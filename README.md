@@ -1,24 +1,9 @@
-# README
+# Science History Institute Digital Collections
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+In progress re-write of our Digital Collections application.
 
-Things you may want to cover:
+This one is based on the [kithe](https://github.com/sciencehistory/kithe) toolkit, being developed in tandem.
 
-* Ruby version
 
-* System dependencies
 
-* Configuration
 
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
