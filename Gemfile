@@ -31,6 +31,9 @@ gem 'jbuilder', '~> 2.5'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.1.0', require: false
 
+gem 'bootstrap', '~> 4.1.3'
+gem 'sprockets-rails', '>= 2.3.2' # bootstrap gem requirement
+
 gem 'kithe', git: "https://github.com/sciencehistory/kithe.git"
 gem 'simple_form', "~> 4.0"
 
