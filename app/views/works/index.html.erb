@@ -2,22 +2,31 @@
 
 <h1>Works</h1>
 
-<%= link_to 'New Work', new_work_path %>
-
+<p>
+  <%= link_to 'Create New Work', new_work_path, class: "btn btn-primary" %>
+</p>
 <table class="table">
   <thead>
     <tr>
+      <th>ID</th>
       <th>Title</th>
-      <th colspan="2"></th>
+      <th>Created</th>
+      <th>Last Modified</th>
+      <th></th>
     </tr>
   </thead>
 
   <tbody>
     <% @works.each do |work| %>
       <tr>
+        <td><%= work.friendlier_id %></td>
         <td><%= work.title %></td>
-        <td><%= link_to 'Edit', edit_work_path(work) %></td>
-        <td><%= link_to 'Destroy', work, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= l work.created_at.to_date, format: :admin  %></td>
+        <td><%= l work.updated_at.to_date, format: :admin %></td>
+        <td>
+          <%= link_to 'Edit', edit_work_path(work) %>
+          <%= link_to 'Destroy', work, method: :delete, data: { confirm: 'Are you sure?' } %>
+        </td>
       </tr>
     <% end %>
   </tbody>
