@@ -1,22 +1,23 @@
-<%= form_with(model: work, local: true) do |form| %>
+<%= simple_form_for(@work) do |f| %>
   <% if work.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(work.errors.count, "error") %> prohibited this work from being saved:</h2>
+    <div class="kithe-form-errors-top">
+      <p><%= pluralize(work.errors.count, "error") %> prohibited this work from being saved:</p>
+      <p><%= work.errors.full_messages.to_sentence %></p>
 
-      <ul>
-      <% work.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
+      <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
     </div>
   <% end %>
 
-  <div class="field">
-    <%= form.label :title %>
-    <%= form.text_field :title %>
+
+
+  <div class="form-inputs">
+    <%= f.input :title %>
   </div>
 
-  <div class="actions">
-    <%= form.submit %>
+  <div class="form-actions">
+    <%= f.button :submit %>
   </div>
 <% end %>
+
+
+
