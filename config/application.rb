@@ -26,5 +26,16 @@ module ScihistDigicoll
     # Application configuration can go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded after loading
     # the framework and any gems in your application.
+    #
+    config.generators do |g|
+      g.assets            false
+      g.helper            false
+      g.javascript        false
+      g.stylesheets       false
+      g.stylesheets_engine :scss
+      g.test_framework    :rspec, fixtures: false, view_specs: false, helper_specs: false, routing_specs: false
+      #generate.fixture_replacement :factory_bot, dir: "spec/factories"
+      g.jbuilder          false
+    end
   end
 end
