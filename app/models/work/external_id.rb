@@ -3,6 +3,6 @@ class Work::ExternalId
 
   include AttrJson::Model
 
-  attr_json :type, :string
+  attr_json :category, :string
   attr_json :value, :string
 end

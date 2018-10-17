@@ -1,4 +1,12 @@
 class Work < Kithe::Work
+  include AttrJson::NestedAttributes
+
+  validate :test_validation_errors
+
+  def test_validation_errors
+    #errors.add(:external_id, "is wrong because we said so")
+  end
+
   # No repeatable yet, getting there
   attr_json :addtional_title, :string
   attr_json :external_id, Work::ExternalId.to_type
@@ -28,5 +36,7 @@ class Work < Kithe::Work
 
   attr_json :file_creator, :string
   attr_json :admin_note, :text
+
+  attr_json_accepts_nested_attributes_for :external_id
 
 end
