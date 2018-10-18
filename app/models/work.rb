@@ -8,8 +8,8 @@ class Work < Kithe::Work
   end
 
   # No repeatable yet, getting there
-  attr_json :addtional_title, :string
-  attr_json :external_id, Work::ExternalId.to_type
+  attr_json :additional_title, :string, array: true
+  attr_json :external_id, Work::ExternalId.to_type, array: true
   attr_json :creator, Work::Creator.to_type
   attr_json :format, :string
   attr_json :genre, :string

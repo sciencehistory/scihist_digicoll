@@ -1,4 +1,4 @@
-<%= simple_form_for(@work) do |f| %>
+<%= simple_form_for(@work, builder: Kithe::FormBuilder) do |f| %>
 
   <% if work.errors.any? %>
     <div class="kithe-form-errors-top">
@@ -14,19 +14,19 @@
   <div class="form-inputs">
     <%= f.input :title, hint: "yes it is a hint" %>
 
+    <%= f.input :additional_title, wrapper: :multi_input do %>
+        <% f.object.additional_title.each do |str| %>
+          <%= f.text_field(:additional_title, value: str, class: "form-control mb-2", multiple: true) %>
+        <% end %>
+    <% end %>
+
     <%= f.input :external_id, wrapper: :multi_input, hint: "is a" do %>
       <%= f.fields_for :external_id do |sub_form| %>
-          <div class="nested-fields form-row" id="work_external_id">
-            <div class="col">
-              <%= sub_form.input :category, label: false do %>
-                <%= sub_form.select :category, Work::ExternalId::TYPE_VOCAB, { include_blank: sub_form.object.send(:category).blank? }, class: "custom-select" %>
-              <% end %>
-            </div>
-            <div class="col">
-              <%= sub_form.input :value, label: false %>
-            </div>
-          </div>
-        <% end %>
+        <%= render "external_id_fields", f: sub_form %>
+      <% end %>
+      <div class="links">
+        <%= link_to_add_association "Add another #{f.label_text(:external_id)}", f, :external_id %>
+      </div>
     <% end %>
   </div>
 

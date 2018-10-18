@@ -30,6 +30,12 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
+  simple_form:
+    required:
+      html: '<span class="badge badge-pill badge-warning">required</span>'
+    labels:
+      work:
+        external_id: "External ID"
   date:
     formats:
       admin: '%Y-%b-%d'
