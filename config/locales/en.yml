@@ -33,9 +33,21 @@ en:
   simple_form:
     required:
       html: '<span class="badge badge-pill badge-warning">required</span>'
-    labels:
-      work:
-        external_id: "External ID"
+
   date:
     formats:
       admin: '%Y-%b-%d'
+
+# Customizing model and attribute names that show up in edit forms:
+
+  activerecord:
+    attributes:
+      work:
+        # Rails defaults wants to drop the 'ID'
+        external_id:
+          one: "External ID"
+          other: "External IDs"
+
+  activemodel:
+    models:
+      work/external_id: "External ID"

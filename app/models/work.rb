@@ -1,6 +1,4 @@
 class Work < Kithe::Work
-  include AttrJson::NestedAttributes
-
   validate :test_validation_errors
 
   def test_validation_errors
