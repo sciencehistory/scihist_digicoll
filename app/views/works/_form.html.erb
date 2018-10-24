@@ -1,4 +1,4 @@
-<%= kithe_form_for(@work) do |f| %>
+<%= kithe_form_for(work) do |f| %>
 
   <% if work.errors.any? %>
     <div class="kithe-form-errors-top">
@@ -16,16 +16,58 @@
 
     <%= f.repeatable_attr_input :additional_title %>
 
+
     <%= f.repeatable_attr_input(:external_id) do |sub_form| %>
-        <div class="form-row">
-          <div class="col-auto">
-            <%= sub_form.input :category, collection: Work::ExternalId::TYPE_VOCAB, label: false %>
-          </div>
-          <div class="col">
-            <%= sub_form.input :value, label: false %>
-          </div>
-        </div>
+      <%= category_and_value(sub_form, category_list: Work::ExternalId::CATEGORY_VALUES) %>
     <% end %>
+
+    <%= f.repeatable_attr_input(:creator) do |sub_form| %>
+      <%= category_and_value(sub_form, category_list: Work::Creator::CATEGORY_VALUES) %>
+    <% end %>
+
+    <%= f.repeatable_attr_input(:date) do |sub_form| %>
+      <%= render "date", f: sub_form %>
+    <% end %>
+
+    <%= f.repeatable_attr_input(:place) do |sub_form| %>
+      <%= category_and_value(sub_form, category_list: Work::Place::CATEGORY_VALUES) %>
+    <% end %>
+
+    <%= f.input :format,
+                collection: Work::FORMAT_VALUES.collect { |v| [v.humanize.titlecase, v] },
+                as: :check_boxes,
+                input_html: { multiple: true, size: Work::FORMAT_VALUES.count  },
+                include_blank: false %>
+
+    <%= f.input :genre, collection: Work::GENRE_VALUES  %>
+
+    <%= f.repeatable_attr_input :medium %>
+
+    <%= f.repeatable_attr_input :extent %>
+
+    <%= f.repeatable_attr_input :language %>
+
+    <%= f.input :description, as: :text, input_html: { rows: 14 } %>
+
+    <%= f.repeatable_attr_input(:inscription) do |sub_form| %>
+      <%= sub_form.input :location, wrapper: :horizontal_form %>
+      <%= sub_form.input :text, wrapper: :horizontal_form %>
+    <% end %>
+
+    <%= f.repeatable_attr_input :subject %>
+
+    <%= f.input :department, collection: Work::DEPARTMENT_VALUES  %>
+
+    TO DO EXHIBITION
+
+    <%= f.input :source %>
+
+    <%= f.repeatable_attr_input :series_arrangement %>
+
+    TO DO PHYSICAL CONTAINER
+
+    <%= f.repeatable_attr_input :related_url %>
+
   </div>
 
   <div class="form-actions">

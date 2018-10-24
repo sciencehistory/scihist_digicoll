@@ -1,0 +1,22 @@
+
+<div class="form-row">
+  <div class="col-sm-8">
+    <%= f.input :start, wrapper: :horizontal_form, placeholder: "YYYY-MM-DD" %>
+  </div>
+  <div class="col-sm-4">
+    <%= f.input :start_qualifier, label: false, collection: Work::Date::START_QUALIFIERS %>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-sm-8">
+    <%= f.input :finish, wrapper: :horizontal_form, placeholder: "YYYY-MM-DD" %>
+  </div>
+  <div class="col-sm-4">
+    <%= f.input :finish_qualifier, label: false, collection: Work::Date::FINISH_QUALIFIERS %>
+  </div>
+</div>
+
+
+<%= f.input :note, wrapper: :horizontal_form %>
+

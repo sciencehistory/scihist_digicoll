@@ -48,6 +48,17 @@ en:
           one: "External ID"
           other: "External IDs"
 
+
+
   activemodel:
     models:
       work/external_id: "External ID"
+    enum_values:
+      work/external_id:
+        category:
+          object_id: Object ID (Past Perfect)
+          sierra_bib_num: Sierra Bib No.
+          sierra_item_num: Sierra Item No.
+          accession_num: Accession No.
+          aspace_reference_num: ASpace Reference No.
+          oral_history_interview_num: Oral History Interview No.
