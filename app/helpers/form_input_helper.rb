@@ -63,10 +63,10 @@ module FormInputHelper
     end.to_h
 
     content_tag("div", class: "form-row category-and-value") do
-      content_tag("div", class: "col-auto category") do
+      content_tag("div", class: "col-left category") do
         builder.input category_key, collection: category_list, label: false, include_blank: false
       end +
-      content_tag("div", class: "col value") do
+      content_tag("div", class: "col-sm value") do
         builder.input value_key, label: false
       end
     end

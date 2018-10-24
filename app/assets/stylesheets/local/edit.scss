@@ -1,0 +1,25 @@
+.admin-edit {
+  max-width: 800px;
+
+  label, legend {
+    &.form-control-label, &.col-form-label {
+      @extend .h5;
+    }
+  }
+
+  .form-inputs > .form-group {
+    @extend .mb-4;
+  }
+
+  // a column for a select box in category-and-value, or label in sub-labelled models.
+  // make everything line up.
+  .left-col {
+    @extend .col-sm-5, .col-md-4;
+
+    &.col-form-label {
+      text-align: right;
+    }
+  }
+}
+
+

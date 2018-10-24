@@ -1,7 +1,7 @@
 
 
 class Work < Kithe::Work
-  FORMAT_VALUES = %w{ image mixed_material moving_image physical_object sound text }
+
   # BUG, format is getting empty string. :(
   # make sure only allowed format values in multi-value format attribute
   # validates_each :format do |record, attr, value|
@@ -11,63 +11,9 @@ class Work < Kithe::Work
   #   end
   # end
   #
-  GENRE_VALUES = [
-      'Advertisements',
-      'Artifacts',
-      'Business correspondence',
-      'Catalogs',
-      'Charts, diagrams, etc',
-      'Chemistry sets',
-      'Clothing & dress',
-      'Documents',
-      'Drawings',
-      'Encyclopedias and dictionaries',
-      'Electronics',
-      'Engravings',
-      'Ephemera',
-      'Etchings',
-      'Glassware',
-      'Handbooks and manuals',
-      'Illustrations',
-      'Implements, utensils, etc.',
-      'Lithographs',
-      'Manuscripts',
-      'Medical equipment & supplies',
-      'Minutes (Records)',
-      'Molecular models',
-      'Negatives',
-      'Oral histories',
-      'Paintings',
-      'Pamphlets',
-      'Personal correspondence',
-      'Pesticides',
-      'Photographs',
-      'Plastics',
-      'Portraits',
-      'Postage stamps',
-      'Press releases',
-      'Prints',
-      'Publications',
-      'Rare books',
-      'Sample books',
-      'Scientific apparatus and instruments',
-      'Slides',
-      'Stereographs',
-      'Textiles',
-      'Vessels (Containers)',
-      'Woodcuts'
-    ]
-  # we're not using key/value i18n, should we?
-  validates :genre, inclusion: { in: GENRE_VALUES, allow_blank: true }
 
-  DEPARTMENT_VALUES = [
-    'Archives',
-    'Center for Oral History',
-    'Museum',
-    'Library',
-  ]
-  validates :department, inclusion: { in: DEPARTMENT_VALUES, allow_blank: true }
-
+  validates :genre, inclusion: { in: ControlledLists::GENRE, allow_blank: true }
+  validates :department, inclusion: { in: ControlledLists::DEPARTMENT, allow_blank: true }
 
   # No repeatable yet, getting there
   attr_json :additional_title, :string, array: true

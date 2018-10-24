@@ -1,11 +1,10 @@
-<%= kithe_form_for(work) do |f| %>
+<%= kithe_form_for(work, :html=> { class: 'edit-work mx-auto admin-edit' }) do |f| %>
 
   <% if work.errors.any? %>
-    <div class="kithe-form-errors-top">
-      <p><%= pluralize(work.errors.count, "error") %> prohibited this work from being saved:</p>
-      <p><%= work.errors.full_messages.to_sentence %></p>
-
-      <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
+    <div class="kithe-form-errors-top alert alert-danger" role="alert"">
+      <h2 class="h4" class="alert-heading"><%= pluralize(work.errors.count, "error") %> prohibited this work from being saved</h2>
+      <p class="mb-0"><%= work.errors.full_messages.to_sentence %></p>
+      <%= f.error_notification(message: f.object.errors[:base].to_sentence) if f.object.errors[:base].present? %>
     </div>
   <% end %>
 
@@ -34,12 +33,14 @@
     <% end %>
 
     <%= f.input :format,
-                collection: Work::FORMAT_VALUES.collect { |v| [v.humanize.titlecase, v] },
+                collection: (Work::ControlledLists::FORMAT.collect do |v|
+                  [Work.human_attribute_name("format.#{v}"), v]
+                end),
                 as: :check_boxes,
-                input_html: { multiple: true, size: Work::FORMAT_VALUES.count  },
+                input_html: { multiple: true, size: Work::ControlledLists::FORMAT.count  },
                 include_blank: false %>
 
-    <%= f.input :genre, collection: Work::GENRE_VALUES  %>
+    <%= f.input :genre, collection: Work::ControlledLists::GENRE  %>
 
     <%= f.repeatable_attr_input :medium %>
 
@@ -50,13 +51,13 @@
     <%= f.input :description, as: :text, input_html: { rows: 14 } %>
 
     <%= f.repeatable_attr_input(:inscription) do |sub_form| %>
-      <%= sub_form.input :location, wrapper: :horizontal_form %>
-      <%= sub_form.input :text, wrapper: :horizontal_form %>
+      <%= sub_form.input :location, wrapper: :scihist_horizontal_form %>
+      <%= sub_form.input :text, wrapper: :scihist_horizontal_form %>
     <% end %>
 
     <%= f.repeatable_attr_input :subject %>
 
-    <%= f.input :department, collection: Work::DEPARTMENT_VALUES  %>
+    <%= f.input :department, collection: Work::ControlledLists::DEPARTMENT  %>
 
     TO DO EXHIBITION
 
@@ -67,6 +68,8 @@
     TO DO PHYSICAL CONTAINER
 
     <%= f.repeatable_attr_input :related_url %>
+
+
 
   </div>
 

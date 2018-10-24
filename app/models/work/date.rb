@@ -4,7 +4,9 @@ class Work::Date
   START_QUALIFIERS = [nil] + %w{before after century circa decade undated}
   FINISH_QUALIFIERS = [nil] + %w{before circa}
 
-  validates_format_of :start, :finish, with: /\d{4}-\d{2}-\d{2}/, message: "must be of format YYYY-MM-DD"
+  validates_format_of :start, with: /\d{4}-\d{2}-\d{2}/, message: "must be of format YYYY-MM-DD"
+  validates_format_of :finish, with: /\d{4}-\d{2}-\d{2}/, message: "must be of format YYYY-MM-DD", allow_blank: true
+
 
   attr_json :start, :string
   attr_json :start_qualifier, :string

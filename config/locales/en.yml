@@ -47,6 +47,14 @@ en:
         external_id:
           one: "External ID"
           other: "External IDs"
+      work/format:
+        image: "Image"
+        mixed_material: "Mixed Material"
+        moving_image: "Moving Image"
+        physical_object: "Physical Object"
+        sound: "Sound"
+        text: "Text"
+
 
 
 
@@ -56,9 +64,9 @@ en:
     enum_values:
       work/external_id:
         category:
-          object_id: Object ID (Past Perfect)
-          sierra_bib_num: Sierra Bib No.
-          sierra_item_num: Sierra Item No.
-          accession_num: Accession No.
-          aspace_reference_num: ASpace Reference No.
-          oral_history_interview_num: Oral History Interview No.
+          object: Object ID (Past Perfect)
+          bib: Sierra Bib No.
+          item: Sierra Item No.
+          accn: Accession No.
+          aspace: ASpace Reference No.
+          interview: Oral History Interview No.

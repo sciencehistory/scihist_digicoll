@@ -1,5 +1,5 @@
 class Work::ExternalId
-  CATEGORY_VALUES = %w{object_id sierra_bib_num sierra_item_num accession_num aspace_reference_num oral_history_interview_num}
+  CATEGORY_VALUES = %w{object bib item accn aspace interview}
 
   include AttrJson::Model
 
