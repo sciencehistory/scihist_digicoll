@@ -13,13 +13,22 @@
 
   // a column for a select box in category-and-value, or label in sub-labelled models.
   // make everything line up.
-  .left-col {
+  .col-left {
     @extend .col-sm-5, .col-md-4;
 
     &.col-form-label {
       text-align: right;
     }
   }
+
+  .repeatable-add-link {
+    text-align: right;
+  }
+
+  .scihist-hint {
+    font-size: 100%;
+  }
+
 }
 
 

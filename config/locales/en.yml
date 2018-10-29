@@ -38,35 +38,4 @@ en:
     formats:
       admin: '%Y-%b-%d'
 
-# Customizing model and attribute names that show up in edit forms:
 
-  activerecord:
-    attributes:
-      work:
-        # Rails defaults wants to drop the 'ID'
-        external_id:
-          one: "External ID"
-          other: "External IDs"
-      work/format:
-        image: "Image"
-        mixed_material: "Mixed Material"
-        moving_image: "Moving Image"
-        physical_object: "Physical Object"
-        sound: "Sound"
-        text: "Text"
-
-
-
-
-  activemodel:
-    models:
-      work/external_id: "External ID"
-    enum_values:
-      work/external_id:
-        category:
-          object: Object ID (Past Perfect)
-          bib: Sierra Bib No.
-          item: Sierra Item No.
-          accn: Accession No.
-          aspace: ASpace Reference No.
-          interview: Oral History Interview No.

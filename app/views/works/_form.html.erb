@@ -11,10 +11,9 @@
 
 
   <div class="form-inputs">
-    <%= f.input :title, hint: "yes it is a hint" %>
+    <%= f.input :title %>
 
-    <%= f.repeatable_attr_input :additional_title %>
-
+    <%=  f.repeatable_attr_input :additional_title  %>
 
     <%= f.repeatable_attr_input(:external_id) do |sub_form| %>
       <%= category_and_value(sub_form, category_list: Work::ExternalId::CATEGORY_VALUES) %>
@@ -55,7 +54,7 @@
       <%= sub_form.input :text, wrapper: :scihist_horizontal_form %>
     <% end %>
 
-    <%= f.repeatable_attr_input :subject %>
+    <%# f.repeatable_attr_input :subject %>
 
     <%= f.input :department, collection: Work::ControlledLists::DEPARTMENT  %>
 

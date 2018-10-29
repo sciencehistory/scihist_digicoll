@@ -17,7 +17,7 @@ SimpleForm.setup do |config|
     b.optional :pattern
     b.optional :min_max
     b.optional :readonly
-    b.wrapper tag: "div", class: 'left-col col-form-label' do |ba|
+    b.wrapper tag: "div", class: 'col-left col-form-label' do |ba|
       ba.use :label, wrapper: false
     end
     b.wrapper :grid_wrapper, tag: 'div', class: 'col-sm' do |ba|
@@ -26,4 +26,5 @@ SimpleForm.setup do |config|
       ba.use :hint, wrap_with: { tag: 'small', class: 'form-text text-muted' }
     end
   end
+
 end

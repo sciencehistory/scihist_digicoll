@@ -1,19 +1,17 @@
 
 
 class Work < Kithe::Work
-
-  # BUG, format is getting empty string. :(
   # make sure only allowed format values in multi-value format attribute
-  # validates_each :format do |record, attr, value|
-  #   # for weird rails reasons, the empty string will be in there...
-  #   unless value.blank? || (FORMAT_VALUES - value).empty?
-  #     record.errors.add(attr, :inclusion)
-  #   end
-  # end
-  #
+  validates_each :format do |record, attr, value_arr|
+    # for weird rails reasons, the empty string will be in there...
+    unless (value_arr - Work::ControlledLists::FORMAT).empty?
+      record.errors.add(attr, :inclusion)
+    end
+  end
 
   validates :genre, inclusion: { in: ControlledLists::GENRE, allow_blank: true }
   validates :department, inclusion: { in: ControlledLists::DEPARTMENT, allow_blank: true }
+  validates_presence_of :external_id
 
   # No repeatable yet, getting there
   attr_json :additional_title, :string, array: true
@@ -47,6 +45,13 @@ class Work < Kithe::Work
   attr_json :file_creator, :string
   attr_json :admin_note, :text
 
-  attr_json_accepts_nested_attributes_for :external_id, :date, :creator, :place, :inscription, reject_if: :all_blank
+  # filter out empty strings, makes our forms easier, with the way checkbox
+  # groups include hidden field with empty string
+  def format=(arr)
+    if arr.is_a?(Array)
+      arr = arr.reject {|v| v.blank? }
+    end
+    super(arr)
+  end
 
 end
