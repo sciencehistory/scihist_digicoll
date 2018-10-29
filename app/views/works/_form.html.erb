@@ -75,7 +75,7 @@
     <%= f.repeatable_attr_input :related_url %>
 
     <%= f.repeatable_attr_input :additional_credit do |sub_form| %>
-      <%= category_and_value(sub_form, category_list: Work::ExternalId::CATEGORY_VALUES) %>
+      <%= category_and_value(sub_form, category_list: Work::AdditionalCredit::CATEGORY_VALUES) %>
     <% end %>
 
     <%= f.input :file_creator, collection: Work::ControlledLists::FILE_CREATOR %>
