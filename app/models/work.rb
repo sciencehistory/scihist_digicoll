@@ -11,6 +11,7 @@ class Work < Kithe::Work
 
   validates :genre, inclusion: { in: ControlledLists::GENRE, allow_blank: true }
   validates :department, inclusion: { in: ControlledLists::DEPARTMENT, allow_blank: true }
+  validates :file_creator, inclusion: { in: ControlledLists::FILE_CREATOR, allow_blank: true }
   validates_presence_of :external_id
 
   # No repeatable yet, getting there
@@ -38,9 +39,9 @@ class Work < Kithe::Work
 
   # Turn into type of url and value please
   attr_json :related_url, :string, array: true
-  attr_json :rights, :string
-  attr_json :rights_holder, :string
-  attr_json :additional_credit, :string
+  attr_json :rights, :string, array: true
+  attr_json :rights_holder, :string, array: true
+  attr_json :additional_credit, Work::AdditionalCredit.to_type, array: true
 
   attr_json :file_creator, :string
   attr_json :admin_note, :text

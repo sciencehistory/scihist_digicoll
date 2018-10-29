@@ -79,5 +79,23 @@ class Work
       'Museum',
       'Library',
     ]
+
+    FILE_CREATOR = [
+      'Brown, Will',
+      'Center for Oral History',
+      'Conservation Center for Art & Historic Artifacts',
+      'DiMeo, Michelle',
+      'George Blood Audio LP',
+      'Kativa, Hillary',
+      'Lockard, Douglas',
+      'Lu, Cathleen',
+      'Miller, Megan',
+      'Muhlin, Jay',
+      'Newhouse, Sarah',
+      'The University of Pennsylvania Libraries',
+      'Tobias, Gregory',
+      'Voelkel, James',
+    ]
+
   end
 end
