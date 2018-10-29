@@ -64,7 +64,13 @@
 
     <%= f.repeatable_attr_input :series_arrangement %>
 
-    TO DO PHYSICAL CONTAINER
+    <%# single, not array, so we need some slightly weird setup. Including we need at least one to exist:  %>
+    <% f.object.build_physical_container unless f.object.physical_container.present? %>
+    <%= f.input :physical_container, wrapper: :vertical_form do |sub_form| %>
+      <% f.fields_for :physical_container do |sub_form| %>
+        <%= render "physical_container", f: sub_form %>
+      <% end %>
+    <% end %>
 
     <%= f.repeatable_attr_input :related_url %>
 
