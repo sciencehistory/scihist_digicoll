@@ -1,20 +1,22 @@
-class Work::Date
-  include AttrJson::Model
+class Work
+  class Date
+    include AttrJson::Model
 
-  START_QUALIFIERS = %w{before after century circa decade undated}
-  FINISH_QUALIFIERS = %w{before circa}
+    START_QUALIFIERS = %w{before after century circa decade undated}
+    FINISH_QUALIFIERS = %w{before circa}
 
-  validates_format_of :start, with: /\d{4}-\d{2}-\d{2}/, message: "must be of format YYYY-MM-DD"
-  validates_format_of :finish, with: /\d{4}-\d{2}-\d{2}/, message: "must be of format YYYY-MM-DD", allow_blank: true
-
-
-  attr_json :start, :string
-  attr_json :start_qualifier, :string
-
-  attr_json :finish, :string
-  attr_json :finish_qualifier, :string
-
-  attr_json :note, :string
+    validates_format_of :start, with: /\d{4}-\d{2}-\d{2}/, message: "must be of format YYYY-MM-DD"
+    validates_format_of :finish, with: /\d{4}-\d{2}-\d{2}/, message: "must be of format YYYY-MM-DD", allow_blank: true
 
 
+    attr_json :start, :string
+    attr_json :start_qualifier, :string
+
+    attr_json :finish, :string
+    attr_json :finish_qualifier, :string
+
+    attr_json :note, :string
+
+
+  end
 end
