@@ -9,19 +9,19 @@ class Work < Kithe::Work
     end
   end
 
-  validates :genre, inclusion: { in: ControlledLists::GENRE, allow_blank: true }
   validates :department, inclusion: { in: ControlledLists::DEPARTMENT, allow_blank: true }
   validates :file_creator, inclusion: { in: ControlledLists::FILE_CREATOR, allow_blank: true }
   validates_presence_of :external_id
 
-  # No repeatable yet, getting there
+  #validate :genre
+
   attr_json :additional_title, :string, array: true
   attr_json :external_id, Work::ExternalId.to_type, array: true
   attr_json :creator, Work::Creator.to_type, array: true
   attr_json :date, Work::Date.to_type, array: true
   attr_json :place, Work::Place.to_type, array: true
   attr_json :format, :string, array: true
-  attr_json :genre, :string
+  attr_json :genre, :string, array: true
   attr_json :medium, :string, array: true
   attr_json :extent, :string, array: true
   attr_json :language, :string, array: true

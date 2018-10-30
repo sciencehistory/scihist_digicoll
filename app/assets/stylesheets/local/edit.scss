@@ -25,10 +25,10 @@
     text-align: right;
   }
 
-  .scihist-hint {
-    font-size: 100%;
-  }
 
+  .input-primitive {
+    @extend .mb-2;
+  }
 }
 
 

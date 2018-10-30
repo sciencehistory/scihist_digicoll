@@ -39,7 +39,13 @@
                 input_html: { multiple: true, size: Work::ControlledLists::FORMAT.count  },
                 include_blank: false %>
 
-    <%= f.input :genre, collection: Work::ControlledLists::GENRE  %>
+    <%= f.repeatable_attr_input :genre do |input_name, value| %>
+        <%= f.input_field :exhibition, selected: value, include_blank: true, id: nil,
+          collection: Work::ControlledLists::GENRE,
+          name: input_name,
+          class: "form-control input-primitive" %>
+    <% end %>
+
 
     <%= f.repeatable_attr_input :medium %>
 
@@ -58,7 +64,15 @@
 
     <%= f.input :department, collection: Work::ControlledLists::DEPARTMENT  %>
 
-    TO DO EXHIBITION
+    <%= f.repeatable_attr_input(:exhibition) do |input_name, value| %>
+      <%= f.input_field :exhibition,
+            name: input_name,
+            id: nil,
+            selected: value,
+            collection: Work::ControlledLists::EXHIBITION,
+            include_blank: true,
+            class: "form-control input-primitive" %>
+    <% end %>
 
     <%= f.input :source %>
 

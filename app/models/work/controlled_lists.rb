@@ -97,5 +97,25 @@ class Work
       'Voelkel, James',
     ]
 
+    EXHIBITION = [
+      "Making Modernity",
+      'The Whole of Nature and the Mirror of Art',
+      "Transmutations",
+      "Lobby 2017",
+      'ExhibitLab',
+      'Age of Alchemy',
+      "Things Fall Apart",
+      "Second Skin",
+      "Science at Play",
+      "Books of Secrets",
+      "Sensing Change",
+      "The Alchemical Quest",
+      "Inspiring Youth in Chemistry",
+      "Elemental Matters",
+      "Marvels and Ciphers",
+      "Molecules That Matter",
+      "The Sky's the Limit"
+    ]
+
   end
 end
