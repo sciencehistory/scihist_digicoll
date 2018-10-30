@@ -68,8 +68,17 @@ class WorksController < ApplicationController
       @work = Work.find_by_friendlier_id!(params[:id])
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
+    # only allow whitelisted params through (TODO, we're allowing all work params!)
+    # Plus sanitization or any other mutation.
+    #
+    # This could be done in a form object or otherwise abstracted, but this is good
+    # enough for now.
     def work_params
-      params.require(:work).permit!
+      params.require(:work).permit!.tap do |params|
+        # sanitize description
+        if params[:description].present?
+          params[:description] = DescriptionSanitizer.new.sanitize(params[:description])
+        end
+      end
     end
 end
