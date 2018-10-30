@@ -25,9 +25,15 @@
     text-align: right;
   }
 
-
   .input-primitive {
     @extend .mb-2;
+  }
+
+  // Give em a red bar alongside for visibility
+  .form-group.form-group-invalid {
+    border-left: 2px solid $danger;
+    padding-left: 8px;
+    margin-left: -11px;
   }
 }
 
