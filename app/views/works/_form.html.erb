@@ -1,4 +1,4 @@
-<%= kithe_form_for(work, :html=> { class: 'edit-work mx-auto admin-edit' }) do |f| %>
+<%= kithe_form_for(work, :html=> { novalidate: true, class: 'edit-work mx-auto admin-edit' }) do |f| %>
 
   <% if work.errors.any? %>
     <div class="kithe-form-errors-top alert alert-danger" role="alert"">
@@ -13,21 +13,21 @@
   <div class="form-inputs">
     <%= f.input :title %>
 
-    <%=  f.repeatable_attr_input :additional_title  %>
+    <%=  f.repeatable_attr_input :additional_title, build: :at_least_one  %>
 
-    <%= f.repeatable_attr_input(:external_id) do |sub_form| %>
+    <%= f.repeatable_attr_input(:external_id, build: :at_least_one) do |sub_form| %>
       <%= category_and_value(sub_form, category_list: Work::ExternalId::CATEGORY_VALUES) %>
     <% end %>
 
-    <%= f.repeatable_attr_input(:creator) do |sub_form| %>
+    <%= f.repeatable_attr_input(:creator, build: :at_least_one) do |sub_form| %>
       <%= category_and_value(sub_form, category_list: Work::Creator::CATEGORY_VALUES) %>
     <% end %>
 
-    <%= f.repeatable_attr_input(:date) do |sub_form| %>
+    <%= f.repeatable_attr_input(:date, build: :at_least_one) do |sub_form| %>
       <%= render "date", f: sub_form %>
     <% end %>
 
-    <%= f.repeatable_attr_input(:place) do |sub_form| %>
+    <%= f.repeatable_attr_input(:place, build: :at_least_one) do |sub_form| %>
       <%= category_and_value(sub_form, category_list: Work::Place::CATEGORY_VALUES) %>
     <% end %>
 
@@ -39,7 +39,7 @@
                 input_html: { multiple: true, size: Work::ControlledLists::FORMAT.count  },
                 include_blank: false %>
 
-    <%= f.repeatable_attr_input :genre do |input_name, value| %>
+    <%= f.repeatable_attr_input :genre, build: :at_least_one do |input_name, value| %>
         <%= f.input_field :exhibition, selected: value, include_blank: true, id: nil,
           collection: Work::ControlledLists::GENRE,
           name: input_name,
@@ -47,11 +47,11 @@
     <% end %>
 
 
-    <%= f.repeatable_attr_input :medium %>
+    <%= f.repeatable_attr_input :medium, build: :at_least_one %>
 
     <%= f.repeatable_attr_input :extent %>
 
-    <%= f.repeatable_attr_input :language %>
+    <%= f.repeatable_attr_input :language, build: :at_least_one %>
 
     <%= f.input :description, as: :text, input_html: { rows: 14 } %>
 
@@ -60,7 +60,7 @@
       <%= sub_form.input :text, wrapper: :scihist_horizontal_form %>
     <% end %>
 
-    <%= f.repeatable_attr_input :subject %>
+    <%= f.repeatable_attr_input :subject, build: :at_least_one %>
 
     <%= f.input :department, collection: Work::ControlledLists::DEPARTMENT  %>
 

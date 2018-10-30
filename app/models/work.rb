@@ -1,19 +1,13 @@
 
 
 class Work < Kithe::Work
-  # make sure only allowed format values in multi-value format attribute
-  validates_each :format do |record, attr, value_arr|
-    # for weird rails reasons, the empty string will be in there...
-    unless (value_arr - Work::ControlledLists::FORMAT).empty?
-      record.errors.add(attr, :inclusion)
-    end
-  end
-
+  validates :external_id, presence: true
   validates :department, inclusion: { in: ControlledLists::DEPARTMENT, allow_blank: true }
   validates :file_creator, inclusion: { in: ControlledLists::FILE_CREATOR, allow_blank: true }
-  validates_presence_of :external_id
+  validates :format, array_inclusion: { in: ControlledLists::FORMAT }
+  validates :genre, array_inclusion: { in: ControlledLists::GENRE  }
+  validates :exhibition, array_inclusion: { in: ControlledLists::EXHIBITION  }
 
-  #validate :genre
 
   attr_json :additional_title, :string, array: true
   attr_json :external_id, Work::ExternalId.to_type, array: true
@@ -28,7 +22,7 @@ class Work < Kithe::Work
   attr_json :description, :text
   attr_json :inscription, Work::Inscription.to_type, array: true
 
-  # eventually keep vocab id
+  # eventually keep vocab id?
   attr_json :subject, :string, array: true
 
   attr_json :department, :string
@@ -37,7 +31,7 @@ class Work < Kithe::Work
   attr_json :series_arrangement, :string, array: true
   attr_json :physical_container, Work::PhysicalContainer.to_type
 
-  # Turn into type of url and value please
+  # Turn into type of url and value?
   attr_json :related_url, :string, array: true
   attr_json :rights, :string, array: true
   attr_json :rights_holder, :string, array: true
@@ -47,7 +41,8 @@ class Work < Kithe::Work
   attr_json :admin_note, :text
 
   # filter out empty strings, makes our forms easier, with the way checkbox
-  # groups include hidden field with empty string
+  # groups include hidden field with empty string. Kithe repeatable
+  # input normally handles this for us, but we're not using one for this one.
   def format=(arr)
     if arr.is_a?(Array)
       arr = arr.reject {|v| v.blank? }
