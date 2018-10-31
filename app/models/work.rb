@@ -8,6 +8,10 @@ class Work < Kithe::Work
   validates :format, array_inclusion: { in: ControlledLists::FORMAT }
   validates :genre, array_inclusion: { in: ControlledLists::GENRE  }
   validates :exhibition, array_inclusion: { in: ControlledLists::EXHIBITION  }
+  validates :related_url, array_inclusion: {
+    proc: ->(v) { ScihistDigicoll::Util.valid_url?(v) } ,
+    message: "is not a valid url: %{rejected_values}"
+  }
 
 
   attr_json :additional_title, :string, array: true

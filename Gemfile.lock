@@ -1,6 +1,7 @@
 GIT
   remote: https://github.com/sciencehistory/kithe.git
   revision: 2e87210472202df25d13d5dc47a3d65569f96e7d
+  branch: master
   specs:
     kithe (0.1.0)
       attr_json (< 2.0.0)
@@ -259,7 +260,7 @@ DEPENDENCIES
   web-console (>= 3.3.0)
 
 RUBY VERSION
-   ruby 2.5.1p57
+   ruby 2.5.3p105
 
 BUNDLED WITH
-   1.17.0
+   1.17.1
