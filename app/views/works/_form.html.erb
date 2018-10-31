@@ -93,7 +93,17 @@
     <%= f.input :rights_holder %>
 
     <%= f.repeatable_attr_input :additional_credit do |sub_form| %>
-      <%= category_and_value(sub_form, category_list: Work::AdditionalCredit::CATEGORY_VALUES) %>
+      <div class="form-row">
+        <div class="col-left">
+          <%= sub_form.input :role, label: false,
+            collection: Work::AdditionalCredit::ROLES,
+            label_method: proc { |id| Work::AdditionalCredit.human_attribute_name("role.#{id}") }
+           %>
+        </div>
+        <div class="col-sm">
+          <%= sub_form.input :name, label: false, collection: Work::AdditionalCredit::NAMES %>
+        </div>
+      </div>
     <% end %>
 
     <%= f.input :file_creator, collection: Work::ControlledLists::FILE_CREATOR %>
