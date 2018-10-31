@@ -88,6 +88,10 @@
 
     <%= f.repeatable_attr_input :related_url %>
 
+    <%= f.input :rights, collection: RightsTerms.collection_for_select %>
+
+    <%= f.input :rights_holder %>
+
     <%= f.repeatable_attr_input :additional_credit do |sub_form| %>
       <%= category_and_value(sub_form, category_list: Work::AdditionalCredit::CATEGORY_VALUES) %>
     <% end %>

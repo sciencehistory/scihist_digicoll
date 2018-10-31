@@ -4,6 +4,7 @@ class Work < Kithe::Work
   validates :external_id, presence: true
   validates :department, inclusion: { in: ControlledLists::DEPARTMENT, allow_blank: true }
   validates :file_creator, inclusion: { in: ControlledLists::FILE_CREATOR, allow_blank: true }
+  validates :rights, inclusion: { in: RightsTerms.all_ids, allow_blank: true }
   validates :format, array_inclusion: { in: ControlledLists::FORMAT }
   validates :genre, array_inclusion: { in: ControlledLists::GENRE  }
   validates :exhibition, array_inclusion: { in: ControlledLists::EXHIBITION  }
@@ -33,8 +34,8 @@ class Work < Kithe::Work
 
   # Turn into type of url and value?
   attr_json :related_url, :string, array: true
-  attr_json :rights, :string, array: true
-  attr_json :rights_holder, :string, array: true
+  attr_json :rights, :string
+  attr_json :rights_holder, :string
   attr_json :additional_credit, Work::AdditionalCredit.to_type, array: true
 
   attr_json :file_creator, :string
