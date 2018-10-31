@@ -1,0 +1,11 @@
+language: ruby
+rvm:
+  - 2.5.3
+addons:
+  postgresql: "9.6"
+services:
+  - postgresql
+cache:
+  bundler: true
+  directories:
+    - /home/travis/.rvm/
