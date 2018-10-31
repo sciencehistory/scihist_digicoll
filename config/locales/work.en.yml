@@ -17,6 +17,10 @@ en:
         physical_object: "Physical Object"
         sound: "Sound"
         text: "Text"
+      # look up with eg Work::AdditionalCredit.human_attribute_name("role.photographed_by")
+      # https://guides.rubyonrails.org/i18n.html#translations-for-active-record-models
+      work/additional_credit/role:
+        photographed_by: "Photographed by"
 
 
 

@@ -1,16 +1,28 @@
 class Work
   class AdditionalCredit
-    CATEGORY_VALUES = %w{photographer}
-
     include AttrJson::Model
 
-    validates_presence_of :category, :value
-    validates :category, inclusion:
-      { in: CATEGORY_VALUES,
-        allow_blank: true,
-        message: "%{value} is not a valid category" }
+    ROLES = ['photographed_by']
+    NAMES = [
+      'Douglas Lockard',
+      'Gregory Tobias',
+      'Mark Backrath',
+      'Penn School of Medicine',
+      'Will Brown'
+    ]
 
-    attr_json :category, :string
-    attr_json :value, :string
+    # allow_blank keeps us from having double validation error messages for
+    # presence and inclusion.
+    validates :role, presence: true, inclusion:
+      { in: ROLES,
+        allow_blank: true,
+        message: "%{value} is not a valid credit role" }
+    validates :name, presence: true, inclusion:
+      { in: NAMES,
+        allow_blank: true,
+        message: "%{value} is not a valid credit name" }
+
+    attr_json :role, :string
+    attr_json :name, :string
   end
 end
