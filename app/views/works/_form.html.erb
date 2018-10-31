@@ -23,8 +23,8 @@
       <%= category_and_value(sub_form, category_list: Work::Creator::CATEGORY_VALUES) %>
     <% end %>
 
-    <%= f.repeatable_attr_input(:date, build: :at_least_one) do |sub_form| %>
-      <%= render "date", f: sub_form %>
+    <%= f.repeatable_attr_input(:date_of_work, build: :at_least_one) do |sub_form| %>
+      <%= render "date_of_work", f: sub_form %>
     <% end %>
 
     <%= f.repeatable_attr_input(:place, build: :at_least_one) do |sub_form| %>

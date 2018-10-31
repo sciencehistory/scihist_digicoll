@@ -13,7 +13,7 @@ class Work < Kithe::Work
   attr_json :additional_title, :string, array: true
   attr_json :external_id, Work::ExternalId.to_type, array: true
   attr_json :creator, Work::Creator.to_type, array: true
-  attr_json :date, Work::Date.to_type, array: true
+  attr_json :date_of_work, Work::DateOfWork.to_type, array: true
   attr_json :place, Work::Place.to_type, array: true
   attr_json :format, :string, array: true
   attr_json :genre, :string, array: true
