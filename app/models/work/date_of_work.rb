@@ -1,5 +1,5 @@
 class Work
-  class Date
+  class DateOfWork
     include AttrJson::Model
 
     START_QUALIFIERS = %w{before after century circa decade undated}

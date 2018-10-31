@@ -8,6 +8,7 @@ en:
         external_id:
           one: "External ID"
           other: "External IDs"
+        date_of_work: Date
         related_url: "Related URL"
       work/format:
         image: "Image"
