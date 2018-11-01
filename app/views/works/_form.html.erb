@@ -43,7 +43,7 @@
                 include_blank: false %>
 
     <%= f.repeatable_attr_input :genre, build: :at_least_one do |input_name, value| %>
-        <%= f.input_field :exhibition, selected: value, include_blank: true, id: nil,
+        <%= f.input_field :genre, selected: value, include_blank: true, id: nil,
           collection: Work::ControlledLists::GENRE,
           name: input_name,
           class: "form-control input-primitive" %>
