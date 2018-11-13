@@ -16,3 +16,4 @@
 
 //= require jquery3
 //= require cocoon
+//= require uppy_dashboard

@@ -1,0 +1,34 @@
+<%= content_for(:load_uppy, true) %>
+
+<div class="scihist-attach-files">
+
+  <h1>Add Files</h1>
+  <p>To: <%= @parent.title %> (<%= @parent.friendlier_id %>)
+  <p>Once the files have been uploaded and are ready for attachment, you can proceed to Attach</p>
+
+  <%= form_with(url: attach_files_path(@parent.friendlier_id), method: :post, local: true) do |form| %>
+
+    <div class="row">
+
+        <div class="col-md-6 mb-3">
+          <h2>1. Upload Files</h2>
+          <%= content_tag "div",
+            class: "uppy-dashboard-container",
+            data: {
+              create_uppy_dashboard: true,
+            } do %>
+          <% end %>
+        </div>
+
+        <div class="col-sm-6">
+          <h2>2. Attach files</h2>
+          <%= form.submit "Attach", class: "btn btn-primary btn-lg", data: { uppy_dashboard_submit: true } %>
+
+          <table class="table table-sm mt-3 attach-files-table" data-cached-files-table="true">
+            <tr><th class="attach-files-table-filename">Filename</th><th class="attach-files-table-size">Size</th><th class="attach-files-table-remove"></th></tr>
+          </table>
+        </div>
+    </div>
+
+  <% end %>
+</div>

@@ -1,0 +1,43 @@
+<h1>Members: <%= @work.title %></h1>
+
+<div class="alert alert-info">
+  <h2 class="h4 alert-heading">Add New Members</h2>
+  From:
+  <%= link_to "metadata only", "", class: "btn btn-primary" %>
+  <%= link_to "files on your device", ingest_direct_path(@work), class: "btn btn-primary" %>
+  <%= link_to "files in ingest bucket", "", class: "btn btn-primary" %>
+</div>
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Type</th>
+      <th>Title</th>
+      <th>Created</th>
+      <th>Last Modified</th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @work.members.each do |member| %>
+      <tr>
+        <td><%= member.friendlier_id %></td>
+        <td><%= member.class.name %></td>
+        <td><%= member.title %></td>
+        <td><%= l member.created_at.to_date, format: :admin  %></td>
+        <td><%= l member.updated_at.to_date, format: :admin %></td>
+        <td>
+          <%# link_to 'Edit', edit_work_path(work) %>
+          <%# link_to 'Destroy', work, method: :delete, data: { confirm: 'Are you sure?' } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+
