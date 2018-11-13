@@ -4,7 +4,7 @@
 #
 # We'll probably handle `show` in a different controller, for now no show.
 class WorksController < ApplicationController
-  before_action :set_work, only: [:show, :edit, :update, :destroy]
+  before_action :set_work, only: [:show, :edit, :update, :destroy, :members_index]
 
   # GET /works
   # GET /works.json
@@ -60,6 +60,10 @@ class WorksController < ApplicationController
       format.html { redirect_to works_url, notice: 'Work was successfully destroyed.' }
       format.json { head :no_content }
     end
+  end
+
+  # List all members, which could be Works or Assets
+  def members_index
   end
 
   private
