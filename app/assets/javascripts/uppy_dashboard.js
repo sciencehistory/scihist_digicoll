@@ -25,12 +25,14 @@ function createUppyDashboard(container) {
     uppyRestrictions = JSON.parse(uppyRestrictions);
   }
 
+
   var closest = function(el, fn) {
     return el && (fn(el) ? el : closest(el.parentNode, fn));
   }
 
   var containerForm = closest(container, function(el) { return el.tagName.toLowerCase() == "form" });
   var cachedFileTableEl = containerForm.querySelector("*[data-cached-files-table]")
+  var directoryInput = containerForm.querySelector("*[data-dashboard-directory-input]")
 
   var uppy = Uppy.Core({
       id: container.id,
@@ -120,6 +122,29 @@ function createUppyDashboard(container) {
       row.parentNode.removeChild(row);
     }
   });
+
+  var handleDirectoryInput = function() {
+    var fileList = this.files;
+    for (var i = 0; i < fileList.length; i++) {
+      var file = fileList[i];
+      uppy.addFile({
+        name: file.name, // file name
+        type: file.type, // file type
+        data: file, // file blob
+//        source: 'Local', // optional, determines the source of the file, for example, Instagram
+//        isRemote: false // optional, set to true if actual file is not in the browser, but on some remote server, for example, when using companion in combination with Instagram
+      });
+
+      //this.value = ""; // remove files from html input?
+      //debugger;
+      1+1;
+    }
+  }
+
+  if (directoryInput) {
+    directoryInput.addEventListener("change", handleDirectoryInput, false);
+  }
+
 
 
   // Pretty hacky and not great way to try to disable submit button
