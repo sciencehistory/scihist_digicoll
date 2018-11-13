@@ -12,6 +12,19 @@
 
         <div class="col-md-6 mb-3">
           <h2>1. Upload Files</h2>
+
+          <div class="row">
+            <div class="col-md-6 mt-2 mb-2">
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" multiple directory webkitdirectory id="inputGroupFile01" data-dashboard-directory-input="true">
+                <label class="custom-file-label" for="inputGroupFile01">Add folder</label>
+              </div>
+            </div>
+            <div class="col-md-6 mt-2 mb-2">
+              ...Add from Cloud...
+            </div>
+          </div>
+
           <%= content_tag "div",
             class: "uppy-dashboard-container",
             data: {
