@@ -15,29 +15,30 @@
 
           <div class="row">
             <div class="col-md-6 mt-2 mb-2">
+              <button type="button" data-toggle="kithe-browse-everything" data-route="<%=browse_everything_engine.root_path%>"
+                      class="btn btn-outline-primary w-100" id="browse">
+                    Add from Cloud
+              </button>
+            </div>
+
+            <div class="col-md-6 mt-2 mb-2">
               <div class="custom-file">
-                <input type="file" class="custom-file-input" multiple directory webkitdirectory id="inputGroupFile01" data-dashboard-directory-input="true">
+                <input type="file" class="custom-file-input" multiple directory webkitdirectory id="inputGroupFile01"
+                  data-toggle="directory-input">
                 <label class="custom-file-label" for="inputGroupFile01">Add folder</label>
               </div>
             </div>
-            <div class="col-md-6 mt-2 mb-2">
-              ...Add from Cloud...
-            </div>
           </div>
 
-          <%= content_tag "div",
-            class: "uppy-dashboard-container",
-            data: {
-              create_uppy_dashboard: true,
-            } do %>
+          <%= content_tag "div", class: "uppy-dashboard-container", data: kithe_upload_data_config do %>
           <% end %>
         </div>
 
         <div class="col-sm-6">
           <h2>2. Attach files</h2>
-          <%= form.submit "Attach", class: "btn btn-primary btn-lg", data: { uppy_dashboard_submit: true } %>
+          <%= form.submit "Attach", class: "btn btn-primary btn-lg", data: { toggle: "kithe-upload-submit" } %>
 
-          <table class="table table-sm mt-3 attach-files-table" data-cached-files-table="true">
+          <table class="table table-sm mt-3 attach-files-table" data-toggle="cached-files-table">
             <tr><th class="attach-files-table-filename">Filename</th><th class="attach-files-table-size">Size</th><th class="attach-files-table-remove"></th></tr>
           </table>
         </div>
