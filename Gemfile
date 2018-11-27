@@ -39,6 +39,11 @@ gem 'kithe', git: "https://github.com/sciencehistory/kithe.git", branch: "master
 #gem "attr_json", path: "../attr_json"
 gem 'simple_form', "~> 4.0"
 gem "cocoon"
+# Need bootstrap4 support https://github.com/samvera/browse-everything/pull/255:
+gem "browse-everything", git: "git@github.com:samvera/browse-everything.git", branch: :master
+gem "shrine", "~> 2.0" #, path: "../shrine"
+# shrine-compat endpoint to get uppy to direct upload to S3 with resumable multi-part upload
+gem "uppy-s3_multipart"
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

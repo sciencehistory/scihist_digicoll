@@ -21,4 +21,18 @@ class AssetsController < ApplicationController
     redirect_to members_for_work_url(@parent.friendlier_id)
   end
 
+  private
+
+  def kithe_upload_data_config
+    data = {
+      toggle: "kithe-upload"
+    }
+    if Shrine.storages[:cache].kind_of?(Shrine::Storage::S3)
+      data[:s3_storage] = "cache"
+      data[:s3_storage_prefix] = Shrine.storages[:cache].prefix
+    end
+    data
+  end
+  helper_method :kithe_upload_data_config
+
 end
