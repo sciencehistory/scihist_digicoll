@@ -10,8 +10,15 @@ class AssetsController < ApplicationController
   def attach_files
     @parent = Work.find_by_friendlier_id(params[:parent_id])
 
-    (params[:cached_files] || []).each do |file_data|
-      asset = Kithe::Asset.new
+    current_position = @parent.members.maximum(:position) || 0
+
+    files_params = (params[:cached_files] || []).
+      collect { |s| JSON.parse(s) }.
+      sort_by { |h| h && h.dig("metadata", "filename")}
+
+    files_params.each do |file_data|
+      asset = Asset.new
+      asset.position = (current_position += 1)
       asset.parent_id = @parent.id
       asset.file = file_data
       asset.title = (asset.file&.original_filename || "Untitled")

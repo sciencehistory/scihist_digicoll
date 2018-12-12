@@ -13,12 +13,21 @@ require "action_cable/engine"
 require "sprockets/railtie"
 require "rails/test_unit/railtie"
 
+
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
 module ScihistDigicoll
   class Application < Rails::Application
+    # We need to explicitly require our Kithe::Model subclasses, so Rails STI knows about
+    # them. :( https://guides.rubyonrails.org/autoloading_and_reloading_constants.html#autoloading-and-sti
+    config.to_prepare do
+      require_dependency "work"
+      require_dependency "asset"
+    end
+
+
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.2
 

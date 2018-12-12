@@ -69,6 +69,27 @@ module ScihistDigicoll
           access_key_id:     lookup(:aws_access_key_id),
           secret_access_key: lookup(:aws_secret_access_key),
           region:            lookup(:aws_region)
+      })
+      when "production"
+        raise TypeError.new("not yet implemented")
+      else
+        raise TypeError.new("unrecognized storage mode")
+      end
+    end
+
+    # Note we set shrine S3 storage to public, to upload with public ACLs
+    def self.shrine_derivatives_storage
+      case lookup!(:storage_mode)
+      when "dev_file"
+        Shrine::Storage::FileSystem.new("tmp/shrine_storage_testing", prefix: "derivatives")
+      when "dev_s3"
+        Shrine::Storage::S3.new({
+          bucket:            lookup(:s3_dev_bucket),
+          prefix:            "#{lookup(:s3_dev_prefix)}/derivatives",
+          access_key_id:     lookup(:aws_access_key_id),
+          secret_access_key: lookup(:aws_secret_access_key),
+          region:            lookup(:aws_region),
+          public: true
         })
       when "production"
         raise TypeError.new("not yet implemented")
