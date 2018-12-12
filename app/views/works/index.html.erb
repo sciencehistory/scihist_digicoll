@@ -1,5 +1,3 @@
-<p id="notice"><%= notice %></p>
-
 <h1>Works</h1>
 
 <p>
@@ -25,6 +23,7 @@
         <td><%= l work.updated_at.to_date, format: :admin %></td>
         <td>
           <%= link_to 'Edit', edit_work_path(work) %>
+          <%= link_to 'Members', members_for_work_path(work) %>
           <%= link_to 'Destroy', work, method: :delete, data: { confirm: 'Are you sure?' } %>
         </td>
       </tr>
