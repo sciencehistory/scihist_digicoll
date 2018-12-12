@@ -4,14 +4,15 @@
   <h2 class="h4 alert-heading">Add New Members</h2>
   From:
   <%= link_to "metadata only", "", class: "btn btn-primary" %>
-  <%= link_to "files on your device", ingest_direct_path(@work), class: "btn btn-primary" %>
-  <%= link_to "files in ingest bucket", "", class: "btn btn-primary" %>
+  <%= link_to "Files", ingest_direct_path(@work), class: "btn btn-primary" %>
 </div>
 
+<p><%= @work.members.count  %> members</p>
 
 <table class="table">
   <thead>
     <tr>
+      <th>thumb</th>
       <th>ID</th>
       <th>Type</th>
       <th>Title</th>
@@ -22,10 +23,33 @@
   </thead>
 
   <tbody>
-    <% @work.members.each do |member| %>
+    <% @work.members.order(:position).includes(:derivatives).each do |member| %>
       <tr>
+        <td>
+          <% if member.kind_of?(Kithe::Asset) && member.stored? && member.derivatives_created? %>
+            <%= image_tag member.derivative_for(:thumb_standard).url,
+              srcset: "#{member.derivative_for(:thumb_standard).url} 1x, #{member.derivative_for(:thumb_standard_2X).url} 2x" %>
+          <% end %>
+        </td>
+
         <td><%= member.friendlier_id %></td>
-        <td><%= member.class.name %></td>
+
+        <td>
+          <ul class="list-unstyled">
+            <li><%= member.class.name %></li>
+            <% if member.kind_of?(Kithe::Asset) %>
+              <li><small><%= member.content_type %></small></li>
+              <li><small><%= number_to_human_size(member.size) %></small></li>
+              <% if ! member.stored? %>
+                <li><small class="text-danger">waiting for ingest...</small></li>
+              <% elsif  ! member.derivatives_created? %>
+                <li><small class="text-danger">waiting for derivatives...</small></li>
+              <% end %>
+            <% end %>
+          </ul>
+        </td>
+
+        </td>
         <td><%= member.title %></td>
         <td><%= l member.created_at.to_date, format: :admin  %></td>
         <td><%= l member.updated_at.to_date, format: :admin %></td>
