@@ -52,9 +52,7 @@
 
         </td>
         <td>
-          <%= link_to show_asset_path(member) do %>
-            <%= member.title %>
-          <% end %>
+          <%= link_to_if member.kind_of?(Asset), member.title, show_asset_path(member) %>
         </td>
         <td><%= l member.created_at.to_date, format: :admin  %></td>
         <td><%= l member.updated_at.to_date, format: :admin %></td>
