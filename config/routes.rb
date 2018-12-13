@@ -27,6 +27,7 @@ Rails.application.routes.draw do
   # Note "assets" is Rails reserved word, oops.
   get "/works/:parent_id/ingest", to: "assets#display_attach_form", as: "asset_ingest"
   post "/works/:parent_id/ingest", to: "assets#attach_files"
+  get "/asset_files/:id/show", to: "assets#show", as: "show_asset"
 
 
 end

@@ -26,8 +26,10 @@
       <tr>
         <td>
           <% if member.kind_of?(Kithe::Asset) && member.stored? && member.derivatives_created? %>
-            <%= image_tag member.derivative_for(:thumb_standard).url,
-              srcset: "#{member.derivative_for(:thumb_standard).url} 1x, #{member.derivative_for(:thumb_standard_2X).url} 2x" %>
+            <%= link_to show_asset_path(member) do %>
+              <%= image_tag member.derivative_for(:thumb_standard).url,
+                srcset: "#{member.derivative_for(:thumb_standard).url} 1x, #{member.derivative_for(:thumb_standard_2X).url} 2x" %>
+            <% end %>
           <% end %>
         </td>
 
@@ -49,7 +51,11 @@
         </td>
 
         </td>
-        <td><%= member.title %></td>
+        <td>
+          <%= link_to show_asset_path(member) do %>
+            <%= member.title %>
+          <% end %>
+        </td>
         <td><%= l member.created_at.to_date, format: :admin  %></td>
         <td><%= l member.updated_at.to_date, format: :admin %></td>
         <td>

@@ -44,6 +44,7 @@ gem "browse-everything", git: "https://github.com/samvera/browse-everything.git"
 gem "shrine", "~> 2.0" #, path: "../shrine"
 # shrine-compat endpoint to get uppy to direct upload to S3 with resumable multi-part upload
 gem "uppy-s3_multipart"
+gem "content_disposition"
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

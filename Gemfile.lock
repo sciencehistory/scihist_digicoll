@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: 208b4fd315d3953c8ce2ce9ce4f73b592948a737
+  revision: f1462d491f5afcd4ed6e5796cfdfb9f918a7c74a
   branch: master
   specs:
     kithe (0.1.0)
@@ -135,6 +135,7 @@ GEM
       execjs
     coffee-script-source (1.12.2)
     concurrent-ruby (1.1.3)
+    content_disposition (0.1.0)
     crass (1.0.4)
     declarative (0.0.10)
     declarative-option (0.1.0)
@@ -396,6 +397,7 @@ DEPENDENCIES
   chromedriver-helper
   cocoon
   coffee-rails (~> 4.2)
+  content_disposition
   jbuilder (~> 2.5)
   jquery-rails (~> 4.3)
   kithe!

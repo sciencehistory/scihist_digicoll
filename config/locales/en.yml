@@ -37,5 +37,8 @@ en:
   date:
     formats:
       admin: '%Y-%b-%d'
+  time:
+    formats:
+      admin: '%Y-%b-%d %H:%M:%S %Z'
 
 
