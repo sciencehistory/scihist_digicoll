@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: 38e9811ca23a11a0ec8d048fa46b6d2861d3846e
+  revision: 208b4fd315d3953c8ce2ce9ce4f73b592948a737
   branch: master
   specs:
     kithe (0.1.0)
