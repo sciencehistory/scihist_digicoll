@@ -31,7 +31,7 @@
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               <%= link_to 'Edit Metadata', edit_work_path(work), class: "dropdown-item" %>
               <%= link_to 'Members', members_for_work_path(work), class: "dropdown-item" %>
-              <%= link_to 'Destroy', work, method: :delete, data: { confirm: 'Are you sure?' }, class: "dropdown-item" %>
+              <%= link_to 'Destroy', work, method: :delete, data: { confirm: "Delete #{work.title}?" }, class: "dropdown-item" %>
             </div>
           </div>
         </td>
