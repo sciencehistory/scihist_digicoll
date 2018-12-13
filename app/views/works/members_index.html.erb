@@ -25,7 +25,7 @@
     <% @work.members.order(:position).includes(:derivatives).each do |member| %>
       <tr>
         <td>
-          <% if member.kind_of?(Kithe::Asset) && member.stored? && member.derivatives_created? %>
+          <% if member.kind_of?(Kithe::Asset) && member.stored? && member.derivative_for(:thumb_standard) && member.derivative_for(:thumb_standard_2X) %>
             <%= link_to show_asset_path(member) do %>
               <%= image_tag member.derivative_for(:thumb_standard).url,
                 srcset: "#{member.derivative_for(:thumb_standard).url} 1x, #{member.derivative_for(:thumb_standard_2X).url} 2x" %>
