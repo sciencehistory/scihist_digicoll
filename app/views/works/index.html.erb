@@ -1,7 +1,10 @@
 <h1>Works</h1>
 
 <p>
-  <%= link_to 'Create New Work', new_work_path, class: "btn btn-primary" %>
+  <div class="alert alert-secondary d-inline-block">
+    <h2 class="h4 alert-heading">Create New Work</h2>
+    <%= link_to 'Metadata', new_work_path, class: "btn btn-primary" %>
+  </div>
 </p>
 <table class="table">
   <thead>
@@ -23,7 +26,7 @@
         <td><%= l work.updated_at.to_date, format: :admin %></td>
         <td>
           <div class="dropdown">
-              <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</button>
+            <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
 
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               <%= link_to 'Edit Metadata', edit_work_path(work), class: "dropdown-item" %>

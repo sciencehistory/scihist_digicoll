@@ -1,6 +1,6 @@
 class AssetsController < ApplicationController
 
-  def ingest_direct_files_input
+  def display_attach_form
     @parent = Work.find_by_friendlier_id(params[:parent_id])
   end
 
