@@ -1,10 +1,9 @@
 <h1>Members: <%= @work.title %></h1>
 
-<div class="alert alert-info">
+<div class="alert alert-secondary">
   <h2 class="h4 alert-heading">Add New Members</h2>
   From:
-  <%= link_to "metadata only", "", class: "btn btn-primary" %>
-  <%= link_to "Files", ingest_direct_path(@work), class: "btn btn-primary" %>
+  <%= link_to "Files", asset_ingest_path(@work), class: "btn btn-primary" %>
 </div>
 
 <p><%= @work.members.count  %> members</p>
@@ -12,7 +11,7 @@
 <table class="table">
   <thead>
     <tr>
-      <th>thumb</th>
+      <th>thumbnail</th>
       <th>ID</th>
       <th>Type</th>
       <th>Title</th>
