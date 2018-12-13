@@ -4,8 +4,6 @@ require "shrine/storage/s3"
 
 module ScihistDigicoll
   class Env < Kithe::ConfigBase
-
-
     define_key :aws_access_key_id
     define_key :aws_secret_access_key
 
@@ -33,8 +31,11 @@ module ScihistDigicoll
         'production'
       elsif Rails.env.test?
         'dev_file'
-      else
+      elsif lookup(:aws_access_key_id) && lookup(:aws_secret_access_key)
         'dev_s3'
+      else
+        warn("ScihistDigicoll: Using STORAGE_MODE=dev_file, because we lack aws_access_key_id and aws_secret_access_key")
+        'dev_file'
       end
     }
 
