@@ -14,6 +14,8 @@ module ScihistDigicoll
       self.config_file_paths = ["config/local_env.yml", "config/local_env_#{rails_env.downcase}.yml"]
     end
 
+    define_key :service_level, allows: ["stage", "prod", nil]
+
     # Rails-style db url, eg postgres://myuser:mypass@localhost/somedatabase
     define_key :rails_database_url
 
@@ -135,6 +137,8 @@ module ScihistDigicoll
       end
     end
 
+
+    define_key :honeybadger_api_key
 
   end
 end

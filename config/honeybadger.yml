@@ -1,0 +1,10 @@
+---
+api_key: <%= ScihistDigicoll::Env.lookup(:honeybadger_api_key) %>
+env: <%= ScihistDigicoll::Env.lookup(:service_level) || Rails.env.to_s %>
+feedback:
+  enabled: true
+user_informer:
+  enabled: true
+  info: "Error ID: {{error_id}}"
+
+# http://docs.honeybadger.io/ruby/gem-reference/configuration.html
