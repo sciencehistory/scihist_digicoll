@@ -1,0 +1,4 @@
+production:
+  "*": 5
+development:
+  "*": 5
