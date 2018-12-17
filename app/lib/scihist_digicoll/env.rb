@@ -14,10 +14,18 @@ module ScihistDigicoll
       self.config_file_paths = ["config/local_env.yml", "config/local_env_#{rails_env.downcase}.yml"]
     end
 
+    # Rails-style db url, eg postgres://myuser:mypass@localhost/somedatabase
+    define_key :rails_database_url
+
     define_key :aws_access_key_id
     define_key :aws_secret_access_key
 
     define_key :aws_region, default: "us-east-1"
+
+    define_key :s3_bucket_originals
+    define_key :s3_bucket_derivatives
+    define_key :s3_bucket_uploads
+
 
     # shared bucket for dev, everything will be on there
     # This bucket name is not right. Really confused what the buckets are.
@@ -27,7 +35,7 @@ module ScihistDigicoll
 
     define_key :ingest_bucket, default: -> {
       if Rails.env.production?
-        nil # to do
+        "scihi-kithe-stage-uploads"
       else
         "scih-uploads-dev"
       end
@@ -63,7 +71,13 @@ module ScihistDigicoll
           region:            lookup(:aws_region)
         })
       when "production"
-        raise TypeError.new("not yet implemented")
+        Shrine::Storage::S3.new({
+          bucket:            lookup(:s3_bucket_uploads),
+          prefix:            "web",
+          access_key_id:     lookup(:aws_access_key_id),
+          secret_access_key: lookup(:aws_secret_access_key),
+          region:            lookup(:aws_region)
+        })
       else
         raise TypeError.new("unrecognized storage mode")
       end
@@ -82,7 +96,12 @@ module ScihistDigicoll
           region:            lookup(:aws_region)
       })
       when "production"
-        raise TypeError.new("not yet implemented")
+        Shrine::Storage::S3.new({
+          bucket:            lookup(:s3_bucket_originals),
+          access_key_id:     lookup(:aws_access_key_id),
+          secret_access_key: lookup(:aws_secret_access_key),
+          region:            lookup(:aws_region)
+        })
       else
         raise TypeError.new("unrecognized storage mode")
       end
@@ -103,7 +122,12 @@ module ScihistDigicoll
           public: true
         })
       when "production"
-        raise TypeError.new("not yet implemented")
+        Shrine::Storage::S3.new({
+          bucket:            lookup(:s3_bucket_derivatives),
+          access_key_id:     lookup(:aws_access_key_id),
+          secret_access_key: lookup(:aws_secret_access_key),
+          region:            lookup(:aws_region)
+        })
       else
         raise TypeError.new("unrecognized storage mode")
       end
