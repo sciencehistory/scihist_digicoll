@@ -35,7 +35,9 @@ ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
 # Default value for :linked_files is []
 #set :linked_files, fetch(:linked_files, []).push('config/initializers/devise.rb', 'config/blacklight.yml', 'config/database.yml', 'config/fedora.yml', 'config/redis.yml', 'config/secrets.yml', 'config/solr.yml', 'config/local_env.yml')
-set :linked_files, fetch(:linked_files, []).push('config/local_env.yml')
+
+# TODO no local_env.yml yet
+# set :linked_files, fetch(:linked_files, []).push('config/local_env.yml')
 
 # Default value for linked_dirs is []
 set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/system')
