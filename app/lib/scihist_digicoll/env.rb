@@ -4,7 +4,15 @@ require "shrine/storage/s3"
 
 module ScihistDigicoll
   class Env < Kithe::ConfigBase
+    # look for config/local_env.yml, and if we're NOT in production,
+    # config/local_env_#{env}.yml
 
+    rails_env = defined?(Rails) ? Rails.env.to_s : (ENV["RAILS_ENV"] || "development")
+    if rails_env != "development" && rails_env != "test"
+      self.config_file_paths = ["config/local_env.yml"]
+    else
+      self.config_file_paths = ["config/local_env.yml", "config/local_env_#{rails_env.downcase}.yml"]
+    end
 
     define_key :aws_access_key_id
     define_key :aws_secret_access_key
@@ -33,8 +41,11 @@ module ScihistDigicoll
         'production'
       elsif Rails.env.test?
         'dev_file'
-      else
+      elsif lookup(:aws_access_key_id) && lookup(:aws_secret_access_key)
         'dev_s3'
+      else
+        warn("ScihistDigicoll: Using STORAGE_MODE=dev_file, because we lack aws_access_key_id and aws_secret_access_key")
+        'dev_file'
       end
     }
 
