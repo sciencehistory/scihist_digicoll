@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
+  # temporarily, as we build out app, this is the part we have working...
+  root to: "works#index"
+
   # Should be protecting to just logged in users?
   mount BrowseEverything::Engine => '/browse'
 
@@ -25,8 +28,9 @@ Rails.application.routes.draw do
   end
 
   # Note "assets" is Rails reserved word, oops.
-  get "/asset/ingest_direct/:parent_id", to: "assets#ingest_direct_files_input", as: "ingest_direct"
-  post "/asset/attach/:parent_id", to: "assets#attach_files", as: "attach_files"
+  get "/works/:parent_id/ingest", to: "assets#display_attach_form", as: "asset_ingest"
+  post "/works/:parent_id/ingest", to: "assets#attach_files"
+  get "/asset_files/:id/show", to: "assets#show", as: "show_asset"
 
 
 end
