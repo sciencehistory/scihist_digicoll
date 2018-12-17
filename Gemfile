@@ -16,6 +16,8 @@ gem 'puma', '~> 3.11'
 gem "resque", "~> 1.0"
 gem "resque-pool"
 
+gem 'honeybadger', '~> 4.0'
+
 # Use SCSS for stylesheets
 gem 'sassc-rails', '~> 2.0'
 # Use Uglifier as compressor for JavaScript assets
