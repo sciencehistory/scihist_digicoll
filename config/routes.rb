@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
+  # temporarily, as we build out app, this is the part we have working...
+  root to: "works#index"
+
   # Should be protecting to just logged in users?
   mount BrowseEverything::Engine => '/browse'
 
