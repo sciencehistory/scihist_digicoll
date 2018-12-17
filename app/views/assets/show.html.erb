@@ -1,0 +1,80 @@
+<h1>Asset: <%= @asset.title %></h1>
+<p>In Work: <%= @asset.parent.title %></p>
+<div class="row">
+  <div class="col-sm-6">
+    <% if @asset.derivative_for(:thumb_large) && @asset.derivative_for(:thumb_large_2X) %>
+      <%= image_tag @asset.derivative_for(:thumb_large).url,
+            srcset: "#{@asset.derivative_for(:thumb_large).url} 1x, #{@asset.derivative_for(:thumb_large_2X).url} 2x",
+            style: "max-width: 100%" %>
+    <% elsif ! @asset.stored? %>
+      <p class="text-white bg-danger">
+        Waiting on ingest...
+      </p>
+    <% else %>
+      <p class="text-white bg-danger">
+        Derivatives not available
+      </p>
+    <% end %>
+
+    <%= link_to "Download Original",
+      @asset.file.url(response_content_disposition: ContentDisposition.format(disposition: :attachment, filename: @asset.title)),
+      class: "btn btn-outline-primary btn-lg mt-4" %>
+  </div>
+
+  <div class="col-sm-6">
+    <dl class="row">
+      <dt class="col-sm-3">Content-type</dt>
+      <dd class="col-sm-9"><%= @asset.content_type %></dd>
+
+      <dt class="col-sm-3">File Size</dt>
+      <dd class="col-sm-9"><%= number_to_human_size(@asset.size) %></dd>
+
+      <dt class="col-sm-3">Signatures</dt>
+      <dd class="col-sm-9">
+        <dl class="row">
+          <dt class="col-sm-2">MD5</dt>
+          <dd class="col-sm-10 text-truncate">
+            <%= text_field_tag "", @asset.md5, readonly: true, style: "width: 100%" %>
+          </dd>
+
+          <dt class="col-sm-2">SHA1</dt>
+          <dd class="col-sm-10 text-truncate" title="foo">
+            <%= text_field_tag "", @asset.sha1, readonly: true, style: "width: 100%" %>
+          </dd>
+
+          <dt class="col-sm-2">SHA512</dt>
+          <dd class="col-sm-10 text-truncate" title="foo">
+            <%= text_field_tag "", @asset.sha512, readonly: true, style: "width: 100%" %>
+          </dd>
+        </dl>
+      </dd>
+
+      <dt class="col-sm-3">Dimensions</dt>
+      <dd class="col-sm-9">
+        <dl>
+          <% if @asset.width %>
+            <dt>Width</dt><dd><%= @asset.width %> px</dd>
+          <% end %>
+          <% if @asset.height %>
+            <dt>Height</dt><dd><%= @asset.height %> px</dd>
+          <% end %>
+        </dl>
+      </dd>
+
+      <dt class="col-sm-3">Created</dt>
+      <dd class="col-sm-9"><%= l @asset.created_at, format: :admin %></dd>
+
+      <dt class="col-sm-3">Last Updated</dt>
+      <dd class="col-sm-9"><%= l @asset.updated_at, format: :admin %></dd>
+
+    </dl>
+
+
+    <h2 class="mt-4">Derivatives</h2>
+    <ul class="list-unstyled">
+      <% @asset.derivatives.sort_by(&:key).each do |derivative| %>
+        <li><%= link_to derivative.key, derivative.url %></li>
+      <% end %>
+    </ul>
+  </div>
+</div>

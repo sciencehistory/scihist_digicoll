@@ -1,10 +1,9 @@
 <h1>Members: <%= @work.title %></h1>
 
-<div class="alert alert-info">
+<div class="alert alert-secondary d-inline-block">
   <h2 class="h4 alert-heading">Add New Members</h2>
   From:
-  <%= link_to "metadata only", "", class: "btn btn-primary" %>
-  <%= link_to "Files", ingest_direct_path(@work), class: "btn btn-primary" %>
+  <%= link_to "Files", asset_ingest_path(@work), class: "btn btn-primary" %>
 </div>
 
 <p><%= @work.members.count  %> members</p>
@@ -12,7 +11,7 @@
 <table class="table">
   <thead>
     <tr>
-      <th>thumb</th>
+      <th>thumbnail</th>
       <th>ID</th>
       <th>Type</th>
       <th>Title</th>
@@ -26,9 +25,11 @@
     <% @work.members.order(:position).includes(:derivatives).each do |member| %>
       <tr>
         <td>
-          <% if member.kind_of?(Kithe::Asset) && member.stored? && member.derivatives_created? %>
-            <%= image_tag member.derivative_for(:thumb_standard).url,
-              srcset: "#{member.derivative_for(:thumb_standard).url} 1x, #{member.derivative_for(:thumb_standard_2X).url} 2x" %>
+          <% if member.kind_of?(Kithe::Asset) && member.stored? && member.derivative_for(:thumb_standard) && member.derivative_for(:thumb_standard_2X) %>
+            <%= link_to show_asset_path(member) do %>
+              <%= image_tag member.derivative_for(:thumb_standard).url,
+                srcset: "#{member.derivative_for(:thumb_standard).url} 1x, #{member.derivative_for(:thumb_standard_2X).url} 2x" %>
+            <% end %>
           <% end %>
         </td>
 
@@ -50,7 +51,9 @@
         </td>
 
         </td>
-        <td><%= member.title %></td>
+        <td>
+          <%= link_to_if member.kind_of?(Asset), member.title, show_asset_path(member) %>
+        </td>
         <td><%= l member.created_at.to_date, format: :admin  %></td>
         <td><%= l member.updated_at.to_date, format: :admin %></td>
         <td>

@@ -1,7 +1,10 @@
 <h1>Works</h1>
 
 <p>
-  <%= link_to 'Create New Work', new_work_path, class: "btn btn-primary" %>
+  <div class="alert alert-secondary d-inline-block">
+    <h2 class="h4 alert-heading">Create New Work</h2>
+    <%= link_to 'Metadata', new_work_path, class: "btn btn-primary" %>
+  </div>
 </p>
 <table class="table">
   <thead>
@@ -22,9 +25,15 @@
         <td><%= l work.created_at.to_date, format: :admin  %></td>
         <td><%= l work.updated_at.to_date, format: :admin %></td>
         <td>
-          <%= link_to 'Edit', edit_work_path(work) %>
-          <%= link_to 'Members', members_for_work_path(work) %>
-          <%= link_to 'Destroy', work, method: :delete, data: { confirm: 'Are you sure?' } %>
+          <div class="dropdown">
+            <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
+
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <%= link_to 'Edit Metadata', edit_work_path(work), class: "dropdown-item" %>
+              <%= link_to 'Members', members_for_work_path(work), class: "dropdown-item" %>
+              <%= link_to 'Destroy', work, method: :delete, data: { confirm: "Delete #{work.title}?" }, class: "dropdown-item" %>
+            </div>
+          </div>
         </td>
       </tr>
     <% end %>
