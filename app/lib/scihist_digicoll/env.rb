@@ -26,6 +26,8 @@ module ScihistDigicoll
     define_key :s3_bucket_derivatives
     define_key :s3_bucket_uploads
 
+    # For ActiveJob queue, among maybe other things.
+    define_key :persistent_redis_host, default: "localhost:6379"
 
     # shared bucket for dev, everything will be on there
     # This bucket name is not right. Really confused what the buckets are.
