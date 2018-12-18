@@ -22,13 +22,19 @@
 <% end %>
 
 
+<% if @works.total_count > 0 %>
+  <p>
+    <%= @works.offset_value + 1 %> - <%= @works.offset_value + @works.count %> of <%= @works.total_count %>
+  </p>
+<% end %>
+
 <table class="table">
   <thead>
     <tr>
-      <th><%= sort_link(@q, :id, "ID") %></th>
-      <th><%= sort_link(@q, :title) %></th>
-      <th><%= sort_link(@q, :created_at, "Created") %></th>
-      <th><%= sort_link(@q, :updated_at, "Last Modified") %></th>
+      <th><%= sort_link(@q, :id, "ID", page: nil) %></th>
+      <th><%= sort_link(@q, :title, page: nil) %></th>
+      <th><%= sort_link(@q, :created_at, "Created", page: nil) %></th>
+      <th><%= sort_link(@q, :updated_at, "Last Modified", page: nil) %></th>
       <th></th>
     </tr>
   </thead>
@@ -56,6 +62,4 @@
   </tbody>
 </table>
 
-<br>
-
-
+<%= paginate @works, theme: 'twitter-bootstrap-4' %>
