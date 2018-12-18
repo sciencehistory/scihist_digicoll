@@ -47,6 +47,9 @@ gem "uppy-s3_multipart"
 gem "content_disposition"
 
 gem "ransack", "~> 2.1"
+gem "kaminari", "~> 1.0"
+gem 'bootstrap4-kaminari-views'
+
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

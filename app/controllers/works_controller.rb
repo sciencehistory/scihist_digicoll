@@ -12,7 +12,7 @@ class WorksController < ApplicationController
     @q = Work.ransack(params[:q])
     @q.sorts = 'updated_at desc' if @q.sorts.empty?
 
-    @works = @q.result
+    @works = @q.result.page(params[:page]).per(20)
   end
 
 
