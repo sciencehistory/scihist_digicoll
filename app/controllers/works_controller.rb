@@ -9,6 +9,11 @@ class WorksController < ApplicationController
   # GET /works
   # GET /works.json
   def index
+    # weird ransack param, we want it to default to true
+    if params.dig(:q, "parent_id_null").nil?
+      params[:q] ||= {}
+      params[:q]["parent_id_null"] = true
+    end
     @q = Work.ransack(params[:q])
     @q.sorts = 'updated_at desc' if @q.sorts.empty?
 
