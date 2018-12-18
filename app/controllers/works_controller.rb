@@ -9,7 +9,10 @@ class WorksController < ApplicationController
   # GET /works
   # GET /works.json
   def index
-    @works = Work.all
+    @q = Work.ransack(params[:q])
+    @q.sorts = 'updated_at desc' if @q.sorts.empty?
+
+    @works = @q.result
   end
 
 

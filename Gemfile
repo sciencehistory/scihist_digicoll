@@ -46,6 +46,8 @@ gem "shrine", "~> 2.0" #, path: "../shrine"
 gem "uppy-s3_multipart"
 gem "content_disposition"
 
+gem "ransack", "~> 2.1"
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]
