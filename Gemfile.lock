@@ -448,8 +448,8 @@ DEPENDENCIES
   chromedriver-helper
   cocoon
   coffee-rails (~> 4.2)
-  honeybadger (~> 4.0)
   content_disposition
+  honeybadger (~> 4.0)
   jbuilder (~> 2.5)
   jquery-rails (~> 4.3)
   kithe!
@@ -473,7 +473,7 @@ DEPENDENCIES
   web-console (>= 3.3.0)
 
 RUBY VERSION
-   ruby 2.5.1p57
+   ruby 2.5.3p105
 
 BUNDLED WITH
    1.17.1
