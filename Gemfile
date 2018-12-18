@@ -45,7 +45,7 @@ gem 'sprockets-rails', '>= 2.3.2' # bootstrap gem requirement
 
 gem 'jquery-rails', "~> 4.3"
 gem 'kithe', git: "https://github.com/sciencehistory/kithe.git", branch: "master"
-#gem "attr_json", path: "../attr_json"
+gem "attr_json", git: "https://github.com/jrochkind/attr_json" #path: "../attr_json"
 gem 'simple_form', "~> 4.0"
 gem "cocoon"
 # Need bootstrap4 support https://github.com/samvera/browse-everything/pull/255:
