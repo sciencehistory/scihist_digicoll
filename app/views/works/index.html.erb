@@ -7,18 +7,24 @@
   </div>
 </p>
 
+<%# this is ransack %>
 <%= search_form_for @q  do |f| %>
   <div class="row">
-    <div class="input-group col-lg-6 col-md-8 mb-3">
+    <div class="input-group col-lg-9 col-md-10 mb-3">
       <div class="input-group-prepend">
         <%= f.label :title_or_friendlier_id_cont, "In Title or ID", class: "input-group-text" %>
       </div>
       <%= f.search_field :title_or_friendlier_id_cont, class: "form-control" %>
+      <%= select_tag "q[parent_id_null]",
+            options_for_select({"All" => "", "Top-level" => true}, params[:q][:parent_id_null]),
+            class: "custom-select col-2"
+      %>
       <div class="input-group-append">
         <%= f.button "Search", class: "btn btn-primary" %>
       </div>
     </div>
   </div>
+
 <% end %>
 
 
