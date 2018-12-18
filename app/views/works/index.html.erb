@@ -6,13 +6,29 @@
     <%= link_to 'Metadata', new_work_path, class: "btn btn-primary" %>
   </div>
 </p>
+
+<%= search_form_for @q  do |f| %>
+  <div class="row">
+    <div class="input-group col-lg-6 col-md-8 mb-3">
+      <div class="input-group-prepend">
+        <%= f.label :title_or_friendlier_id_cont, "In Title or ID", class: "input-group-text" %>
+      </div>
+      <%= f.search_field :title_or_friendlier_id_cont, class: "form-control" %>
+      <div class="input-group-append">
+        <%= f.button "Search", class: "btn btn-primary" %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+
 <table class="table">
   <thead>
     <tr>
-      <th>ID</th>
-      <th>Title</th>
-      <th>Created</th>
-      <th>Last Modified</th>
+      <th><%= sort_link(@q, :id, "ID") %></th>
+      <th><%= sort_link(@q, :title) %></th>
+      <th><%= sort_link(@q, :created_at, "Created") %></th>
+      <th><%= sort_link(@q, :updated_at, "Last Modified") %></th>
       <th></th>
     </tr>
   </thead>
