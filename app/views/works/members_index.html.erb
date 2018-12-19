@@ -57,8 +57,12 @@
         <td><%= l member.created_at.to_date, format: :admin  %></td>
         <td><%= l member.updated_at.to_date, format: :admin %></td>
         <td>
-          <%# link_to 'Edit', edit_work_path(work) %>
-          <%# link_to 'Destroy', work, method: :delete, data: { confirm: 'Are you sure?' } %>
+          <div class="dropdown dropdown-menu-right">
+            <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
+            <% if member.kind_of?(Work) %>
+              <%= admin_dropdown_for_work(member, labelled_by_id: "dropdownMenuButton") %>
+            <% end %>
+          </div>
         </td>
       </tr>
     <% end %>

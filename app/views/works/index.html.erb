@@ -55,12 +55,7 @@
         <td>
           <div class="dropdown">
             <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
-
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <%= link_to 'Edit Metadata', edit_work_path(work), class: "dropdown-item" %>
-              <%= link_to 'Members', members_for_work_path(work), class: "dropdown-item" %>
-              <%= link_to 'Destroy', work, method: :delete, data: { confirm: "Delete #{work.title}?" }, class: "dropdown-item" %>
-            </div>
+            <%= admin_dropdown_for_work(work, labelled_by_id: "dropdownMenuButton") %>
           </div>
         </td>
       </tr>
