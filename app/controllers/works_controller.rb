@@ -9,7 +9,15 @@ class WorksController < ApplicationController
   # GET /works
   # GET /works.json
   def index
-    @works = Work.all
+    # weird ransack param, we want it to default to true
+    if params.dig(:q, "parent_id_null").nil?
+      params[:q] ||= {}
+      params[:q]["parent_id_null"] = true
+    end
+    @q = Work.ransack(params[:q])
+    @q.sorts = 'updated_at desc' if @q.sorts.empty?
+
+    @works = @q.result.page(params[:page]).per(20)
   end
 
 
@@ -57,7 +65,7 @@ class WorksController < ApplicationController
   def destroy
     @work.destroy
     respond_to do |format|
-      format.html { redirect_to works_url, notice: 'Work was successfully destroyed.' }
+      format.html { redirect_to works_url, notice: "Work '#{@work.title}' was successfully destroyed." }
       format.json { head :no_content }
     end
   end
