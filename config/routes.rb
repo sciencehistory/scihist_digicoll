@@ -27,10 +27,13 @@ Rails.application.routes.draw do
     end
   end
 
-  # Note "assets" is Rails reserved word, oops.
+  # Note "assets" is Rails reserved word for routing, oops.
+  resources :assets, path: "asset_files", only: [:show, :destroy]
+
+
   get "/works/:parent_id/ingest", to: "assets#display_attach_form", as: "asset_ingest"
   post "/works/:parent_id/ingest", to: "assets#attach_files"
-  get "/asset_files/:id/show", to: "assets#show", as: "show_asset"
+  #get "/asset_files/:id/show", to: "assets#show", as: "show_asset"
 
 
 end

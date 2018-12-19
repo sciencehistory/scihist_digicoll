@@ -5,6 +5,16 @@ class AssetsController < ApplicationController
     @asset = Asset.find_by_friendlier_id(params[:id])
   end
 
+  def destroy
+    @asset = Asset.find_by_friendlier_id(params[:id])
+    work = @asset.parent
+    @asset.destroy
+    respond_to do |format|
+      format.html { redirect_to members_for_work_url(work.friendlier_id), notice: 'Asset was successfully destroyed.' }
+      format.json { head :no_content }
+    end
+  end
+
   def display_attach_form
     @parent = Work.find_by_friendlier_id(params[:parent_id])
   end
