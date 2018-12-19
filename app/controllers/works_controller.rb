@@ -65,7 +65,7 @@ class WorksController < ApplicationController
   def destroy
     @work.destroy
     respond_to do |format|
-      format.html { redirect_to works_url, notice: 'Work was successfully destroyed.' }
+      format.html { redirect_to works_url, notice: "Work '#{@work.title}' was successfully destroyed." }
       format.json { head :no_content }
     end
   end

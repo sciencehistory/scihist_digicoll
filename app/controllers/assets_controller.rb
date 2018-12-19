@@ -10,7 +10,7 @@ class AssetsController < ApplicationController
     work = @asset.parent
     @asset.destroy
     respond_to do |format|
-      format.html { redirect_to members_for_work_url(work.friendlier_id), notice: 'Asset was successfully destroyed.' }
+      format.html { redirect_to members_for_work_url(work.friendlier_id), notice: "Asset '#{@asset.title}' was successfully destroyed." }
       format.json { head :no_content }
     end
   end
