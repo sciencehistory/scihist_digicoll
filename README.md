@@ -43,3 +43,12 @@ Or by putting in a local_env[_development].yml file:
 `./bin/rspec`.
 
 
+## Production deployment
+
+We deploy to AWS, the deployment is done _mostly_ automatically by some ansible playbooks:
+* https://bitbucket.org/ChemicalHeritageFoundation/ansible-inventory/src/master/
+* https://bitbucket.org/ChemicalHeritageFoundation/ansible-inventory/src/master/create_kithe.yml
+* https://bitbucket.org/ChemicalHeritageFoundation/ansible-inventory/src/master/create_kithe_s3.yml
+
+There is some additional manual setup for S3 buckets:
+* https://chemheritage.atlassian.net/wiki/spaces/HDCSD/pages/516784129/S3+Bucket+Setup+and+Architecture
