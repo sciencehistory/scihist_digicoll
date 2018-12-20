@@ -55,9 +55,12 @@ gem "shrine", "~> 2.0" #, path: "../shrine"
 gem "uppy-s3_multipart"
 gem "content_disposition"
 
-
 # slack notifications on capistrano deploys
 gem 'slackistrano', "~> 3.8"
+
+gem "ransack", "~> 2.1"
+gem "kaminari", "~> 1.0"
+gem 'bootstrap4-kaminari-views'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
