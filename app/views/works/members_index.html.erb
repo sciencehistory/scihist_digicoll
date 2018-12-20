@@ -26,7 +26,7 @@
       <tr>
         <td>
           <% if member.kind_of?(Kithe::Asset) && member.stored? && member.derivative_for(:thumb_standard) && member.derivative_for(:thumb_standard_2X) %>
-            <%= link_to show_asset_path(member) do %>
+            <%= link_to asset_path(member) do %>
               <%= image_tag member.derivative_for(:thumb_standard).url,
                 srcset: "#{member.derivative_for(:thumb_standard).url} 1x, #{member.derivative_for(:thumb_standard_2X).url} 2x" %>
             <% end %>
@@ -52,13 +52,19 @@
 
         </td>
         <td>
-          <%= link_to_if member.kind_of?(Asset), member.title, show_asset_path(member) %>
+          <%= link_to_if member.kind_of?(Asset), member.title, asset_path(member) %>
         </td>
         <td><%= l member.created_at.to_date, format: :admin  %></td>
         <td><%= l member.updated_at.to_date, format: :admin %></td>
         <td>
-          <%# link_to 'Edit', edit_work_path(work) %>
-          <%# link_to 'Destroy', work, method: :delete, data: { confirm: 'Are you sure?' } %>
+          <div class="dropdown dropdown-menu-right">
+            <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
+            <% if member.kind_of?(Work) %>
+              <%= admin_dropdown_for_work(member, labelled_by_id: "dropdownMenuButton") %>
+            <% elsif member.kind_of?(Asset) %>
+                <%= admin_dropdown_for_asset(member, labelled_by_id: "dropdownMenuButton") %>
+            <% end %>
+          </div>
         </td>
       </tr>
     <% end %>

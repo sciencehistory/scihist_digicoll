@@ -6,13 +6,41 @@
     <%= link_to 'Metadata', new_work_path, class: "btn btn-primary" %>
   </div>
 </p>
+
+<%# this is ransack %>
+<%= search_form_for @q  do |f| %>
+  <div class="row">
+    <div class="input-group col-lg-9 col-md-10 mb-3">
+      <div class="input-group-prepend">
+        <%= f.label :title_or_friendlier_id_cont, "In Title or ID", class: "input-group-text" %>
+      </div>
+      <%= f.search_field :title_or_friendlier_id_cont, class: "form-control" %>
+      <%= select_tag "q[parent_id_null]",
+            options_for_select({"All" => "", "Top-level" => true}, params[:q][:parent_id_null]),
+            class: "custom-select col-2"
+      %>
+      <div class="input-group-append">
+        <%= f.button "Search", class: "btn btn-primary" %>
+      </div>
+    </div>
+  </div>
+
+<% end %>
+
+
+<% if @works.total_count > 0 %>
+  <p>
+    <%= @works.offset_value + 1 %> - <%= @works.offset_value + @works.count %> of <%= @works.total_count %>
+  </p>
+<% end %>
+
 <table class="table">
   <thead>
     <tr>
-      <th>ID</th>
-      <th>Title</th>
-      <th>Created</th>
-      <th>Last Modified</th>
+      <th><%= sort_link(@q, :id, "ID", page: nil) %></th>
+      <th><%= sort_link(@q, :title, page: nil) %></th>
+      <th><%= sort_link(@q, :created_at, "Created", page: nil) %></th>
+      <th><%= sort_link(@q, :updated_at, "Last Modified", page: nil) %></th>
       <th></th>
     </tr>
   </thead>
@@ -27,12 +55,7 @@
         <td>
           <div class="dropdown">
             <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
-
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <%= link_to 'Edit Metadata', edit_work_path(work), class: "dropdown-item" %>
-              <%= link_to 'Members', members_for_work_path(work), class: "dropdown-item" %>
-              <%= link_to 'Destroy', work, method: :delete, data: { confirm: "Delete #{work.title}?" }, class: "dropdown-item" %>
-            </div>
+            <%= admin_dropdown_for_work(work, labelled_by_id: "dropdownMenuButton") %>
           </div>
         </td>
       </tr>
@@ -40,6 +63,4 @@
   </tbody>
 </table>
 
-<br>
-
-
+<%= paginate @works, theme: 'twitter-bootstrap-4' %>
