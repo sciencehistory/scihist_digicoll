@@ -1,3 +1,5 @@
+require 'resque/server'
+
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
@@ -14,6 +16,9 @@ Rails.application.routes.draw do
   if Shrine.storages[:cache].kind_of?(Shrine::Storage::S3)
     mount Shrine.uppy_s3_multipart(:cache) => "/s3"
   end
+
+  # TODO restrictions, URL
+  mount Resque::Server, at: 'admin/queues'
 
   if Shrine.storages[:cache].kind_of?(Shrine::Storage::S3)
     # TODO, auth restrictions?

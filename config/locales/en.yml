@@ -41,4 +41,10 @@ en:
     formats:
       admin: '%Y-%b-%d %H:%M:%S %Z'
 
-
+  honeybadger:
+    feedback:
+      # https://docs.honeybadger.io/ruby/getting-started/collecting-user-feedback.html
+      labels:
+        name: "Your name (optional)"
+        email: "Your email address (optional)"
+        comment: "Comment"
