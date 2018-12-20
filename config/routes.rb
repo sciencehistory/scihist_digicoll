@@ -24,6 +24,7 @@ Rails.application.routes.draw do
   resources :works, except: [:show] do
     member do
       get "members", action: :members_index, as: "members_for"
+      match "members_reorder", via: [:put, :get], as: "reorder_members_for"
     end
   end
 
