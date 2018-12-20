@@ -39,11 +39,7 @@ module ScihistDigicoll
     define_key :s3_dev_prefix, default: -> { "#{ENV['USER']}.#{Socket.gethostname}" }
 
     define_key :ingest_bucket, default: -> {
-      if Rails.env.production?
-        "scihi-kithe-stage-uploads"
-      else
-        "scih-uploads-dev"
-      end
+      "scih-uploads"
     }
 
     # production is s3 buckets configured for production. dev_s3 is a single
