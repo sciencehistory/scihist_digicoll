@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <title>The page you were looking for doesn't exist (404)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset='utf-8'>
+  <%= stylesheet_link_tag 'application', media: 'all' %>
+</head>
+<body class='error-page s404'>
+
+  <!-- header -->
+  <nav id="masthead" class="masthead navbar navbar-inverse navbar-static-top">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+
+        <a id="logo" class="navbar-brand" href="https://www.sciencehistory.org" data-no-turbolink="true">
+
+          <%= image_tag "partial-mark-75rotate-80.png", class: "small-masthead-only masthead-logo-small", alt: "Science History Institute" %>
+
+          <%= image_tag "sci_logo-webheader_1x.png",
+              srcset:  "#{image_url 'sci_logo-webheader_1x.png'} 1x, #{image_url 'sci_logo-webheader_2x.png'} 2x",
+              class: "large-masthead-only masthead-logo-large",
+              alt: "Science History Institute" %>
+        </a>
+        <h1 class="masthead-title small-masthead-only"><a href="/">Digital Collections</a></h1>
+      </div>
+
+      <div class="collapse navbar-collapse pull-right" id="top-navbar-collapse" role="navigation">
+        <div class="masthead-right">
+          <h1 class="masthead-title large-masthead-only"><a href="/">Digital Collections</a></h1>
+        </div>
+      </div>
+
+    </div>
+  </nav>
+  <!-- end header -->
+
+  <div class="error-body">
+    <div class="image-column column">
+      <a href="/works/w3763731m" class="image-link-wrapper">
+        <%= image_tag "404image.jpg", class: "hero-image" %>
+        <div class="caption">
+          Adapted from <i>The Alchemist's Experiment Takes Fire</i>.
+        </div>
+      </a>
+    </div>
+    <div class="text-column column">
+      <h1 class="h2 error-headline"><i class="fa fa-warning"></i> Sorry, that page doesn't exist.</h1>
+      <p class="h3 error-subheadline">But neither does the Philosopher's Stone. Probably.</p>
+
+
+
+      <div class="error-section">
+        <h2 class="h4 dark-blue">Try searching our Digital Collections for something else?</h2>
+        <form class="nav-search-form opened" id="search-form-header" role="search" action="/catalog" accept-charset="UTF-8" method="get"><input name="utf8" type="hidden" value="✓">
+
+          <div class="input-group nav-search-text">
+
+            <label class="sr-only" for="search-field-header">Search</label>
+            <input type="text" name="q" id="search-field-header" value="" class="q form-control" autocomplete="off" placeholder="Search">
+
+            <div class="input-group-btn">
+              <button type="submit" class="btn btn-emphasis" title="Search" id="search-submit-header">
+                <span class="glyphicon glyphicon-search"></span> Go
+              </button>
+
+            </div><!-- /.input-group-btn -->
+
+          </div><!-- /.input-group -->
+        </form>
+      </div>
+
+
+      <div class="error-section">
+        <h2 class="h4">Or go somewhere else?</h2>
+        <ul class="list-unstyled">
+          <li><a href="/">Digital Collections Home</a></li>
+          <li><a href="https://www.sciencehistory.org">The Science History Institute</a></li>
+        </ul>
+      </div>
+
+
+      <div class="error-section">
+        <h2 class="h4">For more help, email...</h2>
+        <a href="mailto:digital@sciencehistory.org">digital@sciencehistory.org</a>
+      </div>
+
+    </div>
+  </div>
+
+
+</body>
+</html>
