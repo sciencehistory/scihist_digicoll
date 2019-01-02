@@ -70,8 +70,8 @@ class WorksController < ApplicationController
     end
   end
 
-  # List all members, which could be Works or Assets
-  def members_index
+  # Our admin 'show' page is really the members index.
+  def show
   end
 
   private
