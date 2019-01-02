@@ -14,17 +14,22 @@
 
 .while-sorting-actions {
   display: none;
+
+  justify-content: space-between;
+  @extend .p-1, .fixed-top;
+  background-color: white;
+  border-bottom: 2px solid $danger;
 }
 
 .sorting {
   tbody tr {
     cursor: move;
   }
-  .sort-actions {
-    display: none;
-  }
   .while-sorting-actions {
-    display: block;
+    display: flex;
+  }
+  .admin-work-toolbar {
+    display: none;
   }
 }
 
