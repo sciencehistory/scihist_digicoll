@@ -1,17 +1,24 @@
 <%= kithe_form_for(work, :html=> { novalidate: true, class: 'edit-work mx-auto admin-edit' }) do |f| %>
   <div class="admin-header sticky-top d-flex justify-content-between p-2 mb-4 mt-1 bg-light border">
+    <% if !@work.persisted? && @work.parent_id %>
+      <%= hidden_field_tag "work[parent_id]", @work.parent_id %>
+    <% end %>
+
     <div class="form-actions-label">
       <h1 class="h4">
         <% if @work.persisted? %>
           Editing <%= @work.title %> (<%= @work.friendlier_id %>)
         <% else %>
           New Work
+          <% if @work.parent_id.present? %>
+            in <%= @work.parent.title %> (<%= @work.parent.friendlier_id %>)
+          <% end %>
         <% end %>
       </h1>
     </div>
 
     <div class="form-actions">
-      <%= link_to 'Cancel', @work.persisted? ? work_path(@work) : works_path, class: "btn btn-outline-primary" %>
+      <%= link_to 'Cancel', cancel_url, class: "btn btn-outline-primary" %>
       <%= f.button :submit %>
     </div>
   </div>
