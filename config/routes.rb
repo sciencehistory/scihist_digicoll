@@ -25,10 +25,9 @@ Rails.application.routes.draw do
     mount Shrine.uppy_s3_multipart(:cache) => "/s3"
   end
 
-  # We'll handle show elsewhere
-  resources :works, except: [:show] do
+  # Admin page for work management, we'll handle public view elsewhere
+  resources :works do
     member do
-      get "members", action: :members_index, as: "members_for"
       match "members_reorder", via: [:put, :get], as: "reorder_members_for"
     end
   end

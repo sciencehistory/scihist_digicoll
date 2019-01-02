@@ -23,7 +23,11 @@ class WorksController < ApplicationController
 
   # GET /works/new
   def new
-    @work = Work.new
+    if params[:parent_id]
+      @parent_work = Work.find_by_friendlier_id!(params[:parent_id])
+    end
+    @work = Work.new(parent: @parent_work)
+    render :edit
   end
 
   # GET /works/1/edit
@@ -37,7 +41,7 @@ class WorksController < ApplicationController
 
     respond_to do |format|
       if @work.save
-        format.html { redirect_to works_path, notice: 'Work was successfully created.' }
+        format.html { redirect_to work_path(@work), notice: 'Work was successfully created.' }
         format.json { render :show, status: :created, location: @work }
       else
         format.html { render :new }
@@ -51,7 +55,7 @@ class WorksController < ApplicationController
   def update
     respond_to do |format|
       if @work.update(work_params)
-        format.html { redirect_to works_path, notice: 'Work was successfully updated.' }
+        format.html { redirect_to work_path(@work), notice: 'Work was successfully updated.' }
         format.json { render :show, status: :ok, location: @work }
       else
         format.html { render :edit }
@@ -70,8 +74,8 @@ class WorksController < ApplicationController
     end
   end
 
-  # List all members, which could be Works or Assets
-  def members_index
+  # Our admin 'show' page is really the members index.
+  def show
   end
 
   # triggered from members reorder form,
@@ -99,7 +103,7 @@ class WorksController < ApplicationController
       end
     end
 
-    redirect_to members_for_work_url(params[:id])
+    redirect_to work_url(params[:id])
   end
 
 
@@ -122,4 +126,17 @@ class WorksController < ApplicationController
         end
       end
     end
+
+    def cancel_url
+      if @parent_work
+        return work_path(@parent_work)
+      end
+
+      if @work.persisted?
+        return work_path(@work)
+      end
+
+      works_path
+    end
+    helper_method :cancel_url
 end
