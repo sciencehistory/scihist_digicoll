@@ -23,7 +23,10 @@ class WorksController < ApplicationController
 
   # GET /works/new
   def new
-    @work = Work.new
+    if params[:parent_id]
+      @parent_work = Work.find_by_friendlier_id!(params[:parent_id])
+    end
+    @work = Work.new(parent: @parent_work)
     render :edit
   end
 
@@ -94,4 +97,17 @@ class WorksController < ApplicationController
         end
       end
     end
+
+    def cancel_url
+      if @parent_work
+        return work_path(@parent_work)
+      end
+
+      if @work.persisted?
+        return work_path(@work)
+      end
+
+      works_path
+    end
+    helper_method :cancel_url
 end
