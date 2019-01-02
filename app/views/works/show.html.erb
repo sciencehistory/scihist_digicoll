@@ -1,4 +1,7 @@
-<h1>Members: <%= @work.title %></h1>
+<h1><%= @work.title %></h1>
+<% if @work.parent.present? %>
+  <p>In: <%= link_to "#{@work.parent.title} (#{@work.parent.friendlier_id})", work_path(@work.parent) %></p>
+<% end %>
 
 <div class="alert alert-secondary d-inline-block">
   <h2 class="h4 alert-heading">Add New Members</h2>
