@@ -24,6 +24,7 @@ class WorksController < ApplicationController
   # GET /works/new
   def new
     @work = Work.new
+    render :edit
   end
 
   # GET /works/1/edit
