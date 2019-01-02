@@ -3,6 +3,13 @@
   <p>In: <%= link_to "#{@work.parent.title} (#{@work.parent.friendlier_id})", work_path(@work.parent) %></p>
 <% end %>
 
+
+<div class="alert alert-secondary d-inline-block">
+  <h2 class="h4 alert-heading">Edit</h2>
+  <%= link_to "Metadata", edit_work_path(@work), class: "btn btn-primary" %>
+  <%= link_to('Delete', @work, method: :delete, data: { confirm: "Delete Work '#{@work.title}'?" }, class: "btn btn-danger" )%>
+</div>
+
 <div class="alert alert-secondary d-inline-block">
   <h2 class="h4 alert-heading">Add New Members</h2>
   From:
