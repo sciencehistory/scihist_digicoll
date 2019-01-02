@@ -1,4 +1,21 @@
 <%= kithe_form_for(work, :html=> { novalidate: true, class: 'edit-work mx-auto admin-edit' }) do |f| %>
+  <div class="admin-header sticky-top d-flex justify-content-between p-2 mb-4 mt-1 bg-light border">
+    <div class="form-actions-label">
+      <h1 class="h4">
+        <% if @work.persisted? %>
+          Editing <%= @work.title %> (<%= @work.friendlier_id %>)
+        <% else %>
+          New Work
+        <% end %>
+      </h1>
+    </div>
+
+    <div class="form-actions">
+      <%= link_to 'Cancel', @work.persisted? ? work_path(@work) : works_path, class: "btn btn-outline-primary" %>
+      <%= f.button :submit %>
+    </div>
+  </div>
+
 
   <% if work.errors.any? %>
     <div class="kithe-form-errors-top alert alert-danger mb-4" role="alert"">
@@ -112,10 +129,6 @@
     <%= f.input :file_creator, collection: Work::ControlledLists::FILE_CREATOR %>
 
     <%= f.input :admin_note, as: :text, input_html: { rows: 5 } %>
-  </div>
-
-  <div class="form-actions">
-    <%= f.button :submit %>
   </div>
 <% end %>
 
