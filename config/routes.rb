@@ -25,12 +25,8 @@ Rails.application.routes.draw do
     mount Shrine.uppy_s3_multipart(:cache) => "/s3"
   end
 
-  # We'll handle show elsewhere
-  resources :works, except: [:show] do
-    member do
-      get "members", action: :members_index, as: "members_for"
-    end
-  end
+  # Admin page for work management, we'll handle public view elsewhere
+  resources :works
 
   # Note "assets" is Rails reserved word for routing, oops.
   resources :assets, path: "asset_files", only: [:show, :destroy]
