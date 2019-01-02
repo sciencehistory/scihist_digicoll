@@ -80,6 +80,4 @@ test:
 #
 production:
   <<: *default
-  database: scihist_digicoll_production
-  username: scihist_digicoll
-  password: <%= ENV['SCIHIST_DIGICOLL_DATABASE_PASSWORD'] %>
+  url: <%= ScihistDigicoll::Env.lookup(:rails_database_url) %>

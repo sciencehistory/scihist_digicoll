@@ -12,6 +12,15 @@ gem 'webpacker', '~> 3.5'
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
 gem 'puma', '~> 3.11'
+
+# resque+redis being used for activejob, maybe later for Rails.cache
+# resque-pool currently does not support resque 2.0 alas.
+# https://github.com/nevans/resque-pool/issues/170
+gem "resque", "~> 1.0"
+gem "resque-pool"
+
+gem 'honeybadger', '~> 4.0'
+
 # Use SCSS for stylesheets
 gem 'sassc-rails', '~> 2.0'
 # Use Uglifier as compressor for JavaScript assets
@@ -39,7 +48,7 @@ gem 'sprockets-rails', '>= 2.3.2' # bootstrap gem requirement
 
 gem 'jquery-rails', "~> 4.3"
 gem 'kithe', git: "https://github.com/sciencehistory/kithe.git", branch: "master"
-#gem "attr_json", path: "../attr_json"
+gem "attr_json", git: "https://github.com/jrochkind/attr_json" #path: "../attr_json"
 gem 'simple_form', "~> 4.0"
 gem "cocoon"
 # Need bootstrap4 support https://github.com/samvera/browse-everything/pull/255:
@@ -49,10 +58,12 @@ gem "shrine", "~> 2.0" #, path: "../shrine"
 gem "uppy-s3_multipart"
 gem "content_disposition"
 
+# slack notifications on capistrano deploys
+gem 'slackistrano', "~> 3.8"
+
 gem "ransack", "~> 2.1"
 gem "kaminari", "~> 1.0"
 gem 'bootstrap4-kaminari-views'
-
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -63,6 +74,12 @@ group :development do
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
   gem 'web-console', '>= 3.3.0'
   gem 'listen', '>= 3.0.5', '< 3.2'
+  gem 'capistrano', '~> 3.8'
+  gem 'capistrano-bundler', '~> 1.2'
+  gem 'capistrano-passenger', '~> 0.2'
+  gem 'capistrano-rails', '~> 1.2'
+  gem 'capistrano-maintenance', '~> 1.0', require: false
+
 end
 
 group :test do
