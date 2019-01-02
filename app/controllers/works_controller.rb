@@ -89,15 +89,16 @@ class WorksController < ApplicationController
   # alphbetically.
   def members_reorder
     if params[:ordered_member_ids]
-      params[:ordered_member_ids].each_with_index do |id, index|
-        ActiveRecord::Base.transaction do
+      ActiveRecord::Base.transaction do
+        params[:ordered_member_ids].each_with_index do |id, index|
           Kithe::Model.find(id).update(position: index)
         end
       end
     else # alphabetical
       work = Work.find_by_friendlier_id(params[:id])
-      work.members.sort_by(&:title).each_with_index do |member, index|
-        ActiveRecord::Base.transaction do
+      sorted_members = work.members.sort_by(&:title).to_a
+      ActiveRecord::Base.transaction do
+        sorted_members.each_with_index do |member, index|
           member.update(position: index)
         end
       end
