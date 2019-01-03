@@ -22,6 +22,22 @@ require 'rspec/rails'
 #
 # Dir[Rails.root.join('spec', 'support', '**', '*.rb')].each { |f| require f }
 
+#Eddie adding
+require 'webmock/rspec'
+require 'capybara/rspec'
+require 'capybara/rails'
+require 'equivalent-xml/rspec_matchers'
+
+
+Capybara.default_driver = :rack_test # Faster but doesn't do Javascript
+# eg `SHOW_BROWSER=true ./bin/rspec` will show you an actual chrome browser
+# being operated by capybara.
+Capybara.javascript_driver = ENV['SHOW_BROWSER'] ? :selenium_chrome : :selenium_chrome_headless
+
+# get puma logs out of console
+# https://github.com/rspec/rspec-rails/issues/1897
+Capybara.server = :puma, { Silent: true }
+
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove these lines.
 begin
@@ -33,6 +49,7 @@ end
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
+
 
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
@@ -58,4 +75,11 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+
+
+  # Allow local http connections
+  WebMock.disable_net_connect!(:allow_localhost => true)
+
+  config.include FactoryBot::Syntax::Methods
+
 end
