@@ -18,6 +18,9 @@
 
 
     <%= stylesheet_link_tag    'application', media: 'all' %>
+    <%# trying to include our webpacker-managed scripts with defer for better browser
+        load performance.  works until we do something that doesn't... %>
+    <%= javascript_pack_tag 'application', defer: true %>
     <%= javascript_include_tag 'application' %>
   </head>
 

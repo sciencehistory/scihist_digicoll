@@ -1,5 +1,13 @@
 {
   "name": "scihist_digicoll",
   "private": true,
-  "dependencies": {}
+  "dependencies": {
+    "@rails/webpacker": "3.5",
+    "@shopify/draggable": "^1.0.0-beta.8",
+    "domready": "^1.0.8",
+    "mdn-polyfills": "^5.15.0"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "2.11.2"
+  }
 }

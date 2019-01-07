@@ -25,3 +25,8 @@
 
 /config/local_env.yml
 /config/local_env_development.yml
+/public/packs
+/public/packs-test
+/node_modules
+yarn-debug.log*
+.yarn-integrity
