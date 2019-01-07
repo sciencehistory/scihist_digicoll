@@ -1,0 +1,36 @@
+// doing our best to make table row while dragging look okay, esp hard cause
+// it's a 'tr' outside of a table, which isn't really a thing.
+
+.member-list .draggable-mirror {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: $table-border-width solid $table-border-color;
+
+  display: flex;
+  & td {
+    flex-grow: 1;
+  }
+}
+
+.while-sorting-actions {
+  display: none;
+
+  justify-content: space-between;
+  @extend .p-1, .fixed-top;
+  background-color: white;
+  border-bottom: 2px solid $danger;
+}
+
+.sorting {
+  tbody tr {
+    cursor: move;
+  }
+  .while-sorting-actions {
+    display: flex;
+  }
+  .admin-work-toolbar {
+    display: none;
+  }
+}
+
+

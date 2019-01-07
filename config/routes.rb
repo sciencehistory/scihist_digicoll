@@ -26,7 +26,11 @@ Rails.application.routes.draw do
   end
 
   # Admin page for work management, we'll handle public view elsewhere
-  resources :works
+  resources :works do
+    member do
+      match "members_reorder", via: [:put, :get], as: "reorder_members_for"
+    end
+  end
 
   # Note "assets" is Rails reserved word for routing, oops.
   resources :assets, path: "asset_files", only: [:show, :destroy]

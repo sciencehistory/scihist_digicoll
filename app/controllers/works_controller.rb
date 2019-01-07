@@ -78,6 +78,36 @@ class WorksController < ApplicationController
   def show
   end
 
+  # triggered from members reorder form,
+  #
+  # A) Accessed with HTTP put (meaning Rails fakes it with :method hidden field),
+  # we want an array of member IDs (UUIDs)
+  # in params[:ordered_member_ids][]. All with the same parent, the one specified
+  # in params[:id].
+  #
+  # B) Accessed via HTTP get without params[:ordered_member_ids], we'll sort
+  # alphbetically.
+  def members_reorder
+    if params[:ordered_member_ids]
+      ActiveRecord::Base.transaction do
+        params[:ordered_member_ids].each_with_index do |id, index|
+          Kithe::Model.find(id).update(position: index)
+        end
+      end
+    else # alphabetical
+      work = Work.find_by_friendlier_id(params[:id])
+      sorted_members = work.members.sort_by(&:title).to_a
+      ActiveRecord::Base.transaction do
+        sorted_members.each_with_index do |member, index|
+          member.update(position: index)
+        end
+      end
+    end
+
+    redirect_to work_url(params[:id])
+  end
+
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_work
