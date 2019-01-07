@@ -65,6 +65,8 @@ gem "ransack", "~> 2.1"
 gem "kaminari", "~> 1.0"
 gem 'bootstrap4-kaminari-views'
 
+gem 'devise', "~> 4.5" # auth
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]
