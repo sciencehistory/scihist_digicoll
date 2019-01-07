@@ -143,7 +143,9 @@ CREATE TABLE kithe_models (
     updated_at timestamp without time zone NOT NULL,
     parent_id uuid,
     friendlier_id character varying DEFAULT kithe_models_friendlier_id_gen('2176782336'::bigint, '78364164095'::bigint) NOT NULL,
-    file_data jsonb
+    file_data jsonb,
+    representative_id uuid,
+    leaf_representative_id uuid
 );
 
 
@@ -157,10 +159,52 @@ CREATE TABLE schema_migrations (
 
 
 --
+-- Name: users; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE users (
+    id bigint NOT NULL,
+    email character varying DEFAULT ''::character varying NOT NULL,
+    encrypted_password character varying DEFAULT ''::character varying NOT NULL,
+    reset_password_token character varying,
+    reset_password_sent_at timestamp without time zone,
+    remember_created_at timestamp without time zone,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE users_id_seq OWNED BY users.id;
+
+
+--
 -- Name: kithe_derivatives id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY kithe_derivatives ALTER COLUMN id SET DEFAULT nextval('kithe_derivatives_id_seq'::regclass);
+
+
+--
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
 
 
 --
@@ -196,6 +240,14 @@ ALTER TABLE ONLY schema_migrations
 
 
 --
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: index_kithe_derivatives_on_asset_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -217,10 +269,38 @@ CREATE UNIQUE INDEX index_kithe_models_on_friendlier_id ON kithe_models USING bt
 
 
 --
+-- Name: index_kithe_models_on_leaf_representative_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kithe_models_on_leaf_representative_id ON kithe_models USING btree (leaf_representative_id);
+
+
+--
 -- Name: index_kithe_models_on_parent_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_kithe_models_on_parent_id ON kithe_models USING btree (parent_id);
+
+
+--
+-- Name: index_kithe_models_on_representative_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kithe_models_on_representative_id ON kithe_models USING btree (representative_id);
+
+
+--
+-- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_users_on_email ON users USING btree (email);
+
+
+--
+-- Name: index_users_on_reset_password_token; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_users_on_reset_password_token ON users USING btree (reset_password_token);
 
 
 --
@@ -232,11 +312,27 @@ ALTER TABLE ONLY kithe_derivatives
 
 
 --
+-- Name: kithe_models fk_rails_403cce5c0d; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY kithe_models
+    ADD CONSTRAINT fk_rails_403cce5c0d FOREIGN KEY (leaf_representative_id) REFERENCES kithe_models(id);
+
+
+--
 -- Name: kithe_models fk_rails_90130a9780; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY kithe_models
     ADD CONSTRAINT fk_rails_90130a9780 FOREIGN KEY (parent_id) REFERENCES kithe_models(id);
+
+
+--
+-- Name: kithe_models fk_rails_afa93b7b5d; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY kithe_models
+    ADD CONSTRAINT fk_rails_afa93b7b5d FOREIGN KEY (representative_id) REFERENCES kithe_models(id);
 
 
 --
@@ -250,6 +346,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181016145644'),
 ('20181016145645'),
 ('20181107183159'),
-('20181211182457');
+('20181211182457'),
+('20190107205722'),
+('20190107222521');
 
 
