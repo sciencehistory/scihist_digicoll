@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
   # https://github.com/plataformatec/devise/wiki/how-to:-change-the-default-sign_in-and-sign_out-routes
-  devise_for :users, skip: [:session]
+  devise_for :users, skip: [:session, :registration]
   devise_scope :user do
     get 'login', to: 'devise/sessions#new', as: :new_user_session
     post 'login', to: 'devise/sessions#create', as: :user_session
