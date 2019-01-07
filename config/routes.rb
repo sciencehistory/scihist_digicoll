@@ -3,6 +3,12 @@ require 'resque/server'
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
+  devise_for :users
+  # https://github.com/plataformatec/devise/wiki/how-to:-change-the-default-sign_in-and-sign_out-routes
+  devise_scope :user do
+    get 'login', to: 'devise/sessions#new'
+  end
+
   # temporarily, as we build out app, this is the part we have working...
   root to: redirect("/admin")
 
