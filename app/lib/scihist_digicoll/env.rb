@@ -127,7 +127,8 @@ module ScihistDigicoll
           bucket:            lookup(:s3_bucket_derivatives),
           access_key_id:     lookup(:aws_access_key_id),
           secret_access_key: lookup(:aws_secret_access_key),
-          region:            lookup(:aws_region)
+          region:            lookup(:aws_region),
+          public: true
         })
       else
         raise TypeError.new("unrecognized storage mode")
