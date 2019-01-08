@@ -66,6 +66,9 @@
                 <%= thumb_image_tag(member.representative, size: :mini) %>
               <% end %>
             <% end %>
+            <% if @work.representative_id == member.id %>
+              <br><span class="text-info">representative</span>
+            <% end %>
           </td>
 
           <td><%= member.friendlier_id %></td>
