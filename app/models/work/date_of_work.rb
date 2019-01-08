@@ -7,8 +7,8 @@ class Work
 
     validates :start_qualifier, inclusion: { in: START_QUALIFIERS, allow_blank: true }
     validates :finish_qualifier, inclusion: { in: FINISH_QUALIFIERS, allow_blank: true }
-    validates_format_of :start, with: /\d{4}-\d{2}-\d{2}/, message: "must be of format YYYY-MM-DD"
-    validates_format_of :finish, with: /\d{4}-\d{2}-\d{2}/, message: "must be of format YYYY-MM-DD", allow_blank: true
+    validates_format_of :start, with: /\A\d{4}(-\d{2}(-\d{2})?)?\Z/, message: "must be of format YYYY[-MM-DD]"
+    validates_format_of :finish, with: /\A\d{4}(-\d{2}(-\d{2})?)?\Z/, message: "must be of format YYYY[-MM-DD]", allow_blank: true
 
 
 
