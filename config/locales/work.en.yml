@@ -10,6 +10,7 @@ en:
           other: "External IDs"
         date_of_work: Date
         related_url: "Related URL"
+        representative: "Representative Thumbnail"
       work/format:
         image: "Image"
         mixed_material: "Mixed Material"
@@ -71,3 +72,4 @@ en:
         #provenance: "Record of ownership or custody of the work."
         file_creator: "Select the individual, group, or organization responsible for producing the digital representation of the work, such as the digitizing agent or file author. If a desired entry is not available, contact the Digital Projects and Metadata Librarian. Recommended."
         admin_note: "Use for any internal notes about the digital object or physical work, such as copyright concerns, digitization errors, legacy metadata, etc. Record first initial, last name, and date with the note in case a follow-up is necessary."
+        representative: "Select the file with media that represents this Work and is used as a thumbnail."
