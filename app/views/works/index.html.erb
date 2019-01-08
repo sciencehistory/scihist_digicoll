@@ -37,6 +37,7 @@
 <table class="table">
   <thead>
     <tr>
+      <th>thumbnail</th>
       <th><%= sort_link(@q, :id, "ID", page: nil) %></th>
       <th><%= sort_link(@q, :title, page: nil) %></th>
       <th><%= sort_link(@q, :created_at, "Created", page: nil) %></th>
@@ -48,6 +49,7 @@
   <tbody>
     <% @works.each do |work| %>
       <tr>
+        <td><%= thumb_image_tag(work.representative, size: :mini) %></td>
         <td><%= work.friendlier_id %></td>
         <td><%= work.title %></td>
         <td><%= l work.created_at.to_date, format: :admin  %></td>
