@@ -2,7 +2,9 @@ module ImageHelper
 
   # Create an image tag for a thumbnail/derivative image.
   #
-  #      thumb_image_tag(asset) # 'standard' thumb size
+  #      thumb_image_tag(work.leaf_representative)
+  #
+  #      thumb_image_tag(asset) # 'standard' thumb size by default
   #      thumb_image_tag(asset, size: :large) # or :mini
   #
   #      # can add other keyword args that will be passed to Rails image_tag:

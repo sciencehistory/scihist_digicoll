@@ -63,7 +63,7 @@
           <td>
             <% if member.representative %>
               <%= link_to member do %>
-                <%= thumb_image_tag(member.representative, size: :mini) %>
+                <%= thumb_image_tag(member.leaf_representative, size: :mini) %>
               <% end %>
             <% end %>
             <% if @work.representative_id == member.id %>
