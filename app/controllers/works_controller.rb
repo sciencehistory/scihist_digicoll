@@ -17,7 +17,7 @@ class WorksController < ApplicationController
     @q = Work.ransack(params[:q])
     @q.sorts = 'updated_at desc' if @q.sorts.empty?
 
-    @works = @q.result.page(params[:page]).per(20)
+    @works = @q.result.includes(:leaf_representative).page(params[:page]).per(20)
   end
 
 
@@ -111,7 +111,7 @@ class WorksController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_work
-      @work = Work.find_by_friendlier_id!(params[:id])
+      @work = Work.includes(:leaf_representative).find_by_friendlier_id!(params[:id])
     end
 
     # only allow whitelisted params through (TODO, we're allowing all work params!)
