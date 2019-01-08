@@ -3,9 +3,7 @@
 <div class="row">
   <div class="col-sm-6">
     <% if @asset.derivative_for(:thumb_large) && @asset.derivative_for(:thumb_large_2X) %>
-      <%= image_tag @asset.derivative_for(:thumb_large).url,
-            srcset: "#{@asset.derivative_for(:thumb_large).url} 1x, #{@asset.derivative_for(:thumb_large_2X).url} 2x",
-            style: "max-width: 100%" %>
+      <%= thumb_image_tag @asset, size: :large, style: "max-width: 100%" %>
     <% elsif ! @asset.stored? %>
       <p class="text-white bg-danger">
         Waiting on ingest...
