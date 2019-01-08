@@ -44,7 +44,7 @@ class WorksController < ApplicationController
         format.html { redirect_to work_path(@work), notice: 'Work was successfully created.' }
         format.json { render :show, status: :created, location: @work }
       else
-        format.html { render :new }
+        format.html { render :edit }
         format.json { render json: @work.errors, status: :unprocessable_entity }
       end
     end
