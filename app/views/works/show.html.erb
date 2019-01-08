@@ -61,11 +61,13 @@
       <% @work.members.order(:position).includes(:derivatives).each do |member| %>
         <tr>
           <td>
-            <% if member.kind_of?(Kithe::Asset) && member.stored? && member.derivative_for(:thumb_standard) && member.derivative_for(:thumb_standard_2X) %>
-              <%= link_to asset_path(member) do %>
-                <%= image_tag member.derivative_for(:thumb_standard).url,
-                  srcset: "#{member.derivative_for(:thumb_standard).url} 1x, #{member.derivative_for(:thumb_standard_2X).url} 2x" %>
+            <% if member.representative %>
+              <%= link_to member do %>
+                <%= thumb_image_tag(member.representative, size: :mini) %>
               <% end %>
+            <% end %>
+            <% if @work.representative_id == member.id %>
+              <br><span class="text-info">representative</span>
             <% end %>
           </td>
 
@@ -88,7 +90,7 @@
 
           </td>
           <td>
-            <%= link_to_if member.kind_of?(Asset), member.title, asset_path(member) %>
+            <%= link_to member.title, member %>
             <%# hidden field for resort submit %>
             <%= tag :input, type: "hidden", name: "ordered_member_ids[]", value: member.id %>
           </td>

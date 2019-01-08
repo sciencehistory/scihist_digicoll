@@ -40,6 +40,10 @@ class AssetsController < ApplicationController
       asset.save!
     end
 
+    if @parent.representative_id == nil
+      @parent.update(representative: @parent.members.order(:position).first)
+    end
+
     redirect_to work_url(@parent.friendlier_id)
   end
 
