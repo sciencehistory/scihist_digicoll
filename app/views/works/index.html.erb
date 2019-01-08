@@ -51,7 +51,7 @@
       <tr>
         <td><%= thumb_image_tag(work.representative, size: :mini) %></td>
         <td><%= work.friendlier_id %></td>
-        <td><%= work.title %></td>
+        <td><%= link_to work.title, work_path(work) %></td>
         <td><%= l work.created_at.to_date, format: :admin  %></td>
         <td><%= l work.updated_at.to_date, format: :admin %></td>
         <td>
