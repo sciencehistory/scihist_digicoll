@@ -41,6 +41,10 @@ class WorksController < ApplicationController
   def create
     @work = Work.new(work_params)
 
+    if @work.parent_id && @work.position.nil?
+      @work.position = (@work.parent.members.maximum(:position) || 0) + 1
+    end
+
     respond_to do |format|
       if @work.save
         format.html { redirect_to work_path(@work), notice: 'Work was successfully created.' }
