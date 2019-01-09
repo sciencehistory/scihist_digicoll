@@ -23,10 +23,12 @@ class WorksController < ApplicationController
 
   # GET /works/new
   def new
+    @work = Work.new
     if params[:parent_id]
       @parent_work = Work.find_by_friendlier_id!(params[:parent_id])
+      @work.parent = @parent_work
+      @work.position = (@parent_work.members.maximum(:position) || 0) + 1
     end
-    @work = Work.new(parent: @parent_work)
     render :edit
   end
 
@@ -69,7 +71,7 @@ class WorksController < ApplicationController
   def destroy
     @work.destroy
     respond_to do |format|
-      format.html { redirect_to works_url, notice: "Work '#{@work.title}' was successfully destroyed." }
+      format.html { redirect_to cancel_url, notice: "Work '#{@work.title}' was successfully destroyed." }
       format.json { head :no_content }
     end
   end
@@ -129,11 +131,11 @@ class WorksController < ApplicationController
     end
 
     def cancel_url
-      if @parent_work
-        return work_path(@parent_work)
+      if @work && @work.parent
+        return work_path(@work.parent)
       end
 
-      if @work.persisted?
+      if @work && @work.persisted?
         return work_path(@work)
       end
 
