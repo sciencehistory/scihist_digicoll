@@ -23,10 +23,13 @@ class WorksController < ApplicationController
 
   # GET /works/new
   def new
+    @work = Work.new(parent: @parent_work)
     if params[:parent_id]
       @parent_work = Work.find_by_friendlier_id!(params[:parent_id])
+      @work.parent = @parent_work
+      @work.contained_by = @parent_work.contained_by
     end
-    @work = Work.new(parent: @parent_work)
+
     render :edit
   end
 
