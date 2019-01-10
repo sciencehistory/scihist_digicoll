@@ -17,17 +17,18 @@ class WorksController < ApplicationController
     @q = Work.ransack(params[:q])
     @q.sorts = 'updated_at desc' if @q.sorts.empty?
 
-    @works = @q.result.includes(:leaf_representative).page(params[:page]).per(20)
+    @works = @q.result.includes(:derivatives).includes(:leaf_representative => :derivatives).page(params[:page]).per(20)
   end
 
 
   # GET /works/new
   def new
-    @work = Work.new(parent: @parent_work)
+    @work = Work.new
     if params[:parent_id]
       @parent_work = Work.find_by_friendlier_id!(params[:parent_id])
       @work.parent = @parent_work
       @work.contained_by = @parent_work.contained_by
+      @work.position = (@parent_work.members.maximum(:position) || 0) + 1
     end
 
     render :edit
@@ -41,6 +42,10 @@ class WorksController < ApplicationController
   # POST /works.json
   def create
     @work = Work.new(work_params)
+
+    if @work.parent_id && @work.position.nil?
+      @work.position = (@work.parent.members.maximum(:position) || 0) + 1
+    end
 
     respond_to do |format|
       if @work.save
@@ -72,7 +77,7 @@ class WorksController < ApplicationController
   def destroy
     @work.destroy
     respond_to do |format|
-      format.html { redirect_to works_url, notice: "Work '#{@work.title}' was successfully destroyed." }
+      format.html { redirect_to cancel_url, notice: "Work '#{@work.title}' was successfully destroyed." }
       format.json { head :no_content }
     end
   end
@@ -132,11 +137,11 @@ class WorksController < ApplicationController
     end
 
     def cancel_url
-      if @parent_work
-        return work_path(@parent_work)
+      if @work && @work.parent
+        return work_path(@work.parent)
       end
 
-      if @work.persisted?
+      if @work && @work.persisted?
         return work_path(@work)
       end
 
