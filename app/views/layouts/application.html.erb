@@ -18,19 +18,21 @@
 
 
     <%= stylesheet_link_tag    'application', media: 'all' %>
+    <%# trying to include our webpacker-managed scripts with defer for better browser
+        load performance.  works until we do something that doesn't... %>
+    <%= javascript_pack_tag 'application', defer: true %>
     <%= javascript_include_tag 'application' %>
   </head>
 
   <body>
     <div class="container-fluid">
-
       <% {  notice: 'alert-info',
             error: 'alert-danger',
             alert: 'alert-warning'
           }.each do |type, css_class| %>
         <% if flash[type] %>
           <div class="notice alert <%= css_class %> alert-dismissible fade show" role="alert">
-            <%= notice %>
+            <%= flash[type] %>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>

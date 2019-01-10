@@ -17,16 +17,18 @@ class WorksController < ApplicationController
     @q = Work.ransack(params[:q])
     @q.sorts = 'updated_at desc' if @q.sorts.empty?
 
-    @works = @q.result.page(params[:page]).per(20)
+    @works = @q.result.includes(:derivatives).includes(:leaf_representative => :derivatives).page(params[:page]).per(20)
   end
 
 
   # GET /works/new
   def new
+    @work = Work.new
     if params[:parent_id]
       @parent_work = Work.find_by_friendlier_id!(params[:parent_id])
+      @work.parent = @parent_work
+      @work.position = (@parent_work.members.maximum(:position) || 0) + 1
     end
-    @work = Work.new(parent: @parent_work)
     render :edit
   end
 
@@ -39,12 +41,16 @@ class WorksController < ApplicationController
   def create
     @work = Work.new(work_params)
 
+    if @work.parent_id && @work.position.nil?
+      @work.position = (@work.parent.members.maximum(:position) || 0) + 1
+    end
+
     respond_to do |format|
       if @work.save
         format.html { redirect_to work_path(@work), notice: 'Work was successfully created.' }
         format.json { render :show, status: :created, location: @work }
       else
-        format.html { render :new }
+        format.html { render :edit }
         format.json { render json: @work.errors, status: :unprocessable_entity }
       end
     end
@@ -69,7 +75,7 @@ class WorksController < ApplicationController
   def destroy
     @work.destroy
     respond_to do |format|
-      format.html { redirect_to works_url, notice: "Work '#{@work.title}' was successfully destroyed." }
+      format.html { redirect_to cancel_url, notice: "Work '#{@work.title}' was successfully destroyed." }
       format.json { head :no_content }
     end
   end
@@ -78,10 +84,40 @@ class WorksController < ApplicationController
   def show
   end
 
+  # triggered from members reorder form,
+  #
+  # A) Accessed with HTTP put (meaning Rails fakes it with :method hidden field),
+  # we want an array of member IDs (UUIDs)
+  # in params[:ordered_member_ids][]. All with the same parent, the one specified
+  # in params[:id].
+  #
+  # B) Accessed via HTTP get without params[:ordered_member_ids], we'll sort
+  # alphbetically.
+  def members_reorder
+    if params[:ordered_member_ids]
+      ActiveRecord::Base.transaction do
+        params[:ordered_member_ids].each_with_index do |id, index|
+          Kithe::Model.find(id).update(position: index)
+        end
+      end
+    else # alphabetical
+      work = Work.find_by_friendlier_id(params[:id])
+      sorted_members = work.members.sort_by{ |member| member.title.downcase  }.to_a
+      ActiveRecord::Base.transaction do
+        sorted_members.each_with_index do |member, index|
+          member.update(position: index)
+        end
+      end
+    end
+
+    redirect_to work_url(params[:id])
+  end
+
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_work
-      @work = Work.find_by_friendlier_id!(params[:id])
+      @work = Work.includes(:leaf_representative).find_by_friendlier_id!(params[:id])
     end
 
     # only allow whitelisted params through (TODO, we're allowing all work params!)
@@ -99,11 +135,11 @@ class WorksController < ApplicationController
     end
 
     def cancel_url
-      if @parent_work
-        return work_path(@parent_work)
+      if @work && @work.parent
+        return work_path(@work.parent)
       end
 
-      if @work.persisted?
+      if @work && @work.persisted?
         return work_path(@work)
       end
 

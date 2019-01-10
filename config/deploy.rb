@@ -104,7 +104,7 @@ namespace :chf do
         execute :sudo, "/usr/sbin/service solr restart"
       else
         # the querystring doesn't come through without the quotes
-        execute :curl, '"localhost:8983/solr/admin/cores?action=reload&core=collection1"'
+        execute :curl, "-s", '"localhost:8983/solr/admin/cores?action=reload&core=collection1"', "--write-out", '"\nhttp response status: %{http_code}\n"'
       end
     end
   end

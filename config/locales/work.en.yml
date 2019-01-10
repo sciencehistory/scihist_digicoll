@@ -10,6 +10,7 @@ en:
           other: "External IDs"
         date_of_work: Date
         related_url: "Related URL"
+        representative: "Representative Thumbnail"
       work/format:
         image: "Image"
         mixed_material: "Mixed Material"
@@ -45,7 +46,7 @@ en:
         additional_title: "Use for additional or varying form of title if it contributes to further identification of the work. Subtitles or translated titles can be recorded here (without brackets)."
         external_id: "Enter an Object ID, Bibliographic or Item Number, Accession, ASpace Reference, or Oral History Interview Number. Use multiple IDs to distinguish the particular holding of a work with multiple copies. The external ID does not necessarily have to be unique but should point to a source record. Bib Numbers will be used to generate a link to the OPAC. <em><strong>Ex: • 2008.043.002 • B10337957</strong></em>. Required to save."
         creator: "Any individual, group, or organization responsible for the work, either primarily or more auxiliary, if relevant. Field supports VIAF (includes Library of Congress/NACO authorities) autocomplete. If a name is not available, contact the Digital Projects and Metadata Librarian. Denote specific roles when possible; otherwise, Creator and Contributor can be used as default roles. Required if available."
-        date: "Date(s) of creation or publication. Three levels of granularity can be used for precise dates—year (<em>YYYY</em>), year-month (<em>YYYY-MM</em>), and year-month-day (<em>YYYY-MM-DD</em>). Input discrete dates into the Start field. For date ranges or uncertainties, accepted formats are <em>YYYY-YYYY</em>, <em>before YYYY</em>, <em>after YYYY</em>, <em>circa YYYY</em>, <em>YYY0 decade</em>, <em>YY00 century</em>, or <em>Undated</em>. For dates expressed in alternative formats or systems, record the original value as is in Note, which will display in parentheses after the W3C date. Required."
+        date_of_work: "Date(s) of creation or publication. Three levels of granularity can be used for precise dates—year (<em>YYYY</em>), year-month (<em>YYYY-MM</em>), and year-month-day (<em>YYYY-MM-DD</em>). Input discrete dates into the Start field. For date ranges or uncertainties, accepted formats are <em>YYYY-YYYY</em>, <em>before YYYY</em>, <em>after YYYY</em>, <em>circa YYYY</em>, <em>YYY0 decade</em>, <em>YY00 century</em>, or <em>Undated</em>. For dates expressed in alternative formats or systems, record the original value as is in Note, which will display in parentheses after the W3C date. Required."
         place: "Location of origin for the work. Regions can include neighborhood, city, state, or country. Note that places depicted in a work are topical and should be cataloged as <strong>Subjects</strong>. Field supports FAST (derived from Library of Congress authorities) autocomplete."
         format: "Format in which the work is expressed. Select the content type(s) that best reflects the original work and not the digital resource. Use Ctrl+click to make multiple selections. Required."
         genre: "The nature of the work, covering aspects such as content, form, function, physical character, style, or technique. Select the genre(s) of the work or its content. If a desired term is not available, contact the Digital Projects and Metadata Librarian. Required."
@@ -71,3 +72,4 @@ en:
         #provenance: "Record of ownership or custody of the work."
         file_creator: "Select the individual, group, or organization responsible for producing the digital representation of the work, such as the digitizing agent or file author. If a desired entry is not available, contact the Digital Projects and Metadata Librarian. Recommended."
         admin_note: "Use for any internal notes about the digital object or physical work, such as copyright concerns, digitization errors, legacy metadata, etc. Record first initial, last name, and date with the note in case a follow-up is necessary."
+        representative: "Select the file with media that represents this Work and is used as a thumbnail."
