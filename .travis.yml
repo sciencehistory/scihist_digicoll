@@ -14,5 +14,3 @@ before_install:
   - gem install bundler
 before_script:
   - psql -c 'create database scihist_digicoll_test;' -U postgres
-  # precompile assets, per https://github.com/rails/webpacker/issues/1047
-  - bundle exec rails webpacker:compile
