@@ -7,8 +7,8 @@ GIT
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: 30421c9b2498b9d024542fc804db7b443ae25516
-  branch: master
+  revision: 121651b1098f1402b2c7239261f0cf5a9a708f9c
+  branch: contains_association
   specs:
     kithe (0.1.0)
       attr_json (< 2.0.0)
@@ -513,4 +513,4 @@ RUBY VERSION
    ruby 2.5.3p105
 
 BUNDLED WITH
-   1.17.2
+   1.17.3

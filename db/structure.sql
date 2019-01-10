@@ -22,6 +22,20 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
+-- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pg_trgm; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching based on trigrams';
+
+
+--
 -- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -127,6 +141,16 @@ CREATE SEQUENCE kithe_derivatives_id_seq
 --
 
 ALTER SEQUENCE kithe_derivatives_id_seq OWNED BY kithe_derivatives.id;
+
+
+--
+-- Name: kithe_model_contains; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE kithe_model_contains (
+    containee_id uuid,
+    container_id uuid
+);
 
 
 --
@@ -262,6 +286,20 @@ CREATE UNIQUE INDEX index_kithe_derivatives_on_asset_id_and_key ON kithe_derivat
 
 
 --
+-- Name: index_kithe_model_contains_on_containee_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kithe_model_contains_on_containee_id ON kithe_model_contains USING btree (containee_id);
+
+
+--
+-- Name: index_kithe_model_contains_on_container_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_kithe_model_contains_on_container_id ON kithe_model_contains USING btree (container_id);
+
+
+--
 -- Name: index_kithe_models_on_friendlier_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -304,6 +342,21 @@ CREATE UNIQUE INDEX index_users_on_reset_password_token ON users USING btree (re
 
 
 --
+-- Name: trgm_idx_kithe_models_title; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX trgm_idx_kithe_models_title ON kithe_models USING gin (title gin_trgm_ops);
+
+
+--
+-- Name: kithe_model_contains fk_rails_091010187b; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY kithe_model_contains
+    ADD CONSTRAINT fk_rails_091010187b FOREIGN KEY (container_id) REFERENCES kithe_models(id);
+
+
+--
 -- Name: kithe_derivatives fk_rails_3dac8b4201; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -317,6 +370,14 @@ ALTER TABLE ONLY kithe_derivatives
 
 ALTER TABLE ONLY kithe_models
     ADD CONSTRAINT fk_rails_403cce5c0d FOREIGN KEY (leaf_representative_id) REFERENCES kithe_models(id);
+
+
+--
+-- Name: kithe_model_contains fk_rails_490c1158f7; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY kithe_model_contains
+    ADD CONSTRAINT fk_rails_490c1158f7 FOREIGN KEY (containee_id) REFERENCES kithe_models(id);
 
 
 --
@@ -348,6 +409,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181107183159'),
 ('20181211182457'),
 ('20190107205722'),
-('20190107222521');
+('20190107222521'),
+('20190109000356'),
+('20190110154359');
 
 
