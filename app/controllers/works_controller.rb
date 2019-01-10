@@ -27,8 +27,10 @@ class WorksController < ApplicationController
     if params[:parent_id]
       @parent_work = Work.find_by_friendlier_id!(params[:parent_id])
       @work.parent = @parent_work
+      @work.contained_by = @parent_work.contained_by
       @work.position = (@parent_work.members.maximum(:position) || 0) + 1
     end
+
     render :edit
   end
 
