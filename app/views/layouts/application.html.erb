@@ -45,7 +45,7 @@ it includes an admin menu.  %>
         <% end %>
       <% end %>
 
-      <% if ["edit", "new"].include?(params[:action].to_s) %>
+      <% if ["edit", "new", "display_attach_form"].include?(params[:action].to_s) %>
         <%= yield %>
       <% else %>
         <div class="d-sm-flex admin-wrapper">
