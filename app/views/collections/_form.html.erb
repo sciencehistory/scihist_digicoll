@@ -1,0 +1,38 @@
+
+<%= kithe_form_for(collection, :html=> { novalidate: true, class: 'edit-collection mx-auto admin-edit' }) do |f| %>
+  <div class="admin-header sticky-top d-flex justify-content-between p-2 mb-4 mt-1 bg-light border">
+    <div class="form-actions-label">
+      <h1 class="h4">
+        <% if @collection.persisted? %>
+          Editing <%= @collection.title %> (<%= @collection.friendlier_id %>)
+        <% else %>
+          New Collection
+        <% end %>
+      </h1>
+    </div>
+
+    <div class="form-actions">
+      <%= link_to 'Cancel', collections_url, class: "btn btn-outline-primary" %>
+      <%= f.button :submit %>
+    </div>
+  </div>
+
+  <% if collection.errors.any? %>
+    <div class="kithe-form-errors-top alert alert-danger mb-4" role="alert"">
+      <h2 class="h4" class="alert-heading"><%= pluralize(collection.errors.count, "error") %> prohibited this collection from being saved</h2>
+      <ol class="mb-0">
+      <% collection.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+    </div>
+  <% end %>
+
+  <div class="form-inputs">
+    <%= f.input :title %>
+
+    <%= f.input :description, as: :text, input_html: { rows: 14 } %>
+
+    <%= f.repeatable_attr_input :related_url %>
+  </div>
+<% end %>

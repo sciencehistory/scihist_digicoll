@@ -137,6 +137,9 @@
 
     <%= f.input :admin_note, as: :text, input_html: { rows: 5 } %>
 
+    <%= f.association :contained_by, collection: Collection.all.to_a.sort_by { |c| c.title.downcase } %>
+
+
     <% if @work.members.present? %>
       <%= f.association :representative, collection: @work.members.order(:position), label_method: :title, include_blank: false %>
     <% end %>

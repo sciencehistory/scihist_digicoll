@@ -1,0 +1,14 @@
+en:
+# Customizing model and attribute names that show up in edit forms:
+
+  activerecord:
+    attributes:
+      collection:
+        related_url: "Related URL"
+
+  simple_form:
+    hints:
+      collection:
+        title: A name to aid in identifying a collection.
+        description: "Free-text notes about the collection. Examples include abstracts of a paper or citation information for a journal article. Allowed HTML tags: b, i, cite, a."
+        related_url: "A link to a website or other specific content (audio, video, PDF document) related to the collection. An example is the URL of a research project from which the collection was derived."
