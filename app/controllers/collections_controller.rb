@@ -67,8 +67,12 @@ class CollectionsController < ApplicationController
       @collection = Collection.find_by_friendlier_id(params[:id])
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
+    # only allow whitelisted params through (TODO, we're allowing all collection params!)
+    # Plus sanitization or any other mutation.
+    #
+    # This could be done in a form object or otherwise abstracted, but this is good
+    # enough for now.
     def collection_params
-      params.require(:collection).permit(:title)
+      params.require(:collection).permit!
     end
 end
