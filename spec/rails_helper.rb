@@ -22,11 +22,8 @@ require 'rspec/rails'
 #
 # Dir[Rails.root.join('spec', 'support', '**', '*.rb')].each { |f| require f }
 
-#Eddie adding
-require 'webmock/rspec'
 require 'capybara/rspec'
 require 'capybara/rails'
-require 'equivalent-xml/rspec_matchers'
 
 
 Capybara.default_driver = :rack_test # Faster but doesn't do Javascript
