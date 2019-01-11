@@ -12,11 +12,5 @@ cache:
     - /home/travis/.rvm/
 before_install:
   - gem install bundler
-  - yarn add webpack webpack-dev-server
 before_script:
   - psql -c 'create database scihist_digicoll_test;' -U postgres
-  - bundle exec rails webpacker:compile
-  - ls -R /home/travis/build/sciencehistory/scihist_digicoll/public
-  - cat /home/travis/build/sciencehistory/scihist_digicoll/public/packs-test/manifest.json
-
-
