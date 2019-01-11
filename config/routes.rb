@@ -25,6 +25,8 @@ Rails.application.routes.draw do
     mount Shrine.uppy_s3_multipart(:cache) => "/s3"
   end
 
+  resources :collections, except: [:show]
+
   # Admin page for work management, we'll handle public view elsewhere
   resources :works do
     member do

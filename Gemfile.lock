@@ -7,7 +7,7 @@ GIT
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: 30421c9b2498b9d024542fc804db7b443ae25516
+  revision: dec0b36ae004a97bfe0a13b97ebbee5fa27258ac
   branch: master
   specs:
     kithe (0.1.0)
@@ -534,4 +534,4 @@ RUBY VERSION
    ruby 2.5.3p105
 
 BUNDLED WITH
-   1.17.2
+   1.17.3
