@@ -16,7 +16,7 @@ before_install:
 before_script:
   - psql -c 'create database scihist_digicoll_test;' -U postgres
   - bundle exec rails webpacker:compile
-  - ls /home/travis/build/sciencehistory/scihist_digicoll/public/packs*
-  - cat /home/travis/build/sciencehistory/scihist_digicoll/public/packs*/manifest.json
+  - ls /home/travis/build/sciencehistory/scihist_digicoll/public/packs-test
+  - cat /home/travis/build/sciencehistory/scihist_digicoll/public/packs-test/manifest.json
 
 
