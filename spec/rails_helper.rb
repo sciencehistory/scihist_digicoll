@@ -73,10 +73,5 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
 
-
-  # Allow local http connections
-  WebMock.disable_net_connect!(:allow_localhost => true)
-
   config.include FactoryBot::Syntax::Methods
-
 end
