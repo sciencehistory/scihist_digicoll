@@ -16,7 +16,7 @@
   </div>
 
 
-  <div class="admin-work-toolbar d-flex flex-wrap">
+  <div class="admin-work-toolbar d-flex flex-wrap" data-hide-while-sorting="true">
     <div class="alert alert-secondary mx-1">
       <h2 class="h4 alert-heading">Edit</h2>
       <%= link_to "Metadata", edit_work_path(@work), class: "btn btn-primary" %>
@@ -85,10 +85,10 @@
           <td><%= member.friendlier_id %></td>
 
           <td>
-            <ul class="list-unstyled">
-              <li><%= member.class.name %></li>
+            <%= member.class.name %>
+            <ul class="list-unstyled" data-hide-while-sorting="true">
               <% if member.kind_of?(Kithe::Asset) %>
-                <li><small><%= member.content_type %></small></li>
+                <li ><small><%= member.content_type %></small></li>
                 <li><small><%= number_to_human_size(member.size) %></small></li>
                 <% if ! member.stored? %>
                   <li><small class="text-danger">waiting for ingest...</small></li>

@@ -21,15 +21,18 @@
   border-bottom: 2px solid $danger;
 }
 
-.sorting {
-  tbody tr {
+.member-manual-sorting {
+  padding-top: 4em;
+
+  .member-list tbody tr {
     cursor: move;
   }
   .while-sorting-actions {
     display: flex;
   }
-  .admin-work-toolbar {
-    display: none;
+
+  *[data-hide-while-sorting=true] {
+    display: none !important;
   }
 }
 
