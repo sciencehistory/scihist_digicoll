@@ -34,7 +34,7 @@
       <h2 class="h4 alert-heading">Re-order Members</h2>
       <div class="sort-actions">
         <button type="button" class="btn btn-primary" data-trigger="member-sort">Manual</button>
-        <%= link_to "Alphabetical", reorder_members_for_work_path(@work), class: "btn btn-primary" %>
+        <%= link_to "Alphabetical", reorder_members_for_work_path(@work), class: "btn btn-primary", data: { confirm: "Re-ordering members alphabetically by title can't be undone" } %>
       </div>
     </div>
   </div>
