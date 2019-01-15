@@ -20,7 +20,6 @@
     <div class="alert alert-secondary d-inline-block">
       <h2 class="h4 alert-heading">Edit</h2>
       <%= link_to "Metadata", edit_work_path(@work), class: "btn btn-primary" %>
-      <%= link_to('Delete', @work, method: :delete, data: { confirm: "Delete Work '#{@work.title}'?" }, class: "btn btn-danger" )%>
     </div>
 
     <div class="alert alert-secondary d-inline-block">
@@ -36,6 +35,14 @@
         <button type="button" class="btn btn-primary" data-trigger="member-sort">Manual</button>
         <%= link_to "Alphabetical", reorder_members_for_work_path(@work), class: "btn btn-primary", data: { confirm: "Re-ordering members alphabetically by title can't be undone" } %>
       </div>
+    </div>
+
+    <div class="alert alert-secondary d-inline-block border-danger">
+      <h2 class="h4 alert-heading" data-toggle="collapse" href="#deleteBtn1" role="button" aria-expanded="false" aria-controls="deleteBtn1">Delete</h2>
+        <div class="collapse" id="deleteBtn1">
+            <%= link_to('Delete', @work, method: :delete,
+                 data: { confirm: "Delete Work '#{@work.title}'?" }, class: "btn btn-danger" )%>
+        </div>
     </div>
   </div>
 
