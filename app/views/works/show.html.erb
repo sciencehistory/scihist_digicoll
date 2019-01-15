@@ -16,20 +16,20 @@
   </div>
 
 
-  <div class="admin-work-toolbar">
-    <div class="alert alert-secondary d-inline-block">
+  <div class="admin-work-toolbar d-flex flex-wrap">
+    <div class="alert alert-secondary mx-1">
       <h2 class="h4 alert-heading">Edit</h2>
       <%= link_to "Metadata", edit_work_path(@work), class: "btn btn-primary" %>
     </div>
 
-    <div class="alert alert-secondary d-inline-block">
+    <div class="alert alert-secondary mx-1">
       <h2 class="h4 alert-heading">Add New Members</h2>
       From:
       <%= link_to "Files", asset_ingest_path(@work), class: "btn btn-primary" %>
       <%= link_to "New Child Work", new_work_path(parent_id: @work), class: "btn btn-primary" %>
     </div>
 
-    <div class="alert alert-secondary d-inline-block" data-class="sort-controls">
+    <div class="alert alert-secondary mx-1" data-class="sort-controls">
       <h2 class="h4 alert-heading">Re-order Members</h2>
       <div class="sort-actions">
         <button type="button" class="btn btn-primary" data-trigger="member-sort">Manual</button>
@@ -37,7 +37,7 @@
       </div>
     </div>
 
-    <div class="alert alert-secondary d-inline-block border-danger">
+    <div class="alert alert-secondary border-danger mx-1 align-self-start"">
       <h2 class="h4 alert-heading" data-toggle="collapse" href="#deleteBtn1" role="button" aria-expanded="false" aria-controls="deleteBtn1">Delete</h2>
         <div class="collapse" id="deleteBtn1">
             <%= link_to('Delete', @work, method: :delete,
