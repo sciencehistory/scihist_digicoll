@@ -16,7 +16,7 @@
       </div>
       <%= f.search_field :title_or_friendlier_id_cont, class: "form-control" %>
       <%= select_tag "q[parent_id_null]",
-            options_for_select({"All" => "", "Top-level" => true}, params[:q][:parent_id_null]),
+            options_for_select({"All" => "", "No Children" => true}, params[:q][:parent_id_null]),
             class: "custom-select col-3"
       %>
       <div class="input-group-append">
