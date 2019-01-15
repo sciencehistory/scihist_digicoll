@@ -76,13 +76,13 @@
 
     <%= f.repeatable_attr_input :medium, build: :at_least_one %>
 
-    <%= f.repeatable_attr_input :extent %>
+    <%= f.repeatable_attr_input :extent, build: :at_least_one %>
 
     <%= f.repeatable_attr_input :language, build: :at_least_one %>
 
     <%= f.input :description, as: :text, input_html: { rows: 14 } %>
 
-    <%= f.repeatable_attr_input(:inscription) do |sub_form| %>
+    <%= f.repeatable_attr_input(:inscription, build: :at_least_one) do |sub_form| %>
       <%= sub_form.input :location, wrapper: :scihist_horizontal_form %>
       <%= sub_form.input :text, wrapper: :scihist_horizontal_form %>
     <% end %>
@@ -91,7 +91,7 @@
 
     <%= f.input :department, collection: Work::ControlledLists::DEPARTMENT  %>
 
-    <%= f.repeatable_attr_input(:exhibition) do |input_name, value| %>
+    <%= f.repeatable_attr_input(:exhibition, build: :at_least_one) do |input_name, value| %>
       <%= f.input_field :exhibition,
             name: input_name,
             id: nil,
@@ -103,7 +103,7 @@
 
     <%= f.input :source %>
 
-    <%= f.repeatable_attr_input :series_arrangement %>
+    <%= f.repeatable_attr_input :series_arrangement, build: :at_least_one %>
 
     <%# single, not array, so we need some slightly weird setup. Including we need at least one to exist:  %>
     <% f.object.build_physical_container unless f.object.physical_container.present? %>
@@ -113,13 +113,13 @@
       <% end %>
     <% end %>
 
-    <%= f.repeatable_attr_input :related_url %>
+    <%= f.repeatable_attr_input :related_url, build: :at_least_one %>
 
     <%= f.input :rights, collection: RightsTerms.collection_for_select %>
 
     <%= f.input :rights_holder %>
 
-    <%= f.repeatable_attr_input :additional_credit do |sub_form| %>
+    <%= f.repeatable_attr_input :additional_credit, build: :at_least_one do |sub_form| %>
       <div class="form-row">
         <div class="col-left">
           <%= sub_form.input :role, label: false,
