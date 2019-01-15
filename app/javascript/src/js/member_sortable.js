@@ -24,7 +24,7 @@ domready(function() {
           });
           sortable.on("drag:stop", function() { if(saveButton) { saveButton.disabled = false; } });
           sortForm.setAttribute("action", sortForm.getAttribute("data-submit-url"));
-          sortForm.classList.add("sorting");
+          document.querySelector("body").classList.add("member-manual-sorting");
         }
       } else { // turning sortMode off
         if (sortable) {
