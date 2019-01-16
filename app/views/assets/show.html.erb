@@ -1,5 +1,9 @@
-<h1>Asset: <%= @asset.title %></h1>
-<p>In Work: <%= @asset.parent.title %></p>
+<h1>Asset: <%= @asset.title %> <%= link_to "Edit", edit_asset_path(@asset), class: "btn btn-primary" %></h1>
+<%if @asset.parent %>
+  <p>In Work: <%= link_to @asset.parent.title, @asset.parent %> </p>
+<% end %>
+
+
 <div class="row">
   <div class="col-sm-6">
     <% if @asset.derivative_for(:thumb_large) && @asset.derivative_for(:thumb_large_2X) %>

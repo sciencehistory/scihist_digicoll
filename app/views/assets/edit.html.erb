@@ -1,0 +1,35 @@
+<%= simple_form_for(@asset, :html=> { novalidate: true, class: 'edit-work mx-auto admin-edit' }) do |f| %>
+  <div class="admin-header sticky-top d-flex justify-content-between p-2 mb-4 mt-1 bg-light border">
+    <div class="form-actions-label">
+      <h1 class="h4">
+        Editing <%= @asset.title %> (<%= @asset.friendlier_id %>)
+        <% if @asset.parent_id.present? %>
+          in <%= @asset.parent.title %> (<%= @asset.parent.friendlier_id %>)
+        <% end %>
+      </h1>
+    </div>
+
+    <div class="form-actions">
+      <%= link_to 'Cancel', asset_path(@asset), class: "btn btn-outline-primary" %>
+      <%= f.button :submit %>
+    </div>
+  </div>
+
+  <% if @asset.errors.any? %>
+    <div class="kithe-form-errors-top alert alert-danger mb-4" role="alert"">
+      <h2 class="h4" class="alert-heading"><%= pluralize(@asset.errors.count, "error") %> prohibited this asset from being saved</h2>
+      <ol class="mb-0">
+      <% @asset.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+    </div>
+  <% end %>
+
+  <div class="form-inputs">
+    <%= f.input :title %>
+  </div>
+<% end %>
+
+
+

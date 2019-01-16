@@ -35,7 +35,7 @@ Rails.application.routes.draw do
   end
 
   # Note "assets" is Rails reserved word for routing, oops.
-  resources :assets, path: "asset_files", only: [:show, :destroy]
+  resources :assets, path: "asset_files", except: [:new, :create]
 
 
   get "/works/:parent_id/ingest", to: "assets#display_attach_form", as: "asset_ingest"
