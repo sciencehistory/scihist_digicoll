@@ -5,6 +5,27 @@ class AssetsController < ApplicationController
     @asset = Asset.find_by_friendlier_id(params[:id])
   end
 
+  def edit
+    @asset = Asset.find_by_friendlier_id!(params[:id])
+  end
+
+  # PATCH/PUT /works/1
+  # PATCH/PUT /works/1.json
+  def update
+    @asset = Asset.find_by_friendlier_id!(params[:id])
+    asset_params = params.require(:asset).permit(:title)
+
+    respond_to do |format|
+      if @asset.update(asset_params)
+        format.html { redirect_to asset_url(@asset), notice: 'Asset was successfully updated.' }
+        format.json { render :show, status: :ok, location: @asset }
+      else
+        format.html { render :edit }
+        format.json { render json: @asset.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   def destroy
     @asset = Asset.find_by_friendlier_id(params[:id])
     work = @asset.parent
