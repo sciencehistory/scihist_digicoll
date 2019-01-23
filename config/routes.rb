@@ -13,6 +13,11 @@ Rails.application.routes.draw do
         match "members_reorder", via: [:put, :get], as: "reorder_members_for"
       end
     end
+
+
+    # Note "assets" is Rails reserved word for routing, oops. So we use
+    # asset_files.
+    resources :assets, path: "asset_files", except: [:new, :create]
   end
 
   # Tell Rails polymorphic routing to assume :admin namespace for works,
@@ -21,6 +26,9 @@ Rails.application.routes.draw do
   # May not actually be a good idea? What will we do when we add non-admin show?
   resolve("Work") do |work, options|
     [:admin, work, options]
+  end
+  resolve("Asset") do |asset, options|
+    [:admin, asset, options]
   end
 
   # Should be protecting to just logged in users?
@@ -45,12 +53,10 @@ Rails.application.routes.draw do
   resources :collections, except: [:show]
 
 
-  # Note "assets" is Rails reserved word for routing, oops.
-  resources :assets, path: "asset_files", except: [:new, :create]
 
 
-  get "/works/:parent_id/ingest", to: "assets#display_attach_form", as: "asset_ingest"
-  post "/works/:parent_id/ingest", to: "assets#attach_files"
+  get "/works/:parent_id/ingest", to: "admin/assets#display_attach_form", as: "asset_ingest"
+  post "/works/:parent_id/ingest", to: "admin/assets#attach_files"
   #get "/asset_files/:id/show", to: "assets#show", as: "show_asset"
 
 

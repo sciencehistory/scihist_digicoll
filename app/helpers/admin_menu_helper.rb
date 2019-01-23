@@ -12,8 +12,8 @@ module AdminMenuHelper
   def admin_dropdown_for_asset(asset, labelled_by_id:)
     content_tag(:div, class: "dropdown-menu dropdown-menu-right", :"aria-labelledby" => labelled_by_id) do
       safe_join([
-        link_to('Edit', edit_asset_path(asset), class: "dropdown-item"),
-        link_to('Delete', asset, method: :delete, data: { confirm: "Delete Asset '#{asset.title}'?" }, class: "dropdown-item")
+        link_to('Edit', edit_admin_asset_path(asset), class: "dropdown-item"),
+        link_to('Delete', [:admin, asset], method: :delete, data: { confirm: "Delete Asset '#{asset.title}'?" }, class: "dropdown-item")
       ])
     end
   end

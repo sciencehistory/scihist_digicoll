@@ -1,4 +1,4 @@
-class AssetsController < ApplicationController
+class Admin::AssetsController < ApplicationController
 
   # intended for staff, not sure if we will hide it
   def show
@@ -17,7 +17,7 @@ class AssetsController < ApplicationController
 
     respond_to do |format|
       if @asset.update(asset_params)
-        format.html { redirect_to asset_url(@asset), notice: 'Asset was successfully updated.' }
+        format.html { redirect_to admin_asset_url(@asset), notice: 'Asset was successfully updated.' }
         format.json { render :show, status: :ok, location: @asset }
       else
         format.html { render :edit }
