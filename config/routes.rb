@@ -19,6 +19,8 @@ Rails.application.routes.draw do
     get "/works/:parent_id/ingest", to: "assets#display_attach_form", as: "asset_ingest"
     post "/works/:parent_id/ingest", to: "assets#attach_files"
 
+    resources :collections, except: [:show]
+
     # Note "assets" is Rails reserved word for routing, oops. So we use
     # asset_files.
     resources :assets, path: "asset_files", except: [:new, :create]
@@ -44,13 +46,13 @@ Rails.application.routes.draw do
   resolve("Asset") do |asset, options|
     [:admin, asset, options]
   end
+  resolve("Collection") do |collection, options|
+    [:admin, collection, options]
+  end
 
   # Should be protecting to just logged in users?
   mount BrowseEverything::Engine => '/browse'
 
-
-
-  resources :collections, except: [:show]
 
 
 
