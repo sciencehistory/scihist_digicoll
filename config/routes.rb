@@ -14,6 +14,9 @@ Rails.application.routes.draw do
       end
     end
 
+    get "/works/:parent_id/ingest", to: "assets#display_attach_form", as: "asset_ingest"
+    post "/works/:parent_id/ingest", to: "assets#attach_files"
+
 
     # Note "assets" is Rails reserved word for routing, oops. So we use
     # asset_files.
@@ -53,11 +56,6 @@ Rails.application.routes.draw do
   resources :collections, except: [:show]
 
 
-
-
-  get "/works/:parent_id/ingest", to: "admin/assets#display_attach_form", as: "asset_ingest"
-  post "/works/:parent_id/ingest", to: "admin/assets#attach_files"
-  #get "/asset_files/:id/show", to: "assets#show", as: "show_asset"
 
 
 end
