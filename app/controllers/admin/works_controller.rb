@@ -3,7 +3,7 @@
 # Started with generated code from Rails 5.2 scaffold.
 #
 # We'll probably handle `show` in a different controller, for now no show.
-class WorksController < ApplicationController
+class Admin::WorksController < ApplicationController
   before_action :set_work, only: [:show, :edit, :update, :destroy, :members_index]
 
   # GET /works
@@ -49,7 +49,7 @@ class WorksController < ApplicationController
 
     respond_to do |format|
       if @work.save
-        format.html { redirect_to work_path(@work), notice: 'Work was successfully created.' }
+        format.html { redirect_to admin_work_path(@work), notice: 'Work was successfully created.' }
         format.json { render :show, status: :created, location: @work }
       else
         format.html { render :edit }
@@ -63,7 +63,7 @@ class WorksController < ApplicationController
   def update
     respond_to do |format|
       if @work.update(work_params)
-        format.html { redirect_to work_path(@work), notice: 'Work was successfully updated.' }
+        format.html { redirect_to admin_work_path(@work), notice: 'Work was successfully updated.' }
         format.json { render :show, status: :ok, location: @work }
       else
         format.html { render :edit }
@@ -138,14 +138,14 @@ class WorksController < ApplicationController
 
     def cancel_url
       if @work && @work.parent
-        return work_path(@work.parent)
+        return admin_work_path(@work.parent)
       end
 
       if @work && @work.persisted?
-        return work_path(@work)
+        return admin_work_path(@work)
       end
 
-      works_path
+      admin_works_path
     end
     helper_method :cancel_url
 end

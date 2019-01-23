@@ -6,6 +6,23 @@ Rails.application.routes.draw do
   # temporarily, as we build out app, this is the part we have working...
   root to: "works#index"
 
+  namespace :admin do
+    # Admin page for work management, we'll handle public view elsewhere
+    resources :works do
+      member do
+        match "members_reorder", via: [:put, :get], as: "reorder_members_for"
+      end
+    end
+  end
+
+  # Tell Rails polymorphic routing to assume :admin namespace for works,
+  # so we can just do `url_for @work` and get /admin/works.
+  #
+  # May not actually be a good idea? What will we do when we add non-admin show?
+  resolve("Work") do |work, options|
+    [:admin, work, options]
+  end
+
   # Should be protecting to just logged in users?
   mount BrowseEverything::Engine => '/browse'
 
@@ -27,12 +44,6 @@ Rails.application.routes.draw do
 
   resources :collections, except: [:show]
 
-  # Admin page for work management, we'll handle public view elsewhere
-  resources :works do
-    member do
-      match "members_reorder", via: [:put, :get], as: "reorder_members_for"
-    end
-  end
 
   # Note "assets" is Rails reserved word for routing, oops.
   resources :assets, path: "asset_files", except: [:new, :create]
