@@ -24,6 +24,10 @@ Rails.application.routes.draw do
     # TODO, need to restrict to probably just logged in users, at least.
     mount Kithe::AssetUploader.upload_endpoint(:cache) => "/direct_upload", as: :direct_app_upload
 
+    # TODO, need to restrict to probably just logged in users, at least.
+    if Shrine.storages[:cache].kind_of?(Shrine::Storage::S3)
+      mount Shrine.uppy_s3_multipart(:cache) => "/s3"
+    end
 
     mount Resque::Server, at: '/queues'
   end
@@ -42,16 +46,7 @@ Rails.application.routes.draw do
   # Should be protecting to just logged in users?
   mount BrowseEverything::Engine => '/browse'
 
-  # TODO, need to restrict to probably just logged in users, at least.
-  if Shrine.storages[:cache].kind_of?(Shrine::Storage::S3)
-    mount Shrine.uppy_s3_multipart(:cache) => "/s3"
-  end
 
-
-  if Shrine.storages[:cache].kind_of?(Shrine::Storage::S3)
-    # TODO, auth restrictions?
-    mount Shrine.uppy_s3_multipart(:cache) => "/s3"
-  end
 
   resources :collections, except: [:show]
 
