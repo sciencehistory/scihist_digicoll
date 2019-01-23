@@ -1,5 +1,5 @@
 
-<%= kithe_form_for(collection, :html=> { novalidate: true, class: 'edit-collection mx-auto admin-edit' }) do |f| %>
+<%= kithe_form_for([:admin, collection], :html=> { novalidate: true, class: 'edit-collection mx-auto admin-edit' }) do |f| %>
   <div class="admin-header sticky-top d-flex justify-content-between p-2 mb-4 mt-1 bg-light border">
     <div class="form-actions-label">
       <h1 class="h4">
@@ -12,7 +12,7 @@
     </div>
 
     <div class="form-actions">
-      <%= link_to 'Cancel', collections_url, class: "btn btn-outline-primary" %>
+      <%= link_to 'Cancel', admin_collections_url, class: "btn btn-outline-primary" %>
       <%= f.button :submit %>
     </div>
   </div>

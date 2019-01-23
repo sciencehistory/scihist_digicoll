@@ -1,6 +1,6 @@
 <h1>Collections</h1>
 
-<%= link_to 'New Collection', new_collection_path, class: "btn btn-primary" %>
+<%= link_to 'New Collection', new_admin_collection_path, class: "btn btn-primary" %>
 
 <table class="table mt-4">
   <thead>
@@ -17,8 +17,8 @@
         <td><%= collection.friendlier_id %>
         <td><%= collection.title %></td>
         <td>
-          <%= link_to 'Edit', edit_collection_path(collection), class: "btn btn-sm btn-outline-primary" %>
-          <%= link_to 'Delete', collection, method: :delete, data: { confirm: "Delete collection '#{collection.title}'?" }, class: "btn btn-sm btn-outline-danger" %>
+          <%= link_to 'Edit', edit_admin_collection_path(collection), class: "btn btn-sm btn-outline-primary" %>
+          <%= link_to 'Delete', [:admin, collection], method: :delete, data: { confirm: "Delete collection '#{collection.title}'?" }, class: "btn btn-sm btn-outline-danger" %>
         </td>
       </tr>
     <% end %>

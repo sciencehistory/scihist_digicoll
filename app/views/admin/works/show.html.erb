@@ -44,7 +44,7 @@
         </a>
       </h2>
         <div class="collapse" id="deleteBtn1">
-            <%= link_to('Delete', @work, method: :delete,
+            <%= link_to('Delete', [:admin, @work], method: :delete,
                  data: { confirm: "Delete Work '#{@work.title}'?" }, class: "btn btn-danger" )%>
         </div>
     </div>
@@ -101,7 +101,7 @@
 
           </td>
           <td>
-            <%= link_to member.title, member %>
+            <%= link_to member.title, [:admin, member] %>
             <%# hidden field for resort submit %>
             <%= tag :input, type: "hidden", name: "ordered_member_ids[]", value: member.id %>
           </td>
