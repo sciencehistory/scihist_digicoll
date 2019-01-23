@@ -4,9 +4,11 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
   # temporarily, as we build out app, this is the part we have working...
-  root to: "works#index"
+  root to: redirect("/admin")
 
   namespace :admin do
+    root to: "works#index"
+
     # Admin page for work management, we'll handle public view elsewhere
     resources :works do
       member do
