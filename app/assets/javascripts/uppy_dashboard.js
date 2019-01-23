@@ -16,7 +16,7 @@
 (function() {
   function kithe_createFileUploader(container) {
     // Some variables that can be taken from data- attributes, or defaults.
-    var uploadEndpoint   = container.getAttribute("data-upload-endpoint") || "/direct_upload";
+    var uploadEndpoint   = container.getAttribute("data-upload-endpoint");
     var dashboardWidth   = container.getAttribute("data-dashboard-width") || "auto";
     var dashboardHeight  = container.getAttribute("data-dashboard-height") || "400px";
     var uppyRestrictions = container.getAttribute("data-uppy-restrictions");
@@ -59,7 +59,7 @@
     // S3 mode still a work in progress.
     if (s3Storage) {
       uppy.use(Uppy.AwsS3Multipart, {
-        serverUrl: '/', // will call Shrine's presign endpoint mounted on `/s3/params`
+        serverUrl: (uploadEndpoint || '/'), // will call Shrine's presign endpoint mounted on `/s3/params`
         abortMultipartUpload: function(file, options) {
           // no-op, we don't want uppy trying to delete, which it does on removeFile,
           // which we use to remove completed files from dashboard. See:
@@ -68,7 +68,7 @@
       })
     } else {
       uppy.use(Uppy.XHRUpload, {
-        endpoint: uploadEndpoint, // Shrine's upload endpoint
+        endpoint: (uploadEndpoint || "/direct_upload"), // Shrine's upload endpoint
         fieldName: 'file'
       })
     }
