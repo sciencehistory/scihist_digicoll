@@ -38,7 +38,7 @@
           <h2>2. Attach files</h2>
           <div class="d-flex justify-content-between">
             <%= form.submit "Attach", class: "btn btn-primary btn-lg", data: { toggle: "kithe-upload-submit" } %>
-            <%= link_to  "Cancel", work_path(@parent),
+            <%= link_to  "Cancel", admin_work_path(@parent),
                   class: "btn btn-outline-secondary btn-lg",
                   data: { confirm: "Cancel attach files?" }
             %>
