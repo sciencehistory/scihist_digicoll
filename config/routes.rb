@@ -17,10 +17,13 @@ Rails.application.routes.draw do
     get "/works/:parent_id/ingest", to: "assets#display_attach_form", as: "asset_ingest"
     post "/works/:parent_id/ingest", to: "assets#attach_files"
 
-
     # Note "assets" is Rails reserved word for routing, oops. So we use
     # asset_files.
     resources :assets, path: "asset_files", except: [:new, :create]
+
+    # TODO, need to restrict to probably just logged in users, at least.
+    mount Kithe::AssetUploader.upload_endpoint(:cache) => "/direct_upload", as: :direct_app_upload
+
 
     mount Resque::Server, at: '/queues'
   end
@@ -38,9 +41,6 @@ Rails.application.routes.draw do
 
   # Should be protecting to just logged in users?
   mount BrowseEverything::Engine => '/browse'
-
-  # TODO, need to restrict to probably just logged in users, at least.
-  mount Kithe::AssetUploader.upload_endpoint(:cache) => "/direct_upload"
 
   # TODO, need to restrict to probably just logged in users, at least.
   if Shrine.storages[:cache].kind_of?(Shrine::Storage::S3)
