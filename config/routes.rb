@@ -36,6 +36,12 @@ Rails.application.routes.draw do
     mount Resque::Server, at: '/queues'
   end
 
+  # We can't put browse-everything in the routing namespace, cause it breaks
+  # browse-everything, alas. We'll still make it route as if it were, and
+  # have to add access control separate here to protect to just logged in users.
+  mount BrowseEverything::Engine => '/admin/browse'
+
+
   # Tell Rails polymorphic routing to assume :admin namespace for works,
   # so we can just do `url_for @work` and get /admin/works.
   #
@@ -49,12 +55,4 @@ Rails.application.routes.draw do
   resolve("Collection") do |collection, options|
     [:admin, collection, options]
   end
-
-  # Should be protecting to just logged in users?
-  mount BrowseEverything::Engine => '/browse'
-
-
-
-
-
 end
