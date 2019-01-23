@@ -6,7 +6,7 @@
   <p>To: <%= @parent.title %> (<%= @parent.friendlier_id %>)
   <p>Once the files have been uploaded and are ready for attachment, you can proceed to Attach</p>
 
-  <%= form_with(url: asset_ingest_path(@parent && @parent.friendlier_id), method: :post, local: true) do |form| %>
+  <%= form_with(url: admin_asset_ingest_path(@parent && @parent.friendlier_id), method: :post, local: true) do |form| %>
 
     <div class="row">
 
