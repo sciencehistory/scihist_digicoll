@@ -21,6 +21,8 @@ Rails.application.routes.draw do
     # Note "assets" is Rails reserved word for routing, oops. So we use
     # asset_files.
     resources :assets, path: "asset_files", except: [:new, :create]
+
+    mount Resque::Server, at: '/queues'
   end
 
   # Tell Rails polymorphic routing to assume :admin namespace for works,
@@ -45,8 +47,6 @@ Rails.application.routes.draw do
     mount Shrine.uppy_s3_multipart(:cache) => "/s3"
   end
 
-  # TODO restrictions, URL
-  mount Resque::Server, at: 'admin/queues'
 
   if Shrine.storages[:cache].kind_of?(Shrine::Storage::S3)
     # TODO, auth restrictions?
