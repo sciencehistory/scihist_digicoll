@@ -72,12 +72,15 @@ class Admin::AssetsController < ApplicationController
 
   def kithe_upload_data_config
     data = {
-      toggle: "kithe-upload"
+      toggle: "kithe-upload",
+      upload_endpoint: admin_direct_app_upload_path
     }
+
     if Shrine.storages[:cache].kind_of?(Shrine::Storage::S3)
       data[:s3_storage] = "cache"
       data[:s3_storage_prefix] = Shrine.storages[:cache].prefix
     end
+
     data
   end
   helper_method :kithe_upload_data_config
