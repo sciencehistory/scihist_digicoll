@@ -91,6 +91,7 @@ group :test do
   gem 'chromedriver-helper'
   gem 'capybara-screenshot'
   gem 'factory_bot_rails'
+  gem "database_cleaner", "~> 1.7"
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
