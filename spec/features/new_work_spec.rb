@@ -1,7 +1,7 @@
 require 'rails_helper'
 require 'pp'
 
-RSpec.feature "Work form", js: true do
+RSpec.feature "New Work form", js: true do
   let!(:collection) { FactoryBot.create(:collection) }
   let!(:work) { FactoryBot.create(:work, :with_complete_metadata) }
 
@@ -140,6 +140,10 @@ RSpec.feature "Work form", js: true do
 
     click_button "Create Work"
 
+    # check page, before checking data, to make sure action has completed.
+    expect(page).to have_css("h1", text: work.title)
+
+    # check data
     newly_added_work = Work.order(:created_at).last
 
     %w(
@@ -154,8 +158,7 @@ RSpec.feature "Work form", js: true do
 
     expect(newly_added_work.contained_by).to include(collection)
 
-    # check page:
-    expect(page).to have_css("h1", text: work.title)
+
 
   end
 end
