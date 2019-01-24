@@ -2,7 +2,8 @@ require 'rails_helper'
 require 'pp'
 
 RSpec.feature "Work form", js: true do
-  let(:work) { FactoryBot.create(:work, :with_complete_metadata) }
+  let!(:collection) { FactoryBot.create(:collection) }
+  let!(:work) { FactoryBot.create(:work, :with_complete_metadata) }
 
   scenario "save, edit, and re-save new work" do
     visit new_admin_work_path
@@ -134,6 +135,8 @@ RSpec.feature "Work form", js: true do
       end
     end
 
+    # Collection membership
+    find("#work_contained_by_ids option[value='#{collection.id}']").select_option
 
     click_button "Create Work"
 
@@ -148,6 +151,8 @@ RSpec.feature "Work form", js: true do
     ).each do |prop|
       expect(newly_added_work.send(prop)).to eq work.send(prop)
     end
+
+    expect(newly_added_work.contained_by).to include(collection)
 
     # check page:
     expect(page).to have_css("h1", text: work.title)
