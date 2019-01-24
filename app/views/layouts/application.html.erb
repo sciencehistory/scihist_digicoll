@@ -52,8 +52,10 @@ it includes an admin menu.  %>
           <div class="admin-nav">
             <ul class="list-unstyled sticky-top px-3 pb-3 pt-1 mt-2 mr-3 bg-light border">
               <li><h2 class="h4">Admin</h2></li>
-              <li><%= link_to  "Works", works_path %></li>
-              <li><%= link_to "Collections", collections_path %></li>
+              <li><%= link_to  "Works", admin_works_path %></li>
+              <li><%= link_to "Collections", admin_collections_path %></li>
+              <li><hr></li>
+              <li><%= link_to "Job Queues", admin_resque_server_path %></li>
             </ul>
           </div>
           <div class='admin-content flex-grow-1'>

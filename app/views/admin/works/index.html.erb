@@ -3,12 +3,12 @@
 <p>
   <div class="alert alert-secondary d-inline-block">
     <h2 class="h4 alert-heading">Create New Work</h2>
-    <%= link_to 'Metadata', new_work_path, class: "btn btn-primary" %>
+    <%= link_to 'Metadata', new_admin_work_path, class: "btn btn-primary" %>
   </div>
 </p>
 
 <%# this is ransack %>
-<%= search_form_for @q  do |f| %>
+<%= search_form_for [:admin, @q]  do |f| %>
   <div class="row">
     <div class="input-group col-sm-10 mb-3">
       <div class="input-group-prepend">
@@ -51,7 +51,7 @@
       <tr>
         <td><%= thumb_image_tag(work.leaf_representative, size: :mini) %></td>
         <td><%= work.friendlier_id %></td>
-        <td><%= link_to work.title, work_path(work) %></td>
+        <td><%= link_to work.title, admin_work_path(work) %></td>
         <td><%= l work.created_at.to_date, format: :admin  %></td>
         <td><%= l work.updated_at.to_date, format: :admin %></td>
         <td>
