@@ -127,5 +127,18 @@ FactoryBot.define do
       # file_data: nil
 
     end
+
+    trait :with_collection do
+      transient do
+        collection_count { 1 }
+      end
+
+      after(:build) do |work, evaluator|
+        evaluator.collection_count.times do
+          work.contained_by << build(:collection)
+        end
+      end
+    end
+
   end
 end
