@@ -128,6 +128,18 @@ FactoryBot.define do
 
     end
 
+    trait :with_assets do
+      transient do
+        asset_count { 1 }
+      end
+
+      after(:build) do |work, evaluator|
+        evaluator.asset_count.times do
+          work.members << build(:asset)
+        end
+      end
+    end
+
     trait :with_collection do
       transient do
         collection_count { 1 }
