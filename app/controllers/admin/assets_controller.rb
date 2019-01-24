@@ -1,4 +1,4 @@
-class AssetsController < ApplicationController
+class Admin::AssetsController < ApplicationController
 
   # intended for staff, not sure if we will hide it
   def show
@@ -17,7 +17,7 @@ class AssetsController < ApplicationController
 
     respond_to do |format|
       if @asset.update(asset_params)
-        format.html { redirect_to asset_url(@asset), notice: 'Asset was successfully updated.' }
+        format.html { redirect_to admin_asset_url(@asset), notice: 'Asset was successfully updated.' }
         format.json { render :show, status: :ok, location: @asset }
       else
         format.html { render :edit }
@@ -31,7 +31,7 @@ class AssetsController < ApplicationController
     work = @asset.parent
     @asset.destroy
     respond_to do |format|
-      format.html { redirect_to work_url(work.friendlier_id), notice: "Asset '#{@asset.title}' was successfully destroyed." }
+      format.html { redirect_to admin_work_url(work.friendlier_id), notice: "Asset '#{@asset.title}' was successfully destroyed." }
       format.json { head :no_content }
     end
   end
@@ -65,19 +65,25 @@ class AssetsController < ApplicationController
       @parent.update(representative: @parent.members.order(:position).first)
     end
 
-    redirect_to work_url(@parent.friendlier_id)
+    redirect_to admin_work_url(@parent.friendlier_id)
   end
 
   private
 
   def kithe_upload_data_config
     data = {
-      toggle: "kithe-upload"
+      toggle: "kithe-upload",
+      upload_endpoint: admin_direct_app_upload_path
     }
+
     if Shrine.storages[:cache].kind_of?(Shrine::Storage::S3)
+      # uppy will access /admin/s3, where we've mounted shrine's uppy_s3_multipart
+      # rack app.
+      data[:upload_endpoint] = "/admin"
       data[:s3_storage] = "cache"
       data[:s3_storage_prefix] = Shrine.storages[:cache].prefix
     end
+
     data
   end
   helper_method :kithe_upload_data_config

@@ -5,7 +5,7 @@ RSpec.feature "Work form", js: true do
   let(:work) { FactoryBot.create(:work, :with_complete_metadata) }
 
   scenario "save, edit, and re-save new work" do
-    visit new_work_path
+    visit new_admin_work_path
 
     # Single-value free text
     %w(title description source admin_note rights_holder).each do |p|
