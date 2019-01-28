@@ -74,4 +74,12 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
 
   config.include FactoryBot::Syntax::Methods
+
+  # In general we don't need database cleaner with Rails support for
+  # transactions in tests, that now works even for browser tests.
+  # But let's make sure the db is clean at beginning of test run.
+  config.before(:suite) do
+    DatabaseCleaner.clean_with(:deletion)
+  end
+
 end
