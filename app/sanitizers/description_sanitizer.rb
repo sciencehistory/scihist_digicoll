@@ -7,6 +7,8 @@
 # only allow good html tags, and good attributes on those tags --
 # no do-it-yourself style or class etc.
 #
+# Changes windows \r\n newlines to just \n.
+#
 #     DescriptionSanitizer.new.sanitize(description)
 class DescriptionSanitizer < Rails::Html::Sanitizer
   class_attribute :allowed_tags
@@ -30,7 +32,6 @@ class DescriptionSanitizer < Rails::Html::Sanitizer
 
     loofah_fragment = Loofah.fragment(html)
     loofah_fragment.scrub!(@scrubber)
-
-    properly_encode(loofah_fragment, encoding: 'UTF-8')
+    properly_encode(loofah_fragment, encoding: 'UTF-8').gsub(/\r\n?/, "\n")
   end
 end
