@@ -1,4 +1,4 @@
-require 'spec_helper'
+require 'rails_helper'
 
 RSpec.describe DescriptionSanitizer do
 
@@ -24,6 +24,13 @@ RSpec.describe DescriptionSanitizer do
 
         This is a final line
       EOS
+    end
+
+    context "windows newlines" do
+      let(:input) { "one <b>paragraph</b>.\r\nAnother <i>paragraph</i>."}
+      it "normalizes newlines to \n" do
+        expect(sanitized).to eq("one <b>paragraph</b>.\nAnother <i>paragraph</i>.")
+      end
     end
   end
 end

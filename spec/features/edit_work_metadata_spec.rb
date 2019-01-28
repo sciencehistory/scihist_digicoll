@@ -30,4 +30,30 @@ RSpec.feature "Edit work metadata form", js: true do
     expect(work.contained_by_ids).to include(new_collection.id)
     expect(work.contained_by_ids).not_to include(original_collection.id)
   end
+
+  it "sanitizes description" do
+    visit edit_admin_work_path(work)
+
+    fill_in "work[description]", with: <<~EOS
+        <script>evil</script>
+        <p>This is a paragraph</p>
+        This is a line with <b>bold</b>, <i>italic</i>, <cite>cite</cite>, and a <a href='http://example.com' onclick='foo'>link</a>.
+
+        This is a final line
+    EOS
+
+    click_button "Update Work"
+
+    # check page, before checking data, to make sure action has completed.
+    expect(page).to have_css("h1", text: work.title)
+    work.reload
+
+    expect(work.description).to eq(<<~EOS)
+        evil
+        This is a paragraph
+        This is a line with <b>bold</b>, <i>italic</i>, <cite>cite</cite>, and a <a href=\"http://example.com\">link</a>.
+
+        This is a final line
+    EOS
+  end
 end
