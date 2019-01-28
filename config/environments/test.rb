@@ -38,6 +38,10 @@ Rails.application.configure do
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 
+  # Only in dev or test, let us know if we are passing params that haven't
+  # been permitted, cause we have complicated params easy to miss one.
+  config.action_controller.action_on_unpermitted_parameters = :raise
+
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 end
