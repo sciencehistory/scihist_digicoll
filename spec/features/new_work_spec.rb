@@ -1,8 +1,9 @@
 require 'rails_helper'
 require 'pp'
 
-RSpec.feature "Work form", js: true do
-  let(:work) { FactoryBot.create(:work, :with_complete_metadata) }
+RSpec.feature "New Work form", js: true do
+  let!(:collection) { FactoryBot.create(:collection) }
+  let!(:work) { FactoryBot.create(:work, :with_complete_metadata) }
 
   scenario "save, edit, and re-save new work" do
     visit new_admin_work_path
@@ -134,9 +135,15 @@ RSpec.feature "Work form", js: true do
       end
     end
 
+    # Collection membership
+    find("#work_contained_by_ids option[value='#{collection.id}']").select_option
 
     click_button "Create Work"
 
+    # check page, before checking data, to make sure action has completed.
+    expect(page).to have_css("h1", text: work.title)
+
+    # check data
     newly_added_work = Work.order(:created_at).last
 
     %w(
@@ -149,8 +156,34 @@ RSpec.feature "Work form", js: true do
       expect(newly_added_work.send(prop)).to eq work.send(prop)
     end
 
-    # check page:
-    expect(page).to have_css("h1", text: work.title)
+    expect(newly_added_work.contained_by).to include(collection)
+  end
 
+  context "creating a child work" do
+    let(:parent_work) { FactoryBot.create(:work, :with_collection, :with_assets, title: "parent_work") }
+
+    it "creates with proper inherited metadata" do
+      members_max_position = parent_work.members.maximum(:position)
+
+      visit new_admin_work_path(parent_id: parent_work.friendlier_id)
+
+      fill_in "work[title]", with: "child work"
+
+      find("#work_external_id_attributes_0_category option[value=object]").select_option
+      fill_in "work_external_id_attributes_0_value", with: "some_object_id"
+
+      click_button "Create Work"
+
+      # check page, before checking data, to make sure action has completed.
+      expect(page).to have_css("h1", text: "child work")
+
+      # check data
+      added_work = Work.order(:created_at).last
+
+      expect(added_work.title).to eq("child work")
+      expect(added_work.parent_id).to eq(parent_work.id)
+      expect(added_work.contained_by).to eq(parent_work.contained_by)
+      expect(added_work.position).to eq(members_max_position + 1)
+    end
   end
 end
