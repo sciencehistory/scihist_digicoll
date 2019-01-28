@@ -157,8 +157,33 @@ RSpec.feature "New Work form", js: true do
     end
 
     expect(newly_added_work.contained_by).to include(collection)
+  end
 
+  context "creating a child work" do
+    let(:parent_work) { FactoryBot.create(:work, :with_collection, :with_assets, title: "parent_work") }
 
+    it "creates with proper inherited metadata" do
+      members_max_position = parent_work.members.maximum(:position)
 
+      visit new_admin_work_path(parent_id: parent_work.friendlier_id)
+
+      fill_in "work[title]", with: "child work"
+
+      find("#work_external_id_attributes_0_category option[value=object]").select_option
+      fill_in "work_external_id_attributes_0_value", with: "some_object_id"
+
+      click_button "Create Work"
+
+      # check page, before checking data, to make sure action has completed.
+      expect(page).to have_css("h1", text: "child work")
+
+      # check data
+      added_work = Work.order(:created_at).last
+
+      expect(added_work.title).to eq("child work")
+      expect(added_work.parent_id).to eq(parent_work.id)
+      expect(added_work.contained_by).to eq(parent_work.contained_by)
+      expect(added_work.position).to eq(members_max_position + 1)
+    end
   end
 end

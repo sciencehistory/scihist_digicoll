@@ -134,8 +134,8 @@ FactoryBot.define do
       end
 
       after(:build) do |work, evaluator|
-        evaluator.asset_count.times do
-          work.members << build(:asset)
+        evaluator.asset_count.times do |i|
+          work.members << build(:asset, position: i+1)
         end
       end
     end
