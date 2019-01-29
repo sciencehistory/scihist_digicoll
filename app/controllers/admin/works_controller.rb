@@ -115,7 +115,7 @@ class Admin::WorksController < ApplicationController
       end
     end
 
-    redirect_to admin_work_url(params[:id])
+    redirect_to admin_work_url(params[:id], anchor: "nav-members")
   end
 
 
@@ -143,11 +143,11 @@ class Admin::WorksController < ApplicationController
 
     def cancel_url
       if @work && @work.parent
-        return admin_work_path(@work.parent)
+        return admin_work_path(@work.parent, anchor: "admin-nav")
       end
 
       if @work && @work.persisted?
-        return admin_work_path(@work)
+        return admin_work_path(@work, anchor: "admin-nav")
       end
 
       admin_works_path
