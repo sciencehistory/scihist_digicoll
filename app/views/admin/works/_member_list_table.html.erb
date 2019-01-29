@@ -1,4 +1,4 @@
-  <table class="table member-list" data-trigger="member-sort-table">
+  <table class="table member-list">
     <thead>
       <tr>
         <th>thumbnail</th>
@@ -29,7 +29,7 @@
 
           <td>
             <%= member.class.name %>
-            <ul class="list-unstyled" data-hide-while-sorting="true">
+            <ul class="list-unstyled">
               <% if member.kind_of?(Kithe::Asset) %>
                 <li ><small><%= member.content_type %></small></li>
                 <li><small><%= number_to_human_size(member.size) %></small></li>
@@ -45,8 +45,6 @@
           </td>
           <td>
             <%= link_to member.title, [:admin, member] %>
-            <%# hidden field for resort submit %>
-            <%= tag :input, type: "hidden", name: "ordered_member_ids[]", value: member.id %>
           </td>
           <td><%= l member.created_at.to_date, format: :admin  %></td>
           <td><%= l member.updated_at.to_date, format: :admin %></td>

@@ -1,19 +1,4 @@
-
-
-
-<%# form for submitting new sort order. We leave it without a url so it can't
-    be accidentally submitted until our JS puts it in sort mode %>
-<%= form_tag "", method: "put", remote: false,  data: { submit_url: reorder_members_for_admin_work_path(@work) } do |f| %>
-  <div class="while-sorting-actions">
-    <h2 class="h3">Drag to re-order</h2>
-    <div>
-      <%= link_to "Cancel", admin_work_path(@work), class: "btn btn-outline-primary" %>
-      <button type="submit" class="btn btn-danger" disabled data-trigger="member-sort-save">Save</button>
-    </div>
-  </div>
-
-
-  <div class="d-flex justify-content-between" data-hide-while-sorting="true">
+  <div class="d-flex justify-content-between">
     <div>
       <div>Managing a Work</div>
       <h1><%= @work.title %></h1>
@@ -53,7 +38,7 @@
 
   </div>
   <div class="tab-pane" id="nav-members" role="tabpanel" aria-labelledby="nav-members-tab">
-    <div class="admin-work-toolbar d-flex flex-wrap" data-hide-while-sorting="true">
+    <div class="admin-work-toolbar d-flex flex-wrap">
       <div class="alert alert-secondary mx-1">
         <h2 class="h4 alert-heading">Add New Members</h2>
         From:
@@ -61,12 +46,10 @@
         <%= link_to "New Child Work", new_admin_work_path(parent_id: @work), class: "btn btn-primary" %>
       </div>
 
-      <div class="alert alert-secondary mx-1" data-class="sort-controls">
+      <div class="alert alert-secondary mx-1">
         <h2 class="h4 alert-heading">Re-order Members</h2>
-        <div class="sort-actions">
-          <button type="button" class="btn btn-primary" data-trigger="member-sort">Manual</button>
-          <%= link_to "Alphabetical", reorder_members_for_admin_work_path(@work), class: "btn btn-primary", data: { confirm: "Re-ordering members alphabetically by title can't be undone" } %>
-        </div>
+        <%= link_to "Manual", reorder_members_admin_work_path(@work), class: "btn btn-primary" %>
+        <%= link_to "Alphabetical", reorder_members_admin_work_path(@work), method: "put", class: "btn btn-primary", data: { confirm: "Re-ordering members alphabetically by title can't be undone" } %>
       </div>
     </div>
 
@@ -75,4 +58,4 @@
     <%= render "member_list_table", work: @work %>
   </div>
 </div>
-<% end %>
+
