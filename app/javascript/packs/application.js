@@ -8,3 +8,4 @@
 // layout file, like app/views/layouts/application.html.erb
 
 import '../src/js/member_sortable';
+import '../src/js/tab_selection_in_anchor';
