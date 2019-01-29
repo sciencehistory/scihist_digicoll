@@ -1,13 +1,13 @@
 GIT
   remote: https://github.com/jrochkind/attr_json
-  revision: 78155dc97762982cd8ebb9f149fe254e4fa0c293
+  revision: 7bc3a3611fd59ca97f6318994a81d606819245f0
   specs:
-    attr_json (0.5.0)
+    attr_json (0.6.0)
       activerecord (>= 5.0.0, < 6.1)
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: fa81dfe39edbb9a0f76ca16542d5a6652378cf2f
+  revision: 2785842d0c44095432838911cbfac24f9302de40
   branch: master
   specs:
     kithe (0.1.0)

@@ -128,7 +128,9 @@ class Admin::WorksController < ApplicationController
     # This could be done in a form object or otherwise abstracted, but this is good
     # enough for now.
     def work_params
-      params.require(:work).permit!.tap do |params|
+      Kithe::Parameters.new(params).require(:work).permit_attr_json(Work).permit(
+        :title, :parent_id, :representative_id, :contained_by_ids => []
+      ).tap do |params|
         # sanitize description
         if params[:description].present?
           params[:description] = DescriptionSanitizer.new.sanitize(params[:description])
