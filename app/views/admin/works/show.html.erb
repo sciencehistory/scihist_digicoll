@@ -35,7 +35,7 @@
           <%= link_to "Edit Metadata", edit_admin_work_path(@work), class: "btn btn-primary" %>
         </p>
 
-        <p>Metadata TBD</p>
+        <%= render "metadata", work: @work %>
 
   </div>
   <div class="tab-pane" id="nav-members" role="tabpanel" aria-labelledby="nav-members-tab">
