@@ -1,0 +1,56 @@
+<%= form_tag reorder_members_admin_work_path(@work),
+      method: "put",
+      remote: false,
+      class: "member-sort",
+      data: { trigger: "member-sort"  } do |f| %>
+  <div class="while-sorting-actions">
+    <h2 class="h3">Drag to re-order for '<%= @work.title %>'</h2>
+    <div>
+      <%= link_to "Cancel", admin_work_path(@work, anchor: "nav-members"), class: "btn btn-outline-primary" %>
+      <button type="submit" class="btn btn-danger" disabled data-trigger="member-sort-save">Save</button>
+    </div>
+  </div>
+
+  <table class="table member-list" data-trigger="member-sort-table">
+    <thead>
+      <tr>
+        <th>thumbnail</th>
+        <th>Type</th>
+        <th>Title</th>
+        <th>Created</th>
+        <th>Last Modified</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @work.members.order(:position).includes(:derivatives).includes(:leaf_representative => :derivatives).each do |member| %>
+        <tr>
+          <td>
+            <% if member.representative %>
+              <%= link_to member, target: "_blank" do %>
+                <%= thumb_image_tag(member.leaf_representative, size: :mini) %>
+              <% end %>
+            <% end %>
+            <% if @work.representative_id == member.id %>
+              <br><span class="text-info">representative</span>
+            <% end %>
+          </td>
+
+          <td>
+            <%= member.class.name %>
+          </td>
+
+          </td>
+          <td>
+            <%= link_to member.title, [:admin, member], target: "_blank" %>
+            <%# hidden field for resort submit %>
+            <%= tag :input, type: "hidden", name: "ordered_member_ids[]", value: member.id %>
+          </td>
+          <td><%= l member.created_at.to_date, format: :admin  %></td>
+          <td><%= l member.updated_at.to_date, format: :admin %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+<% end %>
