@@ -49,7 +49,7 @@ class Admin::WorksController < ApplicationController
 
     respond_to do |format|
       if @work.save
-        format.html { redirect_to admin_work_path(@work), notice: 'Work was successfully created.' }
+        format.html { redirect_to admin_asset_ingest_path(@work), notice: 'Work was successfully created, would you like to add files now?' }
         format.json { render :show, status: :created, location: @work }
       else
         format.html { render :edit }
