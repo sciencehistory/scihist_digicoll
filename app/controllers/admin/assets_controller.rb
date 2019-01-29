@@ -31,7 +31,7 @@ class Admin::AssetsController < ApplicationController
     work = @asset.parent
     @asset.destroy
     respond_to do |format|
-      format.html { redirect_to admin_work_url(work.friendlier_id), notice: "Asset '#{@asset.title}' was successfully destroyed." }
+      format.html { redirect_to admin_work_path(work.friendlier_id, anchor: "nav-members"), notice: "Asset '#{@asset.title}' was successfully destroyed." }
       format.json { head :no_content }
     end
   end
@@ -65,7 +65,7 @@ class Admin::AssetsController < ApplicationController
       @parent.update(representative: @parent.members.order(:position).first)
     end
 
-    redirect_to admin_work_url(@parent.friendlier_id)
+    redirect_to admin_work_path(@parent.friendlier_id, anchor: "nav-members")
   end
 
   private

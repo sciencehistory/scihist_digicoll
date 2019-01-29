@@ -1,43 +1,13 @@
-<h1><%= @work.title %></h1>
-<% if @work.parent.present? %>
-  <p>In: <%= link_to "#{@work.parent.title} (#{@work.parent.friendlier_id})", admin_work_path(@work.parent) %></p>
-<% end %>
-
-
-<%# form for submitting new sort order. We leave it without a url so it can't
-    be accidentally submitted until our JS puts it in sort mode %>
-<%= form_tag "", method: "put", remote: false,  data: { submit_url: reorder_members_for_admin_work_path(@work) } do |f| %>
-  <div class="while-sorting-actions">
-    <h2 class="h3">Drag to re-order</h2>
+  <div class="d-flex justify-content-between">
     <div>
-      <%= link_to "Cancel", admin_work_path(@work), class: "btn btn-outline-primary" %>
-      <button type="submit" class="btn btn-danger" disabled data-trigger="member-sort-save">Save</button>
-    </div>
-  </div>
-
-
-  <div class="admin-work-toolbar d-flex flex-wrap" data-hide-while-sorting="true">
-    <div class="alert alert-secondary mx-1">
-      <h2 class="h4 alert-heading">Edit</h2>
-      <%= link_to "Metadata", edit_admin_work_path(@work), class: "btn btn-primary" %>
+      <div>Managing a Work</div>
+      <h1><%= @work.title %></h1>
+      <% if @work.parent.present? %>
+        <p>In: <%= link_to "#{@work.parent.title} (#{@work.parent.friendlier_id})", admin_work_path(@work.parent) %></p>
+      <% end %>
     </div>
 
     <div class="alert alert-secondary mx-1">
-      <h2 class="h4 alert-heading">Add New Members</h2>
-      From:
-      <%= link_to "Files", admin_asset_ingest_path(@work), class: "btn btn-primary" %>
-      <%= link_to "New Child Work", new_admin_work_path(parent_id: @work), class: "btn btn-primary" %>
-    </div>
-
-    <div class="alert alert-secondary mx-1" data-class="sort-controls">
-      <h2 class="h4 alert-heading">Re-order Members</h2>
-      <div class="sort-actions">
-        <button type="button" class="btn btn-primary" data-trigger="member-sort">Manual</button>
-        <%= link_to "Alphabetical", reorder_members_for_admin_work_path(@work), class: "btn btn-primary", data: { confirm: "Re-ordering members alphabetically by title can't be undone" } %>
-      </div>
-    </div>
-
-    <div class="alert alert-secondary mx-1 align-self-start"">
       <h2 class="h4 alert-heading">
         <a data-toggle="collapse" href="#deleteBtn1" role="button" aria-expanded="false" aria-controls="deleteBtn1">
           Delete
@@ -51,76 +21,42 @@
   </div>
 
 
+<nav class="mb-2">
+  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+    <a class="nav-item nav-link active" id="nav-metadata-tab" data-toggle="tab" href="#nav-metadata" role="tab" aria-controls="nav-home" aria-selected="true">Metadata</a>
+    <a class="nav-item nav-link" id="nav-members-tab" data-toggle="tab" href="#nav-members" role="tab" aria-controls="nav-profile" aria-selected="false">Members</a>
+  </div>
+</nav>
 
-  <p><%= @work.members.count  %> members</p>
+<div class="tab-content">
+  <div class="tab-pane show active" id="nav-metadata" role="tabpanel" aria-labelledby="nav-metadata-tab">
 
+        <p>
+          <%= link_to "Edit Metadata", edit_admin_work_path(@work), class: "btn btn-primary" %>
+        </p>
 
-  <table class="table member-list" data-trigger="member-sort-table">
-    <thead>
-      <tr>
-        <th>thumbnail</th>
-        <th>ID</th>
-        <th>Type</th>
-        <th>Title</th>
-        <th>Created</th>
-        <th>Last Modified</th>
-        <th></th>
-      </tr>
-    </thead>
+        <%= render "metadata", work: @work %>
 
-    <tbody>
-      <% @work.members.order(:position).includes(:derivatives).includes(:leaf_representative => :derivatives).each do |member| %>
-        <tr>
-          <td>
-            <% if member.representative %>
-              <%= link_to member do %>
-                <%= thumb_image_tag(member.leaf_representative, size: :mini) %>
-              <% end %>
-            <% end %>
-            <% if @work.representative_id == member.id %>
-              <br><span class="text-info">representative</span>
-            <% end %>
-          </td>
+  </div>
+  <div class="tab-pane" id="nav-members" role="tabpanel" aria-labelledby="nav-members-tab">
+    <div class="admin-work-toolbar d-flex flex-wrap">
+      <div class="alert alert-secondary mx-1">
+        <h2 class="h4 alert-heading">Add New Members</h2>
+        From:
+        <%= link_to "Files", admin_asset_ingest_path(@work), class: "btn btn-primary" %>
+        <%= link_to "New Child Work", new_admin_work_path(parent_id: @work), class: "btn btn-primary" %>
+      </div>
 
-          <td><%= member.friendlier_id %></td>
+      <div class="alert alert-secondary mx-1">
+        <h2 class="h4 alert-heading">Re-order Members</h2>
+        <%= link_to "Manual", reorder_members_admin_work_path(@work), class: "btn btn-primary" %>
+        <%= link_to "Alphabetical", reorder_members_admin_work_path(@work), method: "put", class: "btn btn-primary", data: { confirm: "Re-ordering members alphabetically by title can't be undone" } %>
+      </div>
+    </div>
 
-          <td>
-            <%= member.class.name %>
-            <ul class="list-unstyled" data-hide-while-sorting="true">
-              <% if member.kind_of?(Kithe::Asset) %>
-                <li ><small><%= member.content_type %></small></li>
-                <li><small><%= number_to_human_size(member.size) %></small></li>
-                <% if ! member.stored? %>
-                  <li><small class="text-danger">waiting for ingest...</small></li>
-                <% elsif  ! member.derivatives_created? %>
-                  <li><small class="text-danger">waiting for derivatives...</small></li>
-                <% end %>
-              <% end %>
-            </ul>
-          </td>
+    <p><%= @work.members.count  %> members</p>
 
-          </td>
-          <td>
-            <%= link_to member.title, [:admin, member] %>
-            <%# hidden field for resort submit %>
-            <%= tag :input, type: "hidden", name: "ordered_member_ids[]", value: member.id %>
-          </td>
-          <td><%= l member.created_at.to_date, format: :admin  %></td>
-          <td><%= l member.updated_at.to_date, format: :admin %></td>
-          <td>
-            <div class="dropdown dropdown-menu-right">
-              <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
-              <% if member.kind_of?(Work) %>
-                <%= admin_dropdown_for_work(member, labelled_by_id: "dropdownMenuButton") %>
-              <% elsif member.kind_of?(Asset) %>
-                  <%= admin_dropdown_for_asset(member, labelled_by_id: "dropdownMenuButton") %>
-              <% end %>
-            </div>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% end %>
-
+    <%= render "member_list_table", work: @work %>
+  </div>
+</div>
 

@@ -12,7 +12,8 @@ Rails.application.routes.draw do
     # Admin page for work management, we'll handle public view elsewhere
     resources :works do
       member do
-        match "members_reorder", via: [:put, :get], as: "reorder_members_for"
+        get "reorder_members", to: "works#reorder_members_form"
+        put "reorder_members"
       end
     end
 

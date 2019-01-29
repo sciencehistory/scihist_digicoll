@@ -4,7 +4,7 @@
 #
 # We'll probably handle `show` in a different controller, for now no show.
 class Admin::WorksController < ApplicationController
-  before_action :set_work, only: [:show, :edit, :update, :destroy, :members_index]
+  before_action :set_work, only: [:show, :edit, :update, :destroy, :reorder_members_form]
 
   # GET /works
   # GET /works.json
@@ -86,6 +86,9 @@ class Admin::WorksController < ApplicationController
   def show
   end
 
+  def reorder_members_form
+  end
+
   # triggered from members reorder form,
   #
   # A) Accessed with HTTP put (meaning Rails fakes it with :method hidden field),
@@ -95,7 +98,7 @@ class Admin::WorksController < ApplicationController
   #
   # B) Accessed via HTTP get without params[:ordered_member_ids], we'll sort
   # alphbetically.
-  def members_reorder
+  def reorder_members
     if params[:ordered_member_ids]
       ActiveRecord::Base.transaction do
         params[:ordered_member_ids].each_with_index do |id, index|
@@ -112,7 +115,7 @@ class Admin::WorksController < ApplicationController
       end
     end
 
-    redirect_to work_url(params[:id])
+    redirect_to admin_work_url(params[:id], anchor: "nav-members")
   end
 
 
@@ -140,11 +143,11 @@ class Admin::WorksController < ApplicationController
 
     def cancel_url
       if @work && @work.parent
-        return admin_work_path(@work.parent)
+        return admin_work_path(@work.parent, anchor: "admin-nav")
       end
 
       if @work && @work.persisted?
-        return admin_work_path(@work)
+        return admin_work_path(@work, anchor: "admin-nav")
       end
 
       admin_works_path
