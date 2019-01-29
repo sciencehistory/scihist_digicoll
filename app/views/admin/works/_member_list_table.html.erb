@@ -1,0 +1,66 @@
+  <table class="table member-list" data-trigger="member-sort-table">
+    <thead>
+      <tr>
+        <th>thumbnail</th>
+        <th>ID</th>
+        <th>Type</th>
+        <th>Title</th>
+        <th>Created</th>
+        <th>Last Modified</th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% work.members.order(:position).includes(:derivatives).includes(:leaf_representative => :derivatives).each do |member| %>
+        <tr>
+          <td>
+            <% if member.representative %>
+              <%= link_to member do %>
+                <%= thumb_image_tag(member.leaf_representative, size: :mini) %>
+              <% end %>
+            <% end %>
+            <% if work.representative_id == member.id %>
+              <br><span class="text-info">representative</span>
+            <% end %>
+          </td>
+
+          <td><%= member.friendlier_id %></td>
+
+          <td>
+            <%= member.class.name %>
+            <ul class="list-unstyled" data-hide-while-sorting="true">
+              <% if member.kind_of?(Kithe::Asset) %>
+                <li ><small><%= member.content_type %></small></li>
+                <li><small><%= number_to_human_size(member.size) %></small></li>
+                <% if ! member.stored? %>
+                  <li><small class="text-danger">waiting for ingest...</small></li>
+                <% elsif  ! member.derivatives_created? %>
+                  <li><small class="text-danger">waiting for derivatives...</small></li>
+                <% end %>
+              <% end %>
+            </ul>
+          </td>
+
+          </td>
+          <td>
+            <%= link_to member.title, [:admin, member] %>
+            <%# hidden field for resort submit %>
+            <%= tag :input, type: "hidden", name: "ordered_member_ids[]", value: member.id %>
+          </td>
+          <td><%= l member.created_at.to_date, format: :admin  %></td>
+          <td><%= l member.updated_at.to_date, format: :admin %></td>
+          <td>
+            <div class="dropdown dropdown-menu-right">
+              <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
+              <% if member.kind_of?(Work) %>
+                <%= admin_dropdown_for_work(member, labelled_by_id: "dropdownMenuButton") %>
+              <% elsif member.kind_of?(Asset) %>
+                  <%= admin_dropdown_for_asset(member, labelled_by_id: "dropdownMenuButton") %>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
