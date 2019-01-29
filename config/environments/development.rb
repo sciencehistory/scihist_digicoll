@@ -33,6 +33,10 @@ Rails.application.configure do
     config.cache_store = :null_store
   end
 
+  # Only in dev or test, let us know if we are passing params that haven't
+  # been permitted, cause we have complicated params easy to miss one.
+  config.action_controller.action_on_unpermitted_parameters = :raise
+
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
 

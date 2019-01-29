@@ -73,6 +73,13 @@ class Admin::CollectionsController < ApplicationController
     # This could be done in a form object or otherwise abstracted, but this is good
     # enough for now.
     def collection_params
-      params.require(:collection).permit!
+      params.
+        require(:collection).
+        permit(:title, :description, :related_url_attributes => []).tap do |hash|
+          # sanitize description
+          if hash[:description].present?
+            hash[:description] = DescriptionSanitizer.new.sanitize(hash[:description])
+          end
+        end
     end
 end
