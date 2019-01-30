@@ -1,39 +1,30 @@
 // doing our best to make table row while dragging look okay, esp hard cause
 // it's a 'tr' outside of a table, which isn't really a thing.
 
-.member-list .draggable-mirror {
-  width: 100%;
-  background-color: rgba(255, 255, 255, 0.8);
-  border: $table-border-width solid $table-border-color;
+.member-sort {
+  margin-top: 4em; // leave room for position fixed control bar
 
-  display: flex;
-  & td {
-    flex-grow: 1;
+  .while-sorting-actions {
+    display: flex;
+    justify-content: space-between;
+    @extend .p-1, .fixed-top;
+    background-color: white;
+    border-bottom: 2px solid $danger;
   }
-}
 
-.while-sorting-actions {
-  display: none;
+  .member-list .draggable-mirror {
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: $table-border-width solid $table-border-color;
 
-  justify-content: space-between;
-  @extend .p-1, .fixed-top;
-  background-color: white;
-  border-bottom: 2px solid $danger;
-}
-
-.member-manual-sorting {
-  padding-top: 4em;
+    display: flex;
+    & td {
+      flex-grow: 1;
+    }
+  }
 
   .member-list tbody tr {
     cursor: move;
   }
-  .while-sorting-actions {
-    display: flex;
-  }
-
-  *[data-hide-while-sorting=true] {
-    display: none !important;
-  }
 }
-
 
