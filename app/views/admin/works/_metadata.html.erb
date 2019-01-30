@@ -1,0 +1,210 @@
+<%# simple list of work metadata for admin page. We don't try to do any fancy
+    introspection loops, or much I18n, just put it all manuall for now.
+    Can DRY or improve later. %>
+
+<dl class='admin-metadata'>
+  <dt>Title</dt>
+  <dd><%= work.title %></dd>
+
+  <dt>Additional Title</dt>
+  <dd>
+    <ul class="list-unstyled">
+      <% work.additional_title.each do |v| %>
+        <li><%= v %></li>
+      <% end %>
+    </ul>
+  </dd>
+
+  <dt>External ID</dt>
+  <dd>
+    <ul class="list-unstyled">
+      <% work.external_id.each do |id| %>
+        <li>
+          <%= I18n.t(id.category,
+                scope: "activemodel.enum_values.work/external_id.category",
+                default: id.category.humanize) %>:
+          <%= id.value %></li>
+      <% end %>
+    </ul>
+  </dd>
+
+  <dt>Creator</dt>
+  <dd>
+    <ul class="list-unstyled">
+      <% work.creator.each do |item| %>
+        <li><%= item.category.humanize %>: <%= item.value %></li>
+      <% end %>
+    </ul>
+  </dd>
+
+  <dt>Date</dt>
+  <dd>
+    <ul class="list-unstyled">
+      <% work.date_of_work.each do |item| %>
+        <li><%= item.attributes.compact.each_pair.collect {|l, v| "#{l}: #{v}" if v.present?}.compact.join(", ") %></li>
+      <% end %>
+    </ul>
+  </dd>
+
+  <dt>Place</dt>
+  <dd>
+    <ul class="list-unstyled">
+      <% work.place.each do |item| %>
+        <li><%= item.category.humanize %>: <%= item.value %></li>
+      <% end %>
+    </ul>
+  </dd>
+
+  <dt>Format</dt>
+  <dd>
+    <ul class="list-unstyled">
+      <% work.format.each do |item| %>
+        <li><%= item %></li>
+      <% end %>
+    </ul>
+  </dd>
+
+  <dt>Genre</dt>
+  <dd>
+    <ul class="list-unstyled">
+      <% work.genre.each do |item| %>
+        <li><%= item %></li>
+      <% end %>
+    </ul>
+  </dd>
+
+  <dt>Medium</dt>
+  <dd>
+    <ul class="list-unstyled">
+      <% work.format.each do |item| %>
+        <li><%= item %></li>
+      <% end %>
+    </ul>
+  </dd>
+
+  <dt>Extent</dt>
+  <dd>
+    <ul class="list-unstyled">
+      <% work.extent.each do |item| %>
+        <li><%= item %></li>
+      <% end %>
+    </ul>
+  </dd>
+
+  <dt>Language</dt>
+  <dd>
+    <ul class="list-unstyled">
+      <% work.language.each do |item| %>
+        <li><%= item %></li>
+      <% end %>
+    </ul>
+  </dd>
+
+  <dt>Description</dt>
+  <dd>
+    <%= work.description %>
+  </dd>
+
+  <dt>Inscription</dt>
+  <dd>
+    <ul class="list-unstyled">
+      <% work.inscription.each do |item| %>
+        <li><%= item.location %>: <%= item.text %></li>
+      <% end %>
+    </ul>
+  </dd>
+
+  <dt>Subject</dt>
+  <dd>
+    <ul class="list-unstyled">
+      <% work.subject.each do |item| %>
+        <li><%= item %></li>
+      <% end %>
+    </ul>
+  </dd>
+
+  <dt>Department</dt>
+  <dd>
+    <%= work.department %>
+  </dd>
+
+  <dt>Exhibition</dt>
+  <dd>
+    <ul class="list-unstyled">
+      <% work.exhibition.each do |item| %>
+        <li><%= item %></li>
+      <% end %>
+    </ul>
+  </dd>
+
+  <dt>Source</dt>
+  <dd>
+    <%= work.source %>
+  </dd>
+
+  <dt>Series Arrangement</dt>
+  <dd>
+    <ul class="list-unstyled">
+      <% work.series_arrangement.each do |item| %>
+        <li><%= item %></li>
+      <% end %>
+    </ul>
+  </dd>
+
+  <dt>Physical Container</dt>
+  <dd>
+    <% if work.physical_container %>
+      <%= work.physical_container.attributes.each_pair.collect {|l, v| "#{l.humanize}: #{v}" if v.present? }.compact.join(", ") %>
+    <% end %>
+  </dd>
+
+  <dt>Related URL</dt>
+  <dd>
+    <ul class="list-unstyled">
+      <% work.related_url.each do |item| %>
+        <li><%= item %></li>
+      <% end %>
+    </ul>
+  </dd>
+
+  <dt>Rights Holder</dt>
+  <dd>
+    <%= work.rights_holder %>
+  </dd>
+
+  <dt>Additional Credit</dt>
+  <dd>
+    <ul class="list-unstyled">
+      <% work.additional_credit.each do |item| %>
+        <li><%= item.role %>: <%= item.name %></li>
+      <% end %>
+    </ul>
+  </dd>
+
+  <dt>File Creator</dt>
+  <dd>
+    <%= work.file_creator %>
+  </dd>
+
+  <dt>Admin Note</dt>
+  <dd>
+    <%= work.admin_note %>
+  </dd>
+
+  <dt>Collections</dt>
+  <dd>
+    <ul class="list-unstyled">
+      <% work.contained_by.each do |item| %>
+        <li><%= item.title %></li>
+      <% end %>
+    </ul>
+  </dd>
+
+
+  <dt>Representative Member</dt>
+  <dd>
+    <%= work.representative.try(:title) %>
+  </dd>
+
+
+</dl>

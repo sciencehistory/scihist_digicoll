@@ -6,6 +6,7 @@
 /* Custom bootstrap variables must be set or imported *before* bootstrap. */
 @import "bootstrap";
 
+@import "local/admin";
 @import "local/edit";
 @import "local/attach_files";
 @import "local/member_sort";

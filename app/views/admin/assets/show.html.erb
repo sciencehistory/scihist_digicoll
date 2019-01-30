@@ -1,4 +1,5 @@
-<h1>Asset: <%= @asset.title %> <%= link_to "Edit", edit_admin_asset_path(@asset), class: "btn btn-primary" %></h1>
+<div>Managing an Asset</div>
+<h1><%= @asset.title %> <%= link_to "Edit", edit_admin_asset_path(@asset), class: "btn btn-primary" %></h1>
 <%if @asset.parent %>
   <p>In Work: <%= link_to @asset.parent.title, [:admin, @asset.parent] %> </p>
 <% end %>
