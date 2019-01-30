@@ -17,10 +17,6 @@ class Importer
   end
 
   def pre_clean()
-    # result = target_item.attributes
-    # result.each do |k, v|
-    #   result[k] = v.to_a if v.is_a? ActiveTriples::Relation
-    # end
   end
 
   def remove_stale_item()
@@ -51,11 +47,19 @@ class Importer
     @new_item.save()
 
     post_processing()
+    set_create_date()
   end
 
   # This is run after each item is saved.
   def post_processing()
   end
+
+  def set_create_date()
+    return if metadata['date_uploaded'].nil?
+    new_item.created_at = Date.parse(metadata['date_uploaded'])
+    new_item.save!
+  end
+
 
   def errors()
     @new_item.errors

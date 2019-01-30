@@ -13,13 +13,13 @@ class GenericWorkImporter < Importer
     return Work
   end
 
-
   def edit_metadata()
     @metadata['resource_type'].map! {|x| x.downcase.gsub(' ', '_') }
   end
 
   def populate()
     super
+    empty_arrays()
     add_external_id()
     add_scalar_attributes()
     add_array_attributes()
@@ -29,6 +29,15 @@ class GenericWorkImporter < Importer
     add_place()
     add_inscriptions()
     add_physical_container()
+  end
+
+  def empty_arrays()
+      new_item.date_of_work = []
+      new_item.place = []
+      new_item.creator = []
+      new_item.exhibition = []
+      new_item.additional_credit = []
+      new_item.inscription = []
   end
 
   def add_physical_container()
@@ -166,9 +175,12 @@ class GenericWorkImporter < Importer
       'genre_string' => 'genre'
     }
     %w(resource_type extent language genre_string subject additional_title exhibition series_arrangement related_url).each do |source_k|
-      next if metadata[source_k].nil?
       dest_k = mapping.fetch(source_k, source_k)
-      @new_item.send("#{dest_k }=", metadata[source_k])
+      if metadata[source_k].nil?
+        @new_item.send("#{dest_k }=", [])
+      else
+        @new_item.send("#{dest_k }=", metadata[source_k])
+      end
     end
   end
 

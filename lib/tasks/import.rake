@@ -4,8 +4,7 @@ namespace :scihist_digicoll do
   task :import => :environment do
     import_dir = Rails.root.join('tmp', 'import')
     %w(FileSet GenericWork Collection).each do |s|
-    #%w(GenericWork).each do |s|
-
+    %w(GenericWork).each do |s|
       importer_class = "#{s}Importer".constantize
       importee_class = importer_class.importee
       importer_class.file_paths.each do |path|
@@ -16,6 +15,7 @@ namespace :scihist_digicoll do
           puts importer.errors.full_messages
           byebug
         end
+        sleep 10
       end
       importer_class.class_post_processing()
     end # exporters.each
