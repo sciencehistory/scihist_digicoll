@@ -13,6 +13,7 @@ module AdminMenuHelper
     content_tag(:div, class: "dropdown-menu dropdown-menu-right", :"aria-labelledby" => labelled_by_id) do
       safe_join([
         link_to('Edit', edit_admin_asset_path(asset), class: "dropdown-item"),
+        link_to('Convert to child work', convert_to_child_work_admin_asset_path(asset), method: "put", class: "dropdown-item"),
         link_to('Delete', [:admin, asset], method: :delete, data: { confirm: "Delete Asset '#{asset.title}'?" }, class: "dropdown-item")
       ])
     end

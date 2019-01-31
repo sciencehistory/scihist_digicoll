@@ -68,6 +68,29 @@ class Admin::AssetsController < ApplicationController
     redirect_to admin_work_path(@parent.friendlier_id, anchor: "nav-members")
   end
 
+  def convert_to_child_work
+    @asset = Asset.find_by_friendlier_id!(params[:id])
+    parent = @asset.parent
+
+    new_child = Work.new(title: @asset.title)
+    new_child.parent = parent
+    # collections
+    new_child.contained_by = parent.contained_by
+    new_child.position = @asset.position
+    new_child.representative = @asset
+    # we can copy _all_ the non-title metadata like this...
+    new_child.json_attributes = parent.json_attributes
+
+    @asset.parent = new_child
+
+    Kithe::Model.transaction do
+      new_child.save!
+      @asset.save! # to get new parent
+    end
+
+    redirect_to admin_work_path(new_child)
+  end
+
   private
 
   def kithe_upload_data_config
