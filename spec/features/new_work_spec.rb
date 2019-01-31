@@ -141,7 +141,7 @@ RSpec.feature "New Work form", js: true do
     click_button "Create Work"
 
     # check page, before checking data, to make sure action has completed.
-    expect(page).to have_css("h1", text: work.title)
+    expect(page).to have_css("h1", text: "Add Files").and have_text("To: #{work.title}")
 
     # check data
     newly_added_work = Work.order(:created_at).last
@@ -175,7 +175,7 @@ RSpec.feature "New Work form", js: true do
       click_button "Create Work"
 
       # check page, before checking data, to make sure action has completed.
-      expect(page).to have_css("h1", text: "child work")
+      expect(page).to have_css("h1", text: "Add Files").and have_text("To: child work")
 
       # check data
       added_work = Work.order(:created_at).last
