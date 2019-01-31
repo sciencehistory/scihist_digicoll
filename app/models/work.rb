@@ -14,33 +14,33 @@ class Work < Kithe::Work
   }
 
 
-  attr_json :additional_title, :string, array: true
-  attr_json :external_id, Work::ExternalId.to_type, array: true
-  attr_json :creator, Work::Creator.to_type, array: true
-  attr_json :date_of_work, Work::DateOfWork.to_type, array: true
-  attr_json :place, Work::Place.to_type, array: true
-  attr_json :format, :string, array: true
-  attr_json :genre, :string, array: true
-  attr_json :medium, :string, array: true
-  attr_json :extent, :string, array: true
-  attr_json :language, :string, array: true
+  attr_json :additional_title, :string, array: true, default: -> { [] }
+  attr_json :external_id, Work::ExternalId.to_type, array: true, default: -> { [] }
+  attr_json :creator, Work::Creator.to_type, array: true, default: -> { [] }
+  attr_json :date_of_work, Work::DateOfWork.to_type, array: true, default: -> { [] }
+  attr_json :place, Work::Place.to_type, array: true, default: -> { [] }
+  attr_json :format, :string, array: true, default: -> { [] }
+  attr_json :genre, :string, array: true, default: -> { [] }
+  attr_json :medium, :string, array: true, default: -> { [] }
+  attr_json :extent, :string, array: true, default: -> { [] }
+  attr_json :language, :string, array: true, default: -> { [] }
   attr_json :description, :text
-  attr_json :inscription, Work::Inscription.to_type, array: true
+  attr_json :inscription, Work::Inscription.to_type, array: true, default: -> { [] }
 
   # eventually keep vocab id?
-  attr_json :subject, :string, array: true
+  attr_json :subject, :string, array: true, default: -> { [] }
 
   attr_json :department, :string
-  attr_json :exhibition, :string, array: true
+  attr_json :exhibition, :string, array: true, default: -> { [] }
   attr_json :source, :string
-  attr_json :series_arrangement, :string, array: true
+  attr_json :series_arrangement, :string, array: true, default: -> { [] }
   attr_json :physical_container, Work::PhysicalContainer.to_type
 
   # Turn into type of url and value?
-  attr_json :related_url, :string, array: true
+  attr_json :related_url, :string, array: true, default: -> { [] }
   attr_json :rights, :string
   attr_json :rights_holder, :string
-  attr_json :additional_credit, Work::AdditionalCredit.to_type, array: true
+  attr_json :additional_credit, Work::AdditionalCredit.to_type, array: true, default: -> { [] }
 
   attr_json :file_creator, :string
   attr_json :admin_note, :text
