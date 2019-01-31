@@ -1,9 +1,12 @@
 <div>Managing an Asset</div>
-<h1><%= @asset.title %> <%= link_to "Edit", edit_admin_asset_path(@asset), class: "btn btn-primary" %></h1>
+<h1><%= @asset.title %></h1>
 <%if @asset.parent %>
   <p>In Work: <%= link_to @asset.parent.title, [:admin, @asset.parent] %> </p>
 <% end %>
-
+<p>
+  <%= link_to "Edit", edit_admin_asset_path(@asset), class: "btn btn-primary" %>
+  <%= link_to "Convert to child work", convert_to_child_work_admin_asset_path(@asset), method: "put", class: "btn btn-primary" %>
+</p>
 
 <div class="row">
   <div class="col-sm-6">
@@ -19,9 +22,11 @@
       </p>
     <% end %>
 
-    <%= link_to "Download Original",
-      @asset.file.url(response_content_disposition: ContentDisposition.format(disposition: :attachment, filename: @asset.title)),
-      class: "btn btn-outline-primary btn-lg mt-4" %>
+    <% if @asset.file %>
+      <%= link_to "Download Original",
+            @asset.file.url(response_content_disposition: ContentDisposition.format(disposition: :attachment, filename: @asset.title)),
+            class: "btn btn-outline-primary btn-lg mt-4" %>
+      <% end %>
   </div>
 
   <div class="col-sm-6">

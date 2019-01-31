@@ -24,7 +24,11 @@ Rails.application.routes.draw do
 
     # Note "assets" is Rails reserved word for routing, oops. So we use
     # asset_files.
-    resources :assets, path: "asset_files", except: [:new, :create]
+    resources :assets, path: "asset_files", except: [:new, :create] do
+      member do
+        put "convert_to_child_work"
+      end
+    end
 
     # TODO, need to restrict to probably just logged in users, at least.
     mount Kithe::AssetUploader.upload_endpoint(:cache) => "/direct_upload", as: :direct_app_upload
