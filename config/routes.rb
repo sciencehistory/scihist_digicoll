@@ -14,6 +14,7 @@ Rails.application.routes.draw do
       member do
         get "reorder_members", to: "works#reorder_members_form"
         put "reorder_members"
+        put "demote_to_asset"
       end
     end
 

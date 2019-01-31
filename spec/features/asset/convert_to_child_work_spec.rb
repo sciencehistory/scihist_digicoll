@@ -1,6 +1,5 @@
 require 'rails_helper'
 
-# We're not gonna test every possible thing here, but a few
 RSpec.feature "Convert asset to child work", js: true do
   let(:work) { FactoryBot.create(:work, :with_complete_metadata, :with_collection, :with_assets, asset_count: 5) }
   let(:conversion_source) { work.members[2] }
