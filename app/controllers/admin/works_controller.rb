@@ -4,7 +4,7 @@
 #
 # We'll probably handle `show` in a different controller, for now no show.
 class Admin::WorksController < ApplicationController
-  before_action :set_work, only: [:show, :edit, :update, :destroy, :reorder_members_form]
+  before_action :set_work, only: [:show, :edit, :update, :destroy, :reorder_members_form, :demote_to_asset]
 
   # GET /works
   # GET /works.json
@@ -116,6 +116,41 @@ class Admin::WorksController < ApplicationController
     end
 
     redirect_to admin_work_url(params[:id], anchor: "nav-members")
+  end
+
+  def self.can_demote_to_asset?(work)
+    work.parent.present? &&
+      work.parent.kind_of?(Work) &&
+      work.members.size == 1 &&
+      work.members.first.kind_of?(Asset)
+  end
+
+  def demote_to_asset
+    unless self.class.can_demote_to_asset?(@work)
+      redirect_to admin_work_path(@work), alert: "Can't convert this work to an Asset"
+      return
+    end
+
+    parent = @work.parent
+    # a bit of race condition here if someone else added an asset in the meantime,
+    # it'll be lost. no big deal at present, unclear right way to solve.
+    #
+    # Also surprisingly hard to make sure rails doesn't delete the asset when we
+    # delete the parent, even though we've re-homed the asset, due to dependent destroy. grr.
+    # The reset says we'll get the first right from db, without a cached list of members,
+    # and it'll refetch list of members later for dependent destroy. :(
+    asset = @work.members.reset.first
+
+    asset.position = @work.position
+    @work.members
+    asset.parent = @work.parent
+
+    Kithe::Model.transaction do
+      asset.save!
+      @work.destroy
+    end
+
+    redirect_to admin_work_path(asset.parent, anchor: "nav-members"), notice: "Child work replaced with asset #{asset.title}"
   end
 
 
