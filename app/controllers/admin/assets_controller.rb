@@ -88,7 +88,7 @@ class Admin::AssetsController < ApplicationController
       @asset.save! # to get new parent
     end
 
-    redirect_to admin_work_path(new_child)
+    redirect_to edit_admin_work_path(new_child)
   end
 
   private
