@@ -7,16 +7,18 @@
       <% end %>
     </div>
 
-    <div class="alert alert-secondary mx-1">
-      <h2 class="h4 alert-heading">
-        <a data-toggle="collapse" href="#deleteBtn1" role="button" aria-expanded="false" aria-controls="deleteBtn1">
-          Delete
-        </a>
-      </h2>
+    <div>
+      <div class="alert alert-secondary mx-1">
+        <h2 class="h4 alert-heading">
+          <a data-toggle="collapse" href="#deleteBtn1" role="button" aria-expanded="false" aria-controls="deleteBtn1">
+            Delete
+          </a>
+        </h2>
         <div class="collapse" id="deleteBtn1">
             <%= link_to('Delete', [:admin, @work], method: :delete,
                  data: { confirm: "Delete Work '#{@work.title}'?" }, class: "btn btn-danger" )%>
         </div>
+      </div>
     </div>
   </div>
 
@@ -33,6 +35,13 @@
 
         <p>
           <%= link_to "Edit Metadata", edit_admin_work_path(@work), class: "btn btn-primary" %>
+          <% if Admin::WorksController.can_demote_to_asset?(@work) %>
+            <%= link_to "Demote to Asset",
+                  demote_to_asset_admin_work_path(@work),
+                  method: "put",
+                  class: "btn btn-outline-primary",
+                  data: { confirm: "All work metadata will be lost, this is not reversible. Are you sure?" } %>
+          <% end %>
         </p>
 
         <%= render "metadata", work: @work %>
