@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "Convert asset to child work", js: true do
+RSpec.describe "Convert asset to child work", type: :system, js: true do
   let(:work) { FactoryBot.create(:work, :with_complete_metadata, :with_collection, :with_assets, asset_count: 5) }
   let(:conversion_source) { work.members[2] }
 
