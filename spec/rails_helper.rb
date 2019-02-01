@@ -26,11 +26,6 @@ require 'capybara/rspec'
 require 'capybara/rails'
 
 
-Capybara.default_driver = :rack_test # Faster but doesn't do Javascript
-# eg `SHOW_BROWSER=true ./bin/rspec` will show you an actual chrome browser
-# being operated by capybara.
-Capybara.javascript_driver = ENV['SHOW_BROWSER'] ? :selenium_chrome : :selenium_chrome_headless
-
 # get puma logs out of console
 # https://github.com/rspec/rspec-rails/issues/1897
 Capybara.server = :puma, { Silent: true }
@@ -52,6 +47,34 @@ RSpec.configure do |config|
   # examples within a transaction, remove the following line or assign false
   # instead of true.
   config.use_transactional_fixtures = true
+
+
+  # eg `SHOW_BROWSER=true ./bin/rspec` will show you an actual chrome browser
+  # being operated by capybara.
+  $capybara_js_driver = ENV['SHOW_BROWSER'] ? :selenium_chrome : :selenium_chrome_headless
+
+  # Capyabara.javascript_driver setting directly applies to 'feature' spec
+  Capybara.default_driver = :rack_test # Faster but doesn't do Javascript
+  Capybara.javascript_driver = $capybara_js_driver
+
+  # and this applies to wrapped Rails 'system' tests, which rspec recommends
+  # we use now over feature tests.
+  #
+  # https://medium.com/table-xi/a-quick-guide-to-rails-system-tests-in-rspec-b6e9e8a8b5f6
+  # https://github.com/rspec/rspec-rails#system-specs-feature-specs-request-specswhats-the-difference
+  # http://rspec.info/blog/2017/10/rspec-3-7-has-been-released/#rails-actiondispatchsystemtest-integration-system-specs
+  #
+  # We'll follow Rails system test's lead and make ALL system tests operate in a browser with JS,
+  # No need for js: true. Meh, we'll let js: false override though.
+  config.before(:each, type: :system) do
+    driven_by $capybara_js_driver
+  end
+  config.before(:each, type: :system, js: false) do
+    driven_by :rack_test
+  end
+
+
+
 
   # RSpec Rails can automatically mix in different behaviours to your tests
   # based on their file location, for example enabling you to call `get` and
