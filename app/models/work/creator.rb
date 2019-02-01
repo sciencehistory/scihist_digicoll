@@ -1,6 +1,6 @@
 class Work
   class Creator
-    CATEGORY_VALUES = %w{after artist author addressee creator_of_work contributor engraver interviewee
+    CATEGORY_VALUES = %w{after artist author addressee creator_of_work contributor editor engraver interviewee
                     interviewer manufacturer manner_of photographer printer printer_of_plates
                     publisher}
 
