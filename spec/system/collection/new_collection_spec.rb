@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "New Collection form", js: true do
+RSpec.describe "New Collection form", type: :system, js: true do
   scenario "save, edit, and re-save new work" do
     visit new_admin_collection_path
 

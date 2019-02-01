@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 # We're not gonna test every possible thing here, but a few
-RSpec.describe "Convert child work to asset", js: true do
+RSpec.describe "Convert child work to asset", type: :system, js: true do
   let(:parent_work) { FactoryBot.create(:work, :with_assets, asset_count: 3) }
   let(:child_work) { FactoryBot.create(:work, :with_assets, parent: parent_work, position: 3) }
 
