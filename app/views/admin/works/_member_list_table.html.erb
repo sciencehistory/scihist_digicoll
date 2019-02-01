@@ -1,13 +1,13 @@
-  <table class="table member-list">
+  <table class="table admin-list member-list">
     <thead>
       <tr>
-        <th>thumbnail</th>
-        <th>ID</th>
-        <th>Type</th>
-        <th>Title</th>
-        <th>Created</th>
-        <th>Last Modified</th>
-        <th></th>
+        <th class="thumbnail">thumbnail</th>
+        <th class="id">ID</th>
+        <th class="type">Type</th>
+        <th class="title">Title</th>
+        <th class="datestamp">Created</th>
+        <th class="datestamp">Last Modified</th>
+        <th class="action"></th>
       </tr>
     </thead>
 
@@ -46,8 +46,8 @@
           <td>
             <%= link_to member.title, [:admin, member] %>
           </td>
-          <td><%= l member.created_at.to_date, format: :admin  %></td>
-          <td><%= l member.updated_at.to_date, format: :admin %></td>
+          <td class="datestamp"><%= l member.created_at.to_date, format: :admin  %></td>
+          <td class="datestamp"><%= l member.updated_at.to_date, format: :admin %></td>
           <td>
             <div class="dropdown dropdown-menu-right">
               <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
