@@ -1,0 +1,61 @@
+<%# copy/paste/modified from view assets/display_attach_form.
+
+Changed wording, added hidden field with our work metadata as serialized json.
+
+Very un-DRY, maybe refactor later. %>
+
+<%= content_for(:load_uppy, true) %>
+
+<div class="scihist-attach-files">
+
+  <h1>Select files for batch create</h1>
+  <p>Once the files have been uploaded and are ready for attachment, you can proceed to Create</p>
+
+  <%= form_with(url: admin_batch_create_finish_path, method: :post, local: true) do |form| %>
+    <%# hidden field with all work metadata %>
+    <%= hidden_field_tag :work_metadata_json, work_params.to_json %>
+
+    <div class="row">
+
+        <div class="col-md-6 mb-3">
+          <h2>1. Choose Files</h2>
+
+          <div class="row">
+            <div class="col-md-6 mt-2 mb-2">
+              <button type="button" data-toggle="kithe-browse-everything" data-route="<%=browse_everything_engine.root_path%>"
+                      class="btn btn-outline-primary w-100" id="browse">
+                    Add from Cloud
+              </button>
+            </div>
+
+            <div class="col-md-6 mt-2 mb-2">
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" multiple directory webkitdirectory id="inputGroupFile01"
+                  data-toggle="directory-input">
+                <label class="custom-file-label" for="inputGroupFile01">Add folder</label>
+              </div>
+            </div>
+          </div>
+
+          <%= content_tag "div", class: "uppy-dashboard-container", data: UploadUtil.kithe_upload_data_config do %>
+          <% end %>
+        </div>
+
+        <div class="col-sm-6">
+          <h2>2. Attach files</h2>
+          <div class="d-flex justify-content-between">
+            <%= form.submit "Attach", class: "btn btn-primary btn-lg", data: { toggle: "kithe-upload-submit" } %>
+            <%= link_to  "Cancel", admin_works_path,
+                  class: "btn btn-outline-secondary btn-lg",
+                  data: { confirm: "Cancel attach files?" }
+            %>
+          </div>
+
+          <table class="table table-sm mt-3 attach-files-table" data-toggle="cached-files-table">
+            <tr><th class="attach-files-table-filename">Filename</th><th class="attach-files-table-size">Size</th><th class="attach-files-table-remove"></th></tr>
+          </table>
+        </div>
+    </div>
+
+  <% end %>
+</div>
