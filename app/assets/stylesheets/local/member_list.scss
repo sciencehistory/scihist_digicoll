@@ -1,0 +1,25 @@
+table.admin-list {
+  max-width: 1400px;
+
+  .thumbnail {
+    width: 120px;
+  }
+
+  .id {
+    width: 7em;
+  }
+
+  .type {
+    width: 9em;
+  }
+
+  .datestamp {
+    width: 9em;
+    white-space: nowrap;
+  }
+
+  .action {
+    width: 8em;
+  }
+
+}
