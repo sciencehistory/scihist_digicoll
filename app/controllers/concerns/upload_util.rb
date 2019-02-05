@@ -1,7 +1,7 @@
 module UploadUtil
-  def self.kithe_upload_data_config
+  def self.kithe_upload_data_config(toggle_value: "kithe-upload")
     data = {
-      toggle: "kithe-upload",
+      toggle: toggle_value,
       upload_endpoint: Rails.application.routes.url_helpers.admin_direct_app_upload_path
     }
 
