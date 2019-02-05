@@ -47,7 +47,7 @@
   <tbody>
     <% @works.each do |work| %>
       <tr>
-        <td><%= thumb_image_tag(work.leaf_representative, size: :mini) %></td>
+        <td><%= thumb_image_tag(work.leaf_representative, size: :mini, image_missing_text: true) %></td>
         <td><%= work.friendlier_id %></td>
         <td><%= link_to work.title, admin_work_path(work) %></td>
         <td class="datestamp"><%= l work.created_at.to_date, format: :admin  %></td>
