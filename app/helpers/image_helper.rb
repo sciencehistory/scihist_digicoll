@@ -15,7 +15,7 @@ module ImageHelper
   # This maybe would be better in a presenter or something, but for now, rails helpers.
   #
   # TODO: fallbacks if asset is nil or derivatives not available?
-  def thumb_image_tag(asset, size: :standard, **image_tag_options)
+  def thumb_image_tag(asset, size: :standard, image_missing_text: false, **image_tag_options)
     thumb_size = size.to_s
     unless %w{mini large standard}.include?(thumb_size)
       raise ArgumentError, "thumb_size must be mini, large, or standard"
@@ -29,7 +29,22 @@ module ImageHelper
     derivative_key_2x = "#{derivative_key.to_s}_2X".to_sym
     derivative_2x = asset.derivative_for(derivative_key_2x)
 
-    return nil if derivative.nil? || derivative_2x.nil?
+    if derivative.nil? || derivative_2x.nil?
+      if image_missing_text
+        text = if ! asset.stored?
+          "Waiting<br>on ingest…".html_safe
+        elsif ! asset.derivatives_created?
+          "Waiting<br>for derivatives...".html_safe
+        else
+          "derivative<br>not available".html_safe
+        end
+
+        return content_tag "div", text, class: "bg-danger text-white derivative-missing-status d-inline-block p-1 small border"
+      else
+        return nil
+      end
+    end
+
 
     image_tag derivative.url,
       srcset: "#{derivative.url} 1x, #{derivative_2x.url} 2x",
