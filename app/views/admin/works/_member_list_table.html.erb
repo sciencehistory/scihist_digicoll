@@ -17,7 +17,7 @@
           <td>
             <% if member.representative %>
               <%= link_to member do %>
-                <%= thumb_image_tag(member.leaf_representative, size: :mini) %>
+                <%= thumb_image_tag(member.leaf_representative, size: :mini, image_missing_text: true) %>
               <% end %>
             <% end %>
             <% if work.representative_id == member.id %>
@@ -33,11 +33,6 @@
               <% if member.kind_of?(Kithe::Asset) %>
                 <li ><small><%= member.content_type %></small></li>
                 <li><small><%= number_to_human_size(member.size) %></small></li>
-                <% if ! member.stored? %>
-                  <li><small class="text-danger">waiting for ingest...</small></li>
-                <% elsif  ! member.derivatives_created? %>
-                  <li><small class="text-danger">waiting for derivatives...</small></li>
-                <% end %>
               <% end %>
             </ul>
           </td>
