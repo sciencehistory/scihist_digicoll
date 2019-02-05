@@ -1,5 +1,12 @@
 <%= kithe_form_for([:admin, work], :html=> { novalidate: true, class: 'edit-work mx-auto admin-edit' }) do |f| %>
   <div class="admin-header sticky-top d-flex justify-content-between p-2 mb-4 mt-1 bg-light border">
+    <% if work.leaf_representative.present? %>
+      <div>
+        <%= thumb_image_tag(work.leaf_representative, size: :mini, image_missing_text: true) %>
+      </div>
+    <% end %>
+
+
     <% if !@work.persisted? && @work.parent_id %>
       <%= hidden_field_tag "work[parent_id]", @work.parent_id %>
     <% end %>
