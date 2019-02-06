@@ -25,12 +25,16 @@ class Collection < Kithe::Collection
   # We also set the asset title to the file title, if appropriate.
   def representative_attributes=(attributes)
     if representative.nil?
-      self.representative = Asset.new(title: "collection-thumbnail-placeholder", parent: self)
+      build_representative
     end
     self.representative.assign_attributes(attributes)
 
     if filename = representative.file.try(:metadata).dig("filename")
       representative.title = filename
     end
+  end
+
+  def build_representative
+    self.representative = CollectionThumbAsset.new(title: "collection-thumbnail-placeholder", parent: self)
   end
 end
