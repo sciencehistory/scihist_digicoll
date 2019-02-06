@@ -1,0 +1,41 @@
+<%= kithe_form_for(@work, url: admin_batch_create_path, method: "post", :html=> { novalidate: true, class: 'mx-auto admin-edit' }) do |f| %>
+  <div class="admin-header sticky-top d-flex justify-content-between p-2 mb-4 mt-1 bg-light border">
+
+    <div class="form-actions-label">
+      <h1 class="h4">
+        Batch Create Works
+      </h1>
+    </div>
+
+    <div class="form-actions">
+      <%= link_to 'Cancel', cancel_url, class: "btn btn-outline-primary" %>
+      <%= f.button :submit, value: "Proceed to Select Files" %>
+    </div>
+  </div>
+
+  <div class="alert alert-warning">
+    <p>Each file will be uploaded to a separate new work resulting in one work per uploaded file.</p>
+
+    To, instead, create a single work including multiple files, go to <%= link_to "Create new work", new_admin_work_path %>.
+  </div>
+
+
+  <% if @work.errors.any? %>
+    <div class="kithe-form-errors-top alert alert-danger mb-4" role="alert"">
+      <h2 class="h4" class="alert-heading"><%= pluralize(@work.errors.count, "error") %> prohibited proceeding to select files.</h2>
+      <ol class="mb-0">
+      <% @work.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+    </div>
+  <% end %>
+
+  <div class="form-inputs">
+    <%= render "work_fields", f: f %>
+  </div>
+<% end %>
+
+
+
+

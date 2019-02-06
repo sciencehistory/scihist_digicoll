@@ -1,8 +1,9 @@
 class Work
   class Creator
-    CATEGORY_VALUES = %w{after artist author addressee creator_of_work contributor engraver interviewee
-                    interviewer manufacturer manner_of photographer printer printer_of_plates
-                    publisher}
+    CATEGORY_VALUES = %w{addressee after artist attributed_to author
+                    contributor creator_of_work editor engraver interviewee
+                    interviewer manufacturer manner_of photographer
+                    printer printer_of_plates publisher}
 
     include AttrJson::Model
     validates_presence_of :category, :value
