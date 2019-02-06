@@ -128,18 +128,17 @@ class GenericWorkImporter < Importer
     @@parent_to_child_hash.each_pair.each do | parent_id, child_ids |
       parent = Work.find_by_friendlier_id(parent_id)
       current_position = 0
-      rep_id = @@representative_hash[parent.friendlier_id]
+      rep_fid = @@representative_hash[parent.friendlier_id]
       child_ids.each do |child_id|
         # This child could be a Work *or* an Asset.
         child = Kithe::Model.find_by_friendlier_id(child_id)
         if child.nil?
-          puts "Unable to find child item #{child_id} for parent #{parent_id}"
-          raise StandardError
+          raise StandardError,  "Unable to find child item #{child_id} for parent #{parent_id}"
         end
         child.parent_id = parent.id
         child.position = (current_position += 1)
         child.save!
-        if child.friendlier_id == rep_id
+        if child.friendlier_id == rep_fid
           parent.representative_id = child.id
           parent.save!
         end
@@ -182,6 +181,10 @@ class GenericWorkImporter < Importer
         @new_item.send("#{dest_k }=", metadata[source_k])
       end
     end
+  end
+
+  def how_long_to_sleep()
+    3
   end
 
 end
