@@ -55,21 +55,10 @@ class FileSetImporter < Importer
     # kick off yet another job for derivatives creation. For now, let's tell it
     # NOT to do derivatives creation at all.
 
-    #@new_item.file_attacher.set_promotion_directives(derivatives: false)
-    @new_item.file_attacher.set_promotion_directives(derivatives: "inline")
-
-    # or could be `derivatives: "inline"`
-
-    # not doing this....
-    #@new_item.file = an_io_object # Down.open(metadata['file_urls'].first)
+    # @new_item.file_attacher.set_promotion_directives(create_derivatives: false)
+    @new_item.file_attacher.set_promotion_directives(create_derivatives: "inline")
 
 
-    # alternately, this second way defers downloading of the remote url to the background job,
-    # and should skip an extra copy in "cache".
-
-    # `storage => "remote_url"` with that exact
-    # literal is what tells the uploader it needs to retrieve a URL that is stored in "id" key.
-    # id is actually the URL.
     @new_item.file = { "id" => metadata['file_url'], "storage" => "remote_url"}
 
     super

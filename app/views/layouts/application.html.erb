@@ -45,11 +45,11 @@ it includes an admin menu.  %>
         <% end %>
       <% end %>
 
-      <% if ["edit", "new", "display_attach_form", "reorder_members_form"].include?(params[:action].to_s) %>
+      <% if ["edit", "new", "display_attach_form", "reorder_members_form", "add_files"].include?(params[:action].to_s) %>
         <%= yield %>
       <% else %>
         <div class="d-sm-flex admin-wrapper">
-          <div class="admin-nav">
+          <div class="admin-nav flex-shrink-0">
             <ul class="list-unstyled sticky-top px-3 pb-3 pt-1 mt-2 mr-3 bg-light border">
               <li><h2 class="h4">Admin</h2></li>
               <li><%= link_to  "Works", admin_works_path %></li>

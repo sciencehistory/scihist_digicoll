@@ -2,6 +2,7 @@
 
 <p>
   <%= link_to 'Create new work', new_admin_work_path, class: "btn btn-primary" %>
+  <%= link_to 'Batch create works', admin_batch_create_path, class: "btn btn-outline-primary" %>
 </p>
 
 <%# this is ransack %>
@@ -31,26 +32,26 @@
   </p>
 <% end %>
 
-<table class="table">
+<table class="table admin-list">
   <thead>
     <tr>
-      <th>thumbnail</th>
-      <th><%= sort_link(@q, :id, "ID", page: nil) %></th>
-      <th><%= sort_link(@q, :title, page: nil) %></th>
-      <th><%= sort_link(@q, :created_at, "Created", page: nil) %></th>
-      <th><%= sort_link(@q, :updated_at, "Last Modified", page: nil) %></th>
-      <th></th>
+      <th class="thumbnail">thumbnail</th>
+      <th class="id"><%= sort_link(@q, :id, "ID", page: nil) %></th>
+      <th class="title"><%= sort_link(@q, :title, page: nil) %></th>
+      <th class="datestamp"><%= sort_link(@q, :created_at, "Created", page: nil) %></th>
+      <th class="datestamp"><%= sort_link(@q, :updated_at, "Last Modified", page: nil) %></th>
+      <th class="action"></th>
     </tr>
   </thead>
 
   <tbody>
     <% @works.each do |work| %>
       <tr>
-        <td><%= thumb_image_tag(work.leaf_representative, size: :mini) %></td>
+        <td><%= thumb_image_tag(work.leaf_representative, size: :mini, image_missing_text: true) %></td>
         <td><%= work.friendlier_id %></td>
         <td><%= link_to work.title, admin_work_path(work) %></td>
-        <td><%= l work.created_at.to_date, format: :admin  %></td>
-        <td><%= l work.updated_at.to_date, format: :admin %></td>
+        <td class="datestamp"><%= l work.created_at.to_date, format: :admin  %></td>
+        <td class="datestamp"><%= l work.updated_at.to_date, format: :admin %></td>
         <td>
           <div class="dropdown">
             <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
