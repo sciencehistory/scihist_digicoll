@@ -9,3 +9,4 @@
 
 import '../src/js/member_sortable';
 import '../src/js/tab_selection_in_anchor';
+import '../src/js/simple_uppy_file_input';
