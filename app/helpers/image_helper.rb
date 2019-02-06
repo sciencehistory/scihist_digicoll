@@ -17,7 +17,7 @@ module ImageHelper
   # TODO: fallbacks if asset is nil or derivatives not available?
   def thumb_image_tag(asset, size: :standard, image_missing_text: false, **image_tag_options)
     thumb_size = size.to_s
-    unless %w{mini large standard}.include?(thumb_size)
+    unless %w{mini large standard collection_page}.include?(thumb_size)
       raise ArgumentError, "thumb_size must be mini, large, or standard"
     end
 
