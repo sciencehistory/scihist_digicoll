@@ -38,12 +38,16 @@ class CollectionImporter < Importer
     metadata['members'].each do | work_id |
       member = Work.find_by_friendlier_id(work_id)
       if member.nil?
-        raise ArgumentError.new("Couldn't find Work #{work_id} that is supposed to be in collection #{new_item.friendlier_id}.")
+        raise RuntimeError.new("Couldn't find Work #{work_id} that is supposed to be in collection #{new_item.friendlier_id}.")
       end
       new_item.contains << member
       new_item.save!
       member.save!
     end
+  end
+
+  def how_long_to_sleep()
+    1
   end
 
 end

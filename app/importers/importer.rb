@@ -19,33 +19,57 @@ class Importer
   def pre_clean()
   end
 
-  def remove_stale_item()
+  def preexisting_item()
+    # There can be at most one such preexisting item
+    # if we trust the uniqueness of the key.
     klass = self.class.destination_class
-    klass.where(friendlier_id:@metadata['id']).destroy_all
-    #stale_item = self.class.destination_class.find_by_friendlier_id(@metadata['id'])
-    #stale_item.delete
-    # @metadata.select { |key, value| value!=[] && value != nil }
+    matches = klass.where(friendlier_id:@metadata['id'])
+    matches == [] ? nil : matches.first
+  end
+
+  def remove_stale_item()
+    throw RuntimeError "Assets should not be removed by this method." if preexisting_item.is_a? Asset
+    p_i = preexisting_item
+    return if p_i.nil?
+    p_i.members.each do |child|
+      child.parent = nil
+      child.save!
+    end
+    (Kithe::Model.where representative_id: p_i.id).each do |r|
+      r.representative_id = nil
+      r.save!
+    end
+    (Kithe::Model.where leaf_representative_id: p_i.id).each do |r|
+      r.leaf_representative_id = nil
+      r.save!
+    end
+    p_i.contained_by = []
+    p_i.delete
   end
 
   def post_clean()
-    # @metadata.select { |key, value| value!=[] && value != nil }
+  end
+
+  # Subclass this and return true for items that
+  # don't need to be imported for whatever reason.
+  # For now, we're skipping Assets if an Asset already
+  # exists with the same friendlier_id and the
+  # same sha_1 hash.
+  def ok_to_skip_this_item()
+    false
   end
 
   def save_item()
-    # reads metadata from file, creates an item based on it, returns it
+    # reads metadata from file, creates an item based on it, saves it
     read_from_file()
+    return if ok_to_skip_this_item
     remove_stale_item()
     pre_clean()
     edit_metadata()
     post_clean()
-
     @new_item = self.class.destination_class().new()
-    # new_item.friendlier_id = metadata['id']
-    # new_item.title = metadata['title']
-
     populate()
-    @new_item.save()
-
+    @new_item.save!
     post_processing()
     set_create_date()
   end
@@ -62,9 +86,14 @@ class Importer
 
 
   def errors()
-    @new_item.errors
+    return [] if @new_item.nil?
+    @new_item.errors.full_messages
   end
 
+  #How many seconds to wait after importing this item
+  def how_long_to_sleep()
+    10
+  end
 
   #take a new item and add all metadata to it. Do not save.
   def populate()
@@ -78,12 +107,12 @@ class Importer
   end
 
 
-  # the old thing importee class name, as a string, e.g. 'FileSet'
+  # the old importee class name, as a string, e.g. 'FileSet'
   def self.importee()
     raise NotImplementedError
   end
 
-  # the new thing importee class, e.g. Asset
+  # the new importee class, e.g. Asset
   def self.destination_class()
     raise NotImplementedError
   end

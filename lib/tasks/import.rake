@@ -7,14 +7,14 @@ namespace :scihist_digicoll do
   Move them to a corresponding tmp/import file in this project,
   and finally, run `bundle exec rake scihist_digicoll:import`.
 
-  Note: this import will DELETE AND OVERWRITE items in scihist_digicoll
-  that have the same friendlier_id.
+  Note: this import will DELETE AND OVERWRITE Works and Collections
+  in scihist_digicoll that have the same friendlier_id.
 
-  Note: There will soon be an exception to the above rule: if an Asset is
-  found already in scihist_digicoll that has a) the same friendlier_id
-  and b) an identical md5 hash for its file, the Asset will be considered
-  identical and no attempt will be made to reimport it.
+  However, if an existing Asset a) has the same friendlier_id and b)
+  contains an identical file (as determined by the sha1 hash), we
+  consider it hasn't changed, and leave it be.
   """
+
   task :import => :environment do
     import_dir = Rails.root.join('tmp', 'import')
     %w(FileSet GenericWork Collection).each do |s|
@@ -24,11 +24,12 @@ namespace :scihist_digicoll do
         puts "Importing #{path}"
         importer = importer_class.new(path)
         importer.save_item()
-        unless importer.errors.full_messages == []
-          puts importer.errors.full_messages
+        unless importer.errors == []
+          puts importer.errors
+          #TODO make a proper error report
           byebug
         end
-        sleep 10
+        sleep importer.how_long_to_sleep
       end
       importer_class.class_post_processing()
     end # exporters.each
