@@ -25,10 +25,9 @@ class Admin::CollectionsController < ApplicationController
   # POST /collections.json
   def create
     @collection = Collection.new(collection_params)
-
     respond_to do |format|
       if @collection.save
-        format.html { redirect_to admin_collections_url, notice: 'Collection was successfully created.' }
+        format.html { redirect_to admin_collections_url, notice: "Collection '#{@collection.title}' was successfully created." }
         format.json { render :show, status: :created, location: @collection }
       else
         format.html { render :new }
@@ -42,7 +41,7 @@ class Admin::CollectionsController < ApplicationController
   def update
     respond_to do |format|
       if @collection.update(collection_params)
-        format.html { redirect_to admin_collections_url, notice: 'Collection was successfully updated.' }
+        format.html { redirect_to admin_collections_url, notice: "Collection '#{@collection.title}' was successfully updated." }
         format.json { render :show, status: :ok, location: @collection }
       else
         format.html { render :edit }
@@ -56,7 +55,7 @@ class Admin::CollectionsController < ApplicationController
   def destroy
     @collection.destroy
     respond_to do |format|
-      format.html { redirect_to admin_collections_url, notice: 'Collection was successfully destroyed.' }
+      format.html { redirect_to admin_collections_url, notice: "Collection '#{@collection.title}' was successfully deleted." }
       format.json { head :no_content }
     end
   end
@@ -75,7 +74,7 @@ class Admin::CollectionsController < ApplicationController
     def collection_params
       params.
         require(:collection).
-        permit(:title, :description, :related_url_attributes => []).tap do |hash|
+        permit(:title, :description, :representative_attributes => {}, :related_url_attributes => []).tap do |hash|
           # sanitize description
           if hash[:description].present?
             hash[:description] = DescriptionSanitizer.new.sanitize(hash[:description])
