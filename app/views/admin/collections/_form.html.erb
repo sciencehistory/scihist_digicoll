@@ -37,11 +37,16 @@
     <%= f.repeatable_attr_input :related_url, build: :at_least_one %>
 
 
+    <%# uppy simple file input heavily adapted from shrine-rails-example single "cover" photo.
+        https://github.com/erikdahlstrand/shrine-rails-example
+
+        Goes with javascript in simple_uppy_file_input.js
+    -%>
     <div class="form-group form-group-valid">
       <label class="form-control-label string" for="collection_thumbnail">Thumbnail</label>
       <small class="form-text text-muted scihist-hint mb-2 mt-0">Image for collection, should be square and at least TODOxTODO.</small>
 
-      <%= f.fields_for :representative, (f.object.representative || Asset.new) do |representative_f| %>
+      <%= f.fields_for :representative, (f.object.representative || f.object.build_representative) do |representative_f| %>
 
         <%= representative_f.hidden_field :file,
                 value: ("" || @collection.cached_file_data),
