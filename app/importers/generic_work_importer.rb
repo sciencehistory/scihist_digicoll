@@ -184,7 +184,7 @@ class GenericWorkImporter < Importer
   end
 
   def how_long_to_sleep()
-    3
+    0
   end
 
 end
