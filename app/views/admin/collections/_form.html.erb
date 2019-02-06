@@ -1,3 +1,4 @@
+<%= content_for(:load_uppy, true) %>
 
 <%= kithe_form_for([:admin, collection], :html=> { novalidate: true, class: 'edit-collection mx-auto admin-edit' }) do |f| %>
   <div class="admin-header sticky-top d-flex justify-content-between p-2 mb-4 mt-1 bg-light border">
@@ -34,5 +35,57 @@
     <%= f.input :description, as: :text, input_html: { rows: 14 } %>
 
     <%= f.repeatable_attr_input :related_url, build: :at_least_one %>
+
+
+    <%# uppy simple file input heavily adapted from shrine-rails-example single "cover" photo.
+        https://github.com/erikdahlstrand/shrine-rails-example
+
+        Goes with javascript in simple_uppy_file_input.js
+    -%>
+    <div class="form-group form-group-valid">
+      <label class="form-control-label string" for="collection_thumbnail">Thumbnail</label>
+      <small class="form-text text-muted scihist-hint mb-2 mt-0">Image for collection, should be <b>square and at least
+        <%= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2 %>x<%= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2%> pixels</b>. No need to resize—full-size crop is great for possible future uses.</small>
+
+      <%= f.fields_for :representative, (f.object.representative || f.object.build_representative) do |representative_f| %>
+
+        <%= representative_f.hidden_field :file,
+                value: ("" || @collection.cached_file_data),
+                id: "collection-thumbnail-upload-result",
+                data: {
+                  toggle: "scihist-simple-uppy-file-hidden"
+                }
+        %>
+        <%= representative_f.file_field :file,
+              id: "collection_thumbnail",
+              accept: "image/*",
+              data: {
+                upload_server: "",
+                preview_element: "preview-cover-photo",
+                upload_result_element: "album-cover-photo-upload-result"
+              }.merge(UploadUtil.kithe_upload_data_config(toggle_value: "scihist-simple-uppy-file"))
+        %>
+        <div class="image-preview mb-2" data-toggle="scihist-simple-uppy-file-preview">
+          <% if collection.representative.file.present? %>
+
+            <% if collection.representative.file &&
+              ( !collection.representative.content_type.start_with?("image/") ||
+                collection.representative.width != collection.representative.height ||
+              collection.representative.width < 532 ) %>
+              <p class="text-danger">Uploaded asset should be a square image at least of at least <%= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2%> pixels.
+                The file uploaded was type <%= collection.representative.content_type %>,
+                <%= collection.representative.width %>x<%= collection.representative.height %>px
+              </p>
+            <% end %>
+
+            <%= thumb_image_tag(collection.leaf_representative, size: :collection_page, image_missing_text: true) %>
+
+            <br><i><%= collection.representative.title %></i>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+
   </div>
 <% end %>
