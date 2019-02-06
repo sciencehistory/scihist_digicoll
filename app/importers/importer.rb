@@ -92,7 +92,7 @@ class Importer
 
   #How many seconds to wait after importing this item
   def how_long_to_sleep()
-    10
+    0
   end
 
   #take a new item and add all metadata to it. Do not save.

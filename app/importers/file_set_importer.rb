@@ -13,9 +13,9 @@ class FileSetImporter < Importer
   def initialize(path, options = {})
     super
     if Rails.env.development?
-      @seconds_to_wait_after_importing = 2
+      @seconds_to_wait_after_importing = 0
     else
-      @seconds_to_wait_after_importing = 10
+      @seconds_to_wait_after_importing = 0
     end
   end
 
@@ -45,22 +45,17 @@ class FileSetImporter < Importer
   end
 
   def populate()
-    # @new_item is an unsaved Asset
-
-    # this _should_ tell @new_item's shrine uploader to do promotion inline instead of
+    # Note: @new_item is an unsaved Asset
+    # This tells @new_item's shrine uploader to do promotion inline instead of
     # kicking off a background job.
     @new_item.file_attacher.set_promotion_directives(promote: "inline")
-
-    # Now the promotion is happening inline, but the promotion will ordinarily
-    # kick off yet another job for derivatives creation. For now, let's tell it
-    # NOT to do derivatives creation at all.
-
+    # Now the promotion is happening inline (not in a bg job), but the promotion will ordinarily
+    # kick off yet another job for derivatives creation.
+    # We can either tell it NOT to do derivatives creation at all.
     # @new_item.file_attacher.set_promotion_directives(create_derivatives: false)
+    # or we can tell it to create derivatives inline:
     @new_item.file_attacher.set_promotion_directives(create_derivatives: "inline")
-
-
     @new_item.file = { "id" => metadata['file_url'], "storage" => "remote_url"}
-
     super
   end
 
