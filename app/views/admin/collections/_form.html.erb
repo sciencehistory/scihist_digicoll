@@ -44,7 +44,8 @@
     -%>
     <div class="form-group form-group-valid">
       <label class="form-control-label string" for="collection_thumbnail">Thumbnail</label>
-      <small class="form-text text-muted scihist-hint mb-2 mt-0">Image for collection, should be <b>square and at least 532x532 pixels</b>. No need to resize—full-size crop is great for possible future uses.</small>
+      <small class="form-text text-muted scihist-hint mb-2 mt-0">Image for collection, should be <b>square and at least
+        <%= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2 %>x<%= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2%> pixels</b>. No need to resize—full-size crop is great for possible future uses.</small>
 
       <%= f.fields_for :representative, (f.object.representative || f.object.build_representative) do |representative_f| %>
 
@@ -65,20 +66,21 @@
               }.merge(UploadUtil.kithe_upload_data_config(toggle_value: "scihist-simple-uppy-file"))
         %>
         <div class="image-preview mb-2" data-toggle="scihist-simple-uppy-file-preview">
-          <% if collection.representative.present? %>
-            <%= thumb_image_tag(collection.leaf_representative, size: :standard, image_missing_text: true) %>
-            <% if collection.representative.file %>
-              <br><i><%= collection.representative.title %></i>
-            <% end %>
+          <% if collection.representative.file.present? %>
+
             <% if collection.representative.file &&
               ( !collection.representative.content_type.start_with?("image/") ||
                 collection.representative.width != collection.representative.height ||
               collection.representative.width < 532 ) %>
-              <br><strong class="text-danger">Uploaded asset should be a square image at least 532x532px.
+              <p class="text-danger">Uploaded asset should be a square image at least of at least <%= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2%> pixels.
                 The file uploaded was type <%= collection.representative.content_type %>,
                 <%= collection.representative.width %>x<%= collection.representative.height %>px
-              </strong>
+              </p>
             <% end %>
+
+            <%= thumb_image_tag(collection.leaf_representative, size: :collection_page, image_missing_text: true) %>
+
+            <br><i><%= collection.representative.title %></i>
           <% end %>
         </div>
       <% end %>
