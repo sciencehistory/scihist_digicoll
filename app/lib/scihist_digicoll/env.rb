@@ -62,7 +62,7 @@ module ScihistDigicoll
     def self.shrine_cache_storage
       case lookup!(:storage_mode)
       when "dev_file"
-        Shrine::Storage::FileSystem.new("tmp/shrine_storage_testing", prefix: "cache")
+        Shrine::Storage::FileSystem.new("public", prefix: "shrine_storage_#{Rails.env}/cache")
       when "dev_s3"
         Shrine::Storage::S3.new({
           bucket:            lookup(:s3_dev_bucket),
@@ -87,7 +87,7 @@ module ScihistDigicoll
     def self.shrine_store_storage
       case lookup!(:storage_mode)
       when "dev_file"
-        Shrine::Storage::FileSystem.new("tmp/shrine_storage_testing", prefix: "store")
+        Shrine::Storage::FileSystem.new("public", prefix: "shrine_storage_#{Rails.env}/store")
       when "dev_s3"
         Shrine::Storage::S3.new({
           bucket:            lookup(:s3_dev_bucket),
@@ -112,7 +112,7 @@ module ScihistDigicoll
     def self.shrine_derivatives_storage
       case lookup!(:storage_mode)
       when "dev_file"
-        Shrine::Storage::FileSystem.new("tmp/shrine_storage_testing", prefix: "derivatives")
+        Shrine::Storage::FileSystem.new("public", prefix: "shrine_storage_#{Rails.env}/derivatives")
       when "dev_s3"
         Shrine::Storage::S3.new({
           bucket:            lookup(:s3_dev_bucket),
