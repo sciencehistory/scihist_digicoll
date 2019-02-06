@@ -4,6 +4,9 @@ rvm:
 addons:
   postgresql: "9.6"
   chrome: stable
+  apt:
+    packages:
+      - libvips-tools
 services:
   - postgresql
 cache:
