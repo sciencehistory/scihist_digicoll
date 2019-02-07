@@ -32,14 +32,24 @@ namespace :scihist_digicoll do
     # and finally all the Collections.
     # The class_post_processing relies on this order
     # to function properly.
+
+    #Total number of tasks: ingest each file
+    # and then do post-processing for each of the 3 file types.
+
+    total_tasks = %w(FileSet GenericWork Collection).collect { |s| "#{s}Importer".
+      constantize.file_paths.count }.sum + 3
+
+    progress_bar = ProgressBar.create(total: total_tasks, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
+
     %w(FileSet GenericWork Collection).each do |s|
       importer_class = "#{s}Importer".constantize
       importee_class = importer_class.importee
       # For all the JSON files of a particular type,
       # instantiate an importer for that file and
       # perform the import.
+
       importer_class.file_paths.each do |path|
-        puts "Importing #{path}"
+        #puts "Importing #{path}"
         importer = importer_class.new(path)
         # save_item() creates a new item, and adds metadata to it,
         # and save it.
@@ -51,6 +61,7 @@ namespace :scihist_digicoll do
         end
         # These sleep intervals are currently set to zero.
         sleep importer.how_long_to_sleep
+        progress_bar.increment
       end
       # Each importer class defines a post-processing function
       # that is run only after all items in its class have
@@ -58,6 +69,7 @@ namespace :scihist_digicoll do
       # subclasses class_post_processing with functionality that
       # links each Work with its child Works and Assets.
       importer_class.class_post_processing()
+      progress_bar.increment
     end # exporters.each
   end # task
 end # namespace
