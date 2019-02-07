@@ -29,7 +29,7 @@ class Collection < Kithe::Collection
     end
     self.representative.assign_attributes(attributes)
 
-    if filename = representative.file.try(:metadata).dig("filename")
+    if filename = representative.file&.try(:metadata).try(:[], :filename)
       representative.title = filename
     end
   end
