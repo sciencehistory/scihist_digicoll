@@ -42,7 +42,7 @@ class FileSetImporter < Importer
   def ok_to_skip_this_item()
     return false if preexisting_item.nil?
     if preexisting_item.sha1 == @metadata['sha_1']
-      puts "The checksums matched; ok to skip this item."
+      #puts "The checksums matched; ok to skip this item."
       @seconds_to_wait_after_importing = 0
       return true
     end
