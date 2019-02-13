@@ -4,6 +4,10 @@ class CollectionImporter < Importer
     h
   end
 
+  def edit_metadata()
+    # TODO Fix the description so it's a single value, not an array.
+  end
+
   def populate()
     super
     %w(description related_url).each do |k|
@@ -42,6 +46,8 @@ class CollectionImporter < Importer
       end
       new_item.contains << member
       new_item.save!
+      # TODO we haven't actually done anything to member
+      # so probably no need to save it.
       member.save!
     end
   end
@@ -49,5 +55,4 @@ class CollectionImporter < Importer
   def how_long_to_sleep()
     0
   end
-
 end
