@@ -1,8 +1,18 @@
 class GenericWorkImporter < Importer
 
+  # These class variables store information about relationships between
+  # items. They're populated in store_parent_info, and they are later used
+  # by the class method link_children_and_parents to associate Assets and Works
+  # with their parents. Note that collection memberships are dealt with entirely by
+  # collection_importer.
+
   # { parent_fid => [ child_fid, child_fid, child_fid], [...] }
   @@parent_to_child_hash ||= {}
+
+  # { work_1_fid => representative_fid; work_2_fid => representative_2_fid; [...] }
   @@representative_hash  ||= {}
+
+  # { work_1_fid => thumbnail_1_fid; work_2_fid => thumbnail_2_fid; [...] }
   @@thumbnail_hash       ||= {}
 
   def self.importee()
@@ -14,6 +24,7 @@ class GenericWorkImporter < Importer
   end
 
   def edit_metadata()
+    # Concert the resource_type / format strings to slugs:
     @metadata['resource_type'].map! {|x| x.downcase.gsub(' ', '_') }
   end
 
@@ -31,6 +42,8 @@ class GenericWorkImporter < Importer
     add_physical_container()
   end
 
+  # This may no longer be needed, but having these be nil rather than
+  # empty arrays wasn't handled well by one of the front-end templates.
   def empty_arrays()
       new_item.date_of_work = []
       new_item.place = []
@@ -99,54 +112,6 @@ class GenericWorkImporter < Importer
     end
   end
 
-  def post_processing()
-    store_parent_info()
-  end
-
-  def store_parent_info()
-    # this info is processed later on in the import.
-    return if metadata['child_ids'] == nil
-    the_id = @new_item.friendlier_id
-    @@parent_to_child_hash[the_id] = metadata['child_ids']
-
-    unless metadata['representative_id'].nil?
-      @@representative_hash[the_id] = metadata['representative_id']
-    end
-
-    unless metadata['thumbnail_id'].nil?
-      @@thumbnail_hash[the_id] = metadata['thumbnail_id']
-    end
-  end
-
-  def self.class_post_processing()
-    self.link_children_and_parents()
-  end
-
-  # By the time this class method is called, ALL assets and works have been saved
-  # to the DB and have their UUIDs ready.
-  def self.link_children_and_parents()
-    @@parent_to_child_hash.each_pair.each do | parent_id, child_ids |
-      parent = Work.find_by_friendlier_id(parent_id)
-      current_position = 0
-      rep_fid = @@representative_hash[parent.friendlier_id]
-      child_ids.each do |child_id|
-        # This child could be a Work *or* an Asset.
-        child = Kithe::Model.find_by_friendlier_id(child_id)
-        if child.nil?
-          raise StandardError,  "Unable to find child item #{child_id} for parent #{parent_id}"
-        end
-        child.parent_id = parent.id
-        child.position = (current_position += 1)
-        child.save!
-        if child.friendlier_id == rep_fid
-          parent.representative_id = child.id
-          parent.save!
-        end
-      end # each child id
-    end # each parent
-  end # method
-
-
   def add_external_id()
     @metadata['identifier'].each do |x|
       category, value = x.split('-')
@@ -167,7 +132,6 @@ class GenericWorkImporter < Importer
     end
   end
 
-
   def add_array_attributes()
     mapping = {
       'resource_type' => 'format',
@@ -183,6 +147,71 @@ class GenericWorkImporter < Importer
     end
   end
 
+  # POST-PROCESSING METHODS:
+  def post_processing()
+    store_parent_info()
+  end
+
+  def store_parent_info()
+    # Stores relationship info in class variables until it can be
+    # processed later in the ingest by link_children_and_parents.
+    # Note that this method is called once per item,
+    # while link_children_and_parents is called once per ingest.
+
+    # If you don't have child items, you won't have a representative.
+    return if metadata['child_ids'] == nil
+
+    the_id = @new_item.friendlier_id
+    @@parent_to_child_hash[the_id] = metadata['child_ids']
+    unless metadata['representative_id'].nil?
+      @@representative_hash[the_id] = metadata['representative_id']
+    end
+    unless metadata['thumbnail_id'].nil?
+      @@thumbnail_hash[the_id] = metadata['thumbnail_id']
+    end
+  end
+
+  def self.class_post_processing()
+    self.link_children_and_parents()
+  end
+
+  # By the time this class method is called, ALL assets and works have been saved
+  # to the DB and have their UUIDs ready.
+  def self.link_children_and_parents()
+    # Iterate through the ENTIRE has of parents and children.
+    @@parent_to_child_hash.each_pair.each do | parent_id, child_ids |
+      parent = Work.find_by_friendlier_id(parent_id)
+      current_position = 0
+      rep_fid = @@representative_hash[parent.friendlier_id]
+
+      # For each of the current parent's children...
+      child_ids.each do |child_id|
+        # This child could be a Work *or* an Asset, so look it up this way:
+        child = Kithe::Model.find_by_friendlier_id(child_id)
+
+        # In theory, once you get to this point in the ingest, all the possible
+        # Assets and child Works have already been ingested. But just to be sure...
+        if child.nil?
+          raise StandardError,  "Unable to find child item #{child_id} for parent #{parent_id}"
+        end
+
+        #Link the child and its parent.
+        child.parent_id = parent.id
+        child.position = (current_position += 1)
+        child.save!
+
+        # Set the representative.
+        # TODO: This would break if the representative happens to not be
+        # not the child of this item, which could in theory be the case.
+        if child.friendlier_id == rep_fid
+          parent.representative_id = child.id
+          parent.save!
+        end
+      end # each child id
+    end # each parent
+  end # method
+
+  # No need to sleep between Work ingests.
   def how_long_to_sleep()
     0
   end
