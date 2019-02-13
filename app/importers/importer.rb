@@ -1,4 +1,5 @@
 require "json"
+require 'byebug'
 
 class Importer
   attr_reader :path, :metadata, :new_item
@@ -28,7 +29,7 @@ class Importer
   end
 
   def remove_stale_item()
-    throw RuntimeError "Assets should not be removed by this method." if preexisting_item.is_a? Asset
+    raise RuntimeError, "Assets should not be removed by this method." if preexisting_item.is_a? Asset
     p_i = preexisting_item
     return if p_i.nil?
     p_i.members.each do |child|
