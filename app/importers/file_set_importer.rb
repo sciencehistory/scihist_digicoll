@@ -1,6 +1,7 @@
 require "shrine"
 require "shrine/storage/file_system"
 require "down"
+require "byebug"
 
 class FileSetImporter < Importer
 
@@ -27,6 +28,7 @@ class FileSetImporter < Importer
   def edit_metadata()
     if @@fedora_credentials != {}
       basic_download_url = @metadata['file_url']
+      return if basic_download_url.nil?
       credentials = "http://#{@@fedora_credentials[:username]}:#{@@fedora_credentials[:password]}@"
       @metadata['file_url'] = basic_download_url.sub('http://', credentials)
     end
@@ -49,11 +51,14 @@ class FileSetImporter < Importer
     false
   end
 
-  # TODO: this class needs to implement
-  # remove_stale_item for the cases in which a prior Asset
-  # ingest fails and the resulting file has the wrong checksum.
-  # Not a common case but it could happen.
-
+  def remove_stale_item()
+    p_i = preexisting_item
+    return if p_i.nil?
+    the_work = Work.find_by_leaf_representative_id(p_i.id)
+    the_work.destroy() unless the_work.nil?
+    p_i.derivatives.destroy_all
+    p_i.delete()
+ end
 
   # How many seconds this returns could depend on
   # whether this item was already skipped; see ok_to_skip_this_item().
@@ -71,9 +76,9 @@ class FileSetImporter < Importer
     # Now the promotion is happening inline (not in a bg job), but the promotion will ordinarily
     # kick off yet another job for derivatives creation.
     # We can either tell it NOT to do derivatives creation at all.
-    # @new_item.file_attacher.set_promotion_directives(create_derivatives: false)
+    @new_item.file_attacher.set_promotion_directives(create_derivatives: false)
     # or we can tell it to create derivatives inline:
-    @new_item.file_attacher.set_promotion_directives(create_derivatives: "inline")
+    #@new_item.file_attacher.set_promotion_directives(create_derivatives: "inline")
     @new_item.file = { "id" => metadata['file_url'], "storage" => "remote_url"}
     super
   end
