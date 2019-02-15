@@ -42,7 +42,8 @@ class CollectionImporter < Importer
     metadata['members'].each do | work_id |
       member = Work.find_by_friendlier_id(work_id)
       if member.nil?
-        raise RuntimeError.new("Couldn't find Work #{work_id} that is supposed to be in collection #{new_item.friendlier_id}.")
+        puts "ERROR: collection #{new_item.friendlier_id} refers to nonexistent member #{work_id}"
+        next
       end
       new_item.contains << member
       new_item.save!

@@ -25,6 +25,10 @@ class GenericWorkImporter < Importer
 
   def edit_metadata()
     # Concert the resource_type / format strings to slugs:
+    if @metadata['resource_type'].nil?
+      puts "ERROR: bad resource type / format in #{@metadata['id']}"
+      return
+    end
     @metadata['resource_type'].map! {|x| x.downcase.gsub(' ', '_') }
   end
 
@@ -103,11 +107,16 @@ class GenericWorkImporter < Importer
 
   def add_inscriptions()
     return if metadata['inscriptions'].nil?
+
     metadata['inscriptions'].each do |ins|
+      if ins['text'].nil?
+        puts "ERROR: bad inscription in #{@metadata['id']}"
+        next
+      end
       params = {
           'location' => ins['location'],
           'text'     => ins['text']
-        }
+      }
       new_item.build_inscription(params)
     end
   end

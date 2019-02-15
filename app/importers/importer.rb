@@ -1,4 +1,5 @@
 require "json"
+require "byebug"
 # This class knows about all the common functionality
 # needed to ingest an individual Asset or Work or Collection
 # from the old chf-sufia repository.
@@ -42,7 +43,20 @@ class Importer
     @new_item = self.class.destination_class().new()
     # Apply the metadata from @metadata to the @new_item.
     populate()
-    @new_item.save!
+    begin
+      @new_item.save!
+    rescue
+      if @new_item.errors.first == [:date_of_work, "is invalid"]
+        puts "ERROR: Invalid date in #{path}"
+        @new_item.date_of_work = []
+        @new_item.save!
+      elsif
+        new_item.errors.first.first == :related_url
+        puts "ERROR: Invalid related_url in #{path}"
+        new_item.related_url = []
+        @new_item.save!
+      end
+    end
     # Any tasks that need to be applied *after* save.
     # Typically these tasks involve associating the newly-created @new_item
     # with other items in the database.
@@ -124,6 +138,8 @@ class Importer
       r.leaf_representative_id = nil
       r.save!
     end
+    
+    p_i.contains = [] if p_i.is_a? Collection
     p_i.contained_by = []
     p_i.delete
   end
