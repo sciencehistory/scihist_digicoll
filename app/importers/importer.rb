@@ -1,5 +1,6 @@
 require "json"
 require "byebug"
+
 # This class knows about all the common functionality
 # needed to ingest an individual Asset or Work or Collection
 # from the old chf-sufia repository.
@@ -123,7 +124,7 @@ class Importer
   # a) not delete any items other than preexisting_item.
   # b) not to run afoul of any postgres foreign-key constraints.
   def remove_stale_item()
-    throw RuntimeError "Assets should not be removed by this method." if preexisting_item.is_a? Asset
+    raise RuntimeError, "Assets should not be removed by this method." if preexisting_item.is_a? Asset
     p_i = preexisting_item
     return if p_i.nil?
     p_i.members.each do |child|
@@ -212,5 +213,4 @@ class Importer
   # after the item has been saved.
   def self.class_post_processing()
   end
-
 end
