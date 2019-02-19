@@ -1,0 +1,85 @@
+require "json"
+require "byebug"
+
+class Auditor
+  # path is where to find the json import file for this item
+  # metadata contains the metadata in the file
+  # item contains the corresponding item from the database
+
+  attr_reader :path, :metadata, :item, :report_file
+
+  def initialize(path, file, options = {})
+    #raise ArgumentError unless target_item.is_a? self.class.exportee
+    @path = path
+    @file = file
+    @metadata = {}
+  end
+
+  def check_item()
+    # Parse the metadata from a file into @metadata.
+    read_from_file()
+    load_item()
+    if @item.nil?
+      report_line("Item not found in database.")
+    end
+    common_checks()
+    special_checks()
+  end
+
+  # Common checks for Assets, Files and Collections.
+  def common_checks()
+    confirm(metadata['id'] == item.friendlier_id, "friendlier_id")
+  end
+
+  def confirm(condition, report_string)
+    report_line(report_string) unless condition
+  end
+
+
+  # Checks specific to the imported class.
+  def special_checks()
+    raise NotImplementedError
+  end
+
+  # Add a line to the report.
+  def report_line(str)
+    @file.puts("#{@item.type} #{@item.friendlier_id}: #{str}")
+  end
+
+  def read_from_file()
+    file = File.read(@path)
+    @metadata = JSON.parse(file)
+  end
+
+  def load_item()
+    klass = self.class.destination_class
+    matches = klass.where(friendlier_id:@metadata['id'])
+    @item = (matches == [] ? nil : matches.first)
+  end
+
+
+  # the old importee class name, as a string, e.g. 'FileSet'
+  def self.importee()
+    raise NotImplementedError
+  end
+
+  # the new importee class, e.g. Asset
+  def self.destination_class()
+    raise NotImplementedError
+  end
+
+  # An array of paths to all the files that this class can import
+  def self.file_paths()
+     files = Dir.entries(dir).select{|x| x.end_with? ".json"}
+     files.map{|x| File.join(dir,x)}
+  end
+
+  def self.dir()
+    Rails.root.join('tmp', 'import', dirname)
+  end
+
+  #The names of the directory where this sort of item's json files can be found.
+  def self.dirname()
+    "#{importee.downcase}s"
+  end
+end
