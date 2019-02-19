@@ -15,6 +15,12 @@ namespace :dev do
       puts "Please request a password via the 'Forgot your password?' page."
     end
 
+    task :send_password_reset, [:email] => :environment do |t, args|
+      user = User.find_by_email!(args[:email])
+      user.send_reset_password_instructions
+      puts "Password reset email sent to #{user.email}"
+    end
+
     namespace :test do
       desc 'Create a test user with a password; not secure for actual users'
       task :create, [:email, :pass] => ["dev:production_guard", :environment] do |t, args|
