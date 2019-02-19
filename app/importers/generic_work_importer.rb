@@ -189,6 +189,7 @@ class GenericWorkImporter < Importer
   # By the time this class method is called, ALL assets and works have been saved
   # to the DB and have their UUIDs ready.
   def self.link_children_and_parents()
+    report_via_progress_bar("INFO: linking parent Works with their member Works.")
     # Iterate through the ENTIRE has of parents and children.
     @@parent_to_child_hash.each_pair.each do | parent_id, child_ids |
       parent = Work.find_by_friendlier_id(parent_id)
