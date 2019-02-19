@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
   # https://github.com/plataformatec/devise/wiki/how-to:-change-the-default-sign_in-and-sign_out-routes
+  # We aren't using :registration cause we don't want to allow self-registration,
+  # We aren't using session cause we define em ourselves manually.
   devise_for :users, skip: [:session, :registration]
   devise_scope :user do
     get 'login', to: 'devise/sessions#new', as: :new_user_session
@@ -18,6 +20,8 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root to: "works#index"
+
+    resources :users, except: [:destroy, :show]
 
     # Admin page for work management, we'll handle public view elsewhere
     resources :works do
