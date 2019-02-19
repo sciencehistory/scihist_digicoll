@@ -21,7 +21,11 @@ Rails.application.routes.draw do
   namespace :admin do
     root to: "works#index"
 
-    resources :users, except: [:destroy, :show]
+    resources :users, except: [:destroy, :show] do
+      member do
+        post "send_password_reset"
+      end
+    end
 
     # Admin page for work management, we'll handle public view elsewhere
     resources :works do
