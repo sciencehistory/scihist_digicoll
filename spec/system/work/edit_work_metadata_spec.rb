@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 # We're not gonna test every possible thing here, but a few
-RSpec.describe "Edit work metadata form", type: :system, js: true do
+RSpec.describe "Edit work metadata form", :logged_in_user, type: :system, js: true do
   let!(:new_collection) { FactoryBot.create(:collection) }
   let(:work) { FactoryBot.create(:work, :with_complete_metadata, :with_collection, :with_assets, asset_count: 3) }
 

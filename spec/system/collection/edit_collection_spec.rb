@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "Edit Collection form", type: :system, queue_adapter: :inline, js: true do
+RSpec.describe "Edit Collection form", :logged_in_user, type: :system, queue_adapter: :inline, js: true do
   let(:collection) {
     FactoryBot.create(
         :collection,

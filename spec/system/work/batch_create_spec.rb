@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "batch create", type: :system, js: true, queue_adapter: :test do
+RSpec.describe "batch create", :logged_in_user, type: :system, js: true, queue_adapter: :test do
   it "can go through all steps of batch create" do
     visit admin_batch_create_path
 
