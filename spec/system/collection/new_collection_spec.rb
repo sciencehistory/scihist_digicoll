@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "New Collection form", type: :system, js: true, queue_adapter: :test do
+RSpec.describe "New Collection form", :logged_in_user, type: :system, js: true, queue_adapter: :test do
   it "saves new collection with thumbnail" do
     visit new_admin_collection_path
 
