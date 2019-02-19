@@ -167,11 +167,13 @@ class GenericWorkImporter < Importer
     # Note that this method is called once per item,
     # while link_children_and_parents is called once per ingest.
 
+    the_id = @new_item.friendlier_id
+
+    @@parent_to_child_hash[the_id] = metadata['child_ids'] || []
+
     # If you don't have child items, you won't have a representative.
     return if metadata['child_ids'] == nil
 
-    the_id = @new_item.friendlier_id
-    @@parent_to_child_hash[the_id] = metadata['child_ids']
     unless metadata['representative_id'].nil?
       @@representative_hash[the_id] = metadata['representative_id']
     end
@@ -217,6 +219,7 @@ class GenericWorkImporter < Importer
           parent.save!
         end
       end # each child id
+      @@progress_bar.increment
     end # each parent
   end # method
 

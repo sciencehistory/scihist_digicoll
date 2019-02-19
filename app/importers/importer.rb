@@ -11,15 +11,19 @@ class Importer
   # path is where to find the json import file for this item
   # metadata will contain the item's metadata once that json file is parsed
   # new_item will contain the actual item that we want to save to the database.
-  attr_reader :path, :metadata, :new_item
+  attr_reader :path, :metadata, :new_item, :progress_bar
+
+  @@progress_bar = nil
+
 
   # Creates the importer and assigns the path to the json file
   # it's going to try to import.
   # At the moment we don't use options.
-  def initialize(path, options = {})
+  def initialize(path, progress_bar, options = {})
     #raise ArgumentError unless target_item.is_a? self.class.exportee
     @path = path
     @metadata = {}
+    @@progress_bar ||= progress_bar
   end
 
   # This is the only method called on this class
@@ -33,7 +37,10 @@ class Importer
     # that's fine for our purposes and doesn't need to be
     # reingested. If so, it's fine to move on to
     # the next item on our list.
-    return if ok_to_skip_this_item
+    if ok_to_skip_this_item
+      @@progress_bar.increment
+      return
+    end
     # If a stale item already exists in the system from a prior ingest,
     # remove the stale item so it can be replaced.
     remove_stale_item()
@@ -48,12 +55,12 @@ class Importer
       @new_item.save!
     rescue
       if @new_item.errors.first == [:date_of_work, "is invalid"]
-        puts "ERROR: Invalid date in #{path}"
+        report_via_progress_bar("ERROR: Invalid date")
         @new_item.date_of_work = []
         @new_item.save!
       elsif
         new_item.errors.first.first == :related_url
-        puts "ERROR: Invalid related_url in #{path}"
+        report_via_progress_bar("ERROR: Invalid related_url")
         new_item.related_url = []
         @new_item.save!
       end
@@ -65,6 +72,11 @@ class Importer
     # Set the create date to the *original* create date from chf-sufia.
     # We do not store the ingest date.
     set_create_date()
+    @@progress_bar.increment
+    unless errors == []
+      report_via_progress_bar(errors)
+    end
+
   end
 
   # Parse the json file and add its contents to @metadata.
@@ -139,7 +151,7 @@ class Importer
       r.leaf_representative_id = nil
       r.save!
     end
-    
+
     p_i.contains = [] if p_i.is_a? Collection
     p_i.contained_by = []
     p_i.delete
@@ -182,6 +194,11 @@ class Importer
     @new_item.title = @metadata['title'].first
   end
 
+  def report_via_progress_bar(msg)
+    str = "#{self.importee} #{metadata['id']}: #{msg}"
+    @@progress_bar.log(str)
+  end
+
   # the old importee class name, as a string, e.g. 'FileSet'
   def self.importee()
     raise NotImplementedError
@@ -213,4 +230,5 @@ class Importer
   # after the item has been saved.
   def self.class_post_processing()
   end
+
 end
