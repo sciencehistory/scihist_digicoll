@@ -72,4 +72,24 @@ namespace :scihist_digicoll do
       #progress_bar.increment
     end # exporters.each
   end # task
+
+
+
+  task :audit_import => :environment do
+    import_dir = Rails.root.join('tmp', 'import')
+    report_file = File.new("report.txt", "w")
+    %w(FileSet GenericWork Collection).each do |s|
+      puts "Loading #{s} file paths"
+      auditor_class = "#{s}Auditor".constantize
+      importee_class = auditor_class.importee
+      auditor_class.file_paths.each do |path|
+        auditor = auditor_class.new(path, report_file)
+        auditor.check_item()
+      end
+    end # auditors.each
+    report_file.close
+  end # task
+
+
+
 end # namespace
