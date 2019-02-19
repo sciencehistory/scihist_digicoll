@@ -1,5 +1,5 @@
 class Admin::UsersController < ApplicationController
-  before_action :set_user, only: [:show, :edit, :update, :destroy]
+  before_action :set_user, only: [:edit, :update, :send_password_reset]
 
   # GET /users
   # GET /users.json
@@ -44,6 +44,12 @@ class Admin::UsersController < ApplicationController
         format.json { render json: @user.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  # POST /users/1
+  def send_password_reset
+    @user.send_reset_password_instructions
+    redirect_to admin_users_path, notice: "Password reset email sent to #{@user.email}"
   end
 
   private
