@@ -36,10 +36,13 @@ namespace :scihist_digicoll do
     #Total number of tasks: ingest each file
     # and then do post-processing for each of the 3 file types.
 
-    total_tasks = %w(FileSet GenericWork Collection).collect { |s| "#{s}Importer".
-      constantize.file_paths.count }.sum + 3
+    total_tasks = FileSetImporter.file_paths.count
+    # Generic works increment the progress bar twice.
+    total_tasks += GenericWorkImporter.file_paths.count * 2
+    total_tasks += CollectionImporter.file_paths.count
 
-    #progress_bar = ProgressBar.create(total: total_tasks, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
+
+    progress_bar = ProgressBar.create(total: total_tasks, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
 
     %w(FileSet GenericWork Collection).each do |s|
       importer_class = "#{s}Importer".constantize
@@ -47,21 +50,17 @@ namespace :scihist_digicoll do
       # For all the JSON files of a particular type,
       # instantiate an importer for that file and
       # perform the import.
+      progress_bar.log("INFO: Gathering #{s} files.")
 
       importer_class.file_paths.each do |path|
-        puts "Importing #{path}"
-        importer = importer_class.new(path)
+        # puts "Importing #{path}"
+        importer = importer_class.new(path, progress_bar)
         # save_item() creates a new item, and adds metadata to it,
         # and save it.
         # It does not take care of parent-child relationships.
         importer.save_item()
-        unless importer.errors == []
-          # For now, we're using nohup.out as the error report mechanism / log.
-          puts importer.errors
-        end
         # These sleep intervals are currently set to zero.
         sleep importer.how_long_to_sleep
-        #progress_bar.increment
       end
       # Each importer class defines a post-processing function
       # that is run only after all items in its class have
