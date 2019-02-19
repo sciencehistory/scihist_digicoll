@@ -65,8 +65,7 @@ Rails.application.configure do
   config.active_job.queue_name_prefix = "scihist_digicoll_#{Rails.env}"
 
   # devise mailers require this set
-  config.action_mailer.default_url_options = { host: 'kithe.sciencehistory.org' }
-
+  config.action_mailer.default_url_options = { host: ScihistDigicoll::Env.lookup!(:web_hostname) }
 
   config.action_mailer.perform_caching = false
 
