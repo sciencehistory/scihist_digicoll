@@ -7,13 +7,14 @@ GIT
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: 084b2d54972fbe1a9705d98ce570d7e1cd99c99c
+  revision: bf77264d778d6fac6ab863a1422f3f3976de79b9
   branch: master
   specs:
     kithe (0.1.0)
       attr_json (< 2.0.0)
       fastimage (~> 2.0.0)
       marcel
+      mini_mime
       pdf-reader (~> 2.0)
       rails (~> 5.2.1)
       ruby-progressbar (~> 1.0)
@@ -26,6 +27,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     Ascii85 (1.0.3)
+    access-granted (1.3.1)
     actioncable (5.2.2)
       actionpack (= 5.2.2)
       nio4r (~> 2.0)
@@ -492,6 +494,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  access-granted (~> 1.0)
   attr_json!
   bootsnap (>= 1.1.0)
   bootstrap (~> 4.1.3)
@@ -509,8 +512,8 @@ DEPENDENCIES
   coffee-rails (~> 4.2)
   content_disposition
   database_cleaner (~> 1.7)
-  factory_bot_rails
   devise (~> 4.5)
+  factory_bot_rails
   honeybadger (~> 4.0)
   jbuilder (~> 2.5)
   jquery-rails (~> 4.3)

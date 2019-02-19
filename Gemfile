@@ -65,7 +65,8 @@ gem "ransack", "~> 2.1"
 gem "kaminari", "~> 1.0"
 gem 'bootstrap4-kaminari-views'
 
-gem 'devise', "~> 4.5" # auth
+gem 'devise', "~> 4.5" # user accounts and login
+gem 'access-granted', "~> 1.0" # authorization
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
