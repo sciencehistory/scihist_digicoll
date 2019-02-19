@@ -56,6 +56,14 @@ it includes an admin menu.  %>
               <li><%= link_to "Collections", admin_collections_path %></li>
               <li><hr></li>
               <li><%= link_to "Job Queues", admin_resque_server_path %></li>
+
+
+              <br>
+              <% if current_user %>
+                <li><%= link_to("Logout", destroy_user_session_path, method: :delete) %></li>
+              <% else %>
+                <li><%= link_to('Login', new_user_session_path)  %></li>
+              <% end %>
             </ul>
           </div>
           <div class='admin-content flex-grow-1'>
