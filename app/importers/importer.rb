@@ -195,7 +195,7 @@ class Importer
   end
 
   def report_via_progress_bar(msg)
-    str = "#{self.importee} #{metadata['id']}: #{msg}"
+    str = "#{self.class.importee} #{metadata['id']}: #{msg}"
     @@progress_bar.log(str)
   end
 
