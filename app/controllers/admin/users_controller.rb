@@ -1,6 +1,10 @@
 class Admin::UsersController < ApplicationController
   before_action :set_user, only: [:edit, :update, :send_password_reset]
 
+  before_action do
+    authorize! :admin, User
+  end
+
   # GET /users
   # GET /users.json
   def index

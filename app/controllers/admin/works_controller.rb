@@ -75,6 +75,8 @@ class Admin::WorksController < ApplicationController
   # DELETE /works/1
   # DELETE /works/1.json
   def destroy
+    authorize! :destroy, @work
+
     @work.destroy
     respond_to do |format|
       format.html { redirect_to cancel_url, notice: "Work '#{@work.title}' was successfully destroyed." }
