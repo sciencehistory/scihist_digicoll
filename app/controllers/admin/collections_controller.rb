@@ -53,6 +53,8 @@ class Admin::CollectionsController < ApplicationController
   # DELETE /collections/1
   # DELETE /collections/1.json
   def destroy
+    authorize! :destroy, @collection
+
     @collection.destroy
     respond_to do |format|
       format.html { redirect_to admin_collections_url, notice: "Collection '#{@collection.title}' was successfully deleted." }

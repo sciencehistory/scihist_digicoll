@@ -37,6 +37,9 @@ Rails.application.configure do
   # been permitted, cause we have complicated params easy to miss one.
   config.action_controller.action_on_unpermitted_parameters = :raise
 
+  # devise mailers require this set
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
 
