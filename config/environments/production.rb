@@ -66,6 +66,7 @@ Rails.application.configure do
 
   # devise mailers require this set
   config.action_mailer.default_url_options = { host: ScihistDigicoll::Env.lookup!(:web_hostname) }
+  config.action_mailer.delivery_method = :sendmail
 
   config.action_mailer.perform_caching = false
 
