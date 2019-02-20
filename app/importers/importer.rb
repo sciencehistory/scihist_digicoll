@@ -11,7 +11,7 @@ class Importer
   # path is where to find the json import file for this item
   # metadata will contain the item's metadata once that json file is parsed
   # new_item will contain the actual item that we want to save to the database.
-  attr_reader :path, :metadata, :new_item, :progress_bar
+  attr_accessor :path, :metadata, :new_item, :progress_bar
 
   @@progress_bar = nil
 
