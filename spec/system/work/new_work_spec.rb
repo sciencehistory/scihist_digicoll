@@ -1,7 +1,7 @@
 require 'rails_helper'
 require 'pp'
 
-RSpec.describe "New Work form", type: :system, js: true do
+RSpec.describe "New Work form", :logged_in_user, type: :system, js: true do
   let!(:collection) { FactoryBot.create(:collection) }
   let!(:work) { FactoryBot.create(:work, :with_complete_metadata) }
 

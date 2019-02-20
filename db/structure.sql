@@ -194,7 +194,10 @@ CREATE TABLE users (
     reset_password_sent_at timestamp without time zone,
     remember_created_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    name character varying,
+    admin boolean,
+    locked_out boolean
 );
 
 
@@ -411,6 +414,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190107205722'),
 ('20190107222521'),
 ('20190109000356'),
-('20190110154359');
+('20190110154359'),
+('20190219225344');
 
 
