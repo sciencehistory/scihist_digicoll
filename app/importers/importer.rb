@@ -55,12 +55,12 @@ class Importer
       @new_item.save!
     rescue
       if @new_item.errors.first == [:date_of_work, "is invalid"]
-        report_via_progress_bar("ERROR: bad date")
+        report_via_progress_bar("ERROR: bad date: #{metadata['dates']}")
         @new_item.date_of_work = []
         @new_item.save!
       elsif
         new_item.errors.first.first == :related_url
-        report_via_progress_bar("ERROR: bad related_url")
+        report_via_progress_bar("ERROR: bad related_url: #{metadata['related_url']}")
         new_item.related_url = []
         @new_item.save!
       end
