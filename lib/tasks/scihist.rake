@@ -23,7 +23,7 @@ namespace :scihist do
 
     namespace :test do
       desc 'Create a test user with a password; not secure for actual users'
-      task :create, [:email, :pass] => ["dev:production_guard", :environment] do |t, args|
+      task :create, [:email, :pass] => ["production_guard", :environment] do |t, args|
         u = User.create!(email: args[:email], password: args[:pass])
         puts "Test user created"
       end
