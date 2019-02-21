@@ -73,6 +73,17 @@ RSpec.configure do |config|
     driven_by :rack_test
   end
 
+  # tag your context or text with :logged_in_user, and we'll use devise to
+  # do so
+  config.include Devise::Test::ControllerHelpers, type: :controller
+  config.include Devise::Test::ControllerHelpers, type: :view
+  config.include Devise::Test::IntegrationHelpers, type: :feature
+  config.include Devise::Test::IntegrationHelpers, type: :system
+  config.include Devise::Test::IntegrationHelpers, type: :integration
+  config.before(:each, :logged_in_user) do
+    sign_in FactoryBot.create(:user)
+  end
+
   # Let blocks or tests add (eg) `queue_adapter: :test` to determine Rails
   # ActiveJob queue adapter. :test, :inline:, or :async, presumably.
   # eg `it "does something", queue_adapter: :inline`, or
@@ -85,6 +96,8 @@ RSpec.configure do |config|
 
     ActiveJob::Base.queue_adapter = original
   end
+
+
 
 
   # RSpec Rails can automatically mix in different behaviours to your tests

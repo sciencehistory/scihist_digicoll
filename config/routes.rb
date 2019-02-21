@@ -3,11 +3,45 @@ require 'resque/server'
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
-  # temporarily, as we build out app, this is the part we have working...
-  root to: redirect("/admin")
+  # https://github.com/plataformatec/devise/wiki/how-to:-change-the-default-sign_in-and-sign_out-routes
+  # We aren't using :registration cause we don't want to allow self-registration,
+  # We aren't using session cause we define em ourselves manually.
+  devise_for :users, skip: [:session, :registration]
+  devise_scope :user do
+    get 'login', to: 'devise/sessions#new', as: :new_user_session
+    post 'login', to: 'devise/sessions#create', as: :user_session
+    delete 'logout', to: 'devise/sessions#destroy', as: :destroy_user_session
+  end
 
-  namespace :admin do
+  class LoggedInConstraint
+    def self.matches?(request)
+      current_user = request.env['warden'].user
+      !!current_user
+    end
+  end
+
+  # temporarily, as we build out app, the admin part is only part we have
+  # working. If not logged in, redir to login. If logged in, send to admin.
+  root to: redirect { |path_params, req|
+    if LoggedInConstraint.matches?(req)
+      "/admin"
+    else
+      "/login"
+    end
+  }
+
+
+  # Routes will even only _show up_ to logged in users, this applies
+  # to internal rack apps we're mounting here too, like shrine upload endpoints,
+  # is one reason to use a constraint.
+  namespace :admin, constraints: LoggedInConstraint do
     root to: "works#index"
+
+    resources :users, except: [:destroy, :show] do
+      member do
+        post "send_password_reset"
+      end
+    end
 
     # Admin page for work management, we'll handle public view elsewhere
     resources :works do
@@ -35,10 +69,8 @@ Rails.application.routes.draw do
     post "/batch_create", to: "batch_create#add_files" # step 2
     post "/batch_create/finish", to: "batch_create#create" # step 3, create and redirect
 
-    # TODO, need to restrict to probably just logged in users, at least.
     mount Kithe::AssetUploader.upload_endpoint(:cache) => "/direct_upload", as: :direct_app_upload
 
-    # TODO, need to restrict to probably just logged in users, at least.
     if Shrine.storages[:cache].kind_of?(Shrine::Storage::S3)
       mount Shrine.uppy_s3_multipart(:cache) => "/s3"
     end
@@ -48,8 +80,10 @@ Rails.application.routes.draw do
 
   # We can't put browse-everything in the routing namespace, cause it breaks
   # browse-everything, alas. We'll still make it route as if it were, and
-  # have to add access control separate here to protect to just logged in users.
-  mount BrowseEverything::Engine => '/admin/browse'
+  # add a routing constraint to protect to just logged in users.
+  constraints LoggedInConstraint do
+    mount BrowseEverything::Engine => '/admin/browse'
+  end
 
 
   # Tell Rails polymorphic routing to assume :admin namespace for works,
