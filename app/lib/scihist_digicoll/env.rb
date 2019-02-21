@@ -25,6 +25,14 @@ module ScihistDigicoll
 
     define_key :aws_region, default: "us-east-1"
 
+    # where our web app is located, https://WHAT
+    define_key :web_hostname
+
+    # set in ENV LOGINS_DISABLED or local_env.yml, to globally
+    # prevent access to pages requiring authentication. May be useful
+    # for maintenance tasks.
+    define_key :logins_disabled, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
+
     define_key :s3_bucket_originals
     define_key :s3_bucket_derivatives
     define_key :s3_bucket_uploads

@@ -3,7 +3,7 @@ require 'rails_helper'
 # mostly we use feature tests, but some things can't easily be tested that way
 # Should this be a 'request' spec instead of a rspec 'controller' spec
 # (that is a rails 'functional' test)?
-RSpec.describe Admin::WorksController, type: :controller do
+RSpec.describe Admin::WorksController, :logged_in_user, type: :controller do
   context "#demote_to_asset" do
     context "work not suitable" do
       context "becuase it has no parent" do

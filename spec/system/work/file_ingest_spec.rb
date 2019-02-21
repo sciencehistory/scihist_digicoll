@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "ingest files to work", type: :system, js: true, queue_adapter: :test do
+RSpec.describe "ingest files to work", :logged_in_user, type: :system, js: true, queue_adapter: :test do
   let(:work) { FactoryBot.create(:work) }
 
   it "can add files" do

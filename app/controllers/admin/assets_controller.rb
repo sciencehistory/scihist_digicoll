@@ -28,6 +28,9 @@ class Admin::AssetsController < ApplicationController
 
   def destroy
     @asset = Asset.find_by_friendlier_id(params[:id])
+
+    authorize! :destroy, @asset
+
     work = @asset.parent
     @asset.destroy
     respond_to do |format|
