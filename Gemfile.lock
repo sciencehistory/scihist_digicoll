@@ -7,7 +7,7 @@ GIT
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: bf77264d778d6fac6ab863a1422f3f3976de79b9
+  revision: 01a18cc7763fa88d11755e9589d3df9ba8d512c4
   branch: master
   specs:
     kithe (0.1.0)
@@ -216,7 +216,7 @@ GEM
       signet (~> 0.7)
     hashery (2.1.2)
     honeybadger (4.1.0)
-    http (4.0.3)
+    http (4.0.5)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
       http-form_data (~> 2.0)
@@ -418,7 +418,7 @@ GEM
     selenium-webdriver (3.141.0)
       childprocess (~> 0.5)
       rubyzip (~> 1.2, >= 1.2.2)
-    shrine (2.14.0)
+    shrine (2.16.0)
       content_disposition (~> 1.0)
       down (~> 4.1)
     shrine-url (2.2.1)
