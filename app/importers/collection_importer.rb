@@ -39,6 +39,11 @@ class CollectionImporter < Importer
 
   def update_collection_members()
     return if metadata['members'].nil?
+
+    # Possible refactor:
+    # new_item.contain_ids = Kithe::Model.where(friendlier_id: metadata['members']).pluck(:id)
+    # new_item.save!
+
     metadata['members'].each do | work_id |
       member = Work.find_by_friendlier_id(work_id)
       if member.nil?

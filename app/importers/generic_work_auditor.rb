@@ -97,7 +97,8 @@ class GenericWorkAuditor < Auditor
       end
     end
     # format:
-    confirm(metadata['resource_type'].first.downcase == item.format.first, 'resource type / format')
+
+    confirm(metadata['resource_type'].collect{ |x| x.downcase.gsub(' ', '_')} == item.format, 'resource type / format')
 
   end
 
@@ -106,11 +107,9 @@ class GenericWorkAuditor < Auditor
   def check_child_info()
 
     return if metadata['child_ids'] == nil
-
     confirm(@item.members.pluck(:friendlier_id) == metadata['child_ids'], "members")
 
     the_id = @item.friendlier_id
-
     unless metadata['representative_id'].nil?
       confirm( @item.representative.friendlier_id == metadata['representative_id'], "representative")
     end
