@@ -2,7 +2,11 @@ class CollectionAuditor < Auditor
 
   # Checks specific to the imported class.
   def special_checks()
-    confirm(item.members.pluck(:friendlier_id) == metadata['child_ids'], "members")
+    if metadata['child_ids'].nil?
+      confirm(item.members == [], "members")
+    else
+      confirm(item.members.pluck(:friendlier_id) == metadata['child_ids'], "members")
+    end
   end
 
   def populate()
@@ -14,9 +18,6 @@ class CollectionAuditor < Auditor
     end
   end
 
-  def members()
-    target_item.members.map(&:id)
-  end
 
   def self.exportee()
     return Collection

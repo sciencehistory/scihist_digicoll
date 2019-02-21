@@ -192,11 +192,17 @@ class GenericWorkImporter < Importer
     @@progress_bar.log("INFO: linking parent Works with their member Works.")
     # Iterate through the ENTIRE has of parents and children.
     @@parent_to_child_hash.each_pair.each do | parent_id, child_ids |
+
+      # Possible refactor:
+      # parent.contains = Kithe::Model.where(friendlier_id: child_ids)
+      # parent.representative_id = @@representative_hash[parent.friendlier_id]
+      # parent.save!
+
       parent = Work.find_by_friendlier_id(parent_id)
       current_position = 0
       rep_fid = @@representative_hash[parent.friendlier_id]
 
-      # For each of the current parent's children...
+
       child_ids.each do |child_id|
         # This child could be a Work *or* an Asset, so look it up this way:
         child = Kithe::Model.find_by_friendlier_id(child_id)
