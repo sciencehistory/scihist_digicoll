@@ -51,6 +51,7 @@ class Importer
     @new_item = self.class.destination_class().new()
     # Apply the metadata from @metadata to the @new_item.
     populate()
+
     begin
       @new_item.save!
     rescue
@@ -65,17 +66,20 @@ class Importer
         @new_item.save!
       end
     end
+
+
+
     # Any tasks that need to be applied *after* save.
     # Typically these tasks involve associating the newly-created @new_item
     # with other items in the database.
     post_processing()
-    # Set the create date to the *original* create date from chf-sufia.
-    # We do not store the ingest date.
-    set_create_date()
+
+    
     @@progress_bar.increment
     unless errors == []
       report_via_progress_bar(errors)
     end
+
 
   end
 
@@ -169,9 +173,7 @@ class Importer
   # Set the create date on the item so it's the same as its corresponding item in
   # chf-sufia.
   def set_create_date()
-    return if metadata['date_uploaded'].nil?
-    new_item.created_at = Date.parse(metadata['date_uploaded'])
-    new_item.save!
+
   end
 
   # A shortcut method for logging any errors.
@@ -192,6 +194,9 @@ class Importer
   def populate()
     @new_item.friendlier_id = @metadata['id']
     @new_item.title = @metadata['title'].first
+    unless metadata['date_uploaded'].nil?
+      @new_item.created_at = Date.parse(metadata['date_uploaded'])
+    end
   end
 
   def report_via_progress_bar(msg)
