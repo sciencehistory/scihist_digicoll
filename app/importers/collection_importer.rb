@@ -50,7 +50,4 @@ class CollectionImporter < Importer
     end
   end
 
-  def how_long_to_sleep()
-    0
-  end
 end

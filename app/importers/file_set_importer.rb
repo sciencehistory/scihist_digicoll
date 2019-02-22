@@ -15,11 +15,6 @@ class FileSetImporter < Importer
 
   def initialize(path, options = {})
     super
-    if Rails.env.development?
-      @seconds_to_wait_after_importing = 0
-    else
-      @seconds_to_wait_after_importing = 0
-    end
   end
 
   # If we know the username and password for Fedora,
@@ -45,7 +40,6 @@ class FileSetImporter < Importer
     return false if preexisting_item.nil?
     if preexisting_item.sha1 == @metadata['sha_1']
       #puts "The checksums matched; ok to skip this item."
-      @seconds_to_wait_after_importing = 0
       return true
     end
     false
@@ -60,11 +54,6 @@ class FileSetImporter < Importer
     p_i.delete()
  end
 
-  # How many seconds this returns could depend on
-  # whether this item was already skipped; see ok_to_skip_this_item().
-  def how_long_to_sleep()
-    @seconds_to_wait_after_importing
-  end
 
   # Assets actually have minimal metadata, so this method basically
   # fetches the file from Fedora and (possibly) generates the derivatives.

@@ -59,8 +59,6 @@ namespace :scihist_digicoll do
         # and save it.
         # It does not take care of parent-child relationships.
         importer.save_item()
-        # These sleep intervals are currently set to zero.
-        sleep importer.how_long_to_sleep
       end
       # Each importer class defines a post-processing function
       # that is run only after all items in its class have
