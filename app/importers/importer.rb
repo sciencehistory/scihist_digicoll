@@ -41,16 +41,22 @@ class Importer
       @@progress_bar.increment
       return
     end
-    # If a stale item already exists in the system from a prior ingest,
-    # remove the stale item so it can be replaced.
-    remove_stale_item()
+
 
     # Make any adjustments to @metadata before it's applied to
     # to the new item.
     edit_metadata()
 
-    # Create the Asset, Work or Collection that we want to ingest.
-    @new_item = self.class.destination_class().new()
+
+    if preexisting_item.nil?
+      # Create the Asset, Work or Collection that we want to ingest.
+      @new_item = self.class.destination_class().new()
+    else
+      # If a stale item already exists in the system from a prior ingest,
+      # wipe the stale item so it can be updated
+      @new_item = wipe_stale_item()
+    end
+
 
     # Apply the metadata from @metadata to the @new_item.
     populate()
@@ -76,7 +82,7 @@ class Importer
     # with other items in the database.
     post_processing()
 
-    
+
     @@progress_bar.increment
     unless errors == []
       report_via_progress_bar(errors)
@@ -115,6 +121,8 @@ class Importer
     # There can be at most one such preexisting item
     # if we trust the uniqueness of the key.
     klass = self.class.destination_class
+
+    # TODO replace this by find_by_friendlier_id
     matches = klass.where(friendlier_id:@metadata['id'])
     matches == [] ? nil : matches.first
   end
@@ -163,6 +171,38 @@ class Importer
     p_i.delete
   end
 
+
+  def wipe_stale_item()
+    p_i = preexisting_item
+    return if p_i.nil?
+
+    # To avoid duplicates...
+    p_i.members.each do |child|
+      child.parent = nil
+      child.save!
+    end
+
+    (Kithe::Model.where representative_id: p_i.id).each do |r|
+      r.representative_id = nil
+      r.save!
+    end
+
+    (Kithe::Model.where leaf_representative_id: p_i.id).each do |r|
+      r.leaf_representative_id = nil
+      r.save!
+    end
+
+    p_i.contains = [] if p_i.is_a? Collection
+    p_i.contained_by = []
+
+    # and ordinary attributes too:
+
+    p_i.json_attributes = {}
+    things_to_wipe = p_i.attributes.keys - ['file_data']
+    things_to_wipe.each { | atttr | p_i.send("#{atttr}=", nil) }
+    return p_i
+  end
+
   # This is run after each item is saved.
   # Useful for associating the item with other already-ingested items,
   # or storing info about the item so it can be associated with
@@ -182,11 +222,6 @@ class Importer
   def errors()
     return [] if @new_item.nil?
     @new_item.errors.full_messages
-  end
-
-  #How many seconds to wait after importing this item
-  def how_long_to_sleep()
-    0
   end
 
   # Take the new item and add all metadata to it.
