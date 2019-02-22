@@ -44,11 +44,14 @@ class Importer
     # If a stale item already exists in the system from a prior ingest,
     # remove the stale item so it can be replaced.
     remove_stale_item()
+
     # Make any adjustments to @metadata before it's applied to
     # to the new item.
     edit_metadata()
+
     # Create the Asset, Work or Collection that we want to ingest.
     @new_item = self.class.destination_class().new()
+
     # Apply the metadata from @metadata to the @new_item.
     populate()
 
@@ -59,8 +62,7 @@ class Importer
         report_via_progress_bar("ERROR: bad date: #{metadata['dates']}")
         @new_item.date_of_work = []
         @new_item.save!
-      elsif
-        new_item.errors.first.first == :related_url
+      elsif (!@new_item.errors.first.nil?) && @new_item.errors.first.first == :related_url
         report_via_progress_bar("ERROR: bad related_url: #{metadata['related_url']}")
         new_item.related_url = []
         @new_item.save!
