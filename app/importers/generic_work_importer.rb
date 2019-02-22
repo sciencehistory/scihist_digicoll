@@ -201,16 +201,14 @@ class GenericWorkImporter < Importer
       parent = Work.find_by_friendlier_id(parent_id)
       current_position = 0
       rep_fid = @@representative_hash[parent.friendlier_id]
-
-
       child_ids.each do |child_id|
         # This child could be a Work *or* an Asset, so look it up this way:
         child = Kithe::Model.find_by_friendlier_id(child_id)
-
         # In theory, once you get to this point in the ingest, all the possible
         # Assets and child Works have already been ingested. But just to be sure...
         if child.nil?
-          raise StandardError,  "Unable to find child item #{child_id} for parent #{parent_id}"
+          @@progress_bar.log("ERROR: GenericWork  #{parent_id}: has nil child item.")
+          next
         end
 
         #Link the child and its parent.

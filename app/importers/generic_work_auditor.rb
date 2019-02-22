@@ -97,23 +97,17 @@ class GenericWorkAuditor < Auditor
       end
     end
     # format:
-
-    confirm(metadata['resource_type'].collect{ |x| x.downcase.gsub(' ', '_')} == item.format, 'resource type / format')
-
+    unless metadata['resource_type'].nil?
+      confirm(metadata['resource_type'].collect{ |x| x.downcase.gsub(' ', '_')} == item.format, 'resource type / format')
+    end
   end
 
-
-
   def check_child_info()
-
     return if metadata['child_ids'] == nil
-    confirm(@item.members.pluck(:friendlier_id) == metadata['child_ids'], "members")
-
-    the_id = @item.friendlier_id
+    confirm(@item.members.order(:position).pluck(:friendlier_id) == metadata['child_ids'], "members")
     unless metadata['representative_id'].nil?
       confirm( @item.representative.friendlier_id == metadata['representative_id'], "representative")
     end
-
   end
 
   def self.importee()
