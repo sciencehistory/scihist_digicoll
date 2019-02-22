@@ -1,11 +1,7 @@
 class CollectionImporter < Importer
-  def edit_hash(h)
-    h['members'] = members
-    h
-  end
 
   def edit_metadata()
-    # TODO Fix the description so it's a single value, not an array.
+    @metadata['description'] = @metadata['description'].first unless @metadata['description'].nil?
   end
 
   def populate()
@@ -15,10 +11,6 @@ class CollectionImporter < Importer
       next if v.nil? || v == []
       new_item.send("#{k}=", v)
     end
-  end
-
-  def members()
-    target_item.members.map(&:id)
   end
 
   def self.exportee()
