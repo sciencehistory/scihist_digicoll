@@ -29,6 +29,15 @@ class Auditor
   # Common checks for Assets, Files and Collections.
   def common_checks()
     confirm(metadata['id'] == item.friendlier_id, "friendlier_id")
+    unless metadata['date_uploaded'].nil?
+      if item.created_at.nil?
+        report_line("Missing create_date.")
+      else
+        # TODO: item.created at
+        # truncates the time, and adds EST timezone.
+        # confirm(item.created_at == Date.parse(metadata['date_uploaded']), "created_at")
+      end
+    end
   end
 
   def confirm(condition, report_string)
