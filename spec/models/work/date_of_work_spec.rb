@@ -2,6 +2,11 @@ require 'rails_helper'
 
 describe Work::DateOfWork, type: :model do
   context "validation" do
+    it "validates a good start and finish date" do
+      model = Work::DateOfWork.new(start: '1990-01-01', finish: "1991-01-01", finish_qualifier: "circa")
+      expect(model.valid?).to be(true)
+    end
+
     it "requires present start date if qualifier" do
       model = Work::DateOfWork.new(start_qualifier: 'after')
       expect(model.valid?).to be(false)
