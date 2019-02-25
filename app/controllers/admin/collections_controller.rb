@@ -65,7 +65,7 @@ class Admin::CollectionsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_collection
-      @collection = Collection.find_by_friendlier_id(params[:id])
+      @collection = Collection.find_by_friendlier_id!(params[:id])
     end
 
     # only allow whitelisted params through (TODO, we're allowing all collection params!)
