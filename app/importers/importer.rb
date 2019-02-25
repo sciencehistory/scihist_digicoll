@@ -6,6 +6,8 @@ require "byebug"
 # from the old chf-sufia repository.
 # This class is called from lib/tasks/import.rake ; more info about
 # how to run the task may be found at that file.
+
+# module Import
 class Importer
 
   # path is where to find the json import file for this item
@@ -76,7 +78,7 @@ class Importer
     # with other items in the database.
     post_processing()
 
-    
+
     @@progress_bar.increment
     unless errors == []
       report_via_progress_bar(errors)
@@ -239,3 +241,4 @@ class Importer
   end
 
 end
+# end

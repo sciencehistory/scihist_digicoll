@@ -1,3 +1,4 @@
+# module Import
 class GenericWorkImporter < Importer
 
   # These class variables store information about relationships between
@@ -26,18 +27,17 @@ class GenericWorkImporter < Importer
   def edit_metadata()
     if @metadata['resource_type'].nil?
       report_via_progress_bar("ERROR: no resource type / format given")
-    else 
+    else
       # Convert the resource_type / format strings to slugs:
       @metadata['resource_type'].map! {|x| x.downcase.gsub(' ', '_') }
     end
-    
     unless @metadata['dates'].nil?
       @metadata['dates'].each { |x| x['start_qualifier'].downcase!  unless ( x.nil? || x['start_qualifier'].nil?)}
       @metadata['dates'].each { |x| x['finish_qualifier'].downcase! unless ( x.nil? || x['finish_qualifier'].nil?) }
     end
   end
 
-  
+
   def populate()
     super
     empty_arrays()
@@ -241,3 +241,4 @@ class GenericWorkImporter < Importer
   end
 
 end
+# end

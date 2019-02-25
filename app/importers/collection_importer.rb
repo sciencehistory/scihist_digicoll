@@ -1,3 +1,4 @@
+# module Import
 class CollectionImporter < Importer
 
   def edit_metadata()
@@ -54,3 +55,4 @@ class CollectionImporter < Importer
     0
   end
 end
+# end
