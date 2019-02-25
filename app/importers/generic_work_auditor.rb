@@ -1,3 +1,4 @@
+# module Importers
 class GenericWorkAuditor < Auditor
   def special_checks()
     confirm(@item.type == "Work", "is a work")
@@ -160,6 +161,5 @@ class GenericWorkAuditor < Auditor
   def self.destination_class()
     return Work
   end
-
-
 end
+# end

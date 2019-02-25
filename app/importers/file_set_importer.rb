@@ -3,6 +3,7 @@ require "shrine/storage/file_system"
 require "down"
 require "byebug"
 
+# module Import
 class FileSetImporter < Importer
 
   # Load Fedora credentials (only once) into a
@@ -91,3 +92,4 @@ class FileSetImporter < Importer
     return Asset
   end
 end
+# end

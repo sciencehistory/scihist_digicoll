@@ -2,6 +2,7 @@ require "shrine"
 require "shrine/storage/file_system"
 require "down"
 require "byebug"
+#module Importers
 
 class FileSetAuditor < Auditor
 
@@ -24,3 +25,4 @@ class FileSetAuditor < Auditor
     return Asset
   end
 end
+# end
