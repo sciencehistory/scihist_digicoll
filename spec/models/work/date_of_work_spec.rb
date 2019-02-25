@@ -19,5 +19,11 @@ describe Work::DateOfWork, type: :model do
       expect(model.valid?).to be(false)
       expect(model.errors.find {|i| i == [:start,  "should be left blank if you specify 'undated'."]}).to be_present
     end
+
+    it "requires blank finish if undated start" do
+      model = Work::DateOfWork.new(start_qualifier: 'undated', finish: "1990-01-01")
+      expect(model.valid?).to be(false)
+      expect(model.errors.find {|i| i == [:finish,  "must be blank if 'undated'"]}).to be_present
+    end
   end
 end
