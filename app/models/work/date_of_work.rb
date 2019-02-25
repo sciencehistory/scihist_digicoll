@@ -11,7 +11,7 @@ class Work
       message: "must be of format YYYY[-MM-DD]",
       unless: Proc.new { |d| d.start_qualifier == 'undated' }
 
-    validates_format_of :start, with: /\A\z/,
+    validates_absence_of :start,
       message: "should be left blank if you specify 'undated'.",
       if: Proc.new { |d| d.start_qualifier == 'undated' }
 
