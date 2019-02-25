@@ -2,72 +2,112 @@ class GenericWorkAuditor < Auditor
   def special_checks()
     confirm(@item.type == "Work", "is a work")
     check_child_info()
-    check_array_attributes()
+    check_scalar_attributes
+    check_array_attributes
+    check_physical_container
+    check_creator
+    check_additional_credit
+    check_date
+    check_inscriptions
+    check_external_id
   end
 
   def check_physical_container()
-    return if metadata['physical_container'].nil?
+    if metadata['physical_container'].nil?
+      confirm(@item.physical_container == [], 'stray physical_container')
+      return
+    end
     map = {'b'=>'box', 'f'=>'folder', 'v'=>'volume',
       'p'=>'part', 'g'=>'page', 's'=>'shelfmark'}
     args = metadata['physical_container'].
       split('|').
       map{ |x| { map[x[0]] => x[1..-1] } }.
       inject(:merge)
-    new_item.build_physical_container(args)
+    confirm(item.physical_container.attributes == args, 'physical_container')
   end
 
   def check_creator()
     Work::Creator::CATEGORY_VALUES.each do |k|
-      next if metadata[k].nil?
-      metadata[k].each do |v|
-        new_item.build_creator({'category'=>k, 'value'=>v})
+      if metadata[k].nil?
+          found = (@item.creator.detect { |c| c.category == k } )
+          confirm(!found, k)
+      else
+        metadata[k].each do |val|
+          found = (@item.creator.detect { |c| c.category == k && c.value  ==  val } )
+          confirm(found, k)
+        end
       end
     end
   end
 
   def check_additional_credit()
+    if metadata['additional_credits'].nil?
+      confirm(@item.additional_credit == [], 'stray additional credits')
+      return
+    end
     role_map = {'photographer' => 'photographed_by'}
-    return if metadata['additional_credits'].nil?
     metadata['additional_credits'].each do |a_c|
       params = {
         'role' => role_map.fetch(a_c['role'], a_c['role']),
         'name' => a_c['name']
       }
-      new_item.build_additional_credit(params)
+      found = (@item.additional_credit.detect { |c| c.attributes == params } )
+      confirm(found, 'additional_credit')
+      confirm(@item.additional_credit.count == metadata['additional_credits'].count, 'additional credit count')
     end
   end
 
   def check_date()
-    return if metadata['dates'].nil?
-    metadata['dates'].each do |d|
-      new_item.build_date_of_work(d)
+    if metadata['dates'].nil?
+      confirm(@item.date_of_work.count == 0, 'stray date')
+      return
     end
+    metadata['dates'].each do |d|
+      found = (@item.date_of_work.detect { |wd| wd.attributes == d } )
+      confirm(found, 'date')
+    end
+    confirm(@item.date_of_work.count == metadata['dates'].count, 'date count')
   end
 
   def check_place()
     Work::Place::CATEGORY_VALUES.each do |k|
-      next if metadata[k].nil?
-      metadata[k].each do |v|
-        new_item.build_place({'category'=>k, 'value'=>v})
+      if metadata[k].nil?
+          found = (@item.place.detect { |p| p.attributes == {'category'=>k} } )
+          confirm(!found, "stray place: #{k}")
+      else
+        metadata[k].each do |v|
+          found = (@item.place.detect { |p| p.attributes == {'category'=>k, 'value'=>v} } )
+          confirm(found, 'place')
+        end
       end
     end
   end
 
   def check_inscriptions()
-    return if metadata['inscriptions'].nil?
+    if metadata['inscriptions'].nil?
+      confirm(@item.inscription.count == 0, 'stray inscriptions')
+      return
+    end
     metadata['inscriptions'].each do |ins|
       params = {
           'location' => ins['location'],
           'text'     => ins['text']
       }
-      new_item.build_inscription(params)
+      found = (@item.inscription.detect { |p| p.attributes == params } )
+      confirm(found, 'inscription')
     end
   end
 
   def check_external_id()
+    if metadata['identifier'].nil?
+      confirm(@item.external_id.count == 0, 'stray external_id')
+      return
+    end
     @metadata['identifier'].each do |x|
       category, value = x.split('-')
-      @new_item.build_external_id({'category' => category, 'value' => value})
+      params = {'category' => category, 'value' => value}
+      found = (@item.external_id.detect { |id| id.attributes == params } )
+      confirm(found, 'params')
     end
   end
 
@@ -80,7 +120,7 @@ class GenericWorkAuditor < Auditor
       next if @metadata[k].nil?
       v = metadata[k].class == String ? metadata[k] : metadata[k].first
       property_to_set = mapping.fetch(k, k)
-      @new_item.send("#{property_to_set}=", v)
+      confirm(@item.send(property_to_set) == v, property_to_set)
     end
   end
 
@@ -103,7 +143,10 @@ class GenericWorkAuditor < Auditor
   end
 
   def check_child_info()
-    return if metadata['child_ids'] == nil
+    if metadata['child_ids'].nil?
+      confirm(@item.members.count == 0, "stray members")
+      return
+    end
     confirm(@item.members.order(:position).pluck(:friendlier_id) == metadata['child_ids'], "members")
     unless metadata['representative_id'].nil?
       confirm( @item.representative.friendlier_id == metadata['representative_id'], "representative")
