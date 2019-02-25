@@ -27,7 +27,7 @@ class Admin::AssetsController < ApplicationController
   end
 
   def destroy
-    @asset = Asset.find_by_friendlier_id(params[:id])
+    @asset = Asset.find_by_friendlier_id!(params[:id])
 
     authorize! :destroy, @asset
 
@@ -40,14 +40,14 @@ class Admin::AssetsController < ApplicationController
   end
 
   def display_attach_form
-    @parent = Work.find_by_friendlier_id(params[:parent_id])
+    @parent = Work.find_by_friendlier_id!(params[:parent_id])
   end
 
   # Receives json hashes for direct uploaded files in params[:files],
   # and parent_id in params[:parent_id] (friendlier_id)
   # creates filesets for them and attach.
   def attach_files
-    @parent = Work.find_by_friendlier_id(params[:parent_id])
+    @parent = Work.find_by_friendlier_id!(params[:parent_id])
 
     current_position = @parent.members.maximum(:position) || 0
 
