@@ -34,20 +34,10 @@ class Importer
   def save_item()
     # Parse the metadata from a file into @metadata.
     read_from_file()
-    # Figure out if there's already an item in the DB
-    # that's fine for our purposes and doesn't need to be
-    # reingested. If so, it's fine to move on to
-    # the next item on our list.
-    if ok_to_skip_this_item
-      @@progress_bar.increment
-      return
-    end
-
 
     # Make any adjustments to @metadata before it's applied to
     # to the new item.
     edit_metadata()
-
 
     if preexisting_item.nil?
       # Create the Asset, Work or Collection that we want to ingest.
@@ -98,16 +88,6 @@ class Importer
     @metadata = JSON.parse(file)
   end
 
-  # Subclass this and return true for items that
-  # don't need to be imported for whatever reason.
-  # For now, we're skipping Assets if:
-  # a) an Asset alread exists with the same
-  # friendlier_id, and
-  # b) that asset contains a file with the same sha_1 hash.
-  def ok_to_skip_this_item()
-    false
-  end
-
   # Any initial adjustments to the metadata.
   # Not currently implemented in any subclasses;
   # we may not really need this method.
@@ -128,54 +108,10 @@ class Importer
     matches == [] ? nil : matches.first
   end
 
-  # Context: We plan on re-ingesting improved updated versions of Work and
-  # Collection metadata as we refine the import process. To reingest an item,
-  # you need to first delete the item already in place with the same #friendlier_id.
-
-  # However, by default, deleting a Work also deletes its child works
-  # and assets, and deleting a Collection also deletes all the contents of the collection.
-
-  # Instead, we:
-  # * Figure out if another preexisting_item was already ingested
-  # with the same friendlier_id as @new_item.
-  # * For all children of preexisting_item, be they Assets or Works, remove
-  # references to preexisting_item.
-  # * For any items for which preexisting_item might be listed as the representative,
-  # set the representative_id to null. (It will be re-added later).
-  # * Same process for leaf_representative.
-  # * preexisting_item is removed from any Collections it may be part of. Again,
-  # the association will be re-established later.)
-  # * Delete preexisting_item.
-
-  # This method is guaranteed to:
-  # a) not delete any items other than preexisting_item.
-  # b) not to run afoul of any postgres foreign-key constraints.
-  def remove_stale_item()
-    raise RuntimeError, "Assets should not be removed by this method." if preexisting_item.is_a? Asset
-    p_i = preexisting_item
-    return if p_i.nil?
-    p_i.members.each do |child|
-      child.parent = nil
-      child.save!
-    end
-    (Kithe::Model.where representative_id: p_i.id).each do |r|
-      r.representative_id = nil
-      r.save!
-    end
-    (Kithe::Model.where leaf_representative_id: p_i.id).each do |r|
-      r.leaf_representative_id = nil
-      r.save!
-    end
-
-    p_i.contains = [] if p_i.is_a? Collection
-    p_i.contained_by = []
-    p_i.delete
-  end
-
 
   def wipe_stale_item()
     p_i = preexisting_item
-    return if p_i.nil?
+    raise RuntimeError, "Can't wipe a nil item." if p_i.nil?
 
     # To avoid duplicates...
     p_i.members.each do |child|

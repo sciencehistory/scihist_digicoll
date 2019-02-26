@@ -61,14 +61,14 @@ namespace :scihist_digicoll do
       importer_class.file_paths.each do |path|
         # puts "Importing #{path}"
         importer = importer_class.new(path, progress_bar)
-        # save_item() creates a new item, and adds metadata to it,
+        # save_item() creates a new item, adds metadata to it,
         # and save it.
         # It does not take care of parent-child relationships.
         importer.save_item()
       end
       # Each importer class defines a post-processing function
       # that is run only after all items in its class have
-      # already been ingest. For instance, generic_work_importer
+      # already been ingested. For instance, generic_work_importer
       # subclasses class_post_processing with functionality that
       # links each Work with its child Works and Assets.
       importer_class.class_post_processing()
