@@ -1,6 +1,6 @@
 require "json"
 require "byebug"
-# module Importers
+module Import
 class Auditor
   # path is where to find the json import file for this item
   # metadata contains the metadata in the file
@@ -92,4 +92,4 @@ class Auditor
     "#{importee.downcase}s"
   end
 end
-# end
+end

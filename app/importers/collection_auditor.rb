@@ -1,5 +1,5 @@
-# module Importers
-class CollectionAuditor < Auditor
+module Import
+class Import::CollectionAuditor < Import::Auditor
   # Checks specific to the imported class.
   def special_checks()
 
@@ -36,4 +36,4 @@ class CollectionAuditor < Auditor
     return Collection
   end
 end # class
-# end
+end

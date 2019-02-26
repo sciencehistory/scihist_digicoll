@@ -1,5 +1,5 @@
-# module Importers
-class GenericWorkAuditor < Auditor
+module Import
+class Import::GenericWorkAuditor < Import::Auditor
   def special_checks()
     confirm(@item.type == "Work", "is a work")
     check_child_info()
@@ -18,7 +18,7 @@ class GenericWorkAuditor < Auditor
       confirm(@item.physical_container.nil?, 'stray physical_container')
       return
     end
-    if @item.physical_container.nil? 
+    if @item.physical_container.nil?
       report_line("Missing phyical_container.")
       return
     end
@@ -172,4 +172,4 @@ class GenericWorkAuditor < Auditor
     return Work
   end
 end
-# end
+end
