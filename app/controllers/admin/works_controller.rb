@@ -108,7 +108,7 @@ class Admin::WorksController < ApplicationController
         end
       end
     else # alphabetical
-      work = Work.find_by_friendlier_id(params[:id])
+      work = Work.find_by_friendlier_id!(params[:id])
       sorted_members = work.members.sort_by{ |member| member.title.downcase  }.to_a
       ActiveRecord::Base.transaction do
         sorted_members.each_with_index do |member, index|

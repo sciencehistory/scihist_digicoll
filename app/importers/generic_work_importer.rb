@@ -1,4 +1,5 @@
-class GenericWorkImporter < Importer
+module Import
+class Import::GenericWorkImporter < Import::Importer
 
   # These class variables store information about relationships between
   # items. They're populated in store_parent_info, and they are later used
@@ -196,8 +197,8 @@ class GenericWorkImporter < Importer
   # By the time this class method is called, ALL assets and works have been saved
   # to the DB and have their UUIDs ready.
   def self.link_children_and_parents()
-    @@progress_bar.log("INFO: linking parent Works with their member Works.")
-    # Iterate through the ENTIRE has of parents and children.
+    @@progress_bar.log("INFO: Connecting parent Works with their members.")
+    # Iterate through the ENTIRE hash of parents and children.
     @@parent_to_child_hash.each_pair.each do | parent_id, child_ids |
 
       # Possible refactor:
@@ -235,4 +236,5 @@ class GenericWorkImporter < Importer
     end # each parent
   end # method
 
+end
 end

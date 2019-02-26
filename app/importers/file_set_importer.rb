@@ -3,7 +3,8 @@ require "shrine/storage/file_system"
 require "down"
 require "byebug"
 
-class FileSetImporter < Importer
+module Import
+class FileSetImporter < Import::Importer
 
   # Load Fedora credentials (only once) into a
   # class variable, if we have them.
@@ -79,4 +80,5 @@ class FileSetImporter < Importer
   def self.destination_class()
     return Asset
   end
+end
 end
