@@ -47,10 +47,9 @@ class FileSetImporter < Import::Importer
     p_i.position= nil
     p_i.parent=nil
     p_i.title="_"
-
+    
     #important: return p_i
     return p_i
-
   end
 
   # The sha-1 hash on this asset says
@@ -77,10 +76,13 @@ class FileSetImporter < Import::Importer
       # or we can tell it to create derivatives inline:
       @new_item.file_attacher.set_promotion_directives(create_derivatives: "inline")
       # where to get the file from:
-      @new_item.file = { "id" => metadata['file_url'], "storage" => "remote_url"}
+
+      properties = { "id" => metadata['file_url'], "storage" => "remote_url" }
+      unless metadata['label'].nil?
+        properties['metadata'] = {'filename' => metadata['label'] }
+      end
+      @new_item.file = properties
     end
-    # set basic metadata
-    @new_item.file_data['filename'] = metadata['label'] unless @new_item.file_data.nil?
   end
 
   def self.importee()

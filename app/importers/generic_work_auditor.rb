@@ -160,7 +160,11 @@ class Import::GenericWorkAuditor < Import::Auditor
     end
     confirm(@item.members.order(:position).pluck(:friendlier_id) == metadata['child_ids'], "members")
     unless metadata['representative_id'].nil?
-      confirm( @item.representative.friendlier_id == metadata['representative_id'], "representative")
+      if @item.representative.nil?
+        report_line("missing representative")
+      else
+        confirm( @item.representative.friendlier_id == metadata['representative_id'], "representative")
+      end  
     end
   end
 
