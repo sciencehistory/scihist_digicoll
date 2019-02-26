@@ -7,7 +7,7 @@ require "byebug"
 # This class is called from lib/tasks/import.rake ; more info about
 # how to run the task may be found at that file.
 
-# module Import
+module Import
 class Importer
 
   # path is where to find the json import file for this item
@@ -16,7 +16,6 @@ class Importer
   attr_accessor :path, :metadata, :new_item, :progress_bar
 
   @@progress_bar = nil
-
 
   # Creates the importer and assigns the path to the json file
   # it's going to try to import.
@@ -241,4 +240,4 @@ class Importer
   end
 
 end
-# end
+end
