@@ -16,6 +16,7 @@ class FileSetImporter < Import::Importer
 
   def initialize(path, options = {})
     super
+    @need_file_and_derivatives = true
   end
 
   # If we know the username and password for Fedora,
@@ -30,47 +31,56 @@ class FileSetImporter < Import::Importer
     end
   end
 
-  # Ingesting Assets is by far the most expensive
-  # operation in the import sequence, since they need to be
-  # retrieved from Fedora and their derivatives need to be generated.
-  # This method figures out whetther this Asset has already been ingested.
-  # It looks up the preexisting_item based on its friendlier_id,
-  # then, if it exists, checks its sha1 hash against what Fedora
-  # reported for the original FileSet.
-  def ok_to_skip_this_item()
-    return false if preexisting_item.nil?
-    if preexisting_item.sha1 == @metadata['sha_1']
-      #puts "The checksums matched; ok to skip this item."
-      return true
+  def wipe_stale_item()
+    p_i = preexisting_item
+    raise RuntimeError, "Can't wipe a nil item." if p_i.nil?
+    if p_i.sha1 != @metadata['sha_1']
+      # This is already the default, but just in case...
+      @need_file_and_derivatives = true
+      # If the sha1 hash is different, then remove all file and derivative info.
+      wipe_file_and_derivatives(p_i)
+    else
+      #We're leaving the file and derivatives in place; no need to re-import them.
+      @need_file_and_derivatives = false
     end
-    false
+    # Wipe other stale metadata, regardless.
+    p_i.position= nil
+    p_i.parent=nil
+    p_i.title="_"
+
+    #important: return p_i
+    return p_i
+
   end
 
-  def remove_stale_item()
-    p_i = preexisting_item
-    return if p_i.nil?
-    the_work = Work.find_by_leaf_representative_id(p_i.id)
-    the_work.destroy() unless the_work.nil?
+  # The sha-1 hash on this asset says
+  # remove file info and derivatives:
+  def wipe_file_and_derivatives(p_i)
+    raise RuntimeError, "Can't wipe a nil item." if p_i.nil?
+    p_i.file.delete unless p_i.file.nil?
     p_i.derivatives.destroy_all
-    p_i.delete()
- end
-
+    p_i.file_data = {}
+  end
 
   # Assets actually have minimal metadata, so this method basically
   # fetches the file from Fedora and (possibly) generates the derivatives.
   def populate()
-    # Note: @new_item is an unsaved Asset
-    # This tells @new_item's shrine uploader to do promotion inline instead of
-    # kicking off a background job.
-    @new_item.file_attacher.set_promotion_directives(promote: "inline")
-    # Now the promotion is happening inline (not in a bg job), but the promotion will ordinarily
-    # kick off yet another job for derivatives creation.
-    # We can either tell it NOT to do derivatives creation at all.
-    @new_item.file_attacher.set_promotion_directives(create_derivatives: false)
-    # or we can tell it to create derivatives inline:
-    #@new_item.file_attacher.set_promotion_directives(create_derivatives: "inline")
-    @new_item.file = { "id" => metadata['file_url'], "storage" => "remote_url"}
     super
+    if @need_file_and_derivatives
+      # This tells @new_item's shrine uploader to do promotion inline instead of
+      # kicking off a background job.
+      @new_item.file_attacher.set_promotion_directives(promote: "inline")
+      # Now the promotion is happening inline (not in a bg job), but the promotion will ordinarily
+      # kick off yet another job for derivatives creation.
+      # We can either tell it NOT to do derivatives creation at all.
+      # @new_item.file_attacher.set_promotion_directives(create_derivatives: false)
+      # or we can tell it to create derivatives inline:
+      @new_item.file_attacher.set_promotion_directives(create_derivatives: "inline")
+      # where to get the file from:
+      @new_item.file = { "id" => metadata['file_url'], "storage" => "remote_url"}
+    end
+    # set basic metadata
+    @new_item.file_data['filename'] = metadata['label']
   end
 
   def self.importee()
