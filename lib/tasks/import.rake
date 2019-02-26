@@ -27,6 +27,12 @@ namespace :scihist_digicoll do
   """
 
   task :import => :environment do
+
+    require Rails.root.join('app', 'importers', 'importer.rb')
+    require Rails.root.join('app', 'importers', 'file_set_importer.rb')
+    require Rails.root.join('app', 'importers', 'generic_work_importer.rb')
+    require Rails.root.join('app', 'importers', 'collection_importer.rb')
+
     import_dir = Rails.root.join('tmp', 'import')
     # Import all the Assets, then all the Works,
     # and finally all the Collections.
@@ -36,21 +42,21 @@ namespace :scihist_digicoll do
     #Total number of tasks: ingest each file
     # and then do post-processing for each of the 3 file types.
 
-    total_tasks = FileSetImporter.file_paths.count
+    total_tasks = Import::FileSetImporter.file_paths.count
     # Generic works increment the progress bar twice.
-    total_tasks += GenericWorkImporter.file_paths.count * 2
-    total_tasks += CollectionImporter.file_paths.count
+    total_tasks += Import::GenericWorkImporter.file_paths.count * 2
+    total_tasks += Import::CollectionImporter.file_paths.count
 
 
     progress_bar = ProgressBar.create(total: total_tasks, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
 
     %w(FileSet GenericWork Collection).each do |s|
-      importer_class = "#{s}Importer".constantize
+      importer_class = "Import::#{s}Importer".constantize
       importee_class = importer_class.importee
       # For all the JSON files of a particular type,
       # instantiate an importer for that file and
       # perform the import.
-      progress_bar.log("INFO: Gathering #{s} files.")
+      progress_bar.log("INFO: Importing #{s}s.")
 
       importer_class.file_paths.each do |path|
         # puts "Importing #{path}"
@@ -70,14 +76,18 @@ namespace :scihist_digicoll do
     end # exporters.each
   end # task
 
-
-
   task :audit_import => :environment do
+
+    require Rails.root.join('app', 'importers', 'auditor.rb')
+    require Rails.root.join('app', 'importers', 'file_set_auditor.rb')
+    require Rails.root.join('app', 'importers', 'generic_work_auditor.rb')
+    require Rails.root.join('app', 'importers', 'collection_auditor.rb')
+
     import_dir = Rails.root.join('tmp', 'import')
     report_file = File.new("report.txt", "w")
     %w(FileSet GenericWork Collection).each do |s|
-      puts "Loading #{s} file paths"
-      auditor_class = "#{s}Auditor".constantize
+      puts "Auditing #{s}s"
+      auditor_class = "Import::#{s}Auditor".constantize
       importee_class = auditor_class.importee
       auditor_class.file_paths.each do |path|
         auditor = auditor_class.new(path, report_file)
