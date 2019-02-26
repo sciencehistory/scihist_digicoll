@@ -135,7 +135,7 @@ class Importer
     # and ordinary attributes too:
 
     p_i.json_attributes = {}
-    things_to_wipe = p_i.attributes.keys - ['file_data']
+    things_to_wipe = p_i.attributes.keys - ['file_data', 'id', 'type', 'updated_at']
     things_to_wipe.each { | atttr | p_i.send("#{atttr}=", nil) }
     return p_i
   end

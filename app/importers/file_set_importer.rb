@@ -80,7 +80,7 @@ class FileSetImporter < Import::Importer
       @new_item.file = { "id" => metadata['file_url'], "storage" => "remote_url"}
     end
     # set basic metadata
-    @new_item.file_data['filename'] = metadata['label']
+    @new_item.file_data['filename'] = metadata['label'] unless @new_item.file_data.nil?
   end
 
   def self.importee()
