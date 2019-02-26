@@ -14,8 +14,12 @@ class GenericWorkAuditor < Auditor
   end
 
   def check_physical_container()
-    if metadata['physical_container'].nil?
-      confirm(@item.physical_container == [], 'stray physical_container')
+    if metadata['physical_container'].nil? || metadata['physical_container'] == ""
+      confirm(@item.physical_container.nil?, 'stray physical_container')
+      return
+    end
+    if @item.physical_container.nil? 
+      report_line("Missing phyical_container.")
       return
     end
     map = {'b'=>'box', 'f'=>'folder', 'v'=>'volume',
@@ -24,7 +28,7 @@ class GenericWorkAuditor < Auditor
       split('|').
       map{ |x| { map[x[0]] => x[1..-1] } }.
       inject(:merge)
-    confirm(item.physical_container.attributes == args, 'physical_container')
+    confirm(@item.physical_container.attributes == args, 'physical_container')
   end
 
   def check_creator()
@@ -63,11 +67,17 @@ class GenericWorkAuditor < Auditor
       confirm(@item.date_of_work.count == 0, 'stray date')
       return
     end
+    unless @item.date_of_work.count == metadata['dates'].count
+      report_line('date count')
+      return
+    end
     metadata['dates'].each do |d|
+      d['start_qualifier'].downcase!  unless d['start_qualifier'].nil?
+      d['finish_qualifier'].downcase! unless d['finish_qualifier'].nil?
       found = (@item.date_of_work.detect { |wd| wd.attributes == d } )
+      byebug unless @item.date_of_work.detect { |wd| wd.attributes == d }
       confirm(found, 'date')
     end
-    confirm(@item.date_of_work.count == metadata['dates'].count, 'date count')
   end
 
   def check_place()

@@ -72,8 +72,6 @@ namespace :scihist_digicoll do
     end # exporters.each
   end # task
 
-
-
   task :audit_import => :environment do
     import_dir = Rails.root.join('tmp', 'import')
     report_file = File.new("report.txt", "w")
