@@ -52,7 +52,6 @@ namespace :scihist_digicoll do
 
     %w(FileSet GenericWork Collection).each do |s|
       importer_class = "Import::#{s}Importer".constantize
-      importee_class = importer_class.importee
       # For all the JSON files of a particular type,
       # instantiate an importer for that file and
       # perform the import.
@@ -76,6 +75,28 @@ namespace :scihist_digicoll do
     end # exporters.each
   end # task
 
+  task :import_one => :environment do
+    require Rails.root.join('app', 'importers', 'importer.rb')
+    require Rails.root.join('app', 'importers', 'file_set_importer.rb')
+    require Rails.root.join('app', 'importers', 'generic_work_importer.rb')
+    require Rails.root.join('app', 'importers', 'collection_importer.rb')
+    import_dir = Rails.root.join('tmp', 'import')
+    progress_bar = ProgressBar.create(total: 1, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
+    the_item = Kithe::Asset.find_by_friendlier_id(ENV['THE_ITEM'])
+    classes_to_use = {
+      'Asset'      => Import::FileSetImporter,
+      'Work'       => Import::GenericWorkImporter,
+      'Collection' => Import::CollectionImporter
+    }
+    importer_class = classes_to_use[the_item.class.name]
+    importer_class.file_paths.each do |path|
+      next unless path.include? the_item.friendlier_id
+      importer = importer_class.new(path, progress_bar)
+      importer.save_item()
+    end
+    puts 'WARNING: This is just for testing. Please run a full import to reconnect this item to its containers / containees.'
+  end 
+  
   task :audit_import => :environment do
 
     require Rails.root.join('app', 'importers', 'auditor.rb')
@@ -88,7 +109,6 @@ namespace :scihist_digicoll do
     %w(FileSet GenericWork Collection).each do |s|
       puts "Auditing #{s}s"
       auditor_class = "Import::#{s}Auditor".constantize
-      importee_class = auditor_class.importee
       auditor_class.file_paths.each do |path|
         auditor = auditor_class.new(path, report_file)
         auditor.check_item()

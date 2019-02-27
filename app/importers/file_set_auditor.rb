@@ -9,10 +9,10 @@ class Import::FileSetAuditor < Import::Auditor
   # Checks specific to the imported class.
   def special_checks()
     confirm(@item.sha1 == @metadata['sha_1'], "sha_1")
-    confirm(@item.title == @metadata['title'].first, "title")
-    confirm(@item.file_data['filename'] == @metadata['label'], 'file data filename') unless @item.file_data.nil?
+    confirm(@item.title == @metadata["title_for_export"], 'title')
+    confirm(@item.file.metadata['filename'] == @metadata['filename_for_export'], 'file data filename') unless @item.file.nil?
   end
-  
+
   def self.importee()
     return 'FileSet'
   end
