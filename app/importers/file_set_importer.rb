@@ -77,12 +77,17 @@ class FileSetImporter < Import::Importer
       @new_item.file_attacher.set_promotion_directives(create_derivatives: "inline")
       # where to get the file from:
 
+      # file properties
       properties = { "id" => metadata['file_url'], "storage" => "remote_url" }
-      unless metadata['label'].nil?
-        properties['metadata'] = {'filename' => metadata['label'] }
-      end
       @new_item.file = properties
+      # end file properties
     end
+
+    # This gets executed even if the file's checksum is correct:
+    unless @new_item.file.nil? || @new_item.file.metadata.nil?
+       @new_item.file.metadata['filename'] = metadata['filename_for_export']
+    end
+    @new_item.title = metadata["title_for_export"]
   end
 
   def self.importee()
