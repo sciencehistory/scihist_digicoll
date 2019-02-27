@@ -66,3 +66,24 @@ We deploy to AWS, the deployment is done _mostly_ automatically by some ansible 
 
 There is some additional manual setup for S3 buckets:
 * https://chemheritage.atlassian.net/wiki/spaces/HDCSD/pages/516784129/S3+Bucket+Setup+and+Architecture
+
+## Rake tasks
+
+We shouldn't have to use the rake tasks as much, since there is now admin web interface for creating and editing accounts. But they are still there, as they can be convenient for setting up a dev environment or perhaps bootstrapping a production environment with an admin account, or in general automating things involving users.
+
+```shell
+./bin/rake scihist:user:create[someone@example.com]
+./bin/rake scihist:user:send_password_reset[someone@example.com]
+./bin/rake scihist:user:test:create[someone@example.com,password]
+./bin/rake scihist:user:admin:grant[someone@example.com]
+./bin/rake scihist:user:admin:revoke[someone@example.com]
+./bin/rake scihist:user:admin:list
+```
+
+## Global lock-out
+
+Set `logins_disabled: true` in `./config/local_env.yml`, or somehow set a shell env variable `LOGINS_DISABLED=true` -- then restart the app to pick up the changes. Now the app won't let anyone at all log in, and won't let anyone already logged in access protected screens.
+
+This can be useful if we need to do some maintenance that doesn't bring down the public interface, but we want to keep staff out while it goes on, so they can't edit things.
+
+This feature was in our v1 sufia-based app, we copied it over.
