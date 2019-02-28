@@ -82,18 +82,14 @@ namespace :scihist_digicoll do
     require Rails.root.join('app', 'importers', 'collection_importer.rb')
     import_dir = Rails.root.join('tmp', 'import')
     progress_bar = ProgressBar.create(total: 1, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
-    the_item = Kithe::Asset.find_by_friendlier_id(ENV['THE_ITEM'])
-    classes_to_use = {
-      'Asset'      => Import::FileSetImporter,
-      'Work'       => Import::GenericWorkImporter,
-      'Collection' => Import::CollectionImporter
-    }
-    importer_class = classes_to_use[the_item.class.name]
-    importer_class.file_paths.each do |path|
-      next unless path.include? the_item.friendlier_id
-      importer = importer_class.new(path, progress_bar)
-      importer.save_item()
-    end
+    %w(FileSet GenericWork Collection).each do |s|
+      importer_class = "Import::#{s}Importer".constantize
+      importer_class.file_paths.each do |path|
+        next unless path.include? ENV['THE_ITEM']
+        importer = importer_class.new(path, progress_bar)
+        importer.save_item()
+      end
+    end # exporters.each
     puts 'WARNING: This is just for testing. Please run a full import to reconnect this item to its containers / containees.'
   end 
   
