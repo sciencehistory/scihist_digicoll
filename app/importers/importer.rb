@@ -8,7 +8,7 @@ require "byebug"
 # how to run the task may be found at that file.
 
 module Import
-class Importer
+class Import::Importer
 
   # path is where to find the json import file for this item
   # metadata will contain the item's metadata once that json file is parsed
@@ -65,8 +65,6 @@ class Importer
         @new_item.save!
       end
     end
-
-
 
     # Any tasks that need to be applied *after* save.
     # Typically these tasks involve associating the newly-created @new_item

@@ -2,9 +2,6 @@ require "json"
 require "byebug"
 module Import
 class Auditor
-  # path is where to find the json import file for this item
-  # metadata contains the metadata in the file
-  # item contains the corresponding item from the database
 
   attr_reader :path, :metadata, :item, :report_file
 
@@ -42,13 +39,10 @@ class Auditor
     report_line(report_string) unless condition
   end
 
-
-  # Checks specific to the imported class.
   def special_checks()
     raise NotImplementedError
   end
 
-  # Add a line to the report.
   def report_line(str)
     @file.puts("#{@item.type} #{@item.friendlier_id}: #{str}")
   end
@@ -64,18 +58,14 @@ class Auditor
     @item = (matches == [] ? nil : matches.first)
   end
 
-
-  # the old importee class name, as a string, e.g. 'FileSet'
   def self.importee()
     raise NotImplementedError
   end
 
-  # the new importee class, e.g. Asset
   def self.destination_class()
     raise NotImplementedError
   end
 
-  # An array of paths to all the files that this class can import
   def self.file_paths()
      files = Dir.entries(dir).select{|x| x.end_with? ".json"}
      files.map{|x| File.join(dir,x)}
@@ -85,7 +75,6 @@ class Auditor
     Rails.root.join('tmp', 'import', dirname)
   end
 
-  #The names of the directory where this sort of item's json files can be found.
   def self.dirname()
     "#{importee.downcase}s"
   end
