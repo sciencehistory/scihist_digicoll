@@ -1,5 +1,5 @@
 module Import
-class CollectionImporter < Import::Importer
+class Import::CollectionImporter < Import::Importer
 
   def edit_metadata()
     @metadata['description'] = @metadata['description'].first unless @metadata['description'].nil?
