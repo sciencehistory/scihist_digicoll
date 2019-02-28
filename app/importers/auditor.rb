@@ -33,9 +33,7 @@ class Auditor
       if item.created_at.nil?
         report_line("Missing create_date.")
       else
-        # TODO: item.created at
-        # truncates the time, and adds EST timezone.
-        # confirm(item.created_at == Date.parse(metadata['date_uploaded']), "created_at")
+        confirm(item.created_at == DateTime.parse(metadata['date_uploaded']), "created_at")
       end
     end
   end

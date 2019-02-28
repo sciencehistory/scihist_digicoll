@@ -148,12 +148,6 @@ class Importer
   def post_processing()
   end
 
-  # Set the create date on the item so it's the same as its corresponding item in
-  # chf-sufia.
-  def set_create_date()
-
-  end
-
   # A shortcut method for logging any errors.
   def errors()
     return [] if @new_item.nil?
@@ -168,7 +162,7 @@ class Importer
     @new_item.friendlier_id = @metadata['id']
     @new_item.title = @metadata['title'].first
     unless metadata['date_uploaded'].nil?
-      @new_item.created_at = Date.parse(metadata['date_uploaded'])
+      @new_item.created_at = DateTime.parse(metadata['date_uploaded'])
     end
   end
 
