@@ -4,7 +4,7 @@ require "down"
 require "byebug"
 
 module Import
-class FileSetImporter < Import::Importer
+class Import::FileSetImporter < Import::Importer
 
   # Load Fedora credentials (only once) into a
   # class variable, if we have them.
@@ -47,7 +47,7 @@ class FileSetImporter < Import::Importer
     p_i.position= nil
     p_i.parent=nil
     p_i.title="_"
-    
+
     #important: return p_i
     return p_i
   end

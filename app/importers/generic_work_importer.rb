@@ -174,14 +174,8 @@ class Import::GenericWorkImporter < Import::Importer
     # processed later in the ingest by link_children_and_parents.
     # Note that this method is called once per item,
     # while link_children_and_parents is called once per ingest.
-
     the_id = @new_item.friendlier_id
-
     @@parent_to_child_hash[the_id] = metadata['child_ids'] || []
-
-    # If you don't have child items, you won't have a representative.
-    return if metadata['child_ids'] == nil
-
     unless metadata['representative_id'].nil?
       @@representative_hash[the_id] = metadata['representative_id']
     end
@@ -197,6 +191,7 @@ class Import::GenericWorkImporter < Import::Importer
   # By the time this class method is called, ALL assets and works have been saved
   # to the DB and have their UUIDs ready.
   def self.link_children_and_parents()
+
     @@progress_bar.log("INFO: Connecting parent Works with their members.")
     # Iterate through the ENTIRE hash of parents and children.
     @@parent_to_child_hash.each_pair.each do | parent_id, child_ids |
