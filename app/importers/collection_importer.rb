@@ -77,11 +77,8 @@ class Import::CollectionImporter < Import::Importer
         next
       end
       new_item.contains << member
-      new_item.save!
-      # TODO we haven't actually done anything to member
-      # so probably no need to save it.
-      member.save!
     end
+    new_item.save!
   end
 
 end

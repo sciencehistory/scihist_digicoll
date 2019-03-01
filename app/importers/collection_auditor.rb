@@ -3,10 +3,10 @@ class Import::CollectionAuditor < Import::Auditor
   # Checks specific to the imported class.
   def special_checks()
 
-    if metadata['child_ids'].nil?
-      confirm(item.members == [], "members")
+    if metadata['members'].nil?
+      confirm(item.contains == [], "members should be empty")
     else
-      confirm(item.members.pluck(:friendlier_id) == metadata['child_ids'], "members")
+      confirm(item.contains.pluck(:friendlier_id) == metadata['members'], "members")
     end
 
     v = metadata['description']
