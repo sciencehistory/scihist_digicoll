@@ -35,8 +35,6 @@ namespace :scihist_digicoll do
   """
 
   task :import => :environment do
-
-
     import_dir = Rails.root.join('tmp', 'import')
     # Import all the Assets, then all the Works,
     # and finally all the Collections.
@@ -54,9 +52,7 @@ namespace :scihist_digicoll do
     if total_tasks == 0
       abort ("No files found to import in #{import_dir}")
     end
-
     progress_bar = ProgressBar.create(total: total_tasks, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
-
     %w(FileSet GenericWork Collection).each do |s|
       importer_class = "Import::#{s}Importer".constantize
       # For all the JSON files of a particular type,
