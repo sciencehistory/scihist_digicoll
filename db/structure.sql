@@ -111,6 +111,52 @@ CREATE TABLE ar_internal_metadata (
 
 
 --
+-- Name: digitization_queue_items; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE digitization_queue_items (
+    id bigint NOT NULL,
+    title character varying,
+    collecting_area character varying,
+    bib_number character varying,
+    location character varying,
+    accession_number character varying,
+    museum_object_id character varying,
+    box character varying,
+    folder character varying,
+    dimensions character varying,
+    materials character varying,
+    scope text,
+    instructions text,
+    additional_notes text,
+    copyright_status character varying,
+    status character varying DEFAULT 'awaiting_dig_on_cart'::character varying,
+    status_changed_at timestamp without time zone,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: digitization_queue_items_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE digitization_queue_items_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: digitization_queue_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE digitization_queue_items_id_seq OWNED BY digitization_queue_items.id;
+
+
+--
 -- Name: kithe_derivatives; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -221,6 +267,13 @@ ALTER SEQUENCE users_id_seq OWNED BY users.id;
 
 
 --
+-- Name: digitization_queue_items id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY digitization_queue_items ALTER COLUMN id SET DEFAULT nextval('digitization_queue_items_id_seq'::regclass);
+
+
+--
 -- Name: kithe_derivatives id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -240,6 +293,14 @@ ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regcl
 
 ALTER TABLE ONLY ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: digitization_queue_items digitization_queue_items_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY digitization_queue_items
+    ADD CONSTRAINT digitization_queue_items_pkey PRIMARY KEY (id);
 
 
 --
@@ -415,6 +476,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190107222521'),
 ('20190109000356'),
 ('20190110154359'),
-('20190219225344');
+('20190219225344'),
+('20190226135744');
 
 

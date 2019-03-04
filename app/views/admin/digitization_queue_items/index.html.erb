@@ -1,0 +1,90 @@
+<h1>Digitization Queue: <%= collecting_area.humanize %></h1>
+
+<p>
+<%= link_to 'New Queue Item', new_admin_digitization_queue_items_path(collecting_area), class: "btn btn-primary" %>
+</p>
+
+<div class="my-2">
+  <%= simple_form_for(:query, url: admin_digitization_queue_item_path(collecting_area), method: :get) do |f| %>
+    <div class="row form-group">
+      <div class="col-sm-10">
+        <small class="text-muted">Title, or ID (bib, accession, or object)</small>
+      </div>
+      <div class="input-group col-sm-10">
+        <div class="input-group-prepend">
+          <%= f.label :q, "Search", class: "input-group-text" %>
+        </div>
+        <%= f.search_field :q, class: "form-control", value: params.dig(:query, :q) %>
+        <div class="input-group-append">
+          <%= f.button :submit, value: "Go", class: "btn btn-primary" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="row form-group">
+      <div class="input-group col-sm-10">
+        <div class="input-group-prepend">
+          <%= f.label :status, "Status", class: "input-group-text" %>
+        </div>
+
+        <%= f.select :status,
+            options_for_select(
+              Admin::DigitizationQueueItem::STATUSES.collect {|s| [s.humanize, s]},
+              params.dig(:query, :status)
+            ),
+            {include_blank: "Any"},
+            {
+              class: "custom-select",
+              onchange: "this.form.submit()"
+            }
+        %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+
+<div class="table-responsive">
+<table class="table">
+  <thead>
+    <tr>
+      <th></th>
+      <th>title</th>
+      <th>IDs</th>
+      <th>status</th>
+      <th>created at</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @admin_digitization_queue_items.each do |admin_digitization_queue_item| %>
+      <tr>
+        <td>
+          <%= link_to 'Edit', edit_admin_digitization_queue_item_path(admin_digitization_queue_item), class: "btn btn-sm btn-primary" %>
+        </td>
+        <td><%= admin_digitization_queue_item.title %></td>
+        <td><%= [admin_digitization_queue_item.bib_number, admin_digitization_queue_item.accession_number, admin_digitization_queue_item.museum_object_id].collect(&:presence).compact.join(", ") %>  </td>
+        <td>
+          <%= simple_form_for(admin_digitization_queue_item, data: {remote: true}) do |f| %>
+            <div class="form-row">
+              <div class="col">
+                <%= f.input :status,
+                    label: false,
+                    hint: false,
+                    collection: Admin::DigitizationQueueItem::STATUSES.collect {|s| [s.humanize, s]},
+                    include_blank: false %>
+              </div>
+              <div class="col">
+                <%= f.button :submit, value: "Save", class: "btn-sm", data: { "disable-with": "saving" } %>
+              </div>
+            </div>
+          <% end %>
+        </td>
+        <td><%= l(admin_digitization_queue_item.created_at, format: :admin) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+</div>
+
+
