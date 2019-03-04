@@ -28,8 +28,8 @@ class Admin::DigitizationQueueItemsController < ApplicationController
 
     respond_to do |format|
       if @admin_digitization_queue_item.save
-        format.html { redirect_to @admin_digitization_queue_item, notice: 'Digitization queue item was successfully created.' }
-        format.json { render :show, status: :created, location: @admin_digitization_queue_item }
+        format.html { redirect_to admin_digitization_queue_items_url(@admin_digitization_queue_item.collecting_area), notice: 'Digitization queue item was successfully created.' }
+        format.json { render :show, status: :created, location: admin_digitization_queue_items_url(@admin_digitization_queue_item.collecting_area) }
       else
         format.html { render :new }
         format.json { render json: @admin_digitization_queue_item.errors, status: :unprocessable_entity }
