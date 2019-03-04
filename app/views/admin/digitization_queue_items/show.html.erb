@@ -1,5 +1,5 @@
 <div class="mb-4">
-  <div>Digitization Queue</div>
+  <div>Digitization Queue: <%= link_to @admin_digitization_queue_item.collecting_area.humanize, admin_digitization_queue_items_url(@admin_digitization_queue_item.collecting_area) %></div>
   <h1><%= @admin_digitization_queue_item.title %></h1>
 </div>
 
@@ -59,14 +59,14 @@
 
     <% @admin_digitization_queue_item.queue_item_comments.includes(:user).order(created_at: :desc).each do |comment| %>
       <div>
-        <div class="card queue-comment mb-3 d-inline-flex">
+        <div class="card queue-comment mb-3 d-inline-flex <% if comment.system_action? %>text-white bg-info<% end %>">
           <div class="card-header">
             <% if comment.user %>
               <%= comment.user&.name || comment.user&.email %>,
             <% end %>
             <%= time_ago_in_words comment.created_at %> ago
           </div>
-          <div class="card-body">
+          <div class="card-body pb-0">
             <%= simple_format(comment.text) %>
           </div>
         </div>
