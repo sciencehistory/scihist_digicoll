@@ -11,4 +11,10 @@ class Admin::DigitizationQueueItem < ApplicationRecord
   validates :status, inclusion: { in: STATUSES }
 
   validates :title, presence: true
+
+  before_validation do
+    if self.will_save_change_to_status? || (!self.persisted? && self.status_changed_at.blank?)
+      self.status_changed_at = Time.now
+    end
+  end
 end
