@@ -6,7 +6,8 @@
 <dl>
   <%= queue_item_show_field(@admin_digitization_queue_item, :title) %>
 
-  <%= queue_item_show_field(@admin_digitization_queue_item, :collecting_area, humanize_value: true) %>
+  <dt>Collecting area</dt>
+  <dd><%= link_to @admin_digitization_queue_item.collecting_area.humanize, admin_digitization_queue_items_url(@admin_digitization_queue_item.collecting_area) %></dd>
 
   <dt>Created at</dt>
   <dd>
