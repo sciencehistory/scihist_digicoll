@@ -1,5 +1,5 @@
 class Admin::DigitizationQueueItem < ApplicationRecord
-  has_many :queue_item_comments
+  has_many :queue_item_comments, dependent: :destroy
 
   # collecting areas could have been normalized as a separate table, but
   # not really needed, we'll just leave it as a controlled string.
