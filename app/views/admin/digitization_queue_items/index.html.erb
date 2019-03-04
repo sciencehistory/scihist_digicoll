@@ -28,10 +28,7 @@
         </div>
 
         <%= f.select :status,
-            options_for_select(
-              Admin::DigitizationQueueItem::STATUSES.collect {|s| [s.humanize, s]},
-              params.dig(:query, :status)
-            ),
+            status_filter_options,
             {include_blank: "Any"},
             {
               class: "custom-select",

@@ -89,9 +89,34 @@ class Admin::DigitizationQueueItemsController < ApplicationController
       end
 
       if (status = params.dig(:query, :status)).present?
-        scope = scope.where(status: status)
+        status = status.downcase
+        if status == "open"
+          scope = scope.where.not(status: "closed")
+        else
+          scope = scope.where(status: status)
+        end
       end
 
       scope.page(params[:page]).per(100)
     end
+
+    # hacky helper to give us select menu options for status filter
+    def status_filter_options
+      helpers.grouped_options_for_select(
+        { "open/closed" => ["Open", "Closed"],
+          "status" =>  Admin::DigitizationQueueItem::STATUSES.
+            find_all {|s| s != "closed" }.
+            collect {|s| [s.humanize, s]}
+        },
+        params.dig(:query, :status)
+      )
+
+      # helpers.options_for_select(
+      #   Admin::DigitizationQueueItem::STATUSES.
+      #     find_all {|s| s != "closed" }.
+      #     collect {|s| [s.humanize, s]},
+      #   params.dig(:query, :status)
+      # )
+    end
+    helper_method :status_filter_options
 end
