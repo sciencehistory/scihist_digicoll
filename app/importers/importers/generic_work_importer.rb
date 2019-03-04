@@ -1,5 +1,5 @@
-module Import
-class Import::GenericWorkImporter < Import::Importer
+module Importers
+class Importers::GenericWorkImporter < Importers::Importer
 
   # These class variables store information about relationships between
   # items. They're populated in store_parent_info, and they are later used

@@ -7,7 +7,7 @@ class ProgressBarStub
   end
 end
 
-class FileSetImporter
+class Importers::FileSetImporter
   def initialize()
     @@progress_bar = ProgressBarStub.new()
   end
@@ -19,7 +19,7 @@ class FileSetImporter
   end
 end
 
-RSpec.describe FileSetImporter do
+RSpec.describe Importers::FileSetImporter do
   context "Import fileset" do
     context "simple fileset" do
       let(:file_set_importer) { FactoryBot.create(:file_set_importer)}

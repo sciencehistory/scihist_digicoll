@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :generic_work_importer, class: GenericWorkImporter do
+  factory :generic_work_importer, class: Importers::GenericWorkImporter do
     skip_create
     metadata {
       {

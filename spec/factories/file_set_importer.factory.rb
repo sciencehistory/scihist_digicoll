@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :file_set_importer, class: FileSetImporter do
+  factory :file_set_importer, class: Importers::FileSetImporter do
     skip_create
     metadata {
       {

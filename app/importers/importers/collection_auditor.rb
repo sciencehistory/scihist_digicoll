@@ -1,5 +1,5 @@
-module Import
-class Import::CollectionAuditor < Import::Auditor
+module Importers
+class Importers::CollectionAuditor < Importers::Auditor
   # Checks specific to the imported class.
   def special_checks()
 

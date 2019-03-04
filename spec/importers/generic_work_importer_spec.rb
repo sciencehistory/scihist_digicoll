@@ -13,7 +13,7 @@ class GenericWorkImporter
   end
 end
 
-RSpec.describe GenericWorkImporter do
+RSpec.describe Importers::GenericWorkImporter do
   context "Import work" do
     context "simple work" do
       let(:generic_work_importer) { FactoryBot.create(:generic_work_importer)}
