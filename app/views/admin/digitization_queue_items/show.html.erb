@@ -4,22 +4,36 @@
 </p>
 
 <dl>
-  <dt>title</dt>
-  <dd><%= @admin_digitization_queue_item.title %></dd>
+  <%= queue_item_show_field(@admin_digitization_queue_item, :title) %>
 
-  <dt>status</dt>
-  <dd><%= @admin_digitization_queue_item.status.humanize %></dd>
+  <%= queue_item_show_field(@admin_digitization_queue_item, :collecting_area, humanize_value: true) %>
 
-  <dt>title</dt>
-  <dd><%= @admin_digitization_queue_item.title %></dd>
+  <dt>Created at</dt>
+  <dd>
+    <%= l @admin_digitization_queue_item.created_at, format: :admin %>
+  </dd>
 
-  <dt>title</dt>
-  <dd><%= @admin_digitization_queue_item.title %></dd>
 
-  <dt>title</dt>
-  <dd><%= @admin_digitization_queue_item.title %></dd>
+  <dt>Status</dt>
+  <dd>
+    <%= @admin_digitization_queue_item.status.humanize %> (<%= l @admin_digitization_queue_item.status_changed_at, format: :admin %>)
+  </dd>
 
-  <dt>title</dt>
-  <dd><%= @admin_digitization_queue_item.title %></dd>
+
+  <%= queue_item_show_field(@admin_digitization_queue_item, :bib_number) %>
+  <%= queue_item_show_field(@admin_digitization_queue_item, :location) %>
+  <%= queue_item_show_field(@admin_digitization_queue_item, :accession_number) %>
+  <%= queue_item_show_field(@admin_digitization_queue_item, :museum_object_id) %>
+  <%= queue_item_show_field(@admin_digitization_queue_item, :box) %>
+  <%= queue_item_show_field(@admin_digitization_queue_item, :folder) %>
+
+  <%= queue_item_show_field(@admin_digitization_queue_item, :dimensions) %>
+  <%= queue_item_show_field(@admin_digitization_queue_item, :materials) %>
+
+
+  <%= queue_item_show_field(@admin_digitization_queue_item, :scope, paragraphs: true) %>
+  <%= queue_item_show_field(@admin_digitization_queue_item, :instructions, paragraphs: true) %>
+  <%= queue_item_show_field(@admin_digitization_queue_item, :additional_notes, paragraphs: true) %>
+  <%= queue_item_show_field(@admin_digitization_queue_item, :copyright_status, paragraphs: true) %>
 
 </dl>
