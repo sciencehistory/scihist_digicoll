@@ -92,6 +92,6 @@ class Admin::DigitizationQueueItemsController < ApplicationController
         scope = scope.where(status: status)
       end
 
-      scope
+      scope.page(params[:page]).per(100)
     end
 end
