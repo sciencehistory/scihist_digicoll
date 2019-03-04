@@ -62,7 +62,7 @@
         <td>
           <%= link_to 'Edit', edit_admin_digitization_queue_item_path(admin_digitization_queue_item), class: "btn btn-sm btn-primary" %>
         </td>
-        <td><%= admin_digitization_queue_item.title %></td>
+        <td><%= link_to admin_digitization_queue_item.title, admin_digitization_queue_item_path(admin_digitization_queue_item) %></td>
         <td><%= [admin_digitization_queue_item.bib_number, admin_digitization_queue_item.accession_number, admin_digitization_queue_item.museum_object_id].collect(&:presence).compact.join(", ") %>  </td>
         <td>
           <%= simple_form_for(admin_digitization_queue_item, data: {remote: true}) do |f| %>
