@@ -1,12 +1,3 @@
-require Rails.root.join('app', 'importers', 'importer.rb')
-require Rails.root.join('app', 'importers', 'file_set_importer.rb')
-require Rails.root.join('app', 'importers', 'generic_work_importer.rb')
-require Rails.root.join('app', 'importers', 'collection_importer.rb')
-require Rails.root.join('app', 'importers', 'auditor.rb')
-require Rails.root.join('app', 'importers', 'file_set_auditor.rb')
-require Rails.root.join('app', 'importers', 'generic_work_auditor.rb')
-require Rails.root.join('app', 'importers', 'collection_auditor.rb')
-
 namespace :scihist_digicoll do
   desc """Import all JSON import files present in /tmp/import.
   To generate the JSON import files, see instructions in lib/tasks/export.rake
@@ -44,17 +35,17 @@ namespace :scihist_digicoll do
     #Total number of tasks: ingest each file
     # and then do post-processing for each of the 3 file types.
 
-    total_tasks = Import::FileSetImporter.file_paths.count
+    total_tasks = Importers::FileSetImporter.file_paths.count
     # Generic works increment the progress bar twice.
-    total_tasks += Import::GenericWorkImporter.file_paths.count * 2
-    total_tasks += Import::CollectionImporter.file_paths.count
+    total_tasks += Importers::GenericWorkImporter.file_paths.count * 2
+    total_tasks += Importers::CollectionImporter.file_paths.count
 
     if total_tasks == 0
       abort ("No files found to import in #{import_dir}")
     end
     progress_bar = ProgressBar.create(total: total_tasks, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
     %w(FileSet GenericWork Collection).each do |s|
-      importer_class = "Import::#{s}Importer".constantize
+      importer_class = "Importers::#{s}Importer".constantize
       # For all the JSON files of a particular type,
       # instantiate an importer for that file and
       # perform the import.
@@ -81,7 +72,7 @@ namespace :scihist_digicoll do
     import_dir = Rails.root.join('tmp', 'import')
     progress_bar = ProgressBar.create(total: 1, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
     %w(FileSet GenericWork Collection).each do |s|
-      importer_class = "Import::#{s}Importer".constantize
+      importer_class = "Importers::#{s}Importer".constantize
       importer_class.file_paths.each do |path|
         next unless path.include? ENV['THE_ITEM']
         importer = importer_class.new(path, progress_bar)
@@ -93,16 +84,16 @@ namespace :scihist_digicoll do
 
   task :audit_import => :environment do
 
-    total_tasks = Import::FileSetImporter.file_paths.count
-    total_tasks += Import::GenericWorkImporter.file_paths.count
-    total_tasks += Import::CollectionImporter.file_paths.count
+    total_tasks = Importers::FileSetImporter.file_paths.count
+    total_tasks += Importers::GenericWorkImporter.file_paths.count
+    total_tasks += Importers::CollectionImporter.file_paths.count
     progress_bar = ProgressBar.create(total: total_tasks, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
 
     import_dir = Rails.root.join('tmp', 'import')
     report_file = File.new("report.txt", "w")
     %w(FileSet GenericWork Collection).each do |s|
       progress_bar.log("INFO: Auditing #{s}s")
-      auditor_class = "Import::#{s}Auditor".constantize
+      auditor_class = "Importers::#{s}Auditor".constantize
       auditor_class.file_paths.each do |path|
         auditor = auditor_class.new(path, report_file)
         auditor.check_item()

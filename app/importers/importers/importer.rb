@@ -7,8 +7,8 @@ require "byebug"
 # This class is called from lib/tasks/import.rake ; more info about
 # how to run the task may be found at that file.
 
-module Import
-class Import::Importer
+module Importers
+class Importer
 
   # path is where to find the json import file for this item
   # metadata will contain the item's metadata once that json file is parsed

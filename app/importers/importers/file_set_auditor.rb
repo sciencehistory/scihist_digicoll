@@ -2,9 +2,9 @@ require "shrine"
 require "shrine/storage/file_system"
 require "down"
 require "byebug"
-module Import
+module Importers
 
-class Import::FileSetAuditor < Import::Auditor
+class Importers::FileSetAuditor < Importers::Auditor
 
   # Checks specific to the imported class.
   def special_checks()

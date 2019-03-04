@@ -1,6 +1,6 @@
 require "json"
 require "byebug"
-module Import
+module Importers
 class Auditor
 
   attr_reader :path, :metadata, :item, :report_file

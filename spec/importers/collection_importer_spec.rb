@@ -7,13 +7,13 @@ class ProgressBarStub
   end
 end
 
-class Importer
+class Importers::Importer
   def initialize()
     @@progress_bar = ProgressBarStub.new()
   end
 end
 
-RSpec.describe CollectionImporter do
+RSpec.describe Importers::CollectionImporter do
   context "Import collection" do
     context "simple collection" do
       let(:collection_importer) { FactoryBot.create(:collection_importer)}

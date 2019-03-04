@@ -1,5 +1,5 @@
-module Import
-class Import::GenericWorkAuditor < Import::Auditor
+module Importers
+class Importers::GenericWorkAuditor < Importers::Auditor
   def special_checks()
     confirm(@item.type == "Work", "is a work")
     check_child_info()
@@ -164,7 +164,7 @@ class Import::GenericWorkAuditor < Import::Auditor
         report_line("missing representative")
       else
         confirm( @item.representative.friendlier_id == metadata['representative_id'], "representative")
-      end  
+      end
     end
   end
 

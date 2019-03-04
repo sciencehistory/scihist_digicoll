@@ -1,5 +1,5 @@
-module Import
-class Import::CollectionImporter < Import::Importer
+module Importers
+class CollectionImporter < Importers::Importer
 
   def edit_metadata()
     @metadata['description'] = @metadata['description'].first unless @metadata['description'].nil?
@@ -30,7 +30,7 @@ class Import::CollectionImporter < Import::Importer
   def post_processing()
     update_collection_members()
   end
-  
+
   def create_or_update_thumbnail()
     return if metadata['representative_image_path'].nil?
     thumb = find_thumbnail() || CollectionThumbAsset.new()
@@ -62,10 +62,10 @@ class Import::CollectionImporter < Import::Importer
     return nil unless  File.exists? path
     path.to_s
   end
-  
+
   def update_collection_members()
     return if metadata['members'].nil?
-    
+
     # Possible refactor:
     # new_item.contain_ids = Kithe::Model.where(friendlier_id: metadata['members']).pluck(:id)
     # new_item.save!

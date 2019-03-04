@@ -3,8 +3,8 @@ require "shrine/storage/file_system"
 require "down"
 require "byebug"
 
-module Import
-class Import::FileSetImporter < Import::Importer
+module Importers
+class Importers::FileSetImporter < Importers::Importer
 
   # Load Fedora credentials (only once) into a
   # class variable, if we have them.
