@@ -41,7 +41,7 @@ class Admin::DigitizationQueueItemsController < ApplicationController
   # PATCH/PUT /admin/digitization_queue_items/1.json
   def update
     respond_to do |format|
-      if @admin_digitization_queue_item.update(admin_digitization_queue_item_params)
+      if update_with_action_comments(@admin_digitization_queue_item, admin_digitization_queue_item_params)
         format.html { redirect_to @admin_digitization_queue_item, notice: 'Digitization queue item was successfully updated.' }
         format.json { render text: "Something" }
       else
@@ -132,4 +132,22 @@ class Admin::DigitizationQueueItemsController < ApplicationController
       # )
     end
     helper_method :status_filter_options
+
+    # one way to make sure after we save a queue item, it gets a comment
+    # recorded for status changes,in the same transaction, without using
+    # AR callbacks (and so we have access to current_user)
+    #
+    # with_action_comments do
+    #    save_a_queue_item
+    # end
+    def update_with_action_comments(queue_item, params)
+      result = nil
+      queue_item.class.transaction do
+        result = queue_item.update(params)
+        if result && queue_item.saved_change_to_status?
+          queue_item.queue_item_comments.create!(system_action: true, user: current_user, text: "marked: #{queue_item.status.humanize.downcase}")
+        end
+      end
+      result
+    end
 end
