@@ -1,5 +1,5 @@
 class Admin::DigitizationQueueItemsController < ApplicationController
-  before_action :set_admin_digitization_queue_item, only: [:show, :edit, :update, :destroy]
+  before_action :set_admin_digitization_queue_item, only: [:show, :edit, :update, :destroy, :add_comment]
 
   # GET /admin/digitization_queue_items
   # GET /admin/digitization_queue_items.json
@@ -65,6 +65,19 @@ class Admin::DigitizationQueueItemsController < ApplicationController
     @admin_digitization_queue_item.try(:collecting_area) || params.fetch(:collecting_area)
   end
   helper_method :collecting_area
+
+  # POST /admin/digitization_queue_item/1/add_comment
+  def add_comment
+    if params["comment"].present?
+      Admin::QueueItemComment.create!(
+        user: current_user,
+        digitization_queue_item: @admin_digitization_queue_item,
+        text: params["comment"]
+      )
+    end
+
+    redirect_to @admin_digitization_queue_item
+  end
 
   private
     # Use callbacks to share common setup or constraints between actions.
