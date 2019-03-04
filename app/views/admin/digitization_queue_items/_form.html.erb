@@ -1,0 +1,92 @@
+<%= simple_form_for(@admin_digitization_queue_item) do |f| %>
+  <% if @admin_digitization_queue_item.errors.any? %>
+
+    <div class="kithe-form-errors-top alert alert-danger mb-4" role="alert"">
+      <h2 class="h4" class="alert-heading"><%= pluralize(@admin_digitization_queue_item.errors.count, "error") %> prohibited this work from being saved</h2>
+      <ol class="mb-0">
+        <% @admin_digitization_queue_item.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ol>
+    </div>
+  <% end %>
+
+
+  <div class="form-inputs">
+    <% if ["new", "create"].include?(params[:action].to_s) %>
+      <%= f.hidden_field :collecting_area, value: collecting_area %>
+    <% end %>
+
+    <%= f.input :title, hint: "or Object Name/Description" %>
+
+    <div class="row">
+      <div class="col-6">
+        <%= f.input :status,
+          label: "Digitization Queue Status",
+          collection: Admin::DigitizationQueueItem::STATUSES.collect {|s| [s.humanize, s]},
+          include_blank: false %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :accession_number %>
+      </div>
+      <div class="col">
+        <%= f.input :museum_object_id, label: "Object ID (Past Perfect)" %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :bib_number, hint: "if applicable" %>
+      </div>
+      <div class="col">
+        <%= f.input :location, hint: "Call number, Home Location, etc." %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :box %>
+      </div>
+      <div class="col">
+        <%= f.input :folder %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :dimensions %>
+      </div>
+      <div class="col">
+        <%= f.input :materials %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :scope, hint: "Pages, Components, etc." %>
+      </div>
+      <div class="col">
+        <%= f.input :instructions, hint: "Staging notes, handling instructions, etc." %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :copyright_status, as: :text %>
+      </div>
+      <div class="col">
+        <%= f.input :additional_notes %>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <%= link_to "Cancel", admin_digitization_queue_items_path(collecting_area), class: "btn btn-outline-primary" %>
+    <%= f.button :submit %>
+  </div>
+
+</div>
+<% end %>
