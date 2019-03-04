@@ -43,48 +43,55 @@
   <% end %>
 </div>
 
+<% if @admin_digitization_queue_items.total_count > 0 %>
+  <p>
+    <%= @admin_digitization_queue_items.offset_value + 1 %> - <%= @admin_digitization_queue_items.offset_value + @admin_digitization_queue_items.count %> of <%= @admin_digitization_queue_items.total_count %>
+  </p>
+<% end %>
+
 
 <div class="table-responsive">
-<table class="table">
-  <thead>
-    <tr>
-      <th></th>
-      <th>title</th>
-      <th>IDs</th>
-      <th>status</th>
-      <th>status changed</th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @admin_digitization_queue_items.each do |admin_digitization_queue_item| %>
+  <table class="table">
+    <thead>
       <tr>
-        <td>
-          <%= link_to 'Edit', edit_admin_digitization_queue_item_path(admin_digitization_queue_item), class: "btn btn-sm btn-primary" %>
-        </td>
-        <td><%= link_to admin_digitization_queue_item.title, admin_digitization_queue_item_path(admin_digitization_queue_item) %></td>
-        <td><%= [admin_digitization_queue_item.bib_number, admin_digitization_queue_item.accession_number, admin_digitization_queue_item.museum_object_id].collect(&:presence).compact.join(", ") %>  </td>
-        <td>
-          <%= simple_form_for(admin_digitization_queue_item, data: {remote: true}) do |f| %>
-            <div class="form-row">
-              <div class="col">
-                <%= f.input :status,
-                    label: false,
-                    hint: false,
-                    collection: Admin::DigitizationQueueItem::STATUSES.collect {|s| [s.humanize, s]},
-                    include_blank: false %>
-              </div>
-              <div class="col">
-                <%= f.button :submit, value: "Save", class: "btn-sm", data: { "disable-with": "saving" } %>
-              </div>
-            </div>
-          <% end %>
-        </td>
-        <td><%= l(admin_digitization_queue_item.status_changed_at, format: :admin) %></td>
+        <th></th>
+        <th>title</th>
+        <th>IDs</th>
+        <th>status</th>
+        <th>status changed</th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+
+    <tbody>
+      <% @admin_digitization_queue_items.each do |admin_digitization_queue_item| %>
+        <tr>
+          <td>
+            <%= link_to 'Edit', edit_admin_digitization_queue_item_path(admin_digitization_queue_item), class: "btn btn-sm btn-primary" %>
+          </td>
+          <td><%= link_to admin_digitization_queue_item.title, admin_digitization_queue_item_path(admin_digitization_queue_item) %></td>
+          <td><%= [admin_digitization_queue_item.bib_number, admin_digitization_queue_item.accession_number, admin_digitization_queue_item.museum_object_id].collect(&:presence).compact.join(", ") %>  </td>
+          <td>
+            <%= simple_form_for(admin_digitization_queue_item, data: {remote: true}) do |f| %>
+              <div class="form-row">
+                <div class="col">
+                  <%= f.input :status,
+                      label: false,
+                      hint: false,
+                      collection: Admin::DigitizationQueueItem::STATUSES.collect {|s| [s.humanize, s]},
+                      include_blank: false %>
+                </div>
+                <div class="col">
+                  <%= f.button :submit, value: "Save", class: "btn-sm", data: { "disable-with": "saving" } %>
+                </div>
+              </div>
+            <% end %>
+          </td>
+          <td><%= l(admin_digitization_queue_item.status_changed_at, format: :admin) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 </div>
 
+<%= paginate @admin_digitization_queue_items, theme: 'twitter-bootstrap-4' %>
 
