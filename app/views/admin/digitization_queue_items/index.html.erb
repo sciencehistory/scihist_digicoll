@@ -52,7 +52,7 @@
       <th>title</th>
       <th>IDs</th>
       <th>status</th>
-      <th>created at</th>
+      <th>status changed</th>
     </tr>
   </thead>
 
@@ -80,7 +80,7 @@
             </div>
           <% end %>
         </td>
-        <td><%= l(admin_digitization_queue_item.created_at, format: :admin) %></td>
+        <td><%= l(admin_digitization_queue_item.status_changed_at, format: :admin) %></td>
       </tr>
     <% end %>
   </tbody>
