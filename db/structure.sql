@@ -220,6 +220,40 @@ CREATE TABLE kithe_models (
 
 
 --
+-- Name: queue_item_comments; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE queue_item_comments (
+    id bigint NOT NULL,
+    digitization_queue_item_id bigint NOT NULL,
+    user_id bigint,
+    text text,
+    system_action boolean,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: queue_item_comments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE queue_item_comments_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: queue_item_comments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE queue_item_comments_id_seq OWNED BY queue_item_comments.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -281,6 +315,13 @@ ALTER TABLE ONLY kithe_derivatives ALTER COLUMN id SET DEFAULT nextval('kithe_de
 
 
 --
+-- Name: queue_item_comments id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY queue_item_comments ALTER COLUMN id SET DEFAULT nextval('queue_item_comments_id_seq'::regclass);
+
+
+--
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -317,6 +358,14 @@ ALTER TABLE ONLY kithe_derivatives
 
 ALTER TABLE ONLY kithe_models
     ADD CONSTRAINT kithe_models_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: queue_item_comments queue_item_comments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY queue_item_comments
+    ADD CONSTRAINT queue_item_comments_pkey PRIMARY KEY (id);
 
 
 --
@@ -392,6 +441,20 @@ CREATE INDEX index_kithe_models_on_representative_id ON kithe_models USING btree
 
 
 --
+-- Name: index_queue_item_comments_on_digitization_queue_item_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_queue_item_comments_on_digitization_queue_item_id ON queue_item_comments USING btree (digitization_queue_item_id);
+
+
+--
+-- Name: index_queue_item_comments_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_queue_item_comments_on_user_id ON queue_item_comments USING btree (user_id);
+
+
+--
 -- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -461,6 +524,14 @@ ALTER TABLE ONLY kithe_models
 
 
 --
+-- Name: queue_item_comments fk_rails_faa45a6d5b; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY queue_item_comments
+    ADD CONSTRAINT fk_rails_faa45a6d5b FOREIGN KEY (digitization_queue_item_id) REFERENCES digitization_queue_items(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -477,6 +548,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190109000356'),
 ('20190110154359'),
 ('20190219225344'),
-('20190226135744');
+('20190226135744'),
+('20190304201533');
 
 

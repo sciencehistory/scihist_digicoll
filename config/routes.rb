@@ -88,6 +88,9 @@ Rails.application.routes.draw do
           get ":collecting_area/new", to: "digitization_queue_items#new", as: "new"
         end
       end
+      member do
+        post :add_comment
+      end
     end
 
     mount Resque::Server, at: '/queues'
