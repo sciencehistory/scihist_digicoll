@@ -76,7 +76,7 @@ class Admin::CollectionsController < ApplicationController
     def collection_params
       params.
         require(:collection).
-        permit(:title, :description, :representative_attributes => {}, :related_url_attributes => []).tap do |hash|
+        permit(:title, :description, :published, :representative_attributes => {}, :related_url_attributes => []).tap do |hash|
           # sanitize description
           if hash[:description].present?
             hash[:description] = DescriptionSanitizer.new.sanitize(hash[:description])
