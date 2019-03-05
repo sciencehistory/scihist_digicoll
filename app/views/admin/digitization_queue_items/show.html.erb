@@ -66,7 +66,7 @@
       <div id="attachedWorks" class="collapse" aria-labelledby="attachedHeading">
         <ul class="list-unstyled card-body">
           <% @admin_digitization_queue_item.works.order(updated_at: :desc).each do |work| %>
-            <li><%= link_to work.title, admin_work_path(work) %></li>
+            <li><%= link_to work.title, admin_work_path(work) %> <%= publication_badge(work) %></li>
           <% end %>
         </ul>
       </div>
