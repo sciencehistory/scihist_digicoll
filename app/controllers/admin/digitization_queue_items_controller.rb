@@ -107,27 +107,31 @@ class Admin::DigitizationQueueItemsController < ApplicationController
         scope = scope.where("title like ? OR bib_number = ? or accession_number = ? OR museum_object_id = ?", "%#{q}%", q, q, q)
       end
 
-      if (status = params.dig(:query, :status)).present?
-        status = status.downcase
-        if status == "open"
-          scope = scope.open_status
-        else
-          scope = scope.where(status: status)
-        end
+      status = params.dig(:query, :status)
+      if status == "ANY"
+        # no-op, no filter
+      elsif status.blank? # default, "open"
+        scope = scope.open_status
+      else
+        scope = scope.where(status: status)
       end
+
 
       scope.page(params[:page]).per(100)
     end
 
     # hacky helper to give us select menu options for status filter
+    #
+    # The 'nil' option is actually 'closed', that we want to be default
     def status_filter_options
+      helpers.options_for_select([["Any", "ANY"]], params.dig(:query, :status)) +
       helpers.grouped_options_for_select(
-        { "open/closed" => ["Open", "Closed"],
+        { "open/closed" => [["Open", ""], ["Closed", "closed"]],
           "status" =>  Admin::DigitizationQueueItem::STATUSES.
             find_all {|s| s != "closed" }.
             collect {|s| [s.humanize, s]}
         },
-        params.dig(:query, :status)
+        params.dig(:query, :status) || ""
       )
 
       # helpers.options_for_select(

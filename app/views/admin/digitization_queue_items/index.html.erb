@@ -29,7 +29,7 @@
 
         <%= f.select :status,
             status_filter_options,
-            {include_blank: "Any"},
+            { selected: "closed"},
             {
               class: "custom-select",
               onchange: "this.form.submit()"
