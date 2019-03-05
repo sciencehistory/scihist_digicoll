@@ -42,7 +42,11 @@
     </div>
   <% end %>
 
-
+    <% if bib_id = @work.external_id.find {|eid| eid.category == "bib" }.try(:value) %>
+      <p>
+        <%= link_to "OPAC link (#{bib_id})", ScihistDigicoll::Util.opac_url(bib_id), target: "_blank" %>
+      </p>
+    <% end %>
 
   <div class="form-inputs">
     <%= f.input :title %>
