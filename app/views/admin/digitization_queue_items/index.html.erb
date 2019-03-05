@@ -48,14 +48,14 @@
 
 
 <div class="table-responsive">
-  <table class="table">
+  <table class="table" style="table-layout: fixed">
     <thead>
       <tr>
-        <th></th>
+        <th style="width: 4em;"></th>
         <th>title</th>
-        <th>IDs</th>
-        <th>status</th>
-        <th>status changed</th>
+        <th style="width: 8em;">IDs</th>
+        <th style="width: 11em;">status</th>
+        <th style="width: 8em;">status changed</th>
       </tr>
     </thead>
 
@@ -69,21 +69,18 @@
           <td><%= [admin_digitization_queue_item.bib_number, admin_digitization_queue_item.accession_number, admin_digitization_queue_item.museum_object_id].collect(&:presence).compact.join(", ") %>  </td>
           <td>
             <%= simple_form_for(admin_digitization_queue_item, data: {remote: true}) do |f| %>
-              <div class="form-row">
-                <div class="col">
-                  <%= f.input :status,
-                      label: false,
-                      hint: false,
-                      collection: Admin::DigitizationQueueItem::STATUSES.collect {|s| [s.humanize, s]},
-                      include_blank: false %>
-                </div>
-                <div class="col">
-                  <%= f.button :submit, value: "Save", class: "btn-sm", data: { "disable-with": "saving" } %>
+              <div class="input-group input-group-sm flex-nowrap">
+                <%= f.collection_select :status,
+                      Admin::DigitizationQueueItem::STATUSES.collect {|s| [s.humanize, s]}, :second, :first, {},
+                      class: "form-control custom-select"
+                %>
+                <div class="input-group-append">
+                  <%= f.button :submit, value: "Save", class: "btn", data: { "disable-with": "saving" } %>
                 </div>
               </div>
             <% end %>
           </td>
-          <td><%= l(admin_digitization_queue_item.status_changed_at, format: :admin) %></td>
+          <td><%= l(admin_digitization_queue_item.status_changed_at.to_date, format: :admin) %></td>
         </tr>
       <% end %>
     </tbody>
