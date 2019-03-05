@@ -28,7 +28,9 @@
 
   <div class="form-inputs">
     <%= f.input :title %>
-    <%= f.input :published %>
+    <% if can? :publish, @asset %>
+      <%= f.input :published %>
+    <% end %>
   </div>
 <% end %>
 
