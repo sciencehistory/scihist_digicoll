@@ -57,4 +57,29 @@ class Work < Kithe::Work
     super(arr)
   end
 
+  # With one pg recursive CTE find _all_ descendent members, through
+  # multiple levels.
+  #
+  # TODO: Move to kithe? Make more general, a class method that takes
+  # IDs?
+  def all_descendent_members
+    raise TypeError.new("can only call on a persisted object") unless persisted? && id.present?
+
+    sql = <<~EOS
+      id IN (WITH RECURSIVE tree AS (
+        SELECT id, ARRAY[]::UUID[] AS ancestors
+        FROM kithe_models WHERE id = '#{self.id}'
+
+        UNION ALL
+
+        SELECT kithe_models.id, tree.ancestors || kithe_models.parent_id
+        FROM kithe_models, tree
+        WHERE kithe_models.parent_id = tree.id
+      ) SELECT id FROM tree WHERE id != '#{self.id}')
+    EOS
+
+
+    Kithe::Model.where(sql)
+  end
+
 end

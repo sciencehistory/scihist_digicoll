@@ -59,6 +59,7 @@ class Work
       'Personal correspondence',
       'Pesticides',
       'Photographs',
+      'Photomechanical prints',
       'Plastics',
       'Portraits',
       'Postage stamps',
