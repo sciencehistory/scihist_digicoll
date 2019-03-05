@@ -215,7 +215,8 @@ CREATE TABLE kithe_models (
     friendlier_id character varying DEFAULT kithe_models_friendlier_id_gen('2176782336'::bigint, '78364164095'::bigint) NOT NULL,
     file_data jsonb,
     representative_id uuid,
-    leaf_representative_id uuid
+    leaf_representative_id uuid,
+    digitization_queue_item_id bigint
 );
 
 
@@ -484,6 +485,14 @@ ALTER TABLE ONLY kithe_model_contains
 
 
 --
+-- Name: kithe_models fk_rails_210e0ee046; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY kithe_models
+    ADD CONSTRAINT fk_rails_210e0ee046 FOREIGN KEY (digitization_queue_item_id) REFERENCES digitization_queue_items(id);
+
+
+--
 -- Name: kithe_derivatives fk_rails_3dac8b4201; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -549,6 +558,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190110154359'),
 ('20190219225344'),
 ('20190226135744'),
-('20190304201533');
+('20190304201533'),
+('20190305170908');
 
 

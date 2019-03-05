@@ -1,6 +1,8 @@
 class Admin::DigitizationQueueItem < ApplicationRecord
   has_many :queue_item_comments, dependent: :destroy
 
+  has_many :works
+
   # collecting areas could have been normalized as a separate table, but
   # not really needed, we'll just leave it as a controlled string.
   COLLECTING_AREAS = %w{archives photographs rare_books modern_library museum_objects museum_fine_art}
