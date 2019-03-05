@@ -21,4 +21,28 @@ class Admin::DigitizationQueueItem < ApplicationRecord
       self.status_changed_at = Time.now
     end
   end
+
+  # Fill out a work with metadata in here, does not save
+  def fill_out_work(work)
+    work.title            = self.title
+
+    if self.bib_number.present?
+      work.build_external_id(category: "bib", value: self.bib_number)
+    end
+    if self.accession_number.present?
+      work.build_external_id(category: "accn", value: self.accession_number)
+    end
+    if self.museum_object_id.present?
+      work.build_external_id(category: "object", value: self.museum_object_id)
+    end
+    if self.box.present? || self.folder.present?
+      work.physical_container = {box: self.box.presence, folder: self.folder.presence}
+    end
+    if self.dimensions.present?
+      work.extent =  self.dimensions
+    end
+    if self.materials.present?
+      work.medium = self.materials
+    end
+  end
 end
