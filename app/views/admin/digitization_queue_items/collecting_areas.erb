@@ -2,6 +2,11 @@
 
 <ul class="list-unstyled">
   <% Admin::DigitizationQueueItem::COLLECTING_AREAS.each do |area| %>
-    <li><h2><%= link_to area.titleize, admin_digitization_queue_items_path(area) %></h2></li>
+    <li>
+      <h2>
+        <%= link_to area.titleize, admin_digitization_queue_items_path(area) %>
+        <small>(<%= @open_counts[area].to_i %> open)</small>
+      </h2>
+    </li>
   <% end %>
 </ul>
