@@ -84,6 +84,9 @@ class Admin::WorksController < ApplicationController
 
     @work.class.transaction do
       @work.update(published: true)
+      @work.all_descendent_members.find_each do |member|
+        member.update(published: true)
+      end
     end
 
     redirect_to admin_work_url(@work)
@@ -100,6 +103,9 @@ class Admin::WorksController < ApplicationController
 
     @work.class.transaction do
       @work.update(published: false)
+      @work.all_descendent_members.find_each do |member|
+        member.update(published: false)
+      end
     end
 
     redirect_to admin_work_url(@work)
