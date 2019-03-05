@@ -63,7 +63,7 @@
       <% @admin_digitization_queue_items.each do |admin_digitization_queue_item| %>
         <tr>
           <td>
-            <%= link_to 'Edit', edit_admin_digitization_queue_item_path(admin_digitization_queue_item), class: "btn btn-sm btn-primary" %>
+            <%= link_to 'Edit', edit_admin_digitization_queue_item_path(admin_digitization_queue_item), class: "btn btn-sm btn-outline-primary" %>
           </td>
           <td><%= link_to admin_digitization_queue_item.title, admin_digitization_queue_item_path(admin_digitization_queue_item) %></td>
           <td><%= [admin_digitization_queue_item.bib_number, admin_digitization_queue_item.accession_number, admin_digitization_queue_item.museum_object_id].collect(&:presence).compact.join(", ") %>  </td>
@@ -75,7 +75,7 @@
                       class: "form-control custom-select"
                 %>
                 <div class="input-group-append">
-                  <%= f.button :submit, value: "Save", class: "btn", data: { "disable-with": "saving" } %>
+                  <%= f.submit value: "Save", class: "btn btn-outline-secondary", data: { "disable-with": "saving" } %>
                 </div>
               </div>
             <% end %>
