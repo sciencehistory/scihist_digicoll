@@ -39,7 +39,7 @@
 
           </td>
           <td>
-            <%= link_to member.title, [:admin, member] %>
+            <%= link_to member.title, [:admin, member] %> <%= publication_badge(member) %>
           </td>
           <td class="datestamp"><%= l member.created_at.to_date, format: :admin  %></td>
           <td class="datestamp"><%= l member.updated_at.to_date, format: :admin %></td>
