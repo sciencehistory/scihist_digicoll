@@ -34,6 +34,8 @@
 
     <%= f.input :description, as: :text, input_html: { rows: 14 } %>
 
+    <%= f.input :published %>
+
     <%= f.repeatable_attr_input :related_url, build: :at_least_one %>
 
 
