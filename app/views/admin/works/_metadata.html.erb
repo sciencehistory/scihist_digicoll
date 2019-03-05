@@ -32,7 +32,8 @@
             <%= I18n.t(id.category,
                   scope: "activemodel.enum_values.work/external_id.category",
                   default: id.category.humanize) %>:
-            <%= id.value %></li>
+            <%= link_to_if id.category == "bib", id.value, ScihistDigicoll::Util.opac_url(id.value), target: "_blank" %>
+          </li>
         <% end %>
       </ul>
     </dd>
