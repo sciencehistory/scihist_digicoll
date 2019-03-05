@@ -13,7 +13,7 @@ class Admin::AssetsController < ApplicationController
   # PATCH/PUT /works/1.json
   def update
     @asset = Asset.find_by_friendlier_id!(params[:id])
-    asset_params = params.require(:asset).permit(:title)
+    asset_params = params.require(:asset).permit(:title, :published)
 
     respond_to do |format|
       if @asset.update(asset_params)
