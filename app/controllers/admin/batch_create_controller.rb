@@ -8,6 +8,11 @@ class Admin::BatchCreateController < ApplicationController
   # the first step, metadata creation form
   def new
     @work = Work.new
+    if params[:digitization_queue_item]
+      queue_item = Admin::DigitizationQueueItem.find(params[:digitization_queue_item])
+      @work.digitization_queue_item_id = queue_item.id
+      queue_item.fill_out_work(@work)
+    end
   end
 
   # second step, gets metadata attributes POSTed in a serialized
@@ -59,7 +64,7 @@ class Admin::BatchCreateController < ApplicationController
   # we prob should DRY somehow, at least the sanitizing
   def work_params(p = params)
     Kithe::Parameters.new(p).require(:work).permit_attr_json(Work).permit(
-      :contained_by_ids => []
+      :digitization_queue_item_id, :contained_by_ids => []
     ).tap do |params|
       # sanitize description
       if params[:description].present?
