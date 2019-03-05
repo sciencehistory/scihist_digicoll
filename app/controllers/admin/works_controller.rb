@@ -4,10 +4,11 @@
 #
 # We'll probably handle `show` in a different controller, for now no show.
 class Admin::WorksController < ApplicationController
-  before_action :set_work, only: [:show, :edit, :update, :destroy, :reorder_members_form, :demote_to_asset]
+  before_action :set_work,
+    only: [:show, :edit, :update, :destroy, :reorder_members_form, :demote_to_asset, :publish, :unpublish]
 
-  # GET /works
-  # GET /works.json
+  # GET /admin/works
+  # GET /admin/works.json
   def index
     # weird ransack param, we want it to default to true
     if params.dig(:q, "parent_id_null").nil?
@@ -21,7 +22,7 @@ class Admin::WorksController < ApplicationController
   end
 
 
-  # GET /works/new
+  # GET /admin/works/new
   def new
     @work = Work.new
 
@@ -41,12 +42,12 @@ class Admin::WorksController < ApplicationController
     render :edit
   end
 
-  # GET /works/1/edit
+  # GET /admin/works/1/edit
   def edit
   end
 
-  # POST /works
-  # POST /works.json
+  # POST /admin/works
+  # POST /admin/works.json
   def create
     @work = Work.new(work_params)
 
@@ -65,8 +66,8 @@ class Admin::WorksController < ApplicationController
     end
   end
 
-  # PATCH/PUT /works/1
-  # PATCH/PUT /works/1.json
+  # PATCH/PUT /admin/works/1
+  # PATCH/PUT /admin/works/1.json
   def update
     respond_to do |format|
       if @work.update(work_params)
@@ -77,6 +78,44 @@ class Admin::WorksController < ApplicationController
         format.json { render json: @work.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  # PATCH/PUT /admin/works/1/publish
+  #
+  # publishes work AND all of it's children (multi-level).
+  #
+  # fetches all children so rails callbacks will be called, but uses postgres
+  # recursive CTE so it'll be efficient-ish.
+  def publish
+    authorize! :publish, @work
+
+    @work.class.transaction do
+      @work.update(published: true)
+      @work.all_descendent_members.find_each do |member|
+        member.update(published: true)
+      end
+    end
+
+    redirect_to admin_work_url(@work)
+  end
+
+  # PUT /admin/works/1/unpublish
+  #
+  # unpublishes work AND all of it's children (multi-level) using a pg recursive CTE
+  #
+  # fetches all children so rails callbacks will be called, but uses postgres
+  # recursive CTE so it'll be efficient-ish.
+  def unpublish
+    authorize! :publish, @work
+
+    @work.class.transaction do
+      @work.update(published: false)
+      @work.all_descendent_members.find_each do |member|
+        member.update(published: false)
+      end
+    end
+
+    redirect_to admin_work_url(@work)
   end
 
   # DELETE /works/1

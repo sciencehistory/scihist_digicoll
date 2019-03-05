@@ -49,6 +49,8 @@ Rails.application.routes.draw do
         get "reorder_members", to: "works#reorder_members_form"
         put "reorder_members"
         put "demote_to_asset"
+        put "publish"
+        put "unpublish"
       end
     end
 

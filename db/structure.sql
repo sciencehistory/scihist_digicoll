@@ -216,7 +216,8 @@ CREATE TABLE kithe_models (
     file_data jsonb,
     representative_id uuid,
     leaf_representative_id uuid,
-    digitization_queue_item_id bigint
+    digitization_queue_item_id bigint,
+    published boolean
 );
 
 
@@ -559,6 +560,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190219225344'),
 ('20190226135744'),
 ('20190304201533'),
-('20190305170908');
+('20190305170908'),
+('20190305202051');
 
 
