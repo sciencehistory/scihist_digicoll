@@ -3,6 +3,8 @@ class Admin::DigitizationQueueItem < ApplicationRecord
 
   has_many :works
 
+  scope :open_status, -> { where.not(status: "closed") }
+
   # collecting areas could have been normalized as a separate table, but
   # not really needed, we'll just leave it as a controlled string.
   COLLECTING_AREAS = %w{archives photographs rare_books modern_library museum_objects museum_fine_art}

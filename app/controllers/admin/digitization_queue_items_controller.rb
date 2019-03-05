@@ -51,6 +51,12 @@ class Admin::DigitizationQueueItemsController < ApplicationController
     end
   end
 
+  # GET /admin/digitization_queue_items/collecting_areas
+  # Just lists our top-level collecting areas
+  def collecting_areas
+    @open_counts = Admin::DigitizationQueueItem.open_status.group(:collecting_area).count
+  end
+
   # DELETE /admin/digitization_queue_items/1
   # DELETE /admin/digitization_queue_items/1.json
   # def destroy
@@ -104,7 +110,7 @@ class Admin::DigitizationQueueItemsController < ApplicationController
       if (status = params.dig(:query, :status)).present?
         status = status.downcase
         if status == "open"
-          scope = scope.where.not(status: "closed")
+          scope = scope.open_status
         else
           scope = scope.where(status: status)
         end
