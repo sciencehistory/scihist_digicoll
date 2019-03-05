@@ -53,6 +53,30 @@
   </div>
 
   <div class="col-md-5 order-md-1 pr-4">
+
+    <div class="card mb-3">
+      <div class="card-header" id="attachedHeading">
+        <h2 class="h5 mb-0">
+          <a href="#" data-toggle="collapse" data-target="#attachedWorks" aria-expanded="false" aria-controls="attachedWorks">
+            Attached Works
+          </a>
+        </h5>
+      </div>
+
+      <div id="attachedWorks" class="collapse" aria-labelledby="attachedHeading">
+        <div class="card-body">
+          Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+        </div>
+      </div>
+    </div>
+
+    <p>
+      <%= link_to "Create new attached work", new_admin_work_path(digitization_queue_item: @admin_digitization_queue_item.id), class: "btn btn-primary mb-1" %>
+      <%= link_to "Batch create attached works", admin_batch_create_path(digitization_queue_item: @admin_digitization_queue_item.id), class: "btn btn-outline-primary" %>
+    </p>
+
+    <h2>Comments</h2>
+
     <%= form_tag add_comment_admin_digitization_queue_item_path do %>
       <div class="mb-4 text-right">
         <h3 class="h5"><label for="addComment">Add Comment</label></h3>
@@ -60,8 +84,6 @@
         <button class="btn btn-primary mt-1">Submit comment</button>
       </div>
     <% end %>
-
-    <h2>Comments</h2>
 
     <% @admin_digitization_queue_item.queue_item_comments.includes(:user).order(created_at: :desc).each do |comment| %>
       <div>

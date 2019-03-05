@@ -11,6 +11,10 @@
       <%= hidden_field_tag "work[parent_id]", @work.parent_id %>
     <% end %>
 
+    <% if !@work.persisted? && @work.digitization_queue_item_id %>
+      <%= hidden_field_tag "work[digitization_queue_item_id]", @work.digitization_queue_item_id  %>
+    <% end %>
+
     <div class="mr-2">
       <h1 class="h5">
         <% if @work.persisted? %>
