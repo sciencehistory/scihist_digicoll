@@ -1,5 +1,5 @@
 namespace :scihist_digicoll do
-  desc """Import all JSON import files present in /tmp/import.
+  desc """Import all JSON import files present in `#{Rails.root}/tmp/import`.
   To generate the JSON import files, see instructions in lib/tasks/export.rake
   in project https://github.com/sciencehistory/chf-sufia/.
   The export files will be created within that project's tmp/export .
