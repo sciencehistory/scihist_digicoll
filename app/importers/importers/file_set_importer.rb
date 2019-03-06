@@ -19,7 +19,7 @@ class Importers::FileSetImporter < Importers::Importer
   #     we won't actually import any bytestreams at all, whether they were already
   #     there or not. Still import Asset models, but no `#file` in there. Can create
   #     inconsistent data in the import, missing files, but useful for testing runthroughs.
-  def initialize(path, progress_bar, options = {})
+  def initialize(metadata, progress_bar, options = {})
     super
     @disable_bytestream_import = !!options[:disable_bytestream_import]
   end

@@ -19,11 +19,12 @@ class Importer
 
   # Creates the importer and assigns the path to the json file
   # it's going to try to import.
-  # At the moment we don't use options.
-  def initialize(path, progress_bar, options = {})
+  #
+  # Argument metadata is a hash read from an individual import.json file, contents
+  # differ depending on file type.
+  def initialize(metadata, progress_bar, options = {})
     #raise ArgumentError unless target_item.is_a? self.class.exportee
-    @path = path
-    @metadata = {}
+    @metadata = metadata
     @@progress_bar ||= progress_bar
   end
 
@@ -32,9 +33,6 @@ class Importer
   # It reads metadata from file, creates
   # an item based on it, then saves it to the database.
   def save_item()
-    # Parse the metadata from a file into @metadata.
-    read_from_file()
-
     # Make any adjustments to @metadata before it's applied to
     # to the new item.
     edit_metadata()
@@ -79,12 +77,6 @@ class Importer
     end
 
 
-  end
-
-  # Parse the json file and add its contents to @metadata.
-  def read_from_file()
-    file = File.read(@path)
-    @metadata = JSON.parse(file)
   end
 
   # Any initial adjustments to the metadata.
