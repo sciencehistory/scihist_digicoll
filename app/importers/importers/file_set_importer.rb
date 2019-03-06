@@ -14,10 +14,6 @@ class Importers::FileSetImporter < Importers::Importer
     @@fedora_credentials ||= {username: ENV['FEDORA_USERNAME'], password: ENV['FEDORA_PASSWORD']}
   end
 
-  def initialize(path, options = {})
-    super
-    @need_file_and_derivatives = true
-  end
 
   # If we know the username and password for Fedora,
   # add them to the file URL. The admin user can download
@@ -34,15 +30,15 @@ class Importers::FileSetImporter < Importers::Importer
   def wipe_stale_item()
     p_i = preexisting_item
     raise RuntimeError, "Can't wipe a nil item." if p_i.nil?
-    if p_i.sha1 != @metadata['sha_1']
-      # This is already the default, but just in case...
-      @need_file_and_derivatives = true
-      # If the sha1 hash is different, then remove all file and derivative info.
+
+    if should_import_bytestream?
+      # take care of removing the file we're about to import.
+      # TODO: Maybe should let kithe/shrine take care of this, in a way that there's
+      # never a missing file even temporarily. But have to confirm kithe/shrine will,
+      # especially without using bg jobs.
       wipe_file_and_derivatives(p_i)
-    else
-      #We're leaving the file and derivatives in place; no need to re-import them.
-      @need_file_and_derivatives = false
     end
+
     # Wipe other stale metadata, regardless.
     p_i.position= nil
     p_i.parent=nil
@@ -54,18 +50,25 @@ class Importers::FileSetImporter < Importers::Importer
 
   # The sha-1 hash on this asset says
   # remove file info and derivatives:
-  def wipe_file_and_derivatives(p_i)
-    raise RuntimeError, "Can't wipe a nil item." if p_i.nil?
-    p_i.file.delete unless p_i.file.nil?
-    p_i.derivatives.destroy_all
-    p_i.file_data = {}
+  def wipe_file_and_derivatives(asset_model)
+    raise RuntimeError, "Can't wipe a nil item." if asset_model.nil?
+    asset_model.file.delete unless asset_model.file.nil?
+    asset_model.derivatives.destroy_all
+    asset_model.file_data = {}
+  end
+
+  # If we already have an item, and it's file has a sha1 matching fedora's
+  # sha1, we don't need to import the bytestream again, since it's already
+  # there, which saves us lots of time on re-runs.
+  def should_import_bytestream?
+    preexisting_item && preexisting_item.sha1 != metadata['sha_1']
   end
 
   # Assets actually have minimal metadata, so this method basically
   # fetches the file from Fedora and (possibly) generates the derivatives.
   def populate()
     super
-    if @need_file_and_derivatives
+    if should_import_bytestream?
       # This tells @new_item's shrine uploader to do promotion inline instead of
       # kicking off a background job.
       @new_item.file_attacher.set_promotion_directives(promote: "inline")
