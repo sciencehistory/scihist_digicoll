@@ -184,10 +184,6 @@ class Importers::GenericWorkImporter < Importers::Importer
     end
   end
 
-  def self.class_post_processing()
-    self.link_children_and_parents()
-  end
-
   # By the time this class method is called, ALL assets and works have been saved
   # to the DB and have their UUIDs ready.
   def self.link_children_and_parents()

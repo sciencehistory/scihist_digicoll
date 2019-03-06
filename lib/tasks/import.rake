@@ -32,8 +32,6 @@ namespace :scihist_digicoll do
     import_dir = Rails.root.join('tmp', 'import')
     # Import all the Assets, then all the Works,
     # and finally all the Collections.
-    # The class_post_processing relies on this order
-    # to function properly.
 
     #Total number of tasks: ingest each file
     # and then do post-processing for each of the 3 file types.
@@ -59,7 +57,7 @@ namespace :scihist_digicoll do
       Importers::GenericWorkImporter.new(path, progress_bar).save_item
     end
     # sets relationships, before we extract into it's own class
-    Importers::GenericWorkImporter.class_post_processing()
+    Importers::GenericWorkImporter.link_children_and_parents
 
     progress_bar.log("INFO: Importing Collections")
     Importers::CollectionImporter.file_paths.each do |path|
