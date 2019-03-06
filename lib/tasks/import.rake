@@ -30,16 +30,20 @@ namespace :scihist_digicoll do
     disable_bytestream_import = ENV['DISABLE_BYTESTREAM_IMPORT'] == "true"
 
     import_dir = Rails.root.join('tmp', 'import')
+    fileset_dir = Dir[import_dir.join("filesets").join("*.json")]
+    work_dir = Dir[import_dir.join("genericworks").join("*.json")]
+    collection_dir = Dir[import_dir.join("collections").join("*.json")]
+
     # Import all the Assets, then all the Works,
     # and finally all the Collections.
 
     #Total number of tasks: ingest each file
     # and then do post-processing for each of the 3 file types.
 
-    total_tasks = Importers::FileSetImporter.file_paths.count
+    total_tasks = fileset_dir.count
     # Generic works increment the progress bar twice.
-    total_tasks += Importers::GenericWorkImporter.file_paths.count * 2
-    total_tasks += Importers::CollectionImporter.file_paths.count
+    total_tasks += work_dir.count * 2
+    total_tasks += collection_dir.count
 
     if total_tasks == 0
       abort ("No files found to import in #{import_dir}")
@@ -48,19 +52,19 @@ namespace :scihist_digicoll do
 
 
     progress_bar.log("INFO: Importing FileSets")
-    Importers::FileSetImporter.file_paths.each do |path|
+    fileset_dir.each do |path|
       Importers::FileSetImporter.new(path, progress_bar, disable_bytestream_import: disable_bytestream_import).save_item
     end
 
     progress_bar.log("INFO: Importing Genericworks")
-    Importers::GenericWorkImporter.file_paths.each do |path|
+    work_dir.each do |path|
       Importers::GenericWorkImporter.new(path, progress_bar).save_item
     end
     # sets relationships, before we extract into it's own class
     Importers::GenericWorkImporter.link_children_and_parents
 
     progress_bar.log("INFO: Importing Collections")
-    Importers::CollectionImporter.file_paths.each do |path|
+    collection_dir.each do |path|
       Importers::CollectionImporter.new(path, progress_bar).save_item
     end
   end
@@ -80,29 +84,34 @@ namespace :scihist_digicoll do
   end
 
   task :audit_import => :environment do
+    import_dir = Rails.root.join('tmp', 'import')
+    fileset_dir = Dir[import_dir.join("filesets").join("*.json")]
+    work_dir = Dir[import_dir.join("genericworks").join("*.json")]
+    collection_dir = Dir[import_dir.join("collections").join("*.json")]
 
-    total_tasks = Importers::FileSetImporter.file_paths.count
-    total_tasks += Importers::GenericWorkImporter.file_paths.count
-    total_tasks += Importers::CollectionImporter.file_paths.count
+
+    total_tasks = fileset_dir.count
+    total_tasks += work_dir.count
+    total_tasks += collection_dir.count
     progress_bar = ProgressBar.create(total: total_tasks, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
 
-    import_dir = Rails.root.join('tmp', 'import')
     report_file = File.new("tmp/audit_report.txt", "w")
 
+
     progress_bar.log("INFO: Auditing FileSet => Asset")
-    Importers::FileSetAuditor.file_paths.each do |path|
+    fileset_dir.each do |path|
       Importers::FileSetAuditor.new(path, report_file)
       progress_bar.increment
     end
 
     progress_bar.log("INFO: Auditing GenericWork => Work")
-    Importers::GenericWorkAuditor.file_paths.each do |path|
+    work_dir.each do |path|
       Importers::GenericWorkAuditor.new(path, report_file)
       progress_bar.increment
     end
 
     progress_bar.log("INFO: Auditing Collection")
-    Importers::CollectionAuditor.file_paths.each do |path|
+    collection_dir.each do |path|
       Importers::CollectionAuditor.new(path, report_file)
       progress_bar.increment
     end

@@ -177,21 +177,6 @@ class Importer
     raise NotImplementedError
   end
 
-  # An array of paths to all the files that this class can import
-  def self.file_paths()
-     files = Dir.entries(dir).select{|x| x.end_with? ".json"}
-     files.map{|x| File.join(dir,x)}
-  end
-
-  def self.dir()
-    Rails.root.join('tmp', 'import', dirname)
-  end
-
-  #The names of the directory where this sort of item's json files can be found.
-  def self.dirname()
-    "#{importee.downcase}s"
-  end
-
 
 end
 end
