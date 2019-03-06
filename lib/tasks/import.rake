@@ -26,6 +26,9 @@ namespace :scihist_digicoll do
   """
 
   task :import => :environment do
+    # Some options. If this were a CLI thing, we could have better CLI ui.
+    disable_bytestream_import = ENV['DISABLE_BYTESTREAM_IMPORT'] == "true"
+
     import_dir = Rails.root.join('tmp', 'import')
     # Import all the Assets, then all the Works,
     # and finally all the Collections.
@@ -44,16 +47,19 @@ namespace :scihist_digicoll do
       abort ("No files found to import in #{import_dir}")
     end
     progress_bar = ProgressBar.create(total: total_tasks, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
-    %w(FileSet GenericWork Collection).each do |s|
-      importer_class = "Importers::#{s}Importer".constantize
+    [Importers::FileSetImporter, Importers::GenericWorkImporter, Importers::CollectionImporter].each do |importer_class|
       # For all the JSON files of a particular type,
       # instantiate an importer for that file and
       # perform the import.
-      progress_bar.log("INFO: Importing #{s}s.")
+      progress_bar.log("INFO: Importing with #{importer_class}")
 
       importer_class.file_paths.each do |path|
-        # puts "Importing #{path}"
-        importer = importer_class.new(path, progress_bar)
+        # puts "Importing #{path}
+
+        # Some options only apply to certain importers, but for now we're passing same
+        # to all:
+        # disable_bytestream_import: only FileSetImporter
+        importer = importer_class.new(path, progress_bar, disable_bytestream_import: disable_bytestream_import)
         # save_item() creates a new item, adds metadata to it,
         # and save it.
         # It does not take care of parent-child relationships.
