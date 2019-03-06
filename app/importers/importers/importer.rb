@@ -141,8 +141,6 @@ class Importer
   # Useful for associating the item with other already-ingested items,
   # or storing info about the item so it can be associated with
   # items soon to be ingested.
-  # Not to be confused with class_post_processing, which
-  # runs only after all items of this type have already been ingested.
   def post_processing()
   end
 
@@ -194,12 +192,6 @@ class Importer
     "#{importee.downcase}s"
   end
 
-  # This class method gets called only after all
-  # items of a particular type are saved in the DB and thus have UUIDs.
-  # Not to be confused with processing, which runs once for each item,
-  # after the item has been saved.
-  def self.class_post_processing()
-  end
 
 end
 end
