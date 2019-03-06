@@ -54,7 +54,7 @@ class Importer
 
     begin
       @new_item.save!
-    rescue StandardError
+    rescue StandardError => e
       if @new_item.errors.first == [:date_of_work, "is invalid"]
         report_via_progress_bar("ERROR: bad date: #{metadata['dates']}")
         @new_item.date_of_work = []
@@ -63,6 +63,8 @@ class Importer
         report_via_progress_bar("ERROR: bad related_url: #{metadata['related_url']}")
         new_item.related_url = []
         @new_item.save!
+      else
+        report_via_progress_bar("ERROR: Could not save record: #{e}")
       end
     end
 
@@ -98,6 +100,8 @@ class Importer
   def preexisting_item()
     # There can be at most one such preexisting item
     # if we trust the uniqueness of the key.
+    #
+    # Memoize so code can ask for the method
     @preexisting_item ||= self.class.destination_class.where(friendlier_id:@metadata['id']).first
   end
 
