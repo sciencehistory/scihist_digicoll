@@ -96,7 +96,7 @@ namespace :scihist_digicoll do
     progress_bar = ProgressBar.create(total: total_tasks, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
 
     import_dir = Rails.root.join('tmp', 'import')
-    report_file = File.new("report.txt", "w")
+    report_file = File.new("tmp/audit_report.txt", "w")
     %w(FileSet GenericWork Collection).each do |s|
       progress_bar.log("INFO: Auditing #{s}s")
       auditor_class = "Importers::#{s}Auditor".constantize
@@ -107,8 +107,14 @@ namespace :scihist_digicoll do
       end
     end # auditors.each
     report_file.close
+
+    errors = File.readlines(report_file.path)
+    if errors.empty?
+      puts "\n\nNo problems found\n\n"
+    else
+      puts "\n\nAudit problems:\n\n"
+      puts errors
+    end
+    File.unlink(report_file.path)
   end # task
-
-
-
 end # namespace
