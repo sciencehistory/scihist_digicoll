@@ -72,7 +72,9 @@ class Importers::FileSetImporter < Importers::Importer
   # sha1, we don't need to import the bytestream again, since it's already
   # there, which saves us lots of time on re-runs.
   def should_import_bytestream?
-    !@disable_bytestream_import && preexisting_item && preexisting_item.sha1 != metadata['sha_1']
+    return false if @disable_bytestream_import
+    return true if preexisting_item.nil?
+    preexisting_item.sha1 != metadata['sha_1']
   end
 
   # Assets actually have minimal metadata, so this method basically
