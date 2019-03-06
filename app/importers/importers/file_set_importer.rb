@@ -14,6 +14,17 @@ class Importers::FileSetImporter < Importers::Importer
     @@fedora_credentials ||= {username: ENV['FEDORA_USERNAME'], password: ENV['FEDORA_PASSWORD']}
   end
 
+  # options:
+  #   disable_bytestream_import: if set to true,
+  #     we won't actually import any bytestreams at all, whether they were already
+  #     there or not. Still import Asset models, but no `#file` in there. Can create
+  #     inconsistent data in the import, missing files, but useful for testing runthroughs.
+  def initialize(path, progress_bar, options = {})
+    super
+    @disable_bytestream_import = !!options[:disable_bytestream_import]
+  end
+
+
 
   # If we know the username and password for Fedora,
   # add them to the file URL. The admin user can download
@@ -61,7 +72,7 @@ class Importers::FileSetImporter < Importers::Importer
   # sha1, we don't need to import the bytestream again, since it's already
   # there, which saves us lots of time on re-runs.
   def should_import_bytestream?
-    preexisting_item && preexisting_item.sha1 != metadata['sha_1']
+    !@disable_bytestream_import && preexisting_item && preexisting_item.sha1 != metadata['sha_1']
   end
 
   # Assets actually have minimal metadata, so this method basically
