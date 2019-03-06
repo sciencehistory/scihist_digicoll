@@ -47,32 +47,25 @@ namespace :scihist_digicoll do
       abort ("No files found to import in #{import_dir}")
     end
     progress_bar = ProgressBar.create(total: total_tasks, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
-    [Importers::FileSetImporter, Importers::GenericWorkImporter, Importers::CollectionImporter].each do |importer_class|
-      # For all the JSON files of a particular type,
-      # instantiate an importer for that file and
-      # perform the import.
-      progress_bar.log("INFO: Importing with #{importer_class}")
 
-      importer_class.file_paths.each do |path|
-        # puts "Importing #{path}
 
-        # Some options only apply to certain importers, but for now we're passing same
-        # to all:
-        # disable_bytestream_import: only FileSetImporter
-        importer = importer_class.new(path, progress_bar, disable_bytestream_import: disable_bytestream_import)
-        # save_item() creates a new item, adds metadata to it,
-        # and save it.
-        # It does not take care of parent-child relationships.
-        importer.save_item()
-      end
-      # Each importer class defines a post-processing function
-      # that is run only after all items in its class have
-      # already been ingested. For instance, generic_work_importer
-      # subclasses class_post_processing with functionality that
-      # links each Work with its child Works and Assets.
-      importer_class.class_post_processing()
-    end # exporters.each
-  end # task
+    progress_bar.log("INFO: Importing FileSets")
+    Importers::FileSetImporter.file_paths.each do |path|
+      Importers::FileSetImporter.new(path, progress_bar, disable_bytestream_import: disable_bytestream_import).save_item
+    end
+
+    progress_bar.log("INFO: Importing Genericworks")
+    Importers::GenericWorkImporter.file_paths.each do |path|
+      Importers::GenericWorkImporter.new(path, progress_bar).save_item
+    end
+    # sets relationships, before we extract into it's own class
+    Importers::GenericWorkImporter.class_post_processing()
+
+    progress_bar.log("INFO: Importing Collections")
+    Importers::CollectionImporter.file_paths.each do |path|
+      Importers::CollectionImporter.new(path, progress_bar).save_item
+    end
+  end
 
   task :import_one => :environment do
     import_dir = Rails.root.join('tmp', 'import')
