@@ -54,7 +54,7 @@ class Importer
 
     begin
       @new_item.save!
-    rescue
+    rescue StandardError
       if @new_item.errors.first == [:date_of_work, "is invalid"]
         report_via_progress_bar("ERROR: bad date: #{metadata['dates']}")
         @new_item.date_of_work = []
