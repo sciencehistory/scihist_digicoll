@@ -77,6 +77,24 @@ Rails.application.routes.draw do
       mount Shrine.uppy_s3_multipart(:cache) => "/s3"
     end
 
+    resources :digitization_queue_items, except: [:index, :create, :new, :destroy] do
+      collection do
+        get "collecting_areas"
+
+        # index, new and create need a /$collecting_area on them.
+        constraints(proc {|params, req|
+            Admin::DigitizationQueueItem::COLLECTING_AREAS.include?(params[:collecting_area])
+        }) do
+          get ":collecting_area", to: "digitization_queue_items#index", as: ""
+          post ":collecting_area", to: "digitization_queue_items#create", as: nil
+          get ":collecting_area/new", to: "digitization_queue_items#new", as: "new"
+        end
+      end
+      member do
+        post :add_comment
+      end
+    end
+
     mount Resque::Server, at: '/queues'
   end
 
