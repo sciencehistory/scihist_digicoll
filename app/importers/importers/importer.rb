@@ -98,11 +98,7 @@ class Importer
   def preexisting_item()
     # There can be at most one such preexisting item
     # if we trust the uniqueness of the key.
-    klass = self.class.destination_class
-
-    # TODO replace this by find_by_friendlier_id
-    matches = klass.where(friendlier_id:@metadata['id'])
-    matches == [] ? nil : matches.first
+    @preexisting_item ||= self.class.destination_class.where(friendlier_id:@metadata['id']).first
   end
 
 
