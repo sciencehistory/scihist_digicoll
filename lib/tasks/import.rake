@@ -100,19 +100,19 @@ namespace :scihist_digicoll do
 
     progress_bar.log("INFO: Auditing FileSet => Asset")
     fileset_dir.each do |path|
-      Importers::FileSetAuditor.new(path, report_file)
+      Importers::FileSetAuditor.new(path, report_file).check_item
       progress_bar.increment
     end
 
     progress_bar.log("INFO: Auditing GenericWork => Work")
     work_dir.each do |path|
-      Importers::GenericWorkAuditor.new(path, report_file)
+      Importers::GenericWorkAuditor.new(path, report_file).check_item
       progress_bar.increment
     end
 
     progress_bar.log("INFO: Auditing Collection")
     collection_dir.each do |path|
-      Importers::CollectionAuditor.new(path, report_file)
+      Importers::CollectionAuditor.new(path, report_file).check_item
       progress_bar.increment
     end
 
