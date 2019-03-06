@@ -1,6 +1,8 @@
 
 
 class Work < Kithe::Work
+  belongs_to :digitization_queue_item, optional: true, class_name: "Admin::DigitizationQueueItem"
+
   validates :external_id, presence: true
   validates :department, inclusion: { in: ControlledLists::DEPARTMENT, allow_blank: true }
   validates :file_creator, inclusion: { in: ControlledLists::FILE_CREATOR, allow_blank: true }

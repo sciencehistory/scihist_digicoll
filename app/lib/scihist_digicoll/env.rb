@@ -28,6 +28,8 @@ module ScihistDigicoll
     # where our web app is located, https://WHAT
     define_key :web_hostname
 
+    define_key :opac_link_template, default: "https://othmerlib.sciencehistory.org/record=%s"
+
     # set in ENV LOGINS_DISABLED or local_env.yml, to globally
     # prevent access to pages requiring authentication. May be useful
     # for maintenance tasks.

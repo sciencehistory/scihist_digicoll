@@ -25,6 +25,13 @@ class Admin::WorksController < ApplicationController
   # GET /admin/works/new
   def new
     @work = Work.new
+
+    if params[:digitization_queue_item]
+      queue_item = Admin::DigitizationQueueItem.find(params[:digitization_queue_item])
+      @work.digitization_queue_item_id = queue_item.id
+      queue_item.fill_out_work(@work)
+    end
+
     if params[:parent_id]
       @parent_work = Work.find_by_friendlier_id!(params[:parent_id])
       @work.parent = @parent_work
@@ -208,7 +215,7 @@ class Admin::WorksController < ApplicationController
     # enough for now.
     def work_params
       Kithe::Parameters.new(params).require(:work).permit_attr_json(Work).permit(
-        :title, :parent_id, :representative_id, :contained_by_ids => []
+        :title, :parent_id, :representative_id, :digitization_queue_item_id, :contained_by_ids => []
       ).tap do |params|
         # sanitize description
         if params[:description].present?
