@@ -88,15 +88,25 @@ namespace :scihist_digicoll do
 
     import_dir = Rails.root.join('tmp', 'import')
     report_file = File.new("tmp/audit_report.txt", "w")
-    %w(FileSet GenericWork Collection).each do |s|
-      progress_bar.log("INFO: Auditing #{s}s")
-      auditor_class = "Importers::#{s}Auditor".constantize
-      auditor_class.file_paths.each do |path|
-        auditor = auditor_class.new(path, report_file)
-        auditor.check_item()
-        progress_bar.increment
-      end
-    end # auditors.each
+
+    progress_bar.log("INFO: Auditing FileSet => Asset")
+    Importers::FileSetAuditor.file_paths.each do |path|
+      Importers::FileSetAuditor.new(path, report_file)
+      progress_bar.increment
+    end
+
+    progress_bar.log("INFO: Auditing GenericWork => Work")
+    Importers::GenericWorkAuditor.file_paths.each do |path|
+      Importers::GenericWorkAuditor.new(path, report_file)
+      progress_bar.increment
+    end
+
+    progress_bar.log("INFO: Auditing Collection")
+    Importers::CollectionAuditor.file_paths.each do |path|
+      Importers::CollectionAuditor.new(path, report_file)
+      progress_bar.increment
+    end
+
     report_file.close
 
     errors = File.readlines(report_file.path)
