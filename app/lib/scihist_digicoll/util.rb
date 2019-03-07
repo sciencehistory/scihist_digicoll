@@ -10,5 +10,11 @@ module ScihistDigicoll
     rescue URI::InvalidURIError
       return false
     end
+
+    # Just take a bib number and produce a URL to our OPAC, using opac link template
+    # from ENV.
+    def self.opac_url(bib_number)
+      ScihistDigicoll::Env.lookup(:opac_link_template).sub("%s", ERB::Util.url_encode(bib_number))
+    end
   end
 end

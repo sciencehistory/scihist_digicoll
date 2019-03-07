@@ -3,21 +3,22 @@ require "byebug"
 module Importers
 class Auditor
 
-  attr_reader :path, :metadata, :item, :report_file
+  attr_reader :metadata, :item, :report_file
 
-  def initialize(path, file, options = {})
+  # metadata is the hash read from a json import file
+  # file is a (temporary) log file to write audit problems to.
+  def initialize(metadata, file, options = {})
     #raise ArgumentError unless target_item.is_a? self.class.exportee
-    @path = path
     @file = file
-    @metadata = {}
+    @metadata = metadata
   end
 
   def check_item()
     # Parse the metadata from a file into @metadata.
-    read_from_file()
     load_item()
     if @item.nil?
       report_line("Item not found in database.")
+      return
     end
     common_checks()
     special_checks()
@@ -33,6 +34,7 @@ class Auditor
         confirm(item.created_at == DateTime.parse(metadata['date_uploaded']), "created_at")
       end
     end
+    confirm(item.published? == (metadata["access_control"] == "public"), "published")
   end
 
   def confirm(condition, report_string)
@@ -44,12 +46,13 @@ class Auditor
   end
 
   def report_line(str)
-    @file.puts("#{@item.type} #{@item.friendlier_id}: #{str}")
-  end
+    prefix = if @item
+      "#{@item.type} #{@item.friendlier_id}"
+    else
+      "#{self.class.name} #{metadata["id"]}"
+    end
 
-  def read_from_file()
-    file = File.read(@path)
-    @metadata = JSON.parse(file)
+    @file.puts("#{prefix}: #{str}")
   end
 
   def load_item()
@@ -64,19 +67,6 @@ class Auditor
 
   def self.destination_class()
     raise NotImplementedError
-  end
-
-  def self.file_paths()
-     files = Dir.entries(dir).select{|x| x.end_with? ".json"}
-     files.map{|x| File.join(dir,x)}
-  end
-
-  def self.dir()
-    Rails.root.join('tmp', 'import', dirname)
-  end
-
-  def self.dirname()
-    "#{importee.downcase}s"
   end
 end
 end

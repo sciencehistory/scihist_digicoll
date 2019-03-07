@@ -15,8 +15,10 @@ class AccessPolicy
       can :publish, Work
 
       can :destroy, Collection
+      can :publish, Collection
 
       can :destroy, Asset
+      can :publish, Asset
 
       can :admin, User
     end
