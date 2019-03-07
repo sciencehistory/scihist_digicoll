@@ -1,17 +1,15 @@
 module Importers
 class CollectionImporter < Importers::Importer
 
-  def edit_metadata()
-    @metadata['description'] = @metadata['description'].first unless @metadata['description'].nil?
-  end
-
   def populate()
     super
-    %w(description related_url).each do |k|
-      v = metadata[k]
-      next if v.nil? || v == []
-      new_item.send("#{k}=", v)
+
+    new_item.description = @metadata['description'].first
+
+    if metadata["related_url"].present?
+      new_item.related_url = metadata["related_url"]
     end
+
     create_or_update_thumbnail()
   end
 
