@@ -6,7 +6,12 @@ require "byebug"
 # from the old chf-sufia repository.
 # This class is called from lib/tasks/import.rake ; more info about
 # how to run the task may be found at that file.
-
+#
+# The general API for any importer is:
+#     SomeImporter.new(metadata_hash).import
+#
+# Sub-classes will generally implement #populate to transfer data from
+# #metadata to #target_item
 module Importers
 class Importer
 
@@ -58,15 +63,18 @@ class Importer
     @oreexisting_item
   end
 
-
   # This is the only method called on this class
   # by the rake task after instantiation.
   # It reads metadata from file, creates
   # an item based on it, then saves it to the database.
-  #
+  def import
+    populate
+    save_target_item
+  end
+
   # After running, check #errors for any errors you may want to report
   # to the user.
-  def save_item()
+  def save_target_item()
     # Apply the metadata from @metadata to the target_item.
     populate()
 

@@ -56,7 +56,7 @@ namespace :scihist_digicoll do
       Importers::FileSetImporter.new(
         JSON.parse(File.read(path)),
         disable_bytestream_import: disable_bytestream_import).tap do |importer|
-          importer.save_item
+          importer.import
           importer.errors.each { |e| progress_bar.log(e) }
         end
       progress_bar.increment
@@ -65,7 +65,7 @@ namespace :scihist_digicoll do
     progress_bar.log("INFO: Importing Genericworks")
     work_dir.each do |path|
       Importers::GenericWorkImporter.new(JSON.parse(File.read(path))).tap do |importer|
-        importer.save_item
+        importer.import
         importer.errors.each { |e| progress_bar.log(e) }
       end
       progress_bar.increment
@@ -82,7 +82,7 @@ namespace :scihist_digicoll do
     progress_bar.log("INFO: Importing Collections")
     collection_dir.each do |path|
       Importers::CollectionImporter.new(JSON.parse(File.read(path))).tap do |importer|
-        importer.save_item
+        importer.import
         importer.errors.each { |e| progress_bar.log(e) }
       end
       progress_bar.increment
@@ -97,7 +97,7 @@ namespace :scihist_digicoll do
       importer_class.file_paths.each do |path|
         next unless path.include? ENV['THE_ITEM']
         importer = importer_class.new(path, progress_bar)
-        importer.save_item()
+        importer.import
       end
     end # exporters.each
     puts 'WARNING: This is just for testing. Please run a full import to reconnect this item to its containers / containees.'

@@ -30,7 +30,7 @@ RSpec.describe Importers::CollectionImporter do
       let(:collection_importer) { Importers::CollectionImporter.new(metadata) }
 
       it "imports" do
-        collection_importer.save_item()
+        collection_importer.import
         expect(Collection.first.title).to match /Pesticide Collection/
       end
     end

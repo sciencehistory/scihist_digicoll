@@ -30,7 +30,7 @@ RSpec.describe Importers::FileSetImporter do
       let(:file_set_importer) { Importers::FileSetImporter.new(metadata, disable_bytestream_import: true) }
 
       it "Imports properly" do
-        file_set_importer.save_item()
+        file_set_importer.import
         expect(Asset.first.title).to match /b10371138_367/
       end
     end
