@@ -14,24 +14,17 @@ class Importers::RelationshipImporter
     work_metadata["id"]
   end
 
+
   def import
-    child_ids = work_metadata['child_ids'] || []
-    rep_fid = work_metadata['representative_id']
-    parent_id = friendlier_id
+    parent = Work.find_by_friendlier_id!(friendlier_id)
 
-    # Possible refactor:
-    # parent.contains = Kithe::Model.where(friendlier_id: child_ids)
-    # parent.representative_id = @@representative_hash[parent.friendlier_id]
-    # parent.save!
-
-    parent = Work.find_by_friendlier_id!(parent_id)
-    child_ids.each_with_index do |child_id, current_position|
+    (work_metadata['child_ids'] || []).each_with_index do |child_id, current_position|
       # This child could be a Work *or* an Asset, so look it up this way:
       child = Kithe::Model.find_by_friendlier_id(child_id)
       # In theory, once you get to this point in the ingest, all the possible
       # Assets and child Works have already been ingested. But just to be sure...
       if child.nil?
-        raise TypeError.new("ERROR: GenericWork  #{parent_id}: has nil child item.")
+        raise TypeError.new("ERROR: GenericWork #{parent.id}: couldn't find child #{child_id} to set membership")
       end
 
       #Link the child and its parent.
@@ -40,8 +33,8 @@ class Importers::RelationshipImporter
       child.save!
     end
 
-    if rep_fid
-      parent.representative_id = Kithe::Model.find_by_friendlier_id!(rep_fid).id
+    if work_metadata['representative_id'].present?
+      parent.representative_id = Kithe::Model.find_by_friendlier_id!(work_metadata['representative_id']).id
       parent.save!
     end
   end
