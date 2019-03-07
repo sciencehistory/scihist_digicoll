@@ -63,8 +63,12 @@ namespace :scihist_digicoll do
     work_dir.each do |path|
       Importers::GenericWorkImporter.new(JSON.parse(File.read(path)), progress_bar).save_item
     end
-    # sets relationships, before we extract into it's own class
-    Importers::GenericWorkImporter.link_children_and_parents
+
+    progress_bar.log("INFO: Setting GenericWork and Asset relationships")
+    work_dir.each do |path|
+      Importers::RelationshipImporter.new(JSON.parse(File.read(path))).import
+      progress_bar.increment
+    end
 
     progress_bar.log("INFO: Importing Collections")
     collection_dir.each do |path|
