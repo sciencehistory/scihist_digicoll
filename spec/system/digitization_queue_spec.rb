@@ -11,7 +11,7 @@ RSpec.describe "Digitization Queue", :logged_in_user, type: :system do
     fill_in "Title", with: "Test Item"
     fill_in "Accession number", with: "test-acc"
     fill_in "Object ID (Past Perfect)", with: "test-obj-id"
-    fill_in "Bib number", with: "test-bib"
+    fill_in "Bib number", with: "b1234567"
     fill_in "Box", with: "test-box"
     fill_in "Folder", with: "test-folder"
     fill_in "Dimensions", with: "test-dimensions"
@@ -36,7 +36,7 @@ RSpec.describe "Digitization Queue", :logged_in_user, type: :system do
     expect(work.digitization_queue_item).to be_present
     expect(work.external_id.find {|i| i.category == "accn" }&.value).to eq("test-acc")
     expect(work.external_id.find {|i| i.category == "object" }&.value).to eq("test-obj-id")
-    expect(work.external_id.find {|i| i.category == "bib" }&.value).to eq("test-bib")
+    expect(work.external_id.find {|i| i.category == "bib" }&.value).to eq("b1234567")
     expect(work.physical_container.box).to eq("test-box")
     expect(work.physical_container.folder).to eq("test-folder")
     expect(work.extent).to eq(["test-dimensions"])
