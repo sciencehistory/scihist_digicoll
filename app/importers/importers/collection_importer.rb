@@ -2,7 +2,7 @@ module Importers
   class CollectionImporter < Importers::Importer
 
     def populate()
-      target_item.description = @metadata['description'].first
+      target_item.description = @metadata['description'].try(:first)
 
       if metadata["related_url"].present?
         target_item.related_url = metadata["related_url"]
