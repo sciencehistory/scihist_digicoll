@@ -57,11 +57,13 @@ namespace :scihist_digicoll do
         JSON.parse(File.read(path)),
         progress_bar,
         disable_bytestream_import: disable_bytestream_import).save_item
+      progress_bar.increment
     end
 
     progress_bar.log("INFO: Importing Genericworks")
     work_dir.each do |path|
       Importers::GenericWorkImporter.new(JSON.parse(File.read(path)), progress_bar).save_item
+      progress_bar.increment
     end
 
     progress_bar.log("INFO: Setting GenericWork and Asset relationships")
@@ -73,6 +75,7 @@ namespace :scihist_digicoll do
     progress_bar.log("INFO: Importing Collections")
     collection_dir.each do |path|
       Importers::CollectionImporter.new(JSON.parse(File.read(path)), progress_bar).save_item
+      progress_bar.increment
     end
   end
 

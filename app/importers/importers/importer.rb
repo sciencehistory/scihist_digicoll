@@ -71,7 +71,6 @@ class Importer
     # with other items in the database.
     post_processing()
 
-    @@progress_bar.increment
     unless errors == []
       report_via_progress_bar(errors)
     end
