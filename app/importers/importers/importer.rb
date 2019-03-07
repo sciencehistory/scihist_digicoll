@@ -33,6 +33,9 @@ class Importer
   # by the rake task after instantiation.
   # It reads metadata from file, creates
   # an item based on it, then saves it to the database.
+  #
+  # After running, check #errors for any errors you may want to report
+  # to the user.
   def save_item()
     if preexisting_item.nil?
       # Create the Asset, Work or Collection that we want to ingest.
@@ -67,10 +70,6 @@ class Importer
     # Typically these tasks involve associating the newly-created @new_item
     # with other items in the database.
     post_processing()
-
-    unless errors == []
-      report_via_progress_bar(errors)
-    end
   end
 
   def preexisting_item()
@@ -129,7 +128,9 @@ class Importer
   # What errors have been accumulated? Includes any validation errors
   # on the record to be saved, and any errors added with #add_error
   def errors()
-    @errors + (@new_item&.errors&.full_messages || [])
+    (@errors + (@new_item&.errors&.full_messages || [])).collect do |str|
+      "#{self.class.importee} #{metadata['id']}: #{str}"
+    end
   end
 
 
@@ -143,11 +144,6 @@ class Importer
     unless metadata['date_uploaded'].nil?
       @new_item.created_at = DateTime.parse(metadata['date_uploaded'])
     end
-  end
-
-  def report_via_progress_bar(msg)
-    str = "#{self.class.importee} #{metadata['id']}: #{msg}"
-    @progress_bar.log(str)
   end
 
   # the old importee class name, as a string, e.g. 'FileSet'
