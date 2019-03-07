@@ -1,0 +1,106 @@
+<div class="mb-4">
+  <div>Digitization Queue: <%= link_to @admin_digitization_queue_item.collecting_area.humanize, admin_digitization_queue_items_url(@admin_digitization_queue_item.collecting_area) %></div>
+  <h1><%= @admin_digitization_queue_item.title %></h1>
+</div>
+
+<div class="row">
+  <div class="col-md-7 order-md-2">
+    <p>
+    <%= link_to 'Edit Queue item', edit_admin_digitization_queue_item_path(@admin_digitization_queue_item), class: "btn btn-primary" %>
+    </p>
+
+    <% if @admin_digitization_queue_item.bib_number.present? %>
+      <p>
+        <%= link_to "OPAC link (#{@admin_digitization_queue_item.bib_number})", ScihistDigicoll::Util.opac_url(@admin_digitization_queue_item.bib_number), target: "_blank" %>
+      </p>
+    <% end %>
+
+    <dl>
+      <%= queue_item_show_field(@admin_digitization_queue_item, :title) %>
+
+      <dt>Collecting area</dt>
+      <dd><%= link_to @admin_digitization_queue_item.collecting_area.humanize, admin_digitization_queue_items_url(@admin_digitization_queue_item.collecting_area) %></dd>
+
+      <dt>Created at</dt>
+      <dd>
+        <%= l @admin_digitization_queue_item.created_at, format: :admin %>
+      </dd>
+
+
+      <dt>Status</dt>
+      <dd>
+        <%= @admin_digitization_queue_item.status.humanize %> (<%= l @admin_digitization_queue_item.status_changed_at, format: :admin %>)
+      </dd>
+
+
+      <%= queue_item_show_field(@admin_digitization_queue_item, :bib_number) %>
+      <%= queue_item_show_field(@admin_digitization_queue_item, :location) %>
+      <%= queue_item_show_field(@admin_digitization_queue_item, :accession_number) %>
+      <%= queue_item_show_field(@admin_digitization_queue_item, :museum_object_id) %>
+      <%= queue_item_show_field(@admin_digitization_queue_item, :box) %>
+      <%= queue_item_show_field(@admin_digitization_queue_item, :folder) %>
+
+      <%= queue_item_show_field(@admin_digitization_queue_item, :dimensions) %>
+      <%= queue_item_show_field(@admin_digitization_queue_item, :materials) %>
+
+
+      <%= queue_item_show_field(@admin_digitization_queue_item, :scope, paragraphs: true) %>
+      <%= queue_item_show_field(@admin_digitization_queue_item, :instructions, paragraphs: true) %>
+      <%= queue_item_show_field(@admin_digitization_queue_item, :additional_notes, paragraphs: true) %>
+      <%= queue_item_show_field(@admin_digitization_queue_item, :copyright_status, paragraphs: true) %>
+
+    </dl>
+  </div>
+
+  <div class="col-md-5 order-md-1 pr-4">
+
+    <div class="card mb-3">
+      <div class="card-header" id="attachedHeading">
+        <h2 class="h5 mb-0">
+          <a href="#" data-toggle="collapse" data-target="#attachedWorks" aria-expanded="false" aria-controls="attachedWorks">
+            <%= @admin_digitization_queue_item.works.count %> Attached Works
+          </a>
+        </h5>
+      </div>
+
+      <div id="attachedWorks" class="collapse" aria-labelledby="attachedHeading">
+        <ul class="list-unstyled card-body">
+          <% @admin_digitization_queue_item.works.order(updated_at: :desc).each do |work| %>
+            <li><%= link_to work.title, admin_work_path(work) %> <%= publication_badge(work) %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+
+    <p>
+      <%= link_to "Create new attached work", new_admin_work_path(digitization_queue_item: @admin_digitization_queue_item.id), class: "btn btn-primary mb-1" %>
+      <%= link_to "Batch create attached works", admin_batch_create_path(digitization_queue_item: @admin_digitization_queue_item.id), class: "btn btn-outline-primary" %>
+    </p>
+
+    <h2>Comments</h2>
+
+    <%= form_tag add_comment_admin_digitization_queue_item_path do %>
+      <div class="mb-4 text-right">
+        <h3 class="h5"><label for="addComment">Add Comment</label></h3>
+        <textarea class="form-control" name="comment" id="addComment" rows="3"></textarea>
+        <button class="btn btn-primary mt-1">Submit comment</button>
+      </div>
+    <% end %>
+
+    <% @admin_digitization_queue_item.queue_item_comments.includes(:user).order(created_at: :desc).each do |comment| %>
+      <div>
+        <div class="card queue-comment mb-3 d-inline-flex <% if comment.system_action? %>text-white bg-info<% end %>">
+          <div class="card-header">
+            <% if comment.user %>
+              <%= comment.user&.name || comment.user&.email %>,
+            <% end %>
+            <%= time_ago_in_words comment.created_at %> ago
+          </div>
+          <div class="card-body pb-0">
+            <%= simple_format(comment.text) %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
