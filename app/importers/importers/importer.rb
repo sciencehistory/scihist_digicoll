@@ -58,8 +58,9 @@ class Importer
     end
   end
 
+  # Won't work unless target_item was called first. Known problem, otherwise
+  # we get an infinite loop in the FileSetImporter#blank_out_for_reimport method. :(
   def preexisting_item?
-    target_item # sets the value as a side-effect if it's not set already
     @oreexisting_item
   end
 
