@@ -21,31 +21,33 @@ class Importers::RelationshipImporter
 
   # After running, check #errors for errors that you may want to output.
   def import
-    parent = Work.find_by_friendlier_id(friendlier_id)
+    Importers::Importer.without_auto_timestamps do
+      parent = Work.find_by_friendlier_id(friendlier_id)
 
-    if parent.nil?
-      add_error("Could not find work #{friendlier_id} to import relationships")
-      return false
-    end
-
-    (work_metadata['child_ids'] || []).each_with_index do |child_id, current_position|
-      # This child could be a Work *or* an Asset, so look it up this way:
-      child = Kithe::Model.find_by_friendlier_id(child_id)
-      # In theory, once you get to this point in the ingest, all the possible
-      # Assets and child Works have already been ingested. But just to be sure...
-      if child.nil?
-        add_error("ERROR: GenericWork #{parent.id}: couldn't find child #{child_id} to set membership")
+      if parent.nil?
+        add_error("Could not find work #{friendlier_id} to import relationships")
+        return false
       end
 
-      #Link the child and its parent.
-      child.parent_id = parent.id
-      child.position = current_position
-      child.save!
-    end
+      (work_metadata['child_ids'] || []).each_with_index do |child_id, current_position|
+        # This child could be a Work *or* an Asset, so look it up this way:
+        child = Kithe::Model.find_by_friendlier_id(child_id)
+        # In theory, once you get to this point in the ingest, all the possible
+        # Assets and child Works have already been ingested. But just to be sure...
+        if child.nil?
+          add_error("ERROR: GenericWork #{parent.id}: couldn't find child #{child_id} to set membership")
+        end
 
-    if work_metadata['representative_id'].present?
-      parent.representative_id = Kithe::Model.find_by_friendlier_id!(work_metadata['representative_id']).id
-      parent.save!
+        #Link the child and its parent.
+        child.parent_id = parent.id
+        child.position = current_position
+        child.save!
+      end
+
+      if work_metadata['representative_id'].present?
+        parent.representative_id = Kithe::Model.find_by_friendlier_id!(work_metadata['representative_id']).id
+        parent.save!
+      end
     end
   end
 end
