@@ -71,7 +71,7 @@ class CollectionImporter < Importers::Importer
     metadata['members'].each do | work_id |
       member = Work.find_by_friendlier_id(work_id)
       if member.nil?
-        report_via_progress_bar("ERROR: refers to nonexistent member #{work_id}")
+        add_error("ERROR: refers to nonexistent member #{work_id}")
         next
       end
       new_item.contains << member

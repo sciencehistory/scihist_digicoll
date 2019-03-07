@@ -24,7 +24,10 @@ class Importer
     #raise ArgumentError unless target_item.is_a? self.class.exportee
     @metadata = metadata
     @progress_bar ||= progress_bar
+    @errors ||= []
   end
+
+
 
   # This is the only method called on this class
   # by the rake task after instantiation.
@@ -48,15 +51,15 @@ class Importer
       @new_item.save!
     rescue StandardError => e
       if @new_item.errors.first == [:date_of_work, "is invalid"]
-        report_via_progress_bar("ERROR: bad date: #{metadata['dates']}")
+        add_error("ERROR: bad date: #{metadata['dates']}")
         @new_item.date_of_work = []
         @new_item.save!
       elsif (!@new_item.errors.first.nil?) && @new_item.errors.first.first == :related_url
-        report_via_progress_bar("ERROR: bad related_url: #{metadata['related_url']}")
+        add_error("ERROR: bad related_url: #{metadata['related_url']}")
         new_item.related_url = []
         @new_item.save!
       else
-        report_via_progress_bar("ERROR: Could not save record: #{e}")
+        add_error("ERROR: Could not save record: #{e}")
       end
     end
 
@@ -117,11 +120,18 @@ class Importer
   def post_processing()
   end
 
-  # A shortcut method for logging any errors.
-  def errors()
-    return [] if @new_item.nil?
-    @new_item.errors.full_messages
+  # an error that will be shown to operator, often that means a record could
+  # not be imported properly
+  def add_error(str)
+    @errors << str
   end
+
+  # What errors have been accumulated? Includes any validation errors
+  # on the record to be saved, and any errors added with #add_error
+  def errors()
+    @errors + (@new_item&.errors&.full_messages || [])
+  end
+
 
   # Take the new item and add all metadata to it.
   # This do not save the item.

@@ -68,7 +68,9 @@ namespace :scihist_digicoll do
 
     progress_bar.log("INFO: Setting GenericWork and Asset relationships")
     work_dir.each do |path|
-      Importers::RelationshipImporter.new(JSON.parse(File.read(path))).import
+      importer = Importers::RelationshipImporter.new(JSON.parse(File.read(path)))
+      importer.import
+      importer.errors.each { |e| progress_bar.log(e) }
       progress_bar.increment
     end
 

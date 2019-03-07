@@ -115,7 +115,7 @@ class Importers::GenericWorkImporter < Importers::Importer
 
     metadata['inscriptions'].each do |ins|
       if ins['text'].nil?
-        report_via_progress_bar("ERROR: bad inscription: location, but no text.")
+        add_error("ERROR: bad inscription: location, but no text.")
         next
       end
       params = {
