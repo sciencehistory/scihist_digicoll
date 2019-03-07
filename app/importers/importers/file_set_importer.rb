@@ -25,17 +25,14 @@ class Importers::FileSetImporter < Importers::Importer
   end
 
 
-
   # If we know the username and password for Fedora,
   # add them to the file URL. The admin user can download
   # originals from Fedora even if they're marked private.
-  def edit_metadata()
-    if @@fedora_credentials != {}
-      basic_download_url = @metadata['file_url']
-      return if basic_download_url.nil?
-      credentials = "http://#{@@fedora_credentials[:username]}:#{@@fedora_credentials[:password]}@"
-      @metadata['file_url'] = basic_download_url.sub('http://', credentials)
-    end
+  def corrected_file_url
+    return nil if @metadata['file_url'].nil?
+    return metadata["file_url"] unless @@fedora_credentials.present?
+
+    @metadata['file_url'].sub('http://', "http://#{@@fedora_credentials[:username]}:#{@@fedora_credentials[:password]}@")
   end
 
   def wipe_stale_item()
@@ -94,7 +91,7 @@ class Importers::FileSetImporter < Importers::Importer
       # where to get the file from:
 
       # file properties
-      properties = { "id" => metadata['file_url'], "storage" => "remote_url" }
+      properties = { "id" => corrected_file_url, "storage" => "remote_url" }
       @new_item.file = properties
       # end file properties
     end
