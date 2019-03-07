@@ -6,6 +6,7 @@ class Auditor
   attr_reader :metadata, :item, :report_file
 
   # metadata is the hash read from a json import file
+  # file is a (temporary) log file to write audit problems to.
   def initialize(metadata, file, options = {})
     #raise ArgumentError unless target_item.is_a? self.class.exportee
     @file = file
@@ -17,6 +18,7 @@ class Auditor
     load_item()
     if @item.nil?
       report_line("Item not found in database.")
+      return
     end
     common_checks()
     special_checks()
@@ -43,7 +45,13 @@ class Auditor
   end
 
   def report_line(str)
-    @file.puts("#{@item.type} #{@item.friendlier_id}: #{str}")
+    prefix = if @item
+      "#{@item.type} #{@item.friendlier_id}"
+    else
+      "#{self.class.name} #{metadata["id"]}"
+    end
+
+    @file.puts("#{prefix}: #{str}")
   end
 
   def load_item()
