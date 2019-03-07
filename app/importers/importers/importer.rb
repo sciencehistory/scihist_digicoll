@@ -15,8 +15,6 @@ class Importer
   # new_item will contain the actual item that we want to save to the database.
   attr_accessor :path, :metadata, :new_item, :progress_bar
 
-  @@progress_bar = nil
-
   # Creates the importer and assigns the path to the json file
   # it's going to try to import.
   #
@@ -25,7 +23,7 @@ class Importer
   def initialize(metadata, progress_bar, options = {})
     #raise ArgumentError unless target_item.is_a? self.class.exportee
     @metadata = metadata
-    @@progress_bar ||= progress_bar
+    @progress_bar ||= progress_bar
   end
 
   # This is the only method called on this class
@@ -155,7 +153,7 @@ class Importer
 
   def report_via_progress_bar(msg)
     str = "#{self.class.importee} #{metadata['id']}: #{msg}"
-    @@progress_bar.log(str)
+    @progress_bar.log(str)
   end
 
   # the old importee class name, as a string, e.g. 'FileSet'
