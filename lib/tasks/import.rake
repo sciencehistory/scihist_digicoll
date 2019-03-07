@@ -91,16 +91,34 @@ namespace :scihist_digicoll do
 
   task :import_one => :environment do
     import_dir = Rails.root.join('tmp', 'import')
-    progress_bar = ProgressBar.create(total: 1, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
-    %w(FileSet GenericWork Collection).each do |s|
-      importer_class = "Importers::#{s}Importer".constantize
-      importer_class.file_paths.each do |path|
-        next unless path.include? ENV['THE_ITEM']
-        importer = importer_class.new(path, progress_bar)
-        importer.import
-      end
-    end # exporters.each
-    puts 'WARNING: This is just for testing. Please run a full import to reconnect this item to its containers / containees.'
+
+    # find the item we want, could be fileset, work, or collection
+    fileset = Pathname.new(import_dir.join("filesets").join("#{ENV['THE_ITEM']}.json"))
+    work = Pathname.new(import_dir.join("genericworks").join("#{ENV['THE_ITEM']}.json"))
+    collection = Pathname.new(import_dir.join("collections").join("#{ENV['THE_ITEM']}.json"))
+
+    importer = if fileset.exist?
+      puts "Importing fileset"
+      Importers::FileSetImporter.new(JSON.parse(File.read(fileset)))
+    elsif work.exist?
+      puts "Importing work"
+      Importers::GenericWorkImporter.new(JSON.parse(File.read(work)))
+    elsif collection.exist?
+      puts "Importing collection"
+      Importers::CollectionImporter.new(JSON.parse(File.read(collection)))
+    else
+      raise ArgumentError.new("Couldn't find import file for #{ENV['THE_ITEM']}")
+    end
+
+    importer.import
+    if importer.errors.present?
+      puts "\n\nErrors: "
+      puts importer.errors
+    else
+      puts "\n\nNo errors."
+    end
+
+    puts "\n\nWARNING: This is just for testing. Please run a full import to reconnect this item to its containers / containees."
   end
 
   task :audit_import => :environment do
