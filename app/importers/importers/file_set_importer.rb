@@ -43,7 +43,7 @@ module Importers
         # TODO: Maybe should let kithe/shrine take care of this, in a way that there's
         # never a missing file even temporarily. But have to confirm kithe/shrine will,
         # especially without using bg jobs.
-        wipe_file_and_derivatives(p_i)
+        wipe_file_and_derivatives(item)
       end
 
       # Wipe other stale metadata, regardless.
