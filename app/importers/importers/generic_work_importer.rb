@@ -30,12 +30,12 @@ class Importers::GenericWorkImporter < Importers::Importer
   # This may no longer be needed, but having these be nil rather than
   # empty arrays wasn't handled well by one of the front-end templates.
   def empty_arrays()
-      new_item.date_of_work = []
-      new_item.place = []
-      new_item.creator = []
-      new_item.exhibition = []
-      new_item.additional_credit = []
-      new_item.inscription = []
+      target_item.date_of_work = []
+      target_item.place = []
+      target_item.creator = []
+      target_item.exhibition = []
+      target_item.additional_credit = []
+      target_item.inscription = []
   end
 
   def add_physical_container()
@@ -46,14 +46,14 @@ class Importers::GenericWorkImporter < Importers::Importer
       split('|').
       map{ |x| { map[x[0]] => x[1..-1] } }.
       inject(:merge)
-    new_item.build_physical_container(args)
+    target_item.build_physical_container(args)
   end
 
   def add_creator()
     Work::Creator::CATEGORY_VALUES.each do |k|
       next if metadata[k].nil?
       metadata[k].each do |v|
-        new_item.build_creator({'category'=>k, 'value'=>v})
+        target_item.build_creator({'category'=>k, 'value'=>v})
       end
     end
   end
@@ -66,7 +66,7 @@ class Importers::GenericWorkImporter < Importers::Importer
         'role' => role_map.fetch(a_c['role'], a_c['role']),
         'name' => a_c['name']
       }
-      new_item.build_additional_credit(params)
+      target_item.build_additional_credit(params)
     end
   end
 
@@ -79,7 +79,7 @@ class Importers::GenericWorkImporter < Importers::Importer
       d['start_qualifier'].downcase!  if d['start_qualifier']
       d['finish_qualifier'].downcase! if d['finish_qualifier']
 
-      new_item.build_date_of_work(d)
+      target_item.build_date_of_work(d)
     end
   end
 
@@ -87,7 +87,7 @@ class Importers::GenericWorkImporter < Importers::Importer
     Work::Place::CATEGORY_VALUES.each do |k|
       next if metadata[k].nil?
       metadata[k].each do |v|
-        new_item.build_place({'category'=>k, 'value'=>v})
+        target_item.build_place({'category'=>k, 'value'=>v})
       end
     end
   end
@@ -104,14 +104,14 @@ class Importers::GenericWorkImporter < Importers::Importer
           'location' => ins['location'],
           'text'     => ins['text']
       }
-      new_item.build_inscription(params)
+      target_item.build_inscription(params)
     end
   end
 
   def add_external_id()
     @metadata['identifier'].each do |x|
       category, value = x.split('-')
-      @new_item.build_external_id({'category' => category, 'value' => value})
+      target_item.build_external_id({'category' => category, 'value' => value})
     end
   end
 
@@ -124,13 +124,13 @@ class Importers::GenericWorkImporter < Importers::Importer
       next if @metadata[k].nil?
       v = metadata[k].class == String ? metadata[k] : metadata[k].first
       property_to_set = mapping.fetch(k, k)
-      @new_item.send("#{property_to_set}=", v)
+      target_item.send("#{property_to_set}=", v)
     end
   end
 
   def add_resource_type
     # Convert the resource_type / format strings to slugs:
-    @new_item.format = (metadata['resource_type'] || []).map! {|x| x.downcase.gsub(' ', '_') }
+    target_item.format = (metadata['resource_type'] || []).map! {|x| x.downcase.gsub(' ', '_') }
   end
 
   def add_array_attributes()
@@ -140,9 +140,9 @@ class Importers::GenericWorkImporter < Importers::Importer
     %w(extent language genre_string subject additional_title exhibition series_arrangement related_url).each do |source_k|
       dest_k = mapping.fetch(source_k, source_k)
       if metadata[source_k].nil?
-        @new_item.send("#{dest_k }=", [])
+        target_item.send("#{dest_k }=", [])
       else
-        @new_item.send("#{dest_k }=", metadata[source_k])
+        target_item.send("#{dest_k }=", metadata[source_k])
       end
     end
   end
