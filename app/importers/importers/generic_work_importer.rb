@@ -1,21 +1,6 @@
 module Importers
 class Importers::GenericWorkImporter < Importers::Importer
 
-  # These class variables store information about relationships between
-  # items. They're populated in store_parent_info, and they are later used
-  # by the class method link_children_and_parents to associate Assets and Works
-  # with their parents. Note that collection memberships are dealt with entirely by
-  # collection_importer.
-
-  # { parent_fid => [ child_fid, child_fid, child_fid], [...] }
-  @@parent_to_child_hash ||= {}
-
-  # { work_1_fid => representative_fid; work_2_fid => representative_2_fid; [...] }
-  @@representative_hash  ||= {}
-
-  # { work_1_fid => thumbnail_1_fid; work_2_fid => thumbnail_2_fid; [...] }
-  @@thumbnail_hash       ||= {}
-
   def self.importee()
     return 'GenericWork'
   end
