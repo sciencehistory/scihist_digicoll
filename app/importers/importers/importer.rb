@@ -72,14 +72,6 @@ class Importer
     unless errors == []
       report_via_progress_bar(errors)
     end
-
-
-  end
-
-  # Any initial adjustments to the metadata.
-  # Not currently implemented in any subclasses;
-  # we may not really need this method.
-  def pre_clean()
   end
 
   # subclass this to edit the hash that gets used by the populate function...
