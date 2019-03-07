@@ -49,7 +49,8 @@ RSpec.describe Importers::GenericWorkImporter do
         "6q182m18c",
         "1831cm25h",
         "8623hz81w"
-      ]
+      ],
+      "medium" => ["Vellum"]
     }
   end
 
@@ -63,6 +64,7 @@ RSpec.describe Importers::GenericWorkImporter do
     expect(new_work.title).to match /Adulterations/
     expect(new_work.created_at).to eq(DateTime.parse(metadata["date_uploaded"]))
     expect(new_work.published?).to be(false)
+    expect(new_work.medium).to eq(["Vellum"])
   end
 
 
