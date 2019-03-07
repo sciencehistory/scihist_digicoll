@@ -56,7 +56,7 @@ RSpec.describe Importers::GenericWorkImporter do
     let(:generic_work_importer) { Importers::GenericWorkImporter.new(metadata) }
 
     it "imports" do
-      generic_work_importer.save_item()
+      generic_work_importer.import
       expect(Work.first.title).to match /Adulterations/
     end
   end
