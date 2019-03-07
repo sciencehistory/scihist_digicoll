@@ -10,6 +10,14 @@ class CollectionImporter < Importers::Importer
       new_item.related_url = metadata["related_url"]
     end
 
+    if metadata['members'].present?
+      member_ids = Kithe::Model.where(friendlier_id: metadata['members']).pluck(:id)
+      if member_ids.count != metadata['members'].count
+        add_error("some members may be missing, expected #{metadata['members'].count}, only found #{member_ids.count} to associate")
+      end
+      new_item.contain_ids = member_ids
+    end
+
     create_or_update_thumbnail()
   end
 
@@ -23,10 +31,6 @@ class CollectionImporter < Importers::Importer
 
   def self.destination_class()
     return Collection
-  end
-
-  def post_processing()
-    update_collection_members()
   end
 
   def create_or_update_thumbnail()
@@ -60,24 +64,5 @@ class CollectionImporter < Importers::Importer
     return nil unless  File.exists? path
     path.to_s
   end
-
-  def update_collection_members()
-    return if metadata['members'].nil?
-
-    # Possible refactor:
-    # new_item.contain_ids = Kithe::Model.where(friendlier_id: metadata['members']).pluck(:id)
-    # new_item.save!
-
-    metadata['members'].each do | work_id |
-      member = Work.find_by_friendlier_id(work_id)
-      if member.nil?
-        add_error("ERROR: refers to nonexistent member #{work_id}")
-        next
-      end
-      new_item.contains << member
-    end
-    new_item.save!
-  end
-
 end
 end
