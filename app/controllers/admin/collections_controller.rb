@@ -74,9 +74,12 @@ class Admin::CollectionsController < ApplicationController
     # This could be done in a form object or otherwise abstracted, but this is good
     # enough for now.
     def collection_params
+      permitted_attributes = [:title, :description]
+      permitted_attributes << :published if can?(:publish, @collection)
+
       params.
         require(:collection).
-        permit(:title, :description, :representative_attributes => {}, :related_url_attributes => []).tap do |hash|
+        permit(*permitted_attributes, :representative_attributes => {}, :related_url_attributes => []).tap do |hash|
           # sanitize description
           if hash[:description].present?
             hash[:description] = DescriptionSanitizer.new.sanitize(hash[:description])

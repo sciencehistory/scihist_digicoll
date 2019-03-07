@@ -13,7 +13,6 @@ class Admin::AssetsController < ApplicationController
   # PATCH/PUT /works/1.json
   def update
     @asset = Asset.find_by_friendlier_id!(params[:id])
-    asset_params = params.require(:asset).permit(:title)
 
     respond_to do |format|
       if @asset.update(asset_params)
@@ -92,5 +91,14 @@ class Admin::AssetsController < ApplicationController
     end
 
     redirect_to edit_admin_work_path(new_child)
+  end
+
+  private
+
+  def asset_params
+    allowed_params = [:title]
+    allowed_params << :published if can?(:publish, @asset)
+
+    asset_params = params.require(:asset).permit(*allowed_params)
   end
 end
