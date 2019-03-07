@@ -1,13 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Importers::CollectionImporter do
-  class ProgressBarStub
-    def log()
-    end
-    def increment()
-    end
-  end
-
   context "Import collection" do
     let(:metadata) do
       {
@@ -34,7 +27,7 @@ RSpec.describe Importers::CollectionImporter do
     end
 
     context "simple collection" do
-      let(:collection_importer) { Importers::CollectionImporter.new(metadata, ProgressBarStub.new()) }
+      let(:collection_importer) { Importers::CollectionImporter.new(metadata) }
 
       it "imports" do
         collection_importer.save_item()

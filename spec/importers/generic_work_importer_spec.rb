@@ -4,13 +4,6 @@ require 'rails_helper'
 
 
 RSpec.describe Importers::GenericWorkImporter do
-  class ProgressBarStub
-    def log(*args)
-    end
-    def increment(*args)
-    end
-  end
-
   let(:metadata) do
     {
       "id"=>"8049g504g",
@@ -60,7 +53,7 @@ RSpec.describe Importers::GenericWorkImporter do
   end
 
   context "simple work" do
-    let(:generic_work_importer) { Importers::GenericWorkImporter.new(metadata, ProgressBarStub.new) }
+    let(:generic_work_importer) { Importers::GenericWorkImporter.new(metadata) }
 
     it "imports" do
       generic_work_importer.save_item()

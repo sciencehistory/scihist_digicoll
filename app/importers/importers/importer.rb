@@ -13,17 +13,16 @@ class Importer
   # path is where to find the json import file for this item
   # metadata will contain the item's metadata once that json file is parsed
   # new_item will contain the actual item that we want to save to the database.
-  attr_accessor :path, :metadata, :new_item, :progress_bar
+  attr_accessor :path, :metadata, :new_item
 
   # Creates the importer and assigns the path to the json file
   # it's going to try to import.
   #
   # Argument metadata is a hash read from an individual import.json file, contents
   # differ depending on file type.
-  def initialize(metadata, progress_bar, options = {})
+  def initialize(metadata, options = {})
     #raise ArgumentError unless target_item.is_a? self.class.exportee
     @metadata = metadata
-    @progress_bar ||= progress_bar
     @errors ||= []
   end
 
