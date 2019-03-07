@@ -29,6 +29,13 @@ namespace :scihist_digicoll do
     # Some options. If this were a CLI thing, we could have better CLI ui.
     disable_bytestream_import = ENV['DISABLE_BYTESTREAM_IMPORT'] == "true"
 
+    # We normally do NOT trigger derivative creation. You can later run:
+    # ./bin/rake kithe:create_derivatives:lazy_defaults
+    # But if you want to force it here. Note derivatives will only
+    # be created if the importer notices the file has changed and needs
+    # to be imported.
+    create_derivatives = ENV['CREATE_DERIVATIVES'] == "true"
+
     import_dir = Rails.root.join('tmp', 'import')
     fileset_dir = Dir[import_dir.join("filesets").join("*.json")]
     work_dir = Dir[import_dir.join("genericworks").join("*.json")]
@@ -55,7 +62,8 @@ namespace :scihist_digicoll do
     fileset_dir.each do |path|
       Importers::FileSetImporter.new(
         JSON.parse(File.read(path)),
-        disable_bytestream_import: disable_bytestream_import).tap do |importer|
+        disable_bytestream_import: disable_bytestream_import,
+        create_derivatives: create_derivatives).tap do |importer|
           importer.import
           importer.errors.each { |e| progress_bar.log(e) }
         end
