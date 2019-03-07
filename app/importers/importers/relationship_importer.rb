@@ -38,14 +38,11 @@ class Importers::RelationshipImporter
       child.parent_id = parent.id
       child.position = current_position
       child.save!
+    end
 
-      # Set the representative.
-      # TODO: This would break if the representative happens to not be
-      # not the child of this item, which could in theory be the case.
-      if child.friendlier_id == rep_fid
-        parent.representative_id = child.id
-        parent.save!
-      end
+    if rep_fid
+      parent.representative_id = Kithe::Model.find_by_friendlier_id!(rep_fid).id
+      parent.save!
     end
   end
 end
