@@ -132,7 +132,7 @@ module Importers
       mapping = {
         'genre_string' => 'genre'
       }
-      %w(extent language genre_string subject additional_title exhibition series_arrangement related_url).each do |source_k|
+      %w(extent medium language genre_string subject additional_title exhibition series_arrangement related_url).each do |source_k|
         dest_k = mapping.fetch(source_k, source_k)
         if metadata[source_k].nil?
           target_item.send("#{dest_k }=", [])
