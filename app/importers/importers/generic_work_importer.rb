@@ -95,10 +95,6 @@ module Importers
       return if metadata['inscriptions'].nil?
 
       metadata['inscriptions'].each do |ins|
-        if ins['text'].nil?
-          add_error("ERROR: bad inscription: location, but no text.")
-          next
-        end
         params = {
             'location' => ins['location'],
             'text'     => ins['text']
