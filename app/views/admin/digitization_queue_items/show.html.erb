@@ -1,6 +1,7 @@
 <div class="mb-4">
   <div>Digitization Queue: <%= link_to @admin_digitization_queue_item.collecting_area.humanize, admin_digitization_queue_items_url(@admin_digitization_queue_item.collecting_area) %></div>
   <h1><%= @admin_digitization_queue_item.title %></h1>
+  <p class="text-muted"><%= @admin_digitization_queue_item.status.humanize %></p>
 </div>
 
 <div class="row">
