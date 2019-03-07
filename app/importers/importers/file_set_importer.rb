@@ -19,9 +19,11 @@ module Importers
     #     we won't actually import any bytestreams at all, whether they were already
     #     there or not. Still import Asset models, but no `#file` in there. Can create
     #     inconsistent data in the import, missing files, but useful for testing runthroughs.
+    #   create_derivatives: default false, if true will force inline derivative creation
     def initialize(metadata, options = {})
       super
       @disable_bytestream_import = !!options[:disable_bytestream_import]
+      @create_derivatives = !!options[:create_derivatives]
     end
 
 
@@ -79,10 +81,13 @@ module Importers
         target_item.file_attacher.set_promotion_directives(promote: "inline")
         # Now the promotion is happening inline (not in a bg job), but the promotion will ordinarily
         # kick off yet another job for derivatives creation.
-        # We can either tell it NOT to do derivatives creation at all.
-        # target_item.file_attacher.set_promotion_directives(create_derivatives: false)
-        # or we can tell it to create derivatives inline:
-        target_item.file_attacher.set_promotion_directives(create_derivatives: "inline")
+        # We can either tell it NOT to do derivatives creation at all, or
+        # we can tell it to do it inline (no bg job)
+        if @create_derivatives
+          target_item.file_attacher.set_promotion_directives(create_derivatives: "inline")
+        else
+          target_item.file_attacher.set_promotion_directives(create_derivatives: false)
+        end
         # where to get the file from:
 
         # file properties
