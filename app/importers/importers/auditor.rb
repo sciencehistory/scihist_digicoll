@@ -59,18 +59,5 @@ class Auditor
   def self.destination_class()
     raise NotImplementedError
   end
-
-  def self.file_paths()
-     files = Dir.entries(dir).select{|x| x.end_with? ".json"}
-     files.map{|x| File.join(dir,x)}
-  end
-
-  def self.dir()
-    Rails.root.join('tmp', 'import', dirname)
-  end
-
-  def self.dirname()
-    "#{importee.downcase}s"
-  end
 end
 end
