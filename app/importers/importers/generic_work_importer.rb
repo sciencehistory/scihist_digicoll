@@ -24,20 +24,9 @@ class Importers::GenericWorkImporter < Importers::Importer
     return Work
   end
 
-  def edit_metadata()
-    if @metadata['resource_type'].nil?
-      report_via_progress_bar("ERROR: no resource type / format given")
-    else
-      # Convert the resource_type / format strings to slugs:
-      @metadata['resource_type'].map! {|x| x.downcase.gsub(' ', '_') }
-    end
-
-    unless @metadata['dates'].nil?
-      @metadata['dates'].each { |x| x['start_qualifier'].downcase!  unless ( x.nil? || x['start_qualifier'].nil?)}
-      @metadata['dates'].each { |x| x['finish_qualifier'].downcase! unless ( x.nil? || x['finish_qualifier'].nil?) }
-    end
+  def corrected_resource_type
+     (@metadata['resource_type'] || []).map! {|x| x.downcase.gsub(' ', '_') }
   end
-
 
   def populate()
     super
@@ -45,6 +34,7 @@ class Importers::GenericWorkImporter < Importers::Importer
     add_external_id()
     add_scalar_attributes()
     add_array_attributes()
+    add_resource_type()
     add_creator()
     add_additional_credit()
     add_date()
@@ -97,6 +87,13 @@ class Importers::GenericWorkImporter < Importers::Importer
   end
 
   def add_date()
+
+    # unless @metadata['dates'].nil?
+    #   @metadata['dates'].each { |x| x['start_qualifier'].downcase!  unless ( x.nil? || x['start_qualifier'].nil?)}
+    #   @metadata['dates'].each { |x| x['finish_qualifier'].downcase! unless ( x.nil? || x['finish_qualifier'].nil?) }
+    # end
+
+
     return if metadata['dates'].nil?
     metadata['dates'].each do |d|
       next if d.nil?
@@ -149,12 +146,16 @@ class Importers::GenericWorkImporter < Importers::Importer
     end
   end
 
+  def add_resource_type
+    # Convert the resource_type / format strings to slugs:
+    @new_item.format = (metadata['resource_type'] || []).map! {|x| x.downcase.gsub(' ', '_') }
+  end
+
   def add_array_attributes()
     mapping = {
-      'resource_type' => 'format',
       'genre_string' => 'genre'
     }
-    %w(resource_type extent language genre_string subject additional_title exhibition series_arrangement related_url).each do |source_k|
+    %w(extent language genre_string subject additional_title exhibition series_arrangement related_url).each do |source_k|
       dest_k = mapping.fetch(source_k, source_k)
       if metadata[source_k].nil?
         @new_item.send("#{dest_k }=", [])
