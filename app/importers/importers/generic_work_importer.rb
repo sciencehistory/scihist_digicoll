@@ -1,6 +1,5 @@
 module Importers
 class Importers::GenericWorkImporter < Importers::Importer
-
   def self.importee()
     return 'GenericWork'
   end
@@ -72,16 +71,14 @@ class Importers::GenericWorkImporter < Importers::Importer
   end
 
   def add_date()
-
-    # unless @metadata['dates'].nil?
-    #   @metadata['dates'].each { |x| x['start_qualifier'].downcase!  unless ( x.nil? || x['start_qualifier'].nil?)}
-    #   @metadata['dates'].each { |x| x['finish_qualifier'].downcase! unless ( x.nil? || x['finish_qualifier'].nil?) }
-    # end
-
-
     return if metadata['dates'].nil?
+
     metadata['dates'].each do |d|
       next if d.nil?
+
+      d['start_qualifier'].downcase!  if d['start_qualifier']
+      d['finish_qualifier'].downcase! if d['finish_qualifier']
+
       new_item.build_date_of_work(d)
     end
   end
