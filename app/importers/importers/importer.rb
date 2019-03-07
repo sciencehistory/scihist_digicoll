@@ -31,10 +31,6 @@ class Importer
   # It reads metadata from file, creates
   # an item based on it, then saves it to the database.
   def save_item()
-    # Make any adjustments to @metadata before it's applied to
-    # to the new item.
-    edit_metadata()
-
     if preexisting_item.nil?
       # Create the Asset, Work or Collection that we want to ingest.
       @new_item = self.class.destination_class().new()
@@ -72,10 +68,6 @@ class Importer
     unless errors == []
       report_via_progress_bar(errors)
     end
-  end
-
-  # subclass this to edit the hash that gets used by the populate function...
-  def edit_metadata()
   end
 
   def preexisting_item()
