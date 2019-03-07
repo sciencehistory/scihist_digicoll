@@ -64,11 +64,6 @@ class Importer
         add_error("ERROR: Could not save record: #{e}")
       end
     end
-
-    # Any tasks that need to be applied *after* save.
-    # Typically these tasks involve associating the newly-created @new_item
-    # with other items in the database.
-    post_processing()
   end
 
   def preexisting_item()
@@ -109,13 +104,6 @@ class Importer
     things_to_wipe = p_i.attributes.keys - ['file_data', 'id', 'type', 'updated_at', 'created_at']
     things_to_wipe.each { | atttr | p_i.send("#{atttr}=", nil) }
     return p_i
-  end
-
-  # This is run after each item is saved.
-  # Useful for associating the item with other already-ingested items,
-  # or storing info about the item so it can be associated with
-  # items soon to be ingested.
-  def post_processing()
   end
 
   # an error that will be shown to operator, often that means a record could
