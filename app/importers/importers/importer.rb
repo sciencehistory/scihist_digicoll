@@ -73,17 +73,7 @@ class Importer
     begin
       target_item.save!
     rescue StandardError => e
-      if target_item.errors.first == [:date_of_work, "is invalid"]
-        add_error("ERROR: bad date: #{metadata['dates']}")
-        target_item.date_of_work = []
-        target_item.save!
-      elsif (!target_item.errors.first.nil?) && target_item.errors.first.first == :related_url
-        add_error("ERROR: bad related_url: #{metadata['related_url']}")
-        target_item.related_url = []
-        target_item.save!
-      else
-        add_error("ERROR: Could not save record: #{e}")
-      end
+      add_error("ERROR: Could not save record: #{e}")
     end
   end
 
