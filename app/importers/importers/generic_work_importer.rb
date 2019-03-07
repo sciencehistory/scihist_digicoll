@@ -13,7 +13,6 @@ class Importers::GenericWorkImporter < Importers::Importer
   end
 
   def populate()
-    super
     empty_arrays()
     add_external_id()
     add_scalar_attributes()

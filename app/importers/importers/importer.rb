@@ -68,6 +68,7 @@ class Importer
   # It reads metadata from file, creates
   # an item based on it, then saves it to the database.
   def import
+    common_populate
     populate
     save_target_item
   end
@@ -141,14 +142,16 @@ class Importer
 
   # Take the new item and add all metadata to it.
   # This do not save the item.
-  # The three subclasses call this via super but also
-  # add a fair amount of their own metadata processing.
-  def populate()
+  def common_populate()
     target_item.friendlier_id = @metadata['id']
     target_item.title = @metadata['title'].first
     unless metadata['date_uploaded'].nil?
       target_item.created_at = DateTime.parse(metadata['date_uploaded'])
     end
+  end
+
+  # no-op in base class, override in sub-class to do something
+  def populate
   end
 
   # the old importee class name, as a string, e.g. 'FileSet'
