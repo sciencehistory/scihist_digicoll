@@ -6,167 +6,157 @@ require "byebug"
 # from the old chf-sufia repository.
 # This class is called from lib/tasks/import.rake ; more info about
 # how to run the task may be found at that file.
-
+#
+# The general API for any importer is:
+#     SomeImporter.new(metadata_hash).import
+#
+# Sub-classes will generally implement #populate to transfer data from
+# #metadata to #target_item
 module Importers
 class Importer
 
-  # path is where to find the json import file for this item
   # metadata will contain the item's metadata once that json file is parsed
-  # new_item will contain the actual item that we want to save to the database.
-  attr_accessor :path, :metadata, :new_item, :progress_bar
-
-  @@progress_bar = nil
+  attr_accessor :metadata
 
   # Creates the importer and assigns the path to the json file
   # it's going to try to import.
-  # At the moment we don't use options.
-  def initialize(path, progress_bar, options = {})
+  #
+  # Argument metadata is a hash read from an individual import.json file, contents
+  # differ depending on file type.
+  def initialize(metadata, options = {})
     #raise ArgumentError unless target_item.is_a? self.class.exportee
-    @path = path
-    @metadata = {}
-    @@progress_bar ||= progress_bar
+    @metadata = metadata
+    @errors ||= []
+  end
+
+
+  # Returns an ActiveRecord model instance, that is the primary target item to save in the import.
+  # * Will find an existing object in the db, and blank out some of it's metadata for freshening up from import
+  # * Or a new AR model if it didn't already exist.
+  #
+  # Lazily loads with memoization, so checks the db on first time you call it, after that remembers
+  # the object it came up with before, so you can call it as much as you want.
+  #
+  # Often used in #populate for setting metadata based on import json files:
+  #     target_item.title = "whataever"
+  #
+  # Also sets ivar @preexisting_item for use with `#preexisting_item?` as a side-effect (bit hacky,
+  # but we're refactoring here.)
+  def target_item
+    @target_item ||= begin
+      model_object = self.class.destination_class.where(friendlier_id:@metadata['id']).first
+      if (model_object)
+        @preexisting_item = true
+        # let's wipe some of it out
+        blank_out_for_reimport(model_object)
+      else
+        @preexisting_item = false
+        # wasn't already existing in db, we need to create one
+        model_object = self.class.destination_class.new
+      end
+      model_object
+    end
+  end
+
+  # Won't work unless target_item was called first. Known problem, otherwise
+  # we get an infinite loop in the FileSetImporter#blank_out_for_reimport method. :(
+  def preexisting_item?
+    @oreexisting_item
   end
 
   # This is the only method called on this class
   # by the rake task after instantiation.
   # It reads metadata from file, creates
   # an item based on it, then saves it to the database.
-  def save_item()
-    # Parse the metadata from a file into @metadata.
-    read_from_file()
+  def import
+    common_populate
+    populate
+    save_target_item
+  end
 
-    # Make any adjustments to @metadata before it's applied to
-    # to the new item.
-    edit_metadata()
-
-    if preexisting_item.nil?
-      # Create the Asset, Work or Collection that we want to ingest.
-      @new_item = self.class.destination_class().new()
-    else
-      # If a stale item already exists in the system from a prior ingest,
-      # wipe the stale item so it can be updated
-      @new_item = wipe_stale_item()
-    end
-
-
-    # Apply the metadata from @metadata to the @new_item.
+  # After running, check #errors for any errors you may want to report
+  # to the user.
+  def save_target_item()
+    # Apply the metadata from @metadata to the target_item.
     populate()
 
     begin
-      @new_item.save!
-    rescue
-      if @new_item.errors.first == [:date_of_work, "is invalid"]
-        report_via_progress_bar("ERROR: bad date: #{metadata['dates']}")
-        @new_item.date_of_work = []
-        @new_item.save!
-      elsif (!@new_item.errors.first.nil?) && @new_item.errors.first.first == :related_url
-        report_via_progress_bar("ERROR: bad related_url: #{metadata['related_url']}")
-        new_item.related_url = []
-        @new_item.save!
-      end
+      target_item.save!
+    rescue StandardError => e
+      add_error("ERROR: Could not save record: #{e}")
     end
-
-    # Any tasks that need to be applied *after* save.
-    # Typically these tasks involve associating the newly-created @new_item
-    # with other items in the database.
-    post_processing()
-
-    @@progress_bar.increment
-    unless errors == []
-      report_via_progress_bar(errors)
-    end
-
-
   end
 
-  # Parse the json file and add its contents to @metadata.
-  def read_from_file()
-    file = File.read(@path)
-    @metadata = JSON.parse(file)
-  end
+  # when we have an object already in the db that we are targetting for an import,
+  # we may want to blank out some of it's data before applying the import data.
+  #
+  # Does _not_ call "save" on model passed in, but may (for now) fetch and save other objects.
+  def blank_out_for_reimport(model)
+    raise RuntimeError, "Can't wipe a nil item." if model.nil?
 
-  # Any initial adjustments to the metadata.
-  # Not currently implemented in any subclasses;
-  # we may not really need this method.
-  def pre_clean()
-  end
-
-  # subclass this to edit the hash that gets used by the populate function...
-  def edit_metadata()
-  end
-
-  def preexisting_item()
-    # There can be at most one such preexisting item
-    # if we trust the uniqueness of the key.
-    klass = self.class.destination_class
-
-    # TODO replace this by find_by_friendlier_id
-    matches = klass.where(friendlier_id:@metadata['id'])
-    matches == [] ? nil : matches.first
-  end
-
-
-  def wipe_stale_item()
-    p_i = preexisting_item
-    raise RuntimeError, "Can't wipe a nil item." if p_i.nil?
-
+    # Not sure we need to do this
     # To avoid duplicates...
-    p_i.members.each do |child|
+    model.members.each do |child|
       child.parent = nil
       child.save!
     end
 
-    (Kithe::Model.where representative_id: p_i.id).each do |r|
+    # Not sure we need to do this
+    (Kithe::Model.where representative_id: model.id).each do |r|
       r.representative_id = nil
       r.save!
     end
 
-    (Kithe::Model.where leaf_representative_id: p_i.id).each do |r|
+    # Not sure we need to do this
+    (Kithe::Model.where leaf_representative_id: model.id).each do |r|
       r.leaf_representative_id = nil
       r.save!
     end
 
-    p_i.contains = [] if p_i.is_a? Collection
-    p_i.contained_by = []
+    # Not sure we need to do this
+    model.contains = [] if model.is_a? Collection
+    model.contained_by = []
 
     # and ordinary attributes too:
 
-    p_i.json_attributes = {}
-    things_to_wipe = p_i.attributes.keys - ['file_data', 'id', 'type', 'updated_at', 'created_at']
-    things_to_wipe.each { | atttr | p_i.send("#{atttr}=", nil) }
-    return p_i
+    model.json_attributes = {}
+    # why not wipe updated_at and created_at too?
+    things_to_wipe = model.attributes.keys - ['file_data', 'id', 'type', 'updated_at', 'created_at']
+    things_to_wipe.each { | atttr | model.send("#{atttr}=", nil) }
+    return model
   end
 
-  # This is run after each item is saved.
-  # Useful for associating the item with other already-ingested items,
-  # or storing info about the item so it can be associated with
-  # items soon to be ingested.
-  # Not to be confused with class_post_processing, which
-  # runs only after all items of this type have already been ingested.
-  def post_processing()
+  # an error that will be shown to operator, often that means a record could
+  # not be imported properly
+  def add_error(str)
+    @errors << str
   end
 
-  # A shortcut method for logging any errors.
+  # What errors have been accumulated? Includes any validation errors
+  # on the record to be saved, and any errors added with #add_error
   def errors()
-    return [] if @new_item.nil?
-    @new_item.errors.full_messages
-  end
-
-  # Take the new item and add all metadata to it.
-  # This do not save the item.
-  # The three subclasses call this via super but also
-  # add a fair amount of their own metadata processing.
-  def populate()
-    @new_item.friendlier_id = @metadata['id']
-    @new_item.title = @metadata['title'].first
-    unless metadata['date_uploaded'].nil?
-      @new_item.created_at = DateTime.parse(metadata['date_uploaded'])
+    (@errors + (target_item&.errors&.full_messages || [])).collect do |str|
+      "#{self.class.importee} #{metadata['id']}: #{str}"
     end
   end
 
-  def report_via_progress_bar(msg)
-    str = "#{self.class.importee} #{metadata['id']}: #{msg}"
-    @@progress_bar.log(str)
+
+  # Take the new item and add all metadata to it.
+  # This do not save the item.
+  def common_populate()
+    target_item.friendlier_id = @metadata['id']
+    target_item.title = @metadata['title'].first
+    unless metadata['date_uploaded'].nil?
+      target_item.created_at = DateTime.parse(metadata['date_uploaded'])
+    end
+
+    if metadata["access_control"] == "public"
+      target_item.published = true
+    end
+  end
+
+  # no-op in base class, override in sub-class to do something
+  def populate
   end
 
   # the old importee class name, as a string, e.g. 'FileSet'
@@ -179,27 +169,6 @@ class Importer
     raise NotImplementedError
   end
 
-  # An array of paths to all the files that this class can import
-  def self.file_paths()
-     files = Dir.entries(dir).select{|x| x.end_with? ".json"}
-     files.map{|x| File.join(dir,x)}
-  end
-
-  def self.dir()
-    Rails.root.join('tmp', 'import', dirname)
-  end
-
-  #The names of the directory where this sort of item's json files can be found.
-  def self.dirname()
-    "#{importee.downcase}s"
-  end
-
-  # This class method gets called only after all
-  # items of a particular type are saved in the DB and thus have UUIDs.
-  # Not to be confused with processing, which runs once for each item,
-  # after the item has been saved.
-  def self.class_post_processing()
-  end
 
 end
 end

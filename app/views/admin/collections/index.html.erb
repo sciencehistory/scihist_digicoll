@@ -17,7 +17,7 @@
       <tr>
         <td><%= thumb_image_tag(collection.leaf_representative, size: :mini, image_missing_text: true) %>
         <td><%= collection.friendlier_id %>
-        <td><%= collection.title %></td>
+        <td><%= collection.title %> <%= publication_badge(collection) %></td>
         <td>
           <%= link_to 'Edit', edit_admin_collection_path(collection), class: "btn btn-sm btn-outline-primary" %>
           <% if can? :destroy, collection %>

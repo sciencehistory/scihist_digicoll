@@ -111,6 +111,52 @@ CREATE TABLE ar_internal_metadata (
 
 
 --
+-- Name: digitization_queue_items; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE digitization_queue_items (
+    id bigint NOT NULL,
+    title character varying,
+    collecting_area character varying,
+    bib_number character varying,
+    location character varying,
+    accession_number character varying,
+    museum_object_id character varying,
+    box character varying,
+    folder character varying,
+    dimensions character varying,
+    materials character varying,
+    scope text,
+    instructions text,
+    additional_notes text,
+    copyright_status character varying,
+    status character varying DEFAULT 'awaiting_dig_on_cart'::character varying,
+    status_changed_at timestamp without time zone,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: digitization_queue_items_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE digitization_queue_items_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: digitization_queue_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE digitization_queue_items_id_seq OWNED BY digitization_queue_items.id;
+
+
+--
 -- Name: kithe_derivatives; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -169,8 +215,44 @@ CREATE TABLE kithe_models (
     friendlier_id character varying DEFAULT kithe_models_friendlier_id_gen('2176782336'::bigint, '78364164095'::bigint) NOT NULL,
     file_data jsonb,
     representative_id uuid,
-    leaf_representative_id uuid
+    leaf_representative_id uuid,
+    digitization_queue_item_id bigint,
+    published boolean
 );
+
+
+--
+-- Name: queue_item_comments; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE queue_item_comments (
+    id bigint NOT NULL,
+    digitization_queue_item_id bigint NOT NULL,
+    user_id bigint,
+    text text,
+    system_action boolean,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: queue_item_comments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE queue_item_comments_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: queue_item_comments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE queue_item_comments_id_seq OWNED BY queue_item_comments.id;
 
 
 --
@@ -221,10 +303,24 @@ ALTER SEQUENCE users_id_seq OWNED BY users.id;
 
 
 --
+-- Name: digitization_queue_items id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY digitization_queue_items ALTER COLUMN id SET DEFAULT nextval('digitization_queue_items_id_seq'::regclass);
+
+
+--
 -- Name: kithe_derivatives id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY kithe_derivatives ALTER COLUMN id SET DEFAULT nextval('kithe_derivatives_id_seq'::regclass);
+
+
+--
+-- Name: queue_item_comments id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY queue_item_comments ALTER COLUMN id SET DEFAULT nextval('queue_item_comments_id_seq'::regclass);
 
 
 --
@@ -243,6 +339,14 @@ ALTER TABLE ONLY ar_internal_metadata
 
 
 --
+-- Name: digitization_queue_items digitization_queue_items_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY digitization_queue_items
+    ADD CONSTRAINT digitization_queue_items_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: kithe_derivatives kithe_derivatives_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -256,6 +360,14 @@ ALTER TABLE ONLY kithe_derivatives
 
 ALTER TABLE ONLY kithe_models
     ADD CONSTRAINT kithe_models_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: queue_item_comments queue_item_comments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY queue_item_comments
+    ADD CONSTRAINT queue_item_comments_pkey PRIMARY KEY (id);
 
 
 --
@@ -331,6 +443,20 @@ CREATE INDEX index_kithe_models_on_representative_id ON kithe_models USING btree
 
 
 --
+-- Name: index_queue_item_comments_on_digitization_queue_item_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_queue_item_comments_on_digitization_queue_item_id ON queue_item_comments USING btree (digitization_queue_item_id);
+
+
+--
+-- Name: index_queue_item_comments_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_queue_item_comments_on_user_id ON queue_item_comments USING btree (user_id);
+
+
+--
 -- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -357,6 +483,14 @@ CREATE INDEX trgm_idx_kithe_models_title ON kithe_models USING gin (title gin_tr
 
 ALTER TABLE ONLY kithe_model_contains
     ADD CONSTRAINT fk_rails_091010187b FOREIGN KEY (container_id) REFERENCES kithe_models(id);
+
+
+--
+-- Name: kithe_models fk_rails_210e0ee046; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY kithe_models
+    ADD CONSTRAINT fk_rails_210e0ee046 FOREIGN KEY (digitization_queue_item_id) REFERENCES digitization_queue_items(id);
 
 
 --
@@ -400,6 +534,14 @@ ALTER TABLE ONLY kithe_models
 
 
 --
+-- Name: queue_item_comments fk_rails_faa45a6d5b; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY queue_item_comments
+    ADD CONSTRAINT fk_rails_faa45a6d5b FOREIGN KEY (digitization_queue_item_id) REFERENCES digitization_queue_items(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -415,6 +557,10 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190107222521'),
 ('20190109000356'),
 ('20190110154359'),
-('20190219225344');
+('20190219225344'),
+('20190226135744'),
+('20190304201533'),
+('20190305170908'),
+('20190305202051');
 
 

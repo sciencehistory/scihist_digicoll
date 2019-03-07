@@ -1,29 +1,36 @@
 require 'rails_helper'
 
-class ProgressBarStub
-  def log()
-  end
-  def increment()
-  end
-end
-
-class Importers::Importer
-  def initialize()
-    @@progress_bar = ProgressBarStub.new()
-  end
-end
-
 RSpec.describe Importers::CollectionImporter do
   context "Import collection" do
-    context "simple collection" do
-      let(:collection_importer) { FactoryBot.create(:collection_importer)}
-      before do
-        allow(collection_importer).to receive(:read_from_file).and_return(nil)
-        allow(collection_importer).to receive(:report_via_progress_bar).and_return(nil)
-      end
+    let(:metadata) do
+      {
+        "id" => "mg74qm28w",
+        "depositor" => "clu@sciencehistory.org",
+        "title" => [
+            "Phil Allegretti Pesticide Collection"
+        ],
+        "description" => [
+            "This collection consists of 3D objects, including cans, sprayers, and diffusers, as well as ephemera related to DDT pesticide and insecticide in the U.S. in the mid-20th century."
+        ],
+        "representative_image_path" => "mg74qm28w_2x.jpg",
+        "access_control_id" => "0a344e7b-4b7d-42b6-bbd5-84aa5e38b5e3",
+        "members" => [
+            # "9593tv75c",
+            # "hm50ts404",
+            # "5712m741t",
+            # "9s161700f",
+            # "6395w7883",
+            # "6969z166t",
+            # "2z10wr14g"
+        ]
+      }
+    end
 
-      it "Imports properly" do
-        collection_importer.save_item()
+    context "simple collection" do
+      let(:collection_importer) { Importers::CollectionImporter.new(metadata) }
+
+      it "imports" do
+        collection_importer.import
         expect(Collection.first.title).to match /Pesticide Collection/
       end
     end

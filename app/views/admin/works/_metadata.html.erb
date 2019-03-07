@@ -12,6 +12,30 @@
   </div>
 
   <dl class='admin-metadata' style="flex-basis: 50%">
+    <% if work.digitization_queue_item.present? %>
+      <dt>Digitization queue information</dt>
+      <dd>
+        <table class="w-100">
+          <tr>
+            <td>
+              <%= link_to @work.digitization_queue_item.title, admin_digitization_queue_item_path(@work.digitization_queue_item) %>
+            </td>
+            <td>
+              <%= l @work.digitization_queue_item.created_at.to_date, format: :admin %>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <%= @work.digitization_queue_item.status.humanize %>
+            </td>
+            <td>
+              <%= l @work.digitization_queue_item.status_changed_at.to_date, format: :admin %>
+            </td>
+          </tr>
+        </table>
+      </dd>
+  <% end %>
+
     <dt>Title</dt>
     <dd><%= work.title %></dd>
 
@@ -32,7 +56,8 @@
             <%= I18n.t(id.category,
                   scope: "activemodel.enum_values.work/external_id.category",
                   default: id.category.humanize) %>:
-            <%= id.value %></li>
+            <%= link_to_if id.category == "bib", id.value, ScihistDigicoll::Util.opac_url(id.value), target: "_blank" %>
+          </li>
         <% end %>
       </ul>
     </dd>

@@ -31,6 +31,10 @@
     </div>
   <% end %>
 
+  <% if @work.digitization_queue_item_id.present? %>
+    <%= hidden_field_tag "work[digitization_queue_item_id]", @work.digitization_queue_item_id %>
+  <% end %>
+
   <div class="form-inputs">
     <%= render "work_fields", f: f %>
   </div>
