@@ -2,8 +2,6 @@ module Importers
 class CollectionImporter < Importers::Importer
 
   def populate()
-    super
-
     target_item.description = @metadata['description'].first
 
     if metadata["related_url"].present?

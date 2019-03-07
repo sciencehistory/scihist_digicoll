@@ -73,7 +73,6 @@ class Importers::FileSetImporter < Importers::Importer
   # Assets actually have minimal metadata, so this method basically
   # fetches the file from Fedora and (possibly) generates the derivatives.
   def populate()
-    super
     if should_import_bytestream?
       # This tells target_item's shrine uploader to do promotion inline instead of
       # kicking off a background job.
