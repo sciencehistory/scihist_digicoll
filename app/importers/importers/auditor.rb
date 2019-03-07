@@ -34,6 +34,7 @@ class Auditor
         confirm(item.created_at == DateTime.parse(metadata['date_uploaded']), "created_at")
       end
     end
+    confirm(item.published? == (metadata["access_control"] == "public"), "published")
   end
 
   def confirm(condition, report_string)

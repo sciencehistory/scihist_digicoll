@@ -149,6 +149,10 @@ class Importer
     unless metadata['date_uploaded'].nil?
       target_item.created_at = DateTime.parse(metadata['date_uploaded'])
     end
+
+    if metadata["access_control"] == "public"
+      target_item.published = true
+    end
   end
 
   # no-op in base class, override in sub-class to do something
