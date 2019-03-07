@@ -25,8 +25,7 @@ class Importers::RelationshipImporter
     # parent.save!
 
     parent = Work.find_by_friendlier_id!(parent_id)
-    current_position = 0
-    child_ids.each do |child_id|
+    child_ids.each_with_index do |child_id, current_position|
       # This child could be a Work *or* an Asset, so look it up this way:
       child = Kithe::Model.find_by_friendlier_id(child_id)
       # In theory, once you get to this point in the ingest, all the possible
@@ -37,7 +36,7 @@ class Importers::RelationshipImporter
 
       #Link the child and its parent.
       child.parent_id = parent.id
-      child.position = (current_position += 1)
+      child.position = current_position
       child.save!
 
       # Set the representative.
