@@ -57,7 +57,10 @@ RSpec.describe Importers::GenericWorkImporter do
 
     it "imports" do
       generic_work_importer.import
-      expect(Work.first.title).to match /Adulterations/
+      new_work = Work.first
+
+      expect(new_work.title).to match /Adulterations/
+      expect(new_work.created_at).to eq(DateTime.parse(metadata["date_uploaded"]))
     end
   end
 end

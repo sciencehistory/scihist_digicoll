@@ -31,7 +31,10 @@ RSpec.describe Importers::FileSetImporter do
 
       it "Imports properly" do
         file_set_importer.import
-        expect(Asset.first.title).to match /b10371138_367/
+        new_asset = Asset.first
+
+        expect(new_asset.title).to match /b10371138_367/
+        expect(new_asset.created_at).to eq(DateTime.parse(metadata["date_uploaded"]))
       end
     end
   end
