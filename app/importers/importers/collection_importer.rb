@@ -4,10 +4,10 @@ class CollectionImporter < Importers::Importer
   def populate()
     super
 
-    new_item.description = @metadata['description'].first
+    target_item.description = @metadata['description'].first
 
     if metadata["related_url"].present?
-      new_item.related_url = metadata["related_url"]
+      target_item.related_url = metadata["related_url"]
     end
 
     if metadata['members'].present?
@@ -15,7 +15,7 @@ class CollectionImporter < Importers::Importer
       if member_ids.count != metadata['members'].count
         add_error("some members may be missing, expected #{metadata['members'].count}, only found #{member_ids.count} to associate")
       end
-      new_item.contain_ids = member_ids
+      target_item.contain_ids = member_ids
     end
 
     create_or_update_thumbnail()
@@ -42,11 +42,11 @@ class CollectionImporter < Importers::Importer
       thumb.file_attacher.set_promotion_directives(create_derivatives: "inline")
       thumb.file = File.open(the_path)
     end
-    thumb.title = "Thumbnail for #{new_item.title}"
-    thumb.parent = new_item
+    thumb.title = "Thumbnail for #{target_item.title}"
+    thumb.parent = target_item
     thumb.save!
-    new_item.representative = thumb
-    new_item.leaf_representative = thumb
+    target_item.representative = thumb
+    target_item.leaf_representative = thumb
   end
 
   def find_thumbnail()

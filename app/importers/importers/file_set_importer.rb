@@ -35,9 +35,8 @@ class Importers::FileSetImporter < Importers::Importer
     @metadata['file_url'].sub('http://', "http://#{@@fedora_credentials[:username]}:#{@@fedora_credentials[:password]}@")
   end
 
-  def wipe_stale_item()
-    p_i = preexisting_item
-    raise RuntimeError, "Can't wipe a nil item." if p_i.nil?
+  def blank_out_for_reimport(item)
+    super
 
     if should_import_bytestream?
       # take care of removing the file we're about to import.
@@ -48,12 +47,9 @@ class Importers::FileSetImporter < Importers::Importer
     end
 
     # Wipe other stale metadata, regardless.
-    p_i.position= nil
-    p_i.parent=nil
-    p_i.title="_"
-
-    #important: return p_i
-    return p_i
+    item.position= nil
+    item.parent=nil
+    item.title="_"
   end
 
   # The sha-1 hash on this asset says
@@ -70,8 +66,8 @@ class Importers::FileSetImporter < Importers::Importer
   # there, which saves us lots of time on re-runs.
   def should_import_bytestream?
     return false if @disable_bytestream_import
-    return true if preexisting_item.nil?
-    preexisting_item.sha1 != metadata['sha_1']
+    return true if !preexisting_item?
+    target_item.sha1 != metadata['sha_1']
   end
 
   # Assets actually have minimal metadata, so this method basically
@@ -79,28 +75,28 @@ class Importers::FileSetImporter < Importers::Importer
   def populate()
     super
     if should_import_bytestream?
-      # This tells @new_item's shrine uploader to do promotion inline instead of
+      # This tells target_item's shrine uploader to do promotion inline instead of
       # kicking off a background job.
-      @new_item.file_attacher.set_promotion_directives(promote: "inline")
+      target_item.file_attacher.set_promotion_directives(promote: "inline")
       # Now the promotion is happening inline (not in a bg job), but the promotion will ordinarily
       # kick off yet another job for derivatives creation.
       # We can either tell it NOT to do derivatives creation at all.
-      # @new_item.file_attacher.set_promotion_directives(create_derivatives: false)
+      # target_item.file_attacher.set_promotion_directives(create_derivatives: false)
       # or we can tell it to create derivatives inline:
-      @new_item.file_attacher.set_promotion_directives(create_derivatives: "inline")
+      target_item.file_attacher.set_promotion_directives(create_derivatives: "inline")
       # where to get the file from:
 
       # file properties
       properties = { "id" => corrected_file_url, "storage" => "remote_url" }
-      @new_item.file = properties
+      target_item.file = properties
       # end file properties
     end
 
     # This gets executed even if the file's checksum is correct:
-    unless @new_item.file.nil? || @new_item.file.metadata.nil?
-       @new_item.file.metadata['filename'] = metadata['filename_for_export']
+    unless target_item.file.nil? || target_item.file.metadata.nil?
+       target_item.file.metadata['filename'] = metadata['filename_for_export']
     end
-    @new_item.title = metadata["title_for_export"]
+    target_item.title = metadata["title_for_export"]
   end
 
   def self.importee()

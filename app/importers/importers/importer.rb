@@ -10,10 +10,8 @@ require "byebug"
 module Importers
 class Importer
 
-  # path is where to find the json import file for this item
   # metadata will contain the item's metadata once that json file is parsed
-  # new_item will contain the actual item that we want to save to the database.
-  attr_accessor :metadata, :new_item
+  attr_accessor :metadata
 
   # Creates the importer and assigns the path to the json file
   # it's going to try to import.
@@ -27,6 +25,39 @@ class Importer
   end
 
 
+  # Returns an ActiveRecord model instance, that is the primary target item to save in the import.
+  # * Will find an existing object in the db, and blank out some of it's metadata for freshening up from import
+  # * Or a new AR model if it didn't already exist.
+  #
+  # Lazily loads with memoization, so checks the db on first time you call it, after that remembers
+  # the object it came up with before, so you can call it as much as you want.
+  #
+  # Often used in #populate for setting metadata based on import json files:
+  #     target_item.title = "whataever"
+  #
+  # Also sets ivar @preexisting_item for use with `#preexisting_item?` as a side-effect (bit hacky,
+  # but we're refactoring here.)
+  def target_item
+    @target_item ||= begin
+      model_object = self.class.destination_class.where(friendlier_id:@metadata['id']).first
+      if (model_object)
+        @preexisting_item = true
+        # let's wipe some of it out
+        blank_out_for_reimport(model_object)
+      else
+        @preexisting_item = false
+        # wasn't already existing in db, we need to create one
+        model_object = self.class.destination_class.new
+      end
+      model_object
+    end
+  end
+
+  def preexisting_item?
+    target_item # sets the value as a side-effect if it's not set already
+    @oreexisting_item
+  end
+
 
   # This is the only method called on this class
   # by the rake task after instantiation.
@@ -36,74 +67,63 @@ class Importer
   # After running, check #errors for any errors you may want to report
   # to the user.
   def save_item()
-    if preexisting_item.nil?
-      # Create the Asset, Work or Collection that we want to ingest.
-      @new_item = self.class.destination_class().new()
-    else
-      # If a stale item already exists in the system from a prior ingest,
-      # wipe the stale item so it can be updated
-      @new_item = wipe_stale_item()
-    end
-
-
-    # Apply the metadata from @metadata to the @new_item.
+    # Apply the metadata from @metadata to the target_item.
     populate()
 
     begin
-      @new_item.save!
+      target_item.save!
     rescue StandardError => e
-      if @new_item.errors.first == [:date_of_work, "is invalid"]
+      if target_item.errors.first == [:date_of_work, "is invalid"]
         add_error("ERROR: bad date: #{metadata['dates']}")
-        @new_item.date_of_work = []
-        @new_item.save!
-      elsif (!@new_item.errors.first.nil?) && @new_item.errors.first.first == :related_url
+        target_item.date_of_work = []
+        target_item.save!
+      elsif (!target_item.errors.first.nil?) && target_item.errors.first.first == :related_url
         add_error("ERROR: bad related_url: #{metadata['related_url']}")
-        new_item.related_url = []
-        @new_item.save!
+        target_item.related_url = []
+        target_item.save!
       else
         add_error("ERROR: Could not save record: #{e}")
       end
     end
   end
 
-  def preexisting_item()
-    # There can be at most one such preexisting item
-    # if we trust the uniqueness of the key.
-    #
-    # Memoize so code can ask for the method
-    @preexisting_item ||= self.class.destination_class.where(friendlier_id:@metadata['id']).first
-  end
+  # when we have an object already in the db that we are targetting for an import,
+  # we may want to blank out some of it's data before applying the import data.
+  #
+  # Does _not_ call "save" on model passed in, but may (for now) fetch and save other objects.
+  def blank_out_for_reimport(model)
+    raise RuntimeError, "Can't wipe a nil item." if model.nil?
 
-
-  def wipe_stale_item()
-    p_i = preexisting_item
-    raise RuntimeError, "Can't wipe a nil item." if p_i.nil?
-
+    # Not sure we need to do this
     # To avoid duplicates...
-    p_i.members.each do |child|
+    model.members.each do |child|
       child.parent = nil
       child.save!
     end
 
-    (Kithe::Model.where representative_id: p_i.id).each do |r|
+    # Not sure we need to do this
+    (Kithe::Model.where representative_id: model.id).each do |r|
       r.representative_id = nil
       r.save!
     end
 
-    (Kithe::Model.where leaf_representative_id: p_i.id).each do |r|
+    # Not sure we need to do this
+    (Kithe::Model.where leaf_representative_id: model.id).each do |r|
       r.leaf_representative_id = nil
       r.save!
     end
 
-    p_i.contains = [] if p_i.is_a? Collection
-    p_i.contained_by = []
+    # Not sure we need to do this
+    model.contains = [] if model.is_a? Collection
+    model.contained_by = []
 
     # and ordinary attributes too:
 
-    p_i.json_attributes = {}
-    things_to_wipe = p_i.attributes.keys - ['file_data', 'id', 'type', 'updated_at', 'created_at']
-    things_to_wipe.each { | atttr | p_i.send("#{atttr}=", nil) }
-    return p_i
+    model.json_attributes = {}
+    # why not wipe updated_at and created_at too?
+    things_to_wipe = model.attributes.keys - ['file_data', 'id', 'type', 'updated_at', 'created_at']
+    things_to_wipe.each { | atttr | model.send("#{atttr}=", nil) }
+    return model
   end
 
   # an error that will be shown to operator, often that means a record could
@@ -115,7 +135,7 @@ class Importer
   # What errors have been accumulated? Includes any validation errors
   # on the record to be saved, and any errors added with #add_error
   def errors()
-    (@errors + (@new_item&.errors&.full_messages || [])).collect do |str|
+    (@errors + (target_item&.errors&.full_messages || [])).collect do |str|
       "#{self.class.importee} #{metadata['id']}: #{str}"
     end
   end
@@ -126,10 +146,10 @@ class Importer
   # The three subclasses call this via super but also
   # add a fair amount of their own metadata processing.
   def populate()
-    @new_item.friendlier_id = @metadata['id']
-    @new_item.title = @metadata['title'].first
+    target_item.friendlier_id = @metadata['id']
+    target_item.title = @metadata['title'].first
     unless metadata['date_uploaded'].nil?
-      @new_item.created_at = DateTime.parse(metadata['date_uploaded'])
+      target_item.created_at = DateTime.parse(metadata['date_uploaded'])
     end
   end
 
