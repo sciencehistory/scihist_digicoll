@@ -42,25 +42,25 @@ module Importers
     # Also sets ivar @preexisting_item for use with `#preexisting_item?` as a side-effect (bit hacky,
     # but we're refactoring here.)
     def target_item
-      @target_item ||= begin
-        model_object = self.class.destination_class.where(friendlier_id:@metadata['id']).first
-        if (model_object)
-          @preexisting_item = true
-          # let's wipe some of it out
-          blank_out_for_reimport(model_object)
-        else
-          @preexisting_item = false
-          # wasn't already existing in db, we need to create one
-          model_object = self.class.destination_class.new
-        end
-        model_object
+      return @target_item unless @target_item.nil?
+      item_from_db = self.class.destination_class.where(friendlier_id:@metadata['id']).first
+      if (item_from_db)
+        @preexisting_item = true
+        @target_item = item_from_db
+        # let's wipe some of it out
+        blank_out_for_reimport(@target_item)
+      else
+        @preexisting_item = false
+        # wasn't already existing in db, we need to create one
+        @target_item = self.class.destination_class.new
       end
-    end
+      @target_item
+    end # method
 
     # Won't work unless target_item was called first. Known problem, otherwise
     # we get an infinite loop in the FileSetImporter#blank_out_for_reimport method. :(
     def preexisting_item?
-      @oreexisting_item
+      @preexisting_item
     end
 
     # This is the only method called on this class
