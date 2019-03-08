@@ -1,7 +1,6 @@
 require "shrine"
 require "shrine/storage/file_system"
 require "down"
-require "byebug"
 module Importers
 
 class Importers::FileSetAuditor < Importers::Auditor
