@@ -1,5 +1,4 @@
 require "json"
-require "byebug"
 
 # This class knows about all the common functionality
 # needed to ingest an individual Asset or Work or Collection

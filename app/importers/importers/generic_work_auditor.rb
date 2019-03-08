@@ -75,7 +75,6 @@ class Importers::GenericWorkAuditor < Importers::Auditor
       d['start_qualifier'].downcase!  unless d['start_qualifier'].nil?
       d['finish_qualifier'].downcase! unless d['finish_qualifier'].nil?
       found = (@item.date_of_work.detect { |wd| wd.attributes == d } )
-      byebug unless @item.date_of_work.detect { |wd| wd.attributes == d }
       confirm(found, 'date')
     end
   end
