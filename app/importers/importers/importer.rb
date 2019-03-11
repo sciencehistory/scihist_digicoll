@@ -60,7 +60,7 @@ module Importers
     # Won't work unless target_item was called first. Known problem, otherwise
     # we get an infinite loop in the FileSetImporter#blank_out_for_reimport method. :(
     def preexisting_item?
-      @oreexisting_item
+      @preexisting_item
     end
 
     # This is the only method called on this class
