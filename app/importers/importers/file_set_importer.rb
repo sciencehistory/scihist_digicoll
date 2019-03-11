@@ -73,26 +73,9 @@ module Importers
 
     # Assets actually have minimal metadata, so this method basically
     # fetches the file from Fedora and (possibly) generates the derivatives.
-    def populate()
+    def populate
       if should_import_bytestream?
-        # This tells target_item's shrine uploader to do promotion inline instead of
-        # kicking off a background job.
-        target_item.file_attacher.set_promotion_directives(promote: "inline")
-        # Now the promotion is happening inline (not in a bg job), but the promotion will ordinarily
-        # kick off yet another job for derivatives creation.
-        # We can either tell it NOT to do derivatives creation at all, or
-        # we can tell it to do it inline (no bg job)
-        if @create_derivatives
-          target_item.file_attacher.set_promotion_directives(create_derivatives: "inline")
-        else
-          target_item.file_attacher.set_promotion_directives(create_derivatives: false)
-        end
-        # where to get the file from:
-
-        # file properties
-        properties = { "id" => corrected_file_url, "storage" => "remote_url" }
-        target_item.file = properties
-        # end file properties
+       assign_import_bytestream
       end
 
       # This gets executed even if the file's checksum is correct:
@@ -100,6 +83,23 @@ module Importers
          target_item.file.metadata['filename'] = metadata['filename_for_export']
       end
       target_item.title = metadata["title_for_export"]
+    end
+
+    def assign_import_bytestream
+      # This tells target_item's shrine uploader to do promotion inline instead of
+      # kicking off a background job.
+      target_item.file_attacher.set_promotion_directives(promote: "inline")
+      # Now the promotion is happening inline (not in a bg job), but the promotion will ordinarily
+      # kick off yet another job for derivatives creation.
+      # We can either tell it NOT to do derivatives creation at all, or
+      # we can tell it to do it inline (no bg job)
+      if @create_derivatives
+        target_item.file_attacher.set_promotion_directives(create_derivatives: "inline")
+      else
+        target_item.file_attacher.set_promotion_directives(create_derivatives: false)
+      end
+
+      target_item.file = { "id" => corrected_file_url, "storage" => "remote_url" }
     end
 
     def self.importee()
