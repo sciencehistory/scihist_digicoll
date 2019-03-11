@@ -14,6 +14,7 @@ RSpec.describe Importers::CollectionImporter do
         ],
         "representative_image_path" => "mg74qm28w_2x.jpg",
         "access_control_id" => "0a344e7b-4b7d-42b6-bbd5-84aa5e38b5e3",
+        "access_control" => "public",
         "members" => [
             # "9593tv75c",
             # "hm50ts404",
@@ -31,7 +32,10 @@ RSpec.describe Importers::CollectionImporter do
 
       it "imports" do
         collection_importer.import
-        expect(Collection.first.title).to match /Pesticide Collection/
+        new_collection = Collection.first
+
+        expect(new_collection.title).to match /Pesticide Collection/
+        expect(new_collection.published?).to be(true)
       end
     end
   end
