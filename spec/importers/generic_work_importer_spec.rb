@@ -63,6 +63,7 @@ RSpec.describe Importers::GenericWorkImporter do
 
     expect(new_work.title).to match /Adulterations/
     expect(new_work.created_at).to eq(DateTime.parse(metadata["date_uploaded"]))
+    expect(new_work.updated_at).to eq(DateTime.parse(metadata["date_modified"]))
     expect(new_work.published?).to be(false)
     expect(new_work.medium).to eq(["Vellum"])
   end
