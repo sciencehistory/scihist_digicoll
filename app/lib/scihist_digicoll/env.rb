@@ -148,5 +148,9 @@ module ScihistDigicoll
 
     define_key :honeybadger_api_key
 
+    # Only used for our import from sufia script, username/password to fetch
+    # bytestreams from fedora.
+    define_key :import_fedora_auth
+
   end
 end
