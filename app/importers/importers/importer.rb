@@ -161,8 +161,9 @@ module Importers
         target_item.updated_at = DateTime.parse(metadata['date_modified'])
       end
 
-
-      if metadata["access_control"] == "public"
+      if metadata["access_control"].blank?
+        add_error("missing 'access_control'")
+      elsif metadata["access_control"] == "public"
         target_item.published = true
       end
     end
