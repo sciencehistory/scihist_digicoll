@@ -124,6 +124,19 @@ RSpec.describe Importers::GenericWorkImporter do
 
       expect(new_work.published?).to be(true)
     end
-  end
 
+    describe "with existing item" do
+      let!(:existing_item) { FactoryBot.create(:work, friendlier_id: metadata["id"], title: "old title", published: false)}
+
+      it "imports and updates data" do
+        generic_work_importer.import
+
+        expect(Work.where(friendlier_id: metadata["id"]).count).to eq(1)
+        item = Work.find_by_friendlier_id!(metadata["id"])
+
+        expect(item.title).to eq "Adulterations of food; with short processes for their detection."
+        expect(item.published?).to be(true)
+      end
+    end
+  end
 end
