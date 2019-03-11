@@ -76,9 +76,6 @@ module Importers
     # After running, check #errors for any errors you may want to report
     # to the user.
     def save_target_item()
-      # Apply the metadata from @metadata to the target_item.
-      populate()
-
       begin
         target_item.save!
       rescue StandardError => e
