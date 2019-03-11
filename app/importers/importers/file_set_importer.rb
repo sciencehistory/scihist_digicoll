@@ -5,14 +5,6 @@ require "down"
 module Importers
   class FileSetImporter < Importers::Importer
 
-    # Load Fedora credentials (only once) into a
-    # class variable, if we have them.
-    if ENV['FEDORA_USERNAME'].nil? || ENV['FEDORA_PASSWORD'].nil?
-      @@fedora_credentials = {}
-    else
-      @@fedora_credentials ||= {username: ENV['FEDORA_USERNAME'], password: ENV['FEDORA_PASSWORD']}
-    end
-
     # options:
     #   disable_bytestream_import: if set to true,
     #     we won't actually import any bytestreams at all, whether they were already
@@ -29,11 +21,14 @@ module Importers
     # If we know the username and password for Fedora,
     # add them to the file URL. The admin user can download
     # originals from Fedora even if they're marked private.
+    #
+    # Should come from local_env.yml, or you can always set an ENV
+    # IMPORT_FEDORA_AUTH="user:password"
     def corrected_file_url
       return nil if @metadata['file_url'].nil?
-      return metadata["file_url"] unless @@fedora_credentials.present?
+      return metadata["file_url"] unless ScihistDigicoll::Env.lookup(:import_fedora_auth).present?
 
-      @metadata['file_url'].sub('http://', "http://#{@@fedora_credentials[:username]}:#{@@fedora_credentials[:password]}@")
+      @metadata['file_url'].sub('http://', "http://#{ScihistDigicoll::Env.lookup(:import_fedora_auth)}@")
     end
 
     def blank_out_for_reimport(item)
