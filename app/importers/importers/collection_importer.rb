@@ -33,8 +33,8 @@ module Importers
 
     def create_or_update_thumbnail()
       return if metadata['representative_image_path'].nil?
-      thumb = find_thumbnail() || CollectionThumbAsset.new()
-      the_path = thumb_image_path()
+      thumb = find_thumbnail || CollectionThumbAsset.new(created_at: DateTime.now, updated_at: DateTime.now)
+      the_path = thumb_image_path
       if thumb.file.nil? && !the_path.nil?
         thumb.file_attacher.set_promotion_directives(promote: "inline")
         thumb.file_attacher.set_promotion_directives(create_derivatives: "inline")
