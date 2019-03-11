@@ -24,7 +24,8 @@ RSpec.describe Importers::FileSetImporter do
         "access_control_id" => "4d4c2f66-78a3-4385-a835-765064056526",
         "file_url" => fake_test_file_url,
         "sha_1" => test_file_sha1,
-        "title_for_export" => "b10371138_367.tif"
+        "title_for_export" => "b10371138_367.tif",
+        "access_control" => "public"
     }
   end
 
@@ -49,6 +50,8 @@ RSpec.describe Importers::FileSetImporter do
       expect(new_asset.content_type).to eq("image/png")
       expect(new_asset.file.read).to eq(File.read(test_file_path, encoding: "BINARY"))
       expect(new_asset.sha1).to eq(test_file_sha1)
+
+      expect(new_asset.published?).to be(true)
     end
 
     describe "with existing item with same bytestream", queue_adapter: :inline do
