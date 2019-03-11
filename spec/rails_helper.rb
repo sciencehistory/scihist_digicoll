@@ -28,7 +28,14 @@ require 'capybara/rails'
 
 # get puma logs out of console
 # https://github.com/rspec/rspec-rails/issues/1897
-Capybara.server = :puma, { Silent: true }
+#Capybara.server = :puma, { Silent: true }
+#
+# When running tests, jrochkind is getting a core dump when using puma.
+# Think it has to do with rspec setup of puma to use multiple workers,
+# which is running into a bug. For now, we test with webrick, should be
+# just fine.
+Capybara.server = :webrick
+
 
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove these lines.
