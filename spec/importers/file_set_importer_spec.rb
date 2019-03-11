@@ -59,6 +59,7 @@ RSpec.describe Importers::FileSetImporter do
       end
 
       it "imports and updates data, without re-importing file" do
+        expect(file_set_importer).not_to receive(:assign_import_bytestream)
         file_set_importer.import
 
         expect(Asset.where(friendlier_id: metadata["id"]).count).to eq(1)
@@ -68,7 +69,6 @@ RSpec.describe Importers::FileSetImporter do
         expect(item.content_type).to eq("image/png")
         expect(item.file.read).to eq(File.read(test_file_path, encoding: "BINARY"))
         expect(item.sha1).to eq(test_file_sha1)
-
       end
     end
 
@@ -88,6 +88,7 @@ RSpec.describe Importers::FileSetImporter do
         previous_stored_file = existing_item.file
         expect(previous_stored_file.exists?).to be(true)
 
+        expect(file_set_importer).to receive(:assign_import_bytestream).and_call_original
         file_set_importer.import
 
         expect(Asset.where(friendlier_id: metadata["id"]).count).to eq(1)
@@ -98,7 +99,6 @@ RSpec.describe Importers::FileSetImporter do
         expect(item.content_type).to eq("image/png")
         expect(item.file.read).to eq(File.read(test_file_path, encoding: "BINARY"))
         expect(item.sha1).to eq(test_file_sha1)
-
 
         # deleted previous file
         expect(previous_stored_file.exists?).not_to be(true)
