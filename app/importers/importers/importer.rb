@@ -46,8 +46,6 @@ module Importers
         model_object = self.class.destination_class.where(friendlier_id:@metadata['id']).first
         if (model_object)
           @preexisting_item = true
-          # let's wipe some of it out
-          blank_out_for_reimport(model_object)
         else
           @preexisting_item = false
           # wasn't already existing in db, we need to create one
@@ -57,9 +55,8 @@ module Importers
       end
     end
 
-    # Won't work unless target_item was called first. Known problem, otherwise
-    # we get an infinite loop in the FileSetImporter#blank_out_for_reimport method. :(
     def preexisting_item?
+      target_item
       @preexisting_item
     end
 
@@ -68,6 +65,10 @@ module Importers
     # It reads metadata from file, creates
     # an item based on it, then saves it to the database.
     def import
+      if preexisting_item?
+        blank_out_for_reimport(target_item)
+      end
+
       common_populate
       populate
       save_target_item
