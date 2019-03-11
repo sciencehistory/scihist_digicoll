@@ -49,5 +49,60 @@ RSpec.describe Importers::FileSetImporter do
       expect(new_asset.file.read).to eq(File.read(test_file_path, encoding: "BINARY"))
       expect(new_asset.sha1).to eq(test_file_sha1)
     end
+
+    describe "with existing item with same bytestream", queue_adapter: :inline do
+      let!(:existing_item) do
+        FactoryBot.create(:asset, friendlier_id: metadata["id"], title: "old title", file: File.open(test_file_path)).tap do |item|
+          item.reload
+          expect(item.sha1).to eq(test_file_sha1)
+        end
+      end
+
+      it "imports and updates data, without re-importing file" do
+        file_set_importer.import
+
+        expect(Asset.where(friendlier_id: metadata["id"]).count).to eq(1)
+        item = Asset.find_by_friendlier_id!(metadata["id"])
+
+        expect(item.title).to eq "b10371138_367.tif"
+        expect(item.content_type).to eq("image/png")
+        expect(item.file.read).to eq(File.read(test_file_path, encoding: "BINARY"))
+        expect(item.sha1).to eq(test_file_sha1)
+
+      end
+    end
+
+    describe "with existing item with different bytestream", queue_adapter: :inline do
+      let(:other_file_path) { Rails.root.join("spec/test_support/images/30x30.png")}
+
+      let!(:existing_item) do
+        FactoryBot.create(:asset, friendlier_id: metadata["id"], title: "old title", file: File.open(other_file_path)).tap do |item|
+          item.reload
+          expect(item.file.present?).to be(true)
+          expect(item.sha1).to be_present
+          expect(item.sha1).not_to eq(test_file_sha1)
+        end
+      end
+
+      it "imports and updates data, replacing file" do
+        previous_stored_file = existing_item.file
+        expect(previous_stored_file.exists?).to be(true)
+
+        file_set_importer.import
+
+        expect(Asset.where(friendlier_id: metadata["id"]).count).to eq(1)
+        item = Asset.find_by_friendlier_id!(metadata["id"])
+
+        expect(item.title).to eq "b10371138_367.tif"
+
+        expect(item.content_type).to eq("image/png")
+        expect(item.file.read).to eq(File.read(test_file_path, encoding: "BINARY"))
+        expect(item.sha1).to eq(test_file_sha1)
+
+
+        # deleted previous file
+        expect(previous_stored_file.exists?).not_to be(true)
+      end
+    end
   end
 end
