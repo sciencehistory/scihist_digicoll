@@ -43,6 +43,7 @@ RSpec.describe Importers::FileSetImporter do
 
       expect(new_asset.title).to match /b10371138_367/
       expect(new_asset.created_at).to eq(DateTime.parse(metadata["date_uploaded"]))
+      expect(new_asset.updated_at).to eq(DateTime.parse(metadata["date_modified"]))
 
       expect(new_asset.stored?).to be(true)
       expect(new_asset.content_type).to eq("image/png")

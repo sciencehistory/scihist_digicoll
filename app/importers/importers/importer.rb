@@ -65,13 +65,15 @@ module Importers
     # It reads metadata from file, creates
     # an item based on it, then saves it to the database.
     def import
-      if preexisting_item?
-        blank_out_for_reimport(target_item)
-      end
+      self.class.without_auto_timestamps do
+        if preexisting_item?
+          blank_out_for_reimport(target_item)
+        end
 
-      common_populate
-      populate
-      save_target_item
+        common_populate
+        populate
+        save_target_item
+      end
     end
 
     # After running, check #errors for any errors you may want to report
@@ -143,9 +145,22 @@ module Importers
     def common_populate()
       target_item.friendlier_id = @metadata['id']
       target_item.title = @metadata['title'].first
-      unless metadata['date_uploaded'].nil?
+
+      if metadata['date_uploaded'].blank?
+        add_error("missing 'date_uploaded'")
+        target_item.created_at = DateTime.now
+      else
         target_item.created_at = DateTime.parse(metadata['date_uploaded'])
       end
+
+
+      if metadata['date_modified'].blank?
+        add_error("missing 'date_modified'")
+        target_item.updated_at = DateTime.now
+      else
+        target_item.updated_at = DateTime.parse(metadata['date_modified'])
+      end
+
 
       if metadata["access_control"] == "public"
         target_item.published = true
@@ -165,5 +180,16 @@ module Importers
     def self.destination_class()
       raise NotImplementedError
     end
+
+    # turn off autotimestamps for our relevant classes, so we can
+    # set updated_at ourself to match old system
+    def self.without_auto_timestamps
+      original = Kithe::Model.record_timestamps
+      Kithe::Model.record_timestamps = false
+      yield
+    ensure
+      Kithe::Model.record_timestamps = original
+    end
+
   end
 end

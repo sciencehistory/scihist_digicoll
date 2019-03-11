@@ -28,11 +28,20 @@ class Auditor
     confirm(metadata['id'] == item.friendlier_id, "friendlier_id")
     unless metadata['date_uploaded'].nil?
       if item.created_at.nil?
-        report_line("Missing create_date.")
+        report_line("Missing created_at")
       else
         confirm(item.created_at == DateTime.parse(metadata['date_uploaded']), "created_at")
       end
     end
+
+    unless metadata['date_modified'].nil?
+      if item.updated_at.nil?
+        report_line("Missing updated_at")
+      else
+        confirm(item.updated_at == DateTime.parse(metadata['date_modified']), "updated_at")
+      end
+    end
+
     confirm(item.published? == (metadata["access_control"] == "public"), "published")
   end
 
