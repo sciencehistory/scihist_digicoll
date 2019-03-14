@@ -1,4 +1,3 @@
-source ./fedora_creds.sh
 export RAILS_ENV='production'
 export THE_ITEM=$1
 chown -R digcol:deploy /opt/import/scihist_digicoll/
