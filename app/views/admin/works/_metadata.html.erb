@@ -36,6 +36,12 @@
       </dd>
   <% end %>
 
+    <dt>Created</dt>
+    <dd><%= l @work.created_at, format: :admin %></dd>
+
+    <dt>Last Modified</dt>
+    <dd><%= l @work.updated_at, format: :admin %></dd>
+
     <dt>Title</dt>
     <dd><%= work.title %></dd>
 
