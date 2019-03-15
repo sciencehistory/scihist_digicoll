@@ -72,8 +72,10 @@ class Importers::GenericWorkAuditor < Importers::Auditor
       return
     end
     metadata['dates'].each do |d|
-      d['start_qualifier'].downcase!  unless d['start_qualifier'].nil?
-      d['finish_qualifier'].downcase! unless d['finish_qualifier'].nil?
+      d['start_qualifier'].downcase!  if d['start_qualifier']
+      d['finish_qualifier'].downcase! if d['finish_qualifier']
+      d['start' ] = d['start' ].rjust(4, padstr='0') if d['start' ]
+      d['finish'] = d['finish'].rjust(4, padstr='0') if d['finish']
       found = (@item.date_of_work.detect { |wd| wd.attributes == d } )
       confirm(found, 'date')
     end
