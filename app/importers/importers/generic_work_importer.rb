@@ -13,7 +13,6 @@ module Importers
     end
 
     def populate()
-      empty_arrays()
       add_external_id()
       add_scalar_attributes()
       add_array_attributes()
@@ -26,16 +25,6 @@ module Importers
       add_physical_container()
     end
 
-    # This may no longer be needed, but having these be nil rather than
-    # empty arrays wasn't handled well by one of the front-end templates.
-    def empty_arrays()
-        target_item.date_of_work = []
-        target_item.place = []
-        target_item.creator = []
-        target_item.exhibition = []
-        target_item.additional_credit = []
-        target_item.inscription = []
-    end
 
     def add_physical_container()
       return if metadata['physical_container'].nil?
@@ -49,6 +38,7 @@ module Importers
     end
 
     def add_creator()
+      target_item.creator = []
       Work::Creator::CATEGORY_VALUES.each do |k|
         next if metadata[k].nil?
         metadata[k].each do |v|
@@ -58,6 +48,7 @@ module Importers
     end
 
     def add_additional_credit()
+      target_item.additional_credit = []
       role_map = {'photographer' => 'photographed_by'}
       return if metadata['additional_credits'].nil?
       metadata['additional_credits'].each do |a_c|
@@ -70,6 +61,7 @@ module Importers
     end
 
     def add_date()
+      target_item.date_of_work = []
       return if metadata['dates'].nil?
 
       metadata['dates'].each do |d|
@@ -83,6 +75,7 @@ module Importers
     end
 
     def add_place()
+      target_item.place = []
       Work::Place::CATEGORY_VALUES.each do |k|
         next if metadata[k].nil?
         metadata[k].each do |v|
@@ -92,6 +85,7 @@ module Importers
     end
 
     def add_inscriptions()
+      target_item.inscription = []
       return if metadata['inscriptions'].nil?
 
       metadata['inscriptions'].each do |ins|
@@ -104,6 +98,7 @@ module Importers
     end
 
     def add_external_id()
+      target_item.external_id = []
       @metadata['identifier'].each do |x|
         category, value = x.split('-')
         target_item.build_external_id({'category' => category, 'value' => value})
