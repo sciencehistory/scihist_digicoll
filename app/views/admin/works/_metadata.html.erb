@@ -93,7 +93,7 @@
     <dd>
       <ul class="list-unstyled">
         <% work.format.each do |item| %>
-          <li><%= item %></li>
+          <li><%= item.sub('_', ' ').capitalize%></li>
         <% end %>
       </ul>
     </dd>
@@ -110,7 +110,7 @@
     <dt>Medium</dt>
     <dd>
       <ul class="list-unstyled">
-        <% work.format.each do |item| %>
+        <% work.medium.each do |item| %>
           <li><%= item %></li>
         <% end %>
       </ul>
