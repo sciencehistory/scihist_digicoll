@@ -72,7 +72,12 @@ namespace :scihist_digicoll do
 
     progress_bar.log("INFO: Importing Genericworks")
     work_dir.each do |path|
-      Importers::GenericWorkImporter.new(JSON.parse(File.read(path))).tap do |importer|
+      json_str = JSON.parse(File.read(path))
+      if json_str == ''
+        progress_bar.log("ERROR: Empty json file at #{path}")
+        next
+      end
+      Importers::GenericWorkImporter.new(json_str).tap do |importer|
         importer.import
         importer.errors.each { |e| progress_bar.log(e) }
       end
