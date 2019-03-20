@@ -49,7 +49,17 @@ module ScihistDigicoll
     define_key :s3_dev_prefix, default: -> { "#{ENV['USER']}.#{Socket.gethostname}" }
 
     define_key :ingest_bucket, default: -> {
-      "scih-uploads"
+      if Rails.env.production?
+        # This bucket is mounted on some staff Windows workstations
+        # We use it in both production and staging environments.
+        # But dev AWS key does not currently have access to it.
+        "scih-uploads"
+      else
+        # This bucket isn't actually mounted on workstations, but you can
+        # add files to it in AWS console if you want files to test ingest
+        # with in a dev environment.
+        "scih-uploads-dev"
+      end
     }
 
     # production is s3 buckets configured for production. dev_s3 is a single
