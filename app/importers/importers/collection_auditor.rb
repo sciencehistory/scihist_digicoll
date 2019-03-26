@@ -6,7 +6,8 @@ class Importers::CollectionAuditor < Importers::Auditor
     if metadata['members'].nil?
       confirm(item.contains == [], "members should be empty")
     else
-      confirm(item.contains.pluck(:friendlier_id) == metadata['members'], "members")
+      # Note: we don't care about the order of collection members.
+      confirm(item.contains.pluck(:friendlier_id).sort == metadata['members'].sort, "members")
     end
 
     v = metadata['description']

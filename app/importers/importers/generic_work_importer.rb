@@ -66,10 +66,11 @@ module Importers
 
       metadata['dates'].each do |d|
         next if d.nil?
-
         d['start_qualifier'].downcase!  if d['start_qualifier']
         d['finish_qualifier'].downcase! if d['finish_qualifier']
-
+        # Pad dates prior to 1000 CE with zeros:
+        d['start' ] = d['start' ].rjust(4, padstr='0') if d['start' ]
+        d['finish'] = d['finish'].rjust(4, padstr='0') if d['finish']
         target_item.build_date_of_work(d)
       end
     end
