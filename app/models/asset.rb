@@ -30,4 +30,11 @@ class Asset < Kithe::Asset
     end
   end
 
+  # define_derivative(:standard_webm, content_type: "audio") do |original_file|
+  #   Kithe::FfmpegCliAudio.new(destination_format: :mp3).call(original_file)
+  # end
+
+  # define_derivative(:standard_mp3, content_type: "audio")   do |original_file|
+  #   Kithe::FfmpegCliAudio.new(content_type: :webm).call(original_file)
+  # end
 end
