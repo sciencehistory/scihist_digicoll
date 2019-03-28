@@ -15,7 +15,9 @@ module ScihistDigicoll
   # If a key is set in shell env, it will take priority over a key set in `local_env.yml`
   #
   # In development, you can use a local local_env.yml or shell env or a combination, whatever is
-  # most convenient.
+  # most convenient. You can also use `./config/local_env_development.yml` to make sure keys
+  # don't effect spec/test runs, with unexpected results. shell env or `local_env.yml` will effect
+  # test runs too.
   #
   # Many keys have defaults, sometimes depending on Rails.env, and sometimes defined in terms of other
   # keys. Look at the code below to see what the keys are and what their defaults are.
