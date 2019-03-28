@@ -2,7 +2,30 @@ require 'socket'
 require "shrine/storage/file_system"
 require "shrine/storage/s3"
 
+
 module ScihistDigicoll
+  # Storing "environmental" infrastructure/context information.
+  #
+  # All keys defined here can be set in `./config/local_env.yml` with the key name as
+  # defined here as a hash key. (This is how environmental context is current supplied in our
+  # production deployments).
+  #
+  # OR they can be defined by shell ENV with an uppercase version of the name. For instance,
+  # `define_key :aws_access_key_id` means you can supply the key as shell env `AWS_ACCESS_KEY_ID`.
+  # If a key is set in shell env, it will take priority over a key set in `local_env.yml`
+  #
+  # In development, you can use a local local_env.yml or shell env or a combination, whatever is
+  # most convenient.
+  #
+  # Many keys have defaults, sometimes depending on Rails.env, and sometimes defined in terms of other
+  # keys. Look at the code below to see what the keys are and what their defaults are.
+  #
+  # All keys set in ScihistDigicoll::Env are assumed to be immutable for life of the process, they
+  # are environmental context, and can't be changed in the middle of the process. Once looked up,
+  # they are fixed.
+  #
+  # We moved the supporting implementation for this setup into Kithe, so for more information on implementation,
+  # see the Kithe code and documentation for the superclass.
   class Env < Kithe::ConfigBase
     # look for config/local_env.yml, and if we're NOT in production,
     # config/local_env_#{env}.yml
