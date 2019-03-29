@@ -30,10 +30,14 @@ class Asset < Kithe::Asset
     end
   end
 
-
-  [:standard_webm, :standard_mp3].each do |f|
-    define_derivative(f, content_type: "audio") do |original_file|
-      Kithe::FfmpegCliAudio.new(f).call(original_file)
+  available_formats = Kithe::FfmpegTransformer::DEFAULT_FFMPEG_DERIVATIVE_SETTINGS
+  # Note: These are reasonable defaults for spoken audio.
+  our_formats = available_formats.slice(:mono_webm, :mono_mp3)
+  # You could add or delete some; or, based on the list of options
+  # at https://ffmpeg.org/ffmpeg.html, override some of the settings.
+  our_formats.values.each do |props|
+    define_derivative(props[:label], content_type: "audio") do |original_file|
+      Kithe::FfmpegTransformer.new(props).call(original_file)
     end
   end
 end
