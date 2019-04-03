@@ -105,6 +105,23 @@ RSpec.configure do |config|
   end
 
 
+  # disable Kithe::Indexable auto callbacks in our tests, they can be re-enabled in
+  # certain tests with indexable_callbacks:true rspec metadata, implemented below.
+  config.before(:suite) do
+    Kithe::Indexable.settings.disable_callbacks = true
+  end
+
+  # If you do want kithe auto-callbacks, for instance in many integration tests,
+  # set indexable_callbacks:true in your rspec context/example metadata.
+  #
+  #    describe "something", indexable_callbacks: true do
+  config.around(:each, :indexable_callbacks) do |example|
+    original = Kithe::Indexable.settings.disable_callbacks
+    Kithe::Indexable.settings.disable_callbacks = !example.metadata[:indexable_callbacks]
+    example.run
+    Kithe::Indexable.settings.disable_callbacks = original
+  end
+
 
 
   # RSpec Rails can automatically mix in different behaviours to your tests
