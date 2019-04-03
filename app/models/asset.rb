@@ -30,12 +30,16 @@ class Asset < Kithe::Asset
     end
   end
 
-  available_formats = Kithe::FfmpegTransformerSettings::SETTINGS
-  # Note: These are reasonable defaults for spoken audio.
-  our_formats = available_formats.slice(:mono_webm, :mono_mp3)
-  our_formats.values.each do |props|
-    define_derivative(props[:label], content_type: "audio") do |original_file|
-      Kithe::FfmpegTransformer.new(props).call(original_file)
-    end
+  define_derivative('mp3', content_type: "audio") do |original_file|
+    Kithe::FfmpegTransformer.new(
+      bitrate: '64k', stereo: false, suffix: 'mp3',
+      content_type: 'audio/mpeg', codec: nil, other_options: nil
+    ).call(original_file)
+  end
+  define_derivative('webm', content_type: "audio") do |original_file|
+    Kithe::FfmpegTransformer.new(
+      bitrate: '64k', stereo: false, suffix: 'webm',
+      content_type: 'audio/webm', codec: 'libopus', other_options: nil
+    ).call(original_file)
   end
 end
