@@ -47,8 +47,17 @@ gem 'bootstrap', '~> 4.3'
 gem 'sprockets-rails', '>= 2.3.2' # bootstrap gem requirement
 
 gem 'jquery-rails', "~> 4.3"
-gem 'kithe', git: "https://github.com/sciencehistory/kithe.git", branch: "master"
+
+# temporary kithe indexing branch, for scihist_digicoll indexing branch, do not
+# intend to merge to master like this.
+gem 'kithe', git: "https://github.com/sciencehistory/kithe.git", branch: "indexing"
+
+# temporary git master, we should get on an attr_json release once we're settled down
 gem "attr_json", git: "https://github.com/jrochkind/attr_json" #path: "../attr_json"
+
+# temporary git master, we should get on traject release once we release 3.1
+gem 'traject', git: "https://github.com/traject/traject"
+
 gem 'simple_form', "~> 4.0"
 gem "cocoon"
 
@@ -100,3 +109,4 @@ end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+
