@@ -1,14 +1,14 @@
 GIT
   remote: https://github.com/jrochkind/attr_json
-  revision: 7bc3a3611fd59ca97f6318994a81d606819245f0
+  revision: df68a661bb70b75ecec8a6ca3436bc7cbab0a97c
   specs:
     attr_json (0.6.0)
       activerecord (>= 5.0.0, < 6.1)
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: 97e550bea6b957fe8e4ebf44819db9e86e265236
-  branch: master
+  revision: 3c5afda31391d22fa331d891980f22cd8491f494
+  branch: indexing
   specs:
     kithe (0.1.0)
       attr_json (< 2.0.0)
@@ -16,12 +16,29 @@ GIT
       marcel
       mini_mime
       pdf-reader (~> 2.0)
-      rails (~> 5.2.1)
+      rails (>= 5.2.1, < 6.1)
       ruby-progressbar (~> 1.0)
       shrine (~> 2.14)
       shrine-url (~> 2.0)
       simple_form (~> 4.0)
+      traject (~> 3.0)
       tty-command (>= 0.8.2, < 2)
+
+GIT
+  remote: https://github.com/traject/traject
+  revision: 8e4d3efa0dfe2b5e8ff9e4e4590c448ed973c254
+  specs:
+    traject (3.0.0)
+      concurrent-ruby (>= 0.8.0)
+      dot-properties (>= 0.1.1)
+      hashie (~> 3.1)
+      http (~> 3.0)
+      httpclient (~> 2.5)
+      marc (~> 1.0)
+      marc-fastxmlwriter (~> 1.0)
+      nokogiri (~> 1.9)
+      slop (>= 3.4.5, < 4.0)
+      yell
 
 GEM
   remote: https://rubygems.org/
@@ -171,6 +188,7 @@ GEM
     diff-lcs (1.3)
     domain_name (0.5.20180417)
       unf (>= 0.0.5, < 1.0.0)
+    dot-properties (0.1.3)
     down (4.8.0)
       addressable (~> 2.5)
     dropbox_api (0.1.16)
@@ -214,8 +232,9 @@ GEM
       signet (~> 0.7)
     hashdiff (0.3.8)
     hashery (2.1.2)
+    hashie (3.6.0)
     honeybadger (4.1.0)
-    http (4.0.5)
+    http (3.3.0)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
       http-form_data (~> 2.0)
@@ -260,6 +279,11 @@ GEM
       nokogiri (>= 1.5.9)
     mail (2.7.1)
       mini_mime (>= 0.1.1)
+    marc (1.0.3)
+      scrub_rb (>= 1.0.1, < 2)
+      unf
+    marc-fastxmlwriter (1.0.0)
+      marc (~> 1.0)
     marcel (0.3.3)
       mimemagic (~> 0.3.2)
     memoist (0.16.0)
@@ -410,6 +434,7 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
+    scrub_rb (1.0.1)
     selenium-webdriver (3.141.0)
       childprocess (~> 0.5)
       rubyzip (~> 1.2, >= 1.2.2)
@@ -435,6 +460,7 @@ GEM
       tilt (~> 2.0)
     slackistrano (3.8.3)
       capistrano (>= 3.8.1)
+    slop (3.6.0)
     sprockets (3.7.2)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
@@ -493,6 +519,7 @@ GEM
     websocket-extensions (0.1.3)
     xpath (3.2.0)
       nokogiri (~> 1.8)
+    yell (2.1.0)
 
 PLATFORMS
   ruby
@@ -537,6 +564,7 @@ DEPENDENCIES
   simple_form (~> 4.0)
   slackistrano (~> 3.8)
   sprockets-rails (>= 2.3.2)
+  traject!
   tzinfo-data
   uglifier (>= 1.3.0)
   uppy-s3_multipart
