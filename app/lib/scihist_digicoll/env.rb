@@ -103,6 +103,8 @@ module ScihistDigicoll
       end
     }
 
+    define_key :solr_url, default: "http://127.0.0.1:8983/solr/hydra-development"
+
     # Based on config, supply appropriate shrine cache.
     def self.shrine_cache_storage
       case lookup!(:storage_mode)
