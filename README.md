@@ -57,6 +57,14 @@ We are using webpacker (an ES6-style JS toolchain, supported by Rails 5.1+) for 
 Some references I found good for understanding webpacker in Rails:
 * https://medium.com/@coorasse/goodbye-sprockets-welcome-webpacker-3-0-ff877fb8fa79
 
+### Interesting gem dependencies
+
+* [kithe](https://github.com/sciencehistory/kithe) of course provides a lot of digital-collections domain-specific functionality
+  * which itself uses [attr_json](https://github.com/jrochkind/attr_json/) for modelling attributes as a single json column in the db, and [shrine](https://shrinerb.com) for file handling.
+* [devise](https://github.com/plataformatec/devise) is used for authentication/login
+* [access-granted](https://github.com/chaps-io/access-granted) is used for some very simple authorization/permissions (right now just admins can do some things other logged in staff can not)
+
+
 ## Production deployment
 
 We deploy to AWS, the deployment is done _mostly_ automatically by some ansible playbooks:
