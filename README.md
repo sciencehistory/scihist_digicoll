@@ -89,7 +89,9 @@ Regardless, object are generally stored in S3 (or file system) with paths beginn
 
 ## Rake tasks
 
-We shouldn't have to use the rake tasks as much, since there is now admin web interface for creating and editing accounts. But they are still there, as they can be convenient for setting up a dev environment or perhaps bootstrapping a production environment with an admin account, or in general automating things involving users.
+### Account management
+
+We shouldn't have to use account management rake tasks as much, since there is now admin web interface for creating and editing accounts. But they are still there, as they can be convenient for setting up a dev environment or perhaps bootstrapping a production environment with an admin account, or in general automating things involving users.
 
 ```shell
 ./bin/rake scihist:user:create[someone@example.com]
