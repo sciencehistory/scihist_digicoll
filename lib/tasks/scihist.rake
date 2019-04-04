@@ -53,4 +53,24 @@ namespace :scihist do
       end
     end
   end
+
+  desc "sync all Works and Collections to solr index"
+  task :reindex => :environment do
+    progress_bar = ProgressBar.create(total: Work.count + Collection.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
+    count = 0
+    Kithe::Indexable.index_with(batching: true) do
+      Work.find_each do |work|
+        progress_bar.title = "#{work.class.name}:#{work.friendlier_id}"
+        count += 1
+        work.update_index
+        progress_bar.increment
+      end
+      Collection.find_each do |coll|
+        progress_bar.title = "#{coll.class.name}:#{coll.friendlier_id}"
+        count += 1
+        coll.update_index
+        progress_bar.increment
+      end
+    end
+  end
 end
