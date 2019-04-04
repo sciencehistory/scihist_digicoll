@@ -120,7 +120,7 @@ module Importers
 
       model.json_attributes = {}
       # why not wipe updated_at and created_at too?
-      things_to_wipe = model.attributes.keys - ['file_data', 'id', 'type', 'updated_at', 'created_at']
+      things_to_wipe = model.attributes.keys - ['file_data', 'id', 'type', 'updated_at', 'created_at', 'type', 'kithe_model_type']
       things_to_wipe.each { | atttr | model.send("#{atttr}=", nil) }
       return model
     end
