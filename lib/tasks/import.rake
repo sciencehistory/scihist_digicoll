@@ -57,49 +57,56 @@ namespace :scihist_digicoll do
     end
     progress_bar = ProgressBar.create(total: total_tasks, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
 
+    # Disable automatic solr indexing when we do import, so it won't slow it down.
+    # Import saves a buncha things multiple times, each of which would trigger an index,
+    # so even batch indexing slowed things down. So we disable, and then do an index at the end.
+    Kithe::Indexable.index_with(disable_callbacks: true) do
+      progress_bar.log("INFO: Importing FileSets")
+      fileset_dir.each do |path|
+        Importers::FileSetImporter.new(
+          JSON.parse(File.read(path)),
+          disable_bytestream_import: disable_bytestream_import,
+          create_derivatives: create_derivatives).tap do |importer|
+            importer.import
+            importer.errors.each { |e| progress_bar.log(e) }
+          end
+        progress_bar.increment
+      end
 
-    progress_bar.log("INFO: Importing FileSets")
-    fileset_dir.each do |path|
-      Importers::FileSetImporter.new(
-        JSON.parse(File.read(path)),
-        disable_bytestream_import: disable_bytestream_import,
-        create_derivatives: create_derivatives).tap do |importer|
+      progress_bar.log("INFO: Importing Genericworks")
+      work_dir.each do |path|
+        json_str = JSON.parse(File.read(path))
+        if json_str == ''
+          progress_bar.log("ERROR: Empty json file at #{path}")
+          next
+        end
+        Importers::GenericWorkImporter.new(json_str).tap do |importer|
           importer.import
           importer.errors.each { |e| progress_bar.log(e) }
         end
-      progress_bar.increment
-    end
-
-    progress_bar.log("INFO: Importing Genericworks")
-    work_dir.each do |path|
-      json_str = JSON.parse(File.read(path))
-      if json_str == ''
-        progress_bar.log("ERROR: Empty json file at #{path}")
-        next
+        progress_bar.increment
       end
-      Importers::GenericWorkImporter.new(json_str).tap do |importer|
+
+      progress_bar.log("INFO: Setting GenericWork and Asset relationships")
+      work_dir.each do |path|
+        importer = Importers::RelationshipImporter.new(JSON.parse(File.read(path)))
         importer.import
         importer.errors.each { |e| progress_bar.log(e) }
+        progress_bar.increment
       end
-      progress_bar.increment
+
+      progress_bar.log("INFO: Importing Collections")
+      collection_dir.each do |path|
+        Importers::CollectionImporter.new(JSON.parse(File.read(path))).tap do |importer|
+          importer.import
+          importer.errors.each { |e| progress_bar.log(e) }
+        end
+        progress_bar.increment
+      end
     end
 
-    progress_bar.log("INFO: Setting GenericWork and Asset relationships")
-    work_dir.each do |path|
-      importer = Importers::RelationshipImporter.new(JSON.parse(File.read(path)))
-      importer.import
-      importer.errors.each { |e| progress_bar.log(e) }
-      progress_bar.increment
-    end
-
-    progress_bar.log("INFO: Importing Collections")
-    collection_dir.each do |path|
-      Importers::CollectionImporter.new(JSON.parse(File.read(path))).tap do |importer|
-        importer.import
-        importer.errors.each { |e| progress_bar.log(e) }
-      end
-      progress_bar.increment
-    end
+    puts "INFO: Reindexing to Solr"
+    Rake::Task["scihist:reindex"].invoke
   end
 
   task :import_one => :environment do
