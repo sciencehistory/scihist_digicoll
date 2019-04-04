@@ -1,6 +1,8 @@
-
-
 class Work < Kithe::Work
+  # will trigger automatic solr indexing in callbacks
+  self.kithe_indexable_mapper = WorkIndexer.new
+
+
   belongs_to :digitization_queue_item, optional: true, class_name: "Admin::DigitizationQueueItem"
 
   validates :external_id, presence: true
