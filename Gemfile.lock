@@ -7,7 +7,7 @@ GIT
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: 97e550bea6b957fe8e4ebf44819db9e86e265236
+  revision: 015daf924d99e855c11d3c624a82b9a130387d3a
   branch: master
   specs:
     kithe (0.1.0)
@@ -16,7 +16,7 @@ GIT
       marcel
       mini_mime
       pdf-reader (~> 2.0)
-      rails (~> 5.2.1)
+      rails (>= 5.2.1, < 6.1)
       ruby-progressbar (~> 1.0)
       shrine (~> 2.14)
       shrine-url (~> 2.0)
@@ -215,7 +215,7 @@ GEM
     hashdiff (0.3.8)
     hashery (2.1.2)
     honeybadger (4.1.0)
-    http (4.0.5)
+    http (4.1.0)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
       http-form_data (~> 2.0)
