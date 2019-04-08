@@ -64,6 +64,39 @@ Some references I found good for understanding webpacker in Rails:
 * [devise](https://github.com/plataformatec/devise) is used for authentication/login
 * [access-granted](https://github.com/chaps-io/access-granted) is used for some very simple authorization/permissions (right now just admins can do some things other logged in staff can not)
 
+### Writing tests
+
+Some things we have configured in our `rails_helper.rb` to make writing tests easier and the application settings more configurable.
+
+#### browser tests
+
+Rspec `system` tests are configured to run with the `:selenium_chrome_headless` driver for real browser testing. If you tag a system test `js: false`, it will still run with `rack_test`, not a real browser.
+
+If instead of running in a headless browser, you want to run in a real browser you can see being automated on your screen, run as `SHOW_BROWSER=true ./bin/rspec [whatever]`.
+
+#### a logged in user
+
+If you tag a test with `logged_in_user: true`, the test framework will create a random user and set it as the logged in user with devise, so your tests have a logged in user available.
+
+     describe "something", logged_in_user: true do ...
+     # or
+     it "does something", logged_in_user: true do ...
+
+#### ActiveJob queue adapter
+
+Rails by default, in the test environment, will run any background ActiveJobs with it's `:async` adapter -- they are run in a separate thread in process, still async.
+
+Other available ActiveJob adapters are
+
+* `:inline` -- run the job synchronously, inline, so it is is complete before going to the next code line. Using this setting is one way to get our shrine file promotion and derivatives creation have happened before going to the next line of the test.
+* `:test` -- don't run the ActiveJob at all, but there are Rails test methods to test that it was indeed enqueued, with the arguments expected.
+
+We provide test setup to let you switch ActiveJob queue adaptors for particular test or test context:
+
+    describe "something", queue_adapter: :inline
+    # or
+    it "does something", queue_adapter: :test
+
 
 ## Production deployment
 
