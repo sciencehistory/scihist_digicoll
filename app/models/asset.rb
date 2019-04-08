@@ -32,14 +32,12 @@ class Asset < Kithe::Asset
 
   define_derivative('mp3', content_type: "audio") do |original_file|
     Kithe::FfmpegTransformer.new(
-      bitrate: '64k', stereo: false, suffix: 'mp3',
-      content_type: 'audio/mpeg', codec: nil, other_options: nil
+      bitrate: '64k', force_mono: true, output_suffix: 'mp3',
     ).call(original_file)
   end
   define_derivative('webm', content_type: "audio") do |original_file|
     Kithe::FfmpegTransformer.new(
-      bitrate: '64k', stereo: false, suffix: 'webm',
-      content_type: 'audio/webm', codec: 'libopus', other_options: nil
+      bitrate: '64k',  force_mono: true, output_suffix: 'webm'
     ).call(original_file)
   end
 end
