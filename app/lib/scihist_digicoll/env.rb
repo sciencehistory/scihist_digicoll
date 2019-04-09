@@ -103,7 +103,14 @@ module ScihistDigicoll
       end
     }
 
-    define_key :solr_url, default: "http://127.0.0.1:8983/solr/hydra-development"
+    define_key :solr_url, default: ->{
+      if Rails.env.test?
+        "http://127.0.0.1:8985/solr/scihist_digicoll_test"
+      elsif Rails.env.development?
+        "http://127.0.0.1:8983/solr/scihist_digicoll_development"
+      end
+      # production we have no default, local env has to supply it
+    }
 
     # Based on config, supply appropriate shrine cache.
     def self.shrine_cache_storage
