@@ -97,6 +97,9 @@ We provide test setup to let you switch ActiveJob queue adaptors for particular 
     # or
     it "does something", queue_adapter: :test
 
+#### solr indexing callbacks
+
+By default, the test environment disables our automatic callbacks that index models to solr on save. If you'd like to enable them for a test context or example, just supply `indexable_callbacks: true`
 
 ## Production deployment
 
