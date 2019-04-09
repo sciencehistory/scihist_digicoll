@@ -23,7 +23,6 @@ class WorkIndexer < Kithe::Indexer
     to_field "text_no_boost_tesim", obj_extract("related_url")
     to_field ["text_no_boost_tesim", "place_facet"], obj_extract("place", "value")
     to_field "text_no_boost_tesim", obj_extract("related_url")
-    to_field "text_no_boost_tesim", obj_extract("admin_note")
     to_field ["text_no_boost_tesim", "department_facet"], obj_extract("department")
     to_field ["text_no_boost_tesim", "medium_facet"], obj_extract("medium")
     to_field ["text_no_boost_tesim", "format_facet"], obj_extract("format")
@@ -36,8 +35,13 @@ class WorkIndexer < Kithe::Indexer
     to_field "text_no_boost_tesim", obj_extract("additional_credit"), transform(->(v) { "#{v.role}: #{v.name}" })
     to_field ["text_no_boost_tesim", "exhibition_facet"], obj_extract("exhibition")
     to_field "text_no_boost_tesim", obj_extract("source")
+    to_field "text_no_boost_tesim", obj_extract("extent")
 
     to_field "text_no_boost_tesim", obj_extract("physical_container"), transform( ->(v) { v.as_human_string })
+
+    # We put this one in a separate field, cause we only allow logged in users
+    # to search it
+    to_field "admin_only_text_tesim", obj_extract("admin_note")
 
     # for date/year range facet
     to_field "year_facet_isim" do |record, acc|
