@@ -1,9 +1,8 @@
-# Takes date metadata from a GenericWork, expands it into
+# Takes DateOfWork metadata from a Work, expands it into
 # an array of integer years to be used to fill an int facet
-# in solr for date range limit.
+# in solr for date range limit or sortable fields.
 #
 # Copied from https://github.com/sciencehistory/chf-sufia/blob/master/app/indexers/chf/generic_work_indexer/date_values.rb
-
 class DateIndexHelper
   attr_reader :work
   def initialize(work)
