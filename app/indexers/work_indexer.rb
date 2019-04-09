@@ -38,10 +38,27 @@ class WorkIndexer < Kithe::Indexer
     to_field "text_no_boost_tesim", obj_extract("source")
 
     # TODO structured things we need to figure out how we want in text index:
-    # physical container? Date?
+    # physical container?
+
+
+    # for date/year range facet
+    to_field "year_facet_isim" do |record, acc|
+      acc.concat(DateIndexHelper.new(record).expanded_years)
+    end
+
+    # For sorting by oldest first
+    to_field "earliest_year" do |record, acc|
+      acc << DateIndexHelper.new(record).min_year
+    end
+
+    # for sorting by newest first
+    to_field "latest_year" do |record, acc|
+      acc << DateIndexHelper.new(record).max_year
+    end
+
 
 
     ## FACETS and SORTABLE FIELDS
-    # TODO, including date facets.
+    # TODO
   end
 end
