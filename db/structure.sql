@@ -3,23 +3,10 @@ SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET row_security = off;
-
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
 
 --
 -- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: -
@@ -49,13 +36,11 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA public;
 COMMENT ON EXTENSION pgcrypto IS 'cryptographic functions';
 
 
-SET search_path = public, pg_catalog;
-
 --
 -- Name: kithe_models_friendlier_id_gen(bigint, bigint); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION kithe_models_friendlier_id_gen(min_value bigint, max_value bigint) RETURNS text
+CREATE FUNCTION public.kithe_models_friendlier_id_gen(min_value bigint, max_value bigint) RETURNS text
     LANGUAGE plpgsql
     AS $$
   DECLARE
@@ -102,7 +87,7 @@ SET default_with_oids = false;
 -- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE ar_internal_metadata (
+CREATE TABLE public.ar_internal_metadata (
     key character varying NOT NULL,
     value character varying,
     created_at timestamp without time zone NOT NULL,
@@ -114,7 +99,7 @@ CREATE TABLE ar_internal_metadata (
 -- Name: digitization_queue_items; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE digitization_queue_items (
+CREATE TABLE public.digitization_queue_items (
     id bigint NOT NULL,
     title character varying,
     collecting_area character varying,
@@ -141,7 +126,7 @@ CREATE TABLE digitization_queue_items (
 -- Name: digitization_queue_items_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE digitization_queue_items_id_seq
+CREATE SEQUENCE public.digitization_queue_items_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -153,14 +138,14 @@ CREATE SEQUENCE digitization_queue_items_id_seq
 -- Name: digitization_queue_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE digitization_queue_items_id_seq OWNED BY digitization_queue_items.id;
+ALTER SEQUENCE public.digitization_queue_items_id_seq OWNED BY public.digitization_queue_items.id;
 
 
 --
 -- Name: kithe_derivatives; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE kithe_derivatives (
+CREATE TABLE public.kithe_derivatives (
     id bigint NOT NULL,
     key character varying NOT NULL,
     file_data jsonb,
@@ -174,7 +159,7 @@ CREATE TABLE kithe_derivatives (
 -- Name: kithe_derivatives_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE kithe_derivatives_id_seq
+CREATE SEQUENCE public.kithe_derivatives_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -186,14 +171,14 @@ CREATE SEQUENCE kithe_derivatives_id_seq
 -- Name: kithe_derivatives_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE kithe_derivatives_id_seq OWNED BY kithe_derivatives.id;
+ALTER SEQUENCE public.kithe_derivatives_id_seq OWNED BY public.kithe_derivatives.id;
 
 
 --
 -- Name: kithe_model_contains; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE kithe_model_contains (
+CREATE TABLE public.kithe_model_contains (
     containee_id uuid,
     container_id uuid
 );
@@ -203,8 +188,8 @@ CREATE TABLE kithe_model_contains (
 -- Name: kithe_models; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE kithe_models (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
+CREATE TABLE public.kithe_models (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
     title character varying NOT NULL,
     type character varying NOT NULL,
     "position" integer,
@@ -212,12 +197,13 @@ CREATE TABLE kithe_models (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     parent_id uuid,
-    friendlier_id character varying DEFAULT kithe_models_friendlier_id_gen('2176782336'::bigint, '78364164095'::bigint) NOT NULL,
+    friendlier_id character varying DEFAULT public.kithe_models_friendlier_id_gen('2176782336'::bigint, '78364164095'::bigint) NOT NULL,
     file_data jsonb,
     representative_id uuid,
     leaf_representative_id uuid,
     digitization_queue_item_id bigint,
-    published boolean
+    published boolean,
+    kithe_model_type integer NOT NULL
 );
 
 
@@ -225,7 +211,7 @@ CREATE TABLE kithe_models (
 -- Name: queue_item_comments; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE queue_item_comments (
+CREATE TABLE public.queue_item_comments (
     id bigint NOT NULL,
     digitization_queue_item_id bigint NOT NULL,
     user_id bigint,
@@ -240,7 +226,7 @@ CREATE TABLE queue_item_comments (
 -- Name: queue_item_comments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE queue_item_comments_id_seq
+CREATE SEQUENCE public.queue_item_comments_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -252,14 +238,14 @@ CREATE SEQUENCE queue_item_comments_id_seq
 -- Name: queue_item_comments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE queue_item_comments_id_seq OWNED BY queue_item_comments.id;
+ALTER SEQUENCE public.queue_item_comments_id_seq OWNED BY public.queue_item_comments.id;
 
 
 --
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE schema_migrations (
+CREATE TABLE public.schema_migrations (
     version character varying NOT NULL
 );
 
@@ -268,7 +254,7 @@ CREATE TABLE schema_migrations (
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE users (
+CREATE TABLE public.users (
     id bigint NOT NULL,
     email character varying DEFAULT ''::character varying NOT NULL,
     encrypted_password character varying DEFAULT ''::character varying NOT NULL,
@@ -287,7 +273,7 @@ CREATE TABLE users (
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE users_id_seq
+CREATE SEQUENCE public.users_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -299,42 +285,42 @@ CREATE SEQUENCE users_id_seq
 -- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE users_id_seq OWNED BY users.id;
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
 -- Name: digitization_queue_items id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY digitization_queue_items ALTER COLUMN id SET DEFAULT nextval('digitization_queue_items_id_seq'::regclass);
+ALTER TABLE ONLY public.digitization_queue_items ALTER COLUMN id SET DEFAULT nextval('public.digitization_queue_items_id_seq'::regclass);
 
 
 --
 -- Name: kithe_derivatives id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY kithe_derivatives ALTER COLUMN id SET DEFAULT nextval('kithe_derivatives_id_seq'::regclass);
+ALTER TABLE ONLY public.kithe_derivatives ALTER COLUMN id SET DEFAULT nextval('public.kithe_derivatives_id_seq'::regclass);
 
 
 --
 -- Name: queue_item_comments id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY queue_item_comments ALTER COLUMN id SET DEFAULT nextval('queue_item_comments_id_seq'::regclass);
+ALTER TABLE ONLY public.queue_item_comments ALTER COLUMN id SET DEFAULT nextval('public.queue_item_comments_id_seq'::regclass);
 
 
 --
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
 
 
 --
 -- Name: ar_internal_metadata ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY ar_internal_metadata
+ALTER TABLE ONLY public.ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
 
 
@@ -342,7 +328,7 @@ ALTER TABLE ONLY ar_internal_metadata
 -- Name: digitization_queue_items digitization_queue_items_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY digitization_queue_items
+ALTER TABLE ONLY public.digitization_queue_items
     ADD CONSTRAINT digitization_queue_items_pkey PRIMARY KEY (id);
 
 
@@ -350,7 +336,7 @@ ALTER TABLE ONLY digitization_queue_items
 -- Name: kithe_derivatives kithe_derivatives_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY kithe_derivatives
+ALTER TABLE ONLY public.kithe_derivatives
     ADD CONSTRAINT kithe_derivatives_pkey PRIMARY KEY (id);
 
 
@@ -358,7 +344,7 @@ ALTER TABLE ONLY kithe_derivatives
 -- Name: kithe_models kithe_models_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY kithe_models
+ALTER TABLE ONLY public.kithe_models
     ADD CONSTRAINT kithe_models_pkey PRIMARY KEY (id);
 
 
@@ -366,7 +352,7 @@ ALTER TABLE ONLY kithe_models
 -- Name: queue_item_comments queue_item_comments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY queue_item_comments
+ALTER TABLE ONLY public.queue_item_comments
     ADD CONSTRAINT queue_item_comments_pkey PRIMARY KEY (id);
 
 
@@ -374,7 +360,7 @@ ALTER TABLE ONLY queue_item_comments
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY schema_migrations
+ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
 
 
@@ -382,7 +368,7 @@ ALTER TABLE ONLY schema_migrations
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY users
+ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
 
@@ -390,155 +376,155 @@ ALTER TABLE ONLY users
 -- Name: index_kithe_derivatives_on_asset_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_kithe_derivatives_on_asset_id ON kithe_derivatives USING btree (asset_id);
+CREATE INDEX index_kithe_derivatives_on_asset_id ON public.kithe_derivatives USING btree (asset_id);
 
 
 --
 -- Name: index_kithe_derivatives_on_asset_id_and_key; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_kithe_derivatives_on_asset_id_and_key ON kithe_derivatives USING btree (asset_id, key);
+CREATE UNIQUE INDEX index_kithe_derivatives_on_asset_id_and_key ON public.kithe_derivatives USING btree (asset_id, key);
 
 
 --
 -- Name: index_kithe_model_contains_on_containee_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_kithe_model_contains_on_containee_id ON kithe_model_contains USING btree (containee_id);
+CREATE INDEX index_kithe_model_contains_on_containee_id ON public.kithe_model_contains USING btree (containee_id);
 
 
 --
 -- Name: index_kithe_model_contains_on_container_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_kithe_model_contains_on_container_id ON kithe_model_contains USING btree (container_id);
+CREATE INDEX index_kithe_model_contains_on_container_id ON public.kithe_model_contains USING btree (container_id);
 
 
 --
 -- Name: index_kithe_models_on_friendlier_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_kithe_models_on_friendlier_id ON kithe_models USING btree (friendlier_id);
+CREATE UNIQUE INDEX index_kithe_models_on_friendlier_id ON public.kithe_models USING btree (friendlier_id);
 
 
 --
 -- Name: index_kithe_models_on_leaf_representative_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_kithe_models_on_leaf_representative_id ON kithe_models USING btree (leaf_representative_id);
+CREATE INDEX index_kithe_models_on_leaf_representative_id ON public.kithe_models USING btree (leaf_representative_id);
 
 
 --
 -- Name: index_kithe_models_on_parent_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_kithe_models_on_parent_id ON kithe_models USING btree (parent_id);
+CREATE INDEX index_kithe_models_on_parent_id ON public.kithe_models USING btree (parent_id);
 
 
 --
 -- Name: index_kithe_models_on_representative_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_kithe_models_on_representative_id ON kithe_models USING btree (representative_id);
+CREATE INDEX index_kithe_models_on_representative_id ON public.kithe_models USING btree (representative_id);
 
 
 --
 -- Name: index_queue_item_comments_on_digitization_queue_item_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_queue_item_comments_on_digitization_queue_item_id ON queue_item_comments USING btree (digitization_queue_item_id);
+CREATE INDEX index_queue_item_comments_on_digitization_queue_item_id ON public.queue_item_comments USING btree (digitization_queue_item_id);
 
 
 --
 -- Name: index_queue_item_comments_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_queue_item_comments_on_user_id ON queue_item_comments USING btree (user_id);
+CREATE INDEX index_queue_item_comments_on_user_id ON public.queue_item_comments USING btree (user_id);
 
 
 --
 -- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_users_on_email ON users USING btree (email);
+CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
 
 
 --
 -- Name: index_users_on_reset_password_token; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_users_on_reset_password_token ON users USING btree (reset_password_token);
+CREATE UNIQUE INDEX index_users_on_reset_password_token ON public.users USING btree (reset_password_token);
 
 
 --
 -- Name: trgm_idx_kithe_models_title; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX trgm_idx_kithe_models_title ON kithe_models USING gin (title gin_trgm_ops);
+CREATE INDEX trgm_idx_kithe_models_title ON public.kithe_models USING gin (title public.gin_trgm_ops);
 
 
 --
 -- Name: kithe_model_contains fk_rails_091010187b; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY kithe_model_contains
-    ADD CONSTRAINT fk_rails_091010187b FOREIGN KEY (container_id) REFERENCES kithe_models(id);
+ALTER TABLE ONLY public.kithe_model_contains
+    ADD CONSTRAINT fk_rails_091010187b FOREIGN KEY (container_id) REFERENCES public.kithe_models(id);
 
 
 --
 -- Name: kithe_models fk_rails_210e0ee046; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY kithe_models
-    ADD CONSTRAINT fk_rails_210e0ee046 FOREIGN KEY (digitization_queue_item_id) REFERENCES digitization_queue_items(id);
+ALTER TABLE ONLY public.kithe_models
+    ADD CONSTRAINT fk_rails_210e0ee046 FOREIGN KEY (digitization_queue_item_id) REFERENCES public.digitization_queue_items(id);
 
 
 --
 -- Name: kithe_derivatives fk_rails_3dac8b4201; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY kithe_derivatives
-    ADD CONSTRAINT fk_rails_3dac8b4201 FOREIGN KEY (asset_id) REFERENCES kithe_models(id);
+ALTER TABLE ONLY public.kithe_derivatives
+    ADD CONSTRAINT fk_rails_3dac8b4201 FOREIGN KEY (asset_id) REFERENCES public.kithe_models(id);
 
 
 --
 -- Name: kithe_models fk_rails_403cce5c0d; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY kithe_models
-    ADD CONSTRAINT fk_rails_403cce5c0d FOREIGN KEY (leaf_representative_id) REFERENCES kithe_models(id);
+ALTER TABLE ONLY public.kithe_models
+    ADD CONSTRAINT fk_rails_403cce5c0d FOREIGN KEY (leaf_representative_id) REFERENCES public.kithe_models(id);
 
 
 --
 -- Name: kithe_model_contains fk_rails_490c1158f7; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY kithe_model_contains
-    ADD CONSTRAINT fk_rails_490c1158f7 FOREIGN KEY (containee_id) REFERENCES kithe_models(id);
+ALTER TABLE ONLY public.kithe_model_contains
+    ADD CONSTRAINT fk_rails_490c1158f7 FOREIGN KEY (containee_id) REFERENCES public.kithe_models(id);
 
 
 --
 -- Name: kithe_models fk_rails_90130a9780; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY kithe_models
-    ADD CONSTRAINT fk_rails_90130a9780 FOREIGN KEY (parent_id) REFERENCES kithe_models(id);
+ALTER TABLE ONLY public.kithe_models
+    ADD CONSTRAINT fk_rails_90130a9780 FOREIGN KEY (parent_id) REFERENCES public.kithe_models(id);
 
 
 --
 -- Name: kithe_models fk_rails_afa93b7b5d; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY kithe_models
-    ADD CONSTRAINT fk_rails_afa93b7b5d FOREIGN KEY (representative_id) REFERENCES kithe_models(id);
+ALTER TABLE ONLY public.kithe_models
+    ADD CONSTRAINT fk_rails_afa93b7b5d FOREIGN KEY (representative_id) REFERENCES public.kithe_models(id);
 
 
 --
 -- Name: queue_item_comments fk_rails_faa45a6d5b; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY queue_item_comments
-    ADD CONSTRAINT fk_rails_faa45a6d5b FOREIGN KEY (digitization_queue_item_id) REFERENCES digitization_queue_items(id);
+ALTER TABLE ONLY public.queue_item_comments
+    ADD CONSTRAINT fk_rails_faa45a6d5b FOREIGN KEY (digitization_queue_item_id) REFERENCES public.digitization_queue_items(id);
 
 
 --
@@ -561,6 +547,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190226135744'),
 ('20190304201533'),
 ('20190305170908'),
-('20190305202051');
+('20190305202051'),
+('20190404155001');
 
 
