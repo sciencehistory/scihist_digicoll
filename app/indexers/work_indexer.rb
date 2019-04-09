@@ -4,18 +4,17 @@ class WorkIndexer < Kithe::Indexer
     # instead of a Solr field per attribute, we group them into fields
     # that will have similar boosting, to use solr solr more efficiently.
     # text1 is boosted highest, text2 next highest, etc.
-    #
-    # The _ssim values are generally for facets.
+    #.
     #
     # Experiment, not necessarily completed indexing logic.
 
     to_field "text1_tesim", obj_extract("title")
     to_field "text1_tesim", obj_extract("additional_title")
 
-    to_field ["text2_tesim","creator_ssim"], obj_extract("creator", "value")
-    to_field ["text2_tesim" "genre_ssim"], obj_extract("genre")
+    to_field ["text2_tesim","creator_facet"], obj_extract("creator", "value")
+    to_field ["text2_tesim" "genre_facet"], obj_extract("genre")
 
-    to_field ["text3_tesim", "subject_ssim"], obj_extract("subject")
+    to_field ["text3_tesim", "subject_facet"], obj_extract("subject")
 
     to_field "text4_tesim", obj_extract("description")
 
@@ -27,7 +26,7 @@ class WorkIndexer < Kithe::Indexer
     to_field "text_no_boost_tesim", obj_extract("admin_note")
     to_field "text_no_boost_tesim", obj_extract("department")
     to_field "text_no_boost_tesim", obj_extract("medium")
-    to_field ["text_no_boost_tesim", "format_ssim"], obj_extract("format")
+    to_field ["text_no_boost_tesim", "format_facet"], obj_extract("format")
     to_field "text_no_boost_tesim", obj_extract("rights") # URL id
     to_field "text_no_boost_tesim", obj_extract("rights"), transform(->(v) { RightsTerms.label_for(v) }) # human label
     to_field "text_no_boost_tesim", obj_extract("rights_holder")

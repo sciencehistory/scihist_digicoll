@@ -58,8 +58,13 @@
      -->
 
   <types>
-    <!-- added by CHF, int with sort missing last -->
+    <!-- added by Scinece History Institute, int with sort missing last -->
     <fieldType name="int_sortmissinglast" class="solr.IntPointField" docValues="true" sortMissingLast="true"/>
+
+    <!-- added by Science History Institute, string field with docValues, good for faceting, or
+         in the case of a single-valued field, sorting -->
+    <fieldType name="string_dv" class="solr.StrField" indexed="true" stored="false" docValues="true" sortMissingLast="true"/>
+
     <!-- end added by CHF -->
 
 
@@ -221,7 +226,8 @@
     <field name="latest_year" type="int_sortmissinglast" stored="true" indexed="true" multiValued="false"/>
     <field name="earliest_year" type="int_sortmissinglast" stored="true" indexed="true" multiValued="false"/>
 
-    <!-- end added by CHF -->
+    <!-- added by Science History Institute, a dynamic field that's good for string facets, using docValues fields -->
+    <dynamicField name="*_facet" type="string_dv" multiValued="true"/>
 
     <!-- NOTE:  not all possible Solr field types are represented in the dynamic fields -->
 
