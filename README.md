@@ -136,6 +136,8 @@ To start a development instance of Solr you can use with the development Rails a
 
 It will stay up until the process is killed, or you can stop it with `./bin/rake solr:stop`. See also `solr:status`, `solr:restart`, and conveniently `./bin/rake solr:browser` to open a browser window pointing to solr console (MacOS only).
 
+Configuration for solr_wrapper is at `./.solr_wrapper.yml`
+
 
 ### Account management
 
