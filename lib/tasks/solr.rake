@@ -41,7 +41,11 @@ namespace :solr do
 
   desc "output of running `solr status`"
   task :status do
+
+
     SolrWrapper.instance.tap do |instance|
+      puts "solr install at #{instance.instance_dir}\n\n"
+
       # yes, it's a protected method in solr_wrapper so we need to cheat. :(
       solr_status = SolrWrapper.instance.send(:exec, 'status').read
 
@@ -52,6 +56,8 @@ namespace :solr do
       puts "Configured Solr at #{instance.config.url} appears running? #{Pastel.new.decorate(running.to_s.upcase, running ? :green : :red)}"
       puts solr_status
     end
+  rescue Errno::ENOENT => e
+    puts "#{e.message}\nSolr appears not be installed at all. Run ./bin/rake solr:clean or ./bin/rake solr:start"
   end
 
   desc "open solr in browser (MacOS)"

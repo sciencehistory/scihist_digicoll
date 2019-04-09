@@ -10,7 +10,7 @@
 # is fine.
 
 port: <%= Rails.env.test? ? '8985' : '8983' %>
-instance_dir: tmp/solr-<%= Rails.env %>
+instance_dir: tmp/solr_<%= Rails.env %>
   <% # in subdir of tmp to make it easier to tell travis to cache,
      # so we're not downloading it over and over. Make sure it exists.
      FileUtils.mkdir_p("tmp/solr_dist") %>
