@@ -101,6 +101,10 @@ We provide test setup to let you switch ActiveJob queue adaptors for particular 
 
 By default, the test environment disables our automatic callbacks that index models to solr on save. If you'd like to enable them for a test context or example, just supply `indexable_callbacks: true`
 
+#### Real Solr
+
+If you have tests that require a real solr to be running (such as system/integration tests in parts of the app that use solr), specify `solr: true` and `solr_wrapper` will be used to (install if needed and) launch a solr. Solr will only be launched when/if a test is encountered that is so tagged, but will only be launched once (and shut down on termination) if there are multiple tests requiring it.
+
 ## Production deployment
 
 We deploy to AWS, the deployment is done _mostly_ automatically by some ansible playbooks:
