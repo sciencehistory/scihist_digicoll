@@ -36,7 +36,20 @@ namespace :solr do
 
   desc 'stop solr'
   task :stop do
-    SolrWrapper.instance.stop
+    SolrWrapper.instance.tap do |instance|
+      collection_options = instance.config.collection_options
+      if collection_options && !collection_options[:persist]  && col_name = collection_options[:name]
+        begin
+          instance.delete col_name
+        rescue StandardError => e
+          # we don't care if we couldn't connect, it is hard to rescue though
+          unless e.message =~ /Connection refused/
+            raise e
+          end
+        end
+      end
+      instance.stop
+    end
   end
 
   desc "output of running `solr status`"
