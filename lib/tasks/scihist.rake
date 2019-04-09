@@ -56,19 +56,13 @@ namespace :scihist do
 
   desc "sync all Works and Collections to solr index"
   task :reindex => :environment do
-    progress_bar = ProgressBar.create(total: Work.count + Collection.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
-    count = 0
+    scope = Kithe::Model.where(kithe_model_type: ["collection", "work"]) # we don't index Assets
+
+    progress_bar = ProgressBar.create(total: scope.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
     Kithe::Indexable.index_with(batching: true) do
-      Work.find_each do |work|
-        progress_bar.title = "#{work.class.name}:#{work.friendlier_id}"
-        count += 1
-        work.update_index
-        progress_bar.increment
-      end
-      Collection.find_each do |coll|
-        progress_bar.title = "#{coll.class.name}:#{coll.friendlier_id}"
-        count += 1
-        coll.update_index
+      scope.find_each do |model|
+        progress_bar.title = "#{model.class.name}:#{model.friendlier_id}"
+        model.update_index
         progress_bar.increment
       end
     end
