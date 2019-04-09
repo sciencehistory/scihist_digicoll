@@ -56,7 +56,17 @@ class WorkIndexer < Kithe::Indexer
       acc << DateIndexHelper.new(record).max_year
     end
 
+    to_field "date_created_dtsi" do |rec, acc|
+      if rec.created_at
+        acc << rec.created_at.utc.iso8601
+      end
+    end
 
+    to_field "date_modified_dtsi" do |rec, acc|
+      if rec.updated_at
+        acc << rec.updated_at.utc.iso8601
+      end
+    end
 
     ## FACETS and SORTABLE FIELDS
     # TODO
