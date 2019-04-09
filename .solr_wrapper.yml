@@ -1,0 +1,17 @@
+# Configuration used by solr_wrapper, which we use to launch solr in dev and test.
+# It is not used in production, where the host environment provides a solr.
+#
+# Right now this is just for dev, we need to decide how we're going to split out
+# to dev/test, and also fine-tune this.
+
+port: 8983
+instance_dir: tmp/solr-development
+  <% # in subdir of tmp to make it easier to tell travis to cache,
+     # so we're not downloading it over and over. Make sure it exists.
+     FileUtils.mkdir_p("tmp/solr_dist") %>
+download_dir: "tmp/solr_dist"
+collection:
+  persist: true
+  dir: config/solr
+  name: hydra-development
+version: 8.0.0

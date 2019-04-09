@@ -77,6 +77,8 @@ gem 'bootstrap4-kaminari-views'
 gem 'devise', "~> 4.5" # user accounts and login
 gem 'access-granted', "~> 1.0" # authorization
 
+gem 'solr_wrapper', "~> 2.1"
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]
