@@ -122,6 +122,21 @@ Regardless, object are generally stored in S3 (or file system) with paths beginn
 
 ## Rake tasks
 
+### Solr re-indexing
+
+`./bin/rake scihist:reindex ` to reindex all Works and Collections in Solr.
+
+### Dev/test solr
+
+We use [solr_wrapper](https://github.com/cbeer/solr_wrapper) to conveniently install and run a Solr for development and tests. (In production, the host environment provides the solr, but ansible is set up to use our solr core configuration in ./config/solr the same as solr_wrapper does in dev/test).
+
+To start a development instance of Solr you can use with the development Rails app, run:
+
+    ./bin/rake solr:start
+
+It will stay up until the process is killed, or you can stop it with `./bin/rake solr:stop`. See also `solr:status`, `solr:restart`, and conveniently `./bin/rake solr:browser` to open a browser window pointing to solr console (MacOS only).
+
+
 ### Account management
 
 We shouldn't have to use account management rake tasks as much, since there is now admin web interface for creating and editing accounts. But they are still there, as they can be convenient for setting up a dev environment or perhaps bootstrapping a production environment with an admin account, or in general automating things involving users.
