@@ -37,9 +37,7 @@ class WorkIndexer < Kithe::Indexer
     to_field ["text_no_boost_tesim", "exhibition_facet"], obj_extract("exhibition")
     to_field "text_no_boost_tesim", obj_extract("source")
 
-    # TODO structured things we need to figure out how we want in text index:
-    # physical container?
-
+    to_field "text_no_boost_tesim", obj_extract("physical_container"), transform( ->(v) { v.as_human_string })
 
     # for date/year range facet
     to_field "year_facet_isim" do |record, acc|
