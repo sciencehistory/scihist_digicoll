@@ -17,6 +17,6 @@ instance_dir: tmp/solr_<%= Rails.env %>
 download_dir: "tmp/solr_dist"
 collection:
   persist: <%= Rails.env.test? ? "false" : "true" %>
-  dir: config/solr
+  dir: solr/config
   name: scihist_digicoll_<%= Rails.env %>
 version: 8.0.0
