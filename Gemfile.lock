@@ -7,7 +7,7 @@ GIT
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: 6671089df1393b74889edc888922a92f795b87d3
+  revision: c2bc89d99fa6898aed25e712a77425f32eae904e
   branch: indexing
   specs:
     kithe (0.1.0)
@@ -17,6 +17,7 @@ GIT
       mini_mime
       pdf-reader (~> 2.0)
       rails (>= 5.2.1, < 6.1)
+      rsolr (~> 2.2)
       ruby-progressbar (~> 1.0)
       shrine (~> 2.14)
       shrine-url (~> 2.0)
@@ -398,6 +399,9 @@ GEM
     retriable (3.1.2)
     roda (3.15.0)
       rack
+    rsolr (2.2.1)
+      builder (>= 2.1.2)
+      faraday (>= 0.9.0)
     rspec-core (3.8.0)
       rspec-support (~> 3.8.0)
     rspec-expectations (3.8.2)

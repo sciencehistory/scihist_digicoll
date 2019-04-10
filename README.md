@@ -129,9 +129,11 @@ Regardless, object are generally stored in S3 (or file system) with paths beginn
 
 ## Rake tasks
 
-### Solr re-indexing
+### Solr Data
 
-`./bin/rake scihist:reindex ` to reindex all Works and Collections in Solr.
+* `./bin/rake scihist:solr:reindex` to reindex all Works and Collections in Solr.
+* `./bin/rake scihist:solr:delete_orphans` deletes things from Solr that no longer exist in the db. Ordinarily not required, but if things somehow get out of sync.
+* `./bin/rake scihist:solr:delete_all` Meant for development/test only, deletes all documents from Solr.
 
 ### Dev/test solr
 
@@ -141,7 +143,7 @@ To start a development instance of Solr you can use with the development Rails a
 
     ./bin/rake solr:start
 
-It will stay up until the process is killed, or you can stop it with `./bin/rake solr:stop`. See also `solr:status`, `solr:restart`, and conveniently `./bin/rake solr:browser` to open a browser window pointing to solr console (MacOS only).
+It will stay up until the process is killed, or you can stop it with `./bin/rake solr:stop`. See  also `solr:status`, `solr:restart`, and conveniently `./bin/rake solr:browser` to open a browser window pointing to solr console (MacOS only).
 
 Configuration for solr_wrapper is at `./.solr_wrapper.yml`
 
