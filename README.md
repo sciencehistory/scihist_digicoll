@@ -27,6 +27,8 @@ $ yarn install
 $ rake db:setup
 ```
 
+Start a development Solr instance with `./bin/rake solr:start`.
+
 Run app with `./rails server`, it will be available at `http://localhost:3000`.
 
 ### Local Env
@@ -137,7 +139,7 @@ Regardless, object are generally stored in S3 (or file system) with paths beginn
 
 ### Dev/test solr
 
-We use [solr_wrapper](https://github.com/cbeer/solr_wrapper) to conveniently install and run a Solr for development and tests. (In production, the host environment provides the solr, but ansible is set up to use our solr core configuration in ./config/solr the same as solr_wrapper does in dev/test).
+We use [solr_wrapper](https://github.com/cbeer/solr_wrapper) to conveniently install and run a Solr for development and tests. (In production, the host environment provides the solr, but ansible is set up to use our solr core configuration in ./solr/config the same as solr_wrapper does in dev/test).
 
 To start a development instance of Solr you can use with the development Rails app, run:
 
