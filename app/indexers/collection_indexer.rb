@@ -10,5 +10,22 @@ class CollectionIndexer < Kithe::Indexer
     to_field "text4_tesim", obj_extract("description")
 
     to_field "text_no_boost_tesim", obj_extract("related_url")
+
+    to_field "date_created_dtsi" do |rec, acc|
+      if rec.created_at
+        acc << rec.created_at.utc.iso8601
+      end
+    end
+
+    to_field "date_modified_dtsi" do |rec, acc|
+      if rec.updated_at
+        acc << rec.updated_at.utc.iso8601
+      end
+    end
+
+    # for now we index 'published', not sure if we'll move to ONLY indexing
+    # things that are published.
+    to_field "published_bsi", obj_extract("published?")
+
   end
 end
