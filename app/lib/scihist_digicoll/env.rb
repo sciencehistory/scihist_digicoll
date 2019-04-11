@@ -104,10 +104,13 @@ module ScihistDigicoll
     }
 
     define_key :solr_url, default: ->{
+      # Note the ports used in dev/test must match ports in .solr_wrapper
+      # if you want testing to work right and dev instance to talk to solr-wrapper
+      # started dev solr.
       if Rails.env.test?
-        "http://127.0.0.1:8985/solr/scihist_digicoll_test"
+        "http://127.0.0.1:8989/solr/scihist_digicoll_test"
       elsif Rails.env.development?
-        "http://127.0.0.1:8983/solr/scihist_digicoll_development"
+        "http://127.0.0.1:8987/solr/scihist_digicoll_development"
       end
       # production we have no default, local env has to supply it
     }

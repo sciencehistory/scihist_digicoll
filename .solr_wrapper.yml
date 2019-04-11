@@ -8,8 +8,11 @@
 # solr_wrapper doesn't support without customization.  Using `Rails.env` works fine
 # from our rake tasks, but does mean that you can't use `bundle exec solr_wrapper` anymore -- this
 # is fine.
+#
+# Note the port used must match port in ScihistDigicoll::Env solr_url key, and the
+# solr_url must be localhost too if you want it to use this solr_wrapper launched solr.
 
-port: <%= Rails.env.test? ? '8985' : '8983' %>
+port: <%= Rails.env.test? ? '8989' : '8987' %>
 instance_dir: tmp/solr_<%= Rails.env %>
   <% # in subdir of tmp to make it easier to tell travis to cache,
      # so we're not downloading it over and over. Make sure it exists.
