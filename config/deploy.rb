@@ -47,6 +47,11 @@ set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache', '
 
 set :honeybadger_env, fetch(:stage)
 
+# When running rake tasks with `cap staging invoke:rake rake:task:name`, via
+# the capistrano-rake gem, run them on the jobs host, that's a good one for
+# putting extra work on.
+set :rake_roles, [:jobs]
+
 if fetch(:slack_notify)
   require_relative '../lib/scihist_digicoll/slackistrano_messaging'
   slack_notification_webhook = ENV["SLACK_NOTIFICATION_WEBHOOK"]
@@ -109,7 +114,7 @@ namespace :chf do
         # where to restart, sorry.
 
         # the querystring doesn't come through without the quotes
-        execute :curl, "-s", '"localhost:8983/solr/admin/cores?action=reload&core=scihist_digicoll"', "--write-out", '"\nhttp response status: %{http_code}\n"'
+        execute :curl, "-s", '"localhost:8983/solr/admin/cores?action=reload&core=collection1"', "--write-out", '"\nhttp response status: %{http_code}\n"'
       end
     end
   end
