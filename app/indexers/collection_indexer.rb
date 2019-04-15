@@ -5,6 +5,8 @@ class CollectionIndexer < Kithe::Indexer
     # that will have similar boosting, to use solr solr more efficiently.
     # text1 is boosted highest, text2 next highest, etc.
 
+    to_field "friendlier_id_ssi", obj_extract("friendlier_id")
+
     to_field "text1_tesim", obj_extract("title")
 
     to_field "text4_tesim", obj_extract("description")
