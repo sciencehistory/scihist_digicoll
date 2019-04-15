@@ -19,6 +19,8 @@ set :deploytag_utc, false
 
 # use 'passenger-config restart-app' to restart passenger
 set :passenger_restart_with_touch, false
+set :passenger_restart_command, 'sudo systemctl restart passenger'
+set :passenger_restart_options, ""
 
 # send some data to whenever
 #set :whenever_identifier, ->{ "#{fetch(:application)}_#{fetch(:stage)}" }
