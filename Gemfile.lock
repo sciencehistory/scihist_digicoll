@@ -1,13 +1,13 @@
 GIT
   remote: https://github.com/jrochkind/attr_json
-  revision: 7bc3a3611fd59ca97f6318994a81d606819245f0
+  revision: c1564dbdd88ddddc529b8cf83c1fe03f45498877
   specs:
     attr_json (0.6.0)
       activerecord (>= 5.0.0, < 6.1)
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: 015daf924d99e855c11d3c624a82b9a130387d3a
+  revision: afd051fce70e3f72f0620c092f9078044de46332
   branch: master
   specs:
     kithe (0.1.0)
@@ -17,10 +17,12 @@ GIT
       mini_mime
       pdf-reader (~> 2.0)
       rails (>= 5.2.1, < 6.1)
+      rsolr (~> 2.2)
       ruby-progressbar (~> 1.0)
       shrine (~> 2.14)
       shrine-url (~> 2.0)
       simple_form (~> 4.0)
+      traject (~> 3.0, >= 3.1.0.rc1)
       tty-command (>= 0.8.2, < 2)
 
 GEM
@@ -171,6 +173,7 @@ GEM
     diff-lcs (1.3)
     domain_name (0.5.20180417)
       unf (>= 0.0.5, < 1.0.0)
+    dot-properties (0.1.3)
     down (4.8.0)
       addressable (~> 2.5)
     dropbox_api (0.1.16)
@@ -214,8 +217,9 @@ GEM
       signet (~> 0.7)
     hashdiff (0.3.8)
     hashery (2.1.2)
+    hashie (3.6.0)
     honeybadger (4.1.0)
-    http (4.1.0)
+    http (3.3.0)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
       http-form_data (~> 2.0)
@@ -260,6 +264,11 @@ GEM
       nokogiri (>= 1.5.9)
     mail (2.7.1)
       mini_mime (>= 0.1.1)
+    marc (1.0.3)
+      scrub_rb (>= 1.0.1, < 2)
+      unf
+    marc-fastxmlwriter (1.0.0)
+      marc (~> 1.0)
     marcel (0.3.3)
       mimemagic (~> 0.3.2)
     memoist (0.16.0)
@@ -311,7 +320,7 @@ GEM
       pry (~> 0.10)
     public_suffix (3.0.3)
     puma (3.12.0)
-    rack (2.0.6)
+    rack (2.0.7)
     rack-protection (2.0.5)
       rack
     rack-proxy (0.6.5)
@@ -374,6 +383,9 @@ GEM
     retriable (3.1.2)
     roda (3.15.0)
       rack
+    rsolr (2.2.1)
+      builder (>= 2.1.2)
+      faraday (>= 0.9.0)
     rspec-core (3.8.0)
       rspec-support (~> 3.8.0)
     rspec-expectations (3.8.2)
@@ -410,6 +422,7 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
+    scrub_rb (1.0.1)
     selenium-webdriver (3.141.0)
       childprocess (~> 0.5)
       rubyzip (~> 1.2, >= 1.2.2)
@@ -435,6 +448,7 @@ GEM
       tilt (~> 2.0)
     slackistrano (3.8.3)
       capistrano (>= 3.8.1)
+    slop (3.6.0)
     sprockets (3.7.2)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
@@ -448,6 +462,17 @@ GEM
     thor (0.20.3)
     thread_safe (0.3.6)
     tilt (2.0.9)
+    traject (3.1.0.rc1)
+      concurrent-ruby (>= 0.8.0)
+      dot-properties (>= 0.1.1)
+      hashie (~> 3.1)
+      http (~> 3.0)
+      httpclient (~> 2.5)
+      marc (~> 1.0)
+      marc-fastxmlwriter (~> 1.0)
+      nokogiri (~> 1.9)
+      slop (>= 3.4.5, < 4.0)
+      yell
     ttfunk (1.5.1)
     tty-color (0.4.3)
     tty-command (0.8.2)
@@ -493,6 +518,7 @@ GEM
     websocket-extensions (0.1.3)
     xpath (3.2.0)
       nokogiri (~> 1.8)
+    yell (2.1.0)
 
 PLATFORMS
   ruby
