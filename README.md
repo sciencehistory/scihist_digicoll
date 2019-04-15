@@ -137,6 +137,12 @@ Regardless, object are generally stored in S3 (or file system) with paths beginn
 * `./bin/rake scihist:solr:delete_orphans` deletes things from Solr that no longer exist in the db. Ordinarily not required, but if things somehow get out of sync.
 * `./bin/rake scihist:solr:delete_all` Meant for development/test only, deletes all documents from Solr.
 
+You can run these tasks on a remote deploy environment (will actually run on server identified with capistrano "jobs" role) using capistrano, eg:
+
+    bundle exec cap staging invoke:rake TASK="scihist:solr:reindex scihist:solr:delete_orphans"
+
+So no need to actually `ssh` to production environment to trigger a reindex or cleanup. When executing via cap, the "progress bar" is a bit wonky (and not a bar), but it works.
+
 ### Dev/test solr
 
 We use [solr_wrapper](https://github.com/cbeer/solr_wrapper) to conveniently install and run a Solr for development and tests. (In production, the host environment provides the solr, but ansible is set up to use our solr core configuration in ./solr/config the same as solr_wrapper does in dev/test).
