@@ -102,11 +102,14 @@ namespace :chf do
   desc "add solr_restart=true to your cap invocation (e.g. on first solr deploy), otherwise it will reload config files"
   task :restart_or_reload_solr do
     on roles(:solr) do
-      if ENV['solr_restart'].eql? "true"
+      if ENV['solr_restart'] == "true"
         execute :sudo, "/usr/sbin/service solr restart"
       else
+        # Note this is NOT using our solr variable in local_env.yml, it's just hard-coded
+        # where to restart, sorry.
+
         # the querystring doesn't come through without the quotes
-        execute :curl, "-s", '"localhost:8983/solr/admin/cores?action=reload&core=collection1"', "--write-out", '"\nhttp response status: %{http_code}\n"'
+        execute :curl, "-s", '"localhost:8983/solr/admin/cores?action=reload&core=scihist_digicoll"', "--write-out", '"\nhttp response status: %{http_code}\n"'
       end
     end
   end
