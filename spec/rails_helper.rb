@@ -25,6 +25,8 @@ require 'rspec/rails'
 require 'capybara/rspec'
 require 'capybara/rails'
 
+require 'scihist_digicoll/solr_wrapper_util'
+
 
 # get puma logs out of console
 # https://github.com/rspec/rspec-rails/issues/1897
@@ -105,7 +107,49 @@ RSpec.configure do |config|
   end
 
 
+  # disable Kithe::Indexable auto callbacks in our tests, they can be re-enabled in
+  # certain tests with indexable_callbacks:true rspec metadata, implemented below.
+  config.before(:suite) do
+    Kithe::Indexable.settings.disable_callbacks = true
+  end
 
+  # If you do want kithe auto-callbacks, for instance in many integration tests,
+  # set indexable_callbacks:true in your rspec context/example metadata.
+  #
+  #    describe "something", indexable_callbacks: true do
+  config.around(:each, :indexable_callbacks) do |example|
+    original = Kithe::Indexable.settings.disable_callbacks
+    Kithe::Indexable.settings.disable_callbacks = !example.metadata[:indexable_callbacks]
+    example.run
+    Kithe::Indexable.settings.disable_callbacks = original
+  end
+
+  # Vaguely based on advice for sunspot-solr
+  # https://github.com/sunspot/sunspot/wiki/RSpec-and-Sunspot#running-sunspot-during-testing
+  #
+  # TODO: Erase solr index after each example for solr tests?
+  $test_solr_started = false
+  config.before(:each, :solr) do
+    unless $test_solr_started
+      begin
+        $stdout.write("(starting test solr)")
+
+        at_exit {
+          puts "Shutting down test solr..."
+          ScihistDigicoll::SolrWrapperUtil.stop_with_collection(SolrWrapper.instance)
+          $test_solr_started = false
+        }
+
+        WebMock.allow_net_connect!
+        ScihistDigicoll::SolrWrapperUtil.start_with_collection(SolrWrapper.instance)
+
+        $test_solr_started = true
+
+      ensure
+        ScihistDigicoll::SpecUtil.disable_net_connect!
+      end
+    end
+  end
 
   # RSpec Rails can automatically mix in different behaviours to your tests
   # based on their file location, for example enabling you to call `get` and

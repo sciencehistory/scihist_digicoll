@@ -1,0 +1,25 @@
+# Configuration used by solr_wrapper, which we use to launch solr in dev and test.
+# It is not used in production, where the host environment provides a solr.
+#
+# We tell solr_wrapper to start up solr using our collection/core config in ./config/solr
+#
+# We use ERB and Rails.env to have different config for test and dev. We do this
+# in this one file, instead of trying to use differnet solr_wrapper.yml files, which
+# solr_wrapper doesn't support without customization.  Using `Rails.env` works fine
+# from our rake tasks, but does mean that you can't use `bundle exec solr_wrapper` anymore -- this
+# is fine.
+#
+# Note the port used must match port in ScihistDigicoll::Env solr_url key, and the
+# solr_url must be localhost too if you want it to use this solr_wrapper launched solr.
+
+port: <%= Rails.env.test? ? '8989' : '8987' %>
+instance_dir: tmp/solr_<%= Rails.env %>
+  <% # in subdir of tmp to make it easier to tell travis to cache,
+     # so we're not downloading it over and over. Make sure it exists.
+     FileUtils.mkdir_p("tmp/solr_dist") %>
+download_dir: "tmp/solr_dist"
+collection:
+  persist: <%= Rails.env.test? ? "false" : "true" %>
+  dir: solr/config
+  name: scihist_digicoll_<%= Rails.env %>
+version: 8.0.0

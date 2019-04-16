@@ -53,4 +53,32 @@ namespace :scihist do
       end
     end
   end
+
+  namespace :solr do
+    desc "sync all Works and Collections to solr index"
+    task :reindex => :environment do
+      scope = Kithe::Model.where(kithe_model_type: ["collection", "work"]) # we don't index Assets
+
+      progress_bar = ProgressBar.create(total: scope.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
+      Kithe::Indexable.index_with(batching: true) do
+        scope.find_each do |model|
+          progress_bar.title = "#{model.class.name}:#{model.friendlier_id}"
+          model.update_index
+          progress_bar.increment
+        end
+      end
+    end
+
+    desc "delete any model objects in solr that no longer exist in the db"
+    task :delete_orphans => :environment do
+      deleted_ids = Kithe::SolrUtil.delete_solr_orphans
+      puts "Deleted #{deleted_ids.count} Solr objects"
+    end
+
+    desc "delete ALL items from Solr"
+    task :delete_all => [:environment, :production_guard] do
+      Kithe::SolrUtil.delete_all
+    end
+
+  end
 end
