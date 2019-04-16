@@ -5,8 +5,11 @@ addons:
   postgresql: "9.6"
   chrome: stable
   apt:
+    sources:
+    - sourceline: "ppa:mc3man/trusty-media"
     packages:
       - libvips-tools
+      - ffmpeg
 services:
   - postgresql
 cache:
