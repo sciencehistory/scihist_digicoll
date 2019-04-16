@@ -4,6 +4,9 @@
 # Since the member relation destroys children when parent is deleted, deleting a collection
 # automatically deletes the thumb (which automatically deletes the stored file)
 class Collection < Kithe::Collection
+  # automatic Solr indexing on save
+  self.kithe_indexable_mapper = CollectionIndexer.new
+
   validates :related_url, array_inclusion: {
     proc: ->(v) { ScihistDigicoll::Util.valid_url?(v) } ,
     message: "is not a valid url: %{rejected_values}"

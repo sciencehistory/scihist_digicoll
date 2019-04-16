@@ -47,8 +47,14 @@ gem 'bootstrap', '~> 4.3'
 gem 'sprockets-rails', '>= 2.3.2' # bootstrap gem requirement
 
 gem 'jquery-rails', "~> 4.3"
-gem 'kithe', git: "https://github.com/sciencehistory/kithe.git", branch: "master"
+
+# temporary kithe indexing branch, for scihist_digicoll indexing branch, do not
+# intend to merge to master like this.
+gem 'kithe', git: "https://github.com/sciencehistory/kithe.git"
+
+# temporary git master, we should get on an attr_json release once we're settled down
 gem "attr_json", git: "https://github.com/jrochkind/attr_json" #path: "../attr_json"
+
 gem 'simple_form', "~> 4.0"
 gem "cocoon"
 
@@ -68,6 +74,8 @@ gem 'bootstrap4-kaminari-views'
 gem 'devise', "~> 4.5" # user accounts and login
 gem 'access-granted', "~> 1.0" # authorization
 
+gem 'solr_wrapper', "~> 2.1"
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]
@@ -82,6 +90,7 @@ group :development do
   gem 'capistrano-passenger', '~> 0.2'
   gem 'capistrano-rails', '~> 1.2'
   gem 'capistrano-maintenance', '~> 1.0', require: false
+  gem 'capistrano-rake', require: false
 
 end
 
@@ -100,3 +109,4 @@ end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+

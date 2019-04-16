@@ -27,6 +27,8 @@ $ yarn install
 $ rake db:setup
 ```
 
+Start a development Solr instance with `./bin/rake solr:start`.
+
 Run app with `./rails server`, it will be available at `http://localhost:3000`.
 
 ### Local Env
@@ -97,6 +99,13 @@ We provide test setup to let you switch ActiveJob queue adaptors for particular 
     # or
     it "does something", queue_adapter: :test
 
+#### solr indexing callbacks
+
+By default, the test environment disables our automatic callbacks that index models to solr on save. If you'd like to enable them for a test context or example, just supply `indexable_callbacks: true`
+
+#### Real Solr
+
+If you have tests that require a real solr to be running (such as system/integration tests in parts of the app that use solr), specify `solr: true` and `solr_wrapper` will be used to (install if needed and) launch a solr. Solr will only be launched when/if a test is encountered that is so tagged, but will only be launched once (and shut down on termination) if there are multiple tests requiring it.
 
 ## Production deployment
 
@@ -121,6 +130,31 @@ And `storage_mode` `production` is default in production, with different sorts o
 Regardless, object are generally stored in S3 (or file system) with paths beginning with the UUID pk of the Kithe::Asset they belong to.
 
 ## Rake tasks
+
+### Solr Data
+
+* `./bin/rake scihist:solr:reindex` to reindex all Works and Collections in Solr.
+* `./bin/rake scihist:solr:delete_orphans` deletes things from Solr that no longer exist in the db. Ordinarily not required, but if things somehow get out of sync.
+* `./bin/rake scihist:solr:delete_all` Meant for development/test only, deletes all documents from Solr.
+
+You can run these tasks on a remote deploy environment (will actually run on server identified with capistrano "jobs" role) using capistrano, eg:
+
+    bundle exec cap staging invoke:rake TASK="scihist:solr:reindex scihist:solr:delete_orphans"
+
+So no need to actually `ssh` to production environment to trigger a reindex or cleanup. When executing via cap, the "progress bar" is a bit wonky (and not a bar), but it works.
+
+### Dev/test solr
+
+We use [solr_wrapper](https://github.com/cbeer/solr_wrapper) to conveniently install and run a Solr for development and tests. (In production, the host environment provides the solr, but ansible is set up to use our solr core configuration in ./solr/config the same as solr_wrapper does in dev/test).
+
+To start a development instance of Solr you can use with the development Rails app, run:
+
+    ./bin/rake solr:start
+
+It will stay up until the process is killed, or you can stop it with `./bin/rake solr:stop`. See  also `solr:status`, `solr:restart`, and conveniently `./bin/rake solr:browser` to open a browser window pointing to solr console (MacOS only).
+
+Configuration for solr_wrapper is at `./.solr_wrapper.yml`
+
 
 ### Account management
 

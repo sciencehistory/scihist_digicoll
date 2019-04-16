@@ -33,6 +33,8 @@ install_plugin Capistrano::SCM::Git
 
 require 'capistrano/honeybadger'
 
+require 'capistrano/rake' # let us run rake tasks on remote hosts
+
 
 # Load custom tasks from `lib/capistrano/tasks` if you have any defined
 Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }
