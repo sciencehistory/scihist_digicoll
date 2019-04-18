@@ -6,6 +6,15 @@ namespace :scihist do
     end
   end
 
+  desc "print out value for ScihistDigicoll::Env variable. eg ./bin/rake scihist:env_value[solr_url]"
+  task "env_value", [:key] => :environment do |t, args|
+    unless args[:key].present?
+      puts "Error. Run as ./bin/rake scihist:env_value[some_key_name]"
+      exit
+    end
+    puts "#{args[:key]}: #{ScihistDigicoll::Env.lookup(args[:key]).inspect}"
+  end
+
 
   namespace :user do
     desc 'Create a user without a password; they can request one from the UI. `RAILS_ENV=production bundle exec rake chf:user:create[newuser@chemheritage.org]`'
