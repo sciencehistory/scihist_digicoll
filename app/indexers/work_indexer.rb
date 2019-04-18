@@ -14,7 +14,7 @@ class WorkIndexer < Kithe::Indexer
     to_field "text1_tesim", obj_extract("additional_title")
 
     to_field ["text2_tesim","creator_facet"], obj_extract("creator", "value")
-    to_field ["text2_tesim" "genre_facet"], obj_extract("genre")
+    to_field ["text2_tesim", "genre_facet"], obj_extract("genre")
 
     to_field ["text3_tesim", "subject_facet"], obj_extract("subject")
 
