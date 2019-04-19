@@ -11,13 +11,22 @@ class Asset < Kithe::Asset
     small: 800
   }
 
+  # TODO fix this...
+  # require '/Users/erubeiz/Work/code/scihist_digicoll/app/derivative_transformers/vips_cli_pdf_to_jpeg.rb'
+
   # define thumb derivatives for TIFF and other image input: :thumb_mini, :thumb_mini_2X, etc.
   THUMB_WIDTHS.each_pair do |key, width|
     define_derivative("thumb_#{key}", content_type: "image") do |original_file|
       Kithe::VipsCliImageToJpeg.new(max_width: width, thumbnail_mode: true).call(original_file)
     end
+    define_derivative("thumb_#{key}", content_type: "application/pdf") do |original_file|
+      Kithe::VipsCliPdfToJpeg.new(max_width: width, thumbnail_mode: true).call(original_file)
+    end
     define_derivative("thumb_#{key}_2X", content_type: "image") do |original_file|
       Kithe::VipsCliImageToJpeg.new(max_width: width * 2, thumbnail_mode: true).call(original_file)
+    end
+    define_derivative("thumb_#{key}_2X", content_type: "application/pdf") do |original_file|
+      Kithe::VipsCliPdfToJpeg.new(max_width: width * 2, thumbnail_mode: true).call(original_file)
     end
   end
 
@@ -27,6 +36,9 @@ class Asset < Kithe::Asset
   IMAGE_DOWNLOAD_WIDTHS.each_pair do |key, width|
     define_derivative("download_#{key}", content_type: "image") do |original_file|
       Kithe::VipsCliImageToJpeg.new(max_width: width).call(original_file)
+    end
+    define_derivative("download_#{key}", content_type: "application/pdf") do |original_file|
+      Kithe::VipsCliPdfToJpeg.new(max_width: width).call(original_file)
     end
   end
 
