@@ -37,16 +37,21 @@ module Kithe
 
     # Will raise TTY::Command::ExitError if the external Vips command returns non-null.
     def call(original)
-      files = (0..2).map {|x| Tempfile.new(["kithe_vips_pdf", ".jpg"])}
-      # Make a slightly smaller thumbnail to accomodate the border we're adding.
+      # Create three temp files
+      thumbnail, sharpened_thumb, with_borders_thumb = 3.times.
+        map { Tempfile.new(["kithe_vips_pdf", ".jpg"]) }
+      # Make a slightly thinner thumbnail to
+      # accomodate the border we're adding at the end.
       width_minus_borders = @max_width - (2 * @border_pixels)
       # Create and sharpen a thumbnail, then add a black border to it.
-      thumbnail( width_minus_borders, original, files[0])
-      sharpen(   width_minus_borders, files[0], files[1])
-      add_border(width_minus_borders, files[1], files[2])
+      thumbnail( width_minus_borders, original,        thumbnail)
+      sharpen(   width_minus_borders, thumbnail,       sharpened_thumb)
+      add_border(width_minus_borders, sharpened_thumb, with_borders_thumb)
       # The width of the thumbnail, including the border,
       # is now exactly @max_width.
-      files[2]
+      thumbnail.unlink
+      sharpened_thumb.unlink
+      with_borders_thumb
     end
 
     private
