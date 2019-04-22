@@ -75,11 +75,10 @@ gem 'bootstrap4-kaminari-views'
 gem 'devise', "~> 4.5" # user accounts and login
 gem 'access-granted', "~> 1.0" # authorization
 
-gem 'solr_wrapper', "~> 2.1"
-
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'solr_wrapper', "~> 2.1"
 end
 
 group :development do
@@ -111,3 +110,16 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
+
+##
+# Added by blacklight. Not sure why rsolr isn't just a BL dependency.
+  gem 'rsolr', '>= 1.0', '< 3'
+  # gem 'popper_js' #popper shouldn't be needed, it's already a dep of BL 4. PR to BL?
+
+  # Used only for autocomplete, which we aren't currently using. Let's see if
+  # we can get away without it in the future? It is an unmaintained dependency. :(
+  gem 'twitter-typeahead-rails', '0.11.1.pre.corejavascript'
+
+  # We would like to avoid this, but presently it's in there.
+  gem 'devise-guests', '~> 0.6'
+# end BL generated
