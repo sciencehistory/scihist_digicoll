@@ -3,7 +3,7 @@ require 'tty/command'
 
 module Kithe
   # Use the [vips](https://jcupitt.github.io/libvips/) command-line utility (via shell-out)
-  # to transform any image type to a JPG, with a specified maximum width (keeping aspect ratio).
+  # to transform the first page of a PDF to a jpeg, with a specified maximum width (keeping aspect ratio).
   #
   # Requires vips command line utilities `vips` and `vipsthumbnail` and to be installed on your system,
   # eg `brew install vips`, or apt package `vips-tools`.
@@ -14,6 +14,15 @@ module Kithe
   #  * https://developers.google.com/speed/docs/insights/OptimizeImages
   #  * http://libvips.blogspot.com/2013/11/tips-and-tricks-for-vipsthumbnail.html
   #  * https://github.com/jcupitt/libvips/issues/775
+
+  # PDF thumbnails are sharpened, unlike regular images in our collection, as they tend to
+  # contain mostly text. Also, since the first page of our oral history PDFs are mostly white space, adding
+  # a border makes it easier to see what they are against a white background.
+
+  # The recipe is thus:
+  # 1) Create a thumbnail of the first page of the PDF. Make it slightly narrower than the final product.
+  # 2) Sharpen the thumbnail
+  # 3) Add a border around the image, such that the resulting thumbnail is @max_width pixels wide.
 
   class Kithe::VipsCliPdfToJpeg
     class_attribute :srgb_profile_path, default: Kithe::Engine.root.join("lib", "vendor", "icc", "sRGB2014.icc").to_s
@@ -63,20 +72,19 @@ module Kithe
       profile_normalization_args=["--eprofile", srgb_profile_path, "--delete"]
       vips_jpg_params="[Q=#{@jpeg_q },interlace,optimize_coding,strip]"
       args = if width
-        # Due to bug in vips, we need to provide a height constraint, we make
-        # really huge one million pixels so it should not come into play, and
-        # we're constraining proportionally by width.
-        # https://github.com/jcupitt/libvips/issues/781
+        # The image will be resized to fit within a box
+        # which is `width` wide and very, very very tall.
+        # See:
+        # https://github.com/libvips/libvips/issues/781
+        # https://github.com/libvips/ruby-vips/issues/150
         [
-          vips_thumbnail_command,
-          input.path,
+          vips_thumbnail_command, input.path,
           *profile_normalization_args,
           "--size", "#{width}x1000000",
           "-o", "#{output.path}#{vips_jpg_params}"
         ]
       else
-        [ vips_command, "copy",
-          input.path,
+        [ vips_command, "copy", input.path,
           *profile_normalization_args,
           "#{output.path}#{vips_jpg_params}"
         ]
@@ -84,6 +92,9 @@ module Kithe
       @cmd.run(*args)
     end
 
+    # Sharpen a thumbnail.
+    # A full description of the paramaters below can be found at
+    # https://jcupitt.github.io/libvips/API/8.6/libvips-convolution.html#vips-sharpen
     def sharpen(width, input, output)
       args = [
         vips_command,  "sharpen",
@@ -99,10 +110,14 @@ module Kithe
       @cmd.run(*args)
     end
 
-    # Add a border to the thumbnail.
-    # The resulting file is taller and wider by @border_pixels * 2
+    # Add a rectangular border (@border_pixels wide) around the thumbnail.
+    # The image returned will be taller and wider by @border_pixels * 2.
+    # Note: unlike the other methods in this class, this one makes two calls
+    # to the shell.
     def add_border(initial_width, input, output)
       border_color = "0, 0, 0" # black until further notice
+      # Note: calling image_height below
+      # results in a separate shell call.
       initial_height = image_height(input)
       new_width =  initial_width  + @border_pixels * 2
       new_height = initial_height + @border_pixels * 2
@@ -117,6 +132,7 @@ module Kithe
       @cmd.run(*args)
     end
 
+    # Return the height of an image in pixels.
     def image_height(image)
       args = [vips_header_command, '-f', 'Ysize', image.path]
       @cmd.run(*args).out.to_i
