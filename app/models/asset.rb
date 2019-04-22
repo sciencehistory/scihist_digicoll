@@ -13,7 +13,6 @@ class Asset < Kithe::Asset
 
   # define thumb derivatives for TIFF, PDF, and other image input: :thumb_mini, :thumb_mini_2X, etc.
   THUMB_WIDTHS.each_pair do |key, width|
-    ['image', 'application/pdf'].each do |mime_type|
     # Single-width thumbnails
     define_derivative("thumb_#{key}", content_type: "image") do |original_file|
       Kithe::VipsCliImageToJpeg.new(max_width: width, thumbnail_mode: true).call(original_file)
@@ -27,7 +26,6 @@ class Asset < Kithe::Asset
     end
     define_derivative("thumb_#{key}_2X", content_type: "application/pdf") do |original_file|
       Kithe::VipsCliPdfToJpeg.new(max_width: width * 2).call(original_file)
-    end
     end
   end
 
