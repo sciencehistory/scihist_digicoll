@@ -5,8 +5,9 @@ ruby File.read(".ruby-version").chomp
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.2.1'
-
 gem 'webpacker', '~> 3.5'
+
+gem "blacklight", "~> 7.0"
 
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
