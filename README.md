@@ -65,6 +65,8 @@ Some references I found good for understanding webpacker in Rails:
   * which itself uses [attr_json](https://github.com/jrochkind/attr_json/) for modelling attributes as a single json column in the db, and [shrine](https://shrinerb.com) for file handling.
 * [devise](https://github.com/plataformatec/devise) is used for authentication/login
 * [access-granted](https://github.com/chaps-io/access-granted) is used for some very simple authorization/permissions (right now just admins can do some things other logged in staff can not)
+* [blacklight](https://github.com/projectblacklight/blacklight) We are currently using Blacklight
+  for the "end-user-facing" search, although we are using it in a very limited and customized fashion, not including a lot of things the BL generator wanted to include in our app, that we didn't plan on using.
 
 ### Writing tests
 
