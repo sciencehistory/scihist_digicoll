@@ -1,4 +1,12 @@
 class ApplicationController < ActionController::Base
+  # Blacklight tried to add some things to ApplicationController, but
+  # we pretty much only want to use CatalogController from Blacklight, so
+  # are trying just doing these things there instead
+  #
+  #      # Adds a few additional behaviors into the application controller
+  #      include Blacklight::Controller
+  #      layout :determine_layout if respond_to? :layout
+
   rescue_from "AccessGranted::AccessDenied" do |exception|
     redirect_to root_path, alert: "You don't have permission to access requested page."
   end
