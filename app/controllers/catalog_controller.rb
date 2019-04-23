@@ -3,7 +3,7 @@ class CatalogController < ApplicationController
   # Blacklight wanted Blacklight::Controller included in ApplicationController,
   # we do it just here instead.
   include Blacklight::Controller
-  layout :determine_layout if respond_to? :layout
+  layout "scihist_blacklight"
 
   include Blacklight::Catalog
 
