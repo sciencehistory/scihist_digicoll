@@ -1,4 +1,9 @@
 class User < ApplicationRecord
+
+  # Connects this user object to Blacklights Bookmarks.
+  # Do we not need if we're not using Bookmarks? -JR
+  # include Blacklight::User
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   #
@@ -29,6 +34,7 @@ class User < ApplicationRecord
       super
     end
   end
+
   def inactive_message
     if locked_out
       "Sorry, your account is disabled."
@@ -39,4 +45,10 @@ class User < ApplicationRecord
     end
   end
 
+  # Method added by Blacklight; Blacklight uses #to_s on your
+  # user class to get a user-displayable login/identifier for
+  # the account.
+  def to_s
+    email
+  end
 end
