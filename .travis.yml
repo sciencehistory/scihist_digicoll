@@ -16,6 +16,7 @@ cache:
   bundler: true
   directories:
     - /home/travis/.rvm/
+    - ./tmp/solr_dist
 before_install:
   - gem install bundler
 before_script:
