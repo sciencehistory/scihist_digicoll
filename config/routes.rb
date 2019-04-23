@@ -3,16 +3,6 @@ require 'resque/server'
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
-  # https://github.com/plataformatec/devise/wiki/how-to:-change-the-default-sign_in-and-sign_out-routes
-  # We aren't using :registration cause we don't want to allow self-registration,
-  # We aren't using session cause we define em ourselves manually.
-  devise_for :users, skip: [:session, :registration]
-  devise_scope :user do
-    get 'login', to: 'devise/sessions#new', as: :new_user_session
-    post 'login', to: 'devise/sessions#create', as: :user_session
-    delete 'logout', to: 'devise/sessions#destroy', as: :destroy_user_session
-  end
-
   class LoggedInConstraint
     def self.matches?(request)
       current_user = request.env['warden'].user
@@ -30,6 +20,47 @@ Rails.application.routes.draw do
     end
   }
 
+
+  # https://github.com/plataformatec/devise/wiki/how-to:-change-the-default-sign_in-and-sign_out-routes
+  # We aren't using :registration cause we don't want to allow self-registration,
+  # We aren't using session cause we define em ourselves manually.
+  devise_for :users, skip: [:session, :registration]
+  devise_scope :user do
+    get 'login', to: 'devise/sessions#new', as: :new_user_session
+    post 'login', to: 'devise/sessions#create', as: :user_session
+    delete 'logout', to: 'devise/sessions#destroy', as: :destroy_user_session
+  end
+
+
+  ##
+  # Blacklight-generated routes, that were then modified a bit by us to take
+  # out stuff we're not using.
+  #
+      # TODO: Can we get away without actuallymounting Blacklight, just using the CatalogController?
+      # mount Blacklight::Engine => '/'
+      concern :searchable, Blacklight::Routes::Searchable.new
+      resource :catalog, only: [:index], as: 'catalog', path: '/catalog', controller: 'catalog' do
+        concerns :searchable
+      end
+
+      # TODO: We want to not route this at all, we don't want to use solr_document_path
+      concern :exportable, Blacklight::Routes::Exportable.new
+      resources :solr_documents, only: [:show], path: '/catalog', controller: 'catalog' do
+        concerns :exportable
+      end
+
+      # We'd love to not route bookmarks at all, but currently some parts of BL need it
+      # --jrochkind
+      # resources :bookmarks do
+      #   concerns :exportable
+
+      #   collection do
+      #     delete 'clear'
+      #   end
+      # end
+  ##
+  # End Blacklight-generated routes
+  ##
 
   # Routes will even only _show up_ to logged in users, this applies
   # to internal rack apps we're mounting here too, like shrine upload endpoints,
