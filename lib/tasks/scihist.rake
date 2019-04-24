@@ -89,5 +89,9 @@ namespace :scihist do
       Kithe::SolrUtil.delete_all
     end
 
+    desc "print out mapped index hash for specified ID, eg rake scihist:solr:debug_indexing[adf232adf]"
+    task :debug_indexing, [:friendlier_id] => [:environment] do |t, args|
+      Kithe::Model.find_by_friendlier_id(args[:friendlier_id]).update_index(writer: Traject::DebugWriter.new({}))
+    end
   end
 end
