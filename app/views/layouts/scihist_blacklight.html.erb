@@ -47,7 +47,7 @@
     <div id="main-container" class="container-fluid">
       <%= content_for(:container_header) %>
 
-      <%= render partial: 'shared/flash_msg', layout: 'shared/flash_messages' %>
+      <%= render 'flash_message_display' %>
 
       <div class="row">
         <% if content_for? :sidebar %>
