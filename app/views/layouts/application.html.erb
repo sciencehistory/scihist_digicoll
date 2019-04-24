@@ -46,6 +46,7 @@ it includes an admin menu.  %>
               <% if can? :admin, User %>
                 <li><%= link_to "Users", admin_users_path %></li>
               <% end %>
+              <li><%= link_to "Public Search", search_catalog_path %></li>
               <li><hr></li>
               <li><%= link_to "Job Queues", admin_resque_server_path %></li>
 
