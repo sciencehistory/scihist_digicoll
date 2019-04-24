@@ -116,9 +116,10 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
   gem 'rsolr', '>= 1.0', '< 3'
   # gem 'popper_js' #popper shouldn't be needed, it's already a dep of BL 4. PR to BL?
 
-  # Used only for autocomplete, which we aren't currently using. Let's see if
-  # we can get away without it in the future? It is an unmaintained dependency. :(
-  gem 'twitter-typeahead-rails', '0.11.1.pre.corejavascript'
+  # Used only for autocomplete, which we aren't currently using.
+  # Twitter typehead is an unmaintained dependency, and if we wanted the func
+  # we might consider reimplementing without it.
+  # gem 'twitter-typeahead-rails', '0.11.1.pre.corejavascript'
 
   # We would like to avoid this, but presently it's in there.
   gem 'devise-guests', '~> 0.6'
