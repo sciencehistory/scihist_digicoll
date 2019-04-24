@@ -42,7 +42,15 @@
   </head>
 
   <body class="<%= render_body_class %>">
-    <%= render partial: 'shared/header_navbar' %>
+    <% if current_user %>
+      <%= render 'front_end_admin_navbar' %>
+    <% end %>
+
+    <div class="navbar-search navbar navbar-light bg-faded" role="navigation">
+      <div class="<%= container_classes %>">
+        <%= render_search_bar  %>
+      </div>
+    </div>
 
     <div id="main-container" class="container-fluid">
       <%= content_for(:container_header) %>
