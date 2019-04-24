@@ -1,6 +1,7 @@
 <% {  notice: 'alert-info',
       error: 'alert-danger',
-      alert: 'alert-warning'
+      alert: 'alert-warning',
+      success: 'alert-success'
     }.each do |type, css_class| %>
   <% if flash[type] %>
     <div class="notice alert <%= css_class %> alert-dismissible fade show" role="alert">
