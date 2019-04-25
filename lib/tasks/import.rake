@@ -106,7 +106,7 @@ namespace :scihist_digicoll do
     end
 
     puts "INFO: Reindexing to Solr"
-    Rake::Task["scihist:reindex"].invoke
+    Rake::Task["scihist:solr:reindex"].invoke
   end
 
   task :import_one => :environment do
