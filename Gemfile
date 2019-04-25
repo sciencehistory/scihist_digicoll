@@ -111,4 +111,4 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # Used for Cap deployment
-gem 'aws-sdk', '>=3.0'
+gem 'aws-sdk-ec2', '>=1.74'
