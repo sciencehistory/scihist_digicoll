@@ -18,6 +18,7 @@ Prequisites:
 * Postgres installed and running -- on MacOS, I like https://postgresapp.com/
 * `yarn` installed for webpacker -- on MacOS, `brew install yarn`.
 * vips installed --  on MacOS `brew install vips`
+* Have your AWS credentials put in the default profile at ~/.aws/config
 
 ```bash
 $ git clone git@github.com:sciencehistory/scihist_digicoll.git

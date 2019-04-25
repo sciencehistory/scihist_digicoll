@@ -1,10 +1,19 @@
-# using an ssh-config entry to set the user, key, and address of the machine
+#Using the aws-sdk to locate servers via the Role tag and deploy to them.
+require 'aws-sdk-ec2'
 set :stage, :staging
 set :rails_env, 'production'
-server 'kithe.sciencehistory.org', user: 'digcol', roles: [:web, :app, :db, :jobs, :solr, :cron]
-#server '34.227.26.131', user: 'hydep', roles: [:solr]
-#server '54.204.60.1', user: 'hydep', roles: [:jobs, :cron] # dzi bg job box
-
+#Edit ec2 for region changes, right now we only use one region.
+ec2 = Aws::EC2::Resource.new(region:'us-east-1')
+#Server role keys should be the Role tag (assigned by ansible) that you want to deploy to. The array value is the list of capistrano roles that the server needs.
+server_roles = {"kithe"=>[':web', ':app', ':db', ':jobs', ':solr', ':cron']}
+server_roles.each do |key, value|
+  current_server_roles = "#{value}"
+#Service level is set manually here, maybe make it a variable further up to be easy to spot when making new stages?
+  ec2.instances({filters: [{name: 'tag:Role', values: ["#{key}"]},{name: 'tag:Service_level', values: ['stage']}]}).each do |ip|
+#Deploy user is manually set here, see above comment about making it a variable.
+    server "#{ip.public_ip_address}", user: 'digcol', roles: "#{current_server_roles}"
+  end
+end
 
 # server-based syntax
 # ======================
