@@ -67,6 +67,7 @@ gem "content_disposition"
 
 # slack notifications on capistrano deploys
 gem 'slackistrano', "~> 3.8"
+gem "whenever" # automatic crontob maintenance, on capistrano deploys
 
 gem "ransack", "~> 2.1"
 gem "kaminari", "~> 1.0"
