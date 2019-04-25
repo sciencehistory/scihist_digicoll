@@ -9,7 +9,7 @@ server_roles = {"kithe"=>[':web', ':app', ':db', ':jobs', ':solr', ':cron']}
 server_roles.each do |key, value|
   current_server_roles = "#{value}"
 #Service level is set manually here, maybe make it a variable further up to be easy to spot when making new stages?
-  ec2.instances({filters: [{name: 'tag:Role', values: ["#{key}"]},{name: 'tag:Service_level', values: ['stage']}]}).each do |ip|
+  ec2.instances({filters: [{name:'instance-state-code', values:["16"]},{name: 'tag:Role', values: ["#{key}"]},{name: 'tag:Service_level', values: ['stage']}]}).each do |ip|
 #Deploy user is manually set here, see above comment about making it a variable.
     server "#{ip.public_ip_address}", user: 'digcol', roles: "#{current_server_roles}"
   end
