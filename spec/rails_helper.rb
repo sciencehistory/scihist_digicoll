@@ -127,7 +127,6 @@ RSpec.configure do |config|
   # Vaguely based on advice for sunspot-solr
   # https://github.com/sunspot/sunspot/wiki/RSpec-and-Sunspot#running-sunspot-during-testing
   #
-  # TODO: Erase solr index after each example for solr tests?
   $test_solr_started = false
   config.before(:each, :solr) do
     unless $test_solr_started
@@ -149,6 +148,9 @@ RSpec.configure do |config|
         ScihistDigicoll::SpecUtil.disable_net_connect!
       end
     end
+  end
+  config.after(:each, :solr) do
+    Kithe::SolrUtil.delete_all(commit: :soft)
   end
 
   # RSpec Rails can automatically mix in different behaviours to your tests
