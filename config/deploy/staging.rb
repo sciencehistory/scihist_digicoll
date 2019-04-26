@@ -7,12 +7,12 @@ ec2 = Aws::EC2::Resource.new(region:'us-east-1')
 #Server role keys should be the Role tag (assigned by ansible) that you want to deploy to. The array value is the list of capistrano roles that the server needs.
 server_roles = {"kithe"=>[':web', ':app', ':db', ':jobs', ':solr', ':cron']}
 server_roles.each do |key, value|
-  current_server_roles = "#{value}"
+#  current_server_roles = "#{value}"
 #Service level is set manually here, maybe make it a variable further up to be easy to spot when making new stages? 
 #The instance-state-code of 16 is a value from Amazon's docs for a running server. See: https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstances.html
   ec2.instances({filters: [{name:'instance-state-code', values:["16"]},{name: 'tag:Role', values: ["#{key}"]},{name: 'tag:Service_level', values: ['stage']}]}).each do |ip|
 #Deploy user is manually set here, see above comment about making it a variable.
-    server "#{ip.public_ip_address}", user: 'digcol', roles: "#{current_server_roles}"
+    server "#{ip.public_ip_address}", user: 'digcol', roles: "#{value}"
   end
 end
 
