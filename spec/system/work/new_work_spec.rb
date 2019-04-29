@@ -2,12 +2,22 @@ require 'rails_helper'
 require 'pp'
 
 RSpec.describe "New Work form", :logged_in_user, type: :system, js: true do
+
+  # As of Chrome/chromedriver 74.0, chromedriver will refuse to click on something
+  # if it's covered up by something with "position: sticky", even if scrolling
+  # could uncover it. Chromedriver will normally scroll to reveal something to click
+  # on it. I think this is probably a chromedriver bug, but don't know how/where
+  # to report it. For now, this is a workaround, we put this in just where
+  # needed to get test to pass, which can change if page layout changes. :(
+  def scrollToTop
+    page.execute_script "window.scrollTo(0,0)"
+  end
+
   let!(:collection) { FactoryBot.create(:collection) }
   let!(:work) { FactoryBot.create(:work, :with_complete_metadata) }
 
   scenario "save, edit, and re-save new work" do
     visit new_admin_work_path
-
     # Single-value free text
     %w(title description source admin_note rights_holder).each do |p|
       fill_in "work[#{p}]", with: work.send(p)
@@ -29,6 +39,8 @@ RSpec.describe "New Work form", :logged_in_user, type: :system, js: true do
       attr_name = Work.human_attribute_name(p)
       all_items = work.send(p)
       all_items.length.times do |i|
+        scrollToTop
+
         click_link("Add another #{attr_name}")
         all("fieldset.work_#{p} input[type=text]")[i].fill_in with: all_items[i]
       end
@@ -69,6 +81,8 @@ RSpec.describe "New Work form", :logged_in_user, type: :system, js: true do
 
     #Custom single-value selects (2)
     %w(exhibition).each do |p|
+      scrollToTop
+
       attr_name = Work.human_attribute_name(p)
       all_items = work.send(p)
       all_items.length.times do |i|
@@ -117,6 +131,7 @@ RSpec.describe "New Work form", :logged_in_user, type: :system, js: true do
     end
 
     #Format
+    scrollToTop
     work.format.each do |val|
       find("input[value=#{val}]").check
     end

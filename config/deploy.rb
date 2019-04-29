@@ -22,9 +22,6 @@ set :passenger_restart_with_touch, false
 set :passenger_restart_command, 'sudo systemctl restart passenger'
 set :passenger_restart_options, ""
 
-# send some data to whenever
-#set :whenever_identifier, ->{ "#{fetch(:application)}_#{fetch(:stage)}" }
-#set :whenever_roles, [:app, :jobs, :cron]
 
 # not all machines should run bundler; some won't have ruby
 set :bundle_roles, [:web, :jobs, :cron]
@@ -46,6 +43,13 @@ set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache', '
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
 
 set :honeybadger_env, fetch(:stage)
+
+
+# Whenever, only deploy cronjobs on server(s) marked with Capistrano :cron role.
+# Right now our cronjobs are general maintenance tasks that _could_ run on any
+# server with the Rails app available. We set the "jobs" server to have "cron"
+# role.
+set :whenever_roles, [:cron]
 
 # When running rake tasks with `cap staging invoke:rake rake:task:name`, via
 # the capistrano-rake gem, run them on the jobs host, that's a good one for
