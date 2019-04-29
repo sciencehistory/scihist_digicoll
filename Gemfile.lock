@@ -7,7 +7,7 @@ GIT
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: 9c9fd3fc2dccf9ff201dd10122fa536dbd1de851
+  revision: 5b97fd1ed54742e491c5030286b2cd0c61456ff9
   specs:
     kithe (0.2.0)
       attr_json (< 2.0.0)
@@ -469,7 +469,7 @@ GEM
     thor (0.20.3)
     thread_safe (0.3.6)
     tilt (2.0.9)
-    traject (3.1.0.rc1)
+    traject (3.1.0)
       concurrent-ruby (>= 0.8.0)
       dot-properties (>= 0.1.1)
       hashie (~> 3.1)
@@ -493,7 +493,7 @@ GEM
       execjs (>= 0.3.0, < 3)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.7.5)
+    unf_ext (0.0.7.6)
     uppy-s3_multipart (0.3.0)
       aws-sdk-s3 (~> 1.0)
       content_disposition (~> 1.0)
