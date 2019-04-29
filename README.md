@@ -55,7 +55,7 @@ We are using webpacker (an ES6-style JS toolchain, supported by Rails 5.1+) for 
 * We are also still using sprockets for some other javascript at present, in particular for browse-everything integration at present. Bootstrap and JQuery are still included under ordinary javascript, we are endeavoring not to use them in webpacker-controlled JS, but you should be able to use JQuery with `var $ = window.jQuery;`
 * We are still using sprockets to control our CSS (scss), **not** webpacker.
 * So at the moment our app includes both a sprockets manifest and a webpacker manifest in it's layout, and compiles both in dev and in production assets:precompile. Rails integration should make this just work. We have not at present experimented with running `./bin/webpack-dev-server` separately in dev, we're just letting Rails do it the slower but just-works way.
-* Note that Blacklight JS is currently included using _sprockets not webpacker_. While BL theoretically supports webpacker, I found it's instructions somewhat obtuse and weird and was not comfortable with them.
+* Note that Blacklight JS is currently included using _sprockets not webpacker_. While BL theoretically supports webpacker, I found it's [instructions](https://github.com/projectblacklight/blacklight/wiki/Using-Webpacker-to-compile-javascript-assets) somewhat obtuse and weird and was not feeling confident/comfortable with them, and am unsure how much use in what ways the webpacker integration is getting.  Additional BL plugins like blacklight_range_limit could pose further challenges, seemed safest to stick with tried-and-true sprockets.
 
 Some references I found good for understanding webpacker in Rails:
 * https://medium.com/@coorasse/goodbye-sprockets-welcome-webpacker-3-0-ff877fb8fa79
