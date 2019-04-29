@@ -3,6 +3,8 @@
 require 'kithe/blacklight_tools/bulk_loading_search_service'
 
 class CatalogController < ApplicationController
+
+  include BlacklightRangeLimit::ControllerOverride
   # Blacklight wanted Blacklight::Controller included in ApplicationController,
   # we do it just here instead.
   include Blacklight::Controller
@@ -107,6 +109,7 @@ class CatalogController < ApplicationController
 
     # The "show: :current_user" arg lets us limit facets to only showing up if someone is logged in
 
+    config.add_facet_field "year_facet_isim", label: "Date", range: true
     config.add_facet_field "subject_facet", label: "Subject", limit: 5
     config.add_facet_field "creator_facet", label: "Creator", limit: 5
     config.add_facet_field "genre_facet", label: "Genre", limit: 5

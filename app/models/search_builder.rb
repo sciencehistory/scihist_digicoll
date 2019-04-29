@@ -8,6 +8,8 @@
 #   work as limits, probably just for showing the main page for a 'topic'
 class SearchBuilder < Blacklight::SearchBuilder
   include Blacklight::Solr::SearchBuilderBehavior
+  include BlacklightRangeLimit::RangeLimitBuilder
+
 
   # Scihist SearchBuilder extensions
   include SearchBuilder::AdminOnlySearchFields
