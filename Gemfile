@@ -122,6 +122,8 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
   # we might consider reimplementing without it.
   # gem 'twitter-typeahead-rails', '0.11.1.pre.corejavascript'
 
-  # We would like to avoid this, but presently it's in there.
-  gem 'devise-guests', '~> 0.6'
+  # If we aren't using bookmarks, we think we can avoid the devise-guests
+  # gem and NOT having the #current_or_guest_user method that Blacklight uses
+  # involving it. Seems not to be used if you don't use Bookmarks functionality.
+  # gem 'devise-guests', '~> 0.6'
 # end BL generated
