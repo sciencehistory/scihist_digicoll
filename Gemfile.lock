@@ -535,6 +535,7 @@ PLATFORMS
 DEPENDENCIES
   access-granted (~> 1.0)
   attr_json!
+  aws-sdk-core
   aws-sdk-ec2 (>= 1.74)
   bootsnap (>= 1.1.0)
   bootstrap (~> 4.3)
