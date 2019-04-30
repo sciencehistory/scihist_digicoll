@@ -1,8 +1,5 @@
 require 'rails_helper'
 
-
-
-
 RSpec.describe Importers::GenericWorkImporter do
   let(:metadata) do
     {
@@ -50,7 +47,8 @@ RSpec.describe Importers::GenericWorkImporter do
         "1831cm25h",
         "8623hz81w"
       ],
-      "medium" => ["Vellum"]
+      "medium" => ["Vellum"],
+      "project" => ["Nanotechnology"]
     }
   end
 
@@ -66,6 +64,7 @@ RSpec.describe Importers::GenericWorkImporter do
     expect(new_work.updated_at).to eq(DateTime.parse(metadata["date_modified"]))
     expect(new_work.published?).to be(false)
     expect(new_work.medium).to eq(["Vellum"])
+    expect(new_work.project).to eq(["Nanotechnology"])
   end
 
 
