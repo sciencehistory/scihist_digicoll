@@ -251,6 +251,39 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: searches; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.searches (
+    id integer NOT NULL,
+    query_params bytea,
+    user_id integer,
+    user_type character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: searches_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.searches_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: searches_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.searches_id_seq OWNED BY public.searches.id;
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -310,6 +343,13 @@ ALTER TABLE ONLY public.queue_item_comments ALTER COLUMN id SET DEFAULT nextval(
 
 
 --
+-- Name: searches id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.searches ALTER COLUMN id SET DEFAULT nextval('public.searches_id_seq'::regclass);
+
+
+--
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -362,6 +402,14 @@ ALTER TABLE ONLY public.queue_item_comments
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: searches searches_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.searches
+    ADD CONSTRAINT searches_pkey PRIMARY KEY (id);
 
 
 --
@@ -440,6 +488,13 @@ CREATE INDEX index_queue_item_comments_on_digitization_queue_item_id ON public.q
 --
 
 CREATE INDEX index_queue_item_comments_on_user_id ON public.queue_item_comments USING btree (user_id);
+
+
+--
+-- Name: index_searches_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_searches_on_user_id ON public.searches USING btree (user_id);
 
 
 --
@@ -548,6 +603,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190304201533'),
 ('20190305170908'),
 ('20190305202051'),
-('20190404155001');
+('20190404155001'),
+('20190422201311');
 
 

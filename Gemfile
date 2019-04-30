@@ -5,8 +5,9 @@ ruby File.read(".ruby-version").chomp
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.2.1'
-
 gem 'webpacker', '~> 3.5'
+
+gem "blacklight", "~> 7.0"
 
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
@@ -75,11 +76,10 @@ gem 'bootstrap4-kaminari-views'
 gem 'devise', "~> 4.5" # user accounts and login
 gem 'access-granted', "~> 1.0" # authorization
 
-gem 'solr_wrapper', "~> 2.1"
-
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'solr_wrapper', "~> 2.1"
 end
 
 group :development do
@@ -111,3 +111,19 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
+
+##
+# Added by blacklight. Not sure why rsolr isn't just a BL dependency.
+  gem 'rsolr', '>= 1.0', '< 3'
+  # gem 'popper_js' #popper shouldn't be needed, it's already a dep of BL 4. PR to BL?
+
+  # Used only for autocomplete, which we aren't currently using.
+  # Twitter typehead is an unmaintained dependency, and if we wanted the func
+  # we might consider reimplementing without it.
+  # gem 'twitter-typeahead-rails', '0.11.1.pre.corejavascript'
+
+  # If we aren't using bookmarks, we think we can avoid the devise-guests
+  # gem and NOT having the #current_or_guest_user method that Blacklight uses
+  # involving it. Seems not to be used if you don't use Bookmarks functionality.
+  # gem 'devise-guests', '~> 0.6'
+# end BL generated

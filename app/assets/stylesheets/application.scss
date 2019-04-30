@@ -6,6 +6,16 @@
 /* Custom bootstrap variables must be set or imported *before* bootstrap. */
 @import "bootstrap";
 
+/* Blacklight 7 generator assumed a "blacklight.scss" would be required with sprockets.
+   That file consisted of
+      @import 'bootstrap';
+      @import 'blacklight/blacklight';
+  We already have bootstrap imported, so we just need the latter. We do it early, so
+  our locals can override if needed. Not sure if there would be a way to import just
+  some of blacklight CSS.
+*/
+@import 'blacklight/blacklight';
+
 @import "local/admin";
 @import "local/edit";
 @import "local/attach_files";
@@ -14,3 +24,4 @@
 @import "local/member_list";
 
 @import "browse_everything/browse_everything_bootstrap4";
+
