@@ -7,7 +7,7 @@ ruby File.read(".ruby-version").chomp
 gem 'rails', '~> 5.2.1'
 gem 'webpacker', '~> 3.5'
 
-gem "blacklight", "~> 7.0"
+gem "blacklight", "~> 7.0", ">= 7.1.0.alpha"
 
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
