@@ -4,19 +4,23 @@ require 'json'
 require 'aws-sdk-core'
 set :stage, :staging
 set :rails_env, 'production'
-credential_file = File.file?('./aws_secrets.json')
+secret_location = './aws_secrets.json'
+server_roles = {"kithe"=>[':web', ':app', ':db', ':jobs', ':solr', ':cron']}
+aws_region = "us-east-1"
+service_level = "stage"
+#Everything below here should be able to be turned into a method, the variables above may change based on server setup.
+credential_file = File.file?("#{secret_location}")
 #Checking for the needed credential file, which should overwrite any other ENV or file settings.
 if credential_file && true
 #Edit ec2 for region changes, right now we only use one region. Also needs to come after the credential steps otherwise [default] aws credentials in the .aws directory may be used if present leading to erratic behavior.
-  creds= JSON.load(File.read('aws_secrets.json'))
+  creds= JSON.load(File.read("#{secret_location}"))
   Aws.config[:credentials] = Aws::Credentials.new(creds['AccessKeyId'],creds['SecretAccessKey'])
-  ec2 = Aws::EC2::Resource.new(region:'us-east-1')
+  ec2 = Aws::EC2::Resource.new(region:"#{aws_region}")
 #Server role keys should be the Role tag (assigned by ansible) that you want to deploy to. The array value is the list of capistrano roles that the server needs.
-  server_roles = {"kithe"=>[':web', ':app', ':db', ':jobs', ':solr', ':cron']}
   server_roles.each do |key, value|
 #Service level is set manually here, maybe make it a variable further up to be easy to spot when making new stages? 
 #The instance-state-code of 16 is a value from Amazon's docs for a running server. See: https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstances.html
-    ec2.instances({filters: [{name:'instance-state-code', values:["16"]},{name: 'tag:Role', values: ["#{key}"]},{name: 'tag:Service_level', values: ['stage']}]}).each do |ip|
+    ec2.instances({filters: [{name:'instance-state-code', values:["16"]},{name: 'tag:Role', values: ["#{key}"]},{name: 'tag:Service_level', values: ["#{service_level}"]}]}).each do |ip|
 #Deploy user is manually set here, see above comment about making it a variable.
       server "#{ip.public_ip_address}", user: 'digcol', roles: "#{value}"
     end
