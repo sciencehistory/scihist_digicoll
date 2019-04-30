@@ -18,7 +18,7 @@ Prequisites:
 * Postgres installed and running -- on MacOS, I like https://postgresapp.com/
 * `yarn` installed for webpacker -- on MacOS, `brew install yarn`.
 * vips installed --  on MacOS `brew install vips`
-* Have your AWS credentials put in the default profile at ~/.aws/config
+* Have your AWS credentials put in a file called `aws_secrets.json` at the project's root directory. This is needed for deploying code.
 
 ```bash
 $ git clone git@github.com:sciencehistory/scihist_digicoll.git
