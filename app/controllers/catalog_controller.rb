@@ -12,6 +12,14 @@ class CatalogController < ApplicationController
     false
   end
 
+  # Tell Blacklight to include things in context, that will become
+  # available to our custom SearchBuilder extensions
+  def search_service_context
+    {
+      current_user: current_user
+    }
+  end
+
   configure_blacklight do |config|
     ## Class for sending and receiving requests from a search index
     # config.repository_class = Blacklight::Solr::Repository
