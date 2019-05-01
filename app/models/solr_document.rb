@@ -4,6 +4,8 @@ class SolrDocument
 
   # self.unique_key = 'id'
 
+  attr_accessor :model
+
   # Email uses the semantic field mappings below to generate the body of an email.
   SolrDocument.use_extension(Blacklight::Document::Email)
 

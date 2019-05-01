@@ -1,0 +1,4 @@
+<% # container for all documents in index list view -%>
+<ul id="documents" class="list-unstyled documents-<%= document_index_view_type %>">
+  <%= render partial: "scihist_result", collection: documents.collect(&:model).compact, :as => :model %>
+</ul>

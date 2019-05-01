@@ -43,13 +43,16 @@ Rails.application.routes.draw do
         concerns :searchable
       end
 
-      # TODO: We want to not route this at all, we don't want to use solr_document_path
-      concern :exportable, Blacklight::Routes::Exportable.new
-      resources :solr_documents, only: [:show], path: '/catalog', controller: 'catalog' do
-        concerns :exportable
-      end
+      # We aren't using default Blacklight action for 'show' item, instead using our
+      # own ActiveRecord-model based show, so don't need to route SolrDocumentController...
+      # we think, at least for now.
+      #
+      # concern :exportable, Blacklight::Routes::Exportable.new
+      # resources :solr_documents, only: [:show], path: '/catalog', controller: 'catalog' do
+      #   concerns :exportable
+      # end
 
-      # We'd love to not route bookmarks at all, but currently some parts of BL need it
+      # We aren't using bookmarks, and don't have to route them
       # --jrochkind
       # resources :bookmarks do
       #   concerns :exportable
