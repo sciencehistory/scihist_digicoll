@@ -1,4 +1,7 @@
 # frozen_string_literal: true
+
+require 'kithe/blacklight_tools/bulk_loading_search_service'
+
 class CatalogController < ApplicationController
   # Blacklight wanted Blacklight::Controller included in ApplicationController,
   # we do it just here instead.
@@ -19,6 +22,10 @@ class CatalogController < ApplicationController
       current_user: current_user
     }
   end
+
+  self.search_service_class = Kithe::BlacklightTools::BulkLoadingSearchService
+  Kithe::BlacklightTools::BulkLoadingSearchService.bulk_load_scope =
+    -> { includes(:derivatives, leaf_representative: :derivatives)  }
 
   configure_blacklight do |config|
     ## Class for sending and receiving requests from a search index
