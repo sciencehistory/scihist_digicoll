@@ -9,6 +9,9 @@
 class SearchBuilder < Blacklight::SearchBuilder
   include Blacklight::Solr::SearchBuilderBehavior
 
+  # Scihist SearchBuilder extensions
+  include SearchBuilder::AdminOnlySearchFields
+
   ##
   # @example Adding a new step to the processor chain
   #   self.default_processor_chain += [:add_custom_data_to_query]
