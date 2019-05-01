@@ -1,13 +1,13 @@
 GIT
   remote: https://github.com/jrochkind/attr_json
-  revision: c1564dbdd88ddddc529b8cf83c1fe03f45498877
+  revision: 3676174b637496507c526d09c776d3877ff99426
   specs:
-    attr_json (0.6.0)
+    attr_json (0.7.0)
       activerecord (>= 5.0.0, < 6.1)
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: 5b97fd1ed54742e491c5030286b2cd0c61456ff9
+  revision: 3d67573f4258124411d1c6a8ac0303d3cafd263d
   specs:
     kithe (0.2.0)
       attr_json (< 2.0.0)
@@ -301,7 +301,7 @@ GEM
     net-ssh (5.1.0)
     net_http_ssl_fix (0.0.10)
     nio4r (2.3.1)
-    nokogiri (1.10.2)
+    nokogiri (1.10.3)
       mini_portile2 (~> 2.4.0)
     oauth2 (1.4.1)
       faraday (>= 0.8, < 0.16.0)
