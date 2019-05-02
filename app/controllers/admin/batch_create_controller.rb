@@ -66,9 +66,11 @@ class Admin::BatchCreateController < ApplicationController
     Kithe::Parameters.new(p).require(:work).permit_attr_json(Work).permit(
       :digitization_queue_item_id, :contained_by_ids => []
     ).tap do |params|
-      # sanitize description
-      if params[:description].present?
-        params[:description] = DescriptionSanitizer.new.sanitize(params[:description])
+      # sanitize description & provenance
+      [:description, :provenance, :provenance_notes].each do |field|
+        if params[field].present?
+          params[field] = DescriptionSanitizer.new.sanitize(params[field])
+        end
       end
     end
   end

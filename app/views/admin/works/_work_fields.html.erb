@@ -44,7 +44,9 @@
 
     <%= f.repeatable_attr_input :language, build: :at_least_one %>
 
-    <%= f.input :description, as: :text, input_html: { rows: 14 } %>
+    <%= f.input :description,       as: :text, input_html: { rows: 14 } %>
+    <%= f.input :provenance,        as: :text, input_html: { rows: 5 }  %>
+    <%= f.input :provenance_notes,  as: :text, input_html: { rows: 5 }  %>
 
     <%= f.repeatable_attr_input(:inscription, build: :at_least_one) do |sub_form| %>
       <%= sub_form.input :location, wrapper: :scihist_horizontal_form %>

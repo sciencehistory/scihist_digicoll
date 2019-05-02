@@ -30,8 +30,7 @@
 
 
       <div class="scihist-list-item-description">
-        <%# TODO needs proper formatting %>
-        <%= model.description %>
+        <%= raw DescriptionSanitizer.new.sanitize(model.description) %>
       </div>
     </div>
 </li>
