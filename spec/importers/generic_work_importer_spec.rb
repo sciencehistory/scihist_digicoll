@@ -7,6 +7,9 @@ RSpec.describe Importers::GenericWorkImporter do
       "head" => [
         "#<ActiveTriples::Resource:0x0000558a2682fa68>"
       ],
+      "description" =>      ["Description."],
+      "provenance"  =>      ["Provenance."],
+      "provenance_notes" => ["Provenance notes."],
       "tail" => [
         "#<ActiveTriples::Resource:0x0000558a26826030>"
       ],
@@ -65,6 +68,9 @@ RSpec.describe Importers::GenericWorkImporter do
     expect(new_work.published?).to be(false)
     expect(new_work.medium).to eq(["Vellum"])
     expect(new_work.project).to eq(["Nanotechnology"])
+    expect(new_work.description).to      eq("Description.")
+    expect(new_work.provenance).to       eq("Provenance.")
+    expect(new_work.provenance_notes).to eq("Provenance notes.")
   end
 
 
