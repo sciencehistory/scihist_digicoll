@@ -79,12 +79,12 @@
 
     <dt>Provenance</dt>
     <dd>
-      <%= raw DescriptionSanitizer.new.sanitize(work.provenance) %>
+      <%= work.provenance%>
     </dd>
 
     <dt>Provenance notes</dt>
     <dd>
-      <%= raw DescriptionSanitizer.new.sanitize(work.provenance_notes) %>
+      <%= work.provenance_notes%>
     </dd>
 
 
@@ -153,7 +153,7 @@
 
     <dt>Description</dt>
     <dd>
-      <%= raw DescriptionSanitizer.new.sanitize(work.description) %>
+      <%= work.description %>
     </dd>
 
     <dt>Inscription</dt>
