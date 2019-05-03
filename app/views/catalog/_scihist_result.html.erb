@@ -30,7 +30,7 @@
 
 
       <div class="scihist-list-item-description">
-        <%= model.description %>
+        <%= raw DescriptionSanitizer.new.sanitize(model.description) %>
       </div>
     </div>
 </li>
