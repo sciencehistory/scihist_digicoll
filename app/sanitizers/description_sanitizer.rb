@@ -1,5 +1,4 @@
-# Used for sanitizing user-entered description
-# and provenance info to have only HTML tags
+# Used for sanitizing user-entered descriptions to have only HTML tags
 # we want to allow.
 #
 # Based on code in rails_html_sanitizer, which doesn't have as nice
