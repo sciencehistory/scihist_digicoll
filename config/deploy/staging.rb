@@ -1,19 +1,19 @@
 #Using the aws-sdk to locate servers via the Role tag and deploy to them.
 require 'aws-sdk-ec2'
-require 'json'
+require 'yaml'
 require 'aws-sdk-core'
 set :stage, :staging
 set :rails_env, 'production'
-secret_location = './aws_secrets.json'
+secret_location = './aws_secrets.yml'
 server_roles = {"kithe"=>[':web', ':app', ':db', ':jobs', ':solr', ':cron']}
 aws_region = "us-east-1"
 service_level = "stage"
 #Everything below here should be able to be turned into a method, the variables above may change based on server setup.
-credential_file = File.file?("#{secret_location}")
+credential_file = File.file?(secret_location)
 #Checking for the needed credential file, which should overwrite any other ENV or file settings.
 if credential_file && true
 #Edit ec2 for region changes, right now we only use one region. Also needs to come after the credential steps otherwise [default] aws credentials in the .aws directory may be used if present leading to erratic behavior.
-  creds= JSON.load(File.read("#{secret_location}"))
+  creds= YAML.load_file(secret_location)
   Aws.config[:credentials] = Aws::Credentials.new(creds['AccessKeyId'],creds['SecretAccessKey'])
   ec2 = Aws::EC2::Resource.new(region:"#{aws_region}")
 #Server role keys should be the Role tag (assigned by ansible) that you want to deploy to. The array value is the list of capistrano roles that the server needs.
