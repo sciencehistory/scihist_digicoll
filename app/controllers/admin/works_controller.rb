@@ -218,7 +218,7 @@ class Admin::WorksController < ApplicationController
         :title, :parent_id, :representative_id, :digitization_queue_item_id, :contained_by_ids => []
       ).tap do |params|
         # sanitize description & provenance
-        [:description, :provenance, :provenance_notes].each do |field|
+        [:description, :provenance].each do |field|
           if params[field].present?
             params[field] = DescriptionSanitizer.new.sanitize(params[field])
           end

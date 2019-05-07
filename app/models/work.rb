@@ -31,7 +31,6 @@ class Work < Kithe::Work
   attr_json :language, :string, array: true, default: -> { [] }
   attr_json :description, :text
   attr_json :provenance, :text
-  attr_json :provenance_notes, :text
   attr_json :inscription, Work::Inscription.to_type, array: true, default: -> { [] }
 
   # eventually keep vocab id?
