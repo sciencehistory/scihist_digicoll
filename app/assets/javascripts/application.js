@@ -22,8 +22,6 @@
 //= require uppy_dashboard
 //= require browse_everything
 
-
-//= require tether
 // Required by Blacklight
       // not currentlu using blacklight 'suggest' func which uses twitter typeahead.
       // twitter typeahead is a non maintained kind of mess, so we might try to
