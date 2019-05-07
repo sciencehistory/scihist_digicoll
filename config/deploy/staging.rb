@@ -20,9 +20,13 @@ if credential_file && true
   server_roles.each do |key, value|
 #Service level is set manually here, maybe make it a variable further up to be easy to spot when making new stages? 
 #The instance-state-code of 16 is a value from Amazon's docs for a running server. See: https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstances.html
-    ec2.instances({filters: [{name:'instance-state-code', values:["16"]},{name: 'tag:Role', values: ["#{key}"]},{name: 'tag:Service_level', values: ["#{service_level}"]}]}).each do |ip|
+    ec2.instances({filters: [{name:'instance-state-code', values:["16"]},{name: 'tag:Role', values: ["#{key}"]},{name: 'tag:Service_level', values: ["#{service_level}"]}]}).each do |aws_server|
+#Search across the tags and find the one labeled capistrano_roles, tags are hashes with 2 values, key for tag name and value for tag value.
+      capistrano_tag = aws_server.tags.select{|tag| tag["key"]=="capistrano_roles"}
+#Turn the tag (via the value field in the hash) into an array
+      capistrano_roles = capistrano_tag[0][:value].split(',')
 #Deploy user is manually set here, see above comment about making it a variable.
-      server "#{ip.public_ip_address}", user: 'digcol', roles: "#{value}"
+      server aws_server.public_ip_address, user: 'digcol', roles: capistrano_roles
     end
   end
 else
