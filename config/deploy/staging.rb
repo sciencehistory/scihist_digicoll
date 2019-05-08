@@ -5,7 +5,7 @@ require 'aws-sdk-core'
 set :stage, :staging
 set :rails_env, 'production'
 secret_location = './aws_secrets.yml'
-server_roles = {"kithe"=>[':web', ':app', ':db', ':jobs', ':solr', ':cron']}
+server_roles = ["scihist_digicoll"]
 aws_region = "us-east-1"
 service_level = "stage"
 #Everything below here should be able to be turned into a method, the variables above may change based on server setup.
@@ -17,12 +17,12 @@ if credential_file && true
   Aws.config[:credentials] = Aws::Credentials.new(creds['AccessKeyId'],creds['SecretAccessKey'])
   ec2 = Aws::EC2::Resource.new(region:"#{aws_region}")
 #Server role keys should be the Role tag (assigned by ansible) that you want to deploy to. The array value is the list of capistrano roles that the server needs.
-  server_roles.each do |key, value|
+  server_roles.each do |server_application|
 #Service level is set manually here, maybe make it a variable further up to be easy to spot when making new stages? 
 #The instance-state-code of 16 is a value from Amazon's docs for a running server. See: https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstances.html
-    ec2.instances({filters: [{name:'instance-state-code', values:["16"]},{name: 'tag:Role', values: ["#{key}"]},{name: 'tag:Service_level', values: ["#{service_level}"]}]}).each do |aws_server|
+    ec2.instances({filters: [{name:'instance-state-code', values:["16"]},{name: 'tag:Application', values: [server_application]},{name: 'tag:Service_level', values: [service_level]}]}).each do |aws_server|
 #Search across the tags and find the one labeled capistrano_roles, tags are hashes with 2 values, key for tag name and value for tag value.
-      capistrano_tag = aws_server.tags.select{|tag| tag["key"]=="capistrano_roles"}
+      capistrano_tag = aws_server.tags.select{|tag| tag["key"]=="Capistrano_roles"}
 #Turn the tag (via the value field in the hash) into an array
       capistrano_roles = capistrano_tag[0][:value].split(',')
 #Deploy user is manually set here, see above comment about making it a variable.
