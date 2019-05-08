@@ -1,13 +1,13 @@
 GIT
   remote: https://github.com/jrochkind/attr_json
-  revision: c1564dbdd88ddddc529b8cf83c1fe03f45498877
+  revision: 3676174b637496507c526d09c776d3877ff99426
   specs:
-    attr_json (0.6.0)
+    attr_json (0.7.0)
       activerecord (>= 5.0.0, < 6.1)
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: 9c9fd3fc2dccf9ff201dd10122fa536dbd1de851
+  revision: 7ccd2bd0b428628b2507d00bc9c235e88993a866
   specs:
     kithe (0.2.0)
       attr_json (< 2.0.0)
@@ -76,7 +76,7 @@ GEM
     airbrussh (1.3.1)
       sshkit (>= 1.6.1, != 1.7.0)
     arel (9.0.0)
-    autoprefixer-rails (9.4.9)
+    autoprefixer-rails (9.5.1)
       execjs
     aws-eventstream (1.0.2)
     aws-partitions (1.144.0)
@@ -99,6 +99,12 @@ GEM
       aws-eventstream (~> 1.0, >= 1.0.2)
     bcrypt (3.1.12)
     bindex (0.5.0)
+    blacklight (7.1.0.alpha)
+      deprecation
+      globalid
+      jbuilder (~> 2.7)
+      kaminari (>= 0.15)
+      rails (~> 5.1)
     bootsnap (1.3.2)
       msgpack (~> 1.0)
     bootstrap (4.3.1)
@@ -169,6 +175,8 @@ GEM
     database_cleaner (1.7.0)
     declarative (0.0.10)
     declarative-option (0.1.0)
+    deprecation (1.0.0)
+      activesupport
     devise (4.6.2)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -296,7 +304,7 @@ GEM
     net-ssh (5.1.0)
     net_http_ssl_fix (0.0.10)
     nio4r (2.3.1)
-    nokogiri (1.10.2)
+    nokogiri (1.10.3)
       mini_portile2 (~> 2.4.0)
     oauth2 (1.4.1)
       faraday (>= 0.8, < 0.16.0)
@@ -472,7 +480,7 @@ GEM
     thor (0.20.3)
     thread_safe (0.3.6)
     tilt (2.0.9)
-    traject (3.1.0.rc1)
+    traject (3.1.0)
       concurrent-ruby (>= 0.8.0)
       dot-properties (>= 0.1.1)
       hashie (~> 3.1)
@@ -496,7 +504,7 @@ GEM
       execjs (>= 0.3.0, < 3)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.7.5)
+    unf_ext (0.0.7.6)
     uppy-s3_multipart (0.3.0)
       aws-sdk-s3 (~> 1.0)
       content_disposition (~> 1.0)
@@ -540,6 +548,7 @@ DEPENDENCIES
   attr_json!
   aws-sdk-core
   aws-sdk-ec2 (>= 1.74)
+  blacklight (~> 7.0, >= 7.1.0.alpha)
   bootsnap (>= 1.1.0)
   bootstrap (~> 4.3)
   bootstrap4-kaminari-views
@@ -571,6 +580,7 @@ DEPENDENCIES
   ransack (~> 2.1)
   resque (~> 1.0)
   resque-pool
+  rsolr (>= 1.0, < 3)
   rspec-rails (~> 3.8)
   sassc-rails (~> 2.0)
   selenium-webdriver
