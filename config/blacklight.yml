@@ -1,0 +1,9 @@
+development:
+  adapter: solr
+  url: <%= ScihistDigicoll::Env.lookup!(:solr_url) %>
+test: &test
+  adapter: solr
+  url: <%= ScihistDigicoll::Env.lookup!(:solr_url) %>
+production:
+  adapter: solr
+  url: <%= ScihistDigicoll::Env.lookup!(:solr_url) %>

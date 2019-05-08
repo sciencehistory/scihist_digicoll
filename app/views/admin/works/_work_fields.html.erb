@@ -65,6 +65,16 @@
             class: "form-control input-primitive" %>
     <% end %>
 
+    <%= f.repeatable_attr_input(:project, build: :at_least_one) do |input_name, value| %>
+      <%= f.input_field :project,
+            name: input_name,
+            id: nil,
+            selected: value,
+            collection: Work::ControlledLists::PROJECT,
+            include_blank: true,
+            class: "form-control input-primitive" %>
+    <% end %>
+
     <%= f.input :source %>
 
     <%= f.repeatable_attr_input :series_arrangement, build: :at_least_one %>

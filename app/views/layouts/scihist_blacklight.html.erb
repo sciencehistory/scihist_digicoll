@@ -1,0 +1,80 @@
+<%# Blacklight views, including CatalogController views which we use, kind of
+    make a lot of assumptions about the Rails view layout.
+
+    It also has a lot of abstraction and cooperating multiple views/helpers,
+    meant to support surgical customization, but in fact making it rather
+    confusing.
+
+    We customize by making our layout, based on the Blacklight layout,
+    but simplifying it, and then customizing it as desired.
+
+    Based on a combination of:
+    * https://github.com/projectblacklight/blacklight/blob/v7.0.1/app/views/layouts/blacklight.html.erb
+    * https://github.com/projectblacklight/blacklight/blob/v7.0.1/app/views/layouts/blacklight/base.html.erb
+
+    TODO: Possibly using nested layouts, we may need to extract a layout for 'end-user-facing'
+    pages that aren't Blacklight? Or this one may work fine, and should actually be the default
+    layout for everyone?
+%>
+
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Internet Explorer use the highest version available -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title><%= render_page_title %></title>
+    <%= opensearch_description_tag application_name, opensearch_catalog_url(format: 'xml') %>
+    <%= favicon_link_tag %>
+
+
+    <%= stylesheet_link_tag "application", media: "all" %>
+    <%# we are NOT including webpacker JS in end-user facing pages at the moment.
+        Possibly we should be. %>
+    <%= javascript_include_tag "application" %>
+
+    <%= csrf_meta_tags %>
+    <%= content_for(:head) %>
+  </head>
+
+  <body class="<%= render_body_class %>">
+    <% if current_user %>
+      <%= render 'front_end_admin_navbar' %>
+    <% end %>
+
+    <div class="navbar-search navbar navbar-light bg-faded" role="navigation">
+      <div class="<%= container_classes %>">
+        <%= render_search_bar  %>
+      </div>
+    </div>
+
+    <div id="main-container" class="container-fluid">
+      <%= content_for(:container_header) %>
+
+      <%= render 'flash_message_display' %>
+
+      <div class="row">
+        <% if content_for? :sidebar %>
+          <section id="content" class="col-md-9 order-last">
+            <%= yield %>
+          </section>
+
+          <section id="sidebar" class="page-sidebar col-md-3 order-first">
+            <%= content_for(:sidebar) %>
+          </section>
+        <% else %>
+          <section class="col-md-12">
+            <%= yield %>
+          </section>
+        <% end %>
+      </div>
+    </div>
+
+    <%= render partial: 'shared/footer' %>
+    <%= render partial: 'shared/modal' %>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+<%# navbar that is shown at very top of page in "front-end" end-user-accessible
+    pages, if admin is logged in. May use it in admin pages too? Maybe change
+    name if so. %>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark topbar" role="navigation">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse justify-content-md-end" id="user-util-collapse">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <%= link_to "Admin", admin_root_path, class: "nav-link" %>
+      </li>
+
+      <li class="nav-item">
+        <%= link_to("Logout", destroy_user_session_path, method: :delete, class: "nav-link") %>
+      </li>
+
+      <li class="nav-item">
+        <span class="navbar-text"><%= current_user.email %></span>
+      </li>
+    </ul>
+  </div>
+</nav>

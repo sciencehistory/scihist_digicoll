@@ -24,12 +24,12 @@ describe "Work auto-indexes in Solr with kithe", indexable_callbacks: true do
   describe "with real solr", solr: true do
     it "indexes to real solr" do
       work = FactoryBot.create(:work, title: "to be indexed")
-      solr_query_url = "#{ScihistDigicoll::Env.lookup!(:solr_url)}/select?q=id:#{CGI.escape work.id}"
+      solr_query_url = "#{ScihistDigicoll::Env.lookup!(:solr_url)}/select?q=id:#{CGI.escape work.friendlier_id}"
       response = Net::HTTP.get_response(URI.parse(solr_query_url))
 
       solr_docs = JSON.parse(response.body)["response"]["docs"]
 
-      indexed_doc = solr_docs.find { |h| h["id"] == work.id }
+      indexed_doc = solr_docs.find { |h| h["id"] == work.friendlier_id }
       expect(indexed_doc).to be_present
     end
   end

@@ -1,0 +1,37 @@
+<%# A basic proof of concept, far from complete, not styled.
+    Leaning toward replacing this with a draper-based "component" %>
+
+<li id="document_<%= model.friendlier_id %>" class="scihist-results-list-item document"
+    itemscope itemtype="http://schema.org/CreativeWork">
+
+
+    <div class="scihist-list-item-thumb">
+      [thumb]
+    </div>
+
+    <div class="scihist-list-item-content">
+      <div class="scihist-list-item-genre">
+        <span itemprop="genre">
+          <% if model.kind_of?(Collection) %>
+            Collection
+          <% else %>
+            <%= model.genre.join(", ") %></span>
+          <% end %>
+      </div>
+
+      <h2 class="scihist-results-list-item-head brand-alt-h2" itemprop="name">
+        <a itemprop="name" href="#"><%= model.title %></a>
+      </h2>
+
+
+      <div class="scihist-list-item-date">
+        dates
+      </div>
+
+
+      <div class="scihist-list-item-description">
+        <%# TODO needs proper formatting %>
+        <%= model.description %>
+      </div>
+    </div>
+</li>

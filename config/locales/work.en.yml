@@ -59,6 +59,7 @@ en:
         subject: "Topical terms describing the “aboutness” of the work. Depicted persons, places, and time periods are covered here as well. Field supports FAST (derived from Library of Congress authorities) autocomplete. <strong><em>Ex: • Alchemy • Integrated circuits</strong></em>. Recommended."
         department: "Select the CHF administrative entity responsible for the management and curation of the physical work. Required."
         exhibition: "Select any current or past Museum exhibition(s) that the work has been displayed in, if applicable. If a desired entry is not available, contact the Digital Projects and Metadata Librarian."
+        project: "Select any current or past projects that the work is a part of, if applicable. If a desired entry is not available, contact the Digital Projects and Metadata Librarian."
         source: "For standalone digitization from a larger work, use for the name of the work from which the described material is derived. Can be left blank if the digital object is related to its parent work in the repository."
         series_arrangement: "Archival materials only: specify series and subseries of work, where relevant. Capture the information as listed in the finding aid."
         physical_container: "For archival and serialized materials: specify either box/folder or volume/part numbers, where relevant. For library manuscripts, specify shelfmark."

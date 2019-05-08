@@ -62,6 +62,9 @@ FactoryBot.define do
       exhibition {
         ["Making Modernity", "Lobby 2017"]
       }
+      project {
+        ["REACH Ambler", "Science and Disability"]
+      }
       description {
         "Description 1"
       }
@@ -122,9 +125,6 @@ FactoryBot.define do
         ["Series arrangement 1", "Series arrangement 2"]
       }
 
-      # parent_id: nil,
-      # friendlier_id:  "sdqt97k"
-      # file_data: nil
 
     end
 
