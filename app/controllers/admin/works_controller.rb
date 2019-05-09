@@ -217,9 +217,11 @@ class Admin::WorksController < ApplicationController
       Kithe::Parameters.new(params).require(:work).permit_attr_json(Work).permit(
         :title, :parent_id, :representative_id, :digitization_queue_item_id, :contained_by_ids => []
       ).tap do |params|
-        # sanitize description
-        if params[:description].present?
-          params[:description] = DescriptionSanitizer.new.sanitize(params[:description])
+        # sanitize description & provenance
+        [:description, :provenance].each do |field|
+          if params[field].present?
+            params[field] = DescriptionSanitizer.new.sanitize(params[field])
+          end
         end
       end
     end
