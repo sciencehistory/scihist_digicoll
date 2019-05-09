@@ -1,6 +1,7 @@
 require 'resque/server'
 
 Rails.application.routes.draw do
+  concern :range_searchable, BlacklightRangeLimit::Routes::RangeSearchable.new
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
   class LoggedInConstraint
@@ -41,6 +42,7 @@ Rails.application.routes.draw do
       concern :searchable, Blacklight::Routes::Searchable.new
       resource :catalog, only: [:index], as: 'catalog', path: '/catalog', controller: 'catalog' do
         concerns :searchable
+        concerns :range_searchable # for blacklight_range_limit
       end
 
       # We aren't using default Blacklight action for 'show' item, instead using our
