@@ -1,19 +1,15 @@
 /*
  * This is a manifest file that'll be compiled into application.css.
  *
- 
- *
+ */
+
+/*
  * Used by blacklight_range_limit
- *= require  'blacklight_range_limit'
+ * Sadly via sproxkets instead of SASS like below
  *
+ *= require  'blacklight_range_limit'
 */
 
-/* Custom bootstrap variables must be set or imported *before* bootstrap. 
- *
- * Used by blacklight_range_limit
- *= require  'blacklight_range_limit'
- *
-*/
 @import "bootstrap";
 
 /* Blacklight 7 generator assumed a "blacklight.scss" would be required with sprockets.
@@ -23,11 +19,6 @@
   We already have bootstrap imported, so we just need the latter. We do it early, so
   our locals can override if needed. Not sure if there would be a way to import just
   some of blacklight CSS.
-
- *
- * Used by blacklight_range_limit
- *= require  'blacklight_range_limit'
- *
 */
 @import 'blacklight/blacklight';
 
