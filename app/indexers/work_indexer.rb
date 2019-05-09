@@ -19,6 +19,7 @@ class WorkIndexer < Kithe::Indexer
     to_field ["text3_tesim", "subject_facet"], obj_extract("subject")
 
     to_field "text4_tesim", obj_extract("description")
+    to_field "text4_tesim", obj_extract("provenance")
 
     to_field ["text_no_boost_tesim", "language_facet"], obj_extract("language")
     to_field "text_no_boost_tesim", obj_extract("external_id", "value")
