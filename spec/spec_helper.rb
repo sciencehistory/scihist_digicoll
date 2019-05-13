@@ -45,6 +45,11 @@ RSpec.configure do |config|
     mocks.verify_partial_doubles = true
   end
 
+  # automatically give specs in view_models type :helper
+  config.define_derived_metadata file_path: %r{spec/view_models} do |metadata|
+    metadata[:type] = :helper
+  end
+
   # This option will default to `:apply_to_host_groups` in RSpec 4 (and will
   # have no way to turn it off -- the option exists only for backwards
   # compatibility in RSpec 3). It causes shared context metadata to be

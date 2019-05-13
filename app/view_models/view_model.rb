@@ -18,9 +18,18 @@
 #   is useful, plus `safe_join` for concatenating differnet content_tag and plain string outputs in an HTML-escape-safe
 #   way.
 #
-# * When we write tests for a 'ViewModel', we make them rspec type "view" (or helper?), because
-#   that's the one rspec (with draper support) provides the necessary infrastructure support for executing
-#   view code antesting what gets rendered. (Need to test/confirm)
+# * Additional params can be passed in (standard draper feature) like:
+#       IndexResultDisplay.new(some_model, context: { whatever: "you want"})
+#   Those keys will be available in the view model as `context[:whatever]`
+#
+# * When we write tests for a 'ViewModel', we make them rspec type :view or :helper, either
+#   seems to work fine. Those will be set up by rspec to have a view_context for our draper-based
+#   view model. You can set the result of a view model render method to a variable or 'let' declaration,
+#   say "rendered" for consistency with real view specs. If you put it in a Nokogiri object, you
+#   can test it capybara matchers:
+#       let(:rendered) { Nokogiri::HTML.fragment( IndexResultDisplay.new(work).display ) }
+#       expect(rendered).to have_text("some string")
+#       expect(rendered).to have_selector("li", text: "text contents")
 class ViewModel < Draper::Decorator
   # we intentionally do NOT do draper `delegate_all`, but intentionally DO
   # do include all Rails helpers in the ViewModel with:
