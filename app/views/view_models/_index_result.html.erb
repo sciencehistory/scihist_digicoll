@@ -13,45 +13,38 @@
     </div>
 
     <div class="chf-results-list-item-content">
-      <%# if doc_presenter.has_values_for?(Solrizer.solr_name("genre_string", :stored_searchable)) %>
+      <% if view.has_genres? %>
         <div class="chf-results-list-item-genre">
-          <%# doc_presenter.field_value(Solrizer.solr_name("genre_string", :stored_searchable), join_type: :separator) %>
+          <%= view.display_genres %>
         </div>
-      <%# end %>
+      <% end %>
 
       <h2 class="chf-results-list-item-head brand-alt-h2" itemprop="name">
-        <%# link_to generic_work.title_or_label, generic_work, itemprop: "url" %>
-        <%= model.title %>
-
-        <%# if doc_presenter.needs_permission_badge? %>
-          <small class="chf-results-list-item-permission"><%# doc_presenter.permission_badge %></small>
-        <%# end %>
+        <%= link_to model.title, work_path(model), itemprop: "url" %>
+        <%= view.display_permission_badge %>
       </h2>
 
-      <%# if doc_presenter.has_values_for?(Solrizer.solr_name("additional_title", :stored_searchable)) %>
+      <%if model.additional_title.present? %>
         <div class="chf-results-list-item-additional-titles">
-          <%# doc_presenter.field_value(Solrizer.solr_name("additional_title", :stored_searchable), join_type: :list) %>
+            <ul>
+              <% model.additional_title.each do |title| %>
+                <li><%= title %></li>
+              <% end %>
+            </ul>
         </div>
-      <%# end %>
+      <% end %>
 
-      <%# if (parents = @parent_presenter_lookup && @parent_presenter_lookup[doc_presenter.id]).present? || doc_presenter.source.present? %>
+      <% if view.part_of_elements.present? %>
         <div class="chf-results-list-item-parents">
           <ul>
-            <%# if parents.present? %>
-              <%# parents.each do |parent| %>
-                <li>
-                  Part of <%# link_to parent.title_or_label, parent %>
-                </li>
-              <%# end %>
-            <%# end %>
-            <%# (doc_presenter.source || []).each do |source| %>
+            <% view.part_of_elements.each do |element| %>
               <li>
-                Part of <i><%# source %></i>
+                Part of <%= element %>
               </li>
-            <%# end %>
+            <% end %>
           </ul>
         </div>
-      <%# end %>
+      <% end %>
 
       <%# if doc_presenter.has_values_for?(Solrizer.solr_name('date_of_work', :stored_searchable)) %>
         <div class="chf-results-list-item-date">
@@ -92,7 +85,5 @@
       </ul>
 
     </div>
-    <%# render_document_partial(generic_work, :thumbnail, document_counter: generic_work_counter) %>
-    <%# render_document_partial(generic_work, :index, document_counter: generic_work_counter) %>
 </li>
 

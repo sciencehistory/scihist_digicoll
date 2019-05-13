@@ -1,4 +1,7 @@
 <% # container for all documents in index list view -%>
+
 <ul id="documents" class="list-unstyled documents-<%= document_index_view_type %>">
-  <%= render partial: "/view_models/index_result", collection: documents.collect(&:model).compact, :as => :model %>
+  <% documents.collect(&:model).compact.each do |model| %>
+    <%= WorkResultDisplay.new(model).display %>
+  <% end %>
 </ul>
