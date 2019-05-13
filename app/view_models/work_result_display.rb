@@ -1,4 +1,6 @@
 class WorkResultDisplay < ViewModel
+  delegate :additional_title
+
   def display
     render "/view_models/index_result", model: model, view: self
   end

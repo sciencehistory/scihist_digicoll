@@ -24,10 +24,10 @@
         <%= view.display_permission_badge %>
       </h2>
 
-      <%if model.additional_title.present? %>
+      <%if view.additional_title.present? %>
         <div class="chf-results-list-item-additional-titles">
             <ul>
-              <% model.additional_title.each do |title| %>
+              <% view.additional_title.each do |title| %>
                 <li><%= title %></li>
               <% end %>
             </ul>
