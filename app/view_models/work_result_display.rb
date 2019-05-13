@@ -3,13 +3,9 @@ class WorkResultDisplay < ViewModel
     render "/view_models/index_result", model: model, view: self
   end
 
-  def has_genres?
-    model.respond_to?(:genre) && model.genre.present?
-  end
-
   def display_genres
     # TODO, probably a better Blacklight-provided method for generating the url?
-    safe_join(
+    @display_genres ||= safe_join(
       model.genre.map { |g| link_to g, search_catalog_path(f: { genre_facet: [g] }) },
       ", "
     )
