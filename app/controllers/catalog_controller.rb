@@ -30,7 +30,7 @@ class CatalogController < ApplicationController
 
   self.search_service_class = Kithe::BlacklightTools::BulkLoadingSearchService
   Kithe::BlacklightTools::BulkLoadingSearchService.bulk_load_scope =
-    -> { includes(:derivatives, leaf_representative: :derivatives)  }
+    -> { includes(:derivatives, :parent, leaf_representative: :derivatives)  }
 
   configure_blacklight do |config|
     ## Class for sending and receiving requests from a search index
