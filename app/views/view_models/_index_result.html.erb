@@ -1,0 +1,98 @@
+<%# originally copied from chf_sufia app/views/curation_concerns/generic_works/_generic_work.html.erb
+    Modified for cleaner architecture using our draper-based "view models" %>
+
+<li id="document_<%# generic_work.to_param %>" class="chf-results-list-item document <%# render_document_class generic_work %>" itemscope itemtype="<%# generic_work.itemtype %>">
+
+
+    <div class="chf-results-list-item-thumb">
+      <%# render_thumbnail_tag generic_work %>
+      <%# link_to generic_work do %>
+        <%# tag "img", member_src_attributes(member: doc_presenter, size_key: :standard).merge(alt: "") %>
+      <%# end %>
+      <%# doc_presenter.render_num_members %>
+    </div>
+
+    <div class="chf-results-list-item-content">
+      <%# if doc_presenter.has_values_for?(Solrizer.solr_name("genre_string", :stored_searchable)) %>
+        <div class="chf-results-list-item-genre">
+          <%# doc_presenter.field_value(Solrizer.solr_name("genre_string", :stored_searchable), join_type: :separator) %>
+        </div>
+      <%# end %>
+
+      <h2 class="chf-results-list-item-head brand-alt-h2" itemprop="name">
+        <%# link_to generic_work.title_or_label, generic_work, itemprop: "url" %>
+        <%= model.title %>
+
+        <%# if doc_presenter.needs_permission_badge? %>
+          <small class="chf-results-list-item-permission"><%# doc_presenter.permission_badge %></small>
+        <%# end %>
+      </h2>
+
+      <%# if doc_presenter.has_values_for?(Solrizer.solr_name("additional_title", :stored_searchable)) %>
+        <div class="chf-results-list-item-additional-titles">
+          <%# doc_presenter.field_value(Solrizer.solr_name("additional_title", :stored_searchable), join_type: :list) %>
+        </div>
+      <%# end %>
+
+      <%# if (parents = @parent_presenter_lookup && @parent_presenter_lookup[doc_presenter.id]).present? || doc_presenter.source.present? %>
+        <div class="chf-results-list-item-parents">
+          <ul>
+            <%# if parents.present? %>
+              <%# parents.each do |parent| %>
+                <li>
+                  Part of <%# link_to parent.title_or_label, parent %>
+                </li>
+              <%# end %>
+            <%# end %>
+            <%# (doc_presenter.source || []).each do |source| %>
+              <li>
+                Part of <i><%# source %></i>
+              </li>
+            <%# end %>
+          </ul>
+        </div>
+      <%# end %>
+
+      <%# if doc_presenter.has_values_for?(Solrizer.solr_name('date_of_work', :stored_searchable)) %>
+        <div class="chf-results-list-item-date">
+          <%# if doc_presenter.display_dates.present? %>
+            <ul>
+              <%# doc_presenter.display_dates.each do |interval| %>
+                <li>
+                  <span itemprop="date_created">
+                    <%# interval %>
+                  </span>
+                </li>
+              <%# end %>
+            </ul>
+          <%# end %>
+        </div>
+      <%# end %>
+
+
+
+
+      <%# if doc_presenter.has_values_for?(Solrizer.solr_name("description", :stored_searchable)) %>
+        <div class="chf-results-list-item-description">
+          <%# doc_presenter.description.each do |description| %>
+            <%# format_description(description, truncate: true) %>
+          <%# end %>
+        </div>
+      <%# end %>
+
+      <ul class="list-unstyled chf-results-list-values">
+        <%# index_fields(generic_work).each do |field_name, field| -%>
+          <%# if should_render_index_field? generic_work, field %>
+            <li>
+              <span class="attribute-label"><%# render_index_field_label generic_work, field: field_name %></span>
+              <%# doc_presenter.field_value field_name %>
+            </li>
+          <%# end %>
+        <%# end %>
+      </ul>
+
+    </div>
+    <%# render_document_partial(generic_work, :thumbnail, document_counter: generic_work_counter) %>
+    <%# render_document_partial(generic_work, :index, document_counter: generic_work_counter) %>
+</li>
+
