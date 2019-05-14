@@ -40,6 +40,11 @@ class DateDisplayFormatter
       date_string = "#{date_string} (#{date_of_work.note})"
     end
 
+    # Want to capitalize first letter only, and only if it's in position 0
+    if date_string && date_string[0] =~ /\w/
+      date_string = date_string.slice(0,1).capitalize + date_string.slice(1..-1)
+    end
+
     date_string
   end
 
