@@ -12,7 +12,7 @@ class DateDisplayFormatter
   CENTURY = "century"
   CIRCA = "circa"
   DECADE = "decade"
-  UNDATED = "Undated"
+  UNDATED = "undated"
 
   def initialize(dates_of_work)
     @dates_for_display = dates_of_work.collect {|d| display_label(d)}
