@@ -16,7 +16,7 @@ describe DateDisplayFormatter, type: :model do
       Work::DateOfWork.new(start: "1780", start_qualifier: "century") => "Century starting 1780",
       Work::DateOfWork.new(start: "way back when", start_qualifier: "century") => "Century starting way back when",
       Work::DateOfWork.new(start: "1700", start_qualifier: "century") => "1700s",
-      Work::DateOfWork.new(start: "the end of time", note: "For real!") => "After the end of time (For real!)",
+      Work::DateOfWork.new(start: "the end of time", start_qualifier: "after", note: "For real!") => "After the end of time (For real!)",
       Work::DateOfWork.new(start: "the end of time", start_qualifier: "circa") => "Circa the end of time",
       Work::DateOfWork.new(start: "1800", finish: "1900", start_qualifier: "century", note: "Note 1") => "1800s – 1900 (Note 1)",
       Work::DateOfWork.new(start: "1800", finish: "1900", start_qualifier: "century", note: "Note 2") => "1800s – 1900 (Note 2)",
