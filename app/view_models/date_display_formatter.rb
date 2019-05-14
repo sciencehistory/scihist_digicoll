@@ -48,7 +48,7 @@ class DateDisplayFormatter
     date_string
   end
 
-  def fix_month(date_given)
+  def numeric_month_to_abbr(date_given)
     return date_given if date_given.blank?
     ymd_arr = date_given.split("-")
     return date_given if ymd_arr.length < 2
@@ -66,7 +66,7 @@ class DateDisplayFormatter
       int_date_value = nil
     end
 
-    date=fix_month(date)
+    date = numeric_month_to_abbr(date)
 
     if qualifier == (BEFORE) || qualifier == (AFTER) || qualifier == (CIRCA)
       "#{qualifier} #{date}"
