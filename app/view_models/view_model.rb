@@ -30,6 +30,9 @@
 #       let(:rendered) { Nokogiri::HTML.fragment( IndexResultDisplay.new(work).display ) }
 #       expect(rendered).to have_text("some string")
 #       expect(rendered).to have_selector("li", text: "text contents")
+#
+#   * Note you have to have draper clean up it's testing context when using draper in view/helper
+#     tests. https://github.com/drapergem/draper#view-context-leakage
 class ViewModel < Draper::Decorator
   # we intentionally do NOT do draper `delegate_all`, but intentionally DO
   # do include all Rails helpers in the ViewModel with:
