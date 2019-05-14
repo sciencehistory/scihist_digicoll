@@ -49,6 +49,11 @@ RSpec.configure do |config|
   config.define_derived_metadata file_path: %r{spec/view_models} do |metadata|
     metadata[:type] = :helper
   end
+  # cleanup draper test environment for view and helper too, since our
+  # view model use means we may use draper there.
+  # https://github.com/drapergem/draper#view-context-leakage
+  config.before(:each, type: :view) { Draper::ViewContext.clear! }
+  config.before(:each, type: :helper) { Draper::ViewContext.clear! }
 
   # This option will default to `:apply_to_host_groups` in RSpec 4 (and will
   # have no way to turn it off -- the option exists only for backwards
