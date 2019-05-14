@@ -25,7 +25,7 @@ describe DateDisplayFormatter, type: :model do
       Work::DateOfWork.new(start: "1920", finish: "1928-11", start_qualifier: "decade", note: "Note 5") => "1920s – 1928-Nov (Note 5)",
       Work::DateOfWork.new(start_qualifier: "undated") => "Undated"
     }.each do |input, output|
-      it "should format '#{input.to_s}' as #{output.inspect}" do
+      it "should format '#{input.to_json}' as #{output.inspect}" do
         expect(DateDisplayFormatter.new([input]).display_dates).to eq([output])
       end
     end
