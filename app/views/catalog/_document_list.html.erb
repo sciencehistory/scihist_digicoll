@@ -2,6 +2,6 @@
 
 <ul id="documents" class="list-unstyled documents-<%= document_index_view_type %>">
   <% documents.collect(&:model).compact.each do |model| %>
-    <%= WorkResultDisplay.new(model).display %>
+    <%= view_model_class_for(model).new(model).display %>
   <% end %>
 </ul>
