@@ -48,19 +48,6 @@ class DateDisplayFormatter
     date_string
   end
 
-
-  def capitalize (str)
-    if str == nil
-      nil
-    elsif str.blank?
-      str
-    elsif str.length == 1
-      str.capitalize
-    else
-      str.slice(0,1).capitalize + str.slice(1..-1)
-    end
-  end
-
   def fix_month(date_given)
     return date_given if date_given.blank?
     ymd_arr = date_given.split("-")
