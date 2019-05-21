@@ -1,7 +1,7 @@
 # Takes an array of `Work::Date` objects (generally from `some_work.date_of_work`),
 # and formats them for display to the user.
 #
-#     DateDisplayFormatter(work.date_of_work).display_dates
+#     DateDisplayFormatter.new(work.date_of_work).display_dates
 #     # => Array of strings, each being a human presentable date/range, like "1901", or "after 1950 -- circa 1990"
 #
 # Copied from old app chf-sufia/app/presenters/chf/dates_of_work_for_display.rb
