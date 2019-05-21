@@ -23,6 +23,8 @@ class DateDisplayFormatter
     @dates_for_display
   end
 
+  private
+
   def display_label(date_of_work)
     start_string = qualified_date(date_of_work.start,
       date_of_work.start_qualifier)
