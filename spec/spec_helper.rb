@@ -45,9 +45,9 @@ RSpec.configure do |config|
     mocks.verify_partial_doubles = true
   end
 
-  # automatically give specs in view_models type :helper
+  # automatically give specs in view_models type :decorator so draper support is there
   config.define_derived_metadata file_path: %r{spec/view_models} do |metadata|
-    metadata[:type] = :helper
+    metadata[:type] = :decorator
   end
   # cleanup draper test environment for view and helper too, since our
   # view model use means we may use draper there.

@@ -22,17 +22,43 @@
 #       IndexResultDisplay.new(some_model, context: { whatever: "you want"})
 #   Those keys will be available in the view model as `context[:whatever]`
 #
-# * When we write tests for a 'ViewModel', we make them rspec type :view or :helper, either
-#   seems to work fine. Those will be set up by rspec to have a view_context for our draper-based
-#   view model. You can set the result of a view model render method to a variable or 'let' declaration,
-#   say "rendered" for consistency with real view specs. If you put it in a Nokogiri object, you
-#   can test it capybara matchers:
-#       let(:rendered) { Nokogiri::HTML.fragment( IndexResultDisplay.new(work).display ) }
-#       expect(rendered).to have_text("some string")
-#       expect(rendered).to have_selector("li", text: "text contents")
 #
-#   * Note you have to have draper clean up it's testing context when using draper in view/helper
-#     tests. https://github.com/drapergem/draper#view-context-leakage
+# ## Testing View Models
+#
+# When writing a spec for a 'view model', you can use the rspec :decorator type (added by draper), or the
+# :view or :helper type (built into rspec) -- all should work.
+#
+# In any case, you'll want to test the output, usually HTML. Unlike standard Rails "view" tests, you don't
+# automatically have output in a variable called "rendered", but you can just assign the output yourself
+# to a local variable or an rspec `let` block, parsed with Nokogiri.
+# Assign to a variable called `rendered` or whatever else you like.
+# Then you can use the rspec `have_selector` or `have_text` matchers (which are actually provided by the
+# capybara gem).
+#
+#     let(:rendered) { Nokogiri::HTML.fragment( WorkResultDisplay.new(work).display ) }
+#     it "does something" do
+#       expect(rendered).to have_text("succeeded")
+#       expect(rendered).to have_selector("ul > li.some-class", text: "some text")
+#     end
+#
+# It is all a bit manual, perhaps we can provide some glue to eliminate the boilerplate later.
+#
+# ## Automatic test setup
+#
+# In our spec_helper.rb, we tell rspec that for any tests in "spec/view_models", the `:decorator`
+# spec type should be used as default:
+#
+#     config.define_derived_metadata file_path: %r{spec/view_models} do |metadata|
+#       metadata[:type] = :decorator
+#     end
+#
+# And, just in case we end up using any of our 'view models' in a :helper or :view test,
+# we tell draper to clean up it's test context in those types of specs, per
+# [draper documentaton](https://github.com/drapergem/draper#view-context-leakage). We did observe
+# "leakage" (oddly failing specs) without this cleanup.
+#
+#     config.before(:each, type: :view) { Draper::ViewContext.clear! }
+#     config.before(:each, type: :helper) { Draper::ViewContext.clear! }
 class ViewModel < Draper::Decorator
   # we intentionally do NOT do draper `delegate_all`, but intentionally DO
   # do include all Rails helpers in the ViewModel with:

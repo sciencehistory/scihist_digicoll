@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe WorkResultDisplay, type: :helper do
+describe WorkResultDisplay do
   let(:parent_work) { create(:work) }
   let(:work) { FactoryBot.create(:work, :with_complete_metadata,
     parent: parent_work,

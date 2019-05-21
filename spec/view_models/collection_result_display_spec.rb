@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe CollectionResultDisplay, type: :helper do
+describe CollectionResultDisplay do
 
   let(:collection) { FactoryBot.create(:collection) }
   let(:rendered) { Nokogiri::HTML.fragment(described_class.new(collection).display) }
