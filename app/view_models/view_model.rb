@@ -52,6 +52,10 @@
 # It may be useful to use Draper's `delegate` method to have the View Model delegate
 # some methods to the model.
 #
+# A template used by a View Model should never call Rails `render` itself to render
+# partials -- that'll just get confusing. It can call other View Models though,
+# perhaps through methods on it's own owning View Model.
+#
 # We could enhance the View Model superclass to automatically add `view` and/or
 # `model` args to the `render` call -- or to try to do fancier things with
 # automatic path lookup for View Model templates -- but for now we're keeping it
