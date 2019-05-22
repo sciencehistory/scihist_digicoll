@@ -8,6 +8,11 @@ class CollectionResultDisplay < ViewModel
     ["Collection"]
   end
 
+  # none for collections
+  def display_dates
+    []
+  end
+
   # TODO, unify and eliminate from here
   def display_permission_badge
     ""
