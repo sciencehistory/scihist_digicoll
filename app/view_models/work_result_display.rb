@@ -13,6 +13,10 @@ class WorkResultDisplay < ViewModel
     )
   end
 
+  def display_dates
+    @display_dates = DateDisplayFormatter.new(model.date_of_work).display_dates
+  end
+
   # An array of elements for "part of" listing, includes 'parent' in a link,
   # or "source" in italics
   def part_of_elements
