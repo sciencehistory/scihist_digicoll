@@ -46,7 +46,7 @@ RSpec.configure do |config|
   end
 
   # automatically give specs in view_models type :decorator so draper support is there
-  config.define_derived_metadata file_path: %r{spec/view_models} do |metadata|
+  config.define_derived_metadata file_path: %r{spec/presenters} do |metadata|
     metadata[:type] = :decorator
   end
   # cleanup draper test environment for view and helper too, since our

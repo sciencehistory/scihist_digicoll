@@ -1,6 +1,6 @@
 class CollectionResultDisplay < ViewModel
   def display
-    render "/view_models/index_result", model: model, view: self
+    render "/presenters/index_result", model: model, view: self
   end
 
   # TODO, link to Collections page, when it exists

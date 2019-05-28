@@ -2,7 +2,7 @@ class WorkResultDisplay < ViewModel
   delegate :additional_title
 
   def display
-    render "/view_models/index_result", model: model, view: self
+    render "/presenters/index_result", model: model, view: self
   end
 
   def display_genres

@@ -1,6 +1,9 @@
 # A "View Model" as used here, is a ruby object for producing presentation output, usually HTML.
+# It is a kind of "presenter" -- we have other presenters that aren't "View Models", what we call
+# a "View Model" is a presenter that has access to Rails helper methods. But View Models live in
+# `./app/presenters`.
 #
-# This superclass uses the [draper](https://github.com/drapergem/draper) gem to give a View Model
+# This superclass uses the [draper](https://github.com/drapergem/draper) gem to provide
 # access to Rails helper methods (both standard Rails and local app), including the ability to render
 # a rails partial view template (ERB).
 #
@@ -33,8 +36,8 @@
 #
 # However, normal Rails `render` looks up partials based on the current controller, which
 # we don't really want to do for our View Models. So by convention, we put ERB templates
-# for View Models in `./app/views/view_models`, and call them from View Models with
-# `render "/view_models/name_of_template"`. (The template should generally be named
+# for View Models in `./app/views/presenters/`, and call them from View Models with
+# `render "/presenters/name_of_template"`. (The template should generally be named
 # after the View Model class; sub-directories can be used if desired).
 #
 # One of the benefits of view models is it makes it more manageable to minimize logic
@@ -44,7 +47,7 @@
 # we'll pass it in as `view`. We may also want to pass in the `model` (eg a Work)
 # for convenience, so the `render` call in a View Model may look like this:
 #
-#     render "/view_models/name_of_template", model: model, view: self
+#     render "/presenters/name_of_template", model: model, view: self
 #
 # Now, the View Model ERB template can call "helper" methods on the View Model
 # with `view.name_of_method`.  If you wanted to be even more 'pure', you could
@@ -102,10 +105,10 @@
 #
 # ## Automatic test setup
 #
-# In our spec_helper.rb, we tell rspec that for any tests in "spec/view_models", the `:decorator`
+# In our spec_helper.rb, we tell rspec that for any tests in "spec/presenters", the `:decorator`
 # spec type should be used as default:
 #
-#     config.define_derived_metadata file_path: %r{spec/view_models} do |metadata|
+#     config.define_derived_metadata file_path: %r{spec/presenters} do |metadata|
 #       metadata[:type] = :decorator
 #     end
 #
