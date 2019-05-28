@@ -1,4 +1,6 @@
 class CollectionResultDisplay < ViewModel
+  valid_model_type_names "Collection"
+
   def display
     render "/presenters/index_result", model: model, view: self
   end

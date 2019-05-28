@@ -1,4 +1,6 @@
 class WorkResultDisplay < ViewModel
+  valid_model_type_names "Work"
+
   delegate :additional_title
 
   def display
