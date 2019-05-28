@@ -5,10 +5,9 @@
 
 
     <div class="chf-results-list-item-thumb">
-      <%# render_thumbnail_tag generic_work %>
-      <%# link_to generic_work do %>
-        <%# tag "img", member_src_attributes(member: doc_presenter, size_key: :standard).merge(alt: "") %>
-      <%# end %>
+      <%= link_to view.link_to_href do %>
+        <%= ResultThumbDisplay.new(model.leaf_representative).display %>
+      <% end %>
       <%# doc_presenter.render_num_members %>
     </div>
 
