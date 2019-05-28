@@ -1,0 +1,85 @@
+<%# originally copied from chf_sufia app/views/curation_concerns/generic_works/_generic_work.html.erb
+    Modified for cleaner architecture using our draper-based "view models" %>
+
+<li id="document_<%# generic_work.to_param %>" class="chf-results-list-item document <%# render_document_class generic_work %>" itemscope itemtype="<%# generic_work.itemtype %>">
+
+
+    <div class="chf-results-list-item-thumb">
+      <%# render_thumbnail_tag generic_work %>
+      <%# link_to generic_work do %>
+        <%# tag "img", member_src_attributes(member: doc_presenter, size_key: :standard).merge(alt: "") %>
+      <%# end %>
+      <%# doc_presenter.render_num_members %>
+    </div>
+
+    <div class="chf-results-list-item-content">
+      <% if view.display_genres.present? %>
+        <div class="chf-results-list-item-genre">
+          <%= view.display_genres %>
+        </div>
+      <% end %>
+
+      <h2 class="chf-results-list-item-head brand-alt-h2" itemprop="name">
+        <%= link_to model.title, work_path(model), itemprop: "url" %>
+        <%= publication_badge(model) %>
+      </h2>
+
+      <%if view.additional_title.present? %>
+        <div class="chf-results-list-item-additional-titles">
+            <ul>
+              <% view.additional_title.each do |title| %>
+                <li><%= title %></li>
+              <% end %>
+            </ul>
+        </div>
+      <% end %>
+
+      <% if view.part_of_elements.present? %>
+        <div class="chf-results-list-item-parents">
+          <ul>
+            <% view.part_of_elements.each do |element| %>
+              <li>
+                Part of <%= element %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <% if view.display_dates.present? %>
+        <div class="chf-results-list-item-date">
+          <ul>
+            <% view.display_dates.each do |display_interval| %>
+              <li>
+                <span itemprop="date_created">
+                  <%= display_interval %>
+                </span>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+
+      <%# if doc_presenter.has_values_for?(Solrizer.solr_name("description", :stored_searchable)) %>
+        <div class="chf-results-list-item-description">
+          <%# doc_presenter.description.each do |description| %>
+            <%# format_description(description, truncate: true) %>
+          <%# end %>
+        </div>
+      <%# end %>
+
+      <ul class="list-unstyled chf-results-list-values">
+        <%# index_fields(generic_work).each do |field_name, field| -%>
+          <%# if should_render_index_field? generic_work, field %>
+            <li>
+              <span class="attribute-label"><%# render_index_field_label generic_work, field: field_name %></span>
+              <%# doc_presenter.field_value field_name %>
+            </li>
+          <%# end %>
+        <%# end %>
+      </ul>
+
+    </div>
+</li>
+

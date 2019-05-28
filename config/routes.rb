@@ -32,6 +32,9 @@ Rails.application.routes.draw do
     delete 'logout', to: 'devise/sessions#destroy', as: :destroy_user_session
   end
 
+  # public-facing routes
+  resources :works, only: [:show]
+
 
   ##
   # Blacklight-generated routes, that were then modified a bit by us to take
