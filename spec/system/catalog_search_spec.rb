@@ -13,14 +13,25 @@ describe CatalogController, solr: true, indexable_callbacks: true do
   let!(:collection) { create(:collection) }
   let!(:work_with_admin_note) { create(:work, admin_note: admin_note_text) }
 
-  # just a smoke test
-  it "loads" do
-    visit search_catalog_path(search_field: "all_fields")
+  # Creating real representatives with derivatives is a bit slow, only do it for our own
+  # smoke test.
+  describe "with real representative with derivatives" do
+    let!(:work1) { create(:work, representative: create(:asset, :inline_promoted_file)) }
+    let!(:collection) { create(:collection, representative: create(:asset, :inline_promoted_file)) }
 
-    expect(page).to have_content("1 - 3 of 3")
-    expect(page).to have_content(work1.title)
-    expect(page).to have_content(work_with_admin_note.title)
-    expect(page).to have_content(collection.title)
+    # just a smoke test
+    it "loads" do
+      visit search_catalog_path(search_field: "all_fields")
+
+      expect(page).to have_content("1 - 3 of 3")
+      expect(page).to have_content(work1.title)
+      expect(page).to have_content(work_with_admin_note.title)
+      expect(page).to have_content(collection.title)
+
+      # thumbs for work and collection
+      expect(page).to have_selector("img[src='#{work1.leaf_representative.derivative_for(:thumb_standard).url}']")
+      expect(page).to have_selector("img[src='#{collection.leaf_representative.derivative_for(:thumb_standard).url}']")
+    end
   end
 
   it "does not find admin note" do
