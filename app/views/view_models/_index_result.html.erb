@@ -21,7 +21,7 @@
 
       <h2 class="chf-results-list-item-head brand-alt-h2" itemprop="name">
         <%= link_to model.title, work_path(model), itemprop: "url" %>
-        <%= view.display_permission_badge %>
+        <%= publication_badge(model) %>
       </h2>
 
       <%if view.additional_title.present? %>
