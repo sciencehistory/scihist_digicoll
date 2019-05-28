@@ -26,4 +26,10 @@ class CollectionResultDisplay < ViewModel
     []
   end
 
+  # we don't have any Collection result display at present
+  def metadata_labels_and_values
+    {}.freeze
+  end
+
+
 end
