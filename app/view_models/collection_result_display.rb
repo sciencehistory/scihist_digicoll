@@ -13,11 +13,6 @@ class CollectionResultDisplay < ViewModel
     []
   end
 
-  # TODO, unify and eliminate from here
-  def display_permission_badge
-    ""
-  end
-
   def additional_title
     []
   end

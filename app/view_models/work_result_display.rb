@@ -28,16 +28,4 @@ class WorkResultDisplay < ViewModel
       end
     end
   end
-
-  # TODO, this needs to be shared with other places, move to helper? Unify with
-  # existing helper in ApplicationHelper#publication_badge?
-  def display_permission_badge
-    unless model.published
-      content_tag("small", class: "chf-results-list-item-permission") do
-        "private"
-      end
-    end
-  end
-
-
 end
