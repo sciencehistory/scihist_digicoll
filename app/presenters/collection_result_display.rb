@@ -8,6 +8,11 @@ class CollectionResultDisplay < ViewModel
     ["Collection"]
   end
 
+  # TODO, link to Collection detail page when it exists.
+  def link_to_href
+    "#"
+  end
+
   # none for collections
   def display_dates
     []
