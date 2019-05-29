@@ -1,4 +1,6 @@
 class CollectionResultDisplay < ViewModel
+  valid_model_type_names "Collection"
+
   def display
     render "/presenters/index_result", model: model, view: self
   end
@@ -25,5 +27,11 @@ class CollectionResultDisplay < ViewModel
   def part_of_elements
     []
   end
+
+  # we don't have any Collection result display at present
+  def metadata_labels_and_values
+    {}.freeze
+  end
+
 
 end

@@ -7,13 +7,7 @@
 #
 # leaf_representatives should be eager loaded to avoid n+1 queries in search results display.
 class ResultThumbDisplay < ViewModel
-  def initialize(model, *args)
-    unless model.nil? || model.kind_of?(Kithe::Asset)
-      raise ArgumentError.new("#{self.class.name} requires a Kithe::Asset as an argument. (Often a leaf_representative)")
-    end
-
-    super
-  end
+  valid_model_type_names "Kithe::Asset", "NilClass"
 
   def display
     # for non-pdf/image assets, we currently just return a placeholder. We could in future
