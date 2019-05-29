@@ -79,6 +79,10 @@ gem 'bootstrap4-kaminari-views'
 gem 'devise', "~> 4.5" # user accounts and login
 gem 'access-granted', "~> 1.0" # authorization
 
+# decorating and truncating html
+gem "rails_autolink"
+gem 'html_aware_truncation', '~> 1.0'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]

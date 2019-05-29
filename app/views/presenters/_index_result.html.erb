@@ -64,6 +64,7 @@
         <div class="chf-results-list-item-description">
           <%# doc_presenter.description.each do |description| %>
             <%# format_description(description, truncate: true) %>
+            <%= raw DescriptionDisplayFormatter.new(work.description, truncate:true).format %>
           <%# end %>
         </div>
       <%# end %>
