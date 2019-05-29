@@ -5,37 +5,43 @@ require 'rails_autolink'
 # DescriptionDisplayFormatter.new(work.description).format
 # DescriptionDisplayFormatter.new(work.description, truncate:true).format
 
-class DescriptionDisplayFormatter
+class DescriptionDisplayFormatter < ViewModel
 
-  def initialize(description, truncate: false)
-    @description = description
+  def initialize(model, options ={})
     # truncate: true is used in _index_result.html.erb .
-    @truncate = truncate ? true : false
+    @truncate = !! options.delete(:truncate)
+
+    super
   end
 
+  alias_method :description, :model
+
   def format
-    sanitize
-    truncate_description if @truncate
-    add_line_breaks
-    turn_bare_urls_into_links
-    @description.html_safe
+    result = sanitize(description)
+    if @truncate
+      result = truncate_description(result)
+    end
+    result = add_line_breaks(result)
+    result = turn_bare_urls_into_links(result)
+
+    result.html_safe
   end
 
   private
 
   # Sanitize the HTML. Should have been sanitized on input, but just to be safe.
-  def sanitize
-     @description = DescriptionSanitizer.new.sanitize(@description)
+  def sanitize(str)
+     DescriptionSanitizer.new.sanitize(str)
   end
 
   # Truncate, if requested.
-  def truncate_description
-    @description = HtmlAwareTruncation.truncate_html(@description, length: 220, separator: /\s/)
+  def truncate_description(str)
+    HtmlAwareTruncation.truncate_html(str, length: 220, separator: /\s/)
   end
 
   # Convert line breaks to paragraphs.
-  def add_line_breaks
-    @description = ActionController::Base.helpers.simple_format(@description, {}, sanitize: false)
+  def add_line_breaks(str)
+    simple_format(str, {}, sanitize: false)
   end
 
   # Create links out of bare URLs, and add external-link icons to them.
@@ -46,10 +52,9 @@ class DescriptionDisplayFormatter
   #
   # We may later decide to overhaul the content such that
   # the content contains no bare links.
-  def turn_bare_urls_into_links
-    icon = '<i class="fa fa-external-link" aria-hidden="true"></i>'
-    @description = ActionController::Base.helpers.auto_link(@description, sanitize: false) do |text|
-      "#{icon}#{('&nbsp;' + text)}"
+  def turn_bare_urls_into_links(str)
+    auto_link(str, sanitize: false) do |text|
+      "<i class=\"fa fa-external-link\" aria-hidden=\"true\"></i>&nbsp;#{text}"
     end
   end
 
