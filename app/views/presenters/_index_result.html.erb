@@ -68,16 +68,16 @@
         </div>
       <%# end %>
 
-      <ul class="list-unstyled chf-results-list-values">
-        <%# index_fields(generic_work).each do |field_name, field| -%>
-          <%# if should_render_index_field? generic_work, field %>
-            <li>
-              <span class="attribute-label"><%# render_index_field_label generic_work, field: field_name %></span>
-              <%# doc_presenter.field_value field_name %>
-            </li>
-          <%# end %>
-        <%# end %>
-      </ul>
+      <% if view.metadata_labels_and_values.present? %>
+        <ul class="list-unstyled chf-results-list-values">
+          <% view.metadata_labels_and_values.each do |field_label, field_values| -%>
+              <li>
+                <span class="attribute-label"><%= field_label %></span>
+                <%= safe_join(field_values, ", ") %>
+              </li>
+          <% end %>
+        </ul>
+      <% end %>
 
     </div>
 </li>
