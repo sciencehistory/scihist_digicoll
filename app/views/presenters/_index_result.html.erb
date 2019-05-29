@@ -63,7 +63,6 @@
       <%# if doc_presenter.has_values_for?(Solrizer.solr_name("description", :stored_searchable)) %>
         <div class="chf-results-list-item-description">
           <%# doc_presenter.description.each do |description| %>
-            <%# format_description(description, truncate: true) %>
             <%= raw DescriptionDisplayFormatter.new(work.description, truncate:true).format %>
           <%# end %>
         </div>
