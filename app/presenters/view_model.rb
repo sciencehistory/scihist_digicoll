@@ -69,7 +69,8 @@
 # Often a View Model will only need one argument passed in, often an ActiveRecord model object
 # of some kind. The Draper superclass assumes this use case as a happy path, so anything
 # with this View Model superclass can already take one argument in it's initializer,
-# which will be available in the View Model as `#model`.
+# which will be available in the View Model as `#model`. If you'd like to specify a whitelist
+# of allowed classes for the first 'model' arg, see `.valid_model_type_names` below.
 #
 # If you need additional parameters, one option is the standard draper feature of passing
 # in additional "context" like:
@@ -124,4 +125,43 @@ class ViewModel < Draper::Decorator
   # do include all Rails helpers in the ViewModel with:
   include Draper::LazyHelpers
 
+  def initializer(model, *other_args)
+    if self.class.valid_model_type_names
+      unless self.class.valid_model_type_names.any? { |t| model.kind_of?(t.constantize) }
+        raise ArgumentError.new("#{self.class.name} arg must be of one of type #{self.class.valid_model_arg_types.inspect}")
+      end
+    end
+
+    super
+  end
+
+  # A "macro" method you can use in your View Model sub-class to specify one or more
+  # class names (as Strings), to require that the first argument to the ViewModel initializer,
+  # the draper "model", be one of the mentioned classes.
+  #
+  # It's sometimes useful to allow `nil` to be passed to a View Model, to have special nil-handling
+  # handled inside the view model. If so, just specify the ruby stdlib `NilClass` as an allowed class.
+  #
+  # @example
+  #   class Something < ViewModel
+  #     valid_model_type_names "String"
+  #   end
+  #
+  # @example
+  #   class Something < ViewModel
+  #     valid_model_type_names "Collection", "NilClass"
+  #   end
+  #
+  # If you specify `valid_model_type_names`, and a caller tries to initialize a ViewModel
+  # subclass with an arg that isn't one of the allowed classes, an ArgumentError will be raised.
+  def self.valid_model_type_names(*args)
+    if args.present?
+      unless args.all?(String)
+        raise ArgumentError.new("All args to valid_model_type_names should be String class names, not #{args.inspect}")
+      end
+      @valid_model_type_names = args
+    end
+
+    @valid_model_type_names
+  end
 end
