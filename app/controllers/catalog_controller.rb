@@ -45,6 +45,12 @@ class CatalogController < ApplicationController
   end
   helper_method :view_model_class_for
 
+  # Used by our ViewModels for displaying results
+  def child_counter
+    @child_counter ||= ChildCountDisplayFetcher.new(@response.documents.collect(&:id))
+  end
+  helper_method :child_counter
+
   configure_blacklight do |config|
     ## Class for sending and receiving requests from a search index
     # config.repository_class = Blacklight::Solr::Repository

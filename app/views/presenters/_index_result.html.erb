@@ -8,7 +8,7 @@
       <%= link_to view.link_to_href do %>
         <%= ResultThumbDisplay.new(model.leaf_representative).display %>
       <% end %>
-      <%# doc_presenter.render_num_members %>
+      <%= view.display_num_children %>
     </div>
 
     <div class="chf-results-list-item-content">
