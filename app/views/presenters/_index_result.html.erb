@@ -60,13 +60,11 @@
       <% end %>
 
 
-      <%# if doc_presenter.has_values_for?(Solrizer.solr_name("description", :stored_searchable)) %>
+      <% if model.description.present? %>
         <div class="chf-results-list-item-description">
-          <%# doc_presenter.description.each do |description| %>
-            <%# format_description(description, truncate: true) %>
-          <%# end %>
+            <%= DescriptionDisplayFormatter.new(model.description, truncate:true).format %>
         </div>
-      <%# end %>
+      <% end %>
 
       <% if view.metadata_labels_and_values.present? %>
         <ul class="list-unstyled chf-results-list-values">
