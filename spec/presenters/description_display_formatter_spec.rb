@@ -26,11 +26,6 @@ describe DescriptionDisplayFormatter, type: :model do
     it "marks html safe" do
       expect(DescriptionDisplayFormatter.new("some input").format).to be_html_safe
     end
-
-    it "with an array, throws an ArgumentError" do
-      expect(DescriptionDisplayFormatter.new(["some input"]).format).to raise ArgumentError
-    end
-
   end
 
   describe "truncation" do
