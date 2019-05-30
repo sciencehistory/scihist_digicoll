@@ -594,7 +594,7 @@ DEPENDENCIES
   pry-byebug
   puma (~> 3.11)
   rails (~> 5.2.1)
-  rails_autolink
+  rails_autolink (~> 1.0)
   ransack (~> 2.1)
   resque (~> 1.0)
   resque-pool

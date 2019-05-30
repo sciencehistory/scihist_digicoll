@@ -13,6 +13,8 @@ describe DescriptionDisplayFormatter, type: :model do
       "Adds\n\nreturns\nproperly" => "<p>Adds</p>\n\n<p>returns\n<br />properly</p>",
       "Strips <goat>unwanted tags </goat>" => "<p>Strips unwanted tags </p>",
       "Adds links to http://www.randomurl.org" => "<p>Adds links to <a href=\"http://www.randomurl.org\"><i class=\"fa fa-external-link\" aria-hidden=\"true\"></i>&nbsp;http://www.randomurl.org</a></p>",
+      nil => "",
+      "" => "",
       untouched => untouched,
 
     }.each do |input, output|
@@ -23,6 +25,10 @@ describe DescriptionDisplayFormatter, type: :model do
 
     it "marks html safe" do
       expect(DescriptionDisplayFormatter.new("some input").format).to be_html_safe
+    end
+
+    it "with an array, throws an ArgumentError" do
+      expect(DescriptionDisplayFormatter.new(["some input"]).format).to raise ArgumentError
     end
 
   end
@@ -36,4 +42,6 @@ describe DescriptionDisplayFormatter, type: :model do
       expect(truncated_output.length).to be < long_html_string.length
     end
   end
+
+
 end

@@ -6,17 +6,20 @@ require 'rails_autolink'
 # DescriptionDisplayFormatter.new(work.description, truncate:true).format
 
 class DescriptionDisplayFormatter < ViewModel
+  valid_model_type_names 'String', 'NilClass'
 
   def initialize(model, options ={})
+
     # truncate: true is used in _index_result.html.erb .
     @truncate = !! options.delete(:truncate)
-
     super
+
   end
 
   alias_method :description, :model
 
   def format
+    return "".html_safe if description.blank?
     result = sanitize(description)
     if @truncate
       result = truncate_description(result)

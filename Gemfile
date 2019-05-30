@@ -80,7 +80,7 @@ gem 'devise', "~> 4.5" # user accounts and login
 gem 'access-granted', "~> 1.0" # authorization
 
 # decorating and truncating html
-gem "rails_autolink"
+gem "rails_autolink", '~> 1.0'
 gem 'html_aware_truncation', '~> 1.0'
 
 group :development, :test do
