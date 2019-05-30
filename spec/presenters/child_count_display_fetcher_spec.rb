@@ -6,7 +6,7 @@ describe ChildCountDisplayFetcher do
 
   describe "for Works" do
     describe "with published items" do
-      let(:item) { create(:work, members: [create(:work), create(:work)]) }
+      let(:item) { create(:work, members: [create(:work), create(:asset)]) }
 
       it "fetches member count" do
         expect(item_counter.member_count_for_friendlier_id(item.friendlier_id)).to eq(2)
