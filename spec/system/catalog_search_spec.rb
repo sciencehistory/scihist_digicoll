@@ -18,12 +18,14 @@ describe CatalogController, solr: true, indexable_callbacks: true do
   describe "with real representative with derivatives" do
     let!(:work1) do
       create(:work,
+        description: 'priceless work',
         representative: create(:asset, :inline_promoted_file),
         members: [create(:work), create(:work)])
     end
 
     let!(:collection) do
       create(:collection,
+        description: 'priceless collection',
         representative: create(:asset, :inline_promoted_file),
         contains: [work1] )
     end
@@ -36,6 +38,7 @@ describe CatalogController, solr: true, indexable_callbacks: true do
 
       within("#document_#{work1.friendlier_id}") do
         expect(page).to have_content(work1.title)
+        expect(page).to have_content(work1.description)
         expect(page).to have_content("2 items")
         expect(page).to have_selector("img[src='#{work1.leaf_representative.derivative_for(:thumb_standard).url}']")
       end
@@ -44,6 +47,7 @@ describe CatalogController, solr: true, indexable_callbacks: true do
 
       within("#document_#{collection.friendlier_id}") do
         expect(page).to have_content(collection.title)
+        expect(page).to have_content(collection.description)
         expect(page).to have_selector("img[src='#{collection.leaf_representative.derivative_for(:thumb_standard).url}']")
         expect(page).to have_content("1 item")
       end
