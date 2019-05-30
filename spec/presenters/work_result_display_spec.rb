@@ -18,6 +18,15 @@ describe WorkResultDisplay do
     end
   end
 
+  before do
+    # normally provided by CatalogController, the WorkResultDisplay does
+    # expect controller to provide this, we mock it here.
+    without_partial_double_verification do
+      allow(helpers).to receive(:child_counter).and_return(ChildCountDisplayFetcher.new([work.friendlier_id]))
+    end
+  end
+
+
   let(:parent_work) { create(:work) }
 
   let(:work) { FactoryBot.create(:work, :with_complete_metadata,
@@ -27,7 +36,8 @@ describe WorkResultDisplay do
     genre: ["Advertisements", "Artifacts"],
     additional_title: "An Additional Title",
     subject: ["Subject1", "Subject2"],
-    creator: [{category: "contributor", value: "Joe Smith"}, {category: "contributor", value: "Moishe Brown"}, {category: "interviewer", value: "Mary Sue"}]
+    creator: [{category: "contributor", value: "Joe Smith"}, {category: "contributor", value: "Moishe Brown"}, {category: "interviewer", value: "Mary Sue"}],
+    members: [create(:work)]
   )}
 
   let(:presenter) { described_class.new(work) }
@@ -51,6 +61,8 @@ describe WorkResultDisplay do
     expect(rendered).to have_selector("a", text: "Joe Smith")
     expect(rendered).to have_selector("a", text: "Moishe Brown")
     expect(rendered).to have_selector("a", text: "Mary Sue")
+
+    expect(rendered).to have_content("1 item")
   end
 
   describe "#metadata_labels_and_values" do
