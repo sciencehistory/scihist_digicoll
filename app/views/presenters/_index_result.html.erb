@@ -1,7 +1,7 @@
 <%# originally copied from chf_sufia app/views/curation_concerns/generic_works/_generic_work.html.erb
     Modified for cleaner architecture using our draper-based "view models" %>
 
-<li id="document_<%# generic_work.to_param %>" class="chf-results-list-item document <%# render_document_class generic_work %>" itemscope itemtype="<%# generic_work.itemtype %>">
+<li id="document_<%= model.friendlier_id %>" class="chf-results-list-item document <%# render_document_class generic_work %>" itemscope itemtype="<%# generic_work.itemtype %>">
 
 
     <div class="chf-results-list-item-thumb">
