@@ -177,6 +177,9 @@ GEM
       safe_yaml (~> 1.0.0)
     crass (1.0.4)
     database_cleaner (1.7.0)
+    db-query-matchers (0.9.0)
+      activesupport (>= 4.0, <= 6.0)
+      rspec (~> 3.0)
     declarative (0.0.10)
     declarative-option (0.1.0)
     deprecation (1.0.0)
@@ -415,6 +418,10 @@ GEM
     rsolr (2.2.1)
       builder (>= 2.1.2)
       faraday (>= 0.9.0)
+    rspec (3.8.0)
+      rspec-core (~> 3.8.0)
+      rspec-expectations (~> 3.8.0)
+      rspec-mocks (~> 3.8.0)
     rspec-core (3.8.0)
       rspec-support (~> 3.8.0)
     rspec-expectations (3.8.2)
@@ -580,6 +587,7 @@ DEPENDENCIES
   coffee-rails (~> 4.2)
   content_disposition
   database_cleaner (~> 1.7)
+  db-query-matchers (< 2.0)
   devise (~> 4.5)
   draper (~> 3.0)
   factory_bot_rails
