@@ -37,7 +37,7 @@ describe WorkResultDisplay do
     additional_title: "An Additional Title",
     subject: ["Subject1", "Subject2"],
     creator: [{category: "contributor", value: "Joe Smith"}, {category: "contributor", value: "Moishe Brown"}, {category: "interviewer", value: "Mary Sue"}],
-    members: [create(:work)]
+    members: [create(:asset), create(:asset)]
   )}
 
   let(:presenter) { described_class.new(work) }
@@ -62,7 +62,16 @@ describe WorkResultDisplay do
     expect(rendered).to have_selector("a", text: "Moishe Brown")
     expect(rendered).to have_selector("a", text: "Mary Sue")
 
-    expect(rendered).to have_content("1 item")
+    expect(rendered).to have_content("2 items")
+  end
+
+  describe "one child" do
+    let(:work) { create(:work, members: [create(:asset)])}
+
+    it "does not display num items" do
+      expect(rendered).not_to have_content("1 item")
+      expect(rendered).not_to have_content("item")
+    end
   end
 
   describe "#metadata_labels_and_values" do
