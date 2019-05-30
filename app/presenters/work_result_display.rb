@@ -27,7 +27,7 @@ class WorkResultDisplay < ViewModel
   # ChildCountDisplayFetcher. Provided by CatalogController.
   def display_num_children
     count = child_counter.display_count_for(model)
-    return "" unless count > 0
+    return "" unless count > 1
 
     content_tag("div", class: "chf-results-list-item-num-members") do
       number_with_delimiter(count) + ' item'.pluralize(count)
