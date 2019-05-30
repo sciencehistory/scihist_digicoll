@@ -33,17 +33,20 @@ describe CatalogController, solr: true, indexable_callbacks: true do
       visit search_catalog_path(search_field: "all_fields")
 
       expect(page).to have_content("1 - 5 of 5")
-      expect(page).to have_content(work1.title)
+
+      within("#document_#{work1.friendlier_id}") do
+        expect(page).to have_content(work1.title)
+        expect(page).to have_content("2 items")
+        expect(page).to have_selector("img[src='#{work1.leaf_representative.derivative_for(:thumb_standard).url}']")
+      end
+
       expect(page).to have_content(work_with_admin_note.title)
-      expect(page).to have_content(collection.title)
 
-      # thumbs for work and collection
-      expect(page).to have_selector("img[src='#{work1.leaf_representative.derivative_for(:thumb_standard).url}']")
-      expect(page).to have_selector("img[src='#{collection.leaf_representative.derivative_for(:thumb_standard).url}']")
-
-      # cheesy check for "Num items", not distinguishing in test which is work and which is collection
-      expect(page).to have_content("1 item")
-      expect(page).to have_content("2 items")
+      within("#document_#{collection.friendlier_id}") do
+        expect(page).to have_content(collection.title)
+        expect(page).to have_selector("img[src='#{collection.leaf_representative.derivative_for(:thumb_standard).url}']")
+        expect(page).to have_content("1 item")
+      end
     end
   end
 
