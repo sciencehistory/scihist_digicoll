@@ -242,6 +242,8 @@ GEM
     hashery (2.1.2)
     hashie (3.6.0)
     honeybadger (4.1.0)
+    html_aware_truncation (1.0.0)
+      nokogiri (~> 1.0)
     http (3.3.0)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
@@ -368,6 +370,8 @@ GEM
       nokogiri (>= 1.6)
     rails-html-sanitizer (1.0.4)
       loofah (~> 2.2, >= 2.2.2)
+    rails_autolink (1.1.6)
+      rails (> 3.1)
     railties (5.2.3)
       actionpack (= 5.2.3)
       activesupport (= 5.2.3)
@@ -580,6 +584,7 @@ DEPENDENCIES
   draper (~> 3.0)
   factory_bot_rails
   honeybadger (~> 4.0)
+  html_aware_truncation (~> 1.0)
   jbuilder (~> 2.5)
   jquery-rails (~> 4.3)
   kaminari (~> 1.0)
@@ -589,6 +594,7 @@ DEPENDENCIES
   pry-byebug
   puma (~> 3.11)
   rails (~> 5.2.1)
+  rails_autolink (~> 1.0)
   ransack (~> 2.1)
   resque (~> 1.0)
   resque-pool

@@ -16,8 +16,17 @@ describe CatalogController, solr: true, indexable_callbacks: true do
   # Creating real representatives with derivatives is a bit slow, only do it for our own
   # smoke test.
   describe "with real representative with derivatives" do
-    let!(:work1) { create(:work, representative: create(:asset, :inline_promoted_file)) }
-    let!(:collection) { create(:collection, representative: create(:asset, :inline_promoted_file)) }
+    let!(:work1) {
+      create(:work,
+        representative: create(:asset,
+        :inline_promoted_file),
+        description: 'priceless work')
+    }
+    let!(:collection) {
+      create(:collection,
+        representative: create(:asset, :inline_promoted_file),
+        description: 'priceless collection')
+    }
 
     # just a smoke test
     it "loads" do
@@ -25,8 +34,10 @@ describe CatalogController, solr: true, indexable_callbacks: true do
 
       expect(page).to have_content("1 - 3 of 3")
       expect(page).to have_content(work1.title)
+      expect(page).to have_content(work1.description)
       expect(page).to have_content(work_with_admin_note.title)
       expect(page).to have_content(collection.title)
+      expect(page).to have_content(collection.description)
 
       # thumbs for work and collection
       expect(page).to have_selector("img[src='#{work1.leaf_representative.derivative_for(:thumb_standard).url}']")
