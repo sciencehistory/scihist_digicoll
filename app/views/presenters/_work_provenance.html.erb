@@ -1,0 +1,16 @@
+<%= view.provenance_summary %>
+<% unless view.provenance_notes.nil? %>
+    <a data-toggle="collapse" href="#collapseProvenanceNotes"
+      role="button" aria-expanded="false"
+      aria-controls="collapseProvenanceNotes">Show notes</a>
+    <div class="collapse" id="collapseProvenanceNotes">
+      <%= view.provenance_notes %>
+    </div>
+<% end %>
+
+<%#
+  TODO: add css when we include this template.
+  #collapseProvenanceNotes {
+    margin-top: 1em;
+  }
+#>
