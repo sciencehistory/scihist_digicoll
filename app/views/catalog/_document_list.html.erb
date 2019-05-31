@@ -1,7 +1,9 @@
 <% # container for all documents in index list view -%>
 
 <ul id="documents" class="list-unstyled documents-<%= document_index_view_type %>">
+  <% child_counter = ChildCountDisplayFetcher.new(documents.collect(&:id)) %>
+
   <% documents.collect(&:model).compact.each do |model| %>
-    <%= view_model_class_for(model).new(model).display %>
+    <%= view_model_class_for(model).new(model, child_counter: child_counter).display %>
   <% end %>
 </ul>
