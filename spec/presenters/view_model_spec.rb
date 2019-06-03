@@ -20,6 +20,11 @@ describe ViewModel do
     expect {
       self.class::WidgetFormatter.new.format_the_widget
     }.to raise_error ArgumentError
+
+    expect {
+      self.class::WidgetFormatter.new.format_the_widget(123)
+    }.to raise_error ArgumentError
+
   end
 
 end
