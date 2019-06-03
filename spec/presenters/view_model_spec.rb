@@ -3,7 +3,7 @@ require 'rails_helper'
 describe ViewModel do
 
   class self::WidgetFormatter < ViewModel
-   valid_model_type_names 'String', 'NilClass'
+    valid_model_type_names 'String', 'NilClass'
     def format_the_widget
       return "formatted widget"
     end
