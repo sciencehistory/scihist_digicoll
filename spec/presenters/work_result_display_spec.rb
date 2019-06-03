@@ -18,14 +18,7 @@ describe WorkResultDisplay do
     end
   end
 
-  before do
-    # normally provided by CatalogController, the WorkResultDisplay does
-    # expect controller to provide this, we mock it here.
-    without_partial_double_verification do
-      allow(helpers).to receive(:child_counter).and_return(ChildCountDisplayFetcher.new([work.friendlier_id]))
-    end
-  end
-
+  let(:child_counter) { ChildCountDisplayFetcher.new([work.friendlier_id]) }
 
   let(:parent_work) { create(:work) }
 
@@ -40,7 +33,7 @@ describe WorkResultDisplay do
     members: [create(:asset), create(:asset)]
   )}
 
-  let(:presenter) { described_class.new(work) }
+  let(:presenter) { described_class.new(work, child_counter: child_counter) }
   let(:rendered) { Nokogiri::HTML.fragment(presenter.display) }
 
   it "displays" do

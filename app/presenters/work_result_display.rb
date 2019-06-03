@@ -1,12 +1,20 @@
 # Displays an element in search results for a "Work"
 #
-# * requires controller to provide a helper method `child_counter` that returns
-# a ChildCountDisplayFetcher for efficient fetching and provision of "N Items"
+# * requires a a ChildCountDisplayFetcher for efficient fetching and provision of "N Items"
 # child count on display.
 class WorkResultDisplay < ViewModel
   valid_model_type_names "Work"
 
   delegate :additional_title
+
+  attr_reader :child_counter
+
+  # @param work [Work]
+  # @param child_counter [ChildCountDisplayFetcher]
+  def initialize(work, child_counter:)
+    @child_counter = child_counter
+    super(work)
+  end
 
   def display
     render "/presenters/index_result", model: model, view: self
@@ -23,8 +31,6 @@ class WorkResultDisplay < ViewModel
     @display_dates = DateDisplayFormatter.new(model.date_of_work).display_dates
   end
 
-  # Requires helper method `child_counter` to be available, returning a
-  # ChildCountDisplayFetcher. Provided by CatalogController.
   def display_num_children
     count = child_counter.display_count_for(model)
     return "" unless count > 1
