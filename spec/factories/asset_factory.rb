@@ -1,6 +1,7 @@
 FactoryBot.define do
   factory :asset, class: Asset do
     title { 'Test title' }
+    published { true }
 
     trait :inline_promoted_file do
       file { File.open((Rails.root + "spec/test_support/images/30x30.png")) }

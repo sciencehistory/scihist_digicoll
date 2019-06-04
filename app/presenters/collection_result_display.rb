@@ -1,10 +1,18 @@
 # Displays an element in search results for a "Work"
 #
-# * requires controller to provide a helper method `child_counter` that returns
-# a ChildCountDisplayFetcher for efficient fetching and provision of "N Items"
+# * requires a ChildCountDisplayFetcher for efficient fetching and provision of "N Items"
 # child count on display.
 class CollectionResultDisplay < ViewModel
   valid_model_type_names "Collection"
+
+  attr_reader :child_counter
+
+  # @param collection [Collection]
+  # @param child_counter [ChildCountDisplayFetcher]
+  def initialize(collection, child_counter:)
+    @child_counter = child_counter
+    super(collection)
+  end
 
   def display
     render "/presenters/index_result", model: model, view: self

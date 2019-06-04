@@ -2,16 +2,9 @@ require 'rails_helper'
 
 describe CollectionResultDisplay do
   let(:collection) { FactoryBot.create(:collection, contains: [create(:work)]) }
-  let(:rendered) { Nokogiri::HTML.fragment(described_class.new(collection).display) }
+  let(:rendered) { Nokogiri::HTML.fragment(described_class.new(collection, child_counter: child_counter).display) }
 
-  before do
-    # normally provided by CatalogController, the WorkResultDisplay does
-    # expect controller to provide this, we mock it here.
-    without_partial_double_verification do
-      allow(helpers).to receive(:child_counter).and_return(ChildCountDisplayFetcher.new([collection.friendlier_id]))
-    end
-  end
-
+  let(:child_counter) { ChildCountDisplayFetcher.new([collection.friendlier_id]) }
 
   it "displays" do
     expect(rendered).to have_text("Collection") #genre
