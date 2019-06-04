@@ -125,10 +125,10 @@ class ViewModel < Draper::Decorator
   # do include all Rails helpers in the ViewModel with:
   include Draper::LazyHelpers
 
-  def initializer(model, *other_args)
+  def initialize(model, *other_args)
     if self.class.valid_model_type_names
       unless self.class.valid_model_type_names.any? { |t| model.kind_of?(t.constantize) }
-        raise ArgumentError.new("#{self.class.name} arg must be of one of type #{self.class.valid_model_arg_types.inspect}")
+        raise ArgumentError.new("#{self.class.name} arg must be of one of type #{self.class.valid_model_type_names.inspect}")
       end
     end
 
