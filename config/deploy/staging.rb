@@ -18,9 +18,15 @@ if credential_file && true
   ec2 = Aws::EC2::Resource.new(region:"#{aws_region}")
 #Server role keys should be the Role tag (assigned by ansible) that you want to deploy to. The array value is the list of capistrano roles that the server needs.
   server_roles.each do |server_application|
-#Service level is set manually here, maybe make it a variable further up to be easy to spot when making new stages? 
+#Service level is set manually here, maybe make it a variable further up to be easy to spot when making new stages?
 #The instance-state-code of 16 is a value from Amazon's docs for a running server. See: https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstances.html
-    ec2.instances({filters: [{name:'instance-state-code', values:["16"]},{name: 'tag:Application', values: [server_application]},{name: 'tag:Service_level', values: [service_level]}]}).each do |aws_server|
+  aws_instances = ec2.instances({filters: [{name:'instance-state-code', values:["16"]},{name: 'tag:Application', values: [server_application]},{name: 'tag:Service_level', values: [service_level]}]})
+
+  if aws_instances.count == 0
+     puts "\n\nWARNING: Can not find any deploy servers via AWS lookup from tags! Will not deploy to servers!\n\n"
+  end
+
+  aws_instances.each do |aws_server|
 #Search across the tags and find the one labeled capistrano_roles, tags are hashes with 2 values, key for tag name and value for tag value.
       capistrano_tag = aws_server.tags.select{|tag| tag["key"]=="Capistrano_roles"}
 #Turn the tag (via the value field in the hash) into an array
