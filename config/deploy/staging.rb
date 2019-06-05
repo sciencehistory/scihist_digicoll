@@ -36,6 +36,7 @@ if aws_instances.count == 0
    puts "\n\nWARNING: Can not find any deploy servers via AWS lookup from tags! Will not deploy to servers!\n\n"
 end
 
+puts "Fetching servers from AWS EC2 tag lookup...\n\n"
 aws_instances.each do |aws_server|
 #Search across the tags and find the one labeled capistrano_roles, tags are hashes with 2 values, key for tag name and value for tag value.
     capistrano_tag = aws_server.tags.select{|tag| tag["key"]=="Capistrano_roles"}
@@ -43,8 +44,11 @@ aws_instances.each do |aws_server|
     capistrano_roles = capistrano_tag[0][:value].split(',')
 #Deploy user is manually set here, see above comment about making it a variable.
     server aws_server.public_ip_address, user: 'digcol', roles: capistrano_roles
+
+    puts "  server #{aws_server.public_ip_address}, roles: #{capistrano_roles.collect(&:to_sym).collect(&:inspect).join(", ")}"
   end
 end
+puts "\n"
 
 
 # server-based syntax
