@@ -8,20 +8,22 @@ set :rails_env, 'production'
 
 
 
-secret_location = './aws_secrets.yml'
+
+
+credentials_path = './cap_aws_credentials.yml'
 server_roles = ["scihist_digicoll"]
 aws_region = "us-east-1"
 service_level = "staging"
 #Everything below here should be able to be turned into a method, the variables above may change based on server setup.
 
 #Checking for the needed credential file, which should overwrite any other ENV or file settings.
-unless File.file?(secret_location)
-  puts "AWS credential file aws_secrets.json is missing. Please add it to the base directory of the project."
+unless File.file?(credentials_path)
+  puts "AWS credential file #{credentials_path} is missing. Please add it, with keys AccessKeyId and SecretAccessKey, for the `capistrano_deploy` AWS user."
   exit
 end
 
 #Edit ec2 for region changes, right now we only use one region. Also needs to come after the credential steps otherwise [default] aws credentials in the .aws directory may be used if present leading to erratic behavior.
-creds= YAML.load_file(secret_location)
+creds= YAML.load_file(credentials_path)
 Aws.config[:credentials] = Aws::Credentials.new(creds['AccessKeyId'],creds['SecretAccessKey'])
 ec2 = Aws::EC2::Resource.new(region:"#{aws_region}")
 #Server role keys should be the Role tag (assigned by ansible) that you want to deploy to. The array value is the list of capistrano roles that the server needs.
