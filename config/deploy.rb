@@ -87,6 +87,10 @@ else
   set :slackistrano, false
 end
 
+# This is a no-op task, but our server definition script currently
+# outputs to console the server definitions, so a no-op task will do it.
+task :list_ec2_servers
+
 namespace :deploy do
 
   after :restart, :clear_cache do

@@ -144,6 +144,8 @@ We have set up capistrano to auto-discover what servers to deploy to, by using A
 
 To make this work, you need to have AWS credentaisl available -- for now, we use a special set of credentails just for cap deploy, the 'cap_deploy' user. You should get the credentails from Dan or AWS IAS console, and put them in a file at `./cap_aws_credentials.yml`. See/copy the example at [./cap_aws_credentials.yml.example](./cap_aws_credentials.yml.example).
 
+To list servers auto-discovered from EC2 without doing a deploy, run `cap staging list_ec2_servers` or `cap production list_ec2_servers`.
+
 ## Rake tasks
 
 ### Solr Data
