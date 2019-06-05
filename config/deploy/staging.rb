@@ -2,42 +2,46 @@
 require 'aws-sdk-ec2'
 require 'yaml'
 require 'aws-sdk-core'
+
 set :stage, :staging
 set :rails_env, 'production'
+
+
+
 secret_location = './aws_secrets.yml'
 server_roles = ["scihist_digicoll"]
 aws_region = "us-east-1"
 service_level = "staging"
 #Everything below here should be able to be turned into a method, the variables above may change based on server setup.
-credential_file = File.file?(secret_location)
+
 #Checking for the needed credential file, which should overwrite any other ENV or file settings.
-if credential_file && true
-#Edit ec2 for region changes, right now we only use one region. Also needs to come after the credential steps otherwise [default] aws credentials in the .aws directory may be used if present leading to erratic behavior.
-  creds= YAML.load_file(secret_location)
-  Aws.config[:credentials] = Aws::Credentials.new(creds['AccessKeyId'],creds['SecretAccessKey'])
-  ec2 = Aws::EC2::Resource.new(region:"#{aws_region}")
-#Server role keys should be the Role tag (assigned by ansible) that you want to deploy to. The array value is the list of capistrano roles that the server needs.
-  server_roles.each do |server_application|
-#Service level is set manually here, maybe make it a variable further up to be easy to spot when making new stages?
-#The instance-state-code of 16 is a value from Amazon's docs for a running server. See: https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstances.html
-  aws_instances = ec2.instances({filters: [{name:'instance-state-code', values:["16"]},{name: 'tag:Application', values: [server_application]},{name: 'tag:Service_level', values: [service_level]}]})
-
-  if aws_instances.count == 0
-     puts "\n\nWARNING: Can not find any deploy servers via AWS lookup from tags! Will not deploy to servers!\n\n"
-  end
-
-  aws_instances.each do |aws_server|
-#Search across the tags and find the one labeled capistrano_roles, tags are hashes with 2 values, key for tag name and value for tag value.
-      capistrano_tag = aws_server.tags.select{|tag| tag["key"]=="Capistrano_roles"}
-#Turn the tag (via the value field in the hash) into an array
-      capistrano_roles = capistrano_tag[0][:value].split(',')
-#Deploy user is manually set here, see above comment about making it a variable.
-      server aws_server.public_ip_address, user: 'digcol', roles: capistrano_roles
-    end
-  end
-else
+unless File.file?(secret_location)
   puts "AWS credential file aws_secrets.json is missing. Please add it to the base directory of the project."
   exit
+end
+
+#Edit ec2 for region changes, right now we only use one region. Also needs to come after the credential steps otherwise [default] aws credentials in the .aws directory may be used if present leading to erratic behavior.
+creds= YAML.load_file(secret_location)
+Aws.config[:credentials] = Aws::Credentials.new(creds['AccessKeyId'],creds['SecretAccessKey'])
+ec2 = Aws::EC2::Resource.new(region:"#{aws_region}")
+#Server role keys should be the Role tag (assigned by ansible) that you want to deploy to. The array value is the list of capistrano roles that the server needs.
+server_roles.each do |server_application|
+#Service level is set manually here, maybe make it a variable further up to be easy to spot when making new stages?
+#The instance-state-code of 16 is a value from Amazon's docs for a running server. See: https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstances.html
+aws_instances = ec2.instances({filters: [{name:'instance-state-code', values:["16"]},{name: 'tag:Application', values: [server_application]},{name: 'tag:Service_level', values: [service_level]}]})
+
+if aws_instances.count == 0
+   puts "\n\nWARNING: Can not find any deploy servers via AWS lookup from tags! Will not deploy to servers!\n\n"
+end
+
+aws_instances.each do |aws_server|
+#Search across the tags and find the one labeled capistrano_roles, tags are hashes with 2 values, key for tag name and value for tag value.
+    capistrano_tag = aws_server.tags.select{|tag| tag["key"]=="Capistrano_roles"}
+#Turn the tag (via the value field in the hash) into an array
+    capistrano_roles = capistrano_tag[0][:value].split(',')
+#Deploy user is manually set here, see above comment about making it a variable.
+    server aws_server.public_ip_address, user: 'digcol', roles: capistrano_roles
+  end
 end
 
 
