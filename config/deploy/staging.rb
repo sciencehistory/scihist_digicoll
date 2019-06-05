@@ -12,7 +12,6 @@ set :server_autodiscover_application, "scihist_digicoll"
 
 credentials_path = './cap_aws_credentials.yml'
 service_level = "staging"
-#Everything below here should be able to be turned into a method, the variables above may change based on server setup.
 
 #Checking for the needed credential file, which should overwrite any other ENV or file settings.
 unless File.file?(credentials_path)
@@ -20,15 +19,19 @@ unless File.file?(credentials_path)
   exit
 end
 
-#Edit ec2 for region changes, right now we only use one region. Also needs to come after the credential steps otherwise [default] aws credentials in the .aws directory may be used if present leading to erratic behavior.
+# need to set AWS credentials before doing anything else, or AWS will lookup credentials from other
+# default locations.
 creds= YAML.load_file(credentials_path)
 Aws.config[:credentials] = Aws::Credentials.new(creds['AccessKeyId'],creds['SecretAccessKey'])
 
 ec2 = Aws::EC2::Resource.new(region: (creds["Region"] || "us-east-1"))
-#Server role keys should be the Role tag (assigned by ansible) that you want to deploy to. The array value is the list of capistrano roles that the server needs.
 
-#Service level is set manually here, maybe make it a variable further up to be easy to spot when making new stages?
-#The instance-state-code of 16 is a value from Amazon's docs for a running server. See: https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstances.html
+# The instance-state-code of 16 is a value from Amazon's docs for a running server.
+# See: https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstances.html
+#
+# We look for all servers with that state-code, and tags saying they are in the
+# current application group, at the current service level (staging, production, etc).
+# We will be deploying to those servers.
 aws_instances = ec2.instances({
   filters: [
     {name:'instance-state-code', values:["16"]},
@@ -41,15 +44,14 @@ if aws_instances.count == 0
    puts "\n\nWARNING: Can not find any deploy servers via AWS lookup from tags! Will not deploy to servers!\n\n"
 end
 
-puts "Fetching servers from AWS EC2 tag lookup...\n\n"
+puts "Fetching servers from AWS EC2 tag lookup, from servers with tag:Application=#{fetch(:server_autodiscover_application)}...\n\n"
 aws_instances.each do |aws_server|
-#Search across the tags and find the one labeled capistrano_roles, tags are hashes with 2 values, key for tag name and value for tag value.
-  capistrano_tag = aws_server.tags.select{|tag| tag["key"]=="Capistrano_roles"}
-#Turn the tag (via the value field in the hash) into an array
-  capistrano_roles = capistrano_tag[0][:value].split(',')
-#Deploy user is manually set here, see above comment about making it a variable.
-  server aws_server.public_ip_address, user: 'digcol', roles: capistrano_roles
+  # Our servers in EC2 should have a "tag" with key "Capistrano_roles", that includes a
+  # comma-separated lis to of capistrano roles to target that server.
+  capistrano_roles = aws_server.tags.find {|tag| tag["key"]=="Capistrano_roles"}.value.split(",")
 
+  #Deploy user is manually set here, see above comment about making it a variable.
+  server aws_server.public_ip_address, user: 'digcol', roles: capistrano_roles
   puts "  server #{aws_server.public_ip_address}, roles: #{capistrano_roles.collect(&:to_sym).collect(&:inspect).join(", ")}"
 end
 
