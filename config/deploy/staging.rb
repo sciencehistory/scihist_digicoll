@@ -8,11 +8,12 @@ set :rails_env, 'production'
 set :ssh_user, "digcol"
 
 # cap variables used for AWS EC2 server autodiscover
-set :server_autodiscover_application, "scihist_digicoll"
+  set :server_autodiscover_application, "scihist_digicoll"
+  # We have things tagged in EC2 using 'staging' or 'production' the same values
+  # we use for capistrano stage.
+  set :server_autodiscover_service_level, fetch(:stage)
 
 credentials_path = './cap_aws_credentials.yml'
-service_level = "staging"
-
 #Checking for the needed credential file, which should overwrite any other ENV or file settings.
 unless File.file?(credentials_path)
   puts "AWS credential file #{credentials_path} is missing. Please add it, with keys AccessKeyId and SecretAccessKey, for the `capistrano_deploy` AWS user."
@@ -36,7 +37,7 @@ aws_instances = ec2.instances({
   filters: [
     {name:'instance-state-code', values:["16"]},
     {name: 'tag:Application', values: [fetch(:server_autodiscover_application)]},
-    {name: 'tag:Service_level', values: [service_level]}
+    {name: 'tag:Service_level', values: [fetch(:server_autodiscover_service_level)]}
   ]
 })
 
