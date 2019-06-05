@@ -12,7 +12,6 @@ set :rails_env, 'production'
 
 credentials_path = './cap_aws_credentials.yml'
 server_roles = ["scihist_digicoll"]
-aws_region = "us-east-1"
 service_level = "staging"
 #Everything below here should be able to be turned into a method, the variables above may change based on server setup.
 
@@ -25,7 +24,8 @@ end
 #Edit ec2 for region changes, right now we only use one region. Also needs to come after the credential steps otherwise [default] aws credentials in the .aws directory may be used if present leading to erratic behavior.
 creds= YAML.load_file(credentials_path)
 Aws.config[:credentials] = Aws::Credentials.new(creds['AccessKeyId'],creds['SecretAccessKey'])
-ec2 = Aws::EC2::Resource.new(region:"#{aws_region}")
+
+ec2 = Aws::EC2::Resource.new(region: (creds["Region"] || "us-east-1"))
 #Server role keys should be the Role tag (assigned by ansible) that you want to deploy to. The array value is the list of capistrano roles that the server needs.
 server_roles.each do |server_application|
 #Service level is set manually here, maybe make it a variable further up to be easy to spot when making new stages?
