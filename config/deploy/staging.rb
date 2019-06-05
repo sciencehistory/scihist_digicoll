@@ -7,11 +7,10 @@ set :stage, :staging
 set :rails_env, 'production'
 
 
-
-
+# cap variables used for AWS EC2 server autodiscover
+set :server_autodiscover_application, "scihist_digicoll"
 
 credentials_path = './cap_aws_credentials.yml'
-server_roles = ["scihist_digicoll"]
 service_level = "staging"
 #Everything below here should be able to be turned into a method, the variables above may change based on server setup.
 
@@ -27,10 +26,16 @@ Aws.config[:credentials] = Aws::Credentials.new(creds['AccessKeyId'],creds['Secr
 
 ec2 = Aws::EC2::Resource.new(region: (creds["Region"] || "us-east-1"))
 #Server role keys should be the Role tag (assigned by ansible) that you want to deploy to. The array value is the list of capistrano roles that the server needs.
-server_roles.each do |server_application|
+
 #Service level is set manually here, maybe make it a variable further up to be easy to spot when making new stages?
 #The instance-state-code of 16 is a value from Amazon's docs for a running server. See: https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstances.html
-aws_instances = ec2.instances({filters: [{name:'instance-state-code', values:["16"]},{name: 'tag:Application', values: [server_application]},{name: 'tag:Service_level', values: [service_level]}]})
+aws_instances = ec2.instances({
+  filters: [
+    {name:'instance-state-code', values:["16"]},
+    {name: 'tag:Application', values: [fetch(:server_autodiscover_application)]},
+    {name: 'tag:Service_level', values: [service_level]}
+  ]
+})
 
 if aws_instances.count == 0
    puts "\n\nWARNING: Can not find any deploy servers via AWS lookup from tags! Will not deploy to servers!\n\n"
@@ -39,15 +44,15 @@ end
 puts "Fetching servers from AWS EC2 tag lookup...\n\n"
 aws_instances.each do |aws_server|
 #Search across the tags and find the one labeled capistrano_roles, tags are hashes with 2 values, key for tag name and value for tag value.
-    capistrano_tag = aws_server.tags.select{|tag| tag["key"]=="Capistrano_roles"}
+  capistrano_tag = aws_server.tags.select{|tag| tag["key"]=="Capistrano_roles"}
 #Turn the tag (via the value field in the hash) into an array
-    capistrano_roles = capistrano_tag[0][:value].split(',')
+  capistrano_roles = capistrano_tag[0][:value].split(',')
 #Deploy user is manually set here, see above comment about making it a variable.
-    server aws_server.public_ip_address, user: 'digcol', roles: capistrano_roles
+  server aws_server.public_ip_address, user: 'digcol', roles: capistrano_roles
 
-    puts "  server #{aws_server.public_ip_address}, roles: #{capistrano_roles.collect(&:to_sym).collect(&:inspect).join(", ")}"
-  end
+  puts "  server #{aws_server.public_ip_address}, roles: #{capistrano_roles.collect(&:to_sym).collect(&:inspect).join(", ")}"
 end
+
 puts "\n"
 
 
