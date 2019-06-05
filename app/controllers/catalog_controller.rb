@@ -3,6 +3,8 @@
 require 'kithe/blacklight_tools/bulk_loading_search_service'
 
 class CatalogController < ApplicationController
+
+  include BlacklightRangeLimit::ControllerOverride
   # Blacklight wanted Blacklight::Controller included in ApplicationController,
   # we do it just here instead.
   include Blacklight::Controller
@@ -28,7 +30,20 @@ class CatalogController < ApplicationController
 
   self.search_service_class = Kithe::BlacklightTools::BulkLoadingSearchService
   Kithe::BlacklightTools::BulkLoadingSearchService.bulk_load_scope =
-    -> { includes(:derivatives, leaf_representative: :derivatives)  }
+    -> { includes(:derivatives, :parent, leaf_representative: :derivatives)  }
+
+  # What ViewModel class to use for a given search result on the results screen, for
+  # Work or Collection. Called by _document_list.
+  def view_model_class_for(model)
+    if model.kind_of?(Work)
+      WorkResultDisplay
+    elsif model.kind_of?(Collection)
+      CollectionResultDisplay
+    else
+      raise ArgumentError.new("Don't know proper search results ViewModel class for #{model}")
+    end
+  end
+  helper_method :view_model_class_for
 
   configure_blacklight do |config|
     ## Class for sending and receiving requests from a search index
@@ -110,6 +125,7 @@ class CatalogController < ApplicationController
 
     # The "show: :current_user" arg lets us limit facets to only showing up if someone is logged in
 
+    config.add_facet_field "year_facet_isim", label: "Date", range: true
     config.add_facet_field "subject_facet", label: "Subject", limit: 5
     config.add_facet_field "creator_facet", label: "Creator", limit: 5
     config.add_facet_field "genre_facet", label: "Genre", limit: 5

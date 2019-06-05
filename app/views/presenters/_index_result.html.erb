@@ -1,0 +1,82 @@
+<%# originally copied from chf_sufia app/views/curation_concerns/generic_works/_generic_work.html.erb
+    Modified for cleaner architecture using our draper-based "view models" %>
+
+<li id="document_<%= model.friendlier_id %>" class="chf-results-list-item document <%# render_document_class generic_work %>" itemscope itemtype="<%# generic_work.itemtype %>">
+
+
+    <div class="chf-results-list-item-thumb">
+      <%= link_to view.link_to_href do %>
+        <%= ResultThumbDisplay.new(model.leaf_representative).display %>
+      <% end %>
+      <%= view.display_num_children %>
+    </div>
+
+    <div class="chf-results-list-item-content">
+      <% if view.display_genres.present? %>
+        <div class="chf-results-list-item-genre">
+          <%= view.display_genres %>
+        </div>
+      <% end %>
+
+      <h2 class="chf-results-list-item-head brand-alt-h2" itemprop="name">
+        <%= link_to model.title, work_path(model), itemprop: "url" %>
+        <%= publication_badge(model) %>
+      </h2>
+
+      <%if view.additional_title.present? %>
+        <div class="chf-results-list-item-additional-titles">
+            <ul>
+              <% view.additional_title.each do |title| %>
+                <li><%= title %></li>
+              <% end %>
+            </ul>
+        </div>
+      <% end %>
+
+      <% if view.part_of_elements.present? %>
+        <div class="chf-results-list-item-parents">
+          <ul>
+            <% view.part_of_elements.each do |element| %>
+              <li>
+                Part of <%= element %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <% if view.display_dates.present? %>
+        <div class="chf-results-list-item-date">
+          <ul>
+            <% view.display_dates.each do |display_interval| %>
+              <li>
+                <span itemprop="date_created">
+                  <%= display_interval %>
+                </span>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+
+      <% if model.description.present? %>
+        <div class="chf-results-list-item-description">
+            <%= DescriptionDisplayFormatter.new(model.description, truncate:true).format %>
+        </div>
+      <% end %>
+
+      <% if view.metadata_labels_and_values.present? %>
+        <ul class="list-unstyled chf-results-list-values">
+          <% view.metadata_labels_and_values.each do |field_label, field_values| -%>
+              <li>
+                <span class="attribute-label"><%= field_label %></span>
+                <%= safe_join(field_values, ", ") %>
+              </li>
+          <% end %>
+        </ul>
+      <% end %>
+
+    </div>
+</li>
+

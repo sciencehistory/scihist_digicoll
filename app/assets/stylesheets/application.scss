@@ -3,7 +3,13 @@
  *
  */
 
-/* Custom bootstrap variables must be set or imported *before* bootstrap. */
+/*
+ * Used by blacklight_range_limit
+ * Sadly via sproxkets instead of SASS like below
+ *
+ *= require  'blacklight_range_limit'
+*/
+
 @import "bootstrap";
 
 /* Blacklight 7 generator assumed a "blacklight.scss" would be required with sprockets.

@@ -77,6 +77,11 @@
       </ul>
     </dd>
 
+    <dt>Provenance</dt>
+    <dd>
+      <%= work.provenance%>
+    </dd>
+
     <dt>Date</dt>
     <dd>
       <ul class="list-unstyled">
@@ -142,7 +147,7 @@
 
     <dt>Description</dt>
     <dd>
-      <%= work.description %>
+      <%= DescriptionDisplayFormatter.new(work.description).format %>
     </dd>
 
     <dt>Inscription</dt>
