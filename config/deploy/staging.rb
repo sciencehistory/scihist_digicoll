@@ -19,13 +19,12 @@ unless File.file?(credentials_path)
   puts "AWS credential file #{credentials_path} is missing. Please add it, with keys AccessKeyId and SecretAccessKey, for the `capistrano_deploy` AWS user."
   exit
 end
+aws_credentials = YAML.load_file(credentials_path)
 
 # need to set AWS credentials before doing anything else, or AWS will lookup credentials from other
 # default locations.
-creds= YAML.load_file(credentials_path)
-Aws.config[:credentials] = Aws::Credentials.new(creds['AccessKeyId'],creds['SecretAccessKey'])
-
-ec2 = Aws::EC2::Resource.new(region: (creds["Region"] || "us-east-1"))
+Aws.config[:credentials] = Aws::Credentials.new(aws_credentials['AccessKeyId'],aws_credentials['SecretAccessKey'])
+ec2 = Aws::EC2::Resource.new(region: (aws_credentials["Region"] || "us-east-1"))
 
 # The instance-state-code of 16 is a value from Amazon's docs for a running server.
 # See: https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeInstances.html
