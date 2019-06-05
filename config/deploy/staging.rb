@@ -5,7 +5,7 @@ require 'aws-sdk-core'
 
 set :stage, :staging
 set :rails_env, 'production'
-
+set :ssh_user, "digcol"
 
 # cap variables used for AWS EC2 server autodiscover
 set :server_autodiscover_application, "scihist_digicoll"
@@ -50,9 +50,8 @@ aws_instances.each do |aws_server|
   # comma-separated lis to of capistrano roles to target that server.
   capistrano_roles = aws_server.tags.find {|tag| tag["key"]=="Capistrano_roles"}.value.split(",")
 
-  #Deploy user is manually set here, see above comment about making it a variable.
-  server aws_server.public_ip_address, user: 'digcol', roles: capistrano_roles
-  puts "  server #{aws_server.public_ip_address}, roles: #{capistrano_roles.collect(&:to_sym).collect(&:inspect).join(", ")}"
+  server aws_server.public_ip_address, user: fetch(:ssh_user), roles: capistrano_roles
+  puts "  server '#{aws_server.public_ip_address}', roles: #{capistrano_roles.collect(&:to_sym).collect(&:inspect).join(", ")}"
 end
 
 puts "\n"
