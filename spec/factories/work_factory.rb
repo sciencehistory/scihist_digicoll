@@ -1,6 +1,7 @@
 FactoryBot.define do
   factory :work, class: Work do
     title { 'Test title' }
+    published { true }
     external_id do [
         Work::ExternalId.new({"value"=>"Past Perfect ID 1",   "category"=>"object"}),
         Work::ExternalId.new({"value"=>"Sierra Bib Number 1", "category"=>"bib"   }),

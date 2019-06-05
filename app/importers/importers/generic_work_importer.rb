@@ -111,7 +111,7 @@ module Importers
         'division' => 'department'
       }
 
-      %w(description format source rights rights_holder file_creator division admin_note).each do |k|
+      %w(description provenance format source rights rights_holder file_creator division admin_note).each do |k|
         next if @metadata[k].nil?
         v = metadata[k].class == String ? metadata[k] : metadata[k].first
         property_to_set = mapping.fetch(k, k)

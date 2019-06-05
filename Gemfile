@@ -8,6 +8,9 @@ gem 'rails', '~> 5.2.1'
 gem 'webpacker', '~> 3.5'
 
 gem "blacklight", "~> 7.0", ">= 7.1.0.alpha"
+gem "blacklight_range_limit", "~> 7.0" # version sync'd with blacklight
+
+gem "draper", "~> 3.0" # "decorators", which we use as view models
 
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
@@ -76,6 +79,10 @@ gem 'bootstrap4-kaminari-views'
 gem 'devise', "~> 4.5" # user accounts and login
 gem 'access-granted', "~> 1.0" # authorization
 
+# decorating and truncating html
+gem "rails_autolink", '~> 1.0'
+gem 'html_aware_truncation', '~> 1.0'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]
@@ -106,6 +113,7 @@ group :test do
   gem 'factory_bot_rails'
   gem "database_cleaner", "~> 1.7"
   gem "webmock", "~> 3.5"
+  gem "db-query-matchers", "< 2.0"
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
