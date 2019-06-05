@@ -1,7 +1,8 @@
 #Using the aws-sdk to locate servers via the Role tag and deploy to them.
 require 'aws-sdk-ec2'
-require 'yaml'
 require 'aws-sdk-core'
+require 'yaml'
+require 'pastel'
 
 set :stage, :staging
 set :rails_env, 'production'
@@ -12,6 +13,8 @@ set :ssh_user, "digcol"
   # We have things tagged in EC2 using 'staging' or 'production' the same values
   # we use for capistrano stage.
   set :server_autodiscover_service_level, fetch(:stage)
+  # Expect all of these to be set, or we will warn.
+  set :server_autodiscover_expected_roles, [:web, :app, :db, :jobs, :solr, :cron]
 
 credentials_path = './cap_aws_credentials.yml'
 #Checking for the needed credential file, which should overwrite any other ENV or file settings.
@@ -40,21 +43,28 @@ aws_instances = ec2.instances({
   ]
 })
 
-if aws_instances.count == 0
-   puts "\n\nWARNING: Can not find any deploy servers via AWS lookup from tags! Will not deploy to servers!\n\n"
-end
+roles_defined = Set.new
 
-puts "Fetching servers from AWS EC2 tag lookup, from servers with tag:Application=#{fetch(:server_autodiscover_application)}...\n\n"
+puts "Fetching servers from AWS EC2 tag lookup, from servers with tag:Application='#{fetch(:server_autodiscover_application)}'   ...\n\n"
 aws_instances.each do |aws_server|
   # Our servers in EC2 should have a "tag" with key "Capistrano_roles", that includes a
   # comma-separated lis to of capistrano roles to target that server.
   capistrano_roles = aws_server.tags.find {|tag| tag["key"]=="Capistrano_roles"}.value.split(",")
+  roles_defined += capistrano_roles
 
   server aws_server.public_ip_address, user: fetch(:ssh_user), roles: capistrano_roles
   puts "  server '#{aws_server.public_ip_address}', roles: #{capistrano_roles.collect(&:to_sym).collect(&:inspect).join(", ")}"
+
 end
 
 puts "\n"
+
+missing_roles = fetch(:server_autodiscover_expected_roles).collect(&:to_s) - roles_defined.collect(&:to_s)
+unless missing_roles == []
+   puts Pastel.new.red("\n\nWARNING: Autodiscovered servers not found for roles: #{missing_roles.join(", ")}; may be an incomplete deploy")
+   puts "  => found servers for: #{roles_defined.empty? ? 'no roles' : roles_defined.join(', ')}\n\n"
+end
+
 
 
 # server-based syntax
