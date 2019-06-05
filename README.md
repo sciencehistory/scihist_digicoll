@@ -133,6 +133,17 @@ And `storage_mode` `production` is default in production, with different sorts o
 
 Regardless, object are generally stored in S3 (or file system) with paths beginning with the UUID pk of the Kithe::Asset they belong to.
 
+## Deployment
+
+We use [capistrano](https://github.com/capistrano/capistrano) to deploy our application.
+
+    bundle exec cap staging deploy
+    bundle exec cap production deploy
+
+We have set up capistrano to auto-discover what servers to deploy to, by using AWS api to list our EC2 servers, with certain tags. See our custom [CapServerAutodiscover](./config/deploy/lib/cap_server_autodiscover.rb) module for details.
+
+To make this work, you need to have AWS credentaisl available -- for now, we use a special set of credentails just for cap deploy, the 'cap_deploy' user. You should get the credentails from Dan or AWS IAS console, and put them in a file at `./cap_aws_credentials.yml`. See/copy the example at [./cap_aws_credentials.yml.example](./cap_aws_credentials.yml.example).
+
 ## Rake tasks
 
 ### Solr Data
