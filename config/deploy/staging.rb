@@ -7,7 +7,7 @@ set :rails_env, 'production'
 secret_location = './aws_secrets.yml'
 server_roles = ["scihist_digicoll"]
 aws_region = "us-east-1"
-service_level = "stage"
+service_level = "staging"
 #Everything below here should be able to be turned into a method, the variables above may change based on server setup.
 credential_file = File.file?(secret_location)
 #Checking for the needed credential file, which should overwrite any other ENV or file settings.
