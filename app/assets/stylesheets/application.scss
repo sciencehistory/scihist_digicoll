@@ -22,12 +22,10 @@
 */
 @import 'blacklight/blacklight';
 
-@import "local/admin";
-@import "local/edit";
-@import "local/attach_files";
-@import "local/member_sort";
-@import "local/error_pages";
-@import "local/member_list";
-
 @import "browse_everything/browse_everything_bootstrap4";
+
+// All files from 'local', will end up imported in alphabetical order.
+@import "local/**/*";
+
+
 
