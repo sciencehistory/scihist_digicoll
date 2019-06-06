@@ -83,14 +83,18 @@ RSpec.configure do |config|
   end
 
   # tag your context or text with :logged_in_user, and we'll use devise to
-  # do so
+  # do so. tag with `logged_in_user: :admin`, and it'll be an admin user.
   config.include Devise::Test::ControllerHelpers, type: :controller
   config.include Devise::Test::ControllerHelpers, type: :view
   config.include Devise::Test::IntegrationHelpers, type: :feature
   config.include Devise::Test::IntegrationHelpers, type: :system
   config.include Devise::Test::IntegrationHelpers, type: :integration
-  config.before(:each, :logged_in_user) do
-    sign_in FactoryBot.create(:user)
+  config.before(:each, :logged_in_user) do |example|
+    if example.metadata[:logged_in_user] == :admin
+      sign_in FactoryBot.create(:admin_user)
+    else
+      sign_in FactoryBot.create(:user)
+    end
   end
 
   # Let blocks or tests add (eg) `queue_adapter: :test` to determine Rails
