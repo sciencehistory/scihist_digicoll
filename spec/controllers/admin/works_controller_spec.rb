@@ -48,4 +48,39 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller do
     end
   end
 
+  context "protected to admin users" do
+    let(:work) { create(:work) }
+
+    context "with a logged-in non-admin user" do
+      it "can not publish" do
+        put :publish, params: { id: work.friendlier_id }
+        expect(response.status).to redirect_to(root_path)
+        expect(flash[:alert]).to match /You don't have permission/
+      end
+
+      it "can not delete" do
+        put :destroy, params: { id: work.friendlier_id }
+        expect(response.status).to redirect_to(root_path)
+        expect(flash[:alert]).to match /You don't have permission/
+      end
+    end
+
+    context "with a logged-in admin user", logged_in_user: :admin do
+      let(:work) { create(:work, published: false) }
+
+      it "can publish" do
+        put :publish, params: { id: work.friendlier_id }
+        expect(response.status).to redirect_to(admin_work_path(work))
+        expect(work.reload.published?).to be true
+      end
+
+      it "can delete" do
+        put :destroy, params: { id: work.friendlier_id }
+        expect(response.status).to redirect_to(admin_works_path)
+        expect(flash[:notice]).to match /was successfully destroyed/
+
+        expect { work.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+  end
 end
