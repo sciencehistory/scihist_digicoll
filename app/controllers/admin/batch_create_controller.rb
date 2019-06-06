@@ -1,4 +1,4 @@
-class Admin::BatchCreateController < ApplicationController
+class Admin::BatchCreateController < AdminController
 
   # Find views from works controller and assets controller too, since we re-use em
   def self.local_prefixes

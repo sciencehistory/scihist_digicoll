@@ -1,4 +1,4 @@
-class Admin::AssetsController < ApplicationController
+class Admin::AssetsController < AdminController
 
   # intended for staff, not sure if we will hide it
   def show
