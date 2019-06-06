@@ -40,7 +40,7 @@ module ScihistDigicoll
     end
 
     define_key :secret_key_base
-    define_key :service_level, allows: ["staging", "production", nil]
+    define_key :service_level, allows: ["stage", "prod", nil]
 
     # Rails-style db url, eg postgres://myuser:mypass@localhost/somedatabase
     define_key :rails_database_url
