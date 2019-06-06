@@ -1,23 +1,29 @@
-<%# Blacklight views, including CatalogController views which we use, kind of
-    make a lot of assumptions about the Rails view layout.
+<!DOCTYPE html>
 
-    It also has a lot of abstraction and cooperating multiple views/helpers,
-    meant to support surgical customization, but in fact making it rather
-    confusing.
+<%# This is our 'front-end' Rails layout; see also the 'admin' layout for back-end pages.
 
-    We customize by making our layout, based on the Blacklight layout,
-    but simplifying it, and then customizing it as desired.
+    This one _began_ with the out of the box Blacklight layout, but customizing
+    it to have less assumptions so we could let Blacklight have a lighter touch
+    on our app, and let non-Blacklight controllers use this layout.
 
     Based on a combination of:
+
     * https://github.com/projectblacklight/blacklight/blob/v7.0.1/app/views/layouts/blacklight.html.erb
     * https://github.com/projectblacklight/blacklight/blob/v7.0.1/app/views/layouts/blacklight/base.html.erb
 
-    TODO: Possibly using nested layouts, we may need to extract a layout for 'end-user-facing'
-    pages that aren't Blacklight? Or this one may work fine, and should actually be the default
-    layout for everyone?
+    Some Blacklight features that are still in here:
+
+    * `content_for(:sidebar)` to provide sidebar to the layout, triggering
+      top-level HTML making room for sidebar.
+    * providing the blacklight shared/modal with DOM for Bootstrap modal skeleton that
+      can be re-used by any JS that needs a modal.
+
+    Right now, even though we have separate layout for 'admin', we do _not_ segregate
+    our CSS and JS assets, only the single pipelined application.js and application.css,
+    with JS/CSS shared by both.  (Currently the general 'application' layout is not
+    loading our webpacker JS, but that could change.)
 %>
 
-<!DOCTYPE html>
 <html lang="en" class="no-js">
   <head>
     <meta charset="utf-8">
@@ -46,11 +52,15 @@
       <%= render 'front_end_admin_navbar' %>
     <% end %>
 
-    <div class="navbar-search navbar navbar-light bg-faded" role="navigation">
-      <div class="<%= container_classes %>">
-        <%= render_search_bar  %>
+    <%# TODO: remove blacklight-specific searchbar, for something that doens't depend
+        on Blacklight func being in every controller that may use this layout! %>
+    <% if respond_to?(:blacklight_config) %>
+      <div class="navbar-search navbar navbar-light bg-faded" role="navigation">
+        <div class="<%= container_classes %>">
+          <%= render_search_bar  %>
+        </div>
       </div>
-    </div>
+    <% end %>
 
     <div id="main-container" class="container-fluid">
       <%= content_for(:container_header) %>

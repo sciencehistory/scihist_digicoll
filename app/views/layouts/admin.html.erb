@@ -1,8 +1,16 @@
 <!DOCTYPE html>
 
-<%# since all we have is an admin section at present, this is more like the admin layout,
-will prob have to be extracted and separated from end-user layout at some point. Note
-it includes an admin menu.  %>
+<%# Layout for 'admin' portions of our pages. Compare to 'application' layout
+    used for public portions including Blacklight controllers.
+
+    This 'admin' layout puts an admin menu on every page, although with certain
+    Rails controller actions blacklisted from having the menu.
+
+    Right now, even though we have separate layout for 'admin', we do _not_ segregate
+    our CSS and JS assets, only the single pipelined application.js and application.css,
+    with JS/CSS shared by both.  (Currently the general 'application' layout is not
+    loading our webpacker JS, but that could change.)
+%>
 
 <html>
   <head>
