@@ -8,7 +8,13 @@ class ApplicationController < ActionController::Base
   #      layout :determine_layout if respond_to? :layout
 
   rescue_from "AccessGranted::AccessDenied" do |exception|
-    redirect_to root_path, alert: "You don't have permission to access requested page."
+    redirect_path = if current_user.present?
+      root_path
+    else
+      new_user_session_path
+    end
+
+    redirect_to redirect_path, alert: "You don't have permission to access requested page."
   end
 
   around_action :batch_kithe_indexable
