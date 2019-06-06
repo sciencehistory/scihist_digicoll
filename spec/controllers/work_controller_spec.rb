@@ -30,4 +30,22 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller do
       end
     end
   end
+
+  context "protected to logged in users" do
+    context "without a logged-in user", logged_in_user: false do
+      it "redirects to login" do
+        get :index
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "with a logged-in user", logged_in_user: true do
+      it "shows page" do
+        get :index
+        expect(response).not_to be_redirect
+        expect(response.status).to eq(200)
+      end
+    end
+  end
+
 end
