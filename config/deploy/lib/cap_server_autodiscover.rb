@@ -26,6 +26,11 @@ require 'pastel'
 # This is installed in our cap by:
 # * `Capfile` requires this file
 # * deploy.rb `include`s the module, so it's method is available to stage files.
+#
+# We hadn't noticed there was an existing solution already written before writing this, for future
+# reference we may want to consult:
+#   https://github.com/fernandocarletti/capistrano-aws
+# (athough it's missing some features we need, like filtering on `instance-state-code`)
 module CapServerAutodiscover
   def cap_server_autodiscover
     credentials_path = './cap_aws_credentials.yml'
