@@ -112,7 +112,7 @@ namespace :chf do
   task :restart_or_reload_solr do
     on roles(:solr) do
       if ENV['solr_restart'] == "true"
-        execute :sudo, "/usr/sbin/service solr restart"
+        execute :sudo, "/bin/systemctl restart solr"
       else
         # Note this is NOT using our solr variable in local_env.yml, it's just hard-coded
         # where to restart, sorry.
