@@ -35,6 +35,9 @@ require 'capistrano/honeybadger'
 
 require 'capistrano/rake' # let us run rake tasks on remote hosts
 
+# our custom EC2 autodiscover server definition module
+require_relative "config/deploy/lib/cap_server_autodiscover"
+
 
 # Load custom tasks from `lib/capistrano/tasks` if you have any defined
 Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }
