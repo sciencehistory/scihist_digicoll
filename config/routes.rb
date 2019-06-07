@@ -73,7 +73,7 @@ Rails.application.routes.draw do
   # Routes will even only _show up_ to logged in users, this applies
   # to internal rack apps we're mounting here too, like shrine upload endpoints,
   # is one reason to use a constraint.
-  namespace :admin, constraints: LoggedInConstraint do
+  namespace :admin do
     root to: "works#index"
 
     resources :users, except: [:destroy, :show] do
@@ -110,12 +110,6 @@ Rails.application.routes.draw do
     post "/batch_create", to: "batch_create#add_files" # step 2
     post "/batch_create/finish", to: "batch_create#create" # step 3, create and redirect
 
-    mount Kithe::AssetUploader.upload_endpoint(:cache) => "/direct_upload", as: :direct_app_upload
-
-    if Shrine.storages[:cache].kind_of?(Shrine::Storage::S3)
-      mount Shrine.uppy_s3_multipart(:cache) => "/s3"
-    end
-
     resources :digitization_queue_items, except: [:index, :create, :new, :destroy] do
       collection do
         get "collecting_areas"
@@ -134,7 +128,18 @@ Rails.application.routes.draw do
       end
     end
 
-    mount Resque::Server, at: '/queues'
+    # These 'sub-apps' are for admin-use only, but since they are sub-apps
+    # aren't protected by the AdminController. We have Rails routing only
+    # provide the routes if there is a logged-in user.
+    constraints LoggedInConstraint do
+      mount Resque::Server, at: '/queues'
+
+      mount Kithe::AssetUploader.upload_endpoint(:cache) => "/direct_upload", as: :direct_app_upload
+
+      if Shrine.storages[:cache].kind_of?(Shrine::Storage::S3)
+        mount Shrine.uppy_s3_multipart(:cache) => "/s3"
+      end
+    end
   end
 
   # We can't put browse-everything in the routing namespace, cause it breaks
