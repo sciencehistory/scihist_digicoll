@@ -8,6 +8,9 @@
 # config valid only for current version of Capistrano
 lock '3.11.0'
 
+# Make our EC2 server autodiscover available
+include CapServerAutodiscover
+
 set :application, 'scihist_digicoll'
 set :repo_url, 'https://github.com/sciencehistory/scihist_digicoll.git'
 #set :branch, 'master'
@@ -16,6 +19,18 @@ set :log_level, :info
 set :keep_releases, 5
 # label deploys with server local time instead of utm
 set :deploytag_utc, false
+
+
+# cap variables used for AWS EC2 server autodiscover
+set :ssh_user, "digcol"
+set :server_autodiscover_application, "scihist_digicoll"
+# We have things tagged in EC2 using 'staging' or 'production' the same values
+# we use for capistrano stage.
+set :server_autodiscover_service_level, fetch(:stage)
+# Expect all of these to be set, or we will warn.
+set :server_autodiscover_expected_roles, [:web, :app, :db, :jobs, :solr, :cron]
+
+
 
 # use 'passenger-config restart-app' to restart passenger
 set :passenger_restart_with_touch, false
@@ -71,6 +86,10 @@ if fetch(:slack_notify)
 else
   set :slackistrano, false
 end
+
+# This is a no-op task, but our server definition script currently
+# outputs to console the server definitions, so a no-op task will do it.
+task :list_ec2_servers
 
 namespace :deploy do
 
