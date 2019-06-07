@@ -88,6 +88,8 @@ If you tag a test with `logged_in_user: true`, the test framework will create a 
      # or
      it "does something", logged_in_user: true do ...
 
+You can also do `logged_in_user: :admin` to get a user with `admin?` permissions. (superusers)
+
 #### ActiveJob queue adapter
 
 Rails by default, in the test environment, will run any background ActiveJobs with it's `:async` adapter -- they are run in a separate thread in process, still async.

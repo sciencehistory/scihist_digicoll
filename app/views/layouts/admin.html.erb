@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<%# Layout for 'admin' portions of our pages. Compare to 'application' layout
+    used for public portions including Blacklight controllers.
+
+    This 'admin' layout puts an admin menu on every page, although with certain
+    Rails controller actions blacklisted from having the menu.
+
+    Right now, even though we have separate layout for 'admin', we do _not_ segregate
+    our CSS and JS assets, only the single pipelined application.js and application.css,
+    with JS/CSS shared by both.  (Currently the general 'application' layout is not
+    loading our webpacker JS, but that could change.)
+%>
+
+<html>
+  <head>
+    <title>Science History Institute Digital Collections</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%# we aren't using an ES6 toolchain, so are loading uppy the heavy-weight way.
+        uppy recommends against this, but we're doing it for now, but we only do it
+        on pages that ask for it with `content_for(:load_uppy, true)`
+
+        Note we are not curerntly loading fetch and promise polyfills for IE11, we may
+        want to, or maybe it's fine our file uploading doens't work on IE %>
+    <% if content_for?(:load_uppy) %>
+      <link href="https://transloadit.edgly.net/releases/uppy/v0.28.0/dist/uppy.min.css" rel="stylesheet" />
+      <script src="https://transloadit.edgly.net/releases/uppy/v0.28.0/dist/uppy.min.js"></script>
+    <% end %>
+
+
+    <%= stylesheet_link_tag    'application', media: 'all' %>
+    <%# trying to include our webpacker-managed scripts with defer for better browser
+        load performance.  works until we do something that doesn't... %>
+    <%= javascript_pack_tag 'application', defer: true %>
+    <%= javascript_include_tag 'application' %>
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <%= render "flash_message_display" %>
+
+      <% if ["edit", "new", "display_attach_form", "reorder_members_form", "add_files"].include?(params[:action].to_s) %>
+        <%= yield %>
+      <% else %>
+        <div class="d-sm-flex admin-wrapper">
+          <div class="admin-nav flex-shrink-0">
+            <ul class="list-unstyled sticky-top px-3 pb-3 pt-1 mt-2 mr-3 bg-light border">
+              <li><h2 class="h4">Admin</h2></li>
+              <li><%= link_to  "Works", admin_works_path %></li>
+              <li><%= link_to "Collections", admin_collections_path %></li>
+              <li><%= link_to "Digitization Queue", collecting_areas_admin_digitization_queue_items_path %></li>
+              <% if can? :admin, User %>
+                <li><%= link_to "Users", admin_users_path %></li>
+              <% end %>
+              <li><%= link_to "Public Search", search_catalog_path %></li>
+              <li><hr></li>
+              <li><%= link_to "Job Queues", admin_resque_server_path %></li>
+
+
+              <br>
+              <% if current_user %>
+                <li><%= link_to("Logout", destroy_user_session_path, method: :delete) %></li>
+              <% else %>
+                <li><%= link_to('Login', new_user_session_path)  %></li>
+              <% end %>
+            </ul>
+          </div>
+          <div class='admin-content flex-grow-1'>
+            <%= yield %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </body>
+</html>
