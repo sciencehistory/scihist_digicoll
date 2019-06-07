@@ -8,7 +8,7 @@ class WorkIndexer < Kithe::Indexer
     #
     # Experiment, not necessarily completed indexing logic.
 
-    to_field "friendlier_id_ssi", obj_extract("friendlier_id")
+    to_field "model_pk_ssi", obj_extract("id") # the actual db pk, a UUID
 
     to_field "text1_tesim", obj_extract("title")
     to_field "text1_tesim", obj_extract("additional_title")
