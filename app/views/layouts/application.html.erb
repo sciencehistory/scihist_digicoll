@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 
 <%# This is our 'front-end' Rails layout; see also the 'admin' layout for back-end pages.
 
@@ -35,7 +35,7 @@
 
     <title><%= render_page_title %></title>
     <%= opensearch_description_tag application_name, opensearch_catalog_url(format: 'xml') %>
-    <%= favicon_link_tag %>
+    <%= render "layouts/head_tag_common" %>
 
 
     <%= stylesheet_link_tag "application", media: "all" %>
