@@ -1,0 +1,121 @@
+// SCSS variables both purely local and overriding some from Bootstrap
+//
+// Needs to be imported _before_ bootstrap and other things that may need to use
+// the variables.
+//
+// Started with variables from chf_sufia, trying to update for Bootstrap 4 and Blacklight 7.
+
+
+/*******
+ *
+ *  Scihist variables, for branding etc.
+ *
+ */
+
+/* rebrand colors */
+$brand-dark-blue: #050939;
+$brand-bright-green: #a6e5d8;
+$brand-red: #d8262e;
+$brand-yellow: #dbe341;
+//$brand-blue: #76c3d4;
+$brand-blue: #4bb0c7; // zack instructed us to use this slightly darker shade
+$brand-light-grey: #bcbcbc; // not actually very light
+$brand-dark-grey: #646469;
+
+//$brand-blue-text: #338EA2; // brand blue is too light for text on white, here's a darker version 3595AA.
+$brand-blue-text: $brand-blue;
+
+// Our brand sans-serif, with fallbacks copied from Bootstrap's default sans-serif.
+$brand-sans-serif: 'adelle-sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+// fallbacks are useful for weird diacritics that may not be in our main font,
+// especially the weird russian transliteraton stuff seems to be problematic.
+// Times New Roman seems to have them, at least on MacOS.
+$brand-serif: 'abril-text', "Times New Roman", Times, serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+//$bg-lightly-shaded: #f9f9f9; // does not match brand, no suitable color in brand
+$bg-lightly-shaded: $brand-light-grey; // try brand color
+$special-label-muted-color: $brand-dark-grey;
+//$brand-highlight-color: #f15c2b; // an orange used on (old) Distillations website, perhaps use as an alterante highlight sitewide
+
+// Why do we need so much spacing for it to look reasonable? Good spacing for 14px and weight 600.
+$small-caps-letter-spacing: 0.035em;
+
+$brand-btn-alt-bg: $brand-bright-green;
+$brand-alt-header-font: $brand-sans-serif;
+$brand-alt-header-weight: 700;
+
+// adelle-sans has a 600 semi-bold available. 700 is standard bold. 500 seems to be the same as 400=normal.
+$semi-bold-weight: 600;
+
+// Maximum line length we judge to be readable at standard base font size.
+// Used to constrain some block text areas on large screens.
+$max-readable-width: 590px;
+$long-max-readable-width: 680px; // unclear how readable it really is, but we do it sometimes anyway
+
+
+// via experimentation, on search results page larger than this the
+// results column text is way too wide for reading text.
+$chf-fluid-max-width: 1300px;
+
+$transparent-background: rgba(0,0,0,0.25);
+
+$thumb-horizontal-margin: 4px;
+
+// abril is far too small at 16px, it's a small font. 17px abril looks more like
+// 16px other fonts. We use abril for body/paragraph/'text' copy.
+// 1.0625rem is 17px if 1rem is 16px -- 16px is awfully small for abril, 17px looks like 16px for other fonts.
+// bootstrap wants us to use rem, might have accessibility reasons for that.
+$paragraph-font-size: 1.0625rem;
+$paragraph-line-height: 22px; // for abril 17px looks good, coresponds to ~ 1.3 at 17px
+$paragraph-spacer: $paragraph-line-height / 2; // 24 is $line-height-computed. abril looks better with a bit more paragraph space.
+
+
+/****
+ *
+ * Bootstrap overrides
+ *
+ */
+
+// In chf_sufia, we set font-size-base to 16px. In Bootstrap 4, this needs to be in
+// `rem` units, and defaults to 1. Which should be 16px on most browsers. It is considered
+// by some to be better for accessibility to leave this defaulting to browser standard,
+// so we will try it unset with default for now.
+//$font-size-base: 16px;
+$h4-font-size: 22px;
+$body-color: #222; // little bit darker
+
+// bootstrap brand colors
+$danger: $brand-red;
+$warning: $brand-yellow;
+$primary: $brand-blue;
+$dark: $brand-dark-blue;
+
+// $btn-primary-border: $brand-primary; // bootstrap 4 has no button borders already I think.
+// $btn-default-border: $brand-light-grey; // bootstrap 4 has no button borders already I think.
+
+$link-color: $brand-blue-text;
+$link-hover-color: $brand-dark-blue;
+$font-family-sans-serif: $brand-sans-serif;
+
+$text-muted: $brand-dark-grey;
+$dropdown-header-color: $brand-dark-grey;
+
+$navbar-dark-color: $brand-bright-green;
+
+//$card-bg: $bg-lightly-shaded;
+$card-cap-bg: $bg-lightly-shaded;
+$card-border-color: #ccc; // goes with brand light grey. ish.
+$card-border-radius: 0;
+
+$breadcrumb-bg: $bg-lightly-shaded;
+$input-group-addon-bg: $bg-lightly-shaded;
+
+$list-group-border-color: $brand-light-grey;
+
+$input-color: $brand-dark-grey;
+$input-border-color: $brand-light-grey;
+
+// border radius matching some elements on chemheritage.org, larger than bootstrap default
+$btn-border-radius-base:        9px !default;
+$btn-border-radius-lg:       9px !default;
+$btn-border-radius-sm:       9px !default;
