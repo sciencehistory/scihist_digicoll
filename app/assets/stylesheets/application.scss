@@ -10,6 +10,9 @@
  *= require  'blacklight_range_limit'
 */
 
+// Have to import our variables BEFORE bootstrap, as we set some bootstrap variables
+@import "variables";
+
 @import "bootstrap";
 
 /* Blacklight 7 generator assumed a "blacklight.scss" would be required with sprockets.
