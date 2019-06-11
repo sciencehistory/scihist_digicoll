@@ -2,7 +2,6 @@
 //
 // We use lots of flexbox, a flexbox inside a flexbox. Tested in FF, Chrome, Safari,
 // IE 11, and Edge. Likely doens't work in IE < 11 (IE10 is EOL).
-
 .masthead {
   .large-masthead-only {
     display: none;
@@ -103,5 +102,15 @@
     .navbar-nav .nav-link {
       padding: 10px 15px;
     }
+  }
+}
+
+// management-only top bar
+.navbar.topbar {
+  background-color: $gray-200;
+  padding-top: 0;
+  padding-bottom: 0;
+  .nav-item:not(:last-child) {
+    margin-right: $spacer;
   }
 }
