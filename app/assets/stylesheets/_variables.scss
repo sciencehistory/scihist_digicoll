@@ -65,9 +65,9 @@ $thumb-horizontal-margin: 4px;
 // 16px other fonts. We use abril for body/paragraph/'text' copy.
 // 1.0625rem is 17px if 1rem is 16px -- 16px is awfully small for abril, 17px looks like 16px for other fonts.
 // bootstrap wants us to use rem, might have accessibility reasons for that.
-$paragraph-font-size: 1.0625rem;
-$paragraph-line-height: 22px; // for abril 17px looks good, coresponds to ~ 1.3 at 17px
-$paragraph-spacer: $paragraph-line-height / 2; // 24 is $line-height-computed. abril looks better with a bit more paragraph space.
+$paragraph-font-size: 1.0625rem; // 17px if 1rem is 16px
+$paragraph-line-height: 1.2941176471; // 1.0625rem * this line-height is 22px if 1rem is 16px
+$paragraph-spacer: $paragraph-font-size * $paragraph_line_height / 2; // Should be about 22/2=11px if 1rem=16px
 
 
 /****
