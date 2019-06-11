@@ -1,0 +1,45 @@
+<nav id="masthead" class="masthead navbar navbar-expand-md navbar-dark bg-dark">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+
+      <a id="logo" href="https://www.sciencehistory.org" data-no-turbolink="true">
+        <% unless false && CHF::Env.staging? %> <%# temporarily show logo even on staging %>
+          <%= image_tag "partial-mark-75rotate-80.png", class: "small-masthead-only masthead-logo-small", alt: "Science History Institute" %>
+          <%= image_tag "sci_logo-webheader_1x.png",
+              srcset:  "#{image_url 'sci_logo-webheader_1x.png'} 1x, #{image_url 'sci_logo-webheader_2x.png'} 2x",
+              class: "large-masthead-only masthead-logo-large",
+              alt: "Science History Institute" %>
+        <% else %>
+          NON-PRODUCTION DEMO
+        <% end %>
+      </a>
+
+
+      <h1 class="masthead-title small-masthead-only"><%= link_to "Digital Collections", root_path %></h1>
+
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#top-navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+    </div>
+
+    <div class="collapse navbar-collapse pull-right" id="top-navbar-collapse" role="navigation">
+      <div class="masthead-right">
+        <h1 class="masthead-title large-masthead-only"><%= link_to "Digital Collections", root_path %></h1>
+
+        <ul class="nav navbar-nav navbar-right">
+          <li class="navbar-item"><%= link_to "About", "#", class: "nav-link" %></li>
+          <li class="navbar-item"><%= link_to "FAQ", "#", class: "nav-link" %></li>
+          <li class="navbar-item"><%= link_to "Contact", "#", class: "nav-link" %></li>
+        </ul>
+
+        <%# currently commented out: %>
+        <%# unless true && content_for(:suppress_controls) %>
+        <% if false %>
+          <div class="nav navbar-nav navbar-right search-form-wrapper">
+            <%# render partial: 'catalog/search_form' %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+</nav>
