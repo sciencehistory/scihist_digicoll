@@ -70,4 +70,38 @@
       padding-right: 0;
     }
   }
+
+  .navbar-toggler {
+    color: white;
+    margin-right: 15px;
+    border-color: #333;
+  }
+
+
+  $small-logo-height: 40px;
+  .masthead-logo-small {
+    height: $small-logo-height;
+    margin: 0 0 8px 0; // logo is meant to butt against edge
+  }
+
+  // small navbar
+  @include media-breakpoint-down('sm') {
+    background-image: none;
+    padding: 0;
+    .navbar-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .masthead-right {
+      border-top: white 1px solid;
+    }
+    .masthead-right {
+      display: block;
+    }
+    .navbar-nav .nav-link {
+      padding: 10px 15px;
+    }
+  }
 }
