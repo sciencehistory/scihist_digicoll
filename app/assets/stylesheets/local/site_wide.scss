@@ -1,0 +1,161 @@
+// Some general site-wide typography settings.
+//
+// This page in chf_sufia included sidebar/content styling for .chf-container-fluid,
+// but we'll put that in a separate file.
+
+h2, .h2, h3, .h3, h4, .h4, h5, .h5 {
+  color: $brand-dark-blue;
+}
+
+
+// We set more-rounded corners, but only for buttons not input elements,
+// make sure buttons in input groups match original less rounded.
+.input-group .btn {
+  border-radius: $border-radius;
+}
+
+// fade on color change on hover, matches style on www.sciencehistory.org.
+a {
+  transition: color 0.25s ease;
+}
+
+/* informational dls, as on faq, policy page, give them more space */
+dl.info {
+  dt {
+    margin-top: 1em;
+  }
+  dd {
+    margin-top: .25em;
+  }
+}
+
+form label {
+  font-weight: $semi-bold-weight;
+}
+
+// chemheritage.org uses these as default/standard h1-h6, but we're not
+// ready to there yet, keep them in classes.
+.brand-alt-h1, .brand-alt-h2, .brand-alt-h3, .brand-alt-h4, .brand-alt-h5, .brand-alt-h6 {
+  font-family: $brand-alt-header-font;
+  font-weight: $brand-alt-header-weight;
+}
+.brand-alt-h4, .brand-alt-h5, .brand-alt-h6 {
+  font-weight: 600;
+}
+
+hr.brand {
+  width: 65px;
+  height: 3px;
+  background-color: $primary;
+  border: none;
+  margin-top: 3em;
+  margin-bottom: 3em;
+}
+
+
+// meant to be on a font-awesome icon
+.social-media-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%; // make circles
+
+  height: 38px;
+  width: 38px;
+  padding: 0;
+  margin: 0;
+  margin-top: 4px; // i dunno, lines up with rights now
+
+  font-size: 26px;
+  line-height: 0;
+
+  &:not(:last-child) {
+    margin-right: 16px;
+  }
+
+  // &.facebook {
+  //   background-color: #3b5998;
+  // }
+  // &.twitter {
+  //   background-color: #1da1f2;
+  // }
+  // &.google-plus {
+  //   background-color: #dd4b39;
+  // }
+  // &.tumblr {
+  //   background-color: #35465c;
+  // }
+
+}
+
+.download-menu {
+  .dropdown-header {
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+  }
+  li a {
+    color: $link-color;
+  }
+  li small {
+    color: $text-muted;
+    margin-left: 8px;
+    font-weight: 100;
+  }
+}
+
+// In new branding, we use the serif as body text, but leave the sans serif as default font for all the controls,
+// just explicitly set it in certain places, restricted to a parent class cause it kind of messes up
+// admin screens.
+//
+// We set 'p' tags within a .branded-body-font -- with some exceptions -- to use our serif font, and have
+// appropriate max-width and spacer for that font.
+.branded-body-font {
+  p:not(.collection-title):not(.sans-serif), dl:not(.sans-serif) dd, table:not(.sans-serif) td, table:not(.sans-serif) th, .serif {
+    @extend %text-font;
+    // super hacky sorry. :(
+    .btn {
+      font-family: $brand-sans-serif;
+    }
+  }
+  p:not(.collection-title):not(.sans-serif) {
+    // try to keep this readable, abril is particularly hard on long line lengths
+    max-width: $max-readable-width;
+    // and could use some more spacing, normally in bootstrap $line-height-computed / 2
+    margin-bottom: $paragraph-spacer;
+  }
+}
+
+.text-page {
+  max-width: $max-readable-width;
+  margin-right: auto;
+  margin-left: auto;
+  p {
+    max-width: $max-readable-width;
+  }
+}
+
+.popover-citation-help {
+  font-weight: 300;
+  color: white;
+  background-color: $brand-dark-grey;
+  .arrow:after {
+    border-bottom-color: $brand-dark-grey !important;
+  }
+  a {
+    color: $brand-bright-green;
+  }
+}
+
+// bootstrap override
+.label {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: $small-caps-letter-spacing;
+}
+
+.panel-default {
+  border-left-color: $brand-light-grey;
+  border-right-color: $brand-light-grey;
+}
