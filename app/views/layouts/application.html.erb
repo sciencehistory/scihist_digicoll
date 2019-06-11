@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 
 <%# This is our 'front-end' Rails layout; see also the 'admin' layout for back-end pages.
 
@@ -47,7 +47,7 @@
     <%= content_for(:head) %>
   </head>
 
-  <body class="<%= render_body_class %>">
+  <body class="<%= render_body_class %> scihist-main-layout">
     <% if current_user %>
       <%= render 'front_end_admin_navbar' %>
     <% end %>
@@ -62,14 +62,14 @@
       </div>
     <% end %>
 
-    <div id="main-container" class="container-fluid">
+    <div id="mainContainer" class="container-fluid">
       <%= content_for(:container_header) %>
 
       <%= render 'flash_message_display' %>
 
       <div class="row">
         <% if content_for? :sidebar %>
-          <section id="content" class="col-md-9 order-last">
+          <section id="content" role="main" class="col-md-9 order-last">
             <%= yield %>
           </section>
 
@@ -84,7 +84,7 @@
       </div>
     </div>
 
-    <%= render partial: 'shared/footer' %>
     <%= render partial: 'shared/modal' %>
+    <%= render partial: 'layouts/scihist_footer' %>
   </body>
 </html>
