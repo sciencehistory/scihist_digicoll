@@ -12,6 +12,7 @@
 
 // Have to import our variables BEFORE bootstrap, as we set some bootstrap variables
 @import "variables";
+@import "mixins";
 
 @import "bootstrap";
 
