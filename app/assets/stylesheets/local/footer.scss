@@ -1,0 +1,90 @@
+// the site wide Science History Institute footer
+#footer {
+  background-color: $dark;
+  background-image: asset-url('scihist_foot_sym.png');
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  padding: 40px 20px 44px 20px;
+
+  .footer-title {
+    font-family: $brand-serif;
+    font-size: 2.125rem; // 34px if 1rem == 16px
+    margin: 0 0 1.25rem 0;
+    padding: 0;
+    line-height: normal;
+
+    @include media-breakpoint-down(md) {
+      font-size: 1.625rem; // 26px if 1rem == 16px
+    }
+
+    &>a {
+      color: white;
+      &:hover, &:active, &:focus {
+        color: $brand-bright-green;
+        text-decoration: none;
+      }
+    }
+  }
+
+  .footerrow {
+    text-align: center;
+  }
+
+  .footeraddresses {
+    color: $brand-bright-green;
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 800px;
+    text-align: left;
+    justify-content: space-between;
+    width: 100%;
+    margin: auto;
+    font-weight: 300;
+
+    a:hover, a:focus {
+      color: white;
+    }
+
+    // dunno, ask communications
+    .fa-map-marker {
+      color: $brand-bright-green;
+    }
+
+    div {
+      margin: 20px;
+    }
+  }
+
+  .footersocialicons {
+    margin: 20px auto;
+    max-width: 530px;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+
+    .footersocialicon {
+      color: #1fbaf4;
+      font-size: 24px;
+
+      a, a:link, a:visited, a:hover, a:active {
+        color: $primary;
+        text-decoration: none;
+        transition-property: color;
+        transition-duration: 0.25s;
+        transition-timing-function: ease;
+        transition-delay: initial;
+      }
+    }
+  }
+
+  .footerprivacycopyright {
+    color: $brand-bright-green;
+    font-size: 12px;
+    a, a:link, a:visited, a:hover, a:active {
+      color: $brand-bright-green;
+      text-decoration: none;
+    }
+  }
+
+}

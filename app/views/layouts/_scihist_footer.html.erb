@@ -1,0 +1,63 @@
+<footer id="footer" role="contentinfo">
+
+  <div class="footerrow">
+    <h1 class="footer-title"> <%= link_to "Science History Institute", "https://www.sciencehistory.org" %> </h1>
+  </div>
+
+  <div class="footerrow">
+    <div class="footeraddresses">
+      <div class="firstaddress">
+        <strong>Headquarters</strong><br>315 Chestnut Street<br>Philadelphia, PA 19106<br>215.925.2222<br>
+        <a target="_blank" href="https://www.google.com/maps/dir/''/science+history+institute/data=!4m5!4m4!1m0!1m2!1m1!1s0x89c6c884f0010fd7:0x9fdd2fbe5d2744d3?sa=X&ved=0ahUKEwj_mtuCpbrZAhVLs1kKHSpjAicQ9RcIwgEwCw">
+          <i class="fa fa-map-marker"></i> Get Directions
+        </a>
+      </div>
+      <div class="secondaddress">
+        <strong>West Coast Office</strong><br>2120 University Avenue<br>Berkeley, CA 94704<br>
+        <a href="https://www.sciencehistory.org/contact-us">Get in Touch</a>
+      </div>
+      <div class="thirdaddress">
+      <strong>European Office</strong><br>
+      Maison de la Chimie<br>
+      28, Rue Saint-Dominique<br>
+      75007 Paris<br>
+      <a href="https://www.sciencehistory.org/contact-us">Get in Touch</a>
+    </div>
+  </div>
+
+  <div class="footerrow">
+    <div class="footersocialicons">
+      <div class="footersocialicon">
+        <a href="https://www.facebook.com/<%= Rails.application.config.facebook_acct %>" target="_blank" aria-label="Facebook" title="Facebook">
+          <i class="fa fa-facebook-square" aria-hidden="true"></i>
+        </a>
+      </div>
+      <div class="footersocialicon">
+        <a href="https://twitter.com/<%= Rails.application.config.twitter_acct %>" target="_blank" aria-label="Twitter" title="Twitter">
+          <i class="fa fa-twitter" aria-hidden="true"></i>
+        </a>
+      </div>
+      <div class="footersocialicon"><a href="https://www.sciencehistory.org/vimeo" target="_blank" aria-label="Vimeo" title="Vimeo">
+        <i class="fa fa-vimeo" aria-hidden="true"></i>
+      </a></div>
+      <div class="footersocialicon"><a href="https://www.sciencehistory.org/youtube" target="_blank" aria-label="YouTube" title="YouTube">
+        <i class="fa fa-youtube-play" aria-hidden="true"></i>
+      </a></div>
+      <div class="footersocialicon"><a href="https://www.sciencehistory.org/linkedin" target="_blank" aria-label="LinkedIn" title="LinkedIn">
+        <i class="fa fa-linkedin" aria-hidden="true"></i>
+      </a></div>
+      <div class="footersocialicon"><a href="https://www.sciencehistory.org/pinterest" target="_blank" aria-label="Pinterest" title="Pinterest">
+        <i class="fa fa-pinterest" aria-hidden="true"></i>
+      </a></div>
+      <div class="footersocialicon"><a href="https://www.instagram.com/<%= Rails.application.config.instagram_acct %>" target="_blank" aria-label="Instagram" title="Instagram">
+        <i class="fa fa-instagram" aria-hidden="true"></i>
+      </a></div>
+    </div>
+  </div>
+  <div class="footerrow">
+    <div class="footerprivacycopyright">
+      &copy; <%= Time.current.year %>  Science History Institute |
+      <a href="https://www.sciencehistory.org/privacy-policy/" >Privacy Policy</a>
+    </div>
+  </div>
+</footer>
