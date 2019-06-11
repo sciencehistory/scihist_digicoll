@@ -47,7 +47,7 @@
     <%= content_for(:head) %>
   </head>
 
-  <body class="<%= render_body_class %>">
+  <body class="<%= render_body_class %> scihist-main-layout">
     <% if current_user %>
       <%= render 'front_end_admin_navbar' %>
     <% end %>
@@ -62,7 +62,7 @@
       </div>
     <% end %>
 
-    <div id="main-container" class="container-fluid">
+    <div id="mainContainer" class="container-fluid">
       <%= content_for(:container_header) %>
 
       <%= render 'flash_message_display' %>

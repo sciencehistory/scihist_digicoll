@@ -1,0 +1,14 @@
+body.scihist-main-layout {
+  // This makes the footer stay stuck to the bottom even on short screens, by
+  // having #mainContainer div grow to fill screen.
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  #mainContainer {
+    flex-grow: 1
+  }
+
+  // To come: layout for sidebar/main, to make sidebar fixed width and fairly small,
+  // and main content container grow to fill screen, up to a limit.
+  // in chf_sufia, in site_wide.scss, targetting .chf-container-fluid.
+}
