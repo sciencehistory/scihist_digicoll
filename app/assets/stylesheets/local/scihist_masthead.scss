@@ -1,0 +1,73 @@
+// Our branded logo'd large navbar/masthead
+//
+// We use lots of flexbox, a flexbox inside a flexbox. Tested in FF, Chrome, Safari,
+// IE 11, and Edge. Likely doens't work in IE < 11 (IE10 is EOL).
+
+.masthead {
+  .large-masthead-only {
+    display: none;
+  }
+  @include media-breakpoint-up('md') {
+    .large-masthead-only {
+      display: block;
+    }
+    .small-masthead-only {
+      display: none;
+    }
+  }
+
+  padding: 16px 47px 0 32px;
+
+  background-image: asset-url('scihist_top_nav_sym.png');
+  background-repeat: no-repeat;
+  background-position: right top;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+
+  border-bottom: $dark 1px; // match chf_sufia, had an invisible border
+
+  .navbar-collapse {
+    flex-grow: 0;
+  }
+
+  .masthead-title {
+    font-family: $brand-serif;
+    font-size: 30px;
+    margin: 0;
+    padding: 0;
+    line-height: normal;
+    &>a {
+      color: white;
+      &:hover, &:active, &:focus {
+        color: $brand-bright-green;
+        text-decoration: none;
+      }
+    }
+    color: white;
+    &.small-masthead-only {
+      font-size: 18px;
+      //line-height: $small-logo-height + 8px + 8px;
+      text-align: center;
+    }
+  }
+
+  .masthead-right {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .navbar-nav {
+    font-weight: 300;
+    .nav-link {
+      padding: 14px 15px;
+    }
+    .navbar-item:last-child .nav-link {
+      padding-right: 0;
+    }
+  }
+}

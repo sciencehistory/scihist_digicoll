@@ -52,6 +52,8 @@
       <%= render 'front_end_admin_navbar' %>
     <% end %>
 
+    <%= render 'layouts/scihist_masthead' %>
+
     <%# TODO: remove blacklight-specific searchbar, for something that doens't depend
         on Blacklight func being in every controller that may use this layout! %>
     <% if respond_to?(:blacklight_config) %>
