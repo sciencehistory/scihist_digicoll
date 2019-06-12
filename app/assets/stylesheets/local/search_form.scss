@@ -8,6 +8,7 @@
 
 .search-form {
   width: 100%;
+  margin-bottom: .375rem; // just to match chf_sufia for mysterious reasons
 
   // bigger rounding for search box than our usual inputs
   input {
@@ -55,6 +56,7 @@
 // For when it's in the navbar collapsed, so it is on a dark background and inline
 .masthead .search-form {
   padding: 10px 15px;
+  position: relative; // to anchor absolutely positioned drawer
 
   .search-options {
     h3, label, .text {
@@ -71,5 +73,30 @@
   // .search-options are collapsed in a drawer, for JS to slide down on click in search text field
   @include media-breakpoint-up(md) {
     padding: 0;
+
+    .search-options {
+      display: none;
+      z-index: 1000; // not sure why we need
+      position: absolute;
+      width: 100%;
+
+      background: $brand-light-grey;
+      border: 1px solid transparent;
+      box-shadow: 0 20px 40px 10px rgba(0,0,0,0.5);
+      border-radius: 0 0 $btn-border-radius $btn-border-radius;
+      color: $brand-dark-blue;
+
+      h3, label {
+        color: $brand-dark-blue;
+
+      }
+
+      .form-group {
+        // make slide out look better using padding instead of margin, plus
+        // get everything nicely spaced.
+        margin: 0;
+        padding: ($form-group-margin-bottom / 2) $form-group-margin-bottom;
+      }
+    }
   }
 }
