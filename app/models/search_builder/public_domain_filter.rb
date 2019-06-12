@@ -11,11 +11,15 @@ class SearchBuilder
 
     def public_domain_filter(solr_params)
       # look for the public domain only checkbox
-      if blacklight_params.fetch("filter_public_domain", 0).to_i > 0
+      if SearchBuilder::PublicDomainFilter.filtered_public_domain?(blacklight_params)
         solr_params[:fq] ||= []
         public_domain_filter = "{!term f=rights_facet}http://creativecommons.org/publicdomain/mark/1.0/"
         solr_params[:fq] << public_domain_filter
       end
+    end
+
+    def self.filtered_public_domain?(lparams)
+      lparams.fetch("filter_public_domain", 0).to_i > 0
     end
 
   end
