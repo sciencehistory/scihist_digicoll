@@ -1,3 +1,10 @@
+<%# the branded Science History header/navbar/masthead.
+
+Includes a search bar with a JS-powered drawer pop-out. For content that does not
+want a search bar (such as home page with it's own larger centered search bar),
+do `content_for(:suppress_masthead_search, true)`
+
+-%>
 <nav id="masthead" class="masthead navbar navbar-expand-md navbar-dark bg-dark">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
@@ -33,12 +40,10 @@
           <li class="navbar-item"><%= link_to "Contact", "#", class: "nav-link" %></li>
         </ul>
 
-        <%# currently commented out: %>
-        <%# unless true && content_for(:suppress_controls) %>
-        <% if false %>
-          <div class="nav navbar-nav navbar-right search-form-wrapper">
-            <%# render partial: 'catalog/search_form' %>
-          </div>
+        <% unless content_for(:suppress_masthead_search) %>
+          <!-- <div class="nav navbar-nav navbar-right search-form-wrapper"> -->
+            <%= render partial: 'application/search_form' %>
+          <!-- </div> -->
         <% end %>
       </div>
     </div>

@@ -48,3 +48,8 @@ en:
         name: "Your name (optional)"
         email: "Your email address (optional)"
         comment: "Comment"
+
+  blacklight:
+    search:
+      form:
+        submit: "Go"
