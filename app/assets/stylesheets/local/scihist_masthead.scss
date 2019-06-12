@@ -28,7 +28,8 @@
   border-bottom: $dark 1px; // match chf_sufia, had an invisible border
 
   .navbar-collapse {
-    flex-grow: 0;
+    max-width: 55%;
+    flex-basis: 100%; // seems screwy, but makes IE 11 happy whem combined with max-width:55% doesn't seem to disturb anyone else
   }
 
   .masthead-title {
@@ -54,6 +55,7 @@
 
   .masthead-right {
     height: 100%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -87,6 +89,9 @@
   @include media-breakpoint-down('sm') {
     background-image: none;
     padding: 0;
+    .navbar-collapse {
+      max-width: none;
+    }
     .navbar-header {
       width: 100%;
       display: flex;
