@@ -63,4 +63,29 @@ describe CatalogController, solr: true, indexable_callbacks: true do
       end
     end
   end
+
+  describe "navbar search slide-out limits" do
+    let(:green_rights) { "http://creativecommons.org/publicdomain/mark/1.0/" }
+    let(:green_date) { Work::DateOfWork.new({ "start"=>"2014-01-01"}) }
+    let(:green_title) { "good title" }
+
+    let!(:green) { create(:work, title: green_title, rights: green_rights, date_of_work: green_date) }
+    let!(:red1)  { create(:work, title: green_title, rights: green_rights) }
+    let!(:red2)  { create(:work, title: green_title, date_of_work: green_date) }
+
+    it "can use limits to find only matching work" do
+      visit search_catalog_path
+      fill_in "q", with: green_title
+      fill_in "search-option-date-from", with: "2013"
+      fill_in "search-option-date-to", with: "2015"
+      check("Public Domain Only")
+      click_on "Go"
+
+
+      expect(page).to have_content("1 entry found")
+      expect(page).to have_selector("li#document_#{green.friendlier_id}")
+      expect(page).not_to have_selector("li#document_#{red1.friendlier_id}")
+      expect(page).not_to have_selector("li#document_#{red2.friendlier_id}")
+    end
+  end
 end
