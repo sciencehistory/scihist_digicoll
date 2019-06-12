@@ -43,6 +43,23 @@ class CatalogController < ApplicationController
   end
   helper_method :view_model_class_for
 
+
+  # Tell Blacklight to recognize our custom filter_public_domain=1 as a constriants filter.
+  # And override BL helper method to _display_ the filter_public_domain constraint,
+  # as well as display the text query input constraint as a live search box/form allowing
+  # user to change query inline, instead of just a label.
+  module RenderQueryConstraintOverride
+    def render_constraints_query(localized_params = params)
+      # Only on catalog (user-facing), doesn't work for "my_works" admin.
+        render "query_constraint_as_form", params: localized_params
+    end
+
+    def query_has_constraints?(localized_params = params)
+      super || SearchBuilder::PublicDomainFilter.filtered_public_domain?(localized_params)
+    end
+  end
+  helper RenderQueryConstraintOverride
+
   configure_blacklight do |config|
     ## Class for sending and receiving requests from a search index
     # config.repository_class = Blacklight::Solr::Repository
