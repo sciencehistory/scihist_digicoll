@@ -1,0 +1,53 @@
+<%# A search form, used on the navbar, on hte home page, possibly other places.
+
+    * This search form always does a new search, it does not preserve existing
+      limits (intentionally, based on UX analysis)
+    * It includes a .search-options div below the text input, with additional standard limits. When
+      used in the navbar (at large sizes) this additional options area is hidden
+      and automatically slides out in a drawer on search box focus.
+
+      In other areas (such as home page, or navbar at small size collapse),
+      the extra search options may be always visible.
+%>
+
+<%= form_tag search_catalog_path, method: :get, class: "search-form", role: "search" do %>
+  <%= hidden_field_tag :search_field, 'all_fields' %>
+
+
+  <div class="input-group nav-search-text">
+    <%= text_field_tag :q, '', class: "q form-control",
+        id: "q",
+        autocomplete: "off",
+        placeholder: t("blacklight.search.form.search.placeholder"),
+        :"aria-label" => t('blacklight.search.form.search_field.label')
+    %>
+
+    <label class="sr-only" for="q"><%= t('blacklight.search.form.search_field.label') %></label>
+
+    <div class="input-group-append">
+      <button type="submit" class="btn btn-emphasis" title="Search" id="search-submit-header">
+        <i class="fa fa-search" aria-hidden="true"></i>
+        <%= t('blacklight.search.form.submit') %>
+      </button>
+    </div>
+  </div>
+
+  <div class="search-options">
+    <div class="form-group limit-dates">
+      <div class="limit-dates-heading">
+        <h3>Limit Dates</h3>
+      </div>
+      <div class="limit-dates-body">
+        <label class="sr-only" for="search-option-date-from">From</label>
+        <input type="text" inputmode="numeric" name="range[year_facet_isim][begin]" class="form-control search-option-year" autocomplete="off" placeholder="from" id="search-option-date-from" pattern="[0-9]{3,4}" title="start year (yyyy)">
+        <span class="text">&nbsp;&ndash;&nbsp;</span>
+        <label class="sr-only" for="search-option-date-to">To</label>
+        <input type="text" inputmode="numeric" name="range[year_facet_isim][end]" class="form-control search-option-year"  autocomplete="off" placeholder="to" id="search-option-date-from" pattern="[0-9]{3,4}" title="end year (yyyy)">
+      </div>
+    </div>
+
+    <div class="form-group checkbox">
+      <label for="filter_public_domain"><%= check_box_tag 'filter_public_domain', value=1 %> Public Domain Only </label>
+    </div>
+  </div>
+<% end %>
