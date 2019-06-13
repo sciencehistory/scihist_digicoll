@@ -48,3 +48,39 @@
     }
   }
 }
+
+.sort-pagination {
+  //flexbox works a lot better than float here
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  .search-widgets {
+    float: none !important;
+  }
+  &:after {
+    display: none;
+  }
+}
+
+// compact pagination
+.page_links  {
+  line-height: 2.5;
+  strong {
+    font-weight: $semi-bold-weight;
+  }
+  .next {
+    margin-left: 0.66em;
+  }
+  .prev {
+    margin-right: 0.66em;
+  }
+  .next, .prev {
+    text-transform: uppercase;
+    letter-spacing: $small-caps-letter-spacing;
+  }
+}
+
+
+
+
