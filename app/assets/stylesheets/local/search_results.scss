@@ -95,6 +95,35 @@
   }
 }
 
+// full pagination
+.pagination {
+  .first, .prev, .next, .next_page, .last {
+    font-family: $brand-sans-serif;
+    text-transform: uppercase;
+    letter-spacing: $small-caps-letter-spacing;
+  }
+  .active > a, .active > a:hover, .active > a:focus {
+    background-color: $bg-lightly-shaded;
+    border-color: $pagination-border-color;
+    color: $body-color;
+  }
+  &.chf-pagination > li > a, &.chf-pagination > li > span {
+    border: none;
+  }
+}
+// eyeballed for when to switch from full to compact pagination
+@media (max-width: 1010px) {
+  .pagination-alt-expanded {
+    display: none;
+  }
+}
+@media (min-width: 1011px) {
+  .pagination-alt-compact {
+    display: none;
+  }
+}
+
+
 
 
 
