@@ -11,7 +11,9 @@ body.scihist-main-layout {
   }
 
   // 235+15+30px == 280px, 17.5rem at 16px base font size. This is the fixed sidebar size we want.
-  $sidebar-width: 17.5rem;
+  // smaller than 20rem is for some reason messing up the date range flot plot, no idea
+  // why it was fine in chf_sufia, so we have to make it bigger for now.
+  $sidebar-width: 20rem; //17.5rem;
 
   // 960px at 16px base font is
   $content-max-width: 60rem;

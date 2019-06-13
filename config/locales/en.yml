@@ -53,3 +53,8 @@ en:
     search:
       form:
         submit: "Go"
+
+  views:
+    pagination_compact:
+      next: "Next" # get rid of ugly unicode carets
+      previous: "Previous" # get rid of ugly unicode carets
