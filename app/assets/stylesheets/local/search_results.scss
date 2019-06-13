@@ -127,5 +127,18 @@
 
 
 
+.other-searches {
+  .card-header {
+    text-transform: uppercase;
+    color: $brand-dark-blue;
+    font-weight: $semi-bold-weight;
+    letter-spacing: $small-caps-letter-spacing;
+  }
+
+  .card-header, .list-group-item {
+    padding: .625rem .9375rem;
+  }
+}
+
 
 
