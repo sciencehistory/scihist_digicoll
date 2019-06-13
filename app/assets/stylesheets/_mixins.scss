@@ -1,0 +1,48 @@
+
+/***
+ *
+ *  Mixins and placeholder classes
+ *
+ */
+
+
+@mixin all-white-links {
+  a,
+  a:link,
+  a:active,
+  a:visited,
+  a:hover {
+    color: white;
+    text-decoration: none;
+    opacity: 1;
+  }
+}
+
+%special-label{
+  font-family: $brand-sans-serif;
+  font-weight: $semi-bold-weight;
+  text-transform: uppercase;
+  font-size: 0.875rem;  // 14px for 16px=1rem
+  line-height: normal;
+  letter-spacing: $small-caps-letter-spacing;
+  a:not(:focus):not(:hover) {
+    color: $special-label-muted-color;
+  }
+}
+
+%text-font {
+  font-family: $brand-serif;
+  // 16px in abril is really small, 17px looks more like 16px in other fonts.
+  font-size: 17px;
+  line-height: $paragraph-line-height;
+}
+
+// Try to make our date field that has mostly numbers legible with abril
+%text-font-numerals {
+ font-family: $brand-serif;
+  // 16px in abril is really small, 17px looks more like 16px in other fonts.
+ font-size: 17px;
+ line-height: normal;
+ font-variant-numeric: lining-nums;
+ letter-spacing: 0.025em;
+}

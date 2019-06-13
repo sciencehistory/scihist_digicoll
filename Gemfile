@@ -52,6 +52,8 @@ gem 'sprockets-rails', '>= 2.3.2' # bootstrap gem requirement
 
 gem 'jquery-rails', "~> 4.3"
 
+gem 'font-awesome-rails', '~> 4.7'
+
 # temporary kithe indexing branch, for scihist_digicoll indexing branch, do not
 # intend to merge to master like this.
 gem 'kithe', git: "https://github.com/sciencehistory/kithe.git"
@@ -120,6 +122,12 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 
+# Used for Cap deployment
+gem 'aws-sdk-ec2', '>=1.74'
+#gem 'aws-sdk-core'
+gem 'aws-sdk-core'
+
+
 ##
 # Added by blacklight. Not sure why rsolr isn't just a BL dependency.
   gem 'rsolr', '>= 1.0', '< 3'
@@ -135,3 +143,4 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
   # involving it. Seems not to be used if you don't use Bookmarks functionality.
   # gem 'devise-guests', '~> 0.6'
 # end BL generated
+

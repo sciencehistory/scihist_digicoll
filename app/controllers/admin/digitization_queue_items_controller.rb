@@ -1,4 +1,4 @@
-class Admin::DigitizationQueueItemsController < ApplicationController
+class Admin::DigitizationQueueItemsController < AdminController
   before_action :set_admin_digitization_queue_item, only: [:show, :edit, :update, :destroy, :add_comment]
 
   # GET /admin/digitization_queue_items

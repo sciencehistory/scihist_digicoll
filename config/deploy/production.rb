@@ -1,10 +1,10 @@
 set :stage, :staging
 set :rails_env, 'production'
 
+
 # Our custom code to define servers auto-discovered by looking up registered
 # EC2 instances by tags.
 cap_server_autodiscover
-
 
 
 # server-based syntax

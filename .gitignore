@@ -32,3 +32,5 @@ yarn-debug.log*
 .yarn-integrity
 
 scripts/import/fedora_creds.sh
+# Ignore the aws credential file
+/cap_aws_credentials.yml

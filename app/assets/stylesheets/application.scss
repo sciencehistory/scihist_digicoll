@@ -10,7 +10,13 @@
  *= require  'blacklight_range_limit'
 */
 
+// Have to import our variables BEFORE bootstrap, as we set some bootstrap variables
+@import "variables";
+@import "mixins";
+
 @import "bootstrap";
+
+@import "font-awesome"; // fontawesome v4, CSS
 
 /* Blacklight 7 generator assumed a "blacklight.scss" would be required with sprockets.
    That file consisted of
@@ -22,13 +28,8 @@
 */
 @import 'blacklight/blacklight';
 
-@import "local/admin";
-@import "local/edit";
-@import "local/attach_files";
-@import "local/member_sort";
-@import "local/error_pages";
-@import "local/member_list";
-@import "local/work_show";
+// Everything in ./local directory, including subdirs, in unpredictable (probably alphabetic) order.
+@import "local/**/*";
 
 @import "browse_everything/browse_everything_bootstrap4";
 
