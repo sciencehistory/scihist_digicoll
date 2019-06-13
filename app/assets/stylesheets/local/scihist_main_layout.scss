@@ -1,4 +1,6 @@
 body.scihist-main-layout {
+  $layout-expand-up: 'md';
+
   // This makes the footer stay stuck to the bottom even on short screens, by
   // having #mainContainer div grow to fill screen.
   display: flex;
@@ -6,7 +8,7 @@ body.scihist-main-layout {
   min-height: 100vh;
   #mainContainer {
     flex-grow: 1;
-    @include media-breakpoint-up(md) {
+    @include media-breakpoint-up($layout-expand-up) {
       padding-right: $grid-gutter-width;
       padding-left: $grid-gutter-width;
     }
@@ -43,7 +45,7 @@ body.scihist-main-layout {
       padding-bottom: .625rem;
     }
 
-    @include media-breakpoint-up(md) {
+    @include media-breakpoint-up($layout-expand-up) {
       padding-right: $grid-gutter-width; // twice normal padding, we want that.
       padding-bottom: 0;
       width: $sidebar-width;
@@ -55,7 +57,7 @@ body.scihist-main-layout {
 
   #content {
     @include make-col-ready;
-    @include media-breakpoint-up(md) {
+    @include media-breakpoint-up($layout-expand-up) {
       // We need to keep this thing within the screen, so it won't flex-wrap
       // even as screen gets smaller. Which is annoying, cause if there was
       // no sidebar, this isn't the right max-width. But it's how chf_sufia
