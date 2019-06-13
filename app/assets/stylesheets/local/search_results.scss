@@ -1,0 +1,50 @@
+// override sufia facet widget styles to be more brand-like, and generally neater
+.facets {
+  // No idea why blacklight puts the heading in a .navbar, but we got
+  // to restyle it now, also to match chf_sufia.
+  .navbar {
+    margin: 0;
+    padding: .625rem .9375rem; // to match chf_sufia I dunno
+    background-color: $brand-dark-blue;
+    h2.facets-heading {
+      color: white;
+      margin: 0;
+      line-height: 1.1;
+     }
+  }
+
+  .card-header {
+    font-size: $font-size-base;
+    font-weight: normal;
+    line-height: 1.4;
+    color: inherit;
+
+    &::after { // the arrow
+      color: $brand-dark-grey;
+    }
+  }
+
+  .facet-limit {
+    border-top: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .facet-values li {
+    line-height: 1.2;
+  }
+
+  // no special styles on active facet
+  .facet-limit-active {
+    color: inherit;
+    border-color: $card-border-color !important;
+    &  .card-header {
+      background-color: $card-cap-bg !important;
+      color: #333; // not sure where this came from, but matches chf_sufia
+      border-color: $card-border-color !important;
+    }
+    .facet-values li .selected {
+      color: inherit !important;
+    }
+  }
+}
