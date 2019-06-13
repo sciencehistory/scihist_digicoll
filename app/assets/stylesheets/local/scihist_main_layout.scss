@@ -35,9 +35,19 @@ body.scihist-main-layout {
   // kind of like a bootstrap grid column, but with fixed width.
   #sidebar {
     @include make-col-ready;
+    padding-bottom: .625rem;
+
+    .facets {
+      padding-bottom: .625rem;
+    }
+
     @include media-breakpoint-up(md) {
       padding-right: $grid-gutter-width; // twice normal padding, we want that.
+      padding-bottom: 0;
       width: $sidebar-width;
+      .facets {
+        padding-bottom: 0;
+      }
     }
   }
 
