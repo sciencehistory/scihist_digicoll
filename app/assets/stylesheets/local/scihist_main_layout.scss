@@ -50,6 +50,8 @@ body.scihist-main-layout {
       // Can't totally explain why we don't have to account for gutters
       // here, but it works somehow.
       max-width: calc(100% - (#{$sidebar-width}));
+      margin-right: auto;
+      margin-left: auto;
     }
   }
 }
