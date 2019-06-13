@@ -1,0 +1,26 @@
+<%# override blacklight to add our extra links
+https://github.com/projectblacklight/blacklight/blob/v6.7.2/app/views/catalog/_search_sidebar.html.erb
+%>
+
+<%= render 'facets' %>
+
+<% if params[:q].present? %>
+
+  <div class="other-searches sidenav card d-sm-none d-md-block">
+    <div class="card-header">
+      Other search tools
+    </div>
+
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item"><%= link_to "https://www.sciencehistory.org/search/site/#{Addressable::URI.encode_component(params[:q], Addressable::URI::CharacterClasses::PATH)}" do %>
+        <i class="fa fa-search" aria-hidden="true"></i>  Science History Institute
+      <% end %></li>
+      <li class="list-group-item"><%= link_to "https://othmerlib.sciencehistory.org/search/?searchtype=X&SORT=D&searcharg=#{Addressable::URI.encode_component(params[:q], Addressable::URI::CharacterClasses::QUERY)}" do %>
+        <i class="fa fa-search" aria-hidden="true"></i>  Othmer Library Catalog
+      <% end %></li>
+      <li class="list-group-item"><%= link_to "https://oh.sciencehistory.org/search/site/#{Addressable::URI.encode_component(params[:q], Addressable::URI::CharacterClasses::PATH)}" do %>
+        <i class="fa fa-search" aria-hidden="true"></i>  Oral Histories
+      <% end %></li>
+    </ul>
+  </div>
+<% end %>

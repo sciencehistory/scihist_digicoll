@@ -42,7 +42,7 @@ body.scihist-main-layout {
     padding-bottom: .625rem;
 
     .facets {
-      padding-bottom: .625rem;
+      padding-bottom: 1rem;
     }
 
     @include media-breakpoint-up($layout-expand-up) {
@@ -50,7 +50,7 @@ body.scihist-main-layout {
       padding-bottom: 0;
       width: $sidebar-width;
       .facets {
-        padding-bottom: 0;
+        padding-bottom: 2rem;
       }
     }
   }
