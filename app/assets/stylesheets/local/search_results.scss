@@ -23,6 +23,8 @@
     line-height: 1.4;
     color: inherit;
 
+    padding: .625rem .9375rem;
+
     &::after { // the arrow
       color: $brand-dark-grey;
     }
