@@ -51,6 +51,16 @@
       color: inherit !important;
     }
   }
+
+
+  form.range_limit {
+    display: block;
+      // get 'limit' button all on one line by making inputs more compact
+    input.range_begin, input.range_end {
+      width: 52px;
+      padding: 6px;
+    }
+  }
 }
 
 .sort-pagination {

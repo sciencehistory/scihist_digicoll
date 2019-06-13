@@ -53,6 +53,8 @@ en:
     search:
       form:
         submit: "Go"
+    range_limit:
+      submit_limit: Apply
 
   views:
     pagination_compact:
