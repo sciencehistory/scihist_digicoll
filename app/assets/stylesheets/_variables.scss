@@ -49,8 +49,8 @@ $semi-bold-weight: 600;
 
 // Maximum line length we judge to be readable at standard base font size.
 // Used to constrain some block text areas on large screens.
-$max-readable-width: 590px;
-$long-max-readable-width: 680px; // unclear how readable it really is, but we do it sometimes anyway
+$max-readable-width: 36.25rem; // 590px at 16px base;
+$long-max-readable-width: 42.5rem; // 680px; unclear how readable it really is, but we do it sometimes anyway
 
 
 // via experimentation, on search results page larger than this the

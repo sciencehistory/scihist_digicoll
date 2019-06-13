@@ -5,10 +5,51 @@ body.scihist-main-layout {
   flex-direction: column;
   min-height: 100vh;
   #mainContainer {
-    flex-grow: 1
+    flex-grow: 1;
+    padding-right: $grid-gutter-width;
+    padding-left: $grid-gutter-width;
   }
 
-  // To come: layout for sidebar/main, to make sidebar fixed width and fairly small,
-  // and main content container grow to fill screen, up to a limit.
-  // in chf_sufia, in site_wide.scss, targetting .chf-container-fluid.
+  // 235+15+30px == 280px, 17.5rem at 16px base font size. This is the fixed sidebar size we want.
+  $sidebar-width: 17.5rem;
+
+  // 960px at 16px base font is
+  $content-max-width: 60rem;
+
+
+  // We max-width mainContainer to get it centered for us. (Could there be another way?)
+  // But it's based on the fixed-width sidebar, and the *actual* max-width we want for
+  // content, that seems to be about the max readable width.
+  //
+  // This whole system is mostly based on what we did in chf_sufia, and perhaps
+  // can be made cleaner, but good enough for now.
+  #mainContainer {
+    // sidebar width plus a 60rem max content size (content has a thumb column too,
+    // keep content text no wider than readable), plus some gutters, we wind
+    // up at 1300px via magic, which is 81.25rem at 16px base font size.
+    max-width: 81.25rem;
+  }
+
+  // kind of like a bootstrap grid column, but with fixed width.
+  #sidebar {
+    @include make-col-ready;
+    @include media-breakpoint-up(md) {
+      padding-right: $grid-gutter-width; // twice normal padding, we want that.
+      width: $sidebar-width;
+    }
+  }
+
+  #content {
+    @include make-col-ready;
+    @include media-breakpoint-up(md) {
+      // We need to keep this thing within the screen, so it won't flex-wrap
+      // even as screen gets smaller. Which is annoying, cause if there was
+      // no sidebar, this isn't the right max-width. But it's how chf_sufia
+      // worked, overriding where needed, and good enough for now.
+      //
+      // Can't totally explain why we don't have to account for gutters
+      // here, but it works somehow.
+      max-width: calc(100% - (#{$sidebar-width}));
+    }
+  }
 }
