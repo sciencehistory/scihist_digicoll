@@ -60,6 +60,21 @@ class CatalogController < ApplicationController
   end
   helper RenderQueryConstraintOverride
 
+  # Cheesy way to override Blaclight helper method with call to super possible
+  module SortHelperOverrides
+    # Override Blacklight method, so "best match"/relevancy sort is not offered
+    # unless there's a text query, cause it makes no sense in that case.
+    def active_sort_fields
+      if params[:q].present?
+        super
+      else
+        # with no query, relevance doesn't make a lot of sense
+        super.delete_if { |k| k.start_with?("score") }
+      end
+    end
+  end
+  helper SortHelperOverrides
+
   configure_blacklight do |config|
     ## Class for sending and receiving requests from a search index
     # config.repository_class = Blacklight::Solr::Repository
