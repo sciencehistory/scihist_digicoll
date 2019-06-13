@@ -1,0 +1,18 @@
+<%# overridden from Blacklight to use customized kaminari theme, and have different pagination at small screen size -%>
+
+<% if show_pagination? and @response.total_pages > 1 %>
+ <div class="row record-padding">
+  <div class="col-md-12">
+    <%# expanded will be shown by CSS at large screen sizes, else compact %>
+
+    <div class="pagination pagination-alt-expanded">
+      <%= paginate @response, :window => 3, :outer_window => 1, :theme => 'local' %>
+    </div>
+
+    <div class="pagination pagination-alt-compact">
+      <%= paginate @response, :page_entries_info => page_entries_info(@response), :theme => 'blacklight_compact' %>
+    </div>
+  </div>
+ </div>
+<% end %>
+
