@@ -6,8 +6,10 @@ body.scihist-main-layout {
   min-height: 100vh;
   #mainContainer {
     flex-grow: 1;
-    padding-right: $grid-gutter-width;
-    padding-left: $grid-gutter-width;
+    @include media-breakpoint-up(md) {
+      padding-right: $grid-gutter-width;
+      padding-left: $grid-gutter-width;
+    }
   }
 
   // 235+15+30px == 280px, 17.5rem at 16px base font size. This is the fixed sidebar size we want.
