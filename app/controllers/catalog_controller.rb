@@ -8,8 +8,6 @@ class CatalogController < ApplicationController
   # Blacklight wanted Blacklight::Controller included in ApplicationController,
   # we do it just here instead.
   include Blacklight::Controller
-  layout "scihist_blacklight"
-
   include Blacklight::Catalog
 
   # Not totally sure why we need this, instead of Rails loading all helpers automatically

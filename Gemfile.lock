@@ -89,6 +89,9 @@ GEM
       aws-partitions (~> 1.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
+    aws-sdk-ec2 (1.74.0)
+      aws-sdk-core (~> 3, >= 3.48.0)
+      aws-sigv4 (~> 1.1)
     aws-sdk-kms (1.15.0)
       aws-sdk-core (~> 3, >= 3.48.0)
       aws-sigv4 (~> 1.1)
@@ -220,6 +223,8 @@ GEM
     fastimage (2.0.1)
       addressable (~> 2)
     ffi (1.9.25)
+    font-awesome-rails (4.7.0.5)
+      railties (>= 3.2, < 6.1)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
     google-api-client (0.28.4)
@@ -569,6 +574,8 @@ PLATFORMS
 DEPENDENCIES
   access-granted (~> 1.0)
   attr_json!
+  aws-sdk-core
+  aws-sdk-ec2 (>= 1.74)
   blacklight (~> 7.0, >= 7.1.0.alpha)
   blacklight_range_limit (~> 7.0)
   bootsnap (>= 1.1.0)
@@ -591,6 +598,7 @@ DEPENDENCIES
   devise (~> 4.5)
   draper (~> 3.0)
   factory_bot_rails
+  font-awesome-rails (~> 4.7)
   honeybadger (~> 4.0)
   html_aware_truncation (~> 1.0)
   jbuilder (~> 2.5)
@@ -625,7 +633,7 @@ DEPENDENCIES
   whenever
 
 RUBY VERSION
-   ruby 2.5.3p105
+   ruby 2.6.3p62
 
 BUNDLED WITH
    1.17.3

@@ -1,6 +1,5 @@
-class Admin::AssetsController < ApplicationController
+class Admin::AssetsController < AdminController
 
-  # intended for staff, not sure if we will hide it
   def show
     @asset = Asset.find_by_friendlier_id!(params[:id])
   end

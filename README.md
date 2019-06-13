@@ -18,6 +18,7 @@ Prequisites:
 * Postgres installed and running -- on MacOS, I like https://postgresapp.com/
 * `yarn` installed for webpacker -- on MacOS, `brew install yarn`.
 * vips installed --  on MacOS `brew install vips`
+* Have your AWS credentials put in a file called `aws_secrets.json` at the project's root directory. This is needed for deploying code.
 
 ```bash
 $ git clone git@github.com:sciencehistory/scihist_digicoll.git
@@ -87,6 +88,8 @@ If you tag a test with `logged_in_user: true`, the test framework will create a 
      # or
      it "does something", logged_in_user: true do ...
 
+You can also do `logged_in_user: :admin` to get a user with `admin?` permissions. (superusers)
+
 #### ActiveJob queue adapter
 
 Rails by default, in the test environment, will run any background ActiveJobs with it's `:async` adapter -- they are run in a separate thread in process, still async.
@@ -131,6 +134,19 @@ There are different file storage modes available for convenience in development/
 And `storage_mode` `production` is default in production, with different sorts of files being stored in different S3 buckets, with those bucket names also set in env.
 
 Regardless, object are generally stored in S3 (or file system) with paths beginning with the UUID pk of the Kithe::Asset they belong to.
+
+## Deployment
+
+We use [capistrano](https://github.com/capistrano/capistrano) to deploy our application.
+
+    bundle exec cap staging deploy
+    bundle exec cap production deploy
+
+We have set up capistrano to auto-discover what servers to deploy to, by using AWS api to list our EC2 servers, with certain tags. See our custom [CapServerAutodiscover](./config/deploy/lib/cap_server_autodiscover.rb) module for details.
+
+To make this work, you need to have AWS credentaisl available -- for now, we use a special set of credentails just for cap deploy, the 'cap_deploy' user. You should get the credentails from Dan or AWS IAS console, and put them in a file at `./cap_aws_credentials.yml`. See/copy the example at [./cap_aws_credentials.yml.example](./cap_aws_credentials.yml.example).
+
+To list servers auto-discovered from EC2 without doing a deploy, run `cap staging list_ec2_servers` or `cap production list_ec2_servers`.
 
 ## Rake tasks
 

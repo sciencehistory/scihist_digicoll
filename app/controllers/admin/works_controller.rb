@@ -3,7 +3,7 @@
 # Started with generated code from Rails 5.2 scaffold.
 #
 # We'll probably handle `show` in a different controller, for now no show.
-class Admin::WorksController < ApplicationController
+class Admin::WorksController < AdminController
   before_action :set_work,
     only: [:show, :edit, :update, :destroy, :reorder_members_form, :demote_to_asset, :publish, :unpublish]
 

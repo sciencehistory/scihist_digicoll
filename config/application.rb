@@ -48,5 +48,17 @@ module ScihistDigicoll
       #generate.fixture_replacement :factory_bot, dir: "spec/factories"
       g.jbuilder          false
     end
+
+    ###
+    # Local custom scihist config
+    ###
+
+    # Organizational social media accounts/handles
+    config.twitter_acct = "scihistoryorg"
+    config.facebook_acct = "SciHistoryOrg"
+    config.instagram_acct = "scihistoryorg"
+
+
+
   end
 end
