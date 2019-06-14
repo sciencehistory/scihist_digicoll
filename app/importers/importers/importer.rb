@@ -65,6 +65,11 @@ module Importers
     # It reads metadata from file, creates
     # an item based on it, then saves it to the database.
     def import
+      conflicting_item_of_different_type = same_friendlier_id_different_type
+      if conflicting_item_of_different_type
+        add_error("Destroying a conflicting #{conflicting_item_of_different_type.type} with ID #{ metadata['id']}.")
+        conflicting_item_of_different_type.destroy
+      end
       self.class.without_auto_timestamps do
         if preexisting_item?
           blank_out_for_reimport(target_item)
@@ -192,5 +197,8 @@ module Importers
       Kithe::Model.record_timestamps = original
     end
 
+    def same_friendlier_id_different_type
+      Kithe::Model.where(friendlier_id:metadata['id']).where.not(type:self.class.destination_class.to_s).first
+    end
   end
 end
