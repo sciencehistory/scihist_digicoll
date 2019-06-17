@@ -50,8 +50,7 @@ class CatalogController < ApplicationController
   # user to change query inline, instead of just a label.
   module RenderQueryConstraintOverride
     def render_constraints_query(localized_params = params)
-      # Only on catalog (user-facing), doesn't work for "my_works" admin.
-        render "query_constraint_as_form", params: localized_params
+      render "query_constraint_as_form", params: localized_params
     end
 
     def query_has_constraints?(localized_params = params)

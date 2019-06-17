@@ -53,6 +53,7 @@ en:
     search:
       form:
         submit: "Go"
+      search_constraints_header: "You Searched For"
     range_limit:
       submit_limit: Apply
 
