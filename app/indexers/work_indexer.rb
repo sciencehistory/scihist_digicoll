@@ -28,7 +28,7 @@ class WorkIndexer < Kithe::Indexer
     to_field "text_no_boost_tesim", obj_extract("related_url")
     to_field ["text_no_boost_tesim", "department_facet"], obj_extract("department")
     to_field ["text_no_boost_tesim", "medium_facet"], obj_extract("medium")
-    to_field ["text_no_boost_tesim", "format_facet"], obj_extract("format")
+    to_field ["text_no_boost_tesim", "format_facet"], obj_extract("format"), transform(->(v) { v.titleize })
     to_field ["text_no_boost_tesim", "rights_facet"], obj_extract("rights") # URL id
     to_field ["text_no_boost_tesim"], obj_extract("rights"), transform(->(v) { RightsTerms.label_for(v) }) # human label
     to_field "text_no_boost_tesim", obj_extract("rights_holder")
