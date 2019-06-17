@@ -14,6 +14,7 @@ class SearchBuilder < Blacklight::SearchBuilder
   # Scihist SearchBuilder extensions
   include SearchBuilder::AdminOnlySearchFields
   include SearchBuilder::PublicDomainFilter
+  include SearchBuilder::CustomSortLogic
 
   ##
   # @example Adding a new step to the processor chain

@@ -49,8 +49,8 @@ $semi-bold-weight: 600;
 
 // Maximum line length we judge to be readable at standard base font size.
 // Used to constrain some block text areas on large screens.
-$max-readable-width: 590px;
-$long-max-readable-width: 680px; // unclear how readable it really is, but we do it sometimes anyway
+$max-readable-width: 36.25rem; // 590px at 16px base;
+$long-max-readable-width: 42.5rem; // 680px; unclear how readable it really is, but we do it sometimes anyway
 
 
 // via experimentation, on search results page larger than this the
@@ -69,6 +69,7 @@ $paragraph-font-size: 1.0625rem; // 17px if 1rem is 16px
 $paragraph-line-height: 1.2941176471; // 1.0625rem * this line-height is 22px if 1rem is 16px
 $paragraph-spacer: $paragraph-font-size * $paragraph_line_height / 2; // Should be about 22/2=11px if 1rem=16px
 
+$navbar-margin-bottom: 22px;
 
 /****
  *
@@ -122,3 +123,13 @@ $input-border-color: $brand-light-grey;
 $btn-border-radius:          9px !default;
 $btn-border-radius-lg:       9px !default;
 $btn-border-radius-sm:       9px !default;
+
+// Used by bootstrap for ordinary buttons too, let's make it match bootstrap 3/chf_sufia,
+// slightly larger.
+$input-btn-padding-x-sm: .625rem; // 10px
+$input-btn-padding-y-sm: .3125rem; // 5px
+
+$pagination-active-color:           $body-color;
+$pagination-active-bg:              $brand-light-grey;
+$pagination-active-border-color:    $pagination-active-bg;
+

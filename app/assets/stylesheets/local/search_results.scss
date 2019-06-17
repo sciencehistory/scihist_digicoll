@@ -1,0 +1,144 @@
+// override sufia facet widget styles to be more brand-like, and generally neater
+.facets {
+  // No idea why blacklight puts the heading in a .navbar, but we got
+  // to restyle it now, also to match chf_sufia.
+  .navbar {
+    margin: 0;
+    padding: .625rem .9375rem; // to match chf_sufia I dunno
+    background-color: $brand-dark-blue;
+    h2.facets-heading {
+      color: white;
+      margin: 0;
+      line-height: 1.1;
+     }
+  }
+
+  .navbar-toggler-icon {
+    background-image: $navbar-dark-toggler-icon-bg;
+  }
+
+  .card-header {
+    font-size: $font-size-base;
+    font-weight: normal;
+    line-height: 1.4;
+    color: inherit;
+
+    padding: .625rem .9375rem;
+
+    &::after { // the arrow
+      color: $brand-dark-grey;
+    }
+  }
+
+  .facet-limit {
+    border-top: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .facet-values li {
+    line-height: 1.2;
+  }
+
+  // no special styles on active facet
+  .facet-limit-active {
+    color: inherit;
+    border-color: $card-border-color !important;
+    &  .card-header {
+      background-color: $card-cap-bg !important;
+      color: #333; // not sure where this came from, but matches chf_sufia
+      border-color: $card-border-color !important;
+    }
+    .facet-values li .selected {
+      color: inherit !important;
+    }
+  }
+
+
+  form.range_limit {
+    display: block;
+      // get 'limit' button all on one line by making inputs more compact
+    input.range_begin, input.range_end {
+      width: 52px;
+      padding: 6px;
+    }
+  }
+}
+
+.sort-pagination {
+  //flexbox works a lot better than float here
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  .search-widgets {
+    float: none !important;
+  }
+  &:after {
+    display: none;
+  }
+}
+
+// compact pagination
+.page_links  {
+  line-height: 2.5;
+  strong {
+    font-weight: $semi-bold-weight;
+  }
+  .next {
+    margin-left: 0.66em;
+  }
+  .prev {
+    margin-right: 0.66em;
+  }
+  .next, .prev {
+    text-transform: uppercase;
+    letter-spacing: $small-caps-letter-spacing;
+  }
+}
+
+// full pagination
+.pagination {
+  .first, .prev, .next, .next_page, .last {
+    font-family: $brand-sans-serif;
+    text-transform: uppercase;
+    letter-spacing: $small-caps-letter-spacing;
+  }
+  .active > a, .active > a:hover, .active > a:focus {
+    background-color: $bg-lightly-shaded;
+    border-color: $pagination-border-color;
+    color: $body-color;
+  }
+  &.chf-pagination > li > a, &.chf-pagination > li > span {
+    border: none;
+  }
+}
+// eyeballed for when to switch from full to compact pagination
+@media (max-width: 1010px) {
+  .pagination-alt-expanded {
+    display: none;
+  }
+}
+@media (min-width: 1011px) {
+  .pagination-alt-compact {
+    display: none;
+  }
+}
+
+
+
+.other-searches {
+  .card-header {
+    text-transform: uppercase;
+    color: $brand-dark-blue;
+    font-weight: $semi-bold-weight;
+    letter-spacing: $small-caps-letter-spacing;
+  }
+
+  .card-header, .list-group-item {
+    padding: .625rem .9375rem;
+  }
+}
+
+
+

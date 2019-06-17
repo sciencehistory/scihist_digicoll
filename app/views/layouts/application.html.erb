@@ -64,11 +64,11 @@
 
       <div class="row">
         <% if content_for? :sidebar %>
-          <section id="content" role="main" class="col-md-9 order-last">
+          <section id="content" role="main" class="order-last">
             <%= yield %>
           </section>
 
-          <section id="sidebar" class="page-sidebar col-md-3 order-first">
+          <section id="sidebar" class="page-sidebar order-first">
             <%= content_for(:sidebar) %>
           </section>
         <% else %>
