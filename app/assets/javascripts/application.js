@@ -38,3 +38,4 @@
 // this:
 //= require 'blacklight_range_limit'
 
+//= require scihist_search_slideout
