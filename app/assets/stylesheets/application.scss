@@ -28,6 +28,7 @@
 */
 @import 'blacklight/blacklight';
 
+// Everything in ./local directory, including subdirs, in unpredictable (probably alphabetic) order.
 @import "local/**/*";
 
 @import "browse_everything/browse_everything_bootstrap4";
