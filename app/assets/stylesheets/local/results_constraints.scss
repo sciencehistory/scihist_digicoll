@@ -1,0 +1,107 @@
+// customize Blacklight constraints, and style our custom query-input constraint
+//
+// Really could be part of search_results.scss, but it gets REALLY HACKY, to make it
+// match the design/UX we designed for chf_sufia/Blacklight 6. So we extract it
+// to keep the complexity here.
+
+#appliedParams.constraints-container {
+  margin-bottom: $navbar-margin-bottom !important; // dunno why Blacklight gotta !important on us
+  margin-right: 0;
+  margin-left: 0;
+  margin-top: -1 * (1.375 * $navbar-margin-bottom) / 2; // dunno, but matches chf_sufia
+  line-height: 2.5;
+
+  padding-top: 0;
+  padding-bottom: 0;
+
+  // The "you searched for"
+  h2 {
+    // We need to hackily UNDO sr-only, we want it on the screen
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    clip: auto;
+
+    display: inline;
+
+    font-size: .875rem;
+    text-transform: uppercase;
+    letter-spacing: $small-caps-letter-spacing;
+    font-weight: $semi-bold-weight;
+    margin-right: 0.66em;
+    color: $brand-dark-blue;
+    vertical-align: middle;
+  }
+
+  .catalog_startOverLink {
+    @extend .btn-sm;
+
+    float: right;
+    margin-top: .33em;
+
+    letter-spacing: $small-caps-letter-spacing;
+    text-transform: uppercase;
+  }
+
+  .applied-filter {
+    margin-right: 0.33em;
+  }
+  .applied-filter .filter-name:after {
+    color: $brand-dark-grey;
+    font-size: 100%;
+    padding-left: .5em;
+    padding-right: .2em;
+  }
+
+  a.remove {
+    @extend .btn-primary;
+  }
+
+  .constraint-value {
+    color: black;
+    background-color: $bg-lightly-shaded;
+    border-color: $bg-lightly-shaded;
+    max-width: initial; // dunno why BL sets a max-width, it's too small what it sets
+    text-align: left;
+    &:hover, &:focus {
+      background-color: $bg-lightly-shaded;
+    }
+  }
+
+  // Our custom query-constraint-as-form, we want borders matching our roundy buttons
+  // and other things.
+  .scihist-constraints-query {
+    vertical-align: middle;
+    .btn {
+      letter-spacing: $small-caps-letter-spacing;
+      text-transform: uppercase;
+      font-weight: 400;
+      border-left-color: $input-border-color;
+    }
+
+    .input-group-prepend .input-group-text {
+      border-bottom-left-radius: $btn-border-radius;
+      border-top-left-radius: $btn-border-radius;
+      font-size: $font-size-base;
+    }
+    .input-group-append{
+      a:last-child, button:last-child {
+        border-top-right-radius: $btn-border-radius;
+        border-bottom-right-radius: $btn-border-radius;
+      }
+    }
+    input[type=text] {
+      border-color: $brand-light-grey;
+    }
+  }
+
+
+}
+// Blacklight 7 makes the filters btn default size, no longer 'sm'. We want
+// them still 'sm' for consistency with chf_sufia, and cause it works well.
+// Have to be careful of order of CSS rule precedence, so we still get proper
+// border behavior on btn-groups.
+.btn-group.applied-filter {
+  @extend .btn-group-sm;
+}
