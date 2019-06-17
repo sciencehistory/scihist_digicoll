@@ -2,19 +2,19 @@
      instead of just a label, and additional constraint for public-domain-only where
      appropriate %>
 
-<form class="chf-constraints-query applied-filter d-inline-block">
+<form class="scihist-constraints-query applied-filter d-inline-block">
     <%= render_hash_as_hidden_fields(search_state.params_for_search.except(:q, :qt, :page, :utf8)) %>
 
-    <div class="input-group">
+    <div class="input-group input-group-sm">
       <div class="input-group-prepend">
         <span class="input-group-text"><i class="fa fa-search" aria-hidden="true"></i><span class="sr-only">Search</span></span>
       </div>
 
       <label class="sr-only" for="constraintsQueryInput">Query</label>
-      <%= text_field_tag "q", local_assigns[:params].try { |h| h[:q] }, placeholder: "Search within results", class: "form-control input-sm", id: "constraintsQueryInput" %>
+      <%= text_field_tag "q", local_assigns[:params].try { |h| h[:q] }, placeholder: "Search within results", class: "form-control", id: "constraintsQueryInput" %>
 
       <div class="input-group-append">
-        <button class="btn btn-sm btn-primary">
+        <button class="btn btn-primary" title="Search within results" aria-label="Search within results">
           Go
         </button>
         <% if params[:q].present? %>
