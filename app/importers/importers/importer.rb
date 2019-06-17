@@ -22,10 +22,13 @@ module Importers
     #
     # Argument metadata is a hash read from an individual import.json file, contents
     # differ depending on file type.
+    # options:
+    # keep_conflicting_items: default true, if false will delete conflicting items to make room for incoming items.
     def initialize(metadata, options = {})
       #raise ArgumentError unless target_item.is_a? self.class.exportee
       @metadata = metadata
       @errors ||= []
+      @keep_conflicting_items = !!options[:keep_conflicting_items]
     end
 
 
@@ -67,8 +70,14 @@ module Importers
     def import
       conflicting_item_of_different_type = same_friendlier_id_different_type
       if conflicting_item_of_different_type
-        add_error("Destroying a conflicting #{conflicting_item_of_different_type.type} with ID #{ metadata['id']}.")
-        conflicting_item_of_different_type.destroy
+        add_error("Found a conflicting #{conflicting_item_of_different_type.type} with ID #{ metadata['id']}.")
+        if @keep_conflicting_items
+          add_error("Skipping this item.").
+          return
+        else
+          add_error("Destroying #{conflicting_item_of_different_type.type} #  #{ metadata['id']}.")
+          conflicting_item_of_different_type.destroy
+        end
       end
       self.class.without_auto_timestamps do
         if preexisting_item?

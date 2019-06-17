@@ -36,6 +36,12 @@ namespace :scihist_digicoll do
     # to be imported.
     create_derivatives = ENV['CREATE_DERIVATIVES'] == "true"
 
+    # Pre-existing items with the same friendlier_id and the same time are simply overwritten.
+    # But how should we handle pre-existing items with the same friendlier_id but a different type?
+    # By default, just skip these items.
+    # If you set this option to "false", the conflicting items will be replaced by items from the import.
+    keep_conflicting_items = ENV['KEEP_CONFLICTING_ITEMS'] == "true"
+
     import_dir = Rails.root.join('tmp', 'import')
     fileset_dir = Dir[import_dir.join("filesets").join("*.json")]
     work_dir = Dir[import_dir.join("genericworks").join("*.json")]
@@ -65,6 +71,7 @@ namespace :scihist_digicoll do
       fileset_dir.each do |path|
         Importers::FileSetImporter.new(
           JSON.parse(File.read(path)),
+          keep_conflicting_items: keep_conflicting_items,
           disable_bytestream_import: disable_bytestream_import,
           create_derivatives: create_derivatives).tap do |importer|
             importer.import
