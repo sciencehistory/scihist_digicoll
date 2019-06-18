@@ -22,16 +22,19 @@ module Importers
     #
     # Argument metadata is a hash read from an individual import.json file, contents
     # differ depending on file type.
+    # options:
+    # keep_conflicting_items: default true, if false will delete conflicting items to make room for incoming items.
     def initialize(metadata, options = {})
       #raise ArgumentError unless target_item.is_a? self.class.exportee
       @metadata = metadata
       @errors ||= []
+      @keep_conflicting_items = !!options[:keep_conflicting_items]
     end
 
 
     # Returns an ActiveRecord model instance, that is the primary target item to save in the import.
-    # * Will find an existing object in the db, and blank out some of it's metadata for freshening up from import
-    # * Or a new AR model if it didn't already exist.
+    # * Will find an existing object in the db if it exists,
+    # * or a new AR model if it didn't already exist.
     #
     # Lazily loads with memoization, so checks the db on first time you call it, after that remembers
     # the object it came up with before, so you can call it as much as you want.
@@ -39,15 +42,30 @@ module Importers
     # Often used in #populate for setting metadata based on import json files:
     #     target_item.title = "whataever"
     #
-    # Also sets ivar @preexisting_item for use with `#preexisting_item?` as a side-effect (bit hacky,
+    # Also sets ivar @preexisting_item_was_found for use with `#preexisting_item?` as a side-effect (bit hacky,
     # but we're refactoring here.)
     def target_item
+      @conflicting_item = nil
       @target_item ||= begin
-        model_object = self.class.destination_class.where(friendlier_id:@metadata['id']).first
-        if (model_object)
-          @preexisting_item = true
+        item_with_same_friendlier_id = Kithe::Model.where(friendlier_id:metadata['id']).first
+        if item_with_same_friendlier_id.is_a? self.class.destination_class                 
+          model_object = item_with_same_friendlier_id
         else
-          @preexisting_item = false
+          @conflicting_item = item_with_same_friendlier_id
+          if @keep_conflicting_items
+            add_error("Found a conflicting #{@conflicting_item.type}.")
+            return
+            # the calling method, @preexisting_item? will notice the conflict and skip importing this item.
+          else
+            add_error("Destroying #{@conflicting_item.type}  #{ @conflicting_item.friendlier_id }.")
+            @conflicting_item.destroy
+            # do not return; continue as usual now that the conflict is resolved.
+          end
+        end
+        if (model_object)
+          @preexisting_item_was_found = true
+        else
+          @preexisting_item_was_found = false
           # wasn't already existing in db, we need to create one
           model_object = self.class.destination_class.new
         end
@@ -55,21 +73,34 @@ module Importers
       end
     end
 
+    # Is there a preexisting item with the same friendlier_id and the same type?
     def preexisting_item?
+      # Calling target_item:
+      #   * checks for any conflicting items
+      #       * deletes them if it is allowed to,
+      #       * sets ivar @conflicting_item otherwise.
+      #   * creates or sets @target_item (without blanking it out -- that's done in the import method.)
+      #   * sets boolean ivar @preexisting_item_was_found
       target_item
-      @preexisting_item
+      # If a conflicting item with the same friendlier_id but a different type was found... return false.
+      return false if @conflicting_item
+      @preexisting_item_was_found
     end
 
     # This is the only method called on this class
     # by the rake task after instantiation.
-    # It reads metadata from file, creates
-    # an item based on it, then saves it to the database.
+    # It reads metadata from file, creates or finds
+    # an item based on it, blanks out some of its metadata for freshening up from import if needed, 
+    # then saves it to the database.
     def import
       self.class.without_auto_timestamps do
         if preexisting_item?
           blank_out_for_reimport(target_item)
         end
-
+        if @conflicting_item
+          add_error("Not importing this item:there is a conflicting #{@conflicting_item.type} with the same ID.").
+          return
+        end
         common_populate
         populate
         save_target_item
@@ -192,5 +223,8 @@ module Importers
       Kithe::Model.record_timestamps = original
     end
 
+    def same_friendlier_id_different_type
+      Kithe::Model.where(friendlier_id:metadata['id']).where.not(type:self.class.destination_class.to_s).first
+    end
   end
 end
