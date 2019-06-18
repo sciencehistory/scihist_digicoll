@@ -111,7 +111,7 @@ hr.brand {
 //
 // We set 'p' tags within a .branded-body-font -- with some exceptions -- to use our serif font, and have
 // appropriate max-width and spacer for that font.
-.branded-body-font {
+.branded-body-font, .scihist-main-layout {
   p:not(.collection-title):not(.sans-serif), dl:not(.sans-serif) dd, table:not(.sans-serif) td, table:not(.sans-serif) th, .serif {
     @extend %text-font;
     // super hacky sorry. :(
