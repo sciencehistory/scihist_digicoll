@@ -17,6 +17,11 @@ class CollectionShowController < CatalogController
 
   private
 
+  def collection
+    @collection
+  end
+  helper_method :collection
+
   def set_collection
     @collection = Collection.find_by_friendlier_id!(params[:id])
   end

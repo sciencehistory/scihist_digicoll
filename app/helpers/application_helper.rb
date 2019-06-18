@@ -8,4 +8,8 @@ module ApplicationHelper
       '<span class="badge badge-warning">Private</span>'.html_safe
     end
   end
+
+  def construct_page_title(title)
+    "#{title} - #{application_name}"
+  end
 end
