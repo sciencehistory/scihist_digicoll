@@ -36,7 +36,7 @@ class CollectionResultDisplay < ViewModel
 
   # TODO, link to Collection detail page when it exists.
   def link_to_href
-    "#"
+    collection_path(model)
   end
 
   # none for collections

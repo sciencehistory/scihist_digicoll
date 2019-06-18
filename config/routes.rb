@@ -34,7 +34,7 @@ Rails.application.routes.draw do
 
   # public-facing routes
   resources :works, only: [:show]
-  get "/collections/:id", to: "collection_show#index"
+  get "/collections/:id", to: "collection_show#index", as: :collection
 
 
   ##
