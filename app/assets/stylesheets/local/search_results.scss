@@ -71,6 +71,7 @@
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-between;
+  border: none;
   .search-widgets {
     float: none !important;
   }
@@ -140,5 +141,138 @@
   }
 }
 
+// Styling of actual hits on search results page. .documents-list parent selector
+// needed to succesfully override some BL styles.
+.documents-list {
+  .document.scihist-results-list-item {
+    display: flex;
+    margin-bottom: 2.8125rem;
+    border-bottom: none;
+    margin-top: 0;
+    padding-top: 0;
+
+    overflow-x: hidden;
+
+    $thumb-width: 13rem; // 208px at 16px==1rem
+
+    .scihist-results-list-item-thumb {
+      flex-basis: $thumb-width;
+      width: $thumb-width; // Should match ImageServiceHelper::THUMB_BASE_WIDTHS[:standard]
+      max-width: 33%; // on smaller screens, more space for text
+      margin-right: 28px;
+      flex-shrink: 0;
+      text-align: right;
+
+      .scihist-results-list-item-num-members {
+        @extend %special-label;
+        // hack we shoudl change special-label to a sass mixin
+        color: $body-color;
+        a:not(:focus):not(:hover) {
+          color: $body-color !important;
+        }
+
+        text-align: right;
+        margin-top: .25rem;
+      }
+
+      img {
+        max-width: 100%;
+      }
+    }
+
+    .scihist-results-list-item-content {
+      max-width: calc(67% - 1.75rem);
+    }
 
 
+    // When the screen is too small for thumb + metadata next to each other,
+    // make em over/under. At sidebar collapse side, and also hackily trying to do
+    // at sidebar expanded size where there's still not enough space, but it's
+    // kind of kluge.
+    $max-results-above-below: 33rem; // 528px at 16px==1rem;
+    @media (max-width: $max-results-above-below), (min-width: breakpoint-min('md')) AND (max-width: 55rem) {
+      // Browser hyphenization isn't great, but only way to keep really long
+      // words from busting the layout or going off-screen. We'll use it at small sizes.
+      hyphens: auto;
+      word-wrap: break-word;
+
+      display: block;
+      position: relative;
+
+      .scihist-results-list-item-thumb, .scihist-results-list-item-content {
+        max-width: 100%;
+      }
+      .scihist-results-list-item-content {
+        margin-top: $paragraph-spacer;
+      }
+      .scihist-results-list-item-num-members {
+        position: absolute;
+        display: block;
+        text-align: left !important;
+        top: 0;
+        left: $thumb-width + ($spacer / 2);
+        right: 0;
+      }
+    }
+
+    .scihist-results-list-item-head {
+      margin-top: 0;
+      margin-bottom: 0;
+      @include font-size($h3-font-size);
+      a {
+        color: $dark;
+        &:hover, &:focus {
+          color: $link-hover-color;
+        }
+      }
+    }
+    .scihist-results-list-item-genre {
+      @extend %special-label;
+      color: $special-label-muted-color;
+      margin-bottom: .125rem;
+    }
+
+    .scihist-results-list-item-additional-titles, .scihist-results-list-item-parents {
+      ul {
+        @extend .list-unstyled;
+        @include font-size($h4-font-size);
+        font-family: $brand-alt-header-font;
+        line-height: $headings-line-height;
+        margin-top: 0;
+      }
+      li {
+        margin-top: ($paragraph-spacer / 2);
+      }
+    }
+
+    .scihist-results-list-item-date {
+      ul {
+        @extend .list-unstyled;
+        margin-top: $paragraph-spacer;
+      }
+      li {
+        @extend %text-font-numerals;
+      }
+    }
+
+    .scihist-results-list-item-description {
+      margin-top: $paragraph-spacer;
+    }
+
+    .scihist-results-list-values {
+      margin-top: $paragraph-spacer;
+      li {
+        @extend %text-font;
+        // hanging indent, serving to add margin to subsequent lines
+        padding-left: 0.66em;
+        text-indent: -0.66em;
+        margin-bottom: $paragraph-spacer / 8;
+      }
+    }
+
+    .attribute-label {
+      @extend %special-label;
+      margin-right: 0.66em;
+    }
+  }
+}

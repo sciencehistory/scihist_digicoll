@@ -29,7 +29,7 @@ class CollectionResultDisplay < ViewModel
     count = child_counter.display_count_for(model)
     return "" unless count > 0
 
-    content_tag("div", class: "chf-results-list-item-num-members") do
+    content_tag("div", class: "scihist-results-list-item-num-members") do
       number_with_delimiter(count) + ' item'.pluralize(count)
     end
   end

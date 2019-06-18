@@ -31,7 +31,7 @@ describe CatalogController, solr: true, indexable_callbacks: true do
       within("#document_#{work1.friendlier_id}") do
         expect(page).to have_content(work1.title)
         expect(page).to have_content(work1.description)
-        expect(page).to have_content("2 items")
+        expect(page).to have_content /2 items/i
         expect(page).to have_selector("img[src='#{work1.leaf_representative.derivative_for(:thumb_standard).url}']")
       end
 
@@ -39,7 +39,7 @@ describe CatalogController, solr: true, indexable_callbacks: true do
         expect(page).to have_content(collection.title)
         expect(page).to have_content(collection.description)
         expect(page).to have_selector("img[src='#{collection.leaf_representative.derivative_for(:thumb_standard).url}']")
-        expect(page).to have_content("1 item")
+        expect(page).to have_content /1 item/i
       end
     end
   end
