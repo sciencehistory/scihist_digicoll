@@ -26,6 +26,7 @@ class AccessPolicy
     # Any logged-in staff considered staff at present
     role :staff, proc { |user| !user.nil? } do
       can :read, Kithe::Model # whether publisehd or not
+      can :update, Kithe::Model
     end
 
     role :public do
