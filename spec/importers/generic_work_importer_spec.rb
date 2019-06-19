@@ -56,6 +56,7 @@ RSpec.describe Importers::GenericWorkImporter do
 
 
   let(:generic_work_importer) { Importers::GenericWorkImporter.new(metadata) }
+  let(:generic_work_importer_remove_conflicts) { Importers::GenericWorkImporter.new(metadata, {keep_conflicting_items: false})}
 
   it "imports" do
     generic_work_importer.import
@@ -122,6 +123,18 @@ RSpec.describe Importers::GenericWorkImporter do
       }
     end
 
+    describe "correct defaults" do
+      it "has the correct settings by default" do
+        default_importer = Importers::FileSetImporter.new({}, {})
+        expect(default_importer.instance_variable_get(:@create_derivatives)).
+          to be false
+        expect(default_importer.instance_variable_get(:@disable_bytestream_import)).
+          to be false
+        expect(default_importer.instance_variable_get(:@keep_conflicting_items)).
+          to be true
+      end
+    end
+
     it "imports as published" do
       generic_work_importer.import
       new_work = Work.first
@@ -147,5 +160,28 @@ RSpec.describe Importers::GenericWorkImporter do
         expect(item.external_id).to eq([Work::ExternalId.new(category: "bib", value: "b1075796")])
       end
     end
+
+    describe "with conflicting item" do
+      let!(:existing_item) {
+        FactoryBot.create(:asset, friendlier_id: metadata["id"])
+      }
+      it "doesn't attempt to run the import; leaves conflicting item in place." do
+        generic_work_importer.import
+        expect(Asset.where(friendlier_id: metadata["id"]).count).to eq(1)
+        expect(Work.where( friendlier_id: metadata["id"]).count).to eq(0)
+      end
+    end
+
+    describe "with conflicting item (with remove conflicts set)" do
+      let!(:existing_item) {
+        FactoryBot.create(:asset, friendlier_id: metadata["id"])
+      }
+      it "destroys the conflicting item and imports the new item in its place." do
+        generic_work_importer_remove_conflicts.import
+        expect(Asset.where(friendlier_id: metadata["id"]).count).to eq(0)
+        expect(Work.where( friendlier_id: metadata["id"]).count).to eq(1)
+      end
+    end
+
   end
 end

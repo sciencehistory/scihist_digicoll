@@ -5,6 +5,8 @@ RSpec.describe Importers::FileSetImporter do
   let(:test_file_sha1) { Digest::SHA1.hexdigest(File.read(test_file_path)) }
   let(:fake_test_file_url) { "http://www.example.com/fedora/rest/prod/n5/83/xw/08/n583xw08g/files/file_hash" }
 
+
+
   # not giving it a file_url, so it won't try to import it from fedora, cause we're
   # not ready to test that here.
   let(:metadata) do
@@ -35,8 +37,45 @@ RSpec.describe Importers::FileSetImporter do
   end
 
 
+  describe "correct defaults" do
+    it "has the correct settings by default" do
+      default_importer = Importers::FileSetImporter.new({}, {})
+      expect(default_importer.instance_variable_get(:@create_derivatives)).
+        to be false
+      expect(default_importer.instance_variable_get(:@disable_bytestream_import)).
+        to be false
+      expect(default_importer.instance_variable_get(:@keep_conflicting_items)).
+        to be true
+    end
+  end
+
   context "simple fileset" do
     let(:file_set_importer) { Importers::FileSetImporter.new(metadata) }
+    let(:file_set_importer_remove_conflicts) { Importers::FileSetImporter.new(metadata, {keep_conflicting_items: false})}
+
+
+    describe "with conflicting item" do
+      let!(:existing_item) {
+        FactoryBot.create(:work, friendlier_id: metadata["id"])
+      }
+      it "doesn't attempt to run the import; leaves conflicting item in place." do
+        file_set_importer.import
+        expect(Work.where(friendlier_id: metadata["id"]).count).to eq(1)
+        expect(Asset.where( friendlier_id: metadata["id"]).count).to eq(0)
+      end
+    end
+
+    describe "with conflicting item (with remove conflicts set)" do
+      let!(:existing_item) {
+        FactoryBot.create(:work, friendlier_id: metadata["id"])
+      }
+      it "destroys the conflicting item and imports the new item in its place." do
+        file_set_importer_remove_conflicts.import
+        expect(Work.where(friendlier_id: metadata["id"]).count).to eq(0)
+        expect(Asset.where( friendlier_id: metadata["id"]).count).to eq(1)
+      end
+    end
+
 
     it "Imports properly" do
       file_set_importer.import

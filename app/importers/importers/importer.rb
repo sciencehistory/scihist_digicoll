@@ -25,10 +25,45 @@ module Importers
     # options:
     # keep_conflicting_items: default true, if false will delete conflicting items to make room for incoming items.
     def initialize(metadata, options = {})
-      #raise ArgumentError unless target_item.is_a? self.class.exportee
       @metadata = metadata
       @errors ||= []
-      @keep_conflicting_items = !!options[:keep_conflicting_items]
+      @conflicting_item_was_kept = false
+      @keep_conflicting_items = options[:keep_conflicting_items].nil? ? true : options[:keep_conflicting_items]
+    end
+
+
+
+
+
+    # This is the only method called on this class
+    # by the rake task after instantiation.
+    # It reads metadata from file, creates or finds
+    # an item based on it, blanks out some of its metadata for freshening up from import if needed,
+    # then saves it to the database.
+    def import
+      self.class.without_auto_timestamps do
+        if preexisting_item?
+          blank_out_for_reimport(target_item)
+        end
+        return if @conflicting_item_was_kept
+        common_populate
+        populate
+        save_target_item
+      end
+    end
+
+    # Is there a preexisting item with the same friendlier_id and the same type?
+    def preexisting_item?
+      # Calling target_item:
+      #   * checks for any conflicting items
+      #       * deletes them if it is allowed to,
+      #       * sets @conflicting_item_was_kept otherwise.
+      #   * creates or sets @target_item (without blanking it out -- that's done in the import method.)
+      #   * sets boolean ivar @preexisting_item_was_found
+      target_item
+      # If a conflicting item still exists, return false.
+      return false if @conflicting_item_was_kept
+      @preexisting_item_was_found
     end
 
 
@@ -44,67 +79,44 @@ module Importers
     #
     # Also sets ivar @preexisting_item_was_found for use with `#preexisting_item?` as a side-effect (bit hacky,
     # but we're refactoring here.)
+    #
+    # If there are conflicting items, either removes them or sets @conflicting_item_was_kept.
     def target_item
-      @conflicting_item = nil
       @target_item ||= begin
-        item_with_same_friendlier_id = Kithe::Model.where(friendlier_id:metadata['id']).first
-        if item_with_same_friendlier_id.is_a? self.class.destination_class                 
-          model_object = item_with_same_friendlier_id
-        else
-          @conflicting_item = item_with_same_friendlier_id
+        items_with_same_id = check_for_items_with_same_id
+
+        # First, handle any conflicts:
+        if items_with_same_id[:conflicting]
+          add_error("Found a conflicting #{items_with_same_id[:conflicting].type}.")
           if @keep_conflicting_items
-            add_error("Found a conflicting #{@conflicting_item.type}.")
+            @conflicting_item_was_kept = true
             return
-            # the calling method, @preexisting_item? will notice the conflict and skip importing this item.
-          else
-            add_error("Destroying #{@conflicting_item.type}  #{ @conflicting_item.friendlier_id }.")
-            @conflicting_item.destroy
-            # do not return; continue as usual now that the conflict is resolved.
           end
+          add_error("Destroying it.")
+          items_with_same_id[:conflicting].destroy!
         end
-        if (model_object)
+
+        # Now set @target_item to either the preexisting item, or a new item.
+        if items_with_same_id[:preexisting]
           @preexisting_item_was_found = true
+          model_object = items_with_same_id[:preexisting]
         else
           @preexisting_item_was_found = false
-          # wasn't already existing in db, we need to create one
           model_object = self.class.destination_class.new
         end
         model_object
       end
     end
 
-    # Is there a preexisting item with the same friendlier_id and the same type?
-    def preexisting_item?
-      # Calling target_item:
-      #   * checks for any conflicting items
-      #       * deletes them if it is allowed to,
-      #       * sets ivar @conflicting_item otherwise.
-      #   * creates or sets @target_item (without blanking it out -- that's done in the import method.)
-      #   * sets boolean ivar @preexisting_item_was_found
-      target_item
-      # If a conflicting item with the same friendlier_id but a different type was found... return false.
-      return false if @conflicting_item
-      @preexisting_item_was_found
-    end
-
-    # This is the only method called on this class
-    # by the rake task after instantiation.
-    # It reads metadata from file, creates or finds
-    # an item based on it, blanks out some of its metadata for freshening up from import if needed, 
-    # then saves it to the database.
-    def import
-      self.class.without_auto_timestamps do
-        if preexisting_item?
-          blank_out_for_reimport(target_item)
-        end
-        if @conflicting_item
-          add_error("Not importing this item:there is a conflicting #{@conflicting_item.type} with the same ID.").
-          return
-        end
-        common_populate
-        populate
-        save_target_item
-      end
+    # Checks for items with the same friendlier_id.
+    # If the item exists and it has the type we want to import, call it :preexisting.
+    # Said item can later be blanked out and refreshed with the data from the import.
+    # If it exists and has a *different* type, we flag that and call it :conflicting.
+    def check_for_items_with_same_id
+      item = Kithe::Model.where(friendlier_id:metadata['id']).first
+      return {} unless item
+      return {preexisting: item} if item.is_a? self.class.destination_class
+      return {conflicting: item}
     end
 
     # After running, check #errors for any errors you may want to report
