@@ -11,6 +11,7 @@
       //padding-bottom: $line-height-computed;
     }
     .collection-thumb {
+      min-width: 266px;
       flex-shrink: 0;
       margin-left: 3rem;
       margin-bottom: $spacer;
