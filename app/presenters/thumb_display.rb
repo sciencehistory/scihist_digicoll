@@ -1,12 +1,17 @@
-# A ViewModel presenter that displays an image for a given Kithe::Asset, suitable
-# for using in our search reuslts.
+# A ViewModel presenter that displays an image for a given Kithe::Asset.
 #
-# The Kithe::Image will usually be a leaf_representative of a Work or Collection.
+# The Kithe::Asset provided as an arg will usually be a leaf_representative of a Work or Collection.
 #
-#     <%= ResultThumbDisplay.new(work.leaf_representative).display %>
+#     <%= ThumbDisplay.new(work.leaf_representative).display %>
 #
-# leaf_representatives should be eager loaded to avoid n+1 queries in search results display.
-class ResultThumbDisplay < ViewModel
+# In a search results list, leaf_representatives should be eager loaded to avoid n+1 queries in search results display.
+#
+# By default, it will display thumb size :standard, suitable for use in results display, but you can
+# supply another thumb size initializer arg.
+#
+# By default, it will use our standard placeholder image if no derivaties are availalble, but you can
+# supply an alternate placeholder image path in initializer arg.
+class ThumbDisplay < ViewModel
   valid_model_type_names "Kithe::Asset", "NilClass"
 
   attr_accessor :placeholder_img_url, :thumb_size
