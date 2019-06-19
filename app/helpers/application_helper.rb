@@ -12,4 +12,9 @@ module ApplicationHelper
   def construct_page_title(title)
     "#{title} - #{application_name}"
   end
+
+  # for now any logged in user is a staff user
+  def current_staff_user?
+    current_user.present?
+  end
 end
