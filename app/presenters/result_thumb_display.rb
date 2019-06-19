@@ -9,6 +9,13 @@
 class ResultThumbDisplay < ViewModel
   valid_model_type_names "Kithe::Asset", "NilClass"
 
+  attr_accessor :placeholder_img_url
+
+  def initialize(model, placeholder_img_url: asset_path("placeholderbox.svg"))
+    @placeholder_img_url = placeholder_img_url
+    super(model)
+  end
+
   def display
     # for non-pdf/image assets, we currently just return a placeholder. We could in future
     # return a default audio/video icon thumb or something. At present we don't intend to use
@@ -23,7 +30,7 @@ class ResultThumbDisplay < ViewModel
   private
 
   def placeholder_image
-    tag "img", alt: "", src: asset_path("placeholderbox.svg"), width: Asset::THUMB_WIDTHS[:standard]
+    tag "img", alt: "", src: placeholder_img_url, width: Asset::THUMB_WIDTHS[:standard]
   end
 
   # "standard" size thumb, providing srcset wtih double-res image for better

@@ -31,4 +31,16 @@ describe ResultThumbDisplay do
       expect(img_tag["srcset"]).to eq("#{standard_deriv.url} 1x, #{standard_2x_deriv.url} 2x")
     end
   end
+
+  describe "specified placeholder image" do
+    let(:argument) { build(:asset) }
+    let(:rendered) { Nokogiri::HTML.fragment(ResultThumbDisplay.new(argument, placeholder_img_url: specified_img_url).display) }
+
+    let(:specified_img_url) { "http://example.org/image.jpg" }
+
+    it "is used for placeholder" do
+      expect(rendered).to have_selector("img[src='#{specified_img_url}']")
+    end
+
+  end
 end
