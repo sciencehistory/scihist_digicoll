@@ -40,6 +40,11 @@ class WorkResultDisplay < ViewModel
     end
   end
 
+  def thumbnail_html
+    ThumbDisplay.new(model.leaf_representative).display
+  end
+
+
   def link_to_href
     work_path(model)
   end
