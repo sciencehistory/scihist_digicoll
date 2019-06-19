@@ -47,7 +47,7 @@ class ThumbDisplay < ViewModel
   private
 
   def placeholder_image
-    tag "img", alt: "", src: placeholder_img_url, width: Asset::THUMB_WIDTHS[:standard]
+    tag "img", alt: "", src: placeholder_img_url, width: "100%";
   end
 
   # "standard" size thumb, providing srcset wtih double-res image for better
