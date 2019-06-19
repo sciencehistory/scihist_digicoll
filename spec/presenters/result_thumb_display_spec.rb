@@ -2,7 +2,8 @@ require 'rails_helper'
 
 describe ResultThumbDisplay do
   let(:placeholder_selector) { "img[src*=placeholder]" }
-  let(:rendered) { Nokogiri::HTML.fragment(ResultThumbDisplay.new(argument).display) }
+  let(:instance) { ResultThumbDisplay.new(argument) }
+  let(:rendered) { Nokogiri::HTML.fragment(instance.display) }
 
   describe "with nil argument" do
     let(:argument) { nil }
@@ -34,13 +35,29 @@ describe ResultThumbDisplay do
 
   describe "specified placeholder image" do
     let(:argument) { build(:asset) }
-    let(:rendered) { Nokogiri::HTML.fragment(ResultThumbDisplay.new(argument, placeholder_img_url: specified_img_url).display) }
+    let(:instance) { ResultThumbDisplay.new(argument, placeholder_img_url: specified_img_url) }
 
     let(:specified_img_url) { "http://example.org/image.jpg" }
 
     it "is used for placeholder" do
       expect(rendered).to have_selector("img[src='#{specified_img_url}']")
     end
+  end
 
+  describe "specified thumb size" do
+    let(:thumb_size) { :mini }
+    let(:argument) { create(:asset, :inline_promoted_file)}
+    let(:instance) { ResultThumbDisplay.new(argument, thumb_size: thumb_size) }
+
+    it "renders" do
+      deriv    = argument.derivative_for("thumb_#{thumb_size}")
+      deriv_2x = argument.derivative_for("thumb_#{thumb_size}_2X")
+
+      img_tag = rendered.at_css("img")
+
+      expect(img_tag).to be_present
+      expect(img_tag["src"]). to eq(deriv.url)
+      expect(img_tag["srcset"]).to eq("#{deriv.url} 1x, #{deriv_2x.url} 2x")
+    end
   end
 end

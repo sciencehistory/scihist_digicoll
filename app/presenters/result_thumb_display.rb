@@ -9,10 +9,22 @@
 class ResultThumbDisplay < ViewModel
   valid_model_type_names "Kithe::Asset", "NilClass"
 
-  attr_accessor :placeholder_img_url
+  attr_accessor :placeholder_img_url, :thumb_size
 
-  def initialize(model, placeholder_img_url: asset_path("placeholderbox.svg"))
+  # collection_page for CollectionThumbAssets only, oh well we allow them all for now.
+  ALLOWED_THUMB_SIZES = Asset::THUMB_WIDTHS.keys + [:collection_page]
+
+  def initialize(model,
+    placeholder_img_url: asset_path("placeholderbox.svg"),
+    thumb_size: :standard)
+
     @placeholder_img_url = placeholder_img_url
+    @thumb_size = thumb_size.to_sym
+
+    unless ALLOWED_THUMB_SIZES.include? thumb_size
+      raise ArgumentError.new("thumb_size must be in #{ALLOWED_THUMB_SIZES}, but was '#{thumb_size}'")
+    end
+
     super(model)
   end
 
@@ -46,8 +58,8 @@ class ResultThumbDisplay < ViewModel
   # URLs depending on shrine settings (beware of performance issues
   # if they are signed?)
   def multi_res_standard_thumb
-    res_1x_url = model.derivative_for(:thumb_standard).try(:url)
-    res_2x_url = model.derivative_for(:thumb_standard_2X).try(:url)
+    res_1x_url = model.derivative_for("thumb_#{thumb_size}").try(:url)
+    res_2x_url = model.derivative_for("thumb_#{thumb_size}_2X").try(:url)
 
     unless res_1x_url && res_2x_url
       return placeholder_image
