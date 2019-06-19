@@ -1,8 +1,8 @@
 require 'rails_helper'
 
-describe ResultThumbDisplay do
+describe ThumbDisplay do
   let(:placeholder_selector) { "img[src*=placeholder]" }
-  let(:instance) { ResultThumbDisplay.new(argument) }
+  let(:instance) { ThumbDisplay.new(argument) }
   let(:rendered) { Nokogiri::HTML.fragment(instance.display) }
 
   describe "with nil argument" do
@@ -35,7 +35,7 @@ describe ResultThumbDisplay do
 
   describe "specified placeholder image" do
     let(:argument) { build(:asset) }
-    let(:instance) { ResultThumbDisplay.new(argument, placeholder_img_url: specified_img_url) }
+    let(:instance) { ThumbDisplay.new(argument, placeholder_img_url: specified_img_url) }
 
     let(:specified_img_url) { "http://example.org/image.jpg" }
 
@@ -47,7 +47,7 @@ describe ResultThumbDisplay do
   describe "specified thumb size" do
     let(:thumb_size) { :mini }
     let(:argument) { create(:asset, :inline_promoted_file)}
-    let(:instance) { ResultThumbDisplay.new(argument, thumb_size: thumb_size) }
+    let(:instance) { ThumbDisplay.new(argument, thumb_size: thumb_size) }
 
     it "renders" do
       deriv    = argument.derivative_for("thumb_#{thumb_size}")
