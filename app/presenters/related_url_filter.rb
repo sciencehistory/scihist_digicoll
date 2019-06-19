@@ -20,7 +20,7 @@ class RelatedUrlFilter
   attr_reader :input_related_urls, :opac_urls, :filtered_related_urls, :related_work_urls
 
   def initialize(related_urls)
-    @input_related_urls = related_urls
+    @input_related_urls = related_urls || []
     filter!
   end
 
