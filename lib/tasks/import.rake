@@ -87,7 +87,9 @@ namespace :scihist_digicoll do
           progress_bar.log("ERROR: Empty json file at #{path}")
           next
         end
-        Importers::GenericWorkImporter.new(json_str).tap do |importer|
+        Importers::GenericWorkImporter.new(json_str,
+          keep_conflicting_items: keep_conflicting_items
+          ).tap do |importer|
           importer.import
           importer.errors.each { |e| progress_bar.log(e) }
         end
@@ -104,7 +106,9 @@ namespace :scihist_digicoll do
 
       progress_bar.log("INFO: Importing Collections")
       collection_dir.each do |path|
-        Importers::CollectionImporter.new(JSON.parse(File.read(path))).tap do |importer|
+        Importers::CollectionImporter.new(JSON.parse(File.read(path)),
+          keep_conflicting_items: keep_conflicting_items
+          ).tap do |importer|
           importer.import
           importer.errors.each { |e| progress_bar.log(e) }
         end
