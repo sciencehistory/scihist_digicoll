@@ -38,7 +38,6 @@ class CollectionResultDisplay < ViewModel
     ThumbDisplay.new(model.leaf_representative, placeholder_img_url: asset_path("default_collection.svg")).display
   end
 
-  # TODO, link to Collection detail page when it exists.
   def link_to_href
     collection_path(model)
   end
