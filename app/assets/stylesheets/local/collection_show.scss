@@ -1,0 +1,36 @@
+
+.collection-show {
+  margin-left: auto;
+  margin-right: auto;
+
+  .collection-top {
+    display: flex;
+    .collection-desc {
+      flex-grow: 1;
+      flex-shrink: 1;
+      //padding-bottom: $line-height-computed;
+    }
+    .collection-thumb {
+      flex-shrink: 0;
+      margin-left: 3rem;
+      margin-bottom: $spacer;
+
+      @include media-breakpoint-down(sm) {
+        display: none;
+      }
+    }
+  }
+
+  .collection_description {
+    max-width: $max-readable-width;
+  }
+
+  .chf-attributes {
+    margin-left: -0.3em;
+  }
+
+  .chf-attributes > tbody >tr:first-child td, .chf-attributes > tbody > tr:first-child th {
+    border-top: 0; // nope, not here.
+  }
+}
+

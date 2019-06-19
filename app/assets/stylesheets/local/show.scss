@@ -1,0 +1,23 @@
+// common styles for work/collection show
+
+
+#collapseProvenanceNotes {
+  margin-top: 1em;
+}
+
+.show-admin {
+  margin-bottom: $spacer;
+}
+
+.show-genre {
+  @extend %special-label;
+  color: $special-label-muted-color;
+  margin-bottom: .125rem;
+}
+
+.show-title h1 {
+  @extend .h2;
+  @extend .brand-alt-h2;
+  margin-top: 0;
+  margin-bottom: $paragraph-spacer;
+}

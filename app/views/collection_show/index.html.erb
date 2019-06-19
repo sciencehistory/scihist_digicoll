@@ -4,7 +4,7 @@
 
   <% if can? :update, collection %>
     <div class="show-admin">
-      <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-primary" %>
+      <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-outline-primary" %>
     </div>
   <% end %>
   <div class="collection-top">
@@ -36,10 +36,16 @@
             </tr>
           <% end %>
 
-          <% presenter.related_urls.each do |url| %>
+          <% if presenter.related_urls.present? %>
             <tr>
               <th>Related URL</th>
-              <td><%= ExternalLinkDisplay.new(url).display %></td>
+              <td>
+                <ul>
+                  <% presenter.related_urls.each do |url| %>
+                    <li class="attribute"><%= ExternalLinkDisplay.new(url).display %></li>
+                  <% end %>
+                </ul>
+              </td>
             </tr>
           <% end %>
         </table>
@@ -48,7 +54,7 @@
     </div>
 
     <div class="collection-thumb">
-      <%= ThumbDisplay.new(presenter.leaf_representative, placeholder_img_url: asset_path("default_collection.svg")).display %>
+      <%= ThumbDisplay.new(presenter.leaf_representative, thumb_size: :collection_page, placeholder_img_url: asset_path("default_collection.svg")).display %>
     </div>
   </div>
 
