@@ -6,7 +6,7 @@
 
     <div class="scihist-results-list-item-thumb">
       <%= link_to view.link_to_href do %>
-        <%= ResultThumbDisplay.new(model.leaf_representative).display %>
+        <%= ThumbDisplay.new(model.leaf_representative).display %>
       <% end %>
       <%= view.display_num_children %>
     </div>
