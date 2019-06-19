@@ -1,0 +1,91 @@
+// At large sizes this is a table with labels in one column and values in another.
+// At small sizes it breaks down, and is just labels on top of values, in a list.
+// It's some pretty hacky CSS to make that so at the moment, so it goes.
+//
+// Used on 'show' pages for metadata in tabular format.
+//
+// At small sizes that may still be table, we turn on abbreviation, to keep long
+// words from breaking the box in edge cases. But browser hyphenation algorithm can be funky,
+// so only at small sizes where we're likely to need it.
+
+$attribute-cell-padding: 0.66em;
+$attribute-table-max-tabular: 22.5em;
+
+.chf-attributes {
+  @extend .table;
+  @extend .table-sm;
+  width: 100%;
+  max-width: ($max-readable-width / 0.67);
+
+  td, th {
+    padding: 0.3em; // 5px at 17px font em
+  }
+
+
+  // small, break down table
+  @media (max-width: $attribute-table-max-tabular) {
+    word-break: break-word;
+    hyphens: auto;
+
+    table, tbody, thead, td, th {
+      display: block;
+      width: 100%;
+    }
+    td {
+      border-top: 0;
+      &:not(:last-child) {
+        margin-bottom: $paragraph-spacer / 2;
+      }
+      ul {
+        padding-left: 0;
+      }
+    }
+    & > tbody > tr  td {
+      border-top: 0;
+    }
+  }
+
+  // At larger sizes, a table for real.
+  @media (min-width: $attribute-table-max-tabular + 1) {
+    //table-layout: fixed;
+    overflow: hidden;
+
+    & > tbody > tr:first-child  {
+      td, th {
+        border-top: 3px solid $table-border-color;
+      }
+    }
+
+    td > ul {
+      list-style: none;
+    }
+
+    td, th {
+      vertical-align: baseline;
+    }
+    th, tbody > tr > th { // horizontal label
+      font-weight: normal;
+      width: 33%;
+      max-width: 11em; // ~185px at 17px em
+      padding-right: $attribute-cell-padding;
+    }
+    td {
+      width: 67%;
+    }
+    td ul {
+      padding-left: 0;
+      margin-bottom: 0;
+    }
+    .attribute:not(:last-child) {
+      margin-bottom: $paragraph-spacer / 2;
+    }
+  }
+}
+
+// .attribute-sub-head {
+//   @extend .brand-alt-h3;
+//   @extend .h3;
+//   margin-top: $line-height-computed * 1.5;
+//   margin-bottom: 1px;
+//   padding: $table-condensed-cell-padding;
+// }
