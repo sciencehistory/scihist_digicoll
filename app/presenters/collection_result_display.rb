@@ -20,7 +20,7 @@ class CollectionResultDisplay < ViewModel
 
   # TODO, link to Collections page, when it exists
   def display_genres
-    ["Collection"]
+    link_to "Collections", "#"
   end
 
   # Requires helper method `child_counter` to be available, returning a
