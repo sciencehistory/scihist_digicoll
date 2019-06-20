@@ -67,6 +67,8 @@ namespace :scihist do
     desc "sync all Works and Collections to solr index"
     task :reindex => :environment do
       scope = Kithe::Model.where(kithe_model_type: ["collection", "work"]) # we don't index Assets
+      # we should pre-load contained_by_ids since the work indexer will use
+      scope = scope.includes(:contains_contained_by)
 
       progress_bar = ProgressBar.create(total: scope.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
       Kithe::Indexable.index_with(batching: true) do
