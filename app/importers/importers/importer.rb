@@ -28,12 +28,10 @@ module Importers
       @metadata = metadata
       @errors ||= []
       @conflicting_item_was_kept = false
+      explanation = 'options[:keep_conflicting_items] should be true, false or nil.'
+      raise ArgumentError, explanation unless [true,false,nil].include? options[:keep_conflicting_items]
       @keep_conflicting_items = options[:keep_conflicting_items].nil? ? true : options[:keep_conflicting_items]
     end
-
-
-
-
 
     # This is the only method called on this class
     # by the rake task after instantiation.
