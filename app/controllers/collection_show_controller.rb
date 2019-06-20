@@ -8,14 +8,15 @@
 # There may be a less hacky way to do this, esp in Blacklight 7, but this is a port of
 # what was in chf_sufia. There also may not be.
 class CollectionShowController < CatalogController
-  before_action :set_collection
+  before_action :set_collection, :check_auth
 
-  def index
-    authorize! :read, @collection
-    super
-  end
+  # index action inherited from CatalogController, that's what we use.
 
   private
+
+  def check_auth
+    authorize! :read, @collection
+  end
 
   # Technically overrides a Blacklight method, although we do our own thing with it
   def presenter
