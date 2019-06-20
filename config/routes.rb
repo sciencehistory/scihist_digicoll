@@ -34,7 +34,12 @@ Rails.application.routes.draw do
 
   # public-facing routes
   resources :works, only: [:show]
+
+  # Our collections show controller provides a Blacklight search, so needs
+  # some additional routes for various search behaviors too.
   get "/collections/:id", to: "collection_show#index", as: :collection
+  get "collections/:id/range_limit" => "collection_show#range_limit"
+  get "collections/:id/facet" => "collection_show#facet"
 
 
   ##
