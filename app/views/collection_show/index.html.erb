@@ -7,6 +7,7 @@
       <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-outline-primary" %>
     </div>
   <% end %>
+
   <div class="collection-top">
     <div class="collection-desc clearfix">
       <div class="show-title">
@@ -56,6 +57,39 @@
     <div class="collection-thumb">
       <%= ThumbDisplay.new(presenter.leaf_representative, thumb_size: :collection_page, placeholder_img_url: asset_path("default_collection.svg")).display %>
     </div>
+  </div>
+
+  <div class="collection-search-form">
+      <h2 class="search-title">
+            Search within the <%= presenter.title %>
+      </h2>
+
+      <%= form_tag "", method: :get do |f| %>
+       <div class="input-group">
+          <%= search_field_tag :q, '', class: "q form-control",
+              id: "q",
+              autocomplete: "off",
+              placeholder: t("blacklight.search.form.search.placeholder"),
+              :"aria-label" => t('blacklight.search.form.search_field.label')
+          %>
+
+          <label class="sr-only" for="q"><%= t('blacklight.search.form.search_field.label') %></label>
+
+          <div class="input-group-append">
+            <button type="submit" class="btn btn-emphasis" title="Search" id="search-submit-header">
+              <i class="fa fa-search" aria-hidden="true"></i>
+              <%= t('blacklight.search.form.submit') %>
+            </button>
+          </div>
+        </div>
+
+        <%= hidden_field_tag :sort, params[:sort], id: 'collection_sort' %>
+      <% end %>
+
+  </div>
+
+
+
   </div>
 
 </div>
