@@ -39,8 +39,19 @@ class CollectionShowController < CatalogController
     end
   end
 
+  configure_blacklight do |config|
+    # Our custom sub-class to limit just to docs in collection, with collection id
+    # taken from params[:id]
+    config.search_builder_class = ::SearchBuilder::WithinCollectionBuilder
+  end
+
 
   private
+
+  # Our custom SearchBuilder needs to know collection id (UUID)
+  def search_service_context
+    { collection_id: collection.id }
+  end
 
   def check_auth
     authorize! :read, @collection
