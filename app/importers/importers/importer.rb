@@ -67,9 +67,12 @@ module Importers
     def import
       self.class.without_auto_timestamps do
         if preexisting_item?
+          if !target_item.is_a? self.class.destination_class
+            add_error("Skipping this item; found a conflicting #{target_item.type}")
+            return
+          end
           blank_out_for_reimport(target_item)
         end
-
         common_populate
         populate
         save_target_item
