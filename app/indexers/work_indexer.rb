@@ -62,9 +62,20 @@ class WorkIndexer < Kithe::Indexer
       acc << DateIndexHelper.new(record).max_year
     end
 
+    # We need to know what collection(s) this work is in, to support search-within-a-collection.
+    #
+    # NOTE: This will do an SQL query to fetch collection ids, if are you indexing a bunch
+    # at once, you should eager-load contains_contained_by assoc to join table.
+    #
+    # NOTE: If Collection contained by changes for a work, it needs to be reindexed.
+    # Right now we only allow collection membership to be changed in the UI on the Work
+    # edit page, and clicking save will re-index the work anyway (need to test to be sure).
+    # But if you are programmatically changing the join table objects, beware.
+    to_field "collection_id_ssim", obj_extract("contains_contained_by", "to_a", "container_id")
+
+
     # Note standard created_at, updated_at, and published are duplicated
     # in CollectionIndexer. Maybe we want to DRY it somehow.
-
 
     # May want to switch to or add a 'date published' instead, right
     # now we only have date added to DB, which is what we had in sufia.
