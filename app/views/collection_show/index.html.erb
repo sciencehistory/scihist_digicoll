@@ -88,6 +88,26 @@
 
   </div>
 
+  <div class="chf-constraints-wrapper">
+    <%= render 'catalog/constraints' %>
+  </div>
+
+  <div class="row">
+    <% if @response.documents.present? %>
+      <div class="sidebar-col">
+       <%= render 'facets' %>
+      </div>
+    <% end %>
+    <div class="content-col">
+      <%# per-page and sort controls, from Blacklight partial %>
+      <%= render 'search_header' %>
+
+      <%= render "document_list", documents: @response.documents %>
+    </div>
+  </div>
+
+
+
 
 
   </div>
