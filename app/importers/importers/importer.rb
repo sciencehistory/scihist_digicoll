@@ -50,7 +50,7 @@ module Importers
       end
     end
 
-    # Is there a preexisting item with the same friendlier_id and the same type?
+    # Is there a preexisting item with the same friendlier_id *and* the same type?
     def preexisting_item?
       # Calling target_item:
       #   * checks for any conflicting items
@@ -119,7 +119,7 @@ module Importers
 
     # After running, check #errors for any errors you may want to report
     # to the user.
-    def save_target_item()
+    def save_target_item
       begin
         target_item.save!
       rescue StandardError => e
@@ -174,7 +174,7 @@ module Importers
 
     # What errors have been accumulated? Includes any validation errors
     # on the record to be saved, and any errors added with #add_error
-    def errors()
+    def errors
       (@errors + (target_item&.errors&.full_messages || [])).collect do |str|
         "#{self.class.importee} #{metadata['id']}: #{str}"
       end
@@ -183,7 +183,7 @@ module Importers
 
     # Take the new item and add all metadata to it.
     # This do not save the item.
-    def common_populate()
+    def common_populate
       target_item.friendlier_id = @metadata['id']
       target_item.title = @metadata['title'].first
 
@@ -214,12 +214,12 @@ module Importers
     end
 
     # the old importee class name, as a string, e.g. 'FileSet'
-    def self.importee()
+    def self.importee
       raise NotImplementedError
     end
 
     # the new importee class, e.g. Asset
-    def self.destination_class()
+    def self.destination_class
       raise NotImplementedError
     end
 
@@ -233,8 +233,5 @@ module Importers
       Kithe::Model.record_timestamps = original
     end
 
-    def same_friendlier_id_different_type
-      Kithe::Model.where(friendlier_id:metadata['id']).where.not(type:self.class.destination_class.to_s).first
-    end
   end
 end
