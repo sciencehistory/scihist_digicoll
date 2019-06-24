@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 # Mostly we trust Kithe::Indexable to work, but let's do a basic smoke test
-describe "Work auto-indexes in Solr with kithe", indexable_callbacks: true do
+describe "Work auto-indexes in Solr", indexable_callbacks: true do
   describe "with stubbed solr" do
     let(:update_url) { "#{ScihistDigicoll::Env.lookup!(:solr_url)}/update/json?softCommit=true" }
     before do
@@ -17,6 +17,41 @@ describe "Work auto-indexes in Solr with kithe", indexable_callbacks: true do
       work.save!
 
       expect(WebMock).to have_requested(:post, update_url)
+    end
+
+    # Make sure that changing the collection triggers a reindex, because we
+    # need it to, since we index collection id with work to support search-inside-collection.
+    describe "on contained_by change" do
+      let(:collection) { FactoryBot.create(:collection)}
+      let(:work) { FactoryBot.create(:work) }
+
+      it "reindexes on contained_by change" do
+        work.contained_by << collection
+
+        expect(work).to receive(:update_index).and_call_original
+        expect(Work.kithe_indexable_mapper).to receive(:process_with).and_call_original
+
+        work.save!
+      end
+
+      it "reindexes on contained_by_ids change" do
+        work.contained_by_ids << collection.id
+
+        expect(work).to receive(:update_index).and_call_original
+        expect(Work.kithe_indexable_mapper).to receive(:process_with).and_call_original
+
+        work.save!
+      end
+
+      # This does NOT currently work to trigger reindexing, beware!
+      skip "reindexes on collection contains change" do
+        collection.contains << work
+
+        expect(work).to receive(:update_index).and_call_original
+        expect(Work.kithe_indexable_mapper).to receive(:process_with).and_call_original
+
+        collection.save!
+      end
     end
   end
 
