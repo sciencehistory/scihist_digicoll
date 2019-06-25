@@ -36,8 +36,9 @@ body.scihist-main-layout {
     max-width: 81.25rem;
   }
 
-  // kind of like a bootstrap grid column, but with fixed width.
-  #sidebar {
+  // kind of like a bootstrap grid column, but with fixed width. Meant to be
+  // inside a bootstrap `row` next to #column below.
+  #sidebar, .sidebar-col {
     @include make-col-ready;
     padding-bottom: .625rem;
 
@@ -56,7 +57,7 @@ body.scihist-main-layout {
     }
   }
 
-  #content {
+  #content, .content-col {
     @include make-col-ready;
     @include media-breakpoint-up($layout-expand-up) {
       // We need to keep this thing within the screen, so it won't flex-wrap
