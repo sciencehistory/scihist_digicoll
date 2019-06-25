@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "Public work show page", type: :system do
+describe "Public work show page", type: :system, js: false do
 
   describe "work with complete metadata" do
     def expect_attribute_row(header, text_values, as_links: false)
@@ -78,6 +78,15 @@ describe "Public work show page", type: :system do
       expect_attribute_row("Series arrangement", work.series_arrangement)
 
       expect_attribute_row("Physical container", work.physical_container.display_as)
+    end
+  end
+
+  describe "work with very little metadata" do
+    let(:work) { create(:work) }
+    it "displays without error" do
+      visit work_path(work)
+      expect(page).to have_http_status(:success)
+      expect(page).to have_selector("h1", text: work.title)
     end
   end
 end
