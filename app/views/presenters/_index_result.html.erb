@@ -6,7 +6,7 @@
 
     <div class="scihist-results-list-item-thumb">
       <%= link_to view.link_to_href do %>
-        <%= ResultThumbDisplay.new(model.leaf_representative).display %>
+        <%= view.thumbnail_html %>
       <% end %>
       <%= view.display_num_children %>
     </div>
@@ -19,7 +19,7 @@
       <% end %>
 
       <h2 class="scihist-results-list-item-head brand-alt-h2" itemprop="name">
-        <%= link_to model.title, work_path(model), itemprop: "url" %>
+        <%= link_to model.title, view.link_to_href, itemprop: "url" %>
         <%= publication_badge(model) %>
       </h2>
 
