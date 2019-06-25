@@ -16,6 +16,8 @@ class ThumbDisplay < ViewModel
 
   attr_accessor :placeholder_img_url, :thumb_size
 
+  alias_method :asset, :model
+
   # collection_page for CollectionThumbAssets only, oh well we allow them all for now.
   ALLOWED_THUMB_SIZES = Asset::THUMB_WIDTHS.keys + [:collection_page]
 
@@ -39,7 +41,7 @@ class ThumbDisplay < ViewModel
     # for non-pdf/image assets, we currently just return a placeholder. We could in future
     # return a default audio/video icon thumb or something. At present we don't intend to use
     # a/v as representative images.
-    if model.nil? || model.content_type.nil? || !(model.content_type == "application/pdf" || model.content_type.start_with?("image/"))
+    if asset.nil? || asset.content_type.nil? || !(asset.content_type == "application/pdf" || asset.content_type.start_with?("image/"))
       return placeholder_image_tag
     end
 
@@ -100,25 +102,25 @@ class ThumbDisplay < ViewModel
   # used for lazysizes-aspectratio
   # https://github.com/aFarkas/lazysizes/tree/gh-pages/plugins/aspectratio
   def aspect_ratio
-    if model && model.width && model.height
-      "#{model.width}/#{model.height}"
+    if asset && asset.width && asset.height
+      "#{asset.width}/#{asset.height}"
     else
       nil
     end
   end
 
   def res_1x_url
-    @res_1x_url ||= model.derivative_for("thumb_#{thumb_size}").try(:url)
+    @res_1x_url ||= asset.derivative_for("thumb_#{thumb_size}").try(:url)
   end
 
   def res_2x_url
-    @res_2x_url ||= model.derivative_for("thumb_#{thumb_size}_2X").try(:url)
+    @res_2x_url ||= asset.derivative_for("thumb_#{thumb_size}_2X").try(:url)
   end
 
   def src_attributes
     {
        src: res_1x_url,
-       srcset: "#{res_1x_url} 1x, #{res_2x_url} 2x" if
+       srcset: "#{res_1x_url} 1x, #{res_2x_url} 2x"
     }
   end
 end
