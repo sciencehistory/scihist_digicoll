@@ -13,7 +13,22 @@ describe ThumbDisplay do
   end
 
   describe "asset missing derivatives" do
-    let(:argument) { create(:asset) }
+    let(:argument) do
+      create(:asset).tap do |asset|
+        allow(asset).to receive(:content_type).and_return("image/jpeg")
+      end
+    end
+    it "renders placeholder" do
+      expect(rendered).to have_selector(placeholder_selector)
+    end
+  end
+
+  describe "non-handlable type" do
+    let(:argument) do
+      create(:asset).tap do |asset|
+        allow(asset).to receive(:content_type).and_return("audio/mpeg")
+      end
+    end
     it "renders placeholder" do
       expect(rendered).to have_selector(placeholder_selector)
     end
