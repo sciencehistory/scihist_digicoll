@@ -33,5 +33,39 @@
   .chf-attributes > tbody >tr:first-child td, .chf-attributes > tbody > tr:first-child th {
     border-top: 0; // nope, not here.
   }
+
+  .collection-search-form {
+    margin: $spacer 0;
+    padding: ($spacer);
+    background-color: $bg-lightly-shaded;
+    display: inline-block;
+
+    width: 100%;
+    max-width: $max-readable-width;
+
+    .search-title {
+      font-size: $h4-font-size;
+      margin-bottom: $spacer;
+      font-weight: 600;
+    }
+
+    .input-group {;
+      // hacky way to have extra rounded corners on search box, matching
+      // nav bar search box.
+      input[type=search] {
+        border-top-left-radius: $btn-border-radius;
+        border-bottom-left-radius: $btn-border-radius;
+      }
+      button:last-child {
+        border-top-right-radius: $btn-border-radius;
+        border-bottom-right-radius: $btn-border-radius;
+      }
+    }
+  }
+
+  #appliedParams.constraints-container {
+    // undo negatie margin from when it's meant to be at top of page, messy.
+    margin-top: 0;
+  }
 }
 

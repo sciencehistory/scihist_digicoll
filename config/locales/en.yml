@@ -61,3 +61,9 @@ en:
     pagination_compact:
       next: "Next" # get rid of ugly unicode carets
       previous: "Previous" # get rid of ugly unicode carets
+
+  collection:
+    search_form:
+      search_field:
+        label: "Search this collection for"
+        placeholder: "Search"
