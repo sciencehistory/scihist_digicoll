@@ -21,10 +21,12 @@ class ThumbDisplay < ViewModel
 
   def initialize(model,
     placeholder_img_url: asset_path("placeholderbox.svg"),
-    thumb_size: :standard)
+    thumb_size: :standard,
+    lazy: false)
 
     @placeholder_img_url = placeholder_img_url
     @thumb_size = thumb_size.to_sym
+    @lazy = lazy
 
     unless ALLOWED_THUMB_SIZES.include? thumb_size
       raise ArgumentError.new("thumb_size must be in #{ALLOWED_THUMB_SIZES}, but was '#{thumb_size}'")
@@ -45,6 +47,10 @@ class ThumbDisplay < ViewModel
   end
 
   private
+
+  def lazy?
+    !!@lazy
+  end
 
   def placeholder_image_tag
     tag "img", alt: "", src: placeholder_img_url, width: "100%";
@@ -71,20 +77,34 @@ class ThumbDisplay < ViewModel
       return placeholder_image_tag
     end
 
-    # used for lazysizes-aspectratio
-    # https://github.com/aFarkas/lazysizes/tree/gh-pages/plugins/aspectratio
-    aspect_ratio = if model && model.width && model.height
-      "#{model.width}/#{model.height}"
+    img_attributes = {
+      alt: "",
+      data: {
+        aspectratio: aspect_ratio
+      }
+    }
+
+    if lazy?
+      # tell lazysizes.js to load with class, and put src/srcset only in
+      # data- attributes, so the image will not be loaded immediately, but lazily
+      # by lazysizes.js.
+      img_attributes[:class] = "lazyload"
+      img_attributes[:data].merge!(src_attributes)
+    else
+      img_attributes.merge!(src_attributes)
     end
 
-    tag("img",
-      {
-        alt: "",
-        data: {
-          aspectratio: aspect_ratio
-        }
-      }.merge(src_attributes)
-    )
+    tag("img", img_attributes)
+  end
+
+  # used for lazysizes-aspectratio
+  # https://github.com/aFarkas/lazysizes/tree/gh-pages/plugins/aspectratio
+  def aspect_ratio
+    if model && model.width && model.height
+      "#{model.width}/#{model.height}"
+    else
+      nil
+    end
   end
 
   def res_1x_url
@@ -98,7 +118,7 @@ class ThumbDisplay < ViewModel
   def src_attributes
     {
        src: res_1x_url,
-       srcset: "#{res_1x_url} 1x, #{res_2x_url} 2x"
+       srcset: "#{res_1x_url} 1x, #{res_2x_url} 2x" if
     }
   end
 end

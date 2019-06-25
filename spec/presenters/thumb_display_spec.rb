@@ -71,10 +71,32 @@ describe ThumbDisplay do
       img_tag = rendered.at_css("img")
 
       expect(img_tag).to be_present
-      expect(img_tag["src"]). to eq(deriv.url)
+      expect(img_tag["src"]).to eq(deriv.url)
       expect(img_tag["srcset"]).to eq("#{deriv.url} 1x, #{deriv_2x.url} 2x")
 
       expect(img_tag["data-aspectratio"]).to eq "#{argument.width}/#{argument.height}"
+    end
+
+    describe "lazy load with lazysizes.js" do
+      let(:thumb_size) { :mini }
+      let(:argument) { create(:asset, :inline_promoted_file)}
+      let(:instance) { ThumbDisplay.new(argument, thumb_size: thumb_size, lazy: true) }
+
+      it "renders with lazysizes class and data- attributes" do
+        deriv    = argument.derivative_for("thumb_#{thumb_size}")
+        deriv_2x = argument.derivative_for("thumb_#{thumb_size}_2X")
+
+        img_tag = rendered.at_css("img")
+
+        expect(img_tag).to be_present
+        expect(img_tag["src"]).not_to be_present
+        expect(img_tag["srcset"]).not_to be_present
+
+        expect(img_tag["class"]).to eq "lazyload"
+        expect(img_tag["data-aspectratio"]).to eq "#{argument.width}/#{argument.height}"
+        expect(img_tag["data-src"]).to eq(deriv.url)
+        expect(img_tag["data-srcset"]).to eq("#{deriv.url} 1x, #{deriv_2x.url} 2x")
+      end
     end
   end
 end
