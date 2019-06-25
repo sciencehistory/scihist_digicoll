@@ -71,7 +71,7 @@ class ThumbDisplay < ViewModel
     res_2x_url = model.derivative_for("thumb_#{thumb_size}_2X").try(:url)
 
     unless res_1x_url && res_2x_url
-      return placeholder_image
+      return placeholder_image_tag
     end
 
     tag("img",
