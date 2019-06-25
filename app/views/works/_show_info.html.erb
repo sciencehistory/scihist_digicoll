@@ -1,0 +1,186 @@
+<%# the right column of a work show page including description, metadata,
+    citation, related items.
+
+    In a partial to make it easier to re-use in templates that differ in how
+    they show media, but still need this.
+%>
+
+<%= DescriptionDisplayFormatter.new(@work.description).format  %>
+
+<table class="work chf-attributes">
+
+  <% decorator.grouped_creators.each do |category, values| %>
+    <%= AttributeTable::RowDisplay.new(category, values: values, link_to_facet: "creator_facet").display %>
+  <% end %>
+
+  <% if @work.provenance.present? %>
+    <tr>
+      <th>Provenance</th>
+      <td><%= WorkProvenanceDisplay.new(@work.provenance).display %></td>
+    </tr>
+  <% end %>
+
+
+  <% decorator.grouped_places.each do |category, values| %>
+    <%= AttributeTable::RowDisplay.new(category, values: values, link_to_facet: "place_facet").display %>
+  <% end %>
+
+  <%= AttributeTable::RowDisplay.new(:format, values: @work.format.map(&:humanize), link_to_facet: "format_facet").display %>
+
+
+  <% if decorator.humanized_content_types.length > 0 %>
+    <tr>
+      <th>Original file type</th>
+      <td>
+          <%= decorator.humanized_content_types.join(", ") %>
+      </td>
+    </tr>
+  <% end %>
+
+  <%= AttributeTable::RowDisplay.new(:genre, values: @work.genre, link_to_facet: "genre_facet").display %>
+  <%= AttributeTable::RowDisplay.new(:medium, values: @work.medium, link_to_facet: ("medium_facet" if current_staff_user?)).display %>
+  <%= AttributeTable::RowDisplay.new(:extent, values: @work.extent).display %>
+  <%= AttributeTable::RowDisplay.new(:language, values: @work.language, link_to_facet: "language_facet").display %>
+
+  <% if @work.inscription.present? %>
+    <tr>
+      <th>Inscription</th>
+      <td>
+        <ul>
+          <% @work.inscription.each do |inscription| %>
+          <li class="attribute"><%= inscription.display_as %></li>
+          <% end %>
+        </ul>
+      </td>
+    </tr>
+  <% end %>
+
+  <%= AttributeTable::RowDisplay.new(:subject, values: @work.subject, link_to_facet: "subject_facet").display %>
+
+  <% if @work.rights.present? %>
+    <tr>
+      <th>Rights</th>
+      <td>
+        <%= link_to RightsTerms.label_for(@work.rights), @work.rights, target: "_blank" %>
+      </td>
+    </tr>
+  <% end %>
+
+
+  <%= AttributeTable::RowDisplay.new(:rights_holder, values: [@work.rights_holder]).display %>
+
+  <% if decorator.related_urls_filtered.present? %>
+    <tr>
+      <th>Related URL</th>
+      <td>
+        <ul>
+          <% decorator.related_urls_filtered.each do |url| %>
+            <li class="attribute"><%= ExternalLinkDisplay.new(url).display %></li>
+          <% end %>
+        </ul>
+      </td>
+    </tr>
+  <% end %>
+
+  <%# hard-coded credit line instead of taking from record %>
+  <tr>
+    <th>Credit line</th>
+    <td>
+      <ul>
+        <li class="attribute credit_line">Courtesy of Science History Institute</li>
+      </ul>
+    </td>
+  </tr>
+
+
+  <% if @work.additional_credit.present? %>
+    <tr>
+      <th>Additional credit</th>
+      <td>
+        <ul>
+          <% @work.additional_credit.each do |credit| %>
+            <li class="attribute"><%= credit.display_as %></li>
+          <% end %>
+        </ul>
+      </td>
+    </tr>
+  <% end %>
+</table>
+
+<h2 class="attribute-sub-head">Physical location</h2>
+
+<table class="work chf-attributes">
+  <%= AttributeTable::RowDisplay.new(:department, values: [@work.department], link_to_facet: "department_facet").display %>
+  <%= AttributeTable::RowDisplay.new(:exhibition, values: @work.exhibition, link_to_facet: "exhibition_facet").display %>
+
+  <% if @work.contained_by.present? %>
+    <tr>
+      <th>Collection</th>
+      <td>
+        <ul>
+          <% @work.contained_by.each do |collection| %>
+            <li class="attribute">
+              <%= link_to collection.title, collection_path(collection) %>
+            </li>
+          <% end %>
+        </ul>
+      </td>
+    </tr>
+  <% end %>
+
+  <%= AttributeTable::RowDisplay.new(:project, values: @work.project, link_to_facet: "project_facet").display %>
+  <%= AttributeTable::RowDisplay.new(:series_arrangement, values: @work.series_arrangement).display %>
+
+  <% if @work.physical_container.present? %>
+    <tr>
+      <th>Physical container</th>
+      <td>
+        <ul>
+          <li class="attribute">
+            <%= @work.physical_container.display_as %>
+          </li>
+        </ul>
+      </td>
+    </tr>
+  <% end %>
+
+  <% if decorator.links_to_opac.present? %>
+    <tr>
+      <td colspan=2 class="catalog-links">
+        <% decorator.links_to_opac.each do |url| %>
+          <%= content_tag "a", "View in library catalog", href: url %>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+</table>
+
+<% if decorator.related_works.present? %>
+  <h2 class="attribute-sub-head">Related Items</h2>
+
+  <ul class="related-items show-sub-head-body list-unstyled">
+    <% decorator.related_works.each do |work| %>
+      <li class="related-work">
+        <div class="related-work-thumb">
+          <%= link_to work_path(work.friendlier_id) do %>
+            <%= ThumbDisplay.new(work.leaf_representative, lazy: true).display %>
+          <% end %>
+        </div>
+
+        <div class="related-work-text">
+          <%= link_to work_path(work.friendlier_id) do %>
+            <%= work.title %>
+          <% end %>
+        </div>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
+
+
+<p>CITATIONS TO DO</p>
+
+
+
+
+
