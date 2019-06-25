@@ -91,6 +91,10 @@ class WorkShowDecorator < Draper::Decorator
       ).includes(leaf_representative: :derivatives).all
   end
 
+  def public_collections
+    @work.contained_by.where(published: true)
+  end
+
   private
 
   def related_url_filter
