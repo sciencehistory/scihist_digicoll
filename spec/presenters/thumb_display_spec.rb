@@ -73,6 +73,8 @@ describe ThumbDisplay do
       expect(img_tag).to be_present
       expect(img_tag["src"]). to eq(deriv.url)
       expect(img_tag["srcset"]).to eq("#{deriv.url} 1x, #{deriv_2x.url} 2x")
+
+      expect(img_tag["data-aspectratio"]).to eq "#{argument.width}/#{argument.height}"
     end
   end
 end

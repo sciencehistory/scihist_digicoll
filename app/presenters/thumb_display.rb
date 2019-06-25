@@ -71,7 +71,20 @@ class ThumbDisplay < ViewModel
       return placeholder_image_tag
     end
 
-    tag("img", {alt: ""}.merge(src_attributes))
+    # used for lazysizes-aspectratio
+    # https://github.com/aFarkas/lazysizes/tree/gh-pages/plugins/aspectratio
+    aspect_ratio = if model && model.width && model.height
+      "#{model.width}/#{model.height}"
+    end
+
+    tag("img",
+      {
+        alt: "",
+        data: {
+          aspectratio: aspect_ratio
+        }
+      }.merge(src_attributes)
+    )
   end
 
   def res_1x_url
