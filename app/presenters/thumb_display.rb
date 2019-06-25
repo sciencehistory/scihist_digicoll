@@ -38,31 +38,35 @@ class ThumbDisplay < ViewModel
     # return a default audio/video icon thumb or something. At present we don't intend to use
     # a/v as representative images.
     if model.nil? || model.content_type.nil? || !(model.content_type == "application/pdf" || model.content_type.start_with?("image/"))
-      return placeholder_image
+      return placeholder_image_tag
     end
 
-    multi_res_standard_thumb
+    thumb_image_tag
   end
 
   private
 
-  def placeholder_image
+  def placeholder_image_tag
     tag "img", alt: "", src: placeholder_img_url, width: "100%";
   end
 
-  # "standard" size thumb, providing srcset wtih double-res image for better
-  # display on high-res screens
+  # A thumb 'img' tag that provides srcset wtih double-res image for better
+  # display on high-res screens.
+  #
+  # Takes the thumb size arg, and assumes derivs are available named "thumb_#{size}"
+  # and "thumb_#{size}_2X"
+  #
+  # If necessary derivatives aren't there, will return placeholder -- right now
+  # it needs 1x and 2x derivatives.
   #
   # alt is "" intentionally, because screen-readers should ignore this thumb,
   # search results are perfectly usable without it and there's nothing we
   # can say about it except "a thumbnail" or something, not useful.
   #
-  # If necessary derivatives aren't there, will return placeholder.
-  #
   # Currently uses direct-to-S3 URLs, provided by shrine. Maybe signed
   # URLs depending on shrine settings (beware of performance issues
   # if they are signed?)
-  def multi_res_standard_thumb
+  def thumb_image_tag
     res_1x_url = model.derivative_for("thumb_#{thumb_size}").try(:url)
     res_2x_url = model.derivative_for("thumb_#{thumb_size}_2X").try(:url)
 
