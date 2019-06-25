@@ -67,17 +67,25 @@ class ThumbDisplay < ViewModel
   # URLs depending on shrine settings (beware of performance issues
   # if they are signed?)
   def thumb_image_tag
-    res_1x_url = model.derivative_for("thumb_#{thumb_size}").try(:url)
-    res_2x_url = model.derivative_for("thumb_#{thumb_size}_2X").try(:url)
-
     unless res_1x_url && res_2x_url
       return placeholder_image_tag
     end
 
-    tag("img",
-         alt: "",
-         src: res_1x_url,
-         srcset: "#{res_1x_url} 1x, #{res_2x_url} 2x"
-    )
+    tag("img", {alt: ""}.merge(src_attributes))
+  end
+
+  def res_1x_url
+    @res_1x_url ||= model.derivative_for("thumb_#{thumb_size}").try(:url)
+  end
+
+  def res_2x_url
+    @res_2x_url ||= model.derivative_for("thumb_#{thumb_size}_2X").try(:url)
+  end
+
+  def src_attributes
+    {
+       src: res_1x_url,
+       srcset: "#{res_1x_url} 1x, #{res_2x_url} 2x"
+    }
   end
 end
