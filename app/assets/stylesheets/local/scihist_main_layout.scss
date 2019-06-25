@@ -50,6 +50,7 @@ body.scihist-main-layout {
       padding-right: $grid-gutter-width; // twice normal padding, we want that.
       padding-bottom: 0;
       width: $sidebar-width;
+      max-width: 40vw;
       .facets {
         padding-bottom: 2rem;
       }
