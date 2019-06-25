@@ -32,7 +32,7 @@
     <% end %>
 
     <% if decorator.parent.present? || decorator.source.present? %>
-      <ul class="parent-works list-unstyled">
+      <ul class="part-of parent-works list-unstyled">
         <% if decorator.parent.present? %>
           <li>Part of <%= link_to decorator.parent.title, work_path(decorator.parent) %></li>
         <% end %>
