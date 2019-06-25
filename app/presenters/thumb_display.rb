@@ -1,4 +1,4 @@
-# A ViewModel presenter that displays an image for a given Kithe::Asset.
+# A ViewModel presenter that displays an image tag, for a thumbnail derivative for a given Kithe::Asset.
 #
 # The Kithe::Asset provided as an arg will usually be a leaf_representative of a Work or Collection.
 #
@@ -6,11 +6,22 @@
 #
 # In a search results list, leaf_representatives should be eager loaded to avoid n+1 queries in search results display.
 #
-# By default, it will display thumb size :standard, suitable for use in results display, but you can
-# supply another thumb size initializer arg.
+# * ThumbDisplay uses `srcset` tag for high-res images on high-res displays, using our _2x derivatives.
 #
-# By default, it will use our standard placeholder image if no derivaties are availalble, but you can
-# supply an alternate placeholder image path in initializer arg.
+# * By default it will display thumb size `standard`, suitable for use in results display, but you
+#   can supply any other thumb size we support, eg, :mini, :large, or for collections :collection_page
+#
+# * Optionally pass `lazy:true` to produce an image tag suitable for lazyloading with lazysizes.js,
+#   https://github.com/aFarkas/lazysizes , including a data-aspectratio tag for
+#   https://github.com/aFarkas/lazysizes/tree/gh-pages/plugins/aspectratio
+#
+# ## Placeholders
+#
+# By default, if suitable derivatives can't be found, it will use our standard placeholder image. Alternate
+# placeholders can be specified (such as our collection defaut icon). Note that most of our placeholders
+# are svg's, which may not have internal widths specified, so image tags should always be in containers
+# with a CSS width/max-width -- and should usually have their own CSS width set to 100% --
+# and you should probably manually visually test your layout with placeholders.
 class ThumbDisplay < ViewModel
   valid_model_type_names "Kithe::Asset", "NilClass"
 
@@ -21,9 +32,18 @@ class ThumbDisplay < ViewModel
   # collection_page for CollectionThumbAssets only, oh well we allow them all for now.
   ALLOWED_THUMB_SIZES = Asset::THUMB_WIDTHS.keys + [:collection_page]
 
+  # @param model [Kithe::Asset] the asset whose derivatives we will display
+  # @param thumb_size [Symbol] which set of thumb derivatives? :standard, :mini, :large,
+  #   :collection_page (for colletions). Both a 1x and 2x derivative must exist. Default
+  #   :standard.
+  # @param placeholder_img_url [String] url (likely relative path) to a placeholder image
+  #   to use if thumb can't be displayed. By default our standard placeholderbox.svg,
+  #   but you may want to use the collection default image for collections, etc.
+  # @param lazy [Boolean] default false. If true, will use data-src and data-srcset attributes,
+  #   and NOT src/srcset direct attributes, for lazy loading with lazysizes.js.
   def initialize(model,
-    placeholder_img_url: asset_path("placeholderbox.svg"),
     thumb_size: :standard,
+    placeholder_img_url: asset_path("placeholderbox.svg"),
     lazy: false)
 
     @placeholder_img_url = placeholder_img_url
