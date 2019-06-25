@@ -19,6 +19,7 @@
         <td><%= collection.friendlier_id %>
         <td><%= collection.title %> <%= publication_badge(collection) %></td>
         <td>
+          <%= link_to 'Public view', collection_path(collection), class: "btn btn-sm btn-outline-primary" %>
           <%= link_to 'Edit', edit_admin_collection_path(collection), class: "btn btn-sm btn-outline-primary" %>
           <% if can? :destroy, collection %>
             <%= link_to 'Delete', [:admin, collection], method: :delete, data: { confirm: "Delete collection '#{collection.title}'?" }, class: "btn btn-sm btn-outline-danger" %>

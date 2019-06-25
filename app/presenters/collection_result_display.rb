@@ -20,7 +20,7 @@ class CollectionResultDisplay < ViewModel
 
   # TODO, link to Collections page, when it exists
   def display_genres
-    ["Collection"]
+    link_to "Collections", "#"
   end
 
   # Requires helper method `child_counter` to be available, returning a
@@ -34,9 +34,12 @@ class CollectionResultDisplay < ViewModel
     end
   end
 
-  # TODO, link to Collection detail page when it exists.
+  def thumbnail_html
+    ThumbDisplay.new(model.leaf_representative, placeholder_img_url: asset_path("default_collection.svg")).display
+  end
+
   def link_to_href
-    "#"
+    collection_path(model)
   end
 
   # none for collections
