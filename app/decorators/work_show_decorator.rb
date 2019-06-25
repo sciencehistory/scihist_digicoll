@@ -85,9 +85,10 @@ class WorkShowDecorator < Draper::Decorator
   # Make sure to prefetch leaf_representatives and it's derivatives, so we can display
   # without n+1 fetch.
   def related_works
-    @related_works ||= Work.where(friendlier_id: related_url_filter.related_work_friendlier_ids).
-      includes(leaf_representative: :derivatives).
-      all
+    @related_works ||= Work.where(
+        friendlier_id: related_url_filter.related_work_friendlier_ids,
+        published: true
+      ).includes(leaf_representative: :derivatives).all
   end
 
   private
