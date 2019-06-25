@@ -75,7 +75,7 @@ class Admin::CollectionsController < AdminController
     # enough for now.
     def collection_params
       permitted_attributes = [:title, :description]
-      permitted_attributes << :published if can?(:publish, @collection)
+      permitted_attributes << :published if can?(:publish, @collection || Collection)
 
       params.
         require(:collection).
