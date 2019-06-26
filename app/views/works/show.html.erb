@@ -58,7 +58,7 @@
   </header>
 
   <div class="show-representative">
-    <%= ThumbDisplay.new(decorator.leaf_representative, thumb_size: :large).display %>
+    <%= ThumbDisplay.new(decorator.representative_for_display, thumb_size: :large).display %>
   </div>
 
   <div class="show-metadata">
@@ -70,13 +70,12 @@
     big representative image %>
   <div style="clear: left"></div>
 
-  <div class="show-page-image-wrapper">
-    TO DO, member thumb goes here
-  </div>
-
-  <div class="show-page-image-wrapper">
-    TO DO, member thumb goes here
-  </div>
+  <% decorator.member_list_for_display.each do |member| %>
+    <div class="show-page-image-wrapper">
+      <%# warning, we're not checking for access control/published here, probably should. Maybe inside ThumbDisplay? %>
+      <%= ThumbDisplay.new(member.leaf_representative, thumb_size: :standard).display %>
+    </div>
+  <% end %>
 
 
 </div>
