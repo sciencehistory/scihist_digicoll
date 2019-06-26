@@ -4,7 +4,7 @@
   <%# render "chf_meta_tags", presenter: @presenter  %>
 <% end %>
 
-<div class="show-page-layout" itemscope itemtype="http://schema.org/CreativeWork" class="row">
+<div class="show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
 
 
   <header class="show-title">
@@ -32,7 +32,7 @@
     <% end %>
 
     <% if decorator.parent.present? || decorator.source.present? %>
-      <ul class="part-of parent-works list-unstyled">
+      <ul class="part-of list-unstyled">
         <% if decorator.parent.present? %>
           <li>Part of <%= link_to decorator.parent.title, work_path(decorator.parent) %></li>
         <% end %>
