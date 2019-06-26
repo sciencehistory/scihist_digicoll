@@ -19,7 +19,7 @@ describe "Public work show page", type: :system, js: false do
     end
 
 
-    let(:work) { create(:work, :with_complete_metadata, parent: create(:work)) }
+    let(:work) { create(:work, :with_complete_metadata, contained_by: [create(:collection)], parent: create(:work)) }
 
     # REALLY doesn't test everything, just a sampling
     it "smoke tests" do
