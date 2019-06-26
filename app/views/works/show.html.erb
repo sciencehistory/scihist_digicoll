@@ -4,7 +4,7 @@
   <%# render "chf_meta_tags", presenter: @presenter  %>
 <% end %>
 
-<div class="work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
+<div class="show-page-layout" itemscope itemtype="http://schema.org/CreativeWork" class="row">
 
 
   <header class="show-title">
@@ -57,8 +57,10 @@
     <% end %>
   </header>
 
-  <div class="show-representative">
-    <%= ThumbDisplay.new(decorator.representative_for_display, thumb_size: :large).display %>
+  <div class="show-hero">
+    <div class="show-page-img">
+      <%= ThumbDisplay.new(decorator.representative_for_display, thumb_size: :large).display %>
+    </div>
   </div>
 
   <div class="show-metadata">
@@ -71,9 +73,11 @@
   <div style="clear: left"></div>
 
   <% decorator.member_list_for_display.each do |member| %>
-    <div class="show-page-image-wrapper">
-      <%# warning, we're not checking for access control/published here, probably should. Maybe inside ThumbDisplay? %>
-      <%= ThumbDisplay.new(member.leaf_representative, thumb_size: :standard).display %>
+    <div class="show-member-list-item">
+      <div class="thumb">
+        <%# warning, we're not checking for access control/published here, probably should. Maybe inside ThumbDisplay? %>
+        <%= ThumbDisplay.new(member.leaf_representative, thumb_size: :standard).display %>
+      </div>
     </div>
   <% end %>
 
