@@ -95,6 +95,22 @@ class WorkShowDecorator < Draper::Decorator
     @work.contained_by.where(published: true)
   end
 
+  # leaf_representative, as long as it's public
+  def representative_for_display
+    @representative_display ||= model.leaf_representative if model.leaf_representative.try(:published?)
+  end
+
+  # Public members, ordered.
+  # Not including the representative IF the representative is the first item in the
+  # list, because no reason to duplicate it right after the representative.
+  def member_list_for_display
+    @member_list_display ||= begin
+      members = model.members.where(published: true).order(:position).to_a
+      members.delete_at(0) if members[0] == representative_for_display
+      members
+    end
+  end
+
   private
 
   def related_url_filter

@@ -118,7 +118,7 @@
       <th>Collection</th>
       <td>
         <ul>
-          <% @work.contained_by.each do |collection| %>
+          <% decorator.public_collections.each do |collection| %>
             <li class="attribute">
               <%= link_to collection.title, collection_path(collection) %>
             </li>
