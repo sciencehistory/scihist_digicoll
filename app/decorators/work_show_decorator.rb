@@ -15,7 +15,8 @@ class WorkShowDecorator < Draper::Decorator
     @humanized_content_types ||= model.members.
       find_all { |m| m.kind_of?(Asset) }.
       map(&:content_type).
-      map { |a| ScihistDigicoll::Util.humanized_content_type(a) }
+      map { |a| ScihistDigicoll::Util.humanized_content_type(a) }.
+      uniq
   end
 
   def related_urls_filtered
