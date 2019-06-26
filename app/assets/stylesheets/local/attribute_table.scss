@@ -17,6 +17,10 @@ $attribute-table-max-tabular: 22.5em;
   width: 100%;
   max-width: ($max-readable-width / 0.67);
 
+  // Make text in table line up with text above or below it not in table,
+  // and thus border lines will extend a bit outside the ordinary space, negative margin.
+  margin-left: -1 * $table-cell-padding-sm;
+
   td, th {
     padding: 0.3em; // 5px at 17px font em
   }
@@ -82,10 +86,11 @@ $attribute-table-max-tabular: 22.5em;
   }
 }
 
-// .attribute-sub-head {
-//   @extend .brand-alt-h3;
-//   @extend .h3;
-//   margin-top: $line-height-computed * 1.5;
-//   margin-bottom: 1px;
-//   padding: $table-condensed-cell-padding;
-// }
+.attribute-sub-head {
+  @extend .brand-alt-h3;
+  @extend .h3;
+  margin-top: 2rem;
+  margin-bottom: 1px;
+  // 0 padding on left to line up with table negative margin
+  padding: $table-cell-padding-sm $table-cell-padding-sm $table-cell-padding-sm 0;
+}

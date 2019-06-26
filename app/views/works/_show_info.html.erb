@@ -5,7 +5,9 @@
     they show media, but still need this.
 %>
 
-<%= DescriptionDisplayFormatter.new(@work.description).format  %>
+<div class="work-description">
+  <%= DescriptionDisplayFormatter.new(@work.description).format  %>
+</div>
 
 <table class="work chf-attributes">
 
