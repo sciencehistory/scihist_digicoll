@@ -93,7 +93,7 @@ class WorkShowDecorator < Draper::Decorator
   end
 
   def public_collections
-    @work.contained_by.where(published: true)
+    model.contained_by.where(published: true)
   end
 
   # leaf_representative, as long as it's public
