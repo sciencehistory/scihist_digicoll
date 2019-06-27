@@ -372,7 +372,7 @@ describe CitableAttributes do
 
   describe "Special case oral history" do
 
-    let(:work) { FactoryBot.build( :work, :oral_history_work) }
+    let(:work) { FactoryBot.build( :oral_history_work) }
 
     it "has oral-history-style title" do
       expect(citable_attributes.title).to eq("William John Bailey, interviewed by James J. Bohning in University of Maryland, College Park on June 3, 1986")
@@ -398,8 +398,7 @@ describe CitableAttributes do
   #   end
 
     describe "unusual interviewee name format" do
-      let(:work) { FactoryBot.build(:work,
-        :oral_history_work,
+      let(:work) { FactoryBot.build(:oral_history_work,
         creator: [
           { category: "interviewer", value:"Marsha P. Johnson" },
           { category: "interviewee", value:"Biemann, K. (Klaus)" }
@@ -413,8 +412,7 @@ describe CitableAttributes do
     end
 
     describe "place with dashes" do
-      let(:work) { FactoryBot.build(:work,
-          :oral_history_work,
+      let(:work) { FactoryBot.build(:oral_history_work,
           place: [
             { category: "place_of_interview", value:'New Hampshire--Alton Bay'},
           ],

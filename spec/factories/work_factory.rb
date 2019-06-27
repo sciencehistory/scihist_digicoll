@@ -1,7 +1,4 @@
 FactoryBot.define do
-
-
-
   factory :work, class: Work do
     title { 'Test title' }
     published { true }
@@ -156,37 +153,24 @@ FactoryBot.define do
       end
     end
 
-    trait :oral_history_work do
-      title { "Oral history interview with William John Bailey" }
-
-      external_id {
-        [
-          {'category' => 'bib', 'value' => 'b1043559'},
-          {'category' => 'interview', 'value' => '0012'}
-        ]
-      }
-
-      creator {
-        [
-          {category: "interviewee", value:"Bailey, William John, 1921-1989"},
-          {category: "interviewer", value:"Bohning, James J."},
-        ]
-      }
-
-      date_of_work { [ Work::DateOfWork.new(start: "1986-06-03") ] }
-
-      place {
-        [
-          {category: "place_of_interview", value:"University of Maryland, College Park"},
-        ]
-      }
-      format { ['Text'] }
-      genre { ["Oral histories"] }
-      extent { ['50 pages'] }
-      language { ['English'] }
-      department { 'Center for Oral History' }
-      created_at { DateTime.now }
+    factory :oral_history_work do
+      title  "Oral history interview with William John Bailey"
+      external_id [
+        {'category' => 'bib', 'value' => 'b1043559'},
+        {'category' => 'interview', 'value' => '0012'}
+      ]
+      creator [
+        {category: "interviewee", value:"Bailey, William John, 1921-1989"},
+        {category: "interviewer", value:"Bohning, James J."}
+      ]
+      date_of_work [ Work::DateOfWork.new(start: "1986-06-03") ]
+      place  [{category: "place_of_interview", value:"University of Maryland, College Park"}]
+      format ['text']
+      genre ["Oral histories"]
+      extent ['50 pages']
+      language ['English']
+      department 'Center for Oral History'
+      created_at DateTime.now
     end
-
   end
 end
