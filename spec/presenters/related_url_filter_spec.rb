@@ -25,8 +25,8 @@ describe RelatedUrlFilter do
     expect(filter.related_work_urls).to eq(related_work_urls)
   end
 
-  it "extracts related_work_ids" do
-    expect(filter.related_work_ids).to eq(["work1", "work2"])
+  it "extracts related_work_friendlier_ids" do
+    expect(filter.related_work_friendlier_ids).to eq(["work1", "work2"])
   end
 
   it "extracts opac_ids" do
@@ -41,7 +41,7 @@ describe RelatedUrlFilter do
       expect(filter.opac_urls).to eq []
       expect(filter.related_work_urls).to eq []
 
-      expect(filter.related_work_ids).to eq []
+      expect(filter.related_work_friendlier_ids).to eq []
       expect(filter.opac_ids).to eq []
     end
   end

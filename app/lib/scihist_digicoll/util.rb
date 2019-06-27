@@ -16,5 +16,20 @@ module ScihistDigicoll
     def self.opac_url(bib_number)
       ScihistDigicoll::Env.lookup(:opac_link_template).sub("%s", ERB::Util.url_encode(bib_number))
     end
+
+    # Turn a content-type into a string we can show to a user, like 'application/pdf' to 'PDF'.
+    #
+    # For now, it's kind of rough, and relies on types registered with Rails Mime::Type
+    # (see config/initializers/mime_types.rb), and assumes all caps of the extension is good.
+    #
+    # Maybe we should use explicit i18n instead.
+    #
+    # If nothing found registered with Rails Mime::Type, will return input.
+    def self.humanized_content_type(content_type)
+      mime_obj = Mime::Type.lookup(content_type)
+      return content_type unless mime_obj && mime_obj.symbol
+
+      mime_obj.symbol.to_s.upcase
+    end
   end
 end
