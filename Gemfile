@@ -144,3 +144,9 @@ gem 'aws-sdk-core'
   # gem 'devise-guests', '~> 0.6'
 # end BL generated
 
+# we use for data structures for citation models, and for generating citations
+gem "citeproc-ruby", '~> 1.0'
+gem 'csl-styles', '~> 1.0' # Need to load the styles so we can use chicago
+# On MRI <= 2.3, citeproc-ruby insists upon `unicode` or `unicode_utils` gem. :(
+# https://github.com/inukshuk/citeproc/commit/c14d3cd272698dd4aa52625dd140864b7a7bd6cb
+gem 'unicode'
