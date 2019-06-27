@@ -295,9 +295,7 @@ class CitableAttributes
     end
 
     def url
-      # TODO fix this once we have the actual public facing work id. Need the full absolute URL.
-      # "#{CHF::Env.lookup(:app_url_base)}/works/#{work.id}"
-      "/admin/works/#{work.friendlier_id}"
+      "#{ScihistDigicoll::Env.lookup!(:web_hostname)}/works/#{work.friendlier_id}"
     end
 
     def container_title

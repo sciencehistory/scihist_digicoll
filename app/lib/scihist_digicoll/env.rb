@@ -51,7 +51,11 @@ module ScihistDigicoll
     define_key :aws_region, default: "us-east-1"
 
     # where our web app is located, https://WHAT
-    define_key :web_hostname
+    define_key :web_hostname, default: -> {
+      if Rails.env.test?
+        "https://localhost"
+      end
+    }
 
     define_key :opac_link_template, default: "https://othmerlib.sciencehistory.org/record=%s"
 

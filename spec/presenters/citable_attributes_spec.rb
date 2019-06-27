@@ -3,6 +3,7 @@ require 'rails_helper'
 describe CitableAttributes do
   let(:citable_attributes) { CitableAttributes.new(work)}
 
+
   describe "standard treatment" do
   let(:work) { FactoryBot.create(:work, date_of_work: nil)}
     describe "authors" do
@@ -322,7 +323,7 @@ describe CitableAttributes do
             :title=>"pH means Beckman",
             :id=>"scihist123456",
             :issued => {"date-parts"=>[[1957]]},
-            :URL=>"/admin/works/123456",
+            :URL=>"https://localhost/works/123456",
             :archive=>"Science History Institute",
             :'archive-place'=>"Philadelphia",
             :archive_location=>"Box 49, Folder 14"},
