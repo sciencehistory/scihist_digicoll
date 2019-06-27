@@ -31,7 +31,7 @@ class WorkShowDecorator < Draper::Decorator
       end.map(&:value)
 
       (bib_ids + related_url_filter.opac_ids).map do |bib_id|
-        RelatedUrlFilter.opac_url(bib_id)
+        ScihistDigicoll::Util.opac_url(bib_id)
       end
     end
   end
