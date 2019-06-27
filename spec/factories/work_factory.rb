@@ -48,6 +48,17 @@ FactoryBot.define do
           Work::Creator.new({"value"=>"Contributor 1", "category"=>"contributor"}),
         ]
       }
+
+      provenance {
+        <<~HEREDOC
+          This is a provenance[1].
+
+          NOTES
+
+          [1] This is a note.
+        HEREDOC
+      }
+
       subject {
         ["Integrated Circuits"]
       }

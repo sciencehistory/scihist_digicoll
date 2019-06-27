@@ -24,5 +24,9 @@ class Work
 
     attr_json :role, :string
     attr_json :name, :string
+
+    def display_as
+      "#{role.humanize} #{name}"
+    end
   end
 end

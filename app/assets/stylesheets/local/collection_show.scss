@@ -26,10 +26,6 @@
     max-width: $max-readable-width;
   }
 
-  .chf-attributes {
-    margin-left: -0.3em;
-  }
-
   .chf-attributes > tbody >tr:first-child td, .chf-attributes > tbody > tr:first-child th {
     border-top: 0; // nope, not here.
   }

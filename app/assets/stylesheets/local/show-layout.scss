@@ -1,0 +1,137 @@
+// This is a kind of crazy CSS for work-show-page layout, using floats and responsive
+// media queries. It could possibly be rewritten simpler (using flexbox?), but it's doing
+// some complicated things.
+//
+// * On a "medium" page, we have two main columns, a 'hero' image (and controls) on the left,
+// and title/metadata on the right.
+//
+// * Below the 'hero' are a list of thumbs of member images, which can scroll UNDER the metadata
+// column if there are enough of them, to use that whitespace.
+//
+// * On a page too narrow for two columns, we get one column, with the title section FIRST,
+// then the 'hero' section, then the metadata, then the member images. Even though in two-column
+// layout title and metadata are both in right column.
+//
+// * While the two columsn are normally both 50%, on a very WIDE page, we keep the 'hero'
+// column to max at our actual size of large thumb image, and let the metadata column
+// grow more than 50%.
+//
+// * Depending on screen size, the member thumb image list, the thumbs can be differnet
+// sizes. They are carefully calculated to be flush with the hero column though, either
+// two or three smaller thumbs accross. Our derivative sizes are calculated to try to be
+// 'natural' at at least one of these sizes.
+//
+// It's crazy, but it works, and does a bunch of nice responsive things.
+//
+// It does NOT size it's layout based on the default browser font-size (`1rem`), as is
+// sometimes considered better for accessibility. Unclear what is really best, and it would
+// take a lot of work. The default browser font size WILL increase font size, that will be
+// respected, but layout widths will stay fixed.
+.show-page-layout {
+
+  $main-gutter-width: 36px;
+  // thumb width large size (525px)
+  $max-image-column: 525px;
+  // this is the point the image column is 'naturally' 525px, any bigger it's 'naturally' bigger,
+  // and we don't want to let it get so.
+  // 90px seem to be our main layout/bootstrap outer margins, hacky.
+  $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90px;
+
+
+
+  // even when collapsed to no columns, we don't want image bigger than this
+  .show-hero {
+    max-width: $max-image-column + $main-gutter-width;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  // Big enough for grid, not so big that we need to constrain the image column
+  // to be smaller than 50%
+  @include media-breakpoint-up(md) {
+    .show-hero, .show-metadata, .show-title {
+      width: 50%;
+      display: inline-block;
+    }
+    .show-hero {
+      float: left;
+      padding-right: $main-gutter-width;
+      .show-page-img img {
+        max-width: 100%;
+      }
+    }
+
+    .show-metadata, .show-title {
+      clear: right;
+      float: right;
+    }
+
+  }
+
+  @media (min-width: $max-image-column-breakpoint) {
+    // // some crazy CSS calc arithmatic to keep the main image and the thumbs under it
+    // // at $max-image-column, with still column break centered.
+    .show-hero {
+      max-width: $max-image-column + $main-gutter-width;
+    }
+    .show-title, .show-metadata {
+      width: calc(100% - #{$max-image-column + $main-gutter-width});
+    }
+  }
+
+
+  // The smaller member thumbs that layout in a grid, and can wrap
+  // under the metadata.
+  .show-member-list-item {
+    $member-list-gutter: 4px;
+    display: inline-block;
+    vertical-align: bottom;
+    // good small size for small collapsed screens
+    width: 160px;
+    margin: 4px $member-list-gutter 32px 0;
+
+    .thumb img {
+      width: 100%;
+      &.lazyload, &.lazyloading {
+        background: #AAA asset-url('static-progress.svg') no-repeat;
+        background-position: center center;
+        background-size: 50%;
+      }
+      vertical-align: bottom;
+      min-height: 100px; // just so it's something big enough to see! Will distort very wide images.
+
+      // sanity max-height to keep keep crazy long aspect ratio images from
+      // totally ruining page. Very difficult to get this right based on
+      // aspect ratio, cause the dimensions are so responsive. This is just
+      // a rough huge limit, if it's not working out just delete this and give up.
+      max-height: 300vw;
+
+      // inline-block may be neccesary to get JS aspectratio setting to work
+      display: inline-block;
+    }
+
+    .btn {
+      @extend .btn-sm;
+      border-radius: 2px;
+    }
+
+    // Sizing the images to exactly line up with hero at various sizes,
+    // 2 or 3 images accross. This math is weird, not sure why we need the +/-
+    // 1 or 2 pixels at the end, but it lines up. (browser-added whitespace?)
+
+    // we have a grid, we want 2 images in the space of the hero column
+    @include media-breakpoint-up(md) {
+      width: calc( ((50% - #{$main-gutter-width} - #{$member-list-gutter}) / 2) - 1.5px);
+    }
+    // larger screen, let's let the member list items go 3-wide
+    @media (min-width: 1000px) {
+      width: calc( (50% - #{$main-gutter-width} - #{$member-list-gutter * 2}) / 3 - 2px);
+    }
+    // hero column is maxed, max our member thumbs to match
+    @media (min-width: $max-image-column-breakpoint) {
+      width: calc( (#{$max-image-column} - #{$member-list-gutter * 2}) / 3  - 2px);
+    }
+  }
+
+
+}

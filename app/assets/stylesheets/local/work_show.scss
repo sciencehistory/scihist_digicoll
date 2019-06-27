@@ -1,0 +1,37 @@
+.work-show {
+  .show-title {
+    margin-bottom: $paragraph-spacer;
+    h1 {
+      margin-bottom: 0;
+    }
+  }
+
+  .additional-titles, .part-of {
+    margin-bottom: 0;
+    &, h2 {
+      font-family: $brand-alt-header-font;
+      font-weight: normal;
+      @extend h3;
+      margin-bottom: 0;
+      margin-top: 0;
+    }
+    li {
+      margin-top: $paragraph-spacer / 2;
+    }
+  }
+
+  .show-date {
+    @extend %text-font-numerals;
+    ul {
+      @extend .list-unstyled;
+      margin-bottom: 0;
+    }
+    margin-top: $paragraph-spacer;
+  }
+
+  .work-description p {
+    max-width: $max-readable-width;
+  }
+
+
+}

@@ -24,12 +24,19 @@ class RelatedUrlFilter
     filter!
   end
 
-  def related_work_ids
-    @related_work_ids ||= related_work_urls.collect {|u| u.sub(RELATED_WORK_PREFIX_RE, '') }
+  # Take the ID out of the URL for any work URL referencing our app. It's a friendlier_id
+  # cause that's what we use in our URLs.
+  def related_work_friendlier_ids
+    @related_work_friendlier_ids ||= related_work_urls.collect {|u| u.sub(RELATED_WORK_PREFIX_RE, '') }
   end
 
   def opac_ids
     @opac_ids ||= opac_urls.collect {|u| u.sub(OPAC_PREFIX_RE, '') }
+  end
+
+  # Just a convenience class method to turn a bib_id into a link to the OPAC.
+  def self.opac_url(bib_id)
+    "https://othmerlib.sciencehistory.org/record=#{CGI.escape bib_id}"
   end
 
   private
