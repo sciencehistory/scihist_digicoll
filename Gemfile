@@ -144,3 +144,5 @@ gem 'aws-sdk-core'
   # gem 'devise-guests', '~> 0.6'
 # end BL generated
 
+# we use for data structures for citation models, and for generating citations
+ gem "citeproc-ruby", '~> 1.0'
