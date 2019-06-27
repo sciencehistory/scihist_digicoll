@@ -52,7 +52,7 @@ module ScihistDigicoll
 
     # where our web app is located, https://WHAT
     define_key :web_hostname, default: -> {
-      if Rails.env.test?
+      unless Rails.env.production?
         "https://localhost"
       end
     }
