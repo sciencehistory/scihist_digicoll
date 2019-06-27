@@ -34,11 +34,6 @@ class RelatedUrlFilter
     @opac_ids ||= opac_urls.collect {|u| u.sub(OPAC_PREFIX_RE, '') }
   end
 
-  # Just a convenience class method to turn a bib_id into a link to the OPAC.
-  def self.opac_url(bib_id)
-    "https://othmerlib.sciencehistory.org/record=#{CGI.escape bib_id}"
-  end
-
   private
 
   def filter!
