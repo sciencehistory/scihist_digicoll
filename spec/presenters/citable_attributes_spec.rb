@@ -393,7 +393,7 @@ describe CitableAttributes do
       expect(citable_attributes.archive_location).to eq ('Oral History Transcript 0012')
     end
     it "renders html" do
-      html = CitationDisplay.new(citable_attributes).display
+      html = CitationDisplay.new(work).display
       expect(html).to eq "William John Bailey, interviewed by James J. Bohning in University of Maryland, College Park on June 3, 1986. Philadelphia: Science History Institute, n.d. Oral History Transcript 0012. https://localhost/works/."
     end
 
@@ -435,7 +435,7 @@ describe CitableAttributes do
         genre: ["Oral histories"],
         department: "Center for Oral History")}
       it "does not raise" do
-        CitationDisplay.new(citable_attributes).display
+        CitationDisplay.new(work).display
       end
     end
     describe "weird citation missing fields (2)" do
@@ -445,7 +445,7 @@ describe CitableAttributes do
         department: "Center for Oral History")
       }
       it "does not raise" do
-        CitationDisplay.new(citable_attributes).display
+        CitationDisplay.new(work).display
       end
     end
     end
