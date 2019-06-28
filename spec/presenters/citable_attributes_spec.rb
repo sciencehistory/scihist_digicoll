@@ -392,10 +392,10 @@ describe CitableAttributes do
     it "supplies OH interview number as archive location" do
       expect(citable_attributes.archive_location).to eq ('Oral History Transcript 0012')
     end
-    # TODO figure out what this renderer is
-  #   it "renders html" do
-  #     expect(CHF::CitableAttributes::Renderer.from_work_presenter(presenter).render_html).to eq "William John Bailey, interviewed by James J. Bohning in University of Maryland, College Park on June 3, 1986. Philadelphia: Science History Institute, n.d. Oral History Transcript 0012. http://test.app/works/."
-  #   end
+    it "renders html" do
+      html = CitationDisplay.new(citable_attributes).display
+      expect(html).to eq "William John Bailey, interviewed by James J. Bohning in University of Maryland, College Park on June 3, 1986. Philadelphia: Science History Institute, n.d. Oral History Transcript 0012. https://localhost/works/."
+    end
 
     describe "unusual interviewee name format" do
       let(:work) { FactoryBot.build(:oral_history_work,
@@ -435,8 +435,7 @@ describe CitableAttributes do
         genre: ["Oral histories"],
         department: "Center for Oral History")}
       it "does not raise" do
-        citable_attributes
-        #CHF::CitableAttributes::Renderer.from_work_presenter(presenter).render_html
+        CitationDisplay.new(citable_attributes).display
       end
     end
     describe "weird citation missing fields (2)" do
@@ -446,8 +445,7 @@ describe CitableAttributes do
         department: "Center for Oral History")
       }
       it "does not raise" do
-        citable_attributes
-        # CHF::CitableAttributes::Renderer.from_work_presenter(presenter).render_html
+        CitationDisplay.new(citable_attributes).display
       end
     end
     end
