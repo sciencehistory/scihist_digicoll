@@ -33,5 +33,15 @@
     max-width: $max-readable-width;
   }
 
+  .show-sub-head-body {
+    border-top: 3px solid #ddd;
+    padding: 5px;
+  }
+  .citation {
+      line-height: 1.5 !important;
+      word-break: break-word;
+  }
+
+
 
 }

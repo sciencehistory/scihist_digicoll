@@ -179,13 +179,25 @@
   </ul>
 <% end %>
 
-<h2 class="attribute-sub-head">Cite as (beta)</h2>
+<h2 class="attribute-sub-head">Cite as</h2>
 <div class="show-sub-head-body">
   <p class="citation">
      <%=CitationDisplay.new(@work).display %>
   </p>
+  <p class="btn-group" role="group">
+    <a class="btn btn-sm btn-primary export-citation" href="/works/<%= @work.friendlier_id %>.ris">
+      <i class="fa fa-address-card"></i>&nbsp;&nbsp;Export citation (RIS)
+    </a>
+    <a class="btn btn-brand-dark btn-sm" tabindex="0" role="button" data-toggle="popover" data-placement="bottom" data-container="body" data-html="true" data-trigger="focus" data-template="<div class=&quot;popover popover-citation-help&quot; role=&quot;tooltip&quot;><div class=&quot;arrow&quot;></div><div class=&quot;popover-content&quot;></div></div>" data-content="The RIS format can be imported into most reference management software, including
+        <a target='_blank' href='https://www.zotero.org/'>Zotero</a>,
+        <a target='_blank' href='https://www.mendeley.com/reference-management/reference-manager'>Mendeley</a>,
+        <a target='_blank' href='http://endnote.com/'>EndNote</a>,
+        and <a href='https://www.refworks.com'>Refworks</a>." data-original-title="" title="">
+      <b>?</b>
+    </a> &nbsp;&nbsp;&nbsp; <&mdash;&mdash; Exporting RIS isn't working yet.
+  </p>
+  <p><em>This citation is automatically generated and may contain errors.</em></p>
 </div>
-<p><em>This citation is automatically generated and may contain errors.</em></p>
 
 
 
