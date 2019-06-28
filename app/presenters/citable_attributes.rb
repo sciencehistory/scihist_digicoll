@@ -15,6 +15,10 @@
 #     # => A hash of attributes.
 #
 # Ported from Sufia: app/models/chf/citable_attributes.rb
+#
+# A citable_attributes instance can be passed to a CitationDisplay as follows:
+#
+# CitationDisplay.new(citable_attributes).display
 
 class CitableAttributes
 
@@ -195,7 +199,7 @@ class CitableAttributes
     end
 
     def abstract
-      work.description.present? ? ActionView::Base.full_sanitizer.sanitize(work.description.join(" ")) : nil
+      work.description.present? ? ActionView::Base.full_sanitizer.sanitize(work.description) : nil
     end
 
     # an array of CiteProc::Name objects, suitable for using as cited creator(s)
@@ -507,6 +511,8 @@ class CitableAttributes
     def title
       interviewee = CitableAttributes::work_lookup(work, "creator", "interviewee")
       interviewer = CitableAttributes::work_lookup(work, "creator", "interviewer")
+      interviewer = [""] if interviewer == [nil]
+      interviewee = [""] if interviewee == [nil]
       return work.title if interviewee.blank? || interviewer.blank?
       interview_place = CitableAttributes::work_lookup(work, "place", "place_of_interview")
       place = interview_place.blank? ? "" : "in #{normalize_place(interview_place.first)}"
