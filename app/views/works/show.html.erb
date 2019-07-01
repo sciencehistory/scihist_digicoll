@@ -61,6 +61,7 @@
     <div class="show-page-img">
       <%= ThumbDisplay.new(decorator.representative_for_display, thumb_size: :large).display %>
     </div>
+    <%= render "rights_and_social", work: @work %>
   </div>
 
   <div class="show-metadata">
