@@ -4,20 +4,14 @@
 #
 # RisSerializer.new(work).to_ris
 
-class RisSerializer < ViewModel
+class RisSerializer
   RIS_LINE_END = "\r\n"
   RIS_END_RECORD = "ER  -#{RIS_LINE_END}"
 
-  valid_model_type_names 'Work'
-
-  def initialize(model)
-     super
-     @citable_attributes = CitableAttributes.new(model)
-  end
-
-  # TODO replace this
-  def work
-    model
+  def initialize(the_work)
+    raise ArgumentError, 'Argument should be a Work' unless the_work.is_a? Work
+    @work = the_work
+    @citable_attributes = CitableAttributes.new(@work)
   end
 
   def self.formatted_ris_date(year:, month: nil, day: nil, extra: nil)
@@ -56,7 +50,7 @@ class RisSerializer < ViewModel
       "TI" => @citable_attributes.title,
       "T2" => @citable_attributes.container_title,
 
-      "ID" => work.friendlier_id,
+      "ID" => @work.friendlier_id,
       "AU" => @citable_attributes.authors_formatted,
       "PB" => @citable_attributes.publisher,
       "CY" => @citable_attributes.publisher_place,
@@ -100,7 +94,7 @@ class RisSerializer < ViewModel
   end
 
   def genre
-    work.genre || []
+    @work.genre || []
   end
 
   # # Limited ability to map to RIS types -- 'manuscript' type seems to get
@@ -124,9 +118,9 @@ class RisSerializer < ViewModel
         "PCOMM"
       elsif (genre & ['Rare books', 'Sample books']).present?
         "BOOK"
-      elsif genre.include?('Documents') && work.title =~ /report/i
+      elsif genre.include?('Documents') && @work.title =~ /report/i
         "RPRT"
-      elsif  work.department == ["Archives"]
+      elsif  @work.department == ["Archives"]
         # if it's not one of above known to use archival metadata, and it's in
         # Archives, insist on Manuscript.
         "MANSCPT"
@@ -145,23 +139,12 @@ class RisSerializer < ViewModel
   # # zotero 'extra'. endnote?
   def m2
     return @m2 if defined?(@m2)
-
     @m2 ||= begin
       result = "Courtesy of Science History Institute."
-      # TODO: figure out what CurationConcerns::LicenseService
-      # is actually accomplishing.
-
-      #license_labels = work.rights.collect do |id|
-      #   CurationConcerns::LicenseService.new.label(id)
-      #end
-
-      license_labels = []
-      rights_holder_string = work.rights_holder.present? ? ", #{work.rights_holder.try(:first)}" : ""
-
-      if work.rights.present?
-        result = result + "  Rights: " + license_labels.join(", ") + rights_holder_string
-      else
-        ""
+      if @work.rights.present?
+        # Note: @work.rights is a string, not an array as in Sufia.
+        rights_holder_string = @work.rights_holder.present? ? ", #{@work.rights_holder.try(:first)}" : ""
+        result = result + "  Rights: " + RightsTerms.label_for(@work.rights) + rights_holder_string
       end
       result
     end
@@ -196,7 +179,7 @@ class RisSerializer < ViewModel
     return @kw if defined?(@kw)
 
     @kw ||= begin
-      work.subject
+      @work.subject
     end
   end
 
@@ -207,6 +190,6 @@ class RisSerializer < ViewModel
   def la
     return @la if defined?(@la)
 
-    @la ||= work.language.join(", ")
+    @la ||= @work.language.join(", ")
   end
 end

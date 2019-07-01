@@ -61,7 +61,6 @@ describe RisSerializer do
   end
 
   describe "complex archival work" do
-    let(:collection) { FactoryBot.build(:collection, title: "Collection Title") }
     let(:parent_work) { FactoryBot.build(:work, title: "parent_work") }
     let(:work) do
       FactoryBot.build(:work,
@@ -80,15 +79,14 @@ describe RisSerializer do
         series_arrangement: ["Sub-series 2. Advertisements", "Series VIII. Clippings and Advertisements"],
         physical_container:  {box:'49', folder: '14' },
         date_of_work: [Work::DateOfWork.new(start: "1916-05-04")],
-        rights: "http://rightsstatements.org/vocab/InC-RUU/1.0/"
+        rights: "http://rightsstatements.org/vocab/InC-RUU/1.0/",
+        parent: parent_work
       )
     end
+    let(:collection) { FactoryBot.build(:collection, title: "Collection Title") }
     let(:serializer) { RisSerializer.new(work) }
     before do
-      collection.contains << work
-      work.parent_id = parent_work.id
-      work.position = 0
-      work.save!
+      work.contained_by = [collection]
     end
 
     it "serializes as expected" do
