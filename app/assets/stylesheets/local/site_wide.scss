@@ -137,9 +137,13 @@ hr.brand {
 }
 
 .popover-citation-help {
-  font-weight: 300;
-  color: white;
   background-color: $brand-dark-grey;
+
+  .popover-body {
+    font-weight: 300;
+    color: white;
+  }
+
   .arrow:after {
     border-bottom-color: $brand-dark-grey !important;
   }
