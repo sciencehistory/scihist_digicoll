@@ -89,7 +89,7 @@ class WorkShowDecorator < Draper::Decorator
     @related_works ||= Work.where(
         friendlier_id: related_url_filter.related_work_friendlier_ids,
         published: true
-      ).includes(leaf_representative: :derivatives).all
+      ).includes(:derivatives, leaf_representative: :derivatives).all
   end
 
   def public_collections
@@ -106,7 +106,12 @@ class WorkShowDecorator < Draper::Decorator
   # list, because no reason to duplicate it right after the representative.
   def member_list_for_display
     @member_list_display ||= begin
-      members = model.members.where(published: true).order(:position).to_a
+      members = model.members.
+        includes(:derivatives, leaf_representative: :derivatives).
+        where(published: true).
+        order(:position).
+        to_a
+
       members.delete_at(0) if members[0] == representative_for_display
       members
     end
