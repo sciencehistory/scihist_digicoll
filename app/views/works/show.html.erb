@@ -1,7 +1,7 @@
 <% provide :page_title, construct_page_title(decorator.title) %>
 
 <% content_for :head do %>
-  <%# render "chf_meta_tags", presenter: @presenter  %>
+  <%= render "meta_tags", work: @work  %>
 <% end %>
 
 <div class="show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">

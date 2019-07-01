@@ -11,8 +11,16 @@ class WorkSocialShareAttributes < ViewModel
     content_for(:page_title) || construct_page_title(work.title)
   end
 
+  def simple_title
+    work.title
+  end
+
   def share_url
     work_url(work)
+  end
+
+  def rights_statement
+    work.rights
   end
 
   # Our 'medium' downloadable derivative, at 1200px wide, is a good size for
