@@ -13,14 +13,16 @@ class CitationDisplay < ViewModel
   valid_model_type_names 'Work'
 
   def display
-    attributes = CitableAttributes.new(model)
-    csl_data = attributes.as_csl_json.stringify_keys
-    citation_item = CiteProc::CitationItem.new(id: csl_data["id"] || "id") do |c|
-      c.data = CiteProc::Item.new(csl_data)
+    @display ||= begin
+      attributes = CitableAttributes.new(model)
+      csl_data = attributes.as_csl_json.stringify_keys
+      citation_item = CiteProc::CitationItem.new(id: csl_data["id"] || "id") do |c|
+        c.data = CiteProc::Item.new(csl_data)
+      end
+      renderer = CiteProc::Ruby::Renderer.new :format => CiteProc::Ruby::Formats::Html.new,
+        :locale => self.class.csl_en_us_locale
+      renderer.render(citation_item, self.class.csl_chicago_style.bibliography).html_safe
     end
-    renderer = CiteProc::Ruby::Renderer.new :format => CiteProc::Ruby::Formats::Html.new,
-      :locale => self.class.csl_en_us_locale
-    renderer.render(citation_item, self.class.csl_chicago_style.bibliography).html_safe
   end
 
   # reuse this style cause it's expensive to load. It appears to be concurrency-safe.
