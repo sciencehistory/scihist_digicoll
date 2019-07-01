@@ -30,6 +30,7 @@
     <% end %>
 
     <%= render "layouts/head_tag_common" %>
+    <%= javascript_pack_tag 'lazysizes' %>
 
     <%= stylesheet_link_tag    'application', media: 'all' %>
     <%# trying to include our webpacker-managed scripts with defer for better browser
