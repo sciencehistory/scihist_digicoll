@@ -33,9 +33,11 @@
     max-width: $max-readable-width;
   }
 
+  // matches the attribute table, although it's not really a table.
   .show-sub-head-body {
-    border-top: 3px solid #ddd;
-    padding: 5px;
+    border-top: 3px solid $table-border-color;
+    padding: $table-cell-padding-sm;
+    margin-left: -1 * $table-cell-padding-sm;
   }
   .citation {
       line-height: 1.5 !important;
