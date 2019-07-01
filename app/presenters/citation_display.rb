@@ -9,12 +9,16 @@
 #
 # CitationDisplay.new(work).display
 
-class CitationDisplay < ViewModel
-  valid_model_type_names 'Work'
+class CitationDisplay
+
+  def initialize(the_work)
+    raise ArgumentError, 'Argument should be a Work' unless the_work.is_a? Work
+    @work = the_work
+  end
 
   def display
     @display ||= begin
-      attributes = CitableAttributes.new(model)
+      attributes = CitableAttributes.new(@work)
       csl_data = attributes.as_csl_json.stringify_keys
       citation_item = CiteProc::CitationItem.new(id: csl_data["id"] || "id") do |c|
         c.data = CiteProc::Item.new(csl_data)
