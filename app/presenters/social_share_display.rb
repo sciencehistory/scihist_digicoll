@@ -35,8 +35,9 @@ class SocialShareDisplay < ViewModel
           analytics_action: "share_facebook",
           analytics_label: work.friendlier_id
         },
+        "aria-label" => "Share to Facebook",
         title: "Share to Facebook" do
-      '<i class="fa fa-facebook-f"></i>'.html_safe
+      '<i class="fa fa-facebook-f" aria-hidden="true"></i>'.html_safe
     end
   end
 
@@ -51,8 +52,9 @@ class SocialShareDisplay < ViewModel
           analytics_action: "share_twitter",
           analytics_label: work.friendlier_id
         },
+        "aria-label" => "Share to Twitter",
         title: "Share to Twitter" do
-      '<i class="fa fa-twitter"></i>'.html_safe
+      '<i class="fa fa-twitter" aria-hidden="true"aria-hidden="true" ></i>'.html_safe
     end
   end
 
@@ -67,8 +69,9 @@ class SocialShareDisplay < ViewModel
           analytics_action: "share_pinterest",
           analytics_label: work.friendlier_id
         },
+        "aria-label" => "Share to Pinterest",
         title: 'Share to Pinterest' do
-    '<i class="fa fa-pinterest-p"></i>'.html_safe
+    '<i class="fa fa-pinterest-p" aria-hidden="true"></i>'.html_safe
     end
   end
 
