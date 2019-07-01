@@ -7,7 +7,7 @@
         <% end %>
         <div>
           <div>Managing a Work</div>
-          <h1><%= @work.title %> <%= publication_badge(@work) %></h1>
+          <h1><%= @work.title %> <%= publication_badge(@work) %>   <%= link_to "Public view", work_path(@work), class: "btn btn-sm btn-outline-primary" %></h1>
         </div>
       </div>
     </div>

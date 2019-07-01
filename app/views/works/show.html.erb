@@ -72,11 +72,12 @@
     big representative image %>
   <div style="clear: left"></div>
 
-  <% decorator.member_list_for_display.each do |member| %>
+  <% decorator.member_list_for_display.each_with_index do |member, index| %>
     <div class="show-member-list-item">
       <div class="thumb">
         <%# warning, we're not checking for access control/published here, probably should. Maybe inside ThumbDisplay? %>
-        <%= ThumbDisplay.new(member.leaf_representative, thumb_size: :standard).display %>
+        <%# lazyload all but first 6 images %>
+        <%= ThumbDisplay.new(member.leaf_representative, thumb_size: :standard, lazy: (index > 5)).display %>
       </div>
     </div>
   <% end %>
