@@ -23,7 +23,7 @@
     </thead>
 
     <tbody>
-      <% @work.members.order(:position).includes(:derivatives).includes(:leaf_representative => :derivatives).each do |member| %>
+      <% @work.members.order(:position).with_representative_derivatives.each do |member| %>
         <tr>
           <td>
             <% if member.representative %>
