@@ -31,7 +31,7 @@
 # we don't want to show people the placeholder, this is just a fail-safe to avoid
 # showing non-public content in case of other errors.
 class MemberImagePresentation < ViewModel
-  valid_model_type_names "Work", "Asset"
+  valid_model_type_names "Work", "Asset", "NilClass"
 
   alias_method :member, :model
   attr_reader :size, :lazy
@@ -43,8 +43,8 @@ class MemberImagePresentation < ViewModel
   end
 
   def display
-    unless user_has_access_to_asset?
-      return no_access_placeholder
+    if member.nil? || representative_asset.nil? || !user_has_access_to_asset?
+      return not_available_placeholder
     end
 
     content_tag("div", class: "member-image-presentation") do
@@ -63,10 +63,10 @@ class MemberImagePresentation < ViewModel
     can?(:read, representative_asset)
   end
 
-  def no_access_placeholder
+  def not_available_placeholder
     content_tag("div", class: "member-image-presentation") do
       content_tag("div", class: "thumb") do
-        tag "img", alt: "", src: asset_path("placeholderbox.svg"), width: "100%", class: "no-access-placeholder";
+        tag "img", alt: "", src: asset_path("placeholderbox.svg"), width: "100%", class: "not-available-placeholder";
       end
     end
   end

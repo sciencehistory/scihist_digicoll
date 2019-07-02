@@ -35,7 +35,7 @@ describe MemberImagePresentation, type: :decorator do
       it "outputs only placeholder" do
         expect(wrapper_div).to be_present
 
-        expect(wrapper_div).to have_selector(".thumb img.no-access-placeholder")
+        expect(wrapper_div).to have_selector(".thumb img.not-available-placeholder")
 
         expect(wrapper_div).not_to have_selector(".action-item-bar .action-item.downloads .btn")
         expect(wrapper_div).not_to have_selector(".action-item-bar .action-item.view .btn")
@@ -75,11 +75,37 @@ describe MemberImagePresentation, type: :decorator do
       it "outputs only placeholder" do
         expect(wrapper_div).to be_present
 
-        expect(wrapper_div).to have_selector(".thumb img.no-access-placeholder")
+        expect(wrapper_div).to have_selector(".thumb img.not-available-placeholder")
 
         expect(wrapper_div).not_to have_selector(".action-item-bar .action-item.downloads .btn")
         expect(wrapper_div).not_to have_selector(".action-item-bar .action-item.view .btn")
       end
+    end
+
+    describe "with no representative" do
+      let(:member) { create(:work) }
+
+      it "outputs only placeholder" do
+        expect(wrapper_div).to be_present
+
+        expect(wrapper_div).to have_selector(".thumb img.not-available-placeholder")
+
+        expect(wrapper_div).not_to have_selector(".action-item-bar .action-item.downloads .btn")
+        expect(wrapper_div).not_to have_selector(".action-item-bar .action-item.view .btn")
+      end
+    end
+  end
+
+  describe "with nil argument" do
+    let(:member) { nil }
+
+    it "outputs only placeholder" do
+      expect(wrapper_div).to be_present
+
+      expect(wrapper_div).to have_selector(".thumb img.not-available-placeholder")
+
+      expect(wrapper_div).not_to have_selector(".action-item-bar .action-item.downloads .btn")
+      expect(wrapper_div).not_to have_selector(".action-item-bar .action-item.view .btn")
     end
   end
 end
