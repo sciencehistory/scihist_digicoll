@@ -16,7 +16,18 @@
 #
 # You pass in a Work or Asset. Note that we will need to access the leaf_representative and it's
 # derivatives, so if displaying a list of multiple (as you usually will be), you should
-# eager load these, possibly with kithe `with_representative_derivatives` scope.
+# eager load these, possibly with kithe `with_representative_derivatives` scope. You DO NOT
+# pass in the leaf_representative itself, pass in the member -- we need to know about it
+# to know what to display.
+#
+# ## Access Control
+#
+# This component WILL refuse to show something the user does not have permission to see,
+# as a fail-safe guard. It will just show our placeholder image in that case.
+#
+# In general, we intend the front-end to NOT try to put these on the page at all,
+# we don't want to show people the placeholder, this is just a fail-safe to avoid
+# showing non-public content in case of other errors.
 class MemberImagePresentation < ViewModel
   valid_model_type_names "Work", "Asset"
 
@@ -30,6 +41,10 @@ class MemberImagePresentation < ViewModel
   end
 
   def display
+    unless user_has_access_to_asset?
+      return no_access_placeholder
+    end
+
     content_tag("div", class: "member-image-presentation") do
       content_tag("div", class: "thumb") do
         ThumbDisplay.new(representative_asset, thumb_size: size, lazy: lazy).display
@@ -41,6 +56,18 @@ class MemberImagePresentation < ViewModel
   end
 
   private
+
+  def user_has_access_to_asset?
+    can?(:read, representative_asset)
+  end
+
+  def no_access_placeholder
+    content_tag("div", class: "member-image-presentation") do
+      content_tag("div", class: "thumb") do
+        tag "img", alt: "", src: asset_path("placeholderbox.svg"), width: "100%", class: "no-access-placeholder";
+      end
+    end
+  end
 
   def representative_asset
     member.leaf_representative
