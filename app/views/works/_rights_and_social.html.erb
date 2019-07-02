@@ -1,0 +1,16 @@
+<%# the rights logo and social media share buttons for a work show page
+
+    Takes a `work` local param.
+%>
+
+<div class="rights-and-social">
+  <% if work.rights.present? %>
+    <%= RightsIconDisplay.new(work).display %>
+  <% else %>
+    <%# hacky spacer to keep flexbox intact and social-media on the right even
+        if there's no rights %>
+    <div class="rights-placeholder"></div>
+  <% end %>
+
+  <%= SocialShareDisplay.new(work).display %>
+</div>
