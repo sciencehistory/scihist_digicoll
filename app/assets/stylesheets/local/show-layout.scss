@@ -56,16 +56,11 @@
     .show-hero {
       float: left;
       padding-right: $main-gutter-width;
-      .show-page-img img {
-        max-width: 100%;
-      }
     }
-
     .show-metadata, .show-title {
       clear: right;
       float: right;
     }
-
   }
 
   @media (min-width: $max-image-column-breakpoint) {
@@ -76,6 +71,28 @@
     }
     .show-title, .show-metadata {
       width: calc(100% - #{$max-image-column + $main-gutter-width});
+    }
+  }
+
+  .member-image-presentation {
+    .thumb img {
+      max-width: 100%;
+
+      &.lazyload, &.lazyloading {
+        background: #AAA asset-url('static-progress.svg') no-repeat;
+        background-position: center center;
+        background-size: 50%;
+      }
+      min-height: 50px; // just so it's something big enough to see! Will distort very wide images.
+
+      // sanity max-height to keep keep crazy long aspect ratio images from
+      // totally ruining page. Very difficult to get this right based on
+      // aspect ratio, cause the dimensions are so responsive. This is just
+      // a rough huge limit, if it's not working out just delete this and give up.
+      max-height: 300vw;
+
+      // inline-block may be neccesary to get JS aspectratio setting to work
+      display: inline-block;
     }
   }
 
@@ -92,22 +109,7 @@
 
     .thumb img {
       width: 100%;
-      &.lazyload, &.lazyloading {
-        background: #AAA asset-url('static-progress.svg') no-repeat;
-        background-position: center center;
-        background-size: 50%;
-      }
       vertical-align: bottom;
-      min-height: 100px; // just so it's something big enough to see! Will distort very wide images.
-
-      // sanity max-height to keep keep crazy long aspect ratio images from
-      // totally ruining page. Very difficult to get this right based on
-      // aspect ratio, cause the dimensions are so responsive. This is just
-      // a rough huge limit, if it's not working out just delete this and give up.
-      max-height: 300vw;
-
-      // inline-block may be neccesary to get JS aspectratio setting to work
-      display: inline-block;
     }
 
     .btn {
