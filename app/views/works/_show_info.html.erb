@@ -185,9 +185,12 @@
      <%=CitationDisplay.new(@work).display %>
   </p>
   <p class="btn-group" role="group">
-    <a class="btn btn-sm btn-primary export-citation" href="/works/<%= @work.friendlier_id %>.ris">
-      <i class="fa fa-address-card"></i>&nbsp;&nbsp;Export citation (RIS)
-    </a>
+    <%= link_to('<i class="fa fa-address-card"></i>&nbsp;&nbsp;Export citation (RIS)'.html_safe,
+      work_path(@work,
+      format: :ris),
+      class: "btn btn-sm btn-primary export-citation"
+    )
+    %>
     <a class="btn btn-brand-dark btn-sm" tabindex="0" role="button" data-toggle="popover" data-placement="bottom" data-container="body" data-html="true"data-trigger="focus" data-template="<div class=&quot;popover popover-citation-help&quot; role=&quot;tooltip&quot;><div class=&quot;arrow&quot;></div><div class=&quot;popover-body&quot;></div></div>" data-content="The RIS format can be imported into most reference management software, including
         <a target='_blank' href='https://www.zotero.org/'>Zotero</a>,
         <a target='_blank' href='https://www.mendeley.com/reference-management/reference-manager'>Mendeley</a>,
