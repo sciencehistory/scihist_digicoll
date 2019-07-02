@@ -146,3 +146,4 @@ gem 'aws-sdk-core'
 
 # we use for data structures for citation models, and for generating citations
  gem "citeproc-ruby", '~> 1.0'
+ gem 'csl-styles', '~> 1.0' # Need to load the styles so we can use chicago

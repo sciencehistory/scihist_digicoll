@@ -15,6 +15,8 @@
 #     # => A hash of attributes.
 #
 # Ported from Sufia: app/models/chf/citable_attributes.rb
+# This object is used in both the citation_display and ris_converter objects,
+# to generate the front-end citation and the RIS citation object.
 
 class CitableAttributes
 
@@ -57,7 +59,8 @@ class CitableAttributes
   def self.work_lookup(work, main_attribute, sub_attribute)
     work.send(main_attribute).
       select{|p| p.category == sub_attribute }.
-      map { |y| y.value}
+      map { |y| y.value}.
+      compact
   end
 
   # ruby-csl can't really do date ranges yet.
@@ -194,8 +197,10 @@ class CitableAttributes
       end
     end
 
+    # An abstract for the citation; either a string or nil.
+    # Note: work.description is a string (as opposed to an array in Sufia).
     def abstract
-      work.description.present? ? ActionView::Base.full_sanitizer.sanitize(work.description.join(" ")) : nil
+      work.description.present? ? ActionView::Base.full_sanitizer.sanitize(work.description) : nil
     end
 
     # an array of CiteProc::Name objects, suitable for using as cited creator(s)
@@ -301,7 +306,7 @@ class CitableAttributes
     def container_title
       memoize(:container_title) do
         if work.source.present?
-          work.source.first
+          work.source
         elsif work.parent && work.parent.title.present?
           work.parent.title
         end
@@ -504,12 +509,28 @@ class CitableAttributes
   end
 
   class TreatAsOralHistory < StandardTreatment
+
+    def interviewee
+      memoize(:interviewee) do
+        CitableAttributes.work_lookup(work, "creator", "interviewee")
+      end
+    end
+
+    def interviewer
+      memoize(:interviewer) do
+        CitableAttributes.work_lookup(work, "creator", "interviewer")
+      end
+    end
+
+    def place_of_interview
+      memoize(:place_of_interview) do
+        CitableAttributes::work_lookup(work, "place", "place_of_interview")
+      end
+    end
+
     def title
-      interviewee = CitableAttributes::work_lookup(work, "creator", "interviewee")
-      interviewer = CitableAttributes::work_lookup(work, "creator", "interviewer")
       return work.title if interviewee.blank? || interviewer.blank?
-      interview_place = CitableAttributes::work_lookup(work, "place", "place_of_interview")
-      place = interview_place.blank? ? "" : "in #{normalize_place(interview_place.first)}"
+      place = place_of_interview.blank? ? "" : "in #{normalize_place(place_of_interview.first)}"
       time = original_date.nil? ? "" : "on #{original_date.strftime("%B %-d, %Y")}"
       "#{parse_name(interviewee.first).format}, interviewed by #{parse_name(interviewer.first).format} #{place} #{time}"
     end
