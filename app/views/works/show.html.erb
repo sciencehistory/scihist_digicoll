@@ -58,11 +58,7 @@
   </header>
 
   <div class="show-hero">
-    <div class="member-image-presentation">
-      <div class="thumb">
-        <%= ThumbDisplay.new(decorator.representative_for_display, thumb_size: :large).display %>
-      </div>
-    </div>
+    <%= MemberImagePresentation.new(decorator.model, size: :large).display %>
   </div>
 
   <div class="show-metadata">
