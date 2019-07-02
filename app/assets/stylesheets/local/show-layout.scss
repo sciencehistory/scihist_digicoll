@@ -94,6 +94,38 @@
       // inline-block may be neccesary to get JS aspectratio setting to work
       display: inline-block;
     }
+
+    // A div of btn's
+    .show-page-image-bar {
+      display: flex;
+      width: 100%;
+      margin-top: 4px;
+
+      .btn-group {
+        width: 100%;
+        flex-basis: 0;
+        flex-grow: 1;
+        flex-shrink: 1;
+        min-width: 0;
+
+        &:not(:last-child) {
+          margin-right: 4px;
+        }
+
+        .btn {
+          width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .dropdown-menu {
+          left: 5px;
+        }
+      }
+      & > button, & > .btn, & > .btn-group > button {
+        flex: 1;
+        border-radius: 2px;
+      }
+    }
   }
 
 
