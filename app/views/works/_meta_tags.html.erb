@@ -1,0 +1,42 @@
+<% attributes = WorkSocialShareAttributes.new(work) %>
+
+
+<meta property="og:type" content="article"/>
+<meta property="og:rich_attachment" content="true" />
+<meta property="og:site_name" content="<%= application_name %>"/>
+
+<%# article stuff not currently showing up, I think we need some kind of 'link ownership' from fb %>
+<meta property="article:publisher" content="https://www.facebook.com/<%= Rails.application.config.facebook_acct %>" />
+<meta property="article:author" content="https://www.facebook.com/<%= Rails.application.config.facebook_acct %>" />
+
+<meta property="og:title" content="<%= attributes.simple_title %>"/>
+<meta property="og:description" content="<%= attributes.short_plain_description %>"/>
+<meta property="og:image" content="<%= attributes.share_media_url %>"/>
+<%# we know we're delivering a JPG %>
+<meta property="og:image:type" content="image/jpeg" />
+
+<%# height and width will get facebook to immediately show image on first share %>
+<% if attributes.share_media_width.present? %>
+  <meta property="og:image:width" content="<%= attributes.share_media_width %>" />
+<% end %>
+<% if attributes.share_media_height.present? %>
+  <meta property="og:image:height" content="<%= attributes.share_media_height %>" />
+<% end %>
+
+<meta property="og:url" content="<%= attributes.share_url %>"/>
+
+
+<%# maybe?
+fb:app_id Facebook ID A Facebook app ID
+fb:pages  Array<Facebook ID>
+fb:profile_id %>
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@<%= Rails.application.config.twitter_acct %>"/>
+
+<%# not sure twitter really uses these, but maybe it used to? %>
+<meta name="twitter:label1" content="Rights Statement"/>
+<meta name="twitter:data1" content="<%= attributes.rights_statement %>"/>
+
+
+

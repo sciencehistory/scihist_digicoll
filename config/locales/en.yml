@@ -50,12 +50,14 @@ en:
         comment: "Comment"
 
   blacklight:
+    application_name: "Science History Institute Digital Collections"
     search:
       form:
         submit: "Go"
       search_constraints_header: "You Searched For"
     range_limit:
       submit_limit: Apply
+
 
   views:
     pagination_compact:
