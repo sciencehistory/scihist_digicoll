@@ -89,7 +89,7 @@ class WorkShowDecorator < Draper::Decorator
     @related_works ||= Work.where(
         friendlier_id: related_url_filter.related_work_friendlier_ids,
         published: true
-      ).includes(:derivatives, leaf_representative: :derivatives).all
+      ).with_representative_derivatives.all
   end
 
   def public_collections
@@ -107,7 +107,7 @@ class WorkShowDecorator < Draper::Decorator
   def member_list_for_display
     @member_list_display ||= begin
       members = model.members.
-        includes(:derivatives, leaf_representative: :derivatives).
+        with_representative_derivatives.
         where(published: true).
         order(:position).
         to_a
