@@ -8,7 +8,7 @@ class WorksController < ApplicationController
       format.html
       format.ris {
         send_data RisSerializer.new(@work).to_ris,
-          disposition: 'inline',
+          disposition: 'attachment',
           type: "application/x-research-info-systems"
       }
     end

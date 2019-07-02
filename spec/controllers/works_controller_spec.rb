@@ -16,6 +16,7 @@ RSpec.describe WorksController, type: :controller do
         expect(response.body).to include "TI  - Test title"
         expect(response.body).to include "M2  - Courtesy of Science History Institute."
         expect(response.content_type).to eq "application/x-research-info-systems"
+        expect(response.headers["Content-Disposition"]).to eq "attachment"
       end
     end
   end
