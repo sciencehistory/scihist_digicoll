@@ -58,7 +58,7 @@
   </header>
 
   <div class="show-hero">
-    <%= MemberImagePresentation.new(decorator.model, size: :large).display %>
+    <%= MemberImagePresentation.new(decorator.representative_member, size: :large).display %>
     <%= render "rights_and_social", work: @work %>
   </div>
 
