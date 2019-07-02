@@ -7,7 +7,7 @@ RSpec.describe WorksController, type: :controller do
 
       it "shows the work as expected" do
         get :show, params: { id: work.friendlier_id }, as: :html
-        expect(response.body).to include work.title
+        expect(response.status).to eq(200)
       end
 
       it 'allows user to download RIS citation' do
@@ -15,7 +15,7 @@ RSpec.describe WorksController, type: :controller do
         expect(response.status).to eq(200)
         expect(response.body).to include "TI  - Test title"
         expect(response.body).to include "M2  - Courtesy of Science History Institute."
-        expect(response.body).to include "M2  - Courtesy of Science History Institute."
+        expect(response.content_type).to eq "application/x-research-info-systems"
       end
     end
   end
