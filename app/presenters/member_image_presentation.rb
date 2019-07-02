@@ -14,7 +14,9 @@
 #
 # And can also be lazy-loading or not.
 #
-# You pass in a Work or Asset. Note that we will need to access the leaf_representative and it's
+# You pass in a Work or Asset -- a direct member, not a leaf_representative.
+#
+# Note that we will need to access the leaf_representative and it's
 # derivatives, so if displaying a list of multiple (as you usually will be), you should
 # eager load these, possibly with kithe `with_representative_derivatives` scope. You DO NOT
 # pass in the leaf_representative itself, pass in the member -- we need to know about it
@@ -73,9 +75,31 @@ class MemberImagePresentation < ViewModel
     member.leaf_representative
   end
 
+  # All action buttons should be wrapped in a div.action-item, to make CSS
+  # work right.
+  #
+  # For legacy reasons, cow paths arrived at in chf_sufia, there's a kind of weird logic
+  # for what buttons to show.
+  #
+  # For a direct asset, we show both download and view buttons in LARGE view, else
+  # just download.
+  #
+  # For a child work, in LARGE view we show THREE buttons: download, view and info (link to child).
+  # Otherwise, non-large, just "info" button.
   def action_buttons_display
-    download_button +
-    view_button
+    if member.kind_of?(Work)
+      if size == :large
+        download_button + view_button + info_button
+      else
+        info_button
+      end
+    else
+      if size == :large
+        download_button + view_button
+      else
+        download_button
+      end
+    end
   end
 
   def download_button
@@ -102,4 +126,14 @@ class MemberImagePresentation < ViewModel
       end
     end
   end
+
+  # For a child work only, 'info' button links to public work view page
+  def info_button
+    return "" unless member.kind_of?(Work)
+
+    content_tag("div", class: "action-item info") do
+      link_to "Info", work_path(member), class: "btn btn-primary"
+    end
+  end
+
 end
