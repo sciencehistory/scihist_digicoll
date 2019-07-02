@@ -34,7 +34,7 @@ class MemberImagePresentation < ViewModel
       content_tag("div", class: "thumb") do
         ThumbDisplay.new(representative_asset, thumb_size: size, lazy: lazy).display
       end +
-      content_tag("div", class: "show-page-image-bar") do
+      content_tag("div", class: "action-item-bar") do
         action_buttons_display
       end
     end
@@ -53,7 +53,7 @@ class MemberImagePresentation < ViewModel
 
   def download_button
     <<~EOS.html_safe
-    <div class="btn-group dropup">
+    <div class="action-item downloads dropup">
       <button type="button" class="btn btn-primary dropdown-toggle" id="dropdownMenu_downloads_#{member.id}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <i class='fa fa-download' aria-hidden="true"></i> Download
       </button>
@@ -69,7 +69,7 @@ class MemberImagePresentation < ViewModel
   end
 
   def view_button
-    content_tag("div", class: "btn-group") do
+    content_tag("div", class: "action-item view") do
       content_tag("button", type: "button", class: "btn btn-primary", data: {}) do
           "<i class='fa fa-search' aria-hidden='true'></i> View".html_safe
       end
