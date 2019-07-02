@@ -96,12 +96,17 @@
     }
 
     // A div of btn's
-    .show-page-image-bar {
+    .action-item-bar {
       display: flex;
       width: 100%;
-      margin-top: 4px;
+      margin-top: 0.25rem;
 
-      .btn-group {
+      .action-item {
+        // Not sure why, but this makes it all display okay. The bootstrap
+        // dropdown docs sometimes show a dropdown as a single btn in a btn-group.
+        // We use it to wrap individual buttons or dropdowns in our action item bar.
+        @extend .btn-group;
+
         width: 100%;
         flex-basis: 0;
         flex-grow: 1;
@@ -109,21 +114,27 @@
         min-width: 0;
 
         &:not(:last-child) {
-          margin-right: 4px;
+          margin-right: 0.25rem;
+        }
+
+        &.downloads .dropdown-toggle:after {
+          // We want to hide the caret icon that bootstrap puts in, maybe bad accessibility
+          // but it's what we've done previous.
+          display: none;
         }
 
         .btn {
+          flex: 1;
+          border-radius: 2px;
+
           width: 100%;
           overflow: hidden;
           text-overflow: ellipsis;
         }
         .dropdown-menu {
-          left: 5px;
+          // allow some of the thumb to show on edge please.
+          left: 6px !important;
         }
-      }
-      & > button, & > .btn, & > .btn-group > button {
-        flex: 1;
-        border-radius: 2px;
       }
     }
   }
