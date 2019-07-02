@@ -186,6 +186,8 @@ GEM
     crass (1.0.4)
     csl (1.5.0)
       namae (~> 1.0)
+    csl-styles (1.0.1.9)
+      csl (~> 1.0)
     database_cleaner (1.7.0)
     db-query-matchers (0.9.0)
       activesupport (>= 4.0, <= 6.0)
@@ -602,6 +604,7 @@ DEPENDENCIES
   cocoon
   coffee-rails (~> 4.2)
   content_disposition
+  csl-styles (~> 1.0)
   database_cleaner (~> 1.7)
   db-query-matchers (< 2.0)
   devise (~> 4.5)

@@ -33,5 +33,58 @@
     max-width: $max-readable-width;
   }
 
+  // matches the attribute table, although it's not really a table.
+  .show-sub-head-body {
+    border-top: 3px solid $table-border-color;
+    padding: $table-cell-padding-sm;
+    margin-left: -1 * $table-cell-padding-sm;
+    margin-bottom: 1rem;
+  }
+  .citation {
+      line-height: 1.5 !important;
+      word-break: break-word;
+  }
 
+  .rights-and-social {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: (.6875rem) 0;
+
+
+    .rights-statement.large, .social-media {
+      padding: 0;
+      margin-bottom: $paragraph-spacer;
+    }
+
+    .rights-statement.large {
+      margin-right: $spacer;
+    }
+
+    .social-media {
+      padding-top: 12px;
+    }
+  }
+
+  .rights-statement.large {
+    margin-top: $spacer;
+
+    @include clearfix;
+
+    .rights-statement-logo {
+      width: 2.25rem;
+      height: 2.25rem;
+      float: left;
+      margin-right: 0.5em;
+      margin-top: 0.25rem;
+    }
+    .rights-statement-label {
+      display: inline-block;
+      font-size: 1.1875rem;
+      line-height: 1.375rem;
+      text-transform: uppercase;
+      letter-spacing: $small-caps-letter-spacing;
+      font-weight: $semi-bold-weight;
+    }
+  }
 }
