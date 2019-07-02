@@ -97,6 +97,15 @@ RSpec.configure do |config|
     end
   end
 
+  # Get current_user to work in decorator (draper) specs when there is no logged in user,
+  # where #current_user should be nil. Weird workaround with Draper.
+  # https://github.com/drapergem/draper/issues/857
+  config.before(:each, type: :decorator) do |example|
+    unless example.metadata[:logged_in_user]
+      _stub_current_scope :user, nil
+    end
+  end
+
   # Let blocks or tests add (eg) `queue_adapter: :test` to determine Rails
   # ActiveJob queue adapter. :test, :inline:, or :async, presumably.
   # eg `it "does something", queue_adapter: :inline`, or
