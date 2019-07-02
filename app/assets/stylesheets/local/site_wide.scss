@@ -61,17 +61,17 @@ hr.brand {
 
   border-radius: 50%; // make circles
 
-  height: 38px;
-  width: 38px;
+  height: 2.25rem;
+  width: 2.25rem;
   padding: 0;
   margin: 0;
-  margin-top: 4px; // i dunno, lines up with rights now
+  margin-top: 0.25rem; // 4px at 16px 1rem. i dunno, lines up with rights now
 
-  font-size: 26px;
+  font-size: 1.625rem; // 26px if 16px is 1rem
   line-height: 0;
 
   &:not(:last-child) {
-    margin-right: 16px;
+    margin-right: 1rem;
   }
 
   // &.facebook {
@@ -137,9 +137,13 @@ hr.brand {
 }
 
 .popover-citation-help {
-  font-weight: 300;
-  color: white;
   background-color: $brand-dark-grey;
+
+  .popover-body {
+    font-weight: 300;
+    color: white;
+  }
+
   .arrow:after {
     border-bottom-color: $brand-dark-grey !important;
   }
