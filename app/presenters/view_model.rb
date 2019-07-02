@@ -128,7 +128,7 @@ class ViewModel < Draper::Decorator
   def initialize(model, *other_args)
     if self.class.valid_model_type_names
       unless self.class.valid_model_type_names.any? { |t| model.kind_of?(t.constantize) }
-        raise ArgumentError.new("#{self.class.name} arg must be of one of type #{self.class.valid_model_type_names.inspect}")
+        raise ArgumentError.new("#{self.class.name} arg must be of one of type #{self.class.valid_model_type_names.inspect}, but was #{model.class.name.inspect}")
       end
     end
 
