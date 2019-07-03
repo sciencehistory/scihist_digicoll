@@ -18,7 +18,7 @@ class Admin::WorksController < AdminController
     @q = Work.ransack(params[:q])
     @q.sorts = 'updated_at desc' if @q.sorts.empty?
 
-    @works = @q.result.includes(:derivatives).includes(:leaf_representative => :derivatives).page(params[:page]).per(20)
+    @works = @q.result.with_representative_derivatives.page(params[:page]).per(20)
   end
 
 
