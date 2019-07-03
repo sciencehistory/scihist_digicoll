@@ -22,6 +22,11 @@
 # are svg's, which may not have internal widths specified, so image tags should always be in containers
 # with a CSS width/max-width -- and should usually have their own CSS width set to 100% --
 # and you should probably manually visually test your layout with placeholders.
+#
+# ## Note: access control
+#
+# ThumbDisplay does NOT do any access control, it will display whatever you give it, if it can,
+# even if not published with no logged in user. Access control should be done by caller.
 class ThumbDisplay < ViewModel
   valid_model_type_names "Kithe::Asset", "NilClass"
 

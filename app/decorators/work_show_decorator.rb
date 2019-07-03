@@ -96,11 +96,6 @@ class WorkShowDecorator < Draper::Decorator
     model.contained_by.where(published: true)
   end
 
-  # leaf_representative, as long as it's public
-  def representative_for_display
-    @representative_display ||= model.leaf_representative if model.leaf_representative.try(:published?)
-  end
-
   # Public members, ordered.
   # Not including the representative IF the representative is the first item in the
   # list, because no reason to duplicate it right after the representative.
@@ -112,9 +107,18 @@ class WorkShowDecorator < Draper::Decorator
         order(:position).
         to_a
 
-      members.delete_at(0) if members[0] == representative_for_display
+      members.delete_at(0) if members[0] == representative_member
       members
     end
+  end
+
+  # We don't want the leaf_representative, we want the direct representative member
+  # to pass to MemberImagePresenter. But instead of following the `representative`
+  # association, let's find it from the `members`, to avoid an extra fetch.
+  #
+  # Does assume your represnetative is one of your members, otherwise it won't find it.
+  def representative_member
+    @representative_member ||= model.members.find { |m| m.id == model.representative_id }
   end
 
   private
