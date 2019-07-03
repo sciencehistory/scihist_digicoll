@@ -58,9 +58,7 @@
   </header>
 
   <div class="show-hero">
-    <div class="show-page-img">
-      <%= ThumbDisplay.new(decorator.representative_for_display, thumb_size: :large).display %>
-    </div>
+    <%= MemberImagePresentation.new(decorator.representative_member, size: :large).display %>
     <%= render "rights_and_social", work: @work %>
   </div>
 
@@ -74,13 +72,10 @@
   <div style="clear: left"></div>
 
   <% decorator.member_list_for_display.each_with_index do |member, index| %>
-    <div class="show-member-list-item">
-      <div class="thumb">
-        <%# warning, we're not checking for access control/published here, probably should. Maybe inside ThumbDisplay? %>
+      <div class="show-member-list-item">
         <%# lazyload all but first 6 images %>
-        <%= ThumbDisplay.new(member.leaf_representative, thumb_size: :standard, lazy: (index > 5)).display %>
+        <%= MemberImagePresentation.new(member, lazy: (index > 5)).display %>
       </div>
-    </div>
   <% end %>
 
 
