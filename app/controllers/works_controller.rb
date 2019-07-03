@@ -3,9 +3,15 @@
 class WorksController < ApplicationController
   before_action :set_work, :check_auth
 
-
   def show
-
+    respond_to do |format|
+      format.html
+      format.ris {
+        send_data RisSerializer.new(@work).to_ris,
+          disposition: 'attachment',
+          type: :ris
+      }
+    end
   end
 
   private
