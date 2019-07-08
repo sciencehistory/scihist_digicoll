@@ -603,7 +603,7 @@ DEPENDENCIES
   citeproc-ruby (~> 1.0)
   cocoon
   coffee-rails (~> 4.2)
-  content_disposition
+  content_disposition (~> 1.0)
   csl-styles (~> 1.0)
   database_cleaner (~> 1.7)
   db-query-matchers (< 2.0)
