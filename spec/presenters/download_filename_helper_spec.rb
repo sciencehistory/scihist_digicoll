@@ -70,8 +70,15 @@ describe DownloadFilenameHelper, type: :model do
   end
 
   describe "#filename_for_asset" do
-    let(:asset) { create(:asset, :inline_promoted_file, position: 12, parent: create(:work, title: "Plastics make the package Dow makes the plastics"))}
-    let(:derivative) { asset.derivative_for(:thumb_mini) }
+    let(:derivative_key) { :thumb_mini }
+    let(:asset) do
+      create(:asset,
+             :faked_image_file,
+             faked_derivatives: [ build(:faked_derivative, key: derivative_key, uploaded_file: build(:stored_uploaded_file, content_type: "image/jpeg")) ],
+             position: 12,
+             parent: create(:work, title: "Plastics make the package Dow makes the plastics"))
+    end
+    let(:derivative) { asset.derivative_for(derivative_key) }
     it "can create for original" do
       expect(DownloadFilenameHelper.filename_for_asset(asset)).to eq "plastics_make_the_#{asset.parent.friendlier_id}_12_#{asset.friendlier_id}.png"
     end
