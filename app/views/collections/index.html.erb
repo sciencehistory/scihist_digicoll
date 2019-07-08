@@ -2,18 +2,20 @@
   <h1 class="collections-index-title brand-alt-h1">All Collections</h1>
   <div class="collections-index-list">
     <% @collections.each do |col| %>
-        <div class="collection">
-          <%= link_to collection_path(col.friendlier_id) do %>
-            <div class="collection-thumb">
-                <%# TODO do we need a thumb_size parameter?  %>
-                <%= ThumbDisplay.new(
-                    col.leaf_representative, placeholder_img_url: asset_path("default_collection.svg")).display %>
-                </div>
-                <div class="collection-title-wrapper">
-                  <p class="collection-title"><%= col.title %></p>
-                </div>
-            <% end %>
-        </div>
+        <% if can? :read, col %>
+            <div class="collection">
+                <%= link_to collection_path(col.friendlier_id) do %>
+                <div class="collection-thumb">
+                    <%# TODO do we need a thumb_size parameter?  %>
+                    <%= ThumbDisplay.new(
+                        col.leaf_representative, placeholder_img_url: asset_path("default_collection.svg")).display %>
+                    </div>
+                    <div class="collection-title-wrapper">
+                      <p class="collection-title"><%= col.title %></p>
+                    </div>
+                <% end %>
+            </div>
+        <% end %>
     <% end %>
     <%# hack to keep our last line of collection teasers left-aligned, assuming
     max four-columns %>
