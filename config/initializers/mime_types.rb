@@ -4,3 +4,7 @@
 # Mime::Type.register "text/richtext", :rtf
 
 Mime::Type.register "application/x-research-info-systems", :ris
+
+# We want mp3 not mpga
+Mime::Type.register "audio/mpeg", :mp3
+
