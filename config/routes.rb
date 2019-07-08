@@ -41,6 +41,9 @@ Rails.application.routes.draw do
   get "collections/:id/range_limit" => "collection_show#range_limit"
   get "collections/:id/facet" => "collection_show#facet"
 
+  get "downloads/:asset_id", to: "downloads#original"
+  get "downloads/:asset_id/:derivative_key", to: "downloads#derivative"
+
 
   ##
   # Blacklight-generated routes, that were then modified a bit by us to take
