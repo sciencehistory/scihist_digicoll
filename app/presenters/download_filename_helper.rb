@@ -3,8 +3,29 @@
 #
 # In chf_sufia, this stuff all became a tangled mess. To try to avoid that,
 # we're doing some kind of low-level non-OO utility methods for key parts, that
-# can be mixed and matched and put together by other code.
+# can be mixed and matched and put together by other code. This might be
+# better with a more OO API, but I didn't trust myself to get it right, start
+# out like this!
 class DownloadFilenameHelper
+
+  # The actual content-disposition filename we want for a given asset -- and optionally
+  # a given derivative.
+  #
+  # May in future decide different things for different types of assets.
+  def self.filename_for_asset(asset, derivative: nil)
+    base = DownloadFilenameHelper.filename_base_from_parent(asset)
+    if derivative
+      base = [base, derivative.key].join("_")
+    end
+
+    content_type = if derivative
+      derivative.content_type
+    else
+      asset.content_type
+    end
+
+    DownloadFilenameHelper.filename_with_suffix(base, content_type: content_type)
+  end
 
   # Pass in a string, get the first three words separated by underscores, stripping punctuation.
   # Ignores any filename dot-suffix. Downcases.

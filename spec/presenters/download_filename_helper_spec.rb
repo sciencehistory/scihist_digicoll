@@ -53,7 +53,7 @@ describe DownloadFilenameHelper, type: :model do
     end
   end
 
-  describe "filename_base_from_parent" do
+  describe "#filename_base_from_parent" do
     let(:asset) { create(:asset, position: 12, parent: create(:work, title: "Plastics make the package Dow makes the plastics"))}
 
     it "creates a long filename base" do
@@ -68,4 +68,18 @@ describe DownloadFilenameHelper, type: :model do
       end
     end
   end
+
+  describe "#filename_for_asset" do
+    let(:asset) { create(:asset, :inline_promoted_file, position: 12, parent: create(:work, title: "Plastics make the package Dow makes the plastics"))}
+    let(:derivative) { asset.derivative_for(:thumb_mini) }
+    it "can create for original" do
+      expect(DownloadFilenameHelper.filename_for_asset(asset)).to eq "plastics_make_the_#{asset.parent.friendlier_id}_12_#{asset.friendlier_id}.png"
+    end
+
+    it "can create for derivative" do
+      # note ends with jpeg, not png, cause it's a jpeg derivative
+      expect(DownloadFilenameHelper.filename_for_asset(asset, derivative: derivative)).to eq "plastics_make_the_#{asset.parent.friendlier_id}_12_#{asset.friendlier_id}_#{derivative.key}.jpeg"
+    end
+  end
+
 end
