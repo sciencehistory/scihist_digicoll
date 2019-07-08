@@ -90,4 +90,18 @@ describe CatalogController, solr: true, indexable_callbacks: true do
       expect(page).not_to have_selector("li#document_#{red2.friendlier_id}")
     end
   end
+
+  describe "non-published items" do
+    let!(:non_published_work) { create(:work, title: "work non-published", published: false) }
+    let!(:non_published_collection) { create(:work, title: "collection non-published", published: false) }
+    let!(:published_work) { create(:work, title: "work published", published: true) }
+
+    it "do not show up in search results" do
+      visit search_catalog_path(search_field: "all_fields")
+
+      expect(page).to have_content(published_work.title)
+      expect(page).not_to have_content(non_published_work.title)
+      expect(page).not_to have_content(non_published_collection.title)
+    end
+  end
 end
