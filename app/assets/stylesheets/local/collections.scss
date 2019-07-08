@@ -39,8 +39,7 @@ $collection-index-box-margin: 17px;
         left: 0;
         width: 100%;
         height: 75px;
-        /* TODO change  this back to brand-inverse and figure out where definition should go. */
-        background-color: /*brand-inverse */  $brand-dark-blue;
+        background-color: $brand-inverse ;
         padding: 10px;
 
         .collection-title {
