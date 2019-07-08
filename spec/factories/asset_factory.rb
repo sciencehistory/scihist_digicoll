@@ -21,6 +21,14 @@ FactoryBot.define do
       end
     end
 
+    # Will not trigger promotion phase, which also means no derivatives.
+    trait :non_promoted_file do
+      file { File.open((Rails.root + "spec/test_support/images/30x30.png")) }
+      after(:build) do |asset|
+        asset.file_attacher.set_promotion_directives(promote: false)
+      end
+    end
+
     # While it still uses a real file, it skips all of the (slow) standard metadata extraction
     # and derivative generation, instead just SETTING the metadata and derivatives to fixed
     # values (which may not be actually right, but that doesn't matter for many tests).
