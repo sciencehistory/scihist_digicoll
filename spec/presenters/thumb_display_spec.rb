@@ -14,7 +14,7 @@ describe ThumbDisplay do
 
   describe "asset missing derivatives" do
     let(:argument) do
-      create(:asset).tap do |asset|
+      build(:asset).tap do |asset|
         allow(asset).to receive(:content_type).and_return("image/jpeg")
       end
     end
@@ -25,7 +25,7 @@ describe ThumbDisplay do
 
   describe "non-handlable type" do
     let(:argument) do
-      create(:asset).tap do |asset|
+      build(:asset).tap do |asset|
         allow(asset).to receive(:content_type).and_return("audio/mpeg")
       end
     end
@@ -35,7 +35,7 @@ describe ThumbDisplay do
   end
 
   describe "asset with 'standard' size derivatives" do
-    let(:argument) { create(:asset, :inline_promoted_file)}
+    let(:argument) { build(:asset, :faked_image_file)}
     it "renders img with srcset" do
       standard_deriv    = argument.derivative_for(:thumb_standard)
       standard_2x_deriv = argument.derivative_for(:thumb_standard_2X)
@@ -61,7 +61,7 @@ describe ThumbDisplay do
 
   describe "specified thumb size" do
     let(:thumb_size) { :mini }
-    let(:argument) { create(:asset, :inline_promoted_file)}
+    let(:argument) { build(:asset, :faked_image_file)}
     let(:instance) { ThumbDisplay.new(argument, thumb_size: thumb_size) }
 
     it "renders" do
@@ -79,7 +79,7 @@ describe ThumbDisplay do
 
     describe "lazy load with lazysizes.js" do
       let(:thumb_size) { :mini }
-      let(:argument) { create(:asset, :inline_promoted_file)}
+      let(:argument) { build(:asset, :faked_image_file)}
       let(:instance) { ThumbDisplay.new(argument, thumb_size: thumb_size, lazy: true) }
 
       it "renders with lazysizes class and data- attributes" do
