@@ -11,10 +11,19 @@ class DownloadFilenameHelper
   # The actual content-disposition filename we want for a given asset -- and optionally
   # a given derivative.
   #
-  # May in future decide different things for different types of assets.
+  # Can do different things for different sorts of Assets, like speical audio file
+  # handling.
   def self.filename_for_asset(asset, derivative: nil)
-    base = DownloadFilenameHelper.filename_base_from_parent(asset)
-    if derivative
+    # audio files use their whole title instead of parents, with the intended
+    # use case of Oral History, our only audio files at present, where archival
+    # title is important.
+    base = if asset.content_type && asset.content_type.start_with?("audio/")
+      asset.title
+    else
+      DownloadFilenameHelper.filename_base_from_parent(asset)
+    end
+
+    if derivative && !asset.content_type.start_with?("audio")
       base = [base, derivative.key].join("_")
     end
 
@@ -93,9 +102,19 @@ class DownloadFilenameHelper
     end
   end
 
-  # We'll try using mini-mime.
+  # We'll try to find a suffix for a MIME type, first using rails Mime::Type
+  # (types usually reigstered in config/initializers/mime_types.rb), then if
+  # not found, using the mini_mime gem.
+  #
+  # Sometimes the 'official' suffix is not what we really want (mpga instead of mp3),
+  # registering a mime-type with Rails initializers/mime_type.rb is the way to force it.
   def self.suffix_for_content_type(content_type)
     return "" unless content_type.present?
+
+    mime_obj = Mime::Type.lookup(content_type)
+    if mime_obj && mime_obj.symbol
+      return mime_obj.symbol.to_s.downcase
+    end
 
     MiniMime.lookup_by_content_type(content_type)&.extension
   end
