@@ -49,19 +49,7 @@ FactoryBot.define do
       after(:build) do |asset, evaluator|
         # Set our uploaded file
 
-        id = SecureRandom.hex
-        Shrine.storages[:store].upload(evaluator.faked_file, id)
-        uploaded_file = Shrine::UploadedFile.new(
-          "id" => id,
-          "storage" => "store",
-          "metadata" => {
-            "filename"=> File.basename( evaluator.faked_file.path ),
-            "size"=> evaluator.faked_file.size,
-            "mime_type"=> evaluator.faked_content_type,
-            "width"=> evaluator.faked_width,
-            "height"=> evaluator.faked_height
-          }
-        )
+        uploaded_file = create(:stored_uploaded_file)
         asset.file_data = uploaded_file.to_json
 
         # Now add derivatives for any that work for our faked file type
@@ -69,27 +57,16 @@ FactoryBot.define do
           if derivative_defn.applies_to?(asset)
             derivative = Kithe::Derivative.new(key: derivative_defn.key)
 
-
             # We're gonna lie and say the original is a derivative, it won't
             # be the right size, oh well. It also assumes all derivatives
             # result in an image of the same type which isn't true, it
             # won't even be the right type! for many tests, it's okay.
-            uploaded_file = Shrine::UploadedFile.new(
-              "id" => id,
-              "storage" => "store",
-              "metadata" => {
-                "filename"=> File.basename( evaluator.faked_file.path ),
-                "size"=> evaluator.faked_file.size,
-                "mime_type"=> evaluator.faked_content_type,
-                "width"=> evaluator.faked_width,
-                "height"=> evaluator.faked_height
-              }
-            )
+            # When it's not, caller of this factory should supply their own
+            # derivatives.
             derivative.file_data = uploaded_file.to_json
             asset.derivatives << derivative
           end
         end
-
       end
     end
 
