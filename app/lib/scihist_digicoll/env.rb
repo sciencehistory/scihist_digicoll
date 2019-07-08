@@ -50,10 +50,22 @@ module ScihistDigicoll
 
     define_key :aws_region, default: "us-east-1"
 
-    # where our web app is located, https://WHAT
+    # Where our web app is hosted.
+    #
+    # This setting should not include the protocol, as this
+    # is supplied in the code ("https://").
+    #
+    # The production value is set in config/local_env.yml.
+    # This default value is used in the development and testing environments;
+    # if you choose, you can also override it in
+    # your own local config/local_env.yml file.
+    #
+    # The equivalent setting in Sufia is called app_url_base
+    # and is defined at
+    # https://github.com/sciencehistory/chf-sufia/blob/a103c5908af90c9076cb826140527213ba2e645f/lib/chf/env.rb#L158 .
     define_key :web_hostname, default: -> {
       unless Rails.env.production?
-        "https://localhost"
+        "localhost"
       end
     }
 
