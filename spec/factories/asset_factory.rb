@@ -39,7 +39,7 @@ FactoryBot.define do
     # In fact, we set all the derivatives to just be the same as the original file.
     #
     # Only is set up to provide metadata and derivatives expected for image/ content-types.
-    trait :faked_image_file do
+    factory :asset_with_faked_file do
       transient do
         faked_file { File.open((Rails.root + "spec/test_support/images/30x30.png")) }
         faked_content_type { "image/png" }
