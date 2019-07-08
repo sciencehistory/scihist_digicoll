@@ -41,8 +41,12 @@ Rails.application.routes.draw do
   get "collections/:id/range_limit" => "collection_show#range_limit"
   get "collections/:id/facet" => "collection_show#facet"
 
-  get "downloads/:asset_id", to: "downloads#original"
-  get "downloads/:asset_id/:derivative_key", to: "downloads#derivative"
+  # download_path(asset)
+  # download_url(asset)
+  get "downloads/:asset_id", to: "downloads#original", as: :download
+  # download_derivative_path(asset, "thumb_small")
+  # download_derivative_url(asset, "thumb_small")
+  get "downloads/:asset_id/:derivative_key", to: "downloads#derivative", as: :download_derivative
 
 
   ##
