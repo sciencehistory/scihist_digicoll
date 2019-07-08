@@ -61,7 +61,11 @@ FactoryBot.define do
       after(:build) do |asset, evaluator|
         # Set our uploaded file
 
-        uploaded_file = create(:stored_uploaded_file)
+        uploaded_file = create(:stored_uploaded_file,
+          content_type: evaluator.faked_content_type,
+          width: evaluator.faked_width,
+          height: evaluator.faked_height)
+
         asset.file_data = uploaded_file.to_json
 
         # Now add derivatives for any that work for our faked file type
