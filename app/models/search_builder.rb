@@ -12,6 +12,7 @@ class SearchBuilder < Blacklight::SearchBuilder
 
 
   # Scihist SearchBuilder extensions
+  include SearchBuilder::AccessControlFilter
   include SearchBuilder::AdminOnlySearchFields
   include SearchBuilder::PublicDomainFilter
   include SearchBuilder::CustomSortLogic
