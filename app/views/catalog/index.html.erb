@@ -1,0 +1,15 @@
+<%# override the default Blacklight to REMOVE check for has_search_parameters?, which displayed
+    special home page instead of search results unless there was a search.
+
+    We don't want to do that, we will handle our home page elsewhere not via Blacklight,
+    and want this blacklight search action to always show results -- if no query is entered,
+    it will just show all results, if we let it.
+
+    Customization forked from: https://github.com/projectblacklight/blacklight/blob/5a0e229b68d3a853e7dce7f477d777336ac7f63a/app/views/catalog/index.html.erb
+%>
+
+<% content_for(:sidebar) do %>
+  <%= render 'search_sidebar' %>
+<% end %>
+
+<%= render 'search_results' %>
