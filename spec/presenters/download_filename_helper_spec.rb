@@ -72,8 +72,7 @@ describe DownloadFilenameHelper, type: :model do
   describe "#filename_for_asset" do
     let(:derivative_key) { :thumb_mini }
     let(:asset) do
-      create(:asset,
-             :faked_image_file,
+      create(:asset_with_faked_file,
              faked_derivatives: [ build(:faked_derivative, key: derivative_key, uploaded_file: build(:stored_uploaded_file, content_type: "image/jpeg")) ],
              position: 12,
              parent: create(:work, title: "Plastics make the package Dow makes the plastics"))

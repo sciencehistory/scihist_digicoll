@@ -35,7 +35,7 @@ describe ThumbDisplay do
   end
 
   describe "asset with 'standard' size derivatives" do
-    let(:argument) { build(:asset, :faked_image_file)}
+    let(:argument) { build(:asset_with_faked_file)}
     it "renders img with srcset" do
       standard_deriv    = argument.derivative_for(:thumb_standard)
       standard_2x_deriv = argument.derivative_for(:thumb_standard_2X)
@@ -61,7 +61,7 @@ describe ThumbDisplay do
 
   describe "specified thumb size" do
     let(:thumb_size) { :mini }
-    let(:argument) { build(:asset, :faked_image_file)}
+    let(:argument) { build(:asset_with_faked_file)}
     let(:instance) { ThumbDisplay.new(argument, thumb_size: thumb_size) }
 
     it "renders" do
@@ -79,7 +79,7 @@ describe ThumbDisplay do
 
     describe "lazy load with lazysizes.js" do
       let(:thumb_size) { :mini }
-      let(:argument) { build(:asset, :faked_image_file)}
+      let(:argument) { build(:asset_with_faked_file)}
       let(:instance) { ThumbDisplay.new(argument, thumb_size: thumb_size, lazy: true) }
 
       it "renders with lazysizes class and data- attributes" do
