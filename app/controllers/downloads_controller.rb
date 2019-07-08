@@ -8,17 +8,12 @@ class DownloadsController < ApplicationController
 
   #GET /downloads/:asset_id
   def original
-    filename = DownloadFilenameHelper.filename_with_suffix(
-      DownloadFilenameHelper.filename_base_from_parent(@asset),
-      asset: @asset
-    )
-
     redirect_to @asset.file.url(
       expires_in: URL_EXPIRES_IN,
       response_content_type: @asset.content_type,
       response_content_disposition: ContentDisposition.format(
         disposition: content_disposition_mode,
-        filename: filename
+        filename: DownloadFilenameHelper.filename_for_asset(@asset)
       ),
       status: 302
     )
@@ -26,17 +21,12 @@ class DownloadsController < ApplicationController
 
   #GET /downloads/:asset_id/:derivative_key
   def derivative
-    filename = DownloadFilenameHelper.filename_with_suffix(
-      [DownloadFilenameHelper.filename_base_from_parent(@asset), params[:derivative_key]].join("_"),
-      content_type: @derivative.content_type
-    )
-
     redirect_to @derivative.file.url(
       expires_in: URL_EXPIRES_IN,
       response_content_type: @derivative.content_type,
       response_content_disposition: ContentDisposition.format(
         disposition: content_disposition_mode,
-        filename: filename
+        filename: DownloadFilenameHelper.filename_for_asset(@asset, derivative: @derivative)
       ),
       status: 302
     )
