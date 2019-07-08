@@ -5,7 +5,6 @@
         <div class="collection">
             <%= link_to collection_path(col.friendlier_id) do %>
             <div class="collection-thumb">
-                <%# TODO do we need a thumb_size parameter?  %>
                 <%= ThumbDisplay.new(
                     col.leaf_representative, thumb_size: :collection_page, placeholder_img_url: asset_path("default_collection.svg")).display %>
                 </div>
