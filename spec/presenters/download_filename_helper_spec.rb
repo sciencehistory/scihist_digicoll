@@ -48,6 +48,10 @@ describe DownloadFilenameHelper, type: :model do
       expect(DownloadFilenameHelper.filename_with_suffix("filename", content_type: "image/made-this-up")).to eq("filename")
     end
 
+    it "removes existing suffix for unrecognized content type" do
+      expect(DownloadFilenameHelper.filename_with_suffix("filename.pdf", content_type: "image/made-this-up")).to eq("filename")
+    end
+
     it "removes dangerous characters" do
       expect(DownloadFilenameHelper.filename_with_suffix("this/has dangerous:characters/", suffix: "jpg")).to eq("thishas dangerouscharacters.jpg")
     end
@@ -92,7 +96,7 @@ describe DownloadFilenameHelper, type: :model do
       let(:asset) do
         create(:asset_with_faked_file,
                title: "mark_h_0030_1-1.flac",
-               faked_content_type: "audio/flac",
+               faked_content_type: "audio/x-flac",
                faked_derivatives: [ build(:faked_derivative, key: derivative_key, uploaded_file: build(:stored_uploaded_file, content_type: "audio/mpeg")) ],
                position: 12,
                parent: create(:work, title: "Plastics make the package Dow makes the plastics"))

@@ -98,7 +98,9 @@ class DownloadFilenameHelper
       suffix = ".#{suffix}" unless suffix.start_with?('.')
       Pathname.new(base).sub_ext(suffix).to_s
     else
-      base
+      # remove any existing suffix, the one that's there is not right but
+      # we have no new one
+      Pathname.new(base).sub_ext("").to_s
     end
   end
 
