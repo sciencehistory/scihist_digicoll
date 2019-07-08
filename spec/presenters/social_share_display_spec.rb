@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe SocialShareDisplay do
-  let(:work) { create(:work, :with_complete_metadata, representative: create(:asset, :inline_promoted_file))}
+  let(:work) { create(:work, :with_complete_metadata, representative: create(:asset, :faked_image_file))}
   let(:displayer) { SocialShareDisplay.new(work) }
   let(:rendered) { Nokogiri::HTML.fragment( displayer.display )}
   let(:container_div) { rendered.at_css("div.social-media") }
