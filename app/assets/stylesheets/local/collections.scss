@@ -20,7 +20,6 @@ $collection-index-box-margin: 17px;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    /* TODO clean this up */
     margin: -1 * $collection-index-box-margin; /* negate flex-item margins on outer border */
     margin-bottom: $collection-index-box-margin;
 
@@ -39,7 +38,7 @@ $collection-index-box-margin: 17px;
         left: 0;
         width: 100%;
         height: 75px;
-        background-color: $brand-inverse ;
+        background-color: $dark;
         padding: 10px;
 
         .collection-title {
