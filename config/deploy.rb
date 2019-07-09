@@ -28,7 +28,7 @@ set :server_autodiscover_application, "scihist_digicoll"
 # we use for capistrano stage.
 set :server_autodiscover_service_level, fetch(:stage)
 # Expect all of these to be set, or we will warn.
-set :server_autodiscover_expected_roles, [:web, :app, :db, :jobs, :solr, :cron]
+set :server_autodiscover_expected_roles, [:web, :app, :jobs, :solr, :cron]
 
 
 
