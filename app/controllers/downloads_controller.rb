@@ -47,9 +47,8 @@ class DownloadsController < ApplicationController
       response_content_disposition: ContentDisposition.format(
         disposition: content_disposition_mode,
         filename: DownloadFilenameHelper.filename_for_asset(@asset)
-      ),
-      status: 302
-    )
+      )
+    ), status: 302
   end
 
   #GET /downloads/:asset_id/:derivative_key
@@ -60,9 +59,8 @@ class DownloadsController < ApplicationController
       response_content_disposition: ContentDisposition.format(
         disposition: content_disposition_mode,
         filename: DownloadFilenameHelper.filename_for_asset(@asset, derivative: @derivative)
-      ),
-      status: 302
-    )
+      )
+    ), status: 302
   end
 
   private
