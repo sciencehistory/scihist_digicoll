@@ -41,7 +41,11 @@ class DownloadsController < ApplicationController
 
   #GET /downloads/:asset_id
   def original
+    # Tell shrine url method `public:false` to make sure we get a signed URL
+    # that lets us set content-disposition and content-type, even if
+    # it's public in S3.
     redirect_to @asset.file.url(
+      public: false,
       expires_in: URL_EXPIRES_IN,
       response_content_type: @asset.content_type,
       response_content_disposition: ContentDisposition.format(
@@ -53,7 +57,11 @@ class DownloadsController < ApplicationController
 
   #GET /downloads/:asset_id/:derivative_key
   def derivative
+    # Tell shrine url method `public:false` to make sure we get a signed URL
+    # that lets us set content-disposition and content-type, even if
+    # it's public in S3.
     redirect_to @derivative.file.url(
+      public: false,
       expires_in: URL_EXPIRES_IN,
       response_content_type: @derivative.content_type,
       response_content_disposition: ContentDisposition.format(
