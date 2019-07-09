@@ -73,25 +73,16 @@ class DownloadFilenameHelper
   # The base should already be prepared for what you want -- the only thing
   # we'll do to it is a failsafe removal of characters no good for filenames (slash, backslash, colon).
   #
-  # You can pass in a suffix literal like "jpg", or a content_type like "image/jpeg"
-  # and we'll look up the suffix, or an Asset instance, and we'll look up the suffix
-  # from it's content_type. precedence is suffix, content_type, and asset.content_type
-  # in that order. You can pass in multiple, if some end up blank, it'll go on to try the
-  # next.
+  # We will ensure the filename suffix matches the content-type you pass in (unless content_type is nil),
+  # and also remove any bad-for-filenames characters from the base.
   #
   # @param base [String] base filename, is left alone except filename-dangerous characters are removed.
-  # @param suffix [String] eg "jpg"
   # @param content_type [String] eg "image/jpeg"
-  # @param asset [Asset] will look up .content_type from asset, and suffix from that content_type.
-  def self.filename_with_suffix(base, asset: nil, content_type: nil, suffix: nil)
+  def self.filename_with_suffix(base, content_type: nil)
     base = base.gsub(/[:\\\/]+/, '')
 
-    if suffix.blank? && content_type.present?
+    if content_type.present?
       suffix = suffix_for_content_type(content_type)
-    end
-
-    if suffix.blank? && asset.present? && asset.content_type.present?
-      suffix = suffix_for_content_type(asset.content_type)
     end
 
     if suffix.present?

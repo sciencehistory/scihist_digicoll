@@ -32,12 +32,8 @@ describe DownloadFilenameHelper, type: :model do
   end
 
   describe "#filename_with_suffix" do
-    it "uses supplied suffix" do
-      expect(DownloadFilenameHelper.filename_with_suffix("filename", suffix: "jpg")).to eq("filename.jpg")
-    end
-
     it "replaces existing suffix" do
-      expect(DownloadFilenameHelper.filename_with_suffix("filename.pdf", suffix: "jpg")).to eq("filename.jpg")
+      expect(DownloadFilenameHelper.filename_with_suffix("filename.pdf", content_type: "image/jpeg")).to eq("filename.jpeg")
     end
 
     it "can look up content_type" do
@@ -53,7 +49,7 @@ describe DownloadFilenameHelper, type: :model do
     end
 
     it "removes dangerous characters" do
-      expect(DownloadFilenameHelper.filename_with_suffix("this/has dangerous:characters/", suffix: "jpg")).to eq("thishas dangerouscharacters.jpg")
+      expect(DownloadFilenameHelper.filename_with_suffix("this/has dangerous:characters/", content_type: "image/jpeg")).to eq("thishas dangerouscharacters.jpeg")
     end
   end
 
