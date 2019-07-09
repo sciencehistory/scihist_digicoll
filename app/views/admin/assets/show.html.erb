@@ -37,6 +37,10 @@
       <dt class="col-sm-4">Last Modified</dt>
       <dd class="col-sm-8"><%= l @asset.updated_at, format: :admin %></dd>
 
+
+      <dt class="col-sm-4">Orig. Filename</dt>
+      <dd class="col-sm-8"><%= @asset&.file&.metadata.try { |h| h["filename"]} %></dd>
+
       <dt class="col-sm-4">Content-type</dt>
       <dd class="col-sm-8"><%= @asset.content_type %></dd>
 
