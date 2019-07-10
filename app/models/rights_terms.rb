@@ -41,6 +41,11 @@ class RightsTerms
     metadata_for(id).try { |h| h["short_label_html"] }
   end
 
+  # short_label_html_for with <br> tags removed
+  def short_label_inline_for(id)
+    short_label_html_for(id).try { |str| str.gsub("<br>", " ") }
+  end
+
   def metadata_for(id)
     terms_by_id[id]
   end
@@ -55,7 +60,7 @@ class RightsTerms
   # 'delegate' to the #global class method containing a global instance.
   class << self
     delegate :all_ids, :collection_for_select, :metadata_for, :category_for,
-      :short_label_html_for, :label_for, to: :global
+      :short_label_html_for, :short_label_inline_for, :label_for, to: :global
   end
 
   private
