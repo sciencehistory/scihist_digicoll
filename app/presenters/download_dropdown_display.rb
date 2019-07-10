@@ -58,7 +58,7 @@ class DownloadDropdownDisplay < ViewModel
   def menu_items
     elements = []
 
-    if parent.rights.present?
+    if parent && parent.rights.present?
       elements << "<h3 class='dropdown-header'>Rights</h3>".html_safe
       elements << rights_statement_item
       elements << "<li class='dropdown-divider'></li>".html_safe

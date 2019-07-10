@@ -22,4 +22,12 @@ describe DownloadDropdownDisplay do
       expect(div).not_to have_selector("h3.dropdown-header", text: "Rights")
     end
   end
+
+  # shouldn't normally happen, but does in tests sometimes, we don't want an error.
+  describe "no parent" do
+    let(:asset) { build(:asset) }
+    it "renders without error" do
+      expect(div).to be_present
+    end
+  end
 end
