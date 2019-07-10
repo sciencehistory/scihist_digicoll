@@ -6,6 +6,17 @@
 # can be mixed and matched and put together by other code. This might be
 # better with a more OO API, but I didn't trust myself to get it right, start
 # out like this!
+#
+# ## NOTE ON FILENAME SUFFIXES
+#
+# At present we are insisting on setting a 'correct' filename suffix for the mime-type,
+# and never use/look at the filename suffix on the actual stored file (original or derivative).
+# Perhaps we should do the latter (verifying that it matches content-type), to avoid issues
+# with multiple suffixes for a given content-type and current code picking a less good or
+# wrong one. But it would require some refactoring of this code, may not be needed.
+#
+# You can always register a type/suffix in config/initializers/mime_types.rb to override
+# whatever the overall type->suffix database would say.
 class DownloadFilenameHelper
 
   # The actual content-disposition filename we want for a given asset -- and optionally
