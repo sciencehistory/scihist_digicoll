@@ -1,0 +1,40 @@
+// A large rights statement, as on work show page, where the label is usually
+// two lines via an internal "BR". Trying to mimic standard displays from
+// rightstatements.org
+
+.rights-statement.large {
+  margin-top: $spacer;
+
+  @include clearfix;
+
+  .rights-statement-logo {
+    width: 2.25rem;
+    height: 2.25rem;
+    float: left;
+    margin-right: 0.5em;
+    margin-top: 0.25rem;
+  }
+  .rights-statement-label {
+    display: inline-block;
+    font-size: 1.1875rem;
+    line-height: 1.375rem;
+    text-transform: uppercase;
+    letter-spacing: $small-caps-letter-spacing;
+    font-weight: $semi-bold-weight;
+  }
+}
+
+
+// The one-line rights statement, usually in a download menu, as on work show
+// page and image viewer.
+
+.rights-statement.dropdown-item {
+  .rights-statement-label {
+    vertical-align: middle;
+  }
+  .rights-statement-logo {
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+  }
+}

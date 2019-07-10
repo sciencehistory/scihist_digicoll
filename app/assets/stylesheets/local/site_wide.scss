@@ -95,10 +95,10 @@ hr.brand {
     font-weight: 600;
     letter-spacing: 0.025em;
   }
-  li a {
+  a.dropdown-item {
     color: $link-color;
   }
-  li small {
+  .dropdown-item small {
     color: $text-muted;
     margin-left: 8px;
     font-weight: 100;
