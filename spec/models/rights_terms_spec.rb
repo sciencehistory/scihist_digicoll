@@ -27,5 +27,10 @@ describe RightsTerms do
     it "can look up short_label_html_for" do
       expect(described_class.short_label_html_for(id)).to be_present
     end
+
+    it "can look up short_label_inline" do
+      expect(described_class.short_label_inline_for(id)).to be_present
+      expect(described_class.short_label_inline_for(id)).not_to include("br")
+    end
   end
 end
