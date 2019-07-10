@@ -36,6 +36,14 @@ class Asset < Kithe::Asset
     end
   end
 
+  # and a full size jpg
+  define_derivative("full_jpg", content_type: "image") do |original_file, record:|
+    # No need to do this if our original is a JPG
+    unless record.content_type == "image/jpeg"
+      Kithe::VipsCliImageToJpeg.new.call(original_file)
+    end
+  end
+
   define_derivative('mp3', content_type: "audio") do |original_file|
     Kithe::FfmpegTransformer.new(
       bitrate: '64k', force_mono: true, output_suffix: 'mp3',
