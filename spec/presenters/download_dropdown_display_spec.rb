@@ -1,18 +1,59 @@
 require 'rails_helper'
 
 describe DownloadDropdownDisplay do
-  let(:asset) { build(:asset, parent: build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")) }
   let(:rendered) { Nokogiri::HTML.fragment(DownloadDropdownDisplay.new(asset).display) }
   let(:div) { rendered.at_css("div.action-item.downloads") }
 
-  it "renders" do
-    expect(div).to be_present
+  describe "no derivatives existing" do
+    let(:asset) do
+      create(:asset_with_faked_file,
+            faked_derivatives: [],
+            parent: build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
+      )
+    end
 
-    ul = div.at_css("div.dropdown-menu.download-menu")
-    expect(ul).to be_present
+    it "renders" do
+      expect(div).to be_present
 
-    expect(ul).to have_selector("h3.dropdown-header", text: "Rights")
-    expect(ul).to have_selector("a.rights-statement.dropdown-item", text: /Public Domain/)
+      ul = div.at_css("div.dropdown-menu.download-menu")
+      expect(ul).to be_present
+
+      expect(ul).to have_selector("h3.dropdown-header", text: "Rights")
+      expect(ul).to have_selector("a.rights-statement.dropdown-item", text: /Public Domain/)
+
+      expect(div).to have_selector(".dropdown-header", text: "Download selected image")
+      expect(div).to have_selector("a.dropdown-item", text: /Original/)
+
+      expect(div).not_to have_selector("a.dropdown-item", text: /Small JPG/)
+      expect(div).not_to have_selector("a.dropdown-item", text: /Medium JPG/)
+      expect(div).not_to have_selector("a.dropdown-item", text: /Large JPG/)
+      expect(div).not_to have_selector("a.dropdown-item", text: /Full-sized JPG/)
+    end
+  end
+
+  describe "with image file and derivatives" do
+    let(:asset) do
+      create(:asset_with_faked_file,
+        faked_derivatives: [
+          build(:faked_derivative, key: "download_small"),
+          build(:faked_derivative, key: "download_medium"),
+          build(:faked_derivative, key: "download_large"),
+          build(:faked_derivative, key: "full_jpg") ],
+        parent: build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
+      )
+    end
+
+    it "renders asset download options" do
+      expect(div).to be_present
+
+      expect(div).to have_selector(".dropdown-header", text: "Download selected image")
+
+      expect(div).to have_selector("a.dropdown-item", text: /Small JPG/)
+      expect(div).to have_selector("a.dropdown-item", text: /Medium JPG/)
+      expect(div).to have_selector("a.dropdown-item", text: /Large JPG/)
+      expect(div).to have_selector("a.dropdown-item", text: /Full-sized JPG/)
+      expect(div).to have_selector("a.dropdown-item", text: /Original/)
+    end
   end
 
   describe "no rights statement" do

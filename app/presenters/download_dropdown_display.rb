@@ -33,6 +33,10 @@ class DownloadDropdownDisplay < ViewModel
 
   private
 
+  def asset_download_options
+    @asset_download_options ||= DownloadOptions::ImageDownloadOptions.new(asset).options
+  end
+
   def parent
     asset.parent
   end
@@ -64,7 +68,19 @@ class DownloadDropdownDisplay < ViewModel
       elements << "<li class='dropdown-divider'></li>".html_safe
     end
 
+    if asset_download_options
+      elements << "<h3 class='dropdown-header'>Download selected image</h3>".html_safe
+      asset_download_options.each do |download_option|
+        elements << format_download_option(download_option)
+      end
+    end
+
     safe_join(elements)
+  end
+
+  def format_download_option(download_option)
+    label = safe_join([download_option.label, content_tag("small", download_option.subhead)])
+    content_tag("a", label, class: "dropdown-item", href: download_option.url)
   end
 
   def rights_statement_item
