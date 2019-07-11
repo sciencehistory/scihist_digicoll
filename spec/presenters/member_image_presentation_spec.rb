@@ -6,7 +6,7 @@ describe MemberImagePresentation, type: :decorator do
   let(:presenter) { MemberImagePresentation.new(member) }
 
   describe "with asset" do
-    let(:member) { create(:asset, :faked_image_file) }
+    let(:member) { create(:asset_with_faked_file) }
 
     describe "large size" do
       let(:presenter) { MemberImagePresentation.new(member, size: :large) }
@@ -44,7 +44,7 @@ describe MemberImagePresentation, type: :decorator do
   end
 
   describe "with child work" do
-    let(:member) { create(:work, representative: create(:asset, :faked_image_file)) }
+    let(:member) { create(:work, representative: create(:asset_with_faked_file)) }
 
     describe "large size" do
       let(:presenter) { MemberImagePresentation.new(member, size: :large) }
