@@ -50,6 +50,7 @@ RSpec.describe Importers::GenericWorkImporter do
         "8623hz81w"
       ],
       "medium" => ["Vellum"],
+      "digitization_funder" => ["Daniel Sanford"],
       "project" => ["Nanotechnology"]
     }
   end
@@ -69,6 +70,8 @@ RSpec.describe Importers::GenericWorkImporter do
     expect(new_work.project).to eq(["Nanotechnology"])
     expect(new_work.description).to      eq("Description.")
     expect(new_work.provenance).to       eq("Provenance.")
+    # note: this field is multivalue in chf-sufia, but single-value in the new app.
+    expect(new_work.digitization_funder).to       eq("Daniel Sanford")
   end
 
 

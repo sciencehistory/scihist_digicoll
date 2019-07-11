@@ -148,6 +148,8 @@ To make this work, you need to have AWS credentaisl available -- for now, we use
 
 To list servers auto-discovered from EC2 without doing a deploy, run `cap staging list_ec2_servers` or `cap production list_ec2_servers`.
 
+When deploying to a new server add the flag solr_restart=true to the deploy so Solr performs a full restart and loads the configuration files. Normal deploys only reload Solr.
+
 ## Rake tasks
 
 ### Solr Data
