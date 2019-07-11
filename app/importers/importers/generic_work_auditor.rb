@@ -148,12 +148,6 @@ class Importers::GenericWorkAuditor < Importers::Auditor
         confirm(@item.send(dest_k) == metadata[source_k], source_k)
       end
     end
-
-    #digitization_funder is unique: it's an array in Sufia but a string in ScihistDigicoll.
-    unless metadata['digitization_funder'].blank?
-      confirm(item.digitization_funder = metadata['digitization_funder'].first)
-    end
-
     # format:
     unless metadata['resource_type'].nil?
       confirm(metadata['resource_type'].collect{ |x| x.downcase.gsub(' ', '_')} == item.format, 'resource type / format')
