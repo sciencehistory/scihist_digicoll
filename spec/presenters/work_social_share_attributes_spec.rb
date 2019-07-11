@@ -21,7 +21,7 @@ describe WorkSocialShareAttributes do
   end
 
   describe "#share_media_url" do
-    let(:work) { create(:work, representative: create(:asset, :faked_image_file))}
+    let(:work) { create(:work, representative: create(:asset_with_faked_file))}
     let(:download_medium_derivative) { work.representative.derivative_for(:download_medium) }
 
     it "direct link to 'medium' download derivative of representative" do

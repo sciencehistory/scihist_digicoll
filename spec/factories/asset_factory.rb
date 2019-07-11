@@ -21,6 +21,14 @@ FactoryBot.define do
       end
     end
 
+    # Will not trigger promotion phase, which also means no derivatives.
+    trait :non_promoted_file do
+      file { File.open((Rails.root + "spec/test_support/images/30x30.png")) }
+      after(:build) do |asset|
+        asset.file_attacher.set_promotion_directives(promote: false)
+      end
+    end
+
     # While it still uses a real file, it skips all of the (slow) standard metadata extraction
     # and derivative generation, instead just SETTING the metadata and derivatives to fixed
     # values (which may not be actually right, but that doesn't matter for many tests).
@@ -31,57 +39,55 @@ FactoryBot.define do
     # In fact, we set all the derivatives to just be the same as the original file.
     #
     # Only is set up to provide metadata and derivatives expected for image/ content-types.
-    trait :faked_image_file do
+    factory :asset_with_faked_file do
       transient do
         faked_file { File.open((Rails.root + "spec/test_support/images/30x30.png")) }
         faked_content_type { "image/png" }
         faked_width { 30 }
         faked_height { 30 }
+
+        # An array of Kithe::Derivative objects that we will add to the faked Asset.
+        # By default, we take every derivative defined in Kithe::Asset, if they
+        # apply to this Asset, and just fake the original asset as the derivative.
+        #
+        # You can pass in an empty array to have no derivatives, or an array of
+        # Kithe::Derivative instances (probably created with the :faked_derivative
+        # factory below, eg build(:faked_derivative)) for specific ones.
+        #
+        # Nil means we'll create some by default in after(:build)
+        faked_derivatives { nil }
       end
+
       after(:build) do |asset, evaluator|
         # Set our uploaded file
 
-        id = SecureRandom.hex
-        Shrine.storages[:store].upload(evaluator.faked_file, id)
-        uploaded_file = Shrine::UploadedFile.new(
-          "id" => id,
-          "storage" => "store",
-          "metadata" => {
-            "filename"=> File.basename( evaluator.faked_file.path ),
-            "size"=> evaluator.faked_file.size,
-            "mime_type"=> evaluator.faked_content_type,
-            "width"=> evaluator.faked_width,
-            "height"=> evaluator.faked_height
-          }
-        )
+        uploaded_file = create(:stored_uploaded_file,
+          content_type: evaluator.faked_content_type,
+          width: evaluator.faked_width,
+          height: evaluator.faked_height)
+
         asset.file_data = uploaded_file.to_json
 
         # Now add derivatives for any that work for our faked file type
-        asset.class.derivative_definitions.each do |derivative_defn|
-          if derivative_defn.applies_to?(asset)
-            derivative = Kithe::Derivative.new(key: derivative_defn.key)
+        if evaluator.faked_derivatives.nil?
+          asset.class.derivative_definitions.each do |derivative_defn|
+            if derivative_defn.applies_to?(asset)
+              # We're gonna lie and say the original is a derivative, it won't
+              # be the right size, oh well. It also assumes all derivatives
+              # result in an image of the same type which isn't true, it
+              # won't even be the right type! for many tests, it's okay.
+              # When it's not, caller of this factory should supply their own
+              # derivatives.
 
-
-            # We're gonna lie and say the original is a derivative, it won't
-            # be the right size, oh well. It also assumes all derivatives
-            # result in an image of the same type which isn't true, it
-            # won't even be the right type! for many tests, it's okay.
-            uploaded_file = Shrine::UploadedFile.new(
-              "id" => id,
-              "storage" => "store",
-              "metadata" => {
-                "filename"=> File.basename( evaluator.faked_file.path ),
-                "size"=> evaluator.faked_file.size,
-                "mime_type"=> evaluator.faked_content_type,
-                "width"=> evaluator.faked_width,
-                "height"=> evaluator.faked_height
-              }
-            )
-            derivative.file_data = uploaded_file.to_json
+              derivative = build(:faked_derivative, key: derivative_defn.key, uploaded_file: uploaded_file)
+              asset.derivatives << derivative
+            end
+          end
+        else
+          evaluator.faked_derivatives.each do |derivative|
             asset.derivatives << derivative
           end
         end
-
       end
     end
 
@@ -90,5 +96,22 @@ FactoryBot.define do
         asset.file_attacher.set_promotion_directives(create_derivatives: false)
       end
     end
+  end
+
+  # A Kithe::Derivative object with faked metadata/content-type for file attachment.
+  # It does have a real file attachment.
+  #
+  # To change the attached file/metadata/content-type, pass in a
+  # full Shrine::UploadedFile to the `uploaded_file` transient attribute -- probably
+  # created with our :stored_uploaded_file factory, as below by default, but maybe with additional attributes.
+  #
+  # Also note that you can pass in a `key`, otherwise it's thumb_mini.
+  factory :faked_derivative, class: Kithe::Derivative do
+    transient do
+      uploaded_file { build(:stored_uploaded_file) }
+    end
+
+    key { "thumb_mini" }
+    file_data { uploaded_file.to_json }
   end
 end
