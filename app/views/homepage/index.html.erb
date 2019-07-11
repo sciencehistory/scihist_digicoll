@@ -1,0 +1,40 @@
+<% provide :page_title, "Science History Institute Digital Collections" %>
+<div class="homepage-wrapper">
+  <div class="row hero-search-container no-gutters">
+    <figure class="hero-image col-xs-12 col-md-6">
+      <img alt="" src="/assets/hero_image_2x-a5e655d75e598b5d73963055c6ce891cb2febbe408fdfbe124cf153526173401.jpg">
+      <figcaption>
+          <a href="/works/w6634363x">Wilson College chemistry club</a>
+      </figcaption>
+    </figure>
+    <div class="col-xs-12 col-md-6 home-right-column">
+      <div class="row search-container">
+        <div class="digital-description col-xs-12 col-sm-6 col-md-12">
+          <div class="pre-heading">Science History Institute</div>
+            <h2 class="brand-alt-h2">Digital Collections</h2>
+            <p>Search <%= number_with_delimiter(Work.count) %> of our digitized items: artifacts, photographs, advertisements, letters, rare books, and more. You can also learn more about the rest of our <a href="https://sciencehistory.org/collections">collections.</a></p>
+        </div>
+        <div class="search-callouts col-xs-12 col-sm-6 col-md-12">
+          <%= render partial: 'application/search_form' %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row recent-items-title_div">
+    <h2 class="brand-alt-h2">Recently Added</h2>
+  </div>
+  <div class="row categories-title-div">
+    <h2 class="brand-alt-h2">Featured Topics</h2>
+  </div>
+  <div class="row categories-list">
+  </div>
+  <div class="row featured-collection-container no-gutters">
+    <div class="col-xs-12 col-sm-6">
+      <div class="row featured-collection-callouts no-gutters">
+        <div class="col-xs-12">
+          <h2 class="brand-alt-h2">Featured Collection</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
