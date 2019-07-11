@@ -20,6 +20,9 @@
 /public/assets
 .byebug_history
 
+# MacOS bookkeeping file
+.DS_Store
+
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 
