@@ -39,6 +39,7 @@ class WorkIndexer < Kithe::Indexer
     to_field ["text_no_boost_tesim", "exhibition_facet"], obj_extract("exhibition")
     to_field ["text_no_boost_tesim", "project_facet"], obj_extract("project")
     to_field "text_no_boost_tesim", obj_extract("source")
+    to_field "text_no_boost_tesim", obj_extract("digitization_funder")
     to_field "text_no_boost_tesim", obj_extract("extent")
 
     to_field "text_no_boost_tesim", obj_extract("physical_container"), transform( ->(v) { v.as_human_string })
