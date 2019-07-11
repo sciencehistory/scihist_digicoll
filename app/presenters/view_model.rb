@@ -125,6 +125,10 @@ class ViewModel < Draper::Decorator
   # do include all Rails helpers in the ViewModel with:
   include Draper::LazyHelpers
 
+  # Workaround weird Draper bug/gotcha interaction with ActiveRecord
+  # https://github.com/drapergem/draper/issues/859
+  delegate :id
+
   def initialize(model, *other_args)
     if self.class.valid_model_type_names
       unless self.class.valid_model_type_names.any? { |t| model.kind_of?(t.constantize) }
