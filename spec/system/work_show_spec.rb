@@ -68,7 +68,7 @@ describe "Public work show page", type: :system, js: false do
       expect_attribute_row("Language", work.language, as_links: true)
 
       expect_attribute_row("Inscription", work.inscription.map(&:display_as))
-
+      expect_attribute_row("Digitization funder", work.digitization_funder)
       expect_attribute_row("Subject", work.subject, as_links: true)
       expect_attribute_row("Rights", RightsTerms.label_for(work.rights), as_links: true)
 

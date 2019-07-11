@@ -117,6 +117,10 @@ module Importers
         property_to_set = mapping.fetch(k, k)
         target_item.send("#{property_to_set}=", v)
       end
+      #digitization_funder is unique: it's an array in Sufia but a string in ScihistDigicoll.
+      unless metadata['digitization_funder'].blank?
+        target_item.digitization_funder = metadata['digitization_funder'].first
+      end
     end
 
     def add_resource_type
