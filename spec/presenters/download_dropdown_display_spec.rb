@@ -86,7 +86,7 @@ describe DownloadDropdownDisplay do
         faked_content_type: "audio/x-flac",
         faked_height: nil,
         faked_width: nil,
-        faked_derivatives: [build(:faked_derivative, key: "mp3", uploaded_file: build(:stored_uploaded_file, content_type: "audio/mpeg"))],
+        faked_derivatives: [build(:faked_derivative, key: "small_mp3", uploaded_file: build(:stored_uploaded_file, content_type: "audio/mpeg"))],
         parent: build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
       )
     end
