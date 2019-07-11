@@ -57,6 +57,8 @@
     </tr>
   <% end %>
 
+  <%= AttributeTable::RowDisplay.new(:digitization_funder, values: [@work.digitization_funder]).display %>
+
   <%= AttributeTable::RowDisplay.new(:subject, values: @work.subject, link_to_facet: "subject_facet").display %>
 
   <% if @work.rights.present? %>
