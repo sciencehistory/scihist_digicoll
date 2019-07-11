@@ -140,7 +140,7 @@ class Importers::GenericWorkAuditor < Importers::Auditor
     mapping = {
       'genre_string' => 'genre'
     }
-    %w(extent medium language genre_string subject additional_title exhibition project series_arrangement digitization_funder related_url).each do |source_k|
+    %w(extent medium language genre_string subject additional_title exhibition project series_arrangement related_url).each do |source_k|
       dest_k = mapping.fetch(source_k, source_k)
       if metadata[source_k].nil?
         confirm(@item.send(dest_k) == [], source_k)
@@ -148,6 +148,12 @@ class Importers::GenericWorkAuditor < Importers::Auditor
         confirm(@item.send(dest_k) == metadata[source_k], source_k)
       end
     end
+
+    #digitization_funder is unique: it's an array in Sufia but a string in ScihistDigicoll.
+    unless metadata['digitization_funder'].blank?
+      confirm(item.digitization_funder = metadata['digitization_funder'].first)
+    end
+
     # format:
     unless metadata['resource_type'].nil?
       confirm(metadata['resource_type'].collect{ |x| x.downcase.gsub(' ', '_')} == item.format, 'resource type / format')
