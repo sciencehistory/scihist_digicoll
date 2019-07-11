@@ -38,7 +38,7 @@ describe DownloadDropdownDisplay do
           build(:faked_derivative, key: "download_small"),
           build(:faked_derivative, key: "download_medium"),
           build(:faked_derivative, key: "download_large"),
-          build(:faked_derivative, key: "full_jpg") ],
+          build(:faked_derivative, key: "download_full") ],
         parent: build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
       )
     end

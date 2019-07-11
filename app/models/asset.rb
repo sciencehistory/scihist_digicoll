@@ -37,7 +37,7 @@ class Asset < Kithe::Asset
   end
 
   # and a full size jpg
-  define_derivative("full_jpg", content_type: "image") do |original_file, record:|
+  define_derivative("download_full", content_type: "image") do |original_file, record:|
     # No need to do this if our original is a JPG
     unless record.content_type == "image/jpeg"
       Kithe::VipsCliImageToJpeg.new.call(original_file)

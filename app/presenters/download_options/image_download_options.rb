@@ -50,9 +50,9 @@ module DownloadOptions
         )
       end
 
-      if dl_full = asset.derivative_for(:full_jpg)
+      if dl_full = asset.derivative_for(:download_full)
         options << DownloadOption.with_formatted_subhead("Full-sized JPG",
-          url: download_derivative_path(asset, :full_jpg),
+          url: download_derivative_path(asset, :download_full),
           analyticsAction: "download_jpg_full",
           width: dl_full.width,
           height: dl_full.height,
