@@ -54,7 +54,11 @@ class DownloadDropdownDisplay < ViewModel
   end
 
   def asset_download_options
-    @asset_download_options ||= DownloadOptions::ImageDownloadOptions.new(asset).options
+    @asset_download_options ||= if asset&.content_type&.start_with?("audio/")
+      DownloadOptions::AudioDownloadOptions.new(asset).options
+    else
+      DownloadOptions::ImageDownloadOptions.new(asset).options
+   end
   end
 
   def parent
