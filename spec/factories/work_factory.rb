@@ -23,6 +23,9 @@ FactoryBot.define do
       type {
         'Work'
       }
+      digitization_funder {
+        'Daniel Sanford'
+      }
       position {
         1
       }
