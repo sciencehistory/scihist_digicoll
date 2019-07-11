@@ -5,6 +5,5 @@ class CollectionsListController < ApplicationController
       where("published = true").
       order(:title).
       with_representative_derivatives
-    render :template => "collections/index"
   end
 end
