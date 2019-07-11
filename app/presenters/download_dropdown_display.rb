@@ -8,15 +8,22 @@
 #     # Don't know if it's a work or an asset?
 #     DownloadDropdownDisplay.new(member.leaf_representative).display
 #
-# This component also has other methods meant as public API, if you need
-# the download options but want to render them in other ways (TODO).
-#
+# This class uses other "DownloadOptions" classes to actually figure out the
+# appropriate options for a given asset of given type and state, if you need
+# that info directly to present in some other way, see those classes in
+# app/presenters/download_options. (Right now the logic for picking _which_ one of
+# those to use for a given asset is in here, but could be extracted out.)
 #
 # ## Preloading required
 #
 # Uses leaf_representative and it's derivatives, as well as #parent.
 # So these should be pre-loaded with Rails eager-loading if you're going to be displaying a bunch of these,
 # as you usually are.
+#
+# Current code decides what options to display based on derivatives *actually existing*, to avoid
+# providing an option that can't be delivered. That does mean it needs info from the db on what derivs
+# exist though. (It also uses metadata on the existing deriv records to provide nice info on the dl
+# link on file size/dimensions/etc.)
 class DownloadDropdownDisplay < ViewModel
   valid_model_type_names "Asset"
 
@@ -32,6 +39,19 @@ class DownloadDropdownDisplay < ViewModel
   end
 
   private
+
+  # What do we call it in labels to the user
+  def thing_name
+    if asset.nil? || asset.content_type.blank?
+      "file"
+    elsif asset.content_type.start_with?("image/")
+      "image"
+    elsif asset.content_type == "application/pdf"
+      "document"
+    else
+      "file"
+    end
+  end
 
   def asset_download_options
     @asset_download_options ||= DownloadOptions::ImageDownloadOptions.new(asset).options
@@ -69,7 +89,7 @@ class DownloadDropdownDisplay < ViewModel
     end
 
     if asset_download_options
-      elements << "<h3 class='dropdown-header'>Download selected image</h3>".html_safe
+      elements << "<h3 class='dropdown-header'>Download selected #{thing_name}</h3>".html_safe
       asset_download_options.each do |download_option|
         elements << format_download_option(download_option)
       end
