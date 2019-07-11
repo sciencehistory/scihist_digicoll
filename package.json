@@ -9,6 +9,6 @@
     "mdn-polyfills": "^5.15.0"
   },
   "devDependencies": {
-    "webpack-dev-server": "^2.11.5"
+    "webpack-dev-server": "^3.7.2"
   }
 }
