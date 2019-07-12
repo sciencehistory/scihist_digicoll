@@ -1,0 +1,287 @@
+/* TODO remove this old Bootstrap junk. */
+$line-height-computed: 24px;
+$screen-md-min: 992px;
+$screen-sm-max: 992px;
+$screen-sm-min: 768px;
+$screen-xs-max: 768px;
+$screen-xs-min: 1px;
+
+.homepage-content-wrapper {
+  margin-top: (-1 * $navbar-margin-bottom); /* overcome the bottom margin on navbar */
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 0 !important; /* overcome id-based css */
+
+  figure.hero-image {
+    position: relative; /* allow absolute positioning of caption */
+    padding-left: 0; /* overcome the padding on grid columns */
+    padding-right: 0; /* overcome the padding on grid columns */
+    img {
+      width: 100%;
+    }
+    figcaption {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background: $transparent-background;
+      padding: 5px 10px;
+      @include all-white-links;
+      font-weight: 300;
+      font-style: italic;
+    }
+  }
+
+
+
+  .digital-description {
+
+    .pre-heading {
+      @extend %special-label;
+      color: $special-label-muted-color;
+      margin-bottom: 3px;
+      margin-top: $line-height-computed;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+  }
+
+  .chf-callout-button {
+    width: 100%;
+    text-transform: uppercase;
+    border-radius: 0;
+    letter-spacing: 0.04em;
+    margin-bottom: $line-height-computed;
+    // unlike normal btns, normally it's full width, but if screen is so small
+    // it needs to, it should break.
+    white-space: initial;
+    border-radius: 2px;
+  }
+
+  .search-container {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+   @media (min-width: $screen-md-min) {
+    .home-right-column {
+      // crazy way to keep .search-container vertically centered
+      $hero-aspect-ratio: 1.366; // w divided by height of hero image in left column
+      // width of hero image (col-md-5) is 6/12. Make that expressed in vw, for screen width.
+      // Then Divided by aspect ratio is it's height.
+      // make this height the same. But account for ~20px scrollbar on some browser/OS.
+      height: calc(((600vw / 12) - 20px) / #{$hero-aspect-ratio});
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      .search-container {
+        max-width: 38em; // keep the lines from going too long on big screens
+        min-height: 70%;
+        // and then center it.
+        margin-left: auto;
+        margin-right: auto;
+        .pre-heading  {
+          margin-top: 0;
+        }
+      }
+    }
+  }
+
+  .search-callouts {
+    .input-group {
+      min-height: 46px;
+      input.q, button {
+        min-height: 46px;
+      }
+    }
+    @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+      /* vertically line up with header when side-by-side */
+      /* stacks with searchbar margin to equal 20 */
+      margin-top: 13px;
+    }
+  }
+
+  $categories-box-width: 350px;
+  $categories-box-height: 350px;
+  $categories-box-margin: 59px;
+
+
+  .categories-title-div {
+    padding-left: 15px;
+    background-color: $brand-dark-grey;
+    h2 {
+      margin-bottom:0px;
+    }
+  }
+
+  .categories-list {
+    background-color: $brand-dark-grey;
+    padding-top: 34px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    .collection {
+      position: relative;
+      width: $categories-box-width;
+      min-width: $categories-box-width;
+      height: $categories-box-height;
+      margin: $categories-box-margin;
+
+      @media (max-width: $categories-box-width) {
+        width: 100vw;
+        min-width: auto;
+        height: 100vw;
+        margin: $categories-box-margin 0;
+      }
+
+      .collection-title-wrapper {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 56px;
+        color: $brand-dark-blue;
+        background-color: $brand-bright-green;
+        padding: 10px;
+
+        .collection-title {
+          text-align: center;
+          font-weight: $semi-bold-weight;
+          text-transform: uppercase;
+          font-size: 18px;
+          padding-top: 5px;
+          padding-bottom: 5px;
+        }
+      }
+    }
+  }
+
+  .featured-collection-callouts {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  @media (min-width: $screen-xs-min) and (max-width: $screen-xs-max) {
+    .featured-collection-callouts {
+      margin-top: 30px;
+    }
+  }
+  @media (min-width: $screen-sm-min) {
+    .featured-collection-container {
+      background-color: white;
+      display: flex;
+      align-items: center;
+      .featured-collection-callouts {
+        margin-left: 10%;
+        margin-right: 2%;
+        /*margin: 0 2% 0 10%;*/
+        h2 {
+          margin-top: 0;
+        }
+      }
+    }
+  }
+
+  .featured-collection-image {
+    padding: 0;
+    .featured-collection-matte {
+      position: relative;
+      img {
+        width: 100%;
+      }
+      figcaption {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.25);
+        padding: 5px 10px;
+        font-weight: 300;
+        font-style: italic;
+        a {
+          color: white;
+          text-decoration: none;
+          opacity: 1;
+        }
+      }
+    }
+  }
+}
+
+$collage-style: true;
+/* i.e. no titles, no horizontal border between images. */
+$recent-items-box-width: 140px;
+$recent-items-box-height: 140px;
+$recent-items-box-margin: 30px;
+
+.recent-items-title_div {
+  padding-left: 15px;
+  background-color: $brand-light-grey;
+  margin-bottom: 0px;
+  h2 {
+    margin-bottom:0px;
+  }
+}
+
+
+.recent-items-list {
+  background-color: $brand-light-grey;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 15px;
+  padding-bottom: 30px;
+
+  .recent-item {
+    float:left;
+    position: relative;
+    width: $recent-items-box-width;
+    min-width: $recent-items-box-width;
+    height: $recent-items-box-height;
+    margin: $recent-items-box-margin;
+    overflow: hidden;
+    @if $collage-style == true {
+      margin: 0px;
+    }
+
+    .recent-item-image-matte {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: $brand-dark-grey;
+    }
+
+    .recent-items-image {
+      width: 100%;
+    }
+    .recent-item-title-wrapper {
+      @if $collage-style == true {
+        display: none;
+      }
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      color: $brand-dark-blue;
+      background-color: rgba(0, 0, 0, 0.7);
+
+      .recent-item-title {
+        font-family: "adelle-sans", "Helvetica Neue", Helvetica, Arial, sans-serif, "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: white;
+        opacity: 1.0;
+        text-align: center;
+        font-weight: $semi-bold-weight;
+        line-height: 16px;
+        font-size: 12px;
+        margin-bottom: 0px;
+      }
+    }
+  }
+}

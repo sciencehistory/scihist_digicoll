@@ -1,0 +1,9 @@
+<div class="collection">
+  <%= link_to synthetic_category_path(category.slug) do %>
+    <%= image_tag category.thumb_asset_path, class: "category-image", width: "100%" %>
+    <div class="collection-title-wrapper">
+      <p class="collection-title"><%= category.title.upcase %></p>
+    </div>
+  <% end %>
+</div>
+

@@ -2,7 +2,8 @@
 <div class="homepage-wrapper">
   <div class="row hero-search-container no-gutters">
     <figure class="hero-image col-xs-12 col-md-6">
-      <img alt="" src="/assets/hero_image_2x-a5e655d75e598b5d73963055c6ce891cb2febbe408fdfbe124cf153526173401.jpg">
+      <%# TODO: Fix this hardcoded image src and implement the hero feature %>
+      <img alt="" src="https://scihi-kithe-stage-derivatives.s3.amazonaws.com/93103656-fe89-4203-956d-edf64c38824f/thumb_large/4518b2be7578df537cd2b8d5f88a266f.jpg">
       <figcaption>
           <a href="/works/w6634363x">Wilson College chemistry club</a>
       </figcaption>
@@ -20,21 +21,15 @@
       </div>
     </div>
   </div>
-  <div class="row recent-items-title_div">
-    <h2 class="brand-alt-h2">Recently Added</h2>
-  </div>
-  <div class="row categories-title-div">
+
+  <%= render 'homepage/recent_items' %>
+
+  <div class='row categories-title-div'>
     <h2 class="brand-alt-h2">Featured Topics</h2>
   </div>
+
   <div class="row categories-list">
+    <%#= render partial: "category_teaser", collection: CHF::SyntheticCategory.all, as: :category %>
   </div>
-  <div class="row featured-collection-container no-gutters">
-    <div class="col-xs-12 col-sm-6">
-      <div class="row featured-collection-callouts no-gutters">
-        <div class="col-xs-12">
-          <h2 class="brand-alt-h2">Featured Collection</h2>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+
+  <%= render '/homepage/featured_collection' %>
