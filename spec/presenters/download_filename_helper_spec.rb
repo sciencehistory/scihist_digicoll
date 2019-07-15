@@ -98,7 +98,7 @@ describe DownloadFilenameHelper, type: :model do
     end
 
     describe "audio file" do
-      let(:derivative_key) { :mp3 }
+      let(:derivative_key) { :small_mp3 }
       let(:asset) do
         create(:asset_with_faked_file,
                title: "mark_h_0030_1-1.flac",
