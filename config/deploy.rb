@@ -94,6 +94,7 @@ end
 
 # This is a no-op task, but our server definition script currently
 # outputs to console the server definitions, so a no-op task will do it.
+desc "list auto-disocvered EC2 servers"
 task :list_ec2_servers
 
 namespace :deploy do
