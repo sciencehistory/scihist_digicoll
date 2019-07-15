@@ -74,25 +74,6 @@ module ScihistDigicoll
       @app_url_base_parsed = URI.parse(lookup!(:app_url_base))
     end
 
-    # Where our web app is hosted.
-    #
-    # This setting should not include the protocol, as this
-    # is supplied in the code ("https://").
-    #
-    # The production value is set in config/local_env.yml.
-    # This default value is used in the development and testing environments;
-    # if you choose, you can also override it in
-    # your own local config/local_env.yml file.
-    #
-    # The equivalent setting in Sufia is called app_url_base
-    # and is defined at
-    # https://github.com/sciencehistory/chf-sufia/blob/a103c5908af90c9076cb826140527213ba2e645f/lib/chf/env.rb#L158 .
-    define_key :web_hostname, default: -> {
-      unless Rails.env.production?
-        "localhost"
-      end
-    }
-
     define_key :opac_link_template, default: "https://othmerlib.sciencehistory.org/record=%s"
 
     # set in ENV LOGINS_DISABLED or local_env.yml, to globally
