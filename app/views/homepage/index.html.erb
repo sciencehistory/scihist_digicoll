@@ -1,4 +1,10 @@
 <% provide :page_title, "Science History Institute Digital Collections" %>
+<%# content_for :container_class, "container-fluid homepage-content-wrapper branded-body-font" %>
+<% provide :suppress_controls, true %>
+
+<%# TODO: figure out what the content_for :container_class tag does on the sufia home page. %>
+<div class="container-fluid homepage-content-wrapper branded-body-font" >
+
 <div class="homepage-wrapper">
   <div class="row hero-search-container no-gutters">
     <figure class="hero-image col-xs-12 col-md-6">
@@ -24,12 +30,13 @@
 
   <%= render 'homepage/recent_items' %>
 
-  <div class='row categories-title-div'>
+  <div class='row categories-title-div no-gutters'>
     <h2 class="brand-alt-h2">Featured Topics</h2>
   </div>
 
-  <div class="row categories-list">
+  <div class="row categories-list no-gutters">
     <%#= render partial: "category_teaser", collection: CHF::SyntheticCategory.all, as: :category %>
   </div>
 
   <%= render '/homepage/featured_collection' %>
+</div>
