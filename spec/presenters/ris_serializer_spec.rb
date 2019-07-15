@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 describe RisSerializer do
+  let(:expected_url_base)  { ScihistDigicoll::Env.lookup!(:app_url_base) }
+
   let(:work) do
     FactoryBot.build(:work,
       friendlier_id:  "TEST_FRIENDLIER_ID",
@@ -41,7 +43,7 @@ describe RisSerializer do
     expect(serialized_fields["AU"]).to eq "Hawes, R. C."
     expect(serialized_fields["PB"]).to eq "Israel Sackett"
     expect(serialized_fields["CY"]).to eq "New York, New York"
-    expect(serialized_fields["UR"]).to eq "https://localhost/works/TEST_FRIENDLIER_ID"
+    expect(serialized_fields["UR"]).to eq "#{expected_url_base}/works/TEST_FRIENDLIER_ID"
     expect(serialized_fields["AB"]).to eq "This is an abstract"
     expect(serialized_fields["KW"]).to eq "subject2"
     expect(serialized_fields["LA"].split(", ")).to match_array(["English", "German"])
