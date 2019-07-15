@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 describe CitationDisplay do
+  let(:expected_url_base)  { ScihistDigicoll::Env.lookup!(:app_url_base) }
+
   let(:work) { FactoryBot.create(:work, :with_complete_metadata,
     date_of_work: [
       Work::DateOfWork.new(start: "2000-01-01", start_qualifier: "circa"),
@@ -21,7 +23,7 @@ describe CitationDisplay do
 
   it "displays" do
     expect(rendered).to be_a ActiveSupport::SafeBuffer
-    expect(rendered).to eq "The Author. “Test Title.” Audiocassettes, celluloid, dye. <i>The Horse's Mouth</i>, circa 2000–2019. Science History Institute. Philadelphia. https://localhost/works/#{work.friendlier_id}."
+    expect(rendered).to eq "The Author. “Test Title.” Audiocassettes, celluloid, dye. <i>The Horse's Mouth</i>, circa 2000–2019. Science History Institute. Philadelphia. #{expected_url_base}/works/#{work.friendlier_id}."
   end
 
 end

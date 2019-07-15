@@ -1,6 +1,9 @@
 require 'rails_helper'
 
 describe CitableAttributes do
+  let(:expected_url_base)  { ScihistDigicoll::Env.lookup!(:app_url_base) }
+
+
   let(:citable_attributes) { CitableAttributes.new(work)}
 
 
@@ -323,7 +326,7 @@ describe CitableAttributes do
             :title=>"pH means Beckman",
             :id=>"scihist123456",
             :issued => {"date-parts"=>[[1957]]},
-            :URL=>"https://localhost/works/123456",
+            :URL=>"#{expected_url_base}/works/123456",
             :archive=>"Science History Institute",
             :'archive-place'=>"Philadelphia",
             :archive_location=>"Box 49, Folder 14"},
@@ -394,7 +397,7 @@ describe CitableAttributes do
     end
     it "renders html" do
       html = CitationDisplay.new(work).display
-      expect(html).to eq "William John Bailey, interviewed by James J. Bohning in University of Maryland, College Park on June 3, 1986. Philadelphia: Science History Institute, n.d. Oral History Transcript 0012. https://localhost/works/."
+      expect(html).to eq "William John Bailey, interviewed by James J. Bohning in University of Maryland, College Park on June 3, 1986. Philadelphia: Science History Institute, n.d. Oral History Transcript 0012. #{expected_url_base}/works/."
     end
 
     describe "unusual interviewee name format" do

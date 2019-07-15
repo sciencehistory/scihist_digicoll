@@ -39,6 +39,11 @@ module ScihistDigicoll
       self.config_file_paths = ["config/local_env.yml", "config/local_env_#{rails_env.downcase}.yml"]
     end
 
+    # Set as a staging server in local_env.yml with `service_level: staging`?
+    def self.staging?
+      @staging ||= ("staging" == lookup(:service_level))
+    end
+
     define_key :secret_key_base
     define_key :service_level, allows: ["staging", "production", nil]
 
@@ -50,24 +55,24 @@ module ScihistDigicoll
 
     define_key :aws_region, default: "us-east-1"
 
-    # Where our web app is hosted.
-    #
-    # This setting should not include the protocol, as this
-    # is supplied in the code ("https://").
-    #
-    # The production value is set in config/local_env.yml.
-    # This default value is used in the development and testing environments;
-    # if you choose, you can also override it in
-    # your own local config/local_env.yml file.
-    #
-    # The equivalent setting in Sufia is called app_url_base
-    # and is defined at
-    # https://github.com/sciencehistory/chf-sufia/blob/a103c5908af90c9076cb826140527213ba2e645f/lib/chf/env.rb#L158 .
-    define_key :web_hostname, default: -> {
-      unless Rails.env.production?
-        "localhost"
+    # eg "https://digital.sciencehistory.org", or "http://localhost:3000".
+    # The first part of the URL for our app, as deployed in the current
+    # setup.
+    define_key :app_url_base, default: -> {
+      # defaults for test/dev, otherwise insist on getting from local_env.yml,
+      # no default.
+      if Rails.env.test?
+        "http://test.app"
+      elsif Rails.env.development?
+        "http://localhost:3000"
       end
     }
+
+    # Sometimes we need the individual parts of the app_base_url, returns a URI object
+    # they can be obtained from.
+    def self.app_url_base_parsed
+      @app_url_base_parsed = URI.parse(lookup!(:app_url_base))
+    end
 
     define_key :opac_link_template, default: "https://othmerlib.sciencehistory.org/record=%s"
 
