@@ -103,20 +103,7 @@ class MemberImagePresentation < ViewModel
   end
 
   def download_button
-    <<~EOS.html_safe
-    <div class="action-item downloads dropup">
-      <button type="button" class="btn btn-primary dropdown-toggle" id="dropdownMenu_downloads_#{member.id}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <i class='fa fa-download' aria-hidden="true"></i> Download
-      </button>
-      <div class="dropdown-menu">
-        <a class="dropdown-item" href="#">Action</a>
-        <a class="dropdown-item" href="#">Another action</a>
-        <a class="dropdown-item" href="#">Something else here</a>
-        <div class="dropdown-divider"></div>
-        <a class="dropdown-item" href="#">Separated link</a>
-      </div>
-    </div>
-    EOS
+    DownloadDropdownDisplay.new(member.leaf_representative).display
   end
 
   def view_button
