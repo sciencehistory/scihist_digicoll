@@ -300,7 +300,7 @@ class CitableAttributes
     end
 
     def url
-      "https://#{ScihistDigicoll::Env.lookup!(:web_hostname)}/works/#{work.friendlier_id}"
+      "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/works/#{work.friendlier_id}"
     end
 
     def container_title
