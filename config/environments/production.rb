@@ -64,8 +64,12 @@ Rails.application.configure do
   config.active_job.queue_adapter     = :resque
   config.active_job.queue_name_prefix = "scihist_digicoll_#{Rails.env}"
 
-  # devise mailers require this set
-  config.action_mailer.default_url_options = { host: ScihistDigicoll::Env.lookup!(:web_hostname) }
+  # devise mailers require the `host` be set
+  config.action_mailer.default_url_options = {
+    host: ScihistDigicoll::Env.app_url_base_parsed.host,
+    protocol: ScihistDigicoll::Env.app_url_base_parsed.scheme
+  }
+
   config.action_mailer.delivery_method = :sendmail
 
   config.action_mailer.perform_caching = false
