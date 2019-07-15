@@ -68,6 +68,12 @@ module ScihistDigicoll
       end
     }
 
+    # Sometimes we need the individual parts of the app_base_url, returns a URI object
+    # they can be obtained from.
+    def self.app_url_base_parsed
+      @app_url_base_parsed = URI.parse(lookup!(:app_url_base))
+    end
+
     # Where our web app is hosted.
     #
     # This setting should not include the protocol, as this
