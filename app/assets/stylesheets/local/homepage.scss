@@ -1,5 +1,15 @@
-.blacklight-homepage #mainContainer {
-    max-width: initial;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+.blacklight-homepage {
+    .row {
+        background-color: purple;
+    }
+
+    #masthead {
+        margin-bottom: 0 !important;
+    }
+
+    #mainContainer {
+        max-width: initial !important;
+        padding-left: 0    !important;
+        padding-right: 0   !important;
+    }
 }
