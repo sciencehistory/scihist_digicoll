@@ -1,10 +1,28 @@
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-xl" style="background-color: lightgreen">
-          Hero image
+<div class="container-fluid homepage-wrapper">
+    <div class="row no-gutters">
+        <div class="col-lg">
+            <figure class="hero-image">
+                <%= image_tag "hero_image_2x.jpg", alt: "" %>
+                <figcaption>
+                    <%
+                    hero_image_work = Work.find_by_friendlier_id('w6634363x')
+                    hero_image_link = hero_image_work ? work_path(hero_image_work.friendlier_id) : "#"
+                    %>
+                    <%= link_to "Wilson College chemistry club", hero_image_link%>
+                </figcaption>
+            </figure>
         </div>
-        <div class="col-xl" style="background-color: lightblue">
-          Search form
+        <div class="col-lg home-right-column">
+            <div class="search-container">
+                <div class="digital-description">
+                  <div class="pre-heading">Science History Institute</div>
+                    <h2 class="brand-alt-h2">Digital Collections</h2>
+                    <p>Search <%= number_with_delimiter(Work.count) %> of our digitized items: artifacts, photographs, advertisements, letters, rare books, and more. You can also learn more about the rest of our <a href="https://sciencehistory.org/collections">collections.</a></p>
+                </div>
+                <div class="search-callouts">
+                  <%= render partial: 'application/search_form' %>
+                </div>
+            </div>
         </div>
     </div>
 </div>
