@@ -1,8 +1,4 @@
 .blacklight-homepage {
-    .row {
-        background-color: purple;
-    }
-
     #masthead {
         margin-bottom: 0 !important;
     }
@@ -12,4 +8,90 @@
         padding-left: 0    !important;
         padding-right: 0   !important;
     }
+    .container-fluid {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    figure.hero-image {
+        position: relative; /* allow absolute positioning of caption */
+        padding-left: 0; /* overcome the padding on grid columns */
+        padding-right: 0; /* overcome the padding on grid columns */
+        margin-bottom: 0;
+        img {
+          width: 100%;
+        }
+        figcaption {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          background: $transparent-background;
+          padding: 5px 10px;
+          @include all-white-links;
+          font-weight: 300;
+          font-style: italic;
+        }
+    }
+
+    .digital-description {
+        .pre-heading {
+          @extend %special-label;
+          color: $special-label-muted-color;
+          margin-bottom: 3px;
+          margin-top: 24px;
+        }
+
+        h2 {
+          margin-top: 0;
+        }
+    }
+
+    .search-container {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+    }
+    /* @media (min-width: $screen-md-min) { */
+    /* $screen-md-min: 992px; */
+    @include media-breakpoint-up(lg) {
+        .home-right-column {
+            // crazy way to keep .search-container vertically centered
+            $hero-aspect-ratio: 1.366; // w divided by height of hero image in left column
+            // width of hero image (col-md-5) is 6/12. Make that expressed in vw, for screen width.
+            // Then Divided by aspect ratio is it's height.
+            // make this height the same. But account for ~20px scrollbar on some browser/OS.
+            height: calc(((600vw / 12) - 20px) / #{$hero-aspect-ratio});
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            .search-container {
+                max-width: 38em; // keep the lines from going too long on big screens
+                min-height: 70%;
+                // and then center it.
+                margin-left: auto;
+                margin-right: auto;
+                .pre-heading  {
+                    margin-top: 0;
+                }
+            }
+        }
+    }
+
+    .search-callouts {
+        .input-group {
+            min-height: 46px;
+            input.q, button {
+                min-height: 46px;
+            }
+        }
+        /* @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) { */
+        /* $screen-sm-max: 992px; $screen-sm-min: 768px; */
+        @include media-breakpoint-only(md) {
+            /* vertically line up with header when side-by-side */
+            /* stacks with searchbar margin to equal 20 */
+            margin-top: 13px;
+        }
+    }
+
+
 }
