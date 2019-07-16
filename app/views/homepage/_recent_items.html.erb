@@ -1,0 +1,25 @@
+<div class="row recent-items-title_div no-gutters">
+  <h2 class="brand-alt-h2">Recently Added</h2>
+</div>
+<div class="row recent-items-list no-gutters">
+  <div class="recent-items-list-content">
+    <% RecentItemsHelper::RecentItems.new().recent_items().each do |work| %>
+      <div class="recent-item">
+        <div class="recent-item-image-matte">
+          <%= link_to work_path(work.friendlier_id) do %>
+            <figure>
+              <%= ThumbDisplay.new(work.leaf_representative, thumb_size: :standard).display %>
+              <figcaption>
+                <div class="recent-item-title-wrapper">
+                  <p class="recent-item-title">
+                    <%= work.title.truncate(35) %>
+                  </p>
+                </div>
+              </figcaption>
+            </figure>
+          <%end%>
+        </div>
+      </div>
+    <%end%>
+  </div>
+</div>
