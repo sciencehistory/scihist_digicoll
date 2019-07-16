@@ -84,6 +84,7 @@ module ScihistDigicoll
     define_key :s3_bucket_originals
     define_key :s3_bucket_derivatives
     define_key :s3_bucket_uploads
+    define_key :s3_bucket_on_demand_derivatives
 
     # For ActiveJob queue, among maybe other things.
     define_key :persistent_redis_host, default: "localhost:6379"
@@ -203,6 +204,32 @@ module ScihistDigicoll
       when "production"
         Shrine::Storage::S3.new({
           bucket:            lookup(:s3_bucket_derivatives),
+          access_key_id:     lookup(:aws_access_key_id),
+          secret_access_key: lookup(:aws_secret_access_key),
+          region:            lookup(:aws_region),
+          public: true
+        })
+      else
+        raise TypeError.new("unrecognized storage mode")
+      end
+    end
+
+    def self.shrine_on_demand_derivatives_storage
+      case lookup!(:storage_mode)
+      when "dev_file"
+        Shrine::Storage::FileSystem.new("public", prefix: "shrine_storage_#{Rails.env}/derivatives")
+      when "dev_s3"
+        Shrine::Storage::S3.new({
+          bucket:            lookup(:s3_dev_bucket),
+          prefix:            "#{lookup(:s3_dev_prefix)}/on_demand_derivatives",
+          access_key_id:     lookup(:aws_access_key_id),
+          secret_access_key: lookup(:aws_secret_access_key),
+          region:            lookup(:aws_region),
+          public: true
+        })
+      when "production"
+        Shrine::Storage::S3.new({
+          bucket:            lookup(:s3_bucket_on_demand_derivatives),
           access_key_id:     lookup(:aws_access_key_id),
           secret_access_key: lookup(:aws_secret_access_key),
           region:            lookup(:aws_region),

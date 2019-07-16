@@ -11,5 +11,6 @@ Shrine.plugin :uppy_s3_multipart
 Shrine.storages = {
   cache: ScihistDigicoll::Env.shrine_cache_storage,
   store: ScihistDigicoll::Env.shrine_store_storage,
-  kithe_derivatives: ScihistDigicoll::Env.shrine_derivatives_storage
+  kithe_derivatives: ScihistDigicoll::Env.shrine_derivatives_storage,
+  on_demand_derivatives: ScihistDigicoll::Env.shrine_on_demand_derivatives_storage
 }
