@@ -13,13 +13,14 @@ Rails.application.routes.draw do
 
   # temporarily, as we build out app, the admin part is only part we have
   # working. If not logged in, redir to login. If logged in, send to admin.
-  root to: redirect { |path_params, req|
-    if LoggedInConstraint.matches?(req)
-      "/admin"
-    else
-      "/login"
-    end
-  }
+  # root to: redirect { |path_params, req|
+  #   if LoggedInConstraint.matches?(req)
+  #     "/admin"
+  #   else
+  #     "/login"
+  #   end
+  # }
+  root 'homepage#index'
 
 
   # https://github.com/plataformatec/devise/wiki/how-to:-change-the-default-sign_in-and-sign_out-routes
