@@ -14,6 +14,8 @@ FactoryBot.define do
       content_type { "image/png" }
       width { 30 }
       height { 30 }
+      md5 { Digest::MD5.hexdigest rand(10000000).to_s }
+      sha512 { Digest::SHA512.hexdigest rand(10000000).to_s }
 
     end
 
@@ -25,7 +27,9 @@ FactoryBot.define do
         "size"=> file.size,
         "mime_type"=> content_type,
         "width"=> width,
-        "height"=> height
+        "height"=> height,
+        "md5" => md5,
+        "sha512" => sha512
       }
     end
 

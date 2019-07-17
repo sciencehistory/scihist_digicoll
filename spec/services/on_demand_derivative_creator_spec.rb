@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe OnDemandDerivativeCreator, queue_adapter: :test do
   let(:deriv_type) { "zip_file" }
-  let(:work) { create(:work, members: [create(:asset, :inline_promoted_file), create(:asset, :inline_promoted_file)]) }
+  let(:work) { create(:work, members: [create(:asset_with_faked_file), create(:asset_with_faked_file)]) }
   let(:creator) { OnDemandDerivativeCreator.new(work, derivative_type: deriv_type) }
   let(:checksum) { creator.calculated_checksum }
 
