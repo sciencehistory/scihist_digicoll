@@ -27,7 +27,7 @@ class WorkZipCreator
   end
 
   # Returns a Tempfile. Up to caller to close/unlink tempfile when done with it.
-  def create_zip
+  def create
     comment_file = tmp_comment_file!
     tmp_zipfile = tmp_zipfile!
 

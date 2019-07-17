@@ -12,7 +12,7 @@ describe WorkZipCreator do
   end
 
   it "builds zip" do
-    zip_file = WorkZipCreator.new(work).create_zip
+    zip_file = WorkZipCreator.new(work).create
 
     found_entries = []
 
@@ -38,7 +38,7 @@ describe WorkZipCreator do
     let(:callback_spy) { spy("callback") }
 
     it "triggers" do
-      zip_file = WorkZipCreator.new(work, callback: callback_spy).create_zip
+      zip_file = WorkZipCreator.new(work, callback: callback_spy).create
 
       expect(callback_spy).to have_received(:call).with(progress_total: 3, progress_i: 1)
       expect(callback_spy).to have_received(:call).with(progress_total: 3, progress_i: 3)
@@ -61,7 +61,7 @@ describe WorkZipCreator do
     end
 
     it "skips missing files" do
-      zip_file = WorkZipCreator.new(work).create_zip
+      zip_file = WorkZipCreator.new(work).create
 
       found_entries = []
 
