@@ -14,21 +14,19 @@ class OnDemandDerivative < ApplicationRecord
     {
       pdf_file: {
         suffix: "pdf",
-        content_type: "application/pdf"
+        content_type: "application/pdf",
+        creator_class_name: "WorkPdfCreator"
       },
       zip_file: {
         suffix: "zip",
-        content_type: "application/zip"
+        content_type: "application/zip",
+        creator_class_name: "WorkZipCreator"
       }
     }
   end
 
   SHRINE_STORAGE_KEY = :on_demand_derivatives
 
-  # Still in progress, and hasn't been touched in this long? Give up and restart
-  STALE_IN_PROGRESS_SECONDS = 20.minutes
-  # Error happened this long ago? Willing to try again.
-  ERROR_RETRY_SECONDS = 10.minutes
 
   PRESIGNED_URL_EXPIRES_IN = 2.days
 
@@ -39,7 +37,7 @@ class OnDemandDerivative < ApplicationRecord
   belongs_to :work
 
   def deriv_type_definition
-    self.class.derivative_type_definitions[deriv_type.to_sym]
+    self.class.derivative_type_definitions[deriv_type.to_sym] || raise(ArgumentError.new("unrecognized derivative type: #{deriv_type}"))
   end
 
   # What is our expected filename/path/key in storage? Based on inputs_checksum so unique
