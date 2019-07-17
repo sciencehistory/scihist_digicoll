@@ -93,5 +93,82 @@
         }
     }
 
+    $collage-style: true;
+    /* i.e. no titles, no horizontal border between images. */
+    $recent-items-box-width: 8.75rem;
+    $recent-items-box-height: 8.75rem;
+    $recent-items-box-margin: 1.875rem;
 
+    .recent-items-title_div {
+      padding-left: 0.9375rem;
+      background-color: $brand-light-grey;
+      margin-bottom: 0;
+      h2 {
+        margin-bottom:0;
+      }
+    }
+
+    .recent-items-title_div {
+        padding-top: 0.9375rem;
+    }
+
+    .recent-items-list {
+        background-color: $brand-light-grey;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding-left: 0.9375rem;
+        padding-right: 0.9375rem;
+        padding-top: 0.9375rem;
+        padding-bottom: 1.875rem;
+
+        .recent-item {
+            float:left;
+            position: relative;
+            width: $recent-items-box-width;
+            min-width: $recent-items-box-width;
+            height: $recent-items-box-height;
+            margin: $recent-items-box-margin;
+            overflow: hidden;
+            @if $collage-style == true {
+                margin: 0;
+            }
+
+            .recent-item-image-matte {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: $brand-dark-grey;
+            }
+
+            .recent-items-image {
+                width: 100%;
+            }
+            .recent-item-title-wrapper {
+                @if $collage-style == true {
+                    display: none;
+                }
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                color: $brand-dark-blue;
+                background-color: rgba(0, 0, 0, 0.7);
+
+                .recent-item-title {
+                    font-family: "adelle-sans", "Helvetica Neue", Helvetica, Arial, sans-serif, "Helvetica Neue", Helvetica, Arial, sans-serif;
+                    color: white;
+                    opacity: 1.0;
+                    text-align: center;
+                    font-weight: $semi-bold-weight;
+                    line-height: 1rem;
+                    font-size: 0.75rem;
+                    margin-bottom: 0;
+                }
+            }
+        }
+    }
 }
