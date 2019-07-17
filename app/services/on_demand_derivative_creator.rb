@@ -62,7 +62,7 @@ class OnDemandDerivativeCreator
     if stale?(record)
       # delete it, and try the whole thing again
       record.delete
-      record = find_or_create_record(type, retry_count: retry_count + 1)
+      record = find_or_create_record(retry_count: retry_count + 1)
     end
 
     return record
