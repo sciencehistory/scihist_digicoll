@@ -171,4 +171,62 @@
             }
         }
     }
+
+    $featured-topics-box-width: 21.875rem;
+    $featured-topics-box-height: 21.875rem;
+    $featured-topics-box-margin: 3.6875rem;
+
+
+    .featured-topics-title-div {
+        padding-top: 0.9375rem;
+        padding-left: 2.125rem;
+        background-color: $brand-dark-grey;
+        h2 {
+            margin-bottom:0;
+        }
+    }
+
+    .featured-topics-list {
+        background-color: $brand-dark-grey;
+        padding-top: 2.125rem;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        .featured-topic {
+            position: relative;
+            width: $featured-topics-box-width;
+            min-width: $featured-topics-box-width;
+            height: $featured-topics-box-height;
+            margin: $featured-topics-box-margin;
+
+            @media (max-width: $featured-topics-box-width) {
+                width: 100vw;
+                min-width: auto;
+                height: 100vw;
+                margin: $featured-topics-box-margin 0;
+            }
+
+            .featured-topic-title-wrapper {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 3.5rem;
+                color: $brand-dark-blue;
+                background-color: $brand-bright-green;
+                padding: 0.625rem;
+
+                .featured-topic-title {
+                    text-align: center;
+                    font-weight: $semi-bold-weight;
+                    text-transform: uppercase;
+                    font-size: 1.125rem;
+                    padding-top: 0.3125rem;
+                    padding-bottom: 0.3125rem;
+                }
+            }
+        }
+    }
 }
