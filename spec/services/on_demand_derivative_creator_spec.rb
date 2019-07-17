@@ -4,6 +4,8 @@ describe OnDemandDerivativeCreator, queue_adapter: :test do
   let(:deriv_type) { "zip_file" }
   let(:work) { create(:work, members: [create(:asset, :inline_promoted_file), create(:asset, :inline_promoted_file)]) }
   let(:creator) { OnDemandDerivativeCreator.new(work, derivative_type: deriv_type) }
+  let(:checksum) { creator.calculated_checksum }
+
 
   describe "find_or_create_record" do
     describe "initial" do
@@ -23,7 +25,6 @@ describe OnDemandDerivativeCreator, queue_adapter: :test do
     end
 
     describe "already in_progress" do
-      let(:checksum) { creator.calculated_checksum }
       let!(:existing) { OnDemandDerivative.create!(work: work, deriv_type: deriv_type, status: "in_progress", inputs_checksum: checksum) }
 
       it "re-uses existing record" do
@@ -37,6 +38,32 @@ describe OnDemandDerivativeCreator, queue_adapter: :test do
         expect(record.id).to eq(existing.id)
         expect(record.status).to eq("in_progress")
       end
+    end
+  end
+
+  describe "attach_derivative!" do
+    let!(:on_demand_derivative) { OnDemandDerivative.create!(work: work, deriv_type: deriv_type, status: "in_progress", inputs_checksum: checksum) }
+
+    it "attaches derivative" do
+      # just make it faster
+      allow_any_instance_of(WorkZipCreator).to receive(:create).and_return(Tempfile.new)
+
+      creator.attach_derivative!
+
+      on_demand_derivative.reload
+      expect(on_demand_derivative.status).to eq "success"
+      expect(on_demand_derivative.file_exists?).to be(true)
+    end
+
+    it "records error and re-raises" do
+      allow_any_instance_of(WorkZipCreator).to receive(:create).and_raise(ArgumentError.new("made this error"))
+
+      expect {
+        creator.attach_derivative!
+      }.to raise_error("made this error")
+
+      on_demand_derivative.reload
+      expect(on_demand_derivative.status).to eq "error"
     end
   end
 end
