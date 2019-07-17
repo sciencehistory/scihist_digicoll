@@ -1,6 +1,5 @@
 <% provide :suppress_controls, true %>
 <% content_for(:suppress_masthead_search, true) %>
-<div>
-    <div class="pre-heading">Science History Institute Digital Collections</div>
-    <p>The home page is currently under construction. Stay tuned, please.</p>
-</div>
+
+<%# For now, to make the HTML more manageable, keeping the hero image and search form in their own template. We will probably later move them back up into index.html.erb if there's a performance boost. %>
+<%= render 'homepage/hero_image_and_search_form' %>
