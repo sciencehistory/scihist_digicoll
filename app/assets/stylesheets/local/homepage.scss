@@ -26,7 +26,7 @@
           bottom: 0;
           right: 0;
           background: $transparent-background;
-          padding: 5px 10px;
+          padding: 0.3125rem 0.625rem;
           @include all-white-links;
           font-weight: 300;
           font-style: italic;
@@ -37,8 +37,8 @@
         .pre-heading {
           @extend %special-label;
           color: $special-label-muted-color;
-          margin-bottom: 3px;
-          margin-top: 24px;
+          margin-bottom: 0.1875rem;
+          margin-top: 1.5rem;
         }
 
         h2 {
@@ -47,8 +47,8 @@
     }
 
     .search-container {
-        padding-left: 20px !important;
-        padding-right: 20px !important;
+        padding-left: 1.25rem  !important;
+        padding-right: 1.25rem !important;
     }
     /* @media (min-width: $screen-md-min) { */
     /* $screen-md-min: 992px; */
@@ -59,7 +59,7 @@
             // width of hero image (col-md-5) is 6/12. Make that expressed in vw, for screen width.
             // Then Divided by aspect ratio is it's height.
             // make this height the same. But account for ~20px scrollbar on some browser/OS.
-            height: calc(((600vw / 12) - 20px) / #{$hero-aspect-ratio});
+            height: calc(((600vw / 12) - 1.25rem) / #{$hero-aspect-ratio});
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -79,9 +79,9 @@
 
     .search-callouts {
         .input-group {
-            min-height: 46px;
+            min-height: 2.875rem;
             input.q, button {
-                min-height: 46px;
+                min-height: 2.875rem;
             }
         }
         /* @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) { */
@@ -89,7 +89,7 @@
         @include media-breakpoint-only(md) {
             /* vertically line up with header when side-by-side */
             /* stacks with searchbar margin to equal 20 */
-            margin-top: 13px;
+            margin-top: 1.75rem;
         }
     }
 
