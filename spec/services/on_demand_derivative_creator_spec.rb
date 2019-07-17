@@ -66,4 +66,17 @@ describe OnDemandDerivativeCreator, queue_adapter: :test do
       expect(on_demand_derivative.status).to eq "error"
     end
   end
+
+  describe "calculated_checksum" do
+    it "changes with member change" do
+      original_checksum = checksum
+
+      work.members.first.destroy
+
+      new_creator = OnDemandDerivativeCreator.new(work, derivative_type: deriv_type)
+
+      expect(new_creator.calculated_checksum).not_to eq original_checksum
+    end
+  end
+
 end
