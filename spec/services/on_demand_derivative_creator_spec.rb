@@ -39,6 +39,23 @@ describe OnDemandDerivativeCreator, queue_adapter: :test do
         expect(record.status).to eq("in_progress")
       end
     end
+
+    describe "stale record" do
+      let!(:existing) { OnDemandDerivative.create!(work: work, deriv_type: deriv_type, status: "success", inputs_checksum: "bad_checksum") }
+
+      it "re-creates" do
+        record = creator.find_or_create_record
+
+        expect { existing.reload }.to raise_error(ActiveRecord::RecordNotFound)
+
+        expect(record.work_id).to eq work.id
+        expect(record.deriv_type).to eq deriv_type
+        expect(record.status).to eq "in_progress"
+        expect(record.inputs_checksum).to eq checksum
+
+        expect(OnDemandDerivativeCreatorJob).to have_been_enqueued
+      end
+    end
   end
 
   describe "attach_derivative!" do
