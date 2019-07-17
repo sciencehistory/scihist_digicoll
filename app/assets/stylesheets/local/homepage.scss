@@ -95,21 +95,21 @@
 
     $collage-style: true;
     /* i.e. no titles, no horizontal border between images. */
-    $recent-items-box-width: 140px;
-    $recent-items-box-height: 140px;
-    $recent-items-box-margin: 30px;
+    $recent-items-box-width: 8.75rem;
+    $recent-items-box-height: 8.75rem;
+    $recent-items-box-margin: 1.875rem;
 
     .recent-items-title_div {
-      padding-left: 15px;
+      padding-left: 0.9375rem;
       background-color: $brand-light-grey;
-      margin-bottom: 0px;
+      margin-bottom: 0;
       h2 {
-        margin-bottom:0px;
+        margin-bottom:0;
       }
     }
 
     .recent-items-title_div {
-        padding-top:15px;
+        padding-top: 0.9375rem;
     }
 
     .recent-items-list {
@@ -118,10 +118,10 @@
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
-        padding-left: 15px;
-        padding-right: 15px;
-        padding-top: 15px;
-        padding-bottom: 30px;
+        padding-left: 0.9375rem;
+        padding-right: 0.9375rem;
+        padding-top: 0.9375rem;
+        padding-bottom: 1.875rem;
 
         .recent-item {
             float:left;
@@ -132,7 +132,7 @@
             margin: $recent-items-box-margin;
             overflow: hidden;
             @if $collage-style == true {
-                margin: 0px;
+                margin: 0;
             }
 
             .recent-item-image-matte {
@@ -164,9 +164,9 @@
                     opacity: 1.0;
                     text-align: center;
                     font-weight: $semi-bold-weight;
-                    line-height: 16px;
-                    font-size: 12px;
-                    margin-bottom: 0px;
+                    line-height: 1rem;
+                    font-size: 0.75rem;
+                    margin-bottom: 0;
                 }
             }
         }
