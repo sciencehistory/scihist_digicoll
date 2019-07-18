@@ -49,11 +49,10 @@ class WorkZipCreator
         # https://github.com/rubyzip/rubyzip/blob/05af1231f49f2637b577accea2b6b732b7204bbb/lib/zip/entry.rb#L53
         derivative = member.leaf_representative.derivative_for(:download_full)
 
-        # We can get a file-like object from our shrine attachment, that ruby zip will accept.
-        # This may result in writing all the bytes to disk locally as a temp cache, even though
-        # we don't really need to, oh well. We do need to keep track of the files to `close` them
-        # in ensure later.
-        derivative_file = derivative.file.open
+        # While it would be nice to stream directly from remote storage into the zip, we couldn't
+        # get this to work with the combo of ruby-zip and shrine api's without downloading it
+        # to local disk first. There may be a way we haven't figured out.
+        derivative_file = derivative.file.download
         derivative_files << derivative_file
 
         entry = ::Zip::Entry.new(zipfile.name, filename, nil, nil, nil, nil, ::Zip::Entry::STORED)
@@ -68,7 +67,10 @@ class WorkZipCreator
 
     return tmp_zipfile
   ensure
-    derivative_files.each(&:close) if derivative_files
+    (derivative_files || []).each do |tmp_file|
+      tmp_file.close
+      tmp_file.unlink
+    end
 
     if comment_file
       comment_file.close
