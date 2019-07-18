@@ -25,6 +25,9 @@ set :keep_releases, 5
 # label deploys with server local time instead of utm
 set :deploytag_utc, false
 
+# We don't use a `:db` role, cause it makes no sense.
+# Run migrations on, oh, say, the first :jobs server.
+set :migration_role, :jobs
 
 # cap variables used for AWS EC2 server autodiscover
 set :ssh_user, "digcol"
