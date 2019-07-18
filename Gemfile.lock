@@ -634,6 +634,7 @@ DEPENDENCIES
   resque-pool
   rsolr (>= 1.0, < 3)
   rspec-rails (~> 3.8)
+  rubyzip (~> 1.2)
   sassc-rails (~> 2.0)
   selenium-webdriver
   shrine (~> 2.0)
