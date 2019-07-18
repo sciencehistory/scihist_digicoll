@@ -87,6 +87,7 @@ gem 'html_aware_truncation', '~> 1.0'
 
 gem "prawn", "~> 2.2" # creating PDFs
 gem "pdf-reader", "~> 2.2" # simple metadata extraction from pdfs
+gem 'rubyzip', '~> 1.2', require: 'zip' # for making zip files, needs explicit require 'zip' cause it's old and crotchety
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
