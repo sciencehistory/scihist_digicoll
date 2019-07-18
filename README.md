@@ -61,6 +61,14 @@ We are using webpacker (an ES6-style JS toolchain, supported by Rails 5.1+) for 
 Some references I found good for understanding webpacker in Rails:
 * https://medium.com/@coorasse/goodbye-sprockets-welcome-webpacker-3-0-ff877fb8fa79
 
+### Development docs
+
+Our ActiveRecord models, with some other support, come from [kithe](https://github.com/sciencehistory/kithe), which has pretty good docs which should be useful.
+
+Some other interesting/complicated sub-systems we've written documentation for:
+
+* [On-demand whole-work derivatives](docs/on_demand_derivatives.md)
+
 ### Interesting gem dependencies
 
 * [kithe](https://github.com/sciencehistory/kithe) of course provides a lot of digital-collections domain-specific functionality
