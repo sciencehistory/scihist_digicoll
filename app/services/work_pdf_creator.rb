@@ -119,7 +119,7 @@ class WorkPdfCreator
       tmp_file.close
       if tmp_file.respond_to?(:unlink)
         tmp_file.unlink
-      else
+      elsif tmp_file.respond_to?(:path)
         File.unlink(tmp_file.path)
       end
     end
