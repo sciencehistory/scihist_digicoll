@@ -115,13 +115,9 @@ class WorkPdfCreator
     return pdf
   ensure
     (tmp_files || []).each do |tmp_file|
-      # don't entirely understand what shrine is giving us when
+      # close should be enough to clean up whatever is returned from Shrine #open --
+      # if we switch to using shrine #download we might need to reexamine!
       tmp_file.close
-      if tmp_file.respond_to?(:unlink)
-        tmp_file.unlink
-      elsif tmp_file.respond_to?(:path)
-        File.unlink(tmp_file.path)
-      end
     end
   end
 
