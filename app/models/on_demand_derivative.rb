@@ -27,8 +27,7 @@ class OnDemandDerivative < ApplicationRecord
 
   SHRINE_STORAGE_KEY = :on_demand_derivatives
 
-
-  PRESIGNED_URL_EXPIRES_IN = 2.days
+  PRESIGNED_URL_EXPIRES_IN = 2.days.to_i
 
   enum deriv_type: self.derivative_type_definitions.keys.collect {|v| [v.to_s, v.to_s]}.to_h.freeze,
        status: %w{in_progress success error}.collect {|v| [v, v]}.to_h.freeze
