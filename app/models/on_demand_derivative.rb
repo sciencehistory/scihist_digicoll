@@ -62,8 +62,9 @@ class OnDemandDerivative < ApplicationRecord
   def file_url
     uploaded_file.url(
       public: false,
-      expires_in: PRESIGNED_URL_EXPIRES_IN
-      #response_content_disposition: "adf"
+      expires_in: PRESIGNED_URL_EXPIRES_IN,
+      response_content_type: uploaded_file.metadata["mime_type"],
+      response_content_disposition: ContentDisposition.attachment(desired_filename)
     )
   end
 
@@ -71,5 +72,15 @@ class OnDemandDerivative < ApplicationRecord
     Shrine.storages[SHRINE_STORAGE_KEY].upload(io, file_key)
   end
 
+  protected
 
+  def desired_filename
+    parts = [
+      DownloadFilenameHelper.first_three_words(work.title),
+      work.friendlier_id,
+      deriv_type
+    ].collect(&:presence).compact
+
+    Pathname.new(parts.join("_")).sub_ext(".#{deriv_type_definition[:suffix]}").to_s
+  end
 end
