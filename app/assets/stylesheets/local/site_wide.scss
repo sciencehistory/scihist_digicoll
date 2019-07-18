@@ -112,14 +112,14 @@ hr.brand {
 // We set 'p' tags within a .branded-body-font -- with some exceptions -- to use our serif font, and have
 // appropriate max-width and spacer for that font.
 .branded-body-font, .scihist-main-layout {
-  p:not(.featured-topic-title):not(.sans-serif), dl:not(.sans-serif) dd, table:not(.sans-serif) td, table:not(.sans-serif) th, .serif {
+  p:not(.collection-title):not(.sans-serif), dl:not(.sans-serif) dd, table:not(.sans-serif) td, table:not(.sans-serif) th, .serif {
     @extend %text-font;
     // super hacky sorry. :(
     .btn {
       font-family: $brand-sans-serif;
     }
   }
-  p:not(.featured-topic-title):not(.sans-serif) {
+  p:not(.collection-title):not(.sans-serif) {
     // try to keep this readable, abril is particularly hard on long line lengths
     max-width: $max-readable-width;
     // and could use some more spacing, normally in bootstrap $line-height-computed / 2
