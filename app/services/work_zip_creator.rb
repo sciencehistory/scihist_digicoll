@@ -39,7 +39,18 @@ class WorkZipCreator
       zipfile.add("about.txt", comment_file)
 
       members_to_include.each_with_index do |member, index|
-        filename = "#{format '%03d', index+1}-#{work.friendlier_id}-#{member.friendlier_id}.jpg"
+        filename = "#{format '%03d', index+1}-#{DownloadFilenameHelper.filename_base_from_parent(member)}.jpg"
+
+        uploaded_file = file_to_include(member.leaf_representative)
+
+        # While it would be nice to stream directly from remote storage into the zip, we couldn't
+        # get this to work with the combo of ruby-zip and shrine api's without downloading it
+        # to local disk first. There may be a way we haven't figured out. May be able
+        # to pass derivative.file.open to it instead for slightly better perf
+        # once https://github.com/janko/down/issues/26
+        file_obj = uploaded_file.download
+        derivative_files << file_obj
+
 
         # We want to add to zip as "STORED", not "DEFLATE", since our JPGs
         # won't compress under DEFLATE anyway, save the CPU. Ruby zip does not
@@ -47,18 +58,8 @@ class WorkZipCreator
         #
         # https://github.com/rubyzip/rubyzip/blob/05af1231f49f2637b577accea2b6b732b7204bbb/lib/zip/file.rb#L271
         # https://github.com/rubyzip/rubyzip/blob/05af1231f49f2637b577accea2b6b732b7204bbb/lib/zip/entry.rb#L53
-        derivative = member.leaf_representative.derivative_for(:download_full)
-
-        # While it would be nice to stream directly from remote storage into the zip, we couldn't
-        # get this to work with the combo of ruby-zip and shrine api's without downloading it
-        # to local disk first. There may be a way we haven't figured out. May be able
-        # to pass derivative.file.open to it instead for slightly better perf
-        # once https://github.com/janko/down/issues/26
-        derivative_file = derivative.file.download
-        derivative_files << derivative_file
-
         entry = ::Zip::Entry.new(zipfile.name, filename, nil, nil, nil, nil, ::Zip::Entry::STORED)
-        zipfile.add(entry, derivative_file)
+        zipfile.add(entry, file_obj)
 
         # We don't really need to update on every page, the front-end is only polling every two seconds anyway
         if callback && (index % 3 == 0 || index >= members_to_include.count - 1)
@@ -82,6 +83,15 @@ class WorkZipCreator
 
   private
 
+  # @returns [Shrine::UploadedFile]
+  def file_to_include(asset)
+    if asset.content_type == "image/jpeg"
+      asset.file
+    else
+      asset.derivative_for(:download_full)&.file
+    end
+  end
+
   # published members. pre-loads leaf_representative derivatives.
   # Limited to members whose leaf representative has a download_full derivative
   #
@@ -91,9 +101,10 @@ class WorkZipCreator
                             members.
                             with_representative_derivatives.
                             where(published: true).
+                            order(:position).
                             select do |m|
                               deriv = m.leaf_representative&.derivative_for(:download_full)
-                              deriv && deriv.file.present?
+                              m.leaf_representative.content_type == "image/jpeg" || (deriv && deriv.file.present?)
                             end
   end
 
