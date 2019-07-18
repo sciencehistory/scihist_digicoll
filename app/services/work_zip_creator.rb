@@ -51,7 +51,9 @@ class WorkZipCreator
 
         # While it would be nice to stream directly from remote storage into the zip, we couldn't
         # get this to work with the combo of ruby-zip and shrine api's without downloading it
-        # to local disk first. There may be a way we haven't figured out.
+        # to local disk first. There may be a way we haven't figured out. May be able
+        # to pass derivative.file.open to it instead for slightly better perf
+        # once https://github.com/janko/down/issues/26
         derivative_file = derivative.file.download
         derivative_files << derivative_file
 
