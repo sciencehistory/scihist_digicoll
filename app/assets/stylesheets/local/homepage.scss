@@ -93,8 +93,6 @@
         }
     }
 
-    $collage-style: true;
-    /* i.e. no titles, no horizontal border between images. */
     $recent-items-box-width: 8.75rem;
     $recent-items-box-height: 8.75rem;
     $recent-items-box-margin: 1.875rem;
@@ -131,9 +129,7 @@
             height: $recent-items-box-height;
             margin: $recent-items-box-margin;
             overflow: hidden;
-            @if $collage-style == true {
-                margin: 0;
-            }
+            margin: 0;
 
             .recent-item-image-matte {
                 position: absolute;
@@ -148,9 +144,7 @@
                 width: 100%;
             }
             .recent-item-title-wrapper {
-                @if $collage-style == true {
-                    display: none;
-                }
+                display: none;
                 position: absolute;
                 bottom: 0;
                 left: 0;
