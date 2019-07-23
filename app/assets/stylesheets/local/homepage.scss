@@ -244,7 +244,7 @@
 
     @include media-breakpoint-only(md) {
         .featured-collection-callouts {
-            margin-top: 30px;
+            margin-top: 1.875rem;
         }
     }
 
@@ -278,7 +278,7 @@
                 bottom: 0;
                 right: 0;
                 background: rgba(0, 0, 0, 0.25);
-                padding: 5px 25px;
+                padding: 0.3125rem 1.5625rem;
                 font-weight: 300;
                 font-style: italic;
                 a {
@@ -294,7 +294,7 @@
         text-transform: uppercase;
         border-radius: 0;
         letter-spacing: 0.04em;
-        margin-bottom: 24px;
+        margin-bottom: 1.5625rem;
         // unlike normal btns, normally it's full width, but if screen is so small
         // it needs to, it should break.
         white-space: initial;
