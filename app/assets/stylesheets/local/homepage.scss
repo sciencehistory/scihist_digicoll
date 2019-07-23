@@ -93,11 +93,11 @@
         }
     }
 
+    $collage-style: true;
     /* i.e. no titles, no horizontal border between images. */
-
-    $recent-items-box-width: 350px;
-    $recent-items-box-height: 350px;
-    $recent-items-box-margin: 59px;
+    $recent-items-box-width: 8.75rem;
+    $recent-items-box-height: 8.75rem;
+    $recent-items-box-margin: 1.875rem;
 
     .recent-items-title_div {
       padding-left: 0.9375rem;
@@ -131,7 +131,9 @@
             height: $recent-items-box-height;
             margin: $recent-items-box-margin;
             overflow: hidden;
-            margin: 0;
+            @if $collage-style == true {
+                margin: 0;
+            }
 
             .recent-item-image-matte {
                 position: absolute;
@@ -146,7 +148,9 @@
                 width: 100%;
             }
             .recent-item-title-wrapper {
-                display: none;
+                @if $collage-style == true {
+                    display: none;
+                }
                 position: absolute;
                 bottom: 0;
                 left: 0;
@@ -226,5 +230,73 @@
                 }
             }
         }
+    }
+
+
+    /* start feat coll */
+
+    .featured-collection-callouts{
+        padding-left: 0.9375rem;
+        padding-right: 0.9375rem;
+        padding-top: 0.9375rem;
+        padding-bottom: 1.875rem;
+    }
+
+    @include media-breakpoint-only(md) {
+        .featured-collection-callouts {
+            margin-top: 1.875rem;
+        }
+    }
+
+    @include media-breakpoint-up(md) {
+        .featured-collection-container {
+            background-color: white;
+            display: flex;
+            align-items: center;
+            .featured-collection-callouts {
+                margin-left: 10%;
+                margin-right: 2%;
+                h2 {
+                    margin-top: 0;
+                }
+            }
+        }
+    }
+    .featured-collection-image {
+        padding: 0;
+        .featured-collection-matte {
+            position: relative;
+            img {
+                width: 100%;
+            }
+            figure {
+                margin-bottom: 0;
+            }
+            figcaption {
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                background: rgba(0, 0, 0, 0.25);
+                padding: 0.3125rem 1.5625rem;
+                font-weight: 300;
+                font-style: italic;
+                a {
+                    color: white;
+                    text-decoration: none;
+                    opacity: 1;
+                }
+            }
+        }
+    }
+    .chf-callout-button {
+        width: 100%;
+        text-transform: uppercase;
+        border-radius: 0;
+        letter-spacing: 0.04em;
+        margin-bottom: 1.5625rem;
+        // unlike normal btns, normally it's full width, but if screen is so small
+        // it needs to, it should break.
+        white-space: initial;
+        border-radius: 2px;
     }
 }
