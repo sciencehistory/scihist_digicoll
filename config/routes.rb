@@ -170,4 +170,10 @@ Rails.application.routes.draw do
   resolve("Collection") do |collection, options|
     [:admin, collection, options]
   end
+
+  #Static pages
+  %w(about contact faq policy).each do |page_label|
+    get page_label, controller: 'static', action: page_label, as: page_label
+  end
+
 end
