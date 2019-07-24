@@ -3,7 +3,7 @@
 </div>
 <div class="row recent-items-list no-gutters">
   <div class="recent-items-list-content">
-    <% RecentItemsHelper::RecentItems.new().recent_items().each do |work| %>
+    <% RecentItems.new.recent_items.each do |work| %>
       <div class="recent-item">
         <div class="recent-item-image-matte">
           <%= link_to work_path(work.friendlier_id) do %>
