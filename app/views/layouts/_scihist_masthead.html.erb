@@ -35,9 +35,9 @@ do `content_for(:suppress_masthead_search, true)`
         <h1 class="masthead-title large-masthead-only"><%= link_to "Digital Collections", root_path %></h1>
 
         <ul class="nav navbar-nav navbar-right">
-          <li class="navbar-item"><%= link_to "About", "#", class: "nav-link" %></li>
-          <li class="navbar-item"><%= link_to "FAQ", "#", class: "nav-link" %></li>
-          <li class="navbar-item"><%= link_to "Contact", "#", class: "nav-link" %></li>
+          <li class="navbar-item"><%= link_to "About", about_path, class: "nav-link" %></li>
+          <li class="navbar-item"><%= link_to "FAQ", faq_path, class: "nav-link" %></li>
+          <li class="navbar-item"><%= link_to "Contact", contact_path, class: "nav-link" %></li>
         </ul>
 
         <% unless content_for(:suppress_masthead_search) %>
