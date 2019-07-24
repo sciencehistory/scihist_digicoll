@@ -88,3 +88,47 @@
   }
 
 }
+
+$accept-cookies-banner-container-height: 2.8125rem;
+nav.accept-cookies-banner-nav {
+  min-height: 1px;
+  background-color: white;
+  border: 0;
+  padding: 0;
+  display: none;
+  div#accept-cookies-banner-container {
+    margin: 0;
+    padding-right: 0;
+    background-color: white;
+    div.i-accept-copy {
+      padding-left: 2rem;
+      color: $text-muted;
+      background-color: white;
+    }
+    div.i-accept-div {
+      height: $accept-cookies-banner-container-height;
+      padding-left: 0;
+    }
+    a.i-accept-link {
+      display: block;
+
+      width: 100%;
+      border: 0;
+      padding-top: 0.75rem;
+      white-space: nowrap;
+      color: white;
+      background-color: $brand-red;
+      &:hover { background-color: $brand-blue; }
+      text-decoration: none;
+      font-size: .9em;
+      font-weight: 700;
+      height: $accept-cookies-banner-container-height + 0.0625rem;
+      /* Exception: at widths larger than md ( i think) set the height to 100 %; */
+      /*
+      @include media-breakpoint-up(md) {
+        height: 100%;
+      }
+      */
+    }
+  }
+}
