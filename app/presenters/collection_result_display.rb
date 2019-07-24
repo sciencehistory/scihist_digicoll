@@ -18,9 +18,8 @@ class CollectionResultDisplay < ViewModel
     render "/presenters/index_result", model: model, view: self
   end
 
-  # TODO, link to Collections page, when it exists
   def display_genres
-    link_to "Collections", "#"
+    link_to "Collections", collections_path
   end
 
   # Requires helper method `child_counter` to be available, returning a
