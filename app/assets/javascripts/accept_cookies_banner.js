@@ -6,7 +6,9 @@ $( document ).ready(function() {
 });
 scihistDigicoll.setUpAcceptCookiesBanner = function () {
     if (! scihistDigicoll.cookiesAlreadyAcceptedByUser()) {
-        jQuery('.accept-cookies-banner-nav').fadeIn(1000);
+        setTimeout(function() {
+            jQuery('.accept-cookies-banner-nav').fadeIn(500);
+        }, 1000);
     }
     jQuery ('.i-accept-link').click(scihistDigicoll.userAcceptsOurCookies);
 }
