@@ -1,9 +1,7 @@
-<%
-    unless Rails.application.config.hide_accept_cookies_banner
-%>
-    <nav class="navbar navbar-default navbar-fixed-bottom accept-cookies-banner-nav">
+<% unless Rails.application.config.hide_accept_cookies_banner %>
+    <nav class="navbar fixed-bottom accept-cookies-banner-nav">
         <div id="accept-cookies-banner-container" class="container-fluid">
-            <div class="row"
+            <div class="row no-gutters accept-cookies-row"
                 role="dialog"
                 aria-live="polite"
                 aria-label="accept-cookies"
