@@ -1,28 +1,32 @@
-<div class="row featured-collection-container">
-  <div class="col-sm-12 col-md-6">
-    <div class="row featured-collection-callouts">
-      <div class="col-sm-12">
-        <h2 class="brand-alt-h2">Featured Collection</h2>
-          <p>The <%= link_to "Beckman Historical Collection", collection_path('wh246s128') %> covers the life and career of American scientist and philanthropist Dr. Arnold O. Beckman (1900–2004) and the growth of his companies. When Dr. Beckman invented the first commercially successful pH meter in 1934, he became a key player in both the American scientific instrument industry and the 20th-century scientific instrumentation revolution.</p>
-          <%= link_to "Browse Collections",
-            collections_path,
-            class: "btn btn-emphasis btn-lg chf-callout-button" %>
+<div class="container-fluid homepage-wrapper">
+  <div class="row featured-collection-container no-gutters">
+    <div class="col-sm-12 col-md-6">
+      <div class="container-fluid homepage-wrapper">
+        <div class="row featured-collection-callouts no-gutters">
+          <div class="col-sm-12">
+            <h2 class="brand-alt-h2">Featured Collection</h2>
+              <p>The <%= link_to "Beckman Historical Collection", collection_path('wh246s128') %> covers the life and career of American scientist and philanthropist Dr. Arnold O. Beckman (1900–2004) and the growth of his companies. When Dr. Beckman invented the first commercially successful pH meter in 1934, he became a key player in both the American scientific instrument industry and the 20th-century scientific instrumentation revolution.</p>
+              <%= link_to "Browse Collections",
+                collections_path,
+                class: "btn btn-emphasis btn-lg chf-callout-button" %>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="featured-collection-image d-none d-md-block col-md-6">
-    <div class="featured-collection-matte">
-      <figure>
-        <%= image_tag 'featured_collection_narrow_2x.jpg',
-          :class => "d-lg-none",
-          alt: "Portrait of Arnold O. Beckman"
-        %>
-        <%= image_tag 'featured_collection_wide_2x.jpg',
-          :class => "d-none d-lg-block",
-          alt: "Portrait of Arnold O. Beckman"
-        %>
-        <figcaption><%= featured_collection_image_link('wm117p231', 'Portrait of Arnold O. Beckman') %></figcaption>
-      </figure>
+    <div class="featured-collection-image d-none d-md-block col-md-6">
+      <div class="featured-collection-matte">
+        <figure>
+          <%= image_tag 'featured_collection_narrow_2x.jpg',
+            :class => "d-lg-none",
+            alt: "Portrait of Arnold O. Beckman"
+          %>
+          <%= image_tag 'featured_collection_wide_2x.jpg',
+            :class => "d-none d-lg-block",
+            alt: "Portrait of Arnold O. Beckman"
+          %>
+          <figcaption><%= featured_collection_image_link('wm117p231', 'Portrait of Arnold O. Beckman') %></figcaption>
+        </figure>
+      </div>
     </div>
   </div>
 </div>

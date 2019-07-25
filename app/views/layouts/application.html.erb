@@ -61,24 +61,26 @@
 
     <div id="mainContainer" class="container-fluid">
       <%= content_for(:container_header) %>
-
       <%= render 'flash_message_display' %>
-
-      <div class="row">
-        <% if content_for? :sidebar %>
-          <section id="content" role="main" class="order-last">
-            <%= yield %>
-          </section>
-
-          <section id="sidebar" class="page-sidebar order-first">
-            <%= content_for(:sidebar) %>
-          </section>
-        <% else %>
-          <section class="col-md-12">
-            <%= yield %>
-          </section>
-        <% end %>
-      </div>
+      <% if content_for? :full_width_layout %>
+        <%# The only template to use this is homepage/index . %>
+        <%= yield %>
+      <% else %>
+        <div class="row">
+          <% if content_for? :sidebar %>
+            <section id="content" role="main" class="order-last">
+              <%= yield %>
+            </section>
+            <section id="sidebar" class="page-sidebar order-first">
+              <%= content_for(:sidebar) %>
+            </section>
+          <% else %>
+            <section class="col-md-12">
+              <%= yield %>
+            </section>
+          <% end %>
+        </div>
+      <% end %>
     </div>
 
     <%= render partial: 'shared/modal' %>
