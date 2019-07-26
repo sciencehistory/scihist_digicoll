@@ -54,8 +54,6 @@
 
     <%= f.repeatable_attr_input :subject, build: :at_least_one %>
 
-    <%= f.input :digitization_funder %>
-
     <%= f.input :department, collection: Work::ControlledLists::DEPARTMENT  %>
 
     <%= f.repeatable_attr_input(:exhibition, build: :at_least_one) do |input_name, value| %>
@@ -109,6 +107,8 @@
         </div>
       </div>
     <% end %>
+
+    <%= f.input :digitization_funder %>
 
     <%= f.input :file_creator, collection: Work::ControlledLists::FILE_CREATOR %>
 
