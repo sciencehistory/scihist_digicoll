@@ -48,6 +48,7 @@ class Work
       'Implements, utensils, etc.',
       'Lithographs',
       'Manuscripts',
+      'Maps',
       'Medical equipment & supplies',
       'Minutes (Records)',
       'Molecular models',
