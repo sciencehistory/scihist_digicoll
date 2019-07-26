@@ -40,7 +40,6 @@ class Work < Kithe::Work
   attr_json :exhibition, :string, array: true, default: -> { [] }
   attr_json :project, :string, array: true, default: -> { [] }
   attr_json :source, :string
-  attr_json :digitization_funder, :string
   attr_json :series_arrangement, :string, array: true, default: -> { [] }
   attr_json :physical_container, Work::PhysicalContainer.to_type
 
@@ -49,6 +48,7 @@ class Work < Kithe::Work
   attr_json :rights, :string
   attr_json :rights_holder, :string
   attr_json :additional_credit, Work::AdditionalCredit.to_type, array: true, default: -> { [] }
+  attr_json :digitization_funder, :string
 
   attr_json :file_creator, :string
   attr_json :admin_note, :text
