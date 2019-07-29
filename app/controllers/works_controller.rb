@@ -7,8 +7,10 @@ class WorksController < ApplicationController
     respond_to do |format|
       format.html
       format.ris {
+        download_name = DownloadFilenameHelper.filename_for_asset(@work.representative)
         send_data RisSerializer.new(@work).to_ris,
           disposition: 'attachment',
+          filename: "#{download_name}.ris",
           type: :ris
       }
     end
