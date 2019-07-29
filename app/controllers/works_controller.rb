@@ -7,19 +7,27 @@ class WorksController < ApplicationController
     respond_to do |format|
       format.html
       format.ris {
-        download_name = Pathname.new(DownloadFilenameHelper.
-          filename_for_asset(@work.representative))
-          .sub_ext("").
-          to_s
         send_data RisSerializer.new(@work).to_ris,
           disposition: 'attachment',
-          filename: "#{download_name}.ris",
+          filename: ris_download_filename,
           type: :ris
       }
     end
   end
 
   private
+
+  # The download_filename helper specializes
+  # in originals and derivatives, and the RIS download
+  # isn't really either, so this is a bit more complicated
+  # than  it used to be.
+  def ris_download_filename
+    name_with_ext = DownloadFilenameHelper.
+      filename_for_asset(@work.representative)
+    name_without_ext = Pathname.
+      new(name_with_ext).sub_ext("").to_s
+    "#{name_without_ext}.ris"
+  end
 
   def set_work
     @work = Work.find_by_friendlier_id!(params[:id])
