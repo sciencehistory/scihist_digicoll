@@ -147,7 +147,15 @@ module Importers
     # This do not save the item.
     def common_populate()
       target_item.friendlier_id = @metadata['id']
-      target_item.title = @metadata['title'].first
+
+      # This should never happen with production data,
+      # but it should also not stop the entire import.
+      if @metadata['title'].nil?
+        add_error("missing title")
+        target_item.title = "No title"
+      else
+        target_item.title = @metadata['title'].first
+      end
 
       if metadata['date_uploaded'].blank?
         add_error("missing 'date_uploaded'")

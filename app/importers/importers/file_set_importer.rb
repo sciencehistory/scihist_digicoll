@@ -94,7 +94,14 @@ module Importers
         target_item.file_attacher.set_promotion_directives(create_derivatives: false)
       end
 
-      target_item.file = { "id" => corrected_file_url, "storage" => "remote_url" }
+      # This should never happen with production data,
+      # but it should also not stop the entire import.
+      begin
+        target_item.file = { "id" => corrected_file_url, "storage" => "remote_url" }
+      rescue Shrine::Error => shrine_error
+        add_error("Shrine error: #{shrine_error}")
+      end
+
     end
 
     def self.importee()
