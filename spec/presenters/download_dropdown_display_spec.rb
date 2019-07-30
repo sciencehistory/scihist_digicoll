@@ -58,10 +58,7 @@ describe DownloadDropdownDisplay do
 
   describe "with a PDF file" do
     let(:asset) do
-      create(:asset_with_faked_file,
-        faked_content_type: "application/pdf",
-        faked_height: nil,
-        faked_width: nil,
+      create(:asset_with_faked_file, :pdf,
         faked_derivatives: [],
         parent: build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
       )
@@ -108,7 +105,7 @@ describe DownloadDropdownDisplay do
   describe "with parent work" do
     let(:rendered) { Nokogiri::HTML.fragment(DownloadDropdownDisplay.new(asset, display_parent_work: parent_work).display) }
 
-    describe "with whole-work download options" do
+    describe "with all image files" do
       let(:asset) do
         create(:asset_with_faked_file,
               faked_derivatives: [])
@@ -124,8 +121,21 @@ describe DownloadDropdownDisplay do
         expect(div).to have_selector(".dropdown-item", text: /PDF/)
       end
     end
-    describe "without whole-work download options" do
 
+    describe "without image files" do
+      let(:asset) do
+        create(:asset_with_faked_file, :pdf,
+              faked_derivatives: [])
+      end
+
+      let(:parent_work) do
+        create(:work, members: [asset, build(:asset_with_faked_file, :mp3), build(:asset_with_faked_file, :mp3)])
+      end
+
+      it "does not render whole-work download options" do
+        expect(div).not_to have_selector(".dropdown-header", text: "Download all 3 images")
+        expect(div).not_to have_selector(".dropdown-item", text: /ZIP/)
+      end
     end
   end
 
