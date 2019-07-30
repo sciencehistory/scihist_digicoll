@@ -27,6 +27,17 @@ The software pieces involved are:
 * `WorkZipCreator` and `WorkPdfCreator` actually create the derivatives, triggered by `OnDemandDerivativeCreator`, as discovered from on-demand derivative type information registered in `OnDemandDerivative.derivative_type_definitions` class method.
 * `OnDemandDerivativeCreatorJob` an ActiveJob that does the actual derivative creation, in a bg job, to not take up web workers.
 
+The link that triggers the JS for on-demand derivative with progress status display looks like:
+
+```html
+<a href="#"
+   data-trigger="on-demand-download"
+   data-work-id="[work.friendlier_id]"
+   derivative-type="[type registered in OnDemandDerivative.derivative_type_definitions]">
+Link text
+</a>
+```
+
 ## Extract?
 
 There are kind of a lot of moving parts, although it ends up working out pretty well, and at this point is probably pretty generalizable. Should we extract this code to somewhere other institutions/developers could use it? Perhaps kithe?
