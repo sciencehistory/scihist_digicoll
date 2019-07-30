@@ -157,6 +157,7 @@ class DownloadDropdownDisplay < ViewModel
   # download options we offer at present.
   def has_work_download_options?
     display_parent_work &&
+      display_parent_work.members.length > 1 &&
       display_parent_work.members.all? do |member|
         member.leaf_representative && member.leaf_representative.content_type.start_with?("image/")
       end
