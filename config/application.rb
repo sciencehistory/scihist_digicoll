@@ -58,7 +58,10 @@ module ScihistDigicoll
     config.facebook_acct = "SciHistoryOrg"
     config.instagram_acct = "scihistoryorg"
 
-
+    # Show the GDPR "I accept" cookies banner by default.
+    # This setting is overridden in test.rb,
+    # so the tests don't have to click "I accept".)
+    config.hide_accept_cookies_banner = false
 
   end
 end
