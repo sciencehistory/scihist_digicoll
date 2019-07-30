@@ -61,6 +61,20 @@ FactoryBot.define do
         faked_derivatives { nil }
       end
 
+      trait :pdf do
+        faked_file { File.open((Rails.root + "spec/test_support/pdf/sample.pdf")) }
+        faked_content_type { "application/pdf" }
+        faked_height { nil }
+        faked_width { nil }
+      end
+
+      trait :mp3 do
+        faked_file { File.open((Rails.root + "spec/test_support/audio/ice_cubes.mp3")) }
+        faked_content_type { "audio/mpeg" }
+        faked_height { nil }
+        faked_width { nil }
+      end
+
       after(:build) do |asset, evaluator|
         # Set our uploaded file
 
