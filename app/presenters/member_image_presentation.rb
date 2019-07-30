@@ -36,10 +36,10 @@ class MemberImagePresentation < ViewModel
   alias_method :member, :model
   attr_reader :size, :lazy
 
-  def initialize(work, size: :standard, lazy: false)
+  def initialize(member, size: :standard, lazy: false)
     @lazy = !!lazy
     @size = size
-    super(work)
+    super(member)
   end
 
   def display
