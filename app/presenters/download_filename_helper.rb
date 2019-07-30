@@ -28,11 +28,7 @@ class DownloadFilenameHelper
     # audio files use their whole title instead of parents, with the intended
     # use case of Oral History, our only audio files at present, where archival
     # title is important.
-    base = if asset.content_type && asset.content_type.start_with?("audio/")
-      asset.title
-    else
-      DownloadFilenameHelper.filename_base_from_parent(asset)
-    end
+    base = self.filename_base_for_asset(asset)
 
     if derivative && !asset.content_type.start_with?("audio")
       base = [base, derivative.key].join("_")
@@ -44,7 +40,25 @@ class DownloadFilenameHelper
       asset.content_type
     end
 
-    DownloadFilenameHelper.filename_with_suffix(base, content_type: content_type)
+    self.filename_with_suffix(base, content_type: content_type)
+  end
+
+  # Try to keep the ris download filename similar to the one we use
+  # for originals: filename_for_asset(asset).
+  def self.ris_download_name(work)
+    base = if work.representative.nil?
+      first_three_words(work.title)
+    else
+      self.filename_base_for_asset(work.representative)
+    end
+    "#{base}.ris"
+  end
+
+  def self.filename_base_for_asset(asset)
+    if asset.content_type && asset.content_type.start_with?("audio/")
+      return asset.title
+    end
+    self.filename_base_from_parent(asset)
   end
 
   # Pass in a string, get the first three words separated by underscores, stripping punctuation.
