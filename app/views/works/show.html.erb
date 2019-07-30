@@ -63,18 +63,6 @@
   </div>
 
   <div class="show-metadata">
-    <div>
-      <%= content_tag "a", "download zip (temporary testing)", href: "#", data: {
-        trigger: "on-demand-download",
-        "work-id": @work.friendlier_id,
-        "derivative-type": "zip_file"
-      } %>
-      <%= content_tag "a", "download pdf (temporary testing)", href: "#", data: {
-        trigger: "on-demand-download",
-        "work-id": @work.friendlier_id,
-        "derivative-type": "pdf_file"
-      } %>
-    </div>
     <%= render "show_info" %>
   </div>
 

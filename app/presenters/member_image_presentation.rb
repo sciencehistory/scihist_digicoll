@@ -103,7 +103,7 @@ class MemberImagePresentation < ViewModel
   end
 
   def download_button
-    DownloadDropdownDisplay.new(member.leaf_representative).display
+    DownloadDropdownDisplay.new(member.leaf_representative, display_parent_work: member.parent).display
   end
 
   def view_button
