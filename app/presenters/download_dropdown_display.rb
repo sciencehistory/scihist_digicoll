@@ -128,7 +128,7 @@ class DownloadDropdownDisplay < ViewModel
           "derivative-type": "zip_file"
         }
       ) do
-        "ZIP <small>(of full-sized JPGs)</small>".html_safe
+        "ZIP<small>of full-sized JPGs</small>".html_safe
       end
 
       elements << "<li class='dropdown-divider'></li>".html_safe
