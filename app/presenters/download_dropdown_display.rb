@@ -104,6 +104,12 @@ class DownloadDropdownDisplay < ViewModel
   def menu_items
     elements = []
 
+    if parent && parent.rights.present?
+      elements << "<h3 class='dropdown-header'>Rights</h3>".html_safe
+      elements << rights_statement_item
+      elements << "<li class='dropdown-divider'></li>".html_safe
+    end
+
     if has_work_download_options?
       elements << "<h3 class='dropdown-header'>Download all #{display_parent_work.members.length} images</h3>".html_safe
 
@@ -125,12 +131,6 @@ class DownloadDropdownDisplay < ViewModel
         "ZIP <small>(of full-sized JPGs)</small>".html_safe
       end
 
-      elements << "<li class='dropdown-divider'></li>".html_safe
-    end
-
-    if parent && parent.rights.present?
-      elements << "<h3 class='dropdown-header'>Rights</h3>".html_safe
-      elements << rights_statement_item
       elements << "<li class='dropdown-divider'></li>".html_safe
     end
 
