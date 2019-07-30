@@ -1,0 +1,28 @@
+<% unless Rails.application.config.hide_accept_cookies_banner %>
+    <nav class="navbar fixed-bottom accept-cookies-banner-nav">
+        <div id="accept-cookies-banner-container" class="container-fluid">
+            <div class="row no-gutters accept-cookies-row"
+                role="dialog"
+                aria-live="polite"
+                aria-label="accept-cookies"
+                aria-describedby="accept-cookies-copy" >
+                <div class="col-md-10 i-accept-copy" id="accept-cookies-copy">
+                    This website uses cookies to perform analytics,
+                    improve functionality, and enhance user experience.
+                    You may set your browser to
+                    <a href="https://www.wikihow.com/Disable-Cookies">decline cookies</a>,
+                    but some content on our site may not display properly.
+                    For more information, please visit our
+                    <a href="https://www.sciencehistory.org/site-terms">privacy policy</a>.
+                </div>
+                <div class="col-md-2 i-accept-div text-center">
+                    <a href="#"
+                        class="i-accept-link"
+                        aria-label="dismiss cookie message"
+                        role="button"
+                        tabindex="0">I Accept</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+<% end %>

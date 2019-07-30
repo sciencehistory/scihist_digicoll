@@ -223,9 +223,6 @@
         }
     }
 
-
-    /* start feat coll */
-
     .featured-collection-callouts{
         padding-left: 0.9375rem;
         padding-right: 0.9375rem;
@@ -289,5 +286,11 @@
         // it needs to, it should break.
         white-space: initial;
         border-radius: 2px;
+    }
+
+    .i-accept-copy {
+        /* add in extra padding removed from .blacklight-homepage > container-fluid */
+        padding-left: 0.9375rem;
+        padding-right: 0.9375rem;
     }
 }
