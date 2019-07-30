@@ -17,7 +17,8 @@
                 <div class="digital-description col-12 col-md-6 col-lg-12">
                   <div class="pre-heading">Science History Institute</div>
                     <h2 class="brand-alt-h2">Digital Collections</h2>
-                    <p>Search <%= number_with_delimiter(Work.count) %> of our digitized items: artifacts, photographs, advertisements, letters, rare books, and more. You can also learn more about the rest of our <a href="https://sciencehistory.org/collections">collections.</a></p>
+                    <% published_item_count = Kithe::Model.where(:published => true, :type => ['Work', 'Collection']).count %>
+                    <p>Search <%= number_with_delimiter(published_item_count) %> of our digitized items: artifacts, photographs, advertisements, letters, rare books, and more. You can also learn more about the rest of our <a href="https://sciencehistory.org/collections">collections.</a></p>
                 </div>
                 <div class="search-callouts col-12 col-md-6 col-lg-12">
                   <%= render partial: 'application/search_form' %>
