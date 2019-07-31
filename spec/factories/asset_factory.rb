@@ -46,6 +46,9 @@ FactoryBot.define do
         faked_width { 30 }
         faked_height { 30 }
 
+        faked_md5 { Digest::MD5.hexdigest rand(10000000).to_s }
+        faked_sha512 { Digest::SHA512.hexdigest rand(10000000).to_s }
+
         # An array of Kithe::Derivative objects that we will add to the faked Asset.
         # By default, we take every derivative defined in Kithe::Asset, if they
         # apply to this Asset, and just fake the original asset as the derivative.
@@ -58,13 +61,29 @@ FactoryBot.define do
         faked_derivatives { nil }
       end
 
+      trait :pdf do
+        faked_file { File.open((Rails.root + "spec/test_support/pdf/sample.pdf")) }
+        faked_content_type { "application/pdf" }
+        faked_height { nil }
+        faked_width { nil }
+      end
+
+      trait :mp3 do
+        faked_file { File.open((Rails.root + "spec/test_support/audio/ice_cubes.mp3")) }
+        faked_content_type { "audio/mpeg" }
+        faked_height { nil }
+        faked_width { nil }
+      end
+
       after(:build) do |asset, evaluator|
         # Set our uploaded file
 
         uploaded_file = create(:stored_uploaded_file,
           content_type: evaluator.faked_content_type,
           width: evaluator.faked_width,
-          height: evaluator.faked_height)
+          height: evaluator.faked_height,
+          md5: evaluator.faked_md5,
+          sha512: evaluator.faked_sha512)
 
         asset.file_data = uploaded_file.to_json
 

@@ -3,16 +3,20 @@
 # The standard menu also includes "rights" information, to put that next to
 # the downloads.
 #
-#     DownloadDropdownDisplay.new(asset).display
+#     DownloadDropdownDisplay.new(asset, display_parent_work: work).display
 #
 #     # Don't know if it's a work or an asset?
-#     DownloadDropdownDisplay.new(member.leaf_representative).display
+#     DownloadDropdownDisplay.new(member.leaf_representative, display_parent_work: work).display
 #
 # This class uses other "DownloadOptions" classes to actually figure out the
 # appropriate options for a given asset of given type and state, if you need
 # that info directly to present in some other way, see those classes in
 # app/presenters/download_options. (Right now the logic for picking _which_ one of
 # those to use for a given asset is in here, but could be extracted out.)
+#
+# `display_parent_work` is used for determining any "whole-work" download options (zip or pdf
+# of images), and will have it's `members` and their leaf_representatives accessed,
+# so should have them pre-loaded to avoid n+1 queries if needed.
 #
 # ## Preloading required
 #
@@ -28,6 +32,20 @@ class DownloadDropdownDisplay < ViewModel
   valid_model_type_names "Asset"
 
   alias_method :asset, :model
+
+  attr_reader :display_parent_work
+
+  # @param asset [Asset] asset to display download links for
+  # @param display_parent_work [Work] the Work we are in the context of displaying, used
+  #   to determine whole-work download links (zip or pdf of all images), will have it's
+  #   `members` and their `leaf_representative`s accessed so should be pre-loaded if needed for performance.
+  #
+  #   We don't just get from asset.parent, because intervening child work hieararchy
+  #   may make it complicated, we need to be told our display parent context.
+  def initialize(asset, display_parent_work:nil)
+    @display_parent_work = display_parent_work
+    super(asset)
+  end
 
   def display
     content_tag("div", class: "action-item downloads dropup") do
@@ -92,6 +110,30 @@ class DownloadDropdownDisplay < ViewModel
       elements << "<li class='dropdown-divider'></li>".html_safe
     end
 
+    if has_work_download_options?
+      elements << "<h3 class='dropdown-header'>Download all #{display_parent_work.members.length} images</h3>".html_safe
+
+      elements << content_tag("a", "PDF", href: "#", class: "dropdown-item",
+        data: {
+          trigger: "on-demand-download",
+          "work-id": display_parent_work.friendlier_id,
+          "derivative-type": "pdf_file"
+        }
+      )
+
+      elements << content_tag("a", href: "#", class: "dropdown-item",
+        data: {
+          trigger: "on-demand-download",
+          "work-id": display_parent_work.friendlier_id,
+          "derivative-type": "zip_file"
+        }
+      ) do
+        "ZIP<small>of full-sized JPGs</small>".html_safe
+      end
+
+      elements << "<li class='dropdown-divider'></li>".html_safe
+    end
+
     if asset_download_options
       elements << "<h3 class='dropdown-header'>Download selected #{thing_name}</h3>".html_safe
       asset_download_options.each do |download_option|
@@ -109,6 +151,16 @@ class DownloadDropdownDisplay < ViewModel
 
   def rights_statement_item
     RightsIconDisplay.new(parent, mode: :dropdown_item).display
+  end
+
+  # have a parent work, and all it's children are images, are the only whole-work
+  # download options we offer at present.
+  def has_work_download_options?
+    display_parent_work &&
+      display_parent_work.members.length > 1 &&
+      display_parent_work.members.all? do |member|
+        member.leaf_representative && member.leaf_representative.content_type.start_with?("image/")
+      end
   end
 
 end

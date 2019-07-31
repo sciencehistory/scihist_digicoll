@@ -208,6 +208,43 @@ CREATE TABLE public.kithe_models (
 
 
 --
+-- Name: on_demand_derivatives; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.on_demand_derivatives (
+    id bigint NOT NULL,
+    work_id uuid NOT NULL,
+    deriv_type character varying NOT NULL,
+    status character varying DEFAULT 'in_progress'::character varying NOT NULL,
+    inputs_checksum character varying NOT NULL,
+    error_info text,
+    progress integer,
+    progress_total integer,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: on_demand_derivatives_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.on_demand_derivatives_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: on_demand_derivatives_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.on_demand_derivatives_id_seq OWNED BY public.on_demand_derivatives.id;
+
+
+--
 -- Name: queue_item_comments; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -336,6 +373,13 @@ ALTER TABLE ONLY public.kithe_derivatives ALTER COLUMN id SET DEFAULT nextval('p
 
 
 --
+-- Name: on_demand_derivatives id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.on_demand_derivatives ALTER COLUMN id SET DEFAULT nextval('public.on_demand_derivatives_id_seq'::regclass);
+
+
+--
 -- Name: queue_item_comments id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -386,6 +430,14 @@ ALTER TABLE ONLY public.kithe_derivatives
 
 ALTER TABLE ONLY public.kithe_models
     ADD CONSTRAINT kithe_models_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: on_demand_derivatives on_demand_derivatives_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.on_demand_derivatives
+    ADD CONSTRAINT on_demand_derivatives_pkey PRIMARY KEY (id);
 
 
 --
@@ -477,6 +529,20 @@ CREATE INDEX index_kithe_models_on_representative_id ON public.kithe_models USIN
 
 
 --
+-- Name: index_on_demand_derivatives_on_work_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_on_demand_derivatives_on_work_id ON public.on_demand_derivatives USING btree (work_id);
+
+
+--
+-- Name: index_on_demand_derivatives_on_work_id_and_deriv_type; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_on_demand_derivatives_on_work_id_and_deriv_type ON public.on_demand_derivatives USING btree (work_id, deriv_type);
+
+
+--
 -- Name: index_queue_item_comments_on_digitization_queue_item_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -532,6 +598,14 @@ ALTER TABLE ONLY public.kithe_model_contains
 
 ALTER TABLE ONLY public.kithe_models
     ADD CONSTRAINT fk_rails_210e0ee046 FOREIGN KEY (digitization_queue_item_id) REFERENCES public.digitization_queue_items(id);
+
+
+--
+-- Name: on_demand_derivatives fk_rails_3b0ff4a213; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.on_demand_derivatives
+    ADD CONSTRAINT fk_rails_3b0ff4a213 FOREIGN KEY (work_id) REFERENCES public.kithe_models(id);
 
 
 --
@@ -604,6 +678,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190305170908'),
 ('20190305202051'),
 ('20190404155001'),
-('20190422201311');
+('20190422201311'),
+('20190716180327');
 
 
