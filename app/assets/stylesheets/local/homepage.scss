@@ -135,11 +135,11 @@
                 width: 100%;
                 height: 100%;
                 background-color: $brand-dark-grey;
+                img {
+                    width: 100%;
+                }
             }
 
-            .recent-items-image {
-                width: 100%;
-            }
             .recent-item-title-wrapper {
                 display: none;
                 position: absolute;
