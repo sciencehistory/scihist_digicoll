@@ -89,45 +89,44 @@
 
 }
 
-$accept-cookies-banner-tall: 5rem;
-$accept-cookies-banner-reg:  3rem;
 nav.accept-cookies-banner-nav {
-  border-top: 2px solid lightgray;
+  border-top: 3px solid #dee2e6;
   min-height: 1px;
-  background-color: white;
   padding: 0;
+  display: flex;
+  align-items: stretch;
+  background-color: white;
   div.i-accept-copy {
-    line-height: 1.4;
+    line-height: 1.3;
     padding-top: 0.05rem;
     color: $text-muted;
   }
   div.i-accept-button-div {
-    background-color: green;
     padding: 0;
     margin: 0;
     a.i-accept-link {
+      display: block;
       color: white;
       background-color: $brand-red;
       &:hover { background-color: $brand-blue; }
       text-decoration: none;
       font-size: .9em;
       font-weight: 700;
-      display: block;
-      width: 100%;
       border: 0;
       white-space: nowrap;
-
-      height: $accept-cookies-banner-tall;
-      line-height: $accept-cookies-banner-tall;
-      @include media-breakpoint-only(xs) {
-          height:       $accept-cookies-banner-reg;
-          line-height:  $accept-cookies-banner-reg;
+      line-height: 3;
+      @include media-breakpoint-between(sm, lg) {
+         line-height: 6;
       }
-      @include media-breakpoint-only(xl) {
-          height:       $accept-cookies-banner-reg;
-          line-height:  $accept-cookies-banner-reg;
+      @include media-breakpoint-between(xs, sm) {
+        margin-top:0.5rem;
       }
-
     }
   }
+
+
+
+
+
+
 }
