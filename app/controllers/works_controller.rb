@@ -9,6 +9,7 @@ class WorksController < ApplicationController
       format.ris {
         send_data RisSerializer.new(@work).to_ris,
           disposition: 'attachment',
+          filename: DownloadFilenameHelper.ris_download_name(@work),
           type: :ris
       }
     end
