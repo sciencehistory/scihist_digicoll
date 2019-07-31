@@ -86,11 +86,10 @@
       text-decoration: none;
     }
   }
-
 }
 
 nav.accept-cookies-banner-nav {
-  border-top: 3px solid #dee2e6;
+  border-top: 3px solid $table-border-color;
   min-height: 1px;
   padding: 0;
   display: flex;
@@ -123,10 +122,4 @@ nav.accept-cookies-banner-nav {
       }
     }
   }
-
-
-
-
-
-
 }
