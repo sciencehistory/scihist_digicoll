@@ -21,15 +21,13 @@
     <%# Instead of loading via webpacker, we are loading uppy the heavy-weight way manually
         from CDN. For somewhat 'legacy' reasons. We may 'fix' this in future.
 
-        Uppy recommends against this, but we're doing it for now. We only load it on pages that notify
-        us it's needed with a content_for, so it does keep the JS source size down on other pages.
+        Uppy recommends against this, but we're doing it for now, until we get it working
+        as a proper webpacker dependency.
 
         Note we are not curerntly loading fetch and promise polyfills for IE11, we may
         want to, or maybe it's fine our file uploading doens't work on IE %>
-    <% if content_for?(:load_uppy) %>
-      <link href="https://transloadit.edgly.net/releases/uppy/v0.28.0/dist/uppy.min.css" rel="stylesheet" />
-      <script src="https://transloadit.edgly.net/releases/uppy/v0.28.0/dist/uppy.min.js"></script>
-    <% end %>
+    <link href="https://transloadit.edgly.net/releases/uppy/v0.28.0/dist/uppy.min.css" rel="stylesheet" />
+    <script src="https://transloadit.edgly.net/releases/uppy/v0.28.0/dist/uppy.min.js"></script>
 
     <%= render "layouts/head_tag_common" %>
     <%= javascript_pack_tag 'lazysizes' %>
