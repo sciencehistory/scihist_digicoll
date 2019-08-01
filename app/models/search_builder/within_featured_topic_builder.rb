@@ -7,14 +7,14 @@ class SearchBuilder
   #
   # Used on CollectionShowController search within a collection
   class WithinFeaturedTopicBuilder < ::SearchBuilder
-     extend ActiveSupport::Concern
+    extend ActiveSupport::Concern
 
-    # self.default_processor_chain += [:within_featured_topic]
+    self.default_processor_chain += [:within_featured_topic]
 
     def within_featured_topic(solr_parameters)
-      featured_topic = FeaturedTopic.from_slug(blacklight_params[featured_topic_slug])
+      featured_topic = FeaturedTopic.from_slug(blacklight_params[:slug])
       solr_parameters[:fq] ||= []
-      solr_parameters[:fq] << solr_params[:fq] << synthetic_category.solr_fq
+      solr_parameters[:fq] << featured_topic.solr_fq
     end
 
 
