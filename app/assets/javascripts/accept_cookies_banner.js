@@ -7,7 +7,10 @@ $( document ).ready(function() {
 scihistDigicoll.setUpAcceptCookiesBanner = function () {
     if (! scihistDigicoll.cookiesAlreadyAcceptedByUser()) {
         setTimeout(function() {
-            jQuery('.accept-cookies-banner-nav').fadeIn(500);
+            jQuery('.accept-cookies-banner-nav')
+                .css("display", "flex")
+                .hide()
+                .fadeIn(500);
         }, 1000);
     }
     jQuery ('.i-accept-link').click(scihistDigicoll.userAcceptsOurCookies);
