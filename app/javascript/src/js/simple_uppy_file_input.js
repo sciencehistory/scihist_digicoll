@@ -50,15 +50,17 @@ domready(function() {
       })
     }
 
-    const shrineHiddenFieldValue = function(file, data) {
+    const shrineHiddenFieldValue = function(file, response) {
       var shrineHash;
 
       if (s3Storage) {
-        var shrineId = data.key;
+        var url = new URL(response.uploadURL);
+        var shrineId = url.pathname.replace(/^\//, '') // remove leading slash on pathname
         if (s3StoragePrefix) {
-          // object key is path on s3, but without the configured shrine storage prefix
+          // object key is path on s3, but without the configured shrine storage prefix,
+          // get the part after our storage prefix.
           var s3StoragePrefixNoTrailingSlash = s3StoragePrefix.replace(/\/$/, "");
-          shrineId = shrineId.match(new RegExp('^' + s3StoragePrefixNoTrailingSlash + '\/(.+)'))[1];
+          shrineId = shrineId.match(new RegExp('^' + s3StoragePrefixNoTrailingSlash + '\/([^\?]+)'))[1];
         }
 
         shrineHash = {
@@ -71,7 +73,7 @@ domready(function() {
           }
         }
       } else {
-        shrineHash = data;
+        shrineHash = response.body;
       }
 
       return JSON.stringify(shrineHash);

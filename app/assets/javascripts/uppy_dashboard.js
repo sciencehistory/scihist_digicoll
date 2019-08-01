@@ -124,11 +124,14 @@
     uppy.on("upload-success", function(file, response) {
       var shrineHash;
       if (s3Storage) {
-        var shrineId = response.key;
+        var url = new URL(response.uploadURL);
+        var shrineId = url.pathname.replace(/^\//, '') // remove leading slash on pathname
+
         if (s3StoragePrefix) {
-          // object key is path on s3, but without the configured shrine storage prefix
+          // object key is path on s3, but without the configured shrine storage prefix,
+          // get the part after our storage prefix.
           var s3StoragePrefixNoTrailingSlash = s3StoragePrefix.replace(/\/$/, "");
-          shrineId = shrineId.match(new RegExp('^' + s3StoragePrefixNoTrailingSlash + '\/(.+)'))[1];
+          shrineId = shrineId.match(new RegExp('^' + s3StoragePrefixNoTrailingSlash + '\/([^\?]+)'))[1];
         }
 
         shrineHash = {
@@ -141,7 +144,7 @@
           }
         }
       } else {
-        shrineHash = response;
+        shrineHash = response.body;
       }
 
       // add the file to our list that will be submitted with form
