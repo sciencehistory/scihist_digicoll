@@ -1,26 +1,23 @@
-<% provide :page_title, construct_page_title(collection.title) %>
+<%# provide :page_title, construct_page_title(collection.title) %>
+
+<% provide :page_title, "A featured topic" %>
 
 <div itemscope itemtype="http://schema.org/CollectionPage" class="collection-show">
 
-  <% if can? :update, collection %>
-    <div class="show-admin">
-      <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-outline-primary" %>
-    </div>
-  <% end %>
 
   <div class="collection-top">
     <div class="collection-desc clearfix">
       <div class="show-title">
         <header>
-          <div class="show-genre"><%= link_to "Collections", collections_path %></div>
-          <h1><%= presenter.title %> <%= publication_badge(presenter) %></h1>
+          <div class="show-genre"><%= link_to "Featured Topics", root_path %></div>
+          <h1><%= presenter.title %> <%#= publication_badge(presenter) %></h1>
         </header>
       </div>
 
       <div class="show-metadata">
         <% if current_staff_user? %>
           <p class="show-item-count">
-            <%= "#{number_with_delimiter(presenter.public_count)} public #{'item'.pluralize(presenter.public_count)}, #{number_with_delimiter(presenter.all_count)} total" %>
+            <%#= "#{number_with_delimiter(presenter.public_count)} public #{'item'.pluralize(presenter.public_count)}, #{number_with_delimiter(presenter.all_count)} total" %>
           </p>
         <% else %>
           <p class="show-item-count"><%= "#{number_with_delimiter(presenter.public_count)} #{'item'.pluralize(presenter.public_count)}" %></p>
@@ -31,37 +28,37 @@
         </div>
 
         <table class="collection-attributes chf-attributes">
-          <% presenter.opac_urls.each do |url| %>
+          <%# presenter.opac_urls.each do |url| %>
             <tr>
-              <td colspan="2"><%= link_to "View in library catalog", url %></td>
+              <td colspan="2"><%#= link_to "View in library catalog", url %></td>
             </tr>
-          <% end %>
+          <%# end %>
 
-          <% if presenter.related_urls.present? %>
+          <%# if presenter.related_urls.present? %>
             <tr>
               <th>Related URL</th>
               <td>
                 <ul>
-                  <% presenter.related_urls.each do |url| %>
-                    <li class="attribute"><%= ExternalLinkDisplay.new(url).display %></li>
-                  <% end %>
+                  <%# presenter.related_urls.each do |url| %>
+                    <li class="attribute"><%#= ExternalLinkDisplay.new(url).display %></li>
+                  <%# end %>
                 </ul>
               </td>
             </tr>
-          <% end %>
+          <%# end %>
         </table>
       </div>
 
     </div>
 
     <div class="collection-thumb">
-      <%= ThumbDisplay.new(presenter.leaf_representative, thumb_size: :collection_page, placeholder_img_url: asset_path("default_collection.svg")).display %>
+      <%#= ThumbDisplay.new(presenter.leaf_representative, thumb_size: :collection_page, placeholder_img_url: asset_path("default_collection.svg")).display %>
     </div>
   </div>
 
   <div class="collection-search-form">
       <h2 class="search-title">
-            Search within the <%= presenter.title %>
+            Search within <%= presenter.title %>
       </h2>
 
       <%= form_tag "", method: :get do |f| %>

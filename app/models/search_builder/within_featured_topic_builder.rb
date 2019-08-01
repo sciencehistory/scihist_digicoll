@@ -7,19 +7,27 @@ class SearchBuilder
   #
   # Used on CollectionShowController search within a collection
   class WithinFeaturedTopicBuilder < ::SearchBuilder
-    # class_attribute :collection_id_solr_field, default: "collection_id_ssim"
+     extend ActiveSupport::Concern
 
-    # self.default_processor_chain += [:within_collection]
+    # self.default_processor_chain += [:within_featured_topic]
 
-    # def within_collection(solr_parameters)
-    #   solr_parameters[:fq] ||= []
-    #   solr_parameters[:fq] << "{!term f=#{collection_id_solr_field}}#{collection_id}"
-    # end
+    def within_featured_topic(solr_parameters)
+      featured_topic = FeaturedTopic.from_slug(blacklight_params[featured_topic_slug])
+      solr_parameters[:fq] ||= []
+      solr_parameters[:fq] << solr_params[:fq] << synthetic_category.solr_fq
+    end
+
 
     # private
 
-    # def collection_id
-    #   scope.context.fetch(:collection_id)
-    end
+    # def subject
+    #   scope.context.fetch(:subject)
+    # end
+
+    # def genre
+    #   scope.context.fetch(:genre)
+    # end
+
+
   end
 end
