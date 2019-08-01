@@ -1,0 +1,115 @@
+<% provide :page_title, construct_page_title(collection.title) %>
+
+<div itemscope itemtype="http://schema.org/CollectionPage" class="collection-show">
+
+  <% if can? :update, collection %>
+    <div class="show-admin">
+      <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-outline-primary" %>
+    </div>
+  <% end %>
+
+  <div class="collection-top">
+    <div class="collection-desc clearfix">
+      <div class="show-title">
+        <header>
+          <div class="show-genre"><%= link_to "Collections", collections_path %></div>
+          <h1><%= presenter.title %> <%= publication_badge(presenter) %></h1>
+        </header>
+      </div>
+
+      <div class="show-metadata">
+        <% if current_staff_user? %>
+          <p class="show-item-count">
+            <%= "#{number_with_delimiter(presenter.public_count)} public #{'item'.pluralize(presenter.public_count)}, #{number_with_delimiter(presenter.all_count)} total" %>
+          </p>
+        <% else %>
+          <p class="show-item-count"><%= "#{number_with_delimiter(presenter.public_count)} #{'item'.pluralize(presenter.public_count)}" %></p>
+        <% end %>
+
+        <div class="collection-description">
+          <%= DescriptionDisplayFormatter.new(presenter.description).format %>
+        </div>
+
+        <table class="collection-attributes chf-attributes">
+          <% presenter.opac_urls.each do |url| %>
+            <tr>
+              <td colspan="2"><%= link_to "View in library catalog", url %></td>
+            </tr>
+          <% end %>
+
+          <% if presenter.related_urls.present? %>
+            <tr>
+              <th>Related URL</th>
+              <td>
+                <ul>
+                  <% presenter.related_urls.each do |url| %>
+                    <li class="attribute"><%= ExternalLinkDisplay.new(url).display %></li>
+                  <% end %>
+                </ul>
+              </td>
+            </tr>
+          <% end %>
+        </table>
+      </div>
+
+    </div>
+
+    <div class="collection-thumb">
+      <%= ThumbDisplay.new(presenter.leaf_representative, thumb_size: :collection_page, placeholder_img_url: asset_path("default_collection.svg")).display %>
+    </div>
+  </div>
+
+  <div class="collection-search-form">
+      <h2 class="search-title">
+            Search within the <%= presenter.title %>
+      </h2>
+
+      <%= form_tag "", method: :get do |f| %>
+       <div class="input-group">
+          <%= search_field_tag :q, '', class: "q form-control",
+              id: "collectionQ",
+              autocomplete: "off",
+              placeholder: t("collection.search_form.search_field.placeholder"),
+              :"aria-label" => t('collection.search_form.search_field.label')
+          %>
+
+          <label class="sr-only" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
+
+          <div class="input-group-append">
+            <button type="submit" class="btn btn-emphasis" title="Search" id="search-submit-header">
+              <i class="fa fa-search" aria-hidden="true"></i>
+              <%= t('blacklight.search.form.submit') %>
+            </button>
+          </div>
+        </div>
+
+        <%= hidden_field_tag :sort, params[:sort], id: 'collection_sort' %>
+      <% end %>
+
+  </div>
+
+
+  <%= render 'catalog/constraints' %>
+
+
+  <div class="row">
+    <% if @response.documents.present? %>
+      <div class="sidebar-col">
+       <%= render 'facets' %>
+      </div>
+    <% end %>
+    <div class="content-col">
+      <%# per-page and sort controls, from Blacklight partial %>
+      <%= render 'search_header' %>
+
+      <%= render "document_list", documents: @response.documents %>
+    </div>
+  </div>
+
+
+
+
+
+  </div>
+
+</div>
