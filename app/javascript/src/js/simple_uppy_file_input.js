@@ -4,11 +4,9 @@
 // Just a single file with something that looks like a file input. Used in collections/_form
 
 import domready from 'domready';
+import Uppy from 'uppy';
 
 domready(function() {
-  // hacky, our JS is still using multiple paradigms, not loading uppy with webpacker
-  const Uppy = window.Uppy;
-
   const fileUpload = function(fileInput) {
     fileInput.style.display = 'none' // uppy will add its own file input
 
