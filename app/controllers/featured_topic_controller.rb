@@ -3,19 +3,9 @@
 class FeaturedTopicController < CatalogController
   before_action :set_featured_topic
 
-  #Override from Blacklight: displays values and pagination links for a single facet field
-  #
-  # We need to override to change URL to get facet_id out of :id, which we use for our collection.
-  # Need to copy-and-paste-and-change implementation, which is unfortunate.
   def facet
-    unless params.key?(:facet_id)
-      redirect_back fallback_location: { action: "index", id: params[:id] }
-      return
-    end
-
-    @facet = blacklight_config.facet_fields[params[:facet_id]]
+    @facet = blacklight_config.facet_fields[params[:id]]
     raise ActionController::RoutingError, 'Not Found' unless @facet
-
     @response = search_service.facet_field_response(@facet.key)
     @display_facet = @response.aggregations[@facet.field]
     @pagination = facet_paginator(@facet, @display_facet)
@@ -62,5 +52,4 @@ class FeaturedTopicController < CatalogController
     params[:slug]
   end
   helper_method :slug
-
 end
