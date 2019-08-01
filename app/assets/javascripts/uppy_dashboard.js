@@ -59,7 +59,7 @@
     // S3 mode still a work in progress.
     if (s3Storage) {
       uppy.use(Uppy.AwsS3Multipart, {
-        serverUrl: (uploadEndpoint || '/'), // will call Shrine's presign endpoint mounted on `/s3/params`
+        companionUrl: (uploadEndpoint || '/'), // will call Shrine's presign endpoint mounted on `/s3/params`
         abortMultipartUpload: function(file, options) {
           // no-op, we don't want uppy trying to delete, which it does on removeFile,
           // which we use to remove completed files from dashboard. See:
