@@ -18,9 +18,11 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%# we aren't using an ES6 toolchain, so are loading uppy the heavy-weight way.
-        uppy recommends against this, but we're doing it for now, but we only do it
-        on pages that ask for it with `content_for(:load_uppy, true)`
+    <%# Instead of loading via webpacker, we are loading uppy the heavy-weight way manually
+        from CDN. For somewhat 'legacy' reasons. We may 'fix' this in future.
+
+        Uppy recommends against this, but we're doing it for now. We only load it on pages that notify
+        us it's needed with a content_for, so it does keep the JS source size down on other pages.
 
         Note we are not curerntly loading fetch and promise polyfills for IE11, we may
         want to, or maybe it's fine our file uploading doens't work on IE %>
