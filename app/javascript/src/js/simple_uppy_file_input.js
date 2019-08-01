@@ -41,7 +41,7 @@ domready(function() {
 
     if (s3Storage) {
       uppy.use(Uppy.AwsS3Multipart, {
-        serverUrl: (uploadEndpoint || '/') // will call Shrine's presign endpoint mounted on `/s3/params`
+        companionUrl: (uploadEndpoint || '/') // will call Shrine's presign endpoint mounted on `/s3/params`
       })
     } else {
       uppy.use(Uppy.XHRUpload, {
