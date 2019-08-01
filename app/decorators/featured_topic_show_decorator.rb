@@ -1,9 +1,6 @@
-# A standard draper decorator, but we name it Collection SHOW decorator specifically,
-# it's the 'helper' methods we need for collection show page.
+# Helper methods methods we need for featured collection show page.
 #
-# So you can't use draper .decorate to automatically find it, instead just do:
 #
-#     CollectionShowDecorator.new(collection)
 class FeaturedTopicShowDecorator < Draper::Decorator
   delegate_all
 

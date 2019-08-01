@@ -1,16 +1,12 @@
-<%# provide :page_title, construct_page_title(collection.title) %>
-
-<% provide :page_title, "A featured topic" %>
+<% provide :page_title, presenter.title %>
 
 <div itemscope itemtype="http://schema.org/CollectionPage" class="collection-show">
-
-
   <div class="collection-top">
     <div class="collection-desc clearfix">
       <div class="show-title">
         <header>
           <div class="show-genre"><%= link_to "Featured Topics", root_path %></div>
-          <h1><%= presenter.title %> <%#= publication_badge(presenter) %></h1>
+          <h1><%= presenter.title %></h1>
         </header>
       </div>
 
@@ -27,32 +23,13 @@
           <%= DescriptionDisplayFormatter.new(presenter.description).format %>
         </div>
 
-        <table class="collection-attributes chf-attributes">
-          <%# presenter.opac_urls.each do |url| %>
-            <tr>
-              <td colspan="2"><%#= link_to "View in library catalog", url %></td>
-            </tr>
-          <%# end %>
-
-          <%# if presenter.related_urls.present? %>
-            <tr>
-              <th>Related URL</th>
-              <td>
-                <ul>
-                  <%# presenter.related_urls.each do |url| %>
-                    <li class="attribute"><%#= ExternalLinkDisplay.new(url).display %></li>
-                  <%# end %>
-                </ul>
-              </td>
-            </tr>
-          <%# end %>
-        </table>
       </div>
 
     </div>
 
+    <!-- todo: clean this up -->
     <div class="collection-thumb">
-      <%#= ThumbDisplay.new(presenter.leaf_representative, thumb_size: :collection_page, placeholder_img_url: asset_path("default_collection.svg")).display %>
+      <%= image_tag presenter.thumb_asset_path, class: "featured-topic-image", width: "266px" %>
     </div>
   </div>
 

@@ -1,7 +1,7 @@
 # Controller for the featured topic show page.
 #
 class FeaturedTopicController < CatalogController
-  before_action :set_featured_topic, :check_auth
+  before_action :set_featured_topic
 
   #Override from Blacklight: displays values and pagination links for a single facet field
   #
@@ -34,23 +34,16 @@ class FeaturedTopicController < CatalogController
     config.search_builder_class = ::SearchBuilder::WithinFeaturedTopicBuilder
   end
 
-
   private
 
-  # Our custom SearchBuilder needs to know the slug
   def search_service_context
     { slug: slug }
-  end
-
-  def check_auth
-    #authorize! :read, @collection
   end
 
   def presenter
     @presenter ||= FeaturedTopicShowDecorator.new(featured_topic)
   end
   helper_method :presenter
-
 
   def featured_topic
     @featured_topic
