@@ -1,11 +1,9 @@
 class SearchBuilder
-  # Applies a limit to search just within a given collection, filtering on solr
-  # field where we've stored the containing collection ids.
+  # Applies a limit to search just within a given featured topic.
   #
-  # :collection_id needs to be provided in context, the actual UUID pk of collection,
-  # since that's what we index.
+  # :slug needs to be provided in context.
   #
-  # Used on CollectionShowController search within a collection
+  # Used on FeaturedTopicController.
   class WithinFeaturedTopicBuilder < ::SearchBuilder
     extend ActiveSupport::Concern
 
@@ -16,18 +14,5 @@ class SearchBuilder
       solr_parameters[:fq] ||= []
       solr_parameters[:fq] << featured_topic.solr_fq
     end
-
-
-    # private
-
-    # def subject
-    #   scope.context.fetch(:subject)
-    # end
-
-    # def genre
-    #   scope.context.fetch(:genre)
-    # end
-
-
   end
 end
