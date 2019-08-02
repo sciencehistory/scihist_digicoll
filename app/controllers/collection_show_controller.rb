@@ -18,12 +18,14 @@ class CollectionShowController < CatalogController
   # We need to override to change URL to get facet_id out of :id, which we use for our collection.
   # Need to copy-and-paste-and-change implementation, which is unfortunate.
   def facet
-    unless params.key?(:facet_id)
-      redirect_back fallback_location: { action: "index", id: params[:id] }
-      return
-    end
+    #unless params.key?(:facet_id)
+    #  redirect_back fallback_location: { action: "index", id: params[:id] }
+    #  return
+    #end
 
-    @facet = blacklight_config.facet_fields[params[:facet_id]]
+    #@facet = blacklight_config.facet_fields[params[:facet_id]]
+
+    @facet = blacklight_config.facet_fields[params[:id]]
     raise ActionController::RoutingError, 'Not Found' unless @facet
 
     @response = search_service.facet_field_response(@facet.key)
@@ -41,7 +43,7 @@ class CollectionShowController < CatalogController
 
   configure_blacklight do |config|
     # Our custom sub-class to limit just to docs in collection, with collection id
-    # taken from params[:id]
+    # taken from params[:collection_id]
     config.search_builder_class = ::SearchBuilder::WithinCollectionBuilder
   end
 
@@ -69,16 +71,16 @@ class CollectionShowController < CatalogController
   helper_method :collection
 
   def set_collection
-    @collection = Collection.find_by_friendlier_id!(params[:id])
+    @collection = Collection.find_by_friendlier_id!(params[:collection_id])
   end
 
   # override from Blacklight to put the facet id in :facet_id instead of :id, so we can keep
   # :id for our parent collection id.
   # Goes with overridden #facet above.
-  def search_facet_path options = {}
-    if options.has_key?(:id)
-      options[:facet_id] = options.delete(:id)
-    end
-    super(options)
-  end
+  # def search_facet_path options = {}
+  #   if options.has_key?(:id)
+  #     options[:facet_id] = options.delete(:id)
+  #   end
+  #   super(options)
+  # end
 end
