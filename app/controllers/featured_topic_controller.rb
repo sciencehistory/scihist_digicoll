@@ -1,5 +1,4 @@
 # Controller for the featured topic show page.
-#
 class FeaturedTopicController < CatalogController
   before_action :set_featured_topic
 
@@ -24,36 +23,27 @@ class FeaturedTopicController < CatalogController
   end
 
   configure_blacklight do |config|
-    # Our custom sub-class to limit just to items in the featured topic.
+    # Limit just to items in the featured topic.
     config.search_builder_class = ::SearchBuilder::WithinFeaturedTopicBuilder
   end
 
   private
 
   def search_service_context
-    { slug: slug }
-  end
-
-  def featured_topic
-    @featured_topic
+    { slug: params[:slug] }
   end
 
   def set_featured_topic
-    @featured_topic ||= FeaturedTopic.from_slug(slug).tap do |ft|
+    @featured_topic ||= FeaturedTopic.from_slug(params[:slug]).tap do |ft|
       if ft.nil?
-        raise ActionController::RoutingError.new("No Featured Topic matches `#{slug}`")
+        raise ActionController::RoutingError.new("No Featured Topic matches `#{params[:slug]}`")
       end
     end
-    puts @featured_topic.solr_fq
   end
-
-  def slug
-    params[:slug]
-  end
-  helper_method :slug
 
   def total_count
     @response.total_count
   end
   helper_method :total_count
+
 end
