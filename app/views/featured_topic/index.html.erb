@@ -1,5 +1,4 @@
 <% provide :page_title, presenter.title %>
-
 <div itemscope itemtype="http://schema.org/CollectionPage" class="collection-show">
   <div class="collection-top">
     <div class="collection-desc clearfix">
@@ -9,81 +8,66 @@
           <h1><%= presenter.title %></h1>
         </header>
       </div>
-
       <div class="show-metadata">
         <% if current_staff_user? %>
           <p class="show-item-count">
-            <%#= "#{number_with_delimiter(presenter.public_count)} public #{'item'.pluralize(presenter.public_count)}, #{number_with_delimiter(presenter.all_count)} total" %>
-          </p>
+          <p class="show-item-count"><%= number_with_delimiter(total_count) + ' item'.pluralize(total_count) %></p>
+        </p>
         <% else %>
           <p class="show-item-count"><%= "#{number_with_delimiter(presenter.public_count)} #{'item'.pluralize(presenter.public_count)}" %></p>
         <% end %>
-
         <div class="collection-description">
           <%= DescriptionDisplayFormatter.new(presenter.description).format %>
         </div>
-
       </div>
-
     </div>
-
     <!-- todo: clean this up -->
     <div class="collection-thumb">
       <%= image_tag presenter.thumb_asset_path, class: "featured-topic-image", width: "266px" %>
     </div>
   </div>
-
   <div class="collection-search-form">
-      <h2 class="search-title">
-            Search within <%= presenter.title %>
-      </h2>
-
-      <%= form_tag "", method: :get do |f| %>
-       <div class="input-group">
-          <%= search_field_tag :q, '', class: "q form-control",
-              id: "collectionQ",
-              autocomplete: "off",
-              placeholder: t("collection.search_form.search_field.placeholder"),
-              :"aria-label" => t('collection.search_form.search_field.label')
-          %>
-
-          <label class="sr-only" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
-
-          <div class="input-group-append">
-            <button type="submit" class="btn btn-emphasis" title="Search" id="search-submit-header">
-              <i class="fa fa-search" aria-hidden="true"></i>
-              <%= t('blacklight.search.form.submit') %>
-            </button>
-          </div>
+    <h2 class="search-title">
+      Search within featured <%= presenter.title %> items
+    </h2>
+    <%= form_tag "", method: :get do |f| %>
+      <div class="input-group">
+        <%= search_field_tag :q, '', class: "q form-control",
+        id: "collectionQ",
+        autocomplete: "off",
+        placeholder: t("collection.search_form.search_field.placeholder"),
+        :"aria-label" => t('collection.search_form.search_field.label')
+        %>
+        <label class="sr-only" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
+        <div class="input-group-append">
+          <button type="submit" class="btn btn-emphasis" title="Search" id="search-submit-header">
+            <i class="fa fa-search" aria-hidden="true"></i>
+            <%= t('blacklight.search.form.submit') %>
+          </button>
         </div>
-
-        <%= hidden_field_tag :sort, params[:sort], id: 'collection_sort' %>
-      <% end %>
-
+      </div>
+      <%= hidden_field_tag :sort, params[:sort], id: 'collection_sort' %>
+    <% end %>
   </div>
-
-
   <%= render 'catalog/constraints' %>
-
-
   <div class="row">
     <% if @response.documents.present? %>
       <div class="sidebar-col">
-       <%= render 'facets' %>
+        <%= render 'facets' %>
       </div>
     <% end %>
     <div class="content-col">
-      <%# per-page and sort controls, from Blacklight partial %>
       <%= render 'search_header' %>
-
       <%= render "document_list", documents: @response.documents %>
+      <% if show_pagination? and @response.total_pages > 1 %>
+        <%# expanded will be shown by CSS at large screen sizes, else compact %>
+        <div class="pagination pagination-alt-expanded">
+          <%= paginate @response, :window => 3, :outer_window => 1, :theme => 'local' %>
+        </div>
+        <div class="pagination pagination-alt-compact">
+          <%= paginate @response, :page_entries_info => page_entries_info(@response), :theme => 'blacklight_compact' %>
+        </div>
+      <% end %>
     </div>
   </div>
-
-
-
-
-
-  </div>
-
 </div>

@@ -24,11 +24,16 @@ class FeaturedTopicController < CatalogController
     config.search_builder_class = ::SearchBuilder::WithinFeaturedTopicBuilder
   end
 
+  def context
+    search_service_context
+  end
+
   private
 
   def search_service_context
     { slug: slug }
   end
+
 
   def presenter
     @presenter ||= FeaturedTopicShowDecorator.new(featured_topic)
@@ -52,4 +57,19 @@ class FeaturedTopicController < CatalogController
     params[:slug]
   end
   helper_method :slug
+
+
+  def total_count
+    #
+    #SearchBuilder.new(self).blacklight_config
+
+    #byebug
+    # SearchBuilder.new(self).methods
+    #SearchBuilder.new(self).processor_chain
+    #@total_count ||= repository.search( search_builder.with(params.merge(rows: 0)).query).total
+    #byebug
+    #SearchBuilder.new(self).rows
+    @response.total_count
+  end
+  helper_method :total_count
 end
