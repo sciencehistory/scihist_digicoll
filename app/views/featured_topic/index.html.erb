@@ -1,11 +1,11 @@
-<% provide :page_title, presenter.title %>
+<% provide :page_title, @featured_topic.title %>
 <div itemscope itemtype="http://schema.org/CollectionPage" class="collection-show featured-collection-show">
   <div class="collection-top">
     <div class="collection-desc clearfix">
       <div class="show-title">
         <header>
           <div class="show-genre"><%= link_to "Featured Topics", root_path %></div>
-          <h1><%= presenter.title %></h1>
+          <h1><%= @featured_topic.title %></h1>
         </header>
       </div>
       <div class="show-metadata">
@@ -14,21 +14,20 @@
           <p class="show-item-count"><%= number_with_delimiter(total_count) + ' item'.pluralize(total_count) %></p>
         </p>
         <% else %>
-          <p class="show-item-count"><%= "#{number_with_delimiter(presenter.public_count)} #{'item'.pluralize(presenter.public_count)}" %></p>
+          <p class="show-item-count"><%= "#{number_with_delimiter(@featured_topic.public_count)} #{'item'.pluralize(@featured_topic.public_count)}" %></p>
         <% end %>
         <div class="collection-description">
-          <%= DescriptionDisplayFormatter.new(presenter.description).format %>
+          <%= DescriptionDisplayFormatter.new(@featured_topic.description).format %>
         </div>
       </div>
     </div>
-    <!-- todo: clean this up -->
     <div class="collection-thumb">
-      <%= image_tag presenter.thumb_asset_path, class: "featured-topic-image", width: "266px" %>
+      <%= image_tag @featured_topic.thumb_asset_path, class: "featured-topic-image", width: "266px" %>
     </div>
   </div>
   <div class="collection-search-form">
     <h2 class="search-title">
-      Search within featured <%= presenter.title %> items
+      Search within featured <%= @featured_topic.title %> items
     </h2>
     <%= form_tag "", method: :get do |f| %>
       <div class="input-group">
