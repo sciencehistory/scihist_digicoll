@@ -40,6 +40,11 @@ Rails.application.routes.draw do
   get "collections/:collection_id/range_limit" => "collection_show#range_limit"
   get "collections/:collection_id/facet" => "collection_show#facet"
 
+  get "focus/:slug", to: "featured_topic#index", as: :featured_topic
+  get "focus/:slug/range_limit" => "featured_topic#range_limit"
+  get "focus/:slug/facet" => "featured_topic#facet"
+
+
   # download_path(asset)
   # download_url(asset)
   get "downloads/:asset_id", to: "downloads#original", as: :download
