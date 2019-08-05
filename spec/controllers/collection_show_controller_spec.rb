@@ -9,14 +9,14 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
 
     describe "non-logged-in user", logged_in_user: false do
       it "has permission denied" do
-        get :index, params: { id: collection.friendlier_id }
+        get :index, params: { collection_id: collection.friendlier_id }
         expect(response).to redirect_to(new_user_session_path)
       end
     end
 
     describe "logged-in user", logged_in_user: true do
       it "can see page" do
-        get :index, params: { id: collection.friendlier_id }
+        get :index, params: { collection_id: collection.friendlier_id }
         expect(response).to have_http_status(:success)
       end
     end
