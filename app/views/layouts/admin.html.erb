@@ -34,13 +34,15 @@
     <script src="https://transloadit.edgly.net/releases/uppy/v1.3.0/uppy.min.js"></script>
 
     <%= render "layouts/head_tag_common" %>
+
+    <%# lazysizes gets it's own "pack", loaded early without 'defer', per lazysizes doc suggestion %>
     <%= javascript_pack_tag 'lazysizes' %>
 
     <%= stylesheet_link_tag    'application', media: 'all' %>
-    <%# trying to include our webpacker-managed scripts with defer for better browser
-        load performance.  works until we do something that doesn't... %>
+
+    <%= javascript_include_tag 'application', defer: true %>
     <%= javascript_pack_tag 'application', defer: true %>
-    <%= javascript_include_tag 'application' %>
+
   </head>
 
   <body>
