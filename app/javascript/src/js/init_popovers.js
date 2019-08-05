@@ -5,8 +5,6 @@
 
 import domready from 'domready';
 
-console.log("here in init popovers");
 domready(function() {
-  debugger;
   $('[data-toggle="popover"]').popover()
 });
