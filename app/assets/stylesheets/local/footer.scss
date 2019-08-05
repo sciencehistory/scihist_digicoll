@@ -86,45 +86,4 @@
       text-decoration: none;
     }
   }
-
-}
-
-$accept-cookies-banner-container-height: 2.8125rem;
-
-nav.accept-cookies-banner-nav {
-  min-height: 1px;
-  background-color: white;
-  border: 0;
-  padding: 0;
-  div#accept-cookies-banner-container {
-    margin: 0;
-    padding-right: 0;
-    background-color: white;
-    div.accept-cookies-row {
-      div.i-accept-copy {
-        line-height: 1.42857143;
-        padding-top: 0.05rem;
-        color: $text-muted;
-        background-color: white;
-      }
-      div.i-accept-div {
-        height: $accept-cookies-banner-container-height;
-        padding-left: 0;
-      }
-      a.i-accept-link {
-        display: block;
-        height: $accept-cookies-banner-container-height + 1;
-        width: 100%;
-        border: 0;
-        padding-top: 0.75rem;
-        white-space: nowrap;
-        color: white;
-        background-color: $brand-red;
-        &:hover { background-color: $brand-blue; }
-        text-decoration: none;
-        font-size: .9em;
-        font-weight: 700;
-      }
-    }
-  }
 }
