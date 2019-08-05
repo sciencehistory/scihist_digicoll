@@ -24,8 +24,8 @@
         Uppy recommends against this, but we're doing it for now, until we get it working
         as a proper webpacker dependency.
 
-        Note we are not curerntly loading fetch and promise polyfills for IE11, we may
-        want to, or maybe it's fine our file uploading doens't work on IE %>
+        Fetch and promise polyfills are required for Uppy to work on IE11. (which we may
+        not really need it to, does our staff use IE?) %>
 
     <script src="https://unpkg.com/babel-polyfill@6.26.0/dist/polyfill.min.js"></script>
     <script src="https://unpkg.com/whatwg-fetch@2.0.3/fetch.js"></script>
