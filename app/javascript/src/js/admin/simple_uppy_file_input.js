@@ -4,7 +4,10 @@
 // Just a single file with something that looks like a file input. Used in collections/_form
 
 import domready from 'domready';
-import Uppy from 'uppy';
+
+// We are just using Uppy loaded from CDN in script tag, only in admin layout.
+// If we actually had it as a dependency in webpacker, we'd want:
+//import Uppy from 'uppy';
 
 domready(function() {
   const fileUpload = function(fileInput) {
