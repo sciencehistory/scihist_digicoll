@@ -10,5 +10,6 @@
 import '../src/js/admin/member_sortable';
 import '../src/js/admin/tab_selection_in_anchor';
 import '../src/js/admin/simple_uppy_file_input';
+import '../src/js/admin/uppy_dashboard.js';
 
 import '../src/js/init_popovers.js';

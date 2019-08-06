@@ -19,11 +19,10 @@
 //= require bootstrap-sprockets
 
 //= require cocoon
-//= require uppy_dashboard
 //= require browse_everything
 
 // Required by Blacklight
-      // not currentlu using blacklight 'suggest' func which uses twitter typeahead.
+      // not currently using blacklight 'suggest' func which uses twitter typeahead.
       // twitter typeahead is a non maintained kind of mess, so we might try to
       // avoid it even if we wanted auto-suggest.
       //
