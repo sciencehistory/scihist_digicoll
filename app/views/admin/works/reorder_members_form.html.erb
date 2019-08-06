@@ -24,11 +24,21 @@
 
     <tbody>
       <% @work.members.order(:position).with_representative_derivatives.each do |member| %>
+        <% show_audio = (member.kind_of?(Kithe::Asset) && member.file && member.content_type.start_with?("audio/") && member.derivatives.present?) %>
         <tr>
           <td>
             <% if member.representative %>
-              <%= link_to member, target: "_blank" do %>
-                <%= thumb_image_tag(member.leaf_representative, size: :mini) %>
+              <% if show_audio %>
+                <audio controls controlsList="nodownload">
+                  <% member.derivatives.each do |audio_file | %>
+                    <source src="<%= audio_file.url %>" type="<%= audio_file.file.content_type%>" />
+                  <% end %>
+                </audio>
+              </div>
+              <% else %>
+                <%= link_to member, target: "_blank" do %>
+                  <%= thumb_image_tag(member.leaf_representative, size: :mini) %>
+                <% end %>
               <% end %>
             <% end %>
             <% if @work.representative_id == member.id %>
