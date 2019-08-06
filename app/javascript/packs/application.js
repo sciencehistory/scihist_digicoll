@@ -13,3 +13,4 @@ import '../src/js/admin/simple_uppy_file_input';
 import '../src/js/admin/uppy_dashboard.js';
 
 import '../src/js/init_popovers.js';
+import '../src/js/accept_cookies_banner.js';
