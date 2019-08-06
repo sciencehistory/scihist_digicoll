@@ -30,11 +30,11 @@
       // require twitter/typeahead
 //= require blacklight/blacklight
 
-//= require_tree .
-
-
 // For blacklight_range_limit built-in JS, if you don't want it you don't need
 // this:
 //= require 'blacklight_range_limit'
 
-//= require scihist_search_slideout
+//= require_tree .
+
+
+
