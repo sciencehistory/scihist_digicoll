@@ -15,3 +15,4 @@ import '../src/js/admin/uppy_dashboard.js';
 import '../src/js/init_popovers.js';
 import '../src/js/accept_cookies_banner.js';
 import '../src/js/scihist_search_slideout.js';
+import '../src/js/scihist_on_demand_downloader.js';
