@@ -13,11 +13,14 @@
 
     <tbody>
       <% work.members.order(:position).with_representative_derivatives.each do |member| %>
+      <% show_audio = (member.kind_of?(Kithe::Asset) && member.file && member.content_type.start_with?("audio/") && member.derivatives.present?) %>
         <tr>
           <td>
             <% if member.leaf_representative_id %>
-              <%= link_to member do %>
-                <%= thumb_image_tag(member.leaf_representative, size: :mini, image_missing_text: true) %>
+              <% unless show_audio %>
+                <%= link_to member do %>
+                  <%= thumb_image_tag(member.leaf_representative, size: :mini, image_missing_text: true) %>
+                <% end %>
               <% end %>
             <% end %>
             <% if work.representative_id == member.id %>
@@ -40,6 +43,15 @@
           </td>
           <td>
             <%= link_to member.title, [:admin, member] %> <%= publication_badge(member) %>
+            <% if show_audio %>
+              <div class="member_list_audio_scrubber_div">
+                <audio controls controlsList="nodownload">
+                  <% member.derivatives.each do |audio_file | %>
+                    <source src="<%= audio_file.url %>" type="<%= audio_file.file.content_type%>" />
+                  <% end %>
+                </audio>
+              </div>
+            <% end %>
           </td>
           <td class="datestamp"><%= l member.created_at.to_date, format: :admin  %></td>
           <td class="datestamp"><%= l member.updated_at.to_date, format: :admin %></td>
