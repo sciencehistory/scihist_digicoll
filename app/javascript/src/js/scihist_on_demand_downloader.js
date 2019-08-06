@@ -145,8 +145,10 @@ $( document ).ready(function() {
   $(document).on('click', '*[data-trigger="on-demand-download"]', function(e) {
     e.preventDefault();
 
-    var type = $(e.target).data("derivative-type");
-    var id   = $(e.target).data("work-id");
+    // in case you actually clicked on a <small> inside the <a> or something...
+    var link = $(e.target).closest('*[data-trigger="on-demand-download"]');
+    var type = link.data("derivative-type");
+    var id   = link.data("work-id");
 
     var downloader = new ScihistOnDemandDownloader(id, type);
     downloader.fetchForStatus();
