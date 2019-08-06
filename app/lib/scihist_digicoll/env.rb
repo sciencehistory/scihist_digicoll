@@ -137,107 +137,76 @@ module ScihistDigicoll
       # production we have no default, local env has to supply it
     }
 
-    # Based on config, supply appropriate shrine cache.
-    def self.shrine_cache_storage
-      case lookup!(:storage_mode)
-      when "dev_file"
-        Shrine::Storage::FileSystem.new("public", prefix: "shrine_storage_#{Rails.env}/cache")
-      when "dev_s3"
+    # Return appropriate Shrine::Storage instance for our mode (dev_file, dev_s3, or production),
+    # and the bucket key.
+    #
+    # In dev_file, different bucket_keys are just different paths in a local filesystem dir
+    # in public/
+    #
+    # In dev_s3, different bucket_keys are just different prefixes in a single shared dev bucket.
+    # (bucket name in :s3_dev_bucket env, by default kithe-files-dev)
+    #
+    # In production, different bucket keys are actual keys to look up actual bucket names in the Env
+    # system (local_env.yml or ENV), usually a different bucket per key.
+    #
+    def self.appropriate_shrine_storage(bucket_key:, mode: lookup!(:storage_mode), s3_storage_options: {})
+      unless %I{s3_bucket_uploads s3_bucket_originals s3_bucket_derivatives s3_bucket_on_demand_derivatives}.include?(bucket_key)
+        raise ArgumentError("Unrecognized mode: #{mode}")
+      end
+
+      # used in dev_file and dev_s3 modes:
+      path_prefix = bucket_key.to_s.sub(/^s3_bucket/, '')
+
+      if mode == "dev_file"
+        Shrine::Storage::FileSystem.new("public", prefix: "shrine_storage_#{Rails.env}/#{path_prefix}")
+      elsif mode == "dev_s3"
         Shrine::Storage::S3.new({
           bucket:            lookup(:s3_dev_bucket),
-          prefix:            "#{lookup(:s3_dev_prefix)}/shrine_cache",
+          prefix:            "#{lookup(:s3_dev_prefix)}/#{path_prefix}",
           access_key_id:     lookup(:aws_access_key_id),
           secret_access_key: lookup(:aws_secret_access_key),
           region:            lookup(:aws_region)
-        })
-      when "production"
+        }.merge(s3_storage_options))
+      elsif mode == "production"
         Shrine::Storage::S3.new({
-          bucket:            lookup(:s3_bucket_uploads),
-          prefix:            "web",
+          bucket:            lookup(bucket_key),
           access_key_id:     lookup(:aws_access_key_id),
           secret_access_key: lookup(:aws_secret_access_key),
           region:            lookup(:aws_region)
-        })
+        }.merge(s3_storage_options))
       else
-        raise TypeError.new("unrecognized storage mode")
+        raise TypeError.new("unrecognized storage mode: #{mode}")
       end
     end
 
+    # Based on config, supply appropriate shrine cache.
+    def self.shrine_cache_storage
+      # special handling with "web" prefix, I forget why.
+
+      appropriate_shrine_storage( bucket_key: :s3_bucket_uploads,
+                                  s3_storage_options: {
+                                    prefix: "web"
+                                  })
+    end
+
     def self.shrine_store_storage
-      case lookup!(:storage_mode)
-      when "dev_file"
-        Shrine::Storage::FileSystem.new("public", prefix: "shrine_storage_#{Rails.env}/store")
-      when "dev_s3"
-        Shrine::Storage::S3.new({
-          bucket:            lookup(:s3_dev_bucket),
-          prefix:            "#{lookup(:s3_dev_prefix)}/shrine_store",
-          access_key_id:     lookup(:aws_access_key_id),
-          secret_access_key: lookup(:aws_secret_access_key),
-          region:            lookup(:aws_region)
-      })
-      when "production"
-        Shrine::Storage::S3.new({
-          bucket:            lookup(:s3_bucket_originals),
-          access_key_id:     lookup(:aws_access_key_id),
-          secret_access_key: lookup(:aws_secret_access_key),
-          region:            lookup(:aws_region)
-        })
-      else
-        raise TypeError.new("unrecognized storage mode")
-      end
+      appropriate_shrine_storage(bucket_key: :s3_bucket_originals)
     end
 
     # Note we set shrine S3 storage to public, to upload with public ACLs
     def self.shrine_derivatives_storage
-      case lookup!(:storage_mode)
-      when "dev_file"
-        Shrine::Storage::FileSystem.new("public", prefix: "shrine_storage_#{Rails.env}/derivatives")
-      when "dev_s3"
-        Shrine::Storage::S3.new({
-          bucket:            lookup(:s3_dev_bucket),
-          prefix:            "#{lookup(:s3_dev_prefix)}/derivatives",
-          access_key_id:     lookup(:aws_access_key_id),
-          secret_access_key: lookup(:aws_secret_access_key),
-          region:            lookup(:aws_region),
-          public: true
-        })
-      when "production"
-        Shrine::Storage::S3.new({
-          bucket:            lookup(:s3_bucket_derivatives),
-          access_key_id:     lookup(:aws_access_key_id),
-          secret_access_key: lookup(:aws_secret_access_key),
-          region:            lookup(:aws_region),
-          public: true
-        })
-      else
-        raise TypeError.new("unrecognized storage mode")
-      end
+      appropriate_shrine_storage( bucket_key: :s3_bucket_derivatives,
+                                  s3_storage_options: {
+                                    public: true
+                                  })
     end
 
+    # Note we set shrine S3 storage to public, to upload with public ACLs
     def self.shrine_on_demand_derivatives_storage
-      case lookup!(:storage_mode)
-      when "dev_file"
-        Shrine::Storage::FileSystem.new("public", prefix: "shrine_storage_#{Rails.env}/derivatives")
-      when "dev_s3"
-        Shrine::Storage::S3.new({
-          bucket:            lookup(:s3_dev_bucket),
-          prefix:            "#{lookup(:s3_dev_prefix)}/on_demand_derivatives",
-          access_key_id:     lookup(:aws_access_key_id),
-          secret_access_key: lookup(:aws_secret_access_key),
-          region:            lookup(:aws_region),
-          public: true
-        })
-      when "production"
-        Shrine::Storage::S3.new({
-          bucket:            lookup(:s3_bucket_on_demand_derivatives),
-          access_key_id:     lookup(:aws_access_key_id),
-          secret_access_key: lookup(:aws_secret_access_key),
-          region:            lookup(:aws_region),
-          public: true
-        })
-      else
-        raise TypeError.new("unrecognized storage mode")
-      end
+      appropriate_shrine_storage( bucket_key: :s3_bucket_on_demand_derivatives,
+                                  s3_storage_options: {
+                                    public: true
+                                  })
     end
 
 
