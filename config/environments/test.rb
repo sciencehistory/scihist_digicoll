@@ -48,15 +48,4 @@ Rails.application.configure do
 
   # Hide the GDPR "I accept" cookies banner.
   config.hide_accept_cookies_banner = true
-
-
-  # https://grosser.it/2017/04/29/rails-5-1-do-not-compile-asset-in-test-vs-asset-is-not-present-in-the-asset-pipeline/
-  # make our tests fast by avoiding asset compilation
-  # but do not raise when assets are not compiled either
-  Rails.application.config.assets.compile = false
-    Sprockets::Rails::Helper.prepend(Module.new do
-      def resolve_asset_path(path, *)
-        super || path
-      end
-    end)
-  end
+end
