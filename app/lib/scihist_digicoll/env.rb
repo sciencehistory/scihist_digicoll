@@ -155,7 +155,7 @@ module ScihistDigicoll
       end
 
       # used in dev_file and dev_s3 modes:
-      path_prefix = bucket_key.to_s.sub(/^s3_bucket/, '')
+      path_prefix = bucket_key.to_s.sub(/^s3_bucket_/, '')
 
       if mode == "dev_file"
         Shrine::Storage::FileSystem.new("public", prefix: "shrine_storage_#{Rails.env}/#{path_prefix}")
@@ -182,7 +182,6 @@ module ScihistDigicoll
     # Based on config, supply appropriate shrine cache.
     def self.shrine_cache_storage
       # special handling with "web" prefix, I forget why.
-
       appropriate_shrine_storage( bucket_key: :s3_bucket_uploads,
                                   s3_storage_options: {
                                     prefix: "web"
@@ -204,6 +203,13 @@ module ScihistDigicoll
     # Note we set shrine S3 storage to public, to upload with public ACLs
     def self.shrine_on_demand_derivatives_storage
       appropriate_shrine_storage( bucket_key: :s3_bucket_on_demand_derivatives,
+                                  s3_storage_options: {
+                                    public: true
+                                  })
+    end
+
+    def self.shrine_dzi_storage
+      appropriate_shrine_storage( bucket_key: :s3_bucket_dzi,
                                   s3_storage_options: {
                                     public: true
                                   })
