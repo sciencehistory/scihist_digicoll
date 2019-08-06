@@ -181,40 +181,44 @@ module ScihistDigicoll
 
     # Based on config, supply appropriate shrine cache.
     def self.shrine_cache_storage
-      # special handling with "web" prefix, I forget why.
-      appropriate_shrine_storage( bucket_key: :s3_bucket_uploads,
-                                  s3_storage_options: {
-                                    prefix: "web"
-                                  })
+      @shrine_cache_storage ||=
+        # special handling with "web" prefix, I forget why.
+        appropriate_shrine_storage( bucket_key: :s3_bucket_uploads,
+                                    s3_storage_options: {
+                                      prefix: "web"
+                                    })
     end
 
     def self.shrine_store_storage
-      appropriate_shrine_storage(bucket_key: :s3_bucket_originals)
+      @shrine_store_storage ||=
+        appropriate_shrine_storage(bucket_key: :s3_bucket_originals)
     end
 
     # Note we set shrine S3 storage to public, to upload with public ACLs
     def self.shrine_derivatives_storage
-      appropriate_shrine_storage( bucket_key: :s3_bucket_derivatives,
-                                  s3_storage_options: {
-                                    public: true
-                                  })
+      @shrine_derivatives_storage ||=
+        appropriate_shrine_storage( bucket_key: :s3_bucket_derivatives,
+                                    s3_storage_options: {
+                                      public: true
+                                    })
     end
 
     # Note we set shrine S3 storage to public, to upload with public ACLs
     def self.shrine_on_demand_derivatives_storage
-      appropriate_shrine_storage( bucket_key: :s3_bucket_on_demand_derivatives,
-                                  s3_storage_options: {
-                                    public: true
-                                  })
+      @shrine_on_demand_derivatives_storage ||=
+        appropriate_shrine_storage( bucket_key: :s3_bucket_on_demand_derivatives,
+                                    s3_storage_options: {
+                                      public: true
+                                    })
     end
 
     def self.shrine_dzi_storage
-      appropriate_shrine_storage( bucket_key: :s3_bucket_dzi,
-                                  s3_storage_options: {
-                                    public: true
-                                  })
+      @shrine_dzi_storage ||=
+        appropriate_shrine_storage( bucket_key: :s3_bucket_dzi,
+                                    s3_storage_options: {
+                                      public: true
+                                    })
     end
-
 
     define_key :honeybadger_api_key
 
