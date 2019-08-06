@@ -9,16 +9,10 @@
         </header>
       </div>
       <div class="show-metadata">
-        <% if current_staff_user? %>
-          <p class="show-item-count">
           <p class="show-item-count"><%= number_with_delimiter(total_count) + ' item'.pluralize(total_count) %></p>
-        </p>
-        <% else %>
-          <p class="show-item-count"><%= "#{number_with_delimiter(@featured_topic.public_count)} #{'item'.pluralize(@featured_topic.public_count)}" %></p>
-        <% end %>
-        <div class="collection-description">
-          <%= DescriptionDisplayFormatter.new(@featured_topic.description).format %>
-        </div>
+          <div class="collection-description">
+            <%= DescriptionDisplayFormatter.new(@featured_topic.description).format %>
+          </div>
       </div>
     </div>
     <div class="collection-thumb">
