@@ -12,5 +12,6 @@ Shrine.storages = {
   cache: ScihistDigicoll::Env.shrine_cache_storage,
   store: ScihistDigicoll::Env.shrine_store_storage,
   kithe_derivatives: ScihistDigicoll::Env.shrine_derivatives_storage,
-  on_demand_derivatives: ScihistDigicoll::Env.shrine_on_demand_derivatives_storage
+  on_demand_derivatives: ScihistDigicoll::Env.shrine_on_demand_derivatives_storage,
+  dzi_storage: ScihistDigicoll::Env.shrine_dzi_storage
 }
