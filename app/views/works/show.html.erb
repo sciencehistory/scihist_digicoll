@@ -6,56 +6,7 @@
 
 <div class="show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
 
-
-  <header class="show-title">
-    <% if decorator.genre.present? %>
-      <div class="show-genre">
-        <%= decorator.display_genres %>
-      </div>
-    <% end %>
-
-    <h1>
-      <%= decorator.title %>
-      <%= publication_badge(decorator) %>
-      <% if can?(:read, @work) %>
-        <%= link_to "Edit", admin_work_path(decorator), class: "btn btn-outline-primary" %>
-      <% end %>
-    </h1>
-
-
-    <% if decorator.additional_title.present? %>
-      <ul class="additional-titles list-unstyled">
-        <% decorator.additional_title.each do |title| %>
-          <li><h2><%= title %></h2></li>
-        <% end %>
-      </ul>
-    <% end %>
-
-    <% if decorator.parent.present? || decorator.source.present? %>
-      <ul class="part-of list-unstyled">
-        <% if decorator.parent.present? %>
-          <li>Part of <%= link_to decorator.parent.title, work_path(decorator.parent) %></li>
-        <% end %>
-        <% if decorator.source.present? %>
-          <li> Part of <i><%= decorator.source %></i></li>
-        <% end %>
-      </ul>
-    <% end %>
-
-    <% if decorator.date_of_work.present?  %>
-      <div class="show-date">
-          <ul>
-            <% DateDisplayFormatter.new(decorator.date_of_work).display_dates.each do |interval| %>
-              <li>
-                <span itemprop="date_created">
-                  <%= interval %>
-                </span>
-              </li>
-            <% end %>
-          </ul>
-      </div>
-    <% end %>
-  </header>
+  <%= render "title_and_dates", decorator: decorator %>
 
   <div class="show-hero">
     <%= MemberImagePresentation.new(decorator.representative_member, size: :large).display %>
@@ -77,6 +28,4 @@
         <%= MemberImagePresentation.new(member, lazy: (index > 5)).display %>
       </div>
   <% end %>
-
-
 </div>

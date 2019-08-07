@@ -2,13 +2,15 @@
 <div class="show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
   <%= render "title_and_dates", decorator: decorator %>
   <div class="show-hero">
-    <%= render "audio_player", decorator: decorator %>
+    <%= render "playlist", decorator: decorator %>
     <%= MemberImagePresentation.new(decorator.representative_member, size: :large).display %>
     <%= render "rights_and_social", work: @work %>
   </div>
   <div class="show-metadata">
     <%= render "show_info" %>
   </div>
+
+
   <%# these next are not in a div so they can wrap around the bottom of the metadata
     div to take up all space. A bit hacky but it works. A clear hack to make sure they start after
     big representative image %>
