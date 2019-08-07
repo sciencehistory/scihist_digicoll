@@ -48,6 +48,19 @@ describe DziManagement do
         asset.destroy
         expect(DeleteDziJob).to have_been_enqueued.with(asset.dzi_file.dzi_uploaded_file.id)
       end
+
+      it "respects disabled promotion_directive" do
+        asset.set_promotion_directives(delete: false)
+        asset.destroy
+        expect(DeleteDziJob).not_to have_been_enqueued
+      end
+
+      it "respects inline promotion_directive" do
+        asset.set_promotion_directives(delete: :inline)
+        asset.destroy
+        expect(DeleteDziJob).not_to have_been_enqueued
+        expect(asset.dzi_file.exists?).to be false
+      end
     end
   end
 end
