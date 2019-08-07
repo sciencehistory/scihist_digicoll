@@ -1,0 +1,7 @@
+<% decorator.audio_members.each do | member | %>
+  <audio controls controlsList="nodownload">
+    <% member.derivatives.each do |audio_file | %>
+      <source src="<%= audio_file.url %>" type="<%= audio_file.file.content_type%>" />
+    <% end %>
+  </audio>
+<% end %>
