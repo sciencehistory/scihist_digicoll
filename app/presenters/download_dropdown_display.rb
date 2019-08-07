@@ -159,7 +159,7 @@ class DownloadDropdownDisplay < ViewModel
     display_parent_work &&
       display_parent_work.members.length > 1 &&
       display_parent_work.members.all? do |member|
-        member.leaf_representative && member.leaf_representative.content_type.start_with?("image/")
+        member.leaf_representative && member.leaf_representative.file_data && member.leaf_representative.content_type.start_with?("image/")
       end
   end
 
