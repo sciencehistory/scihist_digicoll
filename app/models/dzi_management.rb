@@ -7,10 +7,11 @@ class DziManagement
 
   delegate :exists?, :url, to: :dzi_uploaded_file
 
-  attr_reader :asset
+  attr_reader :asset, :md5
 
-  def initialize(asset)
+  def initialize(asset, md5:nil)
     @asset = asset
+    @md5 = md5 || asset.md5
   end
 
   # The main .dzi file as a Shrine::UploadedFile.
@@ -35,6 +36,28 @@ class DziManagement
     create_and_yield do |tmp_output_dir|
       upload(tmp_output_dir)
     end
+  end
+
+  # Deletes ALL files associated with a dzi set, the main dzi and in _files subdir.
+  #
+  def delete
+    # No list files or delete files at prefix built into shrine, so we gotta
+    # do it ourselves for storage types we want to support.
+    deleter = case destination_storage
+    when Shrine::Storage::S3
+      S3PrefixDeleter
+    when Shrine::Storage::FileSystem
+      FileSystemPrefixDeleter
+    else
+      raise TypeError.new("Don't know how to delete for storage type #{destination_storage.class}")
+    end
+
+    # The DZI manifest file
+    dzi_uploaded_file.delete
+
+    # All the tiles...
+    dir = "#{base_file_name}_files"
+    deleter.new(storage: destination_storage, clear_prefix: dir).clear!
   end
 
   # @yield string path where the dzi files are. They will be cleaned up (deleted)
@@ -68,7 +91,7 @@ class DziManagement
   # so it will be unique to actual file content, cacheable forever, and
   # automatically not used when file content changes.
   def base_file_name
-    "#{asset.id}_md5_#{asset.md5}"
+    "#{asset.id}_md5_#{md5}"
   end
 
 
@@ -78,6 +101,54 @@ class DziManagement
     Shrine.storages[shrine_storage_key]
   end
 
+  # list/delete at prefix isn't (yet) included in shrine, so we annoyingly
+  # gotta do it for the shrine storage types we might want ourselves.
+  class S3PrefixDeleter
+    attr_reader :prefix, :total_prefix, :storage
 
+    def initialize(storage:, clear_prefix:)
+      unless storage.kind_of?(Shrine::Storage::S3)
+        raise ArgumentError("storage must be a Shrine::Storage::S3")
+      end
 
+      @storage = storage
+      @prefix = prefix
+      @total_prefix = File.join(storage.prefix, clear_prefix).to_s
+    end
+
+    # copy/pasted/modifed from Shrine::Storage::S3#clear!, to let us
+    # just clear a prefix, still using efficient calls.
+    def clear!
+      objects_to_delete = Enumerator.new do |yielder|
+        storage.bucket.objects(prefix: total_prefix).each do |object|
+          yielder << object
+        end
+      end
+
+      # Batches the deletes...
+      objects_to_delete.each_slice(1000) do |objects_batch|
+        delete_params = { objects: objects_batch.map { |object| { key: object.key } } }
+        storage.bucket.delete_objects(delete: delete_params)
+      end
+    end
+  end
+
+  class FileSystemPrefixDeleter
+    attr_reader :prefix, :total_prefix, :storage
+
+    def initialize(storage:, clear_prefix:)
+      unless storage.kind_of?(Shrine::Storage::FileSystem)
+        raise ArgumentError("storage must be a Shrine::Storage::FileSystem")
+      end
+
+      @storage = storage
+      @prefix = prefix
+      @total_prefix = File.join(storage.directory, clear_prefix).to_s
+    end
+    def clear!
+      if Dir.exist?(total_prefix)
+        FileUtils.remove_dir(total_prefix)
+      end
+    end
+  end
 end
