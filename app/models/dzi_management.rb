@@ -108,11 +108,6 @@ class DziManagement
     "#{asset.id}_md5_#{md5}"
   end
 
-  def self.before_create(foo)
-    byebug
-    1+1
-  end
-
   def self.after_promotion(asset)
     # we're gonna use the same kithe promotion_directives for derivatives to
     # control how we do dzi
@@ -127,6 +122,12 @@ class DziManagement
       CreateDziJob.perform_later(asset)
     else
       raise ArgumentError.new("unrecognized :create_derivatives directive value: #{directive}")
+    end
+  end
+
+  def self.after_commit(asset)
+    if asset.destroyed?
+      DeleteDziJob.perform_later(asset.dzi_file.dzi_uploaded_file.id)
     end
   end
 

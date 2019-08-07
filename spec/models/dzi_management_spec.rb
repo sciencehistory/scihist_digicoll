@@ -40,5 +40,14 @@ describe DziManagement do
         end
       end
     end
+
+    describe "asset deletion" do
+      let(:asset) { create(:asset_with_faked_file) }
+
+      it "queues dzi deletion" do
+        asset.destroy
+        expect(DeleteDziJob).to have_been_enqueued.with(asset.dzi_file.dzi_uploaded_file.id)
+      end
+    end
   end
 end
