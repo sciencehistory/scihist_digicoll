@@ -3,6 +3,10 @@ $line-height-computed: 24px;
 .show-page-audio-playlist-wrapper {
   margin-bottom: 2.25em;
 
+  li.dropdown-divider {
+    display: none;
+  }
+
   h2.attribute-sub-head {
     margin-top: 0; // kinda ugly override sorry
     padding-top: 0;
@@ -47,6 +51,15 @@ $line-height-computed: 24px;
       padding: 5px;
     }
 
+    /* TODO remove these janky hacks later when we use a plain menu*/
+    button {
+      font-family: $brand-sans-serif;
+      white-space: nowrap;
+      padding: 5px;
+      background-color: transparent;
+      border-color: transparent;
+      color: $brand-dark-blue;
+    }
 
     &.currently-selected {
       background-color: $brand-bright-green;

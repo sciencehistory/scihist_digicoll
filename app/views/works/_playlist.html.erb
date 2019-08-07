@@ -16,8 +16,9 @@
             <%
               mp3_deriv  = member.derivatives.find {|d| d.file_data['metadata']['kithe_derivative_key'] == 'small_mp3' }
               webm_deriv = member.derivatives.find {|d| d.file_data['metadata']['kithe_derivative_key'] == 'webm'      }
-            # TODO check that derivs exist and the mp3 and webm exist too.
-            # TODO move this back up to the controller
+            # TODO don't fail if the mp3 and webm do not exist too.
+            # TODO move this logic back up to the decorator.
+            # TODO try to iterate over all derivatives regardless of actual content type.
             %>
                 <li class="track-listing"
                     data-role="track-listing"
@@ -32,6 +33,8 @@
                         <i class="fa fa-play-circle" aria-hidden="true"></i>
                         <%= member.title %>
                     </a>
+                    <%= DownloadDropdownDisplay.new(member, menu_dividers: false).display %>
+
                 </li>
             <% end %>
         </ul>
