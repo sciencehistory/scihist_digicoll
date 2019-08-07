@@ -12,6 +12,8 @@ class DziManagement
   def initialize(asset, md5:nil)
     @asset = asset
     @md5 = md5 || asset.md5
+    raise ArgumentError.new("need an md5") if md4.blank?
+    raise ArgumentError.new*("need an asset") if asset.nil?
   end
 
   # The main .dzi file as a Shrine::UploadedFile.
@@ -93,7 +95,6 @@ class DziManagement
   def base_file_name
     "#{asset.id}_md5_#{md5}"
   end
-
 
   private
 
