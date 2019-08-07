@@ -70,7 +70,7 @@ class DziManagement
     ).delete
 
 
-    dir = dzi_file_id.sub(/\.dzi$/, "_files")
+    dir = dzi_file_id.sub(/\.dzi$/, "_files/")
     deleter.new(storage: storage, clear_prefix: dir).clear!
   end
 
