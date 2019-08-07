@@ -163,7 +163,11 @@ RSpec.configure do |config|
     end
   end
   config.after(:each, :solr) do
-    Kithe::SolrUtil.delete_all(commit: :soft)
+    Kithe::SolrUtil.delete_all(commit: :soft) unless ENV["WEBMOCK_ALLOW_CONNECT"] == "true"
+  end
+
+  if ENV["WEBMOCK_ALLOW_CONNECT"] == "true"
+    WebMock.allow_net_connect!
   end
 
   # RSpec Rails can automatically mix in different behaviours to your tests
