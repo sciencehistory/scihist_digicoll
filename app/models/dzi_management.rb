@@ -125,9 +125,23 @@ class DziManagement
     end
   end
 
+  # TODO we should factor out/DRY this promotion directive lifecycle logic in kithe
   def self.after_commit(asset)
     if asset.destroyed?
-      DeleteDziJob.perform_later(asset.dzi_file.dzi_uploaded_file.id)
+      directive = asset.file_attacher.promotion_directives[:delete]
+      directive = (directive.nil? ? "background" : directive).to_s
+
+      if directive == "false"
+        # no-op
+      elsif directive == "inline"
+        asset.dzi_file.delete
+      elsif directive == "background"
+        DeleteDziJob.perform_later(asset.dzi_file.dzi_uploaded_file.id)
+      else
+        raise ArgumentError.new("unrecognized :create_derivatives directive value: #{directive}")
+      end
+
+
     end
   end
 
