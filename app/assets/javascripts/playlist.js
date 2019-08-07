@@ -10,7 +10,7 @@
 */
 $( document ).ready(function() {
 
-	function ChfAudioPlaylist(playlistWrapper) {
+	function SciHistAudioPlaylist(playlistWrapper) {
 	  this.playlistWrapper = $(playlistWrapper);
 
 	  this.firstTrack 		 = this.findByRole('track-listing')[0];
@@ -22,7 +22,7 @@ $( document ).ready(function() {
 		this.loadTrack(this.firstTrack);
 	};
 
-	ChfAudioPlaylist.prototype.playNextTrack = function() {
+	SciHistAudioPlaylist.prototype.playNextTrack = function() {
 		var nextTrack = this.playlistWrapper.find("[data-currently-selected='true']").next()[0];
 		if (nextTrack) {
 			this.loadTrack(nextTrack);
@@ -30,24 +30,24 @@ $( document ).ready(function() {
 		}
 	};
 
-	ChfAudioPlaylist.prototype.onTrackClick = function(ev) {
+	SciHistAudioPlaylist.prototype.onTrackClick = function(ev) {
 		ev.preventDefault();
 		var trackListing = $(ev.target).closest("[data-role='track-listing']");
 		this.loadTrack(trackListing);
 		this.playAudio();
 	};
 
-	ChfAudioPlaylist.prototype.findByRole = function(role) {
+	SciHistAudioPlaylist.prototype.findByRole = function(role) {
 		return this.playlistWrapper.find("[data-role='" + role + "']");
 	};
 
-	ChfAudioPlaylist.prototype.playAudio = function() {
+	SciHistAudioPlaylist.prototype.playAudio = function() {
 		// See: https://stackoverflow.com/questions/9421505/switch-audio-source-with-jquery-and-html5-audio-tag
 		// oncanplaythrough in case audio isn't fully loaded yet when we call this.
 		this.audioElement.oncanplaythrough = this.audioElement.play();
 	};
 
-	ChfAudioPlaylist.prototype.loadTrack = function(track) {
+	SciHistAudioPlaylist.prototype.loadTrack = function(track) {
 		// css (for styling)
 		this.findByRole('track-listing').removeClass("currently-selected");
 		$(track).addClass("currently-selected");
@@ -68,6 +68,6 @@ $( document ).ready(function() {
 	};
 
 	$("[data-role='audio-playlist-wrapper']").each(function() {
-		new ChfAudioPlaylist(this);
+		new SciHistAudioPlaylist(this);
 	});
  });

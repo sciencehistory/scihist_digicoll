@@ -35,6 +35,7 @@ class DownloadDropdownDisplay < ViewModel
 
   attr_reader :display_parent_work
 
+
   # @param asset [Asset] asset to display download links for
   # @param display_parent_work [Work] the Work we are in the context of displaying, used
   #   to determine whole-work download links (zip or pdf of all images), will have it's
@@ -42,8 +43,9 @@ class DownloadDropdownDisplay < ViewModel
   #
   #   We don't just get from asset.parent, because intervening child work hieararchy
   #   may make it complicated, we need to be told our display parent context.
-  def initialize(asset, display_parent_work:nil)
+  def initialize(asset, display_parent_work:nil, menu_dividers:true)
     @display_parent_work = display_parent_work
+    @menu_dividers = menu_dividers
     super(asset)
   end
 
@@ -107,7 +109,7 @@ class DownloadDropdownDisplay < ViewModel
     if parent && parent.rights.present?
       elements << "<h3 class='dropdown-header'>Rights</h3>".html_safe
       elements << rights_statement_item
-      elements << "<li class='dropdown-divider'></li>".html_safe
+      elements << "<li class='dropdown-divider'></li>".html_safe if @menu_dividers
     end
 
     if has_work_download_options?
