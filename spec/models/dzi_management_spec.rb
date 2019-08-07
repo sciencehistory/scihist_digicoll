@@ -4,8 +4,8 @@ describe DziManagement do
   let(:asset) { create(:asset_with_faked_file) }
   let(:dzi_management) { DziManagement.new(asset) }
 
-  describe "#create" do
-    it "creates DZI files on appropriate storage, with UploadedFile access" do
+  describe "create and delete" do
+    it "creates and deletes and does everything" do
       dzi_management.create
       expect(dzi_management.exists?).to be true
       expect(dzi_management.url).to be_present
@@ -17,6 +17,10 @@ describe DziManagement do
         "storage" => dzi_management.shrine_storage_key
       )
       expect(uploaded_file_0_0.exists?).to be true
+
+      dzi_management.delete
+      expect(dzi_management.exists?).to be false
+      expect(uploaded_file_0_0.exists?).to be false
     end
   end
 end
