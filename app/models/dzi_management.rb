@@ -9,10 +9,10 @@ class DziManagement
 
   attr_reader :asset, :md5
 
-  def initialize(asset, md5:nil)
+  def initialize(asset, md5:asset.md5)
     @asset = asset
     @md5 = md5 || asset.md5
-    raise ArgumentError.new("need an md5") if md4.blank?
+    raise ArgumentError.new("need an md5") if md5.blank?
     raise ArgumentError.new*("need an asset") if asset.nil?
   end
 
@@ -102,7 +102,20 @@ class DziManagement
   end
 
   def self.after_promotion(asset)
-    CreateDziJob.perform_later(asset)
+    # we're gonna use the same kithe promotion_directives for derivatives to
+    # control how we do dzi
+    directive = asset.file_attacher.promotion_directives[:create_derivatives]
+    directive = (directive.nil? ? "background" : directive).to_s
+
+    if directive == "false"
+      # no-op
+    elsif directive == "inline"
+      DziManagement.new(asset).create
+    elsif directive == "background"
+      CreateDziJob.perform_later(asset)
+    else
+      raise ArgumentError.new("unrecognized :create_derivatives directive value: #{directive}")
+    end
   end
 
   private
