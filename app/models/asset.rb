@@ -57,4 +57,6 @@ class Asset < Kithe::Asset
       bitrate: '64k',  force_mono: true, output_suffix: 'webm'
     ).call(original_file)
   end
+
+  after_promotion DziManagement
 end
