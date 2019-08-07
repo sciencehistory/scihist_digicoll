@@ -96,6 +96,15 @@ class DziManagement
     "#{asset.id}_md5_#{md5}"
   end
 
+  def self.before_create(foo)
+    byebug
+    1+1
+  end
+
+  def self.after_promotion(asset)
+    CreateDziJob.perform_later(asset)
+  end
+
   private
 
   def destination_storage
