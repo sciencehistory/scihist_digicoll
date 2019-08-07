@@ -1,0 +1,57 @@
+.show-page-audio-playlist-wrapper {
+  margin-bottom: $line-height-computed * 1.5;
+
+  h2.attribute-sub-head {
+    margin-top: 0; // kinda ugly override sorry
+    padding-top: 0;
+  }
+
+  .show-sub-head-body {
+    // sorry for evil overrides of re-used class, we want the horizontal
+    // edges to line up with hero thumb below, not sure why padding was there normally.
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+
+  .now-playing-container {
+    margin-bottom: $paragraph-spacer;
+  }
+
+  .now-playing-info {
+    margin-bottom: $paragraph-spacer;
+    text-align: center;
+    @extend %text-font;
+  }
+
+  audio {
+    width: 100%;
+  }
+
+
+  .track-listing {
+    display: flex;
+
+    @extend %text-font;
+
+    .play-link {
+      flex-grow: 1;
+      padding: 5px;
+    }
+
+    .download-link {
+      font-family: $brand-sans-serif;
+      white-space: nowrap;
+      padding: 5px;
+    }
+
+
+    &.currently-selected {
+      background-color: $brand-bright-green;
+      color: $brand-dark-blue;
+      a, a:link, a:visited, a:hover, a:active {
+        color: $brand-dark-blue;
+      }
+    }
+  }
+}

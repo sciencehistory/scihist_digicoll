@@ -1,5 +1,11 @@
 class AudioWorkShowDecorator < WorkShowDecorator
 
+  def audio_members
+    @ordered_public_members ||= begin
+      ordered_public_members.select { | x| is_audio?(x) }
+    end
+  end
+
   # Not including the representative IF the representative is the first item in the
   # list, because no reason to duplicate it right after the representative.
   def non_audio_member_list_for_display
@@ -8,9 +14,6 @@ class AudioWorkShowDecorator < WorkShowDecorator
     result
   end
 
-  def audio_members
-    ordered_public_members.select { | x| is_audio?(x) }
-  end
 
   private
 

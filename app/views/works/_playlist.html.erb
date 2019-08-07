@@ -1,0 +1,39 @@
+<div class="show-page-audio-playlist-wrapper" data-role="audio-playlist-wrapper">
+    <h2 class="attribute-sub-head"><%= pluralize(decorator.audio_members.count, 'sound file')%></h2>
+    <div class="show-sub-head-body">
+        <div class="now-playing-container" data-role="now-playing-container">
+            <div class="now-playing-info" data-role="now-playing-info">
+                <span class="current-track-label" data-role="current-track-label"></span>
+            </div>
+
+            <audio controls controlsList="nodownload" data-role="audio-elem" >
+                <source src=""  type="audio/mpeg"/>
+                <source src=""  type="audio/webm"/>
+            </audio>
+        </div>
+        <ul class="track-listings list-unstyled" data-role="track-listings" >
+            <% decorator.audio_members.each do |member| %>
+            <%
+              mp3_deriv  = member.derivatives.find {|d| d.file_data['metadata']['kithe_derivative_key'] == 'small_mp3' }
+              webm_deriv = member.derivatives.find {|d| d.file_data['metadata']['kithe_derivative_key'] == 'webm'      }
+            # TODO check that derivs exist and the mp3 and webm exist too.
+            # TODO move this back up to the controller
+            %>
+                <li class="track-listing"
+                    data-role="track-listing"
+                    data-title="<%= member.title %>"
+                    data-member-id="<%= member.id %>"
+                    data-original-url="<%= main_app.download_path(member.id) %>"
+                    data-mp3-url="<%= mp3_deriv.url %>"
+                    data-webm-url="<%= webm_deriv.url %>"
+                >
+
+                    <a class="title play-link" title="Listen to '<%= member.title%>'" href="#" data-role="play-link">
+                        <i class="fa fa-play-circle" aria-hidden="true"></i>
+                        <%= member.title %>
+                    </a>
+                </li>
+            <% end %>
+        </ul>
+    </div>
+</div>
