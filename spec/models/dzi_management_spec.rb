@@ -27,8 +27,8 @@ describe DziManagement do
   describe "Asset life-cycle automatic actions", queue_adapter: :test do
     let(:asset) { create(:asset, :inline_promoted_file, :bg_derivatives)}
 
-    describe "asset creation", queue_adapter: :test do
-      it "creates dzi" do
+    describe "asset creation" do
+      it "queues dzi creation" do
         asset
         expect(CreateDziJob).to have_been_enqueued.with(asset)
       end

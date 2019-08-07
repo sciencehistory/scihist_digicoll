@@ -41,11 +41,21 @@ class DziManagement
   end
 
   # Deletes ALL files associated with a dzi set, the main dzi and in _files subdir.
-  #
+  # Will work inline.
   def delete
+    self.class.delete(dzi_uploaded_file.id)
+  end
+
+  # class method to delete without a model, so we can easily delete DZI's after the
+  # model/DB record is already deleted and we don't have it anymore, in a bg job.
+  #
+  # The arg is the shrine id (path) of the *.dzi file.
+  def self.delete(dzi_file_id, storage_key: shrine_storage_key)
+    storage = Shrine.storages[storage_key]
+
     # No list files or delete files at prefix built into shrine, so we gotta
     # do it ourselves for storage types we want to support.
-    deleter = case destination_storage
+    deleter = case storage
     when Shrine::Storage::S3
       S3PrefixDeleter
     when Shrine::Storage::FileSystem
@@ -54,12 +64,14 @@ class DziManagement
       raise TypeError.new("Don't know how to delete for storage type #{destination_storage.class}")
     end
 
-    # The DZI manifest file
-    dzi_uploaded_file.delete
+    Shrine::UploadedFile.new(
+      "id" => dzi_file_id,
+      "storage" => storage_key
+    ).delete
 
-    # All the tiles...
-    dir = "#{base_file_name}_files"
-    deleter.new(storage: destination_storage, clear_prefix: dir).clear!
+
+    dir = dzi_file_id.sub(/\.dzi$/, "_files")
+    deleter.new(storage: storage, clear_prefix: dir).clear!
   end
 
   # @yield string path where the dzi files are. They will be cleaned up (deleted)
