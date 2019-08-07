@@ -150,12 +150,14 @@ module ScihistDigicoll
     # system (local_env.yml or ENV), usually a different bucket per key.
     #
     def self.appropriate_shrine_storage(bucket_key:, mode: lookup!(:storage_mode), s3_storage_options: {})
-      unless %I{s3_bucket_uploads s3_bucket_originals s3_bucket_derivatives s3_bucket_on_demand_derivatives}.include?(bucket_key)
-        raise ArgumentError("Unrecognized mode: #{mode}")
+      unless %I{s3_bucket_uploads s3_bucket_originals s3_bucket_derivatives
+                s3_bucket_on_demand_derivatives s3_bucket_dzi}.include?(bucket_key)
+        raise ArgumentError.new("Unrecognized bucket_key: #{bucket_key}")
       end
 
       # used in dev_file and dev_s3 modes:
       path_prefix = bucket_key.to_s.sub(/^s3_bucket_/, '')
+      mode = mode.to_s
 
       if mode == "dev_file"
         Shrine::Storage::FileSystem.new("public", prefix: "shrine_storage_#{Rails.env}/#{path_prefix}")
