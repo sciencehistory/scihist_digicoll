@@ -5,10 +5,11 @@
 
 import domready from 'domready';
 
-domready(function() {
-  // hacky, our JS is still using multiple paradigms, not loading uppy with webpacker
-  const Uppy = window.Uppy;
+// We are just using Uppy loaded from CDN in script tag, only in admin layout.
+// If we actually had it as a dependency in webpacker, we'd want:
+//import Uppy from 'uppy';
 
+domready(function() {
   const fileUpload = function(fileInput) {
     fileInput.style.display = 'none' // uppy will add its own file input
 
@@ -43,7 +44,7 @@ domready(function() {
 
     if (s3Storage) {
       uppy.use(Uppy.AwsS3Multipart, {
-        serverUrl: (uploadEndpoint || '/') // will call Shrine's presign endpoint mounted on `/s3/params`
+        companionUrl: (uploadEndpoint || '/') // will call Shrine's presign endpoint mounted on `/s3/params`
       })
     } else {
       uppy.use(Uppy.XHRUpload, {
@@ -52,15 +53,17 @@ domready(function() {
       })
     }
 
-    const shrineHiddenFieldValue = function(file, data) {
+    const shrineHiddenFieldValue = function(file, response) {
       var shrineHash;
 
       if (s3Storage) {
-        var shrineId = data.key;
+        var url = new URL(response.uploadURL);
+        var shrineId = url.pathname.replace(/^\//, '') // remove leading slash on pathname
         if (s3StoragePrefix) {
-          // object key is path on s3, but without the configured shrine storage prefix
+          // object key is path on s3, but without the configured shrine storage prefix,
+          // get the part after our storage prefix.
           var s3StoragePrefixNoTrailingSlash = s3StoragePrefix.replace(/\/$/, "");
-          shrineId = shrineId.match(new RegExp('^' + s3StoragePrefixNoTrailingSlash + '\/(.+)'))[1];
+          shrineId = shrineId.match(new RegExp('^' + s3StoragePrefixNoTrailingSlash + '\/([^\?]+)'))[1];
         }
 
         shrineHash = {
@@ -73,7 +76,7 @@ domready(function() {
           }
         }
       } else {
-        shrineHash = data;
+        shrineHash = response.body;
       }
 
       return JSON.stringify(shrineHash);

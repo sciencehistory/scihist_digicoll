@@ -1,3 +1,5 @@
+// uses jQuery without an import at present.
+
 
 // Arg should be container `form` object
 function ScihistSearchSlideout(element) {

@@ -19,11 +19,10 @@
 //= require bootstrap-sprockets
 
 //= require cocoon
-//= require uppy_dashboard
 //= require browse_everything
 
 // Required by Blacklight
-      // not currentlu using blacklight 'suggest' func which uses twitter typeahead.
+      // not currently using blacklight 'suggest' func which uses twitter typeahead.
       // twitter typeahead is a non maintained kind of mess, so we might try to
       // avoid it even if we wanted auto-suggest.
       //
@@ -31,11 +30,11 @@
       // require twitter/typeahead
 //= require blacklight/blacklight
 
-//= require_tree .
-
-
 // For blacklight_range_limit built-in JS, if you don't want it you don't need
 // this:
 //= require 'blacklight_range_limit'
 
-//= require scihist_search_slideout
+//= require_tree .
+
+
+

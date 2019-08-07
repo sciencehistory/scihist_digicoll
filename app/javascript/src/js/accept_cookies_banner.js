@@ -1,11 +1,11 @@
-var scihistDigicoll = scihistDigicoll || {}
 $( document ).ready(function() {
     if (jQuery('.accept-cookies-banner-nav').length) {
-        scihistDigicoll.setUpAcceptCookiesBanner();
+        setUpAcceptCookiesBanner();
     }
 });
-scihistDigicoll.setUpAcceptCookiesBanner = function () {
-    if (! scihistDigicoll.cookiesAlreadyAcceptedByUser()) {
+
+function setUpAcceptCookiesBanner() {
+    if (! cookiesAlreadyAcceptedByUser()) {
         setTimeout(function() {
             jQuery('.accept-cookies-banner-nav')
                 .css("display", "flex")
@@ -13,12 +13,14 @@ scihistDigicoll.setUpAcceptCookiesBanner = function () {
                 .fadeIn(500);
         }, 1000);
     }
-    jQuery ('.i-accept-link').click(scihistDigicoll.userAcceptsOurCookies);
+    jQuery ('.i-accept-link').click(userAcceptsOurCookies);
 }
-scihistDigicoll.cookiesAlreadyAcceptedByUser = function () {
+
+function cookiesAlreadyAcceptedByUser() {
     return document.cookie.match(/userAcceptsOurCookies=true/) != null;
 }
-scihistDigicoll.userAcceptsOurCookies = function(event) {
+
+function userAcceptsOurCookies(event) {
     event.preventDefault();
     var expiratonStr = new Date(new Date()
         .setFullYear(new Date()
@@ -27,9 +29,10 @@ scihistDigicoll.userAcceptsOurCookies = function(event) {
     document.cookie = "userAcceptsOurCookies=true; path=/; expires=" + expiratonStr
     jQuery('.accept-cookies-banner-nav').fadeOut(1000);
 }
-scihistDigicoll.userDoesNotAcceptOurCookies = function() {
-    // This is useful for testing; just call this function
-    // from the console and you can test repeatedly.
+
+// This is useful for testing; just call this function
+// from the console and you can test repeatedly.
+window.scihist_userDoesNotAcceptOurCookies = function() {
     document.cookie = "userAcceptsOurCookies=false;"
     jQuery('.accept-cookies-banner-nav').fadeIn(1000);
 }

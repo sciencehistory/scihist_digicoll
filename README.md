@@ -51,12 +51,29 @@ Or by putting in a local_env[_development].yml file:
 
 ### Javascript
 
-We are using webpacker (an ES6-style JS toolchain, supported by Rails 5.1+) for some javascript.
-* This is something of an experiment
-* We are also still using sprockets for some other javascript at present, in particular for browse-everything integration at present. Bootstrap and JQuery are still included under ordinary javascript, we are endeavoring not to use them in webpacker-controlled JS, but you should be able to use JQuery with `var $ = window.jQuery;`
-* We are still using sprockets to control our CSS (scss), **not** webpacker.
-* So at the moment our app includes both a sprockets manifest and a webpacker manifest in it's layout, and compiles both in dev and in production assets:precompile. Rails integration should make this just work. We have not at present experimented with running `./bin/webpack-dev-server` separately in dev, we're just letting Rails do it the slower but just-works way.
-* Note that Blacklight JS is currently included using _sprockets not webpacker_. While BL theoretically supports webpacker, I found it's [instructions](https://github.com/projectblacklight/blacklight/wiki/Using-Webpacker-to-compile-javascript-assets) somewhat obtuse and weird and was not feeling confident/comfortable with them, and am unsure how much use in what ways the webpacker integration is getting.  Additional BL plugins like blacklight_range_limit could pose further challenges, seemed safest to stick with tried-and-true sprockets.
+We are using webpacker (an ES6-style JS toolchain, supported by Rails 5.1+, default/recommended in Rails5) for some javascript, but still using sprockets asset pipeline for other javascript. Our layouts will generally load a webpacker pack (with `javascript_include_pack`) as well as a sprockets compiled file (with `javascript_include_file`). Both will be compiled by `rake assets:precompile` in production, and automatically compiled in dev.
+
+We are still using sprockets to control our CSS (scss), **not** webpacker.
+
+* All _local javascript_ is controlled using webpacker, and you should do that for future JS.
+
+* Some general purpose dependencies that probably *could* be via webpacker are at the moment still via sprockets (and gem dependencies to provide the JS, rather than npm packages).
+  * jQuery
+  * Bootstrap
+  * popper.js for Bootstrap
+  * rails-ujs
+
+* Some more rails-y dependencies are also still provided by sprockets asset pipeline, in some cases it is tricky to figure out how to transition to webpacker (or may not be possible)
+  * cocoon (used for adding/removing multi-values in edit screens; may not be avail as npm package)
+  * blacklight (theoretically available as an npm package, but I found it's [instructions](https://github.com/projectblacklight/blacklight/wiki/Using-Webpacker-to-compile-javascript-assets) somewhat obtuse and weird and was not feeling confident/comfortable with them)
+  * blacklight_range_limit (may not be avail as npm package instead of ruby gem/sprockets)
+  * browse-everything (not avail as npm package instead of ruby gem/sprockets)
+
+* You can look at `./app/assets/javascripts/application.js` to see what dependencies are still being provided via the sprockets-asset-pipeline-compiled application.js file, usually with src from a rubygem.
+
+* uppy (JS for fancy file upload func) is still being loaded in it's own separate script tag from remote CDN (see admin.html.erb layout). This is recommended against by the uppy docs, and we should transition to providing via webpacker and `import` statement, just including the parts of uppy we need, but haven't figured out how to do that yet (including uppy css)
+
+* We have not at present experimented with running `./bin/webpack-dev-server` separately in dev (and it is likely not working, pending update to webpacker 4), we're just letting Rails do it the slower but just-works way.
 
 Some references I found good for understanding webpacker in Rails:
 * https://medium.com/@coorasse/goodbye-sprockets-welcome-webpacker-3-0-ff877fb8fa79
