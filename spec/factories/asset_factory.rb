@@ -21,6 +21,18 @@ FactoryBot.define do
       end
     end
 
+    trait :bg_derivatives do
+      after(:build) do |asset|
+        asset.file_attacher.set_promotion_directives(create_derivatives: :background)
+      end
+    end
+
+    trait :no_derivatives_creation do
+      after(:build) do |asset|
+        asset.file_attacher.set_promotion_directives(create_derivatives: false)
+      end
+    end
+
     # Will not trigger promotion phase, which also means no derivatives.
     trait :non_promoted_file do
       file { File.open((Rails.root + "spec/test_support/images/30x30.png")) }
@@ -107,12 +119,6 @@ FactoryBot.define do
             asset.derivatives << derivative
           end
         end
-      end
-    end
-
-    trait :no_derivatives_creation do
-      after(:build) do |asset|
-        asset.file_attacher.set_promotion_directives(create_derivatives: false)
       end
     end
   end
