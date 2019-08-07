@@ -5,7 +5,9 @@ class WorksController < ApplicationController
 
   def show
     respond_to do |format|
-      format.html
+      format.html {
+        render template: show_audio_player? ? 'works/show_with_audio' : 'works/show'
+      }
       format.ris {
         send_data RisSerializer.new(@work).to_ris,
           disposition: 'attachment',
@@ -17,6 +19,17 @@ class WorksController < ApplicationController
 
   private
 
+  def show_audio_player?
+    @show_audio_player ||= begin
+      @work.members.any? do | member |
+        member.kind_of?(Kithe::Asset) &&
+          member.file &&
+          member.content_type.start_with?("audio/") &&
+          member.derivatives.present?
+      end
+    end
+  end
+
   def set_work
     @work = Work.find_by_friendlier_id!(params[:id])
   end
@@ -26,7 +39,7 @@ class WorksController < ApplicationController
   end
 
   def decorator
-    @decorator = WorkShowDecorator.new(@work)
+    @decorator = show_audio_player? ? AudioWorkShowDecorator.new(@work) : WorkShowDecorator.new(@work)
   end
   helper_method :decorator
 end
