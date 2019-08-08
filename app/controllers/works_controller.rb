@@ -1,12 +1,12 @@
 # FRONT-END controller for public Works views -- mostly just the #show action.
 # Not to be confused with admin/works_controller for staff/management/edit views.
 class WorksController < ApplicationController
-  before_action :set_work, :check_auth
+  before_action :set_work, :set_decorator_and_template, :check_auth
 
   def show
     respond_to do |format|
       format.html {
-        render template: show_audio_player? ? 'works/show_with_audio' : 'works/show'
+        render template: @template
       }
       format.ris {
         send_data RisSerializer.new(@work).to_ris,
@@ -19,9 +19,15 @@ class WorksController < ApplicationController
 
   private
 
-  # TODO this code is duplicated in the decorator.
-  def show_audio_player?
-    @show_audio_player ||= AudioWorkShowDecorator.has_audio_members?(@work)
+  def set_decorator_and_template
+    if AudioWorkShowDecorator.show_playlist?(@work)
+      then
+        @decorator = AudioWorkShowDecorator.new(@work)
+        @template  = 'works/show_with_audio'
+      else
+        @decorator = WorkShowDecorator.new(@work)
+        @template  = 'works/show'
+      end
   end
 
   def set_work
@@ -33,7 +39,7 @@ class WorksController < ApplicationController
   end
 
   def decorator
-    @decorator = show_audio_player? ? AudioWorkShowDecorator.new(@work) : WorkShowDecorator.new(@work)
+    @decorator
   end
   helper_method :decorator
 end
