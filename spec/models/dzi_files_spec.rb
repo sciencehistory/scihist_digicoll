@@ -1,8 +1,8 @@
 require 'rails_helper'
 
-describe DziManagement do
+describe DziFiles do
   let(:asset) { create(:asset_with_faked_file) }
-  let(:dzi_management) { DziManagement.new(asset) }
+  let(:dzi_management) { DziFiles.new(asset) }
 
   describe "create and delete" do
     it "creates and deletes and does everything" do

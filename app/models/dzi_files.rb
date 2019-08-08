@@ -1,6 +1,6 @@
 require 'tty-command'
 
-class DziManagement
+class DziFiles
   class_attribute :vips_command, default: "vips"
   class_attribute :jpeg_quality, default: "85"
   class_attribute :shrine_storage_key, default: :dzi_storage
@@ -116,7 +116,7 @@ class DziManagement
         directives: asset.file_attacher.promotion_directives) do |directive|
 
       if directive.inline?
-        DziManagement.new(asset).create
+        DziFiles.new(asset).create
       elsif directive.background?
         CreateDziJob.perform_later(asset)
       end
@@ -147,7 +147,7 @@ class DziManagement
         if old_file_data["id"] != new_file_data["id"] &&
            old_md5 = old_file_data.dig("metadata", "md5")
 
-           old_id = DziManagement.new(asset, md5: old_md5).dzi_uploaded_file.id
+           old_id = DziFiles.new(asset, md5: old_md5).dzi_uploaded_file.id
            DeleteDziJob.perform_later(old_id)
          end
       end
