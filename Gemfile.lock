@@ -7,7 +7,7 @@ GIT
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: 7ac64ad9af19d9cae026b27aa146e578349134bc
+  revision: c37389849727d9ae5960f23cae15f3ee256f0c14
   specs:
     kithe (0.3.0)
       attr_json (< 2.0.0)
@@ -348,7 +348,7 @@ GEM
       equatable (~> 0.6)
       tty-color (~> 0.5)
     pdf-core (0.7.0)
-    pdf-reader (2.2.0)
+    pdf-reader (2.2.1)
       Ascii85 (~> 1.0.0)
       afm (~> 0.2.1)
       hashery (~> 2.0)
@@ -390,7 +390,7 @@ GEM
     rails-dom-testing (2.0.3)
       activesupport (>= 4.2.0)
       nokogiri (>= 1.6)
-    rails-html-sanitizer (1.0.4)
+    rails-html-sanitizer (1.1.0)
       loofah (~> 2.2, >= 2.2.2)
     rails_autolink (1.1.6)
       rails (> 3.1)
@@ -400,7 +400,7 @@ GEM
       method_source
       rake (>= 0.8.7)
       thor (>= 0.19.0, < 2.0)
-    rake (12.3.2)
+    rake (12.3.3)
     ransack (2.1.1)
       actionpack (>= 5.0)
       activerecord (>= 5.0)
