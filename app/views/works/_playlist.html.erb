@@ -13,13 +13,14 @@
         </div>
         <ul class="track-listings list-unstyled" data-role="track-listings" >
             <% decorator.audio_members.each do |member| %>
+                <% #byebug %>
                 <li class="track-listing"
                     data-role="track-listing"
                     data-title="<%= member.title %>"
                     data-member-id="<%= member.id %>"
                     data-original-url="<%= main_app.download_path(member.id) %>"
-                    data-mp3-url="<%=  member.derivatives.find {|d| d.file_data['metadata']['kithe_derivative_key'] == 'small_mp3' }&.url %>"
-                    data-webm-url="<%= member.derivatives.find {|d| d.file_data['metadata']['kithe_derivative_key'] == 'webm'      }&.url %>"
+                    data-mp3-url="<%=  member.derivatives.find {|d| d.file.data['metadata']['kithe_derivative_key'] == 'small_mp3' }&.url %>"
+                    data-webm-url="<%= member.derivatives.find {|d| d.file.data['metadata']['kithe_derivative_key'] == 'webm'      }&.url %>"
                 >
                     <a class="title play-link" title="Listen to '<%= member.title%>'" href="#" data-role="play-link">
                         <i class="fa fa-play-circle" aria-hidden="true"></i>
