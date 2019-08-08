@@ -111,37 +111,32 @@ class DziManagement
   def self.after_promotion(asset)
     # we're gonna use the same kithe promotion_directives for derivatives to
     # control how we do dzi
-    directive = asset.file_attacher.promotion_directives[:create_derivatives]
-    directive = (directive.nil? ? "background" : directive).to_s
+    Kithe::TimingPromotionDirective.new(
+        key: :create_derivatives,
+        directives: asset.file_attacher.promotion_directives) do |directive|
 
-    if directive == "false"
-      # no-op
-    elsif directive == "inline"
-      DziManagement.new(asset).create
-    elsif directive == "background"
-      CreateDziJob.perform_later(asset)
-    else
-      raise ArgumentError.new("unrecognized :create_derivatives directive value: #{directive}")
+      if directive.inline?
+        DziManagement.new(asset).create
+      elsif directive.background?
+        CreateDziJob.perform_later(asset)
+      end
     end
   end
 
-  # TODO we should factor out/DRY this promotion directive lifecycle logic in kithe
   def self.after_commit(asset)
     if asset.destroyed?
-      directive = asset.file_attacher.promotion_directives[:delete]
-      directive = (directive.nil? ? "background" : directive).to_s
+      # we're gonna use the same kithe promotion_directives for :delete to
+      # control how we do dzi deletion too.
+      Kithe::TimingPromotionDirective.new(
+          key: :delete,
+          directives: asset.file_attacher.promotion_directives) do |directive|
 
-      if directive == "false"
-        # no-op
-      elsif directive == "inline"
-        asset.dzi_file.delete
-      elsif directive == "background"
-        DeleteDziJob.perform_later(asset.dzi_file.dzi_uploaded_file.id)
-      else
-        raise ArgumentError.new("unrecognized :create_derivatives directive value: #{directive}")
+        if directive.inline?
+          asset.dzi_file.delete
+        elsif directive.background?
+          DeleteDziJob.perform_later(asset.dzi_file.dzi_uploaded_file.id)
+        end
       end
-
-
     end
   end
 
