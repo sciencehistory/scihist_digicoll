@@ -15,7 +15,7 @@ module DownloadOptions
 
       if mp3_deriv = asset.derivative_for(:small_mp3)
         options << DownloadOption.with_formatted_subhead("Optimized MP3",
-          url: download_derivative_path(asset, :mp3),
+          url: download_derivative_path(asset, :small_mp3),
           analyticsAction: "download_optimized_mp3",
           size: mp3_deriv.size
         )
