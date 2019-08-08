@@ -62,5 +62,21 @@ describe DziManagement do
         expect(asset.dzi_file.exists?).to be false
       end
     end
+
+    describe "asset file change" do
+      let(:asset) { create(:asset_with_faked_file).tap {|a| a.dzi_file.create } }
+
+      it "deletes original and creates new" do
+        asset.set_promotion_directives(promote: :inline)
+        original_dzi_id = asset.dzi_file.dzi_uploaded_file.id
+
+        asset.file = File.open((Rails.root + "spec/test_support/pdf/sample.pdf").to_s)
+        asset.save!
+
+        expect(DeleteDziJob).to have_been_enqueued.once.with(original_dzi_id)
+        expect(CreateDziJob).to have_been_enqueued.once.with(asset)
+      end
+    end
+
   end
 end
