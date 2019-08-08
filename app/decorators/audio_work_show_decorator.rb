@@ -1,40 +1,43 @@
 class AudioWorkShowDecorator < WorkShowDecorator
 
-  def self.has_audio_members?(some_work)
+  # Used in works controller to figure out whether it's appropriate to show an audio playlist
+  # for a particular work.
+  def self.show_playlist?(some_work)
     some_work.members.
       where(published: true).to_a.
-      any? { | x| self.is_audio?(x) }
+      any? { | x| self.has_playable_audio_derivatives?(x) }
   end
 
+  # This is the list of tracks for the playlist.
   def audio_members
-    @ordered_public_members ||= begin
-      ordered_public_members.select { | x| self.class.is_audio?(x) }
+    @audio_members ||= begin
+      ordered_public_members.select { | x| self.class.has_playable_audio_derivatives?(x) }
     end
   end
 
-  # Not including the representative IF the representative is the first item in the
-  # list, because no reason to duplicate it right after the representative.
-  def non_audio_member_list_for_display
-    result = ordered_public_members.select { | x| !self.class.is_audio?(x) }
+  # Remove the representative from this list if it happens to be
+  # at the head of the list. It's displayed separately in the template.
+  def non_audio_members
+    result = ordered_public_members.select { | x| !self.class.has_playable_audio_derivatives?(x) }
     result.delete_at(0) if result[0] == representative_member
     result
   end
 
   private
 
-  # Public members, ordered.
   def ordered_public_members
     @ordered_public_members ||= begin
-      members = model.members.
+      model.members.
         with_representative_derivatives.
         where(published: true).
         order(:position).
         to_a
-      members
     end
   end
 
-  def self.is_audio?(member)
+  # To play properly, an audio track needs to meet the conditions below.
+  # If it doesn't, it will be shown under non_audio_members.
+  def self.has_playable_audio_derivatives?(member)
     member.kind_of?(Kithe::Asset) &&
       member.file &&
       member.content_type.start_with?("audio/") &&

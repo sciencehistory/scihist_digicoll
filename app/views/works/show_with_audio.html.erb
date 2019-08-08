@@ -10,7 +10,7 @@
     <%= render "show_info" %>
   </div>
   <div style="clear: left"></div>
-  <% decorator.non_audio_member_list_for_display.each_with_index do |member, index| %>
+  <% decorator.non_audio_members.each_with_index do |member, index| %>
       <div class="show-member-list-item">
         <%# lazyload all but first 6 images %>
         <%= MemberImagePresentation.new(member, lazy: (index > 5)).display %>
