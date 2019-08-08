@@ -19,15 +19,9 @@ class WorksController < ApplicationController
 
   private
 
+  # TODO this code is duplicated in the decorator.
   def show_audio_player?
-    @show_audio_player ||= begin
-      @work.members.any? do | member |
-        member.kind_of?(Kithe::Asset) &&
-          member.file &&
-          member.content_type.start_with?("audio/") &&
-          member.derivatives.present?
-      end
-    end
+    @show_audio_player ||= AudioWorkShowDecorator.has_audio_members?(@work)
   end
 
   def set_work
