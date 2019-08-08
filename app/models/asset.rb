@@ -58,14 +58,14 @@ class Asset < Kithe::Asset
     ).call(original_file)
   end
 
-  # Our DziManagement object to manage associated DZI (deep zoom, for OpenSeadragon
+  # Our DziFiles object to manage associated DZI (deep zoom, for OpenSeadragon
   # panning/zooming) file(s).
   def dzi_file
-    @dzi_file ||= DziManagement.new(self)
+    @dzi_file ||= DziFiles.new(self)
   end
 
-  after_promotion DziManagement
-  after_commit DziManagement, only: [:update, :destroy]
+  after_promotion DziFiles
+  after_commit DziFiles, only: [:update, :destroy]
 
 
 end
