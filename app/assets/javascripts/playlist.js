@@ -1,12 +1,7 @@
-/* Somewhat hacky, written by we who aren't great at JS, based on JQuery
-   and using an HTML5 audio element.
-
+/*
    An audio player with playlist below, where clicking on an item from the playlist
    loads in audio player (and starts playing). When one track finishes, starts playing
    the next automatically.
-
-   Clicking a track to 'load' it in player also sets download links for currently
-   playing track.
 */
 $( document ).ready(function() {
 

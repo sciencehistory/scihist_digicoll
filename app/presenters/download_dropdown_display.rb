@@ -43,15 +43,15 @@ class DownloadDropdownDisplay < ViewModel
   #
   #   We don't just get from asset.parent, because intervening child work hieararchy
   #   may make it complicated, we need to be told our display parent context.
-  def initialize(asset, display_parent_work:nil, menu_dividers:true)
+  def initialize(asset, display_parent_work:nil, use_link: false)
     @display_parent_work = display_parent_work
-    @menu_dividers = menu_dividers
+    @use_link = use_link
     super(asset)
   end
 
   def display
     content_tag("div", class: "action-item downloads dropup") do
-      button +
+      (@use_link ? link : button) +
       content_tag("div", class: "dropdown-menu download-menu", "aria-labelledby" => menu_button_id) do
         menu_items
       end
@@ -102,6 +102,16 @@ class DownloadDropdownDisplay < ViewModel
                 "aria-expanded" => "false")
   end
 
+  def link
+    content_tag("a",
+                "<i class='fa fa-download' aria-hidden='true'></i> Download".html_safe,
+                class: "dropdown-toggle download-link",
+                id: menu_button_id,
+                "data-toggle" => "dropdown",
+                "aria-haspopup" => "true",
+                "aria-expanded" => "false")
+  end
+
   # Returns a string of rendered menu items
   def menu_items
     elements = []
@@ -109,7 +119,7 @@ class DownloadDropdownDisplay < ViewModel
     if parent && parent.rights.present?
       elements << "<h3 class='dropdown-header'>Rights</h3>".html_safe
       elements << rights_statement_item
-      elements << "<li class='dropdown-divider'></li>".html_safe if @menu_dividers
+      elements << "<div class='dropdown-divider'></div>".html_safe
     end
 
     if has_work_download_options?

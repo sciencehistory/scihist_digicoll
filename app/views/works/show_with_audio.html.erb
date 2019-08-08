@@ -9,11 +9,6 @@
   <div class="show-metadata">
     <%= render "show_info" %>
   </div>
-
-
-  <%# these next are not in a div so they can wrap around the bottom of the metadata
-    div to take up all space. A bit hacky but it works. A clear hack to make sure they start after
-    big representative image %>
   <div style="clear: left"></div>
   <% decorator.non_audio_member_list_for_display.each_with_index do |member, index| %>
       <div class="show-member-list-item">

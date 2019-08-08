@@ -45,22 +45,18 @@ $line-height-computed: 24px;
       padding: 5px;
     }
 
-    .download-link {
-      font-family: $brand-sans-serif;
-      white-space: nowrap;
-      padding: 5px;
+    div.dropup {
+      padding-top: 5px;
+      .download-link {
+        i.fa-download {
+          display:none;
+        }
+        cursor: pointer;
+        font-family: $brand-sans-serif;
+        white-space: nowrap;
+        padding: 5px;
+      }
     }
-
-    /* TODO remove these janky hacks later when we use a plain menu*/
-    button {
-      font-family: $brand-sans-serif;
-      white-space: nowrap;
-      padding: 5px;
-      background-color: transparent;
-      border-color: transparent;
-      color: $brand-dark-blue;
-    }
-
     &.currently-selected {
       background-color: $brand-bright-green;
       color: $brand-dark-blue;
