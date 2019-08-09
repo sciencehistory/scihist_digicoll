@@ -18,25 +18,31 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%# we aren't using an ES6 toolchain, so are loading uppy the heavy-weight way.
-        uppy recommends against this, but we're doing it for now, but we only do it
-        on pages that ask for it with `content_for(:load_uppy, true)`
+    <%# Instead of loading via webpacker, we are loading uppy the heavy-weight way manually
+        from CDN. For somewhat 'legacy' reasons. We may 'fix' this in future.
 
-        Note we are not curerntly loading fetch and promise polyfills for IE11, we may
-        want to, or maybe it's fine our file uploading doens't work on IE %>
-    <% if content_for?(:load_uppy) %>
-      <link href="https://transloadit.edgly.net/releases/uppy/v0.28.0/dist/uppy.min.css" rel="stylesheet" />
-      <script src="https://transloadit.edgly.net/releases/uppy/v0.28.0/dist/uppy.min.js"></script>
-    <% end %>
+        Uppy recommends against this, but we're doing it for now, until we get it working
+        as a proper webpacker dependency.
+
+        Fetch and promise polyfills are required for Uppy to work on IE11. (which we may
+        not really need it to, does our staff use IE?) %>
+
+    <script src="https://unpkg.com/babel-polyfill@6.26.0/dist/polyfill.min.js"></script>
+    <script src="https://unpkg.com/whatwg-fetch@2.0.3/fetch.js"></script>
+
+    <link href="https://transloadit.edgly.net/releases/uppy/v1.3.0/uppy.min.css" rel="stylesheet" />
+    <script src="https://transloadit.edgly.net/releases/uppy/v1.3.0/uppy.min.js"></script>
 
     <%= render "layouts/head_tag_common" %>
+
+    <%# lazysizes gets it's own "pack", loaded early without 'defer', per lazysizes doc suggestion %>
     <%= javascript_pack_tag 'lazysizes' %>
 
     <%= stylesheet_link_tag    'application', media: 'all' %>
-    <%# trying to include our webpacker-managed scripts with defer for better browser
-        load performance.  works until we do something that doesn't... %>
+
+    <%= javascript_include_tag 'application', defer: true %>
     <%= javascript_pack_tag 'application', defer: true %>
-    <%= javascript_include_tag 'application' %>
+
   </head>
 
   <body>

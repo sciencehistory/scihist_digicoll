@@ -41,9 +41,9 @@
     <%= javascript_pack_tag 'lazysizes' %>
 
     <%= stylesheet_link_tag "application", media: "all" %>
-    <%# we are NOT including webpacker JS in end-user facing pages at the moment.
-        Possibly we should be. %>
+
     <%= javascript_include_tag "application", defer: true %>
+    <%= javascript_pack_tag "application", defer: true %>
 
     <%= csrf_meta_tags %>
     <%= content_for(:head) %>

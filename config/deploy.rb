@@ -79,28 +79,37 @@ set :whenever_roles, [:cron]
 # putting extra work on.
 set :rake_roles, [:jobs]
 
-if fetch(:slack_notify)
-  require_relative '../lib/scihist_digicoll/slackistrano_messaging'
-  slack_notification_webhook = ENV["SLACK_NOTIFICATION_WEBHOOK"]
-  if slack_notification_webhook
-    set :slackistrano, {
-      klass: ScihistDigicoll::SlackistranoMessaging,
-      webhook: slack_notification_webhook
-    }
-  else
-    set :slackistrano, false
-    $stderr.puts "WARN: No ENV['SLACK_NOTIFICATION_WEBHOOK'], can't do slack notification"
-  end
-else
-  set :slackistrano, false
-end
 
 # This is a no-op task, but our server definition script currently
 # outputs to console the server definitions, so a no-op task will do it.
 desc "list auto-disocvered EC2 servers"
 task :list_ec2_servers
 
+
 namespace :deploy do
+
+  # For cap deploy to notify slack:
+  #   * you need `set :slack_notify, true` in the relevant stage file (eg ./config/deploy/staging.rb)
+  #   * you need a shell ENV var on the machine you are deploying from, SLACK_NOTIFICATION_WEBHOOK
+  #     set to an authorized webhook, which looks like https://hooks.slack.com/services/{opaque stuff}/{opaque stuff}/{opaque stuff}
+  task :register_slack_notify do
+    if fetch(:slack_notify)
+      require_relative '../lib/scihist_digicoll/slackistrano_messaging'
+      slack_notification_webhook = ENV["SLACK_NOTIFICATION_WEBHOOK"]
+      if slack_notification_webhook
+        set :slackistrano, {
+          klass: ScihistDigicoll::SlackistranoMessaging,
+          webhook: slack_notification_webhook
+        }
+      else
+        set :slackistrano, false
+        $stderr.puts "WARN: No ENV['SLACK_NOTIFICATION_WEBHOOK'], can't do slack notification"
+      end
+    else
+      set :slackistrano, false
+    end
+  end
+  before "started", :register_slack_notify
 
   after :restart, :clear_cache do
     on roles(:web), in: :groups, limit: 3, wait: 10 do
