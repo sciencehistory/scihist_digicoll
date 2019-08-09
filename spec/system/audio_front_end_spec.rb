@@ -19,11 +19,7 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
   scenario "Non-staff user can see the playlist but not the regular item listings" do
     visit work_path(assets.first.parent.friendlier_id)
     within(".show-page-audio-playlist-wrapper") do
-      # TODO:
-      # application.js can't load member_sortable, tab_selection_in_anchor,
-      # or simple_uppy_file_input in the test context apparently.
-      # This in turn causes the JS on this page to fail.
-      # expect(page).to have_css(".current-track-label", :text => "Track 1")
+      expect(page).to have_css(".current-track-label", :text => "Track 1")
       audio_element = page.find('.show-page-audio-playlist-wrapper audio')
       track_listings = page.find_all('.track-listing')
       expect(track_listings.map {|x| x['data-title'] }).to contain_exactly("Track 1", "Track 2", "Track 3")
