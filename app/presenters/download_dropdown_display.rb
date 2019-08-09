@@ -91,23 +91,25 @@ class DownloadDropdownDisplay < ViewModel
   end
 
   def link_or_button
+    content_tag(
+      (@use_link ? "a" : "button"),
+      "<i class='fa fa-download' aria-hidden='true'></i> Download".html_safe,
+      link_or_button_options
+    )
+  end
+
+  def link_or_button_options
     options = {
       id: menu_button_id, "data-toggle" => "dropdown",
       "aria-haspopup" => "true", "aria-expanded" => "false"
     }
-
     if @use_link
       options[:class] = "dropdown-toggle download-link"
     else
       options[:type]  = "button"
       options[:class] = "btn btn-primary dropdown-toggle"
     end
-
-    content_tag(
-      (@use_link ? "a" : "button"),
-      "<i class='fa fa-download' aria-hidden='true'></i> Download".html_safe,
-      options
-    )
+    options
   end
 
 
