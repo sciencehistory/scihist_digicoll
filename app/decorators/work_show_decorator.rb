@@ -9,6 +9,11 @@ class WorkShowDecorator < Draper::Decorator
     )
   end
 
+  # This is called by works_controller#show.
+  def view_template
+    'works/show'
+  end
+
   # Like chf_sufia, it only looks at content types from direct Asset children, it
   # won't go down levels. That has been good enough.
   def humanized_content_types
