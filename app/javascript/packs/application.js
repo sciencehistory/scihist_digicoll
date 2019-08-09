@@ -7,10 +7,11 @@
 // To reference this file, add <%= javascript_pack_tag 'application' %> to the appropriate
 // layout file, like app/views/layouts/application.html.erb
 
-import '../src/js/member_sortable';
-import '../src/js/tab_selection_in_anchor';
-import '../src/js/simple_uppy_file_input';
+import '../src/js/admin/member_sortable';
+import '../src/js/admin/tab_selection_in_anchor';
+import '../src/js/admin/simple_uppy_file_input';
 import '../src/js/admin/uppy_dashboard.js';
+
 import '../src/js/playlist.js'
 import '../src/js/init_popovers.js';
 import '../src/js/accept_cookies_banner.js';
