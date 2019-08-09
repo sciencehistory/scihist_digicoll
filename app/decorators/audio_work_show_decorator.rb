@@ -6,15 +6,18 @@ class AudioWorkShowDecorator < WorkShowDecorator
     'works/show_with_audio'
   end
 
-  # Used in works controller to figure out whether it's appropriate to show an audio playlist
+  # Used in works controller to figure out whether
+  # it's appropriate to show an audio playlist
   # for a particular work.
+  # Doesn't care about the order of the members,
+  # just whether any of the published ones have playable audio.
   def self.show_playlist?(some_work)
     some_work.members.
       where(published: true).to_a.
       any? { | x| self.has_playable_audio_derivatives?(x) }
   end
 
-  # This is the list of tracks for the playlist.
+  # The list of tracks for the playlist.
   def audio_members
     @audio_members ||= begin
       ordered_public_members.select { | x| self.class.has_playable_audio_derivatives?(x) }
@@ -31,6 +34,8 @@ class AudioWorkShowDecorator < WorkShowDecorator
 
   private
 
+  # An ordered list of members to be displayed
+  # for a particular work, whether audio or not.
   def ordered_public_members
     @ordered_public_members ||= begin
       model.members.
