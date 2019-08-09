@@ -1,5 +1,11 @@
 class AudioWorkShowDecorator < WorkShowDecorator
 
+
+  # This is called by works_controller#show.
+  def view_template
+    'works/show_with_audio'
+  end
+
   # Used in works controller to figure out whether it's appropriate to show an audio playlist
   # for a particular work.
   def self.show_playlist?(some_work)
