@@ -1,42 +1,42 @@
 <header class="show-title">
-  <% if decorator.genre.present? %>
+  <% if view.genre.present? %>
     <div class="show-genre">
-      <%= decorator.display_genres %>
+      <%= view.display_genres %>
     </div>
   <% end %>
 
   <h1>
-    <%= decorator.title %>
-    <%= publication_badge(decorator) %>
-    <% if can?(:read, @work) %>
-      <%= link_to "Edit", admin_work_path(decorator), class: "btn btn-outline-primary" %>
+    <%= view.title %>
+    <%= publication_badge(view) %>
+    <% if can?(:read, model) %>
+      <%= link_to "Edit", admin_work_path(view), class: "btn btn-outline-primary" %>
     <% end %>
   </h1>
 
 
-  <% if decorator.additional_title.present? %>
+  <% if view.additional_title.present? %>
     <ul class="additional-titles list-unstyled">
-      <% decorator.additional_title.each do |title| %>
+      <% view.additional_title.each do |title| %>
         <li><h2><%= title %></h2></li>
       <% end %>
     </ul>
   <% end %>
 
-  <% if decorator.parent.present? || decorator.source.present? %>
+  <% if view.parent.present? || view.source.present? %>
     <ul class="part-of list-unstyled">
-      <% if decorator.parent.present? %>
-        <li>Part of <%= link_to decorator.parent.title, work_path(decorator.parent) %></li>
+      <% if view.parent.present? %>
+        <li>Part of <%= link_to view.parent.title, work_path(view.parent) %></li>
       <% end %>
-      <% if decorator.source.present? %>
-        <li> Part of <i><%= decorator.source %></i></li>
+      <% if view.source.present? %>
+        <li> Part of <i><%= view.source %></i></li>
       <% end %>
     </ul>
   <% end %>
 
-  <% if decorator.date_of_work.present?  %>
+  <% if view.date_of_work.present?  %>
     <div class="show-date">
         <ul>
-          <% DateDisplayFormatter.new(decorator.date_of_work).display_dates.each do |interval| %>
+          <% DateDisplayFormatter.new(view.date_of_work).display_dates.each do |interval| %>
             <li>
               <span itemprop="date_created">
                 <%= interval %>
