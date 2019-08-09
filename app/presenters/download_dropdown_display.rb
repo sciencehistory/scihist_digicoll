@@ -51,7 +51,7 @@ class DownloadDropdownDisplay < ViewModel
 
   def display
     content_tag("div", class: "action-item downloads dropup") do
-      (@use_link ? link : button) +
+      link_or_button +
       content_tag("div", class: "dropdown-menu download-menu", "aria-labelledby" => menu_button_id) do
         menu_items
       end
@@ -88,6 +88,26 @@ class DownloadDropdownDisplay < ViewModel
   def menu_button_id
     # include our object_id just to ensure uniqueness
     "dropdownMenu_downloads_#{asset.friendlier_id}_#{self.object_id}"
+  end
+
+  def link_or_button
+    options = {
+      id: menu_button_id, "data-toggle" => "dropdown",
+      "aria-haspopup" => "true", "aria-expanded" => "false"
+    }
+
+    if @use_link
+      options[:class] = "dropdown-toggle download-link"
+    else
+      options[:type]  = "button"
+      options[:class] = "btn btn-primary dropdown-toggle"
+    end
+
+    content_tag(
+      (@use_link ? "a" : "button"),
+      "<i class='fa fa-download' aria-hidden='true'></i> Download".html_safe,
+      options
+    )
   end
 
 
