@@ -112,28 +112,6 @@ class DownloadDropdownDisplay < ViewModel
     options
   end
 
-
-  def button
-    content_tag("button",
-                "<i class='fa fa-download' aria-hidden='true'></i> Download".html_safe,
-                type: "button",
-                class: "btn btn-primary dropdown-toggle",
-                id: menu_button_id,
-                "data-toggle" => "dropdown",
-                "aria-haspopup" => "true",
-                "aria-expanded" => "false")
-  end
-
-  def link
-    content_tag("a",
-                "<i class='fa fa-download' aria-hidden='true'></i> Download".html_safe,
-                class: "dropdown-toggle download-link",
-                id: menu_button_id,
-                "data-toggle" => "dropdown",
-                "aria-haspopup" => "true",
-                "aria-expanded" => "false")
-  end
-
   # Returns a string of rendered menu items
   def menu_items
     elements = []
