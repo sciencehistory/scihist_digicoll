@@ -201,6 +201,17 @@ You can run these tasks on a remote deploy environment (will actually run on ser
 
 So no need to actually `ssh` to production environment to trigger a reindex or cleanup. When executing via cap, the "progress bar" is a bit wonky (and not a bar), but it works.
 
+### Derivatives
+
+We have some rake tasks from [kithe] for managing derivatives. Most commonly useful:
+
+    ./bin/rake kithe:create_derivatives:lazy_defaults
+
+Creates all defined derivatives that don't already exist. There are other ways to create
+only certain defined derivatives, lazily or not. (May need some tweaking). See
+https://github.com/sciencehistory/kithe/blob/master/guides/derivatives.md#rake-tasks
+
+
 ### Dev/test solr
 
 We use [solr_wrapper](https://github.com/cbeer/solr_wrapper) to conveniently install and run a Solr for development and tests. (In production, the host environment provides the solr, but ansible is set up to use our solr core configuration in ./solr/config the same as solr_wrapper does in dev/test).
