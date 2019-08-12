@@ -16,10 +16,11 @@ namespace :scihist do
   end
 
   desc "create DZI files for all assets"
-  task "create_dzi" => :environment do
+  task "lazy_create_dzi" => :environment do |t, args|
     progress_bar = ProgressBar.create(total: Kithe::Asset.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
     Kithe::Asset.find_each do |asset|
       next unless asset.stored?
+      next if asset.dzi_file.exists?
 
       progress_bar.title = asset.friendlier_id
       asset.dzi_file.create
