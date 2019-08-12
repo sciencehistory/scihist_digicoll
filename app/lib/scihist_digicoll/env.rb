@@ -85,6 +85,7 @@ module ScihistDigicoll
     define_key :s3_bucket_derivatives
     define_key :s3_bucket_uploads
     define_key :s3_bucket_on_demand_derivatives
+    define_key :s3_bucket_dzi
 
     # For ActiveJob queue, among maybe other things.
     define_key :persistent_redis_host, default: "localhost:6379"
