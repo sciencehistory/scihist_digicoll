@@ -481,7 +481,7 @@ GEM
     selenium-webdriver (3.141.0)
       childprocess (~> 0.5)
       rubyzip (~> 1.2, >= 1.2.2)
-    shrine (2.19.2)
+    shrine (2.19.3)
       content_disposition (~> 1.0)
       down (~> 4.1)
     shrine-url (2.2.1)
