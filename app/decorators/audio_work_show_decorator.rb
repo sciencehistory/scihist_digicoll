@@ -27,10 +27,9 @@ class AudioWorkShowDecorator < WorkShowDecorator
   private
 
   # To play properly, an audio track needs to meet the conditions below.
-  # If it doesn't, it will be shown under non_audio_members.
   def self.has_playable_audio_derivatives?(member)
     member.kind_of?(Kithe::Asset) &&
-      member.content_type&.start_with?("audio/") &&
+      member&.content_type&.start_with?("audio/") &&
       member.derivatives.present?
   end
 
