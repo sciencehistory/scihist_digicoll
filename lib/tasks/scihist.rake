@@ -15,6 +15,21 @@ namespace :scihist do
     puts "#{args[:key]}: #{ScihistDigicoll::Env.lookup(args[:key]).inspect}"
   end
 
+  desc "create DZI files for all assets"
+  task "create_dzi" => :environment do
+    progress_bar = ProgressBar.create(total: Kithe::Asset.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
+    Kithe::Asset.find_each do |asset|
+      next unless asset.stored?
+
+      progress_bar.title = asset.friendlier_id
+      asset.dzi_file.create
+    rescue Aws::S3::Errors::NotFound
+      progress_bar.log("Missing original for #{asset.friendlier_id}")
+    ensure
+      progress_bar.increment
+    end
+  end
+
 
   namespace :user do
     desc 'Create a user without a password; they can request one from the UI. `RAILS_ENV=production bundle exec rake chf:user:create[newuser@chemheritage.org]`'
