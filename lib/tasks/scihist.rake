@@ -31,6 +31,16 @@ namespace :scihist do
     end
   end
 
+  desc "force create DZI for named assets: ./bin/rake scihist:create_dzi_for[friendlier_id1,friendlier_id2,...]"
+  task "create_dzi_for" => :environment do |t, args|
+    progress_bar = ProgressBar.create(total: args.to_a.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
+    Kithe::Asset.where(friendlier_id: args.to_a).find_each do |asset|
+      progress_bar.title = asset.friendlier_id
+      asset.dzi_file.create
+      progress_bar.increment
+    end
+  end
+
 
   namespace :user do
     desc 'Create a user without a password; they can request one from the UI. `RAILS_ENV=production bundle exec rake chf:user:create[newuser@chemheritage.org]`'

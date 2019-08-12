@@ -218,6 +218,10 @@ an S3 api request:
 
     ./bin/rake scihist:lazy_create_dzi
 
+Or to force-create DZI for specific assets named by friendlier_id:
+
+    ./bin/rake scihist:create_dzi_for[11tdi3v,2eh2i28]
+
 ### Dev/test solr
 
 We use [solr_wrapper](https://github.com/cbeer/solr_wrapper) to conveniently install and run a Solr for development and tests. (In production, the host environment provides the solr, but ansible is set up to use our solr core configuration in ./solr/config the same as solr_wrapper does in dev/test).
