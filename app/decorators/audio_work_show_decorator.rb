@@ -18,7 +18,8 @@ class AudioWorkShowDecorator < WorkShowDecorator
     end
   end
 
-  # All the members to be displayed underneath the hero image.
+  # All the members to be displayed as thumbnails underneath the hero image.
+  # As the audio members are already being "displayed" in the playlist, we don't need them in this list.
   def member_list_for_display
     super.reject { | x| audio_members.include?(x) }
   end
