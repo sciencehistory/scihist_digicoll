@@ -46,7 +46,7 @@ class DziFiles
   # @return [Shrine::UploadedFile]
   def dzi_uploaded_file
     @dzi_uploaded_file ||= Shrine::UploadedFile.new(
-      "id" => "#{base_file_name}.dzi",
+      "id" => "#{base_file_path}.dzi",
       "storage" => shrine_storage_key
     )
   end
@@ -101,9 +101,10 @@ class DziFiles
   def create_and_yield
     asset.file.download do |original_file|
       Dir.mktmpdir("dzi_#{asset.friendlier_id}_") do |tmp_output_dir|
-        vips_output_arg = Pathname.new(tmp_output_dir).join(base_file_name).to_s
+        vips_output_pathname = Pathname.new(tmp_output_dir).join(base_file_path)
+        FileUtils.mkdir_p(vips_output_pathname.dirname)
 
-        TTY::Command.new(printer: :null).run(vips_command, "dzsave", original_file.path, vips_output_arg, "--suffix", ".jpg[Q=#{jpeg_quality}]")
+        TTY::Command.new(printer: :null).run(vips_command, "dzsave", original_file.path, vips_output_pathname.to_s, "--suffix", ".jpg[Q=#{jpeg_quality}]")
 
         yield tmp_output_dir
       end
@@ -126,8 +127,8 @@ class DziFiles
   # includes asset ID (actual PK, it's long), and a digest checksum,
   # so it will be unique to actual file content, cacheable forever, and
   # automatically not used when file content changes.
-  def base_file_name
-    "#{asset.id}_md5_#{md5}"
+  def base_file_path
+    "#{asset.id}/md5_#{md5}"
   end
 
   def self.after_promotion(asset)
