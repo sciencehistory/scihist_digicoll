@@ -26,6 +26,7 @@ class WorksController < ApplicationController
       WorkShowDecorator.new(@work)
     end
   end
+  helper_method :decorator
 
   def template
     @template ||= decorator.view_template
@@ -40,5 +41,4 @@ class WorksController < ApplicationController
   end
 
 
-  helper_method :decorator
 end
