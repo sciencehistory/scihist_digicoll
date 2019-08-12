@@ -1,5 +1,6 @@
 <div class="show-page-audio-playlist-wrapper" data-role="audio-playlist-wrapper">
-    <h2 class="attribute-sub-head"><%= pluralize(decorator.audio_members.count, 'sound file')%></h2>
+    <%# Note: model is an array of Assets.%>
+    <h2 class="attribute-sub-head"><%= pluralize(view.array_of_tracks.count, 'sound file')%></h2>
     <div class="show-sub-head-body">
         <div class="now-playing-container" data-role="now-playing-container">
             <div class="now-playing-info" data-role="now-playing-info">
@@ -12,20 +13,20 @@
             </audio>
         </div>
         <ul class="track-listings list-unstyled" data-role="track-listings" >
-            <% decorator.audio_members.each do |member| %>
+            <% view.array_of_tracks.each do |track_asset| %>
                 <li class="track-listing"
                     data-role="track-listing"
-                    data-title="<%= member.title %>"
-                    data-member-id="<%= member.id %>"
-                    data-original-url="<%= main_app.download_path(member.id) %>"
-                    data-mp3-url="<%=  member.derivatives.find {|d| d.file.data['metadata']['kithe_derivative_key'] == 'small_mp3' }&.url %>"
-                    data-webm-url="<%= member.derivatives.find {|d| d.file.data['metadata']['kithe_derivative_key'] == 'webm'      }&.url %>"
+                    data-title="<%= track_asset.title %>"
+                    data-member-id="<%= track_asset.id %>"
+                    data-original-url="<%= main_app.download_path(track_asset.id) %>"
+                    data-mp3-url="<%=  track_asset.derivatives.find {|d| d.file.data['metadata']['kithe_derivative_key'] == 'small_mp3' }&.url %>"
+                    data-webm-url="<%= track_asset.derivatives.find {|d| d.file.data['metadata']['kithe_derivative_key'] == 'webm'      }&.url %>"
                 >
-                    <a class="title play-link" title="Listen to '<%= member.title%>'" href="#" data-role="play-link">
+                    <a class="title play-link" title="Listen to '<%= track_asset.title%>'" href="#" data-role="play-link">
                         <i class="fa fa-play-circle" aria-hidden="true"></i>
-                        <%= member.title %>
+                        <%= track_asset.title %>
                     </a>
-                    <%= DownloadDropdownDisplay.new(member, use_link:true).display %>
+                    <%= DownloadDropdownDisplay.new(track_asset, use_link:true).display %>
                 </li>
             <% end %>
         </ul>

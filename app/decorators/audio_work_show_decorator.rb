@@ -13,7 +13,7 @@ class AudioWorkShowDecorator < WorkShowDecorator
   # just whether any of the published ones have playable audio.
   def self.show_playlist?(some_work)
     some_work.members.
-      where(published: true).to_a.
+      where(published: true).
       any? { | x| self.has_playable_audio_derivatives?(x) }
   end
 
@@ -50,8 +50,7 @@ class AudioWorkShowDecorator < WorkShowDecorator
   # If it doesn't, it will be shown under non_audio_members.
   def self.has_playable_audio_derivatives?(member)
     member.kind_of?(Kithe::Asset) &&
-      member.file &&
-      member.content_type.start_with?("audio/") &&
+      member.content_type&.start_with?("audio/") &&
       member.derivatives.present?
   end
 
