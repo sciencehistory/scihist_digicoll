@@ -6,7 +6,7 @@ class WorksController < ApplicationController
   def show
     respond_to do |format|
       format.html {
-        render template: template
+        render template: 'works/show'
       }
       format.ris {
         send_data RisSerializer.new(@work).to_ris,
@@ -27,10 +27,6 @@ class WorksController < ApplicationController
     end
   end
   helper_method :decorator
-
-  def template
-    @template ||= decorator.view_template
-  end
 
   def set_work
     @work = Work.find_by_friendlier_id!(params[:id])
