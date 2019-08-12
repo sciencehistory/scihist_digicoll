@@ -1,5 +1,3 @@
-$line-height-computed: 24px;
-
 .show-page-audio-playlist-wrapper {
   margin-bottom: 2.25em;
 
@@ -42,11 +40,11 @@ $line-height-computed: 24px;
 
     .play-link {
       flex-grow: 1;
-      padding: 5px;
+      padding: 0.3125rem;
     }
 
     div.dropup {
-      padding-top: 5px;
+      padding-top: 0.3125rem;
       .download-link {
         i.fa-download {
           display:none;
@@ -54,7 +52,7 @@ $line-height-computed: 24px;
         cursor: pointer;
         font-family: $brand-sans-serif;
         white-space: nowrap;
-        padding: 5px;
+        padding: 0.3125rem;
       }
     }
     &.currently-selected {
