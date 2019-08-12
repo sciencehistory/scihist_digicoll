@@ -138,6 +138,18 @@ By default, the test environment disables our automatic callbacks that index mod
 
 If you have tests that require a real solr to be running (such as system/integration tests in parts of the app that use solr), specify `solr: true` and `solr_wrapper` will be used to (install if needed and) launch a solr. Solr will only be launched when/if a test is encountered that is so tagged, but will only be launched once (and shut down on termination) if there are multiple tests requiring it.
 
+#### Testing with S3
+
+Normally all tests are run against local file system storage instead of S3. (And that is what
+travis tests).
+
+But if you want to manually run some tests against a real S3, make sure you have S3 credentials
+set up, and you can run against dev_s3 mode:
+
+    WEBMOCK_ALLOW_CONNECT=true STORAGE_MODE=dev_s3 S3_DEV_PREFIX="jrochkind-tests" ./bin/rspec whatever
+
+In dev_s3, all files are put in our shared dev bucket. The above command manually sets an S3_DEV_PREFIX, so it won't mess with or accidentally delete your ordinary dev files.
+
 ## Production deployment
 
 We deploy to AWS, the deployment is done _mostly_ automatically by some ansible playbooks:
@@ -188,6 +200,27 @@ You can run these tasks on a remote deploy environment (will actually run on ser
     bundle exec cap staging invoke:rake TASK="scihist:solr:reindex scihist:solr:delete_orphans"
 
 So no need to actually `ssh` to production environment to trigger a reindex or cleanup. When executing via cap, the "progress bar" is a bit wonky (and not a bar), but it works.
+
+### Derivatives
+
+We have some rake tasks from [kithe] for managing derivatives. Most commonly useful, to
+bulk create all missing derivatives:
+
+    ./bin/rake kithe:create_derivatives:lazy_defaults
+
+Creates all defined derivatives that don't already exist. There are other ways to create
+only certain defined derivatives, lazily or not. (May need some tweaking). See
+https://github.com/sciencehistory/kithe/blob/master/guides/derivatives.md#rake-tasks
+
+DZI's are not handled with kithe's ordinary derivative function (see ./app/models/dzi_files.rb),
+so have separate rake task to bulk create only DZI that do not exist, checking first with
+an S3 api request:
+
+    ./bin/rake scihist:lazy_create_dzi
+
+Or to force-create DZI for specific assets named by friendlier_id:
+
+    ./bin/rake scihist:create_dzi_for[11tdi3v,2eh2i28]
 
 ### Dev/test solr
 
