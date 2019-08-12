@@ -203,7 +203,8 @@ So no need to actually `ssh` to production environment to trigger a reindex or c
 
 ### Derivatives
 
-We have some rake tasks from [kithe] for managing derivatives. Most commonly useful:
+We have some rake tasks from [kithe] for managing derivatives. Most commonly useful, to
+bulk create all missing derivatives:
 
     ./bin/rake kithe:create_derivatives:lazy_defaults
 
@@ -211,6 +212,11 @@ Creates all defined derivatives that don't already exist. There are other ways t
 only certain defined derivatives, lazily or not. (May need some tweaking). See
 https://github.com/sciencehistory/kithe/blob/master/guides/derivatives.md#rake-tasks
 
+DZI's are not handled with kithe's ordinary derivative function (see ./app/models/dzi_files.rb),
+so have separate rake task to bulk create only DZI that do not exist, checking first with
+an S3 api request:
+
+    ./bin/rake scihist:lazy_create_dzi
 
 ### Dev/test solr
 
