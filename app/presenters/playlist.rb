@@ -21,5 +21,4 @@ class Playlist < ViewModel
   def display
     render "/works/playlist", model: model, view: self
   end
-
 end
