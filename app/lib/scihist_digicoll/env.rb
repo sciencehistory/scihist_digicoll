@@ -219,7 +219,12 @@ module ScihistDigicoll
       @shrine_dzi_storage ||=
         appropriate_shrine_storage( bucket_key: :s3_bucket_dzi,
                                     s3_storage_options: {
-                                      public: true
+                                      public: true,
+                                      upload_options: {
+                                        # our DZI's are all public right now, and at unique-to-content
+                                        # URLs, cache forever.
+                                        cache_control: "max-age=31536000,public"
+                                      }
                                     })
     end
 
