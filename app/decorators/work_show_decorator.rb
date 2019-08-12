@@ -9,9 +9,9 @@ class WorkShowDecorator < Draper::Decorator
     )
   end
 
-  # This is called by works_controller#show.
-  def view_template
-    'works/show'
+  # Overridden by audio_work_show_decorator.
+  def audio_members
+    []
   end
 
   # Like chf_sufia, it only looks at content types from direct Asset children, it
@@ -106,12 +106,7 @@ class WorkShowDecorator < Draper::Decorator
   # list, because no reason to duplicate it right after the representative.
   def member_list_for_display
     @member_list_display ||= begin
-      members = model.members.
-        with_representative_derivatives.
-        where(published: true).
-        order(:position).
-        to_a
-
+      members = ordered_public_members
       members.delete_at(0) if members[0] == representative_member
       members
     end
@@ -127,6 +122,16 @@ class WorkShowDecorator < Draper::Decorator
   end
 
   private
+
+  def ordered_public_members
+    @ordered_public_members ||= begin
+      model.members.
+        with_representative_derivatives.
+        where(published: true).
+        order(:position).
+        to_a
+    end
+  end
 
   def related_url_filter
     @related_url_filter ||= RelatedUrlFilter.new(model.related_url)
