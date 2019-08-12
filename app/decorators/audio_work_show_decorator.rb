@@ -27,9 +27,11 @@ class AudioWorkShowDecorator < WorkShowDecorator
   # Remove the representative from this list if it happens to be
   # at the head of the list. It's displayed separately in the template.
   def non_audio_members
-    result = ordered_public_members.select { | x| !self.class.has_playable_audio_derivatives?(x) }
-    result.delete_at(0) if result[0] == representative_member
-    result
+    @non_audio_members ||= begin
+      result = ordered_public_members.select { | x| !self.class.has_playable_audio_derivatives?(x) }
+      result.delete_at(0) if result[0] == representative_member
+      result
+    end
   end
 
   private
