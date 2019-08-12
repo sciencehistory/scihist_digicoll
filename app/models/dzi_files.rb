@@ -1,5 +1,27 @@
 require 'tty-command'
 
+# DZI (Deep Zoom Image) is a format for tiled images for deep-zoom and pan, that we use with OpenSeadragon
+# JS viewer. It consists of a *.dzi "manifest" file, and a bunch of tiles in subdirs of a `*_files` dir named
+# after the *.dzi manifest, and next to it in the file system/URL structure. https://en.wikipedia.org/wiki/Deep_Zoom
+#
+# We do not use Shrine attachment to keep track of our DZI files, or otherwise register whether they have been
+# created or at what address in our database. Rather, we just use a predictable URL for the DZI for a given
+# Asset. The URL is based on both Asset ID and current MD5 hash, so it can be cached forever (will change
+# if file changes).
+#
+# We currently store all DZI files with public ACLs on S3, like other derivatives. We don't currently implement
+# access control for DZIs. (Would have to figure out how to deal with that plus, ideally, HTTP cacheability)
+#
+# This model class has logic for creating and deleting DZI on an S3 bucket (or other shrine storage, hypothetically).
+# It also includes methods for seeing if a DZI currently exists (will make a request to S3), and getting a URL
+# to the manifest file. (#url delegates to the Shrine method, so all shrine #url arguments are possible,
+# including S3 specific ones, such as public: true/false.)
+#
+# We use ActiveRecord callbacks to hook into AR model lifecycle to create and delete the DZI files appropriately.
+# We actually hook into the shrine/kithe after_promotion hook to create DZI after the asset is fully promoted,
+# but ordinary AR callbacks to delete a stale DZI if an Asset is deleted or has it's file changed. Callbacks
+# are registered in Asset, to class methods here. Creation and deletion when triggered by lifecycle hooks
+# is done in background ActiveJobs.
 class DziFiles
   class_attribute :vips_command, default: "vips"
   class_attribute :jpeg_quality, default: "85"

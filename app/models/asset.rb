@@ -60,6 +60,11 @@ class Asset < Kithe::Asset
 
   # Our DziFiles object to manage associated DZI (deep zoom, for OpenSeadragon
   # panning/zooming) file(s).
+  #
+  #     asset.dzi_file.url # url to manifest file
+  #     asset.dzi_file.exists?
+  #     asset.dzi_file.create # normally handled by automatic lifecycle hooks
+  #     asset.dzi_file.delete # normally handled by automatic lifecycle hooks
   def dzi_file
     @dzi_file ||= DziFiles.new(self)
   end
