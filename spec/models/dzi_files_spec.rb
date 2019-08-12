@@ -13,7 +13,7 @@ describe DziFiles do
       # let's make sure at least something is in the _files dir, although
       # we aren't gonna test for every tile.
       uploaded_file_0_0 = Shrine::UploadedFile.new(
-        "id"    => "#{dzi_management.base_file_name}_files/0/0_0.jpg",
+        "id"    => "#{dzi_management.base_file_path}_files/0/0_0.jpg",
         "storage" => dzi_management.shrine_storage_key
       )
       expect(uploaded_file_0_0.exists?).to be true
