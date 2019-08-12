@@ -1,9 +1,13 @@
 class AudioWorkShowDecorator < WorkShowDecorator
 
-  # Used in works controller to figure out whether
-  # it's appropriate to show an audio playlist
-  # for a particular work.
-  # Doesn't care about the order of the members,
+  # This is a class method. We're calling it from works controller
+  # on all works (audio or not) to determine which decorator to use.
+  # It looks at all the derivatives and stops, returning true, as soon as
+  # it finds *one* that's audio.
+  # Note: `audio_members` is an instance method to list *all* the audio
+  # members for an item that we've already determined that it has at
+  # least one playable audio track.
+  # This method doesn't care about the order of the members,
   # just whether any of the published ones have playable audio.
   def self.show_playlist?(some_work)
     some_work.members.
