@@ -105,7 +105,7 @@ class MemberImagePresentation < ViewModel
   end
 
   def download_button
-    DownloadDropdownDisplay.new(member.leaf_representative, display_parent_work: member.parent).display
+    DownloadDropdownDisplay.new(representative_asset, display_parent_work: member.parent).display
   end
 
   def view_button
@@ -124,16 +124,16 @@ class MemberImagePresentation < ViewModel
   #
   # For non-images with no viewer, simply link to original.
   def view_href
-    if member.leaf_representative&.content_type&.start_with?("image/")
+    if representative_asset&.content_type&.start_with?("image/")
       viewer_path(member.parent.friendlier_id, member.friendlier_id)
     else # PDF, etc, just try to show it in the browser
-      download_path(member.leaf_representative, disposition: :inline)
+      download_path(representative_asset, disposition: :inline)
     end
   end
 
   # to trigger image viewer
   def view_data_attributes
-    if member.leaf_representative&.content_type&.start_with?("image/")
+    if representative_asset&.content_type&.start_with?("image/")
       {
         trigger: "scihist_image_viewer",
         member_id: member.friendlier_id
