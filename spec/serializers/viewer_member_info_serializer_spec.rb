@@ -21,7 +21,7 @@ describe ViewerMemberInfoSerializer, type: :decorator do
     expect(child_serialized[:title]).to eq child.title
     expect(child_serialized[:memberShowUrl]).to eq helper.work_path(child)
     expect(child_serialized[:tileSource]).to eq child.leaf_representative.dzi_file.url
-    expect(child_serialized[:fallbackTileSource]).to eq helper.download_derivative_path(child.leaf_representative, :download_full, disposition: "inline")
+    expect(child_serialized[:fallbackTileSource]).to eq({ type: "image", url: helper.download_derivative_path(child.leaf_representative, :download_medium, disposition: "inline")})
 
     asset_serialized = serialized.find { |h| h[:memberId] == asset.friendlier_id }
     expect(asset_serialized).to be_present
@@ -30,6 +30,6 @@ describe ViewerMemberInfoSerializer, type: :decorator do
     expect(asset_serialized[:title]).to eq asset.title
     expect(asset_serialized[:memberShowUrl]).to be nil
     expect(asset_serialized[:tileSource]).to eq asset.dzi_file.url
-    expect(asset_serialized[:fallbackTileSource]).to eq helper.download_derivative_path(asset, :download_full, disposition: "inline")
+    expect(asset_serialized[:fallbackTileSource]).to eq({ type: "image", url: helper.download_derivative_path(asset, :download_medium, disposition: "inline") })
   end
 end
