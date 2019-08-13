@@ -589,7 +589,6 @@ jQuery(document).ready(function($) {
 
     $(document).on("click", "*[data-trigger='scihist_image_viewer']", function(event) {
       event.preventDefault();
-debugger;
       var id = this.getAttribute('data-member-id');
       chf_image_viewer().show(id);
     });
