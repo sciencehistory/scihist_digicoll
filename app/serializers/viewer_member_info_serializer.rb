@@ -23,7 +23,7 @@ class ViewerMemberInfoSerializer < ViewModel
         index: i + 1,
         memberShouldShowInfo: member.kind_of?(Work),
         title: member.title,
-        memberId: asset.friendlier_id,
+        memberId: member.friendlier_id,
         memberShowUrl: (work_path(member) if member.kind_of?(Work)),
         tileSource: asset.dzi_file.url,
         # if tilesource DZI is unavailable, give them the JPG full
