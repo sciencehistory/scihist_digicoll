@@ -124,7 +124,7 @@ class MemberImagePresentation < ViewModel
   #
   # For non-images with no viewer, simply link to original.
   def view_href
-    if representative_asset&.content_type&.start_with?("image/")
+    if member.parent && representative_asset&.content_type&.start_with?("image/")
       viewer_path(member.parent.friendlier_id, member.friendlier_id)
     else # PDF, etc, just try to show it in the browser
       download_path(representative_asset, disposition: :inline)
