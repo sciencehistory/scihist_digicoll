@@ -6,35 +6,30 @@ class AudioWorkShowDecorator < WorkShowDecorator
   # it finds *one* that's audio.
   # Note: `audio_members` is an instance method to list *all* the audio
   # members for an item that we've already determined that it has at
-  # least one playable audio track.
+  # least one audio track.
   # This method doesn't care about the order of the members,
-  # just whether any of the published ones have playable audio.
+  # just whether any of the published ones have audio.
   def self.show_playlist?(some_work)
     some_work.members.
       where(published: true).
-      any? { | x| self.has_playable_audio_derivatives?(x) }
+      any? { | x| self.has_audio_derivatives?(x) }
   end
 
   # The list of tracks for the playlist.
   def audio_members
     @audio_members ||= begin
-      ordered_public_members.select { | x| self.class.has_playable_audio_derivatives?(x) }
+      ordered_public_members.select { | x| self.class.has_audio_derivatives?(x) }
     end
-  end
-
-  # All the members to be displayed as thumbnails underneath the hero image.
-  # As the audio members are already being "displayed" in the playlist, we don't need them in this list.
-  def member_list_for_display
-    super.reject { | x| audio_members.include?(x) }
   end
 
   private
 
   # To play properly, an audio track needs to meet the conditions below.
-  def self.has_playable_audio_derivatives?(member)
+  # Technically it should *also* have derivatives of the main audio asset,
+  # but we are not testing for that here.
+  def self.has_audio_derivatives?(member)
     member.kind_of?(Kithe::Asset) &&
-      member&.content_type&.start_with?("audio/") &&
-      member.derivatives.present?
+      member&.content_type&.start_with?("audio/")
   end
 
 end
