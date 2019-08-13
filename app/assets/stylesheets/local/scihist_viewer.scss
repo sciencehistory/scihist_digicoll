@@ -150,18 +150,21 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       background: transparent;
       padding: 0;
 
-      // &:focus {
-      //   outline: 0;
-      //   i {
-      //     @include tab-focus;
-      //   }
-      // }
+      &:focus {
+        outline: 0;
+        i {
+          // copied from what used to be tab-focus mixin in bootstrap3, I dunno
+          // but it's how it looked in chf_sufia and how we want.
+          outline: 5px auto -webkit-focus-ring-color;
+          outline-offset: -2px;
+        }
+      }
 
       &:hover {
-        // i {
-        //   background-color: transparentize(darken($btn-primary-bg, 10%), .3);
-        //   border-color: darken($btn-primary-border, 12%);
-        // }
+        i {
+          background-color: transparentize(darken($primary, 10%), .3);
+          border-color: darken($primary, 12%);
+        }
       }
 
       & > i {
