@@ -49,7 +49,7 @@ class MemberImagePresentation < ViewModel
 
     content_tag("div", class: "member-image-presentation") do
       content_tag("div", class: "thumb") do
-        content_tag("a", href: view_button_href) do
+        content_tag("a", href: view_href, data: view_data_attributes) do
           ThumbDisplay.new(representative_asset, thumb_size: size, lazy: lazy).display
         end
       end +
@@ -111,13 +111,9 @@ class MemberImagePresentation < ViewModel
   def view_button
     content_tag("div", class: "action-item view") do
       content_tag("a",
-        href: view_button_href,
+        href: view_href,
         class: "btn btn-primary",
-        data: {
-          trigger: "scihist_image_viewer",
-          member_id: member.friendlier_id
-
-        }) do
+        data: view_data_attributes) do
           "<i class='fa fa-search' aria-hidden='true'></i> View".html_safe
       end
     end
@@ -127,8 +123,24 @@ class MemberImagePresentation < ViewModel
   # set to anchor link to open viewer.
   #
   # For non-images with no viewer, simply link to original.
-  def view_button_href
-    viewer_path(member.parent.friendlier_id, member.friendlier_id)
+  def view_href
+    if member.leaf_representative&.content_type&.start_with?("image/")
+      viewer_path(member.parent.friendlier_id, member.friendlier_id)
+    else # PDF, etc, just try to show it in the browser
+      download_path(member.leaf_representative, disposition: :inline)
+    end
+  end
+
+  # to trigger image viewer
+  def view_data_attributes
+    if member.leaf_representative&.content_type&.start_with?("image/")
+      {
+        trigger: "scihist_image_viewer",
+        member_id: member.friendlier_id
+      }
+    else
+      {}
+    end
   end
 
   # For a child work only, 'info' button links to public work view page
