@@ -51,7 +51,7 @@ class ViewerMemberInfoSerializer < ViewModel
     derivative_2x_url = asset.derivative_for("#{THUMB_DERIVATIVE.to_s}_2X").url
     {
       thumbSrc: derivative_1x_url,
-      thumbSrcSet: "#{derivative_1x_url} 1x, #{derivative_2x_url} 2x"
+      thumbSrcset: "#{derivative_1x_url} 1x, #{derivative_2x_url} 2x"
     }
   end
 

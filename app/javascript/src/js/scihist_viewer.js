@@ -2,6 +2,7 @@
 //
 //   * Depends on JQuery being available, although not imported webpacker style
 //   * Depends on Bootstrap modal JS being available, although not imported webpacker style
+//   * Depends on lazysizes.js with aspect-ratio plugin being loaded. (we load in separate webpack, so no "import")
 //
 // Image viewer is triggered with an <a> tag with these data attributes:
 //
@@ -11,6 +12,7 @@
 // Assumes a bootstrap modal for viewer is available at DOM id #scihist-image-viewer-modal, it has to have
 // a data-work-id and data-images-info-path (URL to JSON images info) for the work. Yes, that means
 // right now we assume on a given page, a viewer will only be displayed for ONE single work.
+//
 //
 // Note the viewer updates the URL to add a "viewer/[memberId]" reference, so you can bookmark or link to viewer open
 // to certain member. Routes need to route that to ordinary show page, let JS pick up the end of the path.
@@ -425,12 +427,12 @@ ScihistImageViewer.prototype.makeThumbnails = function(json) {
     }
     container.append(
       '<img class="lazyload viewer-thumb-img"' +
-            ' height="' + config.thumbHeight + '"' +
             ' alt="" tabindex="0" role="button"' +
             ' data-member-id="' + config.memberId + '"' +
             ' data-trigger="change-viewer-source"' +
             ' data-src="' + config.thumbSrc + '"' +
             ' data-srcset="' +  (config.thumbSrcset || '') + '"' +
+            ' data-aspectratio="' + (config.thumbAspectRatio || '') + '"' +
             ' data-index="' + index + '"' +
       '>'
     );
