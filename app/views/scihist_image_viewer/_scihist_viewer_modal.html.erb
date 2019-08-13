@@ -1,0 +1,66 @@
+<%# The image viewer, contained in a partial, for the scihist_image_viewr.js
+
+    Might later change this to some kind of JS templates or other fancy JS,
+    instead of just server-side HTML all pre-rendered invisible on page like it is now.
+
+    local args:
+      * work (used for putting work title in modal header, and work id and info json path for work)
+        (Yes, that assumes at present on a given page can only host viewer for ONE single work)
+ %>
+<div id="scihist-image-viewer-modal" class="modal" tabindex="-1" role="dialog"
+     data-images-info-path="<%= viewer_images_info_path(work) %>"
+     data-work-id="<%= work.friendlier_id %>"
+>
+
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div id= "scihist-image-viewer" class="scihist-image-viewer">
+          <div class="viewer-header">
+
+            <%= link_to main_app.root_path do %>
+              <%= image_tag "partial-mark-75rotate-80.png", class: "chf-logo", alt: "Science History Institute" %>
+            <% end %>
+
+            <h1>
+              <a data-trigger="scihist_image_viewer_close" href="#"><%= work.title %></a>
+            </h1>
+
+            <a href="#" data-trigger="scihist_image_viewer_close" title="close" aria-label="close" class="header-close">
+              <i class="fa fa-times aria-hidden=true"></i>
+            </a>
+          </div>
+
+          <div class="viewer-content">
+            <div class="viewer-image-and-navbar" data-alert-container>
+              <div class="viewer-image" id="openseadragon-container">
+                <button href="#" id="viewer-left" class="viewer-image-prev" data-trigger="viewer-prev" tabindex="0"><i class="fa fa-chevron-left" title="Previous"></i></button>
+                <button href="#" id="viewer-right" class="viewer-image-next" data-trigger="viewer-next" tabindex="0"><i class="fa fa-chevron-right" title="Next"></i></button>
+              </div>
+
+              <%= render "scihist_image_viewer/scihist_viewer_navbar" %>
+            </div>
+
+            <%# just some DOM content that the viewer.js will copy into download
+                menus, we use same rights statement for all members, filesets don't
+                even have rights data, so. would probably be better to commicate
+                this some way other than DOM. %>
+            <% if false && work.rights_url %>
+              <div style="display: none" class="parent-rights-inline">
+                <%= render_rights_statement(work) %>
+              </div>
+            <% end %>
+            <% if false && work.public_member_presenters.size >  1 %>
+              <div style="display: none" class="parent-download-options-inline">
+                <%= safe_join(whole_work_download_options(work)) %>
+              </div>
+            <% end %>
+
+            <%# will be filled by JS, from json endpoint data %>
+            <%= content_tag "div", "", id:"viewer-thumbs", class: "viewer-thumbs" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,353 @@
+/*
+    The image viewer is a collection of nested flex divs -- inside a bootstrap
+    modal which has CSS overridden to be full-screen
+
+    #scihist-image-viewer-modal .modal
+      .modal-dialog
+        .modal-content
+          .modal-body // this and above is standard bootstrap markup for modal
+
+            .scihist-image-viewer
+              .viewer-header
+              .viewer-content
+                .viewer-image-and-navbar // to keep image and navbar together whether thumbs are on bottom or side
+                  .viewer-image
+                  .viewer-navbar
+                .viewer-thumbs
+
+    Divs that are in the middle of the hieararchy might be flex-items and
+    have CSS properties relevant to that, AND be `display:flex` for their
+    contents and have CSS properties relevant to that too.
+*/
+
+$scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::THUMB_BASE_WIDHTS[:mini]
+
+// Override some bootstrap modal stuff to give us a full-viewport modal
+#chf-image-viewer-modal {
+  .modal-dialog {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .modal-content {
+    border: 0 none;
+    border-radius: 0;
+  }
+
+  // custom slide-up animation on open, no fade.
+  .modal-dialog {
+    top: 100vh;
+    bottom: 200vh;
+    transition-property: top, bottom;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in-out;
+  }
+  &.in .modal-dialog {
+    top: 0;
+    bottom: 100vh;
+  }
+}
+
+// Now styles for our actual viewer, which happens to be inside a bootstrap modal.
+.scihist-image-viewer {
+  //cover whole screen. not totally sure why we need to repeat this
+  //when wrapping modal-dialog is already, but it works.
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  max-width: 100vw;
+
+  background-color: $body-bg;
+
+  display: flex;
+  flex-direction: column;
+
+  .viewer-alert {
+    position: absolute;
+    z-index: 1;
+  }
+
+  .viewer-header {
+    flex-shrink: 0;
+    background-color: $dark;
+    color: $brand-bright-green;
+    a {
+      color: $brand-bright-green;
+      &:hover {
+        color: white;
+      }
+    }
+
+    display: flex;
+    align-items: center;
+    padding: 4px 15px 4px 0; // icon is meant to butt against edge
+
+    .scihist-logo {
+      width: 40px;
+      position: relative;
+      top: -4px;
+    }
+
+    h1 {
+      flex-grow: 1;
+
+      padding: 0;
+      margin: 0 15px;
+
+      font-family: $brand-alt-header-font;
+      font-size: $h3-font-size;
+      line-height: normal;
+      overflow: hidden;
+
+      a {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+    .header-close {
+      color: white;
+      font-size: $h3-font-size;
+    }
+  }
+
+  .viewer-content {
+    // as a mmeber of it's container flex
+    flex-grow: 1;
+
+    // and a flex itself with content
+    display: flex;
+    flex-direction: column;
+  }
+
+  .viewer-image-and-navbar {
+    // https://css-tricks.com/flexbox-truncated-text/
+    min-width: 0;
+    width: 100vw; // important to keep long child texts from overflowing on IE11
+    // as a member of it's container flex
+    flex-grow: 1;
+
+    // as a flex itself with content
+    display: flex;
+    flex-direction: column;
+
+    // the actual button link is full screen height for click target,
+    // but you can only see the <i> centered inside it. styles copied/adapted
+    // from bootstrap3 button-variant mixin, but only applying to <i> inside.
+    .viewer-image-next, .viewer-image-prev {
+      display: block;
+      z-index: 1; // above OSD canvas
+      position: absolute;
+      height: 100%;
+      cursor: pointer;
+      border: 0 none;
+      background: transparent;
+      padding: 0;
+
+      // &:focus {
+      //   outline: 0;
+      //   i {
+      //     @include tab-focus;
+      //   }
+      // }
+
+      &:hover {
+        // i {
+        //   background-color: transparentize(darken($btn-primary-bg, 10%), .3);
+        //   border-color: darken($btn-primary-border, 12%);
+        // }
+      }
+
+      & > i {
+        font-size: 2.5rem;
+        padding: 8px 12px;
+        background-color: transparentize($dark, .3);
+        border: 1px solid transparent;
+        border-radius: 40px;
+        color: white;
+        margin: 0 3px;
+      }
+    }
+    .viewer-image-next {
+      right: 0;
+      & > i {
+        padding-right: 9px;
+      }
+    }
+
+    .viewer-image-prev {
+      left: 0;
+      & > i {
+        padding-left: 9px;
+      }
+    }
+
+    .viewer-image {
+      flex-grow: 1;
+      // to be a anchor point for openseadragon viewer inside
+      position: relative;
+    }
+
+    .viewer-image.viewer-image-loading {
+      background: asset-url('spinner.svg') no-repeat center;
+      background-size: 25vw
+    }
+
+    // will show at larger sizes
+    .viewer-navbar-label {
+      display: none;
+    }
+
+    .viewer-navbar {
+      // bootstrap btn-justified doens't seem to be working, and flex is
+      // more powerful anyway.
+      display: flex;
+
+      .viewer-navbar-btn {
+        border-radius: 0 !important;
+        flex-grow: 2;
+      }
+      .viewer-thin-btn {
+        flex-grow: 0;
+      }
+      .btn-group .btn {
+        width: 100%;
+      }
+      .viewer-pagination {
+        flex-grow: 0;
+
+        background-color: $dark;
+        color: white;
+
+        font-weight: $btn-font-weight;
+        text-align: center;
+        vertical-align: middle;
+        //@include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-border-radius-lg, 0);
+
+        white-space: nowrap;
+      }
+      .viewer-member-info {
+
+        //@include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-border-radius-lg, 0);
+        //border: 1px solid $btn-primary-border;
+        flex-grow: 4;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: left;
+      }
+      .viewer-spacer {
+        width: 0;
+        flex-grow: 1;
+        background-color: $dark;
+      }
+      .viewer-download {
+        max-width: 440px;
+      }
+      .viewer-keyboard {
+        .table {
+          margin-bottom: 0;
+        }
+        .dropdown-menu {
+          left: auto;
+          right: 5px;
+
+          min-width: 280px;
+          padding: 5px;
+
+          h3 {
+            margin-top: 0;
+            text-align: center;
+          }
+        }
+      }
+    }
+  }
+
+
+
+  // single row with horizontal scrolling
+  .viewer-thumbs {
+    white-space: nowrap;
+    overflow-x: auto;
+    background-color: $dark;
+    padding: 7px;
+
+    .viewer-thumb-img {
+      display: inline-block; // makes FF respect width on unloaded image, not sure why needed
+      max-height: 80px;
+      box-sizing: content-box;
+      width: $scihist_image_viewer_thumb_width;
+
+      cursor: pointer;
+
+      // leave transparent space for selected border
+      border: 2px solid transparent;
+      padding: 1px;
+
+      &.viewer-thumb-selected {
+        border: 2px solid $brand-yellow;
+      }
+
+      &.lazyload, &.lazyloading, &.lazyload {
+        background: #AAA asset-url('static-progress.svg') no-repeat;
+        background-size: 34px 34px;
+        background-clip: content-box;
+        background-position: center center;
+      }
+    }
+  }
+
+
+  @media (max-width: 500px) {
+    // On small screens, which are probably touch anyway, save space by
+    // hiding some non-essential toolbar buttons.
+    .viewer-navbar-btn.viewer-keyboard, .viewer-navbar-btn.viewer-zoom-fit,
+    .viewer-navbar-btn.viewer-fullscreen, .viewer-navbar-btn.viewer-rotate-right {
+      display: none !important;
+    }
+  }
+
+  // At larger screen sizes, thumbs go to a sidebar with multiple columns
+  @media (min-width: 768px) {
+    // sorry the selectors get crazy unpredictable to ensure specificity
+    // for override. needs refactor.
+
+    .viewer-content {
+      flex-direction: row;
+      // don't totally understand this, but it gets our flex-in-flex layout
+      // right on FF, without the thumbs overflowing their bounding.
+      // https://bugzilla.mozilla.org/show_bug.cgi?id=1108514
+      min-height: 0;
+    }
+
+    .viewer-thumbs {
+      padding-top: 0;
+      max-height: 100%; // IE 11 needs this, although others don't, i dunno.
+
+      white-space: normal;
+      overflow-y: auto;
+      overflow-x: hidden;
+      // 20px, need to leave enough room for scroll-bar on browsers that count that inside
+      width: calc(#{$scihist_image_viewer_thumb_width} * 2 + 7px * 3 + 22px);
+      text-align: center;
+      flex-shrink: 0;
+
+      .viewer-thumb-img {
+        max-height: $scihist_image_viewer_thumb_width * 2;
+      }
+    }
+    .viewer-download {
+      flex-grow: 0;
+    }
+    .viewer-image-and-navbar .viewer-navbar-label {
+      display: inline;
+    }
+  }
+}
