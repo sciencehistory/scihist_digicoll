@@ -526,6 +526,9 @@ ScihistImageViewer.prototype.initOpenSeadragon = function() {
       _self.viewer.open(fallbackOsdOpenArg);
     } else {
       _self.removeLoading();
+      // This doesn't seem to succesfully remove image, alas.
+      _self.viewer.close();
+      _self.displayAlert("Could not load image!");
     }
   });
   // If we haven't loaded a single tile yet, and get a tile-load-failed, error message
