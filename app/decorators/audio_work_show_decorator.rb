@@ -1,5 +1,10 @@
 class AudioWorkShowDecorator < WorkShowDecorator
 
+  # This is called by works_controller#show.
+  def view_template
+    'works/show_with_audio'
+  end
+
   # This is a class method. We're calling it from works controller
   # on all works (audio or not) to determine which decorator to use.
   # It looks at all the derivatives and stops, returning true, as soon as

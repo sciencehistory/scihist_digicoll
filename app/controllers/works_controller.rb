@@ -6,7 +6,7 @@ class WorksController < ApplicationController
   def show
     respond_to do |format|
       format.html {
-        render template: 'works/show'
+        render template: template
       }
       format.ris {
         send_data RisSerializer.new(@work).to_ris,
@@ -36,5 +36,8 @@ class WorksController < ApplicationController
     authorize! :read, @work
   end
 
+  def template
+    @template ||= decorator.view_template
+  end
 
 end

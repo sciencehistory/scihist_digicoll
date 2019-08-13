@@ -9,6 +9,7 @@
   <%= WorkTitleAndDates.new(@work).display %>
 
   <div class="show-hero">
+    <%= Playlist.new(decorator.audio_members).display %>
     <%= MemberImagePresentation.new(decorator.representative_member, size: :large).display %>
     <%= render "rights_and_social", work: @work %>
   </div>
