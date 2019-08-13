@@ -15,6 +15,10 @@ class WorksController < ApplicationController
     end
   end
 
+  def viewer_images_info
+    render json: ViewerMemberInfoSerializer.new(@work).as_hash
+  end
+
   private
 
   def set_work
