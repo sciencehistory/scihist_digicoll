@@ -2,6 +2,12 @@ class WorkShowDecorator < Draper::Decorator
   delegate_all
   include Draper::LazyHelpers
 
+
+  # This is called by works_controller#show.
+  def view_template
+    'works/show'
+  end
+
   def display_genres
     safe_join(
       model.genre.map { |g| link_to g, search_on_facet_path(:genre_facet, g) },
