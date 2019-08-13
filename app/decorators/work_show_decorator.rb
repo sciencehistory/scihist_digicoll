@@ -102,11 +102,15 @@ class WorkShowDecorator < Draper::Decorator
   end
 
   # Public members, ordered.
+  # All the members to be displayed as thumbnails underneath the hero image.
+  # As the audio members are already being "displayed" in the playlist, we don't need them in this list.
+
   # Not including the representative IF the representative is the first item in the
   # list, because no reason to duplicate it right after the representative.
   def member_list_for_display
     @member_list_display ||= begin
       members = ordered_public_members
+      members.reject! { | x| audio_members.include?(x) }
       members.delete_at(0) if members[0] == representative_member
       members
     end
