@@ -19,11 +19,26 @@ describe "Public work show page", type: :system, js: false do
     end
 
 
-    let(:work) { create(:work, :with_complete_metadata, contained_by: [create(:collection)], parent: create(:work)) }
+    let(:work) {
+      create(
+        :work, :with_complete_metadata, contained_by: [create(:collection)], parent: create(:work), members: [
+          create(:asset_with_faked_file,
+            faked_derivatives: [],
+            position: 0),
+          create(:asset_with_faked_file,
+            faked_derivatives: [],
+            position: 0)
+          ]
+      )
+    }
+
 
     # REALLY doesn't test everything, just a sampling
     it "smoke tests" do
       visit work_path(work)
+
+      # No audio assets, so the playlist should not be present.
+      expect(page.find_all(".show-page-audio-playlist-wrapper").count). to eq 0
 
       within(".show-genre") do
         work.genre.each do |g|
