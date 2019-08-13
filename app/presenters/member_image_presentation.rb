@@ -113,7 +113,11 @@ class MemberImagePresentation < ViewModel
       content_tag("a",
         href: view_button_href,
         class: "btn btn-primary",
-        data: {}) do
+        data: {
+          trigger: "scihist_image_viewer",
+          member_id: member.friendlier_id
+
+        }) do
           "<i class='fa fa-search' aria-hidden='true'></i> View".html_safe
       end
     end
@@ -124,7 +128,7 @@ class MemberImagePresentation < ViewModel
   #
   # For non-images with no viewer, simply link to original.
   def view_button_href
-    "#"
+    viewer_path(member.parent.friendlier_id, member.friendlier_id)
   end
 
   # For a child work only, 'info' button links to public work view page

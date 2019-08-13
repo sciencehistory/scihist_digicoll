@@ -37,6 +37,10 @@ Rails.application.routes.draw do
     format: false,
     as: :viewer_images_info
 
+  # Make the viewer  URL lead to ordinary show page, so JS can pick it up and launch viewer.
+  get '/works/:id/viewer/:viewer_member_id(.:format)' => 'works#show', as: :viewer
+
+
   get '/collections', to: "collections_list#index", as: :collections
 
   # Our collections show controller provides a Blacklight search, so needs
