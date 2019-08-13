@@ -14,7 +14,7 @@ describe ViewerMemberInfoSerializer, type: :decorator do
     expect(serialized).to be_kind_of(Array)
     expect(serialized.length).to eq(2)
 
-    child_serialized = serialized.find { |h| h[:memberId] == child.leaf_representative.friendlier_id }
+    child_serialized = serialized.find { |h| h[:memberId] == child.friendlier_id }
     expect(child_serialized).to be_present
     expect(child_serialized[:index]).to eq 2
     expect(child_serialized[:memberShouldShowInfo]).to be true
