@@ -165,11 +165,11 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       }
 
       & > i {
-        font-size: 2.5rem;
-        padding: 8px 12px;
+        font-size: 1.5625rem; // ~20px
+        padding: 0.5rem 0.75rem;
         background-color: transparentize($dark, .3);
         border: 1px solid transparent;
-        border-radius: 40px;
+        border-radius: 40rem; // make a circle
         color: white;
         margin: 0 3px;
       }
@@ -209,6 +209,11 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       // more powerful anyway.
       display: flex;
 
+      // We want to go against bootstrap's insistence, and get rid of the caret
+      .dropdown-toggle:after {
+        display: none;
+      }
+
       .viewer-navbar-btn {
         border-radius: 0 !important;
         flex-grow: 2;
@@ -228,14 +233,13 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
         font-weight: $btn-font-weight;
         text-align: center;
         vertical-align: middle;
-        //@include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-border-radius-lg, 0);
+        @include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-line-height-lg, 0);
 
         white-space: nowrap;
       }
       .viewer-member-info {
-
-        //@include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-border-radius-lg, 0);
-        //border: 1px solid $btn-primary-border;
+        @include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-line-height-lg, 0);
+        border: 1px solid $primary;
         flex-grow: 4;
         white-space: nowrap;
         overflow: hidden;
