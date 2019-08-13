@@ -11,8 +11,8 @@
 //
 // Assumes a bootstrap modal for viewer is available at DOM id #scihist-image-viewer-modal, it has to have
 // a data-work-id and data-images-info-path (URL to JSON images info) for the work. Yes, that means
-// right now we assume on a given page, a viewer will only be displayed for ONE single work.
-//
+// right now we assume on a given page, a viewer will only be displayed for ONE single work. data-images-info-path
+// is a URL that will return JSON, see ViewerMemberInfoSerializer for what it looks like.
 //
 // Note the viewer updates the URL to add a "viewer/[memberId]" reference, so you can bookmark or link to viewer open
 // to certain member. Routes need to route that to ordinary show page, let JS pick up the end of the path.
