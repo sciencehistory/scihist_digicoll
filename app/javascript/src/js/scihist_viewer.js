@@ -53,6 +53,8 @@ ScihistImageViewer.prototype.show = function(id) {
       _self.hideUiElement(document.querySelector("#viewer-right"));
       _self.hideUiElement(document.querySelector("#viewer-left"));
       _self.hideUiElement(document.querySelector("#viewer-thumbs"));
+    } else {
+      document.getElementsByClassName('viewer-pagination-denominator').item(0).textContent = _self.totalCount;
     }
 
     var selectedThumb;
