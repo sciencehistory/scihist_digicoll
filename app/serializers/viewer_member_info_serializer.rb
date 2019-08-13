@@ -25,9 +25,9 @@ class ViewerMemberInfoSerializer < ViewModel
         title: member.title,
         memberId: member.friendlier_id,
         memberShowUrl: (work_path(member) if member.kind_of?(Work)),
-        tileSource: asset.dzi_file.url,
-        # if tilesource DZI is unavailable, give them the JPG full
-        fallbackTileSource: download_derivative_path(asset, :download_full, disposition: "inline"),
+        tileSource: asset.dzi_file.url + "adf",
+        # if tilesource DZI is unavailable, give them a more reasonable sized JPG
+        fallbackTileSource: download_derivative_path(asset, :download_medium, disposition: "inline"),
         thumbAspectRatio: ("#{asset.width}/#{asset.height}" if asset.width && asset.height)
         # downloads TODO
       }.merge(thumb_src_attributes(asset))
