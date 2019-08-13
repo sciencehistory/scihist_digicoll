@@ -49,7 +49,9 @@ class MemberImagePresentation < ViewModel
 
     content_tag("div", class: "member-image-presentation") do
       content_tag("div", class: "thumb") do
-        ThumbDisplay.new(representative_asset, thumb_size: size, lazy: lazy).display
+        content_tag("a", href: view_button_href) do
+          ThumbDisplay.new(representative_asset, thumb_size: size, lazy: lazy).display
+        end
       end +
       content_tag("div", class: "action-item-bar") do
         action_buttons_display
@@ -108,10 +110,21 @@ class MemberImagePresentation < ViewModel
 
   def view_button
     content_tag("div", class: "action-item view") do
-      content_tag("button", type: "button", class: "btn btn-primary", data: {}) do
+      content_tag("a",
+        href: view_button_href,
+        class: "btn btn-primary",
+        data: {}) do
           "<i class='fa fa-search' aria-hidden='true'></i> View".html_safe
       end
     end
+  end
+
+  # When viewer, useful for right-click open in another tab, and we
+  # set to anchor link to open viewer.
+  #
+  # For non-images with no viewer, simply link to original.
+  def view_button_href
+    "#"
   end
 
   # For a child work only, 'info' button links to public work view page
