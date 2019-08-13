@@ -73,6 +73,7 @@
       display: block;
     }
     .thumb img {
+      cursor: zoom-in;
       max-width: 100%;
 
       &.lazyload, &.lazyloading {
