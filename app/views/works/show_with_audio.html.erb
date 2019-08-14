@@ -15,7 +15,8 @@
   </div>
 
   <div class="show-metadata">
-    <%= render "show_info" %>
+    <%= WorkShowInfo.new(@work).display %>
+    <%= render "citation", work: @work  %>
   </div>
 
   <%# these next are not in a div so they can wrap around the bottom of the metadata
