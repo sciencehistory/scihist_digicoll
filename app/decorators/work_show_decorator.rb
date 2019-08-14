@@ -41,16 +41,4 @@ class WorkShowDecorator < Draper::Decorator
   def representative_member
     @representative_member ||= model.members.find { |m| m.id == model.representative_id }
   end
-
-  private
-
-  def ordered_public_members
-    @ordered_public_members ||= begin
-      model.members.
-        with_representative_derivatives.
-        where(published: true).
-        order(:position).
-        to_a
-    end
-  end
 end
