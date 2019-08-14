@@ -143,12 +143,17 @@ ScihistImageViewer.prototype.restoreFocus =  function() {
 
 ScihistImageViewer.prototype.addLoading =  function() {
   this.loadingSpinnerDisplayed = true;
-  $('.viewer-image').addClass('viewer-image-loading');
+  var loading = $(".viewer-image-loading");
+  if (loading.length > 0) {
+    loading.show();
+  } else {
+    $(".viewer-image").append("<div class='viewer-image-loading'></div>");
+  }
 }
 
 ScihistImageViewer.prototype.removeLoading =  function() {
   if (this.loadingSpinnerDisplayed) {
-    $('.viewer-image').removeClass('viewer-image-loading');
+    $(".viewer-image-loading").hide();
     this.loadingSpinnerDisplayed = false;
   }
 };
@@ -177,7 +182,6 @@ ScihistImageViewer.prototype.selectThumb = function(thumbElement) {
   this.viewer.close();
 
   this.addLoading();
-
   this.viewer.open(tileSource);
 
   document.querySelector('*[data-hook="viewer-navbar-title-label"]').textContent = title;
@@ -533,7 +537,6 @@ ScihistImageViewer.prototype.initOpenSeadragon = function() {
       _self.displayAlert("Sorry, full zooming is not currently available.")
       _self.viewer.open(fallbackOsdOpenArg);
     } else {
-      _self.removeLoading();
       // This doesn't seem to succesfully remove image, alas.
       _self.viewer.close();
       _self.displayAlert("Could not load image!");
