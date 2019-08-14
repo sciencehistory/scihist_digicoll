@@ -5,7 +5,9 @@ class WorksController < ApplicationController
 
   def show
     respond_to do |format|
-      format.html
+      format.html {
+        render template: template
+      }
       format.ris {
         send_data RisSerializer.new(@work).to_ris,
           disposition: 'attachment',
@@ -17,6 +19,21 @@ class WorksController < ApplicationController
 
   private
 
+  def decorator
+    @decorator ||= if has_audio_member?
+      AudioWorkShowDecorator.new(@work)
+    else
+      WorkShowDecorator.new(@work)
+    end
+  end
+  helper_method :decorator
+
+  def has_audio_member?
+    @work.members.
+      where(published: true).
+      any? { | x| x.leaf_representative&.content_type&.start_with?("audio/") }
+  end
+
   def set_work
     @work = Work.find_by_friendlier_id!(params[:id])
   end
@@ -25,8 +42,8 @@ class WorksController < ApplicationController
     authorize! :read, @work
   end
 
-  def decorator
-    @decorator = WorkShowDecorator.new(@work)
+  def template
+    @template ||= decorator.view_template
   end
-  helper_method :decorator
+
 end

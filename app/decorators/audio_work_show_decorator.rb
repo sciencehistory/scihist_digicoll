@@ -1,29 +1,21 @@
-class WorkShowDecorator < Draper::Decorator
+class AudioWorkShowDecorator < Draper::Decorator
   delegate_all
-  include Draper::LazyHelpers
 
   # This is called by works_controller#show.
   def view_template
-    'works/show'
+    'works/show_with_audio'
   end
 
-  # Public members, ordered.
-  # All the members to be displayed as thumbnails
-  # underneath, and excluding, the hero image.
-  # As the audio members (if any) are already being "displayed"
-  # in the playlist, we don't need them in this list.
 
-  def member_list_for_display
-    @member_list_display ||= begin
-      members = model.members.
+
+  # The list of tracks for the playlist.
+  def all_members
+    @all_members ||= begin
+      model.members.
         with_representative_derivatives.
         where(published: true).
         order(:position).
         to_a
-
-      # If the representative image is the first item in the list, don't show it twice.
-      members.delete_at(0) if members[0] == representative_member
-      members
     end
   end
 
@@ -35,4 +27,16 @@ class WorkShowDecorator < Draper::Decorator
   def representative_member
     @representative_member ||= model.members.find { |m| m.id == model.representative_id }
   end
+
+  def audio_members
+    @audio_members ||= all_members.select { |m| m.leaf_representative&.content_type&.start_with?("audio/") }
+  end
+
+  def other_member_list
+    @non_audio_members ||= all_members.select do |m|
+       !m.leaf_representative&.content_type&.start_with?("audio/") &&
+       m != representative_member
+     end
+  end
+
 end
