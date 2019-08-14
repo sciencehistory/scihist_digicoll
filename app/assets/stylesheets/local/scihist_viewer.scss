@@ -22,46 +22,32 @@
 
 $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::THUMB_BASE_WIDHTS[:mini]
 
-// Override some bootstrap modal stuff to give us a full-viewport modal
-#chf-image-viewer-modal {
+// Override some bootstrap modal stuff with some hacks to give us a full-viewport modal
+#scihist-image-viewer-modal {
   .modal-dialog {
     position: fixed;
     height: 100%;
     width: 100%;
+    max-width: 100%;
     margin: 0;
     padding: 0;
     border: 0;
   }
-  .modal-content {
-    border: 0 none;
-    border-radius: 0;
+
+  // not sure why we need this too, but we do.
+  .scihist-image-viewer {
+    height: 100vh;
   }
 
-  // custom slide-up animation on open, no fade.
-  .modal-dialog {
-    top: 100vh;
-    bottom: 200vh;
-    transition-property: top, bottom;
-    transition-duration: 0.5s;
-    transition-timing-function: ease-in-out;
-  }
-  &.in .modal-dialog {
-    top: 0;
-    bottom: 100vh;
+  .modal-body {
+    margin: 0;
+    padding: 0;
+    border: 0;
   }
 }
 
 // Now styles for our actual viewer, which happens to be inside a bootstrap modal.
 .scihist-image-viewer {
-  //cover whole screen. not totally sure why we need to repeat this
-  //when wrapping modal-dialog is already, but it works.
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  max-width: 100vw;
-
   background-color: $body-bg;
 
   display: flex;
