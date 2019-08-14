@@ -434,6 +434,7 @@ ScihistImageViewer.prototype.makeThumbnails = function(json) {
             ' data-srcset="' +  (config.thumbSrcset || '') + '"' +
             ' data-aspectratio="' + (config.thumbAspectRatio || '') + '"' +
             ' data-index="' + index + '"' +
+            ' style="width:54px"' +
       '>'
     );
   });
