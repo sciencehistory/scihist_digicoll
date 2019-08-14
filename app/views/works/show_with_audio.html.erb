@@ -9,6 +9,7 @@
   <%= WorkTitleAndDates.new(@work).display %>
 
   <div class="show-hero">
+    <%= Playlist.new(decorator.audio_members).display %>
     <%= MemberImagePresentation.new(decorator.representative_member, size: :large).display %>
     <%= render "rights_and_social", work: @work %>
   </div>
@@ -23,7 +24,7 @@
     big representative image %>
   <div style="clear: left"></div>
 
-  <% decorator.member_list_for_display.each_with_index do |member, index| %>
+  <% decorator.other_member_list.each_with_index do |member, index| %>
       <div class="show-member-list-item">
         <%# lazyload all but first 6 images %>
         <%= MemberImagePresentation.new(member, lazy: (index > 5)).display %>

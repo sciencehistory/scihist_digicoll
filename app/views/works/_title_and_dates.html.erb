@@ -1,0 +1,49 @@
+<header class="show-title">
+  <% if view.genre.present? %>
+    <div class="show-genre">
+      <%= view.display_genres %>
+    </div>
+  <% end %>
+
+  <h1>
+    <%= view.title %>
+    <%= publication_badge(view) %>
+    <% if can?(:read, model) %>
+      <%= link_to "Edit", admin_work_path(view), class: "btn btn-outline-primary" %>
+    <% end %>
+  </h1>
+
+
+  <% if view.additional_title.present? %>
+    <ul class="additional-titles list-unstyled">
+      <% view.additional_title.each do |title| %>
+        <li><h2><%= title %></h2></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <% if view.parent.present? || view.source.present? %>
+    <ul class="part-of list-unstyled">
+      <% if view.parent.present? %>
+        <li>Part of <%= link_to view.parent.title, work_path(view.parent) %></li>
+      <% end %>
+      <% if view.source.present? %>
+        <li> Part of <i><%= view.source %></i></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <% if view.date_of_work.present?  %>
+    <div class="show-date">
+        <ul>
+          <% DateDisplayFormatter.new(view.date_of_work).display_dates.each do |interval| %>
+            <li>
+              <span itemprop="date_created">
+                <%= interval %>
+              </span>
+            </li>
+          <% end %>
+        </ul>
+    </div>
+  <% end %>
+</header>

@@ -6,50 +6,50 @@
 %>
 
 <div class="work-description">
-  <%= DescriptionDisplayFormatter.new(@work.description).format  %>
+  <%= DescriptionDisplayFormatter.new(view.description).format  %>
 </div>
 
 <table class="work chf-attributes">
 
-  <% decorator.grouped_creators.each do |category, values| %>
+  <% view.grouped_creators.each do |category, values| %>
     <%= AttributeTable::RowDisplay.new(category, values: values, link_to_facet: "creator_facet").display %>
   <% end %>
 
-  <% if @work.provenance.present? %>
+  <% if view.provenance.present? %>
     <tr>
       <th>Provenance</th>
-      <td><%= WorkProvenanceDisplay.new(@work.provenance).display %></td>
+      <td><%= WorkProvenanceDisplay.new(view.provenance).display %></td>
     </tr>
   <% end %>
 
 
-  <% decorator.grouped_places.each do |category, values| %>
+  <% view.grouped_places.each do |category, values| %>
     <%= AttributeTable::RowDisplay.new(category, values: values, link_to_facet: "place_facet").display %>
   <% end %>
 
-  <%= AttributeTable::RowDisplay.new(:format, values: @work.format.map(&:humanize), link_to_facet: "format_facet").display %>
+  <%= AttributeTable::RowDisplay.new(:format, values: view.format.map(&:humanize), link_to_facet: "format_facet").display %>
 
 
-  <% if decorator.humanized_content_types.length > 0 %>
+  <% if view.humanized_content_types.length > 0 %>
     <tr>
       <th>Original file type</th>
       <td>
-          <%= decorator.humanized_content_types.join(", ") %>
+          <%= view.humanized_content_types.join(", ") %>
       </td>
     </tr>
   <% end %>
 
-  <%= AttributeTable::RowDisplay.new(:genre, values: @work.genre, link_to_facet: "genre_facet").display %>
-  <%= AttributeTable::RowDisplay.new(:medium, values: @work.medium, link_to_facet: ("medium_facet" if current_staff_user?)).display %>
-  <%= AttributeTable::RowDisplay.new(:extent, values: @work.extent).display %>
-  <%= AttributeTable::RowDisplay.new(:language, values: @work.language, link_to_facet: "language_facet").display %>
+  <%= AttributeTable::RowDisplay.new(:genre, values: view.genre, link_to_facet: "genre_facet").display %>
+  <%= AttributeTable::RowDisplay.new(:medium, values: view.medium, link_to_facet: ("medium_facet" if current_staff_user?)).display %>
+  <%= AttributeTable::RowDisplay.new(:extent, values: view.extent).display %>
+  <%= AttributeTable::RowDisplay.new(:language, values: view.language, link_to_facet: "language_facet").display %>
 
-  <% if @work.inscription.present? %>
+  <% if view.inscription.present? %>
     <tr>
       <th>Inscription</th>
       <td>
         <ul>
-          <% @work.inscription.each do |inscription| %>
+          <% view.inscription.each do |inscription| %>
           <li class="attribute"><%= inscription.display_as %></li>
           <% end %>
         </ul>
@@ -57,26 +57,26 @@
     </tr>
   <% end %>
 
-  <%= AttributeTable::RowDisplay.new(:subject, values: @work.subject, link_to_facet: "subject_facet").display %>
+  <%= AttributeTable::RowDisplay.new(:subject, values: view.subject, link_to_facet: "subject_facet").display %>
 
-  <% if @work.rights.present? %>
+  <% if view.rights.present? %>
     <tr>
       <th>Rights</th>
       <td>
-        <%= link_to RightsTerms.label_for(@work.rights), @work.rights, target: "_blank" %>
+        <%= link_to RightsTerms.label_for(view.rights), view.rights, target: "_blank" %>
       </td>
     </tr>
   <% end %>
 
 
-  <%= AttributeTable::RowDisplay.new(:rights_holder, values: [@work.rights_holder]).display %>
+  <%= AttributeTable::RowDisplay.new(:rights_holder, values: [view.rights_holder]).display %>
 
-  <% if decorator.related_urls_filtered.present? %>
+  <% if view.related_urls_filtered.present? %>
     <tr>
       <th>Related URL</th>
       <td>
         <ul>
-          <% decorator.related_urls_filtered.each do |url| %>
+          <% view.related_urls_filtered.each do |url| %>
             <li class="attribute"><%= ExternalLinkDisplay.new(url).display %></li>
           <% end %>
         </ul>
@@ -95,34 +95,34 @@
   </tr>
 
 
-  <% if @work.additional_credit.present? %>
+  <% if view.additional_credit.present? %>
     <tr>
       <th>Additional credit</th>
       <td>
         <ul>
-          <% @work.additional_credit.each do |credit| %>
+          <% view.additional_credit.each do |credit| %>
             <li class="attribute"><%= credit.display_as %></li>
           <% end %>
         </ul>
       </td>
     </tr>
   <% end %>
-  <%= AttributeTable::RowDisplay.new(:digitization_funder, values: [@work.digitization_funder]).display %>
+  <%= AttributeTable::RowDisplay.new(:digitization_funder, values: [view.digitization_funder]).display %>
 </table>
 
 
 <h2 class="attribute-sub-head">Physical location</h2>
 
 <table class="work chf-attributes">
-  <%= AttributeTable::RowDisplay.new(:department, values: [@work.department], link_to_facet: "department_facet").display %>
-  <%= AttributeTable::RowDisplay.new(:exhibition, values: @work.exhibition, link_to_facet: "exhibition_facet").display %>
+  <%= AttributeTable::RowDisplay.new(:department, values: [view.department], link_to_facet: "department_facet").display %>
+  <%= AttributeTable::RowDisplay.new(:exhibition, values: view.exhibition, link_to_facet: "exhibition_facet").display %>
 
-  <% if @work.contained_by.present? %>
+  <% if view.contained_by.present? %>
     <tr>
       <th>Collection</th>
       <td>
         <ul>
-          <% decorator.public_collections.each do |collection| %>
+          <% view.public_collections.each do |collection| %>
             <li class="attribute">
               <%= link_to collection.title, collection_path(collection) %>
             </li>
@@ -132,8 +132,8 @@
     </tr>
   <% end %>
 
-  <%= AttributeTable::RowDisplay.new(:project, values: @work.project, link_to_facet: "project_facet").display %>
-  <%= AttributeTable::RowDisplay.new(:series_arrangement, values: @work.series_arrangement).display %>
+  <%= AttributeTable::RowDisplay.new(:project, values: view.project, link_to_facet: "project_facet").display %>
+  <%= AttributeTable::RowDisplay.new(:series_arrangement, values: view.series_arrangement).display %>
 
   <% if @work.physical_container.present? %>
     <tr>
@@ -141,17 +141,17 @@
       <td>
         <ul>
           <li class="attribute">
-            <%= @work.physical_container.display_as %>
+            <%= view.physical_container.display_as %>
           </li>
         </ul>
       </td>
     </tr>
   <% end %>
 
-  <% if decorator.links_to_opac.present? %>
+  <% if view.links_to_opac.present? %>
     <tr>
       <td colspan=2 class="catalog-links">
-        <% decorator.links_to_opac.each do |url| %>
+        <% view.links_to_opac.each do |url| %>
           <%= content_tag "a", "View in library catalog", href: url %>
         <% end %>
       </td>
@@ -159,11 +159,11 @@
   <% end %>
 </table>
 
-<% if decorator.related_works.present? %>
+<% if view.related_works.present? %>
   <h2 class="attribute-sub-head">Related Items</h2>
 
   <ul class="related-items show-sub-head-body list-unstyled">
-    <% decorator.related_works.each do |work| %>
+    <% view.related_works.each do |work| %>
       <li class="related-work">
         <div class="related-work-thumb">
           <%= link_to work_path(work.friendlier_id) do %>
@@ -180,27 +180,3 @@
     <% end %>
   </ul>
 <% end %>
-
-<h2 class="attribute-sub-head">Cite as</h2>
-<div class="show-sub-head-body">
-  <p class="citation">
-     <%=CitationDisplay.new(@work).display %>
-  </p>
-  <p class="btn-group" role="group">
-    <%=  link_to(work_path(@work, format: :ris), class: "btn btn-sm btn-primary export-citation") do %>
-      <i class="fa fa-address-card"></i>&nbsp;&nbsp;Export citation (RIS)
-    <% end %>
-
-    <a class="btn btn-brand-dark btn-sm" tabindex="0" role="button" data-toggle="popover" data-placement="bottom" data-container="body" data-html="true"data-trigger="focus" data-template="<div class=&quot;popover popover-citation-help&quot; role=&quot;tooltip&quot;><div class=&quot;arrow&quot;></div><div class=&quot;popover-body&quot;></div></div>" data-content="The RIS format can be imported into most reference management software, including
-        <a target='_blank' href='https://www.zotero.org/'>Zotero</a>,
-        <a target='_blank' href='https://www.mendeley.com/reference-management/reference-manager'>Mendeley</a>,
-        <a target='_blank' href='http://endnote.com/'>EndNote</a>,
-        and <a target='_blank' href='https://www.refworks.com'>Refworks</a>."
-        aria-label="About Export Citation (RIS)" ><b>?</b></a>
-  </p>
-  <p><em>This citation is automatically generated and may contain errors.</em></p>
-</div>
-
-
-
-
