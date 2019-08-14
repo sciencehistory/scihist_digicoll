@@ -22,6 +22,8 @@
 
 $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::THUMB_BASE_WIDHTS[:mini]
 
+
+
 // Override some bootstrap modal stuff with some hacks to give us a full-viewport modal
 #scihist-image-viewer-modal {
   .modal-dialog {
@@ -43,6 +45,19 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     margin: 0;
     padding: 0;
     border: 0;
+  }
+
+  // custom slide-up animation on open, no fade.
+  .modal-dialog {
+    top: 100vh;
+    bottom: 200vh;
+    transition-property: top, bottom;
+    transition-duration: .25s;
+    transition-timing-function: ease-out;
+  }
+  &.show .modal-dialog {
+    top: 0;
+    bottom: 100vh;
   }
 }
 
