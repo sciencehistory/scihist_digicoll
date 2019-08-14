@@ -7,11 +7,6 @@ class WorkShowDecorator < Draper::Decorator
     'works/show'
   end
 
-  # Overridden by audio_work_show_decorator.
-  def audio_members
-    []
-  end
-
   # Public members, ordered.
   # All the members to be displayed as thumbnails
   # underneath, and excluding, the hero image.
@@ -26,7 +21,6 @@ class WorkShowDecorator < Draper::Decorator
         order(:position).
         to_a
 
-      members.reject! { | x| audio_members.include?(x) }
       # If the representative image is the first item in the list, don't show it twice.
       members.delete_at(0) if members[0] == representative_member
       members
