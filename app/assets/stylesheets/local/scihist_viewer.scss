@@ -198,7 +198,11 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       position: relative;
     }
 
-    .viewer-image.viewer-image-loading {
+    .viewer-image-loading {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      z-index: 10000;
       background: asset-url('spinner.svg') no-repeat center;
       background-size: 25vw
     }
