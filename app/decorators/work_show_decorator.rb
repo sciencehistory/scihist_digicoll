@@ -20,7 +20,12 @@ class WorkShowDecorator < Draper::Decorator
 
   def member_list_for_display
     @member_list_display ||= begin
-      members = ordered_public_members.dup
+      members = model.members.
+        with_representative_derivatives.
+        where(published: true).
+        order(:position).
+        to_a
+
       members.reject! { | x| audio_members.include?(x) }
       # If the representative image is the first item in the list, don't show it twice.
       members.delete_at(0) if members[0] == representative_member
