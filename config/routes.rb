@@ -31,6 +31,15 @@ Rails.application.routes.draw do
   # public-facing routes
   resources :works, only: [:show]
 
+  # JSON info for scihist_viewer image viewer
+  get '/works/:id/viewer_images_info' => 'works#viewer_images_info',
+    defaults: {format: "json"},
+    format: false,
+    as: :viewer_images_info
+
+  # Make the viewer  URL lead to ordinary show page, so JS can pick it up and launch viewer.
+  get '/works/:id/viewer/:viewer_member_id(.:format)' => 'works#show', as: :viewer
+
 
   get '/collections', to: "collections_list#index", as: :collections
 
@@ -112,6 +121,7 @@ Rails.application.routes.draw do
 
     get "/works/:parent_id/ingest", to: "assets#display_attach_form", as: "asset_ingest"
     post "/works/:parent_id/ingest", to: "assets#attach_files"
+
 
     resources :collections, except: [:show]
 

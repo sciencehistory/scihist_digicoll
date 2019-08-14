@@ -28,4 +28,15 @@ RSpec.describe WorksController, type: :controller do
       end
     end
   end
+
+  context("#viewer_images_info") do
+    let(:work) { create(:work, members: [create(:asset_with_faked_file)]) }
+
+    it "returns JSON" do
+      get :viewer_images_info, params: { id: work.friendlier_id }, as: :json
+      expect(response.status).to eq(200)
+      expect(response.content_type).to eq "application/json"
+      expect(JSON.parse(response.body)).to be_kind_of(Array)
+    end
+  end
 end

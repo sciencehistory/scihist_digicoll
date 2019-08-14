@@ -1,0 +1,96 @@
+<%# the button navbar at the bottom of the image viewer. Shouldn't really be used
+    outside the image viewer, but extracted for clarity.
+
+    Many of the content areas in here are actually filled in by the viewer JS
+%>
+
+<div class="viewer-navbar btn-group" role="group" aria-label="actions">
+    <div id="viewer-pagination" class="viewer-pagination viewer-navbar-btn">
+      <span class="viewer-pagination-numerator"></span> / <span class="viewer-pagination-denominator"></span>
+    </div>
+
+    <div id="viewer-spacer" class="viewer-spacer"></div>
+
+    <a id="viewer-member-info" class="viewer-navbar-btn viewer-member-info"
+       tabindex="0" data-hook="viewer-navbar-info-link" aria-label="Download">
+      <i class="fa fa-external-link" aria-hidden="Download"></i>
+      <span data-hook="viewer-navbar-title-label"></span>
+    </a>
+
+    <div id="viewer-download" class="viewer-navbar-btn btn-group dropup viewer-download" role="group">
+      <button id="btnViewerDownload" type="button" class="btn btn-lg btn-emphasis dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" tabindex="0">
+        <i class="fa fa-download"></i> <span class="viewer-navbar-label">Download</span>
+      </button>
+
+      <ul class="dropdown-menu download-menu" role="menu" aria-labelled-by="btnViewerDownload">
+      </ul>
+    </div>
+
+    <button class="viewer-navbar-btn btn btn-lg btn-emphasis viewer-fullscreen viewer-thin-btn" id="viewer-fullscreen"
+            data-trigger="viewer-fullscreen" tabindex="0" title="Fullscreen" aria-label="full screen">
+      <i class="fa fa-arrows-alt" aria-hidden="true"></i>
+    </button>
+
+    <a class="viewer-navbar-btn btn btn-lg btn-emphasis viewer-rotate-right viewer-thin-btn" id="viewer-rotate-right"
+       tabindex="0" aria-label="Rotate" title="Rotate">
+      <i class="fa fa-repeat" aria-hidden="true" aria-hidden="true"></i>
+    </a>
+
+    <a class="viewer-navbar-btn btn btn-lg btn-emphasis viewer-zoom-fit viewer-thin-btn" id="viewer-zoom-fit"
+       tabindex="0" aria-label="zoom to fit" title="Zoom to fit">
+      <i class="fa fa-square-o" aria-hidden="true"></i>
+    </a>
+    <a class="viewer-navbar-btn btn btn-lg btn-emphasis viewer-zoom-in viewer-thin-btn" id="viewer-zoom-in"
+       tabindex="0" aria-label="Zoom in" title="Zoom in">
+      <i class="fa fa-search-plus" aria-hidden="true"></i>
+    </a>
+    <a class="viewer-navbar-btn btn btn-lg btn-emphasis viewer-zoom-out viewer-thin-btn" id="viewer-zoom-out"
+       tabindex="0" aria-label="Zoom out" title="Zoom out">
+      <i class="fa fa-search-minus" aria-hidden="true"></i>
+    </a>
+
+    <div class="viewer-navbar-btn btn-group dropup viewer-keyboard viewer-thin-btn" role="group">
+      <%# this isn't really a dropdown menu, but that bootstrap works best as
+          a starting point for a popup info area, it turns out. popover doesn't
+          behave how we want. %>
+      <button id="btnViewerKeyboard" type="button" class="viewer-navbar-btn btn btn-lg btn-emphasis dropdown-toggle"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" tabindex="0"
+              aria-label="Keyboard shortcut legend" title="Keyboard shortcut legend">
+        <i class="fa fa-keyboard-o" aria-hidden="true"></i>
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="btnViewerKeyboard">
+        <li>
+          <h3>Keyboard Shortcuts</h3>
+          <table class="table table-sm sans-serif">
+            <tr>
+              <td>Previous image</td><td><kbd>shift + <i class="fa fa-arrow-left"></i></kbd> or <kbd>,</kbd></td>
+            </tr>
+            <tr>
+              <td>Next image</td><td><kbd>shift + <i class="fa fa-arrow-right"></i></kbd> or <kbd>.</kbd></td>
+            </tr>
+            <tr>
+              <td>Pan image</td><td><kbd><i class="fa fa-arrow-left"></i></kbd> <kbd><i class="fa fa-arrow-right"></i></kbd> <kbd><i class="fa fa-arrow-up"></i></kbd> <kbd><i class="fa fa-arrow-down"></i></kbd></td>
+            </tr>
+            <tr>
+              <td>Zoom in</td><td><kbd>+</kbd> or <kbd>shift + <i class="fa fa-arrow-up"></i></kbd></td>
+            </tr>
+            <tr>
+              <td>Zoom out</td><td><kbd>-</kbd> or <kbd>shift + <i class="fa fa-arrow-down"></i></kbd></td>
+            </tr>
+            <tr>
+              <td>Zoom to fit</td><td><kbd>0</kbd></td>
+            </tr>
+            <tr>
+              <td>Close viewer</td><td><kbd>esc</kbd></td>
+            </tr>
+            <tr>
+              <td colspan=2>
+                <b><i>Also</i></b><br>
+                Mouse click to zoom in; shift-click to zoom out. Drag to pan. Pinch to zoom on touch.
+              </td>
+            </tr>
+          </table>
+        </li>
+      </ul>
+    </div>
+</div>
