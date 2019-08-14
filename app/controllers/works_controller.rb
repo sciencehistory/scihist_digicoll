@@ -20,13 +20,19 @@ class WorksController < ApplicationController
   private
 
   def decorator
-    @decorator ||= if AudioWorkShowDecorator.show_playlist?(@work)
+    @decorator ||= if has_audio_member?
       AudioWorkShowDecorator.new(@work)
     else
       WorkShowDecorator.new(@work)
     end
   end
   helper_method :decorator
+
+  def has_audio_member?
+    @work.members.
+      where(published: true).
+      any? { | x| x.leaf_representative&.content_type&.start_with?("audio/") }
+  end
 
   def set_work
     @work = Work.find_by_friendlier_id!(params[:id])
