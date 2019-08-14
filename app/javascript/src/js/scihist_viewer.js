@@ -2,7 +2,7 @@
 //
 //   * Depends on JQuery being available, although not imported webpacker style
 //   * Depends on Bootstrap modal JS being available, although not imported webpacker style
-//   * Depends on lazysizes.js with aspect-ratio plugin being loaded. (we load in separate webpack, so no "import")
+//   * Depends on lazysizes.js (we load in separate webpack, so no "import")
 //
 // Image viewer is triggered with an <a> tag with these data attributes:
 //
@@ -28,6 +28,10 @@ function ScihistImageViewer() {
 }
 
 ScihistImageViewer.prototype.viewerPathComponentRe = /\/viewer\/(\w+)$/;
+
+// In pixels, has to match CSS, and should match actual width of
+// thumbnails generated and delivered in JSON info.
+ScihistImageViewer.prototype.thumbWidth = "54";
 
 ScihistImageViewer.prototype.show = function(id) {
   if (document.activeElement) {
@@ -419,12 +423,16 @@ ScihistImageViewer.prototype.initModal = function(modalElement) {
 
 // From json data describing our images, make the thumbnail sidebar
 ScihistImageViewer.prototype.makeThumbnails = function(json) {
-  this.thumbnailData = json;
+  var _self = this;
+  _self.thumbnailData = json;
   var container = $(this.modal).find("#viewer-thumbs");
   $.each(json, function(index, config) {
     if (! config) {
       return;
     }
+
+    var calcPixelHeight = (_self.thumbWidth / config.thumbAspectRatio).toFixed(1);
+
     container.append(
       '<img class="lazyload viewer-thumb-img"' +
             ' alt="" tabindex="0" role="button"' +
@@ -432,9 +440,8 @@ ScihistImageViewer.prototype.makeThumbnails = function(json) {
             ' data-trigger="change-viewer-source"' +
             ' data-src="' + config.thumbSrc + '"' +
             ' data-srcset="' +  (config.thumbSrcset || '') + '"' +
-            ' data-aspectratio="' + (config.thumbAspectRatio || '') + '"' +
             ' data-index="' + index + '"' +
-            ' style="width:54px"' +
+            ' style="height:' + calcPixelHeight + 'px;"' +
       '>'
     );
   });
