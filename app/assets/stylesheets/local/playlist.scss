@@ -58,7 +58,7 @@
     &.currently-selected {
       background-color: $brand-bright-green;
       color: $brand-dark-blue;
-      a, a:link, a:visited, a:hover, a:active {
+      a.play-link, a.play-link:link, a.play-link:visited, a.play-link:hover, a.play-link:active {
         color: $brand-dark-blue;
       }
     }
