@@ -275,7 +275,7 @@ ScihistImageViewer.prototype.onKeyDown = function(event) {
 
   // Otherwise, if a drop down is visible, still ignore ESC key,
   // to let it close the dropdown.
-  if (event.which == 27 && $("#chf-image-viewer-modal *[data-toggle='dropdown'][aria-expanded='true']").length > 0) {
+  if (event.which == 27 && $("#scihist-image-viewer-modal *[data-toggle='dropdown'][aria-expanded='true']").length > 0) {
     return;
   }
 
