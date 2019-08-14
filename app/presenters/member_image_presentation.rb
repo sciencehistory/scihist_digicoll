@@ -49,7 +49,9 @@ class MemberImagePresentation < ViewModel
 
     content_tag("div", class: "member-image-presentation") do
       content_tag("div", class: "thumb") do
-        ThumbDisplay.new(representative_asset, thumb_size: size, lazy: lazy).display
+        content_tag("a", href: view_href, data: view_data_attributes) do
+          ThumbDisplay.new(representative_asset, thumb_size: size, lazy: lazy).display
+        end
       end +
       content_tag("div", class: "action-item-bar") do
         action_buttons_display
@@ -103,14 +105,41 @@ class MemberImagePresentation < ViewModel
   end
 
   def download_button
-    DownloadDropdownDisplay.new(member.leaf_representative, display_parent_work: member.parent).display
+    DownloadDropdownDisplay.new(representative_asset, display_parent_work: member.parent).display
   end
 
   def view_button
     content_tag("div", class: "action-item view") do
-      content_tag("button", type: "button", class: "btn btn-primary", data: {}) do
+      content_tag("a",
+        href: view_href,
+        class: "btn btn-primary",
+        data: view_data_attributes) do
           "<i class='fa fa-search' aria-hidden='true'></i> View".html_safe
       end
+    end
+  end
+
+  # When viewer, useful for right-click open in another tab, and we
+  # set to anchor link to open viewer.
+  #
+  # For non-images with no viewer, simply link to original.
+  def view_href
+    if member.parent && representative_asset&.content_type&.start_with?("image/")
+      viewer_path(member.parent.friendlier_id, member.friendlier_id)
+    else # PDF, etc, just try to show it in the browser
+      download_path(representative_asset, disposition: :inline)
+    end
+  end
+
+  # to trigger image viewer
+  def view_data_attributes
+    if representative_asset&.content_type&.start_with?("image/")
+      {
+        trigger: "scihist_image_viewer",
+        member_id: member.friendlier_id
+      }
+    else
+      {}
     end
   end
 
