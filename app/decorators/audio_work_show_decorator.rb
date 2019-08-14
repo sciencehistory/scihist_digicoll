@@ -10,7 +10,11 @@ class AudioWorkShowDecorator < WorkShowDecorator
   # The list of tracks for the playlist.
   def audio_members
     @audio_members ||= begin
-      ordered_public_members.select { | x| x.leaf_representative&.content_type&.start_with?("audio/") }
+      model.members.
+        with_representative_derivatives.
+        where(published: true).
+        order(:position).
+        select { | x| x.leaf_representative&.content_type&.start_with?("audio/") }
     end
   end
 
