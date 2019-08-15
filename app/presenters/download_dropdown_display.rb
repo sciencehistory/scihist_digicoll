@@ -124,25 +124,9 @@ class DownloadDropdownDisplay < ViewModel
 
     if has_work_download_options?
       elements << "<h3 class='dropdown-header'>Download all #{display_parent_work.members.length} images</h3>".html_safe
-
-      elements << content_tag("a", "PDF", href: "#", class: "dropdown-item",
-        data: {
-          trigger: "on-demand-download",
-          "work-id": display_parent_work.friendlier_id,
-          "derivative-type": "pdf_file"
-        }
-      )
-
-      elements << content_tag("a", href: "#", class: "dropdown-item",
-        data: {
-          trigger: "on-demand-download",
-          "work-id": display_parent_work.friendlier_id,
-          "derivative-type": "zip_file"
-        }
-      ) do
-        "ZIP<small>of full-sized JPGs</small>".html_safe
+      whole_work_download_options.each do |download_option|
+        elements << format_download_option(download_option)
       end
-
       elements << "<li class='dropdown-divider'></li>".html_safe
     end
 
@@ -157,7 +141,9 @@ class DownloadDropdownDisplay < ViewModel
   end
 
   def format_download_option(download_option)
-    label = safe_join([download_option.label, content_tag("small", download_option.subhead)])
+    label = safe_join([
+      download_option.label, (content_tag("small", download_option.subhead) if download_option.subhead.present?)
+    ])
 
     analytics_data_attr = if display_parent_work
       {
@@ -165,12 +151,14 @@ class DownloadDropdownDisplay < ViewModel
         analytics_action: download_option.analyticsAction,
         analytics_label: display_parent_work.friendlier_id
       }
+    else
+      {}
     end
 
     content_tag("a", label,
                       class: "dropdown-item",
                       href: download_option.url,
-                      data: analytics_data_attr)
+                      data: download_option.data_attrs.merge(analytics_data_attr))
   end
 
   def rights_statement_item
@@ -185,6 +173,25 @@ class DownloadDropdownDisplay < ViewModel
       display_parent_work.members.all? do |member|
         member.leaf_representative&.content_type&.start_with?("image/")
       end
+  end
+
+  def whole_work_download_options
+    return [] unless has_work_download_options?
+
+    [
+      DownloadOption.new("PDF", url: "#", analyticsAction: "download_pdf",
+        data_attrs: {
+          trigger: "on-demand-download",
+          derivative_type: "pdf_file",
+          work_id: display_parent_work.friendlier_id
+        }),
+      DownloadOption.new("ZIP", subhead: "of full-sized JPGs", url: "#", analyticsAction: "download_zip",
+        data_attrs: {
+          trigger: "on-demand-download",
+          derivative_type: "zip_file",
+          work_id: display_parent_work.friendlier_id
+        }),
+    ]
   end
 
 end
