@@ -158,7 +158,19 @@ class DownloadDropdownDisplay < ViewModel
 
   def format_download_option(download_option)
     label = safe_join([download_option.label, content_tag("small", download_option.subhead)])
-    content_tag("a", label, class: "dropdown-item", href: download_option.url)
+
+    analytics_data_attr = if display_parent_work
+      {
+        analytics_category: "Work",
+        analytics_action: download_option.analyticsAction,
+        analytics_label: display_parent_work.friendlier_id
+      }
+    end
+
+    content_tag("a", label,
+                      class: "dropdown-item",
+                      href: download_option.url,
+                      data: analytics_data_attr)
   end
 
   def rights_statement_item
