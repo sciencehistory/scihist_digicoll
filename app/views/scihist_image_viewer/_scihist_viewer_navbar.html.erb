@@ -27,24 +27,8 @@
     Yes, this is kinda messy/hacky/non-DRY interaction/duplication with the DownloadDropdownDisplay
     ViewModel. Doesn't yet include whole-work download options. Good enough for now. %>
 
-    <div id="viewer-download" class="viewer-navbar-btn btn-group dropup viewer-download" role="group">
-      <button id="btnViewerDownload" type="button" class="btn btn-lg btn-emphasis dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" tabindex="0">
-        <i class="fa fa-download"></i> <span class="viewer-navbar-label">Download</span>
-      </button>
 
-      <div class="dropdown-menu download-menu" role="menu" aria-labelled-by="btnViewerDownload">
-
-        <% if work.rights.present? %>
-          <h3 class="dropdown-header">Rights</h3>
-          <%= RightsIconDisplay.new(work, mode: :dropdown_item).display %>
-          <div class='dropdown-divider'></div>
-        <% end %>
-
-        <h3 class="dropdown-header">Download selected image</h3>
-        <div data-slot="selected-downloads">
-        </div>
-      </div>
-    </div>
+    <%= DownloadDropdownDisplay.new(nil, display_parent_work: work, viewer_template: true).display %>
 
     <button class="viewer-navbar-btn btn btn-lg btn-emphasis viewer-fullscreen viewer-thin-btn" id="viewer-fullscreen"
             data-trigger="viewer-fullscreen" tabindex="0" title="Fullscreen" aria-label="full screen">

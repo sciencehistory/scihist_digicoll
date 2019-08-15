@@ -28,8 +28,19 @@
 # providing an option that can't be delivered. That does mean it needs info from the db on what derivs
 # exist though. (It also uses metadata on the existing deriv records to provide nice info on the dl
 # link on file size/dimensions/etc.)
+#
+# ## Viewer-template mode
+#
+# For use in the JS viewer modal template, we can produce a dropdown menu which has rights and whole-work
+# download links, but doesn't have any asset-specific links. Instead having a <div data-slot="selected-downloads">
+# for the JS to fill in.
+#
+#     DownloadDropdownDisplay.new(nil, display_parent_work: work, viewer_template: true).display
+#
+# (This is a bit hacky)
+#
 class DownloadDropdownDisplay < ViewModel
-  valid_model_type_names "Asset"
+  valid_model_type_names "Asset", "NilClass"
 
   alias_method :asset, :model
 
@@ -45,14 +56,21 @@ class DownloadDropdownDisplay < ViewModel
   #   may make it complicated, we need to be told our display parent context.
   # @param use_link [Boolean], default false, if true will make the link that opens the menu an
   #   ordinary hyperlink, instead of a button (used on audio playlist).
-  def initialize(asset, display_parent_work:, use_link: false)
+  def initialize(asset, display_parent_work:, use_link: false, viewer_template: false)
+    if viewer_template
+      raise ArgumentError.new("asset must be nil if template_only") unless asset.nil?
+    else
+      raise ArgumentError.new("asset can't be nil if not template_only") if asset.nil?
+    end
+
     @display_parent_work = display_parent_work
     @use_link = use_link
     super(asset)
   end
 
   def display
-    content_tag("div", class: "action-item downloads dropup") do
+    # viewer-navbar-btn necessary for it to style correctly when embedded in viewer. :(
+    content_tag("div", class: "action-item viewer-navbar-btn btn-group downloads dropup") do
       link_or_button +
       content_tag("div", class: "dropdown-menu download-menu", "aria-labelledby" => menu_button_id) do
         menu_items
@@ -61,6 +79,10 @@ class DownloadDropdownDisplay < ViewModel
   end
 
   private
+
+  def viewer_template_mode?
+    asset.nil?
+  end
 
   # What do we call it in labels to the user
   def thing_name
@@ -84,12 +106,16 @@ class DownloadDropdownDisplay < ViewModel
   end
 
   def parent
-    asset.parent
+    asset&.parent
   end
 
   def menu_button_id
     # include our object_id just to ensure uniqueness
-    "dropdownMenu_downloads_#{asset.friendlier_id}_#{self.object_id}"
+    unless viewer_template_mode?
+      "dropdownMenu_downloads_#{asset.friendlier_id}_#{self.object_id}"
+    else
+      "dropdownMenu_downloads_template_#{display_parent_work.friendlier_id}"
+    end
   end
 
   def link_or_button
@@ -109,7 +135,11 @@ class DownloadDropdownDisplay < ViewModel
       options[:class] = "dropdown-toggle download-link"
     else
       options[:type]  = "button"
-      options[:class] = "btn btn-primary dropdown-toggle"
+      if viewer_template_mode?
+        options[:class] = "btn btn-emphasis btn-lg dropdown-toggle"
+      else
+        options[:class] = "btn btn-primary dropdown-toggle"
+      end
     end
     options
   end
@@ -132,7 +162,10 @@ class DownloadDropdownDisplay < ViewModel
       elements << "<li class='dropdown-divider'></li>".html_safe
     end
 
-    if asset_download_options
+    if viewer_template_mode?
+      elements << "<h3 class='dropdown-header'>Download selected image</h3>".html_safe
+      elements << '<div data-slot="selected-downloads"></div>'.html_safe
+    elsif asset_download_options
       elements << "<h3 class='dropdown-header'>Download selected #{thing_name}</h3>".html_safe
       asset_download_options.each do |download_option|
         elements << format_download_option(download_option)
