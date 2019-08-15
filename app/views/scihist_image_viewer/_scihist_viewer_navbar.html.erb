@@ -22,8 +22,11 @@
         <i class="fa fa-download"></i> <span class="viewer-navbar-label">Download</span>
       </button>
 
-      <ul class="dropdown-menu download-menu" role="menu" aria-labelled-by="btnViewerDownload">
-      </ul>
+      <div class="dropdown-menu download-menu" role="menu" aria-labelled-by="btnViewerDownload">
+        <h3 class="dropdown-header">Download selected image</h3>
+        <div data-slot="selected-downloads">
+        </div>
+      </div>
     </div>
 
     <button class="viewer-navbar-btn btn btn-lg btn-emphasis viewer-fullscreen viewer-thin-btn" id="viewer-fullscreen"
