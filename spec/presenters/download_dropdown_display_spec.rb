@@ -142,6 +142,20 @@ describe DownloadDropdownDisplay do
         expect(pdf_option["data-analytics-action"]).to eq "download_pdf"
         expect(pdf_option["data-analytics-label"]).to eq parent_work.friendlier_id
       end
+
+      describe "template_only" do
+        let(:rendered) { Nokogiri::HTML.fragment(DownloadDropdownDisplay.new(nil, display_parent_work: parent_work, viewer_template: true).display) }
+
+        it "renders only slot" do
+          expect(div).to have_selector(".dropdown-header", text: "Download selected image")
+          expect(div).to have_selector('*[data-slot="selected-downloads"]')
+
+          expect(div).not_to have_selector("a.dropdown-item", text: /Small JPG/)
+          expect(div).not_to have_selector("a.dropdown-item", text: /Medium JPG/)
+          expect(div).not_to have_selector("a.dropdown-item", text: /Large JPG/)
+          expect(div).not_to have_selector("a.dropdown-item", text: /Full-sized JPG/)
+        end
+      end
     end
 
     describe "without image files" do

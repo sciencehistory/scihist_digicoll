@@ -195,7 +195,7 @@ ScihistImageViewer.prototype.selectThumb = function(thumbElement) {
   document.querySelector('*[data-hook="viewer-navbar-info-link"]').href = linkUrl;
   document.getElementsByClassName('viewer-pagination-numerator').item(0).textContent = humanIndex;
 
-  $(this.modal).find("#viewer-download *[data-slot='selected-downloads']").html(this.downloadMenuItems(this.selectedThumbData));
+  $(this.modal).find(".downloads *[data-slot='selected-downloads']").html(this.downloadMenuItems(this.selectedThumbData));
 
   if (shouldShowInfo) {
     // spacer shows up when info doesn't.
