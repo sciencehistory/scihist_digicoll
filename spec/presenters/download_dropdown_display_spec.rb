@@ -123,8 +123,18 @@ describe DownloadDropdownDisplay do
 
       it "renders whole-work download options" do
         expect(div).to have_selector(".dropdown-header", text: "Download all 3 images")
-        expect(div).to have_selector(".dropdown-item", text: /ZIP/)
-        expect(div).to have_selector(".dropdown-item", text: /PDF/)
+
+        zip_option = div.at_css("a.dropdown-item:contains('ZIP')")
+        expect(zip_option).to be_present
+        expect(zip_option["data-trigger"]).to eq "on-demand-download"
+        expect(zip_option["data-derivative-type"]).to eq "zip_file"
+        expect(zip_option["data-work-id"]).to eq parent_work.friendlier_id
+
+        pdf_option = div.at_css("a.dropdown-item:contains('PDF')")
+        expect(pdf_option).to be_present
+        expect(pdf_option["data-trigger"]).to eq "on-demand-download"
+        expect(pdf_option["data-derivative-type"]).to eq "pdf_file"
+        expect(pdf_option["data-work-id"]).to eq parent_work.friendlier_id
       end
     end
 
