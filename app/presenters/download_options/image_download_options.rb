@@ -43,7 +43,7 @@ module DownloadOptions
       if dl_large = asset.derivative_for(:download_large)
         options << DownloadOption.with_formatted_subhead("Large JPG",
           url: download_derivative_path(asset, :download_large),
-          analyticsAction: "download_jpg_medium",
+          analyticsAction: "download_jpg_large",
           width: dl_large.width,
           height: dl_large.height,
           size: dl_large.size

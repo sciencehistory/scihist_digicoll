@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe DownloadDropdownDisplay do
-  let(:rendered) { Nokogiri::HTML.fragment(DownloadDropdownDisplay.new(asset).display) }
+  let(:rendered) { Nokogiri::HTML.fragment(DownloadDropdownDisplay.new(asset, display_parent_work: asset.parent).display) }
   let(:div) { rendered.at_css("div.action-item.downloads") }
 
   describe "no derivatives existing" do
@@ -53,6 +53,12 @@ describe DownloadDropdownDisplay do
       expect(div).to have_selector("a.dropdown-item", text: /Large JPG/)
       expect(div).to have_selector("a.dropdown-item", text: /Full-sized JPG/)
       expect(div).to have_selector("a.dropdown-item", text: /Original/)
+
+      sample_download_option = div.at_css("a.dropdown-item:contains('Large JPG')")
+      expect(sample_download_option["href"]).to be_present
+      expect(sample_download_option["data-analytics-category"]).to eq("Work")
+      expect(sample_download_option["data-analytics-action"]).to eq("download_jpg_large")
+      expect(sample_download_option["data-analytics-label"]).to eq(asset.parent.friendlier_id)
     end
   end
 
