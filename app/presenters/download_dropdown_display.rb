@@ -43,6 +43,8 @@ class DownloadDropdownDisplay < ViewModel
   #
   #   We don't just get from asset.parent, because intervening child work hieararchy
   #   may make it complicated, we need to be told our display parent context.
+  # @param use_link [Boolean], default false, if true will make the link that opens the menu an
+  #   ordinary hyperlink, instead of a button (used on audio playlist).
   def initialize(asset, display_parent_work:nil, use_link: false)
     @display_parent_work = display_parent_work
     @use_link = use_link
