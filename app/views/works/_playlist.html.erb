@@ -26,7 +26,7 @@
                         <i class="fa fa-play-circle" aria-hidden="true"></i>
                         <%= track.title %>
                     </a>
-                    <%= DownloadDropdownDisplay.new(track, use_link:true).display %>
+                    <%= DownloadDropdownDisplay.new(track, display_parent_work: track.parent, use_link:true).display %>
                 </li>
             <% end %>
         </ul>

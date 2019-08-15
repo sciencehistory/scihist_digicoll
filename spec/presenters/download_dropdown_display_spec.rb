@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe DownloadDropdownDisplay do
-  let(:rendered) { Nokogiri::HTML.fragment(DownloadDropdownDisplay.new(asset).display) }
+  let(:rendered) { Nokogiri::HTML.fragment(DownloadDropdownDisplay.new(asset, display_parent_work: asset.parent).display) }
   let(:div) { rendered.at_css("div.action-item.downloads") }
 
   describe "no derivatives existing" do
@@ -53,6 +53,12 @@ describe DownloadDropdownDisplay do
       expect(div).to have_selector("a.dropdown-item", text: /Large JPG/)
       expect(div).to have_selector("a.dropdown-item", text: /Full-sized JPG/)
       expect(div).to have_selector("a.dropdown-item", text: /Original/)
+
+      sample_download_option = div.at_css("a.dropdown-item:contains('Large JPG')")
+      expect(sample_download_option["href"]).to be_present
+      expect(sample_download_option["data-analytics-category"]).to eq("Work")
+      expect(sample_download_option["data-analytics-action"]).to eq("download_jpg_large")
+      expect(sample_download_option["data-analytics-label"]).to eq(asset.parent.friendlier_id)
     end
   end
 
@@ -117,8 +123,38 @@ describe DownloadDropdownDisplay do
 
       it "renders whole-work download options" do
         expect(div).to have_selector(".dropdown-header", text: "Download all 3 images")
-        expect(div).to have_selector(".dropdown-item", text: /ZIP/)
-        expect(div).to have_selector(".dropdown-item", text: /PDF/)
+
+        zip_option = div.at_css("a.dropdown-item:contains('ZIP')")
+        expect(zip_option).to be_present
+        expect(zip_option["data-trigger"]).to eq "on-demand-download"
+        expect(zip_option["data-derivative-type"]).to eq "zip_file"
+        expect(zip_option["data-work-id"]).to eq parent_work.friendlier_id
+        expect(zip_option["data-analytics-category"]).to eq "Work"
+        expect(zip_option["data-analytics-action"]).to eq "download_zip"
+        expect(zip_option["data-analytics-label"]).to eq parent_work.friendlier_id
+
+        pdf_option = div.at_css("a.dropdown-item:contains('PDF')")
+        expect(pdf_option).to be_present
+        expect(pdf_option["data-trigger"]).to eq "on-demand-download"
+        expect(pdf_option["data-derivative-type"]).to eq "pdf_file"
+        expect(pdf_option["data-work-id"]).to eq parent_work.friendlier_id
+        expect(pdf_option["data-analytics-category"]).to eq "Work"
+        expect(pdf_option["data-analytics-action"]).to eq "download_pdf"
+        expect(pdf_option["data-analytics-label"]).to eq parent_work.friendlier_id
+      end
+
+      describe "template_only" do
+        let(:rendered) { Nokogiri::HTML.fragment(DownloadDropdownDisplay.new(nil, display_parent_work: parent_work, viewer_template: true).display) }
+
+        it "renders only slot" do
+          expect(div).to have_selector(".dropdown-header", text: "Download selected image")
+          expect(div).to have_selector('*[data-slot="selected-downloads"]')
+
+          expect(div).not_to have_selector("a.dropdown-item", text: /Small JPG/)
+          expect(div).not_to have_selector("a.dropdown-item", text: /Medium JPG/)
+          expect(div).not_to have_selector("a.dropdown-item", text: /Large JPG/)
+          expect(div).not_to have_selector("a.dropdown-item", text: /Full-sized JPG/)
+        end
       end
     end
 

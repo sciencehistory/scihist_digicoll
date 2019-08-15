@@ -28,8 +28,19 @@
 # providing an option that can't be delivered. That does mean it needs info from the db on what derivs
 # exist though. (It also uses metadata on the existing deriv records to provide nice info on the dl
 # link on file size/dimensions/etc.)
+#
+# ## Viewer-template mode
+#
+# For use in the JS viewer modal template, we can produce a dropdown menu which has rights and whole-work
+# download links, but doesn't have any asset-specific links. Instead having a <div data-slot="selected-downloads">
+# for the JS to fill in.
+#
+#     DownloadDropdownDisplay.new(nil, display_parent_work: work, viewer_template: true).display
+#
+# (This is a bit hacky)
+#
 class DownloadDropdownDisplay < ViewModel
-  valid_model_type_names "Asset"
+  valid_model_type_names "Asset", "NilClass"
 
   alias_method :asset, :model
 
@@ -43,14 +54,23 @@ class DownloadDropdownDisplay < ViewModel
   #
   #   We don't just get from asset.parent, because intervening child work hieararchy
   #   may make it complicated, we need to be told our display parent context.
-  def initialize(asset, display_parent_work:nil, use_link: false)
+  # @param use_link [Boolean], default false, if true will make the link that opens the menu an
+  #   ordinary hyperlink, instead of a button (used on audio playlist).
+  def initialize(asset, display_parent_work:, use_link: false, viewer_template: false)
+    if viewer_template
+      raise ArgumentError.new("asset must be nil if template_only") unless asset.nil?
+    else
+      raise ArgumentError.new("asset can't be nil if not template_only") if asset.nil?
+    end
+
     @display_parent_work = display_parent_work
     @use_link = use_link
     super(asset)
   end
 
   def display
-    content_tag("div", class: "action-item downloads dropup") do
+    # viewer-navbar-btn necessary for it to style correctly when embedded in viewer. :(
+    content_tag("div", class: "action-item viewer-navbar-btn btn-group downloads dropup") do
       link_or_button +
       content_tag("div", class: "dropdown-menu download-menu", "aria-labelledby" => menu_button_id) do
         menu_items
@@ -59,6 +79,10 @@ class DownloadDropdownDisplay < ViewModel
   end
 
   private
+
+  def viewer_template_mode?
+    asset.nil?
+  end
 
   # What do we call it in labels to the user
   def thing_name
@@ -82,12 +106,16 @@ class DownloadDropdownDisplay < ViewModel
   end
 
   def parent
-    asset.parent
+    asset&.parent
   end
 
   def menu_button_id
     # include our object_id just to ensure uniqueness
-    "dropdownMenu_downloads_#{asset.friendlier_id}_#{self.object_id}"
+    unless viewer_template_mode?
+      "dropdownMenu_downloads_#{asset.friendlier_id}_#{self.object_id}"
+    else
+      "dropdownMenu_downloads_template_#{display_parent_work.friendlier_id}"
+    end
   end
 
   def link_or_button
@@ -107,7 +135,11 @@ class DownloadDropdownDisplay < ViewModel
       options[:class] = "dropdown-toggle download-link"
     else
       options[:type]  = "button"
-      options[:class] = "btn btn-primary dropdown-toggle"
+      if viewer_template_mode?
+        options[:class] = "btn btn-emphasis btn-lg dropdown-toggle"
+      else
+        options[:class] = "btn btn-primary dropdown-toggle"
+      end
     end
     options
   end
@@ -124,29 +156,16 @@ class DownloadDropdownDisplay < ViewModel
 
     if has_work_download_options?
       elements << "<h3 class='dropdown-header'>Download all #{display_parent_work.members.length} images</h3>".html_safe
-
-      elements << content_tag("a", "PDF", href: "#", class: "dropdown-item",
-        data: {
-          trigger: "on-demand-download",
-          "work-id": display_parent_work.friendlier_id,
-          "derivative-type": "pdf_file"
-        }
-      )
-
-      elements << content_tag("a", href: "#", class: "dropdown-item",
-        data: {
-          trigger: "on-demand-download",
-          "work-id": display_parent_work.friendlier_id,
-          "derivative-type": "zip_file"
-        }
-      ) do
-        "ZIP<small>of full-sized JPGs</small>".html_safe
+      whole_work_download_options.each do |download_option|
+        elements << format_download_option(download_option)
       end
-
       elements << "<li class='dropdown-divider'></li>".html_safe
     end
 
-    if asset_download_options
+    if viewer_template_mode?
+      elements << "<h3 class='dropdown-header'>Download selected image</h3>".html_safe
+      elements << '<div data-slot="selected-downloads"></div>'.html_safe
+    elsif asset_download_options
       elements << "<h3 class='dropdown-header'>Download selected #{thing_name}</h3>".html_safe
       asset_download_options.each do |download_option|
         elements << format_download_option(download_option)
@@ -157,8 +176,24 @@ class DownloadDropdownDisplay < ViewModel
   end
 
   def format_download_option(download_option)
-    label = safe_join([download_option.label, content_tag("small", download_option.subhead)])
-    content_tag("a", label, class: "dropdown-item", href: download_option.url)
+    label = safe_join([
+      download_option.label, (content_tag("small", download_option.subhead) if download_option.subhead.present?)
+    ])
+
+    analytics_data_attr = if display_parent_work
+      {
+        analytics_category: "Work",
+        analytics_action: download_option.analyticsAction,
+        analytics_label: display_parent_work.friendlier_id
+      }
+    else
+      {}
+    end
+
+    content_tag("a", label,
+                      class: "dropdown-item",
+                      href: download_option.url,
+                      data: download_option.data_attrs.merge(analytics_data_attr))
   end
 
   def rights_statement_item
@@ -173,6 +208,25 @@ class DownloadDropdownDisplay < ViewModel
       display_parent_work.members.all? do |member|
         member.leaf_representative&.content_type&.start_with?("image/")
       end
+  end
+
+  def whole_work_download_options
+    return [] unless has_work_download_options?
+
+    [
+      DownloadOption.new("PDF", url: "#", analyticsAction: "download_pdf",
+        data_attrs: {
+          trigger: "on-demand-download",
+          derivative_type: "pdf_file",
+          work_id: display_parent_work.friendlier_id
+        }),
+      DownloadOption.new("ZIP", subhead: "of full-sized JPGs", url: "#", analyticsAction: "download_zip",
+        data_attrs: {
+          trigger: "on-demand-download",
+          derivative_type: "zip_file",
+          work_id: display_parent_work.friendlier_id
+        }),
+    ]
   end
 
 end

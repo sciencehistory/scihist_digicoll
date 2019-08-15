@@ -31,4 +31,31 @@ describe DownloadOption do
         size: 16384).subhead).to eq "JPEG — 16 KB"
     end
   end
+
+  describe "#as_json" do
+    let(:url) { "http://example.org/faked" }
+    let(:subhead) { "This is a <small>subhead</small>" }
+    let(:label) { "This is a label" }
+    let(:analyticsAction) { "click-on-something" }
+    let(:download_option) { DownloadOption.new(label, url: url, subhead: subhead, analyticsAction: analyticsAction) }
+
+    it "produces hash" do
+      expect(download_option.as_json).to match({
+        url: url,
+        subhead: subhead,
+        label: label,
+        analyticsAction: analyticsAction
+      })
+    end
+
+    it "produces string from to_json" do
+      expect(JSON.parse(download_option.to_json)).to match({
+        "url" => url,
+        "subhead" => subhead,
+        "label" => label,
+        "analyticsAction" => analyticsAction
+      })
+    end
+  end
+
 end

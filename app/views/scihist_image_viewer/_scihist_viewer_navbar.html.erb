@@ -1,7 +1,10 @@
 <%# the button navbar at the bottom of the image viewer. Shouldn't really be used
     outside the image viewer, but extracted for clarity.
 
-    Many of the content areas in here are actually filled in by the viewer JS
+    Many of the content areas in here are actually filled in by the viewer JS.
+
+    Needs a 'work' local to generate fixed rights statement and whole-work download
+    options for fixed work this modal is for.
 %>
 
 <div class="viewer-navbar btn-group" role="group" aria-label="actions">
@@ -17,14 +20,15 @@
       <span data-hook="viewer-navbar-title-label"></span>
     </a>
 
-    <div id="viewer-download" class="viewer-navbar-btn btn-group dropup viewer-download" role="group">
-      <button id="btnViewerDownload" type="button" class="btn btn-lg btn-emphasis dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" tabindex="0">
-        <i class="fa fa-download"></i> <span class="viewer-navbar-label">Download</span>
-      </button>
 
-      <ul class="dropdown-menu download-menu" role="menu" aria-labelled-by="btnViewerDownload">
-      </ul>
-    </div>
+    <%# A download menu that has the parts fixed for a given work fixed, with a slot for JS
+    to fill in as selected thumb is changed for member-specific options.
+
+    Yes, this is kinda messy/hacky/non-DRY interaction/duplication with the DownloadDropdownDisplay
+    ViewModel. Doesn't yet include whole-work download options. Good enough for now. %>
+
+
+    <%= DownloadDropdownDisplay.new(nil, display_parent_work: work, viewer_template: true).display %>
 
     <button class="viewer-navbar-btn btn btn-lg btn-emphasis viewer-fullscreen viewer-thin-btn" id="viewer-fullscreen"
             data-trigger="viewer-fullscreen" tabindex="0" title="Fullscreen" aria-label="full screen">

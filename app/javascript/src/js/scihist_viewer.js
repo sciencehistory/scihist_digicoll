@@ -12,10 +12,17 @@
 // Assumes a bootstrap modal for viewer is available at DOM id #scihist-image-viewer-modal, it has to have
 // a data-work-id and data-images-info-path (URL to JSON images info) for the work. Yes, that means
 // right now we assume on a given page, a viewer will only be displayed for ONE single work. data-images-info-path
-// is a URL that will return JSON, see ViewerMemberInfoSerializer for what it looks like.
+// is a URL that will return JSON, see ViewerMemberInfoSerializer for what it looks like. It also has
+// a 'template' for download links menu. This is one of the hackiest/least generalizable parts of the implementation.
 //
 // Note the viewer updates the URL to add a "viewer/[memberId]" reference, so you can bookmark or link to viewer open
 // to certain member. Routes need to route that to ordinary show page, let JS pick up the end of the path.
+//
+// ## Extract to a re-usable component for other apps?
+//
+// It would be nice and we're trying to write it with that end in mind, but there are still
+// plenty of places that lack customizability or make odd undocumented assumptions about the
+// app, it would take signifcant more work. :(
 
 import OpenSeadragon from 'openseadragon';
 
@@ -188,7 +195,7 @@ ScihistImageViewer.prototype.selectThumb = function(thumbElement) {
   document.querySelector('*[data-hook="viewer-navbar-info-link"]').href = linkUrl;
   document.getElementsByClassName('viewer-pagination-numerator').item(0).textContent = humanIndex;
 
-  $(this.modal).find("#viewer-download .dropdown-menu").html(this.downloadMenuItems(this.selectedThumbData));
+  $(this.modal).find(".downloads *[data-slot='selected-downloads']").html(this.downloadMenuItems(this.selectedThumbData));
 
   if (shouldShowInfo) {
     // spacer shows up when info doesn't.
@@ -397,16 +404,6 @@ ScihistImageViewer.prototype.initModal = function(modalElement) {
 
   this.workId = modalElement.getAttribute("data-work-id");
 
-  var rightsElement = modalElement.querySelector('.parent-rights-inline');
-  if (rightsElement) {
-    this.rightsInlineHtml = rightsElement.innerHTML;
-  }
-
-  var parentDownloadElements = modalElement.querySelector('.parent-download-options-inline');
-  if (parentDownloadElements) {
-    this.parentDownloadInlineHtml = parentDownloadElements.innerHTML;
-  }
-
   var _self = this;
   var imageInfoUrl = modalElement.getAttribute("data-images-info-path");
   // This promise should be used in #show to make sure we don't until this
@@ -456,30 +453,15 @@ ScihistImageViewer.prototype.downloadMenuItems = function(thumbData) {
 
   var htmlElements = []
 
-  if (_self.rightsInlineHtml) {
-    htmlElements.push('<li class="dropdown-header">Rights</li>');
-    htmlElements.push('<li tabindex="-1" role="menuItem">' + _self.rightsInlineHtml + '</li>');
-    htmlElements.push('<li role="separator" class="divider"></li>');
-  }
-  if (_self.parentDownloadInlineHtml) {
-    htmlElements.push(_self.parentDownloadInlineHtml);
-    htmlElements.push('<li role="separator" class="divider"></li>');
-  }
-
-
-  htmlElements.push('<li class="dropdown-header">Download selected image</li>');
-
   htmlElements = htmlElements.concat(
     $.map(thumbData.downloads, function(downloadElement) {
-      return '<li tabindex="-1" role="menuitem">' +
-                '<a target="_new" data-analytics-category="Work"' +
+      return  '<a class="dropdown-item" target="_new" data-analytics-category="Work"' +
                 ' data-analytics-action="' + (downloadElement.analyticsAction || "download") + '"' +
                 ' data-analytics-label="' + _self.workId + '"' +
                 ' href="' + downloadElement.url + '">' +
                   downloadElement.label +
                 ' <small>' + (downloadElement.subhead || '') + '</small>' +
-                '</a>' +
-              '</li>';
+              '</a>';
     })
   );
 
