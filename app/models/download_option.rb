@@ -43,4 +43,13 @@ class DownloadOption
     @analyticsAction = analyticsAction
   end
 
+  # Rails architecture gives us #to_json for a string if we provide as_json
+  def as_json(options={})
+    {
+      url: url,
+      label: label,
+      subhead: subhead,
+      analyticsAction: analyticsAction
+    }
+  end
 end
