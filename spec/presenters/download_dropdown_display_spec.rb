@@ -129,12 +129,18 @@ describe DownloadDropdownDisplay do
         expect(zip_option["data-trigger"]).to eq "on-demand-download"
         expect(zip_option["data-derivative-type"]).to eq "zip_file"
         expect(zip_option["data-work-id"]).to eq parent_work.friendlier_id
+        expect(zip_option["data-analytics-category"]).to eq "Work"
+        expect(zip_option["data-analytics-action"]).to eq "download_zip"
+        expect(zip_option["data-analytics-label"]).to eq parent_work.friendlier_id
 
         pdf_option = div.at_css("a.dropdown-item:contains('PDF')")
         expect(pdf_option).to be_present
         expect(pdf_option["data-trigger"]).to eq "on-demand-download"
         expect(pdf_option["data-derivative-type"]).to eq "pdf_file"
         expect(pdf_option["data-work-id"]).to eq parent_work.friendlier_id
+        expect(pdf_option["data-analytics-category"]).to eq "Work"
+        expect(pdf_option["data-analytics-action"]).to eq "download_pdf"
+        expect(pdf_option["data-analytics-label"]).to eq parent_work.friendlier_id
       end
     end
 
