@@ -38,23 +38,8 @@
                 <button href="#" id="viewer-right" class="viewer-image-next" data-trigger="viewer-next" tabindex="0"><i class="fa fa-chevron-right" title="Next"></i></button>
               </div>
 
-              <%= render "scihist_image_viewer/scihist_viewer_navbar" %>
+              <%= render "scihist_image_viewer/scihist_viewer_navbar", work: work %>
             </div>
-
-            <%# just some DOM content that the viewer.js will copy into download
-                menus, we use same rights statement for all members, filesets don't
-                even have rights data, so. would probably be better to commicate
-                this some way other than DOM. %>
-            <% if false && work.rights_url %>
-              <div style="display: none" class="parent-rights-inline">
-                <%= render_rights_statement(work) %>
-              </div>
-            <% end %>
-            <% if false && work.public_member_presenters.size >  1 %>
-              <div style="display: none" class="parent-download-options-inline">
-                <%= safe_join(whole_work_download_options(work)) %>
-              </div>
-            <% end %>
 
             <%# will be filled by JS, from json endpoint data %>
             <%= content_tag "div", "", id:"viewer-thumbs", class: "viewer-thumbs" %>

@@ -28,8 +28,8 @@ class ViewerMemberInfoSerializer < ViewModel
         tileSource: asset.dzi_file.url,
         # if tilesource DZI is unavailable, give them a more reasonable sized JPG
         fallbackTileSource: { type: "image", url: download_derivative_path(asset, :download_medium, disposition: "inline") },
-        thumbAspectRatio: ("#{asset.width.to_f / asset.height}" if asset.width && asset.height)
-        # downloads TODO
+        thumbAspectRatio: ("#{asset.width.to_f / asset.height}" if asset.width && asset.height),
+        downloads: download_options(asset).as_json
       }.merge(thumb_src_attributes(asset))
     end
   end
@@ -42,6 +42,10 @@ class ViewerMemberInfoSerializer < ViewModel
       member.leaf_representative.content_type&.start_with?("image/") &&
       member.leaf_representative.stored?
     end
+  end
+
+  def download_options(asset)
+    DownloadOptions::ImageDownloadOptions.new(asset).options
   end
 
 
