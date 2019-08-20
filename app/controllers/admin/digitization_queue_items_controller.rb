@@ -1,5 +1,5 @@
 class Admin::DigitizationQueueItemsController < AdminController
-  before_action :set_admin_digitization_queue_item, only: [:show, :edit, :update, :destroy, :add_comment]
+  before_action :set_admin_digitization_queue_item, only: [:show, :edit, :update, :destroy, :add_comment, :delete_comment]
 
   # GET /admin/digitization_queue_items
   # GET /admin/digitization_queue_items.json
@@ -83,6 +83,36 @@ class Admin::DigitizationQueueItemsController < AdminController
     end
 
     redirect_to @admin_digitization_queue_item
+  end
+
+  # admin_delete_comment
+  # DELETE
+  # /admin/digitization_queue_items/delete_comment/:comment_id(.:format)
+  # admin/admin/digitization_queue_items#delete_comment
+
+  def delete_comment
+    comment = Admin::QueueItemComment.find_by_id(params['comment_id'])
+
+    if comment.nil?
+      redirect_to @admin_digitization_queue_item,
+        notice: 'Could not find this comment.'
+      return
+    end
+
+    # This is also checked on the front end -
+    # just being paranoid.
+    #
+    # TODO use standard permissions:
+    # unless can?(:delete, comment)
+    if current_user.id != comment.user_id
+      redirect_to @admin_digitization_queue_item,
+        notice: "You may not delete this comment."
+      return
+    end
+
+    comment.delete
+    redirect_to @admin_digitization_queue_item,
+      notice: 'Comment deleted.'
   end
 
   private
