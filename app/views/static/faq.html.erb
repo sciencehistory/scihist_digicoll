@@ -3,13 +3,13 @@
 
   <dl class="info">
     <dt>How do I report a problem?</dt>
-    <dd>Please send us an e-mail at <a href="mailto:digital@sciencehistory.org">digital@sciencehistory.org</a>.</dd>
+    <dd>Please send us an e-mail at <%= link_to ScihistDigicoll::Env.lookup!(:admin_email), "mailto:#{ ScihistDigicoll::Env.lookup!(:admin_email)}" %>.</dd>
 
     <dt>How do I request a copy of the images in the Digital Collections?</dt>
     <dd>All items are freely available for download via the “Download” icon at the bottom of the image. As part of our mission to make our collections available for research and outreach, the Science History Institute provides free downloads of its Digital Collections material for scholarly and general use. However, patrons are solely responsible for determining the copyright status of any materials they wish to use, investigating the ownership of the copyright, and obtaining permission for the intended use.</dd>
 
     <dt>I want to use the image I downloaded from the Digital Collections for a specific purpose (i.e., future publication or commercial product). Can you give me a rights license to do this?</dt>
-    <dd>Possession of a digital reproduction of the Science History Institute's collection materials does not constitute permission to publish, exhibit, or distribute. In most instances the Institute does not hold the copyright to its materials and cannot grant or deny permission to use them. Science History Institute staff makes every effort to inform patrons of copyrights and other restrictions that may apply to the works by providing a link to <a href="http://rightsstatements.org/en/" target="_blank">RightsStatements.org</a> or Creative Commons in the Rights field in the object’s metadata record. Additional information about the Rights Statement is provided by clicking on the link in the Rights field in an object’s metadata record. If you have a question not answered by the information provided with the image, feel free to e-mail us at <a href="mailto:digital@sciencehistory.org">digital@sciencehistory.org</a>.</dd>
+    <dd>Possession of a digital reproduction of the Science History Institute's collection materials does not constitute permission to publish, exhibit, or distribute. In most instances the Institute does not hold the copyright to its materials and cannot grant or deny permission to use them. Science History Institute staff makes every effort to inform patrons of copyrights and other restrictions that may apply to the works by providing a link to <a href="http://rightsstatements.org/en/" target="_blank">RightsStatements.org</a> or Creative Commons in the Rights field in the object’s metadata record. Additional information about the Rights Statement is provided by clicking on the link in the Rights field in an object’s metadata record. If you have a question not answered by the information provided with the image, feel free to e-mail us at <%= link_to ScihistDigicoll::Env.lookup!(:admin_email), "mailto:#{ ScihistDigicoll::Env.lookup!(:admin_email)}" %>.</dd>
 
     <dt>How do I cite an image?</dt>
     <dd>Please use “Courtesy of Science History Institute” in your credit line. When possible, we ask that you also include the title of the image or name of the collection.</dd>
@@ -21,10 +21,10 @@
     <dd>For more information on how to access the full holdings in our physical collections, see <a href="https://www.sciencehistory.org/collections">the Science History Institute’s Collections page</a>. From there you will be able to search our library catalog and the oral-history catalog, and make an appointment to schedule a research visit.</dd>
 
     <dt>I believe I own the copyright to an image, but I’m not credited. How do I tell a staff member and/or request that the item be taken down?</dt>
-    <dd>The Science History Institute makes its collections available for education and research and makes reasonable efforts to present accurate and reliable information about copyright. If you believe you hold the copyright to an item and/or want to request that an item be taken down, please e-mail us at <a href="mailto:digital@sciencehistory.org">digital@sciencehistory.org</a>, and we will consider your request. Please include the URL or the full title of the image.</dd>
+    <dd>The Science History Institute makes its collections available for education and research and makes reasonable efforts to present accurate and reliable information about copyright. If you believe you hold the copyright to an item and/or want to request that an item be taken down, please e-mail us at <%= link_to ScihistDigicoll::Env.lookup!(:admin_email), "mailto:#{ ScihistDigicoll::Env.lookup!(:admin_email)}" %>, and we will consider your request. Please include the URL or the full title of the image.</dd>
 
     <dt>Can I make recommendations to improve the metadata based on my personal experience with the objects or people represented in the image?</dt>
-    <dd>Yes! Please send an e-mail to <a href="mailto:digital@sciencehistory.org">digital@sciencehistory.org</a>. You should include the URL or the full title of the image.</dd>
+    <dd>Yes! Please send an e-mail to <%= link_to ScihistDigicoll::Env.lookup!(:admin_email), "mailto:#{ ScihistDigicoll::Env.lookup!(:admin_email)}" %>. You should include the URL or the full title of the image.</dd>
 
     <dt>How do you decide what gets included in the Digital Collections?</dt>
     <dd>We add new material on a daily basis, but only a small portion of the Science History Institute’s physical collections are represented here. Selection for digitization is guided by <%= link_to "the Science History Institute’s Digital Collections Policy", policy_path %>.</dd>
