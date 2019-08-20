@@ -152,8 +152,20 @@ Rails.application.routes.draw do
       end
       member do
         post :add_comment
+        # not sure how to do this implicitly.
+        # delete :delete_comment
       end
     end
+
+    # TODO: investigate whether this could live in the
+    # resources :digitization_queue_items > member do block.
+    # Something like delete :delete_comment
+    # but with an additional :comment_id parameter.
+    # For now, just do the obvious:
+    delete  "digitization_queue_items/:id/delete_comment/:comment_id",
+      to: "digitization_queue_items#delete_comment",
+      as: "delete_comment"
+
 
     # These 'sub-apps' are for admin-use only, but since they are sub-apps
     # aren't protected by the AdminController. We have Rails routing only
