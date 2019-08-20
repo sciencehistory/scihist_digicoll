@@ -1,5 +1,5 @@
 <div class="branded-body-font text-page">
   <h1 class="brand-alt-h1">Contact Us</h1>
 
-  <p>If you have a request or a question, first check our <%= link_to "Frequently Asked Questions", faq_path %> page. If your question is not answered there or you want to report a problem, contact us via e-mail at <a href="mailto:digital@sciencehistory.org">digital@sciencehistory.org</a>. A staff member will reply to you shortly.</p>
+  <p>If you have a request or a question, first check our <%= link_to "Frequently Asked Questions", faq_path %> page. If your question is not answered there or you want to report a problem, contact us via e-mail at <%= link_to ScihistDigicoll::Env.lookup!(:admin_email), "mailto:#{ ScihistDigicoll::Env.lookup!(:admin_email)}" %>. A staff member will reply to you shortly.</p>
 </div>
