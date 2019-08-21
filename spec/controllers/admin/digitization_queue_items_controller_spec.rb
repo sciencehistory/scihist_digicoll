@@ -8,7 +8,6 @@ RSpec.describe Admin::DigitizationQueueItemsController, :logged_in_user, type: :
       Admin::QueueItemComment.new(
         digitization_queue_item_id: queue_item.id,
         text: "Some other user's comment",
-        id:1,
         user_id:123
       ).save!
     end
