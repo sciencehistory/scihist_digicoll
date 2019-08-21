@@ -83,7 +83,7 @@
 
       <div class="error-section">
         <h2 class="h4">For more help, email...</h2>
-        <a href="mailto:digital@sciencehistory.org">digital@sciencehistory.org</a>
+        <a href="mailto:<%= ScihistDigicoll::Env.lookup!(:admin_email) %>"><%= ScihistDigicoll::Env.lookup!(:admin_email) %></a>
       </div>
 
     </div>
