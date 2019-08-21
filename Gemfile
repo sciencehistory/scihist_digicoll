@@ -89,7 +89,8 @@ gem "prawn", "~> 2.2" # creating PDFs
 gem "pdf-reader", "~> 2.2" # simple metadata extraction from pdfs
 gem 'rubyzip', '~> 1.2', require: 'zip' # for making zip files, needs explicit require 'zip' cause it's old and crotchety
 
-gem 'oai', ">= 0.4.0", "< 2.0"
+# Until oai 1.0 is released...
+gem 'oai', ">= 0.4.0", "< 2.0", git: "https://github.com/code4lib/ruby-oai.git"
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
