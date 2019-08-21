@@ -99,17 +99,17 @@
           </div>
           <div class="card-body pb-0">
             <%= simple_format(comment.text) %>
+            <% if can?(:destroy, comment) %>
+              <div class="text-right">
+                <%= link_to "Delete",
+                  admin_delete_comment_path(id: @admin_digitization_queue_item.id, comment_id: comment.id),
+                  class: "btn btn-primary mb-1",
+                  method: 'delete',
+                  data: { confirm: "Delete your comment?" }
+                %>
+              </div>
+            <%end %>
           </div>
-          <% if current_user.id == comment.user_id %>
-            <div class="text-right">
-              <%= link_to "Delete",
-                admin_delete_comment_path(id: @admin_digitization_queue_item.id, comment_id: comment.id),
-                class: "btn btn-primary mb-1",
-                method: 'delete',
-                data: { confirm: "Delete this comment?" }
-              %>
-            </div>
-          <%end %>
         </div>
       </div>
     <% end %>
