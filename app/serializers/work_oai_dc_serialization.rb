@@ -100,7 +100,7 @@ class WorkOaiDcSerialization
         end
 
         if work.description.present?
-          xml["dc"].description work.description
+          xml["dc"].description DescriptionDisplayFormatter.new(work.description).format_plain
         end
 
         # Mime types in DC:format
