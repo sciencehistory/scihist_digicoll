@@ -47,12 +47,7 @@ RSpec.feature "OAI-PMH feed", js: false do
     # validate XSD
     schema = Nokogiri::XML::Schema(File.read(oai_pmh_xsd_path))
     errors = schema.validate(xml)
-    # PA Digital is at present asking for a dc:identifier.thumbnail element which
-    # fails validation.
-    expect(
-      errors.count == 0 ||
-      ( errors.count == 1 && errors.first.message.include?("identifier.thumbnail': This element is not expected.") )
-    )
+    expect(errors.count == 0)
 
     # includes one item, which is the work, not the collection, not the non-published work.
     records = xml.xpath("//oai:record", oai: "http://www.openarchives.org/OAI/2.0/")
