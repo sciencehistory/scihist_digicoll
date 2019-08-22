@@ -2,7 +2,14 @@ require 'rails_helper'
 
 describe WorkOaiDcSerialization do
   let(:member_asset) { create(:asset, :inline_promoted_file)}
-  let(:work) { create(:work, :with_complete_metadata, representative: member_asset, members: [member_asset])}
+  let(:work) { create(:work, :with_complete_metadata,
+    creator: [
+      { category: :author, value: "Smith, Joe" },
+      { category: :editor, value: "Editor, Joe" }
+    ],
+    representative: member_asset,
+    members: [member_asset]
+  )}
 
   # hacky probably a better way to do this. :(
   let(:app_base) { "#{ScihistDigicoll::Env.app_url_base_parsed.scheme}://#{ScihistDigicoll::Env.app_url_base_parsed.host}" }
@@ -34,6 +41,7 @@ describe WorkOaiDcSerialization do
     expect(container.at_xpath("./dc:rights").text).to eq work.rights
 
     expect(container.at_xpath("./dc:creator").text).to eq creator_values(work, "author").first
+    expect(container.at_xpath("./dc:contributor").text).to eq creator_values(work, "editor").first
 
     expect(container.at_xpath("./dc:description").text).to eq work.description
 
