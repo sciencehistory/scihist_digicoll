@@ -32,6 +32,10 @@ RSpec.feature "OAI-PMH feed", js: false do
   # We use this to validate OAI-pmh:
   let(:oai_pmh_xsd_path) { Rails.root + "spec/fixtures/xsd/OAI-PMH.xsd" }
 
+  let(:public_work_url) { work_url(work) }
+  let(:work_thumb_url) { download_derivative_url(work.leaf_representative, "download_medium", disposition: :inline) }
+  let(:work_full_url) { download_derivative_url(work.leaf_representative, "download_full", disposition: :inline) }
+
   it "renders feed with just work" do
     visit(oai_provider_path(verb: "ListRecords", metadataPrefix: "oai_dc"))
 
@@ -53,16 +57,22 @@ RSpec.feature "OAI-PMH feed", js: false do
     # includes one item, which is the work, not the collection, not the non-published work.
     records = xml.xpath("//oai:record", oai: "http://www.openarchives.org/OAI/2.0/")
     expect(records.count).to eq (1)
+    record = records.first
 
-    dc_contributors = xml.xpath("//dc:contributor", dc:"http://purl.org/dc/elements/1.1/").children.map(&:to_s)
+    dc_contributors = record.xpath("//dc:contributor", dc:"http://purl.org/dc/elements/1.1/").children.map(&:to_s)
     expect(dc_contributors.map).to include("G. Henle Verlag")
 
-    dc_creators = xml.xpath("//dc:contributor", dc:"http://purl.org/dc/elements/1.1/").children.map(&:to_s)
+    dc_creators = record.xpath("//dc:contributor", dc:"http://purl.org/dc/elements/1.1/").children.map(&:to_s)
     expect(dc_contributors.map).to include("G. Henle Verlag")
 
-    record_id = records.first.at_xpath("./oai:header/oai:identifier", oai: "http://www.openarchives.org/OAI/2.0/")
+    record_id = record.at_xpath("./oai:header/oai:identifier", oai: "http://www.openarchives.org/OAI/2.0/")
     expect(record_id.text).to eq("oai:sciencehistoryorg:#{work.id}")
 
-    # TODO test thumb URL, and that it's resolvable
+    dc_identifiers = record.xpath("//dc:identifier", dc:"http://purl.org/dc/elements/1.1/").collect(&:text)
+    expect(dc_identifiers).to include(public_work_url)
+    # PA digital wants the thumb in there too, I dunno.
+    expect(dc_identifiers).to include(work_thumb_url)
+
+    expect(record.at_xpath("//edm:object", edm: "http://www.europeana.eu/schemas/edm/")&.text).to eq work_full_url
   end
 end
