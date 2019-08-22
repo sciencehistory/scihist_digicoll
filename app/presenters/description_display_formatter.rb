@@ -9,14 +9,16 @@ require 'rails_autolink'
 #     DescriptionDisplayFormatter.new(work.description, truncate:true).format_plain
 #
 class DescriptionDisplayFormatter < ViewModel
+  DEFAULT_TRUNCATE = 220
+
   valid_model_type_names 'String', 'NilClass'
 
-  def initialize(model, options ={})
-
-    # truncate: true is used in _index_result.html.erb .
-    @truncate = !! options.delete(:truncate)
+  # @param str [String] description string
+  # @option truncate [Integer,Boolean] truncate string to this amount, or `true` for default 220. Default value is nil, for not truncate.
+  def initialize(str, options ={})
+    @truncate = options.delete(:truncate)
+    @truncate = DEFAULT_TRUNCATE if @truncate == true
     super
-
   end
 
   alias_method :description, :model
@@ -24,6 +26,7 @@ class DescriptionDisplayFormatter < ViewModel
   def format
     return "".html_safe if description.blank?
     result = sanitize(description)
+
     if @truncate
       result = truncate_description(result)
     end
@@ -46,7 +49,7 @@ class DescriptionDisplayFormatter < ViewModel
     str = strip_tags(description)
 
     if @truncate
-      str = "#{truncate(str, escape: false, length: 400, separator: /\s/)}"
+      str = "#{truncate(str, escape: false, length: @truncate, separator: /\s/)}"
     end
 
     return str
@@ -61,7 +64,7 @@ class DescriptionDisplayFormatter < ViewModel
 
   # Truncate, if requested.
   def truncate_description(str)
-    HtmlAwareTruncation.truncate_html(str, length: 220, separator: /\s/)
+    HtmlAwareTruncation.truncate_html(str, length: @truncate, separator: /\s/)
   end
 
   # Convert line breaks to paragraphs.

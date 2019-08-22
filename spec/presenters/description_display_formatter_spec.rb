@@ -30,12 +30,19 @@ describe DescriptionDisplayFormatter, type: :model do
 
   describe "truncation" do
     long_html_string = untouched * 20
-    truncated_output = DescriptionDisplayFormatter.
-      new(long_html_string, truncate:true).format
+    $debugging = true
+    truncated_output = DescriptionDisplayFormatter.new(long_html_string, truncate:true).format
+    $debugging = false
 
     it "correctly truncates a long html string" do
       expect(truncated_output.length).to be < long_html_string.length
     end
+
+    it "can truncate to explicit value" do
+      truncated = DescriptionDisplayFormatter.new(long_html_string, truncate: 20).format
+      expect(helpers.strip_tags(truncated).length).to be <= 20
+    end
+
   end
 
   describe "#format_plain" do
