@@ -77,7 +77,9 @@ class WorkOaiDcSerialization
 
         xml["dc"].title work.title
 
-        xml["dc"].rights work.rights
+        if work.rights.present?
+          xml["dc"].rights work.rights
+        end
 
         dc_creators.each do |creator|
           xml["dc"].creator creator
@@ -97,7 +99,9 @@ class WorkOaiDcSerialization
           xml["dc"].date display_dates.join(", ")
         end
 
-        xml["dc"].description work.description
+        if work.description.present?
+          xml["dc"].description work.description
+        end
 
         # Mime types in DC:format
         # work_presenter.content_types.each do |ctype|
@@ -154,7 +158,10 @@ class WorkOaiDcSerialization
         if medium_download_size_url.present?
           xml["edm"].preview medium_download_size_url
         end
-        xml["edm"].rights work.rights
+
+        if work.rights.present?
+          xml["edm"].rights work.rights
+        end
 
         Array(work.genre).each do |genre|
           xml["edm"].hasType genre.downcase
