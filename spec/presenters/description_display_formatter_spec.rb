@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe DescriptionDisplayFormatter, type: :model do
   url = "http://www.randomurl.org"
-  untouched = "<p><cite>These</cite><i>tags</i><b>are</b><a href=\"#{url}\">OK</a>.</p>"
+  untouched = "<p><cite>These</cite><i>tags</i> <b>are</b><a href=\"#{url}\">OK</a>. </p>"
 
   describe "no truncation" do
     {
@@ -38,5 +38,25 @@ describe DescriptionDisplayFormatter, type: :model do
     end
   end
 
+  describe "#format_plain" do
+    let(:html_description) { untouched }
+    let(:formatted) { DescriptionDisplayFormatter.new(html_description).format_plain }
 
+    it "is not html_safe" do
+      expect(formatted).not_to be_html_safe
+    end
+
+    it "has html tags removed" do
+      expect(formatted).to eq helpers.strip_tags(html_description)
+    end
+
+    describe "with very long description" do
+      let(:html_description) { untouched * 100 }
+      let(:formatted) { DescriptionDisplayFormatter.new(html_description, truncate: 400).format_plain }
+
+      it "truncates" do
+        expect(formatted.length).to be < 400
+      end
+    end
+  end
 end
