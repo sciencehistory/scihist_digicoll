@@ -3,6 +3,7 @@ require 'rails_helper'
 describe WorkOaiDcSerialization do
   let(:member_asset) { create(:asset, :inline_promoted_file)}
   let(:work) { create(:work, :with_complete_metadata,
+    description: "This starts out with <b>tags</b>\n\nAnother paragraph",
     creator: [
       { category: :author, value: "Smith, Joe" },
       { category: :editor, value: "Editor, Joe" }
@@ -43,7 +44,7 @@ describe WorkOaiDcSerialization do
     expect(container.at_xpath("./dc:creator").text).to eq creator_values(work, "author").first
     expect(container.at_xpath("./dc:contributor").text).to eq creator_values(work, "editor").first
 
-    expect(container.at_xpath("./dc:description").text).to eq work.description
+    expect(container.at_xpath("./dc:description").text).to eq work.description.gsub(/<[^>]*>/, '') # strip html tags
 
     #expect(container.at_xpath("./dc:format").text).to eq work.file_sets.first.mime_type
 
@@ -59,10 +60,8 @@ describe WorkOaiDcSerialization do
     expect(container.at_xpath("./edm:object").text).to eq full_jpg_url
     expect(container.at_xpath("./edm:preview").text).to eq work_thumb_url
 
-    # TODO make sure we take html out of description
     # TODO xml["dc"].format for mime/types of all included files
     # TODO test more than one thing?
-    # TODO test contributors not just creators
   end
 
 end
