@@ -56,7 +56,8 @@ module CapServerAutodiscover
       filters: [
         {name:'instance-state-code', values:["16"]},
         {name: 'tag:Application', values: [fetch(:server_autodiscover_application)]},
-        {name: 'tag:Service_level', values: [fetch(:server_autodiscover_service_level)]}
+        {name: 'tag:Service_level', values: [fetch(:server_autodiscover_service_level)]},
+        {name: 'tag-key', values:["Capistrano_roles"]}
       ]
     })
 
