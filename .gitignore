@@ -37,3 +37,5 @@ yarn-debug.log*
 scripts/import/fedora_creds.sh
 # Ignore the aws credential file
 /cap_aws_credentials.yml
+
+/public/sitemap
