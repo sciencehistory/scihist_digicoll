@@ -35,14 +35,18 @@ describe DateDisplayFormatter, type: :model do
     let(:date_array) {[
       Work::DateOfWork.new(start: "1912", start_qualifier: "century"),
       Work::DateOfWork.new(start: "1800"),
+      Work::DateOfWork.new,
       Work::DateOfWork.new(start: "1800", finish: "1900")
     ]}
 
     it "formats them all in order" do
       # should it sort them? It doesn't yet...
-      expect(DateDisplayFormatter.new(date_array).display_dates).to eq( date_array.collect { |d|
-        DateDisplayFormatter.new([d]).display_dates
-      }.flatten)
+      expect(DateDisplayFormatter.new(date_array).display_dates).to eq(
+        date_array.
+          sort_by {|d| d.start || "0" }.
+          collect { |d| DateDisplayFormatter.new([d]).display_dates}.
+          flatten
+      )
     end
   end
 end
