@@ -155,7 +155,7 @@ namespace :chf do
         # where to restart, sorry.
 
         # the querystring doesn't come through without the quotes
-        execute :curl, "-s", '"localhost:8983/solr/admin/cores?action=reload&core=collection1"', "--write-out", '"\nhttp response status: %{http_code}\n"'
+        execute :curl, "-s", '"localhost:8983/solr/admin/cores?action=reload&core=scihist_digicoll"', "--write-out", '"\nhttp response status: %{http_code}\n"'
       end
     end
   end
