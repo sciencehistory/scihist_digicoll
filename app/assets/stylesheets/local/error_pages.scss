@@ -1,0 +1,74 @@
+// our static error pages
+
+.error-page {
+  .error-body {
+    display: flex;
+    width: 100%;
+
+    .column {
+      flex: 1;
+      flex-shrink: 0;
+      padding: 0 2%;
+    }
+
+    .image-link-wrapper {
+      display: block;
+      position: relative;
+      .caption {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        padding: 4px 8px;
+        background-color: transparentize($dark, .3);
+        color: white;
+      }
+    }
+
+    .hero-image {
+      max-width: 100%;
+    }
+
+    .error-headline {
+      color: $brand-red;
+      margin-top: 0;
+    }
+
+    .error-subheadline {
+      color: $brand-dark-grey;
+      margin-top: 1.375rem;
+    }
+
+    .error-section {
+      margin: 34px 0;
+      h2 {
+        color: $brand-dark-blue;
+        &:before {
+          font-family: FontAwesome;
+          content: '\F0A4'; // hand-right
+          padding-right: 0.4em;
+          color: $brand-red;
+        }
+      }
+    }
+
+    #honeybadger_feedback_submit {
+      height: auto;
+      @extend .btn;
+      @extend .btn-primary;
+    }
+
+    @media (max-width: 768px) {
+      flex-wrap: wrap;
+      .column {
+        width: 100%;
+        flex: initial;
+      }
+      .text-column {
+        order: 1;
+      }
+      .image-column {
+        order: 2;
+      }
+    }
+  }
+}
