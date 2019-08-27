@@ -23,6 +23,10 @@ Rails.application.routes.draw do
     delete 'logout', to: 'devise/sessions#destroy', as: :destroy_user_session
   end
 
+  # Dynamic robots.txt
+  # this will fall through to ./views/application/robots.txt.erb, no need for an action method
+  get 'robots.txt', to: "application#robots.txt", format: "text"
+
   # On-demand derivatives
   constraints(derivative_type: Regexp.union(OnDemandDerivative.derivative_type_definitions.keys.collect(&:to_s))) do
     get "works/:id/:derivative_type", to: "on_demand_derivatives#on_demand_status", as: :on_demand_derivative_status
