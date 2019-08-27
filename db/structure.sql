@@ -9,17 +9,17 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: -
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
 --
 
-CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION pg_trgm; Type: COMMENT; Schema: -; Owner: -
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
 --
 
-COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching based on trigrams';
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
@@ -139,6 +139,41 @@ CREATE SEQUENCE public.digitization_queue_items_id_seq
 --
 
 ALTER SEQUENCE public.digitization_queue_items_id_seq OWNED BY public.digitization_queue_items.id;
+
+
+--
+-- Name: fixity_check_logs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.fixity_check_logs (
+    id bigint NOT NULL,
+    asset_id uuid NOT NULL,
+    passed boolean,
+    expected_result character varying,
+    actual_result character varying,
+    checked_uri character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: fixity_check_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.fixity_check_logs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: fixity_check_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.fixity_check_logs_id_seq OWNED BY public.fixity_check_logs.id;
 
 
 --
@@ -306,6 +341,7 @@ CREATE TABLE public.searches (
 --
 
 CREATE SEQUENCE public.searches_id_seq
+    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -366,6 +402,13 @@ ALTER TABLE ONLY public.digitization_queue_items ALTER COLUMN id SET DEFAULT nex
 
 
 --
+-- Name: fixity_check_logs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.fixity_check_logs ALTER COLUMN id SET DEFAULT nextval('public.fixity_check_logs_id_seq'::regclass);
+
+
+--
 -- Name: kithe_derivatives id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -414,6 +457,14 @@ ALTER TABLE ONLY public.ar_internal_metadata
 
 ALTER TABLE ONLY public.digitization_queue_items
     ADD CONSTRAINT digitization_queue_items_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: fixity_check_logs fixity_check_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.fixity_check_logs
+    ADD CONSTRAINT fixity_check_logs_pkey PRIMARY KEY (id);
 
 
 --
@@ -470,6 +521,27 @@ ALTER TABLE ONLY public.searches
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: by_asset_and_checked_uri; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX by_asset_and_checked_uri ON public.fixity_check_logs USING btree (asset_id, checked_uri);
+
+
+--
+-- Name: index_fixity_check_logs_on_asset_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_fixity_check_logs_on_asset_id ON public.fixity_check_logs USING btree (asset_id);
+
+
+--
+-- Name: index_fixity_check_logs_on_checked_uri; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_fixity_check_logs_on_checked_uri ON public.fixity_check_logs USING btree (checked_uri);
 
 
 --
@@ -578,13 +650,6 @@ CREATE UNIQUE INDEX index_users_on_reset_password_token ON public.users USING bt
 
 
 --
--- Name: trgm_idx_kithe_models_title; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX trgm_idx_kithe_models_title ON public.kithe_models USING gin (title public.gin_trgm_ops);
-
-
---
 -- Name: kithe_model_contains fk_rails_091010187b; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -598,6 +663,14 @@ ALTER TABLE ONLY public.kithe_model_contains
 
 ALTER TABLE ONLY public.kithe_models
     ADD CONSTRAINT fk_rails_210e0ee046 FOREIGN KEY (digitization_queue_item_id) REFERENCES public.digitization_queue_items(id);
+
+
+--
+-- Name: fixity_check_logs fk_rails_3424e993fb; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.fixity_check_logs
+    ADD CONSTRAINT fk_rails_3424e993fb FOREIGN KEY (asset_id) REFERENCES public.kithe_models(id);
 
 
 --
@@ -670,7 +743,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181211182457'),
 ('20190107205722'),
 ('20190107222521'),
-('20190109000356'),
 ('20190110154359'),
 ('20190219225344'),
 ('20190226135744'),
@@ -679,6 +751,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190305202051'),
 ('20190404155001'),
 ('20190422201311'),
-('20190716180327');
+('20190716180327'),
+('20190827124516');
 
 
