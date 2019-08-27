@@ -1,10 +1,20 @@
 require 'sitemap_generator'
 require 'scihist_digicoll/env'
 
+# Global variable hackily used only so tests can change it to not write to s3 under test
+unless $force_local_sitemap_generation
+  sitemap_adapter = SitemapGenerator::AwsSdkAdapter.new(
+    ScihistDigicoll::Env.lookup!("s3_sitemap_bucket"),
+    aws_access_key_id: ScihistDigicoll::Env.lookup!("aws_access_key_id"),
+    aws_secret_access_key: ScihistDigicoll::Env.lookup!("aws_secret_access_key"),
+    aws_region: ScihistDigicoll::Env.lookup!("aws_region")
+  )
+end
 
 SitemapGenerator::Sitemap.create(
-  sitemaps_path: 'sitemap/',
-  default_host: ScihistDigicoll::Env.lookup!(:app_url_base)
+  sitemaps_path: ScihistDigicoll::Env.lookup!(:sitemap_path),
+  default_host: ScihistDigicoll::Env.lookup!(:app_url_base),
+  adapter: sitemap_adapter
 ) do
 
   add about_path, changefreq: 'monthly'
