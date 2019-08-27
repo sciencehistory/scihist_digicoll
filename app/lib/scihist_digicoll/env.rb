@@ -86,20 +86,14 @@ module ScihistDigicoll
     # for maintenance tasks.
     define_key :logins_disabled, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
 
+    # For ActiveJob queue, among maybe other things.
+    define_key :persistent_redis_host, default: "localhost:6379"
+
     define_key :s3_bucket_originals
     define_key :s3_bucket_derivatives
     define_key :s3_bucket_uploads
     define_key :s3_bucket_on_demand_derivatives
     define_key :s3_bucket_dzi
-
-    # For ActiveJob queue, among maybe other things.
-    define_key :persistent_redis_host, default: "localhost:6379"
-
-    # shared bucket for dev, everything will be on there
-    # This bucket name is not right. Really confused what the buckets are.
-    define_key :s3_dev_bucket, default: "kithe-files-dev"
-    # shared between different users, let's segregate em
-    define_key :s3_dev_prefix, default: -> { "#{ENV['USER']}.#{Socket.gethostname}" }
 
     define_key :ingest_bucket, default: -> {
       if Rails.env.production?
@@ -114,6 +108,15 @@ module ScihistDigicoll
         "scih-uploads-dev"
       end
     }
+
+
+    # shared bucket for dev, everything will be on there
+    # This bucket name is not right. Really confused what the buckets are.
+    define_key :s3_dev_bucket, default: "kithe-files-dev"
+    # shared between different users, let's segregate em
+    define_key :s3_dev_prefix, default: -> { "#{ENV['USER']}.#{Socket.gethostname}" }
+
+
 
     # production is s3 buckets configured for production. dev_s3 is a single
     # s3 bucket, useful in dev. dev_file is local filesystem, default in test, can be useful
