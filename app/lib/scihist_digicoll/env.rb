@@ -47,6 +47,16 @@ module ScihistDigicoll
     define_key :secret_key_base
     define_key :service_level, allows: ["staging", "production", nil]
 
+    def self.staging?
+      @staging ||= lookup(:service_level) == "staging"
+    end
+
+    def self.production?
+      @production ||= lookup(:service_level) == "production"
+    end
+
+
+
     # Rails-style db url, eg postgres://myuser:mypass@localhost/somedatabase
     define_key :rails_database_url
 
@@ -62,7 +72,8 @@ module ScihistDigicoll
       # defaults for test/dev, otherwise insist on getting from local_env.yml,
       # no default.
       if Rails.env.test?
-        "http://test.app"
+        # This seems to match what Rails/Capybara/Rspec are using/expect
+        "http://127.0.0.1"
       elsif Rails.env.development?
         "http://localhost:3000"
       end
@@ -86,20 +97,14 @@ module ScihistDigicoll
     # for maintenance tasks.
     define_key :logins_disabled, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
 
+    # For ActiveJob queue, among maybe other things.
+    define_key :persistent_redis_host, default: "localhost:6379"
+
     define_key :s3_bucket_originals
     define_key :s3_bucket_derivatives
     define_key :s3_bucket_uploads
     define_key :s3_bucket_on_demand_derivatives
     define_key :s3_bucket_dzi
-
-    # For ActiveJob queue, among maybe other things.
-    define_key :persistent_redis_host, default: "localhost:6379"
-
-    # shared bucket for dev, everything will be on there
-    # This bucket name is not right. Really confused what the buckets are.
-    define_key :s3_dev_bucket, default: "kithe-files-dev"
-    # shared between different users, let's segregate em
-    define_key :s3_dev_prefix, default: -> { "#{ENV['USER']}.#{Socket.gethostname}" }
 
     define_key :ingest_bucket, default: -> {
       if Rails.env.production?
@@ -114,6 +119,21 @@ module ScihistDigicoll
         "scih-uploads-dev"
       end
     }
+
+    define_key :s3_sitemap_bucket, default: -> {
+      # for now we keep Google sitemaps in our derivatives bucket
+      ScihistDigicoll::Env.lookup(:s3_bucket_derivatives)
+    }
+    define_key :sitemap_path, default: "__sitemaps/"
+
+
+    # shared bucket for dev, everything will be on there
+    # This bucket name is not right. Really confused what the buckets are.
+    define_key :s3_dev_bucket, default: "kithe-files-dev"
+    # shared between different users, let's segregate em
+    define_key :s3_dev_prefix, default: -> { "#{ENV['USER']}.#{Socket.gethostname}" }
+
+
 
     # production is s3 buckets configured for production. dev_s3 is a single
     # s3 bucket, useful in dev. dev_file is local filesystem, default in test, can be useful
