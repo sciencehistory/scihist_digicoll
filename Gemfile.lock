@@ -1,13 +1,4 @@
 GIT
-  remote: https://github.com/code4lib/ruby-oai.git
-  revision: 5e4e4b5d537377389b1d19c7c93226b20e40931b
-  specs:
-    oai (0.4.0)
-      builder (>= 3.1.0)
-      faraday
-      faraday_middleware
-
-GIT
   remote: https://github.com/jrochkind/attr_json
   revision: 3676174b637496507c526d09c776d3877ff99426
   specs:
@@ -347,6 +338,10 @@ GEM
     nio4r (2.4.0)
     nokogiri (1.10.4)
       mini_portile2 (~> 2.4.0)
+    oai (1.0.0.beta1)
+      builder (>= 3.1.0)
+      faraday
+      faraday_middleware
     oauth2 (1.4.1)
       faraday (>= 0.8, < 0.16.0)
       jwt (>= 1.0, < 3.0)
@@ -633,7 +628,7 @@ DEPENDENCIES
   kaminari (~> 1.0)
   kithe!
   listen (>= 3.0.5, < 3.2)
-  oai (>= 0.4.0, < 2.0)!
+  oai (>= 1.0.0.beta1, < 2.0)
   pdf-reader (~> 2.2)
   pg (>= 0.18, < 2.0)
   prawn (~> 2.2)
