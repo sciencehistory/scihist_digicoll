@@ -72,7 +72,8 @@ module ScihistDigicoll
       # defaults for test/dev, otherwise insist on getting from local_env.yml,
       # no default.
       if Rails.env.test?
-        "http://test.app"
+        # This seems to match what Rails/Capybara/Rspec are using/expect
+        "http://127.0.0.1"
       elsif Rails.env.development?
         "http://localhost:3000"
       end
