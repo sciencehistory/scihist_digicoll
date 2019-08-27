@@ -61,7 +61,7 @@ RSpec.feature "OAI-PMH feed", js: false do
     expect(dc_contributors.map).to include("G. Henle Verlag")
 
     record_id = record.at_xpath("./oai:header/oai:identifier", oai: "http://www.openarchives.org/OAI/2.0/")
-    expect(record_id.text).to eq("oai:sciencehistoryorg:#{work.id}")
+    expect(record_id.text).to eq("oai:sciencehistoryorg:#{work.friendlier_id}")
 
     dc_identifiers = record.xpath("//dc:identifier", dc:"http://purl.org/dc/elements/1.1/").collect(&:text)
     expect(dc_identifiers).to include(public_work_url)

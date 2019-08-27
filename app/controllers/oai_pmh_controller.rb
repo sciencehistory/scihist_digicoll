@@ -12,7 +12,10 @@
       sample_id (Work.first.friendlier_id rescue "tq57nr00k")
 
       # Note we limit to published true, and pre-load leaf_representative for performance
-      source_model OAI::Provider::ActiveRecordWrapper.new(Work.where(published: true).includes(:leaf_representative))
+      source_model OAI::Provider::ActiveRecordWrapper.new(
+        Work.where(published: true).includes(:leaf_representative),
+        identifier_field: :friendlier_id
+      )
     end
 
 
