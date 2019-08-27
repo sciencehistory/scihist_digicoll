@@ -47,6 +47,16 @@ module ScihistDigicoll
     define_key :secret_key_base
     define_key :service_level, allows: ["staging", "production", nil]
 
+    def self.staging?
+      @staging ||= lookup(:service_level) == "staging"
+    end
+
+    def self.production?
+      @production ||= lookup(:service_level) == "production"
+    end
+
+
+
     # Rails-style db url, eg postgres://myuser:mypass@localhost/somedatabase
     define_key :rails_database_url
 
@@ -108,6 +118,12 @@ module ScihistDigicoll
         "scih-uploads-dev"
       end
     }
+
+    define_key :s3_sitemap_bucket, default -> {
+      # for now we keep Google sitemaps in our derivatives bucket
+      ScihistDigicoll::Env.lookup(:s3_bucket_derivatives)
+    }
+    define_key :sitemap_path, default: "__sitemaps/"
 
 
     # shared bucket for dev, everything will be on there
