@@ -119,7 +119,7 @@ module ScihistDigicoll
       end
     }
 
-    define_key :s3_sitemap_bucket, default -> {
+    define_key :s3_sitemap_bucket, default: -> {
       # for now we keep Google sitemaps in our derivatives bucket
       ScihistDigicoll::Env.lookup(:s3_bucket_derivatives)
     }
