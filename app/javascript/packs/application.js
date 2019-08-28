@@ -9,6 +9,9 @@
 
 // fetch polyfill for IE11, used by viewer, on-demand downlaods, and other local code.
 import 'whatwg-fetch';
+// The whatwg-fetch polyfill requires a promise polyfill too, for browsers that don't
+// have promises, and IE11 is one, so.
+import 'promise-polyfill/src/polyfill';
 
 import '../src/js/playlist.js'
 import '../src/js/init_popovers.js';
