@@ -56,7 +56,8 @@ module CapServerAutodiscover
       filters: [
         {name:'instance-state-code', values:["16"]},
         {name: 'tag:Application', values: [fetch(:server_autodiscover_application)]},
-        {name: 'tag:Service_level', values: [fetch(:server_autodiscover_service_level)]}
+        {name: 'tag:Service_level', values: [fetch(:server_autodiscover_service_level)]},
+        {name: 'tag-key', values:["Capistrano_roles"]}
       ]
     })
 
@@ -69,9 +70,10 @@ module CapServerAutodiscover
       capistrano_roles = aws_server.tags.find {|tag| tag["key"]=="Capistrano_roles"}.value.split(",")
       roles_defined += capistrano_roles
 
-      server aws_server.public_ip_address, user: fetch(:ssh_user), roles: capistrano_roles
-      puts "  server '#{aws_server.public_ip_address}', roles: #{capistrano_roles.collect(&:to_sym).collect(&:inspect).join(", ")}"
+      server_name = aws_server.tags.find {|t| t["key"] == "Name" }.value
 
+      server aws_server.public_ip_address, user: fetch(:ssh_user), roles: capistrano_roles
+      puts "  server '#{aws_server.public_ip_address}', roles: #{capistrano_roles.collect(&:to_sym).collect(&:inspect).join(", ")} # name: #{server_name}"
     end
 
     puts "\n"

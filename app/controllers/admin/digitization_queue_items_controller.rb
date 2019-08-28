@@ -1,5 +1,5 @@
 class Admin::DigitizationQueueItemsController < AdminController
-  before_action :set_admin_digitization_queue_item, only: [:show, :edit, :update, :destroy, :add_comment]
+  before_action :set_admin_digitization_queue_item, only: [:show, :edit, :update, :destroy, :add_comment, :delete_comment]
 
   # GET /admin/digitization_queue_items
   # GET /admin/digitization_queue_items.json
@@ -83,6 +83,23 @@ class Admin::DigitizationQueueItemsController < AdminController
     end
 
     redirect_to @admin_digitization_queue_item
+  end
+
+  # admin_delete_comment
+  # DELETE
+  # /admin/digitization_queue_items/:id/delete_comment/:comment_id(.:format)
+  # admin/digitization_queue_items#delete_comment
+  def delete_comment
+    comment = Admin::QueueItemComment.find_by_id(params['comment_id'])
+    raise ArgumentError.new( 'Could not find this comment.') if comment.nil?
+    if can?(:destroy, comment)
+      comment.delete
+      notice = 'Comment deleted.'
+    else
+      notice = 'You may not delete this comment.'
+    end
+    redirect_to @admin_digitization_queue_item,
+      notice: notice
   end
 
   private

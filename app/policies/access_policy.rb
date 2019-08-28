@@ -21,12 +21,21 @@ class AccessPolicy
       can :publish, Asset
 
       can :admin, User
+
+      can :destroy, Admin::QueueItemComment do |comment, user|
+        comment.user_id == user.id
+      end
     end
 
     # Any logged-in staff considered staff at present
     role :staff, proc { |user| !user.nil? } do
       can :read, Kithe::Model # whether publisehd or not
       can :update, Kithe::Model
+
+      can :destroy, Admin::QueueItemComment do |comment, user|
+        comment.user_id == user.id
+      end
+
     end
 
     role :public do
