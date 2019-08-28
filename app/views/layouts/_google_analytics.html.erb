@@ -1,0 +1,26 @@
+<%#
+  Google analytics tracker code, should be included 'near top of <head> tag'
+
+  https://developers.google.com/analytics/devguides/collection/analyticsjs/
+
+  We should only have an Env google_analytics_property_id in environments we want to track, production.
+-%>
+
+<% if property_id = ScihistDigicoll::Env.lookup(:google_analytics_property_id) %>
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', '<%= property_id %>', 'auto');
+ga('send', 'pageview');
+</script>
+<% else %>
+<%# We are not doing Google Analytics tracking in this environment, but will no-op ga()
+    function so code trying to send custom events etc doesn't error, it just no-ops. -%>
+<script>
+
+  window.ga = function() {};
+</script>
+<% end %>
