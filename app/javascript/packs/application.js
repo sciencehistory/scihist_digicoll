@@ -7,10 +7,11 @@
 // To reference this file, add <%= javascript_pack_tag 'application' %> to the appropriate
 // layout file, like app/views/layouts/application.html.erb
 
-import '../src/js/admin/member_sortable';
-import '../src/js/admin/tab_selection_in_anchor';
-import '../src/js/admin/simple_uppy_file_input';
-import '../src/js/admin/uppy_dashboard.js';
+// fetch polyfill for IE11, used by viewer, on-demand downlaods, and other local code.
+import 'whatwg-fetch';
+// The whatwg-fetch polyfill requires a promise polyfill too, for browsers that don't
+// have promises, and IE11 is one, so.
+import 'promise-polyfill/src/polyfill';
 
 import '../src/js/playlist.js'
 import '../src/js/init_popovers.js';
