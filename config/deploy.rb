@@ -119,23 +119,9 @@ namespace :deploy do
       # end
     end
   end
-
-  after "deploy:assets:precompile", "chf:link_custom_error_pages"
 end
 
 namespace :chf do
-
-  desc "link our static html error pages in public/"
-  task "link_custom_error_pages" do
-    on roles(:web) do
-      within release_path do
-        ["404.html", "500.html"].each do |filename|
-          execute "./config/deploy/bin/link_custom_error_pages.rb", filename
-        end
-      end
-    end
-  end
-
   # Restart resque-pool.
   desc "Restart resque-pool"
   task :resquepoolrestart do
