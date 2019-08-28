@@ -121,7 +121,7 @@ namespace :deploy do
   end
 end
 
-namespace :chf do
+namespace :scihist do
   # Restart resque-pool.
   desc "Restart resque-pool"
   task :resquepoolrestart do
@@ -129,7 +129,7 @@ namespace :chf do
       execute :sudo, "/usr/sbin/service resque-pool restart"
     end
   end
-  after "deploy:symlink:release", "chf:resquepoolrestart"
+  after "deploy:symlink:release", "scihist:resquepoolrestart"
 
   desc "add solr_restart=true to your cap invocation (e.g. on first solr deploy), otherwise it will reload config files"
   task :restart_or_reload_solr do
@@ -145,5 +145,5 @@ namespace :chf do
       end
     end
   end
-  after "deploy:log_revision", "chf:restart_or_reload_solr"
+  after "deploy:log_revision", "scihist:restart_or_reload_solr"
 end
