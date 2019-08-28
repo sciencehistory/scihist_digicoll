@@ -119,23 +119,9 @@ namespace :deploy do
       # end
     end
   end
-
-  after "deploy:assets:precompile", "chf:link_custom_error_pages"
 end
 
-namespace :chf do
-
-  desc "link our static html error pages in public/"
-  task "link_custom_error_pages" do
-    on roles(:web) do
-      within release_path do
-        ["404.html", "500.html"].each do |filename|
-          execute "./config/deploy/bin/link_custom_error_pages.rb", filename
-        end
-      end
-    end
-  end
-
+namespace :scihist do
   # Restart resque-pool.
   desc "Restart resque-pool"
   task :resquepoolrestart do
@@ -143,7 +129,7 @@ namespace :chf do
       execute :sudo, "/usr/sbin/service resque-pool restart"
     end
   end
-  after "deploy:symlink:release", "chf:resquepoolrestart"
+  after "deploy:symlink:release", "scihist:resquepoolrestart"
 
   desc "add solr_restart=true to your cap invocation (e.g. on first solr deploy), otherwise it will reload config files"
   task :restart_or_reload_solr do
@@ -159,5 +145,5 @@ namespace :chf do
       end
     end
   end
-  after "deploy:log_revision", "chf:restart_or_reload_solr"
+  after "deploy:log_revision", "scihist:restart_or_reload_solr"
 end
