@@ -25,9 +25,9 @@ describe DziFiles do
   end
 
   describe "Asset life-cycle automatic actions", queue_adapter: :test do
-    let(:asset) { create(:asset, :inline_promoted_file, :bg_derivatives)}
-
     describe "asset creation" do
+      let(:asset) { create(:asset, :inline_promoted_file, :bg_derivatives)}
+
       it "queues dzi creation" do
         asset
         expect(CreateDziJob).to have_been_enqueued.with(asset)
@@ -64,13 +64,16 @@ describe DziFiles do
     end
 
     describe "asset file change" do
-      let(:asset) { create(:asset_with_faked_file).tap {|a| a.dzi_file.create } }
+      let(:asset) {
+        create(:asset_with_faked_file, faked_file: File.open((Rails.root + "spec/test_support/images/30x30.png").to_s)).
+        tap {|a| a.dzi_file.create }
+      }
 
       it "deletes original and creates new" do
         asset.set_promotion_directives(promote: :inline)
         original_dzi_id = asset.dzi_file.dzi_uploaded_file.id
 
-        asset.file = File.open((Rails.root + "spec/test_support/pdf/sample.pdf").to_s)
+        asset.file = File.open((Rails.root + "spec/test_support/images/30x30.jpg").to_s)
         asset.save!
 
         expect(DeleteDziJob).to have_been_enqueued.once.with(original_dzi_id)
@@ -78,5 +81,27 @@ describe DziFiles do
       end
     end
 
+    describe "non-image file" do
+      describe "asset creation" do
+        let(:asset) {
+          create(:asset_with_faked_file, faked_file: File.open((Rails.root + "spec/test_support/pdf/sample.pdf").to_s)).
+          tap {|a| a.dzi_file.create }
+        }
+
+        it "does not queue dzi creation" do
+          asset
+          expect(CreateDziJob).not_to have_been_enqueued.with(asset)
+        end
+      end
+
+      describe "asset deletion" do
+        let(:asset) { create(:asset_with_faked_file, faked_file: File.open((Rails.root + "spec/test_support/pdf/sample.pdf").to_s)) }
+
+        it "does not raise" do
+          asset.set_promotion_directives(delete: :inline)
+          asset.destroy
+        end
+      end
+    end
   end
 end
