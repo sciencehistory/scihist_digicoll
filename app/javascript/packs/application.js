@@ -7,6 +7,9 @@
 // To reference this file, add <%= javascript_pack_tag 'application' %> to the appropriate
 // layout file, like app/views/layouts/application.html.erb
 
+// fetch polyfill for IE11, used by viewer, on-demand downlaods, and other local code.
+import 'whatwg-fetch';
+
 import '../src/js/playlist.js'
 import '../src/js/init_popovers.js';
 import '../src/js/accept_cookies_banner.js';
