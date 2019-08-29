@@ -1,0 +1,30 @@
+// https://github.com/devbridge/jQuery-Autocomplete/blob/52e4899f55b027e434b19f24c9634aa183e877ef/readme.md#styling
+// https://github.com/devbridge/jQuery-Autocomplete/wiki/Bootstrap-3-Styling
+
+.autocomplete-selected {
+  background: $dropdown-link-hover-bg;
+  color: $dropdown-link-hover-color;
+}
+
+.autocomplete-suggestion {
+  cursor: pointer;
+  overflow: hidden; // From the jQuery Autocomplete README.
+  padding: $dropdown-item-padding-y $dropdown-item-padding-x; // Same as .dropdown-menu links.
+}
+
+.autocomplete-no-suggestion {
+  padding: $dropdown-item-padding-y $dropdown-item-padding-x;
+}
+
+.autocomplete-suggestions {
+  padding: $dropdown-padding-y 0;
+  margin: $dropdown-spacer 0 0; // override default ul
+  @include font-size($dropdown-font-size);
+  color: $dropdown-color;
+  background-color: $dropdown-bg;
+  border: $dropdown-border-width solid $dropdown-border-color;
+  @include border-radius($dropdown-border-radius);
+  @include box-shadow($dropdown-box-shadow);
+
+  overflow: auto;
+}
