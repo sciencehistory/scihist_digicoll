@@ -32,9 +32,9 @@ jQuery( document ).ready(function() {
         }
 
         return {
-            suggestions: $.map(response, function(dataItem) {
-                return { value: dataItem.label, data: dataItem.value };
-            })
+          suggestions: $.map(response, function(dataItem) {
+            return { value: dataItem.label, data: dataItem.value };
+          })
         };
       },
 
@@ -50,7 +50,7 @@ jQuery( document ).ready(function() {
         // you've changed anything, but minimized and that's not too horrible.
         var input = $(this);
         input.autocomplete('disable');
-        this.value = suggestion.data;
+        this.value = suggestion.data || suggestion.value;
 
         $(this).one("keydown", function() { input.autocomplete("enable") })
       }
