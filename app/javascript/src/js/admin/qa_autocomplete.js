@@ -7,7 +7,7 @@ import 'devbridge-autocomplete';
 
 jQuery( document ).ready(function() {
 
-  $("*[data-scihist-autocomplete]").each(function() {
+  $("*[data-scihist-qa-autocomplete]").each(function() {
     var input_el =$(this);
     var qa_search_url = input_el.data("scihist-qa-autocomplete");
 
