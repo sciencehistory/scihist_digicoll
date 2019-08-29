@@ -9,7 +9,7 @@ jQuery( document ).ready(function() {
 
   $("*[data-scihist-autocomplete]").each(function() {
     var input_el =$(this);
-    var qa_search_url = input_el.data("scihist-autocomplete");
+    var qa_search_url = input_el.data("scihist-qa-autocomplete");
 
     input_el.autocomplete({
       deferRequestBy: 600, // bunch keystrokes into 600ms groups for requests
