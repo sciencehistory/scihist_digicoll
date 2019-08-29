@@ -1,3 +1,46 @@
+// Provide auto-suggest from qa (questioning authority) endpoints. (Or really anything that returns results
+// in the same format as qa, but qa is what it is intended for).
+//
+// Add to a text field the HTML attribute `data-scihist-qa-autocomplete=/path/to/qa/search`, and your
+// text field, as you type in it, will get dropdown menu of sugggestions from the QA-delivered vocabulary.
+// You can still enter 'manual' entries that were not from vocabulary.
+//
+// For qa vocabularly sources that return a :label and a :value, like FAST, the :label shows up
+// in the suggestions, but when chosen the :value is what gets put in the textbox. For FAST,
+// qa delivers results such as label=`Pennsylvania--Philadelphie USE Pennsylvania--Philadelphia`,
+// value=`Pennsylvania--Philadelphia`.
+//
+// The `id` attribute returned in qa JSON response (which might be unique identifier from FAST or
+// other vocabulary) -- is currently ignored, not displayed or preserved in any way.
+//
+// All this behavior is meant to match what we had in chf_sufia with hydra-editor or whatever other samvera
+// dependencies were providing (not sure)
+//
+//
+// ## Implementation
+//
+// The auto-suggest from remote AJAX source uses the devbridge-autocomplete/jquery-autocomplete
+// jQuery plugin. https://github.com/devbridge/jQuery-Autocomplete . This was the most suitable
+// pre-made thing I found with extensive looking (including trying to find things not dependent
+// on jQuery).
+//
+// It still required a bit of hacking to get it to work. In particular, to get the behavior above
+// for "USE" examples, where the string shown in the suggestions is not the thing that ends up
+// in your text box if you select it -- that really confused the jquery-autocomplete plugin,
+// it kept wanting to show a new set of suggestions when to our UX nothing had changed.
+//
+// This was made worse by a bug around onFocus (https://github.com/devbridge/jQuery-Autocomplete/issues/766)
+// -- although really we wanted to disable "show suggestions onFocus" altogether to match
+// chf_sufia behavior.
+//
+// We fix things up mostly with a few kind of hacky private API interventions into the plugin --
+// but hey, this still isn't much code, and the plugin isn't getting much development so
+// it probably won't break.
+//
+// We could try to add features we need upstream (https://github.com/devbridge/jQuery-Autocomplete/issues/769),
+// we could consider forking this (it's not actually much code), or we could in the future provide a
+// better alternate tool for a JS auto-suggest UI.
+
 import 'jquery'
 
 // https://github.com/devbridge/jQuery-Autocomplete
