@@ -70,9 +70,10 @@ module CapServerAutodiscover
       capistrano_roles = aws_server.tags.find {|tag| tag["key"]=="Capistrano_roles"}.value.split(",")
       roles_defined += capistrano_roles
 
-      server aws_server.public_ip_address, user: fetch(:ssh_user), roles: capistrano_roles
-      puts "  server '#{aws_server.public_ip_address}', roles: #{capistrano_roles.collect(&:to_sym).collect(&:inspect).join(", ")}"
+      server_name = aws_server.tags.find {|t| t["key"] == "Name" }.value
 
+      server aws_server.public_ip_address, user: fetch(:ssh_user), roles: capistrano_roles
+      puts "  server '#{aws_server.public_ip_address}', roles: #{capistrano_roles.collect(&:to_sym).collect(&:inspect).join(", ")} # name: #{server_name}"
     end
 
     puts "\n"

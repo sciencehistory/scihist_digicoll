@@ -38,7 +38,9 @@ RSpec.describe "Logins", type: :system do
 
   context "global lock-out" do
     it "can't log in" do
+      allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
       allow(ScihistDigicoll::Env).to receive(:lookup).with(:logins_disabled).and_return(true)
+
       visit new_user_session_path
 
       fill_in "Email", with: user.email
@@ -53,6 +55,7 @@ RSpec.describe "Logins", type: :system do
       visit admin_works_path
       expect(page).to have_text("Works")
 
+      allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
       allow(ScihistDigicoll::Env).to receive(:lookup).with(:logins_disabled).and_return(true)
 
       visit admin_works_path

@@ -163,6 +163,9 @@ module ScihistDigicoll
       # production we have no default, local env has to supply it
     }
 
+    # Supplied only on production servers, should have form 'UA-XXXXX-Y'
+    define_key :google_analytics_property_id
+
     # Return appropriate Shrine::Storage instance for our mode (dev_file, dev_s3, or production),
     # and the bucket key.
     #
