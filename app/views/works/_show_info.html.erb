@@ -167,7 +167,7 @@
       <li class="related-work">
         <div class="related-work-thumb">
           <%= link_to work_path(work.friendlier_id) do %>
-            <%= ThumbDisplay.new(work.leaf_representative, lazy: true).display %>
+            <%= ThumbDisplay.new(work.leaf_representative, thumb_size: :standard, lazy: true).display %>
           <% end %>
         </div>
 
