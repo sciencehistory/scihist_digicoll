@@ -52,7 +52,8 @@
       <%= sub_form.input :text, wrapper: :scihist_horizontal_form %>
     <% end %>
 
-    <%= f.repeatable_attr_input :subject, build: :at_least_one %>
+    <%= f.repeatable_attr_input :subject, build: :at_least_one,
+          html_attributes: { "data-scihist-autocomplete" => qa_search_vocab_path("assign_fast", "all") } %>
 
     <%= f.input :department, collection: Work::ControlledLists::DEPARTMENT  %>
 
