@@ -44,7 +44,8 @@
 
     <%= f.repeatable_attr_input :extent, build: :at_least_one %>
 
-    <%= f.repeatable_attr_input :language, build: :at_least_one %>
+    <%= f.repeatable_attr_input :language, build: :at_least_one,
+      html_attributes: { "data-scihist-autocomplete" => qa_search_vocab_path("local", "languages")} %>
 
     <%= f.input :description,       as: :text, input_html: { rows: 14 } %>
     <%= f.input :provenance,        as: :text, input_html: { rows: 5 }  %>
