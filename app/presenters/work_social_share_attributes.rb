@@ -52,22 +52,8 @@ class WorkSocialShareAttributes < ViewModel
     share_representative_derivative&.width
   end
 
-  # A plain-text (html tags removed) description that is also truncated to ~400 chars.
-  #
-  # We don't want it escaped here, cause it will be escaped appropriately as point of use (which might be in a URL
-  # query param).  But also NOT marked html_safe, because it's not!
-  #
-  # The truncate helper makes that hard, we have to embed it in a string literal to get it neither
-  # escaped nor marked html_safe
   def short_plain_description
-    return "" unless work.description.present?
-
-    "#{truncate(
-      strip_tags(work.description),
-      escape: false,
-      length: 400,
-      separator: /\s/
-    )}"
+    DescriptionDisplayFormatter.new(work.description, truncate: 400).format_plain
   end
 
   def title_plus_description
