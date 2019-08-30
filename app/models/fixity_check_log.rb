@@ -3,12 +3,13 @@ class FixityCheckLog < ApplicationRecord
   validates_presence_of :asset
 
   # FixityCheckLog.check_asset(some_asset)
-  def self.check_asset(asset)
+  def self.check(asset)
+    raise ArgumentError.new("Please pass in an Asset.") unless asset.is_a? Asset
     self.new(asset: asset).run_check
   end
 
   def self.logs_for(asset, checked_uri)
-    ChecksumAuditLog.where(asset: asset, checked_uri: checked_uri).order('created_at desc, id desc')
+    FixityCheckLog.where(asset: asset, checked_uri: checked_uri).order('created_at desc, id desc')
   end
 
   def failed?
@@ -36,10 +37,12 @@ class FixityCheckLog < ApplicationRecord
   end
 
   def actual_checksum
-    io_object = asset.file.open(rewindable: false)
-    sha_512_calculated = Shrine::Plugins::Signature::SignatureCalculator.new(:sha512, format: :hex).call(io_object)
-    @actual_result = sha_512_calculated
-    io_object.close
-    return sha_512_calculated
+    sha_512 = nil
+    asset.file.open(rewindable: false) do | io_object |
+      sha_512 = Shrine::Plugins::Signature::SignatureCalculator.
+        new(:sha512, format: :hex).
+        call(io_object)
+    end
+    sha_512
   end
 end
