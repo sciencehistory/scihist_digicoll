@@ -87,6 +87,10 @@ FactoryBot.define do
         faked_width { nil }
       end
 
+      trait :correct_sha512 do
+        faked_sha512 { Digest::SHA512.file(Rails.root + "spec/test_support/images/30x30.png").to_s }
+      end
+
       after(:build) do |asset, evaluator|
         # Set our uploaded file
 
