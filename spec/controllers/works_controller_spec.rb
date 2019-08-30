@@ -26,6 +26,16 @@ RSpec.describe WorksController, type: :controller do
         expect(response.headers["Content-Disposition"]).
           to match(/attachment. filename=.test_title[^\.]+\.ris/)
       end
+
+      it "delivers oai_dc from XML request" do
+        get :show, params: { id: work.friendlier_id }, as: :xml
+        expect(response.status).to eq(200)
+        expect(response.content_type).to eq "application/xml"
+
+        parsed = Nokogiri::XML(response.body)
+        expect(parsed.root&.namespace&.href).to eq "http://www.openarchives.org/OAI/2.0/oai_dc/"
+        expect(parsed.root&.name).to eq "dc"
+      end
     end
   end
 

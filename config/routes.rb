@@ -13,6 +13,8 @@ Rails.application.routes.draw do
 
   root 'homepage#index'
 
+  match 'oai', to: "oai_pmh#index", via: [:get, :post], as: :oai_provider
+
   # https://github.com/plataformatec/devise/wiki/how-to:-change-the-default-sign_in-and-sign_out-routes
   # We aren't using :registration cause we don't want to allow self-registration,
   # We aren't using session cause we define em ourselves manually.
