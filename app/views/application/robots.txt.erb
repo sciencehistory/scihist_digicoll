@@ -1,0 +1,20 @@
+# See http://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+
+<% if ScihistDigicoll::Env.production? %>
+# No restrictions at present
+
+# Link to sitemap
+Sitemap: https://s3.amazonaws.com/<%= ScihistDigicoll::Env.lookup("s3_sitemap_bucket") %>/<%= ScihistDigicoll::Env.lookup("sitemap_path") %>sitemap.xml.gz
+
+
+<% else %>
+# Non-production, no robots please, although we let twitter in to test twitter integration
+
+# let twitter scrape cards metadata for testing
+User-agent: Twitterbot
+Disallow:
+
+User-agent: *
+Disallow: /
+
+<% end %>

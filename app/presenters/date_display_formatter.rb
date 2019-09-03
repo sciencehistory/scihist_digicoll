@@ -15,7 +15,9 @@ class DateDisplayFormatter
   UNDATED = "undated"
 
   def initialize(dates_of_work)
-    @dates_for_display = dates_of_work.collect {|d| display_label(d)}
+    @dates_for_display = dates_of_work.sort_by do |date|
+      date.start || "0"
+    end.collect {|d| display_label(d)}
   end
 
   #Return an array of strings, each containing a formatted date.

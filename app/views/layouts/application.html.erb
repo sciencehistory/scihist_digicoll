@@ -33,6 +33,8 @@
     <!-- Internet Explorer use the highest version available -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
+    <%= render 'layouts/google_analytics' %>
+
     <title><%= render_page_title %></title>
     <%= opensearch_description_tag application_name, opensearch_catalog_url(format: 'xml') %>
     <%= render "layouts/head_tag_common" %>

@@ -23,6 +23,10 @@ Rails.application.routes.draw do
     delete 'logout', to: 'devise/sessions#destroy', as: :destroy_user_session
   end
 
+  # Dynamic robots.txt
+  # this will fall through to ./views/application/robots.txt.erb, no need for an action method
+  get 'robots.txt', to: "application#robots.txt", format: "text"
+
   # On-demand derivatives
   constraints(derivative_type: Regexp.union(OnDemandDerivative.derivative_type_definitions.keys.collect(&:to_s))) do
     get "works/:id/:derivative_type", to: "on_demand_derivatives#on_demand_status", as: :on_demand_derivative_status
@@ -152,8 +156,20 @@ Rails.application.routes.draw do
       end
       member do
         post :add_comment
+        # not sure how to do this implicitly.
+        # delete :delete_comment
       end
     end
+
+    # TODO: investigate whether this could live in the
+    # resources :digitization_queue_items > member do block.
+    # Something like delete :delete_comment
+    # but with an additional :comment_id parameter.
+    # For now, just do the obvious:
+    delete  "digitization_queue_items/:id/delete_comment/:comment_id",
+      to: "digitization_queue_items#delete_comment",
+      as: "delete_comment"
+
 
     # These 'sub-apps' are for admin-use only, but since they are sub-apps
     # aren't protected by the AdminController. We have Rails routing only

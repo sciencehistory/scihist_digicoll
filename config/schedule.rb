@@ -12,6 +12,10 @@ env :HONEYBADGER_EXCEPTIONS_RESCUE_RAKE, true
 #   rake "scihist:solr:reindex"
 # end
 
-every :day, :at => '2:00 am', roles: [:app] do
+every :day, :at => '2:00 am', roles: [:cron] do
   rake "blacklight:delete_old_searches[7]"
+end
+
+every :tuesday, :at => '4:00 am', roles: [:cron] do
+  rake "sitemap:create"
 end

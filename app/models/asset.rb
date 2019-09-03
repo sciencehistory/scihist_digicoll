@@ -72,8 +72,6 @@ class Asset < Kithe::Asset
     @dzi_file ||= DziFiles.new(self)
   end
 
-  after_promotion DziFiles
+  after_promotion DziFiles, if: ->(asset) { asset.content_type&.start_with?("image/") }
   after_commit DziFiles, only: [:update, :destroy]
-
-
 end

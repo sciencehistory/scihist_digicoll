@@ -89,6 +89,8 @@ gem "prawn", "~> 2.2" # creating PDFs
 gem "pdf-reader", "~> 2.2" # simple metadata extraction from pdfs
 gem 'rubyzip', '~> 1.2', require: 'zip' # for making zip files, needs explicit require 'zip' cause it's old and crotchety
 
+gem 'sitemap_generator', '~> 6.0' # google sitemap generation
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]
