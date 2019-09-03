@@ -11,7 +11,8 @@
     <% end %>
 
     <%= f.repeatable_attr_input(:creator, build: :at_least_one) do |sub_form| %>
-      <%= category_and_value(sub_form, category_list: Work::Creator::CATEGORY_VALUES) %>
+      <%= category_and_value(sub_form, category_list: Work::Creator::CATEGORY_VALUES,
+            input_data_attributes: { "scihist-qa-autocomplete" => qa_search_vocab_path("assign_fast", "all")}) %>
     <% end %>
 
     <%= f.repeatable_attr_input(:date_of_work, build: :at_least_one) do |sub_form| %>
@@ -19,7 +20,8 @@
     <% end %>
 
     <%= f.repeatable_attr_input(:place, build: :at_least_one) do |sub_form| %>
-      <%= category_and_value(sub_form, category_list: Work::Place::CATEGORY_VALUES) %>
+      <%= category_and_value(sub_form, category_list: Work::Place::CATEGORY_VALUES,
+            input_data_attributes: { "scihist-qa-autocomplete" => qa_search_vocab_path("assign_fast", "all")}) %>
     <% end %>
 
     <%= f.input :format,
@@ -42,7 +44,8 @@
 
     <%= f.repeatable_attr_input :extent, build: :at_least_one %>
 
-    <%= f.repeatable_attr_input :language, build: :at_least_one %>
+    <%= f.repeatable_attr_input :language, build: :at_least_one,
+      html_attributes: { "data-scihist-qa-autocomplete" => qa_search_vocab_path("local", "languages")} %>
 
     <%= f.input :description,       as: :text, input_html: { rows: 14 } %>
     <%= f.input :provenance,        as: :text, input_html: { rows: 5 }  %>
@@ -52,7 +55,8 @@
       <%= sub_form.input :text, wrapper: :scihist_horizontal_form %>
     <% end %>
 
-    <%= f.repeatable_attr_input :subject, build: :at_least_one %>
+    <%= f.repeatable_attr_input :subject, build: :at_least_one,
+          html_attributes: { "data-scihist-qa-autocomplete" => qa_search_vocab_path("assign_fast", "all") } %>
 
     <%= f.input :department, collection: Work::ControlledLists::DEPARTMENT  %>
 

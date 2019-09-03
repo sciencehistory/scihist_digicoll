@@ -1,0 +1,50 @@
+# This is a configuration file for the `qa` (questioning authorities) gem, to create a local
+# authority. It looks for the configuration file at this exact location.
+#
+# WARNING: Do not edit this data without changing existing metadata; additions are fine.
+terms:
+  - Afrikaans
+  - Arabic
+  - Bulgarian
+  - Catalan
+  - Chinese
+  - Croatian
+  - Czech
+  - Danish
+  - Dutch
+  - English
+  - Esperanto
+  - Estonian
+  - Finnish
+  - French
+  - Galician
+  - German
+  - German, Middle High
+  - Greek, Ancient (to 1453)
+  - Greek, Modern (1453-)
+  - Hebrew
+  - Hungarian
+  - Icelandic
+  - Indonesian
+  - Italian
+  - Japanese
+  - Latin
+  - Latvian
+  - Norwegian
+  - Polish
+  - Portuguese
+  - Romani
+  - Romanian
+  - Russian
+  - Serbian
+  - Slovak
+  - Slovenian
+  - Spanish
+  - Swazi
+  - Swedish
+  - Tahitian
+  - Tereno
+  - Thai
+  - Turkish
+  - Ukrainian
+  - Yiddish

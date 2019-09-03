@@ -38,7 +38,8 @@ module FormInputHelper
   def category_and_value(builder,
                          category_key: :category,
                          value_key: :value,
-                         category_list:)
+                         category_list:,
+                         input_data_attributes: {})
     model_class = builder.object.class
 
     # If existing value (which may be nil) is not in category list, add it to front.
@@ -67,7 +68,7 @@ module FormInputHelper
         builder.input category_key, collection: category_list, label: false, include_blank: false
       end +
       content_tag("div", class: "col-sm value") do
-        builder.input value_key, label: false
+        builder.input value_key, label: false, input_html: { data: input_data_attributes }
       end
     end
   end
