@@ -192,6 +192,14 @@ Rails.application.routes.draw do
   # add a routing constraint to protect to just logged in users.
   constraints LoggedInConstraint do
     mount BrowseEverything::Engine => '/admin/browse'
+
+    # Don't know if we really need qa to be limited to logged-in users, but
+    # that's the only place we use it, so let's limit to avoid anyone DOSing
+    # us with it or whatever.
+    #
+    # And we mount it as '/authorities' rather than '/qa' that the installer
+    # wanted, to match sufia/hyrax and be less weird.
+    mount Qa::Engine => '/authorities'
   end
 
 
