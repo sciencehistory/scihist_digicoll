@@ -90,4 +90,10 @@ class Work < Kithe::Work
     Kithe::Model.where(sql)
   end
 
+  # This method is used by `oai` gem to automatically get serialization for oai-pmh responses
+  # @returns [String] XML, note as a STRING.
+  def to_oai_dc
+    WorkOaiDcSerialization.new(self).to_oai_dc
+  end
+
 end
