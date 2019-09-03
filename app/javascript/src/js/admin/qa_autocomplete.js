@@ -50,6 +50,9 @@ import 'devbridge-autocomplete';
 
 jQuery( document ).ready(function() {
 
+  var errorContainer =  $('<div class="autocomplete-no-suggestion"></div>')
+    .html("<i class='fa fa-exclamation-triangle' aria-hidden='true'></i> Error fetching results").get(0);
+
   $("*[data-scihist-qa-autocomplete]").each(function() {
     var input_el =$(this);
     var qa_search_url = input_el.data("scihist-qa-autocomplete");
@@ -65,7 +68,13 @@ jQuery( document ).ready(function() {
 
       onSearchError: function (query, jqXHR, textStatus, errorThrown) {
         console.log("autocomplete error fetching results: " + textStatus + ": " + errorThrown);
-        // would like to show an error in browser, but haven't figured out a good way to. :(
+
+        // Pretty hacky way to show error message in dropdown, reaching into
+        // autocomplete internals. Based on how autocomplete shows no-results message.
+        var container = $($(this).autocomplete().suggestionsContainer)
+        container.empty();
+        container.append(errorContainer);
+        container.show();
       },
 
       transformResult: function(response) {
