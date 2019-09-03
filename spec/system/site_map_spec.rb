@@ -3,6 +3,16 @@ require 'rake'
 
 
 describe "sitemap generator", js: false do
+  around do |example|
+    # keep sitemap_generator output from messing up our test output!
+    # https://github.com/kjvarga/sitemap_generator/issues/332
+    orig =  Rake::FileUtilsExt.verbose
+    Rake::FileUtilsExt.verbose(false)
+    example.run
+    Rake::FileUtilsExt.verbose(orig)
+  end
+
+
   # hacky way to tell sitemap generator NOT to send to s3, so we can test it.
   around(:each) do |example|
     $force_local_sitemap_generation = true
