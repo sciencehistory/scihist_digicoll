@@ -9,31 +9,24 @@
 <body class='error-page s500'>
 
   <!-- header -->
-  <nav id="masthead" class="masthead navbar navbar-inverse navbar-static-top">
-    <div class="container-fluid">
-      <!-- Brand and toggle get grouped for better mobile display -->
-      <div class="navbar-header">
+  <nav id="masthead" class="masthead navbar navbar-expand-md navbar-dark bg-dark">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
 
-        <a id="logo" class="navbar-brand" href="https://www.sciencehistory.org" data-no-turbolink="true">
-
+      <a id="logo" href="https://www.sciencehistory.org" data-no-turbolink="true">
           <%= image_tag "partial-mark-75rotate-80.png", class: "small-masthead-only masthead-logo-small", alt: "Science History Institute" %>
-
           <%= image_tag "sci_logo-webheader_1x.png",
               srcset:  "#{image_url 'sci_logo-webheader_1x.png'} 1x, #{image_url 'sci_logo-webheader_2x.png'} 2x",
               class: "large-masthead-only masthead-logo-large",
               alt: "Science History Institute" %>
-        </a>
-        <h1 class="masthead-title small-masthead-only"><a href="/">Digital Collections</a></h1>
-      </div>
+      </a>
 
-      <div class="collapse navbar-collapse pull-right" id="top-navbar-collapse" role="navigation">
-        <div class="masthead-right">
-          <h1 class="masthead-title large-masthead-only"><a href="/">Digital Collections</a></h1>
+      <h1 class="masthead-title small-masthead-only"><a href="/">Digital Collections</a></h1>
+      <div></div>
+    </div>
 
-
-        </div>
-      </div>
-
+    <div class="masthead-right">
+      <h1 class="masthead-title large-masthead-only"><a href="/">Digital Collections</a></h1>
     </div>
   </nav>
   <!-- end header -->
@@ -48,7 +41,7 @@
       </a>
     </div>
     <div class="text-column column">
-      <h1 class="h2 error-headline"><i class="fa fa-warning"></i> We're sorry. A software error occured.</h1>
+      <h1 class="h2 error-headline"><i class="fa fa-exclamation-triangle"></i> We're sorry. A software error occured.</h1>
 
       <div class="error-section">
         <%# https://docs.honeybadger.io/ruby/getting-started/collecting-user-feedback.html %>

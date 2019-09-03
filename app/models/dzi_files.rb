@@ -195,7 +195,7 @@ class DziFiles
 
       @storage = storage
       @prefix = prefix
-      @total_prefix = File.join(storage.prefix, clear_prefix).to_s
+      @total_prefix = File.join(storage.prefix || "", clear_prefix).to_s
     end
 
     # copy/pasted/modifed from Shrine::Storage::S3#clear!, to let us
