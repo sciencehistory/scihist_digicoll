@@ -23,6 +23,20 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
+-- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pg_trgm; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching based on trigrams';
+
+
+--
 -- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -341,7 +355,6 @@ CREATE TABLE public.searches (
 --
 
 CREATE SEQUENCE public.searches_id_seq
-    AS integer
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -650,6 +663,13 @@ CREATE UNIQUE INDEX index_users_on_reset_password_token ON public.users USING bt
 
 
 --
+-- Name: trgm_idx_kithe_models_title; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX trgm_idx_kithe_models_title ON public.kithe_models USING gin (title public.gin_trgm_ops);
+
+
+--
 -- Name: kithe_model_contains fk_rails_091010187b; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -743,6 +763,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181211182457'),
 ('20190107205722'),
 ('20190107222521'),
+('20190109000356'),
 ('20190110154359'),
 ('20190219225344'),
 ('20190226135744'),
