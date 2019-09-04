@@ -159,7 +159,7 @@ class DownloadDropdownDisplay < ViewModel
       whole_work_download_options.each do |download_option|
         elements << format_download_option(download_option)
       end
-      elements << "<li class='dropdown-divider'></li>".html_safe
+      elements << "<div class='dropdown-divider'></div>".html_safe
     end
 
     if viewer_template_mode?
