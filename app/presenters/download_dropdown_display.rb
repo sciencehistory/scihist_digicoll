@@ -58,7 +58,11 @@ class DownloadDropdownDisplay < ViewModel
   #   display_parent_work is also used for determining "rights" statement.
   # @param use_link [Boolean], default false, if true will make the link that opens the menu an
   #   ordinary hyperlink, instead of a button (used on audio playlist).
-  def initialize(asset, display_parent_work:, use_link: false, viewer_template: false)
+  def initialize(asset,
+      display_parent_work:,
+      use_link: false,
+      viewer_template: false)
+
     if viewer_template
       raise ArgumentError.new("asset must be nil if template_only") unless asset.nil?
     else
@@ -198,12 +202,15 @@ class DownloadDropdownDisplay < ViewModel
     RightsIconDisplay.new(display_parent_work, mode: :dropdown_item).display
   end
 
-  # have a parent work, and all it's children are images, are the only whole-work
-  # download options we offer at present.
+  # have a parent work, with more than 1 child, and AT LEAST ONE of it's children are images,
+  # provide multi-image downloads. These are the only whole-work-download options we provide at present.
+  #
+  # NOTE: We had been checking to make sure ALL members were images, but that was FAR
+  # too resource intensive, it destroyed ramelli. Checking just one is okay though.
   def has_work_download_options?
     display_parent_work &&
-      display_parent_work.members.length > 1 &&
-      display_parent_work.members.all? do |member|
+    display_parent_work.members.size > 1 &&
+      display_parent_work.members.any? do |member|
         member.leaf_representative&.content_type&.start_with?("image/")
       end
   end
