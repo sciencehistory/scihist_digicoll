@@ -1,8 +1,16 @@
+# FixityCheckLog.check_asset(some_asset)
+# This first version of fixity checking only checks
+# for actual discrepancies between already-recorded
+# checksums and calculated ones.
+#
+# This means:
+# Assets with nil files are ignored.
+# Files with nil checksums are ignored.
+
 class FixityCheckLog < ApplicationRecord
   belongs_to :asset
   validates_presence_of :asset
 
-  # FixityCheckLog.check_asset(some_asset)
   def self.check(asset)
     raise ArgumentError.new("Please pass in an Asset.") unless asset.is_a? Asset
     self.new(asset: asset).run_check
@@ -22,10 +30,15 @@ class FixityCheckLog < ApplicationRecord
 
   def run_check
     return nil if asset.nil?
-    return nil unless asset.file.exists?
-    self.checked_uri=  asset.file.url
+    return nil if asset.file.nil?
+    the_expected_checksum = expected_checksum
+    # Note: asset.file.sha512 can be nil on e.g.
+    # items imported with DISABLE_BYTESTREAM_IMPORT=true
+    # For now, we are ignoring these.
+    return nil if the_expected_checksum.nil?
+    self.expected_result = the_expected_checksum
+    self.checked_uri = asset.file.url
     self.actual_result = actual_checksum
-    self.expected_result = expected_checksum
     self.passed=(expected_result == actual_result)
     save!
   end
