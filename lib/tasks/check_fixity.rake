@@ -11,7 +11,7 @@ namespace :scihist_digicoll do
     progress_bar = ProgressBar.create(total: asset_count, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
     progress_bar.log("INFO: checking asset fixity")
     Asset.all.each do |asset|
-      FixityCheckLog.check(asset)
+      FixityCheck.check(asset)
       progress_bar.increment
     end
   end
@@ -24,7 +24,7 @@ namespace :scihist_digicoll do
     progress_bar = ProgressBar.create(total: asset_count, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
     progress_bar.log("INFO: pruning the logs of asset fixity checks")
     Asset.all.each do |asset|
-      FixityCheckLog.prune_checks(asset)
+      FixityCheck.prune_checks(asset)
       progress_bar.increment
     end
   end

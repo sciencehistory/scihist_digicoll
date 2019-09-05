@@ -1,6 +1,6 @@
 class Asset < Kithe::Asset
 
-  has_many :fixity_check_logs, foreign_key: "asset_id", inverse_of: "asset", dependent: :destroy
+  has_many :fixity_checks, foreign_key: "asset_id", inverse_of: "asset", dependent: :destroy
 
   THUMB_WIDTHS = {
     mini: 54,
