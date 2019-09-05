@@ -96,4 +96,33 @@ class Work < Kithe::Work
     WorkOaiDcSerialization.new(self).to_oai_dc
   end
 
+  # @returns [Array] of IANA/MIME content types from any members.
+  #
+  # It will collect these by visiting each actual member, and then uniquing. Results are then
+  # _cached_, so subsequent calls will _not_ reflect any changes you've made to members or
+  # their content types -- unless you pass in `reset:false`.
+  #
+  # The Work model is a kind of architectural unfortunate place to put this, but it worked
+  # for being easily accessible from the DownloadDropdownDisplay, which is what this method
+  # is intended for. Multiple DownloadDropdownDisplays needed to get this value for the same
+  # work without re-calculating it. See https://github.com/sciencehistory/scihist_digicoll/pull/334
+  #
+  # Note that for this to be most performant, you have to have members => leaf_representatives
+  # eager-loaded, so it doesn't lead to an n+1 problem.
+  def member_content_types(reset: false)
+    @member_content_types = nil if reset
+    @member_content_types ||= begin
+      warned = false
+
+      members.collect do |member|
+        unless warned || member.association(:leaf_representative).loaded?
+          Rails.logger.warn("Calling Work#member_content_types without pre-loading members => leaf_representative may be dangerous to performance")
+          warned = true
+        end
+
+        member.leaf_representative&.content_type
+      end.compact.uniq
+    end
+  end
+
 end
