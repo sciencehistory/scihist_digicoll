@@ -53,8 +53,7 @@ module DownloadOptions
           analyticsAction: "download_original",
           content_type: asset.content_type,
           width: asset.width,
-          height: asset.height,
-          size: asset.size
+          height: asset.height
         )
       end
 
