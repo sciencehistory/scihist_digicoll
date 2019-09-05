@@ -6,9 +6,11 @@ class CreateFixityChecks < ActiveRecord::Migration[5.2]
       t.string :expected_result
       t.string :actual_result
       t.string :checked_uri
+      t.string :hash_function, null: false
       t.timestamps
     end
     add_index :fixity_checks, :checked_uri
     add_index :fixity_checks, [:asset_id, :checked_uri], name: 'by_asset_and_checked_uri', order: {created_at: "DESC" }
+    change_column_default( :fixity_checks, :hash_function, from: nil, to: 'SHA-512')
   end
 end
