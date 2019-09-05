@@ -84,6 +84,7 @@ class DownloadDropdownDisplay < ViewModel
     end
   end
 
+
   private
 
   def viewer_template_mode?
@@ -221,6 +222,7 @@ class DownloadDropdownDisplay < ViewModel
       url: download_path(asset),
       analyticsAction: "download_original",
       content_type: asset.content_type,
+      size: asset.size,
       width: asset.width,
       height: asset.height)
   end
