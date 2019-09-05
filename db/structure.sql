@@ -156,10 +156,10 @@ ALTER SEQUENCE public.digitization_queue_items_id_seq OWNED BY public.digitizati
 
 
 --
--- Name: fixity_check_logs; Type: TABLE; Schema: public; Owner: -
+-- Name: fixity_checks; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.fixity_check_logs (
+CREATE TABLE public.fixity_checks (
     id bigint NOT NULL,
     asset_id uuid NOT NULL,
     passed boolean,
@@ -172,10 +172,10 @@ CREATE TABLE public.fixity_check_logs (
 
 
 --
--- Name: fixity_check_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: fixity_checks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.fixity_check_logs_id_seq
+CREATE SEQUENCE public.fixity_checks_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -184,10 +184,10 @@ CREATE SEQUENCE public.fixity_check_logs_id_seq
 
 
 --
--- Name: fixity_check_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: fixity_checks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.fixity_check_logs_id_seq OWNED BY public.fixity_check_logs.id;
+ALTER SEQUENCE public.fixity_checks_id_seq OWNED BY public.fixity_checks.id;
 
 
 --
@@ -415,10 +415,10 @@ ALTER TABLE ONLY public.digitization_queue_items ALTER COLUMN id SET DEFAULT nex
 
 
 --
--- Name: fixity_check_logs id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: fixity_checks id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.fixity_check_logs ALTER COLUMN id SET DEFAULT nextval('public.fixity_check_logs_id_seq'::regclass);
+ALTER TABLE ONLY public.fixity_checks ALTER COLUMN id SET DEFAULT nextval('public.fixity_checks_id_seq'::regclass);
 
 
 --
@@ -473,11 +473,11 @@ ALTER TABLE ONLY public.digitization_queue_items
 
 
 --
--- Name: fixity_check_logs fixity_check_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: fixity_checks fixity_checks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.fixity_check_logs
-    ADD CONSTRAINT fixity_check_logs_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.fixity_checks
+    ADD CONSTRAINT fixity_checks_pkey PRIMARY KEY (id);
 
 
 --
@@ -540,21 +540,21 @@ ALTER TABLE ONLY public.users
 -- Name: by_asset_and_checked_uri; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX by_asset_and_checked_uri ON public.fixity_check_logs USING btree (asset_id, checked_uri);
+CREATE INDEX by_asset_and_checked_uri ON public.fixity_checks USING btree (asset_id, checked_uri);
 
 
 --
--- Name: index_fixity_check_logs_on_asset_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_fixity_checks_on_asset_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_fixity_check_logs_on_asset_id ON public.fixity_check_logs USING btree (asset_id);
+CREATE INDEX index_fixity_checks_on_asset_id ON public.fixity_checks USING btree (asset_id);
 
 
 --
--- Name: index_fixity_check_logs_on_checked_uri; Type: INDEX; Schema: public; Owner: -
+-- Name: index_fixity_checks_on_checked_uri; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_fixity_check_logs_on_checked_uri ON public.fixity_check_logs USING btree (checked_uri);
+CREATE INDEX index_fixity_checks_on_checked_uri ON public.fixity_checks USING btree (checked_uri);
 
 
 --
@@ -686,11 +686,11 @@ ALTER TABLE ONLY public.kithe_models
 
 
 --
--- Name: fixity_check_logs fk_rails_3424e993fb; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: fixity_checks fk_rails_2950403fc8; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.fixity_check_logs
-    ADD CONSTRAINT fk_rails_3424e993fb FOREIGN KEY (asset_id) REFERENCES public.kithe_models(id);
+ALTER TABLE ONLY public.fixity_checks
+    ADD CONSTRAINT fk_rails_2950403fc8 FOREIGN KEY (asset_id) REFERENCES public.kithe_models(id);
 
 
 --

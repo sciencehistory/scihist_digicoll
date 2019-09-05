@@ -1,4 +1,4 @@
-# FixityCheckLog.check_asset(some_asset)
+# FixityCheck.check_asset(some_asset)
 # This first version of fixity checking only checks
 # for actual discrepancies between already-recorded
 # checksums and calculated ones.
@@ -7,7 +7,7 @@
 # Assets with nil files are ignored.
 # Files with nil checksums are ignored.
 
-class FixityCheckLog < ApplicationRecord
+class FixityCheck < ApplicationRecord
 
   NUMBER_OF_RECENT_PASSED_CHECKS_TO_KEEP = 5
 
@@ -20,8 +20,8 @@ class FixityCheckLog < ApplicationRecord
   end
 
   # Returns in reverse chron order: first is most recent check.
-  def self.logs_for(asset, checked_uri)
-    FixityCheckLog.where(asset: asset, checked_uri: checked_uri).order('created_at desc, id desc')
+  def self.checks_for(asset, checked_uri)
+    FixityCheck.where(asset: asset, checked_uri: checked_uri).order('created_at desc, id desc')
   end
 
   def self.prune_checks(asset)
@@ -63,7 +63,7 @@ class FixityCheckLog < ApplicationRecord
   # Never throw out the earliest PASSED check
   # Always keep N recent PASSED checks
   def self.checks_its_ok_to_delete(asset)
-    checks = self.logs_for(asset, asset.file.url)
+    checks = self.checks_for(asset, asset.file.url)
     return [] if checks.empty?
     # Throw all the passed checks INTO the trash.
     trash = checks.select { | ch | ch.passed? }
