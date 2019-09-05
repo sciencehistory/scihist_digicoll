@@ -18,16 +18,16 @@
 # of images), and will have it's `members` and their leaf_representatives accessed,
 # so should have them pre-loaded to avoid n+1 queries if needed.
 #
-# ## Preloading required
+# ## Not currently using actual derivative models
 #
-# Uses leaf_representative and it's derivatives, as well as #parent.
-# So these should be pre-loaded with Rails eager-loading if you're going to be displaying a bunch of these,
-# as you usually are.
+# For performance reasons, we are avoiding referencing actual derivative models here. (Performance: fetching
+# them, but even more so seems to be accessing shrine-json metadata. This may be a performance problem
+# fixed in shrine 3.0). So we are unable to provide file sizes of derivatives for UI, or to base
+# our logic on whether derivatives actually exist (we supply download links appropriate for content
+# type regardless).
 #
-# Current code decides what options to display based on derivatives *actually existing*, to avoid
-# providing an option that can't be delivered. That does mean it needs info from the db on what derivs
-# exist though. (It also uses metadata on the existing deriv records to provide nice info on the dl
-# link on file size/dimensions/etc.)
+# But it should not be necessary to eager load any assoications on the models passed in, no associations
+# are used.
 #
 # ## Viewer-template mode
 #
