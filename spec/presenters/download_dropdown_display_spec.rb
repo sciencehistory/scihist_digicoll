@@ -4,33 +4,6 @@ describe DownloadDropdownDisplay do
   let(:rendered) { Nokogiri::HTML.fragment(DownloadDropdownDisplay.new(asset, display_parent_work: asset.parent).display) }
   let(:div) { rendered.at_css("div.action-item.downloads") }
 
-  describe "no derivatives existing" do
-    let(:asset) do
-      create(:asset_with_faked_file,
-            faked_derivatives: [],
-            parent: build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
-      )
-    end
-
-    it "renders" do
-      expect(div).to be_present
-
-      ul = div.at_css("div.dropdown-menu.download-menu")
-      expect(ul).to be_present
-
-      expect(ul).to have_selector("h3.dropdown-header", text: "Rights")
-      expect(ul).to have_selector("a.rights-statement.dropdown-item", text: /Public Domain/)
-
-      expect(div).to have_selector(".dropdown-header", text: "Download selected image")
-      expect(div).to have_selector("a.dropdown-item", text: /Original/)
-
-      expect(div).not_to have_selector("a.dropdown-item", text: /Small JPG/)
-      expect(div).not_to have_selector("a.dropdown-item", text: /Medium JPG/)
-      expect(div).not_to have_selector("a.dropdown-item", text: /Large JPG/)
-      expect(div).not_to have_selector("a.dropdown-item", text: /Full-sized JPG/)
-    end
-  end
-
   describe "with image file and derivatives" do
     let(:asset) do
       create(:asset_with_faked_file,
@@ -188,6 +161,35 @@ describe DownloadDropdownDisplay do
     let(:asset) { build(:asset) }
     it "renders without error" do
       expect(div).to be_present
+    end
+  end
+
+  # NOT currently supported, skipping tests. We stopped using fetched derivative records
+  # when deciding what download links to display.
+  xdescribe "no derivatives existing" do
+    let(:asset) do
+      create(:asset_with_faked_file,
+            faked_derivatives: [],
+            parent: build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
+      )
+    end
+
+    it "renders" do
+      expect(div).to be_present
+
+      ul = div.at_css("div.dropdown-menu.download-menu")
+      expect(ul).to be_present
+
+      expect(ul).to have_selector("h3.dropdown-header", text: "Rights")
+      expect(ul).to have_selector("a.rights-statement.dropdown-item", text: /Public Domain/)
+
+      expect(div).to have_selector(".dropdown-header", text: "Download selected image")
+      expect(div).to have_selector("a.dropdown-item", text: /Original/)
+
+      expect(div).not_to have_selector("a.dropdown-item", text: /Small JPG/)
+      expect(div).not_to have_selector("a.dropdown-item", text: /Medium JPG/)
+      expect(div).not_to have_selector("a.dropdown-item", text: /Large JPG/)
+      expect(div).not_to have_selector("a.dropdown-item", text: /Full-sized JPG/)
     end
   end
 end

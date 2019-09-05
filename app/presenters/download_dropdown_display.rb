@@ -106,9 +106,12 @@ class DownloadDropdownDisplay < ViewModel
   def asset_download_options
     @asset_download_options ||= if asset&.content_type&.start_with?("audio/")
       DownloadOptions::AudioDownloadOptions.new(asset).options
-    else
+    elsif asset&.content_type&.start_with?("image/")
       DownloadOptions::ImageDownloadOptions.new(asset).options
-   end
+    elsif asset.stored?
+      # only original
+      [original_download_option]
+    end
   end
 
   def menu_button_id
@@ -211,6 +214,15 @@ class DownloadDropdownDisplay < ViewModel
     display_parent_work &&
     display_parent_work.members.size > 1 &&
     display_parent_work.member_content_types.all? {|t| t.start_with?("image/")}
+  end
+
+  def original_download_option
+    DownloadOption.with_formatted_subhead("Original file",
+      url: download_path(asset),
+      analyticsAction: "download_original",
+      content_type: asset.content_type,
+      width: asset.width,
+      height: asset.height)
   end
 
   def whole_work_download_options
