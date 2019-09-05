@@ -166,6 +166,7 @@ CREATE TABLE public.fixity_checks (
     expected_result character varying,
     actual_result character varying,
     checked_uri character varying,
+    hash_function character varying DEFAULT 'SHA-512'::character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
