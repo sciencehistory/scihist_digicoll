@@ -106,9 +106,23 @@ class Work < Kithe::Work
   # for being easily accessible from the DownloadDropdownDisplay, which is what this method
   # is intended for. Multiple DownloadDropdownDisplays needed to get this value for the same
   # work without re-calculating it. See https://github.com/sciencehistory/scihist_digicoll/pull/334
+  #
+  # Note that for this to be most performant, you have to have members => leaf_representatives
+  # eager-loaded, so it doesn't lead to an n+1 problem.
   def member_content_types(reset: false)
     @member_content_types = nil if reset
-    @member_content_types ||= members.collect { |member| member.leaf_representative&.content_type }.compact.uniq
+    @member_content_types ||= begin
+      warned = false
+
+      members.collect do |member|
+        unless warned || member.association(:leaf_representative).loaded?
+          Rails.logger.warn("Calling Work#member_content_types without pre-loading members => leaf_representative may be dangerous to performance")
+          warned = true
+        end
+
+        member.leaf_representative&.content_type
+      end.compact.uniq
+    end
   end
 
 end
