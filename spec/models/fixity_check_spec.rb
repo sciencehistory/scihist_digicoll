@@ -9,16 +9,16 @@ describe FixityCheck do
   let(:corrupt_asset) { build(:asset_with_faked_file) }
 
   it "can check an asset's fixity sha512" do
-    FixityCheck.check(good_asset)
-    FixityCheck.check(corrupt_asset)
+    FixityChecker.new(good_asset).check
+    FixityChecker.new(corrupt_asset).check
     expect(FixityCheck.count).to eq 2
     expect(FixityCheck.all[0].passed?).to be true
     expect(FixityCheck.all[1].failed?).to be true
     expect(FixityCheck.all[1].hash_function).to eq 'SHA-512'
 
-    expect { FixityCheck.check(nil) }.
+    expect { FixityChecker.new(nil).check }.
       to raise_error(ArgumentError)
-    expect { FixityCheck.check(Work.new()) }.
+    expect { FixityChecker.new(Work.new()).check }.
       to raise_error(ArgumentError)
 
     # To check FixityCheck.checks_for method, let's
@@ -26,7 +26,7 @@ describe FixityCheck do
     good_asset.file_data = good_asset_2.file_data
     good_asset.save!
     expect(good_asset.file.url).to eq good_asset_2.file.url
-    FixityCheck.check(good_asset)
+    FixityChecker.new(good_asset).check
     expect(good_asset.fixity_checks[0].checked_uri).not_to be == good_asset.fixity_checks[1].checked_uri
 
 
