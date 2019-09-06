@@ -16,7 +16,10 @@ namespace :scihist_digicoll do
     end
   end
 
-  task :prune_fixity_records => :environment do
+  """
+  bundle exec rake scihist_digicoll:prune_fixity_checks
+  """
+  task :prune_fixity_checks => :environment do
     asset_count = Asset.all.count
     if asset_count == 0
       abort ("No assets found to check.")
