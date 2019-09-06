@@ -65,6 +65,7 @@ gem 'simple_form', "~> 4.0"
 gem "cocoon"
 
 gem "browse-everything", "~> 1.0"
+gem "qa", "~> 4.2"
 gem "shrine", "~> 2.0" #, path: "../shrine"
 # shrine-compat endpoint to get uppy to direct upload to S3 with resumable multi-part upload
 gem "uppy-s3_multipart"
@@ -89,7 +90,12 @@ gem "prawn", "~> 2.2" # creating PDFs
 gem "pdf-reader", "~> 2.2" # simple metadata extraction from pdfs
 gem 'rubyzip', '~> 1.2', require: 'zip' # for making zip files, needs explicit require 'zip' cause it's old and crotchety
 
+
+# Until oai 1.0 is released...
+gem 'oai', ">= 1.0.0.beta1", "< 2.0"
+
 gem 'sitemap_generator', '~> 6.0' # google sitemap generation
+
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

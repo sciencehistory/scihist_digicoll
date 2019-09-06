@@ -54,9 +54,15 @@ class DownloadDropdownDisplay < ViewModel
   #
   #   We don't just get from asset.parent, because intervening child work hieararchy
   #   may make it complicated, we need to be told our display parent context.
+  #
+  #   display_parent_work is also used for determining "rights" statement.
   # @param use_link [Boolean], default false, if true will make the link that opens the menu an
   #   ordinary hyperlink, instead of a button (used on audio playlist).
-  def initialize(asset, display_parent_work:, use_link: false, viewer_template: false)
+  def initialize(asset,
+      display_parent_work:,
+      use_link: false,
+      viewer_template: false)
+
     if viewer_template
       raise ArgumentError.new("asset must be nil if template_only") unless asset.nil?
     else
@@ -105,10 +111,6 @@ class DownloadDropdownDisplay < ViewModel
    end
   end
 
-  def parent
-    asset&.parent
-  end
-
   def menu_button_id
     # include our object_id just to ensure uniqueness
     unless viewer_template_mode?
@@ -148,7 +150,7 @@ class DownloadDropdownDisplay < ViewModel
   def menu_items
     elements = []
 
-    if parent && parent.rights.present?
+    if display_parent_work && display_parent_work.rights.present?
       elements << "<h3 class='dropdown-header'>Rights</h3>".html_safe
       elements << rights_statement_item
       elements << "<div class='dropdown-divider'></div>".html_safe
@@ -159,7 +161,7 @@ class DownloadDropdownDisplay < ViewModel
       whole_work_download_options.each do |download_option|
         elements << format_download_option(download_option)
       end
-      elements << "<li class='dropdown-divider'></li>".html_safe
+      elements << "<div class='dropdown-divider'></div>".html_safe
     end
 
     if viewer_template_mode?
@@ -197,17 +199,18 @@ class DownloadDropdownDisplay < ViewModel
   end
 
   def rights_statement_item
-    RightsIconDisplay.new(parent, mode: :dropdown_item).display
+    RightsIconDisplay.new(display_parent_work, mode: :dropdown_item).display
   end
 
-  # have a parent work, and all it's children are images, are the only whole-work
-  # download options we offer at present.
+  # have a parent work, with more than 1 child, and AT LEAST ONE of it's children are images,
+  # provide multi-image downloads. These are the only whole-work-download options we provide at present.
+  #
+  # NOTE: We had been checking to make sure ALL members were images, but that was FAR
+  # too resource intensive, it destroyed ramelli. Checking just one is okay though.
   def has_work_download_options?
     display_parent_work &&
-      display_parent_work.members.length > 1 &&
-      display_parent_work.members.all? do |member|
-        member.leaf_representative&.content_type&.start_with?("image/")
-      end
+    display_parent_work.members.size > 1 &&
+    display_parent_work.member_content_types.all? {|t| t.start_with?("image/")}
   end
 
   def whole_work_download_options

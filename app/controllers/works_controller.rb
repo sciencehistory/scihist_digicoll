@@ -8,6 +8,11 @@ class WorksController < ApplicationController
       format.html {
         render template: template
       }
+
+      format.xml {
+        render body: WorkOaiDcSerialization.new(@work).to_oai_dc, type: :xml
+      }
+
       format.ris {
         send_data RisSerializer.new(@work).to_ris,
           disposition: 'attachment',

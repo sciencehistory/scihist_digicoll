@@ -1,19 +1,24 @@
 require 'rails_autolink'
 # Takes a description string (from a work.description) and formats it for display.
 # Ported from chf-sufia/app/helpers/description_formatter_helper.rb
-
-# DescriptionDisplayFormatter.new(work.description).format
-# DescriptionDisplayFormatter.new(work.description, truncate:true).format
-
+#
+#     DescriptionDisplayFormatter.new(work.description).format
+#     DescriptionDisplayFormatter.new(work.description, truncate:true).format
+#
+# Or for a plain-text description, with html tags stripped:
+#     DescriptionDisplayFormatter.new(work.description, truncate:true).format_plain
+#
 class DescriptionDisplayFormatter < ViewModel
+  DEFAULT_TRUNCATE = 220
+
   valid_model_type_names 'String', 'NilClass'
 
-  def initialize(model, options ={})
-
-    # truncate: true is used in _index_result.html.erb .
-    @truncate = !! options.delete(:truncate)
+  # @param str [String] description string
+  # @option truncate [Integer,Boolean] truncate string to this amount, or `true` for default 220. Default value is nil, for not truncate.
+  def initialize(str, options ={})
+    @truncate = options.delete(:truncate)
+    @truncate = DEFAULT_TRUNCATE if @truncate == true
     super
-
   end
 
   alias_method :description, :model
@@ -21,6 +26,7 @@ class DescriptionDisplayFormatter < ViewModel
   def format
     return "".html_safe if description.blank?
     result = sanitize(description)
+
     if @truncate
       result = truncate_description(result)
     end
@@ -28,6 +34,25 @@ class DescriptionDisplayFormatter < ViewModel
     result = turn_bare_urls_into_links(result)
 
     result.html_safe
+  end
+
+  # A plain-text (html tags removed) description that is also truncated to specified chars.
+  #
+  # We don't want it escaped here, cause it will be escaped appropriately as point of use (which might be in a URL
+  # query param).  But also NOT marked html_safe, because it's not!
+  #
+  # The truncate helper makes that hard, we have to embed it in a string literal to get it neither
+  # escaped nor marked html_safe
+  def format_plain
+    return "" if description.blank?
+
+    str = strip_tags(description)
+
+    if @truncate
+      str = "#{truncate(str, escape: false, length: @truncate, separator: /\s/)}"
+    end
+
+    return str
   end
 
   private
@@ -39,7 +64,7 @@ class DescriptionDisplayFormatter < ViewModel
 
   # Truncate, if requested.
   def truncate_description(str)
-    HtmlAwareTruncation.truncate_html(str, length: 220, separator: /\s/)
+    HtmlAwareTruncation.truncate_html(str, length: @truncate, separator: /\s/)
   end
 
   # Convert line breaks to paragraphs.
