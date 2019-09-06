@@ -105,19 +105,16 @@ class FixityChecker
   end
 
   def actual_checksum
-    sha_512 = nil
-    # TODO:
-    #
-    # SignatureCalculator#call(io) below does issue a rewind
-    # ( see
-    #   https://www.rubydoc.info/gems/shrine/2.6.1/Shrine/Plugins/Signature/SignatureCalculator
-    # ) so we unfortubately can't use
-    # @asset.file.open(rewindable: false)
-    @asset.file.open do | io_object |
-      sha_512 = Shrine::Plugins::Signature::SignatureCalculator.
-        new(:sha512, format: :hex).
-        call(io_object)
+    sha512 = Digest::SHA512.new
+    @asset.file.open(rewindable:false) do |io|
+      if io.is_a? File
+        sha512.file io
+      else
+        io.each_chunk do |chunk|
+          sha512 << chunk
+        end
+      end
     end
-    sha_512
+    sha512.hexdigest
   end
 end
