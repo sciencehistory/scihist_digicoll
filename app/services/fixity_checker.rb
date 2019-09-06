@@ -69,7 +69,7 @@ class FixityChecker
     # But then, pop the earliest passed check back OUT of the trash.
     earliest_passed_check = trash.pop
     # Finally, shift the most recent N passed checks back OUT of the trash.
-    trash.shift(NUMBER_OF_RECENT_PASSED_CHECKS_TO_KEEP)
+    recent_passed_checks = trash.shift(NUMBER_OF_RECENT_PASSED_CHECKS_TO_KEEP)
     return trash
   end
 
