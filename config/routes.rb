@@ -13,6 +13,8 @@ Rails.application.routes.draw do
 
   root 'homepage#index'
 
+  match 'oai', to: "oai_pmh#index", via: [:get, :post], as: :oai_provider
+
   # https://github.com/plataformatec/devise/wiki/how-to:-change-the-default-sign_in-and-sign_out-routes
   # We aren't using :registration cause we don't want to allow self-registration,
   # We aren't using session cause we define em ourselves manually.
@@ -190,6 +192,14 @@ Rails.application.routes.draw do
   # add a routing constraint to protect to just logged in users.
   constraints LoggedInConstraint do
     mount BrowseEverything::Engine => '/admin/browse'
+
+    # Don't know if we really need qa to be limited to logged-in users, but
+    # that's the only place we use it, so let's limit to avoid anyone DOSing
+    # us with it or whatever.
+    #
+    # And we mount it as '/authorities' rather than '/qa' that the installer
+    # wanted, to match sufia/hyrax and be less weird.
+    mount Qa::Engine => '/authorities'
   end
 
 
