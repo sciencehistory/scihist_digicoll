@@ -12,6 +12,8 @@ class FixityChecker
   attr_reader :asset
 
   NUMBER_OF_RECENT_PASSED_CHECKS_TO_KEEP = 5
+  CHECK_CYCLE_LENGTH = 7
+
 
   # @param work [Work] Work object, it's members will be put into a zip
   # @param callback [proc], proc taking keyword arguments progress_i: and progress_total:, can
@@ -22,7 +24,8 @@ class FixityChecker
   end
 
   #FixityChecker.new(asset).check
-  def check
+  def check(sieve_integer = 0)
+    return unless sift(sieve_integer)
     return nil if @asset.nil?
     return nil if @asset.file.nil?
     the_expected_checksum = expected_checksum
@@ -40,7 +43,12 @@ class FixityChecker
   end
 
   #FixityChecker.new(asset).prune_checks
-  def prune_checks
+  # After pruning, for each asset - URI combination, you will be left with:
+  # up to NUMBER_OF_RECENT_PASSED_CHECKS_TO_KEEP recent passed checks,
+  # plus all the failed checks,
+  # plus one initial check (to remember the file that was intially uploaded.)
+  def prune_checks(sieve_integer = 0)
+    return unless sift(sieve_integer)
     return if @asset.file.nil?
     return if @asset.file.url.nil?
     checks_its_ok_to_delete.map(&:destroy)
@@ -54,9 +62,9 @@ class FixityChecker
   # Never throw out the earliest PASSED check
   # Always keep N recent PASSED checks
   def checks_its_ok_to_delete
-    checks = self.checks_for(@asset, @asset.file.url)
-    return [] if checks.empty?
     # Throw all the passed checks INTO the trash.
+    checks = FixityCheck.checks_for(@asset, @asset.file.url)
+    return [] if checks.empty?
     trash = checks.select { | ch | ch.passed? }
     # But then, pop the earliest passed check back OUT of the trash.
     earliest_passed_check = trash.pop
@@ -70,6 +78,30 @@ class FixityChecker
 
   def expected_checksum
     @asset.file.sha512
+  end
+
+
+  # Sifts all our  assets by some integer
+  # between one and CHECK_CYCLE_LENGTH.
+  # Allows us to convieniently check only a subset of
+  # the assets at a time, but be sure everything eventually
+  # gets checked.
+  # Pass in 0, and everything will go through the sieve.
+  def sift(sieve_integer)
+    return true if sieve_integer == 0
+    check_sieve(sieve_integer)
+    @asset.friendlier_id.bytes.sum % CHECK_CYCLE_LENGTH == sieve_integer
+  end
+
+  # Check this is a positive int between 1 and the cycle length.
+  def check_sieve(sieve_integer)
+    if !(sieve_integer.is_a? Integer)        ||
+      sieve_integer < 1                      ||
+      sieve_integer > CHECK_CYCLE_LENGTH
+      raise ArgumentError.new(
+        "Expected a positive int between  1 and #{CHECK_CYCLE_LENGTH}. Got #{sieve_integer}"
+      )
+    end
   end
 
   def actual_checksum
