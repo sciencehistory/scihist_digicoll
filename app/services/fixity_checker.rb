@@ -73,9 +73,6 @@ class FixityChecker
     return trash
   end
 
-  def check_passed
-  end
-
   def expected_checksum
     @asset.file.sha512
   end
