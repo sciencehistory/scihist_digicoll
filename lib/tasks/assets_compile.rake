@@ -31,8 +31,17 @@ namespace :scihist do
   #   https://github.com/rails/sprockets-rails/issues/49#issuecomment-20535134
   #   https://stackoverflow.com/questions/17536023/rake-assetsprecompilenodigest-in-rails-4/26049002
   task :create_non_digest_assets => :"assets:environment"  do
+    # Sprockets has written out our compiled files with locations like
+    # public/assets/404-ef0a[...]14b.html
+    #
+    # We want to figure out what location is -- which is kind of a pain, it doesn't
+    # seem like we can count on any existing Rails objects being set up completely,
+    # but we can make a Sprockets::Manifest which should read the manifest file written
+    # to `.sprockets_manifest-78[...]f8.json`, to find it's record of the latest version. Phew!
+    sprockets_environment = Sprockets::Railtie.build_environment(Rails.application)
+
     %w{404.html 500.html}.each do |file|
-      digest_relative_path = Rails.application.assets.find_asset(file)&.digest_path
+      digest_relative_path = sprockets_environment.find_asset(file)&.digest_path
 
       if digest_relative_path
         digest_path          = Rails.root + 'public/assets' + digest_relative_path
