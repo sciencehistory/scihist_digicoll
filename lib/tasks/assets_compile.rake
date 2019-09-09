@@ -32,7 +32,7 @@ namespace :scihist do
   #   https://stackoverflow.com/questions/17536023/rake-assetsprecompilenodigest-in-rails-4/26049002
   task :create_non_digest_assets => :"assets:environment"  do
     %w{404.html 500.html}.each do |file|
-      digest_relative_path = Rails.application.assets.find_asset("404.html")&.digest_path
+      digest_relative_path = Rails.application.assets.find_asset(file)&.digest_path
 
       if digest_relative_path
         digest_path          = Rails.root + 'public/assets' + digest_relative_path
