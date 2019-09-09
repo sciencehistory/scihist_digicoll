@@ -640,7 +640,7 @@ GEM
       tilt (~> 2.0)
     sitemap_generator (6.0.2)
       builder (~> 3.0)
-    slackistrano (3.8.3)
+    slackistrano (4.0.1)
       capistrano (>= 3.8.1)
     slop (3.6.0)
     solr_wrapper (2.1.0)
@@ -795,7 +795,7 @@ DEPENDENCIES
   shrine (~> 2.0)
   simple_form (~> 4.0)
   sitemap_generator (~> 6.0)
-  slackistrano (~> 3.8)
+  slackistrano (~> 4.0)
   solr_wrapper (~> 2.1)
   sprockets-rails (>= 2.3.2)
   tzinfo-data
