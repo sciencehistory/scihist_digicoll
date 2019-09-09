@@ -32,11 +32,12 @@ namespace :scihist do
   #   https://stackoverflow.com/questions/17536023/rake-assetsprecompilenodigest-in-rails-4/26049002
   task :create_non_digest_assets => :"assets:environment"  do
     %w{404.html 500.html}.each do |file|
-      digest_relative_path = Rails.application.assets_manifest.assets[file]
-      digest_path          = Rails.root + 'public/assets' + digest_relative_path
-      destination_path     = Rails.root + 'public/' + file
+      digest_relative_path = Rails.application.assets.find_asset("404.html")&.digest_path
 
       if digest_relative_path
+        digest_path          = Rails.root + 'public/assets' + digest_relative_path
+        destination_path     = Rails.root + 'public/' + file
+
         logger.info "(Local asset_compile.rake) Copying to #{destination_path}"
 
         # Use FileUtils.copy_file with true third argument to copy
