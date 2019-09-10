@@ -97,7 +97,7 @@ FactoryBot.define do
           md5: evaluator.faked_md5,
           sha512: evaluator.faked_sha512)
 
-        asset.file_data = uploaded_file.to_json
+        asset.file_data = uploaded_file.as_json
 
         # Now add derivatives for any that work for our faked file type
         if evaluator.faked_derivatives.nil?
