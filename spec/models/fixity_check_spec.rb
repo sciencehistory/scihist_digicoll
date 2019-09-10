@@ -2,9 +2,9 @@ require 'rails_helper'
 
 describe FixityCheck do
 
-  let(:good_asset)    { build(:asset_with_faked_file, :correct_sha512) }
+  let(:good_asset)    { build(:asset_image_with_correct_sha512) }
 
-  let(:good_asset_2)  { build(:asset_with_faked_file, :mp3_with_correct_sha512) }
+  let(:good_asset_2)  { build(:asset_mp3_with_correct_sha512) }
   # :asset_with_faked_file, by factory default,comes with a random fake sha512.
   let(:corrupt_asset) { build(:asset_with_faked_file) }
 

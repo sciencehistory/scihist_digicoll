@@ -73,10 +73,6 @@ FactoryBot.define do
         faked_derivatives { nil }
       end
 
-      trait :correct_sha512 do
-        faked_sha512 { Digest::SHA512.file(Rails.root + "spec/test_support/images/30x30.png").to_s }
-      end
-
       trait :pdf do
         faked_file { File.open((Rails.root + "spec/test_support/pdf/sample.pdf")) }
         faked_content_type { "application/pdf" }
@@ -86,14 +82,6 @@ FactoryBot.define do
 
       trait :mp3 do
         faked_file { File.open((Rails.root + "spec/test_support/audio/ice_cubes.mp3")) }
-        faked_content_type { "audio/mpeg" }
-        faked_height { nil }
-        faked_width { nil }
-      end
-
-      trait :mp3_with_correct_sha512 do
-        faked_file { File.open((Rails.root + "spec/test_support/audio/ice_cubes.mp3")) }
-        faked_sha512 { Digest::SHA512.file(Rails.root + "spec/test_support/audio/ice_cubes.mp3").to_s }
         faked_content_type { "audio/mpeg" }
         faked_height { nil }
         faked_width { nil }
@@ -133,6 +121,19 @@ FactoryBot.define do
         end
       end
     end
+
+    factory :asset_image_with_correct_sha512, parent: :asset_with_faked_file do
+      faked_sha512 { Digest::SHA512.file(Rails.root + "spec/test_support/images/30x30.png").to_s }
+    end
+
+    factory :asset_mp3_with_correct_sha512, parent: :asset_with_faked_file do
+      faked_file { File.open((Rails.root + "spec/test_support/audio/ice_cubes.mp3")) }
+      faked_content_type { "audio/mpeg" }
+      faked_sha512 { Digest::SHA512.file(Rails.root + "spec/test_support/audio/ice_cubes.mp3").to_s }
+      faked_height { nil }
+      faked_width { nil }
+    end
+
   end
 
   # A Kithe::Derivative object with faked metadata/content-type for file attachment.
