@@ -4,14 +4,11 @@
 # FixityChecker.new(asset).prune_checks
 #   This will remove all the excess checks for the object so the database table
 #   doesn't get too large.
-#
-# Assets with nil files are ignored.
 
 class FixityChecker
   attr_reader :asset
 
   NUMBER_OF_RECENT_PASSED_CHECKS_TO_KEEP = 5
-
 
   # Creating a FixityChecker.new(asset) doesn't actually do anything.
   def initialize(asset)
@@ -28,15 +25,16 @@ class FixityChecker
     @asset = asset
   end
 
-  #FixityChecker.new(asset).check
+  # FixityChecker.new(asset).check
   def check
-    the_expected_checksum = expected_checksum
-    new_check = FixityCheck.new(asset: @asset)
-    new_check.expected_result = the_expected_checksum
-    new_check.checked_uri = @asset.file.url
-    new_check.actual_result = actual_checksum
-    new_check.passed= (the_expected_checksum==actual_checksum)
-    new_check.save!
+    FixityCheck.create!(
+      asset: @asset,
+      checked_uri: permanent_url,
+      expected_result: expected_checksum,
+      actual_result: actual_checksum,
+      passed: (expected_checksum==actual_checksum)
+    )
+    byebug
   end
 
   #FixityChecker.new(asset).prune_checks
@@ -45,7 +43,7 @@ class FixityChecker
   # plus all the failed checks,
   # plus one initial check (to remember the file that was intially uploaded.)
   def prune_checks
-    checks_its_ok_to_delete.map(&:destroy)
+    checks_to_delete.map(&:destroy)
   end
 
   private
@@ -55,9 +53,9 @@ class FixityChecker
   # Never throw out FAILED checks
   # Never throw out the earliest PASSED check
   # Always keep N recent PASSED checks
-  def checks_its_ok_to_delete
+  def checks_to_delete
     # Throw all the passed checks INTO the trash.
-    checks = FixityCheck.checks_for(@asset, @asset.file.url)
+    checks = FixityCheck.checks_for(@asset, permanent_url)
     return [] if checks.empty?
     trash = checks.select { | ch | ch.passed? }
     # But then, pop the earliest passed check back OUT of the trash.
@@ -83,5 +81,13 @@ class FixityChecker
       end
     end
     sha512.hexdigest
+  end
+
+  # @asset.file.url is not actually what we want here.
+  # For instance, if it's on S3 and shrine doesn't think it's a public ACL,
+  # it'll be a time-limited signed S3 URL which won't actually be accessible
+  # in the far future. So we use this instead.
+  def permanent_url
+    @asset.file.url(public: true)
   end
 end
