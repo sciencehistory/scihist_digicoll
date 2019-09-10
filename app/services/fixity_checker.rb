@@ -54,6 +54,29 @@ class FixityChecker
     checks_its_ok_to_delete.map(&:destroy)
   end
 
+  def all_passed?
+    checks_for_this_uri.all?{ |ch| ch.passed? }
+  end
+
+  def check_count_humanized
+    n = checks_for_this_uri.count
+    return "Never checked" if n == 0
+    return "Checked once" if n == 1
+    "Checked #{n} times"
+  end
+
+  def check_count
+    checks_for_this_uri.count
+  end
+
+  def oldest_check
+    checks_for_this_uri.last.created_at
+  end
+
+  def newest_check
+    checks_for_this_uri.first.created_at
+  end
+
   private
 
   # Returns an array of checks that we don't want to keep.
@@ -71,6 +94,15 @@ class FixityChecker
     # Finally, shift the most recent N passed checks back OUT of the trash.
     recent_passed_checks = trash.shift(NUMBER_OF_RECENT_PASSED_CHECKS_TO_KEEP)
     return trash
+  end
+
+  # A memoized list of checks for this asset's current file.
+  # Used for reporting on a particular asset on the asset view page
+  # without fetching the info more than once.
+  def checks_for_this_uri
+    return [] if @asset.file.nil?
+    return [] if @asset.file.url.nil?
+    @checks_for_this_uri ||= FixityCheck.checks_for(@asset, @asset.file.url)
   end
 
   def expected_checksum

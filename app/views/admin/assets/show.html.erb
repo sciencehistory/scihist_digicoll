@@ -67,6 +67,36 @@
         </dl>
       </dd>
 
+      <dt class="col-sm-4">Fixity audits</dt>
+      <dd class="col-sm-8">
+        <dl class="row">
+
+          <dt class="col-sm-2">Count</dt>
+          <dd class="col-sm-10 text-truncate">
+            <%= text_field_tag "", @fixity_checker.check_count_humanized , readonly: true, style: "width: 100%" %>
+          </dd>
+
+          <% if @fixity_checker.check_count > 0 %>
+            <dt class="col-sm-2">Status</dt>
+            <dd class="col-sm-10 text-truncate">
+              <%= text_field_tag "", "#{@fixity_checker.all_passed? ?  'OK' : 'Some problems'}" , readonly: true, style: "width: 100%" %>
+            </dd>
+
+            <dt class="col-sm-2">Latest</dt>
+            <dd class="col-sm-10 text-truncate">
+              <%= text_field_tag "", "#{time_ago_in_words(@fixity_checker.newest_check)} ago", readonly: true, style: "width: 100%" %>
+            </dd>
+
+            <dt class="col-sm-2">Earliest</dt>
+            <dd class="col-sm-10 text-truncate">
+              <%= text_field_tag "","#{time_ago_in_words(@fixity_checker.oldest_check)} ago", readonly: true, style: "width: 100%" %>
+            </dd>
+          <% end %>
+
+
+        </dl>
+      </dd>
+
       <dt class="col-sm-4">Dimensions</dt>
       <dd class="col-sm-8">
         <dl>
