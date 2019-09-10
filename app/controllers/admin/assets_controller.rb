@@ -2,6 +2,7 @@ class Admin::AssetsController < AdminController
 
   def show
     @asset = Asset.find_by_friendlier_id!(params[:id])
+    @fixity_checker = FixityChecker.new(@asset)
   end
 
   def edit
