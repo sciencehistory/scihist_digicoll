@@ -1,39 +1,36 @@
 # FixityChecker.new(asset).check
-# FixityChecker.new(asset).prune_checks
-# This first version of the fixity checker only checks
-# for actual discrepancies between already-recorded
-# checksums and calculated ones.
+#   This will check the asset, and log the results to the database.
 #
-# This means:
+# FixityChecker.new(asset).prune_checks
+#   This will remove all the excess checks for the object so the database table
+#   doesn't get too large.
+#
 # Assets with nil files are ignored.
-# Files with nil checksums are ignored.
 
 class FixityChecker
   attr_reader :asset
 
   NUMBER_OF_RECENT_PASSED_CHECKS_TO_KEEP = 5
-  CHECK_CYCLE_LENGTH = 7
 
 
-  # @param work [Work] Work object, it's members will be put into a zip
-  # @param callback [proc], proc taking keyword arguments progress_i: and progress_total:, can
-  #   be used to update a progress UI.
+  # Creating a FixityChecker.new(asset) doesn't actually do anything.
   def initialize(asset)
     raise ArgumentError.new("Please pass in an Asset.") unless asset.is_a? Asset
+
+    raise ArgumentError.new(
+        "#{@asset.friendlier_id} has no file associated with it, so we can't run a check on it."
+    ) if asset.file.nil?
+
+    raise ArgumentError.new(
+        "#{@asset.friendlier_id} has no stored checksum, so we can't run a check on it."
+    ) if asset.file.sha512.nil?
+
     @asset = asset
   end
 
   #FixityChecker.new(asset).check
-  def check(sieve_integer = 0)
-    return unless sift(sieve_integer)
-    return nil if @asset.nil?
-    return nil if @asset.file.nil?
+  def check
     the_expected_checksum = expected_checksum
-    # Note: @asset.file.sha512 can be nil on e.g.
-    # items imported with DISABLE_BYTESTREAM_IMPORT=true
-    # For now, we are ignoring these.
-    return nil if the_expected_checksum.nil?
-
     new_check = FixityCheck.new(asset: @asset)
     new_check.expected_result = the_expected_checksum
     new_check.checked_uri = @asset.file.url
@@ -47,10 +44,7 @@ class FixityChecker
   # up to NUMBER_OF_RECENT_PASSED_CHECKS_TO_KEEP recent passed checks,
   # plus all the failed checks,
   # plus one initial check (to remember the file that was intially uploaded.)
-  def prune_checks(sieve_integer = 0)
-    return unless sift(sieve_integer)
-    return if @asset.file.nil?
-    return if @asset.file.url.nil?
+  def prune_checks
     checks_its_ok_to_delete.map(&:destroy)
   end
 
@@ -75,30 +69,6 @@ class FixityChecker
 
   def expected_checksum
     @asset.file.sha512
-  end
-
-
-  # Sifts all our  assets by some integer
-  # between one and CHECK_CYCLE_LENGTH.
-  # Allows us to convieniently check only a subset of
-  # the assets at a time, but be sure everything eventually
-  # gets checked.
-  # Pass in 0, and everything will go through the sieve.
-  def sift(sieve_integer)
-    return true if sieve_integer == 0
-    check_sieve(sieve_integer)
-    @asset.friendlier_id.bytes.sum % CHECK_CYCLE_LENGTH == sieve_integer
-  end
-
-  # Check this is a positive int between 1 and the cycle length.
-  def check_sieve(sieve_integer)
-    if !(sieve_integer.is_a? Integer)        ||
-      sieve_integer < 1                      ||
-      sieve_integer > CHECK_CYCLE_LENGTH
-      raise ArgumentError.new(
-        "Expected a positive int between  1 and #{CHECK_CYCLE_LENGTH}. Got #{sieve_integer}"
-      )
-    end
   end
 
   def actual_checksum
