@@ -68,19 +68,16 @@ class FixityChecker
     @expected_result ||= @asset.file.sha512
   end
 
+  # Note: this recipe is copied from:
+  # https://github.com/shrinerb/shrine/blob/1f67da86ba028c0464d80fd0a8c9bd4d9aec20be/lib/shrine/plugins/signature.rb#L101 .
+  # Thanks to janko for this.
   def actual_result
     @actual_result ||= begin
-      sha512 = Digest::SHA512.new
       @asset.file.open(rewindable:false) do |io|
-        if io.is_a? File
-          sha512.file io
-        else
-          io.each_chunk do |chunk|
-            sha512 << chunk
-          end
-        end
+        digest = Digest::SHA512.new
+        digest.update(io.read(16*1024, buffer ||= String.new)) until io.eof?
+        digest.hexdigest
       end
-      sha512.hexdigest
     end
   end
 
