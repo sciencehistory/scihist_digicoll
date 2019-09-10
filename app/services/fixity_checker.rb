@@ -30,11 +30,10 @@ class FixityChecker
     FixityCheck.create!(
       asset: @asset,
       checked_uri: permanent_url,
-      expected_result: expected_checksum,
-      actual_result: actual_checksum,
-      passed: (expected_checksum==actual_checksum)
+      expected_result: expected_result,
+      actual_result: actual_result,
+      passed: (expected_result==actual_result)
     )
-    byebug
   end
 
   #FixityChecker.new(asset).prune_checks
@@ -65,27 +64,29 @@ class FixityChecker
     return trash
   end
 
-  def expected_checksum
-    @asset.file.sha512
+  def expected_result
+    @expected_result ||= @asset.file.sha512
   end
 
-  def actual_checksum
-    sha512 = Digest::SHA512.new
-    @asset.file.open(rewindable:false) do |io|
-      if io.is_a? File
-        sha512.file io
-      else
-        io.each_chunk do |chunk|
-          sha512 << chunk
+  def actual_result
+    @actual_result ||= begin
+      sha512 = Digest::SHA512.new
+      @asset.file.open(rewindable:false) do |io|
+        if io.is_a? File
+          sha512.file io
+        else
+          io.each_chunk do |chunk|
+            sha512 << chunk
+          end
         end
       end
+      sha512.hexdigest
     end
-    sha512.hexdigest
   end
 
   # @asset.file.url is not actually what we want here.
-  # For instance, if it's on S3 and shrine doesn't think it's a public ACL,
-  # it'll be a time-limited signed S3 URL which won't actually be accessible
+  # For instance, if the file is on S3 and shrine doesn't think it's a public ACL,
+  # file.url would return a time-limited signed S3 URL which won't actually be accessible
   # in the far future. So we use this instead.
   def permanent_url
     @asset.file.url(public: true)
