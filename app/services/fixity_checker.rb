@@ -29,6 +29,7 @@ class FixityChecker
   def check
     FixityCheck.create!(
       asset: @asset,
+      hash_function: 'SHA-512',
       checked_uri: permanent_url,
       expected_result: expected_result,
       actual_result: actual_result,
