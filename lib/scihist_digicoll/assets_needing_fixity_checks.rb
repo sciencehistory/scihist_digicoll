@@ -19,15 +19,9 @@ module ScihistDigicoll
     #
     # Note: if you pass in 0 as the cycle length, you just get all the assets.
     #
-    def self.assets_to_check(cycle_length=7)
-      asset_ids = if cycle_length == 0
-        Asset.all.pluck(:id)
-      else
-        sifted_asset_ids(cycle_length)
-      end
-      asset_ids.each do |id|
-        yield Asset.find(id)
-      end
+    def self.asset_ids_to_check(cycle_length=7)
+      return Asset.all.pluck(:id) if cycle_length == 0
+      sifted_asset_ids(cycle_length)
     end
 
     private
