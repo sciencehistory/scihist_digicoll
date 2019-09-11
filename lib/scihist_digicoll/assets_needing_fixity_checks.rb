@@ -7,7 +7,6 @@ module ScihistDigicoll
     #
     #  * Check all the assets if you run the rake task 7 times.
     #  * Check the same number of assets every day.
-    #  * Not load the assets into memory; that job falls to the rake task.
     #
     # asset_ids tries to find the ids for the assets that need to
     # be checked the most urgently.
@@ -16,9 +15,25 @@ module ScihistDigicoll
     # Then come assets whose MOST RECENT CHECK is the OLDEST.
     #
     # If you run the check once a day, the items will be checked
-    # roughly once a week if length_of_cycle == 7.
-    def self.asset_ids_to_check(length_of_cycle=7)
-      number_to_fetch = Asset.count / length_of_cycle
+    # roughly once a week if cycle_length == 7.
+    #
+    # Note: if you pass in 0 as the cycle length, you just get all the assets.
+    #
+    def self.assets_to_check(cycle_length=7)
+      asset_ids = if cycle_length == 0
+        Asset.all.pluck(:id)
+      else
+        sifted_asset_ids(cycle_length)
+      end
+      asset_ids.each do |id|
+        yield Asset.find(id)
+      end
+    end
+
+    private
+
+    def self.sifted_asset_ids(cycle_length)
+      number_to_fetch = Asset.count / cycle_length
       sql = """
         SELECT kithe_models.id
         FROM kithe_models
