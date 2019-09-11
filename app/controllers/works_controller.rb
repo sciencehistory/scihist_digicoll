@@ -38,9 +38,31 @@ class WorksController < ApplicationController
   helper_method :decorator
 
   def has_audio_member?
-    @work.members.
-      where(published: true).
-      any? { | x| x.leaf_representative&.content_type&.start_with?("audio/") }
+    # some pg JSON operators in our WHERE clause to pull out actually just
+    # what we want.
+    #
+    # The Decorators are going to fetch members again anyway, we're kind of fetching
+    # content that will be fetched again -- but oh well, we do it nice and efficiently!
+    #
+    # We have to do two queries to get all the mime-types, one for where the direct member
+    # is an asset, and another for where it's a child work and we have to follow leaf_representative
+    #
+    # We use Arel.sql cause if we don't we get a deprecation message telling us:
+    #     "Dangerous query method... Known-safe values can be passed by wrapping them in Arel.sql()""
+    @has_audio_member ||= begin
+      direct_types = @work.members.
+        where(published: true).
+        distinct.pluck(Arel.sql("file_data -> 'metadata' -> 'mime_type'")).
+        compact
+
+      indirect_types = @work.members.
+        where(published: true).
+        joins(:leaf_representative).
+        distinct.pluck(Arel.sql("leaf_representatives_kithe_models.file_data -> 'metadata' -> 'mime_type'")).
+        compact
+
+      (direct_types + indirect_types).any? { |t| t.start_with?("audio/")}
+    end
   end
 
   def set_work
