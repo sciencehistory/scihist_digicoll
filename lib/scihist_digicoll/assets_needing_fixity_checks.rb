@@ -46,7 +46,7 @@ module ScihistDigicoll
       """
       ActiveRecord::Base.connection.
         exec_query(sql).
-        rows.map { |r| r.first }
+        rows.map(&:first)
     end
   end
 end
