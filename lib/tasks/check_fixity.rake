@@ -1,3 +1,5 @@
+require 'scihist_digicoll/assets_needing_fixity_checks'
+
 namespace :scihist_digicoll do
   desc """
   Checks the fixity of some or all Assets in the database.
@@ -20,11 +22,7 @@ namespace :scihist_digicoll do
     if ENV['CHECK_ALL_ASSETS_TODAY'] == 'true'
       ids_to_check = Asset.all.pluck(:id)
     else
-      # This recipe will:
-      #   Check all the assets every few days.
-      #   Check exactly the same number of assets every day.
-      #   Only load the assets that are about to get checked.
-      ids_to_check = sifted_asset_ids
+      ids_to_check = ScihistDigicoll::AssetsNeedingFixityChecks.asset_ids_to_check
     end
 
     progress_bar = ProgressBar.create(total: ids_to_check.count, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
@@ -39,40 +37,5 @@ namespace :scihist_digicoll do
       end
       progress_bar.increment
     end
-  end
-
-  # OLD METHOD
-  # Retrieves a convenient subset of asset ids.
-  # Allows us to convieniently check only a subset of
-  # the assets at a time, but be sure everything eventually
-  # gets checked.
-  # Pass in 0, and everything will go through the sieve.
-
-  #CHECK_CYCLE_LENGTH = 7
-
-  def old_sifted_asset_ids(sieve_integer, cycle_length)
-    ids = Asset.all.pluck(:id).select do |id|
-      id.bytes[0..5].sum % cycle_length == sieve_integer % cycle_length
-    end
-    ids
-  end
-
-  # Returns the ids for the assets that need to be checked the most.
-  # Assets with NO CHECK on record at all are picked first.
-  # Then come assets whose MOST RECENT CHECK is the OLDEST.
-  # We pick 5000 at a time, which ensures (as of 2019)
-  # that all assets get checked at least once a week or so.
-  def sifted_asset_ids
-    sql = """
-      SELECT kithe_models.id
-      FROM kithe_models
-      LEFT JOIN fixity_checks
-      ON kithe_models.id = fixity_checks.asset_id
-      WHERE kithe_models.type = 'Asset'
-      GROUP BY kithe_models.id
-      ORDER BY max(fixity_checks.created_at) nulls first
-      LIMIT 5000;
-    """
-    ActiveRecord::Base.connection.exec_query(sql).rows.map { |r| r.first }
   end
 end
