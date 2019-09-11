@@ -125,4 +125,9 @@ class Work < Kithe::Work
     end
   end
 
+  def member_count(reset: false)
+    @member_count = nil if reset
+    @member_count ||= members.count
+  end
+
 end
