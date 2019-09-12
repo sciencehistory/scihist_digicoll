@@ -72,7 +72,7 @@ gem "uppy-s3_multipart"
 gem "content_disposition", "~> 1.0"
 
 # slack notifications on capistrano deploys
-gem 'slackistrano', "~> 3.8"
+gem 'slackistrano', "~> 4.0"
 gem "whenever" # automatic crontob maintenance, on capistrano deploys
 
 gem "ransack", "~> 2.1"
