@@ -9,6 +9,20 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
 -- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -139,6 +153,42 @@ CREATE SEQUENCE public.digitization_queue_items_id_seq
 --
 
 ALTER SEQUENCE public.digitization_queue_items_id_seq OWNED BY public.digitization_queue_items.id;
+
+
+--
+-- Name: fixity_checks; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.fixity_checks (
+    id bigint NOT NULL,
+    asset_id uuid NOT NULL,
+    passed boolean,
+    expected_result character varying,
+    actual_result character varying,
+    checked_uri character varying,
+    hash_function character varying DEFAULT 'SHA-512'::character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: fixity_checks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.fixity_checks_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: fixity_checks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.fixity_checks_id_seq OWNED BY public.fixity_checks.id;
 
 
 --
@@ -366,6 +416,13 @@ ALTER TABLE ONLY public.digitization_queue_items ALTER COLUMN id SET DEFAULT nex
 
 
 --
+-- Name: fixity_checks id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.fixity_checks ALTER COLUMN id SET DEFAULT nextval('public.fixity_checks_id_seq'::regclass);
+
+
+--
 -- Name: kithe_derivatives id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -414,6 +471,14 @@ ALTER TABLE ONLY public.ar_internal_metadata
 
 ALTER TABLE ONLY public.digitization_queue_items
     ADD CONSTRAINT digitization_queue_items_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: fixity_checks fixity_checks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.fixity_checks
+    ADD CONSTRAINT fixity_checks_pkey PRIMARY KEY (id);
 
 
 --
@@ -470,6 +535,27 @@ ALTER TABLE ONLY public.searches
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: by_asset_and_checked_uri; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX by_asset_and_checked_uri ON public.fixity_checks USING btree (asset_id, checked_uri);
+
+
+--
+-- Name: index_fixity_checks_on_asset_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_fixity_checks_on_asset_id ON public.fixity_checks USING btree (asset_id);
+
+
+--
+-- Name: index_fixity_checks_on_checked_uri; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_fixity_checks_on_checked_uri ON public.fixity_checks USING btree (checked_uri);
 
 
 --
@@ -601,6 +687,14 @@ ALTER TABLE ONLY public.kithe_models
 
 
 --
+-- Name: fixity_checks fk_rails_2950403fc8; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.fixity_checks
+    ADD CONSTRAINT fk_rails_2950403fc8 FOREIGN KEY (asset_id) REFERENCES public.kithe_models(id);
+
+
+--
 -- Name: on_demand_derivatives fk_rails_3b0ff4a213; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -680,6 +774,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190404155001'),
 ('20190422201311'),
 ('20190716180327'),
+('20190827124516');
 ('20190910160148');
 
 
