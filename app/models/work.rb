@@ -125,4 +125,16 @@ class Work < Kithe::Work
     end
   end
 
+  # @returns [Integer] count of members (cached)
+  #
+  # This will keep returning the same number in subsequent times called on the same instance, it's cached.
+  #
+  # It's really only meant for use in display code, and specifically created for DownloadDropdownDisplay.
+  #
+  # This is architecturally not a great place to put this, but it works. See also #member_content_types
+  def member_count(reset: false)
+    @member_count = nil if reset
+    @member_count ||= members.size
+  end
+
 end
