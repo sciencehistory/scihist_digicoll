@@ -1,4 +1,4 @@
-set :stage, :staging
+set :stage, :production
 set :rails_env, 'production'
 set :slack_notify, true
 
