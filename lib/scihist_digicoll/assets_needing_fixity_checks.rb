@@ -42,20 +42,17 @@ module ScihistDigicoll
 
     private
 
-    def sifted_asset_ids
-      sql = """
-        SELECT kithe_models.id
-        FROM kithe_models
-        LEFT JOIN fixity_checks
-        ON kithe_models.id = fixity_checks.asset_id
-        WHERE kithe_models.type = 'Asset'
-        GROUP BY kithe_models.id
-        ORDER BY max(fixity_checks.created_at) nulls first
-        LIMIT #{expected_num_to_check};
-      """
-      ActiveRecord::Base.connection.
-        exec_query(sql).
-        rows.map(&:first)
+    def selected_assets_scope
+      Asset.
+        select("kithe_models.id").
+        left_outer_joins(:fixity_checks).
+        group(:id).
+        order(Arel.sql "max(fixity_checks.created_at) nulls first").
+        limit(expected_num_to_check)
+    end
+
+    def selected_asset_ids
+      selected_assets_scope.pluck("kithe_models.id")
     end
   end
 end
