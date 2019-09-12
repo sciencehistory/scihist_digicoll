@@ -55,7 +55,7 @@ describe FixityCheck do
   let(:good_asset) { build(:asset_image_with_correct_sha512) }
   let!(:twenty_checks) do
     (0..19).to_a.map do |x|
-      FixityCheck.create!(
+      create(:fixity_check,
         asset: good_asset,
         checked_uri: good_asset.file.url,
         created_at: Time.now() - 100000 * x,

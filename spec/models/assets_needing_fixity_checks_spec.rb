@@ -35,13 +35,24 @@ describe ScihistDigicoll::AssetsNeedingFixityChecks do
   end
 
   describe "#assets_to_check" do
+    # Work around FactoryBot not liking explicit created_at setting.
+    around do |example|
+      original = FixityCheck.record_timestamps
+      FixityCheck.record_timestamps = false
+      example.run
+      FixityCheck.record_timestamps = original
+    end
+
+
     let!(:blank_one) { create(:asset) }
-    let!(:old_one) { create(:asset, fixity_checks: [FixityCheck.new(created_at: 1.year.ago)]) }
+    let!(:old_one) { create(:asset, fixity_checks: [
+      build(:fixity_check, created_at: 1.year.ago, updated_at: 1.year.ago)
+    ]) }
 
     before do
       # some newer ones
       4.times do |i|
-        create(:asset, fixity_checks: [FixityCheck.new(created_at: i.days.ago)])
+        create(:asset, fixity_checks: [build(:fixity_check, created_at: i.days.ago, updated_at: i.days.ago)])
       end
     end
 
