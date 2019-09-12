@@ -25,6 +25,7 @@ module ScihistDigicoll
     config.to_prepare do
       require_dependency "work"
       require_dependency "asset"
+      require_dependency "collection_thumb_asset"
     end
 
 
