@@ -27,19 +27,18 @@ namespace :scihist_digicoll do
   task :check_and_prune_fixity => :environment do
     cycle_length = ENV['CYCLE_LENGTH']|| 7
 
-    asset_ids_to_check = ScihistDigicoll::AssetsNeedingFixityChecks.new(cycle_length).asset_ids_to_check
+    check_lister = ScihistDigicoll::AssetsNeedingFixityChecks.new(cycle_length)
 
-    info = "checking asset fixity for #{asset_ids_to_check.count} of #{Asset.count} assets"
+    info = "checking asset fixity for #{check_lister.expected_num_to_check} of #{Asset.count} assets"
 
     if ENV['SHOW_PROGRESS_BAR'] == 'true'
-      progress_bar = ProgressBar.create(total: asset_ids_to_check.count, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
+      progress_bar = ProgressBar.create(total: check_lister.expected_num_to_check, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
       progress_bar.log(info)
     else
       Rails.logger.info(info)
     end
 
-    asset_ids_to_check.each do | id |
-      asset = Asset.find(id)
+    check_lister.assets_to_check.each do | asset |
       if asset.stored?
         checker = FixityChecker.new(asset)
         checker.check        unless ENV['SKIP_CHECK'] == 'true'
