@@ -127,7 +127,7 @@ class Work < Kithe::Work
 
   def member_count(reset: false)
     @member_count = nil if reset
-    @member_count ||= members.count
+    @member_count ||= members.size
   end
 
 end
