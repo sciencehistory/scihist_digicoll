@@ -252,7 +252,7 @@ CREATE TABLE public.kithe_models (
     representative_id uuid,
     leaf_representative_id uuid,
     digitization_queue_item_id bigint,
-    published boolean,
+    published boolean DEFAULT false NOT NULL,
     kithe_model_type integer NOT NULL
 );
 
@@ -775,5 +775,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190422201311'),
 ('20190716180327'),
 ('20190827124516');
+('20190910160148');
 
 

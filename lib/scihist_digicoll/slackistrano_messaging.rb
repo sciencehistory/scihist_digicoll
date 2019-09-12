@@ -27,7 +27,7 @@ if defined?(Slackistrano::Messaging)
             payload[:attachments] ||= []
             payload[:attachments] << {
                 title: "Github Diff",
-                title_link: "https://github.com/chemheritage/chf-sufia/compare/#{CGI.escape previous}...#{CGI.escape current}",
+                title_link: "https://github.com/sciencehistory/scihist_digicoll/compare/#{CGI.escape previous}...#{CGI.escape current}",
                 short: false
               }
           end
