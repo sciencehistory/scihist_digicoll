@@ -29,13 +29,13 @@ namespace :scihist_digicoll do
 
     asset_ids_to_check = ScihistDigicoll::AssetsNeedingFixityChecks.new(cycle_length).asset_ids_to_check
 
-    info = "INFO: checking asset fixity for #{asset_ids_to_check.count} of #{Asset.count} assets"
+    info = "checking asset fixity for #{asset_ids_to_check.count} of #{Asset.count} assets"
 
     if ENV['SHOW_PROGRESS_BAR'] == 'true'
       progress_bar = ProgressBar.create(total: asset_ids_to_check.count, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
       progress_bar.log(info)
     else
-      puts info
+      Rails.logger.info(info)
     end
 
     asset_ids_to_check.each do | id |
@@ -46,6 +46,10 @@ namespace :scihist_digicoll do
         checker.prune_checks unless ENV['SKIP_PRUNE'] == 'true'
       end
       progress_bar.increment unless progress_bar.nil?
+    end
+
+    unless ENV['SHOW_PROGRESS_BAR'] == 'true'
+      Rails.logger.info("COMPLETE: " + info)
     end
   end
 end
