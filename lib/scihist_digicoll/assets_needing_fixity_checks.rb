@@ -27,12 +27,13 @@ module ScihistDigicoll
     # or oldest checks on record). The idea is you want all assets to be checked weekly,
     # you run nightly with cycle_length 7. Which is the default. `0` means "all assets".
     def initialize(cycle_length=7)
-      @cycle_link = cycle_length
+      raise ArgumentError.new("cycle_length must be integer") unless cycle_length.kind_of?(Integer)
+      @cycle_length = cycle_length
     end
 
     def asset_ids_to_check
       return Asset.all.pluck(:id) if cycle_length == 0
-      sifted_asset_ids(cycle_length)
+      sifted_asset_ids
     end
 
     def expected_num_to_check
