@@ -8,7 +8,10 @@ namespace :scihist_digicoll do
     bundle exec rake scihist_digicoll:check_and_prune_fixity
 
   To run a full check of all assets with stored files:
-    CHECK_ALL_ASSETS_TODAY='true' bundle exec rake scihist_digicoll:check_and_prune_fixity
+    CYCLE_LENGTH=0 bundle exec rake scihist_digicoll:check_and_prune_fixity
+
+  To check 1/30th today instea dof 1/7th, checking all every 30 days:
+    CYCLE_LENGTH=30 bundle exec rake scihist_digicoll:check_and_prune_fixity
 
   To run checks, but leave stale checks around without pruning them:
     SKIP_PRUNE='true'  bundle exec rake scihist_digicoll:check_and_prune_fixity
@@ -22,7 +25,7 @@ namespace :scihist_digicoll do
   """
 
   task :check_and_prune_fixity => :environment do
-    cycle_length = ENV['CHECK_ALL_ASSETS_TODAY'] == 'true' ? 0 : 7
+    cycle_length = ENV['CYCLE_LENGTH']|| 7
 
     asset_ids_to_check = ScihistDigicoll::AssetsNeedingFixityChecks.new(cycle_length).asset_ids_to_check
 
