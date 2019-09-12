@@ -1,6 +1,10 @@
 require 'rails_helper'
 require 'scihist_digicoll/assets_needing_fixity_checks'
 
+# This shouldn't be necessary to make sure Rails knows about our STI hieararchy and works
+# reliably, but somehow it is. :(
+CollectionThumbAsset.connection
+
 describe ScihistDigicoll::AssetsNeedingFixityChecks do
   let(:cycle_length) { 3 }
   let(:checker) { ScihistDigicoll::AssetsNeedingFixityChecks.new(cycle_length) }
@@ -18,7 +22,7 @@ describe ScihistDigicoll::AssetsNeedingFixityChecks do
         FROM \"kithe_models\"
         LEFT OUTER JOIN \"fixity_checks\"
         ON \"fixity_checks\".\"asset_id\" = \"kithe_models\".\"id\"
-        WHERE \"kithe_models\".\"type\" IN ('Asset')
+        WHERE \"kithe_models\".\"type\" IN ('Asset', 'CollectionThumbAsset')
         GROUP BY \"kithe_models\".\"id\"
         ORDER BY max(fixity_checks.created_at) nulls first
         LIMIT 1
@@ -42,7 +46,7 @@ describe ScihistDigicoll::AssetsNeedingFixityChecks do
     end
 
     it "are correct" do
-      expect(checker.assets_to_check.collect(&:id)).to match([blank_one.id, old_one.id])
+      expect(checker.assets_to_check.collect(&:id)).to contain_exactly(blank_one.id, old_one.id)
     end
   end
 end
