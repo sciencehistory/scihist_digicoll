@@ -24,8 +24,7 @@ namespace :scihist_digicoll do
   task :check_and_prune_fixity => :environment do
     cycle_length = ENV['CHECK_ALL_ASSETS_TODAY'] == 'true' ? 0 : 7
 
-    asset_ids_to_check = ScihistDigicoll::AssetsNeedingFixityChecks.
-      asset_ids_to_check(cycle_length)
+    asset_ids_to_check = ScihistDigicoll::AssetsNeedingFixityChecks.new(cycle_length).asset_ids_to_check
 
     info = "INFO: checking asset fixity for #{asset_ids_to_check.count} of #{Asset.count} assets"
 
