@@ -31,9 +31,10 @@ module ScihistDigicoll
       @cycle_length = cycle_length
     end
 
-    def asset_ids_to_check
-      return Asset.all.pluck(:id) if cycle_length == 0
-      sifted_asset_ids
+    def assets_to_check
+      # We need to use sub-query, cause find_each needs it's own ORDER BY, to
+      # be able to fetch in batches reliably.
+      Asset.where(id: selected_assets_scope).find_each
     end
 
     def expected_num_to_check
@@ -49,10 +50,6 @@ module ScihistDigicoll
         group(:id).
         order(Arel.sql "max(fixity_checks.created_at) nulls first").
         limit(expected_num_to_check)
-    end
-
-    def selected_asset_ids
-      selected_assets_scope.pluck("kithe_models.id")
     end
   end
 end

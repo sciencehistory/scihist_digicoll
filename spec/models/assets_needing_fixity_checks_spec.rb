@@ -2,11 +2,10 @@ require 'rails_helper'
 require 'scihist_digicoll/assets_needing_fixity_checks'
 
 describe ScihistDigicoll::AssetsNeedingFixityChecks do
-  let(:cycle_length) { 7 }
+  let(:cycle_length) { 3 }
   let(:checker) { ScihistDigicoll::AssetsNeedingFixityChecks.new(cycle_length) }
 
-  describe "sql" do
-    let(:cycle_length) { 3 }
+  describe "#selected_assets_scope" do
     before do
       3.times do
         create(:asset)
@@ -28,6 +27,22 @@ describe ScihistDigicoll::AssetsNeedingFixityChecks do
       actual = checker.send(:selected_assets_scope).to_sql.gsub(/\s+/, ' ').strip
 
       expect(actual).to eq(expected), "\nexpected: #{expected}\n     got: #{actual}\n"
+    end
+  end
+
+  describe "#assets_to_check" do
+    let!(:blank_one) { create(:asset) }
+    let!(:old_one) { create(:asset, fixity_checks: [FixityCheck.new(created_at: 1.year.ago)]) }
+
+    before do
+      # some newer ones
+      4.times do |i|
+        create(:asset, fixity_checks: [FixityCheck.new(created_at: i.days.ago)])
+      end
+    end
+
+    it "are correct" do
+      expect(checker.assets_to_check.collect(&:id)).to match([blank_one.id, old_one.id])
     end
   end
 end
