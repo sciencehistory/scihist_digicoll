@@ -35,10 +35,13 @@ module ScihistDigicoll
       sifted_asset_ids(cycle_length)
     end
 
+    def expected_num_to_check
+      @expected_num_to_check ||= Asset.count / cycle_length
+    end
+
     private
 
     def sifted_asset_ids
-      number_to_fetch = Asset.count / cycle_length
       sql = """
         SELECT kithe_models.id
         FROM kithe_models
@@ -47,7 +50,7 @@ module ScihistDigicoll
         WHERE kithe_models.type = 'Asset'
         GROUP BY kithe_models.id
         ORDER BY max(fixity_checks.created_at) nulls first
-        LIMIT #{number_to_fetch};
+        LIMIT #{expected_num_to_check};
       """
       ActiveRecord::Base.connection.
         exec_query(sql).
