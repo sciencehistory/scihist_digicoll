@@ -1,6 +1,6 @@
 require 'scihist_digicoll/assets_needing_fixity_checks'
 
-namespace :scihist_digicoll do
+namespace :scihist do
   desc """
   Checks the fixity of some or all Assets in the database.
 
@@ -24,7 +24,7 @@ namespace :scihist_digicoll do
 
   """
 
-  task :check_and_prune_fixity => :environment do
+  task :check_fixity => :environment do
     cycle_length = ENV['CYCLE_LENGTH']|| 7
 
     check_lister = ScihistDigicoll::AssetsNeedingFixityChecks.new(cycle_length)
