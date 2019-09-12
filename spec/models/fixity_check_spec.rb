@@ -8,6 +8,19 @@ describe FixityCheck do
   # :asset_with_faked_file, by factory default,comes with a random fake sha512.
   let(:corrupt_asset) { build(:asset_with_faked_file) }
 
+  describe "missing S3 file" do
+    let(:corrupt_asset) { build(:asset, friendlier_id: "faked", file_data: { storage: "store", id: "nosuchthing", metadata: { sha512: "whatever"}}) }
+
+    it "records as failed" do
+      FixityChecker.new(corrupt_asset).check
+
+      check = corrupt_asset.fixity_checks.first
+      expect(check).to be_present
+      expect(check.passed?).to be(false)
+      expect(check.actual_result).to eq "[file missing]"
+    end
+  end
+
   it "can check an asset's fixity sha512" do
     FixityChecker.new(good_asset).check
     FixityChecker.new(corrupt_asset).check

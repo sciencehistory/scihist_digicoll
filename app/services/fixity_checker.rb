@@ -79,6 +79,8 @@ class FixityChecker
         digest.update(io.read(16*1024, buffer ||= String.new)) until io.eof?
         digest.hexdigest
       end
+    rescue Aws::S3::Errors::NotFound, Errno::ENOENT
+      "[file missing]"
     end
   end
 
