@@ -10,15 +10,8 @@ class Admin::WorksController < AdminController
   # GET /admin/works
   # GET /admin/works.json
   def index
-    # weird ransack param, we want it to default to true
-    if params.dig(:q, "parent_id_null").nil?
-      params[:q] ||= {}
-      params[:q]["parent_id_null"] = true
-    end
-    @q = Work.ransack(params[:q])
-    @q.sorts = 'updated_at desc' if @q.sorts.empty?
-
-    @works = @q.result.with_representative_derivatives.page(params[:page]).per(20)
+    @q = ransack_object
+    @works = index_work_search(@q)
   end
 
 
@@ -224,6 +217,55 @@ class Admin::WorksController < AdminController
           end
         end
       end
+    end
+
+    # Some of our query SQL is prepared by ransack, which automatically makes
+    # queries from specially named param fields.  (And also has conveniences
+    # for sort UI especially).
+    #
+    # https://github.com/activerecord-hackery/ransack
+    #
+    # that includes our sorting, our main text query field, and also
+    # 'published' and "include or exclude Child Works that match query"
+    #
+    # But other things we add on in ordinary AR, see #index_work_search
+    def ransack_object
+      # weird ransack param, we want it to default to true
+      if params.dig(:q, "parent_id_null").nil?
+        params[:q] ||= {}
+        params[:q]["parent_id_null"] = true
+      end
+
+      ransack_obj = Work.ransack(params[:q]).tap do |ransack|
+        ransack.sorts = 'updated_at desc' if ransack.sorts.empty?
+      end
+    end
+
+
+    # Take a ransack object that already has an ActiveRecord scope
+    # with some of our search conditions in it, and add on the ones
+    # that were hard to do in Ransack -- mainly the ones that we want
+    # to use custom postgres JSON-related operators for.
+    #
+    # Also add on pagination and any eager-loading.
+    def index_work_search(ransack_object)
+      scope = ransack_object.result
+
+      if params[:q][:genre].present?
+        # fancy postgres json operators, may not be using indexes not sure.
+        # genre is actually a JSON array so we use postgres ? operator
+        scope = scope.where("json_attributes -> 'genre' ? :genre", genre: params[:q][:genre])
+      end
+
+      if params[:q][:format].present?
+        scope = scope.where("json_attributes -> 'format' ? :format", format: params[:q][:format])
+      end
+
+      if params[:q][:department].present?
+        scope = scope.where("json_attributes ->> 'department' = :department", department: params[:q][:department])
+      end
+
+      scope.with_representative_derivatives.page(params[:page]).per(20)
     end
 
     def cancel_url

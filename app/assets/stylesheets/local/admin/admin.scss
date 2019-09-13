@@ -3,3 +3,17 @@ dl.admin-metadata {
     @extend .ml-3;
   }
 }
+
+.admin-filter {
+  display: inline-block;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+
+  label {
+    display: block;
+  }
+  .custom-select {
+    max-width: 10em;
+    width: auto;
+  }
+}

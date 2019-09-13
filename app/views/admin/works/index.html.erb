@@ -13,16 +13,54 @@
         <%= f.label :title_or_friendlier_id_cont, "In Title or ID", class: "input-group-text" %>
       </div>
       <%= f.search_field :title_or_friendlier_id_cont, class: "form-control" %>
-      <%= select_tag "q[parent_id_null]",
-            options_for_select({"All" => "", "No Children" => true}, params[:q][:parent_id_null]),
-            class: "custom-select col-3"
-      %>
       <div class="input-group-append">
         <%= f.button "Search", class: "btn btn-primary" %>
       </div>
     </div>
   </div>
 
+  <div class="admin-filters">
+    <div class="admin-filter">
+      <label for="q_published">Published</label>
+      <%= select_tag "q[published_eq]",
+            options_for_select({"Yes" => true, "No" => false}, params[:q][:published_eq]),
+            include_blank: "Any",
+            class: "custom-select" %>
+    </div>
+
+    <div class="admin-filter">
+      <label for="q_genre">Genre</label>
+      <%= select_tag "q[genre]",
+            options_for_select(Work::ControlledLists::GENRE, params[:q][:genre]),
+            include_blank: "Any",
+            class: "custom-select" %>
+    </div>
+
+
+    <div class="admin-filter">
+        <label for="q_format">Format</label>
+        <%= select_tag "q[format]",
+              options_for_select(Work::ControlledLists::FORMAT.collect {|t| [t.titleize, t]}, params[:q][:format]),
+              include_blank: "Any",
+              class: "custom-select" %>
+    </div>
+
+    <div class="admin-filter">
+        <label for="q_department">Department</label>
+        <%= select_tag "q[department]",
+              options_for_select(Work::ControlledLists::DEPARTMENT, params[:q][:department]),
+              include_blank: "Any",
+              class: "custom-select" %>
+    </div>
+
+    <div class="admin-filter">
+      <label for="q_parent_id_null">Child Works In Results</label>
+      <%= select_tag "q[parent_id_null]",
+            options_for_select({"Yes" => "", "No" => true}, params[:q][:parent_id_null]),
+            class: "custom-select"
+      %>
+    </div>
+  </div>
 <% end %>
 
 

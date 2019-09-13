@@ -1,6 +1,23 @@
 require 'sitemap_generator'
 require 'scihist_digicoll/env'
 
+#####
+#
+# Note on google and cross-domain stuff.
+#
+# We have our sitemaps on a different host than the main app -- currently on derivatives S3 bucket.
+#
+# We also include images in our sitemap that are located in derivatives bucket, and are currently linking
+# directly to them.
+#
+# So, to get Google to use the sitemap and index those images, we need to 'claim' the production
+# derivatives host in Google web admin tools. See:
+#
+# https://support.google.com/webmasters/answer/34592?visit_id=1-636531068483226339-3826640717&rd=1
+#
+#####
+
+
 # Global variable hackily used only so tests can change it to not write to s3 under test
 unless $force_local_sitemap_generation
   sitemap_adapter = SitemapGenerator::AwsSdkAdapter.new(

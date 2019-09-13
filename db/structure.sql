@@ -9,34 +9,6 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
---
--- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
-
-
---
--- Name: EXTENSION pg_trgm; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching based on trigrams';
-
-
---
 -- Name: pgcrypto; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -162,10 +134,10 @@ ALTER SEQUENCE public.digitization_queue_items_id_seq OWNED BY public.digitizati
 CREATE TABLE public.fixity_checks (
     id bigint NOT NULL,
     asset_id uuid NOT NULL,
-    passed boolean,
-    expected_result character varying,
-    actual_result character varying,
-    checked_uri character varying,
+    passed boolean NOT NULL,
+    expected_result character varying NOT NULL,
+    actual_result character varying NOT NULL,
+    checked_uri character varying NOT NULL,
     hash_function character varying DEFAULT 'SHA-512'::character varying NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
@@ -252,7 +224,7 @@ CREATE TABLE public.kithe_models (
     representative_id uuid,
     leaf_representative_id uuid,
     digitization_queue_item_id bigint,
-    published boolean,
+    published boolean DEFAULT false NOT NULL,
     kithe_model_type integer NOT NULL
 );
 
@@ -664,13 +636,6 @@ CREATE UNIQUE INDEX index_users_on_reset_password_token ON public.users USING bt
 
 
 --
--- Name: trgm_idx_kithe_models_title; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX trgm_idx_kithe_models_title ON public.kithe_models USING gin (title public.gin_trgm_ops);
-
-
---
 -- Name: kithe_model_contains fk_rails_091010187b; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -764,7 +729,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181211182457'),
 ('20190107205722'),
 ('20190107222521'),
-('20190109000356'),
 ('20190110154359'),
 ('20190219225344'),
 ('20190226135744'),
@@ -774,6 +738,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190404155001'),
 ('20190422201311'),
 ('20190716180327'),
-('20190827124516');
+('20190827124516'),
+('20190910160148'),
+('20190912200533');
 
 
