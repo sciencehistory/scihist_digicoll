@@ -209,7 +209,7 @@ class DownloadDropdownDisplay < ViewModel
   # too resource intensive, it destroyed ramelli. Checking just one is okay though.
   def has_work_download_options?
     display_parent_work &&
-    display_parent_work.members.size > 1 &&
+    display_parent_work.member_count > 1 &&
     display_parent_work.member_content_types.all? {|t| t.start_with?("image/")}
   end
 

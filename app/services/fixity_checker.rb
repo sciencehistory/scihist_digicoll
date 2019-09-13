@@ -1,45 +1,40 @@
 # FixityChecker.new(asset).check
-# FixityChecker.new(asset).prune_checks
-# This first version of the fixity checker only checks
-# for actual discrepancies between already-recorded
-# checksums and calculated ones.
+#   This will check the asset, and log the results to the database.
 #
-# This means:
-# Assets with nil files are ignored.
-# Files with nil checksums are ignored.
+# FixityChecker.new(asset).prune_checks
+#   This will remove all the excess checks for the object so the database table
+#   doesn't get too large.
 
 class FixityChecker
   attr_reader :asset
 
   NUMBER_OF_RECENT_PASSED_CHECKS_TO_KEEP = 5
-  CHECK_CYCLE_LENGTH = 7
 
-
-  # @param work [Work] Work object, it's members will be put into a zip
-  # @param callback [proc], proc taking keyword arguments progress_i: and progress_total:, can
-  #   be used to update a progress UI.
+  # Creating a FixityChecker.new(asset) doesn't actually do anything.
   def initialize(asset)
     raise ArgumentError.new("Please pass in an Asset.") unless asset.is_a? Asset
+
+    raise ArgumentError.new(
+        "#{@asset.friendlier_id} has no file associated with it, so we can't run a check on it."
+    ) if asset.file.nil?
+
+    raise ArgumentError.new(
+        "#{@asset.friendlier_id} has no stored checksum, so we can't run a check on it."
+    ) if asset.file.sha512.nil?
+
     @asset = asset
   end
 
-  #FixityChecker.new(asset).check
-  def check(sieve_integer = 0)
-    return unless sift(sieve_integer)
-    return nil if @asset.nil?
-    return nil if @asset.file.nil?
-    the_expected_checksum = expected_checksum
-    # Note: @asset.file.sha512 can be nil on e.g.
-    # items imported with DISABLE_BYTESTREAM_IMPORT=true
-    # For now, we are ignoring these.
-    return nil if the_expected_checksum.nil?
-
-    new_check = FixityCheck.new(asset: @asset)
-    new_check.expected_result = the_expected_checksum
-    new_check.checked_uri = @asset.file.url
-    new_check.actual_result = actual_checksum
-    new_check.passed= (the_expected_checksum==actual_checksum)
-    new_check.save!
+  # FixityChecker.new(asset).check
+  def check
+    FixityCheck.create!(
+      asset: @asset,
+      hash_function: 'SHA-512',
+      checked_uri: permanent_url,
+      expected_result: expected_result,
+      actual_result: actual_result,
+      passed: (expected_result==actual_result)
+    )
   end
 
   #FixityChecker.new(asset).prune_checks
@@ -47,34 +42,8 @@ class FixityChecker
   # up to NUMBER_OF_RECENT_PASSED_CHECKS_TO_KEEP recent passed checks,
   # plus all the failed checks,
   # plus one initial check (to remember the file that was intially uploaded.)
-  def prune_checks(sieve_integer = 0)
-    return unless sift(sieve_integer)
-    return if @asset.file.nil?
-    return if @asset.file.url.nil?
-    checks_its_ok_to_delete.map(&:destroy)
-  end
-
-  def all_passed?
-    checks_for_this_uri.all?{ |ch| ch.passed? }
-  end
-
-  def check_count_humanized
-    n = checks_for_this_uri.count
-    return "Never checked" if n == 0
-    return "Checked once" if n == 1
-    "Checked #{n} times"
-  end
-
-  def check_count
-    checks_for_this_uri.count
-  end
-
-  def oldest_check
-    checks_for_this_uri.last.created_at
-  end
-
-  def newest_check
-    checks_for_this_uri.first.created_at
+  def prune_checks
+    checks_to_delete.map(&:destroy)
   end
 
   private
@@ -84,9 +53,9 @@ class FixityChecker
   # Never throw out FAILED checks
   # Never throw out the earliest PASSED check
   # Always keep N recent PASSED checks
-  def checks_its_ok_to_delete
+  def checks_to_delete
     # Throw all the passed checks INTO the trash.
-    checks = FixityCheck.checks_for(@asset, @asset.file.url)
+    checks = FixityCheck.checks_for(@asset, permanent_url)
     return [] if checks.empty?
     trash = checks.select { | ch | ch.passed? }
     # But then, pop the earliest passed check back OUT of the trash.
@@ -96,54 +65,30 @@ class FixityChecker
     return trash
   end
 
-  # A memoized list of checks for this asset's current file.
-  # Used for reporting on a particular asset on the asset view page
-  # without fetching the info more than once.
-  def checks_for_this_uri
-    return [] if @asset.file.nil?
-    return [] if @asset.file.url.nil?
-    @checks_for_this_uri ||= FixityCheck.checks_for(@asset, @asset.file.url)
+  def expected_result
+    @expected_result ||= @asset.file.sha512
   end
 
-  def expected_checksum
-    @asset.file.sha512
-  end
-
-
-  # Sifts all our  assets by some integer
-  # between one and CHECK_CYCLE_LENGTH.
-  # Allows us to convieniently check only a subset of
-  # the assets at a time, but be sure everything eventually
-  # gets checked.
-  # Pass in 0, and everything will go through the sieve.
-  def sift(sieve_integer)
-    return true if sieve_integer == 0
-    check_sieve(sieve_integer)
-    @asset.friendlier_id.bytes.sum % CHECK_CYCLE_LENGTH == sieve_integer
-  end
-
-  # Check this is a positive int between 1 and the cycle length.
-  def check_sieve(sieve_integer)
-    if !(sieve_integer.is_a? Integer)        ||
-      sieve_integer < 1                      ||
-      sieve_integer > CHECK_CYCLE_LENGTH
-      raise ArgumentError.new(
-        "Expected a positive int between  1 and #{CHECK_CYCLE_LENGTH}. Got #{sieve_integer}"
-      )
-    end
-  end
-
-  def actual_checksum
-    sha512 = Digest::SHA512.new
-    @asset.file.open(rewindable:false) do |io|
-      if io.is_a? File
-        sha512.file io
-      else
-        io.each_chunk do |chunk|
-          sha512 << chunk
-        end
+  # Note: this recipe is copied from:
+  # https://github.com/shrinerb/shrine/blob/1f67da86ba028c0464d80fd0a8c9bd4d9aec20be/lib/shrine/plugins/signature.rb#L101 .
+  # Thanks to janko for this.
+  def actual_result
+    @actual_result ||= begin
+      @asset.file.open(rewindable:false) do |io|
+        digest = Digest::SHA512.new
+        digest.update(io.read(16*1024, buffer ||= String.new)) until io.eof?
+        digest.hexdigest
       end
+    rescue Aws::S3::Errors::NotFound, Errno::ENOENT
+      "[file missing]"
     end
-    sha512.hexdigest
+  end
+
+  # @asset.file.url is not actually what we want here.
+  # For instance, if the file is on S3 and shrine doesn't think it's a public ACL,
+  # file.url would return a time-limited signed S3 URL which won't actually be accessible
+  # in the far future. So we use this instead.
+  def permanent_url
+    @asset.file.url(public: true)
   end
 end
