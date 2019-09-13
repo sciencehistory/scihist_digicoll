@@ -67,33 +67,64 @@
         </dl>
       </dd>
 
+
       <dt class="col-sm-4">Fixity audits</dt>
       <dd class="col-sm-8">
         <dl class="row">
-
-          <dt class="col-sm-2">Count</dt>
-          <dd class="col-sm-10 text-truncate">
-            <%= text_field_tag "", @fixity_checker.check_count_humanized , readonly: true, style: "width: 100%" %>
+          <dt class="col-sm-2">Status</dt>
+          <%# For all assets %>
+          <dd class="col-sm-10">
+            <% if @asset.stored? %>
+              <% if @fixity_checker.latest_passed?  %>
+                <i class="fa fa-check" aria-hidden="true" style="color:green;"></i> OK
+              <% else %>
+                <i class="fa fa-times" aria-hidden="true" style="color:red;"></i> <strong>FAILURE</strong>
+                  <i class="fa fa-times" aria-hidden="true" style="color:red;"></i> <strong>FAILURE</strong> <br/>
+                  Check ID: <code><%= @fixity_checker.newest_check.id %></code> <br/>
+                  Time: <code><%= @fixity_checker.newest_check.created_at %></code> <br/>
+                  Expected: <code><%= @fixity_checker.newest_check.expected_result %></code> <br/>
+                  Actual: <code><%= @fixity_checker.newest_check.actual_result %></code> <br/>
+                  Checked URI: <code><%= @fixity_checker.newest_check.checked_uri %></code>
+              <% end %>
+            <% else %>
+              This file is still being ingested.
+            <% end %>
           </dd>
 
-          <% if @fixity_checker.check_count > 0 %>
-            <dt class="col-sm-2">Status</dt>
+          <%# Fixity details for stored assets: %>
+          <% if @asset.stored? %>
+            <dt class="col-sm-2">Count</dt>
             <dd class="col-sm-10 text-truncate">
-              <%= text_field_tag "", "#{@fixity_checker.all_passed? ?  'OK' : 'Some problems'}" , readonly: true, style: "width: 100%" %>
+              <%= @fixity_checker.check_count_humanized %>
             </dd>
-
-            <dt class="col-sm-2">Latest</dt>
-            <dd class="col-sm-10 text-truncate">
-              <%= text_field_tag "", "#{time_ago_in_words(@fixity_checker.newest_check)} ago", readonly: true, style: "width: 100%" %>
-            </dd>
-
-            <dt class="col-sm-2">Earliest</dt>
-            <dd class="col-sm-10 text-truncate">
-              <%= text_field_tag "","#{time_ago_in_words(@fixity_checker.oldest_check)} ago", readonly: true, style: "width: 100%" %>
-            </dd>
+            <% if @asset.fixity_checks.count > 0 %>
+              <dt class="col-sm-2">Latest</dt>
+              <dd class="col-sm-10 text-truncate">
+                <%= "#{time_ago_in_words(@fixity_checker.newest_check.created_at)} ago" %>
+              </dd>
+              <dt class="col-sm-2">Earliest</dt>
+              <dd class="col-sm-10 text-truncate">
+                <%= "#{time_ago_in_words(@fixity_checker.oldest_check.created_at)} ago" %>
+              </dd>
+              <dt class="col-sm-2">
+                <a data-toggle="collapse" href="#collapseProvenanceNotes"
+                role="button" aria-expanded="false"
+                aria-controls="collapseProvenanceNotes">Details</a>
+              </dt>
+              <dd class="col-sm-10 collapse" id="collapseProvenanceNotes" >
+                <% @fixity_checker.checks_for_this_uri.each do | ch| %>
+                  <div>
+                    <%if ch.passed? %>
+                      <i class="fa fa-check" aria-hidden="true" style="color:green;"></i> <span class="sr-only">Passed</span>
+                    <% else %>
+                      <i class="fa fa-times" aria-hidden="true" style="color:red;"></i> <span class="sr-only">Failed</span>
+                    <% end %>
+                    <%= ch.created_at.to_formatted_s(:short) %>
+                  </div>
+                <% end %>
+              </dd>
+            <% end %>
           <% end %>
-
-
         </dl>
       </dd>
 
