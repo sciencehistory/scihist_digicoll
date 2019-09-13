@@ -12,14 +12,17 @@ class FixityChecker
 
   # Creating a FixityChecker.new(asset) doesn't actually do anything.
   def initialize(asset)
+
+    raise ArgumentError.new("Please pass in an Asset.") if asset.nil?
+
     raise ArgumentError.new("Please pass in an Asset.") unless asset.is_a? Asset
 
     raise ArgumentError.new(
-        "#{@asset.friendlier_id} has no file associated with it, so we can't run a check on it."
+        "#{asset.friendlier_id} has no file associated with it, so we can't run a check on it."
     ) if asset.file.nil?
 
     raise ArgumentError.new(
-        "#{@asset.friendlier_id} has no stored checksum, so we can't run a check on it."
+        "#{asset.friendlier_id} has no stored checksum, so we can't run a check on it."
     ) if asset.file.sha512.nil?
 
     @asset = asset
@@ -44,6 +47,42 @@ class FixityChecker
   # plus one initial check (to remember the file that was intially uploaded.)
   def prune_checks
     checks_to_delete.map(&:destroy)
+  end
+
+  def all_passed?
+    checks_for_this_uri.all?{ |ch| ch.passed? }
+  end
+
+  def latest_passed?
+    checks_for_this_uri.first.passed?
+  end
+
+  def check_count_humanized
+    n = checks_for_this_uri.count
+    return "Never checked" if n == 0
+    return "Checked once" if n == 1
+    "Checked #{n} times"
+  end
+
+  def check_count
+    checks_for_this_uri.count
+  end
+
+  def oldest_check
+    checks_for_this_uri.last
+  end
+
+  def newest_check
+    checks_for_this_uri.first
+  end
+
+  # A memoized list of checks for this asset's current file.
+  # Used for reporting on a particular asset on the asset view page
+  # without fetching the info more than once.
+  def checks_for_this_uri
+    return [] if @asset.file.nil?
+    return [] if @asset.file.url.nil?
+    @checks_for_this_uri ||= FixityCheck.checks_for(@asset, @asset.file.url)
   end
 
   private
