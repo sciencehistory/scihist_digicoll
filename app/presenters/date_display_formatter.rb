@@ -52,10 +52,15 @@ class DateDisplayFormatter
     date_string
   end
 
-  def numeric_month_to_abbr(date_given)
+  # Some normalization of a yyyy-mm-dd date string to a human date string:
+  # * Use English month abbreviation instead of numeric month
+  # * Eliminate leading zeroes on years
+  def humanize_date_str(date_given)
     return date_given if date_given.blank?
 
     ymd_arr = date_given.split("-")
+
+    ymd_arr[0].gsub!(/\A0+/, '')
 
     if ymd_arr.length > 1
       month_str = Date::ABBR_MONTHNAMES[ymd_arr[1].to_i] || ymd_arr[1]
@@ -72,7 +77,7 @@ class DateDisplayFormatter
       int_date_value = nil
     end
 
-    date = numeric_month_to_abbr(date)
+    date = humanize_date_str(date)
 
     if qualifier == (BEFORE) || qualifier == (AFTER) || qualifier == (CIRCA)
       "#{qualifier} #{date}"
