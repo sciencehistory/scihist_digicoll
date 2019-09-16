@@ -82,7 +82,7 @@ class FixityChecker
   def checks_for_this_uri
     return [] if @asset.file.nil?
     return [] if @asset.file.url.nil?
-    @checks_for_this_uri ||= FixityCheck.checks_for(@asset, @asset.file.url)
+    @checks_for_this_uri ||= FixityCheck.checks_for(@asset, permanent_url)
   end
 
   private
