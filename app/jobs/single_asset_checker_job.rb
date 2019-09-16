@@ -1,4 +1,3 @@
-# placeholder
 class SingleAssetCheckerJob < ApplicationJob
   def perform(asset)
     checker = FixityChecker.new(asset)
