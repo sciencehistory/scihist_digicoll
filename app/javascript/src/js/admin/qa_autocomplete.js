@@ -46,15 +46,11 @@ import 'jquery'
 // https://github.com/devbridge/jQuery-Autocomplete
 import 'devbridge-autocomplete';
 
-// Uses jquery, assumes it exists in `window` for now.
+var errorContainer =  $('<div class="autocomplete-no-suggestion"></div>')
+  .html("<i class='fa fa-exclamation-triangle' aria-hidden='true'></i> Error fetching results").get(0);
 
-jQuery( document ).ready(function() {
-
-  var errorContainer =  $('<div class="autocomplete-no-suggestion"></div>')
-    .html("<i class='fa fa-exclamation-triangle' aria-hidden='true'></i> Error fetching results").get(0);
-
-  $("*[data-scihist-qa-autocomplete]").each(function() {
-    var input_el =$(this);
+function addAutocomplete(element) {
+    var input_el = $(element);
     var qa_search_url = input_el.data("scihist-qa-autocomplete");
 
     input_el.autocomplete({
@@ -112,5 +108,20 @@ jQuery( document ).ready(function() {
     // WANT to autocomplete on focus, plus it's broken with 'disabled' state,
     // that keeps us from working around re-suggest on select
     input_el.autocomplete().onFocus = function() {};
+}
+
+// Uses jquery, assumes it exists in `window` for now.
+
+jQuery( document ).ready(function() {
+  // When an input is focused, see if it already has autocomplete plugin added,
+  // if not add it. This makes it work for suitable new input elements added
+  // to the DOM (in response to 'add another' links), even if they weren't
+  // there on page at load.
+  $("body").on("focus", "*[data-scihist-qa-autocomplete]", function(event) {
+    var el = $(event.target);
+    if (! el.data("autocomplete")) {
+      // hasn't already had autocomplete plugin added, so add it.
+      addAutocomplete(event.target)
+    }
   });
 });
