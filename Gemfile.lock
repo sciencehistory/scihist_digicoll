@@ -275,7 +275,7 @@ GEM
     hashdiff (0.3.8)
     hashery (2.1.2)
     hashie (3.6.0)
-    honeybadger (4.1.0)
+    honeybadger (4.5.1)
     html_aware_truncation (1.0.0)
       nokogiri (~> 1.0)
     htmlentities (4.3.4)
