@@ -109,10 +109,6 @@
 
           <%# Details with assets with actual checks to report about: %>
           <% if @asset.stored? && @fixity_checker.checks_for_this_uri.present? %>
-            <dt class="col-sm-2">Count</dt>
-            <dd class="col-sm-10 text-truncate">
-              <%= @fixity_checker.check_count_humanized %>
-            </dd>
             <dt class="col-sm-2">Latest</dt>
             <dd class="col-sm-10 text-truncate">
               <%= "#{time_ago_in_words(@fixity_checker.newest_check.created_at)} ago" %>
@@ -121,12 +117,12 @@
             <dd class="col-sm-10 text-truncate">
               <%= "#{time_ago_in_words(@fixity_checker.oldest_check.created_at)} ago" %>
             </dd>
-            <dt class="col-sm-2">
-              <a data-toggle="collapse" href="#collapseProvenanceNotes"
-              role="button" aria-expanded="false"
-              aria-controls="collapseProvenanceNotes">Details</a>
+            <dt class="col-sm-12">
+              <a data-toggle="collapse" href="#collapseFixityDetails"
+                role="button" aria-expanded="false"
+                aria-controls="collapseProvenanceNotes">Details</a>
             </dt>
-            <dd class="col-sm-10 collapse" id="collapseProvenanceNotes" >
+            <dd class="col-sm-12 collapse" id="collapseFixityDetails">
               <% @fixity_checker.checks_for_this_uri.each do | ch| %>
                 <div>
                   <%if ch.passed? %>
@@ -134,7 +130,7 @@
                   <% else %>
                     <i class="fa fa-times" aria-hidden="true" style="color:red;"></i> <span class="sr-only">Failed</span>
                   <% end %>
-                  <%= ch.created_at.to_formatted_s(:short) %>
+                  <%= l ch.created_at, format: :admin %>
                 </div>
               <% end %>
             </dd>
