@@ -12,14 +12,17 @@ class FixityChecker
 
   # Creating a FixityChecker.new(asset) doesn't actually do anything.
   def initialize(asset)
+
+    raise ArgumentError.new("Please pass in an Asset.") if asset.nil?
+
     raise ArgumentError.new("Please pass in an Asset.") unless asset.is_a? Asset
 
     raise ArgumentError.new(
-        "#{@asset.friendlier_id} has no file associated with it, so we can't run a check on it."
+        "#{asset.friendlier_id} has no file associated with it, so we can't run a check on it."
     ) if asset.file.nil?
 
     raise ArgumentError.new(
-        "#{@asset.friendlier_id} has no stored checksum, so we can't run a check on it."
+        "#{asset.friendlier_id} has no stored checksum, so we can't run a check on it."
     ) if asset.file.sha512.nil?
 
     @asset = asset

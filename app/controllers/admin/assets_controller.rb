@@ -2,6 +2,11 @@ class Admin::AssetsController < AdminController
 
   def show
     @asset = Asset.find_by_friendlier_id!(params[:id])
+    if @asset.stored?
+      @checks = @asset.fixity_checks.order('created_at desc')
+      @latest_check   = @checks.first
+      @earliest_check = @checks.last
+    end
   end
 
   def edit
