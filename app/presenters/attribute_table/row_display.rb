@@ -15,10 +15,12 @@ module AttributeTable
   class RowDisplay < ViewModel
     attr_reader :label_sym, :values, :link_to_facet
 
-    def initialize(label_sym, link_to_facet: false, values: nil)
+    # @param alpha_sort [Boolean] if true, sort values alphabetically. Default false.
+    def initialize(label_sym, link_to_facet: false, values: nil, alpha_sort: false)
       @label_sym = label_sym
       @values = (values || []).reject {|v| v.blank? }
       @link_to_facet = link_to_facet
+      @alpha_sort =  alpha_sort
 
       # gotta give it something, we aren't really using this.
       super("Foobar")
@@ -42,7 +44,7 @@ module AttributeTable
     end
 
     def value_cell_content
-      ListValuesDisplay.new(values, link_to_facet: link_to_facet).display
+      ListValuesDisplay.new((@alpha_sort ? values.sort : values), link_to_facet: link_to_facet).display
     end
   end
 end
