@@ -58,15 +58,34 @@ ScihistImageViewer.prototype.show = function(id) {
   }
 
   var _self = this;
+
+
+
+  // Hide em all, we'll show em later if applicable
+  _self.hideUiElement(document.querySelector("#viewer-pagination"));
+  _self.hideUiElement(document.querySelector("#viewer-right"));
+  _self.hideUiElement(document.querySelector("#viewer-left"));
+  _self.hideUiElement(document.querySelector("#viewer-thumbs"));
+  _self.hideUiElement(document.querySelector('#viewer-member-info'));
+  _self.hideUiElement(document.querySelector('#viewer-spacer'));
+
+
+  $(_self.modal).modal("show");
+
+  // Catch keyboard controls
+  $("body").on("keydown.chf_image_viewer", function(event) {
+    _self.onKeyDown(event);
+  });
+
   // Make sure we don't try to do this before thumbs are loaded
   this.thumbsLoadedGuard.then(function() {
-    if (_self.totalCount == 1) {
+    if (_self.totalCount > 1) {
       // hide multi-item-relevant controls
-      _self.hideUiElement(document.querySelector("#viewer-pagination"));
-      _self.hideUiElement(document.querySelector("#viewer-right"));
-      _self.hideUiElement(document.querySelector("#viewer-left"));
-      _self.hideUiElement(document.querySelector("#viewer-thumbs"));
-    } else {
+      _self.showUiElement(document.querySelector("#viewer-pagination"));
+      _self.showUiElement(document.querySelector("#viewer-right"));
+      _self.showUiElement(document.querySelector("#viewer-left"));
+      _self.showUiElement(document.querySelector("#viewer-thumbs"));
+
       document.getElementsByClassName('viewer-pagination-denominator').item(0).textContent = _self.totalCount;
     }
 
@@ -82,13 +101,8 @@ ScihistImageViewer.prototype.show = function(id) {
     _self.selectThumb(selectedThumb);
 
     // show the viewer
-    $(_self.modal).modal("show");
     _self.scrollSelectedIntoView();
 
-    // Catch keyboard controls
-    $("body").on("keydown.chf_image_viewer", function(event) {
-      _self.onKeyDown(event);
-    });
   });
 };
 
