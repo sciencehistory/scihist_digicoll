@@ -49,15 +49,6 @@ class FixityChecker
     checks_to_delete.map(&:destroy)
   end
 
-  # A memoized list of checks for this asset's current file.
-  # Used for reporting on a particular asset on the asset view page
-  # without fetching the info more than once.
-  def checks_for_this_uri
-    return [] if @asset.file.nil?
-    return [] if @asset.file.url.nil?
-    @checks_for_this_uri ||= FixityCheck.checks_for(@asset, permanent_url)
-  end
-
   private
 
   # Returns an array of checks that we don't want to keep.

@@ -1,0 +1,70 @@
+<dt class="col-sm-4">Fixity audits</dt>
+<dd class="col-sm-8">
+  <dl class="row">
+    <dt class="col-sm-2">Status</dt>
+    <dd class="col-sm-10">
+      <% if @asset.stored? %>
+        <% if  @checks.present? %>
+          <% if @latest_check.passed?  %>
+            <i class="fa fa-check" aria-hidden="true" style="color:green;"></i> OK
+          <% else %>
+            <ul style="list-style: none;">
+              <li>
+                <i class="fa fa-times" aria-hidden="true" style="color:red;"></i>
+                <strong>FAILURE</strong>
+              </li>
+              <li>
+                Check ID: <code><%= @latest_check.id %></code>
+              </li>
+              <li>
+                Time: <code><%= @latest_check.created_at %></code>
+              </li>
+              <li>
+                Expected: <code><%= @latest_check.expected_result %></code>
+              </li>
+              <li>
+                Actual: <code><%= @latest_check.actual_result %></code>
+              </li>
+              <li>
+                Checked URI: <code><%= @latest_check.checked_uri %></code>
+              </li>
+            </ul>
+          <% end %>
+        <% else %>
+          No fixity checks yet.
+        <% end %>
+      <% else %>
+        This file is still being ingested.
+      <% end %>
+    </dd>
+
+    <%# Details with assets with actual checks to report about: %>
+    <% if @asset.stored? && @checks.present? %>
+      <dt class="col-sm-2">Latest</dt>
+      <dd class="col-sm-10 text-truncate">
+        <%= "#{time_ago_in_words(@latest_check.created_at)} ago" %>
+      </dd>
+      <dt class="col-sm-2">Earliest</dt>
+      <dd class="col-sm-10 text-truncate">
+        <%= "#{time_ago_in_words(@earliest_check.created_at)} ago" %>
+      </dd>
+      <dt class="col-sm-12">
+        <a data-toggle="collapse" href="#collapseFixityDetails"
+          role="button" aria-expanded="false"
+          aria-controls="collapseProvenanceNotes">Details</a>
+      </dt>
+      <dd class="col-sm-12 collapse" id="collapseFixityDetails">
+        <% @checks.each do | ch | %>
+          <div>
+            <%if ch.passed? %>
+              <i class="fa fa-check" aria-hidden="true" style="color:green;"></i> <span class="sr-only">Passed</span>
+            <% else %>
+              <i class="fa fa-times" aria-hidden="true" style="color:red;"></i> <span class="sr-only">Failed</span>
+            <% end %>
+            <%= l ch.created_at, format: :admin %>
+          </div>
+        <% end %>
+      </dd>
+    <% end %>
+  </dl>
+</dd>
