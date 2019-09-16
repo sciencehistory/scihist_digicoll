@@ -139,6 +139,8 @@ Rails.application.routes.draw do
       end
     end
 
+    post "/asset_files/:asset_id/check_fixity", to: "assets#check_fixity", as: "check_fixity"
+
     get "/batch_create", to: "batch_create#new", as: "batch_create" # step 1
     post "/batch_create", to: "batch_create#add_files" # step 2
     post "/batch_create/finish", to: "batch_create#create" # step 3, create and redirect
