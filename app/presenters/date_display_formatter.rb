@@ -54,12 +54,14 @@ class DateDisplayFormatter
 
   def numeric_month_to_abbr(date_given)
     return date_given if date_given.blank?
+
     ymd_arr = date_given.split("-")
-    return date_given if ymd_arr.length < 2
-    month_index = ymd_arr[1].to_i
-    return date_given if month_index == 0
-    month_str = Date::ABBR_MONTHNAMES[month_index]
-    ymd_arr [1] = month_str
+
+    if ymd_arr.length > 1
+      month_str = Date::ABBR_MONTHNAMES[ymd_arr[1].to_i] || ymd_arr[1]
+      ymd_arr[1] = month_str
+    end
+
     return ymd_arr.join('-')
   end
 
