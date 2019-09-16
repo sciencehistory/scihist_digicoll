@@ -126,6 +126,12 @@
             <% end %>
           <% end %>
         </dl>
+
+        <% if @asset.stored? %>
+          <div>
+            <%= link_to "Check now", admin_check_fixity_path(@asset.friendlier_id), method: "post" %>
+          </div>
+        <% end %>
       </dd>
 
       <dt class="col-sm-4">Dimensions</dt>

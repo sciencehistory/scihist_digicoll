@@ -40,6 +40,12 @@ class Admin::AssetsController < AdminController
     end
   end
 
+  def check_fixity
+    @asset = Asset.find_by_friendlier_id!(params[:asset_id])
+    SingleAssetCheckerJob.perform_later(@asset)
+    redirect_to admin_asset_url(@asset), notice: 'Fixity check scheduled!'
+  end
+
   def display_attach_form
     @parent = Work.find_by_friendlier_id!(params[:parent_id])
   end
