@@ -68,7 +68,7 @@ class CatalogController < ApplicationController
         super
       else
         # with no query, relevance doesn't make a lot of sense
-        super.delete_if { |k| k.start_with?("score") }
+        super.delete_if { |k| k == "relevance" }
       end
     end
   end
@@ -282,18 +282,52 @@ class CatalogController < ApplicationController
     # end
 
     # "sort results by" select (pulldown)
-    # label in pulldown is followed by the name of the SOLR field to sort by and
-    # whether the sort is ascending or descending (it must be asc or desc
-    # except in the relevancy case).
+    # We use feature to have sort field name (which shows up in URL) be specified
+    # by us, rather than be the Solr sort value, so it is independent of solr field
+    # names and config, and we can keep our URLs persistent.
+    # http://jessiekeck.com/customizing-blacklight/sort_fields/
 
-    config.add_sort_field "score desc, date_created_dtsi desc", label: "best match"
-    config.add_sort_field "latest_year desc", label: "newest date"
-    config.add_sort_field "earliest_year asc", label: "oldest date"
-    config.add_sort_field "date_created_dtsi desc", label: "recently added", blank_query_default: true # will be used by our custom code as default sort when no query has been entered
-    # TODO, limit to just admins, see that 'if'
-    config.add_sort_field "date_created_dtsi asc", label: "oldest added" #, if: ->(controller, field) { controller.current_ability.current_user.staff? }
-    config.add_sort_field "date_modified_dtsi desc", label: "date modified \u25BC" #, if: ->(controller, field) { controller.current_ability.current_user.staff? }
-    config.add_sort_field "date_modified_dtsi asc", label: "date modified \u25B2" #, if: ->(controller, field) { controller.current_ability.current_user.staff? }
+    config.add_sort_field("relevance") do |field|
+      field.label = "best match"
+      field.sort = "score desc, date_created_dtsi desc"
+    end
+
+    config.add_sort_field("newest_date") do |field|
+      field.label = "newest date"
+      field.sort = "latest_year desc"
+    end
+
+    config.add_sort_field("oldest_date") do |field|
+      field.label = "oldest date"
+      field.sort = "earliest_year asc"
+    end
+
+    config.add_sort_field("recently_added") do |field|
+      field.label = "recently added"
+      field.sort = "date_created_dtsi desc"
+      # will be used by our custom code as default sort when no query has been entered
+      field.blank_query_default = true
+    end
+
+    # limit to just available for logged-in admins, with `if ` param
+
+    config.add_sort_field("oldest_added") do |field|
+      field.label = "oldest added"
+      field.sort = "date_created_dtsi asc"
+      field.if = ->(controller, field) { controller.current_user }
+    end
+
+    config.add_sort_field("date_modified_desc") do |field|
+      field.label = "date modified \u25BC"
+      field.sort = "date_modified_dtsi desc"
+      field.if = ->(controller, field) { controller.current_user }
+    end
+
+    config.add_sort_field("date_modified_asc") do |field|
+      field.label = "date modified \u25B2"
+      field.sort = "date_modified_dtsi asc"
+      field.if = ->(controller, field) { controller.current_user }
+    end
 
 
     # If there are more than this many search results, no spelling ("did you
