@@ -49,42 +49,6 @@ class FixityChecker
     checks_to_delete.map(&:destroy)
   end
 
-  def all_passed?
-    checks_for_this_uri.all?{ |ch| ch.passed? }
-  end
-
-  def latest_passed?
-    checks_for_this_uri.first.passed?
-  end
-
-  def check_count_humanized
-    n = checks_for_this_uri.count
-    return "Never checked" if n == 0
-    return "Checked once" if n == 1
-    "Checked #{n} times"
-  end
-
-  def check_count
-    checks_for_this_uri.count
-  end
-
-  def oldest_check
-    checks_for_this_uri.last
-  end
-
-  def newest_check
-    checks_for_this_uri.first
-  end
-
-  # A memoized list of checks for this asset's current file.
-  # Used for reporting on a particular asset on the asset view page
-  # without fetching the info more than once.
-  def checks_for_this_uri
-    return [] if @asset.file.nil?
-    return [] if @asset.file.url.nil?
-    @checks_for_this_uri ||= FixityCheck.checks_for(@asset, @asset.file.url)
-  end
-
   private
 
   # Returns an array of checks that we don't want to keep.
