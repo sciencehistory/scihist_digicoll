@@ -27,7 +27,7 @@
     <%= AttributeTable::RowDisplay.new(category, values: values, link_to_facet: "place_facet").display %>
   <% end %>
 
-  <%= AttributeTable::RowDisplay.new(:format, values: view.format.map(&:humanize), link_to_facet: "format_facet").display %>
+  <%= AttributeTable::RowDisplay.new(:format, values: view.format.map(&:humanize), link_to_facet: "format_facet", alpha_sort: true).display %>
 
 
   <% if view.humanized_content_types.length > 0 %>
@@ -39,10 +39,10 @@
     </tr>
   <% end %>
 
-  <%= AttributeTable::RowDisplay.new(:genre, values: view.genre, link_to_facet: "genre_facet").display %>
-  <%= AttributeTable::RowDisplay.new(:medium, values: view.medium, link_to_facet: ("medium_facet" if current_staff_user?)).display %>
+  <%= AttributeTable::RowDisplay.new(:genre, values: view.genre, link_to_facet: "genre_facet", alpha_sort: true).display %>
+  <%= AttributeTable::RowDisplay.new(:medium, values: view.medium, link_to_facet: ("medium_facet" if current_staff_user?), alpha_sort: true).display %>
   <%= AttributeTable::RowDisplay.new(:extent, values: view.extent).display %>
-  <%= AttributeTable::RowDisplay.new(:language, values: view.language, link_to_facet: "language_facet").display %>
+  <%= AttributeTable::RowDisplay.new(:language, values: view.language, link_to_facet: "language_facet", alpha_sort: true).display %>
 
   <% if view.inscription.present? %>
     <tr>
@@ -55,9 +55,10 @@
         </ul>
       </td>
     </tr>
+
   <% end %>
 
-  <%= AttributeTable::RowDisplay.new(:subject, values: view.subject, link_to_facet: "subject_facet").display %>
+  <%= AttributeTable::RowDisplay.new(:subject, values: view.subject, link_to_facet: "subject_facet", alpha_sort: true).display %>
 
   <% if view.rights.present? %>
     <tr>
@@ -115,7 +116,7 @@
 
 <table class="work chf-attributes">
   <%= AttributeTable::RowDisplay.new(:department, values: [view.department], link_to_facet: "department_facet").display %>
-  <%= AttributeTable::RowDisplay.new(:exhibition, values: view.exhibition, link_to_facet: "exhibition_facet").display %>
+  <%= AttributeTable::RowDisplay.new(:exhibition, values: view.exhibition, link_to_facet: "exhibition_facet", alpha_sort: true).display %>
 
   <% if view.contained_by.present? %>
     <tr>
@@ -132,7 +133,7 @@
     </tr>
   <% end %>
 
-  <%= AttributeTable::RowDisplay.new(:project, values: view.project, link_to_facet: "project_facet").display %>
+  <%= AttributeTable::RowDisplay.new(:project, values: view.project, link_to_facet: "project_facet", alpha_sort: true).display %>
   <%= AttributeTable::RowDisplay.new(:series_arrangement, values: view.series_arrangement).display %>
 
   <% if @work.physical_container.present? %>

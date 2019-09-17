@@ -16,6 +16,15 @@ describe AttributeTable::RowDisplay, type: :decorator do
     expect(td).to be_present
   end
 
+  describe "alpha_sort" do
+    let(:values) { ["b", "e", "a", "c", "d"]}
+    let(:displayer) { AttributeTable::RowDisplay.new(:place_of_publication, values: values, alpha_sort: true) }
+    it 'sorts' do
+      ordered_values = rendered.css("li.attribute").collect(&:text)
+      expect(ordered_values).to eq ["a", "b", "c", "d", "e"]
+    end
+  end
+
   describe "with empty array input" do
     let(:values) { [] }
     it "renders empty string" do
