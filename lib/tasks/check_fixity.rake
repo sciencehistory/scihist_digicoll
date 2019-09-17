@@ -5,19 +5,19 @@ namespace :scihist do
   Checks the fixity of some or all Assets in the database.
 
   To check only a subset today, checking all every 7 days:
-    bundle exec rake scihist_digicoll:check_and_prune_fixity
+    bundle exec rake scihist_digicoll:check_fixity
 
   To run a full check of all assets with stored files:
-    CYCLE_LENGTH=0 bundle exec rake scihist_digicoll:check_and_prune_fixity
+    CYCLE_LENGTH=0 bundle exec rake scihist_digicoll:check_fixity
 
   To check 1/30th today instea dof 1/7th, checking all every 30 days:
-    CYCLE_LENGTH=30 bundle exec rake scihist_digicoll:check_and_prune_fixity
+    CYCLE_LENGTH=30 bundle exec rake scihist_digicoll:check_fixity
 
   To run checks, but leave stale checks around without pruning them:
-    SKIP_PRUNE='true'  bundle exec rake scihist_digicoll:check_and_prune_fixity
+    SKIP_PRUNE='true'  bundle exec rake scihist_digicoll:check_fixity
 
   To just prune stale checks, without checking any assets:
-    SKIP_CHECK='true'  bundle exec rake scihist_digicoll:check_and_prune_fixity
+    SKIP_CHECK='true'  bundle exec rake scihist_digicoll:check_fixity
 
   For a progress bar, preface any of these with
     SHOW_PROGRESS_BAR='true'
@@ -25,7 +25,7 @@ namespace :scihist do
   """
 
   task :check_fixity => :environment do
-    cycle_length = ENV['CYCLE_LENGTH']|| 7
+    cycle_length = ENV['CYCLE_LENGTH'].nil? ? 7 : Integer(ENV['CYCLE_LENGTH'])
 
     check_lister = ScihistDigicoll::AssetsNeedingFixityChecks.new(cycle_length)
 

@@ -38,7 +38,7 @@ module ScihistDigicoll
     end
 
     def expected_num_to_check
-      @expected_num_to_check ||= Asset.count / cycle_length
+      @expected_num_to_check ||= (cycle_length == 0 ? Asset.count : Asset.count / cycle_length)
     end
 
     private

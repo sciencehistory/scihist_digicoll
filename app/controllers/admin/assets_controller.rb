@@ -3,7 +3,9 @@ class Admin::AssetsController < AdminController
   def show
     @asset = Asset.find_by_friendlier_id!(params[:id])
     if @asset.stored?
-      @fixity_checker = FixityChecker.new(@asset)
+      @checks = @asset.fixity_checks.order('created_at desc')
+      @latest_check   = @checks.first
+      @earliest_check = @checks.last
     end
   end
 
@@ -43,7 +45,7 @@ class Admin::AssetsController < AdminController
   def check_fixity
     @asset = Asset.find_by_friendlier_id!(params[:asset_id])
     SingleAssetCheckerJob.perform_later(@asset)
-    redirect_to admin_asset_url(@asset), notice: 'Fixity check scheduled!'
+    redirect_to admin_asset_url(@asset), notice: 'This file will be checked shortly.'
   end
 
   def display_attach_form
