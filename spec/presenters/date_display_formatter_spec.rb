@@ -23,6 +23,8 @@ describe DateDisplayFormatter, type: :model do
       Work::DateOfWork.new(start: "1929-01-02", finish: "1929-01-03", start_qualifier: "circa", finish_qualifier: "before", note: "Note 3") => "Circa 1929-Jan-02 – before 1929-Jan-03 (Note 3)",
       Work::DateOfWork.new(start: "1872", finish: "1929-01-03", start_qualifier: "after", finish_qualifier: "before", note: "Note 4") => "After 1872 – before 1929-Jan-03 (Note 4)",
       Work::DateOfWork.new(start: "1920", finish: "1928-11", start_qualifier: "decade", note: "Note 5") => "1920s – 1928-Nov (Note 5)",
+      Work::DateOfWork.new(start: "1", finish: "200") => "1 – 200",
+      Work::DateOfWork.new(start: "1900-13") => "1900-13",
       Work::DateOfWork.new(start_qualifier: "undated") => "Undated"
     }.each do |input, output|
       it "should format '#{input.to_json}' as #{output.inspect}" do
