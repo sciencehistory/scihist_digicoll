@@ -6,5 +6,7 @@ feedback:
 user_informer:
   enabled: true
   info: "Error ID: {{error_id}}"
+breadcrumbs:
+  enabled: true
 
 # http://docs.honeybadger.io/ruby/gem-reference/configuration.html
