@@ -353,10 +353,35 @@ class CatalogController < ApplicationController
     "system_modified_dtsi asc" => "date_modified_asc"
   }
 
+  # TODO date?
+  LEGACY_FACET_REDIRECTS = {
+    "subject_sim" => "subject_facet",
+    "maker_facet_sim" => "creator_facet",
+    "genre_string_sim" => "genre_facet",
+    "resource_type_sim" => "format_facet",
+    "medium_sim" => "medium_facet",
+    "place_facet_sim" => "place_facet",
+    "language_sim" => "language_facet",
+    "rights_sim" => "rights_facet",
+    "division_sim" => "department_facet",
+    "exhibition_sim" => "exhibition_facet"
+  }
+
 
   def redirect_legacy_query_urls
+    corrected_params = {}
+
+    if params[:f].respond_to?(:keys) && params[:f].keys.any? { |k| LEGACY_FACET_REDIRECTS.keys.include?(k.to_s) }
+      # to_unsafe_h should be fine here, arbitrary :f params for facet limiting are expected and not a vulnerability.
+      corrected_params[:f] = params[:f].transform_keys { |k| LEGACY_FACET_REDIRECTS[k.to_s] || k }.to_unsafe_h
+    end
+
     if new_sort = LEGACY_SORT_REDIRECTS[params[:sort]]
-      redirect_to helpers.safe_params_merge_url(sort: new_sort)
+      corrected_params[:sort] = new_sort
+    end
+
+    if corrected_params.present?
+      redirect_to helpers.safe_params_merge_url(corrected_params)
     end
   end
 end
