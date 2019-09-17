@@ -70,7 +70,7 @@
     <%# Check the asset now: %>
     <% if @asset.stored? %>
       <dt class="col-sm-12">
-        <%= link_to "Schedule a check now", admin_check_fixity_path(@asset.friendlier_id), method: "post" %>
+        <%= link_to "Schedule a check now", admin_check_fixity_path(@asset.friendlier_id), method: "post", class: "btn btn-primary"%>
       </dt>
     <% end %>
 
