@@ -353,7 +353,6 @@ class CatalogController < ApplicationController
     "system_modified_dtsi asc" => "date_modified_asc"
   }
 
-  # TODO date?
   LEGACY_FACET_REDIRECTS = {
     "subject_sim" => "subject_facet",
     "maker_facet_sim" => "creator_facet",
