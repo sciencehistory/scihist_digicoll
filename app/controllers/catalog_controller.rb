@@ -3,6 +3,7 @@
 require 'kithe/blacklight_tools/bulk_loading_search_service'
 
 class CatalogController < ApplicationController
+  before_action :redirect_legacy_query_urls, only: :index
 
   include BlacklightRangeLimit::ControllerOverride
   # Blacklight wanted Blacklight::Controller included in ApplicationController,
@@ -340,5 +341,22 @@ class CatalogController < ApplicationController
     # if the name of the solr.SuggestComponent provided in your solrcongig.xml is not the
     # default 'mySuggester', uncomment and provide it below
     # config.autocomplete_suggester = 'mySuggester'
+  end
+
+  LEGACY_SORT_REDIRECTS = {
+    "latest_year desc" => "newest_date",
+    "earliest_year asc" => "oldest_date",
+    "score desc, system_create_dtsi desc" => "relevance",
+    "system_create_dtsi desc" => "recently_added",
+    "system_create_dtsi asc" => "oldest_added",
+    "system_modified_dtsi desc" => "date_modified_desc",
+    "system_modified_dtsi asc" => "date_modified_asc"
+  }
+
+
+  def redirect_legacy_query_urls
+    if new_sort = LEGACY_SORT_REDIRECTS[params[:sort]]
+      redirect_to helpers.safe_params_merge_url(sort: new_sort)
+    end
   end
 end
