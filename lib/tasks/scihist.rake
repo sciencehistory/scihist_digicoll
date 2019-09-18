@@ -20,6 +20,8 @@ namespace :scihist do
     progress_bar = ProgressBar.create(total: Kithe::Asset.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
     Kithe::Asset.find_each do |asset|
       next unless asset.stored?
+      next unless asset.content_type&.start_with?("image/")
+
       next if asset.dzi_file.exists?
 
       progress_bar.title = asset.friendlier_id
