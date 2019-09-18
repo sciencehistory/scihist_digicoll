@@ -99,6 +99,8 @@ class DziFiles
   # @yield string path where the dzi files are. They will be cleaned up (deleted)
   #   after block yield is finished.
   def create_and_yield
+    raise ArgumentError.new("Can only create DZI from assets of type 'image/'") unless asset.content_type&.start_with?("image/")
+
     asset.file.download do |original_file|
       Dir.mktmpdir("dzi_#{asset.friendlier_id}_") do |tmp_output_dir|
         vips_output_pathname = Pathname.new(tmp_output_dir).join(base_file_path)
