@@ -39,11 +39,11 @@
       </tr>
       <tr>
         <td>With files, and due to be checked (have not been checked for 7 days, or ever)</td>
-        <td><%= @fixity_report_info[:with_stale_checks] %></td>
+        <td><%= @fixity_report_info[:with_no_checks_or_stale_checks] %></td>
       </tr>
       <tr>
         <td>With files, ingested more than 7 days ago, and should thus have recent checks but don't</td>
-        <td><%= @fixity_report_info[:not_recent_with_stale_checks] %></td>
+        <td><%= @fixity_report_info[:not_recent_with_no_checks_or_stale_checks] %></td>
       </tr>
   </tbody>
 </table>

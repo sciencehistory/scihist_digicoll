@@ -32,15 +32,15 @@ class FixityReport < ViewModel
       x[:check_count] > 0
     end
 
-    report[:with_stale_checks]  = the_data.count do |x|
+    report[:with_no_checks_or_stale_checks]  = the_data.count do |x|
       x[:stored_file] == true &&
-      x[:stale_check] == true
+      [true, nil].include?(x[:stale_check])
     end
 
-    report[:not_recent_with_stale_checks] = the_data.count do |x|
+    report[:not_recent_with_no_checks_or_stale_checks] = the_data.count do |x|
       x[:stored_file] == true &&
       x[:recent] == false  &&
-      x[:stale_check] == true
+      [true, nil].include?(x[:stale_check])
     end
 
     report
@@ -75,7 +75,7 @@ class FixityReport < ViewModel
       'stored_file': "file_data ->> 'storage'",
       # How many checks does each asset have?
       'check_count': 'fixity_checks.count',
-      # Is this asset due for a check?
+      # Is this asset due for a check? # (NULL counts as TRUE) here.
       'stale_check': "max(fixity_checks.created_at) < NOW() - INTERVAL '#{checks_are_stale_after}'",
       # Is the asset "recent" ?
       'recent': "kithe_models.created_at > NOW() - INTERVAL '#{asset_is_old_after}'",
