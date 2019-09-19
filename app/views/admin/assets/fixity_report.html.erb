@@ -1,0 +1,49 @@
+<h1>Fixity report</h1>
+<div class"mt-3">
+    <% if @fixity_report_info[:bad_assets].present? %>
+        <h2><i class="fa fa-times" aria-hidden="true" style="color:red;"></i> Failures</h2>
+    <% else %>
+        <h2><i class="fa fa-check" aria-hidden="true" style="color:green;"></i> OK</h2>
+    <% end %>
+</div>
+<ul style="list-style-type:none;">
+<% @fixity_report_info[:bad_assets].each do |asset| %>
+    <li><i class="fa fa-times" aria-hidden="true" style="color:red;"></i> <%= link_to(asset.title, admin_asset_path(asset)) %></li>
+<% end %>
+</ul>
+
+<h2>Fixity stats</h2>
+<table class="table mt-3">
+  <thead>
+    <tr>
+      <th>Which assets</th>
+      <th>How many</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td>All assets</td>
+        <td><%= @fixity_report_info[:asset_count] %></td>
+      </tr>
+      <tr>
+        <td>With files that can be checked</td>
+        <td><%= @fixity_report_info[:with_stored_files] %></td>
+      </tr>
+      <tr>
+        <td>With fixity checks recorded</td>
+        <td><%= @fixity_report_info[:with_checks] %></td>
+      </tr>
+      <tr>
+        <td>Added in the past 7 days</td>
+        <td><%= @fixity_report_info[:recent] %></td>
+      </tr>
+      <tr>
+        <td>Due to be checked soon (have not been checked for 7 days)</td>
+        <td><%= @fixity_report_info[:with_stale_checks] %></td>
+      </tr>
+      <tr>
+        <td>More than 7 days old and should have checks by now, but don't</td>
+        <td><%= @fixity_report_info[:non_recent_with_stale_checks] %></td>
+      </tr>
+  </tbody>
+</table>
