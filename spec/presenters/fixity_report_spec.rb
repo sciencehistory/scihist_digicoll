@@ -62,11 +62,11 @@ describe FixityReport do
     # That leaves a0, a2 and a3.
     expect(report_1[:recent]).to eq 3
 
-    # All assets with checks have recent checks.
-    expect(report_1[:with_stale_checks]).to eq 0
+    # All assets with checks have recent checks, but a0 still needs to be checked.
+    expect(report_1[:with_no_checks_or_stale_checks]).to eq 1
 
     # Asset a1 is not recent, but it's been checked this week.
-    expect(report_1[:not_recent_with_stale_checks]).to eq 0
+    expect(report_1[:not_recent_with_no_checks_or_stale_checks]).to eq 0
 
     # New scenario:
     # Fixity checking has something wrong with it
@@ -102,8 +102,11 @@ describe FixityReport do
     # Of which 3 are recent (a0, a2 and a3):
     expect(report_2[:recent]).to eq 3
 
+    # a0 (no checks yet) a1 (checks stale) and a2 (checks also stale) need to get checked.
+    expect(report_2[:with_no_checks_or_stale_checks]).to eq 3
+
     # a1 was ingested more than a week ago but it hasn't been checked for over a week.
     # Sound the alarm!
-    expect(report_2[:not_recent_with_stale_checks]).to eq 1
+    expect(report_2[:not_recent_with_no_checks_or_stale_checks]).to eq 1
   end
 end
