@@ -88,6 +88,41 @@ describe FixityCheck do
       expect(count_of_good_checks_kept).to eq n_to_keep + 1
     end
   end
+
+  describe "#checked_uri_in_s3_console" do
+    before do
+      FixityChecker.new(corrupt_asset).check
+    end
+    let(:fixity_check) { corrupt_asset.fixity_checks.order(:created_at).last }
+
+    describe "for local path not url" do
+      it "returns nil" do
+        expect(fixity_check.checked_uri_in_s3_console).to be nil
+      end
+    end
+
+    describe "for S3 storage" do
+      # fake the checked-uri to look like an S3 uri, cheesy but hopefully good
+      # enough for a reliable test.
+      let(:s3_url) { "https://some-bucket.s3.amazonaws.com/asset/b2c64027-7124-4388-9a32-57dba88156ba/f9a99647faa471f5b34b77316c0fbda5.tif" }
+      before do
+        fixity_check.checked_uri = s3_url
+      end
+
+      it "returns what we think is a good direct link to AWS console" do
+        expect(fixity_check.checked_uri_in_s3_console).to eq "https://s3.console.aws.amazon.com/s3/buckets/some-bucket/asset/b2c64027-7124-4388-9a32-57dba88156ba/?region=us-east-1&tab=overview&prefixSearch=f9a99647faa471f5b34b77316c0fbda5.tif"
+      end
+    end
+
+    describe "for some other non-S3 host" do
+      before do
+        fixity_check.checked_uri = "http://example.com/foo/bar"
+      end
+      it "returns nil" do
+        expect(fixity_check.checked_uri_in_s3_console).to be nil
+      end
+    end
+  end
 end
 
 

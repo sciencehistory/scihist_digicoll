@@ -38,13 +38,15 @@ class FixityCheck < ApplicationRecord
   private
 
   # returns false if we do not think checked_uri looks like S3.
-  # (If we later use a custon CNAME for S3 buckets, may have to adjust this!)
+  # (NOTE If we later use a custon CNAME for S3 buckets, may have to adjust this, it assumes
+  # it can recognize S3 as *.s3.amazonaws.com)
   #
   # returns a hash with keys :bucket, :key_path, :end_path
   # Used for #checked_uri_in_s3_console to link admins directly to a AWS S3 console.
-  #
   def checked_uri_on_s3_components
     parsed = URI.parse(checked_uri)
+
+    return false unless parsed.host
 
     host_parts = parsed.host.split(".")
     if host_parts.slice(1, host_parts.length) != %w{s3 amazonaws com}
