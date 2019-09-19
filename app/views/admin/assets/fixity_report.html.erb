@@ -22,28 +22,28 @@
   </thead>
   <tbody>
       <tr>
-        <td>All assets</td>
+        <td>All</td>
         <td><%= @fixity_report_info[:asset_count] %></td>
       </tr>
       <tr>
-        <td>With files that can be checked</td>
+        <td>With files, and thus eligible for fixity checks</td>
         <td><%= @fixity_report_info[:with_stored_files] %></td>
       </tr>
       <tr>
-        <td>With fixity checks recorded</td>
+        <td>With files, and with fixity checks for those files</td>
         <td><%= @fixity_report_info[:with_checks] %></td>
       </tr>
       <tr>
-        <td>Added in the past 7 days</td>
+        <td>With files, added in the past 7 days</td>
         <td><%= @fixity_report_info[:recent] %></td>
       </tr>
       <tr>
-        <td>Due to be checked soon (have not been checked for 7 days)</td>
+        <td>With files, and due to be checked (have not been checked for 7 days, or ever)</td>
         <td><%= @fixity_report_info[:with_stale_checks] %></td>
       </tr>
       <tr>
-        <td>More than 7 days old and should have checks by now, but don't</td>
-        <td><%= @fixity_report_info[:non_recent_with_stale_checks] %></td>
+        <td>With files, ingested more than 7 days ago, and should thus have recent checks but don't</td>
+        <td><%= @fixity_report_info[:not_recent_with_stale_checks] %></td>
       </tr>
   </tbody>
 </table>
