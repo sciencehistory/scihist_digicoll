@@ -86,6 +86,31 @@ desc "list auto-disocvered EC2 servers"
 task :list_ec2_servers
 
 
+# https://stuff-things.net/2017/03/22/capistrano-ssh/
+desc "ssh to a jobs server"
+task :jobs_ssh do
+  on primary(:jobs) do |host|
+    command = "cd #{fetch(:deploy_to)}/current && exec $SHELL -l"
+    ssh_command = "ssh -l #{host.user} #{host.hostname} -p #{host.port || 22} -t '#{command}'"
+    puts ssh_command # if fetch(:log_level) == :debug
+    exec ssh_command
+  end
+end
+
+namespace :jobs_ssh do
+  desc "ssh to a jobs server and open up a rails console"
+  task :console do
+    on primary(:jobs) do |host|
+      command = "hostname && echo && cd #{fetch(:deploy_to)}/current && bundle exec rails console -e #{fetch(:rails_env)}"
+      ssh_command = "ssh -l #{host.user} #{host.hostname} -p #{host.port || 22} -t '#{command}'"
+      puts ssh_command
+      puts
+      exec ssh_command
+    end
+  end
+end
+
+
 namespace :deploy do
 
   # For cap deploy to notify slack:
