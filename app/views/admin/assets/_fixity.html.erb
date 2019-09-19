@@ -64,7 +64,7 @@
       <dt class="text-danger">Actual</dt> <dd><%= @latest_check.hash_function %>: <%= text_field_tag "", @latest_check.actual_result, readonly: true %></dd>
 
       <dt class="text-danger">Checked file location</dt>
-      <dd><%= link_to @latest_check.checked_uri, @latest_check.checked_uri_in_s3_console, target: "_blank" %></dd>
+      <dd><%= link_to_if @latest_check.checked_uri_in_s3_console, @latest_check.checked_uri, @latest_check.checked_uri_in_s3_console, target: "_blank" %></dd>
     </dl>
   <% end %>
 
