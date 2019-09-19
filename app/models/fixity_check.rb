@@ -25,23 +25,43 @@ class FixityCheck < ApplicationRecord
   # ways, but it's so clever and useful when it works!
   def checked_uri_in_s3_console
     @checked_uri_in_s3_console ||= begin
-      original_storage = Shrine.storages[:store]
-      uri = URI.parse(checked_uri)
-
-      if original_storage.kind_of?(Shrine::Storage::S3)
-        region = ScihistDigicoll::Env.lookup(:aws_region)
-        bucket = original_storage.bucket.name
-        path_components = uri.path.split("/")
-        key_path = path_components.slice(1, path_components.length - 2)&.join("/")
-        end_key = path_components.last
-
-        "https://s3.console.aws.amazon.com/s3/buckets/#{bucket}/#{key_path}/?region=#{region}&tab=overview&prefixSearch=#{end_key}"
+      region = ScihistDigicoll::Env.lookup(:aws_region)
+      parts = checked_uri_on_s3_components
+      if parts
+        "https://s3.console.aws.amazon.com/s3/buckets/#{parts[:bucket]}/#{parts[:key_path]}/?region=#{region}&tab=overview&prefixSearch=#{parts[:end_key]}"
       else
-        # Can't do it, sorry
         nil
       end
-    rescue URI::InvalidURIError
-      nil
     end
   end
+
+  private
+
+  # returns false if we do not think checked_uri looks like S3.
+  # (If we later use a custon CNAME for S3 buckets, may have to adjust this!)
+  #
+  # returns a hash with keys :bucket, :key_path, :end_path
+  # Used for #checked_uri_in_s3_console to link admins directly to a AWS S3 console.
+  #
+  def checked_uri_on_s3_components
+    parsed = URI.parse(checked_uri)
+
+    host_parts = parsed.host.split(".")
+    if host_parts.slice(1, host_parts.length) != %w{s3 amazonaws com}
+      return false
+    end
+
+    path_components = parsed.path.split("/")
+    key_path = path_components.slice(1, path_components.length - 2)&.join("/")
+    end_key = path_components.last
+
+    {
+      bucket: host_parts.first,
+      key_path: key_path,
+      end_key: end_key
+    }
+  rescue URI::InvalidURIError
+    false
+  end
+
 end
