@@ -23,7 +23,8 @@ class FixityReport < ViewModel
     end
 
     report[:no_stored_files] = the_data.count do |x|
-      x[:stored_file] == false
+      # reported as nil by the DB.
+      x[:stored_file] != true
     end
 
     report[:no_checks] = the_data.count do |x|
