@@ -20,7 +20,7 @@ module FixityReportHelper
     # Note: asset_stats reports these as null.
     # Note: this could also be count_asset_stats ({stored_file: [false, nil]}).
     def no_stored_files
-      asset_count - stored_files
+      @no_stored_files ||= asset_count - stored_files
     end
 
     # Assets with a file stored on them, but which haven't
@@ -31,42 +31,44 @@ module FixityReportHelper
 
     # Assets with a file and at least one fixity check.
     def with_checks
-      stored_files - no_checks
+      @with_checks ||= stored_files - no_checks
     end
 
     # Assets with a file that have been checked in the past week.
     def recent_checks
-      count_asset_stats ({stored_file: true, stale_check: false})
+      @recent_checks ||= count_asset_stats ({stored_file: true, stale_check: false})
     end
 
     # Assets with a file that *have* checks, but have not been checked for the past week.
     # Note: assets with no checks yet show up as nil in :stale_check column.
     def stale_checks
-      count_asset_stats ({stored_file: true, stale_check: true})
+      @stale_checks ||= count_asset_stats ({stored_file: true, stale_check: true})
     end
 
     # Assets with files, that were ingested less than a week ago.
     def recent_files
-      count_asset_stats ({stored_file: true, recent_asset: true})
+      @recent_files ||= count_asset_stats ({stored_file: true, recent_asset: true})
     end
 
     # Assets with files, that have no checks
     # or stale checks.
     # Because this is a left join,
     # :stale_check could be true
-    #     ('cause the checks are stale),
+    #     (because the checks are stale),
     # or nil
-    #     ('cause there are no checks yet.)
+    #     (because there are no checks yet.)
     def no_checks_or_stale_checks
-      count_asset_stats ({
+      @no_checks_or_stale_checks ||= count_asset_stats ({
         stored_file: true,
         stale_check: [true, nil]
       })
     end
 
     # see above.
+    # Is this method name way too long?
+    # Maybe, but the concept is kind of complex.
     def not_recent_with_no_checks_or_stale_checks
-      count_asset_stats ({
+      not_recent_with_no_checks_or_stale_checks ||= count_asset_stats ({
         stored_file: true,
         recent_asset: false,
         stale_check: [true, nil]
@@ -100,14 +102,15 @@ module FixityReportHelper
     def count_asset_stats(conditions)
       asset_stats.count do |row_hash|
         test_results = conditions.map do |key, values_we_want|
-           check_one_row(row_hash, key, values_we_want)
+           check_one_key(row_hash, key, values_we_want)
         end
-        # If these are all true, the thing passes.
+        # If all the keys are values_we_want,
+        # then add this row to the count.
         test_results.all?
       end
     end
 
-    def check_one_row(row_hash, key, values_we_want)
+    def check_one_key(row_hash, key, values_we_want)
       if values_we_want.is_a? Array
         values_we_want.include? row_hash[key]
       else
@@ -115,12 +118,18 @@ module FixityReportHelper
       end
     end
 
+
+    # Fetches all the asset statistics we need from the database.
+    # Fetches 20,000 rows in about a millisecond.
+    # We could move much of the counting code above into the SQL and make the DB
+    # do more work, but at the cost of some readability; since the fixity report page
+    # isn't viewed much (if ever), not worth optimizing this too much.
     def asset_stats
       @asset_stats ||= begin
         checks_are_stale_after = '7 days'
         asset_is_old_after     = '7 days'
 
-        data_we_need = {
+        column_hash = {
           # We need the asset's ID to group the records.
           'id': 'kithe_models.id',
 
@@ -134,6 +143,7 @@ module FixityReportHelper
           'check_count': 'fixity_checks.count',
 
           # Is this asset due for a check?
+          #     Careful, we're using a left join. So here are the possible values:
           #     NULL  means no checks yet.
           #     true  means there are checks, but they're all older than a week.
           #     false means the file was checked at least once in the past week.
@@ -143,15 +153,13 @@ module FixityReportHelper
           'recent_asset': "kithe_models.created_at > NOW() - INTERVAL '#{asset_is_old_after}'",
         }
 
-        labels = data_we_need.keys
-
-        sql_columns = data_we_need.values.
+        labels = column_hash.keys
+        columns = column_hash.values.
           map { |x| Arel.sql(x) }
 
         Asset.
           left_outer_joins(:fixity_checks).
-          group(:id).
-          pluck(*sql_columns).
+          group(:id).pluck(*columns).
           map { |p| labels.zip(p).to_h }
       end
     end

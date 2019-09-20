@@ -31,49 +31,49 @@
   <tbody>
       <tr>
         <td>All</td>
-        <td><%=  @fixity_report.asset_count %></td>
+        <td><%= number_with_delimiter(@fixity_report.asset_count) %></td>
       </tr>
 
       <tr>
         <td>With no files, so can't be checked</td>
-        <td><%=  @fixity_report.no_stored_files %></td>
+        <td><%=  number_with_delimiter(@fixity_report.no_stored_files) %></td>
       </tr>
       <tr>
         <td>With files, and thus eligible for fixity checks</td>
-        <td><%= @fixity_report.stored_files %></td>
+        <td><%= number_with_delimiter(@fixity_report.stored_files) %></td>
       </tr>
 
       <tr>
         <td>With files, haven't been checked yet</td>
-        <td><%= @fixity_report.no_checks %></td>
+        <td><%= number_with_delimiter(@fixity_report.no_checks) %></td>
       </tr>
       <tr>
       <tr>
         <td>With files, have been checked</td>
-        <td><%= @fixity_report.with_checks %></td>
+        <td><%= number_with_delimiter(@fixity_report.with_checks) %></td>
       </tr>
       <tr>
 
       <tr>
         <td>With files, checked, but not for the past week</td>
-        <td><%= @fixity_report.stale_checks %></td>
+        <td><%= number_with_delimiter(@fixity_report.stale_checks) %></td>
       </tr>
       <tr>
         <td>With files, checked in the past week</td>
-        <td><%= @fixity_report.recent_checks %></td>
+        <td><%= number_with_delimiter(@fixity_report.recent_checks) %></td>
       </tr>
 
       <tr>
         <td>With files, ingested in the past 7 days</td>
-        <td><%= @fixity_report.recent_files %></td>
+        <td><%= number_with_delimiter(@fixity_report.recent_files) %></td>
       </tr>
       <tr>
         <td>With files, and due to be checked (have not been checked for 7 days, or ever)</td>
-        <td><%= @fixity_report.no_checks_or_stale_checks %></td>
+        <td><%= number_with_delimiter(@fixity_report.no_checks_or_stale_checks) %></td>
       </tr>
       <tr>
         <td>With files, ingested more than 7 days ago, and should thus have recent checks but don't</td>
-        <td><%= @fixity_report.not_recent_with_no_checks_or_stale_checks %></td>
+        <td><%= number_with_delimiter(@fixity_report.not_recent_with_no_checks_or_stale_checks) %></td>
       </tr>
   </tbody>
 </table>
