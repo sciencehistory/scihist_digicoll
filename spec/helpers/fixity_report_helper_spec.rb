@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe FixityReportHelper::FixityReportHelper do
+describe FixityReportHelper do
 
   # A recent asset with a file with no checks
   let!(:a0) { create(:asset_image_with_correct_sha512, friendlier_id: '000') }
