@@ -5,83 +5,7 @@
 # The class is used in controllers/admin/assets_controller.rb .
 
 class FixityReport < ViewModel
-
   valid_model_type_names "NilClass"
-
-  # All assets, including collection thumbnail assets.
-  def asset_count
-    asset_stats.count
-  end
-
-  # All assets with stored files.
-  def stored_files
-    asset_stats.count do |x|
-      x[:stored_file] == true
-    end
-  end
-
-  # Assets with no stored files, which obviously can't
-  # be checked for fixity.
-  # Note: asset_stats reports these as null.
-  def no_stored_files
-    asset_stats.count do |x|
-      x[:stored_file] != true
-    end
-  end
-
-  # Assets with a file stored on them, but which haven't
-  # had a fixity check yet.
-  def no_checks
-    asset_stats.count do |x|
-      x[:stored_file] == true &&
-      x[:check_count] == 0
-    end
-  end
-
-  # Assets with a file and at least one fixity check.
-  def with_checks
-    asset_stats.count do |x|
-      x[:stored_file] == true &&
-      x[:check_count] > 0
-    end
-  end
-
-
-  def recent_checks
-    asset_stats.count do |x|
-      x[:stored_file] == true &&
-      x[:stale_check] == false
-    end
-  end
-
-  def stale_checks
-    asset_stats.count do |x|
-      x[:stored_file] == true &&
-      x[:stale_check] == true
-    end
-  end
-
-  def recent_files
-    asset_stats.count do |x|
-      x[:stored_file] == true &&
-      x[:recent] == true
-    end
-  end
-
-  def no_checks_or_stale_checks
-    asset_stats.count do |x|
-      x[:stored_file] == true &&
-      [true, nil].include?(x[:stale_check])
-    end
-  end
-
-  def not_recent_with_no_checks_or_stale_checks
-    asset_stats.count do |x|
-      x[:stored_file] == true &&
-      x[:recent] == false  &&
-      [true, nil].include?(x[:stale_check])
-    end
-  end
 
   def display
     {
@@ -97,6 +21,90 @@ class FixityReport < ViewModel
       no_checks_or_stale_checks: no_checks_or_stale_checks,
       not_recent_with_no_checks_or_stale_checks: not_recent_with_no_checks_or_stale_checks
     }
+  end
+
+  # All assets, including collection thumbnail assets.
+  def asset_count
+    @asset_count ||= asset_stats.count
+  end
+
+  # All assets with stored files.
+  def stored_files
+    @stored_files ||= count_asset_stats ({stored_file: true})
+  end
+
+  # Assets with no stored files, which obviously can't
+  # be checked for fixity.
+  # Note: asset_stats reports these as null.
+  # Note: this could also be count_asset_stats ({stored_file: [false, nil]}).
+  def no_stored_files
+    asset_count - stored_files
+  end
+
+  # Assets with a file stored on them, but which haven't
+  # had a fixity check yet.
+  def no_checks
+    @no_checks ||= count_asset_stats ({stored_file: true, check_count: 0})
+  end
+
+  # Assets with a file and at least one fixity check.
+  def with_checks
+    stored_files - no_checks
+  end
+
+  # Assets with a file that have been checked in the past week.
+  def recent_checks
+    count_asset_stats ({stored_file: true, stale_check: false})
+  end
+
+  # Assets with a file that have NOT been checked for the past week.
+  def stale_checks
+    count_asset_stats ({stored_file: true, stale_check: true})
+  end
+
+  # Assets with files, that were ingested less than a week ago.
+  def recent_files
+    count_asset_stats ({stored_file: true, recent: true})
+  end
+
+  # Assets with files, that have no checks
+  # or stale checks.
+  # Because this is a left join,
+  # :stale_check could be true
+  #   (the checks are stale),
+  # or nil
+  #   (no checks yet.)
+  def no_checks_or_stale_checks
+    count_asset_stats ({
+      stored_file: true,
+      stale_check: [true, nil]
+    })
+  end
+
+  def not_recent_with_no_checks_or_stale_checks
+    count_asset_stats ({
+      stored_file: true,
+      recent: false,
+      stale_check: [true, nil]
+    })
+  end
+
+  # Count how many rows of asset_stats
+  # meet all the required conditions.
+  def count_asset_stats(conditions)
+    asset_stats.count do |x|
+      conditions.map do |key, values_we_want|
+         key_test(x, key, values_we_want)
+      end.all?
+    end
+  end
+
+  def key_test(dict, key, values_we_want)
+    if values_we_want.is_a? Array
+      values_we_want.include? dict[key]
+    else
+      dict[key] == values_we_want
+    end
   end
 
   # Any assets whose most recent check has failed.
