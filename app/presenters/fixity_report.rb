@@ -8,7 +8,8 @@ class FixityReport < ViewModel
   valid_model_type_names "NilClass"
 
   def display
-    {
+    start_time = Time.now
+    result = {
       bad_assets: bad_assets,
       asset_count: asset_stats.count,
       stored_files: stored_files,
@@ -21,6 +22,8 @@ class FixityReport < ViewModel
       no_checks_or_stale_checks: no_checks_or_stale_checks,
       not_recent_with_no_checks_or_stale_checks: not_recent_with_no_checks_or_stale_checks
     }
+    result[:duration] = Time.now - start_time
+    result
   end
 
   # All assets, including collection thumbnail assets.
@@ -86,24 +89,26 @@ class FixityReport < ViewModel
       stored_file: true,
       recent: false,
       stale_check: [true, nil]
-    })
+    } )
   end
 
   # Count how many rows of asset_stats
   # meet all the required conditions.
   def count_asset_stats(conditions)
-    asset_stats.count do |x|
-      conditions.map do |key, values_we_want|
-         key_test(x, key, values_we_want)
-      end.all?
+    asset_stats.count do |row_hash|
+      test_results = conditions.map do |key, values_we_want|
+         check_one_row(row_hash, key, values_we_want)
+      end
+      # If these are all true, the thing passes.
+      test_results.all?
     end
   end
 
-  def key_test(dict, key, values_we_want)
+  def check_one_row(row_hash, key, values_we_want)
     if values_we_want.is_a? Array
-      values_we_want.include? dict[key]
+      values_we_want.include? row_hash[key]
     else
-      dict[key] == values_we_want
+      row_hash[key] == values_we_want
     end
   end
 
