@@ -64,7 +64,7 @@ module FixityReportHelper
       })
     end
 
-    # see above.
+    # See discussion of stale_check above.
     # Is this method name way too long?
     # Maybe, but the concept is kind of complex.
     def not_recent_with_no_checks_or_stale_checks
@@ -79,6 +79,9 @@ module FixityReportHelper
     # Any assets whose most recent check has failed.
     # This query might get slow if we
     # accumulate a lot of failed checks.
+    # This method contacts the DB twice,
+    # once to get the asset ids, and once
+    # to load the assets into memory. Oh well.
     def bad_assets
       @bad_assets ||= begin
         sql = """
@@ -90,8 +93,9 @@ module FixityReportHelper
             AND good.passed = 't'
             AND good.created_at > bad.created_at )
         """
-        ActiveRecord::Base.connection.execute(sql).to_a.
-          map { |row| Asset.find(row['asset_id']) }
+        results = ActiveRecord::Base.connection.execute(sql)
+        asset_ids = results.to_a.map {|row| row['asset_id']}
+        Asset.find(asset_ids)
       end
     end
 
@@ -121,6 +125,7 @@ module FixityReportHelper
 
     # Fetches all the asset statistics we need from the database.
     # Fetches 20,000 rows in about a millisecond.
+    # No assets or fixity checks are loaded into memory.
     # We could move much of the counting code above into the SQL and make the DB
     # do more work, but at the cost of some readability; since the fixity report page
     # isn't viewed much (if ever), not worth optimizing this too much.
