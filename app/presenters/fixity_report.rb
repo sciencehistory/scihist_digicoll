@@ -4,28 +4,7 @@
 # fixity_report.html.erb.
 # The class is used in controllers/admin/assets_controller.rb .
 
-class FixityReport < ViewModel
-  valid_model_type_names "NilClass"
-
-  def display
-    start_time = Time.now
-    result = {
-      bad_assets: bad_assets,
-      asset_count: asset_stats.count,
-      stored_files: stored_files,
-      no_stored_files: no_stored_files,
-      with_checks: with_checks,
-      no_checks: no_checks,
-      recent_checks: recent_checks,
-      stale_checks: stale_checks,
-      recent_files: recent_files,
-      no_checks_or_stale_checks: no_checks_or_stale_checks,
-      not_recent_with_no_checks_or_stale_checks: not_recent_with_no_checks_or_stale_checks
-    }
-    result[:duration] = Time.now - start_time
-    result
-  end
-
+class FixityReport
   # All assets, including collection thumbnail assets.
   def asset_count
     @asset_count ||= asset_stats.count
@@ -60,23 +39,24 @@ class FixityReport < ViewModel
     count_asset_stats ({stored_file: true, stale_check: false})
   end
 
-  # Assets with a file that have NOT been checked for the past week.
+  # Assets with a file that *have* checks, but have not been checked for the past week.
+  # Note: assets with no checks yet show up as nil in :stale_check column.
   def stale_checks
     count_asset_stats ({stored_file: true, stale_check: true})
   end
 
   # Assets with files, that were ingested less than a week ago.
   def recent_files
-    count_asset_stats ({stored_file: true, recent: true})
+    count_asset_stats ({stored_file: true, recent_asset: true})
   end
 
   # Assets with files, that have no checks
   # or stale checks.
   # Because this is a left join,
   # :stale_check could be true
-  #   (the checks are stale),
+  #     ('cause the checks are stale),
   # or nil
-  #   (no checks yet.)
+  #     ('cause there are no checks yet.)
   def no_checks_or_stale_checks
     count_asset_stats ({
       stored_file: true,
@@ -84,13 +64,36 @@ class FixityReport < ViewModel
     })
   end
 
+  # see above.
   def not_recent_with_no_checks_or_stale_checks
     count_asset_stats ({
       stored_file: true,
-      recent: false,
+      recent_asset: false,
       stale_check: [true, nil]
     } )
   end
+
+
+  # Any assets whose most recent check has failed.
+  # This query might get slow if we
+  # accumulate a lot of failed checks.
+  def bad_assets
+    @bad_assets ||= begin
+      sql = """
+        SELECT bad.asset_id FROM fixity_checks bad
+        WHERE bad.passed = 'f'
+        AND NOT EXISTS (
+          SELECT FROM fixity_checks good
+          WHERE good.asset_id = bad.asset_id
+          AND good.passed = 't'
+          AND good.created_at > bad.created_at )
+      """
+      ActiveRecord::Base.connection.execute(sql).to_a.
+        map { |row| Asset.find(row['asset_id']) }
+    end
+  end
+
+  private
 
   # Count how many rows of asset_stats
   # meet all the required conditions.
@@ -112,25 +115,6 @@ class FixityReport < ViewModel
     end
   end
 
-  # Any assets whose most recent check has failed.
-  # This query might get slow if we
-  # accumulate a lot of failed checks.
-  def bad_assets
-    @bad_assets ||= begin
-      sql = """
-        SELECT bad.asset_id FROM fixity_checks bad
-        WHERE bad.passed = 'f'
-        AND NOT EXISTS (
-          SELECT FROM fixity_checks good
-          WHERE good.asset_id = bad.asset_id
-          AND good.passed = 't'
-          AND good.created_at > bad.created_at )
-      """
-      ActiveRecord::Base.connection.execute(sql).to_a.
-        map { |row| Asset.find(row['asset_id']) }
-    end
-  end
-
   def asset_stats
     @asset_stats ||= begin
       checks_are_stale_after = '7 days'
@@ -139,17 +123,26 @@ class FixityReport < ViewModel
       data_we_need = {
         # We need the asset's ID to group the records.
         'id': 'kithe_models.id',
+
         # For debugging:
         'friendlier_id': 'kithe_models.friendlier_id',
+
         # Does the asset have a file attached to it?
         'stored_file': "file_data ->> 'storage'",
+
         # How many checks does each asset have?
         'check_count': 'fixity_checks.count',
-        # Is this asset due for a check? # (NULL counts as TRUE) here.
+
+        # Is this asset due for a check?
+        #     NULL  means no checks yet.
+        #     true  means there are checks, but they're all older than a week.
+        #     false means the file was checked at least once in the past week.
         'stale_check': "max(fixity_checks.created_at) < NOW() - INTERVAL '#{checks_are_stale_after}'",
-        # Is the asset "recent" ?
-        'recent': "kithe_models.created_at > NOW() - INTERVAL '#{asset_is_old_after}'",
+
+        # Was the asset uploaded "recently" ?
+        'recent_asset': "kithe_models.created_at > NOW() - INTERVAL '#{asset_is_old_after}'",
       }
+
       labels = data_we_need.keys
 
       sql_columns = data_we_need.values.
