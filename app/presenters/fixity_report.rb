@@ -16,15 +16,19 @@ class FixityReport < ViewModel
     # General fixity stats:
     the_data = general_stats
 
-    report[:asset_count]        = the_data.count
+    report[:asset_count] = the_data.count
 
-    report[:with_stored_files]  = the_data.count do |x|
+    report[:stored_files] = the_data.count do |x|
       x[:stored_file] == true
     end
 
-    report[:recent] = the_data.count do |x|
+    report[:no_stored_files] = the_data.count do |x|
+      x[:stored_file] == false
+    end
+
+    report[:no_checks] = the_data.count do |x|
       x[:stored_file] == true &&
-      x[:recent] == true
+      x[:check_count] == 0
     end
 
     report[:with_checks] = the_data.count do |x|
@@ -32,7 +36,22 @@ class FixityReport < ViewModel
       x[:check_count] > 0
     end
 
-    report[:with_no_checks_or_stale_checks]  = the_data.count do |x|
+    report[:recent_checks] = the_data.count do |x|
+      x[:stored_file] == true &&
+      x[:stale_check] == false
+    end
+
+    report[:stale_checks] = the_data.count do |x|
+      x[:stored_file] == true &&
+      x[:stale_check] == true
+    end
+
+    report[:recent_files] = the_data.count do |x|
+      x[:stored_file] == true &&
+      x[:recent] == true
+    end
+
+    report[:no_checks_or_stale_checks]  = the_data.count do |x|
       x[:stored_file] == true &&
       [true, nil].include?(x[:stale_check])
     end
