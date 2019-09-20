@@ -25,14 +25,16 @@
         <td>All</td>
         <td><%= @fixity_report_info[:asset_count] %></td>
       </tr>
-      <tr>
-        <td>With files, and thus eligible for fixity checks</td>
-        <td><%= @fixity_report_info[:stored_files] %></td>
-      </tr>
+
       <tr>
         <td>With no files (can't run a check on these)</td>
         <td><%= @fixity_report_info[:no_stored_files] %></td>
       </tr>
+      <tr>
+        <td>With files, and thus eligible for fixity checks</td>
+        <td><%= @fixity_report_info[:stored_files] %></td>
+      </tr>
+
       <tr>
         <td>With files, haven't been checked yet</td>
         <td><%= @fixity_report_info[:no_checks] %></td>
@@ -43,14 +45,16 @@
         <td><%= @fixity_report_info[:with_checks] %></td>
       </tr>
       <tr>
-      <tr>
-        <td>With files, checked in the past week</td>
-        <td><%= @fixity_report_info[:recent_checks] %></td>
-      </tr>
+
       <tr>
         <td>With files, checked, but not for the past week</td>
         <td><%= @fixity_report_info[:stale_checks] %></td>
       </tr>
+      <tr>
+        <td>With files, checked in the past week</td>
+        <td><%= @fixity_report_info[:recent_checks] %></td>
+      </tr>
+
       <tr>
         <td>With files, ingested in the past 7 days</td>
         <td><%= @fixity_report_info[:recent_files] %></td>
@@ -65,3 +69,7 @@
       </tr>
   </tbody>
 </table>
+
+<div>
+  <em>This report took <%= @fixity_report_info[:duration].round(2) %> seconds to generate.</em>
+</div>
