@@ -49,7 +49,7 @@ class Admin::AssetsController < AdminController
   end
 
   def fixity_report
-    @fixity_report_info = FixityReport.new(nil).display
+    @fixity_report = FixityReport.new()
   end
 
   def display_attach_form
