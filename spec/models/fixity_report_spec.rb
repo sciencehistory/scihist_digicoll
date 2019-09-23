@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe FixityReportHelper do
+describe FixityReport do
 
   # A recent asset with a file with no checks
   let!(:a0) { create(:asset_image_with_correct_sha512, friendlier_id: '000') }
@@ -33,7 +33,7 @@ describe FixityReportHelper do
   end
 
   it "correctly counts the assets and fixity checks" do
-    report_1 = FixityReportHelper::FixityReportHelper.new()
+    report_1 = FixityReport.new()
     # OK we have 3 assets, with the a bunch of fixity checks attached to them.
 
     # These are, in REVERSE CHRON ORDER:
@@ -87,7 +87,7 @@ describe FixityReportHelper do
     a1.reload
     a2.reload
 
-    report_2 = FixityReportHelper::FixityReportHelper.new()
+    report_2 = FixityReport.new()
 
     expect(a1.fixity_checks.map{ |fc| fc.passed?}).to eq [true, true, true, false]
     expect(a2.fixity_checks.map{ |fc| fc.passed?}).to eq [true, true, true, true]
