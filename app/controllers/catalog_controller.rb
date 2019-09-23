@@ -3,6 +3,7 @@
 require 'kithe/blacklight_tools/bulk_loading_search_service'
 
 class CatalogController < ApplicationController
+  before_action :redirect_legacy_query_urls, only: :index
 
   include BlacklightRangeLimit::ControllerOverride
   # Blacklight wanted Blacklight::Controller included in ApplicationController,
@@ -68,7 +69,7 @@ class CatalogController < ApplicationController
         super
       else
         # with no query, relevance doesn't make a lot of sense
-        super.delete_if { |k| k.start_with?("score") }
+        super.delete_if { |k| k == "relevance" }
       end
     end
   end
@@ -282,18 +283,52 @@ class CatalogController < ApplicationController
     # end
 
     # "sort results by" select (pulldown)
-    # label in pulldown is followed by the name of the SOLR field to sort by and
-    # whether the sort is ascending or descending (it must be asc or desc
-    # except in the relevancy case).
+    # We use feature to have sort field name (which shows up in URL) be specified
+    # by us, rather than be the Solr sort value, so it is independent of solr field
+    # names and config, and we can keep our URLs persistent.
+    # http://jessiekeck.com/customizing-blacklight/sort_fields/
 
-    config.add_sort_field "score desc, date_created_dtsi desc", label: "best match"
-    config.add_sort_field "latest_year desc", label: "newest date"
-    config.add_sort_field "earliest_year asc", label: "oldest date"
-    config.add_sort_field "date_created_dtsi desc", label: "recently added", blank_query_default: true # will be used by our custom code as default sort when no query has been entered
-    # TODO, limit to just admins, see that 'if'
-    config.add_sort_field "date_created_dtsi asc", label: "oldest added" #, if: ->(controller, field) { controller.current_ability.current_user.staff? }
-    config.add_sort_field "date_modified_dtsi desc", label: "date modified \u25BC" #, if: ->(controller, field) { controller.current_ability.current_user.staff? }
-    config.add_sort_field "date_modified_dtsi asc", label: "date modified \u25B2" #, if: ->(controller, field) { controller.current_ability.current_user.staff? }
+    config.add_sort_field("relevance") do |field|
+      field.label = "best match"
+      field.sort = "score desc, date_created_dtsi desc"
+    end
+
+    config.add_sort_field("newest_date") do |field|
+      field.label = "newest date"
+      field.sort = "latest_year desc"
+    end
+
+    config.add_sort_field("oldest_date") do |field|
+      field.label = "oldest date"
+      field.sort = "earliest_year asc"
+    end
+
+    config.add_sort_field("recently_added") do |field|
+      field.label = "recently added"
+      field.sort = "date_created_dtsi desc"
+      # will be used by our custom code as default sort when no query has been entered
+      field.blank_query_default = true
+    end
+
+    # limit to just available for logged-in admins, with `if ` param
+
+    config.add_sort_field("oldest_added") do |field|
+      field.label = "oldest added"
+      field.sort = "date_created_dtsi asc"
+      field.if = ->(controller, field) { controller.current_user }
+    end
+
+    config.add_sort_field("date_modified_desc") do |field|
+      field.label = "date modified \u25BC"
+      field.sort = "date_modified_dtsi desc"
+      field.if = ->(controller, field) { controller.current_user }
+    end
+
+    config.add_sort_field("date_modified_asc") do |field|
+      field.label = "date modified \u25B2"
+      field.sort = "date_modified_dtsi asc"
+      field.if = ->(controller, field) { controller.current_user }
+    end
 
 
     # If there are more than this many search results, no spelling ("did you
@@ -306,5 +341,46 @@ class CatalogController < ApplicationController
     # if the name of the solr.SuggestComponent provided in your solrcongig.xml is not the
     # default 'mySuggester', uncomment and provide it below
     # config.autocomplete_suggester = 'mySuggester'
+  end
+
+  LEGACY_SORT_REDIRECTS = {
+    "latest_year desc" => "newest_date",
+    "earliest_year asc" => "oldest_date",
+    "score desc, system_create_dtsi desc" => "relevance",
+    "system_create_dtsi desc" => "recently_added",
+    "system_create_dtsi asc" => "oldest_added",
+    "system_modified_dtsi desc" => "date_modified_desc",
+    "system_modified_dtsi asc" => "date_modified_asc"
+  }
+
+  LEGACY_FACET_REDIRECTS = {
+    "subject_sim" => "subject_facet",
+    "maker_facet_sim" => "creator_facet",
+    "genre_string_sim" => "genre_facet",
+    "resource_type_sim" => "format_facet",
+    "medium_sim" => "medium_facet",
+    "place_facet_sim" => "place_facet",
+    "language_sim" => "language_facet",
+    "rights_sim" => "rights_facet",
+    "division_sim" => "department_facet",
+    "exhibition_sim" => "exhibition_facet"
+  }
+
+
+  def redirect_legacy_query_urls
+    corrected_params = {}
+
+    if params[:f].respond_to?(:keys) && params[:f].keys.any? { |k| LEGACY_FACET_REDIRECTS.keys.include?(k.to_s) }
+      # to_unsafe_h should be fine here, arbitrary :f params for facet limiting are expected and not a vulnerability.
+      corrected_params[:f] = params[:f].transform_keys { |k| LEGACY_FACET_REDIRECTS[k.to_s] || k }.to_unsafe_h
+    end
+
+    if new_sort = LEGACY_SORT_REDIRECTS[params[:sort]]
+      corrected_params[:sort] = new_sort
+    end
+
+    if corrected_params.present?
+      redirect_to helpers.safe_params_merge_url(corrected_params)
+    end
   end
 end
