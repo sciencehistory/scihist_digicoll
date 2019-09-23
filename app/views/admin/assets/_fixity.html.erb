@@ -6,29 +6,9 @@
       <% if @asset.stored? %>
         <% if  @checks.present? %>
           <% if @latest_check.passed?  %>
-            <i class="fa fa-check" aria-hidden="true" style="color:green;"></i> OK
+            <i class="fa fa-check text-success" aria-hidden="true"></i> OK
           <% else %>
-            <ul style="list-style: none;">
-              <li>
-                <i class="fa fa-times" aria-hidden="true" style="color:red;"></i>
-                <strong>FAILURE</strong>
-              </li>
-              <li>
-                Check ID: <code><%= @latest_check.id %></code>
-              </li>
-              <li>
-                Time: <code><%= @latest_check.created_at %></code>
-              </li>
-              <li>
-                Expected: <code><%= @latest_check.expected_result %></code>
-              </li>
-              <li>
-                Actual: <code><%= @latest_check.actual_result %></code>
-              </li>
-              <li>
-                Checked URI: <code><%= @latest_check.checked_uri %></code>
-              </li>
-            </ul>
+            <i class="fa fa-times text-danger" aria-hidden="true"></i> <strong class="text-danger">FAILING</strong>
           <% end %>
         <% else %>
           No fixity checks yet.
@@ -37,9 +17,12 @@
         This file is still being ingested.
       <% end %>
     </dd>
+  </dl>
 
-    <%# Details with assets with actual checks to report about: %>
-    <% if @asset.stored? && @checks.present? %>
+
+  <%# Details with assets with actual checks to report about: %>
+  <% if @asset.stored? && @checks.present? %>
+    <dl class="row">
       <dt class="col-sm-2">Latest</dt>
       <dd class="col-sm-10 text-truncate">
         <%= "#{time_ago_in_words(@latest_check.created_at)} ago" %>
@@ -51,28 +34,47 @@
       <dt class="col-sm-12">
         <a data-toggle="collapse" href="#collapseFixityDetails"
           role="button" aria-expanded="false"
-          aria-controls="collapseProvenanceNotes">Details</a>
+          aria-controls="collapseProvenanceNotes">Fixity Check History</a>
       </dt>
       <dd class="col-sm-12 collapse" id="collapseFixityDetails">
         <% @checks.each do | ch | %>
           <div>
             <%if ch.passed? %>
-              <i class="fa fa-check" aria-hidden="true" style="color:green;"></i> <span class="sr-only">Passed</span>
+              <i class="fa fa-check text-success" aria-hidden="true" class="text-success"></i> <span class="sr-only">Passed</span>
             <% else %>
-              <i class="fa fa-times" aria-hidden="true" style="color:red;"></i> <span class="sr-only">Failed</span>
+              <i class="fa fa-times text-danger" aria-hidden="true" class="text-danger"></i> <span class="sr-only">Failed</span>
             <% end %>
             <%= l ch.created_at, format: :admin %>
+            <%= content_tag "span", class: "badge badge-light" do %>
+              <%= ch.hash_function %>:<%= ch.actual_result.slice(0, 10) %>
+            <% end %>
           </div>
         <% end %>
       </dd>
-    <% end %>
+    </dl>
+  <% end %>
 
-    <%# Check the asset now: %>
-    <% if @asset.stored? %>
-      <dt class="col-sm-12">
-        <%= link_to "Schedule a check now", admin_check_fixity_path(@asset.friendlier_id), method: "post", class: "btn btn-primary mt-3"%>
-      </dt>
-    <% end %>
+  <% if @latest_check.present? && !@latest_check.passed? %>
+    <dl>
+      <dt class="text-danger">Current Failing FixityCheck id</dt> <dd><%= @latest_check.id %></dd>
 
-  </dl>
+      <dt class="text-danger">Time</dt><dd><%= l @latest_check.created_at, format: :admin %></dd>
+
+      <dt class="text-danger">Expected</dt>
+      <dd><%= @latest_check.hash_function %>: <%= text_field_tag "", @latest_check.expected_result, readonly: true %></dd>
+
+
+      <dt class="text-danger">Actual</dt> <dd><%= @latest_check.hash_function %>: <%= text_field_tag "", @latest_check.actual_result, readonly: true %></dd>
+
+      <dt class="text-danger">Checked file location</dt>
+      <dd><%= link_to_if @latest_check.checked_uri_in_s3_console, @latest_check.checked_uri, @latest_check.checked_uri_in_s3_console, target: "_blank" %></dd>
+    </dl>
+  <% end %>
+
+  <%# Check the asset now: %>
+  <% if @asset.stored? %>
+    <div class="row col-sm-12">
+      <%= link_to "Schedule a check now", admin_check_fixity_path(@asset.friendlier_id), method: "post", class: "btn btn-primary mt-3 mb-3"%>
+    </div>
+  <% end %>
 </dd>
