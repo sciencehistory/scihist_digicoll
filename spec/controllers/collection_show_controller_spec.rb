@@ -21,4 +21,21 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
       end
     end
   end
+
+  describe "redirects searches with legacy params", solr: false do
+    let(:collection_id) { "faked" }
+    describe "sort" do
+      let(:legacy_sort) { "system_create_dtsi desc" }
+      let(:new_sort) { "recently_added" }
+
+      let(:base_params) { { collection_id: collection_id, q: "some search", search_field: "all_fields" } }
+
+      it "redirects" do
+        get :index, params: base_params.merge(sort: legacy_sort)
+        expect(response).to redirect_to(collection_path(base_params.merge(sort: new_sort)))
+      end
+    end
+  end
+
+
 end
