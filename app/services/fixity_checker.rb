@@ -1,10 +1,14 @@
+# Checks the SHA512 of _current_ stored file, compares against stored expected sha512,
+# records the results of the check in FixityCheck ActiveRecord object. Also prunes old
+# FixityCheck log records to keep only the interesting/useful ones, not complete history.
+#
 # FixityChecker.new(asset).check
 #   This will check the asset, and log the results to the database.
 #
 # FixityChecker.new(asset).prune_checks
 #   This will remove all the excess checks for the object so the database table
 #   doesn't get too large.
-
+#
 class FixityChecker
   attr_reader :asset
 
@@ -32,7 +36,7 @@ class FixityChecker
   def check
     FixityCheck.create!(
       asset: @asset,
-      hash_function: 'SHA-512',
+      hash_function: 'SHA512',
       checked_uri: permanent_url,
       expected_result: expected_result,
       actual_result: actual_result,

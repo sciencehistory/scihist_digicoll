@@ -24,7 +24,7 @@ describe FixityCheck do
     expect(FixityCheck.count).to eq 2
     expect(FixityCheck.all[0].passed?).to be true
     expect(FixityCheck.all[1].failed?).to be true
-    expect(FixityCheck.all[1].hash_function).to eq 'SHA-512'
+    expect(FixityCheck.all[1].hash_function).to eq 'SHA512'
 
     expect { FixityChecker.new(nil).check }.
       to raise_error(ArgumentError)
@@ -49,43 +49,80 @@ describe FixityCheck do
     # ... and one for the new one.
     expect(FixityCheck.checks_for(good_asset, good_asset.fixity_checks[0].checked_uri).count).to eq 1
   end
-end
 
-describe FixityCheck do
-  let(:good_asset) { build(:asset_image_with_correct_sha512) }
-  let!(:twenty_checks) do
-    (0..19).to_a.map do |x|
-      create(:fixity_check,
-        asset: good_asset,
-        checked_uri: good_asset.file.url,
-        created_at: Time.now() - 100000 * x,
-        passed: [
-          true, false, true, true, true, true, false, true, true, true,
-          true, true, true, true, false, true, true, true, false, true][x]
-      )
+  describe "pruning" do
+    let(:good_asset) { build(:asset_image_with_correct_sha512) }
+    let!(:twenty_checks) do
+      (0..19).to_a.map do |x|
+        create(:fixity_check,
+          asset: good_asset,
+          checked_uri: good_asset.file.url,
+          created_at: Time.now() - 100000 * x,
+          passed: [
+            true, false, true, true, true, true, false, true, true, true,
+            true, true, true, true, false, true, true, true, false, true][x]
+        )
+      end
+    end
+    it "correctly prunes excess fixity checks" do
+      # If you change the number, this test is going to fail anyway
+      # so at least fail in a way that's easy to catch.
+      n_to_keep = FixityChecker::NUMBER_OF_RECENT_PASSED_CHECKS_TO_KEEP
+      expect(n_to_keep).to eq 5
+      expect(good_asset.fixity_checks.count).to eq 20
+      passed_before = good_asset.fixity_checks.where(passed: true).count
+      failed_before = good_asset.fixity_checks.where(passed: false).count
+      earliest_passed = good_asset.fixity_checks.where(passed: true).last
+      FixityChecker.new(good_asset).prune_checks
+      # Running prune_checks results in the extra checks going away
+      expect(good_asset.fixity_checks.count).to eq 10
+      passed_after  = good_asset.fixity_checks.where(passed: true).count
+      failed_after  = good_asset.fixity_checks.where(passed: false).count
+      # Failed checks are  not thrown out
+      expect(failed_after).to eq failed_before
+      # The earliest check is not thrown out
+      expect(good_asset.fixity_checks.where(passed: true).last).to eq earliest_passed
+      # We keep AT MOST n_to_keep recent passed checks, PLUS the oldest one.
+      count_of_good_checks_kept = good_asset.fixity_checks.
+        where(passed: true, checked_uri: good_asset.file.url).count
+      expect(count_of_good_checks_kept).to eq n_to_keep + 1
     end
   end
-  it "correctly prunes excess fixity checks" do
-    # If you change the number, this test is going to fail anyway
-    # so at least fail in a way that's easy to catch.
-    n_to_keep = FixityChecker::NUMBER_OF_RECENT_PASSED_CHECKS_TO_KEEP
-    expect(n_to_keep).to eq 5
-    expect(good_asset.fixity_checks.count).to eq 20
-    passed_before = good_asset.fixity_checks.where(passed: true).count
-    failed_before = good_asset.fixity_checks.where(passed: false).count
-    earliest_passed = good_asset.fixity_checks.where(passed: true).last
-    FixityChecker.new(good_asset).prune_checks
-    # Running prune_checks results in the extra checks going away
-    expect(good_asset.fixity_checks.count).to eq 10
-    passed_after  = good_asset.fixity_checks.where(passed: true).count
-    failed_after  = good_asset.fixity_checks.where(passed: false).count
-    # Failed checks are  not thrown out
-    expect(failed_after).to eq failed_before
-    # The earliest check is not thrown out
-    expect(good_asset.fixity_checks.where(passed: true).last).to eq earliest_passed
-    # We keep AT MOST n_to_keep recent passed checks, PLUS the oldest one.
-    count_of_good_checks_kept = good_asset.fixity_checks.
-      where(passed: true, checked_uri: good_asset.file.url).count
-    expect(count_of_good_checks_kept).to eq n_to_keep + 1
+
+  describe "#checked_uri_in_s3_console" do
+    before do
+      FixityChecker.new(corrupt_asset).check
+    end
+    let(:fixity_check) { corrupt_asset.fixity_checks.order(:created_at).last }
+
+    describe "for local path not url" do
+      it "returns nil" do
+        expect(fixity_check.checked_uri_in_s3_console).to be nil
+      end
+    end
+
+    describe "for S3 storage" do
+      # fake the checked-uri to look like an S3 uri, cheesy but hopefully good
+      # enough for a reliable test.
+      let(:s3_url) { "https://some-bucket.s3.amazonaws.com/asset/b2c64027-7124-4388-9a32-57dba88156ba/f9a99647faa471f5b34b77316c0fbda5.tif" }
+      before do
+        fixity_check.checked_uri = s3_url
+      end
+
+      it "returns what we think is a good direct link to AWS console" do
+        expect(fixity_check.checked_uri_in_s3_console).to eq "https://s3.console.aws.amazon.com/s3/buckets/some-bucket/asset/b2c64027-7124-4388-9a32-57dba88156ba/?region=us-east-1&tab=overview&prefixSearch=f9a99647faa471f5b34b77316c0fbda5.tif"
+      end
+    end
+
+    describe "for some other non-S3 host" do
+      before do
+        fixity_check.checked_uri = "http://example.com/foo/bar"
+      end
+      it "returns nil" do
+        expect(fixity_check.checked_uri_in_s3_console).to be nil
+      end
+    end
   end
 end
+
+
