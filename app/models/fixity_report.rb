@@ -12,7 +12,6 @@ class FixityReport
 
   # All assets with stored files.
   def stored_files
-    #@stored_files ||= count_asset_stats({stored_file: true})
     @stored_files ||= check_count_having([
       stored_file_sql
     ])
@@ -43,25 +42,22 @@ class FixityReport
   # Assets with a file that have been checked in the past week.
   def recent_checks
     @recent_checks ||= check_count_having([
-      stored_file_sql,
-      "#{stale_checks_sql} = false"
+      stored_file_sql, "#{stale_checks_sql} = false"
     ])
   end
 
   # Assets with a file that *have* checks, but have not been checked for the past week.
-  # Note: assets with no checks yet show up as nil in :stale_check column.
+  # Note: assets with no checks yet show up as nil, so stale_checks + recent_checks != with_checks
   def stale_checks
     @stale_checks ||= check_count_having([
-      stored_file_sql,
-      "#{stale_checks_sql} = true"
+      stored_file_sql, "#{stale_checks_sql} = true"
     ])
   end
 
   # Assets with files, that were ingested less than a week ago.
   def recent_files
     @recent_files ||= check_count_having([
-      stored_file_sql,
-      "#{recent_asset_sql} = true"
+      stored_file_sql, "#{recent_asset_sql} = true"
     ])
   end
 
@@ -73,12 +69,8 @@ class FixityReport
   # or nil
   #     (because there are no checks yet.)
   def no_checks_or_stale_checks
-    # @no_checks_or_stale_checks ||= count_asset_stats({
-    #   stored_file: true,
-    #   stale_check: [true, nil]
-    # })
     @no_checks_or_stale_checks ||= check_count_having([
-      "file_data ->> 'storage' = 'store'",
+      stored_file_sql,
       "(#{stale_checks_sql} = true) OR (#{stale_checks_sql} is NULL)"
     ])
   end
@@ -87,13 +79,8 @@ class FixityReport
   # Is this method name way too long?
   # Maybe, but the concept is kind of complex.
   def not_recent_with_no_checks_or_stale_checks
-    # not_recent_with_no_checks_or_stale_checks ||= count_asset_stats({
-    #   stored_file: true,
-    #   recent_asset: false,
-    #   stale_check: [true, nil]
-    # } )
     @not_recent_with_no_checks_or_stale_checks ||= check_count_having([
-      "file_data ->> 'storage' = 'store'",
+      stored_file_sql,
       "#{recent_asset_sql} = false",
       "(#{stale_checks_sql} = true) OR (#{stale_checks_sql} is NULL)"
     ])
