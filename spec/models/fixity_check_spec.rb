@@ -24,7 +24,7 @@ describe FixityCheck do
     expect(FixityCheck.count).to eq 2
     expect(FixityCheck.all[0].passed?).to be true
     expect(FixityCheck.all[1].failed?).to be true
-    expect(FixityCheck.all[1].hash_function).to eq 'SHA-512'
+    expect(FixityCheck.all[1].hash_function).to eq 'SHA512'
 
     expect { FixityChecker.new(nil).check }.
       to raise_error(ArgumentError)
