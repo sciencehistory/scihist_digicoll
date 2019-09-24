@@ -55,14 +55,14 @@ class FixityReport
   # Note: assets with no checks yet show up as nil, so stale_checks + recent_checks != with_checks
   def stale_checks
     @stale_checks ||= check_count_having([
-      stored_file_sql, "#{stale_checks_sql} = true"
+      stored_file_sql, "#{stale_checks_sql}"
     ])
   end
 
   # Assets with files, that were ingested less than a week ago.
   def recent_files
     @recent_files ||= check_count_having([
-      stored_file_sql, "#{recent_asset_sql} = true"
+      stored_file_sql, recent_asset_sql
     ])
   end
 
@@ -76,7 +76,7 @@ class FixityReport
   def no_checks_or_stale_checks
     @no_checks_or_stale_checks ||= check_count_having([
       stored_file_sql,
-      "(#{stale_checks_sql} = true) OR (#{stale_checks_sql} is NULL)"
+      "(#{stale_checks_sql}) OR (#{stale_checks_sql} is NULL)"
     ])
   end
 
@@ -87,7 +87,7 @@ class FixityReport
     @not_recent_with_no_checks_or_stale_checks ||= check_count_having([
       stored_file_sql,
       "#{recent_asset_sql} = false",
-      "(#{stale_checks_sql} = true) OR (#{stale_checks_sql} is NULL)"
+      "(#{stale_checks_sql}) OR (#{stale_checks_sql} is NULL)"
     ])
   end
 
