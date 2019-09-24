@@ -113,17 +113,34 @@ class DziFiles
     end
   end
 
+
+
   # Just takes all files in tmp_output_dir passed in, and uploads them at exactly the
   # path they have (with input arg as base) to the remote storage.
+  #
+  # Uses concurrent-ruby to do the uploads concurrently, which speeds things up
+  # significantly, currently with a thread pool of 8 threads.
+  # http://ruby-concurrency.github.io/concurrent-ruby/master/file.promises.out.html
   def upload(tmp_output_dir)
-    Dir.glob("#{tmp_output_dir}/**/*", base: "#{tmp_output_dir}/").each do |path|
-      next if File.directory?(path)
-      upload_path = path.delete_prefix("#{tmp_output_dir}/")
+    thread_pool = Concurrent::FixedThreadPool.new(8, auto_terminate: false)
+    futures = []
 
-      File.open(path) do |file|
-        destination_storage.upload(file, upload_path)
+    Dir.glob("#{tmp_output_dir}/**/*", base: "#{tmp_output_dir}/").each_with_index do |path, i|
+      next if File.directory?(path)
+
+      futures << Concurrent::Promises.future_on(thread_pool) do
+        upload_path = path.delete_prefix("#{tmp_output_dir}/")
+
+        File.open(path) do |file|
+          destination_storage.upload(file, upload_path)
+        end
       end
     end
+
+    # wait for all of them to complete. and raise if one of them raised
+    Concurrent::Promises.zip(*futures).value!
+  ensure
+    thread_pool.kill if thread_pool
   end
 
   # includes asset ID (actual PK, it's long), and a digest checksum,
