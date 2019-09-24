@@ -117,24 +117,17 @@ class FixityReport
 
   private
 
-  def checks_are_stale_after
-    return "#{STALE_IN_DAYS} days"
-  end
-
-  def asset_is_old_after
-    return "#{EXPECTED_FRESH_IN_DAYS} days"
-  end
 
   def stored_file_sql
     "file_data ->> 'storage' = 'store'"
   end
 
   def stale_checks_sql
-    "(max(fixity_checks.created_at) < (NOW() - INTERVAL '#{checks_are_stale_after}'))"
+    "(max(fixity_checks.created_at) < (NOW() - INTERVAL '#{STALE_IN_DAYS} days'))"
   end
 
   def recent_asset_sql
-    "(kithe_models.created_at > NOW() - INTERVAL '#{asset_is_old_after}')"
+    "(kithe_models.created_at > (NOW() - INTERVAL '#{EXPECTED_FRESH_IN_DAYS} days'))"
   end
 
   def check_count_having(conditions)
