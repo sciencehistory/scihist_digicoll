@@ -1,5 +1,3 @@
-require 'scihist_digicoll/assets_needing_fixity_checks'
-
 namespace :scihist do
   desc """
   Checks the fixity of some or all Assets in the database.

@@ -1,5 +1,4 @@
 require 'rails_helper'
-require 'scihist_digicoll/assets_needing_fixity_checks'
 
 # This shouldn't be necessary to make sure Rails knows about our STI hieararchy and works
 # reliably, but somehow it is. :(
