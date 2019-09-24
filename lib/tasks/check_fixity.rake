@@ -23,7 +23,7 @@ namespace :scihist do
   """
 
   task :check_fixity => :environment do
-    cycle_length = ENV['CYCLE_LENGTH'].nil? ? 7 : Integer(ENV['CYCLE_LENGTH'])
+    cycle_length = ENV['CYCLE_LENGTH'].nil? ? ScihistDigicoll::AssetsNeedingFixityChecks::DEFAULT_PERIOD_IN_DAYS : Integer(ENV['CYCLE_LENGTH'])
 
     check_lister = ScihistDigicoll::AssetsNeedingFixityChecks.new(cycle_length)
 

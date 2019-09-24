@@ -16,7 +16,7 @@
         </ul>
       </div>
   <% else %>
-      <h2 class="alert alert-success"><i class="fa fa-thumbs-up" aria-hidden="true"></i> OK</h2>
+      <h2 class="alert alert-success"><i class="fa fa-thumbs-up" aria-hidden="true"></i> No CurrentlyFailed Fixity Checks</h2>
   <% end %>
 </div>
 
@@ -55,24 +55,24 @@
       <tr>
 
       <tr>
-        <td>With files, checked, but not for the past week</td>
+        <td>With files, checked, but not for the past <%= FixityReport::STALE_IN_DAYS %> days</td>
         <td><%= number_with_delimiter(@fixity_report.stale_checks) %></td>
       </tr>
       <tr>
-        <td>With files, checked in the past week</td>
+        <td>With files, checked in the past <%= FixityReport::STALE_IN_DAYS %> days</td>
         <td><%= number_with_delimiter(@fixity_report.recent_checks) %></td>
       </tr>
 
       <tr>
-        <td>With files, ingested in the past 7 days</td>
+        <td>With files, ingested in the past <%= FixityReport::EXPECTED_FRESH_IN_DAYS %> days</td>
         <td><%= number_with_delimiter(@fixity_report.recent_files) %></td>
       </tr>
       <tr>
-        <td>With files, and due to be checked (have not been checked for 7 days, or ever)</td>
+        <td>With files, and due to be checked (have not been checked for <%= FixityReport::STALE_IN_DAYS %> days, or ever)</td>
         <td><%= number_with_delimiter(@fixity_report.no_checks_or_stale_checks) %></td>
       </tr>
       <tr>
-        <td>With files, ingested more than 7 days ago, and should thus have recent checks but don't</td>
+        <td>With files, ingested more than <%= FixityReport::EXPECTED_FRESH_IN_DAYS %> days ago, and should thus have recent checks but don't</td>
         <td><%= number_with_delimiter(@fixity_report.not_recent_with_no_checks_or_stale_checks) %></td>
       </tr>
   </tbody>

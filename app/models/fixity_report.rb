@@ -5,6 +5,11 @@
 # The class is used in controllers/admin/assets_controller.rb .
 
 class FixityReport
+  # If no fixity check no older than STALE_IN_DAYS, considered stale
+  STALE_IN_DAYS = ScihistDigicoll::AssetsNeedingFixityChecks::DEFAULT_PERIOD_IN_DAYS
+  # Assets older than EXPECTED_FRESH_IN_DAYS should not be stale, or it's a problem.
+  EXPECTED_FRESH_IN_DAYS = ScihistDigicoll::AssetsNeedingFixityChecks::DEFAULT_PERIOD_IN_DAYS
+
   # All assets, including collection thumbnail assets.
   def asset_count
     @asset_count ||= Asset.count
@@ -113,11 +118,11 @@ class FixityReport
   private
 
   def checks_are_stale_after
-    return '7 days'
+    return "#{STALE_IN_DAYS} days"
   end
 
   def asset_is_old_after
-    return '7 days'
+    return "#{EXPECTED_FRESH_IN_DAYS} days"
   end
 
   def stored_file_sql
