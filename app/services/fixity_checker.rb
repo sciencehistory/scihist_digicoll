@@ -59,16 +59,39 @@ class FixityChecker
   # The current rules are:
   # Never throw out FAILED checks
   # Never throw out the earliest PASSED check
+  # Always keep a PASSED check if it is preceded or followed by a failing check.
   # Always keep N recent PASSED checks
   def checks_to_delete
-    # Throw all the passed checks INTO the trash.
     checks = FixityCheck.checks_for(@asset, permanent_url)
     return [] if checks.empty?
+
+    # Throw all the passed checks INTO the trash.
     trash = checks.select { | ch | ch.passed? }
+
     # But then, pop the earliest passed check back OUT of the trash.
     earliest_passed_check = trash.pop
-    # Finally, shift the most recent N passed checks back OUT of the trash.
+
+    # Shift the most recent N passed checks back OUT of the trash.
     recent_passed_checks = trash.shift(NUMBER_OF_RECENT_PASSED_CHECKS_TO_KEEP)
+
+    # One more thing:
+    # Certain passing checks are important for
+    # guessing the time window when something bad happened
+    # to a file, or when a bad file was fixed:
+    checks.each_with_index do | ch, i |
+      # Ignore this check if we weren't going to delete it:
+      next unless trash.include?(ch)
+      # OK, we're looking at a passed check we were
+      # about to delete.
+      if checks[i+1]&.failed? || checks[i-1]&.failed?
+        # This check passed, BUT it's either
+        # preceded or followed by a failing check.
+        # Let's remove it from the trash, so it
+        # won't get deleted.
+        trash.delete(ch)
+      end
+    end
+    # OK! Anything still in the trash is OK to delete.
     return trash
   end
 
