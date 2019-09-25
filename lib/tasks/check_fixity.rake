@@ -44,8 +44,9 @@ namespace :scihist do
         transaction_batch.each do |asset|
           if asset.stored?
             checker = FixityChecker.new(asset)
-            checker.check        unless ENV['SKIP_CHECK'] == 'true'
-            checker.prune_checks unless ENV['SKIP_PRUNE'] == 'true'
+            new_check = checker.check  unless ENV['SKIP_CHECK'] == 'true'
+            checker.prune_checks       unless ENV['SKIP_PRUNE'] == 'true'
+            FixityCheckFailureService.new(new_check).send if new_check.failed?
           end
           progress_bar.increment unless progress_bar.nil?
         end
