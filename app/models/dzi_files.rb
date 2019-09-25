@@ -171,20 +171,8 @@ class DziFiles
       @total_prefix = File.join([storage.prefix, clear_prefix].compact).to_s
     end
 
-    # copy/pasted/modifed from Shrine::Storage::S3#clear!, to let us
-    # just clear a prefix, still using efficient calls.
     def clear!
-      objects_to_delete = Enumerator.new do |yielder|
-        storage.bucket.objects(prefix: total_prefix).each do |object|
-          yielder << object
-        end
-      end
-
-      # Batches the deletes...
-      objects_to_delete.each_slice(1000) do |objects_batch|
-        delete_params = { objects: objects_batch.map { |object| { key: object.key } } }
-        storage.bucket.delete_objects(delete: delete_params)
-      end
+      storage.bucket.objects(prefix: total_prefix).batch_delete!
     end
   end
 
