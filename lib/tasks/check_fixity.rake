@@ -46,7 +46,7 @@ namespace :scihist do
             checker = FixityChecker.new(asset)
             new_check = checker.check  unless ENV['SKIP_CHECK'] == 'true'
             checker.prune_checks       unless ENV['SKIP_PRUNE'] == 'true'
-            FixityCheckFailureService.new(new_check).send if new_check.failed?
+            FixityCheckFailureService.new(new_check).send if new_check&.failed?
           end
           progress_bar.increment unless progress_bar.nil?
         end
