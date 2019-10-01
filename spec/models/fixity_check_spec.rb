@@ -89,7 +89,7 @@ describe FixityCheck do
       FixityChecker.new(good_asset).prune_checks
 
       # Running prune_checks results in the extra checks going away
-      expect(good_asset.fixity_checks.count).to eq 14
+      expect(good_asset.fixity_checks.count).to eq 13
       passed_after  = good_asset.fixity_checks.where(passed: true).count
       failed_after  = good_asset.fixity_checks.where(passed: false).count
       # Failed checks are  not thrown out
