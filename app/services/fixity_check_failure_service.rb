@@ -10,12 +10,20 @@ class FixityCheckFailureService
     @asset = fixity_check.asset
   end
 
+
   def send
-    ActionMailer::Base.mail(from: "no-reply@sciencehistory.org",
-                            to: "digital-tech@sciencehistory.org",
-                            subject: subject,
-                            content_type: "text/html",
-                            body: message).deliver_now
+    from_address = ScihistDigicoll::Env.lookup!(:no_reply_email_address)
+    to_address   = ScihistDigicoll::Env.lookup!(:digital_tech_email_address)
+    if from_address.nil? || to_address.nil?
+      raise RuntimeError, 'Cannot send fixity error email; no email address is defined.'
+    else
+      ActionMailer::Base.mail(from:    from_address,
+                              to:      to_address,
+                              subject: subject,
+                              content_type: "text/html",
+                              body: message).deliver_now
+    end
+
     if defined? Honeybadger
       Honeybadger.notify("Fixity check failure", context: {
         asset: @asset.inspect,
