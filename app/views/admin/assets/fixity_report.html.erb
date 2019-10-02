@@ -160,6 +160,18 @@
           <td>Fully ingested, stale checks (have not been checked for <%= FixityReport::STALE_IN_DAYS %> days, or ever)</td>
           <td><%= number_with_delimiter(@fixity_report.no_checks_or_stale_checks) %></td>
         </tr>
+
+        <tr>
+          <td>Oldest fixity check on record</td>
+          <td><%= @fixity_report.earliest_check_date ? l(@fixity_report.earliest_check_date, format: :admin) : "NONE!" %></td>
+        </tr>
+
+        <tr>
+          <td>Most recent fixity check on record</td>
+          <td><%= @fixity_report.latest_check_date ? l(@fixity_report.latest_check_date, format: :admin) : "NONE!" %></td>
+        </tr>
+
+
     </tbody>
   </table>
 </div>

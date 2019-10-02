@@ -78,6 +78,14 @@ class FixityReport
     ])
   end
 
+  def earliest_check_date
+    @earliest_check_date ||= FixityCheck.minimum(:created_at)
+  end
+
+  def latest_check_date
+    @latest_check_date ||= FixityCheck.maximum(:created_at)
+  end
+
   # Assets with files, that were ingested less than a week ago.
   # def recent_files
   #   @recent_files ||= check_count_having([
