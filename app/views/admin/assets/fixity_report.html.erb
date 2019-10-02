@@ -20,6 +20,37 @@
   <% end %>
 </div>
 
+<div class="mt-4">
+  <div class="mb-1">
+    <h2 class="mb-0">Assets created more than <%= pluralize FixityReport::EXPECTED_FRESH_IN_DAYS, "day" %> ago    </h2>
+    <span class="ml-2"><i>Expected to have a recent fixity check on record</i></span>
+  </div>
+
+  <table class="table">
+    <tr>
+      <thead>
+        <tr>
+          <th>Which assets</th>
+          <th colspan="2">How many</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <td>Fully ingested with no fresh fixity check</td>
+        <td><%= number_with_delimiter(@fixity_report.not_recent_with_no_checks_or_stale_checks) %></td>
+        <% if @fixity_report.not_recent_with_no_checks_or_stale_checks == 0 %>
+          <td class="bg-success text-white">
+            <i class="fa fa fa-thumbs-down" aria-hidden="true"></i> Good
+          </td>
+        <% else %>
+          <td class="bg-danger text-white">
+            <i class="fa fa fa-thumbs-down" aria-hidden="true"></i> Unexpected, should be 0
+          </td>
+        <% end %>
+      </tbody>
+    </tr>
+  </table>
+</div>
 
 
 <h2>Fixity stats</h2>
@@ -72,10 +103,6 @@
       <tr>
         <td>With files, and due to be checked (have not been checked for <%= FixityReport::STALE_IN_DAYS %> days, or ever)</td>
         <td><%= number_with_delimiter(@fixity_report.no_checks_or_stale_checks) %></td>
-      </tr>
-      <tr>
-        <td>With files, ingested more than <%= FixityReport::EXPECTED_FRESH_IN_DAYS %> days ago, and should thus have recent checks but don't</td>
-        <td><%= number_with_delimiter(@fixity_report.not_recent_with_no_checks_or_stale_checks) %></td>
       </tr>
   </tbody>
 </table>
