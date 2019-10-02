@@ -8,7 +8,7 @@ class FixityReport
   # If no fixity check no older than STALE_IN_DAYS, considered stale
   STALE_IN_DAYS = ScihistDigicoll::AssetsNeedingFixityChecks::DEFAULT_PERIOD_IN_DAYS
   # Assets older than EXPECTED_FRESH_IN_DAYS should not be stale, or it's a problem.
-  EXPECTED_FRESH_IN_DAYS = ScihistDigicoll::AssetsNeedingFixityChecks::DEFAULT_PERIOD_IN_DAYS
+  EXPECTED_FRESH_IN_DAYS = 1
 
   # All assets, including collection thumbnail assets.
   def asset_count
