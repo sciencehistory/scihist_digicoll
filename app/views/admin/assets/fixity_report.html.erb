@@ -1,4 +1,33 @@
-<h1>Fixity report</h1>
+<h1 class="mb-4">Fixity Health Report</h1>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md">
+      <% if @fixity_report.bad_assets.blank? && @fixity_report.not_recent_with_no_checks_or_stale_checks == 0 %>
+        <p class="h2 alert alert-success"><i class="fa fa fa-thumbs-up" aria-hidden="true"></i> Fixity health good.</p>
+      <% else %>
+        <p class="h2 alert alert-danger"><i class="fa fa fa-thumbs-down" aria-hidden="true"></i> There are fixity health problems!</p>
+        <ul>
+          <% unless @fixity_report.bad_assets.blank? %>
+            <li><%= pluralize @fixity_report.bad_assets.count, 'asset' %> currently failing fixity check</li>
+          <% end %>
+          <% unless @fixity_report.not_recent_with_no_checks_or_stale_checks == 0 %>
+            <li><%= pluralize @fixity_report.not_recent_with_no_checks_or_stale_checks, 'asset' %> expected to have fresh fixity checks, but missing fresh fixity checks</li>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
+
+    <div class="col-md alert alert-info">
+      <ul>
+        <li>We intend to schedule checks such that every file is checked at least once every <%= pluralize FixityReport::STALE_IN_DAYS, 'day' %>.</li>
+        <li>Fixity checks run <b>nightly</b> at <b><%= ScihistDigicoll::AssetsNeedingFixityChecks::WHENEVER_CRON_TIME %></b> and will check 1/<%= FixityReport::STALE_IN_DAYS %> of our total assets (~<%= @fixity_report.asset_count / FixityReport::STALE_IN_DAYS %> assets) each night, choosing the assets with missing or most stale checks to run checks on.</li>
+        <li>Can only run fixity checks on assets that are <i>fully ingested</i> and have attached files.</li>
+        <li>For assets created within last <%= pluralize FixityReport::EXPECTED_FRESH_IN_DAYS, 'day' %>, we tolerate missing fixity checks, as they may not have run yet.</li>
+      </ul>
+    </div>
+  </div>
+</div>
 
 <div class="mt-4">
   <h2 class="border-bottom">Assets Currently Failing Fixity</h2>
@@ -36,7 +65,7 @@
       </thead>
 
       <tbody>
-        <td>Fully ingested with no fresh fixity check</td>
+        <td>Fully ingested without <em>fresh</em> (within past <%= pluralize FixityReport::EXPECTED_FRESH_IN_DAYS, 'day' %>) fixity check</td>
         <td><%= number_with_delimiter(@fixity_report.not_recent_with_no_checks_or_stale_checks) %></td>
         <% if @fixity_report.not_recent_with_no_checks_or_stale_checks == 0 %>
           <td class="bg-success text-white">
