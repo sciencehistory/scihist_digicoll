@@ -15,11 +15,31 @@ class FixityReport
     @asset_count ||= Asset.count
   end
 
+  def not_recent_count
+    @not_recent_count ||= check_count_having([
+      "#{recent_asset_sql} = false"
+    ])
+  end
+
+  def not_recent_not_stored_count
+    @not_recent_not_stored_count ||= check_count_having([
+      "#{recent_asset_sql} = false",
+      not_stored_file_sql
+    ])
+  end
+
   # All assets with stored files.
   def stored_files
     @stored_files ||= check_count_having([
       stored_file_sql
     ])
+  end
+
+  # Assets with a file that have been checked in the past week.
+  def recent_checks
+     @recent_checks ||= check_count_having([
+       stored_file_sql, "#{stale_checks_sql} = false"
+     ])
   end
 
   # Assets with no stored files, which obviously can't
@@ -44,13 +64,6 @@ class FixityReport
     @with_checks ||= stored_files - no_checks
   end
 
-  # Assets with a file that have been checked in the past week.
-  def recent_checks
-    @recent_checks ||= check_count_having([
-      stored_file_sql, "#{stale_checks_sql} = false"
-    ])
-  end
-
   # Assets with a file that *have* checks, but have not been checked for the past week.
   # Note: assets with no checks yet show up as nil, so stale_checks + recent_checks != with_checks
   def stale_checks
@@ -59,12 +72,18 @@ class FixityReport
     ])
   end
 
-  # Assets with files, that were ingested less than a week ago.
-  def recent_files
-    @recent_files ||= check_count_having([
-      stored_file_sql, recent_asset_sql
+  def recent_count
+    @recent_count ||= check_count_having([
+      recent_asset_sql
     ])
   end
+
+  # Assets with files, that were ingested less than a week ago.
+  # def recent_files
+  #   @recent_files ||= check_count_having([
+  #     stored_file_sql, recent_asset_sql
+  #   ])
+  # end
 
   # Assets with files, that have no checks
   # or stale checks.
@@ -92,6 +111,8 @@ class FixityReport
   end
 
 
+
+
   # Any assets whose most recent check has failed.
   # This query might get slow if we
   # accumulate a lot of failed checks.
@@ -117,6 +138,10 @@ class FixityReport
 
   private
 
+
+  def not_stored_file_sql
+    "file_data ->> 'storage' != 'store' or file_data ->> 'storage' is NULL"
+  end
 
   def stored_file_sql
     "file_data ->> 'storage' = 'store'"

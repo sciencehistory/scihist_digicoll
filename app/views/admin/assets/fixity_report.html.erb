@@ -29,7 +29,7 @@
   </div>
 </div>
 
-<div class="mt-4">
+<div class="mt-5">
   <h2 class="border-bottom">Assets Currently Failing Fixity</h2>
   <%# never fear, bad_assets is memoized %>
   <% if @fixity_report.bad_assets.present? %>
@@ -49,7 +49,7 @@
   <% end %>
 </div>
 
-<div class="mt-4">
+<div class="mt-5">
   <div class="mb-1">
     <h2 class="mb-0">Assets created more than <%= pluralize FixityReport::EXPECTED_FRESH_IN_DAYS, "day" %> ago    </h2>
     <span class="ml-2"><i>Expected to have a recent fixity check on record</i></span>
@@ -65,73 +65,101 @@
       </thead>
 
       <tbody>
-        <td>Fully ingested without <em>fresh</em> (within past <%= pluralize FixityReport::EXPECTED_FRESH_IN_DAYS, 'day' %>) fixity check</td>
-        <td><%= number_with_delimiter(@fixity_report.not_recent_with_no_checks_or_stale_checks) %></td>
-        <% if @fixity_report.not_recent_with_no_checks_or_stale_checks == 0 %>
-          <td class="bg-success text-white">
-            <i class="fa fa fa-thumbs-down" aria-hidden="true"></i> Good
-          </td>
-        <% else %>
-          <td class="bg-danger text-white">
-            <i class="fa fa fa-thumbs-down" aria-hidden="true"></i> Unexpected, should be 0
-          </td>
-        <% end %>
+        <tr>
+          <td>Total</td>
+          <td colspan="2"><%= number_with_delimiter @fixity_report.not_recent_count %></td>
+        </tr>
+
+        <tr>
+          <td>Not yet fully ingested</td>
+          <td><%= number_with_delimiter @fixity_report.not_recent_not_stored_count %></td>
+          <% if (@fixity_report.not_recent_not_stored_count > 0) %>
+            <td class="bg-warning">
+              <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+              Expect 0. Are these stuck in ingest process?
+            </td>
+          <% else %>
+            <td></td>
+          <% end %>
+        </tr>
+
+        <tr>
+          <td>Fully ingested without <em>fresh</em> (within past <%= pluralize FixityReport::EXPECTED_FRESH_IN_DAYS, 'day' %>) fixity check</td>
+          <td><%= number_with_delimiter(@fixity_report.not_recent_with_no_checks_or_stale_checks) %></td>
+          <% if @fixity_report.not_recent_with_no_checks_or_stale_checks == 0 %>
+            <td class="bg-success text-white">
+              <i class="fa fa fa-thumbs-up" aria-hidden="true"></i> Good
+            </td>
+          <% else %>
+            <td class="bg-danger text-white">
+              <i class="fa fa fa-thumbs-down" aria-hidden="true"></i> Unexpected, should be 0
+            </td>
+          <% end %>
+        </tr>
+
+        <tr>
+
+
+
+
       </tbody>
     </tr>
   </table>
 </div>
 
 
-<h2>Fixity stats</h2>
-<table class="table mt-3">
-  <thead>
-    <tr>
-      <th>Which assets</th>
-      <th>How many</th>
-    </tr>
-  </thead>
-  <tbody>
+<div class="mt-5">
+  <h2>Asset and Fixity Decriptive Statistics</h2>
+  <table class="table mt-3">
+    <thead>
       <tr>
-        <td>All</td>
-        <td><%= number_with_delimiter(@fixity_report.asset_count) %></td>
+        <th>Which assets</th>
+        <th>How many</th>
       </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>Total assets</td>
+          <td><%= number_with_delimiter(@fixity_report.asset_count) %></td>
+        </tr>
 
-      <tr>
-        <td>With no files, so can't be checked</td>
-        <td><%=  number_with_delimiter(@fixity_report.no_stored_files) %></td>
-      </tr>
-      <tr>
-        <td>With files, and thus eligible for fixity checks</td>
-        <td><%= number_with_delimiter(@fixity_report.stored_files) %></td>
-      </tr>
+        <tr>
+          <td>Created in the last <%= pluralize FixityReport::EXPECTED_FRESH_IN_DAYS, 'day' %></td>
+          <td><%= number_with_delimiter @fixity_report.recent_count %></td>
+        </tr>
 
-      <tr>
-        <td>With files, haven't been checked yet</td>
-        <td><%= number_with_delimiter(@fixity_report.no_checks) %></td>
-      </tr>
-      <tr>
-      <tr>
-        <td>With files, have been checked</td>
-        <td><%= number_with_delimiter(@fixity_report.with_checks) %></td>
-      </tr>
-      <tr>
+        <tr>
+          <td>Not yet fully ingested (no attached file)<br>
+            <i>These should be temporary, pending ingest, and can't be fixity checked yet.</i>
+          </td>
+          <td><%=  number_with_delimiter(@fixity_report.no_stored_files) %></td>
+        </tr>
 
-      <tr>
-        <td>With files, checked, but not for the past <%= FixityReport::STALE_IN_DAYS %> days</td>
-        <td><%= number_with_delimiter(@fixity_report.stale_checks) %></td>
-      </tr>
-      <tr>
-        <td>With files, checked in the past <%= FixityReport::STALE_IN_DAYS %> days</td>
-        <td><%= number_with_delimiter(@fixity_report.recent_checks) %></td>
-      </tr>
 
-      <tr>
-        <td>With files, ingested in the past <%= FixityReport::EXPECTED_FRESH_IN_DAYS %> days</td>
-        <td><%= number_with_delimiter(@fixity_report.recent_files) %></td>
-      </tr>
-      <tr>
-        <td>With files, and due to be checked (have not been checked for <%= FixityReport::STALE_IN_DAYS %> days, or ever)</td>
-        <td><%= number_with_delimiter(@fixity_report.no_checks_or_stale_checks) %></td>
-      </tr>
-  </tbody>
-</table>
+        <tr>
+          <td>Fully ingested (attached file)</td>
+          <td><%= number_with_delimiter(@fixity_report.stored_files) %></td>
+        </tr>
+
+        <tr>
+          <td>Fully ingested, no checks</td>
+          <td><%= number_with_delimiter(@fixity_report.no_checks) %></td>
+        </tr>
+
+        <tr>
+          <td>Fully ingested, at least one check</td>
+          <td><%= number_with_delimiter(@fixity_report.with_checks) %></td>
+        </tr>
+
+        <tr>
+          <td>Fully ingested, checked in the past <%= FixityReport::STALE_IN_DAYS %> days</td>
+          <td><%= number_with_delimiter(@fixity_report.recent_checks) %></td>
+        </tr>
+
+        <tr>
+          <td>Fully ingested, stale checks (have not been checked for <%= FixityReport::STALE_IN_DAYS %> days, or ever)</td>
+          <td><%= number_with_delimiter(@fixity_report.no_checks_or_stale_checks) %></td>
+        </tr>
+    </tbody>
+  </table>
+</div>
