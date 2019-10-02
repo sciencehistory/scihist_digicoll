@@ -148,4 +148,14 @@ describe FixityReport do
       expect(report.not_recent_with_no_checks_or_stale_checks).to eq 1
     end
   end
+
+  describe "not_recent_not_stored_count" do
+    let!(:recent_asset_no_file) { create(:asset) }
+    let!(:old_asset_no_file) { create(:asset, created_at: Time.now() - 10000000)}
+    let!(:recent_asset_file) { create(:asset_image_with_correct_sha512) }
+
+    it "correctly reports" do
+      expect(report.not_recent_not_stored_count).to eq(1)
+    end
+  end
 end
