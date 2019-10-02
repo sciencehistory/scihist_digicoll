@@ -19,6 +19,9 @@ module ScihistDigicoll
   # Note: if you pass in 0 as the cycle length, you just get all the assets.
   #
   class AssetsNeedingFixityChecks
+    # In a constnat used in our whenever cron schedule, that can also be used
+    # in text describing fixity configuration to staff.
+    WHENEVER_CRON_TIME = '2:30 am'
     DEFAULT_PERIOD_IN_DAYS  = 7 # in days
     attr_reader :cycle_length
 

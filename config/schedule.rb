@@ -20,6 +20,6 @@ every :tuesday, :at => '4:00 am', roles: [:cron] do
   rake "sitemap:create"
 end
 
-every :day, :at => '2:30 am', roles: [:cron] do
+every :day, :at => ScihistDigicoll::AssetsNeedingFixityChecks::WHENEVER_CRON_TIME, roles: [:cron] do
   rake "scihist:check_fixity"
 end
