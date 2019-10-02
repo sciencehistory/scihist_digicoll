@@ -21,7 +21,7 @@
     <div class="col-md alert alert-info">
       <ul>
         <li>We intend to schedule checks such that every file is checked at least once every <%= pluralize FixityReport::STALE_IN_DAYS, 'day' %>.</li>
-        <li>Fixity checks run <b>nightly</b> at <b><%= ScihistDigicoll::AssetsNeedingFixityChecks::WHENEVER_CRON_TIME %></b> and will check 1/<%= FixityReport::STALE_IN_DAYS %> of our total assets (~<%= @fixity_report.asset_count / FixityReport::STALE_IN_DAYS %> assets) each night, choosing the assets with missing or most stale checks to run checks on.</li>
+        <li>Fixity checks run <b>nightly</b> at <b><%= ScihistDigicoll::ASSET_CHECK_WHENEVER_CRON_TIME %></b> and will check 1/<%= FixityReport::STALE_IN_DAYS %> of our total assets (~<%= @fixity_report.asset_count / FixityReport::STALE_IN_DAYS %> assets) each night, choosing the assets with missing or most stale checks to run checks on.</li>
         <li>Can only run fixity checks on assets that are <i>fully ingested</i> and have attached files.</li>
         <li>For assets created within last <%= pluralize FixityReport::EXPECTED_FRESH_IN_DAYS, 'day' %>, we tolerate missing fixity checks, as they may not have run yet.</li>
       </ul>

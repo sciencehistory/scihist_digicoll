@@ -20,6 +20,8 @@ every :tuesday, :at => '4:00 am', roles: [:cron] do
   rake "sitemap:create"
 end
 
-every :day, :at => ScihistDigicoll::AssetsNeedingFixityChecks::WHENEVER_CRON_TIME, roles: [:cron] do
+
+require File.expand_path(File.dirname(__FILE__) + "/../lib/scihist_digicoll/asset_check_whenever_cron_time")
+every :day, :at => ScihistDigicoll::ASSET_CHECK_WHENEVER_CRON_TIME, roles: [:cron] do
   rake "scihist:check_fixity"
 end
