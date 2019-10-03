@@ -44,6 +44,6 @@ namespace :scihist do
       fedora_password:      fedora_password,
       metadata_path:        metadata_path
     }
-    FedoraChecker.new(options).check
+    FedoraChecker.new(options: options).check
   end
 end
