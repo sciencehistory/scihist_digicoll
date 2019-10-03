@@ -109,7 +109,26 @@ class FixityReport
     ])
   end
 
+  # Of the assets that have fixity checks, which has the OLDEST most recent
+  # check, and what is it?
+  #
+  # We return an OpenStruct with `asset` and `timestamp` for the asset with
+  # the oldest most recent fixity check. Can both be null if there are no fixity
+  # checks.
+  #
+  # This is some tricky SQL, but we think we got it right.
+  def stalest_current_fixity_check
+    @stalast_current_fixity_check ||= begin
+      # We think this does what we want in SQL...
+      (pk, timestamp) = Asset.left_outer_joins(:fixity_checks).group(:id).
+                          having(stored_file_sql).
+                          order(Arel.sql "max(fixity_checks.created_at)").
+                          limit(1).
+                          maximum("fixity_checks.created_at").first.to_a
 
+      OpenStruct.new(asset: (Asset.find(pk) if pk), timestamp: timestamp)
+    end
+  end
 
 
   # Any assets whose most recent check has failed.
