@@ -1,16 +1,13 @@
 class FedoraChecker
-  def initialize(file_path)
-    json = File.new(file_path, 'r')
-    @data = Yajl::Parser.new.parse(json)
+  def initialize(options)
+    @options = options
+    @real = true
+    if @real
+      json = File.new(options[:metadata_path], 'r')
+      @data = Yajl::Parser.new.parse(json)
+    end
     @checked_works = []
     @checked_assets = []
-    @fedora_host_and_port = "http://35.173.191.206:8080"
-    fedora_credentials = ScihistDigicoll::Env.lookup(:import_fedora_auth)
-    unless fedora_credentials
-      puts "No fedora credentials available."
-      return
-    end
-    @fedora_username,  @fedora_password = fedora_credentials.split(':')
   end
 
   """
@@ -18,11 +15,27 @@ class FedoraChecker
   Depending on its hasModel, we will process it in a different way.
   """
   def check
-    @contents = @data[0]["http://www.w3.org/ns/ldp#contains"].
-      map { |cs| cs["@id"].gsub(/^.*\/fedora\/rest\/prod\//, '') }
+    if @real
+      @contents = @data[0]["http://www.w3.org/ns/ldp#contains"].
+        map { |cs| cs["@id"].gsub(/^.*\/fedora\/rest\/prod\//, '') }
+    end
 
-    # sample = @contents
-    sample = @contents[0..1000]
+    sample = [
+      #'bc/38/6j/33/bc386j33d',
+      'm0/39/k5/32/m039k532d',
+      # 's1/78/4m/31/s1784m313',
+      # 'jd/47/2x/18/jd472x184',
+      # 'k0/69/88/40/k0698840f',
+      # 'pv/63/g1/30/pv63g130s',
+      # '73/66/65/54/736665548',
+      # 'dr/26/xz/12/dr26xz126',
+    ]
+
+    if @real
+      # sample = @contents
+      sample = @contents[0..1000]
+    end
+
     sample.each do |fedora_id|
       dispatch_item(fedora_id)
     end
@@ -36,8 +49,8 @@ class FedoraChecker
 
   def fedora_connection
     @fedora_connection ||= begin
-      conn = Faraday.new(@fedora_host_and_port, headers: { 'Accept' => 'application/ld+json' })
-      conn.basic_auth(@fedora_username, @fedora_password)
+      conn = Faraday.new(@options[:fedora_host_and_port], headers: { 'Accept' => 'application/ld+json' })
+      conn.basic_auth(@options[:fedora_username], @options[:fedora_password])
       conn
     end
   end
@@ -50,22 +63,22 @@ class FedoraChecker
     if ['FileSet', 'GenericWork'].include? model
       item = local_item(obj['@id'])
       if item.nil?
-        puts "ERROR: Missing #{model} in destination for #{obj['@id']}"
+        puts "MISSING: #{model} in destination for #{obj['@id'].gsub(/^.*prod\//, '')}"
         return
       end
       if model == 'GenericWork'
         unless item.is_a? Work
-          puts "ERROR: Mismatched model in destination. #{model} in source, #{item.type} in destination."
+          puts "MISMATCH: #{model} in source, #{item.type} in destination."
           return
         end
-        FedoraItemChecker.new(obj, item, fedora_connection, @fedora_host_and_port).check_generic_work
+        FedoraItemChecker.new(obj, item, fedora_connection, @options).check_generic_work
         @checked_works << item.friendlier_id
       elsif model == 'FileSet'
         unless item.is_a? Asset
-          puts "ERROR: Mismatched model in destination. #{model} in source, #{item.type} in destination."
+          puts "MISMATCH: #{model} in source, #{item.type} in destination."
           return
         end
-        FedoraItemChecker.new(obj, item, fedora_connection, @fedora_host_and_port).check_file_set
+        FedoraItemChecker.new(obj, item, fedora_connection, @options).check_file_set
         @checked_assets << item.friendlier_id
       end
     end
