@@ -159,7 +159,7 @@ describe FixityReport do
   end
 
   describe "stalest_current_fixity_check" do
-    let(:oldest_current) { 1.year.ago }
+    let(:oldest_current) { 1.year.ago.change(nsec: 0) } # avoid more precision than our db can store
 
     let!(:asset_with_file) {
       create(:asset_image_with_correct_sha512, fixity_checks: [build(:fixity_check, created_at: 1.day.ago)])
