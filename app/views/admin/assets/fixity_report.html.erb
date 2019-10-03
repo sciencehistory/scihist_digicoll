@@ -84,7 +84,7 @@
         </tr>
 
         <tr>
-          <td>Fully ingested without <em>fresh</em> (within past <%= pluralize FixityReport::EXPECTED_FRESH_IN_DAYS, 'day' %>) fixity check</td>
+          <td>Fully ingested without <em>fresh</em> (within past <%= pluralize FixityReport::STALE_IN_DAYS, 'day' %>) fixity check</td>
           <td><%= number_with_delimiter(@fixity_report.not_recent_with_no_checks_or_stale_checks) %></td>
           <% if @fixity_report.not_recent_with_no_checks_or_stale_checks == 0 %>
             <td class="bg-success text-white">
