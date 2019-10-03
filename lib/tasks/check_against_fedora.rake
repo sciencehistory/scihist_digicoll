@@ -25,6 +25,8 @@ namespace :scihist do
     fedora_username =       ENV['FEDORA_USERNAME']
     fedora_password =       ENV['FEDORA_PASSWORD']
     metadata_path   =       ENV['METADATA_PATH']
+    percentage_to_check =   Integer(ENV['PERCENTAGE_TO_CHECK'] || "100")
+
     unless fedora_username &&
       fedora_password &&
       metadata_path &&
@@ -42,7 +44,8 @@ namespace :scihist do
       fedora_host_and_port: fedora_host_and_port,
       fedora_username:      fedora_username,
       fedora_password:      fedora_password,
-      metadata_path:        metadata_path
+      metadata_path:        metadata_path,
+      percentage_to_check:  percentage_to_check
     }
     FedoraChecker.new(options: options).check
   end

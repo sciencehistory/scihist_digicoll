@@ -1,12 +1,13 @@
 # Checks the data from a single item (e.g. a Work or an Asset) in Fedora against our database.
 # May perform additional calls to Fedora as needed.
 class FedoraItemChecker
-  def initialize(fedora_data:, local_item:, fedora_connection:, options:)
+  def initialize(fedora_data:, local_item:, fedora_connection:, progress_bar:, options:)
     @fedora_data = fedora_data
     @local_item = local_item
     @fedora_connection = fedora_connection
     @model = get_val(fedora_data,"info:fedora/fedora-system:def/model#hasModel")
     @fedora_id = strip_prefix(fedora_data['@id'])
+    @progress_bar =  progress_bar
     @options = options
   end
 
@@ -233,11 +234,11 @@ class FedoraItemChecker
       "#{@model} [#{fedora_id}]"
     end
 
-    puts """ERROR: #{prefix} ===> #{str}
+    @progress_bar.log ( """ERROR: #{prefix} ===> #{str}
         Fedora:
           #{old_value}
         Scihist:
-          #{new_value}"""
+          #{new_value}""" )
   end
 
   # Tests for equivalency between a and b.
