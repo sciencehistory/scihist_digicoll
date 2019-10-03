@@ -1,31 +1,49 @@
 require 'yajl'
 require 'net/http'
-#require 'app/services/fedora_checker'
 
 namespace :scihist do
-  desc """
-    Checks the current metadata and checksums against a Fedora repository.
+  desc '''
+    # Checks the current metadata and checksums against a Fedora repository.
+    # An example:
+    export FEDORA_HOST_AND_PORT="http://35.173.191.206:8080"
+    export FEDORA_USERNAME="joe"
+    export FEDORA_PASSWORD="shmo"
+    export RAILS_ENV="production"
+    export METADATA_PATH="/tmp/fedora_export.json"
+    curl -v \
+            -H "Accept: application/ld+json"          \
+            -u $FEDORA_USERNAME:$FEDORA_PASSWORD      \
+            "$FEDORA_HOST_AND_PORT/fedora/rest/prod"  \
+            -o $METADATA_PATH
+    cd /opt/scihist_digicoll/current/
     bundle exec rake scihist:check_against_fedora
-  """
-
-  # Print the top-level contents of the repository to a file.
-  task :get_metadata_from_fedora => :environment do
-    puts '''Not implemented yet. For now, use:
-     curl -v \
-         -H "Accept: application/ld+json" \
-         -u $FEDORA_USER:$FEDORA_PASSWORD \
-         "$FEDORA_HOSTNAME/fedora/rest/prod" \
-         -o fedora_export.json'''
-  end
+  '''
 
   task :check_against_fedora => :environment do
     file_path = 'fedora_export.json'
-    FedoraChecker.new(file_path).check
-  end
+    fedora_host_and_port =  ENV['FEDORA_HOST_AND_PORT']
+    fedora_username =       ENV['FEDORA_USERNAME']
+    fedora_password =       ENV['FEDORA_PASSWORD']
+    metadata_path   =       ENV['METADATA_PATH']
+    unless fedora_username &&
+      fedora_password &&
+      metadata_path &&
+      fedora_host_and_port
 
-  task :count_against_fedora => :environment do
-    file_path = 'fedora_export.json'
-    FedoraCounter.new(file_path).check
+      message = """Please supply:
+        FEDORA_HOST_AND_PORT,
+        FEDORA_USERNAME,
+        FEDORA_PASSWORD, and
+        METADATA_PATH
+        via ENV variables."""
+      abort (message)
+    end
+    options = {
+      fedora_host_and_port: fedora_host_and_port,
+      fedora_username:      fedora_username,
+      fedora_password:      fedora_password,
+      metadata_path:        metadata_path
+    }
+    FedoraChecker.new(options).check
   end
-
 end

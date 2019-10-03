@@ -1,13 +1,13 @@
 # Checks the data from a single item (e.g. a Work or an Asset) in Fedora against our database.
 # May perform additional calls to Fedora as needed.
 class FedoraItemChecker
-  def initialize(fedora_data, local_item, fedora_connection, fedora_host_and_port)
+  def initialize(fedora_data, local_item, fedora_connection, options)
     @fedora_data = fedora_data
     @local_item = local_item
     @fedora_connection = fedora_connection
     @model = get_val(fedora_data,"info:fedora/fedora-system:def/model#hasModel")
     @fedora_id = strip_prefix(fedora_data['@id'])
-    @fedora_host_and_port = fedora_host_and_port
+    @options = options
   end
 
   def check_generic_work
@@ -19,22 +19,8 @@ class FedoraItemChecker
     check_additional_credit
     check_date
     check_place
-    check_inscriptions
+    check_inscription
     check_physical_container
-  end
-
-  def check_external_id()
-    old_val = get_all_vals(@fedora_data, FedoraMappings.work_properties["identifier"])
-    new_val = @work.external_id
-    if (old_val.count == 0 || old_val.nil?) && @work.external_id.count > 0
-      confirm(found, "Stray external ID", nil, work.external_id)
-    end
-    old_val.each do |x|
-      category, value = x.split('-')
-      params = {'category' => category, 'value' => value}
-      found = (@work.external_id.detect { |id| id.attributes == params } )
-      confirm(found, "No external ID", x, nil)
-    end
   end
 
   def check_scalar_attributes()
@@ -43,7 +29,7 @@ class FedoraItemChecker
       old_val = get_val(@fedora_data, FedoraMappings.work_properties[k])
       work_property_to_check = mapping.fetch(k, k).to_sym
       new_val = @work.send(work_property_to_check)
-      check_val(old_val, new_val, "Bad #{k}")
+      confirm(compare(old_val, new_val), "#{k}", old_val, new_val)
     end
   end
 
@@ -53,113 +39,141 @@ class FedoraItemChecker
       work_property_to_check = mapping.fetch(source_k, source_k).to_sym
       old_val = get_all_vals(@fedora_data, FedoraMappings.work_properties[source_k])
       new_val = @work.send(work_property_to_check).sort
-      check_arr(old_val, new_val, "Bad #{source_k}")
+      confirm(compare(old_val, new_val), "#{source_k}", old_val, new_val)
     end
 
     # Format / Resource type
     fedora_formats = get_all_vals(@fedora_data, FedoraMappings.work_properties['resource_type'])
     confirm(fedora_formats.collect{ |x| x.downcase.gsub(' ', '_')} == @work.format,
-      "Bad formats", fedora_formats, @work.format
+      "Formats", fedora_formats, @work.format
     )
   end
 
+  def check_external_id()
+    old_val = get_all_vals(@fedora_data, FedoraMappings.work_properties["identifier"])
+    new_val = @work.external_id.map {|id| id.attributes }
+    confirm(compare(old_val, new_val, :compare_external_id, false), "External id", old_val, new_val)
+  end
+  def compare_external_id(item)
+    category, value = item.split('-')
+    {'category' => category, 'value' => value }
+  end
+
+
   def check_creator()
     Work::Creator::CATEGORY_VALUES.each do |k|
-      fedora_vals = get_all_vals(@fedora_data, FedoraMappings.work_properties[k])
-      matches = @work.creator.select { |c| c.category == k } || []
-      confirm(fedora_vals.count ==  matches.count, "wrong number of #{k}")
-      fedora_vals.each do |val|
-        found = (@work.creator.detect { |c| c.category == k && c.value == val } )
-        confirm(found, k, val, found)
-      end
+      old_val = get_all_vals(@fedora_data, FedoraMappings.work_properties[k])
+      new_val = @work.creator.
+        select { |c| c.category == k }.
+        map {|id| id.attributes['value'] }
+      confirm(compare(old_val, new_val), "#{k}", old_val, new_val)
     end
   end
+
 
   def check_additional_credit()
-    fedora_vals = get_all_vals(@fedora_data, FedoraMappings.work_properties['additional_credits'])
-    confirm(fedora_vals.count ==  @work.additional_credit.count, "wrong number of additional_credits")
-    role_map = FedoraMappings.additional_credit_roles
-    fedora_vals.each do |a_c|
-      params = {
-        'role' => role_map.fetch(a_c['role'], a_c['role']),
-        'name' => a_c['name']
-      }
-      found = (@work.additional_credit.detect { |c| c.attributes == params } )
-      confirm(found, 'additional_credit', a_c, nil)
-    end
-    confirm(@work.additional_credit.count == fedora_vals.count, 'additional credit count')
+    uri = FedoraMappings.work_reflections[:additional_credit][:uri]
+    old_val = get_all_ids(@fedora_data, uri)
+    new_val = @work.additional_credit.map {|id| id.attributes }
+    correct = compare(old_val, new_val, :compare_additional_credit)
+    confirm(correct, "Additional credit", old_val.map {|x| compare_additional_credit(x)}, new_val)
+  end
+  def compare_additional_credit(item)
+    ac_data = parse(get_fedora_item(item))[0]
+    name = ac_data['http://xmlns.com/foaf/0.1/name'][0]['@value']
+    role = ac_data['http://chemheritage.org/ns/hasCreditRole'][0]['@value']
+    mapping = FedoraMappings.additional_credit_roles
+    { name: name, role: mapping.fetch(role, role) }
   end
 
+
   def check_date()
-    date_uri = FedoraMappings.work_reflections[:date_of_work][:uri]
-    fedora_vals =  get_all_ids(@fedora_data, date_uri)
-    confirm(fedora_vals.count ==  @work.date_of_work.count, "wrong number of dates")
-    fedora_vals.each do |url|
-      date_hash = parse(get_fedora_item(url))[0]
-      url_mapping = FedoraMappings.dates
-      match_this = Hash[ url_mapping.map { |k, v| [k.to_s,  get_val(date_hash, url_mapping[k]) ] } ]
-      match_this.delete_if {|key, value| value == "" }
-      match_this['start_qualifier'].downcase!  if match_this['start_qualifier']
-      match_this['finish_qualifier'].downcase! if match_this['finish_qualifier']
-      match_this['start' ] = match_this['start' ].rjust(4, padstr='0') if match_this['start' ]
-      match_this['finish'] = match_this['finish'].rjust(4, padstr='0') if match_this['finish']
-      found = (@work.date_of_work.detect { |wd| wd.attributes == match_this } )
-      confirm(found, 'date', match_this, nil)
-    end
+    uri = FedoraMappings.work_reflections[:date_of_work][:uri]
+    old_val = get_all_ids(@fedora_data, uri)
+    new_val = @work.date_of_work.
+      map {|dw|  dw.attributes }.
+      map {|att| att.select { |k,v| v != ""} }
+    correct = compare(old_val, new_val, :compare_date)
+    confirm(correct, "Date", old_val.map {|x| compare_date(x)}, new_val)
+  end
+  def compare_date(item)
+    date_hash = parse(get_fedora_item(item))[0]
+    url_mapping = FedoraMappings.dates
+    result = Hash[ url_mapping.map { |k, v| [k.to_s,  get_val(date_hash, url_mapping[k]) ] } ]
+    result.delete_if {|key, value| value == "" }
+    result['start_qualifier'].downcase!  if result['start_qualifier']
+    result['finish_qualifier'].downcase! if result['finish_qualifier']
+    result['start' ] = result['start' ].rjust(4, padstr='0') if result['start' ]
+    result['finish'] = result['finish'].rjust(4, padstr='0') if result['finish']
+    result
   end
 
   def check_place()
-    Work::Place::CATEGORY_VALUES.each do |k|
-      fedora_vals = get_all_vals(@fedora_data, FedoraMappings.work_properties[k])
-      confirm(fedora_vals.count == @work.place.count{|p| p.attributes['category'] == k}, "wrong number of #{k}")
-      fedora_vals.each do |v|
-        found = (@work.place.detect { |p| p.attributes == {'category'=>k, 'value'=>v} } )
-        confirm(found, 'place')
-      end
+    Work::Place::CATEGORY_VALUES.each do |place_category|
+      old_val = get_all_vals(@fedora_data, FedoraMappings.work_properties[place_category])
+      new_val = @work.place.
+        select {|p| p.attributes['category'] == place_category}.
+        map { |c| c.attributes['value']}
+      correct = compare(old_val, old_val)
+      confirm(correct, place_category, old_val, new_val)
     end
   end
 
-  def check_inscriptions()
-    date_uri = FedoraMappings.work_reflections[:inscription][:uri]
-    fedora_vals =  get_all_ids(@fedora_data, date_uri)
-    confirm(@work.inscription.count == fedora_vals.count, 'inscrption_count', fedora_vals, @work.inscription)
-    fedora_vals.each do |url|
-      inscription_hash = parse(get_fedora_item(url))[0]
-      url_mapping = FedoraMappings.inscriptions
-      tmp = Hash[ url_mapping.map { |k, v| [k.to_s,  get_val(inscription_hash, url_mapping[k]) ] } ]
-      found = (@work.inscription.detect { |p| p.attributes == tmp } )
-      confirm(found, 'inscription', tmp, @work.inscription)
-    end
+  def check_inscription()
+    uri = FedoraMappings.work_reflections[:inscription][:uri]
+    old_val =  get_all_ids(@fedora_data, uri)
+    new_val = @work.inscription.map { |i| i.attributes}
+    correct = compare(old_val, new_val, :compare_inscription, false)
+    confirm(correct, "Inscription", old_val.map {|x| compare_inscription(x)}, new_val)
+  end
+  def compare_inscription(item)
+    inscription_hash = parse(get_fedora_item(item))[0]
+    url_mapping = FedoraMappings.inscriptions
+    Hash[ url_mapping.map { |k, v| [k.to_s,  get_val(inscription_hash, url_mapping[k]) ] } ]
   end
 
   def check_physical_container()
-    old_val = get_val(@fedora_data, FedoraMappings.work_properties['physical_container'])
-    unless old_val.present?
-      confirm(@work.physical_container.nil?, 'stray physical_container', nil, @work.physical_container)
-      return
-    end
-    non_blank_fields = @work.physical_container.attributes.reject {|k, v| v == ""}
-    map = FedoraMappings.physical_container
-    match_this = old_val.
+    raw_fedora_value = get_val(@fedora_data, FedoraMappings.work_properties['physical_container'])
+    old_val = compare_physical_container(raw_fedora_value)
+    new_val = @work&.physical_container&.attributes&.reject {|k, v| v == ""}
+    correct = compare(old_val, new_val)
+    confirm(correct, "Physical Container", old_val, new_val)
+  end
+  def compare_physical_container(item)
+    return nil if item.nil?
+    p_c_map = FedoraMappings.physical_container
+    match_this = item.
       split('|').
-      map{ |x| { map[x[0]] => x[1..-1] } }.
+      map{ |x| { p_c_map[x[0]] => x[1..-1] } }.
       inject(:merge)
-    confirm(non_blank_fields == match_this, 'physical_container')
   end
 
 
   def check_file_set()
     # Todo: file checksum (available in file_sha1)
     # Todo: access control
-    asset = @local_item
-    id = get_val(@fedora_data, '@id')
-    orig_filename = asset&.file&.metadata.try { |h| h["filename"]}
+    @asset = @local_item
+    check_file_set_filename
+    check_file_set_created_at
+  end
 
+  def check_file_set_filename()
+    orig_filename = @asset&.file&.metadata.try { |h| h["filename"]}
     unless orig_filename.nil?
-      check_val(get_val(@fedora_data,'info:fedora/fedora-system:def/model#downloadFilename'), orig_filename, "Bad orig. filename")
+      old_val = get_val(@fedora_data,'info:fedora/fedora-system:def/model#downloadFilename')
+      new_val = orig_filename
+      correct = compare(old_val, new_val)
+      confirm(correct, "Original filename", old_val, new_val)
     end
-    date_submitted = get_val(@fedora_data,'http://purl.org/dc/terms/dateSubmitted').gsub(/\.\d*\+/, '+')
-    check_val(DateTime.parse(date_submitted).utc, asset.created_at.utc, "Bad date")
+  end
+
+  def check_file_set_created_at()
+    old_val_str = get_val(@fedora_data,'http://purl.org/dc/terms/dateSubmitted').
+      gsub(/\.\d*\+/, '+')
+    old_val_date = (DateTime.parse(old_val_str)).utc
+    new_val_date = @asset.created_at.utc
+    correct = compare(old_val_date, new_val_date)
+    confirm(correct, "created_at", old_val_date, new_val_date)
   end
 
   def file_metadata
@@ -175,22 +189,7 @@ class FedoraItemChecker
     first.gsub(/^.*:/, '')
   end
 
-
-  # Helper methods. These can be cleaned up a fair amount.
-  def check_val(old_val, new_val, message)
-    pass = (new_val == old_val) ||
-      (new_val == '' and old_val.nil?) ||
-      (old_val == '' and new_val.nil?)
-    confirm(pass, message, old_val, new_val)
-    return pass
-  end
-
-  def check_arr(old_val, new_val, message)
-    pass = (new_val == old_val) || (new_val == [] and old_val.nil?)
-    confirm(pass, message, old_val, new_val )
-    return pass
-  end
-
+  # Getting stuff out of Fedora json objects:
   def get_val(obj, key)
     obj[key][0]["@value"] unless obj[key].nil?
   end
@@ -206,7 +205,7 @@ class FedoraItemChecker
   end
 
   def add_prefix(end_str)
-    "#{@fedora_host_and_port}/fedora/rest/prod/#{end_str}"
+    "#{@options[:fedora_host_and_port]}/fedora/rest/prod/#{end_str}"
   end
 
   private
@@ -224,16 +223,46 @@ class FedoraItemChecker
     str.gsub(/^.*\/fedora\/rest\/prod\//, '')
   end
 
-  def confirm(condition, report_string, old_value=nil, new_value=nil)
-    report_line(report_string, old_value, new_value) unless condition
+  def confirm(condition, str, old_value=nil, new_value=nil)
+    return if condition
+
+    prefix = if @local_item
+      "#{@model} #{@local_item.friendlier_id} [#{@fedora_id}]"
+    else
+      "#{@model} [#{fedora_id}]"
+    end
+    puts """ERROR: #{prefix} ===> #{str}
+        Fedora:
+          #{old_value}
+        Scihist:
+          #{new_value}"""
   end
 
-  def report_line(str, old_value, new_value)
-    prefix = if @local_item
-      "#{@local_item.type} #{@local_item.friendlier_id} [#{@fedora_id}]"
-    else
-      "#{@model} #{fedora_id}"
+  # Tests for equivalency between a and b.
+  # 1) if a is nil or an empty array, then b should nil or an empty array, and vice-versa.
+  # 1a) if a is a scalar and so is b, they should be equal.
+  # 2) a and b have the same length
+  # 3) if you apply the_method to each element in a, you get a copy of b.
+  # 4) if the_method is nil, a should equal b.
+  def compare(a, b, the_method=nil, order_matters=true)
+
+    return false if (!a.present? &&  b.present?)
+    return false if (!b.present? &&  a.present?)
+    return true  if (!a.present? && !b.present?)
+
+    unless a.is_a? Array and b.is_a? Array
+      return (a == b)
     end
-    puts("#{prefix}: #{str}. Fedora: #{old_value}. Scihist: #{new_value}")
+
+    map_test = a.map do |el|
+      the_method.nil? ? el : method(the_method).call(el)
+    end
+
+    return map_test == b if order_matters
+
+    map_test.to_set == b.to_set
   end
+
+
+
 end
