@@ -1,10 +1,8 @@
 class FedoraChecker
   def initialize(options:)
     @options = options
-    @real = true
-    if @real
-      json = File.new(options[:metadata_path], 'r')
-      @data = Yajl::Parser.new.parse(json)
+    File.open(options[:metadata_path], 'r') do |f|
+      @data = Yajl::Parser.new.parse(f)
     end
     @checked_items = {}
   end
@@ -14,35 +12,30 @@ class FedoraChecker
   Depending on its hasModel, we will process it in a different way.
   """
   def check
-    if @real
-      @contents = @data[0]["http://www.w3.org/ns/ldp#contains"].
-        map { |cs| cs["@id"].gsub(/^.*\/fedora\/rest\/prod\//, '') }
-    end
+    @contents = @data[0]["http://www.w3.org/ns/ldp#contains"].
+      map { |cs| cs["@id"].gsub(/^.*\/fedora\/rest\/prod\//, '') }
 
-    sample = [
-      #'bc/38/6j/33/bc386j33d',
-      'm0/39/k5/32/m039k532d',
-      # 's1/78/4m/31/s1784m313',
-      # 'jd/47/2x/18/jd472x184',
-      # 'k0/69/88/40/k0698840f',
-      # 'pv/63/g1/30/pv63g130s',
-      # '73/66/65/54/736665548',
-      # 'dr/26/xz/12/dr26xz126',
-    ]
+    # @contents = ['4f/16/c2/91/4f16c291q']
 
-    if @real
-      # sample = @contents
-      sample = @contents[0..2000]
-    end
+    @progress_bar = ProgressBar.create(total: @contents.length, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
 
-    sample.each do |fedora_id|
-      dispatch_item(fedora_id)
+    @contents.each do |fedora_id|
+      do_this_item = sift_fedora_id(fedora_id)
+      dispatch_item(fedora_id) if do_this_item
+      @progress_bar.increment
     end
 
     # pp @checked_items
   end
 
   private
+
+  # Only check roughly a certain percentage of the items.
+  # Useful for testing.
+  def sift_fedora_id(fedora_id)
+    return true if @options[:percentage_to_check] == 100
+    fedora_id.bytes[0..10].sum % 100 < @options[:percentage_to_check]
+  end
 
   def local_item(url)
     Kithe::Model.find_by_friendlier_id(url.gsub(/^.*\//, ''))
@@ -64,28 +57,33 @@ class FedoraChecker
     if ['FileSet', 'GenericWork'].include? model
       item = local_item(obj['@id'])
       if item.nil?
-        puts "MISSING: #{model} in destination for #{obj['@id'].gsub(/^.*prod\//, '')}"
+        @progress_bar.log("MISSING: #{model} in destination for #{obj['@id'].gsub(/^.*prod\//, '')}")
         return
       end
       if model == 'GenericWork'
         unless item.is_a? Work
-          puts "MISMATCH: #{model} in source, #{item.type} in destination."
+          @progress_bar.log("MISMATCH: #{model} in source, #{item.type} in destination.")
           return
         end
         FedoraItemChecker.new(
           fedora_data: obj, local_item:item,
           fedora_connection:fedora_connection,
-          options:@options).check_generic_work
+          progress_bar:  @progress_bar,
+          options:@options
+        ).check_generic_work
 
       elsif model == 'FileSet'
         unless item.is_a? Asset
-          puts "MISMATCH: #{model} in source, #{item.type} in destination."
+          @progress_bar.log(puts "MISMATCH: #{model} in source, #{item.type} in destination.")
           return
         end
         FedoraItemChecker.new(
           fedora_data: obj, local_item:item,
           fedora_connection:fedora_connection,
-          options:@options).check_file_set
+          progress_bar:  @progress_bar,
+          options:@options
+        ).check_file_set
+
 
       end
       unless item.nil?
