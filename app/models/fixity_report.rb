@@ -16,23 +16,16 @@ class FixityReport
   end
 
   def not_recent_count
-    @not_recent_count ||= check_count_having([
-      "#{recent_asset_sql} = false"
-    ])
+    @not_recent_count ||= Asset.where("#{recent_asset_sql} = false").count
   end
 
   def not_recent_not_stored_count
-    @not_recent_not_stored_count ||= check_count_having([
-      "#{recent_asset_sql} = false",
-      not_stored_file_sql
-    ])
+    @not_recent_not_stored_count ||= Asset.where("#{recent_asset_sql} = false").where(not_stored_file_sql).count
   end
 
   # All assets with stored files.
   def stored_files
-    @stored_files ||= check_count_having([
-      stored_file_sql
-    ])
+    @stored_files ||= Asset.where(stored_file_sql).count
   end
 
   # Assets with a file that have been checked in the past week.
@@ -73,9 +66,7 @@ class FixityReport
   end
 
   def recent_count
-    @recent_count ||= check_count_having([
-      recent_asset_sql
-    ])
+    @recent_count ||= Asset.where(recent_asset_sql).count
   end
 
   def earliest_check_date
