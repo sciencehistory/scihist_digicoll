@@ -162,6 +162,14 @@
         </tr>
 
         <tr>
+          <td>Fully-ingested Asset with oldest most-recent fixity check</td>
+          <td>
+              <% if @fixity_report.stalest_current_fixity_check.timestamp && @fixity_report.stalest_current_fixity_check.asset %>
+                <%= link_to l(@fixity_report.stalest_current_fixity_check.timestamp, format: :admin), admin_asset_path(@fixity_report.stalest_current_fixity_check.asset) %>
+              <% end %>
+          </td>
+
+        <tr>
           <td>Oldest fixity check on record</td>
           <td><%= @fixity_report.earliest_check_date ? l(@fixity_report.earliest_check_date, format: :admin) : "NONE!" %></td>
         </tr>

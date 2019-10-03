@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 describe FixityReport do
-
   # A recent asset with a file with no checks
   let!(:recent_asset_no_checks) { create(:asset_image_with_correct_sha512, friendlier_id: '000') }
 
@@ -156,6 +155,26 @@ describe FixityReport do
 
     it "correctly reports" do
       expect(report.not_recent_not_stored_count).to eq(1)
+    end
+  end
+
+  describe "stalest_current_fixity_check" do
+    let(:oldest_current) { 1.year.ago }
+
+    let!(:asset_with_file) {
+      create(:asset_image_with_correct_sha512, fixity_checks: [build(:fixity_check, created_at: 1.day.ago)])
+    }
+    let!(:asset_with_oldest_current) {
+      create(:asset_image_with_correct_sha512,
+        fixity_checks: [
+          build(:fixity_check, created_at: oldest_current),
+          build(:fixity_check, created_at: oldest_current - 1.day)
+        ])
+    }
+
+    it "finds" do
+      expect(report.stalest_current_fixity_check.asset).to eq(asset_with_oldest_current)
+      expect(report.stalest_current_fixity_check.timestamp).to eq(oldest_current)
     end
   end
 end
