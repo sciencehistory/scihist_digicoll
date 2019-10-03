@@ -1,13 +1,12 @@
 class FedoraChecker
-  def initialize(options)
+  def initialize(options:)
     @options = options
     @real = true
     if @real
       json = File.new(options[:metadata_path], 'r')
       @data = Yajl::Parser.new.parse(json)
     end
-    @checked_works = []
-    @checked_assets = []
+    @checked_items = {}
   end
 
   """
@@ -33,12 +32,14 @@ class FedoraChecker
 
     if @real
       # sample = @contents
-      sample = @contents[0..1000]
+      sample = @contents[0..2000]
     end
 
     sample.each do |fedora_id|
       dispatch_item(fedora_id)
     end
+
+    # pp @checked_items
   end
 
   private
@@ -71,15 +72,25 @@ class FedoraChecker
           puts "MISMATCH: #{model} in source, #{item.type} in destination."
           return
         end
-        FedoraItemChecker.new(obj, item, fedora_connection, @options).check_generic_work
-        @checked_works << item.friendlier_id
+        FedoraItemChecker.new(
+          fedora_data: obj, local_item:item,
+          fedora_connection:fedora_connection,
+          options:@options).check_generic_work
+
       elsif model == 'FileSet'
         unless item.is_a? Asset
           puts "MISMATCH: #{model} in source, #{item.type} in destination."
           return
         end
-        FedoraItemChecker.new(obj, item, fedora_connection, @options).check_file_set
-        @checked_assets << item.friendlier_id
+        FedoraItemChecker.new(
+          fedora_data: obj, local_item:item,
+          fedora_connection:fedora_connection,
+          options:@options).check_file_set
+
+      end
+      unless item.nil?
+        @checked_items[model] = [] unless @checked_items[model]
+        @checked_items[model] << item.friendlier_id
       end
     end
   end

@@ -1,7 +1,7 @@
 # Checks the data from a single item (e.g. a Work or an Asset) in Fedora against our database.
 # May perform additional calls to Fedora as needed.
 class FedoraItemChecker
-  def initialize(fedora_data, local_item, fedora_connection, options)
+  def initialize(fedora_data:, local_item:, fedora_connection:, options:)
     @fedora_data = fedora_data
     @local_item = local_item
     @fedora_connection = fedora_connection
@@ -52,7 +52,8 @@ class FedoraItemChecker
   def check_external_id()
     old_val = get_all_vals(@fedora_data, FedoraMappings.work_properties["identifier"])
     new_val = @work.external_id.map {|id| id.attributes }
-    confirm(compare(old_val, new_val, :compare_external_id, false), "External id", old_val, new_val)
+    correct = compare(old_val, new_val, :compare_external_id, order_matters:false)
+    confirm(correct, "External id", old_val, new_val)
   end
   def compare_external_id(item)
     category, value = item.split('-')
@@ -123,7 +124,7 @@ class FedoraItemChecker
     uri = FedoraMappings.work_reflections[:inscription][:uri]
     old_val =  get_all_ids(@fedora_data, uri)
     new_val = @work.inscription.map { |i| i.attributes}
-    correct = compare(old_val, new_val, :compare_inscription, false)
+    correct = compare(old_val, new_val, :compare_inscription, order_matters:false)
     confirm(correct, "Inscription", old_val.map {|x| compare_inscription(x)}, new_val)
   end
   def compare_inscription(item)
@@ -231,6 +232,7 @@ class FedoraItemChecker
     else
       "#{@model} [#{fedora_id}]"
     end
+
     puts """ERROR: #{prefix} ===> #{str}
         Fedora:
           #{old_value}
@@ -239,28 +241,39 @@ class FedoraItemChecker
   end
 
   # Tests for equivalency between a and b.
-  # 1) if a is nil or an empty array, then b should nil or an empty array, and vice-versa.
-  # 1a) if a is a scalar and so is b, they should be equal.
-  # 2) a and b have the same length
-  # 3) if you apply the_method to each element in a, you get a copy of b.
-  # 4) if the_method is nil, a should equal b.
-  def compare(a, b, the_method=nil, order_matters=true)
+  # Nil-tolerant, as it uses present? to determine
+  # whether something exists.
+  # Handles both scalars and arrays.
+  # In the case of arrays,
+  # pass in a mapping method if you want,
+  # and it will be applied to a before comparing.
+  def compare(a, b, the_method=nil, order_matters:true)
 
+    # In source, not destination:
     return false if (!a.present? &&  b.present?)
+    # In destination, not source:
     return false if (!b.present? &&  a.present?)
+    # Absent in both:
     return true  if (!a.present? && !b.present?)
 
+    # Scalar values:
     unless a.is_a? Array and b.is_a? Array
       return (a == b)
     end
 
-    map_test = a.map do |el|
-      the_method.nil? ? el : method(the_method).call(el)
+    # If a mapping method provided,
+    # map the values before comparing:
+    mapped_values = if the_method.nil?
+      a
+    else
+      a.map { |el| method(the_method).call(el) }
     end
 
-    return map_test == b if order_matters
+    # Compare as an array if order matters:
+    return mapped_values == b if order_matters
 
-    map_test.to_set == b.to_set
+    # Compare as a set otherwise:
+    mapped_values.to_set == b.to_set
   end
 
 
