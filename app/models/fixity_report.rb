@@ -70,11 +70,11 @@ class FixityReport
   end
 
   def earliest_check_date
-    @earliest_check_date ||= FixityCheck.minimum(:created_at)
+    @earliest_check_date ||= FixityCheck.minimum(:created_at).in_time_zone
   end
 
   def latest_check_date
-    @latest_check_date ||= FixityCheck.maximum(:created_at)
+    @latest_check_date ||= FixityCheck.maximum(:created_at).in_time_zone
   end
 
   # Assets with files, that were ingested less than a week ago.
@@ -126,7 +126,7 @@ class FixityReport
                           limit(1).
                           maximum("fixity_checks.created_at").first.to_a
 
-      OpenStruct.new(asset: (Asset.find(pk) if pk), timestamp: timestamp)
+      OpenStruct.new(asset: (Asset.find(pk) if pk), timestamp: timestamp&.in_time_zone)
     end
   end
 
