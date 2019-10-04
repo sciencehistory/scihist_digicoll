@@ -14,6 +14,7 @@ require "sprockets/railtie"
 require "rails/test_unit/railtie"
 
 
+
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
@@ -28,6 +29,11 @@ module ScihistDigicoll
       require_dependency "collection_thumb_asset"
     end
 
+    config.before_initialize do
+      # require our weird thing(s) in lib/, so non-rails integrated stuff (like whenever crontab)
+      # can get them, but we want Rails app to get them too.
+      require 'scihist_digicoll/asset_check_whenever_cron_time'
+    end
 
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.2
@@ -63,6 +69,7 @@ module ScihistDigicoll
     # This setting is overridden in test.rb,
     # so the tests don't have to click "I accept".)
     config.hide_accept_cookies_banner = false
+
 
   end
 end
