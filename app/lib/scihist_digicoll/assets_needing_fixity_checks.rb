@@ -19,14 +19,14 @@ module ScihistDigicoll
   # Note: if you pass in 0 as the cycle length, you just get all the assets.
   #
   class AssetsNeedingFixityChecks
-
+    DEFAULT_PERIOD_IN_DAYS  = 7 # in days
     attr_reader :cycle_length
 
     # @param cycle_length [Integer] We will prepare for checking 1/cycle_length
     # assets, the ones most in need of checking (cause they have no checks on record
     # or oldest checks on record). The idea is you want all assets to be checked weekly,
     # you run nightly with cycle_length 7. Which is the default. `0` means "all assets".
-    def initialize(cycle_length=7)
+    def initialize(cycle_length=DEFAULT_PERIOD_IN_DAYS)
       raise ArgumentError.new("cycle_length must be integer") unless cycle_length.kind_of?(Integer)
       @cycle_length = cycle_length
     end
