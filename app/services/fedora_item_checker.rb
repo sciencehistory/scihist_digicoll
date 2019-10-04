@@ -52,10 +52,15 @@ class FedoraItemChecker
     end
 
     # Format / Resource type
-    fedora_formats = get_all_vals(@fedora_data, FedoraMappings.work_properties['resource_type'])
-    confirm(fedora_formats.collect{ |x| x.downcase.gsub(' ', '_')} == @work.format,
-      "Formats", fedora_formats, @work.format
-    )
+    old_val = get_all_vals(@fedora_data, FedoraMappings.
+      work_properties['resource_type'])
+    new_val = @work.format
+    correct = compare(old_val, new_val, :compare_format, order_matters:false)
+    confirm(correct, "Format", old_val, new_val)
+  end
+
+  def compare_format(item)
+     item.downcase.gsub(' ', '_')
   end
 
   def check_external_id()
@@ -93,7 +98,7 @@ class FedoraItemChecker
     name = ac_data['http://xmlns.com/foaf/0.1/name'][0]['@value']
     role = ac_data['http://chemheritage.org/ns/hasCreditRole'][0]['@value']
     mapping = FedoraMappings.additional_credit_roles
-    { name: name, role: mapping.fetch(role, role) }
+    { "name" => name, "role" => mapping.fetch(role, role) }
   end
 
 
@@ -163,7 +168,7 @@ class FedoraItemChecker
   def check_representative()
     uri = FedoraMappings.work_reflections[:representative][:uri]
     old_val = get_all_ids(@fedora_data, uri).map {| id| id.gsub(/^.*\//, '')}
-    new_val = [ @work&.representative.friendlier_id ]
+    new_val = [ @work&.representative&.friendlier_id ]
     correct = compare(old_val, new_val)
     confirm(correct, "Representative", old_val, new_val)
   end
@@ -171,7 +176,7 @@ class FedoraItemChecker
   def check_thumbnail()
     uri = FedoraMappings.work_reflections[:thumbnail][:uri]
     old_val = get_all_ids(@fedora_data, uri).map {| id| id.gsub(/^.*\//, '')}
-    new_val = [ @work&.leaf_representative.friendlier_id ]
+    new_val = [ @work&.leaf_representative&.friendlier_id ]
     correct = compare(old_val, new_val)
     confirm(correct, "Thumbnail", old_val, new_val)
   end
@@ -188,12 +193,23 @@ class FedoraItemChecker
     # Todo: file checksum (available in file_sha1)
     # Todo: access control
     @asset = @local_item
-    check_file_set_filename
+    #check_file_set_filename
+    check_file_set_title
     check_file_set_created_at
   end
 
-  def check_file_set_filename()
-    orig_filename = @asset&.file&.metadata.try { |h| h["filename"]}
+  # def check_file_set_filename()
+  #   orig_filename = @asset&.file&.metadata.try { |h| h["filename"]}
+  #   unless orig_filename.nil?
+  #     old_val = get_val(@fedora_data,'info:fedora/fedora-system:def/model#downloadFilename')
+  #     new_val = orig_filename
+  #     correct = compare(old_val, new_val)
+  #     confirm(correct, "Original filename", old_val, new_val)
+  #   end
+  # end
+
+  def check_file_set_title()
+    orig_filename = @asset&.title
     unless orig_filename.nil?
       old_val = get_val(@fedora_data,'info:fedora/fedora-system:def/model#downloadFilename')
       new_val = orig_filename

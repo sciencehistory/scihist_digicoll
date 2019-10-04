@@ -15,6 +15,7 @@ class FedoraChecker
 
     # @contents = ['4f/16/c2/91/4f16c291q']
     # @contents = ['dr/26/xz/12/dr26xz126']
+    # @contents = ['ms/35/t8/61/ms35t861q']
 
     unless defined?(@contents)
       @contents = @data[0]["http://www.w3.org/ns/ldp#contains"].
@@ -41,6 +42,7 @@ class FedoraChecker
   # Useful for testing.
   def sift_fedora_id(fedora_id)
     return true if @options[:percentage_to_check] == 100
+    return true if @contents&.length < 10
     fedora_id.bytes[0..15].sum % 100 < @options[:percentage_to_check]
   end
 
