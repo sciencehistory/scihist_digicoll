@@ -12,18 +12,25 @@ class FedoraChecker
   Depending on its hasModel, we will process it in a different way.
   """
   def check
-    @contents = @data[0]["http://www.w3.org/ns/ldp#contains"].
-      map { |cs| cs["@id"].gsub(/^.*\/fedora\/rest\/prod\//, '') }
 
     # @contents = ['4f/16/c2/91/4f16c291q']
+    # @contents = ['dr/26/xz/12/dr26xz126']
 
-    @progress_bar = ProgressBar.create(total: @contents.length, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
+    unless defined?(@contents)
+      @contents = @data[0]["http://www.w3.org/ns/ldp#contains"].
+        map { |cs| cs["@id"].gsub(/^.*\/fedora\/rest\/prod\//, '') }
+    end
+
+    if @contents && @contents&.length > 10
+      @progress_bar = ProgressBar.create(total: @contents.length, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
+    end
 
     @contents.each do |fedora_id|
       do_this_item = sift_fedora_id(fedora_id)
       dispatch_item(fedora_id) if do_this_item
-      @progress_bar.increment
+      @progress_bar.increment if @progress_bar
     end
+
 
     # pp @checked_items
   end
@@ -34,7 +41,7 @@ class FedoraChecker
   # Useful for testing.
   def sift_fedora_id(fedora_id)
     return true if @options[:percentage_to_check] == 100
-    fedora_id.bytes[0..10].sum % 100 < @options[:percentage_to_check]
+    fedora_id.bytes[0..15].sum % 100 < @options[:percentage_to_check]
   end
 
   def local_item(url)
@@ -49,6 +56,14 @@ class FedoraChecker
     end
   end
 
+  def log(str)
+    if @progress_bar
+      @progress_bar.log(str)
+    else
+      puts(str)
+    end
+  end
+
   # Checks one item against Fedora.
   def dispatch_item(fedora_id)
     response = fedora_connection.get('/fedora/rest/prod/' + fedora_id).body
@@ -57,12 +72,12 @@ class FedoraChecker
     if ['FileSet', 'GenericWork'].include? model
       item = local_item(obj['@id'])
       if item.nil?
-        @progress_bar.log("MISSING: #{model} in destination for #{obj['@id'].gsub(/^.*prod\//, '')}")
+        log("MISSING: #{model} in destination for #{obj['@id'].gsub(/^.*prod\//, '')}")
         return
       end
       if model == 'GenericWork'
         unless item.is_a? Work
-          @progress_bar.log("MISMATCH: #{model} in source, #{item.type} in destination.")
+          log("MISMATCH: #{model} in source, #{item.type} in destination.")
           return
         end
         FedoraItemChecker.new(
@@ -74,7 +89,7 @@ class FedoraChecker
 
       elsif model == 'FileSet'
         unless item.is_a? Asset
-          @progress_bar.log(puts "MISMATCH: #{model} in source, #{item.type} in destination.")
+          log(puts "MISMATCH: #{model} in source, #{item.type} in destination.")
           return
         end
         FedoraItemChecker.new(
