@@ -5,10 +5,11 @@ class FedoraItemChecker
     @fedora_data = fedora_data
     @local_item = local_item
     @fedora_connection = fedora_connection
-    @model = get_val(fedora_data,"info:fedora/fedora-system:def/model#hasModel")
-    @fedora_id = strip_prefix(fedora_data['@id'])
     @progress_bar =  progress_bar
     @options = options
+
+    @fedora_id = strip_prefix(fedora_data['@id'])
+    @model = get_val(fedora_data,"info:fedora/fedora-system:def/model#hasModel")
   end
 
   def check_generic_work
@@ -22,16 +23,23 @@ class FedoraItemChecker
     check_place
     check_inscription
     check_physical_container
+    check_admin_note
+    check_representative
+    check_thumbnail
   end
 
   def check_scalar_attributes()
     mapping = FedoraMappings.scalar_attributes
-    %w(admin_note description division file_creator provenance rights rights_holder source digitization_funder).each do |k|
+    %w(description division file_creator provenance rights rights_holder source digitization_funder).each do |k|
       old_val = get_val(@fedora_data, FedoraMappings.work_properties[k])
       work_property_to_check = mapping.fetch(k, k).to_sym
       new_val = @work.send(work_property_to_check)
       confirm(compare(old_val, new_val), "#{k}", old_val, new_val)
     end
+  end
+
+  def check_admin_note()
+    # Not implemented yet.
   end
 
   def check_array_attributes()
@@ -68,7 +76,7 @@ class FedoraItemChecker
       new_val = @work.creator.
         select { |c| c.category == k }.
         map {|id| id.attributes['value'] }
-      confirm(compare(old_val, new_val), "#{k}", old_val, new_val)
+      confirm(compare(old_val, new_val, order_matters: false), "#{k}", old_val, new_val)
     end
   end
 
@@ -81,7 +89,7 @@ class FedoraItemChecker
     confirm(correct, "Additional credit", old_val.map {|x| compare_additional_credit(x)}, new_val)
   end
   def compare_additional_credit(item)
-    ac_data = parse(get_fedora_item(item))[0]
+    ac_data = get_fedora_item(item)[0]
     name = ac_data['http://xmlns.com/foaf/0.1/name'][0]['@value']
     role = ac_data['http://chemheritage.org/ns/hasCreditRole'][0]['@value']
     mapping = FedoraMappings.additional_credit_roles
@@ -95,11 +103,12 @@ class FedoraItemChecker
     new_val = @work.date_of_work.
       map {|dw|  dw.attributes }.
       map {|att| att.select { |k,v| v != ""} }
-    correct = compare(old_val, new_val, :compare_date)
+    correct = compare(old_val, new_val, :compare_date, order_matters: false)
     confirm(correct, "Date", old_val.map {|x| compare_date(x)}, new_val)
   end
+
   def compare_date(item)
-    date_hash = parse(get_fedora_item(item))[0]
+    date_hash = get_fedora_item(item)[0]
     url_mapping = FedoraMappings.dates
     result = Hash[ url_mapping.map { |k, v| [k.to_s,  get_val(date_hash, url_mapping[k]) ] } ]
     result.delete_if {|key, value| value == "" }
@@ -129,7 +138,7 @@ class FedoraItemChecker
     confirm(correct, "Inscription", old_val.map {|x| compare_inscription(x)}, new_val)
   end
   def compare_inscription(item)
-    inscription_hash = parse(get_fedora_item(item))[0]
+    inscription_hash = get_fedora_item(item)[0]
     url_mapping = FedoraMappings.inscriptions
     Hash[ url_mapping.map { |k, v| [k.to_s,  get_val(inscription_hash, url_mapping[k]) ] } ]
   end
@@ -150,6 +159,30 @@ class FedoraItemChecker
       inject(:merge)
   end
 
+
+  def check_representative()
+    uri = FedoraMappings.work_reflections[:representative][:uri]
+    old_val = get_all_ids(@fedora_data, uri).map {| id| id.gsub(/^.*\//, '')}
+    new_val = [ @work&.representative.friendlier_id ]
+    correct = compare(old_val, new_val)
+    confirm(correct, "Representative", old_val, new_val)
+  end
+
+  def check_thumbnail()
+    uri = FedoraMappings.work_reflections[:thumbnail][:uri]
+    old_val = get_all_ids(@fedora_data, uri).map {| id| id.gsub(/^.*\//, '')}
+    new_val = [ @work&.leaf_representative.friendlier_id ]
+    correct = compare(old_val, new_val)
+    confirm(correct, "Thumbnail", old_val, new_val)
+  end
+
+  #
+  #
+  #
+  # FILE SETS:
+  #
+  #
+  #
 
   def check_file_set()
     # Todo: file checksum (available in file_sha1)
@@ -182,7 +215,7 @@ class FedoraItemChecker
     @file_metadata ||= begin
       file_download_id = get_all_ids(@fedora_data, 'http://pcdm.org/models#hasFile').first
       file_metadata_path = "#{file_download_id}/fcr:metadata"
-      parse(get_fedora_item(file_metadata_path))[0]
+      get_fedora_item(file_metadata_path)[0]
     end
   end
 
@@ -191,7 +224,14 @@ class FedoraItemChecker
     first.gsub(/^.*:/, '')
   end
 
+  #
+  #
+  #
   # Getting stuff out of Fedora json objects:
+  #
+  #
+  #
+
   def get_val(obj, key)
     obj[key][0]["@value"] unless obj[key].nil?
   end
@@ -212,13 +252,9 @@ class FedoraItemChecker
 
   private
 
-  def parse(s)
-    Yajl::Parser.new.parse(s)
-  end
-
   def get_fedora_item(id_str)
     response = @fedora_connection.get('/fedora/rest/prod/' + id_str)
-    response.body
+    Yajl::Parser.new.parse(response.body)
   end
 
   def strip_prefix(str)
@@ -234,11 +270,13 @@ class FedoraItemChecker
       "#{@model} [#{fedora_id}]"
     end
 
-    @progress_bar.log ( """ERROR: #{prefix} ===> #{str}
+    msg = """ERROR: #{prefix} ===> #{str}
         Fedora:
           #{old_value}
         Scihist:
-          #{new_value}""" )
+          #{new_value}"""
+    @progress_bar.log(msg) if @progress_bar
+
   end
 
   # Tests for equivalency between a and b.
