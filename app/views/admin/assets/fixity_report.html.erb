@@ -1,0 +1,185 @@
+<h1 class="mb-4">Fixity Health Report</h1>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md">
+      <% if @fixity_report.bad_assets.blank? && @fixity_report.not_recent_with_no_checks_or_stale_checks == 0 %>
+        <p class="h2 alert alert-success"><i class="fa fa fa-thumbs-up" aria-hidden="true"></i> Fixity health good.</p>
+      <% else %>
+        <p class="h2 alert alert-danger"><i class="fa fa fa-thumbs-down" aria-hidden="true"></i> There are fixity health problems!</p>
+        <ul>
+          <% unless @fixity_report.bad_assets.blank? %>
+            <li><%= pluralize @fixity_report.bad_assets.count, 'asset' %> currently failing fixity check</li>
+          <% end %>
+          <% unless @fixity_report.not_recent_with_no_checks_or_stale_checks == 0 %>
+            <li><%= pluralize @fixity_report.not_recent_with_no_checks_or_stale_checks, 'asset' %> expected to have fresh fixity checks, but missing fresh fixity checks</li>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
+
+    <div class="col-md alert alert-info">
+      <ul>
+        <li>We intend to schedule checks such that every file is checked at least once every <%= pluralize FixityReport::STALE_IN_DAYS, 'day' %>.</li>
+        <li>Fixity checks run <b>nightly</b> at <b><%= ScihistDigicoll::ASSET_CHECK_WHENEVER_CRON_TIME %></b> and will check 1/<%= FixityReport::STALE_IN_DAYS %> of our total assets (~<%= @fixity_report.asset_count / FixityReport::STALE_IN_DAYS %> assets) each night, choosing the assets with missing or most stale checks to run checks on.</li>
+        <li>Can only run fixity checks on assets that are <i>fully ingested</i> and have attached files.</li>
+        <li>For assets created within last <%= pluralize FixityReport::EXPECTED_FRESH_IN_DAYS, 'day' %>, we tolerate missing fixity checks, as they may not have run yet.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="mt-5">
+  <h2 class="border-bottom">Assets Currently Failing Fixity</h2>
+  <%# never fear, bad_assets is memoized %>
+  <% if @fixity_report.bad_assets.present? %>
+      <p class="text-danger">
+        <i class="fa fa fa-thumbs-down" aria-hidden="true"></i> <%= pluralize(@fixity_report.bad_assets.count, 'failure') %>
+      </p>
+      <ul class="list-unstyled alert alert-danger">
+        <% @fixity_report.bad_assets.each do |asset| %>
+            <li >
+              <i class="fa fa-times" aria-hidden="true" ></i>
+              <%= link_to(asset.title, admin_asset_path(asset)) %>
+            </li>
+        <% end %>
+      </ul>
+  <% else %>
+      <span class="text-success"><i class="fa fa-thumbs-up" aria-hidden="true"></i> None<span>
+  <% end %>
+</div>
+
+<div class="mt-5">
+  <div class="mb-1">
+    <h2 class="mb-0">Assets created more than <%= pluralize FixityReport::EXPECTED_FRESH_IN_DAYS, "day" %> ago    </h2>
+    <span class="ml-2"><i>Expected to have a recent fixity check on record</i></span>
+  </div>
+
+  <table class="table">
+    <tr>
+      <thead>
+        <tr>
+          <th>Which assets</th>
+          <th colspan="2">How many</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>Total</td>
+          <td colspan="2"><%= number_with_delimiter @fixity_report.not_recent_count %></td>
+        </tr>
+
+        <tr>
+          <td>Not yet fully ingested</td>
+          <td><%= number_with_delimiter @fixity_report.not_recent_not_stored_count %></td>
+          <% if (@fixity_report.not_recent_not_stored_count > 0) %>
+            <td class="bg-warning">
+              <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+              Expect 0. Are these stuck in ingest process?
+            </td>
+          <% else %>
+            <td></td>
+          <% end %>
+        </tr>
+
+        <tr>
+          <td>Fully ingested without <em>fresh</em> (within past <%= pluralize FixityReport::STALE_IN_DAYS, 'day' %>) fixity check</td>
+          <td><%= number_with_delimiter(@fixity_report.not_recent_with_no_checks_or_stale_checks) %></td>
+          <% if @fixity_report.not_recent_with_no_checks_or_stale_checks == 0 %>
+            <td class="bg-success text-white">
+              <i class="fa fa fa-thumbs-up" aria-hidden="true"></i> Good
+            </td>
+          <% else %>
+            <td class="bg-danger text-white">
+              <i class="fa fa fa-thumbs-down" aria-hidden="true"></i> Unexpected, should be 0
+            </td>
+          <% end %>
+        </tr>
+
+        <tr>
+
+
+
+
+      </tbody>
+    </tr>
+  </table>
+</div>
+
+
+<div class="mt-5">
+  <h2>Asset and Fixity Decriptive Statistics</h2>
+  <table class="table mt-3">
+    <thead>
+      <tr>
+        <th>Which assets</th>
+        <th>How many</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>Total assets</td>
+          <td><%= number_with_delimiter(@fixity_report.asset_count) %></td>
+        </tr>
+
+        <tr>
+          <td>Created in the last <%= pluralize FixityReport::EXPECTED_FRESH_IN_DAYS, 'day' %></td>
+          <td><%= number_with_delimiter @fixity_report.recent_count %></td>
+        </tr>
+
+        <tr>
+          <td>Not yet fully ingested (no attached file)<br>
+            <i>These should be temporary, pending ingest, and can't be fixity checked yet.</i>
+          </td>
+          <td><%=  number_with_delimiter(@fixity_report.no_stored_files) %></td>
+        </tr>
+
+
+        <tr>
+          <td>Fully ingested (attached file)</td>
+          <td><%= number_with_delimiter(@fixity_report.stored_files) %></td>
+        </tr>
+
+        <tr>
+          <td>Fully ingested, no checks</td>
+          <td><%= number_with_delimiter(@fixity_report.no_checks) %></td>
+        </tr>
+
+        <tr>
+          <td>Fully ingested, at least one check</td>
+          <td><%= number_with_delimiter(@fixity_report.with_checks) %></td>
+        </tr>
+
+        <tr>
+          <td>Fully ingested, checked in the past <%= FixityReport::STALE_IN_DAYS %> days</td>
+          <td><%= number_with_delimiter(@fixity_report.recent_checks) %></td>
+        </tr>
+
+        <tr>
+          <td>Fully ingested, stale checks (have not been checked for <%= FixityReport::STALE_IN_DAYS %> days, or ever)</td>
+          <td><%= number_with_delimiter(@fixity_report.no_checks_or_stale_checks) %></td>
+        </tr>
+
+        <tr>
+          <td>Fully-ingested Asset with oldest most-recent fixity check</td>
+          <td>
+              <% if @fixity_report.stalest_current_fixity_check.timestamp && @fixity_report.stalest_current_fixity_check.asset %>
+                <%= link_to l(@fixity_report.stalest_current_fixity_check.timestamp, format: :admin), admin_asset_path(@fixity_report.stalest_current_fixity_check.asset) %>
+              <% end %>
+          </td>
+
+        <tr>
+          <td>Oldest fixity check on record</td>
+          <td><%= @fixity_report.earliest_check_date ? l(@fixity_report.earliest_check_date, format: :admin) : "NONE!" %></td>
+        </tr>
+
+        <tr>
+          <td>Most recent fixity check on record</td>
+          <td><%= @fixity_report.latest_check_date ? l(@fixity_report.latest_check_date, format: :admin) : "NONE!" %></td>
+        </tr>
+
+
+    </tbody>
+  </table>
+</div>
