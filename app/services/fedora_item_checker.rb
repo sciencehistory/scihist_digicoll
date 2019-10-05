@@ -89,7 +89,7 @@ class FedoraItemChecker
     uri = FedoraMappings.work_reflections[:additional_credit][:uri]
     old_val = get_all_ids(@fedora_data, uri)
     new_val = @work.additional_credit.map {|id| id.attributes }
-    correct = compare(old_val, new_val, :compare_additional_credit, order_matter:false )
+    correct = compare(old_val, new_val, :compare_additional_credit, order_matters:false )
     confirm(correct, "Additional credit", old_val.map {|x| compare_additional_credit(x)}, new_val)
   end
   def compare_additional_credit(item)
