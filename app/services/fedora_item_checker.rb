@@ -25,7 +25,6 @@ class FedoraItemChecker
     check_physical_container
     check_admin_note
     check_representative
-    check_thumbnail
   end
 
   def check_scalar_attributes()
@@ -164,21 +163,12 @@ class FedoraItemChecker
       inject(:merge)
   end
 
-
   def check_representative()
     uri = FedoraMappings.work_reflections[:representative][:uri]
-    old_val = get_all_ids(@fedora_data, uri).map {| id| id.gsub(/^.*\//, '')}
-    new_val = [ @work&.representative&.friendlier_id ]
+    old_val = get_all_ids(@fedora_data, uri).map {| id| id.gsub(/^.*\//, '')}.first
+    new_val = @work&.representative&.friendlier_id
     correct = compare(old_val, new_val)
     confirm(correct, "Representative", old_val, new_val)
-  end
-
-  def check_thumbnail()
-    uri = FedoraMappings.work_reflections[:thumbnail][:uri]
-    old_val = get_all_ids(@fedora_data, uri).map {| id| id.gsub(/^.*\//, '')}
-    new_val = [ @work&.leaf_representative&.friendlier_id ]
-    correct = compare(old_val, new_val)
-    confirm(correct, "Thumbnail", old_val, new_val)
   end
 
   #
@@ -211,10 +201,10 @@ class FedoraItemChecker
   def check_file_set_title()
     orig_filename = @asset&.title
     unless orig_filename.nil?
-      old_val = get_val(@fedora_data,'info:fedora/fedora-system:def/model#downloadFilename')
+      old_val = get_val(@fedora_data, FedoraMappings.work_properties['title'])
       new_val = orig_filename
       correct = compare(old_val, new_val)
-      confirm(correct, "Original filename", old_val, new_val)
+      confirm(correct, "title", old_val, new_val)
     end
   end
 
