@@ -70,12 +70,15 @@ class FedoraChecker
     if ['FileSet', 'GenericWork'].include? model
       item = local_item(obj['@id'])
       if item.nil?
-        log("MISSING: #{model} in destination for #{obj['@id'].gsub(/^.*prod\//, '')}")
+        log("""MISSING: #{model} in destination
+          for #{obj['@id'].gsub(/^.*prod\//, '')}""")
         return
       end
       if model == 'GenericWork'
         unless item.is_a? Work
-          log("MISMATCH: #{model} in source, #{item.type} in destination.")
+          log("""MISMATCH: #{model} in source, #{item.type}
+            in destination for
+            #{obj['@id'].gsub(/^.*prod\//, '')}""")
           return
         end
         FedoraItemChecker.new(
@@ -87,7 +90,9 @@ class FedoraChecker
 
       elsif model == 'FileSet'
         unless item.is_a? Asset
-          log(puts "MISMATCH: #{model} in source, #{item.type} in destination.")
+          log(puts """MISMATCH: #{model} in source, #{item.type}
+            in destination for
+            #{obj['@id'].gsub(/^.*prod\//, '')}""")
           return
         end
         FedoraItemChecker.new(
