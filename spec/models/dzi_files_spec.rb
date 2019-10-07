@@ -104,4 +104,20 @@ describe DziFiles do
       end
     end
   end
+
+  # normally shouldn't happen
+  describe "without attached file", queue_adapter: :inline do
+    let(:asset) { create(:asset) }
+    it "can be deleted without complaining about missing DZI/md5" do
+      asset.destroy!
+      expect(asset.destroyed?).to be(true)
+    end
+
+    it "can have a file assigned, and get DZI's, without complaining" do
+      asset.file = File.open(Rails.root + "spec/test_support/images/20x20.png")
+      asset.save!
+      asset.reload
+      expect(dzi_management.exists?).to eq true
+    end
+  end
 end
