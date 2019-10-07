@@ -176,6 +176,8 @@ module Importers
         add_error("missing 'access_control'")
       elsif metadata["access_control"] == "public"
         target_item.published = true
+      else
+        target_item.published = false
       end
     end
 
