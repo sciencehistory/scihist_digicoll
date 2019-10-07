@@ -104,4 +104,13 @@ describe DziFiles do
       end
     end
   end
+
+  # normally shouldn't happen
+  describe "without attached file", queue_adapter: :inline do
+    let(:asset) { create(:asset) }
+    it "can be deleted without complaining about missing DZI/md5" do
+      asset.destroy!
+      expect(asset.destroyed?).to be(true)
+    end
+  end
 end
