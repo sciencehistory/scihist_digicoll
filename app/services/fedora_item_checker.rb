@@ -226,6 +226,7 @@ class FedoraItemChecker
     check_file_set_title
     check_file_set_created_at
     check_file_set_integrity
+    check_access_control
   end
 
   # def check_file_set_filename()
