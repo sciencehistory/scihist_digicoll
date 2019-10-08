@@ -1,3 +1,5 @@
+require "byebug"
+
 class FedoraChecker
   def initialize(options:)
     @options = options
@@ -28,8 +30,20 @@ class FedoraChecker
       @progress_bar.increment if @progress_bar
     end
 
-
-    # pp @checked_items
+    # STATISTICS:
+    kithe_work_ids = Work.pluck(:friendlier_id)
+    if @options[:percentage_to_check] == 100
+      items_in_fedora_but_not_in_kithe = @checked_items['GenericWork'] - kithe_work_ids
+      items_in_kithe_but_not_in_fedora = kithe_work_ids - @checked_items['GenericWork']
+      puts """Items in FEDORA but not in KITHE:
+      #{items_in_fedora_but_not_in_kithe}"""
+      # TODO: these should list the full
+      # Fedora ID rather than just the friendlier ID.
+      puts """Items in KITHE but not in FEDORA:
+      #{items_in_kithe_but_not_in_fedora}"""
+    else
+      puts "Not running stats; didn't request all items be checked."
+    end
   end
 
   private
@@ -69,16 +83,20 @@ class FedoraChecker
     model = obj["info:fedora/fedora-system:def/model#hasModel"][0]["@value"]
     if ['FileSet', 'GenericWork'].include? model
       item = local_item(obj['@id'])
+      friendlier_id = obj['@id'].gsub(/^.*\//, '')
+      @checked_items[model] = [] unless @checked_items[model]
+      @checked_items[model] << friendlier_id
       if item.nil?
         log("""MISSING: #{model} in destination
-          for #{obj['@id'].gsub(/^.*prod\//, '')}""")
+        for #{friendlier_id}""")
         return
       end
+
       if model == 'GenericWork'
         unless item.is_a? Work
           log("""MISMATCH: #{model} in source, #{item.type}
             in destination for
-            #{obj['@id'].gsub(/^.*prod\//, '')}""")
+            #{friendlier_id}""")
           return
         end
         FedoraItemChecker.new(
@@ -101,12 +119,6 @@ class FedoraChecker
           progress_bar:  @progress_bar,
           options:@options
         ).check_file_set
-
-
-      end
-      unless item.nil?
-        @checked_items[model] = [] unless @checked_items[model]
-        @checked_items[model] << item.friendlier_id
       end
     end
   end
