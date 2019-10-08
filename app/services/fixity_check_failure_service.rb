@@ -21,7 +21,7 @@ class FixityCheckFailureService
                               to:      to_address,
                               subject: subject,
                               content_type: "text/html",
-                              body: message).deliver_now
+                              body: message).deliver_later
     end
 
     if defined? Honeybadger
