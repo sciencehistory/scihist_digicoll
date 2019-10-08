@@ -44,33 +44,27 @@ class FixityChecker
     )
   end
 
-  #FixityChecker.new(asset).prune_checks
-  # After pruning, for each asset - URI combination, you will be left with:
-  # up to NUMBER_OF_RECENT_PASSED_CHECKS_TO_KEEP recent passed checks,
-  # plus all the failed checks,
-  # plus one initial check (to remember the file that was intially uploaded.)
+  # FixityChecker.new(asset).prune_checks
+  # Never throw out FAILED checks
+  # Never throw out the earliest PASSED check
+  # Always keep a PASSED check if it is preceded or followed by a failing check.
+  # Always keep N most recent checks, whether passed or failed.
   def prune_checks
-    checks_to_delete.map(&:destroy)
+    checks = FixityCheck.checks_for(@asset, permanent_url).reorder("created_at asc")
+    earliest_passing_check = nil
+    0.upto(checks.length - NUMBER_OF_RECENT_PASSED_CHECKS_TO_KEEP).each do |i|
+      if checks[i].passed? && earliest_passing_check.nil?
+        earliest_passing_check = checks[i]
+        next
+      end
+      next if checks[i].failed?
+      next if i > 0 && checks[i - 1].failed?
+      next if checks[i + 1].failed?
+      checks[i].destroy
+    end
   end
 
   private
-
-  # Returns an array of checks that we don't want to keep.
-  # The current rules are:
-  # Never throw out FAILED checks
-  # Never throw out the earliest PASSED check
-  # Always keep N recent PASSED checks
-  def checks_to_delete
-    # Throw all the passed checks INTO the trash.
-    checks = FixityCheck.checks_for(@asset, permanent_url)
-    return [] if checks.empty?
-    trash = checks.select { | ch | ch.passed? }
-    # But then, pop the earliest passed check back OUT of the trash.
-    earliest_passed_check = trash.pop
-    # Finally, shift the most recent N passed checks back OUT of the trash.
-    recent_passed_checks = trash.shift(NUMBER_OF_RECENT_PASSED_CHECKS_TO_KEEP)
-    return trash
-  end
 
   def expected_result
     @expected_result ||= @asset.file.sha512

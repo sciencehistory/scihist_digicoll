@@ -48,6 +48,10 @@ class Admin::AssetsController < AdminController
     redirect_to admin_asset_url(@asset), notice: 'This file will be checked shortly.'
   end
 
+  def fixity_report
+    @fixity_report = FixityReport.new()
+  end
+
   def display_attach_form
     @parent = Work.find_by_friendlier_id!(params[:parent_id])
   end
