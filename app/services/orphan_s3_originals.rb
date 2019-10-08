@@ -27,8 +27,8 @@ class OrphanS3Originals
           asset = Asset.where(id: asset_id).first
 
           s3_iterator.log "orphaned file!"
-          s3_iterator.log "  bucket: #{s3_bucket_name}"
-          s3_iterator.log "  s3 path: #{path}"
+          s3_iterator.log "  bucket: #{shrine_storage.bucket.name}"
+          s3_iterator.log "  s3 path: #{s3_key}"
           s3_iterator.log "  asset_id: #{asset_id}"
           if asset.nil?
             s3_iterator.log "  asset missing"
@@ -52,8 +52,8 @@ class OrphanS3Originals
       asset_id, shrine_path = parse_s3_path(s3_key)
 
       if orphaned?(asset_id, shrine_path)
-        shrine_storage.bucket.object(path).delete
-        s3_iterator.log "deleted: #{shrine_storage.bucket.name}: #{path}"
+        shrine_storage.bucket.object(s3_key).delete
+        s3_iterator.log "deleted: #{shrine_storage.bucket.name}: #{s3_key}"
         delete_count += 1
       end
     end
