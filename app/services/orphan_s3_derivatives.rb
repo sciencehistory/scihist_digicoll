@@ -1,6 +1,9 @@
 class OrphanS3Derivatives
+  # We put some other things on the 'derivatives' s3, that we want to ignore and not consider orphaned
+  IGNORE_PATHS = ["__sitemaps/"]
 
   attr_reader :s3_iterator, :shrine_storage
+
   def initialize(show_progress_bar: true)
     @shrine_storage = ScihistDigicoll::Env.shrine_derivatives_storage
 
@@ -30,6 +33,8 @@ class OrphanS3Derivatives
     orphans_found = 0
 
     report = s3_iterator.each_s3_path do |s3_path|
+      next if IGNORE_PATHS.include?(s3_path)
+
       asset_id = asset_id(s3_path)
 
       if orphaned?(asset_id)
