@@ -16,6 +16,12 @@ class OrphanS3Base
     nil
   end
 
+  # Sub-class can override to true, means we'll only check the path ending at pk UUID component, not
+  # sub-parts.
+  def check_base_paths_only?
+    false
+  end
+
   # base prefix from the shrine storage, combined with any specified prefix to search within
   # the storage, normalized to always end in '/'
   def search_prefix
@@ -73,6 +79,27 @@ class OrphanS3Base
 
   private
 
+  # iterate through all the keypaths in S#, based on our bucket and extra_prefix, yielding each one to block passed
+  # by caller.
+  #
+  # If check_base_paths_only?, then instead of yielding each path, we only yield the top-level component of the path
+  # after the bucket prefix and extra_prefix -- the component that should be the pk UUID.
+  def each_s3_path
+    delimiter = check_base_paths_only? ? "/" : nil
+
+    s3_client.list_objects_v2(bucket: s3_bucket_name, prefix: search_prefix, delimiter: delimiter, max_keys: 1000).each do |s3_response|
+      if delimiter
+        s3_response.common_prefixes.each do |s3_obj|
+          yield s3_obj.prefix
+        end
+      else
+        s3_response.contents.each do |s3_obj|
+          yield s3_obj.key
+        end
+      end
+    end
+  end
+
   # Yields to block for every orphan.
   # Returns an OpenStruct with total number of S3 files checked, total number of assets, etc.
   def find_orphans
@@ -85,24 +112,19 @@ class OrphanS3Base
 
     files_checked = 0
 
-    s3_client.list_objects_v2(bucket: s3_bucket_name, prefix: search_prefix, max_keys: 1000).each do |s3_response|
+    each_s3_path do |s3_key|
+      asset_id, shrine_path = parse_s3_path(s3_key)
+      unless asset_with_path_exists?(asset_id, shrine_path)
+        yield(s3_key, asset_id: asset_id, shrine_id_value: shrine_path)
+      end
 
-      s3_response.contents.each do |s3_obj|
-        s3_key = s3_obj.key
-
-        asset_id, shrine_path = parse_s3_path(s3_key)
-        unless asset_with_path_exists?(asset_id, shrine_path)
-          yield(s3_key, asset_id: asset_id, shrine_id_value: shrine_path)
+      files_checked += 1
+      if progress_bar
+        if progress_bar.total && progress_bar.progress + 1 >= progress_bar.total
+          # more files than we expected, which makes sense if they were orphans...
+          progress_bar.total = nil
         end
-
-        files_checked += 1
-        if progress_bar
-          if progress_bar.total && progress_bar.progress + 1 >= progress_bar.total
-            # more files than we expected, which makes sense if they were orphans...
-            progress_bar.total = nil
-          end
-          progress_bar.increment
-        end
+        progress_bar.increment
       end
     end
 
