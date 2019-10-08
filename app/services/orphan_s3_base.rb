@@ -40,7 +40,7 @@ class OrphanS3Base
     max_reports = 20
     orphans_found = 0
 
-    report = find_orphans do |path, asset_id:, shrine_id_value:|
+    report = find_orphans do |path, asset_id:|
       orphans_found +=1
 
       if orphans_found == max_reports
@@ -69,7 +69,7 @@ class OrphanS3Base
 
   def delete_orphans
     delete_count = 0
-    find_orphans do |path, asset_id:, shrine_id_value:|
+    find_orphans do |path, asset_id:|
       shrine_storage.bucket.object(path).delete
       puts "deleted: #{path}"
       delete_count += 1
@@ -115,7 +115,7 @@ class OrphanS3Base
     each_s3_path do |s3_key|
       asset_id, shrine_path = parse_s3_path(s3_key)
       unless asset_with_path_exists?(asset_id, shrine_path)
-        yield(s3_key, asset_id: asset_id, shrine_id_value: shrine_path)
+        yield(s3_key, asset_id: asset_id)
       end
 
       files_checked += 1
