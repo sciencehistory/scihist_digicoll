@@ -73,19 +73,39 @@ describe FixityCheck do
       passed_before = good_asset.fixity_checks.where(passed: true).count
       failed_before = good_asset.fixity_checks.where(passed: false).count
       earliest_passed = good_asset.fixity_checks.where(passed: true).last
+
+      # These are the last checks that passed before a file was corrupted.
+      last_known_good_checks, first_known_good_checks = [], []
+      good_asset.fixity_checks.each_with_index do | ch, i |
+        check_after_this = good_asset.fixity_checks[i-1]
+        last_known_good_checks << ch if ch.passed? == true && check_after_this&.failed? == true
+      end
+      # And these are the first checks that passed after a corrupted file was fixed.
+      good_asset.fixity_checks.to_a.each_with_index do | ch, i |
+        check_before_this = good_asset.fixity_checks[i+1]
+        first_known_good_checks << ch if ch.passed? == true && check_before_this&.failed? == true
+      end
+
       FixityChecker.new(good_asset).prune_checks
+
       # Running prune_checks results in the extra checks going away
-      expect(good_asset.fixity_checks.count).to eq 10
+      expect(good_asset.fixity_checks.count).to eq 13
       passed_after  = good_asset.fixity_checks.where(passed: true).count
       failed_after  = good_asset.fixity_checks.where(passed: false).count
       # Failed checks are  not thrown out
       expect(failed_after).to eq failed_before
       # The earliest check is not thrown out
       expect(good_asset.fixity_checks.where(passed: true).last).to eq earliest_passed
-      # We keep AT MOST n_to_keep recent passed checks, PLUS the oldest one.
-      count_of_good_checks_kept = good_asset.fixity_checks.
-        where(passed: true, checked_uri: good_asset.file.url).count
-      expect(count_of_good_checks_kept).to eq n_to_keep + 1
+
+      last_known_good_checks.each do |ch |
+        # Don't throw out any of these.
+        expect(good_asset.fixity_checks).to include ch
+      end
+
+      first_known_good_checks.each do |ch |
+        # Or these.
+        expect(good_asset.fixity_checks).to include ch
+      end
     end
   end
 
