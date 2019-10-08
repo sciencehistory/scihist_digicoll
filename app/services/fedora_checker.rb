@@ -14,6 +14,7 @@ class FedoraChecker
   Depending on its hasModel, we will process it in a different way.
   """
   def check
+    # @contents = ['jd/47/2x/18/jd472x184']
 
     unless defined?(@contents)
       @contents = @data[0]["http://www.w3.org/ns/ldp#contains"].
@@ -32,7 +33,7 @@ class FedoraChecker
 
     # STATISTICS:
     kithe_work_ids = Work.pluck(:friendlier_id)
-    if @options[:percentage_to_check] == 100
+    if @options[:percentage_to_check] == 100 && @contents&.length > 100
       items_in_fedora_but_not_in_kithe = @checked_items['GenericWork'] - kithe_work_ids
       items_in_kithe_but_not_in_fedora = kithe_work_ids - @checked_items['GenericWork']
       puts """Items in FEDORA but not in KITHE:
