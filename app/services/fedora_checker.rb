@@ -76,50 +76,49 @@ class FedoraChecker
     end
   end
 
+  def lookup_target_class(source_class)
+    {
+      'GenericWork' => Work,
+      'FileSet' => Asset,
+      # 'Collection' => Collection
+    }[source_class]
+  end
+
   # Checks one item against Fedora.
   def dispatch_item(fedora_id)
     response = fedora_connection.get('/fedora/rest/prod/' + fedora_id).body
-    obj = Yajl::Parser.new.parse(response)[0]
-    model = obj["info:fedora/fedora-system:def/model#hasModel"][0]["@value"]
-    if ['FileSet', 'GenericWork'].include? model
-      item = local_item(obj['@id'])
-      friendlier_id = obj['@id'].gsub(/^.*\//, '')
-      @checked_items[model] = [] unless @checked_items[model]
-      @checked_items[model] << friendlier_id
-      if item.nil?
-        log("""MISSING: #{model} in destination
-        for #{friendlier_id}""")
-        return
-      end
+    fedora_data = Yajl::Parser.new.parse(response)[0]
+    model = fedora_data["info:fedora/fedora-system:def/model#hasModel"][0]["@value"]
+    target_class = lookup_target_class(model)
+    return if target_class.nil?
 
-      if model == 'GenericWork'
-        unless item.is_a? Work
-          log("""MISMATCH: #{model} in source, #{item.type}
-            in destination for
-            #{friendlier_id}""")
-          return
-        end
-        FedoraItemChecker.new(
-          fedora_data: obj, local_item:item,
-          fedora_connection:fedora_connection,
-          progress_bar:  @progress_bar,
-          options:@options
-        ).check_generic_work
+    kithe_item = local_item(fedora_data['@id'])
 
-      elsif model == 'FileSet'
-        unless item.is_a? Asset
-          log(puts """MISMATCH: #{model} in source, #{item.type}
-            in destination for
-            #{obj['@id'].gsub(/^.*prod\//, '')}""")
-          return
-        end
-        FedoraItemChecker.new(
-          fedora_data: obj, local_item:item,
-          fedora_connection:fedora_connection,
-          progress_bar:  @progress_bar,
-          options:@options
-        ).check_file_set
-      end
+    fedora_id = fedora_data['@id'].gsub(/^.*prod\//, '')
+    friendlier_id = fedora_data['@id'].gsub(/^.*\//, '')
+
+    @checked_items[model] = [] unless @checked_items[model]
+    @checked_items[model] << friendlier_id
+
+    if kithe_item.nil?
+      log("""MISSING: #{model} in destination
+      for #{fedora_id}""")
+      return
     end
+
+    unless kithe_item.is_a? target_class
+      log("""MISMATCH: #{model} in source, #{kithe_item.type}
+        in destination for
+        #{fedora_id}""")
+      return
+    end
+
+    FedoraItemChecker.new(
+      fedora_data:       fedora_data,
+      local_item:        kithe_item,
+      fedora_connection: fedora_connection,
+      progress_bar:      @progress_bar,
+      options:           @options
+    ).check(target_class)
   end
 end
