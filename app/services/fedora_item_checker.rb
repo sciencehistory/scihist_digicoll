@@ -219,25 +219,20 @@ class FedoraItemChecker
   #
 
   def check_file_set()
-    # Todo: file checksum (available in file_sha1)
-    # Todo: access control
     @asset = @local_item
-    #check_file_set_filename
+    check_file_set_filename
     check_file_set_title
     check_file_set_created_at
     check_file_set_integrity
     check_access_control
   end
 
-  # def check_file_set_filename()
-  #   orig_filename = @asset&.file&.metadata.try { |h| h["filename"]}
-  #   unless orig_filename.nil?
-  #     old_val = get_val(@fedora_data,'info:fedora/fedora-system:def/model#downloadFilename')
-  #     new_val = orig_filename
-  #     correct = compare(old_val, new_val)
-  #     confirm(correct, "Original filename", old_val, new_val)
-  #   end
-  # end
+  def check_file_set_filename()
+    new_val = @asset&.file&.metadata.try { |h| h["filename"]}
+    old_val = get_val(file_metadata,'http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#filename')
+    correct = compare(old_val, new_val)
+    confirm(correct, "Original filename", old_val, new_val)
+  end
 
   def check_file_set_title()
     orig_filename = @asset&.title
@@ -286,8 +281,8 @@ class FedoraItemChecker
   end
 
   def file_sha1
-    @file_metadata ||= get_all_ids(file_metadata, 'http://www.loc.gov/premis/rdf/v1#hasMessageDigest').
-    first.gsub(/^.*:/, '')
+    @file_sha1 ||= get_all_ids(file_metadata, 'http://www.loc.gov/premis/rdf/v1#hasMessageDigest').
+      first.gsub(/^.*:/, '')
   end
 
   #
@@ -341,8 +336,8 @@ class FedoraItemChecker
           #{old_value}
         Scihist:
           #{new_value}"""
-    @progress_bar.log(msg) if @progress_bar
 
+    @progress_bar ? @progress_bar.log(msg) : puts(msg)
   end
 
   # Tests for equivalency between a and b.
