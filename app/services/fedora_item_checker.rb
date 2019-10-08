@@ -1,3 +1,4 @@
+require "byebug"
 # Checks the data from a single item (e.g. a Work or an Asset) in Fedora against our database.
 # May perform additional calls to Fedora as needed.
 class FedoraItemChecker
@@ -35,6 +36,7 @@ class FedoraItemChecker
     check_physical_container
     check_admin_note
     check_representative
+    check_access_control
   end
 
   def check_scalar_attributes()
@@ -157,6 +159,33 @@ class FedoraItemChecker
     Hash[ url_mapping.map { |k, v| [k.to_s,  get_val(inscription_hash, url_mapping[k]) ] } ]
   end
 
+
+  def check_access_control()
+    old_val = is_public
+    new_val = @local_item.published?
+    correct = compare(old_val, new_val)
+    confirm(correct, "Published?", old_val, new_val)
+  end
+
+  def is_public()
+    uri = FedoraMappings.work_reflections[:access_control][:uri]
+    access_control_id   = get_all_ids(@fedora_data, uri)&.first
+    access_control_info = get_fedora_item(access_control_id)[0]
+    access_control_list = get_all_ids(access_control_info, 'http://www.w3.org/ns/ldp#contains')
+    access_control_list.each do |a_c_id|
+      return true if allows_public_access(get_fedora_item(a_c_id)[0])
+    end
+    false
+  end
+
+  def allows_public_access(a_c)
+    who         = 'http://www.w3.org/ns/auth/acl#agent'
+    what        = 'http://www.w3.org/ns/auth/acl#mode'
+    the_public  = 'http://projecthydra.org/ns/auth/group#public'
+    can_read    = 'http://www.w3.org/ns/auth/acl#Read'
+    a_c[who][0]['@id'] == the_public && a_c[what][0]['@id'] == can_read
+  end
+
   def check_physical_container()
     raw_fedora_value = get_val(@fedora_data, FedoraMappings.work_properties['physical_container'])
     old_val = compare_physical_container(raw_fedora_value)
@@ -196,6 +225,7 @@ class FedoraItemChecker
     #check_file_set_filename
     check_file_set_title
     check_file_set_created_at
+    check_file_set_integrity
   end
 
   # def check_file_set_filename()
@@ -228,7 +258,6 @@ class FedoraItemChecker
   end
 
   def check_file_set_integrity()
-
     # A nil file would be reported in the
     # fixity check report, so we are
     # passing over this case.
