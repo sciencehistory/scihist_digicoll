@@ -12,6 +12,16 @@ class FedoraItemChecker
     @model = get_val(fedora_data,"info:fedora/fedora-system:def/model#hasModel")
   end
 
+  def check(target_class)
+    if target_class == Work
+      check_generic_work
+    elsif target_class == Asset
+      check_file_set
+    else
+      raise ArgumentError.new("Can't check for class #{target_class}")
+    end
+  end
+
   def check_generic_work
     @work = @local_item
     check_scalar_attributes
@@ -215,6 +225,26 @@ class FedoraItemChecker
     new_val_date = @asset.created_at.utc
     correct = compare(old_val_date, new_val_date)
     confirm(correct, "created_at", old_val_date, new_val_date)
+  end
+
+  def check_file_set_integrity()
+
+    # A nil file would be reported in the
+    # fixity check report, so we are
+    # passing over this case.
+    return if @asset.file.nil?
+
+    # Check the file is actually in s3:
+    unless @asset.file.exists?
+      confirm(false, "Missing in s3", "", @asset.friendlier_id)
+      return
+    end
+
+    # Check its sha1 against Fedora:
+    old_val = file_sha1
+    new_val = @asset.sha1
+    correct = compare(old_val, new_val)
+    confirm(correct, "sha1", old_val, new_val)
   end
 
   def file_metadata
