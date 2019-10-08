@@ -262,5 +262,11 @@ module ScihistDigicoll
     # bytestreams from fedora.
     define_key :import_fedora_auth
 
+    # Used as the from (no_reply) and to (digital_tech) email addresses
+    # when sending notices about failed fixity check.
+    define_key :no_reply_email_address
+    define_key :digital_tech_email_address
+
+
   end
 end
