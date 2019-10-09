@@ -220,11 +220,16 @@ class FedoraItemChecker
 
   def check_file_set()
     @asset = @local_item
-    check_file_set_filename
-    check_file_set_title
+    check_access_control # TODO This method takes up 1/3 of the import time.
     check_file_set_created_at
+    check_file_set_modified
+    if file_metadata.nil?
+      puts "WARNING: No file attached to FileSet #{@fedora_id}. Will not check title, filename or sha1."
+      return
+    end
+    check_file_set_title
+    check_file_set_filename
     check_file_set_integrity
-    check_access_control
   end
 
   def check_file_set_filename()
@@ -245,12 +250,23 @@ class FedoraItemChecker
   end
 
   def check_file_set_created_at()
-    old_val_str = get_val(@fedora_data,'http://purl.org/dc/terms/dateSubmitted').
-      gsub(/\.\d*\+/, '+')
-    old_val_date = (DateTime.parse(old_val_str)).utc
-    new_val_date = @asset.created_at.utc
-    correct = compare(old_val_date, new_val_date)
-    confirm(correct, "created_at", old_val_date, new_val_date)
+    old_val = one_second_precision(get_val(@fedora_data,'http://purl.org/dc/terms/dateSubmitted'))
+    new_val = @asset.created_at
+    correct = compare(old_val, new_val)
+    confirm(correct, "created_at", old_val, new_val)
+  end
+
+  def check_file_set_modified()
+    old_val = one_second_precision(get_val(@fedora_data,'http://purl.org/dc/terms/modified'))
+    new_val = @asset.updated_at
+    correct = compare(old_val, new_val)
+    confirm(correct, "modified", old_val, new_val)
+  end
+
+  def one_second_precision(date_string)
+    str = date_string.
+      gsub(/(T\d\d:\d\d:\d\d)\.\d*/, '\1')
+    DateTime.parse(str).utc
   end
 
   def check_file_set_integrity()
@@ -275,6 +291,7 @@ class FedoraItemChecker
   def file_metadata
     @file_metadata ||= begin
       file_download_id = get_all_ids(@fedora_data, 'http://pcdm.org/models#hasFile').first
+      return nil if file_download_id.nil?
       file_metadata_path = "#{file_download_id}/fcr:metadata"
       get_fedora_item(file_metadata_path)[0]
     end
