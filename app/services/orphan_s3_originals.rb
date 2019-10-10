@@ -7,8 +7,13 @@ class OrphanS3Originals
     @s3_iterator = S3PathIterator.new(
       shrine_storage: shrine_storage,
       extra_prefix: extra_prefix,
-      show_progress_bar: show_progress_bar
+      show_progress_bar: show_progress_bar,
+      progress_bar_total: asset_count
     )
+  end
+
+  def asset_count
+    @asset_count ||= Asset.count
   end
 
   def report_orphans
@@ -41,7 +46,7 @@ class OrphanS3Originals
       end
     end
 
-    $stderr.puts "\n\nTotal Asset count: #{report.asset_count}"
+    $stderr.puts "\n\nTotal Asset count: #{asset_count}"
     $stderr.puts "Checked #{report.files_checked} files on S3"
     $stderr.puts "Found #{orphans_found} orphan files\n"
   end
