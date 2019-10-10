@@ -57,14 +57,16 @@ class OrphanS3Derivatives
           s3_iterator.log "orphaned derivative!"
           s3_iterator.log "  bucket: #{shrine_storage.bucket.name}"
           s3_iterator.log "  s3 path: #{s3_path}"
-          s3_iterator.log "  expected asset_id: #{asset_id}"
+          s3_iterator.log "  asset_id: #{asset_id}"
           s3_iterator.log "  derivative_key: #{derivative_key}"
-
-          s3_iterator.log ""
-          deriv = Kithe::Derivative.where(asset_id: asset_id, key: derivative_key).first
-          s3_iterator.log "  derivative_pk: #{deriv&.id || 'missing'}"
-          s3_iterator.log "  derivative asset_id: #{deriv&.asset_id || 'missing'}"
-          s3_iterator.log "  derivative file path: #{deriv&.file&.id || 'missing'}"
+          if asset.nil?
+            s3_iterator.log "  asset missing"
+          else
+            s3_iterator.log ""
+            deriv = Kithe::Derivative.where(asset_id: asset_id, key: derivative_key).first
+            s3_iterator.log "  derivative_pk: #{deriv&.id || 'missing'}"
+            s3_iterator.log "  derivative file path: #{deriv&.file&.id || 'missing'}"
+          end
           s3_iterator.log ""
         end
       end
@@ -90,13 +92,8 @@ class OrphanS3Derivatives
 
 
   def orphaned?(asset_id, derivative_key, shrine_id)
-    return true unless shrine_id.present?
+    return true unless asset_id.present? && derivative_key.present?
 
-    # we're gonna JUST look by key and file_data->id. Becuase in staging, weird things
-    # have made UUID pk in path go bad, but the derivs are still working.
-    #
-    # We still fetch on key, cause without the key index it'd be a really slow fetch.
-
-    ! Kithe::Derivative.where(key: derivative_key).where("file_data ->> 'id' = ?", shrine_id).exists?
+    ! Kithe::Derivative.where(asset_id: asset_id, key: derivative_key).where("file_data ->> 'id' = ?", shrine_id).exists?
   end
 end
