@@ -37,6 +37,7 @@ class FedoraItemChecker
     check_admin_note
     check_representative
     check_access_control
+    check_contents
   end
 
   def check_scalar_attributes()
@@ -176,6 +177,44 @@ class FedoraItemChecker
       return true if allows_public_access(get_fedora_item(a_c_id)[0])
     end
     false
+  end
+
+  def check_contents()
+    old_val = contents.map { |x| x.gsub(/.*\//, '') }
+    new_val =  @local_item.members.order(:position).pluck(:friendlier_id)
+    correct = compare(old_val, new_val)
+    confirm(compare(old_val, new_val), "Contents", old_val, new_val)
+  end
+
+  # A list of members (either FileSets or child GenericWorks) in this GenericWork.
+  def contents()
+    return [] unless @fedora_data.key? 'http://www.w3.org/ns/ldp#contains'
+    # Fetch the unordered of member proxies:
+    list_source =  get_fedora_item("#{@fedora_id}/list_source")
+    # Organize the member proxies into a linked list:
+    linked_list = {}
+    list_source.each do |l_i|
+      linked_list[l_i["@id"]] = {member:look_up_proxy(l_i), next:next_item(l_i)}
+    end
+    #Try to look up each member in the linked list of member proxies.
+    ordered_items = []
+    proxy_id = list_source[0]['http://www.iana.org/assignments/relation/first'][0]["@id"]
+    while proxy_id
+      current = linked_list[proxy_id]
+      ordered_items << current[:member] if current[:member]
+      proxy_id = current[:next]
+    end
+    ordered_items
+  end
+
+  # The actual Fedora item for which this list item is a proxy, if any.
+  def look_up_proxy(list_item)
+    list_item.dig("http://www.openarchives.org/ore/terms/proxyFor", 0, "@id")
+  end
+
+  # The next list item, if any.
+  def next_item(list_item)
+    list_item.dig("http://www.iana.org/assignments/relation/next",  0, "@id")
   end
 
   def allows_public_access(a_c)
@@ -332,6 +371,7 @@ class FedoraItemChecker
 
   def get_fedora_item(id_str)
     response = @fedora_connection.get('/fedora/rest/prod/' + id_str)
+    return nil if response.status == 404
     Yajl::Parser.new.parse(response.body)
   end
 
