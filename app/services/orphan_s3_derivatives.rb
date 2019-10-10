@@ -37,7 +37,7 @@ class OrphanS3Derivatives
   end
 
   def report_orphans
-    max_reports = 20
+    max_reports = 40
     orphans_found = 0
 
     report = s3_iterator.each_s3_path do |s3_path|
