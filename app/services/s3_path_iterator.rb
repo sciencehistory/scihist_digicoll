@@ -1,13 +1,19 @@
 class S3PathIterator
-  attr_reader :shrine_storage, :extra_prefix, :progress_bar
+  attr_reader :shrine_storage, :extra_prefix, :progress_bar, :progress_bar_total
 
-  def initialize(shrine_storage:, extra_prefix: nil, check_base_paths_only: false, show_progress_bar: true)
+  # progress_bar_total can be just estimated, that's all we usually have available.
+  def initialize(shrine_storage:,
+                 extra_prefix: nil,
+                 check_base_paths_only: false,
+                 show_progress_bar: true,
+                 progress_bar_total: nil)
     @shrine_storage = shrine_storage
     @extra_prefix = extra_prefix
     @check_base_paths_only = check_base_paths_only
 
     if show_progress_bar
-      @progress_bar =  ProgressBar.create(total: asset_count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
+      @progress_bar =  ProgressBar.create(total: progress_bar_total, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
+      @progress_bar_total = progress_bar_total
     end
   end
 
@@ -48,13 +54,9 @@ class S3PathIterator
 
     return OpenStruct.new(
       files_checked: files_checked,
-      asset_count: asset_count
     )
   end
 
-  def asset_count
-    @asset_count ||= Asset.count
-  end
 
   private
 
