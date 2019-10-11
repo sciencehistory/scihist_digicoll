@@ -171,6 +171,7 @@ class FedoraItemChecker
   def is_public()
     uri = FedoraMappings.work_reflections[:access_control][:uri]
     access_control_id   = get_all_ids(@fedora_data, uri)&.first
+    return false unless access_control_id
     access_control_info = get_fedora_item(access_control_id)[0]
     access_control_list = get_all_ids(access_control_info, 'http://www.w3.org/ns/ldp#contains')
     access_control_list.each do |a_c_id|
@@ -191,6 +192,9 @@ class FedoraItemChecker
     return [] unless @fedora_data.key? 'http://www.w3.org/ns/ldp#contains'
     # Fetch the unordered of member proxies:
     list_source =  get_fedora_item("#{@fedora_id}/list_source")
+    return [] unless list_source
+    return [] unless list_source[0].key? 'http://www.iana.org/assignments/relation/first'
+
     # Organize the member proxies into a linked list:
     linked_list = {}
     list_source.each do |l_i|
@@ -263,7 +267,7 @@ class FedoraItemChecker
     check_file_set_created_at
     check_file_set_modified
     if file_metadata.nil?
-      puts "WARNING: No file attached to FileSet #{@fedora_id}. Will not check title, filename or sha1."
+      log("WARNING: No file attached to FileSet #{@fedora_id}. Will not check title, filename or sha1.")
       return
     end
     check_file_set_title
@@ -371,7 +375,7 @@ class FedoraItemChecker
 
   def get_fedora_item(id_str)
     response = @fedora_connection.get('/fedora/rest/prod/' + id_str)
-    return nil if response.status == 404
+    return nil if [410, 404].include?(response.status)
     Yajl::Parser.new.parse(response.body)
   end
 
@@ -394,6 +398,10 @@ class FedoraItemChecker
         Scihist:
           #{new_value}"""
 
+    log(msg)
+  end
+
+  def log(msg)
     @progress_bar ? @progress_bar.log(msg) : puts(msg)
   end
 
