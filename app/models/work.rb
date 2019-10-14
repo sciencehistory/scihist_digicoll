@@ -53,7 +53,7 @@ class Work < Kithe::Work
   attr_json :digitization_funder, :string
 
   attr_json :file_creator, :string
-  attr_json :admin_note, :text, array: true
+  attr_json :admin_note, :text, array: true, default: -> { [] }
 
   # filter out empty strings, makes our forms easier, with the way checkbox
   # groups include hidden field with empty string. Kithe repeatable
