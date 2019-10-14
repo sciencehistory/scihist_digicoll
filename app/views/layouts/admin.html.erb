@@ -57,6 +57,9 @@
           <div class="admin-nav flex-shrink-0">
             <ul class="list-unstyled sticky-top px-3 pb-3 pt-1 mt-2 mr-3 bg-light border">
               <li><h2 class="h4">Admin</h2></li>
+              <% if ScihistDigicoll::Env.lookup(:service_level) %>
+                <%= content_tag "li", ScihistDigicoll::Env.lookup(:service_level).upcase, class: ["text-center p-1 mb-2 font-weight-bold", ("bg-warning" if ScihistDigicoll::Env.staging?)] %>
+              <% end %>
               <li><%= link_to  "Works", admin_works_path %></li>
               <li><%= link_to "Collections", admin_collections_path %></li>
               <li><%= link_to "Digitization Queue", collecting_areas_admin_digitization_queue_items_path %></li>
