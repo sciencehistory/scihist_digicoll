@@ -34,10 +34,11 @@ class FedoraItemChecker
     confirm(compare(old_val, new_val), "title", old_val, new_val)
     # description
     mapping = FedoraMappings.array_attributes
-    old_val = get_val(@fedora_data, FedoraMappings.work_properties['description'])
+    old_val = get_all_vals(@fedora_data, FedoraMappings.work_properties['description']).
+      select { |d| d.present?}.first
     new_val = @collection.description
     confirm(compare(old_val, new_val), "description", old_val, new_val)
-    # see Also
+    # see also
     old_val = get_all_vals(@fedora_data, FedoraMappings.work_properties["related_url"])
     new_val = @collection.related_url
     confirm(compare(old_val, new_val), "related_url", old_val, new_val)
