@@ -14,7 +14,6 @@ class FedoraChecker
   Depending on its hasModel, we will process it in a different way.
   """
   def check
-
     unless defined?(@contents)
       @contents = @data[0]["http://www.w3.org/ns/ldp#contains"].
         map { |cs| cs["@id"].gsub(/^.*\/fedora\/rest\/prod\//, '') }
@@ -80,7 +79,7 @@ class FedoraChecker
     {
       'GenericWork' => Work,
       'FileSet' => Asset,
-      # 'Collection' => Collection
+      'Collection' => Collection
     }[source_class]
   end
 
