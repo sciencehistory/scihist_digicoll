@@ -213,6 +213,10 @@ class FedoraItemChecker
     old_val = contents.map { |x| x.gsub(/.*\//, '') }
     new_val =  @local_item.members.order(:position).pluck(:friendlier_id)
     correct = compare(old_val, new_val)
+    if old_val.count > 1 &&  old_val[0...-1] == new_val
+      confirm(false, "Fedora has exactly one extra item at the end: #{old_val[-1]}", old_val, new_val)
+      return
+    end
     confirm(compare(old_val, new_val), "Contents", old_val, new_val)
   end
 
@@ -234,7 +238,9 @@ class FedoraItemChecker
     proxy_id = list_source[0]['http://www.iana.org/assignments/relation/first'][0]["@id"]
     while proxy_id
       current = linked_list[proxy_id]
-      ordered_items << current[:member] if current[:member]
+      if current[:member] && !(ordered_items.include? current[:member])
+        ordered_items << current[:member]
+      end
       proxy_id = current[:next]
     end
     ordered_items
