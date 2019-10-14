@@ -18,13 +18,42 @@ class FedoraItemChecker
       check_generic_work
     elsif target_class == Asset
       check_file_set
+    elsif target_class == Collection
+      check_collection
     else
       raise ArgumentError.new("Can't check for class #{target_class}")
     end
   end
 
+
+  def check_collection()
+    @collection = @local_item
+    # title
+    old_val = get_val(@fedora_data, 'http://purl.org/dc/terms/title')
+    new_val =  @collection.title
+    confirm(compare(old_val, new_val), "title", old_val, new_val)
+    # description
+    mapping = FedoraMappings.array_attributes
+    old_val = get_val(@fedora_data, FedoraMappings.work_properties['description'])
+    new_val = @collection.description
+    confirm(compare(old_val, new_val), "description", old_val, new_val)
+    # see Also
+    old_val = get_all_vals(@fedora_data, FedoraMappings.work_properties["related_url"])
+    new_val = @collection.related_url
+    confirm(compare(old_val, new_val), "related_url", old_val, new_val)
+    # membership
+    old_vals = get_all_ids(@fedora_data, 'http://pcdm.org/models#hasMember').
+      map { |m| m.gsub(/.*\//, '') }.sort
+    new_vals = @collection.contains.
+      pluck(:friendlier_id).sort
+    confirm(compare(old_val, new_val), "collection members", old_val, new_val)
+  end
+
+
+
   def check_generic_work
     @work = @local_item
+    # TODO Check title!
     check_scalar_attributes
     check_array_attributes
     check_external_id
@@ -42,7 +71,7 @@ class FedoraItemChecker
 
   def check_scalar_attributes()
     mapping = FedoraMappings.scalar_attributes
-    %w(description division file_creator provenance rights rights_holder source digitization_funder).each do |k|
+    %w(description division file_creator provenance rights rights_holder source title digitization_funder).each do |k|
       old_val = get_val(@fedora_data, FedoraMappings.work_properties[k])
       work_property_to_check = mapping.fetch(k, k).to_sym
       new_val = @work.send(work_property_to_check)
