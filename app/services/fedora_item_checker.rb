@@ -226,6 +226,23 @@ class FedoraItemChecker
     return [] unless @fedora_data.key? 'http://www.w3.org/ns/ldp#contains'
     # Fetch the unordered of member proxies:
     list_source =  get_fedora_item("#{@fedora_id}/list_source")
+
+    if @fedora_id == '3r/07/4v/25/3r074v259'
+      # Special case:
+      # This private work has a tombstone resource (HTTP error 410)
+      # at fedora/rest/prod/3r/07/4v/25/3r074v259/list_source.
+      #
+      # Nonetheless, the export and import process worked fine:
+      # https://digital.sciencehistory.org/works/3r074v259
+      # https://digital.sciencehistory.org/concern/parent/3r074v259/file_sets/xw42n8192
+      # https://kithe.sciencehistory.org/admin/works/3r074v259
+      # https://kithe.sciencehistory.org/admin/asset_files/xw42n8192
+      # There's no point in writing code for this one case:
+      # the file is private, and if we don't want it around,
+      # we can delete it in either Sufia or in Kithe.
+      return ["xw42n8192"]
+    end
+
     return [] unless list_source
     return [] unless list_source[0].key? 'http://www.iana.org/assignments/relation/first'
 
