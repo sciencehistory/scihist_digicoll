@@ -30,16 +30,18 @@ class FedoraChecker
     end
 
     # STATISTICS:
-    kithe_work_ids = Work.pluck(:friendlier_id)
     if @options[:percentage_to_check] == 100 && @contents&.length > 100
-      items_in_fedora_but_not_in_kithe = @checked_items['GenericWork'] - kithe_work_ids
-      items_in_kithe_but_not_in_fedora = kithe_work_ids - @checked_items['GenericWork']
-      log """Items in FEDORA but not in KITHE:
-      #{items_in_fedora_but_not_in_kithe}"""
-      # TODO: these should list the full
-      # Fedora ID rather than just the friendlier ID.
-      log """Items in KITHE but not in FEDORA:
-      #{items_in_kithe_but_not_in_fedora}"""
+      ['GenericWork', 'FileSet', 'Collection'].each do |type|
+        kithe_ids = lookup_target_class(type).pluck(:friendlier_id)
+        next if kithe_ids.nil?
+        next if @checked_items[type].nil?
+        items_in_fedora_but_not_in_kithe = @checked_items[type] - kithe_ids
+        items_in_kithe_but_not_in_fedora = kithe_ids - @checked_items[type]
+        log """#{type}s in FEDORA but not in KITHE:
+        #{items_in_fedora_but_not_in_kithe}"""
+        log """#{type}s in KITHE but not in FEDORA:
+        #{items_in_kithe_but_not_in_fedora}"""
+      end
     else
       log "Not running stats; didn't request all items be checked."
     end
