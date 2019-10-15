@@ -25,7 +25,6 @@ class FedoraItemChecker
     end
   end
 
-
   def check_collection()
     @collection = @local_item
     # title
@@ -211,31 +210,24 @@ class FedoraItemChecker
   end
 
   def check_contents()
-    old_val = list_source_contents.map { |x| x.gsub(/.*\//, '') }
+    old_val = contents_1.map { |x| x.gsub(/.*\//, '') }
     new_val =  @local_item.members.order(:position).pluck(:friendlier_id)
     if old_val.count > 1 && old_val[0...-1] == new_val
-      # Sufia bug: Fedora lists one extra item in "/list_source".
-      # This extra item is *not* listed in "/members", and
-      # does not show up anywhere in the Sufia front end.
+      # Sufia bug: Fedora lists one extra item in contents_1.
+      # This extra item is *not* listed in contents_2, and
+      # does not show up in the Sufia front end.
       # Workaround:
-      # Keep only list_source_contents that are *also* in members_contents.
-      old_val = old_val & members_contents()
+      # Keep only get_contents_1 that are *also* in contents_2.
+      old_val = old_val & contents_2
     end
     confirm(compare(old_val, new_val), "Contents", old_val, new_val)
   end
 
   # A list of members (either FileSets or child GenericWorks) in this GenericWork.
-  # Derived from #{@fedora_id}/list_source
-  def members_contents()
-    members_list = get_fedora_item("#{@fedora_id}/members")&.first
-    get_all_ids(members_list, 'http://www.w3.org/ns/ldp#contains').map do |tmp|
-      get_all_ids(get_fedora_item(tmp)[0], "http://www.openarchives.org/ore/terms/proxyFor")&.first&.gsub(/.*\//, '')
-    end
-  end
-
-  # A list of members (either FileSets or child GenericWorks) in this GenericWork.
+  # This is the correct order for the list of members, but it might contain extra items,
+  # repetitions, or items that point to nothing.
   # Derived from #{@fedora_id}/members
-  def list_source_contents()
+  def contents_1()
     return [] unless @fedora_data.key? 'http://www.w3.org/ns/ldp#contains'
     # Fetch the unordered of member proxies:
     list_source =  get_fedora_item("#{@fedora_id}/list_source")
@@ -276,6 +268,17 @@ class FedoraItemChecker
     end
     ordered_items
   end
+
+  # A list of members (either FileSets or child GenericWorks) in this GenericWork.
+  # This is the correct list of members, but in an arbitrary order.
+  # Derived from #{@fedora_id}/list_source
+  def contents_2()
+    members_list = get_fedora_item("#{@fedora_id}/members")&.first
+    get_all_ids(members_list, 'http://www.w3.org/ns/ldp#contains').map do |tmp|
+      get_all_ids(get_fedora_item(tmp)[0], "http://www.openarchives.org/ore/terms/proxyFor")&.first&.gsub(/.*\//, '')
+    end
+  end
+
 
   # The actual Fedora item for which this list item is a proxy, if any.
   def look_up_proxy(list_item)
@@ -506,7 +509,4 @@ class FedoraItemChecker
     # Compare as a set otherwise:
     mapped_values.to_set == b.to_set
   end
-
-
-
 end
