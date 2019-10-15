@@ -250,7 +250,10 @@
 
     <dt>Admin Note</dt>
     <dd>
-      <%= work.admin_note %>
+      <% work.admin_note.each do |note| %>
+        <p><%= simple_format note %></p>
+        <hr>
+      <% end %>
     </dd>
 
     <dt>Collections</dt>
