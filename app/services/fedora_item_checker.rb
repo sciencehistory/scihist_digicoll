@@ -211,18 +211,31 @@ class FedoraItemChecker
   end
 
   def check_contents()
-    old_val = contents.map { |x| x.gsub(/.*\//, '') }
+    old_val = list_source_contents.map { |x| x.gsub(/.*\//, '') }
     new_val =  @local_item.members.order(:position).pluck(:friendlier_id)
-    correct = compare(old_val, new_val)
-    if old_val.count > 1 &&  old_val[0...-1] == new_val
-      confirm(false, "Fedora has exactly one extra item at the end: #{old_val[-1]}", old_val, new_val)
-      return
+    if old_val.count > 1 && old_val[0...-1] == new_val
+      # Sufia bug: Fedora lists one extra item in "/list_source".
+      # This extra item is *not* listed in "/members", and
+      # does not show up anywhere in the Sufia front end.
+      # Workaround:
+      # Keep only list_source_contents that are *also* in members_contents.
+      old_val = old_val & members_contents()
     end
     confirm(compare(old_val, new_val), "Contents", old_val, new_val)
   end
 
   # A list of members (either FileSets or child GenericWorks) in this GenericWork.
-  def contents()
+  # Derived from #{@fedora_id}/list_source
+  def members_contents()
+    members_list = get_fedora_item("#{@fedora_id}/members")&.first
+    get_all_ids(members_list, 'http://www.w3.org/ns/ldp#contains').map do |tmp|
+      get_all_ids(get_fedora_item(tmp)[0], "http://www.openarchives.org/ore/terms/proxyFor")&.first&.gsub(/.*\//, '')
+    end
+  end
+
+  # A list of members (either FileSets or child GenericWorks) in this GenericWork.
+  # Derived from #{@fedora_id}/members
+  def list_source_contents()
     return [] unless @fedora_data.key? 'http://www.w3.org/ns/ldp#contains'
     # Fetch the unordered of member proxies:
     list_source =  get_fedora_item("#{@fedora_id}/list_source")
