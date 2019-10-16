@@ -53,7 +53,6 @@ class FedoraItemChecker
 
   def check_generic_work
     @work = @local_item
-    # TODO Check title!
     check_scalar_attributes
     check_array_attributes
     check_external_id
@@ -81,7 +80,7 @@ class FedoraItemChecker
 
   def check_admin_note()
     old_val = get_all_vals(@fedora_data, FedoraMappings.work_properties['admin_note'])
-    new_val = @work.admin_note ? @work.admin_note.sort : []
+    new_val = @work.admin_note ? Yajl::Parser.new.parse(@work.admin_note).sort : []
     confirm(compare(old_val, new_val), "admin_note", old_val, new_val)
   end
 
@@ -201,7 +200,7 @@ class FedoraItemChecker
 
   def is_public()
     uri = FedoraMappings.work_reflections[:access_control][:uri]
-    access_control_id   = get_all_ids(@fedora_data, uri)&.first
+    access_control_id   = get_id(@fedora_data, uri)
     return false unless access_control_id
     access_control_info = get_fedora_item(access_control_id)[0]
     access_control_list = get_all_ids(access_control_info, 'http://www.w3.org/ns/ldp#contains')
@@ -209,6 +208,14 @@ class FedoraItemChecker
       return true if allows_public_access(get_fedora_item(a_c_id)[0])
     end
     false
+  end
+
+  def allows_public_access(a_c)
+    who         = 'http://www.w3.org/ns/auth/acl#agent'
+    what        = 'http://www.w3.org/ns/auth/acl#mode'
+    the_public  = 'http://projecthydra.org/ns/auth/group#public'
+    can_read    = 'http://www.w3.org/ns/auth/acl#Read'
+    a_c[who][0]['@id'] == the_public && a_c[what][0]['@id'] == can_read
   end
 
   def check_contents()
@@ -277,7 +284,7 @@ class FedoraItemChecker
   def contents_2()
     members_list = get_fedora_item("#{@fedora_id}/members")&.first
     get_all_ids(members_list, 'http://www.w3.org/ns/ldp#contains').map do |tmp|
-      get_all_ids(get_fedora_item(tmp)[0], "http://www.openarchives.org/ore/terms/proxyFor")&.first&.gsub(/.*\//, '')
+      get_id(get_fedora_item(tmp)[0], "http://www.openarchives.org/ore/terms/proxyFor")&.gsub(/.*\//, '')
     end
   end
 
@@ -290,14 +297,6 @@ class FedoraItemChecker
   # The next list item, if any.
   def next_item(list_item)
     list_item.dig("http://www.iana.org/assignments/relation/next",  0, "@id")
-  end
-
-  def allows_public_access(a_c)
-    who         = 'http://www.w3.org/ns/auth/acl#agent'
-    what        = 'http://www.w3.org/ns/auth/acl#mode'
-    the_public  = 'http://projecthydra.org/ns/auth/group#public'
-    can_read    = 'http://www.w3.org/ns/auth/acl#Read'
-    a_c[who][0]['@id'] == the_public && a_c[what][0]['@id'] == can_read
   end
 
   def check_physical_container()
@@ -318,7 +317,7 @@ class FedoraItemChecker
 
   def check_representative()
     uri = FedoraMappings.work_reflections[:representative][:uri]
-    old_val = get_all_ids(@fedora_data, uri).map {| id| id.gsub(/^.*\//, '')}.first
+    old_val = get_id(@fedora_data, uri).gsub(/^.*\//, '')
     new_val = @work&.representative&.friendlier_id
     correct = compare(old_val, new_val)
     confirm(correct, "Representative", old_val, new_val)
@@ -404,16 +403,14 @@ class FedoraItemChecker
 
   def file_metadata
     @file_metadata ||= begin
-      file_download_id = get_all_ids(@fedora_data, 'http://pcdm.org/models#hasFile').first
+      file_download_id = get_id(@fedora_data, 'http://pcdm.org/models#hasFile')
       return nil if file_download_id.nil?
-      file_metadata_path = "#{file_download_id}/fcr:metadata"
-      get_fedora_item(file_metadata_path)[0]
+      get_fedora_item("#{file_download_id}/fcr:metadata")[0]
     end
   end
 
   def file_sha1
-    @file_sha1 ||= get_all_ids(file_metadata, 'http://www.loc.gov/premis/rdf/v1#hasMessageDigest').
-      first.gsub(/^.*:/, '')
+    @file_sha1 ||= get_id(file_metadata, 'http://www.loc.gov/premis/rdf/v1#hasMessageDigest').gsub(/^.*:/, '')
   end
 
   #
@@ -423,6 +420,9 @@ class FedoraItemChecker
   #
   #
   #
+
+
+  private
 
   def get_val(obj, key)
     obj[key][0]["@value"] unless obj[key].nil?
@@ -438,11 +438,9 @@ class FedoraItemChecker
     obj[key].map { |v| strip_prefix(v["@id"]) }
   end
 
-  def add_prefix(end_str)
-    "#{@options[:fedora_host_and_port]}/fedora/rest/prod/#{end_str}"
+  def get_id(obj, key)
+    get_all_ids(obj, key)&.first
   end
-
-  private
 
   def get_fedora_item(id_str)
     response = @fedora_connection.get('/fedora/rest/prod/' + id_str)
@@ -453,6 +451,9 @@ class FedoraItemChecker
   def strip_prefix(str)
     str.gsub(/^.*\/fedora\/rest\/prod\//, '')
   end
+
+
+
 
   def confirm(condition, str, old_value=nil, new_value=nil)
     return if condition
