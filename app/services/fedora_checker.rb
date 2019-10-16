@@ -32,24 +32,11 @@ class FedoraChecker
     # STATISTICS:
     if @options[:percentage_to_check] == 100 && @contents&.length > 100
       ['GenericWork', 'FileSet', 'Collection'].each do |type|
-
-        kithe_ids = lookup_target_class(type).pluck(:friendlier_id)
-        next if kithe_ids.nil?
-        next if @checked_items[type].nil?
-        items_in_fedora_but_not_in_kithe = @checked_items[type] - kithe_ids
-        items_in_kithe_but_not_in_fedora = kithe_ids - @checked_items[type]
-
-        # Account for collection thumb assets, which are in Kithe but not Fedora:
-        if type == 'FileSet'
-          c_t_a_list = CollectionThumbAsset.all.pluck('friendlier_id')
-          items_in_kithe_but_not_in_fedora = items_in_kithe_but_not_in_fedora - c_t_a_list
-        end
-
+        kithe_ids = all_kithe_frienldier_ids(type)
         log """#{type}s in FEDORA but not in KITHE:
-        #{items_in_fedora_but_not_in_kithe}"""
-
+        #{@checked_items[type] - kithe_ids}"""
         log """#{type}s in KITHE but not in FEDORA:
-        #{items_in_kithe_but_not_in_fedora}"""
+        #{kithe_ids - @checked_items[type]}"""
       end
     else
       log "Not running stats; didn't request all items be checked."
@@ -57,6 +44,15 @@ class FedoraChecker
   end
 
   private
+
+  # Fetch all Kithe friendlier_ids of a given type.
+  # We're not interested in collection thumb assets;
+  # these didn't exist in Sufia anyway.
+  def all_kithe_frienldier_ids(type)
+    klass = lookup_target_class(type)
+    klass = klass.where.not(type:'CollectionThumbAsset') if type == 'FileSet'
+    klass.pluck(:friendlier_id)
+  end
 
   # Only check roughly a certain percentage of the items.
   # Useful for testing.
