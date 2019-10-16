@@ -317,7 +317,7 @@ class FedoraItemChecker
 
   def check_representative()
     uri = FedoraMappings.work_reflections[:representative][:uri]
-    old_val = get_id(@fedora_data, uri).gsub(/^.*\//, '')
+    old_val = get_id(@fedora_data, uri)&.gsub(/^.*\//, '')
     new_val = @work&.representative&.friendlier_id
     correct = compare(old_val, new_val)
     confirm(correct, "Representative", old_val, new_val)
@@ -410,7 +410,7 @@ class FedoraItemChecker
   end
 
   def file_sha1
-    @file_sha1 ||= get_id(file_metadata, 'http://www.loc.gov/premis/rdf/v1#hasMessageDigest').gsub(/^.*:/, '')
+    @file_sha1 ||= get_id(file_metadata, 'http://www.loc.gov/premis/rdf/v1#hasMessageDigest')&.gsub(/^.*:/, '')
   end
 
   #
