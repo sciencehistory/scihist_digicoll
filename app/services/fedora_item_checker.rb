@@ -80,7 +80,7 @@ class FedoraItemChecker
 
   def check_admin_note()
     old_val = get_all_vals(@fedora_data, FedoraMappings.work_properties['admin_note'])
-    new_val = @work.admin_note ? Yajl::Parser.new.parse(@work.admin_note).sort : []
+    new_val = @work.admin_note.sort
     confirm(compare(old_val, new_val), "admin_note", old_val, new_val)
   end
 
