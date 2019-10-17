@@ -1,4 +1,3 @@
-require 'yajl'
 require 'net/http'
 
 namespace :scihist do
