@@ -64,7 +64,7 @@ gem "attr_json", git: "https://github.com/jrochkind/attr_json" #path: "../attr_j
 # For parsing large json files (used for checking import against Fedora).
 gem 'yajl-ruby', require: 'yajl'
 
-gem 'simple_form', "~> 4.0"
+gem 'simple_form', "~> 5.0"
 gem "cocoon"
 
 gem "browse-everything", "~> 1.0"

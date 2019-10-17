@@ -128,7 +128,7 @@ class Importers::GenericWorkAuditor < Importers::Auditor
       'division' => 'department'
     }
 
-    %w(title description provenance format source rights rights_holder file_creator division admin_note digitization_funder).each do |k|
+    %w(title description provenance format source rights rights_holder file_creator division digitization_funder).each do |k|
       next if @metadata[k].nil?
       v = metadata[k].class == String ? metadata[k] : metadata[k].first
       property_to_set = mapping.fetch(k, k)
@@ -140,7 +140,7 @@ class Importers::GenericWorkAuditor < Importers::Auditor
     mapping = {
       'genre_string' => 'genre'
     }
-    %w(extent medium language genre_string subject additional_title exhibition project series_arrangement related_url).each do |source_k|
+    %w(admin_note extent medium language genre_string subject additional_title exhibition project series_arrangement related_url).each do |source_k|
       dest_k = mapping.fetch(source_k, source_k)
       if metadata[source_k].nil?
         confirm(@item.send(dest_k) == [], source_k)

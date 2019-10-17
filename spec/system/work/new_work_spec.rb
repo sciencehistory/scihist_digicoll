@@ -19,7 +19,7 @@ RSpec.describe "New Work form", :logged_in_user, type: :system, js: true do
   scenario "save, edit, and re-save new work" do
     visit new_admin_work_path
     # Single-value free text
-    %w(title description digitization_funder source admin_note rights_holder).each do |p|
+    %w(title description digitization_funder source rights_holder).each do |p|
       fill_in "work[#{p}]", with: work.send(p)
     end
 
@@ -33,6 +33,19 @@ RSpec.describe "New Work form", :logged_in_user, type: :system, js: true do
           fill_in with: all_items[i]
       end
     end
+
+    # Multi-value free text in TEXTAREA
+    %w(admin_note).each do |p|
+      attr_name = Work.human_attribute_name(p)
+      all_items = work.send(p)
+      all_items.length.times do |i|
+        click_link("Add another #{attr_name}") unless i == 0
+        all("fieldset.work_#{p} textarea")[i].
+          fill_in with: all_items[i]
+      end
+    end
+
+
 
     # Multi-value free text (2)
     %w(extent series_arrangement related_url).each do |p|

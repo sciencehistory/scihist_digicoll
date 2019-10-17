@@ -20,6 +20,11 @@ class DziFiles
 
     def self.after_commit(asset)
       if asset.destroyed?
+        if asset.md5.blank?
+          Rails.logger.warn("Deleting file without an md5, can't find/delete DZI: #{asset.friendlier_id || asset.id}")
+          return
+        end
+
         # we're gonna use the same kithe promotion_directives for :delete to
         # control how we do dzi deletion too.
         Kithe::TimingPromotionDirective.new(
