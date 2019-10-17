@@ -63,7 +63,7 @@ class FedoraChecker
   end
 
   def local_item(url)
-    Kithe::Model.find_by_friendlier_id(url.gsub(/^.*\//, ''))
+    Kithe::Model.readonly.find_by_friendlier_id(url.gsub(/^.*\//, ''))
   end
 
   def fedora_connection
