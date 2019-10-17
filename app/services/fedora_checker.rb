@@ -3,9 +3,9 @@ require "byebug"
 class FedoraChecker
   def initialize(options:)
     @options = options
-    File.open(options[:metadata_path], 'r') do |f|
-      @data = Yajl::Parser.new.parse(f)
-    end
+
+    # This file contains a long list of Fedora ids and little else.
+    @data = JSON.parse(File.read(options[:metadata_path]))
     @checked_items = {}
   end
 
@@ -17,6 +17,7 @@ class FedoraChecker
     unless defined?(@contents)
       @contents = @data[0]["http://www.w3.org/ns/ldp#contains"].
         map { |cs| cs["@id"].gsub(/^.*\/fedora\/rest\/prod\//, '') }
+      @data = nil # no need for the full data after this.
     end
 
     if @contents&.length > 10
@@ -44,6 +45,7 @@ class FedoraChecker
   end
 
   private
+
 
   # Fetch all Kithe friendlier_ids of a given type.
   # We're not interested in collection thumb assets;
@@ -93,7 +95,7 @@ class FedoraChecker
   # Checks one item against Fedora.
   def dispatch_item(fedora_id)
     response = fedora_connection.get('/fedora/rest/prod/' + fedora_id).body
-    fedora_data = Yajl::Parser.new.parse(response)[0]
+    fedora_data = JSON.parse(response)[0]
     model = fedora_data["info:fedora/fedora-system:def/model#hasModel"][0]["@value"]
     target_class = lookup_target_class(model)
     return if target_class.nil?

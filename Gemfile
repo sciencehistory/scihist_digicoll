@@ -61,9 +61,6 @@ gem 'kithe', git: "https://github.com/sciencehistory/kithe.git"
 # temporary git master, we should get on an attr_json release once we're settled down
 gem "attr_json", git: "https://github.com/jrochkind/attr_json" #path: "../attr_json"
 
-# For parsing large json files (used for checking import against Fedora).
-gem 'yajl-ruby', require: 'yajl'
-
 gem 'simple_form', "~> 5.0"
 gem "cocoon"
 
