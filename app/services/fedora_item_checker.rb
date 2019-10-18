@@ -524,7 +524,7 @@ class FedoraItemChecker
         Scihist:
           #{new_value}"""
 
-    # log(msg)
+    log(msg)
   end
 
   def log(msg)
