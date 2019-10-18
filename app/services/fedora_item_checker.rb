@@ -37,44 +37,25 @@ class FedoraItemChecker
   def check_collection()
     @collection = @local_item
     # title
-    # old_val = item_val('title')
-    # new_val =  @collection.title
-    # confirm(compare(old_val, new_val), "title", old_val, new_val)
     check_and_log( flag: "title",
       old_val: item_val('title'),
       new_val: @collection.title,
     )
-
     # description
-    # mapping = FedoraMappings.array_attributes
-    # old_val = all_item_vals('description').select { |d| d.present?}.first
-    # new_val = @collection.description
     check_and_log( flag: 'description',
       old_val: all_item_vals('description').select { |d| d.present?}.first,
       new_val: @collection.description,
     )
-
     # see also
-    # old_val = all_item_vals("related_url")
-    # new_val = @collection.related_url
-    # confirm(compare(old_val, new_val), "related_url", old_val, new_val)
-
     check_and_log( flag: "related_url",
       old_val: all_item_vals("related_url"),
       new_val: @collection.related_url
     )
-
     # membership
-    # old_vals = all_item_ids('http://pcdm.org/models#hasMember').
-    #   map { |m| m.gsub(/.*\//, '') }.sort
-    # new_vals = @collection.contains.
-    #   pluck(:friendlier_id).sort
-    # confirm(compare(old_val, new_val), "collection members", old_val, new_val)
     check_and_log( flag: "collection members",
       old_val: all_item_ids('http://pcdm.org/models#hasMember').map { |m| m.gsub(/.*\//, '') }.sort,
       new_val:  @collection.contains.pluck(:friendlier_id).sort
     )
-
     # Access control:
     check_access_control
   end
@@ -97,20 +78,14 @@ class FedoraItemChecker
     check_work_representative
     check_work_contents
 
-    # These are checked for both works and assets:
     check_access_control
     check_created_at
     check_modified
   end
 
-
   def check_work_scalar_attributes()
     mapping = FedoraMappings.scalar_attributes
     %w(description division provenance rights rights_holder source title digitization_funder).each do |k|
-      # old_val = item_val(k)
-      # work_property_to_check = mapping.fetch(k, k).to_sym
-      # new_val = @work.send(work_property_to_check)
-      #confirm(compare(old_val, new_val), "#{k}", old_val, new_val)
       check_and_log( flag: k,
         old_val: item_val(k),
         new_val: @work.send(mapping.fetch(k, k).to_sym)
@@ -119,9 +94,6 @@ class FedoraItemChecker
   end
 
   def check_work_admin_note()
-    # old_val = all_item_vals('admin_note')
-    # new_val = @work.admin_note.sort
-    # confirm(compare(old_val, new_val), "admin_note", old_val, new_val)
     check_and_log( flag: "admin_note",
       old_val: all_item_vals('admin_note'),
       new_val: @work.admin_note.sort
@@ -131,21 +103,12 @@ class FedoraItemChecker
   def check_work_array_attributes()
     mapping = FedoraMappings.array_attributes
     %w(extent medium language genre_string subject additional_title exhibition project series_arrangement related_url).each do |k|
-      #work_property_to_check = mapping.fetch(k, k).to_sym
-      # old_val = all_item_vals(k)
-      # new_val = @work.send(work_property_to_check).sort
-      # confirm(compare(old_val, new_val), "#{k}", old_val, new_val)
       check_and_log( flag: k,
         old_val:  all_item_vals(k),
         new_val: @work.send(mapping.fetch(k, k).to_sym).sort
       )
     end
-
     # Format / Resource type
-    # old_val = all_item_vals('resource_type')
-    # new_val = @work.format
-    # correct = compare(old_val, new_val, :compare_format, order_matters:false)
-    # confirm(correct, "Format", old_val, new_val)
     check_and_log( flag: "Format",
       old_val:  all_item_vals('resource_type'),
       new_val: @work.format,
@@ -159,10 +122,6 @@ class FedoraItemChecker
   end
 
   def check_work_external_id()
-    # old_val = all_item_vals("identifier")
-    # new_val = @work.external_id.map {|id| id.attributes }
-    # correct = compare(old_val, new_val, :compare_external_id, order_matters:false)
-    # confirm(correct, "External id", old_val, new_val)
     check_and_log( flag: "External id",
       old_val: all_item_vals("identifier"),
       new_val: @work.external_id.map {|id| id.attributes },
@@ -175,14 +134,8 @@ class FedoraItemChecker
     {'category' => category, 'value' => value }
   end
 
-
   def check_work_creator()
     Work::Creator::CATEGORY_VALUES.each do |k|
-      # old_val = all_item_vals(k)
-      # new_val = @work.creator.
-      #   select { |c| c.category == k }.
-      #   map {|id| id.attributes['value'] }
-      # confirm(compare(old_val, new_val, order_matters: false), "#{k}", old_val, new_val)
       check_and_log( flag: k,
         old_val: all_item_vals(k),
         new_val: @work.creator.select { |c| c.category == k }.map {|id| id.attributes['value'] },
@@ -192,9 +145,6 @@ class FedoraItemChecker
   end
 
   def check_work_file_creator()
-    # old_val = item_val('file_creator')
-    # new_val = @work.file_creator
-    # confirm(compare(old_val, new_val), "file_creator", old_val, new_val)
     check_and_log( flag: "file_creator",
       old_val: item_val('file_creator'),
       new_val: @work.file_creator
@@ -203,13 +153,11 @@ class FedoraItemChecker
 
   def check_work_additional_credit()
     uri = FedoraMappings.work_reflections[:additional_credit][:uri]
-    # old_val = all_item_ids(uri)
-    # new_val = @work.additional_credit.map {|id| id.attributes }
-    # correct = compare(old_val, new_val, :compare_additional_credit, order_matters:false )
-    # confirm(correct, "Additional credit", old_val.map {|x| compare_additional_credit(x)}, new_val)
     check_and_log( flag: "Additional credit",
       old_val: all_item_ids(uri),
       new_val: @work.additional_credit.map {|id| id.attributes }
+      compare_method: :compare_additional_credit,
+      order_matters:false
     )
   end
   def compare_additional_credit(item)
@@ -220,15 +168,8 @@ class FedoraItemChecker
     { "name" => name, "role" => mapping.fetch(role, role) }
   end
 
-
   def check_work_date()
     uri = FedoraMappings.work_reflections[:date_of_work][:uri]
-    # old_val = all_item_ids(uri)
-    # new_val = @work.date_of_work.
-    #   map {|dw|  dw.attributes }.
-    #   map {|att| att.select { |k,v| v != ""} }
-    # correct = compare(old_val, new_val, :compare_date, order_matters: false)
-    # confirm(correct, "Date", old_val.map {|x| compare_date(x)}, new_val)
     check_and_log( flag: "Date",
       old_val: all_item_ids(uri),
       new_val: @work.date_of_work.
@@ -253,12 +194,6 @@ class FedoraItemChecker
 
   def check_work_place()
     Work::Place::CATEGORY_VALUES.each do |place_category|
-      # old_val = all_item_vals(place_category)
-      # new_val = @work.place.
-      #   select {|p| p.attributes['category'] == place_category}.
-      #   map { |c| c.attributes['value']}
-      # correct = compare(old_val, old_val)
-      # confirm(correct, place_category, old_val, new_val)
       check_and_log( flag: place_category,
         old_val: all_item_vals(place_category),
         new_val: @work.place.
@@ -270,10 +205,6 @@ class FedoraItemChecker
 
   def check_work_inscription()
     uri = FedoraMappings.work_reflections[:inscription][:uri]
-    # old_val =  all_item_ids(uri)
-    # new_val = @work.inscription.map { |i| i.attributes}
-    # correct = compare(old_val, new_val, :compare_inscription, order_matters:false)
-    # confirm(correct, "Inscription", old_val.map {|x| compare_inscription(x)}, new_val)
     check_and_log( flag: "Inscription",
       old_val: all_item_ids(uri),
       new_val: @work.inscription.map { |i| i.attributes},
@@ -289,10 +220,6 @@ class FedoraItemChecker
 
 
   def check_access_control()
-    # old_val = is_public
-    # new_val = @local_item.published?
-    # correct = compare(old_val, new_val)
-    # confirm(correct, "Published?", old_val, new_val)
     check_and_log( flag: "Published?",
       old_val: is_public,
       new_val: @local_item.published?,
@@ -336,7 +263,6 @@ class FedoraItemChecker
       old_val: old_val,
       new_val: new_val
     )
-    #confirm(compare(old_val, new_val), "Contents", old_val, new_val)
   end
 
   # A list of members (either FileSets or child GenericWorks) in this GenericWork.
@@ -408,11 +334,6 @@ class FedoraItemChecker
   end
 
   def check_work_physical_container()
-    # raw_fedora_value = item_val('physical_container')
-    # old_val = compare_physical_container(raw_fedora_value)
-    # new_val = @work&.physical_container&.attributes&.reject {|k, v| v == ""}
-    # correct = compare(old_val, new_val)
-    # confirm(correct, "Physical Container", old_val, new_val)
     check_and_log( flag: "Physical Container",
       old_val: compare_physical_container(item_val('physical_container')),
       new_val: @work&.physical_container&.attributes&.reject {|k, v| v == ""}
@@ -429,10 +350,6 @@ class FedoraItemChecker
 
   def check_work_representative()
     uri = FedoraMappings.work_reflections[:representative][:uri]
-    # old_val = item_id(uri)&.gsub(/^.*\//, '')
-    # new_val = @work&.representative&.friendlier_id
-    # correct = compare(old_val, new_val)
-    # confirm(correct, "Representative", old_val, new_val)
     check_and_log( flag: "Representative",
       old_val: item_id(uri)&.gsub(/^.*\//, ''),
       new_val: @work&.representative&.friendlier_id
@@ -456,19 +373,12 @@ class FedoraItemChecker
     check_file_set_title
     check_file_set_filename
     check_file_set_integrity
-
-    # These are checked for both works and assets:
     check_access_control
     check_created_at
     check_modified
-
   end
 
   def check_file_set_filename()
-    # new_val = @asset&.file&.metadata.try { |h| h["filename"]}
-    # old_val = get_val(file_metadata,'http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#filename')
-    # correct = compare(old_val, new_val)
-    # confirm(correct, "Original filename", old_val, new_val)
     check_and_log( flag: "Original filename",
       old_val: get_val(file_metadata,'http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#filename'),
       new_val: @asset&.file&.metadata.try { |h| h["filename"]}
@@ -485,24 +395,7 @@ class FedoraItemChecker
     )
   end
 
-  def check_and_log(flag:, old_val:, new_val:, compare_method: nil, order_matters: true)
-    if compare_method
-      old_val = old_val.map { |el| send(compare_method, el) }
-    end
-    result = FedoraPropertyChecker.new(
-      flag: flag,
-      old_val: old_val,
-      new_val: new_val,
-      fedora_id: @fedora_id
-    ).check()
-    log(result) if result
-  end
-
   def check_created_at()
-    # old_val = one_second_precision(item_val('date_uploaded'))
-    # new_val = @local_item.created_at.utc
-    # correct = compare(old_val, new_val)
-    # confirm(correct, "created_at", old_val, new_val)
     check_and_log(
       flag: 'created_at',
       old_val: one_second_precision(item_val('date_uploaded')),
@@ -511,10 +404,6 @@ class FedoraItemChecker
   end
 
   def check_modified()
-    # old_val = one_second_precision(item_val("date_modified"))
-    # new_val = @local_item.updated_at.utc
-    # correct = compare(old_val, new_val)
-    # confirm(correct, "modified", old_val, new_val)
     check_and_log(
       flag: 'created_at',
       old_val: one_second_precision(item_val("date_modified")),
@@ -541,9 +430,6 @@ class FedoraItemChecker
     end
 
     # Check its sha1 against Fedora:
-    # old_val = file_sha1
-    # new_val = @asset.sha1
-    # confirm(compare(old_val, new_val), "sha1", old_val, new_val)
     check_and_log(
       flag: "sha1",
       old_val: file_sha1,
@@ -592,8 +478,6 @@ class FedoraItemChecker
     get_id(@fedora_data, key)
   end
 
-
-
   # Extract one or more metadata values from a Fedora properties hash:
   def get_val(obj, key)
     obj[key][0]["@value"] unless obj[key].nil?
@@ -602,7 +486,6 @@ class FedoraItemChecker
     return [] if  obj[key].nil?
     obj[key].map { |v| v['@value'] }.sort
   end
-
 
   # Get one or several URLs from a Fedora properties hash:
   def get_id(obj, key)
@@ -614,7 +497,6 @@ class FedoraItemChecker
     obj[key].map { |v| strip_prefix(v["@id"]) }
   end
 
-
   def get_fedora_item(id_str)
     response = @fedora_connection.get('/fedora/rest/prod/' + id_str)
     return nil if [410, 404].include?(response.status)
@@ -625,65 +507,20 @@ class FedoraItemChecker
     str.gsub(/^.*\/fedora\/rest\/prod\//, '')
   end
 
-
-
-
-  # def confirm(condition, str, old_value=nil, new_value=nil)
-  #   return if condition
-
-  #   prefix = if @local_item
-  #     "#{@model} #{@local_item.friendlier_id} [#{@fedora_id}]"
-  #   else
-  #     "#{@model} [#{fedora_id}]"
-  #   end
-
-  #   msg = """ERROR: #{prefix} ===> #{str}
-  #       Fedora:
-  #         #{old_value}
-  #       Scihist:
-  #         #{new_value}"""
-
-  #   log(msg)
-  # end
+  def check_and_log(flag:, old_val:, new_val:, compare_method: nil, order_matters: true)
+    if compare_method
+      old_val = old_val.map { |el| send(compare_method, el) }
+    end
+    result = FedoraPropertyChecker.new(
+      flag: flag,
+      old_val: old_val,
+      new_val: new_val,
+      fedora_id: @fedora_id
+    ).check()
+    log(result) if result
+  end
 
   def log(msg)
     @progress_bar ? @progress_bar.log(msg) : puts(msg)
   end
-
-  # # Tests for equivalency between a and b.
-  # def compare(a, b, compare_method=nil, order_matters:true)
-  #   if (a.is_a? Array) && (b.is_a? Array)
-  #     return compare_arrays(a, b, compare_method, order_matters)
-  #   end
-  #   compare_scalars(a, b)
-  # end
-
-  # #Compare two arrays. A method passed in as compare_method
-  # # will be mapped to a before the comparison.
-  # def compare_arrays(a, b, compare_method, order_matters)
-  #   # If a mapping method is provided,
-  #   # map the values before comparing:
-  #   mapped_values = if compare_method.nil?
-  #     a
-  #   else
-  #     a.map { |el| send(compare_method, el) }
-  #   end
-
-  #   # Compare as an array if order matters:
-  #   return mapped_values == b if order_matters
-
-  #   # Compare as a set otherwise:
-  #   mapped_values.to_set == b.to_set
-  # end
-
-  # # For our purposes, if an item is
-  # # nil in Fedora and "" in scihist_digicoll,
-  # # or vice-versa, that's fine.
-  # def compare_scalars(a, b)
-  #   x = a.present? ? a : nil
-  #   y = b.present? ? b : nil
-  #   x == y
-  # end
-
 end
-
