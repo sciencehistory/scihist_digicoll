@@ -277,7 +277,7 @@ class FedoraItemChecker
     check_and_log( flag: "Inscription",
       old_val: all_item_ids(uri),
       new_val: @work.inscription.map { |i| i.attributes},
-      compare_method: compare_inscription,
+      compare_method: :compare_inscription,
       order_matters: false
     )
   end
@@ -321,7 +321,7 @@ class FedoraItemChecker
 
   def check_work_contents()
     @unchecked_metadata.delete ('http://www.w3.org/ns/ldp#contains')
-
+    new_val = @local_item.members.order(:position).pluck(:friendlier_id)
     old_val = contents_1.map { |x| x.gsub(/.*\//, '') }
     if old_val.count > 1 && old_val[0...-1] == new_val
       # Sufia bug: Fedora lists one extra item in contents_1.
@@ -334,7 +334,7 @@ class FedoraItemChecker
 
     check_and_log( flag: "Contents",
       old_val: old_val,
-      new_val: @local_item.members.order(:position).pluck(:friendlier_id)
+      new_val: new_val
     )
     #confirm(compare(old_val, new_val), "Contents", old_val, new_val)
   end
@@ -487,7 +487,7 @@ class FedoraItemChecker
 
   def check_and_log(flag:, old_val:, new_val:, compare_method: nil, order_matters: true)
     if compare_method
-      old_val = old_val.map { |el| send(@compare_method, el) }
+      old_val = old_val.map { |el| send(compare_method, el) }
     end
     result = FedoraPropertyChecker.new(
       flag: flag,
@@ -495,7 +495,7 @@ class FedoraItemChecker
       new_val: new_val,
       fedora_id: @fedora_id
     ).check()
-    log(result)
+    log(result) if result
   end
 
   def check_created_at()
