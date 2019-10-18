@@ -14,12 +14,10 @@ class FedoraUnneededMetadata
 
       #Creators and modifiers:
       'http://fedora.info/definitions/v4/repository#createdBy' =>
-        """We are not using this in the new app.""",
+        """We are not using this in qthe new app.""",
       'http://scholarsphere.psu.edu/ns#proxyDepositor' =>
         """We are not using this in the new app.""",
       'http://purl.org/dc/terms/creator' =>
-        """We are not using this in the new app.""",
-      'http://purl.org/dc/elements/1.1/creator' =>
         """We are not using this in the new app.""",
       'http://id.loc.gov/vocabulary/relators/dpt' =>
         """We are not using this in the new app.""",
@@ -74,7 +72,9 @@ class FedoraUnneededMetadata
       'http://scholarsphere.psu.edu/ns#importUrl' =>
         """We are not using this in the new app""",
       'http://www.w3.org/ns/ldp#contains' =>
-        """We get file metadata from http://pcdm.org/models#hasFile"""
+        """We get file metadata from http://pcdm.org/models#hasFile""",
+      'http://purl.org/dc/elements/1.1/creator' =>
+        """We don't use file set creator information."""
     }
   end
 

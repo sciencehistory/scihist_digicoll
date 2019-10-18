@@ -142,7 +142,7 @@ class FedoraItemChecker
       new_val = @work.creator.
         select { |c| c.category == k }.
         map {|id| id.attributes['value'] }
-      confirm(compare(old_val, new_val), "#{k}", old_val, new_val)
+      confirm(compare(old_val, new_val, order_matters: false), "#{k}", old_val, new_val)
     end
   end
 
@@ -193,7 +193,7 @@ class FedoraItemChecker
 
   def check_work_place()
     Work::Place::CATEGORY_VALUES.each do |place_category|
-      old_val = all_item_vals('place_category')
+      old_val = all_item_vals(place_category)
       new_val = @work.place.
         select {|p| p.attributes['category'] == place_category}.
         map { |c| c.attributes['value']}
@@ -395,14 +395,14 @@ class FedoraItemChecker
 
   def check_created_at()
     old_val = one_second_precision(item_val('date_uploaded'))
-    new_val = @local_item.created_at
+    new_val = @local_item.created_at.utc
     correct = compare(old_val, new_val)
     confirm(correct, "created_at", old_val, new_val)
   end
 
   def check_modified()
     old_val = one_second_precision(item_val("date_modified"))
-    new_val = @local_item.updated_at
+    new_val = @local_item.updated_at.utc
     correct = compare(old_val, new_val)
     confirm(correct, "modified", old_val, new_val)
   end
