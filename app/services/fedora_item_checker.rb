@@ -155,7 +155,7 @@ class FedoraItemChecker
     uri = FedoraMappings.work_reflections[:additional_credit][:uri]
     check_and_log( flag: "Additional credit",
       old_val: all_item_ids(uri),
-      new_val: @work.additional_credit.map {|id| id.attributes }
+      new_val: @work.additional_credit.map {|id| id.attributes },
       compare_method: :compare_additional_credit,
       order_matters:false
     )
