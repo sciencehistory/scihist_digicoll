@@ -2,8 +2,7 @@ require "byebug"
 
 # Checks a single property in a Fedora item.
 class FedoraPropertyChecker
-
-  def initialize(old_val:, new_val:, flag:, fedora_id:, order_matters: false)
+  def initialize(old_val:, new_val:, flag:, fedora_id:, order_matters:)
     @old_val = old_val
     @new_val = new_val
     @flag = flag
@@ -12,17 +11,12 @@ class FedoraPropertyChecker
   end
 
   def check()
-    correct = compare(@old_val, @new_val)
-    confirm(correct, @flag, @old_val, @new_val)
-  end
-
-  def confirm(condition, flag, old_value, new_value)
-    return if condition
-    """ERROR: #{@fedora_id} ===> #{flag}
+    return if compare(@old_val, @new_val)
+    """ERROR: #{@fedora_id} ===> #{@flag}
         Fedora:
-          #{old_value}
+          #{@old_val}
         Scihist:
-          #{new_value}"""
+          #{@new_val}"""
   end
 
   # Tests for equivalency between a and b.
@@ -49,6 +43,4 @@ class FedoraPropertyChecker
     y = b.present? ? b : nil
     x == y
   end
-
 end
-
