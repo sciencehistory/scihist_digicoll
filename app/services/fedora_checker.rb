@@ -14,6 +14,14 @@ class FedoraChecker
   Depending on its hasModel, we will process it in a different way.
   """
   def check
+    # @contents = [
+    #   'g4/45/cd/18/g445cd18p',
+    #   '9g/54/xh/89/9g54xh89h',
+    #   'k9/30/bx/52/k930bx52k',
+    #   '6d/56/zw/84/6d56zw84m',
+    #   'hx/11/xg/19/hx11xg19w',
+    #   'gf/06/g2/69/gf06g269z',
+    # ]
     unless defined?(@contents)
       @contents = @data[0]["http://www.w3.org/ns/ldp#contains"].
         map { |cs| cs["@id"].gsub(/^.*\/fedora\/rest\/prod\//, '') }
@@ -77,11 +85,7 @@ class FedoraChecker
   end
 
   def log(str)
-    if @progress_bar
-      @progress_bar.log(str)
-    else
-      puts(str)
-    end
+    @progress_bar ? @progress_bar.log(str) : puts(str)
   end
 
   def lookup_target_class(source_class)
@@ -92,12 +96,22 @@ class FedoraChecker
     }[source_class]
   end
 
+
+  def remove_unneeded_items!(fedora_data, target_class)
+    keys_to_remove = FedoraUnneededMetadata.unneeded_keys(target_class)
+    keys_to_remove.each {|k| fedora_data.delete(k)}
+  end
+
   # Checks one item against Fedora.
   def dispatch_item(fedora_id)
     response = fedora_connection.get('/fedora/rest/prod/' + fedora_id).body
     fedora_data = JSON.parse(response)[0]
+
     model = fedora_data["info:fedora/fedora-system:def/model#hasModel"][0]["@value"]
     target_class = lookup_target_class(model)
+
+    remove_unneeded_items!(fedora_data, target_class)
+
     return if target_class.nil?
 
     kithe_item = local_item(fedora_data['@id'])

@@ -9,8 +9,12 @@ class FedoraItemChecker
     @progress_bar =  progress_bar
     @options = options
 
+    @properties_to_check = fedora_data.keys.sort
+
     @fedora_id = strip_prefix(fedora_data['@id'])
-    @model = get_val(fedora_data,"info:fedora/fedora-system:def/model#hasModel")
+    @properties_to_check.delete ('@id')
+
+    @model = item_val('has_model')
   end
 
   def check(target_class)
@@ -23,40 +27,51 @@ class FedoraItemChecker
     else
       raise ArgumentError.new("Can't check for class #{target_class}")
     end
+
+    if @properties_to_check.present?
+      log """ERROR: #{@fedora_id} unchecked metadata. #{ pp @properties_to_check.sort }"""
+    end
+
   end
 
   def check_collection()
     @collection = @local_item
     # title
-    old_val = get_val(@fedora_data, 'http://purl.org/dc/terms/title')
+    old_val = item_val('title')
     new_val =  @collection.title
     confirm(compare(old_val, new_val), "title", old_val, new_val)
+
     # description
     mapping = FedoraMappings.array_attributes
-    old_val = get_all_vals(@fedora_data, FedoraMappings.work_properties['description']).
-      select { |d| d.present?}.first
+    old_val = all_item_vals('description').select { |d| d.present?}.first
     new_val = @collection.description
     confirm(compare(old_val, new_val), "description", old_val, new_val)
+
     # see also
-    old_val = get_all_vals(@fedora_data, FedoraMappings.work_properties["related_url"])
+    old_val = all_item_vals("related_url")
     new_val = @collection.related_url
     confirm(compare(old_val, new_val), "related_url", old_val, new_val)
+
     # membership
-    old_vals = get_all_ids(@fedora_data, 'http://pcdm.org/models#hasMember').
+    old_vals = all_item_ids('http://pcdm.org/models#hasMember').
       map { |m| m.gsub(/.*\//, '') }.sort
     new_vals = @collection.contains.
       pluck(:friendlier_id).sort
     confirm(compare(old_val, new_val), "collection members", old_val, new_val)
+
+    # Access control:
+    check_access_control
   end
 
 
-
   def check_generic_work
+
     @work = @local_item
     check_work_scalar_attributes
     check_work_array_attributes
     check_work_external_id
     check_work_creator
+    check_work_file_creator
     check_work_additional_credit
     check_work_date
     check_work_place
@@ -65,13 +80,18 @@ class FedoraItemChecker
     check_work_admin_note
     check_work_representative
     check_work_contents
+
+    # These are checked for both works and assets:
     check_access_control
+    check_created_at
+    check_modified
   end
+
 
   def check_work_scalar_attributes()
     mapping = FedoraMappings.scalar_attributes
-    %w(description division file_creator provenance rights rights_holder source title digitization_funder).each do |k|
-      old_val = get_val(@fedora_data, FedoraMappings.work_properties[k])
+    %w(description division provenance rights rights_holder source title digitization_funder).each do |k|
+      old_val = item_val(k)
       work_property_to_check = mapping.fetch(k, k).to_sym
       new_val = @work.send(work_property_to_check)
       confirm(compare(old_val, new_val), "#{k}", old_val, new_val)
@@ -79,24 +99,22 @@ class FedoraItemChecker
   end
 
   def check_work_admin_note()
-    old_val = get_all_vals(@fedora_data, FedoraMappings.work_properties['admin_note'])
-    byebug unless @work.admin_note.is_a? Array
+    old_val = all_item_vals('admin_note')
     new_val = @work.admin_note.sort
     confirm(compare(old_val, new_val), "admin_note", old_val, new_val)
   end
 
   def check_work_array_attributes()
     mapping = FedoraMappings.array_attributes
-    %w(extent medium language genre_string subject additional_title exhibition project series_arrangement related_url).each do |source_k|
-      work_property_to_check = mapping.fetch(source_k, source_k).to_sym
-      old_val = get_all_vals(@fedora_data, FedoraMappings.work_properties[source_k])
+    %w(extent medium language genre_string subject additional_title exhibition project series_arrangement related_url).each do |k|
+      work_property_to_check = mapping.fetch(k, k).to_sym
+      old_val = all_item_vals(k)
       new_val = @work.send(work_property_to_check).sort
-      confirm(compare(old_val, new_val), "#{source_k}", old_val, new_val)
+      confirm(compare(old_val, new_val), "#{k}", old_val, new_val)
     end
 
     # Format / Resource type
-    old_val = get_all_vals(@fedora_data, FedoraMappings.
-      work_properties['resource_type'])
+    old_val = all_item_vals('resource_type')
     new_val = @work.format
     correct = compare(old_val, new_val, :compare_format, order_matters:false)
     confirm(correct, "Format", old_val, new_val)
@@ -107,7 +125,7 @@ class FedoraItemChecker
   end
 
   def check_work_external_id()
-    old_val = get_all_vals(@fedora_data, FedoraMappings.work_properties["identifier"])
+    old_val = all_item_vals("identifier")
     new_val = @work.external_id.map {|id| id.attributes }
     correct = compare(old_val, new_val, :compare_external_id, order_matters:false)
     confirm(correct, "External id", old_val, new_val)
@@ -120,18 +138,24 @@ class FedoraItemChecker
 
   def check_work_creator()
     Work::Creator::CATEGORY_VALUES.each do |k|
-      old_val = get_all_vals(@fedora_data, FedoraMappings.work_properties[k])
+      old_val = all_item_vals(k)
       new_val = @work.creator.
         select { |c| c.category == k }.
         map {|id| id.attributes['value'] }
-      confirm(compare(old_val, new_val, order_matters: false), "#{k}", old_val, new_val)
+      confirm(compare(old_val, new_val), "#{k}", old_val, new_val)
     end
+  end
+
+  def check_work_file_creator()
+    old_val = item_val('file_creator')
+    new_val = @work.file_creator
+    confirm(compare(old_val, new_val), "file_creator", old_val, new_val)
   end
 
 
   def check_work_additional_credit()
     uri = FedoraMappings.work_reflections[:additional_credit][:uri]
-    old_val = get_all_ids(@fedora_data, uri)
+    old_val = all_item_ids(uri)
     new_val = @work.additional_credit.map {|id| id.attributes }
     correct = compare(old_val, new_val, :compare_additional_credit, order_matters:false )
     confirm(correct, "Additional credit", old_val.map {|x| compare_additional_credit(x)}, new_val)
@@ -147,7 +171,7 @@ class FedoraItemChecker
 
   def check_work_date()
     uri = FedoraMappings.work_reflections[:date_of_work][:uri]
-    old_val = get_all_ids(@fedora_data, uri)
+    old_val = all_item_ids(uri)
     new_val = @work.date_of_work.
       map {|dw|  dw.attributes }.
       map {|att| att.select { |k,v| v != ""} }
@@ -169,7 +193,7 @@ class FedoraItemChecker
 
   def check_work_place()
     Work::Place::CATEGORY_VALUES.each do |place_category|
-      old_val = get_all_vals(@fedora_data, FedoraMappings.work_properties[place_category])
+      old_val = all_item_vals('place_category')
       new_val = @work.place.
         select {|p| p.attributes['category'] == place_category}.
         map { |c| c.attributes['value']}
@@ -180,7 +204,7 @@ class FedoraItemChecker
 
   def check_work_inscription()
     uri = FedoraMappings.work_reflections[:inscription][:uri]
-    old_val =  get_all_ids(@fedora_data, uri)
+    old_val =  all_item_ids(uri)
     new_val = @work.inscription.map { |i| i.attributes}
     correct = compare(old_val, new_val, :compare_inscription, order_matters:false)
     confirm(correct, "Inscription", old_val.map {|x| compare_inscription(x)}, new_val)
@@ -201,7 +225,7 @@ class FedoraItemChecker
 
   def is_public()
     uri = FedoraMappings.work_reflections[:access_control][:uri]
-    access_control_id   = get_id(@fedora_data, uri)
+    access_control_id   = item_id(uri)
     return false unless access_control_id
     access_control_info = get_fedora_item(access_control_id)[0]
     access_control_list = get_all_ids(access_control_info, 'http://www.w3.org/ns/ldp#contains')
@@ -220,6 +244,8 @@ class FedoraItemChecker
   end
 
   def check_work_contents()
+    @properties_to_check.delete ('http://www.w3.org/ns/ldp#contains')
+
     old_val = contents_1.map { |x| x.gsub(/.*\//, '') }
     new_val =  @local_item.members.order(:position).pluck(:friendlier_id)
     if old_val.count > 1 && old_val[0...-1] == new_val
@@ -260,6 +286,7 @@ class FedoraItemChecker
 
     return [] unless list_source
     return [] unless list_source[0].key? 'http://www.iana.org/assignments/relation/first'
+    @properties_to_check.delete ('http://www.iana.org/assignments/relation/first')
 
     # Organize the member proxies into a linked list:
     linked_list = {}
@@ -301,7 +328,7 @@ class FedoraItemChecker
   end
 
   def check_work_physical_container()
-    raw_fedora_value = get_val(@fedora_data, FedoraMappings.work_properties['physical_container'])
+    raw_fedora_value = item_val('physical_container')
     old_val = compare_physical_container(raw_fedora_value)
     new_val = @work&.physical_container&.attributes&.reject {|k, v| v == ""}
     correct = compare(old_val, new_val)
@@ -318,7 +345,7 @@ class FedoraItemChecker
 
   def check_work_representative()
     uri = FedoraMappings.work_reflections[:representative][:uri]
-    old_val = get_id(@fedora_data, uri)&.gsub(/^.*\//, '')
+    old_val = item_id(uri)&.gsub(/^.*\//, '')
     new_val = @work&.representative&.friendlier_id
     correct = compare(old_val, new_val)
     confirm(correct, "Representative", old_val, new_val)
@@ -334,9 +361,6 @@ class FedoraItemChecker
 
   def check_file_set()
     @asset = @local_item
-    check_access_control # TODO This method takes up 1/3 of the import time.
-    check_file_set_created_at
-    check_file_set_modified
     if file_metadata.nil?
       log("WARNING: No file attached to FileSet #{@fedora_id}. Will not check title, filename or sha1.")
       return
@@ -344,6 +368,12 @@ class FedoraItemChecker
     check_file_set_title
     check_file_set_filename
     check_file_set_integrity
+
+    # These are checked for both works and assets:
+    check_access_control
+    check_created_at
+    check_modified
+
   end
 
   def check_file_set_filename()
@@ -356,23 +386,23 @@ class FedoraItemChecker
   def check_file_set_title()
     orig_filename = @asset&.title
     unless orig_filename.nil?
-      old_val = get_val(@fedora_data, FedoraMappings.work_properties['title'])
+      old_val = item_val('title')
       new_val = orig_filename
       correct = compare(old_val, new_val)
       confirm(correct, "title", old_val, new_val)
     end
   end
 
-  def check_file_set_created_at()
-    old_val = one_second_precision(get_val(@fedora_data,'http://purl.org/dc/terms/dateSubmitted'))
-    new_val = @asset.created_at
+  def check_created_at()
+    old_val = one_second_precision(item_val('date_uploaded'))
+    new_val = @local_item.created_at
     correct = compare(old_val, new_val)
     confirm(correct, "created_at", old_val, new_val)
   end
 
-  def check_file_set_modified()
-    old_val = one_second_precision(get_val(@fedora_data,'http://purl.org/dc/terms/modified'))
-    new_val = @asset.updated_at
+  def check_modified()
+    old_val = one_second_precision(item_val("date_modified"))
+    new_val = @local_item.updated_at
     correct = compare(old_val, new_val)
     confirm(correct, "modified", old_val, new_val)
   end
@@ -404,7 +434,7 @@ class FedoraItemChecker
 
   def file_metadata
     @file_metadata ||= begin
-      file_download_id = get_id(@fedora_data, 'http://pcdm.org/models#hasFile')
+      file_download_id = item_id('http://pcdm.org/models#hasFile')
       return nil if file_download_id.nil?
       get_fedora_item("#{file_download_id}/fcr:metadata")[0]
     end
@@ -414,24 +444,50 @@ class FedoraItemChecker
     @file_sha1 ||= get_id(file_metadata, 'http://www.loc.gov/premis/rdf/v1#hasMessageDigest')&.gsub(/^.*:/, '')
   end
 
-  #
-  #
-  #
-  # Getting stuff out of Fedora json objects:
-  #
-  #
-  #
-
 
   private
 
+  #Get one metadata value from @fedora_data
+  def item_val(key)
+    uri = FedoraMappings.properties[key]
+    @properties_to_check.delete(uri)
+    get_val(@fedora_data, uri)
+  end
+
+  #Get an array of values from @fedora_data
+  def all_item_vals(key)
+    uri = FedoraMappings.properties[key]
+    @properties_to_check.delete(uri)
+    get_all_vals(@fedora_data, uri)
+  end
+
+  # Get an array of URIs from @fedora_data
+  def all_item_ids(key)
+    @properties_to_check.delete(key)
+    get_all_ids(@fedora_data, key)
+  end
+
+  # Get a single URI from @fedora_data
+  def item_id(key)
+    @properties_to_check.delete(key)
+    get_id(@fedora_data, key)
+  end
+
+
+
+  # Extract one or more metadata values from a Fedora properties hash:
   def get_val(obj, key)
     obj[key][0]["@value"] unless obj[key].nil?
   end
-
   def get_all_vals(obj, key)
     return [] if  obj[key].nil?
     obj[key].map { |v| v['@value'] }.sort
+  end
+
+
+  # Get one or several URLs from a Fedora properties hash:
+  def get_id(obj, key)
+    get_all_ids(obj, key)&.first
   end
 
   def get_all_ids(obj, key)
@@ -439,9 +495,6 @@ class FedoraItemChecker
     obj[key].map { |v| strip_prefix(v["@id"]) }
   end
 
-  def get_id(obj, key)
-    get_all_ids(obj, key)&.first
-  end
 
   def get_fedora_item(id_str)
     response = @fedora_connection.get('/fedora/rest/prod/' + id_str)
@@ -471,7 +524,7 @@ class FedoraItemChecker
         Scihist:
           #{new_value}"""
 
-    log(msg)
+    # log(msg)
   end
 
   def log(msg)
@@ -479,27 +532,22 @@ class FedoraItemChecker
   end
 
   # Tests for equivalency between a and b.
-  # Nil-tolerant, as it uses present? to determine
-  # whether something exists.
-  # Handles both scalars and arrays.
-  # In the case of arrays,
-  # pass in a mapping method if you want,
-  # and it will be applied to a before comparing.
   def compare(a, b, compare_method=nil, order_matters:true)
-    a = nil unless a.present?
-    b = nil unless b.present?
-
-    # Scalar values:
-    unless a.is_a? Array and b.is_a? Array
-      return (a == b)
+    if (a.is_a? Array) && (b.is_a? Array)
+      return compare_arrays(a, b, compare_method, order_matters)
     end
+    compare_scalars(a, b)
+  end
 
-    # If a mapping method provided,
+  #Compare two arrays. A method passed in as compare_method
+  # will be mapped to a before the comparison.
+  def compare_arrays(a, b, compare_method, order_matters)
+    # If a mapping method is provided,
     # map the values before comparing:
     mapped_values = if compare_method.nil?
       a
     else
-      a.map { |el| method(compare_method).call(el) }
+      a.map { |el| send(compare_method, el) }
     end
 
     # Compare as an array if order matters:
@@ -508,4 +556,15 @@ class FedoraItemChecker
     # Compare as a set otherwise:
     mapped_values.to_set == b.to_set
   end
+
+  # For our purposes, if an item is
+  # nil in Fedora and "" in scihist_digicoll,
+  # or vice-versa, that's fine.
+  def compare_scalars(a, b)
+    x = a.present? ? a : nil
+    y = b.present? ? b : nil
+    x == y
+  end
+
 end
+
