@@ -140,7 +140,7 @@ class FedoraMappings
 
   # This is the output of the following code in Sufia:
   # Hash [ GenericWork.properties.map do |k, v| [k, v.predicate.to_s] end ]
-  def self.work_properties
+  def self.properties
   {
     "has_model"=>"info:fedora/fedora-system:def/model#hasModel",
      "create_date"=>
