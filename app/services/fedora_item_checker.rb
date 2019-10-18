@@ -198,7 +198,8 @@ class FedoraItemChecker
         old_val: all_item_vals(place_category),
         new_val: @work.place.
           select {|p| p.attributes['category'] == place_category}.
-          map { |c| c.attributes['value']}
+          map { |c| c.attributes['value']},
+        order_matters: false
       )
     end
   end
