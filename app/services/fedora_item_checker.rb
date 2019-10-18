@@ -356,14 +356,6 @@ class FedoraItemChecker
     )
   end
 
-  #
-  #
-  #
-  # FILE SETS:
-  #
-  #
-  #
-
   def check_file_set()
     @asset = @local_item
     if file_metadata.nil?
@@ -395,6 +387,7 @@ class FedoraItemChecker
     )
   end
 
+  # Used for both assets and works.
   def check_created_at()
     check_and_log(
       flag: 'created_at',
@@ -403,6 +396,7 @@ class FedoraItemChecker
     )
   end
 
+  # Used for both assets and works.
   def check_modified()
     check_and_log(
       flag: 'created_at',
@@ -508,6 +502,7 @@ class FedoraItemChecker
   end
 
   def check_and_log(flag:, old_val:, new_val:, compare_method: nil, order_matters: true)
+
     if compare_method
       old_val = old_val.map { |el| send(compare_method, el) }
     end
@@ -515,8 +510,10 @@ class FedoraItemChecker
       flag: flag,
       old_val: old_val,
       new_val: new_val,
-      fedora_id: @fedora_id
+      fedora_id: @fedora_id,
+      order_matters: order_matters
     ).check()
+
     log(result) if result
   end
 
