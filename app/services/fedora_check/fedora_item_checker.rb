@@ -400,7 +400,7 @@ module FedoraCheck
     # Used for both assets and works.
     def check_modified()
       check_and_log(
-        flag: 'created_at',
+        flag: 'updated_at',
         old_val: one_second_precision(item_val("date_modified")),
         new_val: @local_item.updated_at.utc
       )
