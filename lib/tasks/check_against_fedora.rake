@@ -1,5 +1,5 @@
 require 'net/http'
-
+# require 'app/services/fedora_check/fedora_checker.rb'
 namespace :scihist do
   desc '''
     # Checks the current metadata and checksums against a Fedora repository.
@@ -46,6 +46,6 @@ namespace :scihist do
       metadata_path:        metadata_path,
       percentage_to_check:  percentage_to_check
     }
-    FedoraChecker.new(options: options).check
+    FedoraCheck::FedoraChecker.new(options: options).check
   end
 end
