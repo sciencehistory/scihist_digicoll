@@ -13,14 +13,6 @@ module FedoraCheck
     Depending on its hasModel, we will process it in a different way.
     """
     def check
-      # @contents = [
-      #   'g4/45/cd/18/g445cd18p',
-      #   '9g/54/xh/89/9g54xh89h',
-      #   'k9/30/bx/52/k930bx52k',
-      #   '6d/56/zw/84/6d56zw84m',
-      #   'hx/11/xg/19/hx11xg19w',
-      #   'gf/06/g2/69/gf06g269z',
-      # ]
       unless defined?(@contents)
         @contents = @data[0]["http://www.w3.org/ns/ldp#contains"].
           map { |cs| cs["@id"].gsub(/^.*\/fedora\/rest\/prod\//, '') }
