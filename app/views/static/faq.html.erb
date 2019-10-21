@@ -32,7 +32,7 @@
     <dt>Can I freely download or extract your metadata?</dt>
     <dd><p>We strive to make our open data freely available, but the options we provide for machine-readable metadata access are currently limited. If you  have a project that could benefit from more convenient machine-accessible APIs for metadata access, please <%= link_to "get in touch", "mailto:#{ ScihistDigicoll::Env.lookup!(:admin_email)}" %> to share your use case.
 
-        <p>Currently our metadata can be accessed in an XML format designed for <a href="https://www.openarchives.org/pmh/">OAI-PMH</a> access which includes Dublin Core as well as a few additional fields, but does not include all internal metadata or any membership/association information.
+        <p>Currently our metadata can be accessed in an XML format designed for <a href="https://www.openarchives.org/pmh/">OAI-PMH</a> access which includes Dublin Core as well as a few additional fields, but does not include all internal, administrative, and relational metadata.
         <ul>
             <li>You can bulk harvest via an OAI-PMH 2.0 endpoint at <code><%= oai_provider_url %></code></li>
             <li>You can get an oai-dc XML representation for any record by adding `.xml` to the end of a record's URL. For instance, <%= link_to work_url("vt150j62m", format: :xml), work_url("vt150j62m", format: :xml) %>.</li>
