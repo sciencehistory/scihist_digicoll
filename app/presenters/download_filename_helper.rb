@@ -52,7 +52,7 @@ class DownloadFilenameHelper
   end
 
   def self.ris_download_name(work)
-    "#{first_three_words(work.title)}.ris"
+    "#{first_three_words(work.title)}_#{work.friendlier_id}.ris"
   end
 
   # Pass in a string, get the first three words separated by underscores, stripping punctuation.
