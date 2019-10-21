@@ -6,7 +6,6 @@ class OrphanS3Originals
 
     @s3_iterator = S3PathIterator.new(
       shrine_storage: shrine_storage,
-      extra_prefix: extra_prefix,
       show_progress_bar: show_progress_bar,
       progress_bar_total: asset_count
     )
@@ -90,14 +89,11 @@ class OrphanS3Originals
       Regexp.escape(shrine_storage.prefix.chomp('/') + '/')
     end
 
-    intermediate_prefix = if extra_prefix
-      Regexp.escape(extra_prefix.chomp('/') + '/')
-    end
+    s3_path =~ %r{\A#{bucket_prefix}(([^/]+/)([^/]+/).*)\Z}
 
-    s3_path =~ %r{\A#{bucket_prefix}(#{intermediate_prefix}([^/]+/).*)\Z}
-
+    _model_name     = $2
     shrine_id_value = $1
-    asset_id = $2 && $2.chomp("/")
+    asset_id        = $3 && $3.chomp("/")
 
     return [asset_id, shrine_id_value]
   end
