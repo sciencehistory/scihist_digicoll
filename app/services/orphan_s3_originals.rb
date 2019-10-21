@@ -1,5 +1,26 @@
+# Our original files in S3 are stored with keypaths with template:
+#
+#    ./{model_name}/{uuid_pk}/{random.suffix}
+#
+# Eg,
+#
+#    /asset/00968a6c-957a-46a9-817a-a7893aeafed0/0be15a7ad6a89091ad650e498dc5ffb2.jpg
+#
+# The `./` may be bucket root, or may be at a prefix inside a bucket, depending on
+# how our `shrine-store_storage` is configured.
+#
+# This class will use S3 API to iterate through ALL keys in configured shrine_store_storage,
+# for each one try to parse out the UUID-pk from the path, and check the postgres database
+# to make sure an Asset with that pk exists, and it is pointing to the found file on S3.
+#
+# If both those things are not true, it is considered 'orphaned'. This class can be used to
+# report on all discovered orphaned files, or to actually _delete_ orphaned files.  This class
+# is normally called from a rake task.
 class OrphanS3Originals
   attr_reader :s3_iterator, :extra_prefix, :shrine_storage
+
+  # @param show_progress_bar [Boolean], default true, should we show a progress
+  #   bar with estimated progress.
   def initialize(show_progress_bar: true)
     @extra_prefix = "asset"
     @shrine_storage = ScihistDigicoll::Env.shrine_store_storage
@@ -15,6 +36,8 @@ class OrphanS3Originals
     @asset_count ||= Asset.count
   end
 
+  # Prints out any orphans found, and some summary info. If show_progress_bar was
+  # set in an initializer, there will be a progress bar.
   def report_orphans
     max_reports = 20
     orphans_found = 0
@@ -50,6 +73,8 @@ class OrphanS3Originals
     $stderr.puts "Found #{orphans_found} orphan files\n"
   end
 
+  # Deletes all found orphans, outputing to console what was deleted.
+  # If obj initializer show_progress_bar, there will be a progress bar.
   def delete_orphans
     delete_count = 0
     s3_iterator.each_s3_path do |s3_key|
