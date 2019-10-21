@@ -30,6 +30,13 @@
     <dd>We add new material on a daily basis, but only a small portion of the Science History Institute’s physical collections are represented here. Selection for digitization is guided by <%= link_to "the Science History Institute’s Digital Collections Policy", policy_path %>.</dd>
 
     <dt>Can I freely download or extract your metadata?</dt>
-    <dd>We strive to make our linked open data freely available, and it can currently be accessed in JSON and RDF. Please note that our data are formatted for internal use and have not been cleaned up for distribution. In addition, our data model and API are currently undocumented. If you wish to use the data in their current form, you can get the RDF data via Turtle by adding “.ttl” to the end of a record’s URL. You can get the JSON data by adding “.json” to the end of a record’s URL. You can do the same for search results: just make sure to add “.ttl” or “.json” to the end of the URL before the query string. In general the RDF results give more complete data: more metadata fields are returned with search results, and better item membership information is returned with record results.</dd>
+    <dd><p>We strive to make our open data freely available, but the options we provide for machine-readable metadata access are currently limited. If you  have a project that could benefit from more convenient machine-accessible APIs for metadata access, please <%= link_to "get in touch", "mailto:#{ ScihistDigicoll::Env.lookup!(:admin_email)}" %> to share your use case.
+
+        <p>Currently our metadata can be accessed in an XML format designed for <a href="https://www.openarchives.org/pmh/">OAI-PMH</a> access which includes Dublin Core as well as a few additional fields, but does not include all internal, administrative, and relational metadata.
+        <ul>
+            <li>You can bulk harvest via an OAI-PMH 2.0 endpoint at <code><%= oai_provider_url %></code></li>
+            <li>You can get an oai-dc XML representation for any record by adding `.xml` to the end of a record's URL. For instance, <%= link_to work_url("vt150j62m", format: :xml), work_url("vt150j62m", format: :xml) %>.</li>
+        </ul>
+    </dd>
   </dl>
 </div>
