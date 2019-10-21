@@ -116,6 +116,10 @@
 
     <%= f.input :file_creator, collection: Work::ControlledLists::FILE_CREATOR %>
 
-    <%= f.input :admin_note, as: :text, input_html: { rows: 5 } %>
+    <%= f.repeatable_attr_input(:admin_note, build: :at_least_one) do |input_name, value| %>
+      <div class="form-group">
+        <%= f.input_field :admin_note, name: input_name, value: value, as: :text, class: "form-control", rows: 4 %>
+      </div>
+    <% end %>
 
     <%= f.association :contained_by, collection: Collection.all.to_a.sort_by { |c| c.title.downcase } %>
