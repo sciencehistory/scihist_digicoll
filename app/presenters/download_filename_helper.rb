@@ -49,12 +49,13 @@ class DownloadFilenameHelper
     base = if work.representative.nil?
       first_three_words(work.title)
     else
-      self.filename_base_for_asset(work.representative)
+      self.filename_base_for_asset(work.leaf_representative)
     end
     "#{base}.ris"
   end
 
   def self.filename_base_for_asset(asset)
+    raise ArgumentError, 'Pass in an asset.' unless asset.is_a? Asset
     if asset.content_type && asset.content_type.start_with?("audio/")
       return asset.title
     end
