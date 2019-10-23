@@ -1,3 +1,27 @@
+# DZI files (https://en.wikipedia.org/wiki/Deep_Zoom) are stored on S3 using
+# a keypath template:
+#
+#     ./{asset uuid}/{md5 hash}.dzi
+#     ./{asset uuid}/{md5 hash}_files/{lots of tiles}
+#
+# The `x.dzi` manifest file corresponding to an `x_files` directory full of
+# hieararchical tiles, is part of the DZI format.
+#
+# This class will use S3 API to iterate through all DZI files, and for each `x.dzi` file,
+# it'll check to make sure an asset with the UUID encoded in path exists, and it has
+# the MD5 encoded in path -- if not, the `x.dzi` file (and all of it's corresponding tiles)
+# are "orphaned", and no longer correspond to an existing asset, and should be deleted.
+# This class can also delete them.
+#
+# The layout we're using for DZI turns out to be really inconvenient for finding just the `.dzi`
+# files. So this takes around ~50 minutes to run (either for report or for delete).
+#
+# We could consider switching to a layout more like chf_sufia used, where there isn't
+# an `{asset uuid}/` component in the path, but all .dzi files and _files folders
+# are siblings next to each other, and the asset uuid is encoded directly in the .dzi/_files name.
+# It turns out that makes it much more convenient to more quickly find just the top-level .dzi
+# files, using the S3 'delimiter' API. And allows report/delete in more like 5 minutes. But
+# would require a reorganization of our many gigs of DZI files, which is hard to do on S3.
 class OrphanS3Dzi
 
   attr_reader :s3_iterator, :shrine_storage
