@@ -17,12 +17,11 @@
 # report on all discovered orphaned files, or to actually _delete_ orphaned files.  This class
 # is normally called from a rake task.
 class OrphanS3Originals
-  attr_reader :s3_iterator, :extra_prefix, :shrine_storage
+  attr_reader :s3_iterator, :shrine_storage
 
   # @param show_progress_bar [Boolean], default true, should we show a progress
   #   bar with estimated progress.
   def initialize(show_progress_bar: true)
-    @extra_prefix = "asset"
     @shrine_storage = ScihistDigicoll::Env.shrine_store_storage
 
     @s3_iterator = S3PathIterator.new(
