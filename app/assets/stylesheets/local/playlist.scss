@@ -43,7 +43,7 @@
       padding: 0.3125rem;
     }
 
-    div.dropup {
+    div.dropdown {
       padding-top: 0.3125rem;
       .download-link {
         i.fa-download {
@@ -51,16 +51,28 @@
         }
         cursor: pointer;
         font-family: $brand-sans-serif;
+        color: $brand-blue;
         white-space: nowrap;
-        padding: 0.3125rem;
+        padding-right: 0.3125rem;
+      }
+      .download-link:hover {
+        text-decoration: underline;
       }
     }
     &.currently-selected {
       background-color: $brand-bright-green;
       color: $brand-dark-blue;
-      a.play-link, a.play-link:link, a.play-link:visited, a.play-link:hover, a.play-link:active {
+      a.play-link,
+      a.play-link:link,
+      a.play-link:visited,
+      a.play-link:hover,
+      a.play-link:active,
+      div.dropdown a.download-link {
         color: $brand-dark-blue;
       }
+    }
+    .download-menu {
+      font-family: $brand-sans-serif;
     }
   }
 }
