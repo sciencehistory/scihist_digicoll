@@ -1,15 +1,40 @@
+# Just encapsulates some common functionality for iterating through files on S3,
+# with a progress bar. Used by the various orphan file checkers.
+#
+# @example
+#
+#     iterator = S3PathIterator.new(bucket)
+#     iterator.each_s3_path do |s3_path|
+#       iterator.log "We found this S3 path: #{s3_path}"
+#     end
+#
 class S3PathIterator
   attr_reader :shrine_storage, :extra_prefix, :progress_bar, :progress_bar_total
 
-  # progress_bar_total can be just estimated, that's all we usually have available.
+
+  # @param shrine_storage [Shrine::Storage] the Shrine::Storage indicating an S3 bucket
+  #   we're going to list keys off of. It can have a `prefix` set on it, in which case
+  #   we'll only iterate within that prefix (although complete keys are still yielded)
+  #
+  # @param extra_prefix [String] Additional keypath prefix to iterate within, will be
+  #   added onto any prefix already built into bucket. eg "foo/bar".
+  #
+  # @param first_level_only [Boolean] Default false, if true we'll iterate S3 passing
+  #   `delimiter: '/'`, meaning we'll only return hiearchically top-level keys, ie files
+  #   or "directories" directly at the prefix(es) specified.
+  #
+  # @param show_progress_bar [Boolean] show a progress bar!
+  #
+  # @param progress_bar_total [Integer] if using show_progress_bar, pass this in unless you want
+  #   an indeterminate 'spinner' progress bar.
   def initialize(shrine_storage:,
                  extra_prefix: nil,
-                 check_base_paths_only: false,
+                 first_level_only: false,
                  show_progress_bar: true,
                  progress_bar_total: nil)
     @shrine_storage = shrine_storage
     @extra_prefix = extra_prefix
-    @check_base_paths_only = check_base_paths_only
+    @first_level_only = first_level_only
 
     if show_progress_bar
       @progress_bar =  ProgressBar.create(total: progress_bar_total, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
@@ -17,12 +42,14 @@ class S3PathIterator
     end
   end
 
-  def check_base_paths_only?
-    @check_base_paths_only
+  def first_level_only?
+    @first_level_only
   end
 
-  # If progress_bar, use progress_bar#log. Otherwise plain old puts. Caller will want to
-  # use to not interfere with progress bar.
+  # Text you want to send to console.
+  #
+  # If progress_bar, use progress_bar#log. Otherwise plain old puts. So can be used
+  # to log to console without interfering with possibly existing progress bar.
   def log(msg)
     if progress_bar
       progress_bar.log(msg)
@@ -31,9 +58,14 @@ class S3PathIterator
     end
   end
 
-  # _each_s3_path with progress bar apparatus and return report added
+  # The main thing you're going to want to call to get all relevant S3 key paths
+  # for bucket/prefix(es) specified. Will also include commonPrefix "directories"
+  # at top level if `first_level_only` was set.
   #
-  # Returns an OpenStruct with total number of S3 files checked, total number of assets, etc.
+  # Implemented in terms of private method _each_s3_path, but adding progress bar
+  # functionality, and return value.
+  #
+  # @return [Integer] total number of entries checked
   def each_s3_path
     files_checked = 0
 
@@ -52,9 +84,7 @@ class S3PathIterator
 
     progress_bar.finish if progress_bar
 
-    return OpenStruct.new(
-      files_checked: files_checked,
-    )
+    return files_checked
   end
 
 
@@ -75,20 +105,17 @@ class S3PathIterator
   # iterate through all the keypaths in S3, based on our bucket and extra_prefix, yielding each one to block passed
   # by caller.
   #
-  # If check_base_paths_only?, then instead of yielding each path, we only yield the top-level component of the path
-  # after the bucket prefix and extra_prefix -- the component that should be the pk UUID.
+  # If first_level_only?, then we apply "delimiter: '/'", meaning AWS will only be iterating over "top-level"
+  # hiearchical keys, but we yield terminal keys AND common prefixes (files and "directories") at top level.
   def _each_s3_path
-    delimiter = check_base_paths_only? ? "/" : nil
+    delimiter = first_level_only? ? "/" : nil
 
     s3_client.list_objects_v2(bucket: s3_bucket_name, prefix: search_prefix, delimiter: delimiter, max_keys: 1000).each do |s3_response|
-      if delimiter
-        s3_response.common_prefixes.each do |s3_obj|
-          yield s3_obj.prefix
-        end
-      else
-        s3_response.contents.each do |s3_obj|
-          yield s3_obj.key
-        end
+      s3_response.common_prefixes.each do |s3_obj|
+        yield s3_obj.prefix
+      end
+      s3_response.contents.each do |s3_obj|
+        yield s3_obj.key
       end
     end
   end
