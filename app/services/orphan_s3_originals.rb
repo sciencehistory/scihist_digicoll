@@ -41,7 +41,7 @@ class OrphanS3Originals
     max_reports = 20
     orphans_found = 0
 
-    report = s3_iterator.each_s3_path do |s3_key|
+    files_checked = s3_iterator.each_s3_path do |s3_key|
       asset_id, shrine_path = parse_s3_path(s3_key)
 
       if orphaned?(asset_id, shrine_path)
@@ -68,7 +68,7 @@ class OrphanS3Originals
     end
 
     $stderr.puts "\n\nTotal Asset count: #{asset_count}"
-    $stderr.puts "Checked #{report.files_checked} files on S3"
+    $stderr.puts "Checked #{files_checked} files on S3"
     $stderr.puts "Found #{orphans_found} orphan files\n"
   end
 

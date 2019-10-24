@@ -68,7 +68,7 @@ class OrphanS3Derivatives
     max_reports = 40
     orphans_found = 0
 
-    report = s3_iterator.each_s3_path do |s3_path|
+    files_checked = s3_iterator.each_s3_path do |s3_path|
       next if IGNORE_PATH_PREFIXES.any? {|p| p.start_with?(s3_path) }
 
 
@@ -102,7 +102,7 @@ class OrphanS3Derivatives
 
     $stderr.puts "\n\nTotal Asset count: #{Asset.count}"
     $stderr.puts "Kithe::Derivative.count: #{derivative_count}"
-    $stderr.puts "Checked #{report.files_checked} files on S3"
+    $stderr.puts "Checked #{files_checked} files on S3"
     $stderr.puts "Found #{orphans_found} orphan files\n"
   end
 
