@@ -24,7 +24,7 @@ class Admin::DigitizationQueueItem < ApplicationRecord
   validates :collecting_area, inclusion: { in: COLLECTING_AREAS }
 
   STATUSES = %w{
-    awaiting_dig_on_cart imaging_in_process imaging_completed post_production_completed
+    awaiting_dig_on_cart imaging_in_process post_production_completed
     batch_metadata_completed individual_metadata_completed closed hold re_pull_object
    }
   validates :status, inclusion: { in: STATUSES }
