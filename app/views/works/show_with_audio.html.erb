@@ -2,6 +2,7 @@
 
 <% content_for :head do %>
   <%= render "meta_tags", work: @work  %>
+  <%= tag "link", rel: "alternate", type: "application/xml", title: "OAI-DC metadata in XML", href: work_path(@work, format: "xml") %>
 <% end %>
 
 <div class="show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
