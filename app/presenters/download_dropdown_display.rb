@@ -76,7 +76,7 @@ class DownloadDropdownDisplay < ViewModel
 
   def display
     # viewer-navbar-btn necessary for it to style correctly when embedded in viewer. :(
-    content_tag("div", class: "action-item viewer-navbar-btn btn-group downloads dropup") do
+    content_tag("div", class: "action-item viewer-navbar-btn btn-group downloads #{@use_link ? "dropdown" : "dropup"}") do
       link_or_button +
       content_tag("div", class: "dropdown-menu download-menu", "aria-labelledby" => menu_button_id) do
         menu_items
