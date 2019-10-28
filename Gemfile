@@ -96,6 +96,8 @@ gem 'oai', ">= 1.0.0.beta1", "< 2.0"
 
 gem 'sitemap_generator', '~> 6.0' # google sitemap generation
 
+gem 'sane_patch', '< 2.0' # time-limited monkey patches
+
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

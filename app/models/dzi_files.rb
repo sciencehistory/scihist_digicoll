@@ -75,25 +75,15 @@ class DziFiles
   def self.delete(dzi_file_id, storage_key: shrine_storage_key)
     storage = Shrine.storages[storage_key]
 
-    # No list files or delete files at prefix built into shrine, so we gotta
-    # do it ourselves for storage types we want to support.
-    deleter = case storage
-    when Shrine::Storage::S3
-      S3PrefixDeleter
-    when Shrine::Storage::FileSystem
-      FileSystemPrefixDeleter
-    else
-      raise TypeError.new("Don't know how to delete for storage type #{destination_storage.class}")
-    end
-
+    # Delete manifest .dzi file
     Shrine::UploadedFile.new(
       "id" => dzi_file_id,
       "storage" => storage_key
     ).delete
 
-
+    # Delete tiles
     dir = dzi_file_id.sub(/\.dzi$/, "_files/")
-    deleter.new(storage: storage, clear_prefix: dir).clear!
+    storage.delete_prefixed(dir)
   end
 
   # @yield string path where the dzi files are. They will be cleaned up (deleted)
@@ -154,44 +144,5 @@ class DziFiles
 
   def destination_storage
     Shrine.storages[shrine_storage_key]
-  end
-
-  # list/delete at prefix isn't (yet) included in shrine, so we annoyingly
-  # gotta do it for the shrine storage types we might want ourselves.
-  class S3PrefixDeleter
-    attr_reader :prefix, :total_prefix, :storage
-
-    def initialize(storage:, clear_prefix:)
-      unless storage.kind_of?(Shrine::Storage::S3)
-        raise ArgumentError("storage must be a Shrine::Storage::S3")
-      end
-
-      @storage = storage
-      @prefix = prefix
-      @total_prefix = File.join([storage.prefix, clear_prefix].compact).to_s
-    end
-
-    def clear!
-      storage.bucket.objects(prefix: total_prefix).batch_delete!
-    end
-  end
-
-  class FileSystemPrefixDeleter
-    attr_reader :prefix, :total_prefix, :storage
-
-    def initialize(storage:, clear_prefix:)
-      unless storage.kind_of?(Shrine::Storage::FileSystem)
-        raise ArgumentError("storage must be a Shrine::Storage::FileSystem")
-      end
-
-      @storage = storage
-      @prefix = prefix
-      @total_prefix = File.join(storage.directory, clear_prefix).to_s
-    end
-    def clear!
-      if Dir.exist?(total_prefix)
-        FileUtils.remove_dir(total_prefix)
-      end
-    end
   end
 end
