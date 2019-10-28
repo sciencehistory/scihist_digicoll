@@ -8,7 +8,7 @@
   <h1>
     <%= view.title %>
     <%= publication_badge(view) %>
-    <% if can?(:edit, model) %>
+    <% if can?(:update, model) %>
       <%= link_to "Edit", admin_work_path(view), class: "btn btn-outline-primary" %>
     <% end %>
   </h1>
