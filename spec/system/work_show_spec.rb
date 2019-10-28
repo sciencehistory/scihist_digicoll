@@ -1,5 +1,6 @@
 require 'rails_helper'
 
+
 describe "Public work show page", type: :system, js: false do
 
   describe "work with complete metadata" do
@@ -43,6 +44,9 @@ describe "Public work show page", type: :system, js: false do
     # REALLY doesn't test everything, just a sampling
     it "smoke tests" do
       visit work_path(work)
+
+      # Don't show the edit button to users unless they're logged in.
+      expect(page).to have_no_css('a[text()="Edit"]')
 
       # No audio assets, so the playlist should not be present.
       expect(page.find_all(".show-page-audio-playlist-wrapper").count). to eq 0
@@ -113,6 +117,18 @@ describe "Public work show page", type: :system, js: false do
       visit work_path(work)
       expect(page).to have_http_status(:success)
       expect(page).to have_selector("h1", text: work.title)
+    end
+  end
+end
+
+describe "Public work show page", :logged_in_user, type: :system, js: false do
+  let(:work) {
+    create( :work)
+  }
+  describe "Logged in user" do
+    it "shows the edit button" do
+      visit work_path(work)
+      expect(page.find(:css, 'a[text()="Edit"]').visible?).to be true
     end
   end
 end
