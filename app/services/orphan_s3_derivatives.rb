@@ -49,9 +49,9 @@ class OrphanS3Derivatives
   def delete_orphans
     delete_count = 0
     s3_iterator.each_s3_path do |s3_path|
-      next if IGNORE_PATH_PREFIXES.any? {|p| s3_path.start_with?(p) }
-
       asset_id, derivative_key, shrine_path = parse_s3_path(s3_path)
+
+      next if IGNORE_PATH_PREFIXES.any? {|p| shrine_path.start_with?(p) }
 
       if orphaned?(asset_id, derivative_key, shrine_path)
         shrine_storage.delete(shrine_path)
