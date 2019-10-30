@@ -17,20 +17,18 @@
       <dd>
         <table class="w-100">
           <tr>
-            <td>
+            <td class="w-50">
               <%= link_to @work.digitization_queue_item.title, admin_digitization_queue_item_path(@work.digitization_queue_item) %>
             </td>
-            <td>
+            <td class="w-50">
               <%= l @work.digitization_queue_item.created_at.to_date, format: :admin %>
             </td>
           </tr>
           <tr>
             <td>
-              <%= @work.digitization_queue_item.status.humanize %>
+               <%= DigitizationQueueItemStatusForm.new(@work.digitization_queue_item).display %>
             </td>
-            <td>
-              <%= l @work.digitization_queue_item.status_changed_at.to_date, format: :admin %>
-            </td>
+            <td></td>
           </tr>
         </table>
       </dd>
