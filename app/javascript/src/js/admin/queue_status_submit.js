@@ -23,8 +23,19 @@ domready(function() {
   }
 
 
-  // The "ajax:" events are custom events from rails-ujs
+  // On digitization queue item status select menu change, auto-submit form
+  document.body.addEventListener("input", function(event) {
+    var changed = event.target;
+    var form = changed.closest("form")
+    if (changed.tagName != "SELECT" || notOurForm(form))  {
+      return;
+    }
 
+    Rails.fire(form, 'submit');
+  });
+
+
+  // The "ajax:" events are custom events from rails-ujs
 
   document.body.addEventListener('ajax:error', function(event) {
     var form = event.target;
