@@ -44,10 +44,11 @@ class WorkShowInfo < ViewModel
         external_id.category == "bib"
       end.map(&:value)
 
-      (bib_ids + related_url_filter.opac_ids).map do |bib_id|
+      (bib_ids + related_url_filter.opac_ids).uniq.map do |bib_id|
         ScihistDigicoll::Util.opac_url(bib_id)
       end
     end
+    @links_to_opac
   end
 
   # Our creators are a list of Work::Creator object. We want to group them by
