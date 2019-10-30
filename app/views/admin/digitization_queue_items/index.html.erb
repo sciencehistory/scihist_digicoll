@@ -68,23 +68,7 @@
           <td><%= link_to admin_digitization_queue_item.title, admin_digitization_queue_item_path(admin_digitization_queue_item) %></td>
           <td><%= [admin_digitization_queue_item.bib_number, admin_digitization_queue_item.accession_number, admin_digitization_queue_item.museum_object_id].collect(&:presence).compact.join(", ") %>  </td>
           <td>
-            <%= simple_form_for(admin_digitization_queue_item, data: {remote: true, auto_submit: true}) do |f| %>
-              <div class="input-group input-group-sm flex-nowrap">
-                <%= f.collection_select :status,
-                      Admin::DigitizationQueueItem::STATUSES.collect {|s| [s.humanize, s]}, :second, :first, {},
-                      class: "form-control custom-select"
-                %>
-                <div class="input-group-append">
-                  <%= f.button_button '<i class="fa fa-floppy-o fa-fw" aria-hidden="true" title="Save"></i><span class="sr-only">Save</span>'.html_safe,
-                    type: :submit,
-                    class: "btn btn-outline-secondary",
-                    data: {
-                      "disable-with": '<i class="fa fa-spinner fa-spin fa-fw" title="Saving..."></i><span class="sr-only">Saving...</span>',
-                      "submit-button": "true"
-                    } %>
-                </div>
-              </div>
-            <% end %>
+             <%= DigitizationQueueItemStatusForm.new(admin_digitization_queue_item).display %>
           </td>
           <td><%= l(admin_digitization_queue_item.status_changed_at.to_date, format: :admin) %></td>
         </tr>
