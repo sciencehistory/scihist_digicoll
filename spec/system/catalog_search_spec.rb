@@ -96,12 +96,34 @@ describe CatalogController, solr: true, indexable_callbacks: true do
     let!(:non_published_collection) { create(:work, title: "collection non-published", published: false) }
     let!(:published_work) { create(:work, title: "work published", published: true) }
 
-    it "do not show up in search results" do
+    it "do not show up in search results unless the user is logged in" do
       visit search_catalog_path(search_field: "all_fields")
 
       expect(page).to have_content(published_work.title)
       expect(page).not_to have_content(non_published_work.title)
       expect(page).not_to have_content(non_published_collection.title)
+    end
+  end
+
+  describe "non-published items", logged_in_user: true do
+    let!(:non_published_work) { create(:work, title: "work non-published", published: false) }
+    let!(:non_published_collection) { create(:work, title: "collection non-published", published: false) }
+    let!(:published_work) { create(:work, title: "work published", published: true) }
+
+    it "show up in search results if the user is logged in, flagged as private" do
+      visit search_catalog_path(search_field: "all_fields")
+      expect(page).to have_content(published_work.title)
+      expect(page).to have_content(non_published_work.title)
+      expect(page).to have_content(non_published_collection.title)
+      within("#document_#{published_work.friendlier_id}") do
+        expect(page).not_to have_content("Private")
+      end
+      within("#document_#{non_published_collection.friendlier_id}") do
+        expect(page).to have_content("Private")
+      end
+      within("#document_#{non_published_work.friendlier_id}") do
+        expect(page).to have_content("Private")
+      end
     end
   end
 end
