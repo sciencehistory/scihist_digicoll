@@ -25,6 +25,10 @@ gem "resque-pool"
 
 gem 'honeybadger', '~> 4.0'
 
+# Until we get things working under sprockets 4, lock to sprockets 3
+# https://github.com/sciencehistory/scihist_digicoll/issues/458
+gem "sprockets", "~> 3.0"
+
 # Use SCSS for stylesheets
 gem 'sassc-rails', '~> 2.0'
 # Use Uglifier as compressor for JavaScript assets
