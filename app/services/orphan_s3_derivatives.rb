@@ -69,8 +69,7 @@ class OrphanS3Derivatives
     orphans_found = 0
 
     files_checked = s3_iterator.each_s3_path do |s3_path|
-      next if IGNORE_PATH_PREFIXES.any? {|p| p.start_with?(s3_path) }
-
+      next if IGNORE_PATH_PREFIXES.any? {|p| s3_path.start_with?(p) }
 
       asset_id, derivative_key, shrine_path = parse_s3_path(s3_path)
 
