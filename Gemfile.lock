@@ -796,6 +796,7 @@ DEPENDENCIES
   sitemap_generator (~> 6.0)
   slackistrano (~> 4.0)
   solr_wrapper (~> 2.1)
+  sprockets (~> 3.0)
   sprockets-rails (>= 2.3.2)
   tzinfo-data
   uglifier (>= 1.3.0)
