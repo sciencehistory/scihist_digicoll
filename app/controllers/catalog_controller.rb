@@ -168,7 +168,7 @@ class CatalogController < ApplicationController
     config.add_facet_field 'department_facet', label: "Department", limit: 5
     config.add_facet_field 'exhibition_facet', label: "Exhibition", limit: 5
     config.add_facet_field 'project_facet',    label: "Project",    limit: 5
-    config.add_facet_field 'published_bsi',    label: "Published ?", show: :current_user
+    config.add_facet_field 'published_bsi',    label: "Published ?", show: :current_user, helper_method: :visibility_facet_labels
 
 
 

@@ -31,4 +31,12 @@ module ApplicationHelper
     path
   end
 
+    def visibility_facet_labels(value)
+      case value.to_s
+      when "true" ; "published"
+      when "false" ; "private"
+      else ; value
+      end
+    end
+
 end
