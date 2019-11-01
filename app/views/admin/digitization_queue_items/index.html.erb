@@ -75,17 +75,7 @@
           </td>
           <td><%= [admin_digitization_queue_item.bib_number, admin_digitization_queue_item.accession_number, admin_digitization_queue_item.museum_object_id].collect(&:presence).compact.join(", ") %>  </td>
           <td>
-            <%= simple_form_for(admin_digitization_queue_item, data: {remote: true}) do |f| %>
-              <div class="input-group input-group-sm flex-nowrap">
-                <%= f.collection_select :status,
-                      Admin::DigitizationQueueItem::STATUSES.collect {|s| [s.humanize, s]}, :second, :first, {},
-                      class: "form-control custom-select"
-                %>
-                <div class="input-group-append">
-                  <%= f.submit value: "Save", class: "btn btn-outline-secondary", data: { "disable-with": "saving" } %>
-                </div>
-              </div>
-            <% end %>
+             <%= DigitizationQueueItemStatusForm.new(admin_digitization_queue_item).display %>
           </td>
           <td><%= l(admin_digitization_queue_item.status_changed_at.to_date, format: :admin) %></td>
         </tr>
