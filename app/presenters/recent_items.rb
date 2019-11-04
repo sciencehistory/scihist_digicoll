@@ -39,7 +39,7 @@ class RecentItems
 
   def fetch_bag
     @@bag ||= Work.where('published = true').
-      order('updated_at').
+      order('updated_at desc').
       limit(@how_many_works_in_bag)
   end
 end
