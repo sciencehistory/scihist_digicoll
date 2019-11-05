@@ -30,8 +30,15 @@ class RelatedUrlFilter
     @related_work_friendlier_ids ||= related_work_urls.collect {|u| u.sub(RELATED_WORK_PREFIX_RE, '') }
   end
 
+  # Look through related urls for URLs matching OPAC link pattern, extract
+  # bib number out of them. Limit bib number to first 8 chars, to normalize
+  # ones that have been entered as EG `http://othmerlib.sciencehistory.org/record=b1069527~S5`,
+  # where the `~S5` is a weird extra thing sometimes in Sierra OPAC urls that is not
+  # part of the bib number.
   def opac_ids
-    @opac_ids ||= opac_urls.collect {|u| u.sub(OPAC_PREFIX_RE, '') }
+    @opac_ids ||= opac_urls.
+      collect { |u| u.sub(OPAC_PREFIX_RE, '') }.
+      collect { |id| id.slice(0,8) }
   end
 
   private
