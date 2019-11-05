@@ -40,11 +40,14 @@ class WorkShowInfo < ViewModel
   # from related_url (legacy), or from our external_id with bib IDs in it.
   def links_to_opac
     @links_to_opac ||= begin
+      # bib_ids are supposed to be `b` followed by 7 numbers, but sometimes
+      # extra digits get in, cause Siera staff UI wants to add em, but
+      # they won't work for links to OPAC, phew.
       bib_ids = (model.external_id || []).find_all do |external_id|
         external_id.category == "bib"
-      end.map(&:value)
+      end.map(&:value).map { |id| id.slice(0,8) }
 
-      (bib_ids + related_url_filter.opac_ids).uniq.map do |bib_id|
+      (bib_ids.collect(&:downcase) + related_url_filter.opac_ids.collect(&:downcase)).uniq.map do |bib_id|
         ScihistDigicoll::Util.opac_url(bib_id)
       end
     end
