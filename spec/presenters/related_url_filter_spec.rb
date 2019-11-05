@@ -33,6 +33,13 @@ describe RelatedUrlFilter do
     expect(filter.opac_ids).to eq(["b1", "b2", "b3"])
   end
 
+  describe "weird sierra extra url" do
+    let(:opac_urls) {["http://othmerlib.sciencehistory.org/record=b1069527~S5"]}
+
+    it "ignores weird suffix" do
+      expect(filter.opac_ids).to eq(["b1069527"])
+    end
+  end
 
   describe "nil input" do
     let(:filter) { RelatedUrlFilter.new(nil) }
