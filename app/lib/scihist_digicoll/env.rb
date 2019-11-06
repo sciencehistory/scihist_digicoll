@@ -128,7 +128,6 @@ module ScihistDigicoll
 
 
     # shared bucket for dev, everything will be on there
-    # This bucket name is not right. Really confused what the buckets are.
     define_key :s3_dev_bucket, default: "scih-data-dev"
     # shared between different users, let's segregate em
     define_key :s3_dev_prefix, default: -> { "#{ENV['USER']}.#{Socket.gethostname}" }
