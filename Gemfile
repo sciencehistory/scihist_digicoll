@@ -60,7 +60,7 @@ gem 'font-awesome-rails', '~> 4.7'
 
 # temporary kithe indexing branch, for scihist_digicoll indexing branch, do not
 # intend to merge to master like this.
-gem 'kithe', git: "https://github.com/sciencehistory/kithe.git"
+gem 'kithe', git: "https://github.com/sciencehistory/kithe.git", branch: "mediainfo_characterization"
 
 # temporary git master, we should get on an attr_json release once we're settled down
 gem "attr_json", git: "https://github.com/jrochkind/attr_json" #path: "../attr_json"
