@@ -27,7 +27,7 @@
     <%= AttributeTable::RowDisplay.new(category, values: values, link_to_facet: "place_facet").display %>
   <% end %>
 
-  <%= AttributeTable::RowDisplay.new(:format, values: view.format.map(&:humanize), link_to_facet: "format_facet", alpha_sort: true).display %>
+  <%= AttributeTable::RowDisplay.new(:format, values: view.format.map(&:titleize), link_to_facet: "format_facet", alpha_sort: true).display %>
 
 
   <% if view.humanized_content_types.length > 0 %>
