@@ -19,7 +19,7 @@ import domready from 'domready';
 
 domready(function() {
   function notOurForm(form) {
-    !(form && form["data-auto-submit"] == "true");
+    return !(form && form["data-auto-submit"] == "true");
   }
 
 
