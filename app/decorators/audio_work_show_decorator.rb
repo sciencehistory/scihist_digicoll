@@ -1,5 +1,6 @@
 class AudioWorkShowDecorator < Draper::Decorator
   delegate_all
+  include Draper::LazyHelpers
 
   # This is called by works_controller#show.
   def view_template
