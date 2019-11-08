@@ -130,11 +130,11 @@ describe "Public work show page", :logged_in_user, type: :system, js: false do
   let(:work) {
     create( :work, members:
       [
-        create( :asset_with_faked_file, title: "Published asset", published: true  ),
-        create( :work, title: "First child work", published: true  ),
-        create( :work, title: "Second child work", published: false ),
-        create( :work, title: "Third child work", published: true  ),
-        create( :asset_with_faked_file, title: "Private asset",  published: false )
+        create( :asset_with_faked_file, position: 0, title: "Published asset", published: true  ),
+        create( :work,  position: 1, title: "First child work", published: true  ),
+        create( :work,  position: 2, title: "Second child work", published: false ),
+        create( :work,  position: 3, title: "Third child work", published: true  ),
+        create( :asset_with_faked_file,  position: 4, title: "Private asset",  published: false )
       ]
     )
   }
@@ -149,7 +149,7 @@ describe "Public work show page", :logged_in_user, type: :system, js: false do
       visit work_path(work)
       expect(page.find(:css, 'a[text()="Edit"]').visible?).to be true
       thumbnails = page.find_all('.member-image-presentation')
-      expect(thumbnails.count). to eq work.members.count
+      expect(thumbnails.count).to eq work.members.count
     end
   end
 end
