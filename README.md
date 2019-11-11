@@ -17,6 +17,7 @@ Prequisites:
 * (MacOS) XCode installed so C dependencies can be compiled
 * Postgres installed and running -- on MacOS, I like https://postgresapp.com/
 * `yarn` installed for webpacker -- on MacOS, `brew install yarn`.
+* `mediainfo` installed for fallback contnet type detection -- on MacOS, `brew install mediainfo`
 * vips installed --  on MacOS `brew install vips`
 * Have your AWS credentials put in a file called `aws_secrets.json` at the project's root directory. This is needed for deploying code.
 
