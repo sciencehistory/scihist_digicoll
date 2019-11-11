@@ -11,6 +11,7 @@ RSpec.describe "Convert asset to child work", :logged_in_user, type: :system, js
     expect do
       click_on "Convert to child work"
       expect(page).to have_current_path(%r{\A/admin/works})
+      expect(page).to have_content("Asset promoted to child work")
     end.to change { Work.count }.by(1).and change { Asset.count }.by(0)
 
     expect(conversion_source.reload.persisted?).to be(true)
