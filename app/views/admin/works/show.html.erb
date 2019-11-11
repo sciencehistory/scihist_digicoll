@@ -8,13 +8,14 @@
         <div>
           <div>Managing a Work</div>
           <h1><%= @work.title %> <%= publication_badge(@work) %>   <%= link_to "Public view", work_path(@work), class: "btn btn-sm btn-outline-primary" %></h1>
+          <% if @work.parent.present? %>
+            <p class="h4">Member in: <%= link_to "#{@work.parent.title} (#{@work.parent.friendlier_id})", admin_work_path(@work.parent) %></p>
+          <% end %>
         </div>
       </div>
     </div>
 
-    <% if @work.parent.present? %>
-      <p>In: <%= link_to "#{@work.parent.title} (#{@work.parent.friendlier_id})", admin_work_path(@work.parent) %></p>
-    <% end %>
+
 
     <div class="d-flex">
       <% if can? :publish, @work %>
