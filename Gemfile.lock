@@ -7,8 +7,7 @@ GIT
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: d5e61c6a0e8847dc3d6b881cc96265bc05ce24ef
-  branch: mediainfo_characterization
+  revision: f0885528424c9b44d9b908458e3b87cc2621d294
   specs:
     kithe (1.0.0)
       attr_json (< 2.0.0)
