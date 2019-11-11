@@ -104,7 +104,7 @@ class Admin::AssetsController < AdminController
       @asset.save! # to get new parent
     end
 
-    redirect_to edit_admin_work_path(new_child)
+    redirect_to edit_admin_work_path(new_child), notice: "Asset promoted to child work #{new_child.title}"
   end
 
   private
