@@ -183,10 +183,14 @@ class Admin::WorksController < AdminController
     asset = @work.members.reset.first
 
     asset.position = @work.position
-    @work.members
     asset.parent = @work.parent
 
     Kithe::Model.transaction do
+      if parent.representative_id == @work.id
+        parent.representative = asset
+        parent.save!
+      end
+
       asset.save!
       @work.destroy
     end
