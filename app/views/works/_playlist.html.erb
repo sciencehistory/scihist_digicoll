@@ -26,6 +26,10 @@
                         <i class="fa fa-play-circle" aria-hidden="true"></i>
                         <%= track.title %>
                     </a>
+
+                    <% unless track.published? %>
+                      <div class="private-badge-div"><span title="Private" class="badge badge-warning">Private</span></div>
+                    <% end %>
                     <%= DownloadDropdownDisplay.new(track, display_parent_work: track.parent, use_link:true).display %>
                 </li>
             <% end %>
