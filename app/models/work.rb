@@ -7,6 +7,8 @@ class Work < Kithe::Work
 
   has_many :on_demand_derivatives, inverse_of: :work, dependent: :destroy
 
+  has_many :cart_items, dependent: :delete_all
+
   validates :external_id, presence: true
   validates :department, inclusion: { in: ControlledLists::DEPARTMENT, allow_blank: true }
   validates :file_creator, inclusion: { in: ControlledLists::FILE_CREATOR, allow_blank: true }

@@ -82,6 +82,38 @@ CREATE TABLE public.ar_internal_metadata (
 
 
 --
+-- Name: cart_items; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cart_items (
+    id bigint NOT NULL,
+    user_id bigint,
+    work_id uuid,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: cart_items_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.cart_items_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cart_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.cart_items_id_seq OWNED BY public.cart_items.id;
+
+
+--
 -- Name: digitization_queue_items; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -381,6 +413,13 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
+-- Name: cart_items id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cart_items ALTER COLUMN id SET DEFAULT nextval('public.cart_items_id_seq'::regclass);
+
+
+--
 -- Name: digitization_queue_items id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -435,6 +474,14 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 
 ALTER TABLE ONLY public.ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: cart_items cart_items_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cart_items
+    ADD CONSTRAINT cart_items_pkey PRIMARY KEY (id);
 
 
 --
@@ -514,6 +561,20 @@ ALTER TABLE ONLY public.users
 --
 
 CREATE INDEX by_asset_and_checked_uri ON public.fixity_checks USING btree (asset_id, checked_uri);
+
+
+--
+-- Name: index_cart_items_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_cart_items_on_user_id ON public.cart_items USING btree (user_id);
+
+
+--
+-- Name: index_cart_items_on_work_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_cart_items_on_work_id ON public.cart_items USING btree (work_id);
 
 
 --
@@ -741,6 +802,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190827124516'),
 ('20190910160148'),
 ('20190912200533'),
-('20191016134900');
+('20191016134900'),
+('20191112170956');
 
 
