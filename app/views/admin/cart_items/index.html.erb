@@ -1,0 +1,38 @@
+<h1>Admin Cart</h1>
+
+<p>
+  <%= link_to "Clear Cart", clear_admin_cart_items_path, class: "btn btn-outline-danger", data: { confirm: "Delete all items in cart?"}, method: "delete" %>
+</p>
+
+<% if @works.total_count > 0 %>
+  <p>
+    <%= @works.offset_value + 1 %> - <%= @works.offset_value + @works.count %> of <%= @works.total_count %>
+  </p>
+<% end %>
+
+
+<table class="table admin-list">
+  <thead>
+    <tr>
+      <th class="thumbnail">thumbnail</th>
+      <th class="id">ID</th>
+      <th class="title">Title</th>
+      <th class="action"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @works.each do |work| %>
+      <tr>
+        <td><%= thumb_image_tag(work.leaf_representative, size: :mini, image_missing_text: true) %></td>
+        <td><%= work.friendlier_id %></td>
+        <td><%= link_to work.title, admin_work_path(work) %> <%= publication_badge(work) %></td>
+        <td>
+          <%= link_to "Remove", admin_cart_item_path(work), method: :delete, class: "btn btn-outline-danger", data: { confirm: "Remove #{work.title} from cart?"} %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= paginate @works, theme: 'twitter-bootstrap-4' %>
