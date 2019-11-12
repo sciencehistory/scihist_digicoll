@@ -30,7 +30,12 @@ describe "Public work show page", type: :system, js: false do
           create(:asset_with_faked_file,
             title: "Second asset",
             faked_derivatives: [],
-            position: 1)
+            position: 1),
+          create(:asset_with_faked_file,
+            title: "Third asset (private)",
+            faked_derivatives: [],
+            published: false,
+            position: 2)
           ]
       )
     }
@@ -52,7 +57,7 @@ describe "Public work show page", type: :system, js: false do
       expect(page.find_all(".show-page-audio-playlist-wrapper").count). to eq 0
 
       thumbnails = page.find_all('.member-image-presentation')
-      expect(thumbnails.count). to eq work.members.count
+      expect(thumbnails.count). to eq work.members.select {|m| m.published }.count
 
 
       within(".show-genre") do
@@ -123,12 +128,28 @@ end
 
 describe "Public work show page", :logged_in_user, type: :system, js: false do
   let(:work) {
-    create( :work)
+    create( :work, members:
+      [
+        create( :asset_with_faked_file, position: 0, title: "Published asset", published: true  ),
+        create( :work,  position: 1, title: "First child work", published: true  ),
+        create( :work,  position: 2, title: "Second child work", published: false ),
+        create( :work,  position: 3, title: "Third child work", published: true  ),
+        create( :asset_with_faked_file,  position: 4, title: "Private asset",  published: false )
+      ]
+    )
   }
+
+  before do
+    work.representative = work.members.first
+    work.save!
+  end
+
   describe "Logged in user" do
-    it "shows the edit button" do
+    it "shows the edit button, and all child items, including unpublished ones." do
       visit work_path(work)
       expect(page.find(:css, 'a[text()="Edit"]').visible?).to be true
+      thumbnails = page.find_all('.member-image-presentation')
+      expect(thumbnails.count).to eq work.members.count
     end
   end
 end
