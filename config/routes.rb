@@ -176,6 +176,13 @@ Rails.application.routes.draw do
       as: "delete_comment"
 
 
+    resources :cart_items, param: :work_friendlier_id, only: [:index, :create, :update, :destroy] do
+      collection do
+        delete 'clear'
+      end
+    end
+
+
     # These 'sub-apps' are for admin-use only, but since they are sub-apps
     # aren't protected by the AdminController. We have Rails routing only
     # provide the routes if there is a logged-in user.
