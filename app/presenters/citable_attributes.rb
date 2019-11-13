@@ -330,7 +330,7 @@ class CitableAttributes
           if work.contained_by.present? && work.contained_by.first.title.present?
             parts << work.contained_by.first.title
           end
-          parts << work.physical_container.as_human_string if work.physical_container.present?
+          parts << work.physical_container.display_as if work.physical_container.present?
           parts.collect(&:presence).compact.join(', ')
         elsif department?("Library") && self.shelfmark
           self.shelfmark
