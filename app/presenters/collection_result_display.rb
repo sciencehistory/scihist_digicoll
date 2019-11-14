@@ -9,7 +9,7 @@ class CollectionResultDisplay < ViewModel
 
   # @param collection [Collection]
   # @param child_counter [ChildCountDisplayFetcher]
-  def initialize(collection, child_counter:, cart_presence:)
+  def initialize(collection, child_counter:, cart_presence:nil)
     @child_counter = child_counter
     # we don't use cart_presence, you can't put collections in cart at the moment.
     super(collection)
