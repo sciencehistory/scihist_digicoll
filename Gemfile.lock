@@ -107,12 +107,12 @@ GEM
       i18n
     bcrypt (3.1.12)
     bindex (0.5.0)
-    blacklight (7.2.0)
+    blacklight (7.4.0)
       deprecation
       globalid
       jbuilder (~> 2.7)
       kaminari (>= 0.15)
-      rails (~> 5.1)
+      rails (>= 5.1, < 7)
     blacklight_range_limit (7.1.0)
       blacklight (>= 7.0)
       rails (>= 3.0)
