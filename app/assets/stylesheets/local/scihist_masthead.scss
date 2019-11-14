@@ -119,4 +119,7 @@
   .nav-item:not(:last-child) {
     margin-right: $spacer;
   }
+  &.staging {
+    background-color: $warning;
+  }
 }
