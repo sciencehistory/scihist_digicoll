@@ -1,9 +1,9 @@
 <%# navbar that is shown at very top of page in "front-end" end-user-accessible
     pages, if admin is logged in. May use it in admin pages too? Maybe change
     name if so. %>
-<nav class="navbar navbar-expand-sm topbar" role="navigation">
+<nav class="navbar navbar-expand-sm topbar <%= ScihistDigicoll::Env.lookup(:service_level).try(&:underscore) %>" role="navigation">
   <div class="navbar-text">
-    Management
+    Management: <%= ScihistDigicoll::Env.lookup(:service_level).try(&:upcase) %>
   </div>
   <div class="navbar-collapse justify-content-md-end" id="user-util-collapse">
     <ul class="navbar-nav">
