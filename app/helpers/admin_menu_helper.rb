@@ -3,6 +3,11 @@ module AdminMenuHelper
     options = [
       link_to('Edit Metadata', edit_admin_work_path(work), class: "dropdown-item"),
       link_to('Members', admin_work_path(work, anchor: "nav-members"), class: "dropdown-item"),
+      link_to("Demote to Asset",
+                demote_to_asset_admin_work_path(work),
+                method: "put",
+                class: "dropdown-item",
+                data: { confirm: "All work metadata on #{work.title} will be lost, this is not reversible. Are you sure?" }),
       (link_to('Delete', [:admin, work], method: :delete, data: { confirm: "Delete Work '#{work.title}'?" }, class: "dropdown-item") if can?(:destroy, work))
     ].compact
 

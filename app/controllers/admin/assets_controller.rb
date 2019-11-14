@@ -102,9 +102,14 @@ class Admin::AssetsController < AdminController
     Kithe::Model.transaction do
       new_child.save!
       @asset.save! # to get new parent
+
+      if parent.representative_id == @asset.id
+        parent.representative = new_child
+        parent.save!
+      end
     end
 
-    redirect_to edit_admin_work_path(new_child)
+    redirect_to edit_admin_work_path(new_child), notice: "Asset promoted to child work #{new_child.title}"
   end
 
   private
