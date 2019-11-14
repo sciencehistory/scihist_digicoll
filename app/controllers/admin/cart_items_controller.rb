@@ -12,38 +12,45 @@ class Admin::CartItemsController < AdminController
   end
 
 
-  # # POST /admin/cart_items
-  # # POST /admin/cart_items.json
-  # def create
-  #   @admin_cart_item = Admin::CartItem.new(admin_cart_item_params)
+  # PATCH/PUT /admin/cart_items/dj52w562t
+  # PATCH/PUT /admin/cart_items/dj52w562t.json
+  #
+  # Adds or removes a work identified by friendlier_id from logged-in user's cart.
+  # If params["toggle"] is sent as `1` will be added, otherwise removed.
+  #
+  # Used for JS-powered checkbox to add/remove from cart, in CartControl ViewModel with associated JS.
+  #
+  # ONLY returns a JSON response, no HTML response available, this is for support of our cart add/remove
+  # JS.
+  def update
+    work = Work.find_by_friendlier_id(params[:work_friendlier_id])
 
-  #   respond_to do |format|
-  #     if @admin_cart_item.save
-  #       format.html { redirect_to @admin_cart_item, notice: 'Cart item was successfully created.' }
-  #       format.json { render :show, status: :created, location: @admin_cart_item }
-  #     else
-  #       format.html { render :new }
-  #       format.json { render json: @admin_cart_item.errors, status: :unprocessable_entity }
-  #     end
-  #   end
-  # end
+    if params[:toggle] == "1"
+      current_user.works_in_cart << work
+    elsif work
+      # delete it, if the work doesn't exist, consider it deleted.
+      current_user.works_in_cart.delete(work)
+    end
 
-  # PATCH/PUT /admin/cart_items/1
-  # PATCH/PUT /admin/cart_items/1.json
-  # def update
-  #   respond_to do |format|
-  #     if @admin_cart_item.update(admin_cart_item_params)
-  #       format.html { redirect_to @admin_cart_item, notice: 'Cart item was successfully updated.' }
-  #       format.json { render :show, status: :ok, location: @admin_cart_item }
-  #     else
-  #       format.html { render :edit }
-  #       format.json { render json: @admin_cart_item.errors, status: :unprocessable_entity }
-  #     end
-  #   end
-  # end
+    respond_to do |format|
+      format.json do
+        render json: {
+          cart_count: current_user.works_in_cart.count
+        }
+      end
+    end
+  end
+
+
+
+
 
   # DELETE /admin/cart_items/dj52w562t
   # DELETE /admin/cart_items/dj52w562t.json
+  #
+  # Removes a work specified by friendlier_id from cart.
+  # This is for our ordinary non-JS 'remove' link on cart page, see also #update used
+  # by JS.
   def destroy
     work = Work.find_by_friendlier_id(params[:work_friendlier_id])
     if work

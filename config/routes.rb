@@ -176,7 +176,7 @@ Rails.application.routes.draw do
       as: "delete_comment"
 
 
-    resources :cart_items, param: :work_friendlier_id, only: [:index, :create, :update, :destroy] do
+    resources :cart_items, param: :work_friendlier_id, only: [:index, :update, :destroy] do
       collection do
         delete 'clear'
       end
