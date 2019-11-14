@@ -7,12 +7,14 @@ class WorkResultDisplay < ViewModel
 
   delegate :additional_title
 
-  attr_reader :child_counter
+  attr_reader :child_counter, :cart_presence
 
   # @param work [Work]
   # @param child_counter [ChildCountDisplayFetcher]
-  def initialize(work, child_counter:)
+  # @param cart_presence [CartPresence]
+  def initialize(work, child_counter:, cart_presence:)
     @child_counter = child_counter
+    @cart_presence = cart_presence
     super(work)
   end
 
@@ -92,5 +94,10 @@ class WorkResultDisplay < ViewModel
         arr << content_tag("i", model.source)
       end
     end
+  end
+
+
+  def show_cart_control?
+    current_user.present?
   end
 end

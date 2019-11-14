@@ -20,3 +20,4 @@ import '../src/js/scihist_search_slideout.js';
 import '../src/js/scihist_on_demand_downloader.js';
 import '../src/js/scihist_viewer.js';
 import '../src/js/custom_google_analytics_events.js';
+import '../src/js/cart_control.js';
