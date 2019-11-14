@@ -28,6 +28,8 @@ class CartPresence
   # For instance, we might instantiate it on all pages, but only use it for logged-in-users,
   # not logged in users should not have query performance penalty.
   def friendlier_ids_in_cart
+    return [] unless current_user
+
     @friendlier_ids_in_cart ||= Set.new(current_user.works_in_cart.where(friendlier_id: friendlier_id_possibilities).pluck(:friendlier_id))
   end
 
