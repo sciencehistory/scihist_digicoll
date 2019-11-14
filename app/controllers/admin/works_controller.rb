@@ -126,6 +126,7 @@ class Admin::WorksController < AdminController
 
   # Our admin 'show' page is really the members index.
   def show
+    @cart_presence = CartPresence.new([@work.friendlier_id], current_user: current_user)
   end
 
   def reorder_members_form
