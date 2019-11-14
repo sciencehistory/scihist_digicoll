@@ -43,6 +43,16 @@
       padding: 0.3125rem;
     }
 
+    .private-badge-div {
+      font-family: $brand-sans-serif;
+      cursor: pointer;
+      margin-top: 0.25rem;
+      margin-right: 0.25rem;
+      .badge-warning {
+        border-radius: 0;
+      }
+    }
+
     div.dropdown {
       padding-top: 0.3125rem;
       .download-link {
