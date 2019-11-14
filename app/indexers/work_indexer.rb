@@ -42,7 +42,7 @@ class WorkIndexer < Kithe::Indexer
     to_field "text_no_boost_tesim", obj_extract("digitization_funder")
     to_field "text_no_boost_tesim", obj_extract("extent")
 
-    to_field "text_no_boost_tesim", obj_extract("physical_container"), transform( ->(v) { v.as_human_string })
+    to_field "text_no_boost_tesim", obj_extract("physical_container"), transform( ->(v) { v.display_as })
 
     # We put this one in a separate field, cause we only allow logged in users
     # to search it
