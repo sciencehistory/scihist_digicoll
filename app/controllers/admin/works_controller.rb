@@ -12,6 +12,7 @@ class Admin::WorksController < AdminController
   def index
     @q = ransack_object
     @works = index_work_search(@q)
+    @cart_presence = CartPresence.new(@works.collect(&:friendlier_id), current_user: current_user)
   end
 
 
