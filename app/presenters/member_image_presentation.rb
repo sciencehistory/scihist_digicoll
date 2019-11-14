@@ -48,6 +48,7 @@ class MemberImagePresentation < ViewModel
     end
 
     content_tag("div", class: "member-image-presentation") do
+      private_label +
       content_tag("div", class: "thumb") do
         content_tag("a", href: view_href, data: view_data_attributes) do
           ThumbDisplay.new(representative_asset, thumb_size: size, lazy: lazy).display
@@ -60,6 +61,15 @@ class MemberImagePresentation < ViewModel
   end
 
   private
+
+  def private_label
+    return ''.html_safe if member.published?
+    content_tag(:div, class: "private-badge-div") do
+      content_tag(:span, title: "Private", class: "badge badge-warning") do
+        "Private"
+      end
+    end
+  end
 
   def user_has_access_to_asset?
     can?(:read, representative_asset)
