@@ -1,10 +1,11 @@
 # Display a checkbox for adding something and removing someting from admin 'cart'. The checkbox
 # will be powered by Javascript.
 class CartControl < ViewModel
-  attr_reader :work_friendlier_id, :cart_presence
-  def initialize(work_friendlier_id, cart_presence:)
+  attr_reader :work_friendlier_id, :cart_presence, :label_sr_only
+  def initialize(work_friendlier_id, cart_presence:, label_sr_only: false)
     @work_friendlier_id = work_friendlier_id
     @cart_presence = cart_presence
+    @label_sr_only = label_sr_only
   end
 
   def display
@@ -19,7 +20,7 @@ class CartControl < ViewModel
           data: { "cart-toggle-input" => true }
          ),
         " ",
-        label_tag(input_id, "In Cart")
+        label_tag(input_id, "In Cart", class: ("sr-only" if label_sr_only))
       ])
     end
   end
