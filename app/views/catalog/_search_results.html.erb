@@ -1,0 +1,34 @@
+<%#Customization forked from: https://github.com/projectblacklight/blacklight/blob/6b5c5b823d96327282aa0ce401946be0cc267f49/app/views/catalog/_search_results.html.erb %>
+
+<% @page_title = t('blacklight.search.page_title.title', :constraints => render_search_to_page_title(params), :application_name => application_name) %>
+
+<% content_for(:head) do -%>
+  <%= render 'catalog/opensearch_response_metadata', response: @response %>
+  <%# rss_feed_link_tag %>
+  <%# atom_feed_link_tag %>
+  <%# json_api_link_tag %>
+<% end %>
+
+<% content_for(:skip_links) do -%>
+    <%= link_to t('blacklight.skip_links.first_result'), '#documents', class: 'element-invisible element-focusable rounded-bottom py-2 px-3', data: { turbolinks: 'false' } %>
+<% end %>
+
+<% content_for(:container_header) do -%>
+  <h1 class="sr-only top-content-title"><%= t('blacklight.search.header') %></h1>
+
+  <%= render 'constraints' %>
+<% end %>
+
+<%= render 'search_header' %>
+
+<h2 class="sr-only"><%= t('blacklight.search.search_results') %></h2>
+
+<%- if @response.empty? %>
+  <%= render "zero_results" %>
+<%- elsif render_grouped_response? %>
+  <%= render_grouped_document_index %>
+<%- else %>
+  <%= render_document_index %>
+<%- end %>
+
+<%= render 'results_pagination' %>
