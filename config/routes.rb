@@ -72,6 +72,14 @@ Rails.application.routes.draw do
   # Blacklight-generated routes, that were then modified a bit by us to take
   # out stuff we're not using.
   #
+
+      # Route RSS and atom search results to a 404
+      # until we decide to implement them.
+      # Practically speaking, this only affects bots).
+      get 'catalog.rss',  to: proc { [404, {}, ['']] }
+      get 'catalog.atom', to: proc { [404, {}, ['']] }
+      get 'catalog.json', to: proc { [404, {}, ['']] }
+
       # TODO: Can we get away without actuallymounting Blacklight, just using the CatalogController?
       # mount Blacklight::Engine => '/'
       concern :searchable, Blacklight::Routes::Searchable.new
