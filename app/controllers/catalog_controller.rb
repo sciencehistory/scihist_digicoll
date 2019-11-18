@@ -65,6 +65,24 @@ class CatalogController < ApplicationController
     end
   end
 
+  # Override method index in:
+  # https://github.com/projectblacklight/blacklight/blob/6b5c5b823d96327282aa0ce401946be0cc267f49/app/controllers/concerns/blacklight/catalog.rb
+  # to send rss, atom and json format requests to a 404.
+  module Blacklight::Catalog
+    def index
+      (@response, deprecated_document_list) = search_service.search_results
+      @document_list = ActiveSupport::Deprecation::DeprecatedObjectProxy.new(deprecated_document_list, 'The @document_list instance variable is deprecated; use @response.documents instead.')
+      respond_to do |format|
+        format.rss  { raise ActionController::RoutingError.new('These search results are not available as RSS.') }
+        format.atom { raise ActionController::RoutingError.new('These search results are not available as atom.')  }
+        format.json { raise ActionController::RoutingError.new('These search results are not available as json.')  }
+        format.html { store_preferred_view }
+        additional_response_formats(format)
+        document_export_formats(format)
+      end
+    end
+  end
+
   # Tell Blacklight to recognize our custom filter_public_domain=1 as a constriants filter.
   # And override BL helper method to _display_ the filter_public_domain constraint,
   # as well as display the text query input constraint as a live search box/form allowing
