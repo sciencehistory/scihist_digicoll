@@ -13,6 +13,9 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
 
+  has_many :cart_items, dependent: :delete_all
+  has_many :works_in_cart, through: :cart_items, source: :work
+
   # Only used by devise validatable, we want to allow user accounts
   # to be saved with nil password, means they won't be able to log in
   # with any password.

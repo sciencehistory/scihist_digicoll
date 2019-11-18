@@ -77,6 +77,10 @@
         </ul>
       <% end %>
 
+      <% if view.show_cart_control? %>
+        <p><%= CartControl.new(model.friendlier_id, cart_presence: view.cart_presence).display %></p>
+      <% end %>
+
     </div>
 </li>
 

@@ -2,8 +2,9 @@
 
 <ul id="documents" class="list-unstyled documents-<%= document_index_view_type %>">
   <% child_counter = ChildCountDisplayFetcher.new(documents.collect(&:id)) %>
+  <% cart_presence = CartPresence.new(documents.collect(&:id), current_user: current_user) %>
 
   <% documents.collect(&:model).compact.each do |model| %>
-    <%= view_model_class_for(model).new(model, child_counter: child_counter).display %>
+    <%= view_model_class_for(model).new(model, child_counter: child_counter, cart_presence: cart_presence).display %>
   <% end %>
 </ul>

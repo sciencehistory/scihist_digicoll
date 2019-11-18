@@ -12,6 +12,12 @@
       </li>
 
       <li class="nav-item">
+        <%= link_to admin_cart_items_path, class: "nav-link" do %>
+          <span class="badge badge-secondary" data-role="cart-counter"><%= current_user.works_in_cart.count %></span> Cart
+        <% end %>
+      </li>
+
+      <li class="nav-item">
         <span class="navbar-text"><%= current_user.email %></span>
       </li>
 

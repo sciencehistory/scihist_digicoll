@@ -79,6 +79,7 @@
       <th class="datestamp"><%= sort_link(@q, :created_at, "Created", page: nil) %></th>
       <th class="datestamp"><%= sort_link(@q, :updated_at, "Last Modified", page: nil) %></th>
       <th class="action"></th>
+      <th>Cart</th>
     </tr>
   </thead>
 
@@ -96,6 +97,7 @@
             <%= admin_dropdown_for_work(work, labelled_by_id: "dropdownMenuButton") %>
           </div>
         </td>
+        <td><%= CartControl.new(work.friendlier_id, cart_presence: @cart_presence, label_sr_only: true).display %></td>
       </tr>
     <% end %>
   </tbody>
