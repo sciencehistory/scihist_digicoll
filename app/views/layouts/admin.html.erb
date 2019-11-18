@@ -67,6 +67,11 @@
                 <li><%= link_to "Users", admin_users_path %></li>
               <% end %>
               <li><%= link_to "Public Search", search_catalog_path %></li>
+              <li>
+                <%= link_to admin_cart_items_path do %>
+                  Cart <span class="badge badge-secondary" data-role="cart-counter"><%= current_user.works_in_cart.count %></span>
+                <% end %>
+              </li>
               <li><hr></li>
               <li><%= link_to "Job Queues", admin_resque_server_path %></li>
               <li><%= link_to "Fixity Report", admin_fixity_report_path %></li>

@@ -11,6 +11,9 @@
           <% if @work.parent.present? %>
             <p class="h4">Member in: <%= link_to "#{@work.parent.title} (#{@work.parent.friendlier_id})", admin_work_path(@work.parent) %></p>
           <% end %>
+          <div>
+            <%= CartControl.new(@work.friendlier_id, cart_presence: @cart_presence).display %>
+          </div>
         </div>
       </div>
     </div>
@@ -44,7 +47,7 @@
         </div>
       <% end %>
     </div>
-  </div>
+</div>
 
 
 <nav class="mb-2">

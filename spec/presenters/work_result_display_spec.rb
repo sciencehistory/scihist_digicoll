@@ -19,6 +19,7 @@ describe WorkResultDisplay do
   end
 
   let(:child_counter) { ChildCountDisplayFetcher.new([work.friendlier_id]) }
+  let(:cart_presence) { CartPresence.new([work.friendlier_id], current_user: nil) }
 
   let(:parent_work) { create(:work) }
 
@@ -33,7 +34,7 @@ describe WorkResultDisplay do
     members: [create(:asset), create(:asset)]
   )}
 
-  let(:presenter) { described_class.new(work, child_counter: child_counter) }
+  let(:presenter) { described_class.new(work, child_counter: child_counter, cart_presence: cart_presence) }
   let(:rendered) { Nokogiri::HTML.fragment(presenter.display) }
 
   it "displays" do

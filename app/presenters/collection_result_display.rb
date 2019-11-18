@@ -9,8 +9,9 @@ class CollectionResultDisplay < ViewModel
 
   # @param collection [Collection]
   # @param child_counter [ChildCountDisplayFetcher]
-  def initialize(collection, child_counter:)
+  def initialize(collection, child_counter:, cart_presence:nil)
     @child_counter = child_counter
+    # we don't use cart_presence, you can't put collections in cart at the moment.
     super(collection)
   end
 
@@ -57,6 +58,10 @@ class CollectionResultDisplay < ViewModel
   # we don't have any Collection result display at present
   def metadata_labels_and_values
     {}.freeze
+  end
+
+  def show_cart_control?
+    false # never for collections
   end
 
 
