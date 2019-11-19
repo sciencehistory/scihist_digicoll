@@ -5,7 +5,7 @@ ruby File.read(".ruby-version").chomp
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.2.1'
-gem 'webpacker', '~> 3.5'
+gem 'webpacker', '~> 4.0'
 
 gem "blacklight", "~> 7.0", ">= 7.1.0.alpha"
 gem "blacklight_range_limit", "~> 7.0" # version sync'd with blacklight
