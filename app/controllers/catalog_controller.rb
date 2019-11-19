@@ -44,6 +44,26 @@ class CatalogController < ApplicationController
   end
   helper_method :view_model_class_for
 
+  module Blacklight::CatalogHelperBehavior
+    # These three methods
+    # were outputting links (rel="alternate") in the HTML head tag that sent bots
+    # to crawl RSS, atom, and json versions
+    # of our search results, which we are not offering yet.
+    # and we are overrriding them so they output nothing instead.
+    #
+    # Overridden methods:
+    # https://github.com/projectblacklight/blacklight/blob/6b5c5b823d96327282aa0ce401946be0cc267f49/app/helpers/blacklight/catalog_helper_behavior.rb
+    # Template that calls them:
+    # https://github.com/projectblacklight/blacklight/blob/6b5c5b823d96327282aa0ce401946be0cc267f49/app/views/catalog/_search_results.html.erb
+    #
+    # See issue https://github.com/sciencehistory/scihist_digicoll/pull/497 for more details.
+    def rss_feed_link_tag(options = {})
+    end
+    def atom_feed_link_tag(options = {})
+    end
+    def json_api_link_tag(options = {})
+    end
+  end
 
   # Tell Blacklight to recognize our custom filter_public_domain=1 as a constriants filter.
   # And override BL helper method to _display_ the filter_public_domain constraint,
