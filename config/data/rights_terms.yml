@@ -76,3 +76,9 @@ terms:
     active: true
     category: no_copyright
     short_label_html: Public<br>Domain
+
+  - id: http://rightsstatements.org/vocab/CNE/1.0/
+    label: Copyright Not Evaluated
+    active: true
+    category: other
+    short_label_html: Not<br>Evaluated
