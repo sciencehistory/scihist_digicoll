@@ -2,7 +2,7 @@
   "name": "scihist_digicoll",
   "private": true,
   "dependencies": {
-    "@rails/webpacker": "^4.0.0",
+    "@rails/webpacker": "^4.2.0",
     "@shopify/draggable": "^1.0.0-beta.8",
     "devbridge-autocomplete": "^1.4.10",
     "domready": "^1.0.8",
@@ -13,7 +13,7 @@
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
-    "webpack-dev-server": "^3.7.2"
+    "webpack-dev-server": "^3.9.0"
   },
   "resolutions": {
     "lodash": ">= 4.17.13",
