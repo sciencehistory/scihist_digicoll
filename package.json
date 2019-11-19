@@ -2,7 +2,7 @@
   "name": "scihist_digicoll",
   "private": true,
   "dependencies": {
-    "@rails/webpacker": "3.5",
+    "@rails/webpacker": "^4.0.0",
     "@shopify/draggable": "^1.0.0-beta.8",
     "devbridge-autocomplete": "^1.4.10",
     "domready": "^1.0.8",
