@@ -25,11 +25,15 @@ class FixityCheckFailureService
     end
 
     if defined? Honeybadger
-      Honeybadger.notify("Fixity check failure", context: {
-        asset: @asset.inspect,
-        asset_url: asset_url,
-        fixity_check: @fixity_check.inspect
-        })
+      Honeybadger.notify("Fixity check failure: #{@asset.friendlier_id}",
+        context: {
+          asset: @asset.inspect,
+          asset_url: asset_url,
+          fixity_check: @fixity_check.inspect
+        },
+        fingerprint: "fixity_check_failure_#{@asset.friendlier_id}",
+        tags: "fixity"
+      )
     end
   end
 
