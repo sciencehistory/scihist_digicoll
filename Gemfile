@@ -1,7 +1,9 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby File.read(".ruby-version").chomp
+# Include just the major/minor version of whatever we find in .ruby-version,
+# ie `~> 2.5` or `~> 2.6`, not including additional that may be in 2.3
+ruby "~> #{File.read('.ruby-version').chomp.split('.').slice(0,3).join('.')}"
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.2.1'
