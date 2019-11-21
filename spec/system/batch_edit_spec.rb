@@ -18,6 +18,7 @@ describe "Cart and Batch Edit", solr: true, indexable_callbacks: true, logged_in
       additional_title: ["additional title 2a", "additional title 2b"],
       creator: [{category: "contributor", value: "creator 2"}])
   }
+  let!(:work0) { create(:work, provenance: "provenance 0")}
 
   it "smoke test" do
     visit search_catalog_path(search_field: "all_fields")
@@ -69,5 +70,8 @@ describe "Cart and Batch Edit", solr: true, indexable_callbacks: true, logged_in
     expect(work2.provenance).to eq "batch edit provenance"
     expect(work2.creator).to eq([Work::Creator.new(category: "contributor", value: "creator 2")])
     expect(work2.description).to eq "description 2"
+
+    # work0 is unchanged
+    expect(work0.provenance).to eq "provenance 0"
   end
 end
