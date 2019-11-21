@@ -71,7 +71,7 @@ gem 'simple_form', "~> 5.0"
 gem "cocoon"
 
 gem "browse-everything", "~> 1.0"
-gem "qa", "~> 4.2"
+gem "qa", "~> 5.0"
 gem "shrine", "~> 2.0" #, path: "../shrine"
 # shrine-compat endpoint to get uppy to direct upload to S3 with resumable multi-part upload
 gem "uppy-s3_multipart"
