@@ -34,11 +34,26 @@ describe "Cart and Batch Edit", solr: true, indexable_callbacks: true, logged_in
     click_on("Batch Edit")
 
     # Batch Update Form
+    expect(page).to have_selector("h1", text: /Batch Edit/)
+
+    # First try an intentional validation error and then fix it
+    all("fieldset.work_external_id input[type=text]")[0].
+      fill_in with: "id with no category"
+    click_on("Update 2 Works")
+    expect(page).to have_selector("h1", text: /Batch Edit/)
+    expect(page).to have_text("External ID is invalid")
+    expect(page).to have_text("Category can't be blank")
+    # blank it out again
+    all("fieldset.work_external_id input[type=text]")[0].
+      fill_in with: ""
+
+    # Now data that is good that we'll really save....
     all("fieldset.work_additional_title input[type=text]")[0].
       fill_in with: "batch edit additional title"
     fill_in "work[provenance]", with: "batch edit provenance"
     click_on("Update 2 Works")
 
+    # Back to cart
     expect(page).to have_selector("h1", text: "Admin Cart")
 
     # check changes were made, and non-expected changes were not made
