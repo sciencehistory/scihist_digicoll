@@ -41,7 +41,7 @@ class WorkIndexer < Kithe::Indexer
 
     # This still does not correctly index all records with nil rights.
     to_field ["text_no_boost_tesim", "rights_facet"] do |record, acc|
-      if record.department.nil? || record.department.empty?
+      if record.rights.nil? || record.rights.empty?
         acc << "Missing"
       else
         acc << RightsTerms.label_for(record.rights)
