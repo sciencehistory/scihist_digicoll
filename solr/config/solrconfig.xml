@@ -140,21 +140,6 @@
 
        <str name="facet">true</str>
        <str name="facet.mincount">1</str>
-       <!-- This should work
-
-        https://lucene.apache.org/solr/guide/8_0/faceting.html
-
-        Unless otherwise specified, all of the parameters below can be specified on a per-field basis with the syntax of f.<fieldname>.facet.<parameter>
-       -->
-
-       <str name="f.department_facet.facet.missing">true</str>
-       <str name="f.rights_facet.facet.missing">true</str>
-      <!--
-        <str name="f.department_facet.facet.missing">enum</str>
-        <str name="f.rights_facet.facet.method">enum</str>
-       -->
-
-       <!-- end eddie hacking -->
 
        <str name="spellcheck">false</str>
        <str name="spellcheck.dictionary">default</str>
