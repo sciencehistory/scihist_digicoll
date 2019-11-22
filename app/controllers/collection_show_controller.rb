@@ -44,7 +44,7 @@ class CollectionShowController < CatalogController
 
   # Our custom SearchBuilder needs to know collection id (UUID)
   def search_service_context
-    { collection_id: collection.id }
+    super.merge!(collection_id: collection.id)
   end
 
   def check_auth
