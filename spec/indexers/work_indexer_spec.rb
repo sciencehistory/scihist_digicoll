@@ -22,4 +22,13 @@ describe WorkIndexer do
       expect(output_hash["collection_id_ssim"]).to match [collection1.id, collection2.id]
     end
   end
+
+  describe "empty string department" do
+    let(:work) { create(:work, department: "") }
+    it "indexes as nil" do
+      output_hash = WorkIndexer.new.map_record(work)
+      expect(output_hash).not_to include("department_facet")
+    end
+  end
+
 end
