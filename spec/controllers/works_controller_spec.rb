@@ -22,7 +22,7 @@ RSpec.describe WorksController, type: :controller do
         expect(response.status).to eq(200)
         expect(response.body).to include "TI  - Test title"
         expect(response.body).to include "M2  - Courtesy of Science History Institute."
-        expect(response.content_type).to eq "application/x-research-info-systems"
+        expect(response.media_type).to eq "application/x-research-info-systems"
         expect(response.headers["Content-Disposition"]).
           to eq "attachment; filename=\"test_title_#{ work.friendlier_id }.ris\""
       end
@@ -30,7 +30,7 @@ RSpec.describe WorksController, type: :controller do
       it "delivers oai_dc from XML request" do
         get :show, params: { id: work.friendlier_id }, as: :xml
         expect(response.status).to eq(200)
-        expect(response.content_type).to eq "application/xml"
+        expect(response.media_type).to eq "application/xml"
 
         parsed = Nokogiri::XML(response.body)
         expect(parsed.root&.namespace&.href).to eq "http://www.openarchives.org/OAI/2.0/oai_dc/"
@@ -45,7 +45,7 @@ RSpec.describe WorksController, type: :controller do
     it "returns JSON" do
       get :viewer_images_info, params: { id: work.friendlier_id }, as: :json
       expect(response.status).to eq(200)
-      expect(response.content_type).to eq "application/json"
+      expect(response.media_type).to eq "application/json"
       expect(JSON.parse(response.body)).to be_kind_of(Array)
     end
   end
