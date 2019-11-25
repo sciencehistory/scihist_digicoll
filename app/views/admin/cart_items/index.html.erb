@@ -1,6 +1,7 @@
 <h1>Admin Cart</h1>
 
 <p>
+  <%= link_to "Batch Edit", batch_update_admin_works_path, class: "btn btn-primary" %>
   <%= link_to "Clear Cart", clear_admin_cart_items_path, class: "btn btn-outline-danger", data: { confirm: "Delete all items in cart?"}, method: "delete" %>
 </p>
 

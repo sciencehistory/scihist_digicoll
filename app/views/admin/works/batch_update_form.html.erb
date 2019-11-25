@@ -1,0 +1,29 @@
+<%= kithe_form_for(@work, url: batch_update_admin_works_path, html: { novalidate: true, class: 'edit-work mx-auto admin-edit' }) do |f| %>
+  <div class="admin-header sticky-top d-flex justify-content-between p-2 mb-4 mt-1 bg-light border">
+    <div>
+      <h1 class="h5">Batch Edit <small>— <%= current_user.works_in_cart.count %> Works in Cart</small></h1>
+    </div>
+    <div class="form-actions">
+      <%= link_to 'Cancel', admin_cart_items_path, class: "btn btn-outline-primary" %>
+      <%= f.button :submit, value: "Update #{current_user.works_in_cart.count} Works" %>
+    </div>
+  </div>
+
+  <% if @work.errors.any? %>
+    <div class="kithe-form-errors-top alert alert-danger mb-4" role="alert"">
+      <h2 class="h4" class="alert-heading"><%= pluralize(@work.errors.count, "error") %> in specified batch update data</h2>
+      <ol class="mb-0">
+      <% @work.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+    </div>
+  <% end %>
+
+  <div class="form-inputs">
+    <%= render "/admin/works/work_fields", f: f %>
+  </div>
+<% end %>
+
+
+
