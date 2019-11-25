@@ -30,7 +30,7 @@ class FeaturedTopicController < CatalogController
   private
 
   def search_service_context
-    { slug: params[:slug] }
+    super.merge!(slug: params[:slug])
   end
 
   def set_featured_topic
