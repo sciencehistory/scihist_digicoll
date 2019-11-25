@@ -131,6 +131,10 @@ Rails.application.routes.draw do
         put "publish"
         put "unpublish"
       end
+      collection do
+        get 'batch_update', to: "works#batch_update_form"
+        post 'batch_update'
+      end
     end
 
     get "/works/:parent_id/ingest", to: "assets#display_attach_form", as: "asset_ingest"

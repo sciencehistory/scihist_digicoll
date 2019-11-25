@@ -200,6 +200,68 @@ class Admin::WorksController < AdminController
     redirect_to admin_work_path(asset.parent, anchor: "nav-members"), notice: "Child work replaced with asset #{asset.title}"
   end
 
+  # Display a form for entry for batch editing all works in Cart. Covnenient
+  # to put it in WorksController so we can re-use our work form partials.
+  def batch_update_form
+    # just a dummy blank one to power the form, the BatchUpdateWorkForm
+    # object will remove 'presence' validators so the form won't show any
+    # fields as required.
+    @work = Admin::BatchUpdateWorkForm.new({})
+  end
+
+  # Accepts input from batch_update_form, to apply to all items in cart.
+  def batch_update
+    @work = Admin::BatchUpdateWorkForm.new(work_params)
+
+    unless @work.update_works(current_user.works_in_cart.find_each)
+      # the form is based on @work, so re-rendered will show errors
+      render :batch_update_form
+      return
+    end
+
+    redirect_to admin_cart_items_url, notice: "Updated works in Cart"
+    return
+
+    ####
+
+    unless @work.valid?
+      render :batch_update_form
+      return
+    end
+
+    update_attrs = Work.attr_json_registry.definitions.reduce({}) do |hash, attr_defn|
+      value = @work.send(attr_defn.name)
+      if value.present?
+        hash[attr_defn.name] = value
+      end
+      hash
+    end
+
+    Work.transaction do
+      current_user.works_in_cart.find_each do |work|
+        update_attrs.each do |k, v|
+          if v.kind_of?(Array)
+            work.send("#{k}=", work.send(k) + v)
+          else
+            work.send("#{k}=", v)
+          end
+
+          unless work.valid?
+            @work.errors.add(:base, "#{work.title} (#{work.friendlier_id}): #{work.errors.full_messages.join(', ')}")
+            flash.now[:error] = "Some works in the cart couldn't be saved, they may have pre-existing problems. The batch update was not done."
+            render :batch_update_form
+            return
+          end
+
+          work.save!
+        end
+      end
+    end
+
+    redirect_to admin_cart_items_url, notice: "Updated works in Cart"
+  end
+
+
 
   private
     # Use callbacks to share common setup or constraints between actions.
