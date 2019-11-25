@@ -10,7 +10,7 @@ RSpec.describe OnDemandDerivativesController, type: :request, queue_adapter: :te
 
       get on_demand_derivative_status_path(work.friendlier_id, derivative_type)
 
-      expect(response.content_type).to eq("application/json")
+      expect(response.media_type).to eq("application/json")
       expect(response).to have_http_status(200)
 
       json = JSON.parse(response.body)
@@ -43,7 +43,7 @@ RSpec.describe OnDemandDerivativesController, type: :request, queue_adapter: :te
 
       get on_demand_derivative_status_path(work.friendlier_id, derivative_type)
 
-      expect(response.content_type).to eq("application/json")
+      expect(response.media_type).to eq("application/json")
       expect(response).to have_http_status(200)
 
       json = JSON.parse(response.body)
