@@ -19,6 +19,7 @@ cache:
     - ./tmp/solr_dist
 before_install:
   - gem install bundler
+  - nvm install node
 before_script:
   - psql -c 'create database scihist_digicoll_test;' -U postgres
   - yarn install
