@@ -6,7 +6,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby "~> #{File.read('.ruby-version').chomp.split('.').slice(0,3).join('.')}"
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.2.1'
+gem 'rails', '~> 6.0.0'
 gem 'webpacker', '~> 4.0'
 
 gem "blacklight", "~> 7.0", ">= 7.1.0.alpha"
@@ -39,7 +39,7 @@ gem 'uglifier', '>= 1.3.0'
 # gem 'mini_racer', platforms: :ruby
 
 # Use CoffeeScript for .coffee assets and views
-gem 'coffee-rails', '~> 4.2'
+#gem 'coffee-rails', '~> 5.0'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'
 # Use Redis adapter to run Action Cable in production
@@ -71,7 +71,8 @@ gem 'simple_form', "~> 5.0"
 gem "cocoon"
 
 gem "browse-everything", "~> 1.0"
-gem "qa", "~> 5.0"
+# TEMPORARY, until it's merged and ideally released. https://github.com/samvera/questioning_authority/pull/291 :
+gem "qa", "~> 5.0", github: "samvera/questioning_authority", branch: "rails6"
 gem "shrine", "~> 2.0" #, path: "../shrine"
 # shrine-compat endpoint to get uppy to direct upload to S3 with resumable multi-part upload
 gem "uppy-s3_multipart"
@@ -125,7 +126,7 @@ group :development do
 end
 
 group :test do
-  gem 'rspec-rails', '~> 3.8'
+  gem 'rspec-rails', '>= 4.0.0.beta3', "< 5.0"
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '>= 2.15'
   gem 'selenium-webdriver'
