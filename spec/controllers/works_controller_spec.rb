@@ -24,7 +24,7 @@ RSpec.describe WorksController, type: :controller do
         expect(response.body).to include "M2  - Courtesy of Science History Institute."
         expect(response.media_type).to eq "application/x-research-info-systems"
         expect(response.headers["Content-Disposition"]).
-          to eq "attachment; filename=\"test_title_#{ work.friendlier_id }.ris\""
+          to match %r{attachment; filename=\"test_title_#{ work.friendlier_id }.ris\"(; filename*=UTF-8''test_title_2iwaufv.ris)?}
       end
 
       it "delivers oai_dc from XML request" do
