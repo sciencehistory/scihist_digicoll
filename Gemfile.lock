@@ -759,7 +759,7 @@ DEPENDENCIES
   aws-sdk-ec2 (>= 1.74)
   blacklight (~> 7.0, >= 7.1.0.alpha)
   blacklight_range_limit (~> 7.0)
-  bootsnap (>= 1.1.0)
+  bootsnap (>= 1.4.4)
   bootstrap (~> 4.3)
   bootstrap4-kaminari-views
   browse-everything (~> 1.0)
