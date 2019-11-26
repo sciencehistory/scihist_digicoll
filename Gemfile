@@ -17,7 +17,7 @@ gem "draper", "~> 3.0" # "decorators", which we use as view models
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
-gem 'puma', '~> 3.11'
+gem 'puma', '~> 4.1'
 
 # resque+redis being used for activejob, maybe later for Rails.cache
 # resque-pool currently does not support resque 2.0 alas.
