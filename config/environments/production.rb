@@ -70,9 +70,15 @@ Rails.application.configure do
     protocol: ScihistDigicoll::Env.app_url_base_parsed.scheme
   }
 
-  config.action_mailer.delivery_method = :sendmail
-
   config.action_mailer.perform_caching = false
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: ScihistDigicoll::Env.smtp_host,
+    domain: 'sciencehistory.org',
+    ssl: false,
+    enable_starttls_auto: false
+  }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
