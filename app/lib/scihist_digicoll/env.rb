@@ -266,6 +266,7 @@ module ScihistDigicoll
     define_key :no_reply_email_address
     define_key :digital_tech_email_address
 
+    define_key :smtp_host
 
   end
 end
