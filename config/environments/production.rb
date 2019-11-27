@@ -74,7 +74,7 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    address: ScihistDigicoll::Env.smtp_host,
+    address: ScihistDigicoll::Env.lookup!(:smtp_host),
     domain: 'sciencehistory.org',
     ssl: false,
     enable_starttls_auto: false
