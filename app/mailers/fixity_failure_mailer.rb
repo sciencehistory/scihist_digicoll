@@ -1,3 +1,5 @@
+#class FixityFailureMailer < ApplicationMailer
+
 class FixityFailureMailer < ApplicationMailer
 
   def fixity_failure_email
@@ -8,16 +10,12 @@ class FixityFailureMailer < ApplicationMailer
     if from_address.nil? || to_address.nil?
       raise RuntimeError, 'Cannot send fixity error email; no email address is defined.'
     end
-
-    puts from_address
-    puts to_address
-
     mail(
-      from:    from_address,
-      to:      to_address,
-      subject: subject,
+      from:         from_address,
+      to:           to_address,
+      subject:      subject,
       content_type: "text/html",
-      )
+    )
   end
 
   def subject
@@ -52,5 +50,4 @@ class FixityFailureMailer < ApplicationMailer
   def asset_url
     @asset_url ||= "#{ScihistDigicoll::Env.lookup!(:app_url_base)}#{Rails.application.routes.url_helpers.admin_asset_path(@asset.friendlier_id)}"
   end
-
 end

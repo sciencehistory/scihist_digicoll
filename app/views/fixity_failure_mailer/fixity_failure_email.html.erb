@@ -1,0 +1,24 @@
+<p>A fixity check for asset #{@asset.friendlier_id} on #{hostname} just failed at #{ date }.</p>
+
+<dt>Asset:</dt>
+<dd>#{asset_message}</dd>
+
+<dt>Work:</dt>
+<dd>#{work_message}</dd>
+
+<dt>Failing FixityCheck id:</dt>
+<dd>#{ @fixity_check.id }</dd>
+
+<dt>Time:</dt>
+<dd>#{ date }</dd>
+
+<dt>Expected #{ @fixity_check.hash_function }:</dt>
+<dd> #{ @fixity_check.expected_result}</dd>
+
+<dt>Actual #{ @fixity_check.hash_function }:</dt>
+<dd>#{ @fixity_check.actual_result}</dd>
+
+<dt>Checked file location</dt>
+<dd>
+    #{link_to_if @fixity_check.checked_uri_in_s3_console, @fixity_check.checked_uri, @fixity_check.checked_uri_in_s3_console }
+</dd>
