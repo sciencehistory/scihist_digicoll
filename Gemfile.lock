@@ -7,11 +7,11 @@ GIT
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: f0885528424c9b44d9b908458e3b87cc2621d294
+  revision: ec9c184b39c0510e835b5d064f21f6aad1dedea6
   specs:
     kithe (1.0.0)
       attr_json (< 2.0.0)
-      fastimage (~> 2.0.0)
+      fastimage (~> 2.0)
       marcel
       mini_mime
       pdf-reader (~> 2.0)
@@ -241,8 +241,7 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.13.1)
       faraday (>= 0.7.4, < 1.0)
-    fastimage (2.0.1)
-      addressable (~> 2)
+    fastimage (2.1.7)
     ffi (1.9.25)
     font-awesome-rails (4.7.0.5)
       railties (>= 3.2, < 6.1)
