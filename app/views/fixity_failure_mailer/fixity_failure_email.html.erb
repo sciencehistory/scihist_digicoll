@@ -1,24 +1,30 @@
-<p>A fixity check for asset #{@asset.friendlier_id} on #{hostname} just failed at #{ date }.</p>
+<p>A fixity check for asset <%= @asset.friendlier_id %> on <%= ScihistDigicoll::Env.lookup!(:app_url_base) %> just failed at <%= I18n.l @fixity_check.created_at, format: :admin %>.</p>
 
 <dt>Asset:</dt>
-<dd>#{asset_message}</dd>
+<dd><a href="<%=ScihistDigicoll::Env.lookup!(:app_url_base) %><%= Rails.application.routes.url_helpers.admin_asset_path(@asset.friendlier_id)%>"><%= @asset.title %></a></dd>
 
 <dt>Work:</dt>
-<dd>#{work_message}</dd>
+<dd>
+    <% if @asset&.parent.nil? %>
+        none
+    <% else %>
+        <a href="<%= ScihistDigicoll::Env.lookup!(:app_url_base) %><%= Rails.application.routes.url_helpers.work_path(@asset.parent.friendlier_id) %>"><%= @asset.parent.title %></a>
+    <% end %>
+</dd>
 
 <dt>Failing FixityCheck id:</dt>
-<dd>#{ @fixity_check.id }</dd>
+<dd><%= @fixity_check.id %></dd>
 
 <dt>Time:</dt>
-<dd>#{ date }</dd>
+<dd><%= I18n.l @fixity_check.created_at, format: :admin %></dd>
 
 <dt>Expected #{ @fixity_check.hash_function }:</dt>
-<dd> #{ @fixity_check.expected_result}</dd>
+<dd><%= @fixity_check.expected_result %></dd>
 
 <dt>Actual #{ @fixity_check.hash_function }:</dt>
-<dd>#{ @fixity_check.actual_result}</dd>
+<dd><%= @fixity_check.actual_result %></dd>
 
 <dt>Checked file location</dt>
 <dd>
-    #{link_to_if @fixity_check.checked_uri_in_s3_console, @fixity_check.checked_uri, @fixity_check.checked_uri_in_s3_console }
+    <%= link_to_if @fixity_check.checked_uri_in_s3_console, @fixity_check.checked_uri, @fixity_check.checked_uri_in_s3_console %>
 </dd>
