@@ -21,33 +21,4 @@ class FixityFailureMailer < ApplicationMailer
   def subject
     "FIXITY CHECK FAILURE: #{ScihistDigicoll::Env.lookup!(:app_url_base)}, \"#{@asset.title}\" (asset #{@asset.friendlier_id})"
   end
-
-  def hostname
-    ScihistDigicoll::Env.lookup!(:app_url_base)
-  end
-
-  def date
-    I18n.l @fixity_check.created_at, format: :admin
-  end
-
-  def work
-    @work ||= @asset&.parent
-  end
-
-  def asset_message
-    "<a href=\"#{asset_url}\">#{@asset.title}</a>"
-  end
-
-  def work_message
-    return "(none)" if work.nil?
-    "<a href=\"#{work_url}\">#{@work.title}</a>"
-  end
-
-  def work_url
-    @work_url ||= "#{ScihistDigicoll::Env.lookup!(:app_url_base)}#{Rails.application.routes.url_helpers.work_path(work.friendlier_id)}"
-  end
-
-  def asset_url
-    @asset_url ||= "#{ScihistDigicoll::Env.lookup!(:app_url_base)}#{Rails.application.routes.url_helpers.admin_asset_path(@asset.friendlier_id)}"
-  end
 end
