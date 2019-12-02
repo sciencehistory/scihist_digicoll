@@ -149,7 +149,7 @@ class MemberImagePresentation < ViewModel
         member_id: member.friendlier_id,
         analytics_category: "Work",
         analytics_action: "view",
-        analytics_label: member.parent.friendlier_id
+        analytics_label: member.parent&.friendlier_id || representative_asset.friendlier_id
       }
     else
       {}
