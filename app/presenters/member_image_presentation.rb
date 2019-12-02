@@ -146,7 +146,10 @@ class MemberImagePresentation < ViewModel
     if representative_asset&.content_type&.start_with?("image/")
       {
         trigger: "scihist_image_viewer",
-        member_id: member.friendlier_id
+        member_id: member.friendlier_id,
+        analytics_category: "Work",
+        analytics_action: "view",
+        analytics_label: member.parent.friendlier_id
       }
     else
       {}
