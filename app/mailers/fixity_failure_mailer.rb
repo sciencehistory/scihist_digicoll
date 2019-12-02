@@ -3,7 +3,7 @@
 class FixityFailureMailer < ApplicationMailer
 
   def fixity_failure_email
-    @fixity_check = params[:fixity_check]
+    @fixity_check = params[:fixity_check] || raise ArgumentError.new("Required params[:fixity_check] missing")
     @asset = @fixity_check.asset
     from_address = ScihistDigicoll::Env.lookup(:no_reply_email_address)
     to_address   = ScihistDigicoll::Env.lookup(:digital_tech_email_address)
