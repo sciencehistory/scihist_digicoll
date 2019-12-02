@@ -7,7 +7,7 @@ GIT
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: ec9c184b39c0510e835b5d064f21f6aad1dedea6
+  revision: 7f321ae43f9440e16e54dba030724175cc6915e5
   specs:
     kithe (1.0.0)
       attr_json (< 2.0.0)
