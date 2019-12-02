@@ -73,7 +73,18 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
   config.action_mailer.raise_delivery_errors = true
 
-  if ScihistDigicoll::Env.lookup(:smtp_host)
+
+  # service_level can be either production, staging, or nil,
+  # and ScihistDigicoll::Env enforces that it has to be
+  # one of those three values.
+  if ScihistDigicoll::Env.lookup(:service_level).nil?
+    # It's fine to use a local sendmail setup
+    # for development or testing.
+    config.action_mailer.delivery_method = :sendmail
+  else # production or staging environments
+    if ScihistDigicoll::Env.lookup(:smtp_host).nil?
+      raise RuntimeError, "Please specify smtp_host in local_env.py so we can send emails."
+    end
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {
       address: ScihistDigicoll::Env.lookup(:smtp_host),
@@ -81,8 +92,6 @@ Rails.application.configure do
       ssl: false,
       enable_starttls_auto: false
     }
-  else
-    config.action_mailer.delivery_method = :sendmail
   end
 
   config.action_mailer.perform_caching = false
