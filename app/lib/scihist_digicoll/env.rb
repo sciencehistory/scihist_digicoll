@@ -107,17 +107,14 @@ module ScihistDigicoll
     define_key :s3_bucket_dzi
 
     define_key :ingest_bucket, default: -> {
-      if Rails.env.production?
-        # This bucket is mounted on some staff Windows workstations
-        # We use it in both production and staging environments.
-        # But dev AWS key does not currently have access to it.
-        "scih-uploads"
-      else
+      if !Rails.env.production?
         # This bucket isn't actually mounted on workstations, but you can
         # add files to it in AWS console if you want files to test ingest
         # with in a dev environment.
         "scih-uploads-dev"
       end
+      # In production we rely on local_env.yml to provide value, no default,
+      # it'll just get out of sync.
     }
 
     define_key :s3_sitemap_bucket, default: -> {
