@@ -5,7 +5,7 @@
 // We use for tracking download and viewer links, possibly among other things.
 
 $(document).on('click', '*[data-analytics-category]', function(e) {
-  ga('send',
+  ga('send', 'event',
       e.target.getAttribute("data-analytics-category"),
       e.target.getAttribute("data-analytics-action"),
       e.target.getAttribute("data-analytics-label"),
