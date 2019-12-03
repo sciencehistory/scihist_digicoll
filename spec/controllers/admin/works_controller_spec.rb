@@ -89,6 +89,22 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller do
         expect { work_child.reload }.to raise_error(ActiveRecord::RecordNotFound)
         expect { asset_child.reload }.to raise_error(ActiveRecord::RecordNotFound)
       end
+
+      context "published work" do
+        let(:work_child) { build(:public_work) }
+        let(:asset_child) { build(:asset, published: true) }
+        let(:work) { create(:public_work, members: [asset_child, work_child]) }
+
+
+        it "can unpublish, unpublishes children" do
+          put :unpublish, params: { id: work.friendlier_id }
+          expect(response.status).to redirect_to(admin_work_path(work))
+
+          work.reload
+          expect(work.published?).to be false
+          expect(work.members.none? {|m| m.published?}).to be true
+        end
+      end
     end
   end
 end
