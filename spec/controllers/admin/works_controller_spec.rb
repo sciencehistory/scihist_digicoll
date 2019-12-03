@@ -66,7 +66,8 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller do
     end
 
     context "with a logged-in admin user", logged_in_user: :admin do
-      let(:work) { create(:work, published: false) }
+      # has the necessary metadata to be published, but isn't actually published yet:
+      let(:work) { create(:work, :published, published: false) }
 
       it "can publish" do
         put :publish, params: { id: work.friendlier_id }

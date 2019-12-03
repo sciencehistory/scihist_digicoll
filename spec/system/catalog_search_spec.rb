@@ -9,16 +9,16 @@ require 'rails_helper'
 describe CatalogController, solr: true, indexable_callbacks: true do
   describe "general smoke test with lots of features" do
     let!(:work1) do
-      create(:work,
+      create(:public_work,
         description: 'priceless work',
-        representative: create(:asset, :inline_promoted_file),
-        members: [create(:work), create(:work)])
+        representative: create(:asset, :inline_promoted_file, published: true),
+        members: [create(:public_work), create(:public_work)])
     end
 
     let!(:collection) do
       create(:collection,
         description: 'priceless collection',
-        representative: create(:asset, :inline_promoted_file),
+        representative: create(:asset, :inline_promoted_file, published: true),
         contains: [work1] )
     end
 
@@ -49,7 +49,7 @@ describe CatalogController, solr: true, indexable_callbacks: true do
   describe "admin notes" do
     let(:admin_note_text) { "an admin note" }
     let(:admin_note_query) { "\"#{admin_note_text}\"" }
-    let!(:work_with_admin_note) { create(:work, admin_note: admin_note_text) }
+    let!(:work_with_admin_note) { create(:public_work, admin_note: admin_note_text) }
 
     describe "no logged in user" do
       it "can not find admin note" do
@@ -68,12 +68,13 @@ describe CatalogController, solr: true, indexable_callbacks: true do
 
   describe "navbar search slide-out limits" do
     let(:green_rights) { "http://creativecommons.org/publicdomain/mark/1.0/" }
+    let(:red_rights) { "http://rightsstatements.org/vocab/InC/1.0/" }
     let(:green_date) { Work::DateOfWork.new({ "start"=>"2014-01-01"}) }
     let(:green_title) { "good title" }
 
-    let!(:green) { create(:work, title: green_title, rights: green_rights, date_of_work: green_date) }
-    let!(:red1)  { create(:work, title: green_title, rights: green_rights) }
-    let!(:red2)  { create(:work, title: green_title, date_of_work: green_date) }
+    let!(:green) { create(:public_work, title: green_title, rights: green_rights, date_of_work: green_date) }
+    let!(:red1)  { create(:public_work, title: green_title, rights: green_rights) }
+    let!(:red2)  { create(:public_work, title: green_title, date_of_work: green_date, rights: red_rights) }
 
     it "can use limits to find only matching work" do
       visit search_catalog_path
@@ -83,7 +84,6 @@ describe CatalogController, solr: true, indexable_callbacks: true do
       check("Public Domain Only")
       click_on "Go"
 
-
       expect(page).to have_content("1 entry found")
       expect(page).to have_selector("li#document_#{green.friendlier_id}")
       expect(page).not_to have_selector("li#document_#{red1.friendlier_id}")
@@ -92,9 +92,9 @@ describe CatalogController, solr: true, indexable_callbacks: true do
   end
 
   describe "non-published items" do
-    let!(:non_published_work) { create(:work, title: "work non-published", published: false) }
-    let!(:non_published_collection) { create(:work, title: "collection non-published", published: false) }
-    let!(:published_work) { create(:work, title: "work published", published: true) }
+    let!(:non_published_work) { create(:private_work, title: "work non-published") }
+    let!(:non_published_collection) { create(:private_work, title: "collection non-published") }
+    let!(:published_work) { create(:public_work, title: "work published") }
 
     it "do not show up in search results unless the user is logged in" do
       visit search_catalog_path(search_field: "all_fields")
@@ -106,9 +106,9 @@ describe CatalogController, solr: true, indexable_callbacks: true do
   end
 
   describe "non-published items", logged_in_user: true do
-    let!(:non_published_work) { create(:work, title: "work non-published", published: false) }
-    let!(:non_published_collection) { create(:work, title: "collection non-published", published: false) }
-    let!(:published_work) { create(:work, title: "work published", published: true) }
+    let!(:non_published_work) { create(:private_work, title: "work non-published") }
+    let!(:non_published_collection) { create(:private_work, title: "collection non-published") }
+    let!(:published_work) { create(:public_work, title: "work published") }
 
     it "show up in search results if the user is logged in, flagged as private" do
       visit search_catalog_path(search_field: "all_fields")

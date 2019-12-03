@@ -2,11 +2,11 @@ require 'rails_helper'
 
 describe WorkZipCreator do
   let(:work) do
-    create(:work,
+    create(:public_work,
       members: [
         create(:asset_with_faked_file),
         create(:asset_with_faked_file),
-        create(:work, representative: create(:asset_with_faked_file))
+        create(:public_work, representative: create(:asset_with_faked_file))
       ]
     )
   end
