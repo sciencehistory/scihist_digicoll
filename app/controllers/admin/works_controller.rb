@@ -84,13 +84,24 @@ class Admin::WorksController < AdminController
     authorize! :publish, @work
 
     @work.class.transaction do
-      @work.update(published: true)
+      @work.update!(published: true)
       @work.all_descendent_members.find_each do |member|
-        member.update(published: true)
+        member.update!(published: true)
       end
     end
 
     redirect_to admin_work_url(@work)
+  rescue ActiveRecord::RecordInvalid => e
+    # probably because missing a field required for a work to be published, but
+    # could apply to a CHILD work, not just the parent you actually may have clicked 'publish'
+    # on.
+    #
+    # The work we're going to report and redirect to is just the FIRST one we encountered
+    # with an error, there could be more.
+    @work = e.record
+    @work.published = true
+    flash.now[:error] = "Can't publish work: #{@work.title}: #{e.message}"
+    render :edit
   end
 
   # PUT /admin/works/1/unpublish
@@ -103,9 +114,9 @@ class Admin::WorksController < AdminController
     authorize! :publish, @work
 
     @work.class.transaction do
-      @work.update(published: false)
+      @work.update!(published: false)
       @work.all_descendent_members.find_each do |member|
-        member.update(published: false)
+        member.update!(published: false)
       end
     end
 
