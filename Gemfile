@@ -71,8 +71,7 @@ gem 'simple_form', "~> 5.0"
 gem "cocoon"
 
 gem "browse-everything", "~> 1.0"
-# TEMPORARY, until it's merged and ideally released. https://github.com/samvera/questioning_authority/pull/291 :
-gem "qa", "~> 5.0", github: "samvera/questioning_authority", branch: "rails6"
+gem "qa", "~> 5.2"
 gem "shrine", "~> 2.0" #, path: "../shrine"
 # shrine-compat endpoint to get uppy to direct upload to S3 with resumable multi-part upload
 gem "uppy-s3_multipart"
