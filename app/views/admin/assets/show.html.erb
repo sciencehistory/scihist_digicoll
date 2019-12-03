@@ -24,7 +24,7 @@
 
     <% if @asset.file %>
       <%= link_to "Download Original",
-            @asset.file.url(response_content_disposition: ContentDisposition.format(disposition: :attachment, filename: @asset.title)),
+            download_path(@asset),
             class: "btn btn-outline-primary btn-lg mt-4" %>
       <% end %>
   </div>
