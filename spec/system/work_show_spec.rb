@@ -22,7 +22,7 @@ describe "Public work show page", type: :system, js: false do
 
     let(:work) {
       create(
-        :work, :with_complete_metadata, contained_by: [create(:collection)], parent: create(:work), members: [
+        :work, :published, :with_complete_metadata, contained_by: [create(:collection)], parent: create(:work, :published), members: [
           create(:asset_with_faked_file,
             title: "First asset (representative)",
             faked_derivatives: [],
@@ -117,7 +117,7 @@ describe "Public work show page", type: :system, js: false do
   end
 
   describe "work with very little metadata" do
-    let(:work) { create(:work) }
+    let(:work) { create(:work, :published) }
     it "displays without error" do
       visit work_path(work)
       expect(page).to have_http_status(:success)
@@ -128,12 +128,12 @@ end
 
 describe "Public work show page", :logged_in_user, type: :system, js: false do
   let(:work) {
-    create( :work, members:
+    create( :work, :published, members:
       [
         create( :asset_with_faked_file, position: 0, title: "Published asset", published: true  ),
-        create( :work,  position: 1, title: "First child work", published: true  ),
-        create( :work,  position: 2, title: "Second child work", published: false ),
-        create( :work,  position: 3, title: "Third child work", published: true  ),
+        create( :work, :published, position: 1, title: "First child work", published: true  ),
+        create( :work, :published, position: 2, title: "Second child work", published: false ),
+        create( :work, :published, position: 3, title: "Third child work", published: true  ),
         create( :asset_with_faked_file,  position: 4, title: "Private asset",  published: false )
       ]
     )

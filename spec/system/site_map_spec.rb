@@ -38,7 +38,7 @@ describe "sitemap generator", js: false do
 
 
   let(:asset) { create(:asset_with_faked_file) }
-  let!(:work) { create(:work, representative: asset, members: [asset]) }
+  let!(:work) { create(:work, :published, representative: asset, members: [asset]) }
   let(:expected_work_url) { work_url(work) }
 
   let!(:private_work) { create(:work, published: false) }

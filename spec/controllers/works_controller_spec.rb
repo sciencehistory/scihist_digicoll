@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe WorksController, type: :controller do
   context "smoke tests" do
     context "standard work" do
-      let(:work){create(:work, members: [create(:asset)])}
+      let(:work){ create(:public_work, :published, members: [create(:asset)]) }
 
       before do
         work.representative = work.members.first
@@ -40,7 +40,7 @@ RSpec.describe WorksController, type: :controller do
   end
 
   context("#viewer_images_info") do
-    let(:work) { create(:work, members: [create(:asset_with_faked_file)]) }
+    let(:work) { create(:public_work, members: [create(:asset_with_faked_file)]) }
 
     it "returns JSON" do
       get :viewer_images_info, params: { id: work.friendlier_id }, as: :json

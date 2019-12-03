@@ -6,7 +6,7 @@ describe "Collection show page", solr: true, indexable_callbacks: true do
       create(:collection,
         description: "some description",
         related_url: ["http://othmerlib.sciencehistory.org/record=b1234567", "https://example.org/foo/bar"],
-        contains: [create(:work), create(:work), create(:work, published: false)])
+        contains: [create(:public_work), create(:public_work), create(:private_work)])
     end
 
     it "displays" do

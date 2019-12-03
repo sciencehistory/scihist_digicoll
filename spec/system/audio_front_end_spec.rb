@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe "Audio front end", type: :system, js: true do # , solr:true do
   let!(:parent_work) do
-    build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
+    build(:public_work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
   end
   let(:audio_file_path) { Rails.root.join("spec/test_support/audio/ice_cubes.mp3")}
   let(:audio_file_sha512) { Digest::SHA512.hexdigest(File.read(audio_file_path)) }
