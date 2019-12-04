@@ -40,9 +40,13 @@
       <dt class="col-sm-4">Orig. Filename</dt>
       <dd class="col-sm-8"><%= @asset&.file&.metadata.try { |h| h["filename"]} %></dd>
 
-      <% if @asset.stored? && @asset&.file&.url %><%# are these equivalent ? %>
+      <% if @asset.stored? && @asset&.file&.url %>
         <dt class="col-sm-4">Direct link to file in storage</dt>
-        <dd class="col-sm-8"><%= link_to @asset.file.url.split('/').last, @asset.file.url %></dd>
+        <dd class="col-sm-8"><%= link_to @asset.file.url.split('/').last.split('?').first, @asset.file.url %></dd>
+      <%end %>
+      <%if Shrine.storages[:store].try('bucket').try('name') %>
+        <dt class="col-sm-4">Stored in S3 bucket</dt>
+        <dd class="col-sm-8"><%= Shrine.storages[:store].bucket.name %></dd>
       <% end %>
 
       <dt class="col-sm-4">Content-type</dt>
