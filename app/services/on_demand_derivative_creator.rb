@@ -159,6 +159,8 @@ class OnDemandDerivativeCreator
 
       parts = [work.title, work.friendlier_id] + individual_checksums
 
+      excessive_log("create checksum for #{individual_checksums.count} members; #{work.title} #{work.friendlier_id} #{individual_checksums}")
+
       Digest::MD5.hexdigest(parts.join("-"))
     end
   end
