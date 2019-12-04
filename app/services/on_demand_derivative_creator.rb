@@ -159,10 +159,11 @@ class OnDemandDerivativeCreator
   # Our current derivatives only use the single representative of a child work, so our checksum does too.
   def calculated_checksum
     @calculated_checksum ||= begin
-      # important to sort for deterministic order of MD5s
-      individual_checksums = work.members.includes(:leaf_representative).collect do |m|
+      # important to sort for deterministic order of MD5s. Sort by position,
+      # because that matters for the PDF generated, so should matter for our fingerprint.
+      individual_checksums = work.members.order(:position, :id).includes(:leaf_representative).collect do |m|
         m.leaf_representative&.md5
-      end.compact.sort
+      end.compact
 
       parts = [work.title, work.friendlier_id] + individual_checksums
 
