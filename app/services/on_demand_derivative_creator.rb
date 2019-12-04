@@ -44,7 +44,7 @@ class OnDemandDerivativeCreator
   # @param retry_count [Integer] used for limiting recursive calls, shouldn't
   #   really be passed in by caller, let it default to 0 for external callers.
   def find_or_create_record(retry_count: 0)
-    excessive_log("find_or_create_record for work #{work.friendier_id} #{work.id} ")
+    excessive_log("find_or_create_record for work #{work.friendlier_id} #{work.id} ")
 
     if retry_count > MAX_RETRY_COUNT
       # what the heck is going on? Let's keep us from infinitely doing it and taking up all the CPU
