@@ -104,6 +104,8 @@ class OnDemandDerivativeCreator
       raise ArgumentError.new("In order to #attach_derivative! we need an exising OnDemandDerivative with work_id: #{work.id}, deriv_type: #{derivative_type}, status: in_progress. But none found.")
     end
 
+    created_for_checksum = calculated_checksum
+
     creator_class = on_demand_derivative.deriv_type_definition[:creator_class_name].constantize
 
     callback = lambda do |progress_i:, progress_total:|
@@ -113,9 +115,13 @@ class OnDemandDerivativeCreator
     creator = creator_class.new(work, callback: callback)
 
     derivative = creator.create
-    on_demand_derivative.put_file(derivative)
 
-    on_demand_derivative.update(status: "success", inputs_checksum: calculated_checksum)
+    on_demand_derivative.inputs_checksum = created_for_checksum
+    on_demand_derivative.status = "success"
+    on_demand_derivative.put_file(derivative)
+    on_demand_derivative.save!
+
+    excessive_log("marked success with #{created_for_checksum}")
   rescue StandardError => e
     if on_demand_derivative
       on_demand_derivative.update(status: "error", error_info: {class: e.class.name, message: e.message, backtrace: e.backtrace}.to_json)
@@ -159,9 +165,11 @@ class OnDemandDerivativeCreator
 
       parts = [work.title, work.friendlier_id] + individual_checksums
 
-      excessive_log("create checksum for #{individual_checksums.count} members; #{work.title} #{work.friendlier_id} #{individual_checksums}")
+      checksum = Digest::MD5.hexdigest(parts.join("-"))
 
-      Digest::MD5.hexdigest(parts.join("-"))
+      excessive_log("calculated checksum #{checksum }for #{individual_checksums.count} members; #{work.title} #{work.friendlier_id}")
+
+      checksum
     end
   end
 
