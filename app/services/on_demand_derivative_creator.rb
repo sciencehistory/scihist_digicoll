@@ -159,9 +159,10 @@ class OnDemandDerivativeCreator
   # Our current derivatives only use the single representative of a child work, so our checksum does too.
   def calculated_checksum
     @calculated_checksum ||= begin
+      # important to sort for deterministic order of MD5s
       individual_checksums = work.members.includes(:leaf_representative).collect do |m|
         m.leaf_representative&.md5
-      end.compact
+      end.compact.sort
 
       parts = [work.title, work.friendlier_id] + individual_checksums
 
