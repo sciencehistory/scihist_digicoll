@@ -6,9 +6,13 @@ class FixityFailureMailer < ApplicationMailer
     @fixity_check = params[:fixity_check]
     @asset = @fixity_check.asset
     from_address = ScihistDigicoll::Env.lookup(:no_reply_email_address)
-    to_address   = ScihistDigicoll::Env.lookup(:digital_tech_email_address)
-    if from_address.nil? || to_address.nil?
-      raise RuntimeError, 'Cannot send fixity error email; no email address is defined.'
+    to_address = [
+        ScihistDigicoll::Env.lookup(:digital_tech_email_address),
+        ScihistDigicoll::Env.lookup(:digital_email_address)
+      ].compact.join(',')
+
+    unless from_address.present? || to_address.present?
+      raise RuntimeError, 'Cannot send fixity error email; specify at least a "from" and a "to" address.'
     end
     mail(
       from:         from_address,
