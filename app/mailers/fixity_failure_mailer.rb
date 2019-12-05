@@ -11,7 +11,7 @@ class FixityFailureMailer < ApplicationMailer
         ScihistDigicoll::Env.lookup(:digital_email_address)
       ].compact.join(',')
 
-    unless from_address.present? || to_address.present?
+    unless from_address.present? && to_address.present?
       raise RuntimeError, 'Cannot send fixity error email; specify at least a "from" and a "to" address.'
     end
     mail(
