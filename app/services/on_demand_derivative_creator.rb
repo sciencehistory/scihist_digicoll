@@ -44,8 +44,6 @@ class OnDemandDerivativeCreator
   # @param retry_count [Integer] used for limiting recursive calls, shouldn't
   #   really be passed in by caller, let it default to 0 for external callers.
   def find_or_create_record(retry_count: 0)
-    excessive_log("find_or_create_record for work #{work.friendlier_id} #{work.id} ")
-
     if retry_count > MAX_RETRY_COUNT
       # what the heck is going on? Let's keep us from infinitely doing it and taking up all the CPU
       raise StandardError.new("Tried to find/create an OnDemandDerivative record too many times for work #{id}")
@@ -55,7 +53,6 @@ class OnDemandDerivativeCreator
 
     # No record? We have to register one as in_progress so nobody else will, and launch the bg job
     if record.nil?
-      excessive_log("Could not find existing record")
       # If someone else concurrently created, should raise when we try to make a second one.
       record = OnDemandDerivative.create!(work_id: work.id, deriv_type: derivative_type, status: :in_progress, inputs_checksum: calculated_checksum)
       OnDemandDerivativeCreatorJob.perform_later(work, derivative_type)
@@ -63,19 +60,13 @@ class OnDemandDerivativeCreator
 
     # have a record? Is it stale?
     if stale?(record)
-      excessive_log("Stale record.; #{record.inspect};  Current calculated_checksum: #{calculated_checksum}; record.file_exists: #{record.file_exists?}")
-
       # delete it, and try the whole thing again
       record.delete
       record = find_or_create_record(retry_count: retry_count + 1)
     end
 
-    excessive_log("Returning record #{record.inspect}")
-
     return record
   rescue ActiveRecord::RecordNotUnique
-    excessive_log("RecordNotUnique race condition")
-
     # race condition, someone else created it, no biggy, just try again
     return find_or_create_record(type, retry_count: retry_count + 1)
   end
@@ -120,8 +111,6 @@ class OnDemandDerivativeCreator
     on_demand_derivative.status = "success"
     on_demand_derivative.put_file(derivative)
     on_demand_derivative.save!
-
-    excessive_log("marked success with #{created_for_checksum}")
   rescue StandardError => e
     if on_demand_derivative
       on_demand_derivative.update(status: "error", error_info: {class: e.class.name, message: e.message, backtrace: e.backtrace}.to_json)
@@ -167,21 +156,7 @@ class OnDemandDerivativeCreator
 
       parts = [work.title, work.friendlier_id] + individual_checksums
 
-      checksum = Digest::MD5.hexdigest(parts.join("-"))
-
-      excessive_log("calculated checksum #{checksum }for #{individual_checksums.count} members; #{work.title} (#{work.title.encoding} #{Digest::MD5.hexdigest(work.title)}) #{work.friendlier_id}")
-
-      checksum
+      Digest::MD5.hexdigest(parts.join("-"))
     end
   end
-
-  private
-
-  # Trying to debug something very hard to debug that we haven't managed to reproduce
-  # outside of production, we temporarily do LOTS of logging. Since prod is only logging at `info`
-  # level, we log with info not debug.
-  def excessive_log(msg)
-    Rails.logger.info("#{self.class.name}: #{work.friendlier_id}/#{derivative_type}: #{self.object_id}: #{msg}")
-  end
-
 end
