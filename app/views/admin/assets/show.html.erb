@@ -41,8 +41,8 @@
       <dd class="col-sm-8"><%= @asset&.file&.metadata.try { |h| h["filename"]} %></dd>
 
       <%if @asset.stored? && Shrine.storages[:store].try('bucket').try('name') %>
-        <dt class="col-sm-4">File in s3 (requires s3 login)</dt>
-        <dd class="col-sm-8"><%= link_to "File in S3", S3ConsoleUri.new(@asset.file.url(public: true)).console_uri %></dd>
+        <dt class="col-sm-4">File in s3</dt>
+        <dd class="col-sm-8"><%= link_to @asset.file.url(public: true).split('/').last, S3ConsoleUri.new(@asset.file.url(public: true)).console_uri %></dd>
 
         <dt class="col-sm-4">Stored in S3 bucket</dt>
         <dd class="col-sm-8"><%= Shrine.storages[:store].bucket.name %></dd>
