@@ -20,50 +20,7 @@ class FixityCheck < ApplicationRecord
     passed
   end
 
-  # A link to the checked_uri in the AWS S3 Console. Kind of hacky and fragile, will break
-  # if AWS changes their console URLs, or if our assumptions weren't quite right in other
-  # ways, but it's so clever and useful when it works!
   def checked_uri_in_s3_console
-    @checked_uri_in_s3_console ||= begin
-      region = ScihistDigicoll::Env.lookup(:aws_region)
-      parts = checked_uri_on_s3_components
-      if parts
-        "https://s3.console.aws.amazon.com/s3/buckets/#{parts[:bucket]}/#{parts[:key_path]}/?region=#{region}&tab=overview&prefixSearch=#{parts[:end_key]}"
-      else
-        nil
-      end
-    end
+    @checked_uri_in_s3_console ||= S3ConsoleUri.new(checked_uri).console_uri
   end
-
-  private
-
-  # returns false if we do not think checked_uri looks like S3.
-  # (NOTE If we later use a custon CNAME for S3 buckets, may have to adjust this, it assumes
-  # it can recognize S3 as *.s3.amazonaws.com)
-  #
-  # returns a hash with keys :bucket, :key_path, :end_path
-  # Used for #checked_uri_in_s3_console to link admins directly to a AWS S3 console.
-  def checked_uri_on_s3_components
-    parsed = URI.parse(checked_uri)
-
-    return false unless parsed.host
-
-    host_parts = parsed.host.split(".")
-    if host_parts.slice(1, host_parts.length) != %w{s3 amazonaws com}
-      return false
-    end
-
-    path_components = parsed.path.split("/")
-    key_path = path_components.slice(1, path_components.length - 2)&.join("/")
-    end_key = path_components.last
-
-    {
-      bucket: host_parts.first,
-      key_path: key_path,
-      end_key: end_key
-    }
-  rescue URI::InvalidURIError
-    false
-  end
-
 end
