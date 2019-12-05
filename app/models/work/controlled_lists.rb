@@ -71,6 +71,7 @@ class Work
       'Sample books',
       'Scientific apparatus and instruments',
       'Slides',
+      'Specimens',
       'Stereographs',
       'Textiles',
       'Vessels (Containers)',
