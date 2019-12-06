@@ -429,7 +429,7 @@ GEM
       byebug (~> 10.0)
       pry (~> 0.10)
     public_suffix (3.1.1)
-    puma (3.12.0)
+    puma (3.12.2)
     qa (5.0.0)
       activerecord-import
       deprecation
@@ -777,7 +777,7 @@ DEPENDENCIES
   pg (>= 0.18, < 2.0)
   prawn (~> 2.2)
   pry-byebug
-  puma (~> 3.11)
+  puma (~> 3.12)
   qa (~> 5.0)
   rails (~> 5.2.4)
   rails_autolink (~> 1.0)
