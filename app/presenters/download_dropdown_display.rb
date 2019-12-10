@@ -135,6 +135,8 @@ class DownloadDropdownDisplay < ViewModel
     }
     if @use_link
       options[:class] = "dropdown-toggle download-link"
+      options[:role] = "button"
+      options[:href] = "#"
     else
       options[:type]  = "button"
       if viewer_template_mode?
