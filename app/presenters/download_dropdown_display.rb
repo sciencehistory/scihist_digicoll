@@ -121,11 +121,18 @@ class DownloadDropdownDisplay < ViewModel
   end
 
   def link_or_button
-    content_tag(
-      (@use_link ? "a" : "button"),
-      "<i class='fa fa-download' aria-hidden='true'></i> Download".html_safe,
-      link_or_button_options
-    )
+    if @use_link
+      # no fontawesome download icon in link mode
+      content_tag("a",
+        "Download",
+        link_or_button_options
+      )
+    else
+      content_tag("button",
+        "<i class='fa fa-download' aria-hidden='true'></i> Download".html_safe,
+        link_or_button_options
+      )
+    end
   end
 
   def link_or_button_options
@@ -135,6 +142,8 @@ class DownloadDropdownDisplay < ViewModel
     }
     if @use_link
       options[:class] = "dropdown-toggle download-link"
+      options[:role] = "button"
+      options[:href] = "#"
     else
       options[:type]  = "button"
       if viewer_template_mode?
