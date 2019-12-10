@@ -55,7 +55,7 @@
       <div>
         <h2 class="attribute-sub-head"><%= pluralize(decorator.non_audio_members.count, 'other file')%></h2>
 
-        <table class="table">
+        <table class="table other-files">
           <% decorator.non_audio_members.each_with_index do |member, index| %>
             <tr class="show-member-list-item">
               <td class="image">

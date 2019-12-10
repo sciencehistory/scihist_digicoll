@@ -52,17 +52,9 @@
     div.dropdown {
       padding-top: 0.3125rem;
       .download-link {
-        i.fa-download {
-          display:none;
-        }
-        cursor: pointer;
         font-family: $brand-sans-serif;
-        color: $brand-blue;
         white-space: nowrap;
         padding-right: 0.3125rem;
-      }
-      .download-link:hover {
-        text-decoration: underline;
       }
     }
     &.currently-selected {
@@ -82,13 +74,19 @@
     }
   }
 
-  .show-member-list-item {
-    .image {
-      padding-left: 0;
+  .other-files {
+    div.dropdown {
+      font-family: $brand-sans-serif;
     }
-    .action {
-      padding-right: 0;
-      text-align: right;
+
+    .show-member-list-item {
+      .image {
+        padding-left: 0;
+      }
+      .action {
+        padding-right: 0;
+        text-align: right;
+      }
     }
   }
 
