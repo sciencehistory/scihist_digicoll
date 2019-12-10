@@ -59,14 +59,9 @@
         i.fa-download {
           display:none;
         }
-        cursor: pointer;
         font-family: $brand-sans-serif;
-        color: $brand-blue;
         white-space: nowrap;
         padding-right: 0.3125rem;
-      }
-      .download-link:hover {
-        text-decoration: underline;
       }
     }
     &.currently-selected {
