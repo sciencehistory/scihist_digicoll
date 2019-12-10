@@ -35,7 +35,6 @@ class SocialShareDisplay < ViewModel
 
     link_to "javascript:window.open('https://facebook.com/sharer/sharer.php?#{{u: share_url}.to_param}')",
         class: 'social-media-link facebook btn btn-brand-dark',
-        target: '_blank',
         rel: 'noopener noreferrer',
         data: {
           analytics_category: "Work",
