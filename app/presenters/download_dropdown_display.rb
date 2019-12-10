@@ -122,8 +122,9 @@ class DownloadDropdownDisplay < ViewModel
 
   def link_or_button
     if @use_link
+      # no fontawesome download icon in link mode
       content_tag("a",
-        "<i class='fa fa-download' aria-hidden='true'></i> Download".html_safe,
+        "Download",
         link_or_button_options
       )
     else
