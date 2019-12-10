@@ -1,13 +1,26 @@
 FactoryBot.define do
-  factory :work, class: Work do
+  factory :work, aliases: [:private_work], class: Work do
     title { 'Test title' }
-    published { true }
+    published { false }
     external_id do [
         Work::ExternalId.new({"value"=>"Past Perfect ID 1",   "category"=>"object"}),
         Work::ExternalId.new({"value"=>"Sierra Bib Number 1", "category"=>"bib"   }),
         Work::ExternalId.new({"value"=>"Sierra Bib Number 2", "category"=>"bib"   }),
         Work::ExternalId.new({"value"=>"Accession Number 1",  "category"=>"accn"  })
       ]
+    end
+
+    trait :published do
+      published { true }
+      department { "Library" }
+      rights { "http://creativecommons.org/publicdomain/mark/1.0/" }
+      genre { ["Rare books"] }
+      date_of_work { Work::DateOfWork.new(start: "2019") }
+      format { ["text"] }
+    end
+
+    # shortcut for create(:work, :published) since we do it a lot
+    factory :public_work, traits: [:published] do
     end
 
     trait :with_complete_metadata do
@@ -150,7 +163,7 @@ FactoryBot.define do
 
       after(:build) do |work, evaluator|
         evaluator.asset_count.times do |i|
-          work.members << build(:asset, position: i+1)
+          work.members << build(:asset, position: i+1, published: work.published?)
         end
       end
     end

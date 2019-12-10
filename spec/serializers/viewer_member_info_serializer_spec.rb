@@ -2,9 +2,9 @@ require 'rails_helper'
 
 describe ViewerMemberInfoSerializer, type: :decorator do
   let(:grandchild) { create(:asset, :inline_promoted_file).tap { |g| g.reload } }
-  let(:child) { create(:work, members: [grandchild], representative: grandchild, position: 2)}
+  let(:child) { create(:public_work, members: [grandchild], representative: grandchild, position: 2)}
   let(:asset) { create(:asset, :inline_promoted_file, position: 1).tap { |g| g.reload } }
-  let(:work)  { create(:work, members: [child, asset, create(:asset, published: false)]) }
+  let(:work)  { create(:public_work, members: [child, asset, create(:asset, published: false)]) }
 
   let(:serializer) { ViewerMemberInfoSerializer.new(work) }
 
