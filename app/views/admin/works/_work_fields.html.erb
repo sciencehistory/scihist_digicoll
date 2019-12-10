@@ -15,7 +15,7 @@
             input_data_attributes: { "scihist-qa-autocomplete" => qa_search_vocab_path("assign_fast", "all")}) %>
     <% end %>
 
-    <%= f.repeatable_attr_input(:date_of_work, build: :at_least_one) do |sub_form| %>
+    <%= f.repeatable_attr_input(:date_of_work, build: :at_least_one, simple_form_input_args: { required: (true if f.object.published?) }) do |sub_form| %>
       <%= render "date_of_work", f: sub_form %>
     <% end %>
 
@@ -30,9 +30,10 @@
                 end),
                 as: :check_boxes,
                 input_html: { multiple: true, size: Work::ControlledLists::FORMAT.count  },
+                required: (true if f.object.published?),
                 include_blank: false %>
 
-    <%= f.repeatable_attr_input :genre, build: :at_least_one do |input_name, value| %>
+    <%= f.repeatable_attr_input :genre, build: :at_least_one, simple_form_input_args: { required: (true if f.object.published?) } do |input_name, value| %>
         <%= f.input_field :genre, selected: value, include_blank: true, id: nil,
           collection: Work::ControlledLists::GENRE,
           name: input_name,
@@ -58,7 +59,7 @@
     <%= f.repeatable_attr_input :subject, build: :at_least_one,
           html_attributes: { "data-scihist-qa-autocomplete" => qa_search_vocab_path("assign_fast", "all") } %>
 
-    <%= f.input :department, collection: Work::ControlledLists::DEPARTMENT  %>
+    <%= f.input :department, required: (true if f.object.published?), collection: Work::ControlledLists::DEPARTMENT  %>
 
     <%= f.repeatable_attr_input(:exhibition, build: :at_least_one) do |input_name, value| %>
       <%= f.input_field :exhibition,
@@ -94,7 +95,7 @@
 
     <%= f.repeatable_attr_input :related_url, build: :at_least_one %>
 
-    <%= f.input :rights, collection: RightsTerms.collection_for_select %>
+    <%= f.input :rights, required: (true if f.object.published?), collection: RightsTerms.collection_for_select %>
 
     <%= f.input :rights_holder %>
 
