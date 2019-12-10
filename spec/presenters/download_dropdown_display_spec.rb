@@ -196,8 +196,8 @@ describe DownloadDropdownDisplay do
 
       # bootstrap docs for dropdown with <a> suggest what should be there
       # https://getbootstrap.com/docs/4.0/components/dropdowns/
-      #expect(link["role"]).to eq "button"
-      #expect(link["href"]).to eq "#"
+      expect(link["role"]).to eq "button"
+      expect(link["href"]).to eq "#"
       expect(link["id"]).to be_present
       expect(link["aria-haspopup"]).to eq "true"
       expect(link["aria-expanded"]).to eq "false"
