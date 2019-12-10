@@ -175,6 +175,41 @@ describe DownloadDropdownDisplay do
     end
   end
 
+  describe "use_link" do
+    let(:rendered) { Nokogiri::HTML.fragment(DownloadDropdownDisplay.new(asset, display_parent_work: asset.parent, use_link: true).display) }
+
+    let(:asset) do
+      create(:asset_with_faked_file,
+        faked_content_type: "audio/x-flac",
+        faked_height: nil,
+        faked_width: nil,
+        faked_derivatives: [build(:faked_derivative, key: "small_mp3", uploaded_file: build(:stored_uploaded_file, content_type: "audio/mpeg"))],
+        parent: build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
+      )
+    end
+
+    it "renders as <a> tag" do
+      expect(div).to be_present
+
+      link = div.at_css("a[data-toggle='dropdown']")
+      expect(link).to be_present
+
+      # bootstrap docs for dropdown with <a> suggest what should be there
+      # https://getbootstrap.com/docs/4.0/components/dropdowns/
+      #expect(link["role"]).to eq "button"
+      #expect(link["href"]).to eq "#"
+      expect(link["id"]).to be_present
+      expect(link["aria-haspopup"]).to eq "true"
+      expect(link["aria-expanded"]).to eq "false"
+
+      menu = div.at_css("div[aria-labelledby='#{link["id"]}']")
+      expect(menu).to be_present
+      expect(
+        menu.children.all? { |node| node["class"] =~ /\b(dropdown-divider|dropdown-item|dropdown-header)\b/}
+      ).to be true
+    end
+  end
+
   describe "no rights statement" do
     let(:asset) { build(:asset, parent: build(:work)) }
     it "renders without error" do
