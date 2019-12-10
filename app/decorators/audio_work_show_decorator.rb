@@ -31,11 +31,24 @@ class AudioWorkShowDecorator < Draper::Decorator
     @audio_members ||= all_members.select { |m| m.leaf_representative&.content_type&.start_with?("audio/") }
   end
 
-  def other_member_list
+  def non_audio_members
     @non_audio_members ||= all_members.select do |m|
-       !m.leaf_representative&.content_type&.start_with?("audio/") &&
-       m != representative_member
+       !m.leaf_representative&.content_type&.start_with?("audio/")
      end
   end
 
+  def asset_details(asset)
+    details = []
+    if asset.original_filename != asset.title
+      details << asset.original_filename
+    end
+    if asset.content_type.present?
+      details << ScihistDigicoll::Util.humanized_content_type(asset.content_type)
+    end
+    if asset.size.present?
+      details << number_to_human_size(asset.size)
+    end
+
+    details.join(" — ")
+  end
 end

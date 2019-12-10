@@ -1,0 +1,98 @@
+.work-show-audio {
+
+  .show-title {
+    // terrible override
+    float: none;
+  }
+
+
+  .now-playing-container {
+    position: sticky;
+    top: 1rem;
+    z-index: 1;
+
+    margin-top: 2rem;
+
+    background-color: $brand-dark-grey;
+    color: white;
+    padding: 1rem;
+
+    audio {
+      width: 100%;
+      margin-top: $paragraph-margin-bottom;
+    }
+  }
+
+  .col-files {
+    padding-right: 36px;
+  }
+
+
+
+  .track-listing {
+    display: flex;
+
+    @extend %text-font;
+
+    .play-link {
+      flex-grow: 1;
+      padding: 0.3125rem;
+    }
+
+    .private-badge-div {
+      font-family: $brand-sans-serif;
+      cursor: pointer;
+      margin-top: 0.25rem;
+      margin-right: 0.25rem;
+      .badge-warning {
+        border-radius: 0;
+      }
+    }
+
+    div.dropdown {
+      padding-top: 0.3125rem;
+      .download-link {
+        i.fa-download {
+          display:none;
+        }
+        cursor: pointer;
+        font-family: $brand-sans-serif;
+        color: $brand-blue;
+        white-space: nowrap;
+        padding-right: 0.3125rem;
+      }
+      .download-link:hover {
+        text-decoration: underline;
+      }
+    }
+    &.currently-selected {
+      background-color: $brand-bright-green;
+      color: $brand-dark-blue;
+      a.play-link,
+      a.play-link:link,
+      a.play-link:visited,
+      a.play-link:hover,
+      a.play-link:active,
+      div.dropdown a.download-link {
+        color: $brand-dark-blue;
+      }
+    }
+    .download-menu {
+      font-family: $brand-sans-serif;
+    }
+  }
+
+  .show-member-list-item {
+    .image {
+      padding-left: 0;
+    }
+    .action {
+      padding-right: 0;
+      text-align: right;
+    }
+  }
+
+  .work.chf-attributes {
+    border-top: 0;
+  }
+}

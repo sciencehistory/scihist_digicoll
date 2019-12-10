@@ -5,30 +5,94 @@
   <%= tag "link", rel: "alternate", type: "application/xml", title: "OAI-DC metadata in XML", href: work_path(@work, format: "xml") %>
 <% end %>
 
-<div class="show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
+<div class="work-show work-show-audio" data-role="audio-playlist-wrapper" itemscope itemtype="http://schema.org/CreativeWork" class="row">
 
   <%= WorkTitleAndDates.new(@work).display %>
 
-  <div class="show-hero">
-    <%= Playlist.new(decorator.audio_members).display %>
-    <%= MemberImagePresentation.new(decorator.representative_member, size: :large).display %>
-    <%= render "rights_and_social", work: @work %>
+  <div class="now-playing-container" data-role="now-playing-container">
+    <div class="now-playing-info" data-role="now-playing-info">
+        <i class="fa fa-volume-up" aria-hidden="true"></i> <span class="current-track-label" data-role="current-track-label"></span>
+    </div>
+
+    <audio controls controlsList="nodownload" data-role="audio-elem" >
+        <source src=""  type="audio/mpeg"/>
+        <source src=""  type="audio/webm"/>
+    </audio>
   </div>
 
-  <div class="show-metadata">
-    <%= WorkShowInfo.new(@work).display %>
-    <%= render "citation", work: @work  %>
-  </div>
+  <div class="row">
 
-  <%# these next are not in a div so they can wrap around the bottom of the metadata
-    div to take up all space. A bit hacky but it works. A clear hack to make sure they start after
-    big representative image %>
-  <div style="clear: left"></div>
+    <div class="col-lg-6 col-files">
+      <%= render "rights_and_social", work: @work %>
 
-  <% decorator.other_member_list.each_with_index do |member, index| %>
-      <div class="show-member-list-item">
-        <%# lazyload all but first 6 images %>
-        <%= MemberImagePresentation.new(member, lazy: (index > 5)).display %>
+      <div>
+        <h2 class="attribute-sub-head"><%= pluralize(decorator.audio_members.count, 'sound file')%></h2>
+
+        <ul class="track-listings list-unstyled" data-role="track-listings" >
+            <% decorator.audio_members.each do |track| %>
+                <li class="track-listing"
+                    data-role="track-listing"
+                    data-title="<%= track.title %>"
+                    data-member-id="<%= track.id %>"
+                    data-original-url="<%= main_app.download_path(track.id) %>"
+                    data-mp3-url="<%=  track.derivative_for('small_mp3')&.url %>"
+                    data-webm-url="<%= track.derivative_for('webm')&.url      %>"
+                >
+                    <a class="title play-link" title="Listen to '<%= track.title%>'" href="#" data-role="play-link">
+                        <i class="fa fa-play-circle" aria-hidden="true"></i>&nbsp;<%= track.title %>
+                    </a>
+
+                    <% unless track.published? %>
+                      <div class="private-badge-div"><span title="Private" class="badge badge-warning">Private</span></div>
+                    <% end %>
+                    <%= DownloadDropdownDisplay.new(track, display_parent_work: track.parent, use_link:true).display %>
+                </li>
+            <% end %>
+        </ul>
       </div>
-  <% end %>
+
+
+      <div>
+        <h2 class="attribute-sub-head"><%= pluralize(decorator.non_audio_members.count, 'other file')%></h2>
+
+        <table class="table">
+          <% decorator.non_audio_members.each_with_index do |member, index| %>
+            <tr class="show-member-list-item">
+              <td class="image">
+                <%# lazyload all but first 6 images %>
+                <%= ThumbDisplay.new(member.leaf_representative, thumb_size: :mini, lazy: (index > 5)).display %>
+              </td>
+              <td>
+                <div>
+                  <%= member.title  %>
+                  <% unless member.published? %>
+                      <span title="Private" class="badge badge-warning">Private</span>
+                  <% end %>
+                </div>
+                <% if member.kind_of?(Asset) %>
+                  <div>
+                    <small><%= decorator.asset_details(member) %></small>
+                  </div>
+                <% end %>
+              </td>
+              <td class="action">
+                <% if member.kind_of?(Work) %>
+                  <%= link_to "Info", work_path(member), class: "btn btn-primary" %>
+                <% else %>
+                  <%= DownloadDropdownDisplay.new(member, display_parent_work: @work, use_link:true).display %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </table>
+      </div>
+    </div>
+
+    <div class="col-lg-6 col-metadata">
+      <%= WorkShowInfo.new(@work).display %>
+      <%= render "citation", work: @work  %>
+    </div>
+
+  </div>
+
 </div>
