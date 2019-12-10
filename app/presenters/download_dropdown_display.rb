@@ -121,11 +121,17 @@ class DownloadDropdownDisplay < ViewModel
   end
 
   def link_or_button
-    content_tag(
-      (@use_link ? "a" : "button"),
-      "<i class='fa fa-download' aria-hidden='true'></i> Download".html_safe,
-      link_or_button_options
-    )
+    if @use_link
+      content_tag("a",
+        "<i class='fa fa-download' aria-hidden='true'></i> Download".html_safe,
+        link_or_button_options
+      )
+    else
+      content_tag("button",
+        "<i class='fa fa-download' aria-hidden='true'></i> Download".html_safe,
+        link_or_button_options
+      )
+    end
   end
 
   def link_or_button_options
