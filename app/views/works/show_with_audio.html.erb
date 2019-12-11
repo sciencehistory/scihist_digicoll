@@ -26,49 +26,48 @@
       <div>
         <h2 class="attribute-sub-head sound-file-header"><%= pluralize(decorator.audio_members.count, 'sound file')%></h2>
 
-        <table class="sans-serif track-listings" data-role="track-listings" >
-            <% decorator.audio_members.each do |track| %>
-              <tr
-                    data-role="track-listing"
-                    data-title="<%= track.title %>"
-                    data-member-id="<%= track.id %>"
-                    data-original-url="<%= main_app.download_path(track.id) %>"
-                    data-mp3-url="<%=  track.derivative_for('small_mp3')&.url %>"
-                    data-webm-url="<%= track.derivative_for('webm')&.url      %>"
-                >
-                <td class="icon">
-                  <a class="title play-link" title="Listen to '<%= track.title%>'" aria-label="Listen to '<%= track.title%>'" href="#" data-role="play-link">
-                    <i class="fa fa-play-circle" aria-hidden="true"></i>
-                  </a>
-                </td>
-                <td class="track-listing">
-                  <a class="title play-link" title="Listen to '<%= track.title%>'" aria-label="Listen to '<%= track.title%>'" href="#" data-role="play-link">
-                        <%= track.title %>
-                        <% unless track.published? %>
-                          <span title="Private" class="badge badge-warning">Private</span>
-                        <% end %>
-                  </a>
-                </td>
-                <td>
-                  <%= DownloadDropdownDisplay.new(track, display_parent_work: track.parent, use_link:true).display %>
-                </td>
-              </tr>
-            <% end %>
-        </table>
+        <div class="sans-serif track-listings" data-role="track-listings" >
+          <% decorator.audio_members.each do |track| %>
+            <div  class="track-listing" data-role="track-listing"
+                  data-title="<%= track.title %>"
+                  data-member-id="<%= track.id %>"
+                  data-original-url="<%= main_app.download_path(track.id) %>"
+                  data-mp3-url="<%=  track.derivative_for('small_mp3')&.url %>"
+                  data-webm-url="<%= track.derivative_for('webm')&.url      %>"
+              >
+              <div class="icon">
+                <a class="title play-link" title="Listen to '<%= track.title%>'" aria-label="Listen to '<%= track.title%>'" href="#" data-role="play-link">
+                  <i class="fa fa-play-circle" aria-hidden="true"></i>
+                </a>
+              </div>
+              <div class="title">
+                <a class="title play-link" title="Listen to '<%= track.title%>'" aria-label="Listen to '<%= track.title%>'" href="#" data-role="play-link">
+                      <%= track.title %>
+                      <% unless track.published? %>
+                        <span title="Private" class="badge badge-warning">Private</span>
+                      <% end %>
+                </a>
+              </div>
+              <div class="action">
+                <%= DownloadDropdownDisplay.new(track, display_parent_work: track.parent, use_link:true).display %>
+              </div>
+            </div>
+          <% end %>
+        </div>
       </div>
 
       <% if decorator.non_audio_members.present? %>
         <div>
           <h2 class="attribute-sub-head"><%= pluralize(decorator.non_audio_members.count, 'other file')%></h2>
 
-          <table class="table other-files sans-serif">
+          <div class="other-files sans-serif">
             <% decorator.non_audio_members.each_with_index do |member, index| %>
-              <tr class="show-member-list-item">
-                <td class="image">
+              <div class="show-member-list-item">
+                <div class="image">
                   <%# lazyload all but first 6 images %>
                   <%= ThumbDisplay.new(member.leaf_representative, thumb_size: :mini, lazy: (index > 5)).display %>
-                </td>
-                <td class="title">
+                </div>
+                <div class="title">
                   <div>
                     <%= member.title  %>
                     <% unless member.published? %>
@@ -80,17 +79,17 @@
                       <small><%= decorator.asset_details(member) %></small>
                     </div>
                   <% end %>
-                </td>
-                <td class="action">
+                </div>
+                <div class="action">
                   <% if member.kind_of?(Work) %>
                     <%= link_to "Info", work_path(member), class: "btn btn-primary" %>
                   <% else %>
                     <%= DownloadDropdownDisplay.new(member, display_parent_work: @work, use_link:true).display %>
                   <% end %>
-                </td>
-              </tr>
+                </div>
+              </div>
             <% end %>
-          </table>
+          </div>
         </div>
       <% end %>
 

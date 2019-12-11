@@ -34,12 +34,21 @@
   }
 
   .track-listings {
-    td > a, td .dropdown-toggle {
-      padding: $table-cell-padding;
-    }
 
-    td {
-      vertical-align: middle;
+   .track-listing {
+      display: flex;
+      align-items: center;
+
+      &>  div > a, & > div .dropdown-toggle {
+        padding: $table-cell-padding;
+      }
+
+      .title {
+        flex-grow: 1;
+        .play-link {
+          display: block;
+        }
+      }
     }
 
     .icon {
@@ -51,12 +60,7 @@
       word-break: break-word;
     }
 
-    .track-listing {
-      width: 100%;
-      .play-link {
-        display: block;
-      }
-    }
+
 
     .currently-selected {
       background-color: $brand-bright-green;
@@ -74,10 +78,18 @@
 
   .other-files {
     .show-member-list-item {
+      display: flex;
+
+      & > div {
+        padding: $table-cell-padding;
+      }
+
       .image {
         padding-left: 0;
       }
+
       .title {
+        flex-grow: 1;
         width: 100%;
       }
     }
