@@ -42,17 +42,16 @@
                   </a>
                 </td>
                 <td class="track-listing">
-                    <a class="title play-link" title="Listen to '<%= track.title%>'" aria-label="Listen to '<%= track.title%>'" href="#" data-role="play-link">
+                  <a class="title play-link" title="Listen to '<%= track.title%>'" aria-label="Listen to '<%= track.title%>'" href="#" data-role="play-link">
                         <%= track.title %>
                         <% unless track.published? %>
                           <span title="Private" class="badge badge-warning">Private</span>
                         <% end %>
-                    </a>
-                  </td>
-                  <td>
-                    <%= DownloadDropdownDisplay.new(track, display_parent_work: track.parent, use_link:true).display %>
-                  </td>
-                </li>
+                  </a>
+                </td>
+                <td>
+                  <%= DownloadDropdownDisplay.new(track, display_parent_work: track.parent, use_link:true).display %>
+                </td>
               </tr>
             <% end %>
         </table>
