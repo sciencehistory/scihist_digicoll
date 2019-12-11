@@ -18,8 +18,7 @@
   "resolutions": {
     "lodash": ">= 4.17.13",
     "lodash.template": ">= 4.5.0",
-    "js-yaml": ">= 3.13.1",
-    "serialize-javascript": ">= 2.1.1"
+    "js-yaml": ">= 3.13.1"
   },
   "browserslist": [
     "defaults"
