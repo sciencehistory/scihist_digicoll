@@ -17,16 +17,24 @@
     }
   }
 
-  .col-files {
-    padding-right: 36px;
+  .bottom {
+    margin-top: 2rem;
+  }
+
+  // When we're two column, add more spacer than default
+  @include media-breakpoint-up(lg) {
+    .col-files {
+      padding-right: 36px;
+    }
   }
 
   .sound-file-header {
+    margin-top: 0;
     border-bottom: $table-border-width solid $table-border-color;
   }
 
   .track-listings {
-    td > a {
+    td > a, td .dropdown-toggle {
       padding: $table-cell-padding;
     }
 
@@ -36,6 +44,11 @@
 
     .icon {
       font-size: 150%;
+    }
+
+    .title {
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
     .track-listing {
@@ -66,9 +79,6 @@
       }
       .title {
         width: 100%;
-      }
-      .action {
-        padding-right: 0;
       }
     }
   }

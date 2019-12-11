@@ -20,11 +20,9 @@
     </audio>
   </div>
 
-  <div class="row">
+  <div class="row bottom">
 
     <div class="col-lg-6 col-files">
-      <%= render "rights_and_social", work: @work %>
-
       <div>
         <h2 class="attribute-sub-head sound-file-header"><%= pluralize(decorator.audio_members.count, 'sound file')%></h2>
 
@@ -95,6 +93,8 @@
           <% end %>
         </table>
       </div>
+
+      <%= render "rights_and_social", work: @work %>
     </div>
 
     <div class="col-lg-6 col-metadata">
