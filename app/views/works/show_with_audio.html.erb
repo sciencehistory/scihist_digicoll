@@ -57,41 +57,42 @@
         </table>
       </div>
 
+      <% if decorator.non_audio_members.present? %>
+        <div>
+          <h2 class="attribute-sub-head"><%= pluralize(decorator.non_audio_members.count, 'other file')%></h2>
 
-      <div>
-        <h2 class="attribute-sub-head"><%= pluralize(decorator.non_audio_members.count, 'other file')%></h2>
-
-        <table class="table other-files sans-serif">
-          <% decorator.non_audio_members.each_with_index do |member, index| %>
-            <tr class="show-member-list-item">
-              <td class="image">
-                <%# lazyload all but first 6 images %>
-                <%= ThumbDisplay.new(member.leaf_representative, thumb_size: :mini, lazy: (index > 5)).display %>
-              </td>
-              <td class="title">
-                <div>
-                  <%= member.title  %>
-                  <% unless member.published? %>
-                      <span title="Private" class="badge badge-warning">Private</span>
-                  <% end %>
-                </div>
-                <% if member.kind_of?(Asset) %>
+          <table class="table other-files sans-serif">
+            <% decorator.non_audio_members.each_with_index do |member, index| %>
+              <tr class="show-member-list-item">
+                <td class="image">
+                  <%# lazyload all but first 6 images %>
+                  <%= ThumbDisplay.new(member.leaf_representative, thumb_size: :mini, lazy: (index > 5)).display %>
+                </td>
+                <td class="title">
                   <div>
-                    <small><%= decorator.asset_details(member) %></small>
+                    <%= member.title  %>
+                    <% unless member.published? %>
+                        <span title="Private" class="badge badge-warning">Private</span>
+                    <% end %>
                   </div>
-                <% end %>
-              </td>
-              <td class="action">
-                <% if member.kind_of?(Work) %>
-                  <%= link_to "Info", work_path(member), class: "btn btn-primary" %>
-                <% else %>
-                  <%= DownloadDropdownDisplay.new(member, display_parent_work: @work, use_link:true).display %>
-                <% end %>
-              </td>
-            </tr>
-          <% end %>
-        </table>
-      </div>
+                  <% if member.kind_of?(Asset) %>
+                    <div>
+                      <small><%= decorator.asset_details(member) %></small>
+                    </div>
+                  <% end %>
+                </td>
+                <td class="action">
+                  <% if member.kind_of?(Work) %>
+                    <%= link_to "Info", work_path(member), class: "btn btn-primary" %>
+                  <% else %>
+                    <%= DownloadDropdownDisplay.new(member, display_parent_work: @work, use_link:true).display %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </table>
+        </div>
+      <% end %>
 
       <%= render "rights_and_social", work: @work %>
     </div>
