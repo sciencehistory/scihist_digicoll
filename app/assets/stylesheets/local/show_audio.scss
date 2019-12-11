@@ -30,10 +30,10 @@
 
   .sound-file-header {
     margin-top: 0;
-    border-bottom: $table-border-width solid $table-border-color;
   }
 
   .track-listings {
+    border-top: 3px solid $table-border-color;
 
    .track-listing {
       display: flex;
@@ -77,11 +77,14 @@
   }
 
   .other-files {
+    border-top: 3px solid $table-border-color;
+
     .show-member-list-item {
       display: flex;
 
       & > div {
         padding: $table-cell-padding;
+        border-top: $table-border-width solid $table-border-color;
       }
 
       .image {
