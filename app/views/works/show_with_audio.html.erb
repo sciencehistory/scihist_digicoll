@@ -26,11 +26,11 @@
       <%= render "rights_and_social", work: @work %>
 
       <div>
-        <h2 class="attribute-sub-head"><%= pluralize(decorator.audio_members.count, 'sound file')%></h2>
+        <h2 class="attribute-sub-head sound-file-header"><%= pluralize(decorator.audio_members.count, 'sound file')%></h2>
 
-        <ul class="track-listings list-unstyled" data-role="track-listings" >
+        <table class="sans-serif track-listings" data-role="track-listings" >
             <% decorator.audio_members.each do |track| %>
-                <li class="track-listing"
+              <tr
                     data-role="track-listing"
                     data-title="<%= track.title %>"
                     data-member-id="<%= track.id %>"
@@ -38,31 +38,40 @@
                     data-mp3-url="<%=  track.derivative_for('small_mp3')&.url %>"
                     data-webm-url="<%= track.derivative_for('webm')&.url      %>"
                 >
-                    <a class="title play-link" title="Listen to '<%= track.title%>'" href="#" data-role="play-link">
-                        <i class="fa fa-play-circle" aria-hidden="true"></i>&nbsp;<%= track.title %>
+                <td class="icon">
+                  <a class="title play-link" title="Listen to '<%= track.title%>'" aria-label="Listen to '<%= track.title%>'" href="#" data-role="play-link">
+                    <i class="fa fa-play-circle" aria-hidden="true"></i>
+                  </a>
+                </td>
+                <td class="track-listing">
+                    <a class="title play-link" title="Listen to '<%= track.title%>'" aria-label="Listen to '<%= track.title%>'" href="#" data-role="play-link">
+                        <%= track.title %>
+                        <% unless track.published? %>
+                          <span title="Private" class="badge badge-warning">Private</span>
+                        <% end %>
                     </a>
-
-                    <% unless track.published? %>
-                      <div class="private-badge-div"><span title="Private" class="badge badge-warning">Private</span></div>
-                    <% end %>
+                  </td>
+                  <td>
                     <%= DownloadDropdownDisplay.new(track, display_parent_work: track.parent, use_link:true).display %>
+                  </td>
                 </li>
+              </tr>
             <% end %>
-        </ul>
+        </table>
       </div>
 
 
       <div>
         <h2 class="attribute-sub-head"><%= pluralize(decorator.non_audio_members.count, 'other file')%></h2>
 
-        <table class="table other-files">
+        <table class="table other-files sans-serif">
           <% decorator.non_audio_members.each_with_index do |member, index| %>
             <tr class="show-member-list-item">
               <td class="image">
                 <%# lazyload all but first 6 images %>
                 <%= ThumbDisplay.new(member.leaf_representative, thumb_size: :mini, lazy: (index > 5)).display %>
               </td>
-              <td>
+              <td class="title">
                 <div>
                   <%= member.title  %>
                   <% unless member.published? %>
