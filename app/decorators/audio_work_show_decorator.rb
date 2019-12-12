@@ -51,4 +51,29 @@ class AudioWorkShowDecorator < Draper::Decorator
 
     details.join(" — ")
   end
+
+  # We have a list of non-audio "Other' files. We expect them to be PDFs,
+  # and we want to link to pdf "view" link -- just direct delivery of the PDF
+  # to the browser, using download controller same as MemberImagePresentation does.
+  #
+  # If it's an image type, we don't expect it here, and don't know what to do with it
+  # here (we're not supporting the Viewer here at present), so just punt and don't make it
+  # a link.
+  #
+  # This method is called with a block for the actual contents of the <a> tag, we use
+  # it on template to wrap an image or a title string.
+  #
+  #     <%= decorator.link_to_non_audio_member(member) do %>
+  #        contents of link
+  #     <% end %>
+  def link_to_non_audio_member(member)
+    if member.content_type.start_with?("image/")
+      yield
+    else
+      link_to download_path(member.leaf_representative, disposition: :inline) do
+        yield
+      end
+    end
+  end
+
 end

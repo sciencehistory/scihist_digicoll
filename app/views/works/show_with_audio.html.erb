@@ -62,14 +62,19 @@
 
           <div class="other-files sans-serif">
             <% decorator.non_audio_members.each_with_index do |member, index| %>
+
               <div class="show-member-list-item" data-member-id="<%= member.friendlier_id %>">
                 <div class="image">
-                  <%# lazyload all but first 6 images %>
-                  <%= ThumbDisplay.new(member.leaf_representative, thumb_size: :mini, lazy: (index > 5)).display %>
+                  <%= decorator.link_to_non_audio_member(member) do %>
+                    <%# lazyload all but first 6 images %>
+                    <%= ThumbDisplay.new(member.leaf_representative, thumb_size: :mini, lazy: (index > 5)).display %>
+                  <% end %>
                 </div>
                 <div class="title">
                   <div>
-                    <%= member.title  %>
+                    <%= decorator.link_to_non_audio_member(member) do %>
+                      <%= member.title %>
+                    <% end %>
                     <% unless member.published? %>
                         <span title="Private" class="badge badge-warning">Private</span>
                     <% end %>
