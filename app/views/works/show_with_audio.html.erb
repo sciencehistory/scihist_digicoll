@@ -62,7 +62,7 @@
 
           <div class="other-files sans-serif">
             <% decorator.non_audio_members.each_with_index do |member, index| %>
-              <div class="show-member-list-item">
+              <div class="show-member-list-item" data-member-id="<%= member.friendlier_id %>">
                 <div class="image">
                   <%# lazyload all but first 6 images %>
                   <%= ThumbDisplay.new(member.leaf_representative, thumb_size: :mini, lazy: (index > 5)).display %>
