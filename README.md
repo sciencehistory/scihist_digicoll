@@ -256,3 +256,9 @@ Set `logins_disabled: true` in `./config/local_env.yml`, or somehow set a shell 
 This can be useful if we need to do some maintenance that doesn't bring down the public interface, but we want to keep staff out while it goes on, so they can't edit things.
 
 This feature was in our v1 sufia-based app, we copied it over.
+
+## Thanks
+
+<img src="https://www.browserstack.com/images/layout/browserstack-logo-600x315.png" width="280"/>
+
+[BrowserStack](http://www.browserstack.com) supports us with [free access for open source](https://www.browserstack.com/open-source).
