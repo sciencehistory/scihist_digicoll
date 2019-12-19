@@ -76,6 +76,7 @@ class Admin::AssetsController < AdminController
       asset.parent_id = @parent.id
       asset.file = file_data
       asset.title = (asset.file&.original_filename || "Untitled")
+      asset.published = @parent.published
       asset.save!
     end
 
