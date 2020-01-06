@@ -59,6 +59,8 @@ class Admin::AssetsController < AdminController
   # Receives json hashes for direct uploaded files in params[:files],
   # and parent_id in params[:parent_id] (friendlier_id)
   # creates filesets for them and attach.
+  #
+  # POST /admin/works/[parent_work.friendlier_id]/ingest
   def attach_files
     @parent = Work.find_by_friendlier_id!(params[:parent_id])
 
@@ -74,6 +76,7 @@ class Admin::AssetsController < AdminController
       asset.parent_id = @parent.id
       asset.file = file_data
       asset.title = (asset.file&.original_filename || "Untitled")
+      asset.published = @parent.published
       asset.save!
     end
 
