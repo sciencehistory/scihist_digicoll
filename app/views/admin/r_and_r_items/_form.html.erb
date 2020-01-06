@@ -1,0 +1,142 @@
+<%= simple_form_for(@admin_r_and_r_item) do |f| %>
+  <% if @admin_r_and_r_item.errors.any? %>
+
+    <div class="kithe-form-errors-top alert alert-danger mb-4" role="alert">
+      <h2 class="h4" class="alert-heading"><%= pluralize(@admin_r_and_r_item.errors.count, "error") %> prohibited this work from being saved</h2>
+      <ol class="mb-0">
+        <% @admin_r_and_r_item.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ol>
+    </div>
+  <% end %>
+
+  <div class="form-inputs">
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :title%>
+      </div>
+      <div class="col">
+        <%= f.input :is_destined_for_ingest,
+        label: "Ingest this item",
+        hint: "Check the box if we also want this item in the Digital Collections."
+      %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :curator,
+          label: "Curator",
+          hint: "Who is fielding this request?",
+          collection: Admin::RAndRItem::CURATORS.collect {|s| [s.humanize, s]},
+          include_blank: false %>
+      </div>
+      <div class="col">
+        <%= f.input :patron_name,
+          hint: "The person who requested the item(s) be digitized.",
+          label: "Patron name" %>
+      </div>
+      <div class="col">
+        <%= f.input :patron_email,
+          hint: "That person's email.",
+          label: "Patron email" %>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :status,
+          label: "R&R Status",
+          collection: Admin::RAndRItem::STATUSES.collect {|s| [s.humanize, s]},
+          include_blank: false %>
+      </div>
+        <div class="col">
+        <%= f.input :collecting_area,
+        label: "Collecting area",
+        collection: Admin::RAndRItem::COLLECTING_AREAS.collect {|s| [s.humanize, s]},
+        include_blank: false
+        %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :deadline,
+          as: :date, html5: true,
+          label: "Deadline", hint: "Send files to patron by this date." %>
+      </div>
+      <div class="col">
+        <%= f.input :date_files_sent,
+        as: :date, html5: true,
+        label: "Date sent", hint: "When the files were actually sent to the patron. Leave blank until actually sent."  %>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :accession_number %>
+      </div>
+      <div class="col">
+        <%= f.input :museum_object_id, label: "Object ID (Past Perfect)" %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :bib_number, hint: "if applicable" %>
+      </div>
+      <div class="col">
+        <%= f.input :location, hint: "Call number, Home Location, etc." %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :box %>
+      </div>
+      <div class="col">
+        <%= f.input :folder %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :dimensions %>
+      </div>
+      <div class="col">
+        <%= f.input :materials %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :scope, label: "Scope", hint: "Pages to digitize for R&R only" %>
+      </div>
+        <div class="col">
+        <%= f.input :additional_pages_to_ingest, label: "Additional pages", hint: "Only for the Digital Collections. Do not send to patron." %>
+      </div>
+      <div class="col">
+        <%= f.input :instructions, hint: "Staging notes, handling instructions, etc." %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :copyright_status, as: :text %>
+      </div>
+      <div class="col">
+        <%= f.input :additional_notes, label: "Additional notes <small>(shows up on list view)</small>".html_safe %>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions mb-3">
+    <%= link_to "Cancel", admin_r_and_r_items_path(collecting_area), class: "btn btn-outline-primary" %>
+    <%= f.button :submit %>
+  </div>
+</div>
+<% end %>

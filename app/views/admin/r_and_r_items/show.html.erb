@@ -1,0 +1,103 @@
+<div class="mb-2">
+  <h1><%= @admin_r_and_r_item.title %>
+    <%= link_to 'Edit', admin_edit_r_and_r_item_path(@admin_r_and_r_item), class: "btn btn-primary" %>
+    <%= link_to 'Back to list', admin_r_and_r_items_path, class: "btn btn-primary" %>
+  </h1>
+</div>
+
+<div class="row">
+  <div class="col-lg-5 pr-4 mb-4">
+    <%= DigitizationQueueItemStatusForm.new(@admin_r_and_r_item).display %>
+  </div>
+</div>
+
+<div class="row">
+
+  <div class="col-md-7 order-md-2">
+      <dt>Is this going into the Digital Collections?</dt>
+      <dd>
+        <%=  @admin_r_and_r_item.is_destined_for_ingest ? 'Yes' : 'No' %>.
+      </dd>
+
+      <dt>Collecting area</dt>
+      <dd><%= @admin_r_and_r_item.collecting_area.humanize%></dd>
+
+      <dt>Curator</dt>
+      <dd>
+        <%=   @admin_r_and_r_item.curator ? @admin_r_and_r_item.curator.capitalize : "None" %>
+      </dd>
+
+      <%= queue_item_show_field(@admin_r_and_r_item, :patron_name) %>
+      <%= queue_item_show_field(@admin_r_and_r_item, :patron_email) %>
+
+
+      <dt>Status</dt>
+      <dd>
+        <%= @admin_r_and_r_item.status.humanize %> (<%= l @admin_r_and_r_item.status_changed_at, format: :admin %>)
+      </dd>
+
+
+      <% if @admin_r_and_r_item.deadline %>
+      <dt>Deadline to send files to the patron</dt>
+      <dd>
+        <%= l(@admin_r_and_r_item.deadline, format: "%F") %>
+      </dd>
+      <% end %>
+
+
+
+      <% if @admin_r_and_r_item.date_files_sent %>
+      <dt>When files were sent</dt>
+      <dd>
+        <%= l(@admin_r_and_r_item.date_files_sent, format: "%F") %>
+      </dd>
+      <% else %>
+        <dt>Have file been sent to the patron?</dt>
+        <dd>
+          Not yet.
+        </dd>
+      <% end %>
+
+      <%= queue_item_show_field(@admin_r_and_r_item, :date_files_sent) %>
+
+    <% if @admin_r_and_r_item.bib_number.present? %>
+      <p>
+        <%= link_to "OPAC link (#{@admin_r_and_r_item.bib_number})", ScihistDigicoll::Util.opac_url(@admin_r_and_r_item.bib_number), target: "_blank" %>
+      </p>
+    <% end %>
+
+    <dl>
+
+
+
+      <dt>Created at</dt>
+      <dd>
+        <%= l @admin_r_and_r_item.created_at, format: :admin %>
+      </dd>
+
+
+
+      <%= queue_item_show_field(@admin_r_and_r_item, :bib_number) %>
+
+
+      <%= queue_item_show_field(@admin_r_and_r_item, :scope, paragraphs: true, override_label: "Pages to scan for this patron") %>
+      <%= queue_item_show_field(@admin_r_and_r_item, :additional_pages_to_ingest, override_label: "Additional pages to ingest into the Digital Collections") %>
+
+
+      <%= queue_item_show_field(@admin_r_and_r_item, :location) %>
+      <%= queue_item_show_field(@admin_r_and_r_item, :accession_number) %>
+      <%= queue_item_show_field(@admin_r_and_r_item, :museum_object_id, override_label: "Object ID (Past Perfect)") %>
+      <%= queue_item_show_field(@admin_r_and_r_item, :box) %>
+      <%= queue_item_show_field(@admin_r_and_r_item, :folder) %>
+
+      <%= queue_item_show_field(@admin_r_and_r_item, :dimensions) %>
+      <%= queue_item_show_field(@admin_r_and_r_item, :materials) %>
+
+
+      <%= queue_item_show_field(@admin_r_and_r_item, :instructions, paragraphs: true) %>
+      <%= queue_item_show_field(@admin_r_and_r_item, :additional_notes, paragraphs: true) %>
+      <%= queue_item_show_field(@admin_r_and_r_item, :copyright_status, paragraphs: true) %>
+
+    </dl>
+  </div>
+</div>
