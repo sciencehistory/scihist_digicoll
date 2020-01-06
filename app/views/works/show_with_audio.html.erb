@@ -58,7 +58,7 @@
 
       <% if decorator.non_audio_members.present? %>
         <div>
-          <h2 class="attribute-sub-head"><%= pluralize(decorator.non_audio_members.count, 'other file')%></h2>
+          <h2 class="attribute-sub-head"><%= pluralize(decorator.non_audio_members.count, 'PDF transcript')%></h2>
 
           <div class="other-files sans-serif">
             <% decorator.non_audio_members.each_with_index do |member, index| %>
