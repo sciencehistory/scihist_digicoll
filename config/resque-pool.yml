@@ -1,4 +1,5 @@
 production:
-  "*": 10
+  public: 2
+  staff: 10
 development:
   "*": 5
