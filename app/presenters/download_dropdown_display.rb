@@ -137,10 +137,24 @@ class DownloadDropdownDisplay < ViewModel
   end
 
   def link_or_button_options
+    # https://getbootstrap.com/docs/4.3/components/dropdowns/
+    #
+    # * We supply data-boundary "viewport"; without this, specifically on the
+    # OH Audio page where download dropdown is near right side of screen,
+    # popper was miscalculating boundaries and letting download menu go out of screen.
+    #
+    #   * I don't think it messes up any other cases, if it does, we'll have to
+    #   solve some other way, by changing DOM/CSS to fix, or having this component
+    #   take an arg as to data-boundary.
+
     options = {
-      id: menu_button_id, "data-toggle" => "dropdown",
-      "aria-haspopup" => "true", "aria-expanded" => "false"
+      id: menu_button_id,
+      "data-toggle" => "dropdown",
+      "aria-haspopup" => "true",
+      "aria-expanded" => "false",
+      "data-boundary": "viewport"
     }
+
     if @use_link
       options[:class] = "dropdown-toggle download-link"
       options[:role] = "button"
