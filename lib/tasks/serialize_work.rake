@@ -32,7 +32,16 @@ namespace :scihist do
       # of each.
       #
       serialize_proc = lambda do |model|
-        [{ model.class.name => model.attributes }] +
+        model_attributes = model.attributes
+
+        # hacky workaround
+        # https://github.com/sciencehistory/kithe/pull/75
+        if model.kind_of?(Kithe::Asset)
+          model_attributes.delete("representative_id")
+          model_attributes.delete("leaf_representative_id")
+        end
+
+        [{ model.class.name => model_attributes }] +
           model.members.flat_map do |member|
             serialize_proc.call(member)
           end
@@ -58,6 +67,12 @@ namespace :scihist do
       json_input = ActiveSupport::JSON.decode(File.open(args[:json_file_path]).read)
       model_json = json_input["models"]
 
+      # Create a shrine storage configured to point at staging, so we can instantiate
+      # a shrine UploadedObject for it, to copy it locally. (Shrine S3 is actually smart
+      # enough to issue an S3 "copy" command instead of actually shipping bytes around)
+      #
+      # This does require us to have AWS access keys configured locally with
+      # read access to staging "store" originals bucket.
       Shrine.storages[:import_staging_store] = Shrine::Storage::S3.new({
         bucket:            json_input["shrine_s3_storage_staging"]["bucket_name"],
         prefix:            json_input["shrine_s3_storage_staging"]["prefix"],
@@ -65,9 +80,6 @@ namespace :scihist do
         secret_access_key: ScihistDigicoll::Env.lookup(:aws_secret_access_key),
         region:            ScihistDigicoll::Env.lookup(:aws_region)
       })
-
-      assets = []
-
 
       Kithe::Model.transaction do
         # This magically gets postgres to not enforce integrity constraints.
@@ -80,19 +92,20 @@ namespace :scihist do
           model_class = json_hash.keys.first.classify.constantize
           attributes = json_hash.values.first
 
-          puts "Saving #{model_class}/#{attributes["id"]}/#{attributes["friendlier_id"]}/#{attributes["title"].slice(0, 20)}\n\n"
+          puts "Saving #{model_class}/#{attributes["id"]}/#{attributes["friendlier_id"]}/#{attributes["title"].slice(0, 30)}\n\n"
 
           model = model_class.new(attributes)
           model.save!
 
           if model_class < Kithe::Asset
-            puts "  -> Copying and creating derivatives for Asset #{model.friendlier_id}"
+            puts "  -> Copying original and creating local derivatives for Asset/#{model.friendlier_id}\n\n"
 
             # Copy file from staging; requires our local AWS key to have read access to remote S3
             remote_file = Shrine::UploadedFile.new(model.file.data.merge("storage" => "import_staging_store"))
             Shrine.storages[:store].upload(remote_file, model.file.id)
 
-            # Make derivatives please
+            # Make derivatives please. We could try COPYING the derivatives (like we are copying
+            # the original), instead of of re-making them, but for now this is simpler (if slower).
             model.create_derivatives(lazy: true)
           end
         end
