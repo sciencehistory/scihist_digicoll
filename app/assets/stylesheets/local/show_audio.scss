@@ -1,0 +1,107 @@
+.work-show-audio {
+
+  .now-playing-container {
+    position: sticky;
+    top: 0.5rem;
+    z-index: 1;
+
+    margin-top: 2rem;
+
+    background-color: $brand-dark-grey;
+    color: white;
+    padding: 1rem;
+
+    audio {
+      width: 100%;
+      margin-top: $paragraph-margin-bottom;
+    }
+  }
+
+  .bottom {
+    margin-top: 2rem;
+  }
+
+  // When we're two column, add more spacer than default
+  @include media-breakpoint-up(lg) {
+    .col-files {
+      padding-right: 36px;
+    }
+  }
+
+  .sound-file-header {
+    margin-top: 0;
+  }
+
+  .track-listings {
+    border-top: 3px solid $table-border-color;
+
+   .track-listing {
+      display: flex;
+      align-items: center;
+
+      border-top: $table-border-width solid $table-border-color;
+
+      &>  div > a, & > div .dropdown-toggle {
+        padding: $table-cell-padding;
+      }
+
+      .title {
+        flex-grow: 1;
+        .play-link {
+          display: block;
+        }
+      }
+    }
+
+    .icon {
+      font-size: 150%;
+    }
+
+    .title {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+
+
+    .currently-selected {
+      background-color: $brand-bright-green;
+      color: $brand-dark-blue;
+      a.play-link,
+      a.play-link:link,
+      a.play-link:visited,
+      a.play-link:hover,
+      a.play-link:active,
+      div.dropdown a.download-link {
+        color: $brand-dark-blue;
+      }
+    }
+  }
+
+  .other-files {
+    border-top: 3px solid $table-border-color;
+
+    .show-member-list-item {
+      display: flex;
+
+      & > div {
+        padding: $table-cell-padding;
+        border-top: $table-border-width solid $table-border-color;
+      }
+
+      .image {
+        padding-left: 0;
+      }
+
+      .title {
+        flex-grow: 1;
+        width: 100%;
+        word-break: break-word;
+      }
+    }
+  }
+
+  .work.chf-attributes {
+    border-top: 0;
+  }
+}
