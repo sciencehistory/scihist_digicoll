@@ -113,5 +113,63 @@ namespace :scihist do
         Kithe::Model.connection.execute("SET session_replication_role TO 'origin'")
       end
     end
+
+
+    desc "TESTING EXPERIMENT"
+    task :serialize_work2, [:work_friendlier_id] => :environment do |t, args|
+      # Storage where original files live
+      storage = Shrine.storages[:store]
+      unless storage.kind_of?(Shrine::Storage::S3)
+        raise ArgumentError, "We only know how to work with S3 storage for Shrine.storages[:store], not #{storage.class.name}"
+      end
+
+      parent = Work.find_by_friendlier_id!(args[:work_friendlier_id])
+
+
+      # Recursive inline proc to take parent and all children and serialize
+      # them to json.
+      #
+      # Uses model#attributes for data to serialize, this is potentially  less data than #to_json,
+      #  #attributes seems to be what we really want without other stuff getting in the way.
+      #
+      # For each model, we serialize a one-element hash, where key is the class name,
+      # value is the attributes.  Models could be works or assets, and specific sub-classes
+      # of each.
+      #
+      serialize_proc = lambda do |model|
+        model_attributes = model.attributes
+
+        derivatives = []
+
+        # hacky workaround
+        # https://github.com/sciencehistory/kithe/pull/75
+        if model.kind_of?(Kithe::Asset)
+          model_attributes.delete("representative_id")
+          model_attributes.delete("leaf_representative_id")
+
+          derivatives.concat model.derivatives.to_a
+
+        end
+
+        [{ model.class.name => model_attributes }] +
+          model.members.flat_map do |member|
+            serialize_proc.call(member)
+          end +
+          derivatives
+      end
+
+      json_hashes = serialize_proc.call(parent)
+
+      transfer_hash = {
+        "models" => json_hashes,
+        "shrine_s3_storage_staging" => {
+          "bucket_name" => storage.bucket.name,
+          "prefix" => storage.prefix
+        }
+      }
+
+      puts(transfer_hash.to_json)
+    end
+
   end
 end
