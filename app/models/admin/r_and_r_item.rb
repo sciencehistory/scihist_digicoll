@@ -1,4 +1,6 @@
 class Admin::RAndRItem < ApplicationRecord
+  belongs_to :digitization_queue_item, optional: true
+
   scope :open_status, -> { where.not(status: "closed") }
 
   # for now just validate bib numbers to not have the extra digit.
@@ -38,28 +40,34 @@ class Admin::RAndRItem < ApplicationRecord
     end
   end
 
+  # Is this ready to make a DigitizationQueueItem out of?
+  def ready_to_move_to_digitization_queue
+    return false unless self.is_destined_for_ingest
+    possible_statuses = %w{post_production_completed files_sent_to_patron}
+    return false unless possible_statuses.include?(self.status)
+    return false if self.copyright_research_still_needed
+    return true
+  end
 
-  # Fill out a work with metadata in here, does not save
-  # def fill_out_work(work)
-  #   work.title            = self.title
 
-  #   if self.bib_number.present?
-  #     work.build_external_id(category: "bib", value: self.bib_number)
-  #   end
-  #   if self.accession_number.present?
-  #     work.build_external_id(category: "accn", value: self.accession_number)
-  #   end
-  #   if self.museum_object_id.present?
-  #     work.build_external_id(category: "object", value: self.museum_object_id)
-  #   end
-  #   if self.box.present? || self.folder.present?
-  #     work.physical_container = {box: self.box.presence, folder: self.folder.presence}
-  #   end
-  #   if self.dimensions.present?
-  #     work.extent =  self.dimensions
-  #   end
-  #   if self.materials.present?
-  #     work.medium = self.materials
-  #   end
-  # end
+  # Fill out a DigitizationQueueItem with metadata in here. Does not save.
+  def fill_out_work(digitization_queue_item)
+    stuff_to_copy_over = [
+      :bib_number, :accession_number, :museum_object_id,
+      :box, :folder, :dimensions, :location,
+      :collecting_area, :materials,
+      :instructions, :additional_notes, :copyright_status,
+    ]
+
+    stuff_to_copy_over.each do | key |
+      value = self.send(key)
+      if value.present?
+        digitization_queue_item.send "#{key}=", value
+      end
+    end
+    digitization_queue_item.title = self.title
+    # self.scope refers to the R&R request scope.
+    digitization_queue_item.scope = self.additional_pages_to_ingest
+
+  end
 end

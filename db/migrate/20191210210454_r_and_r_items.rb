@@ -1,6 +1,9 @@
 class RAndRItems < ActiveRecord::Migration[5.2]
   def change
     create_table :r_and_r_items do |t|
+
+      t.bigint :digitization_queue_item_id, null:true
+
       t.string :title
 
       t.string :curator
@@ -19,6 +22,7 @@ class RAndRItems < ActiveRecord::Migration[5.2]
       t.string :copyright_status
 
       t.boolean :is_destined_for_ingest # into the digital collections.
+      t.boolean :copyright_research_still_needed, default: true
       t.text :instructions # staging notes/handling issues
       t.text :scope # number of components
       t.text :additional_pages_to_ingest
@@ -31,5 +35,7 @@ class RAndRItems < ActiveRecord::Migration[5.2]
 
       t.timestamps null: false
     end
+
+    add_foreign_key :r_and_r_items, :digitization_queue_items, null: true
   end
 end

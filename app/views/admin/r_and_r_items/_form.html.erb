@@ -20,7 +20,13 @@
       <div class="col">
         <%= f.input :is_destined_for_ingest,
         label: "Ingest this item",
-        hint: "Check the box if we also want this item in the Digital Collections."
+        hint: "Check this box if we also want this item in the Digital Collections."
+      %>
+      </div>
+      <div class="col">
+        <%= f.input :copyright_research_still_needed,
+        label: "Copyright research still needed",
+        hint: "Uncheck this once copyright research is complete."
       %>
       </div>
     </div>
