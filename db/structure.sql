@@ -338,6 +338,7 @@ ALTER SEQUENCE public.queue_item_comments_id_seq OWNED BY public.queue_item_comm
 
 CREATE TABLE public.r_and_r_items (
     id bigint NOT NULL,
+    digitization_queue_item_id bigint,
     title character varying,
     curator character varying,
     collecting_area character varying,
@@ -353,6 +354,7 @@ CREATE TABLE public.r_and_r_items (
     materials character varying,
     copyright_status character varying,
     is_destined_for_ingest boolean,
+    copyright_research_still_needed boolean DEFAULT true,
     instructions text,
     scope text,
     additional_pages_to_ingest text,
@@ -818,6 +820,14 @@ ALTER TABLE ONLY public.kithe_models
 
 ALTER TABLE ONLY public.kithe_model_contains
     ADD CONSTRAINT fk_rails_490c1158f7 FOREIGN KEY (containee_id) REFERENCES public.kithe_models(id);
+
+
+--
+-- Name: r_and_r_items fk_rails_8c0e26bf46; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.r_and_r_items
+    ADD CONSTRAINT fk_rails_8c0e26bf46 FOREIGN KEY (digitization_queue_item_id) REFERENCES public.digitization_queue_items(id);
 
 
 --

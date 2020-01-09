@@ -85,7 +85,7 @@ class Admin::RAndRItemsController < AdminController
         :title, :status, :accession_number, :museum_object_id, :bib_number, :location,
         :box, :folder, :dimensions, :materials, :copyright_status,
         :scope, :instructions, :additional_notes, :collecting_area,
-        :is_destined_for_ingest, :curator, :patron_name,
+        :is_destined_for_ingest, :copyright_research_still_needed, :curator, :patron_name,
         :patron_email, :deadline, :date_files_sent,
         :additional_pages_to_ingest
       )

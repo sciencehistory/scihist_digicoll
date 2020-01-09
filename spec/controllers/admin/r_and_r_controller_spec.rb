@@ -1,32 +1,45 @@
 require 'rails_helper'
 RSpec.describe Admin::RAndRItemsController, :logged_in_user, type: :controller do
   describe "R & R controller", logged_in_user: :admin do
-    it "can show, create and edit r&r items" do
+    it "can show a list of r&r items" do
       expect(Admin::RAndRItem.count).to eq 0
-      # List items
       get :index
       expect(response.code).to eq "200"
-      # New item form
+    end
+
+    it "can show a new r&r item form" do
       get :new
       expect(response.code).to eq "200"
+    end
+
+    it "can create a new r&r item via the form" do
       # Post the form
       r_and_r_params = FactoryBot.attributes_for(:r_and_r_item)
       post :create, params: { admin_r_and_r_item: r_and_r_params }
       expect(Admin::RAndRItem.count).to eq 1
-      the_item = Admin::RAndRItem.last
-      expect(the_item.title).to eq "Some Item"
-      item_id = the_item.id
-      # Show the new item:
-      get :show, params: {"id"=> item_id}
+      item = Admin::RAndRItem.last
+      expect(item.title).to eq "Some Item"
+    end
+
+    it "it can show a single item" do
+      item = FactoryBot.create(:r_and_r_item)
+      get :show, params: {"id"=> item.id}
       expect(response.code).to eq "200"
-      # Edit:
-      get :edit, params: {"id"=> item_id}
+    end
+
+    it "can show the edit form for an item" do
+      item = FactoryBot.create(:r_and_r_item)
+      get :edit, params: {"id"=> item.id}
       expect(response.code).to eq "200"
-      # Update:
+    end
+
+    it "can update an item using the edit form" do
+      r_and_r_params = FactoryBot.attributes_for(:r_and_r_item)
+      item = FactoryBot.create(:r_and_r_item)
       r_and_r_params[:title] = 'The New Title'
-      expect(response.code).to eq "200"
-      patch :update, params: { id:item_id,  admin_r_and_r_item: r_and_r_params }
-      expect(the_item.reload.title).to eq r_and_r_params[:title]
+      patch :update, params: { id:item.id,  admin_r_and_r_item: r_and_r_params }
+      expect(response.code).to eq "302"
+      expect(item.reload.title).to eq r_and_r_params[:title]
     end
   end
 end
