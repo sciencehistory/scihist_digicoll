@@ -31,3 +31,25 @@ task :copy_data, :work_friendlier_id do |t, args|
 
   end
 end
+
+desc "Like :copy_data, but just saves JSON input file locally instead of running import too"
+task :fetch_data, :work_friendlier_id do |t, args|
+  if fetch(:stage) == :production
+    # just cause we haven't really thought it through...
+    raise ArgumentError, "For safety, we do not support copy_data from production at present"
+  end
+
+  unless args[:work_friendlier_id]
+    raise ArgumentError, "missing :work_friendlier_id arg"
+  end
+
+  File.open("export_#{args[:work_friendlier_id]}.json", "w") do |file|
+    on primary(:jobs) do |host|
+      within release_path do
+        with rails_env: fetch(:rails_env) do
+          file.puts capture(:rake, "scihist:copy_staging_work:serialize_work[#{args[:work_friendlier_id]}]")
+        end
+      end
+    end
+  end
+end
