@@ -15,6 +15,12 @@ class Admin::DigitizationQueueItemsController < AdminController
   # GET /admin/digitization_queue_items/new
   def new
     @admin_digitization_queue_item = Admin::DigitizationQueueItem.new
+    if params[:r_and_r_item]
+      r_and_r_item = Admin::RAndRItem.find(params[:r_and_r_item])
+      @admin_digitization_queue_item.r_and_r_item_id = r_and_r_item.id
+      r_and_r_item.fill_out_digitization_queue_item(@admin_digitization_queue_item)
+      @admin_digitization_queue_item.status = 'awaiting_dig_on_cart'
+    end
   end
 
   # GET /admin/digitization_queue_items/1/edit

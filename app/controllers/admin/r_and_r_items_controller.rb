@@ -5,7 +5,6 @@ class Admin::RAndRItemsController < AdminController
   # GET /admin/r_and_r_items.json
   def index
     @admin_r_and_r_items = r_and_r_items
-    #@admin_r_and_r_items = filtered_index_items
   end
 
   # GET /admin/r_and_r_items/1
@@ -29,7 +28,7 @@ class Admin::RAndRItemsController < AdminController
 
     respond_to do |format|
       if @admin_r_and_r_item.save
-        format.html { redirect_to admin_r_and_r_item_path(@admin_r_and_r_item), notice: 'Digitization queue item was successfully created.' }
+        format.html { redirect_to admin_r_and_r_item_path(@admin_r_and_r_item), notice: 'R&R item was successfully created.' }
         format.json { render :show, status: :created, location: admin_r_and_r_items_url(@admin_r_and_r_item.collecting_area) }
       else
         format.html { render :new }
@@ -60,13 +59,13 @@ class Admin::RAndRItemsController < AdminController
 
   # DELETE /admin/r_and_r_items/1
   # DELETE /admin/r_and_r_items/1.json
-  # def destroy
-  #   @admin_r_and_r_item.destroy
-  #   respond_to do |format|
-  #     format.html { redirect_to admin_r_and_r_items_url(collecting_area), notice: 'Digitization queue item was successfully destroyed.' }
-  #     format.json { head :no_content }
-  #   end
-  # end
+  def destroy
+    @admin_r_and_r_item.destroy
+    respond_to do |format|
+      format.html { redirect_to admin_r_and_r_items_url(collecting_area), notice: 'R&R item was successfully destroyed.' }
+      format.json { head :no_content }
+    end
+  end
 
   def collecting_area
     @admin_r_and_r_item.try(:collecting_area) # || params.fetch(:collecting_area)

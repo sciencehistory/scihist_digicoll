@@ -197,6 +197,8 @@ Rails.application.routes.draw do
     get "/r_and_r_items/new", to: "r_and_r_items#new",  as: "new_r_and_r_item"
     # POST  /admin/r_and_r_items/
     post "/r_and_r_items", to: "r_and_r_items#create", as: "create_r_and_r_item"
+    # DELETE /admin/r_and_r_items/1
+    delete "/r_and_r_item/:id", to: "r_and_r_items#destroy", as: "delete_r_and_r_item"
 
     # END R&R
 

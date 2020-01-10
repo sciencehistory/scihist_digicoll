@@ -1,15 +1,81 @@
 <div class="mb-2">
-  <h1><%= @admin_r_and_r_item.title %>
-    <%= link_to 'Edit', admin_edit_r_and_r_item_path(@admin_r_and_r_item), class: "btn btn-primary" %>
-    <%= link_to 'Back to list', admin_r_and_r_items_path, class: "btn btn-primary" %>
-  </h1>
+  <h1><%= @admin_r_and_r_item.title %></h1>
 </div>
 
-<div class="row">
-  <div class="col-lg-5 pr-4 mb-4">
-    <%= DigitizationQueueItemStatusForm.new(@admin_r_and_r_item).display %>
+
+
+
+<div class="row mb-2">
+  <div class="col">
+    <%= link_to 'Back to list', admin_r_and_r_items_path, class: "btn btn-primary" %>
+  </div>
+  <div class="col-9">
+    Back to the list of R&R items
   </div>
 </div>
+
+<div class="row mb-2">
+  <div class="col">
+    <%= link_to 'Edit', admin_edit_r_and_r_item_path(@admin_r_and_r_item), class: "btn btn-primary" %>
+  </div>
+  <div class="col-9">
+    Edit "<%= @admin_r_and_r_item.title %>"
+  </div>
+</div>
+
+
+<% if @admin_r_and_r_item.ready_to_move_to_digitization_queue %>
+  <div class="row mb-2">
+    <div class="col">
+       <%= link_to "Create DQ item", new_admin_digitization_queue_items_path(r_and_r_item: @admin_r_and_r_item.id, collecting_area: @admin_r_and_r_item.collecting_area), class: "btn btn-primary" %>
+    </div>
+    <div class="col-9">
+        Create a new item on the Digitization Queue based on "<%= @admin_r_and_r_item.title %>"
+    </div>
+  </div>
+<% end %>
+
+
+<div class="row mb-2">
+  <div class="col">
+    <%= link_to 'Delete', admin_delete_r_and_r_item_path(r_and_r_item: @admin_r_and_r_item.id),
+      class: "btn btn-primary btn-danger",
+      method: 'delete',
+      data: { confirm: "Do you really want to delete \"#{@admin_r_and_r_item.title}?\"" } %>
+  </div>
+  <div class="col-9">
+    Delete "<%= @admin_r_and_r_item.title %>"
+  </div>
+</div>
+
+
+<dt>Status</dt>
+<dd>
+  <%= @admin_r_and_r_item.status.humanize %> as of <%= l @admin_r_and_r_item.status_changed_at, format: :admin %>
+</dd>
+
+<% if @admin_r_and_r_item.deadline %>
+  <dt>Deadline to send files to the patron</dt>
+  <dd>
+    <%= l(@admin_r_and_r_item.deadline, format: "%F") %>
+  </dd>
+<% end %>
+
+
+
+<% if @admin_r_and_r_item.date_files_sent %>
+  <dt>When files were sent</dt>
+  <dd>
+    <%= l(@admin_r_and_r_item.date_files_sent, format: "%F") %>
+  </dd>
+  <% else %>
+    <dt>Have files been sent to the patron?</dt>
+    <dd>
+      Not yet.
+    </dd>
+<% end %>
+
+<%= queue_item_show_field(@admin_r_and_r_item, :date_files_sent) %>
 
 <div class="row">
 
@@ -17,6 +83,19 @@
       <dt>Is this going into the Digital Collections?</dt>
       <dd>
         <%=  @admin_r_and_r_item.is_destined_for_ingest ? 'Yes' : 'No' %>.
+        <% if @admin_r_and_r_item.is_destined_for_ingest %>
+          <% unless @admin_r_and_r_item.ready_to_move_to_digitization_queue_based_on_status %>
+            <br />(Status is still "<%= @admin_r_and_r_item.status.humanize %>")
+          <% end %>
+          <% if @admin_r_and_r_item.copyright_research_still_needed %>
+            <br />(Copyright research still needed)
+          <%end %>
+        <% end %>
+      </dd>
+
+      <dt>Is copyright research still needed for this item?</dt>
+      <dd>
+        <%=  @admin_r_and_r_item.copyright_research_still_needed ? 'Yes' : 'No' %>.
       </dd>
 
       <dt>Collecting area</dt>
@@ -31,34 +110,7 @@
       <%= queue_item_show_field(@admin_r_and_r_item, :patron_email) %>
 
 
-      <dt>Status</dt>
-      <dd>
-        <%= @admin_r_and_r_item.status.humanize %> (<%= l @admin_r_and_r_item.status_changed_at, format: :admin %>)
-      </dd>
 
-
-      <% if @admin_r_and_r_item.deadline %>
-      <dt>Deadline to send files to the patron</dt>
-      <dd>
-        <%= l(@admin_r_and_r_item.deadline, format: "%F") %>
-      </dd>
-      <% end %>
-
-
-
-      <% if @admin_r_and_r_item.date_files_sent %>
-      <dt>When files were sent</dt>
-      <dd>
-        <%= l(@admin_r_and_r_item.date_files_sent, format: "%F") %>
-      </dd>
-      <% else %>
-        <dt>Have file been sent to the patron?</dt>
-        <dd>
-          Not yet.
-        </dd>
-      <% end %>
-
-      <%= queue_item_show_field(@admin_r_and_r_item, :date_files_sent) %>
 
     <% if @admin_r_and_r_item.bib_number.present? %>
       <p>
