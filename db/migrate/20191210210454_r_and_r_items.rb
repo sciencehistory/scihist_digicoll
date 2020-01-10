@@ -1,9 +1,6 @@
 class RAndRItems < ActiveRecord::Migration[5.2]
   def change
     create_table :r_and_r_items do |t|
-
-      t.bigint :digitization_queue_item_id, null:true
-
       t.string :title
 
       t.string :curator
@@ -36,6 +33,7 @@ class RAndRItems < ActiveRecord::Migration[5.2]
       t.timestamps null: false
     end
 
-    add_foreign_key :r_and_r_items, :digitization_queue_items, null: true
+    add_column :digitization_queue_items, :r_and_r_item_id, :bigint, null:true
+    add_foreign_key :digitization_queue_items, :r_and_r_items, null: true
   end
 end

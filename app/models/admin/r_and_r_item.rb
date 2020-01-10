@@ -43,15 +43,18 @@ class Admin::RAndRItem < ApplicationRecord
   # Is this ready to make a DigitizationQueueItem out of?
   def ready_to_move_to_digitization_queue
     return false unless self.is_destined_for_ingest
-    possible_statuses = %w{post_production_completed files_sent_to_patron}
-    return false unless possible_statuses.include?(self.status)
     return false if self.copyright_research_still_needed
+    return false unless self.ready_to_move_to_digitization_queue_based_on_status
     return true
   end
 
+  def ready_to_move_to_digitization_queue_based_on_status
+    possible_statuses = %w{post_production_completed files_sent_to_patron closed_r_and_r_request}
+    return false unless possible_statuses.include?(self.status)
+  end
 
   # Fill out a DigitizationQueueItem with metadata in here. Does not save.
-  def fill_out_work(digitization_queue_item)
+  def fill_out_digitization_queue_item(digitization_queue_item)
     stuff_to_copy_over = [
       :bib_number, :accession_number, :museum_object_id,
       :box, :folder, :dimensions, :location,

@@ -136,7 +136,8 @@ CREATE TABLE public.digitization_queue_items (
     status character varying DEFAULT 'awaiting_dig_on_cart'::character varying,
     status_changed_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    r_and_r_item_id bigint
 );
 
 
@@ -338,7 +339,6 @@ ALTER SEQUENCE public.queue_item_comments_id_seq OWNED BY public.queue_item_comm
 
 CREATE TABLE public.r_and_r_items (
     id bigint NOT NULL,
-    digitization_queue_item_id bigint,
     title character varying,
     curator character varying,
     collecting_area character varying,
@@ -823,19 +823,19 @@ ALTER TABLE ONLY public.kithe_model_contains
 
 
 --
--- Name: r_and_r_items fk_rails_8c0e26bf46; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.r_and_r_items
-    ADD CONSTRAINT fk_rails_8c0e26bf46 FOREIGN KEY (digitization_queue_item_id) REFERENCES public.digitization_queue_items(id);
-
-
---
 -- Name: kithe_models fk_rails_90130a9780; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.kithe_models
     ADD CONSTRAINT fk_rails_90130a9780 FOREIGN KEY (parent_id) REFERENCES public.kithe_models(id);
+
+
+--
+-- Name: digitization_queue_items fk_rails_a339334e83; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.digitization_queue_items
+    ADD CONSTRAINT fk_rails_a339334e83 FOREIGN KEY (r_and_r_item_id) REFERENCES public.r_and_r_items(id);
 
 
 --
@@ -868,6 +868,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181211182457'),
 ('20190107205722'),
 ('20190107222521'),
+('20190109000356'),
 ('20190110154359'),
 ('20190219225344'),
 ('20190226135744'),

@@ -16,7 +16,6 @@
   <table class="table" style="table-layout: fixed; font-size: 90%; min-width: 700px;">
     <thead>
       <tr>
-        <th style="width: 4rem;"></th>
         <th>title</th>
         <th style="width: 7rem;">IDs</th>
         <th style="width: 11rem;">status</th>
@@ -27,9 +26,6 @@
     <tbody>
       <%@admin_r_and_r_items.each do |admin_r_and_r_item| %>
         <tr>
-          <td>
-            <%= link_to 'Edit', admin_edit_r_and_r_item_path(admin_r_and_r_item), class: "btn btn-sm btn-outline-primary" %>
-          </td>
           <td>
             <%= link_to admin_r_and_r_item.title, admin_r_and_r_item_path(admin_r_and_r_item)%>
           </td>
