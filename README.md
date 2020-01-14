@@ -100,9 +100,9 @@ Some other interesting/complicated sub-systems we've written documentation for:
 
     ./bin/cap staging copy_data[$work_friendlier_id]
 
-Will copy a work (and all it's children) from staging to your local dev instance. It will keep pk's and friendlier_id's constant, so you need to make sure you don't have anything conflicting already in your local db.
+Will copy a work (and all it's children, and all derivatives of all) from staging to your local dev instance. It will keep pk's and friendlier_id's constant, so you need to make sure you don't have anything conflicting already in your local db.
 
-It can be quite slow, and the code has several hacky workarounds to make it work, but it works. See the [capistrano task](.//lib/capistrano/tasks/copy_data.rake), and the [rake tasks it uses](./lib/tasks/copy_staging_work.rake).
+It can be slow, and the code has several hacky workarounds to make it work, but it works. See the [capistrano task](.//lib/capistrano/tasks/copy_data.rake), and the [rake tasks it uses](./lib/tasks/copy_staging_work.rake).
 
 ### Writing tests
 
