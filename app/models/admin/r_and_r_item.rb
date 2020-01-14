@@ -50,7 +50,7 @@ class Admin::RAndRItem < ApplicationRecord
 
   def ready_to_move_to_digitization_queue_based_on_status
     possible_statuses = %w{post_production_completed files_sent_to_patron closed_r_and_r_request}
-    return false unless possible_statuses.include?(self.status)
+    possible_statuses.include?(self.status)
   end
 
   # Fill out a DigitizationQueueItem with metadata in here. Does not save.
