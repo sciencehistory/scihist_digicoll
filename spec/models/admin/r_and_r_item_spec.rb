@@ -49,7 +49,7 @@ describe Admin::RAndRItem, type: :model do
     it "can fill out new DigitizationQueueItem with its own metadata" do
       item = FactoryBot.create(:r_and_r_item)
       new_item = Admin::DigitizationQueueItem.new()
-      item.fill_out_work(new_item)
+      item.fill_out_digitization_queue_item(new_item)
       expect(new_item.title).to eq "Some Item"
       expect(new_item.collecting_area).to eq "archives"
       expect(new_item.bib_number).to eq "b1234567"
