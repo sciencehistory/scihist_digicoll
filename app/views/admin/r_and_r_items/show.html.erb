@@ -1,8 +1,6 @@
 <div class="mb-2">
-  <h1><%= @admin_r_and_r_item.title %></h1>
+  <h1>R&R request: <%= @admin_r_and_r_item.title %> </h1>
 </div>
-
-
 
 
 <div class="row mb-2">
@@ -27,13 +25,25 @@
 <% if @admin_r_and_r_item.ready_to_move_to_digitization_queue %>
   <div class="row mb-2">
     <div class="col">
-       <%= link_to "Create DQ item", new_admin_digitization_queue_items_path(r_and_r_item: @admin_r_and_r_item.id, collecting_area: @admin_r_and_r_item.collecting_area), class: "btn btn-primary" %>
+      <%= link_to "Create DQ item", new_admin_digitization_queue_items_path(r_and_r_item: @admin_r_and_r_item.id, collecting_area: @admin_r_and_r_item.collecting_area), class: "btn btn-primary" %>
     </div>
     <div class="col-9">
         Create a new item on the Digitization Queue based on "<%= @admin_r_and_r_item.title %>"
     </div>
   </div>
 <% end %>
+
+<% if @admin_r_and_r_item.digitization_queue_item %>
+  <div class="row mb-2">
+    <div class="col">
+      <%= link_to "DQ item", admin_digitization_queue_items_path(@admin_r_and_r_item.digitization_queue_item), class: "btn btn-primary" %>
+    </div>
+
+    <div class="col-9">
+        The digitization queue item that originated from this R&R request.
+    </div>
+  </div>
+<% end%>
 
 
 <div class="row mb-2">
