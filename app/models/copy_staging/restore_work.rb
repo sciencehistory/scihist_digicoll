@@ -28,6 +28,8 @@ module CopyStaging
     end
 
     def restore
+      model_count = input_hash["models"].count
+
       Kithe::Model.transaction do
         begin
           # This magically gets postgres to not enforce integrity constraints.
@@ -36,11 +38,12 @@ module CopyStaging
           # https://www.endpoint.com/blog/2015/01/28/postgres-sessionreplication-role
           Kithe::Model.connection.execute("SET session_replication_role TO 'replica'")
 
-          input_hash["models"].each do |json_hash|
+          input_hash["models"].each_with_index do |json_hash, i|
             model_class = json_hash.keys.first.classify.constantize
             attributes  = json_hash.values.first
 
-            puts "Saving #{model_id_string(model_class, attributes)}/\n\n"
+            progress = "#{((i+1).to_f / model_count * 100).round(1)}%"
+            puts "Saving #{model_id_string(model_class, attributes)} (#{progress})\n\n"
 
             model = model_class.new(attributes)
             model.save!
@@ -58,6 +61,8 @@ module CopyStaging
     end
 
     private
+
+
 
     # just a nice human-readable identification of the model being restored,
     # attributes vary depending on type.
