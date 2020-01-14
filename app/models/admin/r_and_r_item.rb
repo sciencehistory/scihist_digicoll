@@ -1,6 +1,8 @@
 class Admin::RAndRItem < ApplicationRecord
   belongs_to :digitization_queue_item, optional: true
 
+  before_destroy :remove_reference_from_dq_table
+
   scope :open_status, -> { where.not(status: "closed") }
 
   # for now just validate bib numbers to not have the extra digit.
@@ -42,6 +44,7 @@ class Admin::RAndRItem < ApplicationRecord
 
   # Is this ready to make a DigitizationQueueItem out of?
   def ready_to_move_to_digitization_queue
+    return false if self.digitization_queue_item
     return false unless self.is_destined_for_ingest
     return false if self.copyright_research_still_needed
     return false unless self.ready_to_move_to_digitization_queue_based_on_status
@@ -73,4 +76,16 @@ class Admin::RAndRItem < ApplicationRecord
     digitization_queue_item.scope = self.additional_pages_to_ingest
 
   end
+
+  def digitization_queue_item
+    Admin::DigitizationQueueItem.find_by(r_and_r_item_id:self.id)
+  end
+
+  def remove_reference_from_dq_table
+    my_dq_item =  self.digitization_queue_item
+    return unless my_dq_item
+    my_dq_item.r_and_r_item_id = nil
+    my_dq_item.save!
+  end
+
 end
