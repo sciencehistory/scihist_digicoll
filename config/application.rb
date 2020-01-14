@@ -35,8 +35,9 @@ module ScihistDigicoll
       require 'scihist_digicoll/asset_check_whenever_cron_time'
     end
 
-    # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 5.2
+    # Initialize configuration defaults for originally generated Rails version,
+    # or Rails version we have upgraded to and verified for new defaults.
+    config.load_defaults 6.0
 
     config.time_zone = "US/Eastern"
 
