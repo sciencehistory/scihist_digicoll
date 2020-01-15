@@ -50,10 +50,17 @@ describe Admin::RAndRItem, type: :model do
       item = FactoryBot.create(:r_and_r_item)
       new_item = Admin::DigitizationQueueItem.new()
       item.fill_out_digitization_queue_item(new_item)
-      expect(new_item.title).to eq "Some Item"
-      expect(new_item.collecting_area).to eq "archives"
-      expect(new_item.bib_number).to eq "b1234567"
-      expect(new_item.copyright_status).to eq "Unclear"
+      stuff_to_copy_over = [
+        :bib_number, :accession_number, :museum_object_id,
+        :box, :folder, :dimensions, :location,
+        :collecting_area, :materials, :title,
+        :instructions, :additional_notes, :copyright_status,
+      ]
+      stuff_to_copy_over.each do | key |
+        expect(new_item.send(key)).to eq item.send(key)
+      end
+      # self.scope refers to the R&R request scope.
+      expect(new_item.scope).to eq item.additional_pages_to_ingest
     end
   end
 end
