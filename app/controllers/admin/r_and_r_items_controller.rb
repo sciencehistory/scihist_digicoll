@@ -86,7 +86,7 @@ class Admin::RAndRItemsController < AdminController
         :scope, :instructions, :additional_notes, :collecting_area,
         :is_destined_for_ingest, :copyright_research_still_needed, :curator, :patron_name,
         :patron_email, :deadline, :date_files_sent,
-        :additional_pages_to_ingest
+        :additional_pages_to_ingest, :status_changed_at
       )
     end
 
