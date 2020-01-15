@@ -25,7 +25,6 @@ class Admin::RAndRItemsController < AdminController
   # POST /admin/r_and_r_items/create.json
   def create
     @admin_r_and_r_item = Admin::RAndRItem.new(admin_r_and_r_item_params)
-
     respond_to do |format|
       if @admin_r_and_r_item.save
         format.html { redirect_to admin_r_and_r_item_path(@admin_r_and_r_item), notice: 'R&R item was successfully created.' }
@@ -51,18 +50,12 @@ class Admin::RAndRItemsController < AdminController
     end
   end
 
-  # GET /admin/r_and_r_items/collecting_areas
-  # Just lists our top-level collecting areas
-  def collecting_areas
-    @open_counts = Admin::RAndRItem.open_status.group(:collecting_area).count
-  end
-
   # DELETE /admin/r_and_r_items/1
   # DELETE /admin/r_and_r_items/1.json
   def destroy
     @admin_r_and_r_item.destroy
     respond_to do |format|
-      format.html { redirect_to admin_r_and_r_items_url(collecting_area), notice: 'R&R item was successfully destroyed.' }
+      format.html { redirect_to admin_r_and_r_items_url, notice: "#{@admin_r_and_r_item.title} was successfully destroyed." }
       format.json { head :no_content }
     end
   end
