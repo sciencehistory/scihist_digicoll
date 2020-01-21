@@ -31,7 +31,7 @@ $attribute-table-max-tabular: 22.5em;
     word-break: break-word;
     hyphens: auto;
 
-    table, tbody, thead, td, th {
+    table, tbody, thead, tr, td, th {
       display: block;
       width: 100%;
     }
