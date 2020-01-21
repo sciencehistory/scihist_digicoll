@@ -239,7 +239,7 @@ GEM
       railties (>= 3.0.0)
     faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
-    faraday_middleware (0.13.1)
+    faraday_middleware (0.14.0)
       faraday (>= 0.7.4, < 1.0)
     fastimage (2.1.7)
     ffi (1.9.25)
@@ -398,7 +398,7 @@ GEM
       mini_portile2 (~> 2.4.0)
     nokogumbo (1.5.0)
       nokogiri
-    oai (1.0.0.beta1)
+    oai (1.0.1)
       builder (>= 3.1.0)
       faraday
       faraday_middleware
@@ -776,7 +776,7 @@ DEPENDENCIES
   kaminari (~> 1.0)
   kithe!
   listen (>= 3.0.5, < 3.2)
-  oai (>= 1.0.0.beta1, < 2.0)
+  oai (~> 1.0, >= 1.0.1)
   pdf-reader (~> 2.2)
   pg (>= 0.18, < 2.0)
   prawn (~> 2.2)
