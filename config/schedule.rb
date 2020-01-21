@@ -27,6 +27,6 @@ every :day, :at => ScihistDigicoll::ASSET_CHECK_WHENEVER_CRON_TIME, roles: [:cro
 end
 
 # Temporary...
-every :tuesday, :at => '11:15 am', roles: [:cron] do
+every :tuesday, :at => '11:25 am', roles: [:cron] do
   rake "scihist:check_fixity"
 end
