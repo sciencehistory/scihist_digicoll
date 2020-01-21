@@ -7,7 +7,7 @@ GIT
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: 7f321ae43f9440e16e54dba030724175cc6915e5
+  revision: 1c73ad4006111a65ca26384341f0c9f55b30bb06
   specs:
     kithe (1.0.0)
       attr_json (< 2.0.0)
@@ -243,7 +243,7 @@ GEM
       railties (>= 4.2.0)
     faraday (0.17.0)
       multipart-post (>= 1.2, < 3)
-    faraday_middleware (0.13.1)
+    faraday_middleware (0.14.0)
       faraday (>= 0.7.4, < 1.0)
     fastimage (2.1.7)
     ffi (1.11.3)
@@ -402,7 +402,7 @@ GEM
       mini_portile2 (~> 2.4.0)
     nokogumbo (2.0.2)
       nokogiri (~> 1.8, >= 1.8.4)
-    oai (1.0.0)
+    oai (1.0.1)
       builder (>= 3.1.0)
       faraday
       faraday_middleware
@@ -785,7 +785,7 @@ DEPENDENCIES
   kaminari (~> 1.0)
   kithe!
   listen (>= 3.0.5, < 3.2)
-  oai (>= 1.0.0.beta1, < 2.0)
+  oai (~> 1.0, >= 1.0.1)
   pdf-reader (~> 2.2)
   pg (>= 0.18, < 2.0)
   prawn (~> 2.2)

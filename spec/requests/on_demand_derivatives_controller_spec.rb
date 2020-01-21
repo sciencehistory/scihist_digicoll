@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe OnDemandDerivativesController, type: :request, queue_adapter: :test do
   let(:derivative_type) { "zip_file" }
-  let(:work) { create(:work) }
+  let(:work) { create(:public_work) }
 
   describe "initial request" do
     it "creates record and returns json" do

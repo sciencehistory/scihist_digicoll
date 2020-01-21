@@ -22,6 +22,14 @@ class Work < Kithe::Work
     message: "is not a valid url: %{rejected_values}"
   }
 
+  with_options if: :published?, message: "can't be blank for published works" do |work|
+    work.validates_presence_of :date_of_work
+    work.validates_presence_of :format
+    work.validates_presence_of :genre
+    work.validates_presence_of :department
+    work.validates_presence_of :rights
+  end
+
 
   attr_json :additional_title, :string, array: true, default: -> { [] }
   attr_json :external_id, Work::ExternalId.to_type, array: true, default: -> { [] }

@@ -6,7 +6,7 @@ describe ChildCountDisplayFetcher do
 
   describe "for Works" do
     describe "with published items" do
-      let(:item) { create(:work, members: [create(:work), create(:asset)]) }
+      let(:item) { create(:public_work, members: [create(:public_work), create(:asset)]) }
 
       it "fetches member count" do
         expect(item_counter.member_count_for_friendlier_id(item.friendlier_id)).to eq(2)
@@ -15,7 +15,7 @@ describe ChildCountDisplayFetcher do
     end
 
     describe "for unpublished work members" do
-      let(:item) { create(:work, members: [create(:work), create(:work, published: false)]) }
+      let(:item) { create(:public_work, members: [create(:public_work), create(:private_work)]) }
 
       it "does not include unpublished members" do
         expect(item_counter.member_count_for_friendlier_id(item.friendlier_id)).to eq(1)
@@ -24,7 +24,7 @@ describe ChildCountDisplayFetcher do
     end
 
     describe "with no members" do
-      let(:item) { create(:work) }
+      let(:item) { create(:public_work) }
 
       it "returns zero" do
         expect(item_counter.member_count_for_friendlier_id(item.friendlier_id)).to eq(0)
@@ -38,9 +38,9 @@ describe ChildCountDisplayFetcher do
       # from db!
       let!(:items) {
         [
-          create(:work, members: [create(:work)]),
-          create(:work, members: [create(:work)]),
-          create(:work, members: [create(:work)]),
+          create(:work, members: [create(:public_work)]),
+          create(:work, members: [create(:public_work)]),
+          create(:work, members: [create(:public_work)]),
         ].tap do |arr|
           arr.each(&:friendlier_id)
         end
@@ -58,7 +58,7 @@ describe ChildCountDisplayFetcher do
 
   describe "for Collections" do
     describe "with published items" do
-      let(:item) { create(:collection, contains: [create(:work), create(:work)]) }
+      let(:item) { create(:collection, contains: [create(:public_work), create(:public_work)]) }
 
       it "fetches contains count" do
         expect(item_counter.contains_count_for_friendlier_id(item.friendlier_id)).to eq(2)
@@ -67,7 +67,7 @@ describe ChildCountDisplayFetcher do
     end
 
     describe "for unpublished work members" do
-      let(:item) { create(:collection, contains: [create(:work), create(:work, published: false)]) }
+      let(:item) { create(:collection, contains: [create(:public_work), create(:private_work)]) }
 
       it "does not include unpublished contained" do
         expect(item_counter.contains_count_for_friendlier_id(item.friendlier_id)).to eq(1)
@@ -90,9 +90,9 @@ describe ChildCountDisplayFetcher do
       # from db!
       let!(:items) {
         [
-          create(:collection, contains: [create(:work)]),
-          create(:collection, contains: [create(:work)]),
-          create(:collection, contains: [create(:work)]),
+          create(:collection, contains: [create(:public_work)]),
+          create(:collection, contains: [create(:public_work)]),
+          create(:collection, contains: [create(:public_work)]),
         ].tap do |arr|
           arr.each(&:friendlier_id)
         end
@@ -109,8 +109,8 @@ describe ChildCountDisplayFetcher do
   end
 
   describe "for friendlier_id not in batch" do
-    let(:item) { create(:work) }
-    let(:other_work) { create(:work) }
+    let(:item) { create(:public_work) }
+    let(:other_work) { create(:public_work) }
 
     it "raises ArgumentError when requested" do
       expect {
