@@ -56,7 +56,7 @@ class AudioWorkShowDecorator < Draper::Decorator
   # and we want to link to pdf "view" link -- just direct delivery of the PDF
   # to the browser, using download controller same as MemberImagePresentation does.
   #
-  # If it's not a PDF, we don't expect it here, and don't know what to do with it
+  # If it's an image type, we don't expect it here, and don't know what to do with it
   # here (we're not supporting the Viewer here at present), so just punt and don't make it
   # a link.
   #
@@ -67,12 +67,13 @@ class AudioWorkShowDecorator < Draper::Decorator
   #        contents of link
   #     <% end %>
   def link_to_non_audio_member(member)
-    if member.content_type == 'application/pdf'
+    if member.content_type&.start_with?("image/")
+      yield
+    else
       link_to download_path(member.leaf_representative, disposition: :inline) do
         yield
       end
-    else
-      yield
     end
   end
+
 end
