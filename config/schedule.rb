@@ -30,3 +30,8 @@ end
 every :tuesday, :at => '11:25 am', roles: [:cron] do
   rake "scihist:check_fixity"
 end
+
+# Temporary...
+every :tuesday, :at => '3:40 pm', roles: [:cron] do
+  rake "scihist:check_fixity"
+end

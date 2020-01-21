@@ -51,10 +51,10 @@ namespace :scihist do
 
     check_lister.assets_to_check.each do | asset |
       if asset.stored?
-        checker = FixityChecker.new(asset)
-        new_check = checker.check  unless ENV['SKIP_CHECK'] == 'true'
-        checker.prune_checks       unless ENV['SKIP_PRUNE'] == 'true'
-        FixityCheckFailureService.new(new_check).send if new_check&.failed?
+        #checker = FixityChecker.new(asset)
+        #new_check = checker.check  unless ENV['SKIP_CHECK'] == 'true'
+        #checker.prune_checks       unless ENV['SKIP_PRUNE'] == 'true'
+        #FixityCheckFailureService.new(new_check).send if new_check&.failed?
         count_of_items_checked = count_of_items_checked + 1 unless ENV['SKIP_CHECK'] == 'true'
       end
       progress_bar.increment unless progress_bar.nil?
