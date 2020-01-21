@@ -98,7 +98,7 @@ gem 'rubyzip', '~> 2.0'
 
 
 # Until oai 1.0 is released...
-gem 'oai', ">= 1.0.0.beta1", "< 2.0"
+gem 'oai', "~> 1.0", ">= 1.0.1"
 
 gem 'sitemap_generator', '~> 6.0' # google sitemap generation
 

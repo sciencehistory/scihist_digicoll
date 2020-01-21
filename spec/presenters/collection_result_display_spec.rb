@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe CollectionResultDisplay do
-  let(:collection) { FactoryBot.create(:collection, contains: [create(:work)]) }
+  let(:collection) { FactoryBot.create(:collection, contains: [create(:public_work)]) }
   let(:rendered) { Nokogiri::HTML.fragment(described_class.new(collection, child_counter: child_counter).display) }
 
   let(:child_counter) { ChildCountDisplayFetcher.new([collection.friendlier_id]) }

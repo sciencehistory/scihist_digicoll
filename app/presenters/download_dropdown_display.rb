@@ -75,8 +75,9 @@ class DownloadDropdownDisplay < ViewModel
   end
 
   def display
+    # https://getbootstrap.com/docs/4.0/components/dropdowns/
     # viewer-navbar-btn necessary for it to style correctly when embedded in viewer. :(
-    content_tag("div", class: "action-item viewer-navbar-btn btn-group downloads #{@use_link ? "dropdown" : "dropup"}") do
+    content_tag("div", class: "action-item viewer-navbar-btn downloads #{@use_link ? "dropdown" : "dropup"}") do
       link_or_button +
       content_tag("div", class: "dropdown-menu download-menu", "aria-labelledby" => menu_button_id) do
         menu_items
@@ -121,20 +122,43 @@ class DownloadDropdownDisplay < ViewModel
   end
 
   def link_or_button
-    content_tag(
-      (@use_link ? "a" : "button"),
-      "<i class='fa fa-download' aria-hidden='true'></i> Download".html_safe,
-      link_or_button_options
-    )
+    if @use_link
+      # no fontawesome download icon in link mode
+      content_tag("a",
+        "Download",
+        link_or_button_options
+      )
+    else
+      content_tag("button",
+        "<i class='fa fa-download' aria-hidden='true'></i> Download".html_safe,
+        link_or_button_options
+      )
+    end
   end
 
   def link_or_button_options
+    # https://getbootstrap.com/docs/4.3/components/dropdowns/
+    #
+    # * We supply data-boundary "viewport"; without this, specifically on the
+    # OH Audio page where download dropdown is near right side of screen,
+    # popper was miscalculating boundaries and letting download menu go out of screen.
+    #
+    #   * I don't think it messes up any other cases, if it does, we'll have to
+    #   solve some other way, by changing DOM/CSS to fix, or having this component
+    #   take an arg as to data-boundary.
+
     options = {
-      id: menu_button_id, "data-toggle" => "dropdown",
-      "aria-haspopup" => "true", "aria-expanded" => "false"
+      id: menu_button_id,
+      "data-toggle" => "dropdown",
+      "aria-haspopup" => "true",
+      "aria-expanded" => "false",
+      "data-boundary": "viewport"
     }
+
     if @use_link
       options[:class] = "dropdown-toggle download-link"
+      options[:role] = "button"
+      options[:href] = "#"
     else
       options[:type]  = "button"
       if viewer_template_mode?

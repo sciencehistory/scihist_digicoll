@@ -24,7 +24,7 @@
 
     <% if @asset.file %>
       <%= link_to "Download Original",
-            @asset.file.url(response_content_disposition: ContentDisposition.format(disposition: :attachment, filename: @asset.title)),
+            @asset.file.url(response_content_disposition: ContentDisposition.format(disposition: :attachment, filename: DownloadFilenameHelper.filename_for_asset(@asset))),
             class: "btn btn-outline-primary btn-lg mt-4" %>
       <% end %>
   </div>
@@ -37,15 +37,23 @@
       <dt class="col-sm-4">Last Modified</dt>
       <dd class="col-sm-8"><%= l @asset.updated_at, format: :admin %></dd>
 
-
       <dt class="col-sm-4">Orig. Filename</dt>
       <dd class="col-sm-8"><%= @asset&.file&.metadata.try { |h| h["filename"]} %></dd>
+
+      <%if @asset.stored? && Shrine.storages[:store].try('bucket').try('name') %>
+        <dt class="col-sm-4">File in s3</dt>
+        <dd class="col-sm-8"><%= link_to @asset.file.url(public: true).split('/').last, S3ConsoleUri.new(@asset.file.url(public: true)).console_uri %></dd>
+
+        <dt class="col-sm-4">Stored in S3 bucket</dt>
+        <dd class="col-sm-8"><%= Shrine.storages[:store].bucket.name %></dd>
+      <% end %>
 
       <dt class="col-sm-4">Content-type</dt>
       <dd class="col-sm-8"><%= @asset.content_type %></dd>
 
       <dt class="col-sm-4">File Size</dt>
       <dd class="col-sm-8"><%= number_to_human_size(@asset.size) %></dd>
+
 
       <dt class="col-sm-4">Signatures</dt>
       <dd class="col-sm-8">
