@@ -1,4 +1,5 @@
 production:
-  "*": 10
+  "mailers,default": 10
+  "on_demand_derivatives": 2
 development:
   "*": 5
