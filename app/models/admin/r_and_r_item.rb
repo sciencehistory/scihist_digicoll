@@ -34,7 +34,9 @@ class Admin::RAndRItem < ApplicationRecord
 
   validates :title, presence: true
 
-  validates :curator, inclusion: { in: CURATORS }
+  validates :curator, inclusion: { in: CURATORS }, presence: true
+  validates :patron_name, presence: true
+
 
   before_validation do
     if self.will_save_change_to_status? || (!self.persisted? && self.status_changed_at.blank?)
