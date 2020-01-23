@@ -62,7 +62,12 @@ Rails.application.configure do
 
   # Use a real queuing backend for Active Job (and separate queues per environment)
   config.active_job.queue_adapter     = :resque
-  config.active_job.queue_name_prefix = "scihist_digicoll_#{Rails.env}"
+
+  # We are not sharing a redis among multiple apps, seems no need to queue_name_prefix,
+  # and it makes it confusing when trying to set resque workers to work specific
+  # queues and getting it to match.
+  config.active_job.queue_name_prefix = nil
+  #config.active_job.queue_name_prefix = "scihist_digicoll_#{Rails.env}"
 
   # devise mailers require the `host` be set
   config.action_mailer.default_url_options = {
