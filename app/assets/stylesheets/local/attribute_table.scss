@@ -31,7 +31,7 @@ $attribute-table-max-tabular: 22.5em;
     word-break: break-word;
     hyphens: auto;
 
-    table, tbody, thead, td, th {
+    table, tbody, thead, tr, td, th {
       display: block;
       width: 100%;
     }
@@ -42,6 +42,7 @@ $attribute-table-max-tabular: 22.5em;
       }
       ul {
         padding-left: 0;
+        list-style: none;
       }
     }
     & > tbody > tr  td {
@@ -50,7 +51,11 @@ $attribute-table-max-tabular: 22.5em;
   }
 
   // At larger sizes, a table for real.
-  @media (min-width: $attribute-table-max-tabular + 1) {
+  //
+  // $attribute-table-max-tabular may be in "ems", this is a hakcy way to do it
+  // combining max-width above with min-width here to take over, but it's what
+  // we got for now.
+  @media (min-width: $attribute-table-max-tabular + 0.01) {
     //table-layout: fixed;
     overflow: hidden;
 
