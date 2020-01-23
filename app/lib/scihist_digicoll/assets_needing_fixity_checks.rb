@@ -34,7 +34,7 @@ module ScihistDigicoll
     def assets_to_check
       # We need to use sub-query, cause find_each needs it's own ORDER BY, to
       # be able to fetch in batches reliably.
-      Asset.where(id: selected_assets_scope).find_each
+      Asset.where(id: selected_assets_scope)
     end
 
     def expected_num_to_check

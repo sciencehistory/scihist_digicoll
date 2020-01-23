@@ -49,7 +49,7 @@ namespace :scihist do
       Rails.logger.info(info)
     end
 
-    check_lister.assets_to_check.each do | asset |
+    check_lister.assets_to_check.find_each do | asset |
       if asset.stored?
         checker = FixityChecker.new(asset)
         new_check = checker.check  unless ENV['SKIP_CHECK'] == 'true'
