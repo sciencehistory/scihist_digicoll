@@ -29,18 +29,18 @@ namespace :scihist do
     fixity_check_task_id = rand.to_s[2..4]
     start_time = Time.now
     count_of_items_checked = 0
-    if defined? Honeybadger
-      Honeybadger.notify("Starting fixity check Rake task ID #{fixity_check_task_id}",
-        context: {
-          start_time: start_time,
-          cycle_length: cycle_length,
-          expected_number_of_items_to_check: check_lister.expected_num_to_check,
-          fixity_check_task_id: fixity_check_task_id
-        },
-        fingerprint: "fixity_task_#{fixity_check_task_id}",
-        tags: "fixity"
-      )
-    end
+    # if defined? Honeybadger
+    #   Honeybadger.notify("Starting fixity check Rake task ID #{fixity_check_task_id}",
+    #     context: {
+    #       start_time: start_time,
+    #       cycle_length: cycle_length,
+    #       expected_number_of_items_to_check: check_lister.expected_num_to_check,
+    #       fixity_check_task_id: fixity_check_task_id
+    #     },
+    #     fingerprint: "fixity_task_#{fixity_check_task_id}",
+    #     tags: "fixity"
+    #   )
+    # end
 
     if ENV['SHOW_PROGRESS_BAR'] == 'true'
       progress_bar = ProgressBar.create(total: check_lister.expected_num_to_check, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
@@ -67,20 +67,20 @@ namespace :scihist do
 
     end_time = Time.now
 
-    if defined? Honeybadger
-      Honeybadger.notify("Finished fixity check Rake task ID #{fixity_check_task_id}",
-        context: {
-          cycle_length: cycle_length,
-          expected_number_of_items_to_check: check_lister.expected_num_to_check,
-          actual_number_of_items_checked: count_of_items_checked,
-          fixity_check_task_id: fixity_check_task_id,
-          start_time: start_time,
-          end_time: end_time,
-          time_elapsed: "#{end_time - start_time} seconds"
-        },
-        fingerprint: "fixity_task_#{fixity_check_task_id}",
-        tags: "fixity"
-      )
-    end
+    # if defined? Honeybadger
+    #   Honeybadger.notify("Finished fixity check Rake task ID #{fixity_check_task_id}",
+    #     context: {
+    #       cycle_length: cycle_length,
+    #       expected_number_of_items_to_check: check_lister.expected_num_to_check,
+    #       actual_number_of_items_checked: count_of_items_checked,
+    #       fixity_check_task_id: fixity_check_task_id,
+    #       start_time: start_time,
+    #       end_time: end_time,
+    #       time_elapsed: "#{end_time - start_time} seconds"
+    #     },
+    #     fingerprint: "fixity_task_#{fixity_check_task_id}",
+    #     tags: "fixity"
+    #   )
+    # end
   end
 end
