@@ -22,7 +22,7 @@ gem 'puma', '~> 3.12'
 # resque+redis being used for activejob, maybe later for Rails.cache
 # resque-pool currently does not support resque 2.0 alas.
 # https://github.com/nevans/resque-pool/issues/170
-gem "resque", "~> 1.0"
+gem "resque", "~> 2.0"
 gem "resque-pool"
 
 gem 'honeybadger', '~> 4.0'
