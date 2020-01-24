@@ -25,3 +25,7 @@ require File.expand_path(File.dirname(__FILE__) + "/../lib/scihist_digicoll/asse
 every :day, :at => ScihistDigicoll::ASSET_CHECK_WHENEVER_CRON_TIME, roles: [:cron] do
   rake "scihist:check_fixity"
 end
+
+every :minute, roles: [:cron] do
+  rake "scihist:check_fixity_simple"
+end
