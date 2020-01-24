@@ -25,8 +25,8 @@ namespace :scihist do
   task :check_fixity => :environment do
     cycle_length = ENV['CYCLE_LENGTH'].nil? ? ScihistDigicoll::AssetsNeedingFixityChecks::DEFAULT_PERIOD_IN_DAYS : Integer(ENV['CYCLE_LENGTH'])
     check_lister = ScihistDigicoll::AssetsNeedingFixityChecks.new(cycle_length)
-    info = "checking asset fixity (task ID #{fixity_check_task_id}) for #{check_lister.expected_num_to_check} of #{Asset.count} assets"
     fixity_check_task_id = rand.to_s[2..4]
+    info = "checking asset fixity (task ID #{fixity_check_task_id}) for #{check_lister.expected_num_to_check} of #{Asset.count} assets"
     start_time = Time.now
     count_of_items_checked = 0
 
@@ -54,7 +54,7 @@ namespace :scihist do
     end
 
     end_time = Time.now
-    info = "Finished checking asset fixity for #{check_lister.count_of_items_checked} of #{Asset.count} assets. The task (ID #{fixity_check_task_id} ) took #{end_time - start_time} seconds"
+    info = "Finished checking asset fixity for #{count_of_items_checked} of #{Asset.count} assets. The task (ID #{fixity_check_task_id} ) took #{end_time - start_time} seconds"
 
 
     unless ENV['SHOW_PROGRESS_BAR'] == 'true'
