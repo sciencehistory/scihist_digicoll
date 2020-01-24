@@ -12,7 +12,7 @@ namespace :scihist do
       left_outer_joins(:fixity_checks).
       group(:id).
       order(Arel.sql "max(fixity_checks.created_at) nulls first").
-      limit(10)
+      limit(3500)
 
     assets_to_check = Asset.where(id: selected_assets_scope)
 
