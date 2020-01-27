@@ -59,12 +59,18 @@ class Admin::RAndRItem < ApplicationRecord
   end
 
   # Fill out a DigitizationQueueItem with metadata in here. Does not save.
+  #
+  # Note:
+  # We do *not* want to bring over the :instructions field, because those
+  # instructions pertain strictly to the digitization process and are
+  # irrelevant once the item is digitized (which it has to be by the time
+  # it moves out of the R&R queue).
   def fill_out_digitization_queue_item(digitization_queue_item)
     stuff_to_copy_over = [
       :bib_number, :accession_number, :museum_object_id,
       :box, :folder, :dimensions, :location,
       :collecting_area, :materials,
-      :instructions, :additional_notes, :copyright_status,
+      :additional_notes, :copyright_status,
     ]
 
     stuff_to_copy_over.each do | key |
