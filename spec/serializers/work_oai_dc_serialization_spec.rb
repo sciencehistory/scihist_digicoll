@@ -33,10 +33,9 @@ describe WorkOaiDcSerialization do
     container = xml.at_xpath("./oai_dc:dc")
     expect(container).to be_present
 
-    # PA digital wants both URL and thumbnail URL in dc:identifiers
+    # PA digital wants both URL in dc:identifiers
     dc_identifiers = container.xpath("./dc:identifier").collect(&:text)
     expect(dc_identifiers).to include public_work_url
-    expect(dc_identifiers).to include work_thumb_url
 
     expect(container.at_xpath("./dc:title").text).to eq work.title
     expect(container.at_xpath("./dc:rights").text).to eq work.rights
