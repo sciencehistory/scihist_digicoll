@@ -33,7 +33,7 @@ RSpec.feature "OAI-PMH feed", js: false do
   let(:oai_pmh_xsd_path) { Rails.root + "spec/fixtures/xsd/OAI-PMH.xsd" }
 
   let(:public_work_url) { work_url(work) }
-  let(:work_thumb_url) { download_derivative_url(work.leaf_representative, "download_medium", disposition: :inline) }
+  let(:work_thumb_url) { download_derivative_url(work.leaf_representative, "thumb_large_2X", disposition: :inline) }
   let(:work_full_url) { download_derivative_url(work.leaf_representative, "download_full", disposition: :inline) }
 
   it "renders feed with just work" do

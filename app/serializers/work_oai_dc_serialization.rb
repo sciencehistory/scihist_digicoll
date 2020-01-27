@@ -143,9 +143,9 @@ class WorkOaiDcSerialization
 
 
 
-        if medium_download_size_url.present?
+        if appropriate_thumb_url.present?
           # PA Digital wants the thumbnail in a repeated dc:identifier, okay then!
-          xml["dc"].send(:"identifier", medium_download_size_url)
+          xml["dc"].send(:"identifier", appropriate_thumb_url)
         end
 
         ########################
@@ -155,8 +155,8 @@ class WorkOaiDcSerialization
         # if anyone wants em, without us having to code em then.
 
         xml["dpla"].originalRecord in_our_app_url
-        if medium_download_size_url.present?
-          xml["edm"].preview medium_download_size_url
+        if appropriate_thumb_url.present?
+          xml["edm"].preview appropriate_thumb_url
         end
 
         if work.rights.present?
@@ -218,8 +218,11 @@ class WorkOaiDcSerialization
   # We are hand-building the URL instead of using Rails route helper to further improve
   # perfomrance and avoid the need to have rails route helpers here. Our tests
   # should still test with rails route helpers.
-  def medium_download_size_url
-    @medium_download_size_url ||= "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/downloads/#{work.leaf_representative.friendlier_id}/download_medium?disposition=inline"
+  #
+  # We are using a pretty big URL, thumb_large_2X (1050px; facebook recommends 1200px upload!)
+  # our largest "thumb" type URL -- even PDFs get thumb-size derivatives.
+  def appropriate_thumb_url
+    @appropriate_thumb_url ||= "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/downloads/#{work.leaf_representative.friendlier_id}/thumb_large_2X?disposition=inline"
   end
 
   def full_jpg_url
