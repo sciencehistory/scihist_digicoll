@@ -15,7 +15,7 @@ describe WorkOaiDcSerialization do
   # hacky probably a better way to do this. :(
   let(:app_base) { "#{ScihistDigicoll::Env.app_url_base_parsed.scheme}://#{ScihistDigicoll::Env.app_url_base_parsed.host}" }
   let(:public_work_url) { app_base + Rails.application.routes.url_helpers.work_path(work) }
-  let(:work_thumb_url) { app_base + Rails.application.routes.url_helpers.download_derivative_path(work.representative, :download_medium, disposition: "inline") }
+  let(:work_thumb_url) { app_base + Rails.application.routes.url_helpers.download_derivative_path(work.representative, :thumb_large_2X, disposition: "inline") }
   let(:full_jpg_url) { app_base + Rails.application.routes.url_helpers.download_derivative_path(work.representative, :download_full, disposition: "inline") }
 
   let(:instance) { WorkOaiDcSerialization.new(work)}

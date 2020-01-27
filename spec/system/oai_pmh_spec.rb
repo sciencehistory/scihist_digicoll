@@ -33,7 +33,7 @@ RSpec.feature "OAI-PMH feed", js: false do
   let(:oai_pmh_xsd_path) { Rails.root + "spec/fixtures/xsd/OAI-PMH.xsd" }
 
   let(:public_work_url) { work_url(work) }
-  let(:work_thumb_url) { download_derivative_url(work.leaf_representative, "download_medium", disposition: :inline) }
+  let(:work_thumb_url) { download_derivative_url(work.leaf_representative, "thumb_large_2X", disposition: :inline) }
   let(:work_full_url) { download_derivative_url(work.leaf_representative, "download_full", disposition: :inline) }
 
   it "renders feed with just work" do
@@ -67,7 +67,14 @@ RSpec.feature "OAI-PMH feed", js: false do
     expect(dc_identifiers).to include(public_work_url)
     # PA digital wants the thumb in there too, I dunno.
     expect(dc_identifiers).to include(work_thumb_url)
+    # But we're also putting it in edm:preview
+    expect(record.xpath("//edm:preview", edm: "http://www.europeana.eu/schemas/edm/").collect(&:text)).to eq([work_thumb_url])
 
     expect(record.at_xpath("//edm:object", edm: "http://www.europeana.eu/schemas/edm/")&.text).to eq work_full_url
+
+    # And make sure thumb_url is actually visitable -- it may result in a redirect to S3 or underlying
+    # storage but should be 200 eventually. Also this may be different in test mock. :(
+    visit work_thumb_url
+    expect(page.status_code).to eq 200
   end
 end
