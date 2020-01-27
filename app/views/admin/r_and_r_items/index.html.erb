@@ -17,8 +17,10 @@
     <thead>
       <tr>
         <th>Title</th>
-        <th >Status</th>
-        <th >Deadline</th>
+        <th>Additional notes</th>
+        <th class="w-25">Status</th>
+        <th>Deadline</th>
+        <th>Collecting area</th>
         <th>Bib number</th>
         <th>Accession number</th>
         <th>Object ID</th>
@@ -31,11 +33,17 @@
           <td>
             <%= link_to admin_r_and_r_item.title, admin_r_and_r_item_path(admin_r_and_r_item)%>
           </td>
+          <td>
+            <%= admin_r_and_r_item.additional_notes %>
+          </td>
 
           <td>
              <%= DigitizationQueueItemStatusForm.new(admin_r_and_r_item).display %>
           </td>
           <td><%= l(admin_r_and_r_item.deadline.to_date, format: :admin) if admin_r_and_r_item.deadline%></td>
+
+
+          <td><%= admin_r_and_r_item.collecting_area.humanize %></td>
 
 
           <td><%= link_to "#{admin_r_and_r_item.bib_number}", ScihistDigicoll::Util.opac_url(admin_r_and_r_item.bib_number), target: "_blank" if admin_r_and_r_item.bib_number %>
