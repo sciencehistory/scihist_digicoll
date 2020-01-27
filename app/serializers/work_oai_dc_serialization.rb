@@ -141,23 +141,17 @@ class WorkOaiDcSerialization
           xml["dc"].type genre.downcase
         end
 
-
-
         if appropriate_thumb_url.present?
-          # PA Digital wants the thumbnail in a repeated dc:identifier, okay then!
-          xml["dc"].send(:"identifier", appropriate_thumb_url)
+          xml["edm"].preview appropriate_thumb_url
         end
 
         ########################
         #
-        # PA Digital will probably throw these out and not forward them to DPLA, but they
-        # are tags DPLA MAP asks for, we might as well include them so they are there in the future
-        # if anyone wants em, without us having to code em then.
+        # These are tags the DPLA MAP asks for, we aren't certain if PA Digital are using these,
+        # but we might as well include them so they are there in the future  if anyone wants em,
+        # without us having to code em then.
 
         xml["dpla"].originalRecord in_our_app_url
-        if appropriate_thumb_url.present?
-          xml["edm"].preview appropriate_thumb_url
-        end
 
         if work.rights.present?
           xml["edm"].rights work.rights
@@ -170,7 +164,9 @@ class WorkOaiDcSerialization
         # "The URL of a suitable source object in the best resolution available on the website of the Data
         # "Provider from which edm:preview could be generated for use in available portal."
         #
-        # BEST resolution available? OK, we'll give them the full jpg.
+        # BEST resolution available? OK, we'll give them the full jpg. We could give them the
+        # actual original TIFFs, but that seems excessive. Unknown if anyone is using this
+        # on the PA Digital end.
         if full_jpg_url.present?
           xml["edm"].object full_jpg_url
         end
