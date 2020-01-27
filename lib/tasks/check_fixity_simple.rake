@@ -7,12 +7,14 @@ namespace :scihist do
     fixity_check_task_id = rand.to_s[2..4]
     count_of_items_checked = 0
 
+    number_of_assets_to_check = Asset.count / 7
+
     selected_assets_scope = Asset.
       select("kithe_models.id").
       left_outer_joins(:fixity_checks).
       group(:id).
       order(Arel.sql "max(fixity_checks.created_at) nulls first").
-      limit(3500)
+      limit(number_of_assets_to_check)
 
     assets_to_check = Asset.where(id: selected_assets_scope)
 
