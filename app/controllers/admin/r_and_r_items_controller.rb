@@ -103,7 +103,7 @@ class Admin::RAndRItemsController < AdminController
       end
 
       collecting_area = params.dig(:query, :collecting_area)
-      unless collecting_area.blank?
+      unless collecting_area.blank? || collecting_area == "ANY"
         scope = scope.where(collecting_area: collecting_area)
       end
 
