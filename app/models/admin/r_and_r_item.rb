@@ -3,7 +3,8 @@ class Admin::RAndRItem < ApplicationRecord
 
   before_destroy :remove_reference_from_dq_table
 
-  scope :open_status, -> { where.not(status: "closed") }
+  scope :open_status,   -> { where.not(status: "closed_r_and_r_request") }
+  scope :closed_status, -> { where(    status: "closed_r_and_r_request") }
 
   # for now just validate bib numbers to not have the extra digit.
   # We could try to 'automatically' fix them if this is still too

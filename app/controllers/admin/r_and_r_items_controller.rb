@@ -4,7 +4,8 @@ class Admin::RAndRItemsController < AdminController
   # GET /admin/r_and_r_items
   # GET /admin/r_and_r_items.json
   def index
-    @admin_r_and_r_items = r_and_r_items
+    #@admin_r_and_r_items = r_and_r_items
+    @admin_r_and_r_items = filtered_index_items
   end
 
   # GET /admin/r_and_r_items/1
@@ -83,36 +84,16 @@ class Admin::RAndRItemsController < AdminController
       )
     end
 
-    def r_and_r_items
-      scope = Admin::RAndRItem.order(status_changed_at: :asc)
-
-
-      # if (q = params.dig(:query, :q)).present?
-      #   scope = scope.where("title like ? OR bib_number = ? or accession_number = ? OR museum_object_id = ?", "%#{q}%", q, q, q)
-      # end
-
-      # status = params.dig(:query, :status)
-      # if status == "ANY"
-      #   # no-op, no filter
-      # elsif status.blank? # default, "open"
-      #   scope = scope.open_status
-      # else
-      #   scope = scope.where(status: status)
-      # end
-
-      scope.page(params[:page]).per(100)
-    end
-
     def filtered_index_items
-      scope = Admin::RAndRItem.
-        where(collecting_area: collecting_area).
-        order(status_changed_at: :asc)
+      scope = Admin::RAndRItem.order(status_changed_at: :asc)
 
       if (q = params.dig(:query, :q)).present?
         scope = scope.where("title like ? OR bib_number = ? or accession_number = ? OR museum_object_id = ?", "%#{q}%", q, q, q)
       end
 
       status = params.dig(:query, :status)
+      status = 'closed_r_and_r_request' if status =='closed'
+
       if status == "ANY"
         # no-op, no filter
       elsif status.blank? # default, "open"
@@ -120,7 +101,6 @@ class Admin::RAndRItemsController < AdminController
       else
         scope = scope.where(status: status)
       end
-
 
       scope.page(params[:page]).per(100)
     end
@@ -133,18 +113,11 @@ class Admin::RAndRItemsController < AdminController
       helpers.grouped_options_for_select(
         { "open/closed" => [["Open", ""], ["Closed", "closed"]],
           "status" =>  Admin::RAndRItem::STATUSES.
-            find_all {|s| s != "closed" }.
+            find_all {|s| s != "closed_r_and_r_request" }.
             collect {|s| [s.humanize, s]}
         },
         params.dig(:query, :status) || ""
       )
-
-      # helpers.options_for_select(
-      #   Admin::RAndRItem::STATUSES.
-      #     find_all {|s| s != "closed" }.
-      #     collect {|s| [s.humanize, s]},
-      #   params.dig(:query, :status)
-      # )
     end
     helper_method :status_filter_options
 end
