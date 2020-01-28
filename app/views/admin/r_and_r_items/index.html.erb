@@ -40,6 +40,26 @@
         %>
       </div>
     </div>
+
+
+    <div class="row form-group">
+      <div class="input-group col-sm-10">
+        <div class="input-group-prepend">
+          <%= f.label :collecting_area, "Collecting Area", class: "input-group-text" %>
+        </div>
+
+        <%= f.select :collecting_area,
+            collecting_area_filter_options,
+            { selected: "closed_r_and_r_request"},
+            {
+              class: "custom-select",
+              onchange: "this.form.submit()"
+            }
+        %>
+      </div>
+    </div>
+
+
   <% end %>
 </div>
 

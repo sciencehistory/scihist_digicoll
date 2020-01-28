@@ -102,6 +102,11 @@ class Admin::RAndRItemsController < AdminController
         scope = scope.where(status: status)
       end
 
+      collecting_area = params.dig(:query, :collecting_area)
+      unless collecting_area.blank?
+        scope = scope.where(collecting_area: collecting_area)
+      end
+
       scope.page(params[:page]).per(100)
     end
 
@@ -120,4 +125,16 @@ class Admin::RAndRItemsController < AdminController
       )
     end
     helper_method :status_filter_options
+
+    def collecting_area_filter_options
+      helpers.options_for_select([["Any", "ANY"]], params.dig(:query, :status)) +
+      helpers.grouped_options_for_select(
+        { "collecting area" =>  Admin::RAndRItem::COLLECTING_AREAS.
+            collect {|s| [s.humanize, s]}
+        },
+        params.dig(:query, :collecting_area) || ""
+      )
+    end
+    helper_method :collecting_area_filter_options
+
 end
