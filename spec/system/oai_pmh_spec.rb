@@ -65,9 +65,8 @@ RSpec.feature "OAI-PMH feed", js: false do
 
     dc_identifiers = record.xpath("//dc:identifier", dc:"http://purl.org/dc/elements/1.1/").collect(&:text)
     expect(dc_identifiers).to include(public_work_url)
-    # PA digital wants the thumb in there too, I dunno.
-    expect(dc_identifiers).to include(work_thumb_url)
-    # But we're also putting it in edm:preview
+
+    # Thumb in edm:preview
     expect(record.xpath("//edm:preview", edm: "http://www.europeana.eu/schemas/edm/").collect(&:text)).to eq([work_thumb_url])
 
     expect(record.at_xpath("//edm:object", edm: "http://www.europeana.eu/schemas/edm/")&.text).to eq work_full_url
