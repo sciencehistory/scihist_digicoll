@@ -4,7 +4,7 @@
   <% child_counter = ChildCountDisplayFetcher.new(documents.collect(&:id)) %>
   <% cart_presence = CartPresence.new(documents.collect(&:id), current_user: current_user) %>
 
-  <% documents.collect(&:model).compact.each do |model| %>
-    <%= view_model_class_for(model).new(model, child_counter: child_counter, cart_presence: cart_presence).display %>
+  <% documents.collect(&:model).compact.each_with_index do |model, i| %>
+    <%= view_model_class_for(model).new(model, index_in_list: i, child_counter: child_counter, cart_presence: cart_presence).display %>
   <% end %>
 </ul>

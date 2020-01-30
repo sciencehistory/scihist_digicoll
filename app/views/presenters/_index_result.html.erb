@@ -3,9 +3,10 @@
 
 <li id="document_<%= model.friendlier_id %>" class="scihist-results-list-item document <%# render_document_class generic_work %>" itemscope itemtype="<%# generic_work.itemtype %>">
 
+  <% search_session_tracking_link = SearchSessionTrackingLink.new(model, index: view.index_in_list) %>
 
     <div class="scihist-results-list-item-thumb">
-      <%= link_to view.link_to_href do %>
+      <%= link_to view.link_to_href, data: { 'context-href': search_session_tracking_link.tracking_search_hit_link } do %>
         <%= view.thumbnail_html %>
       <% end %>
       <%= view.display_num_children %>
@@ -19,7 +20,7 @@
       <% end %>
 
       <h2 class="scihist-results-list-item-head brand-alt-h2" itemprop="name">
-        <%= link_to model.title, view.link_to_href, itemprop: "url" %>
+        <%= link_to model.title, view.link_to_href, itemprop: "url", data: { 'context-href': search_session_tracking_link.tracking_search_hit_link } %>
         <%= publication_badge(model) %>
       </h2>
 

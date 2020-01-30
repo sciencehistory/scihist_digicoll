@@ -5,12 +5,13 @@
 class CollectionResultDisplay < ViewModel
   valid_model_type_names "Collection"
 
-  attr_reader :child_counter
+  attr_reader :child_counter, :index_in_list
 
   # @param collection [Collection]
   # @param child_counter [ChildCountDisplayFetcher]
-  def initialize(collection, child_counter:, cart_presence:nil)
+  def initialize(collection, child_counter:, cart_presence:nil, index_in_list:0)
     @child_counter = child_counter
+    @index_in_list = index_in_list
     # we don't use cart_presence, you can't put collections in cart at the moment.
     super(collection)
   end

@@ -7,14 +7,15 @@ class WorkResultDisplay < ViewModel
 
   delegate :additional_title
 
-  attr_reader :child_counter, :cart_presence
+  attr_reader :child_counter, :cart_presence, :index_in_list
 
   # @param work [Work]
   # @param child_counter [ChildCountDisplayFetcher]
   # @param cart_presence [CartPresence]
-  def initialize(work, child_counter:, cart_presence:)
+  def initialize(work, child_counter:, cart_presence:, index_in_list:0)
     @child_counter = child_counter
     @cart_presence = cart_presence
+    @index_in_list = index_in_list
     super(work)
   end
 

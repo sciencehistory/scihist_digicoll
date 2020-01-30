@@ -5,6 +5,8 @@
   <%= tag "link", rel: "alternate", type: "application/xml", title: "OAI-DC metadata in XML", href: work_path(@work, format: "xml") %>
 <% end %>
 
+<%= BackToSearchSessionLink.new.display %>
+
 <div class="show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
 
   <%= WorkTitleAndDates.new(@work).display %>
