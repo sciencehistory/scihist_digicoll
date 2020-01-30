@@ -25,22 +25,10 @@ namespace :scihist do
   task :check_fixity => :environment do
     cycle_length = ENV['CYCLE_LENGTH'].nil? ? ScihistDigicoll::AssetsNeedingFixityChecks::DEFAULT_PERIOD_IN_DAYS : Integer(ENV['CYCLE_LENGTH'])
     check_lister = ScihistDigicoll::AssetsNeedingFixityChecks.new(cycle_length)
-    info = "checking asset fixity for #{check_lister.expected_num_to_check} of #{Asset.count} assets"
     fixity_check_task_id = rand.to_s[2..4]
+    info = "checking asset fixity (task ID #{fixity_check_task_id}) for #{check_lister.expected_num_to_check} of #{Asset.count} assets"
     start_time = Time.now
     count_of_items_checked = 0
-    if defined? Honeybadger
-      Honeybadger.notify("Starting fixity check Rake task ID #{fixity_check_task_id}",
-        context: {
-          start_time: start_time,
-          cycle_length: cycle_length,
-          expected_number_of_items_to_check: check_lister.expected_num_to_check,
-          fixity_check_task_id: fixity_check_task_id
-        },
-        fingerprint: "fixity_task_#{fixity_check_task_id}",
-        tags: "fixity"
-      )
-    end
 
     if ENV['SHOW_PROGRESS_BAR'] == 'true'
       progress_bar = ProgressBar.create(total: check_lister.expected_num_to_check, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
@@ -48,7 +36,6 @@ namespace :scihist do
     else
       Rails.logger.info(info)
     end
-
 
     # Use transaction for every 10 FixityChecks to add, should speed things up.
     check_lister.assets_to_check.each_slice(10) do | transaction_batch |
@@ -66,26 +53,14 @@ namespace :scihist do
       end
     end
 
-    unless ENV['SHOW_PROGRESS_BAR'] == 'true'
-      Rails.logger.info("COMPLETE: " + info)
-    end
-
     end_time = Time.now
+    info = "Finished checking asset fixity for #{count_of_items_checked} of #{Asset.count} assets. The task (ID #{fixity_check_task_id} ) took #{end_time - start_time} seconds"
 
-    if defined? Honeybadger
-      Honeybadger.notify("Finished fixity check Rake task ID #{fixity_check_task_id}",
-        context: {
-          cycle_length: cycle_length,
-          expected_number_of_items_to_check: check_lister.expected_num_to_check,
-          actual_number_of_items_checked: count_of_items_checked,
-          fixity_check_task_id: fixity_check_task_id,
-          start_time: start_time,
-          end_time: end_time,
-          time_elapsed: "#{end_time - start_time} seconds"
-        },
-        fingerprint: "fixity_task_#{fixity_check_task_id}",
-        tags: "fixity"
-      )
+
+    unless ENV['SHOW_PROGRESS_BAR'] == 'true'
+      Rails.logger.info(info)
     end
+
+
   end
 end

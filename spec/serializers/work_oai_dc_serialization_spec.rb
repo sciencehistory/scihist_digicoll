@@ -15,7 +15,7 @@ describe WorkOaiDcSerialization do
   # hacky probably a better way to do this. :(
   let(:app_base) { "#{ScihistDigicoll::Env.app_url_base_parsed.scheme}://#{ScihistDigicoll::Env.app_url_base_parsed.host}" }
   let(:public_work_url) { app_base + Rails.application.routes.url_helpers.work_path(work) }
-  let(:work_thumb_url) { app_base + Rails.application.routes.url_helpers.download_derivative_path(work.representative, :download_medium, disposition: "inline") }
+  let(:work_thumb_url) { app_base + Rails.application.routes.url_helpers.download_derivative_path(work.representative, :thumb_large_2X, disposition: "inline") }
   let(:full_jpg_url) { app_base + Rails.application.routes.url_helpers.download_derivative_path(work.representative, :download_full, disposition: "inline") }
 
   let(:instance) { WorkOaiDcSerialization.new(work)}
@@ -33,10 +33,9 @@ describe WorkOaiDcSerialization do
     container = xml.at_xpath("./oai_dc:dc")
     expect(container).to be_present
 
-    # PA digital wants both URL and thumbnail URL in dc:identifiers
+    # PA digital wants both URL in dc:identifiers
     dc_identifiers = container.xpath("./dc:identifier").collect(&:text)
     expect(dc_identifiers).to include public_work_url
-    expect(dc_identifiers).to include work_thumb_url
 
     expect(container.at_xpath("./dc:title").text).to eq work.title
     expect(container.at_xpath("./dc:rights").text).to eq work.rights
