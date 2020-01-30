@@ -1,0 +1,119 @@
+<h1>Rights and Reproductions</h1>
+
+
+<p>
+  <%= link_to 'New R & R Item', new_admin_r_and_r_item_path, class: "btn btn-primary" %>
+</p>
+
+
+<div class="my-2">
+  <%#= simple_form_for(:query, url: admin_digitization_queue_item_path(collecting_area), method: :get) do |f| %>
+  <%= simple_form_for(:query, url: admin_r_and_r_items_path, method: :get) do |f| %>
+    <div class="row form-group">
+      <div class="col-sm-10">
+        <small class="text-muted">Title, or ID (bib, accession, or object)</small>
+      </div>
+      <div class="input-group col-sm-10">
+        <div class="input-group-prepend">
+          <%= f.label :q, "Search", class: "input-group-text" %>
+        </div>
+        <%= f.search_field :q, class: "form-control", value: params.dig(:query, :q) %>
+        <div class="input-group-append">
+          <%= f.button :submit, value: "Go", class: "btn btn-primary" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="row form-group">
+      <div class="input-group col-sm-10">
+        <div class="input-group-prepend">
+          <%= f.label :status, "Status", class: "input-group-text" %>
+        </div>
+
+        <%= f.select :status,
+            status_filter_options,
+            { selected: "closed"},
+            {
+              class: "custom-select",
+              onchange: "this.form.submit()"
+            }
+        %>
+      </div>
+    </div>
+
+
+    <div class="row form-group">
+      <div class="input-group col-sm-10">
+        <div class="input-group-prepend">
+          <%= f.label :collecting_area, "Collecting Area", class: "input-group-text" %>
+        </div>
+
+        <%= f.select :collecting_area,
+            collecting_area_filter_options,
+            { selected: "closed"},
+            {
+              class: "custom-select",
+              onchange: "this.form.submit()"
+            }
+        %>
+      </div>
+    </div>
+
+
+  <% end %>
+</div>
+
+
+<% if @admin_r_and_r_items.total_count > 0 %>
+  <p>
+    <%= @admin_r_and_r_items.offset_value + 1 %> - <%= @admin_r_and_r_items.offset_value + @admin_r_and_r_items.count %> of <%= @admin_r_and_r_items.total_count %>
+  </p>
+<% end %>
+
+<div class="table-responsive">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Title and notes</th>
+        <th scope="col" class="d-none d-sm-table-cell" >Status</th>
+        <th scope="col" class="d-none d-sm-table-cell" >Deadline</th>
+        <th scope="col" class="d-none d-sm-table-cell" >Collecting area</th>
+        <th scope="col" class="d-none d-md-table-cell" >Bib number</th>
+        <th scope="col" class="d-none d-md-table-cell" >Accession number</th>
+        <th scope="col" class="d-none d-md-table-cell" >Object ID</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <%@admin_r_and_r_items.each do |admin_r_and_r_item| %>
+        <tr>
+          <td>
+            <%= link_to admin_r_and_r_item.title, admin_r_and_r_item_path(admin_r_and_r_item)%>
+
+            <% if admin_r_and_r_item.additional_notes.present? %>
+              <small class="text-muted">
+                (<%= admin_r_and_r_item.additional_notes %>)
+              </small>
+            <% end %>
+          </td>
+          <td scope="col" class="d-none d-sm-table-cell">
+             <%= DigitizationQueueItemStatusForm.new(admin_r_and_r_item).display %>
+          </td>
+          <td scope="col" class="d-none d-sm-table-cell" ><%= l(admin_r_and_r_item.deadline.to_date, format: :admin) if admin_r_and_r_item.deadline%></td>
+
+
+          <td scope="col" class="d-none d-sm-table-cell" ><%= admin_r_and_r_item.collecting_area.humanize %></td>
+
+
+          <td scope="col" class="d-none d-md-table-cell" ><%= link_to "#{admin_r_and_r_item.bib_number}", ScihistDigicoll::Util.opac_url(admin_r_and_r_item.bib_number), target: "_blank" if admin_r_and_r_item.bib_number %>
+          </td>
+          <td scope="col" class="d-none d-md-table-cell" ><%= admin_r_and_r_item.accession_number %>  </td>
+          <td scope="col" class="d-none d-md-table-cell" ><%= admin_r_and_r_item.museum_object_id %>  </td>
+
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<%= paginate @admin_r_and_r_items, theme: 'twitter-bootstrap-4' %>

@@ -1,7 +1,7 @@
 <%= simple_form_for(view.model, data: {remote: true, auto_submit: true}) do |f| %>
   <div class="input-group input-group-sm flex-nowrap">
     <%= f.collection_select :status,
-          Admin::DigitizationQueueItem::STATUSES.collect {|s| [s.humanize, s]}, :second, :first, {},
+          view.model.available_statuses.collect {|s| [s.humanize, s]}, :second, :first, {},
           class: "form-control custom-select"
     %>
     <div class="input-group-append">

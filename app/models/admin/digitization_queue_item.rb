@@ -29,6 +29,14 @@ class Admin::DigitizationQueueItem < ApplicationRecord
    }
   validates :status, inclusion: { in: STATUSES }
 
+  # Called by /app/views/presenters/_digitization_queue_item_status_form.html.erb
+  # Both this class and Admin::RAndRItem need to implement this,
+  # as the presenter is used to show the `status` of
+  # instances of both classes.
+  def available_statuses
+    STATUSES
+  end
+
   validates :title, presence: true
 
   before_validation do

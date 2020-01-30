@@ -178,15 +178,11 @@ Rails.application.routes.draw do
       end
     end
 
-    # TODO: investigate whether this could live in the
-    # resources :digitization_queue_items > member do block.
-    # Something like delete :delete_comment
-    # but with an additional :comment_id parameter.
-    # For now, just do the obvious:
     delete  "digitization_queue_items/:id/delete_comment/:comment_id",
       to: "digitization_queue_items#delete_comment",
       as: "delete_comment"
 
+    resources :r_and_r_items
 
     resources :cart_items, param: :work_friendlier_id, only: [:index, :update, :destroy] do
       collection do
