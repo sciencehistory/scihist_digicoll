@@ -28,6 +28,14 @@ class BackToSearchSessionLink < ViewModel
 
     query_params = current_search_session.query_params
 
+    if search_session['counter']
+      per_page = (search_session['per_page'] || blacklight_config.default_per_page).to_i
+      counter = search_session['counter'].to_i
+
+      query_params[:per_page] = per_page unless per_page.to_i == blacklight_config.default_per_page
+      query_params[:page] = ((counter - 1) / per_page) + 1
+    end
+
     if query_params.blank?
       catalog_search_path
     else
