@@ -20,9 +20,9 @@ describe Admin::RAndRItem, type: :model do
           is_destined_for_ingest: true,
           copyright_research_still_needed: false,
           status: 'awaiting_dig_on_cart')
-      expect(item.ready_to_move_to_digitization_queue).to be false
+      expect(item.ready_to_move_to_digitization_queue?).to be false
       item.status = 'files_sent_to_patron'
-      expect(item.ready_to_move_to_digitization_queue).to be true
+      expect(item.ready_to_move_to_digitization_queue?).to be true
     end
 
     it "checks whether item is destined for ingest" do

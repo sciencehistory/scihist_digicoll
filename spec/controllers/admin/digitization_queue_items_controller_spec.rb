@@ -23,11 +23,13 @@ RSpec.describe Admin::DigitizationQueueItemsController, :logged_in_user, type: :
       get :new, params: { collecting_area: 'archives', r_and_r_item: r_and_r_item.id }
       expect(response.code).to eq "200"
       d_q_i = @controller.instance_variable_get(:@admin_digitization_queue_item)
+      # Note: we are explicitly instructed *not*
+      # to copy over :instructions.
       stuff_to_copy_over = [
         :bib_number, :accession_number, :museum_object_id,
         :box, :folder, :dimensions, :location,
         :collecting_area, :materials, :title,
-        :instructions, :additional_notes, :copyright_status,
+        :additional_notes, :copyright_status,
       ]
       stuff_to_copy_over.each do | key |
         expect(d_q_i.send(key)).to eq r_and_r_item.send(key)
