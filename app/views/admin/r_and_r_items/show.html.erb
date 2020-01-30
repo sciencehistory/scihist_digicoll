@@ -11,7 +11,7 @@
 
 <div class="row mb-2">
   <div class="col">
-    <%= link_to 'Edit this R & R request', admin_edit_r_and_r_item_path(@admin_r_and_r_item), class: "btn btn-primary" %>
+    <%= link_to 'Edit this R & R request', edit_admin_r_and_r_item_path(@admin_r_and_r_item), class: "btn btn-primary" %>
   </div>
 </div>
 
@@ -141,11 +141,9 @@
   </div>
 </div>
 
-
-
 <div class="row mb-2">
   <div class="col">
-    <%= link_to "Delete \"#{@admin_r_and_r_item.title}\"", admin_delete_r_and_r_item_path(r_and_r_item: @admin_r_and_r_item.id),
+    <%= link_to "Delete \"#{@admin_r_and_r_item.title}\"", admin_r_and_r_item_path(r_and_r_item: @admin_r_and_r_item.id),
       class: "btn btn-primary btn-danger",
       method: 'delete',
       data: { confirm: "Do you really want to delete \"#{@admin_r_and_r_item.title}?\"" } %>

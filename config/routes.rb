@@ -182,25 +182,7 @@ Rails.application.routes.draw do
       to: "digitization_queue_items#delete_comment",
       as: "delete_comment"
 
-
-    # START R&R
-
-    # GET /admin/r_and_r_items/
-    get "/r_and_r_items",    to: "r_and_r_items#index"
-    # GET /admin/r_and_r_item/4
-    get "/r_and_r_item/:id", to: "r_and_r_items#show", as: "r_and_r_item"
-    # GET /admin/r_and_r_items/1/edit
-    get "/r_and_r_item/:id/edit", to: "r_and_r_items#edit", as: "edit_r_and_r_item"
-    # PATCH /admin/r_and_r_items/1/update
-    patch "/r_and_r_item/:id", to: "r_and_r_items#update", as: "update_r_and_r_item"
-    # GET /admin/r_and_r_items/new
-    get "/r_and_r_items/new", to: "r_and_r_items#new",  as: "new_r_and_r_item"
-    # POST  /admin/r_and_r_items/
-    post "/r_and_r_items", to: "r_and_r_items#create", as: "create_r_and_r_item"
-    # DELETE /admin/r_and_r_items/1
-    delete "/r_and_r_item/:id", to: "r_and_r_items#destroy", as: "delete_r_and_r_item"
-
-    # END R&R
+    resources :r_and_r_items
 
     resources :cart_items, param: :work_friendlier_id, only: [:index, :update, :destroy] do
       collection do
