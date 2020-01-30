@@ -136,7 +136,8 @@ CREATE TABLE public.digitization_queue_items (
     status character varying DEFAULT 'awaiting_dig_on_cart'::character varying,
     status_changed_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    r_and_r_item_id bigint
 );
 
 
@@ -333,6 +334,60 @@ ALTER SEQUENCE public.queue_item_comments_id_seq OWNED BY public.queue_item_comm
 
 
 --
+-- Name: r_and_r_items; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.r_and_r_items (
+    id bigint NOT NULL,
+    title character varying,
+    curator character varying,
+    collecting_area character varying,
+    patron_name character varying,
+    patron_email character varying,
+    bib_number character varying,
+    location character varying,
+    accession_number character varying,
+    museum_object_id character varying,
+    box character varying,
+    folder character varying,
+    dimensions character varying,
+    materials character varying,
+    copyright_status character varying,
+    is_destined_for_ingest boolean,
+    copyright_research_still_needed boolean DEFAULT true,
+    instructions text,
+    scope text,
+    additional_pages_to_ingest text,
+    additional_notes text,
+    status character varying DEFAULT 'awaiting_dig_on_cart'::character varying,
+    status_changed_at timestamp without time zone,
+    deadline timestamp without time zone,
+    date_files_sent timestamp without time zone,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: r_and_r_items_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.r_and_r_items_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: r_and_r_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.r_and_r_items_id_seq OWNED BY public.r_and_r_items.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -455,6 +510,13 @@ ALTER TABLE ONLY public.queue_item_comments ALTER COLUMN id SET DEFAULT nextval(
 
 
 --
+-- Name: r_and_r_items id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.r_and_r_items ALTER COLUMN id SET DEFAULT nextval('public.r_and_r_items_id_seq'::regclass);
+
+
+--
 -- Name: searches id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -530,6 +592,14 @@ ALTER TABLE ONLY public.on_demand_derivatives
 
 ALTER TABLE ONLY public.queue_item_comments
     ADD CONSTRAINT queue_item_comments_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: r_and_r_items r_and_r_items_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.r_and_r_items
+    ADD CONSTRAINT r_and_r_items_pkey PRIMARY KEY (id);
 
 
 --
@@ -761,6 +831,14 @@ ALTER TABLE ONLY public.kithe_models
 
 
 --
+-- Name: digitization_queue_items fk_rails_a339334e83; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.digitization_queue_items
+    ADD CONSTRAINT fk_rails_a339334e83 FOREIGN KEY (r_and_r_item_id) REFERENCES public.r_and_r_items(id);
+
+
+--
 -- Name: kithe_models fk_rails_afa93b7b5d; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -790,6 +868,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181211182457'),
 ('20190107205722'),
 ('20190107222521'),
+('20190109000356'),
 ('20190110154359'),
 ('20190219225344'),
 ('20190226135744'),
@@ -803,6 +882,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190910160148'),
 ('20190912200533'),
 ('20191016134900'),
-('20191112170956');
+('20191112170956'),
+('20191210210454');
 
 

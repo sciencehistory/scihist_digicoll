@@ -9,7 +9,7 @@
 #     <%= DigitizationQueueItemStatusForm.new(queue_item).display %>
 #
 class DigitizationQueueItemStatusForm < ViewModel
-  valid_model_type_names 'Admin::DigitizationQueueItem'
+  valid_model_type_names 'Admin::DigitizationQueueItem', 'Admin::RAndRItem'
 
   def display
     render "/presenters/digitization_queue_item_status_form", model: model, view: self

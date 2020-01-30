@@ -1,0 +1,151 @@
+<div class="mb-2">
+  <h1>R&R request: <%= @admin_r_and_r_item.title %> </h1>
+</div>
+
+
+<div class="row mb-2">
+  <div class="col">
+    <%= link_to 'Back to R & R list', admin_r_and_r_items_path, class: "btn btn-primary" %>
+  </div>
+</div>
+
+<div class="row mb-2">
+  <div class="col">
+    <%= link_to 'Edit this R & R request', edit_admin_r_and_r_item_path(@admin_r_and_r_item), class: "btn btn-primary" %>
+  </div>
+</div>
+
+
+<% if @admin_r_and_r_item.ready_to_move_to_digitization_queue? %>
+  <div class="row mb-2">
+    <div class="col">
+      <%= link_to "Send to Digitization Queue", new_admin_digitization_queue_items_path(r_and_r_item: @admin_r_and_r_item.id, collecting_area: @admin_r_and_r_item.collecting_area), class: "btn btn-primary" %>
+    </div>
+  </div>
+<% end %>
+
+<% if @admin_r_and_r_item.digitization_queue_item.count > 0 %>
+    <dt><%= pluralize(@admin_r_and_r_item.digitization_queue_item.count, 'corresponding item') %> in the digitization queue</dt>
+    <dd>
+      <ul class="list-group">
+      <% @admin_r_and_r_item.digitization_queue_item.each do |dq_item| %>
+        <%= link_to dq_item.title, admin_digitization_queue_items_path(dq_item),
+        class: "list-group-item list-group-item-action" %>
+      <% end %>
+      </ul>
+    </dd>
+<% end%>
+
+<dt>Status</dt>
+<dd>
+  <%= @admin_r_and_r_item.status.humanize %> as of <%= l @admin_r_and_r_item.status_changed_at, format: :admin %>
+</dd>
+
+<% if @admin_r_and_r_item.deadline %>
+  <dt>Deadline to send files to the patron</dt>
+  <dd>
+    <%= l(@admin_r_and_r_item.deadline, format: "%F") %>
+  </dd>
+<% end %>
+
+
+
+<% if @admin_r_and_r_item.date_files_sent %>
+  <dt>When files were sent</dt>
+  <dd>
+    <%= l(@admin_r_and_r_item.date_files_sent, format: "%F") %>
+  </dd>
+  <% else %>
+    <dt>Have files been sent to the patron?</dt>
+    <dd>
+      Not yet.
+    </dd>
+<% end %>
+
+<%= queue_item_show_field(@admin_r_and_r_item, :date_files_sent) %>
+
+<div class="row">
+
+  <div class="col-md-7 order-md-2">
+      <dt>Is this going into the Digital Collections?</dt>
+      <dd>
+        <%=  @admin_r_and_r_item.is_destined_for_ingest ? 'Yes' : "No (thus, it can't be moved to the digitization queue)" %>.
+        <% if @admin_r_and_r_item.is_destined_for_ingest %>
+          <% unless @admin_r_and_r_item.ready_to_move_to_digitization_queue_based_on_status? %>
+            <br />(although status is still "<%= @admin_r_and_r_item.status.humanize %>")
+          <% end %>
+          <% if @admin_r_and_r_item.copyright_research_still_needed %>
+            <br />(although copyright research still needed)
+          <%end %>
+        <% end %>
+      </dd>
+
+      <dt>Is copyright research still needed for this item?</dt>
+      <dd>
+        <%=  @admin_r_and_r_item.copyright_research_still_needed ? 'Yes' : 'No' %>.
+      </dd>
+
+      <dt>Collecting area</dt>
+      <dd><%= @admin_r_and_r_item.collecting_area.humanize%></dd>
+
+      <dt>Curator</dt>
+      <dd>
+        <%=   @admin_r_and_r_item.curator ? @admin_r_and_r_item.curator.capitalize : "None" %>
+      </dd>
+
+      <%= queue_item_show_field(@admin_r_and_r_item, :patron_name) %>
+      <%= queue_item_show_field(@admin_r_and_r_item, :patron_email) %>
+
+
+
+
+    <% if @admin_r_and_r_item.bib_number.present? %>
+      <p>
+        <%= link_to "OPAC link (#{@admin_r_and_r_item.bib_number})", ScihistDigicoll::Util.opac_url(@admin_r_and_r_item.bib_number), target: "_blank" %>
+      </p>
+    <% end %>
+
+    <dl>
+
+
+
+      <dt>Created at</dt>
+      <dd>
+        <%= l @admin_r_and_r_item.created_at, format: :admin %>
+      </dd>
+
+
+
+      <%= queue_item_show_field(@admin_r_and_r_item, :bib_number) %>
+
+
+      <%= queue_item_show_field(@admin_r_and_r_item, :scope, paragraphs: true, override_label: "Pages to scan for this patron") %>
+      <%= queue_item_show_field(@admin_r_and_r_item, :additional_pages_to_ingest, override_label: "Additional pages to ingest into the Digital Collections") %>
+
+
+      <%= queue_item_show_field(@admin_r_and_r_item, :location) %>
+      <%= queue_item_show_field(@admin_r_and_r_item, :accession_number) %>
+      <%= queue_item_show_field(@admin_r_and_r_item, :museum_object_id, override_label: "Object ID (Past Perfect)") %>
+      <%= queue_item_show_field(@admin_r_and_r_item, :box) %>
+      <%= queue_item_show_field(@admin_r_and_r_item, :folder) %>
+
+      <%= queue_item_show_field(@admin_r_and_r_item, :dimensions) %>
+      <%= queue_item_show_field(@admin_r_and_r_item, :materials) %>
+
+
+      <%= queue_item_show_field(@admin_r_and_r_item, :instructions, paragraphs: true) %>
+      <%= queue_item_show_field(@admin_r_and_r_item, :additional_notes, paragraphs: true) %>
+      <%= queue_item_show_field(@admin_r_and_r_item, :copyright_status, paragraphs: true) %>
+
+    </dl>
+  </div>
+</div>
+
+<div class="row mb-2">
+  <div class="col">
+    <%= link_to "Delete \"#{@admin_r_and_r_item.title}\"", admin_r_and_r_item_path(r_and_r_item: @admin_r_and_r_item.id),
+      class: "btn btn-primary btn-danger",
+      method: 'delete',
+      data: { confirm: "Do you really want to delete \"#{@admin_r_and_r_item.title}?\"" } %>
+  </div>
+</div>
