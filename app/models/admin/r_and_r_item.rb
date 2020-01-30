@@ -19,6 +19,14 @@ class Admin::RAndRItem < ApplicationRecord
   end
   validates :bib_number, length: { is: 8 }, allow_blank: true, starts_with_b: true
 
+  # Called by /app/views/presenters/_digitization_queue_item_status_form.html.erb
+  # Both this class and Admin::DigitizationQueueItem need to implement this,
+  # as the presenter is used to show the `status` of
+  # instances of both classes.
+  def available_statuses
+    Admin::DigitizationQueueItem::STATUSES
+  end
+
   COLLECTING_AREAS = Admin::DigitizationQueueItem::COLLECTING_AREAS
 
   validates :collecting_area, inclusion: { in: COLLECTING_AREAS }
