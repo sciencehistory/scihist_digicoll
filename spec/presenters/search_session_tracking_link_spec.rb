@@ -6,8 +6,10 @@ describe SearchSessionTrackingLink, type: :presenter do
   let(:subject) { SearchSessionTrackingLink.new(work, index: results_index) }
 
 
-  # We are mocking a BUNCH of Blacklight, to let the SearchSessionTrackingLink get
-  # the context. This is pretty fragile, if BL changes it might actually break our
+  # We are mocking some odd things in Blacklight, in hard to figure out ways,
+  # to have the right context for creating search tracking link.
+  #
+  # This is pretty fragile, if BL changes it might actually break our
   # object, and the test would falsely miss it, and I'm not sure how much we're really
   # testing.
   #
@@ -17,19 +19,23 @@ describe SearchSessionTrackingLink, type: :presenter do
   let(:mocked_search_id) { 1001 }
   let(:mocked_response_start) { 25 }
 
+  let(:custom_controller) { CatalogController.new }
+
   before do
-    allow(helpers).to receive(:session).and_return({
+    Draper::ViewContext.controller = custom_controller
+
+    allow(custom_controller).to receive(:session).and_return({
       :search => {
         'per_page' => mocked_per_page
       }
     })
 
-    allow(subject).to receive(:current_search_session).and_return(
+    allow(custom_controller).to receive(:current_search_session).and_return(
       OpenStruct.new(id: mocked_search_id)
     )
 
     # omg i know
-    helpers.controller.instance_variable_set("@response", OpenStruct.new(start: mocked_response_start))
+    custom_controller.instance_variable_set("@response", OpenStruct.new(start: mocked_response_start))
   end
 
   it "can create session_tracking_params" do
@@ -39,6 +45,7 @@ describe SearchSessionTrackingLink, type: :presenter do
     expect(track_link).to start_with(helpers.track_catalog_path(work.to_param))
 
     parsed_uri = Addressable::URI.parse(track_link)
+
     expect(parsed_uri.query_values["counter"]).to eq((results_index + mocked_response_start + 1).to_s)
     expect(parsed_uri.query_values["per_page"]).to eq(mocked_per_page.to_s)
     expect(parsed_uri.query_values["search_id"]).to eq(mocked_search_id.to_s)
