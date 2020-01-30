@@ -71,17 +71,16 @@
 <% end %>
 
 <div class="table-responsive">
-  <table class="table" style="table-layout: fixed; font-size: 90%; min-width: 700px;">
+  <table class="table">
     <thead>
       <tr>
-        <th>Title</th>
-        <th>Additional notes</th>
-        <th class="w-25">Status</th>
-        <th>Deadline</th>
-        <th>Collecting area</th>
-        <th>Bib number</th>
-        <th>Accession number</th>
-        <th>Object ID</th>
+        <th>Title and notes</th>
+        <th scope="col" class="d-none d-sm-table-cell" >Status</th>
+        <th scope="col" class="d-none d-sm-table-cell" >Deadline</th>
+        <th scope="col" class="d-none d-sm-table-cell" >Collecting area</th>
+        <th scope="col" class="d-none d-md-table-cell" >Bib number</th>
+        <th scope="col" class="d-none d-md-table-cell" >Accession number</th>
+        <th scope="col" class="d-none d-md-table-cell" >Object ID</th>
       </tr>
     </thead>
 
@@ -90,24 +89,26 @@
         <tr>
           <td>
             <%= link_to admin_r_and_r_item.title, admin_r_and_r_item_path(admin_r_and_r_item)%>
-          </td>
-          <td>
-            <%= admin_r_and_r_item.additional_notes %>
-          </td>
 
-          <td>
+            <% if admin_r_and_r_item.additional_notes.present? %>
+              <small class="text-muted">
+                (<%= admin_r_and_r_item.additional_notes %>)
+              </small>
+            <% end %>
+          </td>
+          <td scope="col" class="d-none d-sm-table-cell">
              <%= DigitizationQueueItemStatusForm.new(admin_r_and_r_item).display %>
           </td>
-          <td><%= l(admin_r_and_r_item.deadline.to_date, format: :admin) if admin_r_and_r_item.deadline%></td>
+          <td scope="col" class="d-none d-sm-table-cell" ><%= l(admin_r_and_r_item.deadline.to_date, format: :admin) if admin_r_and_r_item.deadline%></td>
 
 
-          <td><%= admin_r_and_r_item.collecting_area.humanize %></td>
+          <td scope="col" class="d-none d-sm-table-cell" ><%= admin_r_and_r_item.collecting_area.humanize %></td>
 
 
-          <td><%= link_to "#{admin_r_and_r_item.bib_number}", ScihistDigicoll::Util.opac_url(admin_r_and_r_item.bib_number), target: "_blank" if admin_r_and_r_item.bib_number %>
+          <td scope="col" class="d-none d-md-table-cell" ><%= link_to "#{admin_r_and_r_item.bib_number}", ScihistDigicoll::Util.opac_url(admin_r_and_r_item.bib_number), target: "_blank" if admin_r_and_r_item.bib_number %>
           </td>
-          <td><%= admin_r_and_r_item.accession_number %>  </td>
-          <td><%= admin_r_and_r_item.museum_object_id %>  </td>
+          <td scope="col" class="d-none d-md-table-cell" ><%= admin_r_and_r_item.accession_number %>  </td>
+          <td scope="col" class="d-none d-md-table-cell" ><%= admin_r_and_r_item.museum_object_id %>  </td>
 
         </tr>
       <% end %>
