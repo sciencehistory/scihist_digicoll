@@ -16,7 +16,7 @@
 </div>
 
 
-<% if @admin_r_and_r_item.ready_to_move_to_digitization_queue %>
+<% if @admin_r_and_r_item.ready_to_move_to_digitization_queue? %>
   <div class="row mb-2">
     <div class="col">
       <%= link_to "Send to Digitization Queue", new_admin_digitization_queue_items_path(r_and_r_item: @admin_r_and_r_item.id, collecting_area: @admin_r_and_r_item.collecting_area), class: "btn btn-primary" %>
@@ -24,16 +24,17 @@
   </div>
 <% end %>
 
-<% if @admin_r_and_r_item.digitization_queue_item %>
-    <dt>Corresponding item in the digitization queue</dt>
+<% if @admin_r_and_r_item.digitization_queue_item.count > 0 %>
+    <dt><%= pluralize(@admin_r_and_r_item.digitization_queue_item.count, 'corresponding item') %> in the digitization queue</dt>
     <dd>
-      <%= link_to @admin_r_and_r_item.digitization_queue_item.title, admin_digitization_queue_items_path(@admin_r_and_r_item.digitization_queue_item) %>
+      <ul class="list-group">
+      <% @admin_r_and_r_item.digitization_queue_item.each do |dq_item| %>
+        <%= link_to dq_item.title, admin_digitization_queue_items_path(dq_item),
+        class: "list-group-item list-group-item-action" %>
+      <% end %>
+      </ul>
     </dd>
-
 <% end%>
-
-
-
 
 <dt>Status</dt>
 <dd>
@@ -68,13 +69,13 @@
   <div class="col-md-7 order-md-2">
       <dt>Is this going into the Digital Collections?</dt>
       <dd>
-        <%=  @admin_r_and_r_item.is_destined_for_ingest ? 'Yes' : 'No' %>.
+        <%=  @admin_r_and_r_item.is_destined_for_ingest ? 'Yes' : "No (thus, it can't be moved to the digitization queue)" %>.
         <% if @admin_r_and_r_item.is_destined_for_ingest %>
-          <% unless @admin_r_and_r_item.ready_to_move_to_digitization_queue_based_on_status %>
-            <br />(Status is still "<%= @admin_r_and_r_item.status.humanize %>")
+          <% unless @admin_r_and_r_item.ready_to_move_to_digitization_queue_based_on_status? %>
+            <br />(although status is still "<%= @admin_r_and_r_item.status.humanize %>")
           <% end %>
           <% if @admin_r_and_r_item.copyright_research_still_needed %>
-            <br />(Copyright research still needed)
+            <br />(although copyright research still needed)
           <%end %>
         <% end %>
       </dd>
