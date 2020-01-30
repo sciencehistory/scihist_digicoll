@@ -32,7 +32,7 @@
 
         <%= f.select :status,
             status_filter_options,
-            { selected: "closed_r_and_r_request"},
+            { selected: "closed"},
             {
               class: "custom-select",
               onchange: "this.form.submit()"
@@ -50,7 +50,7 @@
 
         <%= f.select :collecting_area,
             collecting_area_filter_options,
-            { selected: "closed_r_and_r_request"},
+            { selected: "closed"},
             {
               class: "custom-select",
               onchange: "this.form.submit()"

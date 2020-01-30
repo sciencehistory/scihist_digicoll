@@ -1,10 +1,10 @@
+# This model is based on the parallel Admin::DigitizationQueueItem.rb.
+
 class Admin::RAndRItem < ApplicationRecord
-  belongs_to :digitization_queue_item, optional: true
+  has_many :digitization_queue_item, dependent: :nullify
 
-  before_destroy :remove_reference_from_dq_table
-
-  scope :open_status,   -> { where.not(status: "closed_r_and_r_request") }
-  scope :closed_status, -> { where(    status: "closed_r_and_r_request") }
+  scope :open_status,   -> { where.not(status: "closed") }
+  scope :closed_status, -> { where(    status: "closed") }
 
   # for now just validate bib numbers to not have the extra digit.
   # We could try to 'automatically' fix them if this is still too
@@ -19,14 +19,13 @@ class Admin::RAndRItem < ApplicationRecord
   end
   validates :bib_number, length: { is: 8 }, allow_blank: true, starts_with_b: true
 
-  # collecting areas could have been normalized as a separate table, but
-  # not really needed, we'll just leave it as a controlled string.
-  COLLECTING_AREAS = %w{archives photographs rare_books modern_library museum_objects museum_fine_art}
+  COLLECTING_AREAS = Admin::DigitizationQueueItem::COLLECTING_AREAS
+
   validates :collecting_area, inclusion: { in: COLLECTING_AREAS }
 
   STATUSES = %w{
     awaiting_dig_on_cart imaging_in_process post_production_completed
-    files_sent_to_patron closed_r_and_r_request
+    files_sent_to_patron closed
    }
 
   CURATORS = %w{ ashley hillary jim patrick molly other }
@@ -35,7 +34,13 @@ class Admin::RAndRItem < ApplicationRecord
 
   validates :title, presence: true
 
-  validates :curator, inclusion: { in: CURATORS }, presence: true
+  # Note: We're choosing not to check that the curator is one of
+  # the existing list of CURATORS
+  # because if one of them is removed
+  # from the list... all their ex-R&R-items
+  # then fail to validate.
+  validates :curator, presence: true
+
   validates :patron_name, presence: true
 
 
@@ -46,16 +51,15 @@ class Admin::RAndRItem < ApplicationRecord
   end
 
   # Is this ready to make a DigitizationQueueItem out of?
-  def ready_to_move_to_digitization_queue
-    return false if self.digitization_queue_item
+  def ready_to_move_to_digitization_queue?
     return false unless self.is_destined_for_ingest
     return false if self.copyright_research_still_needed
-    return false unless self.ready_to_move_to_digitization_queue_based_on_status
+    return false unless self.ready_to_move_to_digitization_queue_based_on_status?
     return true
   end
 
-  def ready_to_move_to_digitization_queue_based_on_status
-    possible_statuses = %w{post_production_completed files_sent_to_patron closed_r_and_r_request}
+  def ready_to_move_to_digitization_queue_based_on_status?
+    possible_statuses = %w{post_production_completed files_sent_to_patron closed}
     possible_statuses.include?(self.status)
   end
 
@@ -85,16 +89,4 @@ class Admin::RAndRItem < ApplicationRecord
     digitization_queue_item.scope = self.additional_pages_to_ingest
 
   end
-
-  def digitization_queue_item
-    Admin::DigitizationQueueItem.find_by(r_and_r_item_id:self.id)
-  end
-
-  def remove_reference_from_dq_table
-    my_dq_item =  self.digitization_queue_item
-    return unless my_dq_item
-    my_dq_item.r_and_r_item_id = nil
-    my_dq_item.save!
-  end
-
 end
