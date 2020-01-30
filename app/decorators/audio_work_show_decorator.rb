@@ -67,7 +67,7 @@ class AudioWorkShowDecorator < Draper::Decorator
   #        contents of link
   #     <% end %>
   def link_to_non_audio_member(member)
-    if member.content_type.start_with?("image/")
+    if member.content_type&.start_with?("image/")
       yield
     else
       link_to download_path(member.leaf_representative, disposition: :inline) do

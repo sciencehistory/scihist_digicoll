@@ -36,9 +36,18 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     border: 0;
   }
 
-  // not sure why we need this too, but we do.
+  // not sure why we need to repeat all this from .modal-dialog above, but
+  // we seem to need both. In part to deal with 100vh not working right on
+  // Android and some other mobile browsers.
+  // https://stackoverflow.com/questions/52848856/100vh-height-when-address-bar-is-shown-chrome-mobile
   .scihist-image-viewer {
-    height: 100vh;
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
   }
 
   .modal-body {
