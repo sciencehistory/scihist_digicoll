@@ -30,9 +30,9 @@ describe Admin::RAndRItem, type: :model do
           is_destined_for_ingest: false,
           copyright_research_still_needed: false,
           status: 'files_sent_to_patron')
-      expect(item.ready_to_move_to_digitization_queue).to be false
+      expect(item.ready_to_move_to_digitization_queue?).to be false
       item.is_destined_for_ingest = true
-      expect(item.ready_to_move_to_digitization_queue).to be true
+      expect(item.ready_to_move_to_digitization_queue?).to be true
     end
 
     it "checks whether copyright_research_still_needed" do
@@ -40,9 +40,9 @@ describe Admin::RAndRItem, type: :model do
           is_destined_for_ingest: true,
           copyright_research_still_needed: true,
           status: 'files_sent_to_patron')
-      expect(item.ready_to_move_to_digitization_queue).to be false
+      expect(item.ready_to_move_to_digitization_queue?).to be false
       item.copyright_research_still_needed = false
-      expect(item.ready_to_move_to_digitization_queue).to be true
+      expect(item.ready_to_move_to_digitization_queue?).to be true
     end
 
 
@@ -50,11 +50,14 @@ describe Admin::RAndRItem, type: :model do
       item = FactoryBot.create(:r_and_r_item)
       new_item = Admin::DigitizationQueueItem.new()
       item.fill_out_digitization_queue_item(new_item)
+      # Note: we are not moving :instructions over,
+      # on purpose. See the method fill_out_digitization_queue_item
+      # itself for an explanation.
       stuff_to_copy_over = [
         :bib_number, :accession_number, :museum_object_id,
         :box, :folder, :dimensions, :location,
         :collecting_area, :materials, :title,
-        :instructions, :additional_notes, :copyright_status,
+        :additional_notes, :copyright_status,
       ]
       stuff_to_copy_over.each do | key |
         expect(new_item.send(key)).to eq item.send(key)
