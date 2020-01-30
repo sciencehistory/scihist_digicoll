@@ -1,3 +1,4 @@
+# This controller is based on Admin::DigitizationQueueItemsController.rb
 class Admin::RAndRItemsController < AdminController
   before_action :set_admin_r_and_r_item, only: [:show, :edit, :update, :destroy]
 
@@ -85,14 +86,13 @@ class Admin::RAndRItemsController < AdminController
     end
 
     def filtered_index_items
-      scope = Admin::RAndRItem.order(status_changed_at: :asc)
+      scope = Admin::RAndRItem.order(deadline: :asc)
 
       if (q = params.dig(:query, :q)).present?
         scope = scope.where("title like ? OR bib_number = ? or accession_number = ? OR museum_object_id = ?", "%#{q}%", q, q, q)
       end
 
       status = params.dig(:query, :status)
-      status = 'closed_r_and_r_request' if status =='closed'
 
       if status == "ANY"
         # no-op, no filter
@@ -118,7 +118,7 @@ class Admin::RAndRItemsController < AdminController
       helpers.grouped_options_for_select(
         { "open/closed" => [["Open", ""], ["Closed", "closed"]],
           "status" =>  Admin::RAndRItem::STATUSES.
-            find_all {|s| s != "closed_r_and_r_request" }.
+            find_all {|s| s != "closed" }.
             collect {|s| [s.humanize, s]}
         },
         params.dig(:query, :status) || ""
