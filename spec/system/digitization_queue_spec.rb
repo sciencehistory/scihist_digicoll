@@ -18,6 +18,7 @@ RSpec.describe "Digitization Queue", :logged_in_user, type: :system do
     fill_in "Materials", with: "test-materials"
     fill_in "Scope", with: "Do this"
     fill_in "Instructions", with: "And this"
+    fill_in "Location", with: "Some location"
 
     click_on "Create Digitization queue item"
     # return to listing page, now click on item we just made

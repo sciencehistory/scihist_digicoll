@@ -69,3 +69,9 @@ en:
       search_field:
         label: "Search this collection for"
         placeholder: "Search"
+
+  activerecord:
+    attributes:
+      admin/digitization_queue_item:
+        museum_object_id: "Object ID (Past Perfect)"
+
