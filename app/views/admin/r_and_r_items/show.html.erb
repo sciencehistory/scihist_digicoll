@@ -12,15 +12,41 @@
     <div class="mb-2">
       <%= link_to 'Edit this R & R request', edit_admin_r_and_r_item_path(@admin_r_and_r_item), class: "btn btn-primary" %>
     </div>
+
+
     <div class="mb-2">
       <% if @admin_r_and_r_item.ready_to_move_to_digitization_queue? %>
-        <%= link_to "Send to Digitization Queue", new_admin_digitization_queue_items_path(r_and_r_item: @admin_r_and_r_item.id, collecting_area: @admin_r_and_r_item.collecting_area), class: "btn btn-primary" %>
+        <% if @admin_r_and_r_item.digitization_queue_item.count > 0 %>
+          <%= link_to "Create a new Digitization Queue item",
+            new_admin_digitization_queue_items_path(r_and_r_item: @admin_r_and_r_item.id,
+            collecting_area: @admin_r_and_r_item.collecting_area),
+            class: "btn btn-primary",
+            data: { confirm: "This R&R item has already been used to create a digitization queue item. Really continue?" }
+          %>
+        <% else %>
+          <%= link_to "Send to Digitization Queue", new_admin_digitization_queue_items_path(r_and_r_item: @admin_r_and_r_item.id, collecting_area: @admin_r_and_r_item.collecting_area), class: "btn btn-primary" %>
+        <% end %>
       <% else %>
         <button type="button" class="btn btn-primary" disabled>Send to Digitization Queue</button>
       <% end %>
     </div>
+
+    <% if @admin_r_and_r_item.digitization_queue_item.count > 0 %>
+      <dt>This R&R item already has <%= pluralize(@admin_r_and_r_item.digitization_queue_item.count, 'corresponding item') %> in the digitization queue:</dt>
+      <dd>
+        <ul class="list-group">
+        <% @admin_r_and_r_item.digitization_queue_item.each do |dq_item| %>
+          <%= link_to dq_item.title, admin_digitization_queue_items_path(dq_item),
+          class: "list-group-item list-group-item-action" %>
+        <% end %>
+        </ul>
+      </dd>
+    <% end%>
   </div>
 </div>
+
+
+<hr/>
 
 <div class="row">
   <div class="col-md-7 order-md-2">
@@ -28,5 +54,16 @@
   </div>
   <div class="col-md-5 order-md-1 pr-4">
     <%= render 'admin/r_and_r_items/show_second_column' %>
+  </div>
+</div>
+
+<hr/>
+
+<div class="row mb-2">
+  <div class="col">
+    <%= link_to "Delete \"#{@admin_r_and_r_item.title}\"", admin_r_and_r_item_path(r_and_r_item: @admin_r_and_r_item.id),
+      class: "btn btn-primary btn-danger",
+      method: 'delete',
+      data: { confirm: "Do you really want to delete \"#{@admin_r_and_r_item.title}?\"" } %>
   </div>
 </div>
