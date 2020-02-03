@@ -48,7 +48,7 @@
     <div class="row">
       <div class="col">
         <%= f.input :bib_number,
-              hint: ("if applicable" unless f.object.field_is_required_for_collecting_area?(:bib_number)),
+              hint: (f.object.field_is_required_for_collecting_area?(:bib_number) ? "for #{self.collecting_area.humanize.singularize} item" : "if applicable" ),
               required: f.object.field_is_required_for_collecting_area?(:bib_number) %>
       </div>
       <div class="col">
