@@ -2,6 +2,7 @@
 
 class Admin::RAndRItem < ApplicationRecord
   has_many :digitization_queue_item, dependent: :nullify
+  has_many :queue_item_comments, dependent: :destroy
 
   scope :open_status,   -> { where.not(status: "closed") }
   scope :closed_status, -> { where(    status: "closed") }
