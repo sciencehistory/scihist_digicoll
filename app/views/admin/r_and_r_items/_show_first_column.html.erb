@@ -1,14 +1,4 @@
-<% if @admin_r_and_r_item.digitization_queue_item.count > 0 %>
-  <dt><%= pluralize(@admin_r_and_r_item.digitization_queue_item.count, 'corresponding item') %> in the digitization queue</dt>
-  <dd>
-    <ul class="list-group">
-    <% @admin_r_and_r_item.digitization_queue_item.each do |dq_item| %>
-      <%= link_to dq_item.title, admin_digitization_queue_items_path(dq_item),
-      class: "list-group-item list-group-item-action" %>
-    <% end %>
-    </ul>
-  </dd>
-<% end%>
+<h2>About</h2>
 
 <dt>Status</dt>
 <dd>
