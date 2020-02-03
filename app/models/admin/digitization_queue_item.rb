@@ -39,6 +39,37 @@ class Admin::DigitizationQueueItem < ApplicationRecord
 
   validates :title, presence: true
 
+  with_options if: -> i { i.collecting_area == "archives" } do |item|
+    item.validates :accession_number, presence: true
+  end
+
+  with_options if: -> i { i.collecting_area == "photographs"} do |item|
+    item.validates :accession_number, presence: true
+  end
+
+  with_options if: -> i { i.collecting_area == "rare_books"} do |item|
+    item.validates :bib_number, presence: true
+    item.validates :location, presence: true
+  end
+
+  with_options if: -> i { i.collecting_area == "modern_library"} do |item|
+    item.validates :bib_number, presence: true
+    item.validates :location, presence: true
+  end
+
+  with_options if: -> i { i.collecting_area == "museum_objects"} do |item|
+    item.validates :accession_number, presence: true
+    item.validates :museum_object_id, presence: true
+  end
+
+  with_options if: -> i { i.collecting_area == "museum_fine_art"} do |item|
+    item.validates :accession_number, presence: true
+    item.validates :museum_object_id, presence: true
+  end
+
+
+
+
   before_validation do
     if self.will_save_change_to_status? || (!self.persisted? && self.status_changed_at.blank?)
       self.status_changed_at = Time.now
