@@ -1,0 +1,35 @@
+<h2>Comments</h2>
+
+<%= form_tag add_comment_admin_r_and_r_item_path do %>
+  <div class="mb-4 text-right">
+    <h3 class="h5"><label for="addComment">Add Comment</label></h3>
+    <textarea class="form-control" name="comment" id="addComment" rows="3"></textarea>
+    <button class="btn btn-primary mt-1">Submit comment</button>
+  </div>
+<% end %>
+
+<% @admin_r_and_r_item.queue_item_comments.includes(:user).order(created_at: :desc).each do |comment| %>
+  <div>
+    <div class="card queue-comment mb-3 d-inline-flex <% if comment.system_action? %>text-white bg-info<% end %>">
+      <div class="card-header">
+        <% if comment.user %>
+          <%= comment.user&.name || comment.user&.email %>,
+        <% end %>
+        <%= time_ago_in_words comment.created_at %> ago
+      </div>
+      <div class="card-body pb-0">
+        <%= simple_format(comment.text) %>
+        <% if can?(:destroy, comment) %>
+          <div class="text-right">
+            <%= link_to "Delete",
+              admin_delete_r_and_r_comment_path(id: @admin_r_and_r_item.id, comment_id: comment.id),
+              class: "btn btn-primary mb-1",
+              method: 'delete',
+              data: { confirm: "Delete your comment?" }
+            %>
+          </div>
+        <%end %>
+      </div>
+    </div>
+  </div>
+<% end %>

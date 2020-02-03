@@ -107,7 +107,7 @@
             <% if can?(:destroy, comment) %>
               <div class="text-right">
                 <%= link_to "Delete",
-                  admin_delete_comment_path(id: @admin_digitization_queue_item.id, comment_id: comment.id),
+                  admin_delete_digitization_queue_item_comment_path(id: @admin_digitization_queue_item.id, comment_id: comment.id),
                   class: "btn btn-primary mb-1",
                   method: 'delete',
                   data: { confirm: "Delete your comment?" }
