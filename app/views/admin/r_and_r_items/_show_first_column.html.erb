@@ -1,15 +1,16 @@
 <h2>About</h2>
 
 
+<dt>Status</dt>
+<dd>
+  <%= DigitizationQueueItemStatusForm.new(@admin_r_and_r_item).display %>
+</dd>
+
 <dt>Is this going into the Digital Collections?</dt>
 <dd>
   <%=  @admin_r_and_r_item.is_destined_for_ingest ? 'Yes' : "No" %>.
 </dd>
 
-<dt>Status</dt>
-<dd>
-  <%= @admin_r_and_r_item.status.humanize %> as of <%= l @admin_r_and_r_item.status_changed_at, format: :admin %>
-</dd>
 
 <% if @admin_r_and_r_item.deadline %>
   <dt>Deadline to send files to the patron</dt>
