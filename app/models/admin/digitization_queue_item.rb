@@ -39,10 +39,55 @@ class Admin::DigitizationQueueItem < ApplicationRecord
 
   validates :title, presence: true
 
+
+  # Some collecting-area-specific required fields. Need to put them in a hash to allow reflection,
+  # so that we can make sure to display 'required' label on entry form as appropriate.
+  REQUIRED_PER_COLLECTING_AREA = {
+    archives: [:accession_number],
+    photographs: [:accession_number],
+    rare_books: [:bib_number, :location],
+    modern_library: [:bib_number, :location],
+    museum_objects: [:accession_number, :museum_object_id],
+    museum_fine_art: [:accession_number, :museum_object_id],
+  }
+
+  with_options if: -> i { i.collecting_area == "archives" } do |item|
+    item.validates *REQUIRED_PER_COLLECTING_AREA[:archives], presence: true
+  end
+
+  with_options if: -> i { i.collecting_area == "photographs"} do |item|
+    item.validates *REQUIRED_PER_COLLECTING_AREA[:photographs], presence: true
+  end
+
+  with_options if: -> i { i.collecting_area == "rare_books"} do |item|
+    item.validates *REQUIRED_PER_COLLECTING_AREA[:rare_books], presence: true
+  end
+
+  with_options if: -> i { i.collecting_area == "modern_library"} do |item|
+    item.validates *REQUIRED_PER_COLLECTING_AREA[:modern_library], presence: true
+  end
+
+  with_options if: -> i { i.collecting_area == "museum_objects"} do |item|
+    item.validates *REQUIRED_PER_COLLECTING_AREA[:museum_objects], presence: true
+  end
+
+  with_options if: -> i { i.collecting_area == "museum_fine_art"} do |item|
+    item.validates *REQUIRED_PER_COLLECTING_AREA[:museum_fine_art], presence: true
+  end
+
+
   before_validation do
     if self.will_save_change_to_status? || (!self.persisted? && self.status_changed_at.blank?)
       self.status_changed_at = Time.now
     end
+  end
+
+  # convenience for front-end to display "required" badge for fields required
+  # for only certain collecting_areas, enforced by validation above
+  def field_is_required_for_collecting_area?(field_name)
+    return false if collecting_area.blank?
+
+    (REQUIRED_PER_COLLECTING_AREA[collecting_area.to_sym] || []).include?(field_name.to_sym)
   end
 
 
