@@ -14,7 +14,7 @@ class Admin::DigitizationQueueItemsController < AdminController
 
   # GET /admin/digitization_queue_items/new
   def new
-    @admin_digitization_queue_item = Admin::DigitizationQueueItem.new
+    @admin_digitization_queue_item = Admin::DigitizationQueueItem.new(collecting_area: params[:collecting_area])
     if params[:r_and_r_item]
       r_and_r_item = Admin::RAndRItem.find(params[:r_and_r_item])
       @admin_digitization_queue_item.r_and_r_item_id = r_and_r_item.id
