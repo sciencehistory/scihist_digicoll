@@ -38,7 +38,7 @@ class Admin::RAndRItem < ApplicationRecord
   end
 
 
-  CURATORS = %w{ ashley hillary jim patrick molly other }
+  CURATORS = %w{ ashley hillary jim patrick molly }
 
   validates :status, inclusion: { in: STATUSES }
 
@@ -81,9 +81,11 @@ class Admin::RAndRItem < ApplicationRecord
         digitization_queue_item.send "#{key}=", value
       end
     end
+
+    digitization_queue_item.status = 'post_production_completed'
+
     digitization_queue_item.title = self.title
     # self.scope refers to the R&R request scope.
     digitization_queue_item.scope = self.additional_pages_to_ingest
-
   end
 end
