@@ -60,19 +60,6 @@ class Admin::RAndRItem < ApplicationRecord
     end
   end
 
-  # Is this ready to make a DigitizationQueueItem out of?
-  def ready_to_move_to_digitization_queue?
-    return false unless self.is_destined_for_ingest
-    return false if self.copyright_research_still_needed
-    return false unless self.ready_to_move_to_digitization_queue_based_on_status?
-    return true
-  end
-
-  def ready_to_move_to_digitization_queue_based_on_status?
-    possible_statuses = %w{post_production_completed files_sent_to_patron closed}
-    possible_statuses.include?(self.status)
-  end
-
   # Fill out a DigitizationQueueItem with metadata in here. Does not save.
   #
   # Note:

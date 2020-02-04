@@ -3,15 +3,7 @@
 
 <dt>Is this going into the Digital Collections?</dt>
 <dd>
-  <%=  @admin_r_and_r_item.is_destined_for_ingest ? 'Yes' : "No (thus, it can't be moved to the digitization queue)" %>.
-  <% if @admin_r_and_r_item.is_destined_for_ingest %>
-    <% unless @admin_r_and_r_item.ready_to_move_to_digitization_queue_based_on_status? %>
-      <br />(although status is still "<%= @admin_r_and_r_item.status.humanize %>")
-    <% end %>
-    <% if @admin_r_and_r_item.copyright_research_still_needed %>
-      <br />(although copyright research still needed)
-    <%end %>
-  <% end %>
+  <%=  @admin_r_and_r_item.is_destined_for_ingest ? 'Yes' : "No" %>.
 </dd>
 
 <dt>Status</dt>
