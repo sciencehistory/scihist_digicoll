@@ -305,12 +305,13 @@ ALTER SEQUENCE public.on_demand_derivatives_id_seq OWNED BY public.on_demand_der
 
 CREATE TABLE public.queue_item_comments (
     id bigint NOT NULL,
-    digitization_queue_item_id bigint NOT NULL,
+    digitization_queue_item_id bigint,
     user_id bigint,
     text text,
     system_action boolean,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    r_and_r_item_id bigint
 );
 
 
@@ -847,6 +848,14 @@ ALTER TABLE ONLY public.kithe_models
 
 
 --
+-- Name: queue_item_comments fk_rails_d9dfe21716; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.queue_item_comments
+    ADD CONSTRAINT fk_rails_d9dfe21716 FOREIGN KEY (r_and_r_item_id) REFERENCES public.r_and_r_items(id);
+
+
+--
 -- Name: queue_item_comments fk_rails_faa45a6d5b; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -883,6 +892,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190912200533'),
 ('20191016134900'),
 ('20191112170956'),
-('20191210210454');
+('20191210210454'),
+('20200131161750');
 
 
