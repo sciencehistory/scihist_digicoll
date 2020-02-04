@@ -173,16 +173,22 @@ Rails.application.routes.draw do
       end
       member do
         post :add_comment
-        # not sure how to do this implicitly.
-        # delete :delete_comment
+      end
+    end
+
+    resources :r_and_r_items do
+      member do
+        post :add_comment
       end
     end
 
     delete  "digitization_queue_items/:id/delete_comment/:comment_id",
       to: "digitization_queue_items#delete_comment",
-      as: "delete_comment"
+      as: "delete_digitization_queue_item_comment"
 
-    resources :r_and_r_items
+    delete  "r_and_r_items/:id/delete_comment/:comment_id",
+      to: "r_and_r_items#delete_comment",
+      as: "delete_r_and_r_comment"
 
     resources :cart_items, param: :work_friendlier_id, only: [:index, :update, :destroy] do
       collection do
