@@ -33,6 +33,8 @@ describe Admin::RAndRItem, type: :model do
       end
       # self.scope refers to the R&R request scope.
       expect(new_item.scope).to eq item.additional_pages_to_ingest
+      # self.scope refers to the R&R request scope.
+      expect(new_item.status).to eq 'post_production_completed'
     end
   end
 end
