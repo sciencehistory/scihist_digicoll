@@ -15,7 +15,6 @@
 
 
     <div class="mb-2">
-      <% if @admin_r_and_r_item.ready_to_move_to_digitization_queue? %>
         <%# We can create a new digitization queue item based on this R&R item.  %>
         <% if @admin_r_and_r_item.digitization_queue_item.count > 0 %>
           <%# This R&R item *already* has at least one DQ item associated with it. Most likely, the user will *not* want to proceed with creating a new one. %>
@@ -29,10 +28,6 @@
           <%# This R&R item has *no* DQ items associated with it.%>
           <%= link_to "Send to Digitization Queue", new_admin_digitization_queue_items_path(r_and_r_item: @admin_r_and_r_item.id, collecting_area: @admin_r_and_r_item.collecting_area), class: "btn btn-primary" %>
         <% end %>
-      <% else %>
-        <%# Show a disabled button, since this is not ready to send to the digitization queue. %>
-        <button type="button" class="btn btn-primary" disabled>Send to Digitization Queue</button>
-      <% end %>
     </div>
 
     <% if @admin_r_and_r_item.digitization_queue_item.count > 0 %>
