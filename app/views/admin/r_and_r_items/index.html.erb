@@ -74,7 +74,7 @@
   <table class="table">
     <thead>
       <tr>
-        <th>Title and notes</th>
+        <th scope="col" class="w-25 p-3">Title and notes</th>
         <th scope="col" class="d-none d-sm-table-cell" >Status</th>
         <th scope="col" class="d-none d-sm-table-cell" >Deadline</th>
         <th scope="col" class="d-none d-sm-table-cell" >Collecting area</th>
@@ -88,7 +88,7 @@
     <tbody>
       <%@admin_r_and_r_items.each do |admin_r_and_r_item| %>
         <tr>
-          <td>
+          <td class="w-25 p-3">
             <%= link_to admin_r_and_r_item.title, admin_r_and_r_item_path(admin_r_and_r_item)%>
 
             <% if admin_r_and_r_item.additional_notes.present? %>
