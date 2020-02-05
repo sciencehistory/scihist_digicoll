@@ -37,20 +37,10 @@ class Admin::RAndRItem < ApplicationRecord
     STATUSES
   end
 
-
-  CURATORS = %w{ ashley hillary jim patrick molly other }
-
   validates :status, inclusion: { in: STATUSES }
 
   validates :title, presence: true
-
-  # Note: We're choosing not to check that the curator is one of
-  # the existing list of CURATORS
-  # because if one of them is removed
-  # from the list... all their ex-R&R-items
-  # then fail to validate.
   validates :curator, presence: true
-
   validates :patron_name, presence: true
 
 
@@ -58,19 +48,6 @@ class Admin::RAndRItem < ApplicationRecord
     if self.will_save_change_to_status? || (!self.persisted? && self.status_changed_at.blank?)
       self.status_changed_at = Time.now
     end
-  end
-
-  # Is this ready to make a DigitizationQueueItem out of?
-  def ready_to_move_to_digitization_queue?
-    return false unless self.is_destined_for_ingest
-    return false if self.copyright_research_still_needed
-    return false unless self.ready_to_move_to_digitization_queue_based_on_status?
-    return true
-  end
-
-  def ready_to_move_to_digitization_queue_based_on_status?
-    possible_statuses = %w{post_production_completed files_sent_to_patron closed}
-    possible_statuses.include?(self.status)
   end
 
   # Fill out a DigitizationQueueItem with metadata in here. Does not save.
@@ -94,9 +71,11 @@ class Admin::RAndRItem < ApplicationRecord
         digitization_queue_item.send "#{key}=", value
       end
     end
+
+    digitization_queue_item.status = 'post_production_completed'
+
     digitization_queue_item.title = self.title
     # self.scope refers to the R&R request scope.
     digitization_queue_item.scope = self.additional_pages_to_ingest
-
   end
 end
