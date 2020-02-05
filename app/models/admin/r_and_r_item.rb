@@ -37,20 +37,10 @@ class Admin::RAndRItem < ApplicationRecord
     STATUSES
   end
 
-
-  CURATORS = %w{ ashley hillary jim patrick molly }
-
   validates :status, inclusion: { in: STATUSES }
 
   validates :title, presence: true
-
-  # Note: We're choosing not to check that the curator is one of
-  # the existing list of CURATORS
-  # because if one of them is removed
-  # from the list... all their ex-R&R-items
-  # then fail to validate.
   validates :curator, presence: true
-
   validates :patron_name, presence: true
 
 
