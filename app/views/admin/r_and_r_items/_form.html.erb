@@ -35,9 +35,8 @@
       <div class="col">
         <%= f.input :curator,
           label: "Curator",
-          hint: "Who is fielding this request?",
-          collection: Admin::RAndRItem::CURATORS.collect {|s| [s.humanize, s]},
-          include_blank: false %>
+          hint: "Who is fielding this request?"
+        %>
       </div>
       <div class="col">
         <%= f.input :patron_name,
