@@ -19,7 +19,6 @@ class Admin::DigitizationQueueItemsController < AdminController
       r_and_r_item = Admin::RAndRItem.find(params[:r_and_r_item])
       @admin_digitization_queue_item.r_and_r_item_id = r_and_r_item.id
       r_and_r_item.fill_out_digitization_queue_item(@admin_digitization_queue_item)
-      @admin_digitization_queue_item.status = 'awaiting_dig_on_cart'
     end
   end
 
