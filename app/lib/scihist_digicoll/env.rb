@@ -254,10 +254,6 @@ module ScihistDigicoll
 
     define_key :honeybadger_api_key
 
-    # Only used for our import from sufia script, username/password to fetch
-    # bytestreams from fedora.
-    define_key :import_fedora_auth
-
     # Used as the from (no_reply) and to (digital_tech, digital) email addresses
     # when sending notices about failed fixity check.
     define_key :no_reply_email_address
