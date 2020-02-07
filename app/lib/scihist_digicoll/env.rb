@@ -63,6 +63,8 @@ module ScihistDigicoll
     define_key :aws_access_key_id
     define_key :aws_secret_access_key
 
+    define_key :lockbox_master_key #default: lookup!(:lockbox_master_key)
+
     define_key :aws_region, default: "us-east-1"
 
     # eg "https://digital.sciencehistory.org", or "http://localhost:3000".
