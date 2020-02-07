@@ -32,6 +32,7 @@ RSpec.describe Admin::RAndRItemsController, :logged_in_user, type: :controller d
     it "can show the edit form for an item" do
       #item = FactoryBot.create(:r_and_r_item)
       get :edit, params: {"id"=> r_and_r_item.id}
+      byebug
       expect(response.code).to eq "200"
     end
 

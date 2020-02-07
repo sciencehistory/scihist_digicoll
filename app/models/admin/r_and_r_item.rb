@@ -1,6 +1,9 @@
 # This model is based on the parallel Admin::DigitizationQueueItem.rb.
 
 class Admin::RAndRItem < ApplicationRecord
+  encrypts :patron_name
+  encrypts :patron_email
+
   has_many :digitization_queue_item, dependent: :nullify
   has_many :queue_item_comments, dependent: :destroy
 

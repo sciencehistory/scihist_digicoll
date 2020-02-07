@@ -1,0 +1,1 @@
+Lockbox.master_key = ScihistDigicoll::Env.lookup(:lockbox_master_key)
