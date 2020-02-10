@@ -15,8 +15,6 @@
 // Our actual HTML uses the poorly documented rails-ujs "data-disable-with" feature to
 // have a progress spinner and disable form when in proress.
 
-var eddie_event;
-
 import domready from 'domready';
 
 domready(function() {
@@ -41,9 +39,11 @@ domready(function() {
 
   document.body.addEventListener('ajax:error', function(event) {
     var form = event.target;
+
     if (notOurForm(form)) {
       return;
     }
+
     // Make it show what we actually think is saved, not updated value.
     form.reset();
     //debugger;
