@@ -50,8 +50,8 @@ domready(function() {
     // And warn the user, with info for developer in console
     var detail = event.detail;
     var data = detail[0], status = detail[1], xhr = detail[2];
-    console.error("DigitizationQueueItem AJAX status change failed\n\n" + status + " " + data);
-    alert("Uh oh, digitization Queue Item status change failed!");
+    console.error("DigitizationQueueItem or RAndRQueueItem AJAX status change failed\n\n" + status + " " + data);
+    alert("Uh oh! Unable to change the status of this queue item.");
   });
 
 
