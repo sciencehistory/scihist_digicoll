@@ -51,22 +51,6 @@ class Admin::DigitizationQueueItemsController < AdminController
         format.json { render text: "Something" }
       else
         format.html { render :edit }
-        # Note: when this method is invoked as part of the DQ status dropdown, format is actually js.
-        # Why? Unclear to me at the moment.
-        # Processing by Admin::DigitizationQueueItemsController#update as JS
-        format.js {
-          # This string is supposed to be javascript that will then
-          # be *evaluated* in the browser. I don't like this, so I'm leaving
-          # the string blank. But it does get us to send an unprocessable_entity status
-          # that will actually get picked up on the front end.
-          #
-          # More helpful than a blank string, of course, would be a sanitized version of
-          # admin_digitization_queue_item.errors, as part of the response, as suggested
-          # in the format.json stanza beneath.
-          evaluate_me = ''
-          render json: evaluate_me, status: :unprocessable_entity
-        }
-        # However, this json output is never returned, as far as I can tell:
         format.json { render json: @admin_digitization_queue_item.errors, status: :unprocessable_entity }
       end
     end

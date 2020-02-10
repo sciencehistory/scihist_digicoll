@@ -48,14 +48,6 @@ class Admin::RAndRItemsController < AdminController
         format.json { render text: "Something" }
       else
         format.html { render :edit }
-        # For a full discussion of this js block,
-        # see the corresponding method in
-        # Admin::DigitizationQueueItem
-        format.js {
-          evaluate_me = ''
-          render json: evaluate_me, status: :unprocessable_entity
-        }
-        # However, this json output is never returned, as far as I can tell:
         format.json { render json: @admin_r_and_r_item.errors, status: :unprocessable_entity }
       end
     end
