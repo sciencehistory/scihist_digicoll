@@ -70,8 +70,13 @@
           <td>
             <%= link_to admin_digitization_queue_item.title, admin_digitization_queue_item_path(admin_digitization_queue_item) %>
             <% if admin_digitization_queue_item.additional_notes.present? %>
-              <p>
+              <p class="mb-0">
                 <%= admin_digitization_queue_item.additional_notes %>
+              </p>
+            <% end %>
+            <% if admin_digitization_queue_item.location.present? %>
+              <p class="mb-0">
+                <b>Location:</b> <%= admin_digitization_queue_item.location %>
               </p>
             <% end %>
           </td>
