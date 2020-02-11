@@ -4,11 +4,11 @@ unless lockbox_master_key.present?
   raise RuntimeError,
     """
 
-    Lockbox master key is missing!
+    Lockbox master key is missing in production.
 
-    This application encrypts patron information using Lockbox.
-    For it to work, you need to make sure that local_env.yml
-    contains a line such as:
+    We encrypt our patron information using Lockbox.
+    For encryption to work in production, local_env.yml
+    must contain a line such as:
         lockbox_master_key: #{Lockbox.generate_key}
     A key can be generated in the Rails console by running:
         \"Lockbox.generate_key\".
