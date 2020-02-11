@@ -343,8 +343,6 @@ CREATE TABLE public.r_and_r_items (
     title character varying,
     curator character varying,
     collecting_area character varying,
-    patron_name character varying,
-    patron_email character varying,
     bib_number character varying,
     location character varying,
     accession_number character varying,
