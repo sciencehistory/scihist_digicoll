@@ -1,5 +1,10 @@
-# This model is based on the parallel Admin::DigitizationQueueItem.rb.
-
+ # "RAndR" is "Rights & Reproductions", and represents requests from specific patrons
+# for copies of things in our collection. We sometimes photograph things in response
+# to patron request, sometimes they will wind up also being processed for adding
+# to Digital Collections, other times not.
+#
+# This model is based on the parallel Admin::DigitizationQueueItem.rb, both are
+# adaptations of former google doc spreadsheet-based processes, and track workflow.
 class Admin::RAndRItem < ApplicationRecord
 
   # For more info about how to rotate a leaked Lockbox master key,
