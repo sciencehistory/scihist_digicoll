@@ -1,8 +1,11 @@
 # This model is based on the parallel Admin::DigitizationQueueItem.rb.
 
 class Admin::RAndRItem < ApplicationRecord
-  encrypts :patron_name
-  encrypts :patron_email
+
+  # For more info about how to rotate a leaked Lockbox master key,
+  # see https://github.com/sciencehistory/scihist_digicoll/issues/629
+  # and https://github.com/ankane/lockbox/issues/35
+  encrypts :patron_name, :patron_email
 
   has_many :digitization_queue_item, dependent: :nullify
   has_many :queue_item_comments, dependent: :destroy
