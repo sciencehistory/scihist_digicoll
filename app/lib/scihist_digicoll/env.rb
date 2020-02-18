@@ -63,6 +63,16 @@ module ScihistDigicoll
     define_key :aws_access_key_id
     define_key :aws_secret_access_key
 
+    define_key :lockbox_master_key, default: -> {
+      # In production, we insist that local_env.yml contain
+      # a real 64-bit key; if none is defined, we fail at
+      # deploy time (see config/initializers/lockbox.rb).
+      #
+      # However, we do provide a dummy key for dev and test
+      # environments, which is a string of 64 zeros.
+      "0" * 64 if Rails.env.test? || Rails.env.development?
+    }
+
     define_key :aws_region, default: "us-east-1"
 
     # eg "https://digital.sciencehistory.org", or "http://localhost:3000".
