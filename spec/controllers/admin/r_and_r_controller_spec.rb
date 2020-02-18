@@ -21,6 +21,12 @@ RSpec.describe Admin::RAndRItemsController, :logged_in_user, type: :controller d
       expect(Admin::RAndRItem.count).to eq 1
       item = Admin::RAndRItem.last
       expect(item.title).to eq "Some Item"
+      # Just by way of making sure the patron and email are indeed
+      # encrypted in the DB. The length of the encrypted strings
+      # is arbitrary, but shouldn't change unless e.g. the master_key
+      # used for our test environment changes first.
+      expect(item.patron_name_ciphertext.length).to  eq 56
+      expect(item.patron_email_ciphertext.length).to eq 56
     end
 
     it "it can show a single item" do

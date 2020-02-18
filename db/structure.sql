@@ -343,8 +343,6 @@ CREATE TABLE public.r_and_r_items (
     title character varying,
     curator character varying,
     collecting_area character varying,
-    patron_name character varying,
-    patron_email character varying,
     bib_number character varying,
     location character varying,
     accession_number character varying,
@@ -365,7 +363,9 @@ CREATE TABLE public.r_and_r_items (
     deadline timestamp without time zone,
     date_files_sent timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    patron_name_ciphertext text,
+    patron_email_ciphertext text
 );
 
 
@@ -893,6 +893,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20191016134900'),
 ('20191112170956'),
 ('20191210210454'),
-('20200131161750');
+('20200131161750'),
+('20200206194219');
 
 

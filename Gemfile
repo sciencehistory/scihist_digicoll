@@ -5,6 +5,8 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 # ie `~> 2.5` or `~> 2.6`, not including additional that may be in 2.3
 ruby "~> #{File.read('.ruby-version').chomp.split('.').slice(0,3).join('.')}"
 
+gem 'lockbox'
+
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.2.4'
 gem 'webpacker', '~> 4.0'
