@@ -5,7 +5,6 @@ class Admin::RAndRItemsController < AdminController
   # GET /admin/r_and_r_items
   # GET /admin/r_and_r_items.json
   def index
-    #@admin_r_and_r_items = r_and_r_items
     @admin_r_and_r_items = filtered_index_items
   end
 
@@ -43,9 +42,9 @@ class Admin::RAndRItemsController < AdminController
   def update
     respond_to do |format|
       if update_with_action_comments(@admin_r_and_r_item, admin_r_and_r_item_params)
-      #if @admin_r_and_r_item.update(admin_r_and_r_item_params)
-        format.html { redirect_to @admin_r_and_r_item, notice: 'R&R item updated.' }
-        format.json { render text: "Something" }
+        notice = 'R&R item updated.'
+        format.html { redirect_to @admin_r_and_r_item, notice: notice }
+        format.json { render json: { notice: notice } }
       else
         format.html { render :edit }
         format.json { render json: @admin_r_and_r_item.errors, status: :unprocessable_entity }

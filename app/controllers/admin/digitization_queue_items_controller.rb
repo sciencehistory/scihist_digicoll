@@ -47,8 +47,9 @@ class Admin::DigitizationQueueItemsController < AdminController
   def update
     respond_to do |format|
       if update_with_action_comments(@admin_digitization_queue_item, admin_digitization_queue_item_params)
-        format.html { redirect_to @admin_digitization_queue_item, notice: 'Digitization queue item was successfully updated.' }
-        format.json { render text: "Something" }
+        notice = 'Digitization queue item was successfully updated.'
+        format.html { redirect_to @admin_digitization_queue_item, notice: notice }
+        format.json { render json: { notice: notice } }
       else
         format.html { render :edit }
         format.json { render json: @admin_digitization_queue_item.errors, status: :unprocessable_entity }
