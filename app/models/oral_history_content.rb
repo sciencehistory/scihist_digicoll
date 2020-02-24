@@ -13,11 +13,11 @@
 # To store a created derivative directly to 'store' storage, you can use some custom methods,
 # passing a `File` object or other shrine-compatible io-like object.
 #
-#     oral_history_content.set_commbined_audio_mp3(io)
-#     oral_history_content.set_commbined_audio_webm(io)
+#     oral_history_content.set_commbined_audio_mp3!(io)
+#     oral_history_content.set_commbined_audio_webm!(io)
 #
-# There is a string field `combined_audio_fingerprint` for fingerprinting
-# combined files for staleness, and a JSONB filed combined_audio_component_timecodes
+# There is a (yet-unused) string field `combined_audio_fingerprint` for fingerprinting
+# combined files for staleness, and a JSONB field combined_audio_component_metadata
 # expected to hold a hash of metadata on components of combined audio.
 #
 # There is a text/blob slot for the OHMS XML file, `ohms_xml`. It's not
