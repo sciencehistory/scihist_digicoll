@@ -8,7 +8,7 @@ class OralHistoryContent < ActiveRecord::Migration[5.2]
       t.string :combined_audio_fingerprint
       t.jsonb :combined_audio_component_metadata
 
-      t.text :ohms_xml
+      t.text :ohms_xml_text
 
       t.timestamps
     end
