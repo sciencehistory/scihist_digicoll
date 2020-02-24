@@ -310,7 +310,7 @@ CREATE TABLE public.oral_history_content (
     combined_audio_webm_data jsonb,
     combined_audio_fingerprint character varying,
     combined_audio_component_metadata jsonb,
-    ohms_xml text,
+    ohms_xml_text text,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );

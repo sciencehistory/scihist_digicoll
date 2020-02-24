@@ -20,7 +20,7 @@
 # combined files for staleness, and a JSONB field combined_audio_component_metadata
 # expected to hold a hash of metadata on components of combined audio.
 #
-# There is a text/blob slot for the OHMS XML file, `ohms_xml`. It's not
+# There is a text/blob slot for the OHMS XML file, `ohms_xml_text`. It's not
 # a shrine file attachment, just a postgres `text` column.
 #
 class OralHistoryContent < ApplicationRecord
