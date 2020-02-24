@@ -28,8 +28,8 @@ class OralHistoryContent < ApplicationRecord
 
   belongs_to :work, inverse_of: :oral_history_content
 
-  include CombinedAudioUploader::Attachment.new(:combined_audio_mp3)
-  include CombinedAudioUploader::Attachment.new(:combined_audio_webm)
+  include CombinedAudioUploader::Attachment.new(:combined_audio_mp3, store: :combined_audio_derivatives)
+  include CombinedAudioUploader::Attachment.new(:combined_audio_webm, store: :combined_audio_derivatives)
 
   # Sets IO to be combined_audio_mp3, writing directly to "store" storage,
   # and *saves model*.

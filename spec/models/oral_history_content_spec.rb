@@ -14,8 +14,11 @@ describe OralHistoryContent do
       expect(oral_history_content.combined_audio_mp3).to be_present
       expect(oral_history_content.combined_audio_mp3.read).to eq(File.read(mp3_path, encoding: "BINARY"))
       expect(oral_history_content.combined_audio_mp3.size).to eq(File.size(mp3_path))
+
       expect(oral_history_content.combined_audio_mp3.original_filename).to eq("combined.mp3")
       expect(oral_history_content.combined_audio_mp3.mime_type).to eq("audio/mpeg")
+
+      expect(oral_history_content.combined_audio_mp3.id).to match(/#{work.id}\/combined_[a-f0-9]+\.mp3/)
     end
 
     describe "for failed save" do
