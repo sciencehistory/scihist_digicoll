@@ -130,6 +130,7 @@ Rails.application.routes.draw do
         put "demote_to_asset"
         put "publish"
         put "unpublish"
+        put "submit_ohms_xml"
       end
       collection do
         get 'batch_update', to: "works#batch_update_form"
