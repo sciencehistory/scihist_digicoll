@@ -5,7 +5,9 @@
 # We'll probably handle `show` in a different controller, for now no show.
 class Admin::WorksController < AdminController
   before_action :set_work,
-    only: [:show, :edit, :update, :destroy, :reorder_members_form, :demote_to_asset, :publish, :unpublish]
+    only: [:show, :edit, :update, :destroy,
+           :reorder_members_form, :demote_to_asset, :publish, :unpublish,
+           :submit_ohms_xml]
 
   # GET /admin/works
   # GET /admin/works.json
@@ -72,6 +74,18 @@ class Admin::WorksController < AdminController
         format.json { render json: @work.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  # comes in as a file multipart POST, we read it and stick it in ohms_xml text field please
+  # PATCH/PUT /admin/works/ab2323ac/submit_ohms_xml
+  def submit_ohms_xml
+    unless params[:ohms_xml].present?
+      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: { error: "No file received" }
+      return
+    end
+
+    @work.oral_history_content!.update!(ohms_xml_text: params[:ohms_xml].read)
+    redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: "OHMS XML file updated"
   end
 
   # PATCH/PUT /admin/works/1/publish
