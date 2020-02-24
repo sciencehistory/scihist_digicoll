@@ -300,6 +300,42 @@ ALTER SEQUENCE public.on_demand_derivatives_id_seq OWNED BY public.on_demand_der
 
 
 --
+-- Name: oral_history_content; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.oral_history_content (
+    id bigint NOT NULL,
+    work_id uuid NOT NULL,
+    combined_audio_mp3_data jsonb,
+    combined_audio_webm_data jsonb,
+    combined_audio_fingerprint character varying,
+    combined_audio_component_timecodes jsonb,
+    ohms_xml text,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: oral_history_content_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.oral_history_content_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: oral_history_content_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.oral_history_content_id_seq OWNED BY public.oral_history_content.id;
+
+
+--
 -- Name: queue_item_comments; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -504,6 +540,13 @@ ALTER TABLE ONLY public.on_demand_derivatives ALTER COLUMN id SET DEFAULT nextva
 
 
 --
+-- Name: oral_history_content id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oral_history_content ALTER COLUMN id SET DEFAULT nextval('public.oral_history_content_id_seq'::regclass);
+
+
+--
 -- Name: queue_item_comments id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -585,6 +628,14 @@ ALTER TABLE ONLY public.kithe_models
 
 ALTER TABLE ONLY public.on_demand_derivatives
     ADD CONSTRAINT on_demand_derivatives_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oral_history_content oral_history_content_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oral_history_content
+    ADD CONSTRAINT oral_history_content_pkey PRIMARY KEY (id);
 
 
 --
@@ -733,6 +784,13 @@ CREATE UNIQUE INDEX index_on_demand_derivatives_on_work_id_and_deriv_type ON pub
 
 
 --
+-- Name: index_oral_history_content_on_work_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_oral_history_content_on_work_id ON public.oral_history_content USING btree (work_id);
+
+
+--
 -- Name: index_queue_item_comments_on_digitization_queue_item_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -773,6 +831,14 @@ CREATE UNIQUE INDEX index_users_on_reset_password_token ON public.users USING bt
 
 ALTER TABLE ONLY public.kithe_model_contains
     ADD CONSTRAINT fk_rails_091010187b FOREIGN KEY (container_id) REFERENCES public.kithe_models(id);
+
+
+--
+-- Name: oral_history_content fk_rails_1684bf9e32; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oral_history_content
+    ADD CONSTRAINT fk_rails_1684bf9e32 FOREIGN KEY (work_id) REFERENCES public.kithe_models(id);
 
 
 --
@@ -894,6 +960,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20191112170956'),
 ('20191210210454'),
 ('20200131161750'),
-('20200206194219');
+('20200206194219'),
+('20200220215652');
 
 
