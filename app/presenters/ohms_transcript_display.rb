@@ -16,6 +16,9 @@ class OhmsTranscriptDisplay < ViewModel
   # We're also doing things somewhat different than OHMS when we coudn't figure out why it made
   # any sense (like a bare span for an empty line, or using span as a wrapper for p which is
   # probably illegal HTML)
+  #
+  # This is kinda dense code, but it works, not sure it would be cleaner with an view template,
+  # and should be more performant this way.
   def display
     paragraphs = []
     current_paragraph = []
