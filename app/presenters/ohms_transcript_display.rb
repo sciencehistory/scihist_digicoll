@@ -3,13 +3,15 @@
 #
 # Includes timestamp tags at appropriate place, from <sync> data.
 #
-# Input is nokogiri parsed OHMS xml.
+# Input is our OralHistoryContent::OhmsXml wrapper/helper object.
 class OhmsTranscriptDisplay < ViewModel
   OHMS_NS = OralHistoryContent::OhmsXml::OHMS_NS
 
-  valid_model_type_names "Nokogiri::XML::Document"
+  valid_model_type_names "OralHistoryContent::OhmsXml"
 
-  alias_method :xml, :model
+  def xml
+    model.parsed
+  end
 
   # Trying to display somewhat like OHMS does. We need to track lines separated by individual "\n", that
   # matches line count in `sync`. But we also need to group lines separated by "\n\n" into paragraphs.
@@ -42,6 +44,16 @@ class OhmsTranscriptDisplay < ViewModel
     content_tag("div", safe_join(paragraph_html_arr), class: "ohms-transcript-container")
   end
 
+  # A hash where key is an OHMS line number. Value is a Hash containing
+  # :word_number and :seconds .
+  #
+  # We parse the somewhat mystical OHMS <sync> element to get it.
+  #
+  # Public mostly so we can test it. :(
+  def sync_timecodes
+    @sync_timecodes ||= parse_sync!
+  end
+
   private
 
   # * adds a timecode anchor if needed.
@@ -67,14 +79,6 @@ class OhmsTranscriptDisplay < ViewModel
 
     # add em together with whitespace on end either way
     safe_join([sync_html, ohms_line_str, " \n"])
-  end
-
-  # A hash where key is an OHMS line number. Value is a Hash containing
-  # :word_number and :seconds .
-  #
-  # We parse the somewhat mystical OHMS <sync> element to get it.
-  def sync_timecodes
-    @sync_timecodes ||= parse_sync!
   end
 
 
