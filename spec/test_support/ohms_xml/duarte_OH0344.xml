@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ROOT xmlns="https://www.weareavp.com/nunncenter/ohms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.weareavp.com/nunncenter/ohms/ohms.xsd">
+  <record dt="2020-02-18" id="00083325">
+    <version>5.4</version>
+    <date format="yyyy-mm-dd" value="2006-06-13"/>
+    <date_nonpreferred_format>13 June 2006</date_nonpreferred_format>
+    <cms_record_id/>
+    <title>Oral history interview with Ronald Duarte</title>
+    <accession>OH0344</accession>
+    <duration>0:28:06</duration>
+    <collection_id/>
+    <collection_name/>
+    <series_id>CHOE</series_id>
+    <series_name>Chemical History of Electronics</series_name>
+    <repository>Science History Institute</repository>
+    <funding>This oral history is one in a series supported by grants from the Gordon and Betty Moore Foundation.</funding>
+    <repository_url/>
+    <subject>Duarte, Ronald, 1930-</subject>
+    <subject>Intel Corporation</subject>
+    <subject>Moore, Gordon E., 1929-</subject>
+    <subject>Semiconductor industry</subject>
+    <interviewee>Ronald Duarte</interviewee>
+    <interviewer>David C. Brock</interviewer>
+    <format>sound</format>
+    <format>text</format>
+    <file_name>duarte_r_0344_1-1.mp3</file_name>
+    <sync>1:|13(3)|19(14)|27(9)|39(12)|48(4)|61(2)|72(10)|80(4)|91(7)|99(6)|110(1)|128(11)|149(2)|163(6)|179(4)|187(13)|199(2)|209(2)|216(8)|229(5)|237(14)|244(10)|260(13)|270(1)|283(6)|292(2)|303(13)|308(2)</sync>
+    <sync_alt/>
+    <transcript_alt_lang/>
+    <translate>0</translate>
+    <media_id/>
+    <media_url>https://scihist-digicoll-production-derivatives.s3.amazonaws.com/6bfa6418-f651-438e-84c5-31c2344c61e3/small_mp3/ee51c131a493f8a8b18f2a42288ca886.mp3</media_url>
+    <mediafile>
+      <host>Other</host>
+      <avalon_target_domain/>
+      <host_account_id/>
+      <host_player_id/>
+      <host_clip_id/>
+      <clip_format>audio</clip_format>
+    </mediafile>
+    <kembed/>
+    <language>English</language>
+    <user_notes>USER NOTE FIELD TEST</user_notes>
+    <index>
+      <point>
+        <time>0</time>
+        <title>Early childhood and Duarte family history</title>
+        <title_alt/>
+        <partial_transcript>DUARTE: I'm Ron Duarte.
+BROCK: And this is David Brock. And this is an interview taking place on June 13, 2006. Ron, I believe that you were born in Pescadero [California] but I’m not sure exactly when.</partial_transcript>
+        <partial_transcript_alt/>
+        <synopsis>Pescadero. Portuguese heritage. Azores. Coming to the United States. Boston. San Francisco. Half Moon Bay. San Mateo County Sheriff. Williamsons from Philadelphia, Pennsylvania.</synopsis>
+        <synopsis_alt/>
+        <keywords>Azores;Gordon E. Moore;Half Moon Bay;Pescadero;ranching;San Mateo;sheriff;Walter E. Moore;whaling;Williamson family</keywords>
+        <keywords_alt/>
+        <subjects>Azores;California--Pescadero;California--San Mateo County;Duarte, Ronald, 1930-;Moore, Gordon E., 1929-;Moore, Walter E.;Williamson family</subjects>
+        <subjects_alt/>
+        <gpspoints>
+          <gps>37.211, -122.273</gps>
+          <gps_zoom>11</gps_zoom>
+          <gps_text>Pescadero, California</gps_text>
+          <gps_text_alt/>
+        </gpspoints>
+        <hyperlinks>
+          <hyperlink/>
+          <hyperlink_text/>
+          <hyperlink_text_alt/>
+        </hyperlinks>
+      </point>
+      <point>
+        <time>212</time>
+        <title>Growing up with Gordon Moore </title>
+        <title_alt/>
+        <partial_transcript>BROCK:  That general store was just down the street, not too far from your family’s tavern?
+DUARTE:  Yes.  The general store is called Muzzi’s now.</partial_transcript>
+        <partial_transcript_alt/>
+        <synopsis>Gordon Moore’s mother Myra. Gordon Moore moving to Redwood City. Getting into trouble with a wagon. Gordon Moore visiting Pescadero. Gordon Moore tinkering. Grammar school. Sequoia High School. Friends. Gordon Moore as a student. </synopsis>
+        <synopsis_alt/>
+        <keywords/>
+        <keywords_alt/>
+        <subjects/>
+        <subjects_alt/>
+        <gpspoints>
+          <gps/>
+          <gps_zoom/>
+          <gps_text/>
+          <gps_text_alt/>
+        </gpspoints>
+        <hyperlinks>
+          <hyperlink/>
+          <hyperlink_text/>
+          <hyperlink_text_alt/>
+        </hyperlinks>
+      </point>
+      <point>
+        <time>573</time>
+        <title>Gordon Moore’s family</title>
+        <title_alt/>
+        <partial_transcript>BROCK:  What impressions do you have from that era of Gordon’s father?
+DUARTE:  He was like a tough sheriff, you know what I mean?</partial_transcript>
+        <partial_transcript_alt/>
+        <synopsis>Gordon Moore’s father, Walter. Fishing. Walter Moore, Jr., and Francis Moore. </synopsis>
+        <synopsis_alt/>
+        <keywords/>
+        <keywords_alt/>
+        <subjects/>
+        <subjects_alt/>
+        <gpspoints>
+          <gps/>
+          <gps_zoom/>
+          <gps_text/>
+          <gps_text_alt/>
+        </gpspoints>
+        <hyperlinks>
+          <hyperlink/>
+          <hyperlink_text/>
+          <hyperlink_text_alt/>
+        </hyperlinks>
+      </point>
+      <point>
+        <time>790</time>
+        <title>Redwood City</title>
+        <title_alt/>
+        <partial_transcript>BROCK:  When you think of your childhood friendship with Gordon Moore, do you have any favorite stories about doing things with him in Pescadero or in Redwood City?
+DUARTE:  That wagon incident, going down the hill. [laughter]  Their neighbor was quite a character in Redwood City.  He could talk like Donald Duck</partial_transcript>
+        <partial_transcript_alt/>
+        <synopsis>Family bar. Donald Duck. Using explosives. Softball. </synopsis>
+        <synopsis_alt/>
+        <keywords/>
+        <keywords_alt/>
+        <subjects/>
+        <subjects_alt/>
+        <gpspoints>
+          <gps/>
+          <gps_zoom/>
+          <gps_text/>
+          <gps_text_alt/>
+        </gpspoints>
+        <hyperlinks>
+          <hyperlink/>
+          <hyperlink_text/>
+          <hyperlink_text_alt/>
+        </hyperlinks>
+      </point>
+      <point>
+        <time>991</time>
+        <title>Gordon Moore as an adult</title>
+        <title_alt/>
+        <partial_transcript>BROCK:  As an adult, have you had any opportunities to interact with him?
+DUARTE:  Just when he used to come over and see his brother.  He’d drop in.  </partial_transcript>
+        <partial_transcript_alt/>
+        <synopsis>Visiting Pescadero. Open Space Commission. Betty I. Moore. Kenneth and Steven Moore.</synopsis>
+        <synopsis_alt/>
+        <keywords/>
+        <keywords_alt/>
+        <subjects/>
+        <subjects_alt/>
+        <gpspoints>
+          <gps/>
+          <gps_zoom/>
+          <gps_text/>
+          <gps_text_alt/>
+        </gpspoints>
+        <hyperlinks>
+          <hyperlink/>
+          <hyperlink_text/>
+          <hyperlink_text_alt/>
+        </hyperlinks>
+      </point>
+      <point>
+        <time>1219</time>
+        <title>Changing community of Pescadero</title>
+        <title_alt/>
+        <partial_transcript>BROCK:  Well, maybe then we could just talk for a moment about Pescadero and how the community has changed and how it has remained the same since the two of you were growing up.
+DUARTE:  It’s remained the same because of the [California] Coastal Commission. We do have a lot of beaches and parks here. Gordon has contributed quite a bit through Open Space.</partial_transcript>
+        <partial_transcript_alt/>
+        <synopsis>Farming. Horses. Tavern</synopsis>
+        <synopsis_alt/>
+        <keywords/>
+        <keywords_alt/>
+        <subjects/>
+        <subjects_alt/>
+        <gpspoints>
+          <gps/>
+          <gps_zoom/>
+          <gps_text/>
+          <gps_text_alt/>
+        </gpspoints>
+        <hyperlinks>
+          <hyperlink/>
+          <hyperlink_text/>
+          <hyperlink_text_alt/>
+        </hyperlinks>
+      </point>
+      <point>
+        <time>1521</time>
+        <title>How to think about Gordon Moore</title>
+        <title_alt/>
+        <partial_transcript>BROCK:  If you had to tell somebody one thing about how they should think about Gordon Moore what would that be?
+DUARTE:  It would have to be about his accomplishments. That says a lot.  </partial_transcript>
+        <partial_transcript_alt/>
+        <synopsis>Accomplishments.</synopsis>
+        <synopsis_alt/>
+        <keywords/>
+        <keywords_alt/>
+        <subjects/>
+        <subjects_alt/>
+        <gpspoints>
+          <gps/>
+          <gps_zoom/>
+          <gps_text/>
+          <gps_text_alt/>
+        </gpspoints>
+        <hyperlinks>
+          <hyperlink/>
+          <hyperlink_text/>
+          <hyperlink_text_alt/>
+        </hyperlinks>
+      </point>
+    </index>
+    <type>Oral history</type>
+    <description>Ronald Duarte begins the interview by discussing his family history, and how the family came to settle in Pescadero, California. Duarte and Gordon E. Moore grew up together in Pescadero, until Moore and his family moved away in the late 1930s. Duarte and Moore attended the same grammar school, although Moore was a year older than Duarte and they did not take any classes together. Duarte recalls fond memories of Moore's mother, and memories of Moore's two brothers. Duarte and Moore kept in touch for a time after Moore moved to Redwood City, California, from Pescadero, and now they only see each other when Moore visits Pescadero.</description>
+    <rel/>
+    <transcript>BROCK: This is an oral history interview with Ron Duarte taking place on 13 June
+2006. The interviewer is David Brock. Ron, I believe that you were born in
+Pescadero [Pescadero, California] but I'm not sure exactly when.
+
+DUARTE: On 7 May 1930.
+
+BROCK: Tell us a little bit about your family background and your family's
+history in Pescadero.
+
+DUARTE: My grandfather Duarte was Portuguese from the Azores [Azorean Islands],
+and he was a barber and a barkeep. He came to San Francisco [California] in
+1894, bought the bar, and went into business. A few years later he bought the
+property also. My grandfather Cardoza--also from the Azores--came much earlier.
+It was probably in the 1870s, maybe late 1860s. He came when they were clearing
+all the land on the coast. The first time he came to the United States was when
+he was sixteen years old. He went to Boston [Massachusetts] and he couldn't get
+a job. He went back to the Azores and then he surfaced here in the Half Moon
+Bay-Pescadero area. He and the rest must have come by whaling ship because there
+was no talk of coming across the plains like the Moore family did. But he
+prevailed, and with a lot of hard work he owned first a small ranch and, later
+on, another fair-sized ranch with cows and pigs. That was part of the days when
+they made cheese and cream. They didn't ship it in and out of town like we do
+now. It was all done by horse and buggy. The Moores came to the area in the
+1850s. They were some of the first to settle the town here. There are still
+members of the Moore family here. We all knew each other throughout the
+years--Gordon's [Gordon E. Moore] father [Walter E. Moore] worked as a San Mateo
+County Sheriff in town--he just lived a couple doors down from where I live now.
+The brother and sister married another set of brother and sister. The set of
+siblings married the Moores and the Williamsons. They are an old family. I think
+the Williamsons came from Philadelphia [Pennsylvania] and they ran a general
+store where they used to sell everything in the old days. They were here for
+over a hundred years and there are still some here.
+
+BROCK: That general store was just down the street, not too far from your
+family's tavern?
+
+DUARTE: Yes. The general store is called Muzzi's now. The Muzzi family bought it
+so they changed the name. Then across the street from the store is where Gordon
+Moore was raised during the first nine years of his life. We are right next door
+and his mother Myra [Myra Moore]--it was a great place to go for us kids because
+she used to let us do anything almost. [laughter] We jumped on couches,
+especially on a rainy day. [laughter] I'm not sure if it was 1938 or 1939 when
+they moved. Gordon was born in 1929. He's a year older than I am. His father
+became under-sheriff of San Mateo County, so they moved to Redwood City
+[California]. We were a little too young to go fishing in San Mateo, like we did
+a few years later, but we used to spend a little time in the creek. Then, when
+they went over to Redwood City, I went over there and stayed a few days or
+sometimes a week and we'd do things in Redwood City, like get in trouble for
+coming down a street with both of us in a wagon. [laughter] His father--holy
+criminies--we'd catch hell over that.
+
+BROCK: [laughter] Was it going down a hill?
+
+DUARTE: It was a paved street with a little slope on it. It was a good place for
+kids to go down in wagons. Also, there weren't many cars on the road, luckily.
+When the Moores came back to Pescadero, they'd usually--my mother was good
+friends with the Williamsons and the Moores. They were raised together here. I
+can remember that Gordon was already tinkering around with some experiments in
+the garage.
+
+BROCK: In Redwood City?
+
+DUARTE: Yes. If I'm not mistaken, I think he got a fire going in the garage a
+time or two. [laughter] Finally the fire department had to go talk to his
+father. [laughter] &quot;Don't let him do anymore of this stuff.&quot;
+
+BROCK: Did the two of you go to grade school together in Pescadero?
+
+DUARTE: Yes. Then him and another fellow, Frank Huglin, who was another smart
+guy--the first grade, if I'm not mistaken--there was no kindergarten here. It
+was grade one of grammar school--and they started a year before I did--but by
+lunch time they were in the second grade already. [laughter] They jumped ahead
+of me by a couple of years.
+
+BROCK: Could you describe the school? Could you describe the size of the school
+and the number of students? DUARTE: There were probably less than a hundred kids
+there in all eight grades. Grammar school was up to eighth grade. There was no
+junior high. And the other thing that Aunt Louise Williamson told me was that
+when Gordon was a freshman at Sequoia [Sequoia High School]--you can verify this
+with Gordon--he was explaining math to the senior class. [laughter]
+
+BROCK: If you think back to your time together at school, what kind of a student
+was Gordon?
+
+DUARTE: He was a good student. He has always been a tremendous student. Even in
+grammar school. But, he was a year ahead of me. I wasn't in his class.
+
+BROCK: I know the two of you were good friends. Were you well-liked? Did you
+have a big group of friends that you did things with?
+
+DUARTE: There were a few kids like us in town. We more or less all hung out at
+his place. [laughter] We had a free run there of things.
+
+BROCK: Was his mother a very tolerant person? DUARTE: Very. She was just too
+good. [laughter] A real nice person.
+
+BROCK: What impressions do you have from that era of Gordon's father? DUARTE: He
+was like a tough sheriff, you know what I mean? We had a lot of laborers over
+here. Before World War II, most of the laborers on the coast were the Philippine
+people, and there were a lot in town. He maintained order, definitely maintained
+order. He was a World War I veteran, and he used to like to hunt. I don't
+remember him fishing too much, but Gordon likes to fish. Now he has a boat and
+goes all over.
+
+BROCK: Was fishing something that the two of you did together in Pescadero?
+
+DUARTE: Not much. We were just getting started at it. I don't remember if we
+went crayfishing together or not. That's how we started out, because they were
+dumb compared to steelhead. They were easier to catch when we first started out.
+All you do is put a piece of meat on the end of a string and throw it out there,
+have a net to put underneath them and pull them in. Steelhead fishing came later.
+
+BROCK: Understood. What about Gordon's brothers? Do you have any impressions of
+them? I know they were older.
+
+DUARTE: Well, one was older. Junior [Walter E. Moore, Jr.] was older. Francis
+[Francis A. Moore] was younger. Is Francis still alive?
+
+BROCK: No. I'm sorry to report that they've both died.
+
+DUARTE: I knew that Walt was dead. He married a local gal here. He was the most
+careful guy in the world on these hills and I'll be damned if he didn't tip over
+in one of those four-wheelers.
+
+BROCK: Oh really?
+
+DUARTE: Yes. He was the most careful guy in the world. I still can't believe how
+in the hell that happened because he was too careful. He made a tractor.
+
+BROCK: He built a tractor?
+
+DUARTE: Right.
+
+BROCK: Wow.
+
+DUARTE: A wide-gauge that was good on the hills. It was wide so that it could go
+on the steep hills. Because these guys running a tractor on these hills, you get
+a novice up there he'll scare the hell out of you.
+
+BROCK: Right. [laughter]
+
+DUARTE: They could be sliding sideways and all kinds of stuff like that.
+
+BROCK: Right. What about his younger brother? What impressions do you have of him?
+
+DUARTE: Well, he was a little younger. I don't remember too much about Francis.
+But, Walt Jr., he was real mild-mannered, easygoing, pretty much a homebody there.
+
+BROCK: Did the brothers seem to get along pretty well?
+
+DUARTE: Absolutely.
+
+BROCK: When you think of your childhood friendship with Gordon Moore, do you
+have any favorite stories about doing things with him in Pescadero or in Redwood City?
+
+DUARTE: That wagon incident, going down the hill. [laughter] Their neighbor was
+quite a character in Redwood City. He could talk like Donald Duck.
+
+BROCK: Was that a child or an adult?
+
+DUARTE: A child. Even later when he grew up he used to come to the bar once in a
+while. [laughter] He liked his tea. Whereas the Moores, they didn't spend much
+time around the bar at all--next to none. This guy, Donald Duck--Donald was his
+name and we used to call him Donald Duck--even when he was twenty-five, thirty
+years old, or even older he'd come around to the bar once in a while and get a
+couple of drinks and he'd start talking like Donald Duck. [laughter]
+
+BROCK: Did you ever tinker around with Gordon Moore?
+
+DUARTE: No. That was all beyond me.
+
+BROCK: Did you ever use any of the explosives that he was making?
+
+DUARTE: No.
+
+BROCK: If you had to pick some words to describe Gordon Moore as a youth, what
+words would come to mind?
+
+DUARTE: He was quite reserved, he didn't have a lot to say, but enough. He
+wasn't shy, but he was maybe a little bit on the quiet side.
+
+BROCK: Was he adventurous? Did he like to do things?
+
+DUARTE: We used to play softball in the lot alongside of his store all the time.
+Even the adults played in the evening. When the adults came we were about done.
+We were only about eight or nine years old. I had a neighbor--he was a
+butcher--he used to use my glove all the time. So you knew where I was at. [laughter]
+
+BROCK: After they moved to Redwood City, would you occasionally see him when he
+came back to Pescadero to visit with his relatives?
+
+DUARTE: Oh yes. I'd see him then and sometimes I went over there--maybe three or
+four times at the most. Something like that.
+
+BROCK: As an adult, have you had any opportunities to interact with him?
+
+DUARTE: Just when he used to come over and see his brother. He'd drop in. Then
+the Open Space [Peninsula Open Space Trust] had a gathering for the lighthouse
+and they had it at the restaurant. He came and we talked. I'd always see him
+maybe a couple times a year after that. We didn't exchange Christmas cards, I
+don't think.
+
+BROCK: Did you have an opportunity to spend time with Betty Moore [Betty I.
+Moore] and do you have impressions about her?
+
+DUARTE: Only when she came here with Gordon, very little time. Even with Steve
+[Steven E. Moore] and--what's the other boy's name?
+
+BROCK: Ken [Kenneth E. Moore].
+
+DUARTE: Ken. I probably wouldn't know him. Steve, I might recognize him if, if
+he came in. The only time I talked to them is when they were over here with Gordon.
+
+BROCK: Right. Gordon Moore strikes me as just a modest, straightforward, and
+very personable individual--I was wondering if you thought there might be any
+connection between his personality and his values, and growing up in Pescadero
+in that era?
+
+DUARTE: Oh no. That's a long time ago.
+
+BROCK: Yeah. [laughter] Did you and Gordon get into much trouble?
+
+DUARTE: The only trouble we got into was that wagon on the hill.
+
+BROCK: Did you belong to any organizations like the Boy Scouts at that age or
+was that a little early?
+
+DUARTE: There was a Boy Scouts but I think it was after he left. They had Boy
+Scouts in town but I think you had to be twelve years old. I'm not sure. There
+was Cub Scouts first, but I don't think he was here then.
+
+BROCK: Let's talk for a moment about Pescadero and how the community has changed
+and how it has remained the same since the two of you have grown up.
+
+DUARTE: It's remained the same because of the Coastal Commission [California
+Coastal Commission]. We do have a lot of beaches and parks here. Gordon has
+contributed quite a bit to Open Space. The thing that's changed is that there is
+not the farming that there used to be. The farmers started to fade out and then
+the floriculture came. Then they started importing flowers from Mexico and South
+America. A lot of the nursery guys are taking a beating on that, too. Now,
+houses and stuff are--for our area here--very high, and there are a lot of
+people here--we call them &quot;horsy people&quot;--like in Woodside [California], where
+they like to have a couple of horses. They're buying up a lot of the land,
+what's available. They'll maintain it and some of them will have jumping horses
+and different things like that. One guy up the road here just bought a ranch and
+he must have forty or fifty wagons and stage coaches.
+
+BROCK: Oh my gosh.
+
+DUARTE: Like Wells Fargo, and stuff like that there. They'll ride around town.
+Of course, there are a lot of bicycle and motorcycle people here now. On
+weekends it's packed with them.
+
+BROCK: All right. [laughter] Was it your grandfather who started the tavern?
+
+DUARTE: It was already here when he came.
+
+BROCK: I see. He took over the business?
+
+DUARTE: Then mom and dad got serious about the food. From then on--I was an only
+child and we stayed in it. Our kids, they all went away to school, but they
+still work it. We have recently been written up quite a bit.
+
+BROCK: When you were running it, were you working in the kitchen, working behind
+the bar, or working in the back office?
+
+DUARTE: I'd tend bar. I'd tend bar at night and I used to cook in the daytime,
+then we started hiring people. Dad passed away when he was quite young. He was
+fifty-seven years old. He didn't drink much. He said, &quot;I'm here to make money,
+not play around,&quot; and he was talking about the bar. But he was a big-time
+smoker. At the bar, gee, there used to be a cloud of smoke six feet off the
+floor in the old days. [laughter]
+
+BROCK: Which years did you run the operation?
+
+DUARTE: Since dad passed away in 1961. From then it was my mother and I, we were
+partners. I got married in 1957, so my wife and my mother made pies. We're noted
+for our pies.
+
+BROCK: I've had the pie.
+
+DUARTE: My mother and my aunt made pies, then my wife started to make pies, and
+then our daughter makes pies. [laughter] Dad used to say, &quot;If I learned how to
+bake pies, I'd be doing everything.&quot; So, I took his advice and never learned how
+to make pie.
+
+BROCK: There you go. [laughter] If you had to tell somebody one thing about how
+they should think about Gordon Moore what would that be?
+
+DUARTE: It would have to be about his accomplishments. That says a lot. That's
+it right there in a nutshell. [laughter] One time we were up in Reno, Nevada,
+when he and Noyce [Robert N. Noyce] worked for Fairchild [Fairchild
+Semiconductor Corporation] out of Chicago [Illinois].
+
+BROCK: Fairchild was based in New York.
+
+DUARTE: Okay. Anyway, he and Noyce were going to take off on their own and form
+Intel [Intel Corporation]. We were watching the floor show up there in Reno,
+Nevada, and this guy was next to us, we started talking and I said, &quot;Oh, then
+you know Gordon Moore?&quot; He said, &quot;Oh yeah. I was with Fairchild and with those
+guys when he and Noyce were going to go form their own company and they asked me
+to go.&quot; [laughter] They said, &quot;We won't be able to give you a salary for maybe a
+year.&quot; He said, &quot;I had just gotten married,&quot; and I don't know if he had kids
+then or not, but he said, &quot;So, I couldn't go.&quot; [laughter] &quot;I would have been a
+partner.&quot; He was working on some kind of electronics things at a military base
+in Sacramento [California]. He said, &quot;I sure missed the boat on that one.&quot; [laughter]
+
+BROCK: Thanks so very much for your time.
+
+[END OF INTERVIEW]
+
+</transcript>
+    <transcript_alt/>
+    <rights>In copyright - Non Commercial Use Permitted</rights>
+    <fmt>audio</fmt>
+    <usage>No restrictions on access. Reproduction and use with permission. Cite as: Ronald Duarte, interviewed by David C. Brock via telephone at Pescardero, California, 2006 June 13 (Philadelphia: Chemical Heritage Foundation, Oral History Transcript 0344). </usage>
+    <userestrict>0</userestrict>
+    <xmllocation/>
+    <xmlfilename/>
+    <collection_link/>
+    <series_link>https://oh.sciencehistory.org/project-name/36</series_link>
+  </record>
+</ROOT>
