@@ -41,7 +41,7 @@
       <div class="tab-content">
         <% if decorator.has_ohms_transcript? %>
           <div class="tab-pane active" id="ohTranscript" role="tabpanel" aria-labelledby="oh-transcript-tab">
-            <%= OhmsTranscriptDisplay.new(decorator.oral_history_content.ohms_xml.parsed).display %>
+            <%= OhmsTranscriptDisplay.new(decorator.oral_history_content.ohms_xml).display %>
           </div>
         <% end %>
 
