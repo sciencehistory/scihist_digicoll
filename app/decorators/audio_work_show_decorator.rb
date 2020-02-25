@@ -76,4 +76,8 @@ class AudioWorkShowDecorator < Draper::Decorator
     end
   end
 
+  def has_ohms_transcript?
+    model&.oral_history_content&.has_ohms_transcript?
+  end
+
 end

@@ -1,0 +1,103 @@
+# Turn OHMS XML into HTML, using tags based on OHMS native viewer, at
+# around OHMS version ~3.8.
+#
+# Includes timestamp tags at appropriate place, from <sync> data.
+#
+# Input is nokogiri parsed OHMS xml.
+class OhmsTranscriptDisplay < ViewModel
+  OHMS_NS = OralHistoryContent::OhmsXml::OHMS_NS
+
+  valid_model_type_names "Nokogiri::XML::Document"
+
+  alias_method :xml, :model
+
+  # Trying to display somewhat like OHMS does. We need to track lines separated by individual "\n", that
+  # matches line count in `sync`. But we also need to group lines separated by "\n\n" into paragraphs.
+  # "\n\n" does mean an empty line as far as line count.
+  #
+  # We're also doing things somewhat different than OHMS when we coudn't figure out why it made
+  # any sense (like a bare span for an empty line, or using span as a wrapper for p which is
+  # probably illegal HTML)
+  def display
+    paragraphs = []
+    current_paragraph = []
+    xml.at_xpath("//ohms:transcript", ohms: OHMS_NS).text.split("\n").each_with_index do |line, index|
+      current_paragraph << { text: line, line_num: index + 1}
+
+      if line.empty?
+        paragraphs << current_paragraph
+        current_paragraph = []
+      end
+    end
+    paragraphs << current_paragraph
+
+    paragraph_html_arr = paragraphs.collect do |p_arr|
+      content_tag("p", class: "ohms-transcript-paragraph") do
+        safe_join(p_arr.collect do |line|
+          content_tag("span", format_ohms_line(line[:text]), class: "ohms-transcript-line", id: "ohms_line_#{line[:line_num]}")
+        end)
+      end
+    end
+
+    content_tag("div", safe_join(paragraph_html_arr), class: "ohms-transcript-container")
+  end
+
+  private
+
+  # Catches "speaker" notation and wraps in class. Makes sure
+  # there is whitespace at the end. Keep it all appropriately html safe.
+  def format_ohms_line(ohms_line_str)
+    # catch speaker prefix
+    if ohms_line_str =~ /\A([A-Z]+:) (.*)\Z/
+      ohms_line_str = safe_join([
+        content_tag("span", $1, class: "ohms-speaker"),
+        " ",
+        $2
+      ])
+    end
+
+    # add whitespace on end either way
+    safe_join([ohms_line_str, " \n"])
+  end
+
+  # A hash where key is an OHMS line number. Value is a Hash containing
+  # :word_number and :seconds .
+  #
+  # We parse the somewhat mystical OHMS <sync> element to get it.
+  def sync_timecodes
+    @sync_timecodes ||= parse_sync!
+  end
+
+
+  # A hash where key is an OHMS line number. Value is a Hash containing
+  # :word_number and :seconds .
+  #
+  # We parse the somewhat mystical OHMS <sync> element to get it.
+  #
+  # It looks like: 1:|13(3)|19(14)|27(9)
+  #
+  # We believe that means:
+  # * `1:` -- 1 second granularity, so each element is separated by one second.
+  # * "13(3)" -- 13 line, 3rd word is 1s timecode (as it's first element and 1s granularity)
+  # * "19(14")  -- 19th line 14th word is 2s timecode
+  # * Etc.
+  #
+  # OHMS seems to actually ignore the word position in placing marker, we may too.
+  def parse_sync!
+    sync = xml.at_xpath("//ohms:sync", ohms: OHMS_NS).text
+    return {} unless sync.present?
+
+    interval_s, stamps = sync.split(":")
+    interval_s = interval_s.to_i
+
+    stamps.split("|").collect_with_index do |stamp, index|
+      next if stamp.blank?
+
+      stamp =~ /(\d+)\((\d+)\)/
+      line_num, word_num = $1, $2
+      next unless line_num.present? && word_num.present?
+
+      [line_num.to_i, { word_number: word_num.to_i, seconds: index * interval_s }]
+    end.to_h
+  end
+end
