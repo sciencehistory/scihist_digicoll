@@ -113,6 +113,31 @@ class OralHistoryContent < ApplicationRecord
       @sync_timecodes ||= parse_sync!
     end
 
+    # What ohms calls an index is more like a ToC
+    def index_points
+      @index_entries ||= parsed.xpath("//ohms:index/ohms:point", ohms: OHMS_NS).collect do |index_point|
+        IndexPoint.new(index_point)
+      end
+    end
+
+    # Represents an ohms //index/point element, what ohms calls an index we might
+    # really call a Table of Contents. We're not currently using all the elements,
+    # only providing access to those we are.
+    class IndexPoint
+
+      attr_reader :title, :partial_transcript, :synopsis, :keywords
+      # timestamp is in seconds
+      attr_reader :timestamp
+
+      def initialize(xml_node)
+        @timestamp = xml_node.at_xpath("./ohms:time", ohms: OHMS_NS).text.to_i
+        @title = xml_node.at_xpath("./ohms:title", ohms: OHMS_NS)&.text&.strip || "[Missing]"
+        @synopsis = xml_node.at_xpath("./ohms:synopsis", ohms: OHMS_NS)&.text&.strip
+        @partial_transcript = xml_node.at_xpath("./ohms:partial_transcript", ohms: OHMS_NS)&.text&.strip
+        @keywords = xml_node.at_xpath("./ohms:keywords", ohms: OHMS_NS)&.text&.split(";")
+      end
+    end
+
     private
 
     # A hash where key is an OHMS line number. Value is a Hash containing
