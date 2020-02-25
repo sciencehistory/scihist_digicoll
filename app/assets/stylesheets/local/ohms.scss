@@ -4,3 +4,18 @@
   font-size: 90%;
   color: $brand-dark-grey;
 }
+
+// make room for and position the timecode links
+// This is more or less how standard OHMS viewer does it.
+.ohms-transcript-container {
+  position: relative;
+  padding-left: 5.5em;
+
+  .ohms-transcript-paragraph {
+    .ohms-transcript-timestamp {
+      font-family: $brand-sans-serif;
+      position: absolute;
+      left: 0;
+    }
+  }
+}
