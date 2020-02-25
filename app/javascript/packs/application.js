@@ -23,3 +23,5 @@ import '../src/js/custom_google_analytics_events.js';
 import '../src/js/cart_control.js';
 import '../src/js/date_range_render_workaround.js';
 import '../src/js/simple_ohms_player.js';
+import '../src/js/tab_selection_in_anchor';
+
