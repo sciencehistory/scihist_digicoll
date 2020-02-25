@@ -56,6 +56,10 @@ class OralHistoryContent < ApplicationRecord
     ohms_xml&.parsed&.at_xpath("//ohms:record/ohms:transcript[normalize-space(text())]", ohms: OhmsXml::OHMS_NS)
   end
 
+  def has_ohms_index?
+    ohms_xml&.index_points&.present?
+  end
+
 
   private
 

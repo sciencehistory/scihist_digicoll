@@ -1,0 +1,37 @@
+<div class="ohms-index-container">
+  <% view.index_points.each do |index_point| %>
+    <div class="ohms-index-point">
+      <h3 class="ohms-index-point-title h4">
+        <a href="#" data-ohms-timestamp-s="<%= index_point.timestamp %>">
+          <span class="mr-3"><i class="fa fa-play-circle" aria-hidden="true"></i> <%= format_ohms_timestamp(index_point.timestamp) %></span> <%= index_point.title %>
+        </a>
+      </h3>
+
+
+      <ul class="list-unstyled ohms-index-list">
+        <% if index_point.synopsis.present? %>
+          <li>
+            <%= index_point.synopsis %>
+          </li>
+        <% end %>
+
+
+        <% if index_point.partial_transcript.present? %>
+          <li>
+            <span class="attribute-label">Begins with</span>
+            <%= view.format_partial_transcript(index_point.partial_transcript) %>
+          </li>
+        <% end %>
+
+        <% if index_point.keywords.present? %>
+          <li>
+            <span class="attribute-label">Keywords</span>
+            <% index_point.keywords.each do |keyword| %>
+              <span class="badge badge-dark"><%= keyword %></span>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+</div>
