@@ -67,7 +67,11 @@ class OhmsTranscriptDisplay < ViewModel
 
     # possibly we need sync anchor html
     sync_html = ""
-    if sync = sync_timecodes[line[:line_num]]
+
+    if line[:line_num] == 1
+      # give a 0 timecode
+      sync_html = content_tag("a", format_ohms_timestamp(0), href: "#", class: "ohms-transcript-timestamp", data: { "ohms_timestamp_s" => 0})
+    elsif sync = sync_timecodes[line[:line_num]]
       sync_html = content_tag("a", format_ohms_timestamp(sync[:seconds]), href: "#", class: "ohms-transcript-timestamp", data: { "ohms_timestamp_s" => sync[:seconds]})
     end
 
