@@ -30,9 +30,13 @@
             <a class="nav-link active" id="oh-transcript-tab" data-toggle="tab" href="#ohTranscript" role="tab" aria-controls="home" aria-selected="true">Transcript</a>
           </li>
         <% end %>
-        <li class="nav-item">
-          <a class="nav-link" id="oh-toc-tab" data-toggle="tab" href="#ohToc" role="tab" aria-controls="profile" aria-selected="false">Table of Contents</a>
-        </li>
+
+        <% if decorator.has_ohms_index? %>
+          <li class="nav-item">
+            <a class="nav-link" id="oh-toc-tab" data-toggle="tab" href="#ohToc" role="tab" aria-controls="profile" aria-selected="false">Segments</a>
+          </li>
+        <% end %>
+
         <li class="nav-item">
           <a class="nav-link" id="oh-downloads-tab" data-toggle="tab" href="#ohDownloads" role="tab" aria-controls="contact" aria-selected="false">Downloads</a>
         </li>
@@ -45,9 +49,11 @@
           </div>
         <% end %>
 
-        <div class="tab-pane" id="ohToc" role="tabpanel" aria-labelledby="oh-toc-tab">
-          Table of Contents
-        </div>
+        <% if decorator.has_ohms_index? %>
+          <div class="tab-pane" id="ohToc" role="tabpanel" aria-labelledby="oh-toc-tab">
+            <%= OhmsIndexDisplay.new(decorator.oral_history_content.ohms_xml).display %>
+          </div>
+        <% end %>
 
         <div class="tab-pane" id="ohDownloads" role="tabpanel" aria-labelledby="oh-downloads-tab">
           <div>

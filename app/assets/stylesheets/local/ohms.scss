@@ -1,8 +1,6 @@
 .ohms-speaker {
   font-weight: bold;
-  font-family: $brand-sans-serif;
-  font-size: 90%;
-  color: $brand-dark-grey;
+  @extend %special-label;
 }
 
 // make room for and position the timecode links
@@ -16,6 +14,25 @@
       font-family: $brand-sans-serif;
       position: absolute;
       left: 0;
+    }
+  }
+}
+
+.ohms-index-container {
+   // based on scihist-results-list-values, see there.
+  ul.ohms-index-list {
+    margin-top: $paragraph-spacer;
+    @extend .ml-4;
+
+    li {
+      @extend %text-font;
+      margin-bottom: $paragraph-spacer;
+
+      .attribute-label {
+        @extend %special-label;
+        margin-right: 0.66em;
+        font-weight: bold;;
+      }
     }
   }
 }
