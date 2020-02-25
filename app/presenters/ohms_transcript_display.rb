@@ -34,7 +34,7 @@ class OhmsTranscriptDisplay < ViewModel
     paragraph_html_arr = paragraphs.collect do |p_arr|
       content_tag("p", class: "ohms-transcript-paragraph") do
         safe_join(p_arr.collect do |line|
-          content_tag("span", format_ohms_line(line[:text]), class: "ohms-transcript-line", id: "ohms_line_#{line[:line_num]}")
+          content_tag("span", format_ohms_line(line), class: "ohms-transcript-line", id: "ohms_line_#{line[:line_num]}")
         end)
       end
     end
@@ -44,9 +44,12 @@ class OhmsTranscriptDisplay < ViewModel
 
   private
 
-  # Catches "speaker" notation and wraps in class. Makes sure
-  # there is whitespace at the end. Keep it all appropriately html safe.
-  def format_ohms_line(ohms_line_str)
+  # * adds a timecode anchor if needed.
+  # * Catches "speaker" notation and wraps in class.
+  # * Makes sure there is whitespace at the end. Keep it all appropriately html safe.
+  def format_ohms_line(line)
+    ohms_line_str = line[:text]
+
     # catch speaker prefix
     if ohms_line_str =~ /\A([A-Z]+:) (.*)\Z/
       ohms_line_str = safe_join([
@@ -56,8 +59,14 @@ class OhmsTranscriptDisplay < ViewModel
       ])
     end
 
-    # add whitespace on end either way
-    safe_join([ohms_line_str, " \n"])
+    # possibly we need sync anchor html
+    sync_html = ""
+    if sync = sync_timecodes[line[:line_num]]
+      sync_html = content_tag("a", format_ohms_timestamp(sync[:seconds]), href: "#", class: "ohms-transcript-timestamp", data: { "ohms_timestamp_s" => sync[:seconds]})
+    end
+
+    # add em together with whitespace on end either way
+    safe_join([sync_html, ohms_line_str, " \n"])
   end
 
   # A hash where key is an OHMS line number. Value is a Hash containing
@@ -77,7 +86,7 @@ class OhmsTranscriptDisplay < ViewModel
   # It looks like: 1:|13(3)|19(14)|27(9)
   #
   # We believe that means:
-  # * `1:` -- 1 second granularity, so each element is separated by one second.
+  # * `1:` -- 1 minute granularity, so each element is separated by one minute.
   # * "13(3)" -- 13 line, 3rd word is 1s timecode (as it's first element and 1s granularity)
   # * "19(14")  -- 19th line 14th word is 2s timecode
   # * Etc.
@@ -87,17 +96,17 @@ class OhmsTranscriptDisplay < ViewModel
     sync = xml.at_xpath("//ohms:sync", ohms: OHMS_NS).text
     return {} unless sync.present?
 
-    interval_s, stamps = sync.split(":")
-    interval_s = interval_s.to_i
+    interval_m, stamps = sync.split(":")
+    interval_m = interval_m.to_i
 
-    stamps.split("|").collect_with_index do |stamp, index|
+    stamps.split("|").enum_for(:each_with_index).collect do |stamp, index|
       next if stamp.blank?
 
       stamp =~ /(\d+)\((\d+)\)/
       line_num, word_num = $1, $2
       next unless line_num.present? && word_num.present?
 
-      [line_num.to_i, { word_number: word_num.to_i, seconds: index * interval_s }]
-    end.to_h
+      [line_num.to_i, { word_number: word_num.to_i, seconds: index * interval_m * 60 }]
+    end.compact.to_h
   end
 end
