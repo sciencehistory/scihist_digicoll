@@ -9,10 +9,6 @@ class OhmsTranscriptDisplay < ViewModel
 
   valid_model_type_names "OralHistoryContent::OhmsXml"
 
-  def xml
-    model.parsed
-  end
-
   # Trying to display somewhat like OHMS does. We need to track lines separated by individual "\n", that
   # matches line count in `sync`. But we also need to group lines separated by "\n\n" into paragraphs.
   # "\n\n" does mean an empty line as far as line count.
@@ -23,7 +19,7 @@ class OhmsTranscriptDisplay < ViewModel
   def display
     paragraphs = []
     current_paragraph = []
-    xml.at_xpath("//ohms:transcript", ohms: OHMS_NS).text.split("\n").each_with_index do |line, index|
+    model.parsed.at_xpath("//ohms:transcript", ohms: OHMS_NS).text.split("\n").each_with_index do |line, index|
       current_paragraph << { text: line, line_num: index + 1}
 
       if line.empty?
@@ -44,17 +40,12 @@ class OhmsTranscriptDisplay < ViewModel
     content_tag("div", safe_join(paragraph_html_arr), class: "ohms-transcript-container")
   end
 
-  # A hash where key is an OHMS line number. Value is a Hash containing
-  # :word_number and :seconds .
-  #
-  # We parse the somewhat mystical OHMS <sync> element to get it.
-  #
-  # Public mostly so we can test it. :(
-  def sync_timecodes
-    @sync_timecodes ||= parse_sync!
-  end
 
   private
+
+  def sync_timecodes
+    model.sync_timecodes
+  end
 
   # * adds a timecode anchor if needed.
   # * Catches "speaker" notation and wraps in class.
@@ -79,38 +70,5 @@ class OhmsTranscriptDisplay < ViewModel
 
     # add em together with whitespace on end either way
     safe_join([sync_html, ohms_line_str, " \n"])
-  end
-
-
-  # A hash where key is an OHMS line number. Value is a Hash containing
-  # :word_number and :seconds .
-  #
-  # We parse the somewhat mystical OHMS <sync> element to get it.
-  #
-  # It looks like: 1:|13(3)|19(14)|27(9)
-  #
-  # We believe that means:
-  # * `1:` -- 1 minute granularity, so each element is separated by one minute.
-  # * "13(3)" -- 13 line, 3rd word is 1s timecode (as it's first element and 1s granularity)
-  # * "19(14")  -- 19th line 14th word is 2s timecode
-  # * Etc.
-  #
-  # OHMS seems to actually ignore the word position in placing marker, we may too.
-  def parse_sync!
-    sync = xml.at_xpath("//ohms:sync", ohms: OHMS_NS).text
-    return {} unless sync.present?
-
-    interval_m, stamps = sync.split(":")
-    interval_m = interval_m.to_i
-
-    stamps.split("|").enum_for(:each_with_index).collect do |stamp, index|
-      next if stamp.blank?
-
-      stamp =~ /(\d+)\((\d+)\)/
-      line_num, word_num = $1, $2
-      next unless line_num.present? && word_num.present?
-
-      [line_num.to_i, { word_number: word_num.to_i, seconds: index * interval_m * 60 }]
-    end.compact.to_h
   end
 end

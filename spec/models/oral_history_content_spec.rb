@@ -83,4 +83,21 @@ describe OralHistoryContent do
       end
     end
   end
+
+
+  describe OralHistoryContent::OhmsXml do
+    let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml"}
+    let(:ohms_xml) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path))}
+
+    describe "#sync_timecodes" do
+      it "are as expected" do
+        # we'll just check a sampling, we have one-second interval granularity in XML
+        expect(ohms_xml.sync_timecodes.count).to eq(28)
+        expect(ohms_xml.sync_timecodes[13]).to eq({:word_number=>3, :seconds=>60, line_number: 13})
+        expect(ohms_xml.sync_timecodes[19]).to eq({:word_number=>14, :seconds=>120, :line_number=>19})
+
+        expect(ohms_xml.sync_timecodes[308]).to eq({:word_number=>2, :seconds=>1680, :line_number=>308})
+      end
+    end
+  end
 end
