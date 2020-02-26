@@ -27,35 +27,35 @@
       <ul class="nav nav-tabs mb-4" id="oralHistoryContent" role="tablist">
         <% if decorator.has_ohms_transcript? %>
           <li class="nav-item">
-            <a class="nav-link active" id="oh-transcript-tab" data-toggle="tab" href="#ohTranscript" role="tab" aria-controls="home" aria-selected="true">Transcript</a>
+            <a class="nav-link <%= decorator.maybe_active_class(:transcript) %>" id="oh-transcript-tab" data-toggle="tab" href="#ohTranscript" role="tab" aria-controls="home" aria-selected="true">Transcript</a>
           </li>
         <% end %>
 
         <% if decorator.has_ohms_index? %>
           <li class="nav-item">
-            <a class="nav-link" id="oh-toc-tab" data-toggle="tab" href="#ohToc" role="tab" aria-controls="profile" aria-selected="false">Segments</a>
+            <a class="nav-link <%= decorator.maybe_active_class(:index) %>" id="oh-toc-tab" data-toggle="tab" href="#ohToc" role="tab" aria-controls="profile" aria-selected="false">Segments</a>
           </li>
         <% end %>
 
         <li class="nav-item">
-          <a class="nav-link" id="oh-downloads-tab" data-toggle="tab" href="#ohDownloads" role="tab" aria-controls="contact" aria-selected="false">Downloads</a>
+          <a class="nav-link <%= decorator.maybe_active_class(:downloads) %>" id="oh-downloads-tab" data-toggle="tab" href="#ohDownloads" role="tab" aria-controls="contact" aria-selected="false">Downloads</a>
         </li>
       </ul>
 
       <div class="tab-content">
         <% if decorator.has_ohms_transcript? %>
-          <div class="tab-pane active" id="ohTranscript" role="tabpanel" aria-labelledby="oh-transcript-tab">
+          <div class="tab-pane <%= decorator.maybe_active_class(:transcript) %>" id="ohTranscript" role="tabpanel" aria-labelledby="oh-transcript-tab">
             <%= OhmsTranscriptDisplay.new(decorator.oral_history_content.ohms_xml).display %>
           </div>
         <% end %>
 
         <% if decorator.has_ohms_index? %>
-          <div class="tab-pane" id="ohToc" role="tabpanel" aria-labelledby="oh-toc-tab">
+          <div class="tab-pane <%= decorator.maybe_active_class(:index) %>" id="ohToc" role="tabpanel" aria-labelledby="oh-toc-tab">
             <%= OhmsIndexDisplay.new(decorator.oral_history_content.ohms_xml).display %>
           </div>
         <% end %>
 
-        <div class="tab-pane" id="ohDownloads" role="tabpanel" aria-labelledby="oh-downloads-tab">
+        <div class="tab-pane <%= decorator.maybe_active_class(:downloads) %>" id="ohDownloads" role="tabpanel" aria-labelledby="oh-downloads-tab">
           <div>
             <h2 class="attribute-sub-head sound-file-header"><%= pluralize(decorator.audio_members.count, 'sound file')%></h2>
 
