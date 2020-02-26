@@ -9,6 +9,8 @@ class Work < Kithe::Work
 
   has_many :cart_items, dependent: :delete_all
 
+  has_one :oral_history_content, inverse_of: :work, dependent: :destroy
+
   validates :external_id, presence: true
   validates :department, inclusion: { in: ControlledLists::DEPARTMENT, allow_blank: true }
   validates :file_creator, inclusion: { in: ControlledLists::FILE_CREATOR, allow_blank: true }
@@ -98,6 +100,28 @@ class Work < Kithe::Work
 
 
     Kithe::Model.where(sql)
+  end
+
+  # Ensures the optional sidecar OralHistoryContent is present if it wans't already
+  # (saving to db if receiver is persisted), and returns it.
+  #
+  # Tries to be concurrency-safe.
+  def oral_history_content!
+    retries = 0
+    begin
+      oral_history_content || (
+        persisted? ? create_oral_history_content : build_oral_history_content
+      )
+    rescue ActiveRecord::RecordNotUnique => e
+      # concurrent creation, let's try again, but not infinitely...
+      self.association(:oral_history_content).reset
+      retries += 1
+      if retries < 3
+        retry
+      else
+        raise e
+      end
+    end
   end
 
   # This method is used by `oai` gem to automatically get serialization for oai-pmh responses
