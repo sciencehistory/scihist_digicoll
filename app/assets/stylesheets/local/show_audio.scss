@@ -21,6 +21,15 @@
     margin-top: 2rem;
   }
 
+  // hackily make it align on top with a hacky override
+  .rights-and-social {
+    padding-top: 0 !important;
+    .rights-statement, .social-media {
+      padding-top: 0 !important;
+      margin-top: 0 !important;
+    }
+  }
+
   // When we're two column, add more spacer than default
   @include media-breakpoint-up(lg) {
     .col-files {
