@@ -8,16 +8,24 @@ require 'tempfile'
 #
 #
 # Sample output:
-    # {
-    #   :combined_audio_mp3_data=>
-    #   "/var/folders/n7/t4zt2w751bj_6pbnf95sgpnrmz8lz8/T/output20200228-61637-ec6kjz.mp3",
-    #  :combined_audio_webm_data=>
-    #   "/var/folders/n7/t4zt2w751bj_6pbnf95sgpnrmz8lz8/T/output20200228-61637-1btjscz.webm",
-    #  :fingerprint=>"4998d366f5edb6222db1181c7b153e21",
-    #  :component_metadata=>
-    #   {:durations=>["00:30:30.29", "00:29:13.32", "00:33:03.26", "00:24:28.94"]}
-    # }
-
+#     {
+#      :combined_audio_mp3_data=>
+#          "/var/folders/n7/t4zt2w751bj_6pbnf95sgpnrmz8lz8/T/output20200228-61637-ec6kjz.mp3",
+#      :combined_audio_webm_data=>
+#          "/var/folders/n7/t4zt2w751bj_6pbnf95sgpnrmz8lz8/T/output20200228-61637-1btjscz.webm",
+#      :fingerprint=>"4998d366f5edb6222db1181c7b153e21",
+#      :component_metadata=>
+#        {:durations=>
+#          [
+#            "00:30:30.29",
+#            "00:29:13.32",
+#            "00:33:03.26",
+#            "00:24:28.94"
+#          ]
+#        }
+#     }
+#
+#
 class CombinedAudioDerivativeCreator
 
   attr_reader :work
@@ -29,47 +37,46 @@ class CombinedAudioDerivativeCreator
   end
 
   def generate
-    # Start by downloading all the audio files:
-    download_originals
+    # Download the components of the oral history from Shrine storage:
+    download_components
 
-    # Figure out how long each component lasts:
+    # Extract duration metadata for each component:
     component_durations = @downloaded_originals.map do |f|
       duration_of_audio_file(f.path)
     end
 
-    # Generate two empty audio files, which will be overwritten by the ffmpeg commands:
-    mp3_output_file  = Tempfile.new(['output',  ".mp3"], :encoding => 'binary')
-    webm_output_file = Tempfile.new(['output', ".webm"], :encoding => 'binary')
+    output_paths = {}
 
-    # Generate the command arguments for ffmpeg:
-    mp3_ffmpeg_args = args_for_ffmpeg(mp3_output_file.path)
-    webm_ffmpeg_args = args_for_ffmpeg(webm_output_file.path)
-
-    # Run the commands:
-    log "Creating mp3 using command:"
-    log(mp3_ffmpeg_args.join(" "))
-    @cmd.run(*mp3_ffmpeg_args,  binmode: true)
-
-    log "Creating webm using command: "
-    log(webm_ffmpeg_args.join(" "))
-    @cmd.run(*webm_ffmpeg_args, binmode: true)
+    # Create the two output files:
+    ['mp3', 'webm'].each do |format|
+      output_paths[format] = output_file(format)
+      ffmpeg_args = args_for_ffmpeg(output_paths[format])
+      log "Creating #{format} using: #{ffmpeg_args.join(" ")}"
+      @cmd.run(*ffmpeg_args, binmode: true)
+    end
 
     # Get rid of the downloaded originals:
     @downloaded_originals.map!(&:unlink)
 
+    # Return the metadata, including paths to the two output files:
     {
-      combined_audio_mp3_data:  mp3_output_file.path,
-      combined_audio_webm_data: webm_output_file.path,
+      combined_audio_mp3_data:   output_paths['mp3'],
+      combined_audio_webm_data:  output_paths['webm'],
       fingerprint: fingerprint,
       component_metadata: {durations: component_durations}
     }
   end
 
+  def output_file(format)
+    Tempfile.new(['output', ".#{format}"], :encoding => 'binary').path
+  end
+
+  # Use ffprobe to determine the length of an audio file.
   def duration_of_audio_file(path)
     (@cmd.run(*['ffprobe', path]).err.match /Duration: ([^,]*),/)[1]
   end
 
-  def download_originals
+  def download_components
     audio_member_files.each do |original_file|
       log "Downloading #{original_file.metadata['filename']}"
       new_temp_file = Tempfile.new(['temp_', original_file.metadata['filename'].downcase], :encoding => 'binary')
@@ -85,6 +92,8 @@ class CombinedAudioDerivativeCreator
   # This is tricky but documented at
   # https://trac.ffmpeg.org/wiki/Map .
   # For now, the audio settings are hardwired.
+  # This does not run the command; it just returns
+  # an array that can be passed to @cmd.run .
   def args_for_ffmpeg(output_file_path)
     # ffmpeg -y: overwrite the already-existing temp file
     ffmpeg_command = ['ffmpeg', '-y']
@@ -146,6 +155,6 @@ class CombinedAudioDerivativeCreator
   end
 
   def log(x)
-    puts (x)
+    # puts (x)
   end
 end
