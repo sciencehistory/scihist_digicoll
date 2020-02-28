@@ -33,15 +33,12 @@ class CombinedAudioDerivativeCreator
   def initialize(work)
     @cmd = TTY::Command.new(printer: :null)
     @work = work
-    @downloaded_originals = []
+    @downloaded_components = download_components
   end
 
   def generate
-    # Download the components of the oral history from Shrine storage:
-    download_components
-
     # Extract duration metadata for each component:
-    component_durations = @downloaded_originals.map do |f|
+    component_durations = @downloaded_components.map do |f|
       duration_of_audio_file(f.path)
     end
 
@@ -56,7 +53,7 @@ class CombinedAudioDerivativeCreator
     end
 
     # Get rid of the downloaded originals:
-    @downloaded_originals.map!(&:unlink)
+    @downloaded_components.map!(&:unlink)
 
     # Return the metadata, including paths to the two output files:
     {
@@ -77,14 +74,16 @@ class CombinedAudioDerivativeCreator
   end
 
   def download_components
+    result = []
     audio_member_files.each do |original_file|
       log "Downloading #{original_file.metadata['filename']}"
       new_temp_file = Tempfile.new(['temp_', original_file.metadata['filename'].downcase], :encoding => 'binary')
       original_file.open(rewindable:false) do |input_audio_io|
         new_temp_file.write input_audio_io.read until input_audio_io.eof?
       end
-      @downloaded_originals << new_temp_file
+      result << new_temp_file
     end
+    result
   end
 
   # Generate ffmpeg command to concatenate a set of audio files using
@@ -99,10 +98,10 @@ class CombinedAudioDerivativeCreator
     ffmpeg_command = ['ffmpeg', '-y']
 
     # Then a list of input files specified with -i
-    input_files = @downloaded_originals.map {|x| [ "-i", x.path] }.flatten
+    input_files = @downloaded_components.map {|x| [ "-i", x.path] }.flatten
 
     # List the number of audio streams: one per file
-    stream_list = 0.upto(@downloaded_originals.count - 1).to_a.map{ |n| "[#{n}:a]"}.join
+    stream_list = 0.upto(@downloaded_components.count - 1).to_a.map{ |n| "[#{n}:a]"}.join
 
     # Specify what to do with the audio streams:
     #
@@ -114,7 +113,7 @@ class CombinedAudioDerivativeCreator
     #   concat -> Stream #0:0 (libmp3lame)
     #
     # v=0 means there is no video.
-    filtergraph = "concat=n=#{@downloaded_originals.count}:v=0:a=1[a]"
+    filtergraph = "concat=n=#{@downloaded_components.count}:v=0:a=1[a]"
 
     # Finally, some output options:
     # -map [a] : map just the audio to the output
@@ -154,7 +153,7 @@ class CombinedAudioDerivativeCreator
     end
   end
 
-  def log(x)
-    # puts (x)
+  def log(msg)
+    Rails.logger.debug(msg)
   end
 end
