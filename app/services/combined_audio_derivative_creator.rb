@@ -33,12 +33,12 @@ class CombinedAudioDerivativeCreator
   def initialize(work)
     @cmd = TTY::Command.new(printer: :null)
     @work = work
-    @downloaded_components = download_components
+    @components = download_components
   end
 
   def generate
     # Extract duration metadata for each component:
-    component_durations = @downloaded_components.map do |f|
+    durations = @components.map do |f|
       duration_of_audio_file(f.path)
     end
 
@@ -53,14 +53,14 @@ class CombinedAudioDerivativeCreator
     end
 
     # Get rid of the downloaded originals:
-    @downloaded_components.map!(&:unlink)
+    @components.map!(&:unlink)
 
     # Return the metadata, including paths to the two output files:
     {
       combined_audio_mp3_data:   output_paths['mp3'],
       combined_audio_webm_data:  output_paths['webm'],
       fingerprint: fingerprint,
-      component_metadata: {durations: component_durations}
+      component_metadata: {durations: durations}
     }
   end
 
@@ -98,10 +98,10 @@ class CombinedAudioDerivativeCreator
     ffmpeg_command = ['ffmpeg', '-y']
 
     # Then a list of input files specified with -i
-    input_files = @downloaded_components.map {|x| [ "-i", x.path] }.flatten
+    input_files = @components.map {|x| [ "-i", x.path] }.flatten
 
     # List the number of audio streams: one per file
-    stream_list = 0.upto(@downloaded_components.count - 1).to_a.map{ |n| "[#{n}:a]"}.join
+    stream_list = 0.upto(@components.count - 1).to_a.map{ |n| "[#{n}:a]"}.join
 
     # Specify what to do with the audio streams:
     #
@@ -113,7 +113,7 @@ class CombinedAudioDerivativeCreator
     #   concat -> Stream #0:0 (libmp3lame)
     #
     # v=0 means there is no video.
-    filtergraph = "concat=n=#{@downloaded_components.count}:v=0:a=1[a]"
+    filtergraph = "concat=n=#{@components.count}:v=0:a=1[a]"
 
     # Finally, some output options:
     # -map [a] : map just the audio to the output
