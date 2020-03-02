@@ -39,7 +39,7 @@ class CombinedAudioDerivativeCreator
   def generate
     # Extract duration metadata for each component:
     durations = @components.map do |f|
-      duration_of_audio_file(f.path)
+      duration_of_audio_file_in_seconds(f.path)
     end
 
     output_paths = {}
@@ -69,8 +69,12 @@ class CombinedAudioDerivativeCreator
   end
 
   # Use ffprobe to determine the length of an audio file.
-  def duration_of_audio_file(path)
-    (@cmd.run(*['ffprobe', path]).err.match /Duration: ([^,]*),/)[1]
+  def duration_of_audio_file_in_seconds(path)
+    options = ['ffprobe', '-v', 'error',
+      '-show_entries', 'format=duration', '-of',
+      'default=noprint_wrappers=1:nokey=1'
+    ] + [ path ]
+    @cmd.run(*options).out.strip
   end
 
   def download_components
