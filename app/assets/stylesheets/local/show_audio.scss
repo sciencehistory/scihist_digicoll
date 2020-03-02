@@ -30,6 +30,11 @@
     }
   }
 
+  .tab-content {
+    // hacky, match attribute-table width
+    max-width: ($max-readable-width / 0.67);
+  }
+
   // When we're two column, add more spacer than default
   @include media-breakpoint-up(lg) {
     .col-files {
@@ -137,10 +142,13 @@
 }
 
 .ohms-index-container {
+  max-width: $long-max-readable-width;
+
    // based on scihist-results-list-values, see there.
   ul.ohms-index-list {
     margin-top: $paragraph-spacer;
     @extend .ml-4;
+    max-width: $max-readable-width;
 
     li {
       @extend %text-font;
