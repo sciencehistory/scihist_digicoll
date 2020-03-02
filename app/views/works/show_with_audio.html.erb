@@ -23,34 +23,30 @@
   <div class="bottom">
       <%= render "rights_and_social", work: @work %>
 
-      <% if decorator.has_ohms_transcript? || decorator.has_ohms_index? %>
-        <%# only need tabs if we have multiple tabs! %>
+      <ul class="nav nav-tabs mb-4" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="oh-description-tab" data-toggle="tab" href="#ohDescription" role="tab" aria-controls="home" aria-selected="true">
+            Description
+          </a>
+        </li>
 
-        <ul class="nav nav-tabs mb-4" role="tablist">
+
+        <% if decorator.has_ohms_transcript? %>
           <li class="nav-item">
-            <a class="nav-link active" id="oh-description-tab" data-toggle="tab" href="#ohDescription" role="tab" aria-controls="home" aria-selected="true">
-              Description
-            </a>
+            <a class="nav-link" id="oh-transcript-tab" data-toggle="tab" href="#ohTranscript" role="tab" aria-controls="home" aria-selected="false">Transcript</a>
           </li>
+        <% end %>
 
-
-          <% if decorator.has_ohms_transcript? %>
-            <li class="nav-item">
-              <a class="nav-link" id="oh-transcript-tab" data-toggle="tab" href="#ohTranscript" role="tab" aria-controls="home" aria-selected="false">Transcript</a>
-            </li>
-          <% end %>
-
-          <% if decorator.has_ohms_index? %>
-            <li class="nav-item">
-              <a class="nav-link" id="oh-toc-tab" data-toggle="tab" href="#ohToc" role="tab" aria-controls="profile" aria-selected="false">Table of Contents</a>
-            </li>
-          <% end %>
-
+        <% if decorator.has_ohms_index? %>
           <li class="nav-item">
-            <a class="nav-link" id="oh-downloads-tab" data-toggle="tab" href="#ohDownloads" role="tab" aria-controls="contact" aria-selected="false">Downloads</a>
+            <a class="nav-link" id="oh-toc-tab" data-toggle="tab" href="#ohToc" role="tab" aria-controls="profile" aria-selected="false">Table of Contents</a>
           </li>
-        </ul>
-      <% end %>
+        <% end %>
+
+        <li class="nav-item">
+          <a class="nav-link" id="oh-downloads-tab" data-toggle="tab" href="#ohDownloads" role="tab" aria-controls="contact" aria-selected="false">Downloads</a>
+        </li>
+      </ul>
 
       <div class="tab-content">
         <div class="tab-pane active" id="ohDescription" role="tabpanel" aria-labelledby="oh-description-tab">
