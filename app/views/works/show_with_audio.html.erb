@@ -20,46 +20,57 @@
     </audio>
   </div>
 
-  <div class="row bottom">
-    <div class="col-lg-6 col-files">
+  <div class="bottom">
       <%= render "rights_and_social", work: @work %>
 
       <% if decorator.has_ohms_transcript? || decorator.has_ohms_index? %>
         <%# only need tabs if we have multiple tabs! %>
 
         <ul class="nav nav-tabs mb-4" id="oralHistoryContent" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" id="oh-description-tab" data-toggle="tab" href="#ohDescription" role="tab" aria-controls="home" aria-selected="true">
+              Description
+            </a>
+          </li>
+
+
           <% if decorator.has_ohms_transcript? %>
             <li class="nav-item">
-              <a class="nav-link <%= decorator.maybe_active_class(:transcript) %>" id="oh-transcript-tab" data-toggle="tab" href="#ohTranscript" role="tab" aria-controls="home" aria-selected="true">Transcript</a>
+              <a class="nav-link" id="oh-transcript-tab" data-toggle="tab" href="#ohTranscript" role="tab" aria-controls="home" aria-selected="false">Transcript</a>
             </li>
           <% end %>
 
           <% if decorator.has_ohms_index? %>
             <li class="nav-item">
-              <a class="nav-link <%= decorator.maybe_active_class(:index) %>" id="oh-toc-tab" data-toggle="tab" href="#ohToc" role="tab" aria-controls="profile" aria-selected="false">Table of Contents</a>
+              <a class="nav-link" id="oh-toc-tab" data-toggle="tab" href="#ohToc" role="tab" aria-controls="profile" aria-selected="false">Table of Contents</a>
             </li>
           <% end %>
 
           <li class="nav-item">
-            <a class="nav-link <%= decorator.maybe_active_class(:downloads) %>" id="oh-downloads-tab" data-toggle="tab" href="#ohDownloads" role="tab" aria-controls="contact" aria-selected="false">Downloads</a>
+            <a class="nav-link" id="oh-downloads-tab" data-toggle="tab" href="#ohDownloads" role="tab" aria-controls="contact" aria-selected="false">Downloads</a>
           </li>
         </ul>
       <% end %>
 
       <div class="tab-content">
+        <div class="tab-pane active" id="ohDescription" role="tabpanel" aria-labelledby="oh-description-tab">
+          <%= WorkShowInfo.new(@work).display %>
+          <%= render "citation", work: @work  %>
+        </div>
+
         <% if decorator.has_ohms_transcript? %>
-          <div class="tab-pane <%= decorator.maybe_active_class(:transcript) %>" id="ohTranscript" role="tabpanel" aria-labelledby="oh-transcript-tab">
+          <div class="tab-pane" id="ohTranscript" role="tabpanel" aria-labelledby="oh-transcript-tab">
             <%= OhmsTranscriptDisplay.new(decorator.oral_history_content.ohms_xml).display %>
           </div>
         <% end %>
 
         <% if decorator.has_ohms_index? %>
-          <div class="tab-pane <%= decorator.maybe_active_class(:index) %>" id="ohToc" role="tabpanel" aria-labelledby="oh-toc-tab">
+          <div class="tab-pane" id="ohToc" role="tabpanel" aria-labelledby="oh-toc-tab">
             <%= OhmsIndexDisplay.new(decorator.oral_history_content.ohms_xml).display %>
           </div>
         <% end %>
 
-        <div class="tab-pane <%= decorator.maybe_active_class(:downloads) %>" id="ohDownloads" role="tabpanel" aria-labelledby="oh-downloads-tab">
+        <div class="tab-pane" id="ohDownloads" role="tabpanel" aria-labelledby="oh-downloads-tab">
           <div>
             <h2 class="attribute-sub-head sound-file-header"><%= pluralize(decorator.audio_members.count, 'sound file')%></h2>
 
@@ -137,13 +148,6 @@
           <% end %>
         </div>
       </div>
-    </div>
-
-    <div class="col-lg-6 col-metadata">
-      <%= WorkShowInfo.new(@work).display %>
-      <%= render "citation", work: @work  %>
-    </div>
-
   </div>
 
 </div>

@@ -83,16 +83,4 @@ class AudioWorkShowDecorator < Draper::Decorator
   def has_ohms_index?
     model&.oral_history_content&.has_ohms_index?
   end
-
-  # outputs "active" or empty string depending on which tab should be default active
-  def maybe_active_class(tab)
-    if has_ohms_transcript?
-      "active" if tab.to_s == "transcript"
-    elsif has_ohms_index?
-      "active" if tab.to_s == "index"
-    else
-      "active" if tab.to_s == "downloads"
-    end
-  end
-
 end
