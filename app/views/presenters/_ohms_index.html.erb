@@ -8,30 +8,30 @@
       </h3>
 
 
-      <ul class="list-unstyled ohms-index-list">
+      <div class="ohms-index-list long-text-line-height">
         <% if index_point.synopsis.present? %>
-          <li>
+          <p>
             <%= index_point.synopsis %>
-          </li>
+          </p>
         <% end %>
 
 
         <% if index_point.partial_transcript.present? %>
-          <li>
+          <p class="attribute">
             <span class="attribute-label">Begins with</span>
             <%= view.format_partial_transcript(index_point.partial_transcript) %>
-          </li>
+          </p>
         <% end %>
 
         <% if index_point.keywords.present? %>
-          <li class="keywords">
+          <p class="attribute keywords">
             <span class="attribute-label">Keywords</span>
             <% index_point.keywords.each do |keyword| %>
               <span class="badge badge-pill badge-dark"><%= keyword %></span>
             <% end %>
-          </li>
+          </p>
         <% end %>
-      </ul>
+      </div>
     </div>
   <% end %>
 </div>
