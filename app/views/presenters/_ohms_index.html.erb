@@ -24,10 +24,10 @@
         <% end %>
 
         <% if index_point.keywords.present? %>
-          <li>
+          <li class="keywords">
             <span class="attribute-label">Keywords</span>
             <% index_point.keywords.each do |keyword| %>
-              <span class="badge badge-dark"><%= keyword %></span>
+              <span class="badge badge-pill badge-dark"><%= keyword %></span>
             <% end %>
           </li>
         <% end %>
