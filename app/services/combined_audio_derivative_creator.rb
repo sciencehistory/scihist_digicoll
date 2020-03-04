@@ -1,4 +1,7 @@
 require 'tempfile'
+
+
+Response = Struct.new(:webm_file, :mp3_file, :fingerprint, :start_times, keyword_init: true)
 #
 # Generate the combined audio derivatives for a
 # given oral history work.
@@ -6,26 +9,16 @@ require 'tempfile'
 # some_work = Work.find_by_friendlier_id(friendlier_id)
 # CombinedAudioDerivativeCreator.new(some_work).generate
 #
-#
 # Sample output:
-#     {
-#      :combined_audio_mp3_data=>
-#          "/var/folders/n7/t4zt2w751bj_6pbnf95sgpnrmz8lz8/T/output20200228-61637-ec6kjz.mp3",
-#      :combined_audio_webm_data=>
-#          "/var/folders/n7/t4zt2w751bj_6pbnf95sgpnrmz8lz8/T/output20200228-61637-1btjscz.webm",
-#      :fingerprint=>"4998d366f5edb6222db1181c7b153e21",
-#      :component_metadata=>
-#        {:durations=>
-#          [
-#            "00:30:30.29",
-#            "00:29:13.32",
-#            "00:33:03.26",
-#            "00:24:28.94"
-#          ]
-#        }
-#     }
-#
-#
+# <struct Response
+#  webm_file=<File:/path/to/file.webm>,
+#  mp3_file=<File:/path/to/file.mp3>,
+#  fingerprint="e0248c40015d6dc90b0d02937950b5d7",
+#  start_times=
+#   [["ddbd1a8d-c2eb-47b3-85a4-11b4ffb41719", 0],
+#    ["df773502-56d7-4756-a58c-b1f479910e97", 1.593469]]
+#  >
+
 class CombinedAudioDerivativeCreator
 
   attr_reader :work
@@ -33,39 +26,33 @@ class CombinedAudioDerivativeCreator
   def initialize(work)
     @cmd = TTY::Command.new(printer: :null)
     @work = work
-    @components = download_components
   end
 
   def generate
-    # Extract duration metadata for each component:
-    durations = @components.map do |f|
-      duration_of_audio_file_in_seconds(f.path)
-    end
-
-    output_paths = {}
+    output_files = {}
 
     # Create the two output files:
     ['mp3', 'webm'].each do |format|
-      output_paths[format] = output_file(format)
-      ffmpeg_args = args_for_ffmpeg(output_paths[format])
+      output_files[format] = output_file(format)
+      ffmpeg_args = args_for_ffmpeg(output_files[format].path)
       log "Creating #{format} using: #{ffmpeg_args.join(" ")}"
       @cmd.run(*ffmpeg_args, binmode: true)
     end
 
-    # Get rid of the downloaded originals:
-    @components.map!(&:unlink)
+    resp = Response.new
+    resp.webm_file   = output_files['webm']
+    resp.mp3_file    = output_files['mp3']
+    resp.fingerprint = fingerprint
+    resp.start_times = calculate_start_times
 
-    # Return the metadata, including paths to the two output files:
-    {
-      combined_audio_mp3_data:   output_paths['mp3'],
-      combined_audio_webm_data:  output_paths['webm'],
-      fingerprint: fingerprint,
-      component_metadata: {durations: durations}
-    }
+    # Before leaving, get rid of the downloaded originals:
+    components.map!(&:unlink)
+
+    resp
   end
 
   def output_file(format)
-    Tempfile.new(['output', ".#{format}"], :encoding => 'binary').path
+    Tempfile.new(['output', ".#{format}"], :encoding => 'binary')
   end
 
   # Use ffprobe to determine the length of an audio file.
@@ -74,20 +61,36 @@ class CombinedAudioDerivativeCreator
       '-show_entries', 'format=duration', '-of',
       'default=noprint_wrappers=1:nokey=1'
     ] + [ path ]
-    @cmd.run(*options).out.strip
+    @cmd.run(*options).out.strip.to_f
   end
 
-  def download_components
-    result = []
-    audio_member_files.each do |original_file|
-      log "Downloading #{original_file.metadata['filename']}"
-      new_temp_file = Tempfile.new(['temp_', original_file.metadata['filename'].downcase], :encoding => 'binary')
-      original_file.open(rewindable:false) do |input_audio_io|
-        new_temp_file.write input_audio_io.read until input_audio_io.eof?
+  def components
+    @components ||= begin
+      result = []
+      audio_member_files.each do |original_file|
+        log "Downloading #{original_file.metadata['filename']}"
+        new_temp_file = Tempfile.new(['temp_', original_file.metadata['filename'].downcase], :encoding => 'binary')
+        original_file.open(rewindable:false) do |input_audio_io|
+          new_temp_file.write input_audio_io.read until input_audio_io.eof?
+        end
+
+        log "Finished downloading #{original_file.metadata['filename']}"
+        result << new_temp_file
       end
-      result << new_temp_file
+      result
     end
-    result
+  end
+
+  # A list of arrays; the first item in each is the UUID of each audio member,
+  # while the second is the *starting point* of that audio w/r/t the combined audio.
+  def calculate_start_times()
+    durations = components.map do |f|
+      duration_of_audio_file_in_seconds(f.path)
+    end
+    sum = 0
+    audio_member_ids = audio_members.map(&:id)
+    end_points = durations.map {|i| sum += i}
+    audio_member_ids.zip([0] + end_points)
   end
 
   # Generate ffmpeg command to concatenate a set of audio files using
@@ -102,10 +105,10 @@ class CombinedAudioDerivativeCreator
     ffmpeg_command = ['ffmpeg', '-y']
 
     # Then a list of input files specified with -i
-    input_files = @components.map {|x| [ "-i", x.path] }.flatten
+    input_files = components.map {|x| [ "-i", x.path] }.flatten
 
     # List the number of audio streams: one per file
-    stream_list = 0.upto(@components.count - 1).to_a.map{ |n| "[#{n}:a]"}.join
+    stream_list = 0.upto(components.count - 1).to_a.map{ |n| "[#{n}:a]"}.join
 
     # Specify what to do with the audio streams:
     #
@@ -117,7 +120,7 @@ class CombinedAudioDerivativeCreator
     #   concat -> Stream #0:0 (libmp3lame)
     #
     # v=0 means there is no video.
-    filtergraph = "concat=n=#{@components.count}:v=0:a=1[a]"
+    filtergraph = "concat=n=#{components.count}:v=0:a=1[a]"
 
     # Finally, some output options:
     # -map [a] : map just the audio to the output
@@ -143,17 +146,21 @@ class CombinedAudioDerivativeCreator
 
   # Filters out non-audio items
   def audio_members
-    work.members.order(:position, :id).select do |member|
-      member.stored? && member.file.mime_type.start_with?('audio')
+    @audio_members ||= begin
+      work.members.order(:position, :id).select do |member|
+        member.stored? && member.file.mime_type.start_with?('audio')
+      end
     end
   end
 
   # If this checksum changes, you need to regenerate the audio
   def fingerprint
-    @calculated_checksum ||= begin
-      parts = [work.title, work.friendlier_id] +
-        audio_members.map { |a| a.file.metadata['sha512'][0..10] }
-      Digest::MD5.hexdigest(parts.join)
+    @fingerprint ||= begin
+      digests = audio_members.map(&:sha512).compact
+      unless digests.length == audio_members.length
+        raise RuntimeError, 'This item is missing a sha512'
+      end
+      Digest::MD5.hexdigest(([work.title, work.friendlier_id] + digests).join)
     end
   end
 
