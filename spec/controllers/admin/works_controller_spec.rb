@@ -31,6 +31,32 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller do
     end
   end
 
+  context "add an OHMS XML file" do
+    let(:valid_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml" }
+
+    let(:work) { FactoryBot.create(:work, genre: ["Oral histories"]) }
+
+    it "can add valid file" do
+      put :submit_ohms_xml, params: { id: work.friendlier_id, ohms_xml: Rack::Test::UploadedFile.new(valid_xml_path, "application/xml")}
+      expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
+      expect(flash[:error]).to be_blank
+
+      expect(work.reload.oral_history_content.ohms_xml).to be_present
+    end
+
+    it "can't add an invalid file" do
+      put :submit_ohms_xml, params: {
+        id: work.friendlier_id,
+        ohms_xml: Rack::Test::UploadedFile.new(StringIO.new("not > xml"), "application/xml", original_filename: "foo.xml")
+      }
+
+      expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
+      expect(flash[:error]).to include("OHMS XML file was invalid and could not be accepted")
+
+      expect(work.reload.oral_history_content&.ohms_xml).not_to be_present
+    end
+  end
+
   context "protected to logged in users" do
     context "without a logged-in user", logged_in_user: false do
       it "redirects to login" do

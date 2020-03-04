@@ -84,8 +84,16 @@ class Admin::WorksController < AdminController
       return
     end
 
-    @work.oral_history_content!.update!(ohms_xml_text: params[:ohms_xml].read)
-    redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: "OHMS XML file updated"
+    xml = params[:ohms_xml].read
+    validator = OralHistoryContent::OhmsXmlValidator.new(xml)
+
+    if validator.valid?
+      @work.oral_history_content!.update!(ohms_xml_text: xml)
+      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: "OHMS XML file updated"
+    else
+      Rails.logger.debug("Could not accept invalid OHMS XML for work #{@work.friendlier_id}:\n  #{xml.slice(0, 60).gsub(/[\n\r]/, '')}...\n\n  #{validator.errors.join("\n  ")}")
+      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: { error: "OHMS XML file was invalid and could not be accepted!" }
+    end
   end
 
   # PATCH/PUT /admin/works/1/publish
