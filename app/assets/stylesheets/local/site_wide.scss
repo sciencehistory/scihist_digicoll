@@ -129,11 +129,11 @@ hr.brand {
 
   // Longer text passages in our serif Abril font really need bigger line-height.
   // For legacy reasons we have to do this as an !important override.
-  .long-text-line-height {
-    p {
-      line-height: $paragraph-line-height-long !important;
-      margin-bottom: ($paragraph-font-size * $paragraph-line-height-long / 2) !important;
-    }
+  //
+  // p inside a div.long-text-line-height, or a p.long-text-line-height itself.
+  .long-text-line-height p, p.long-text-line-height {
+    line-height: $paragraph-line-height-long !important;
+    margin-bottom: ($paragraph-font-size * $paragraph-line-height-long / 2) !important;
   }
 }
 
