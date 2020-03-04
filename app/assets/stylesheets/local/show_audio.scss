@@ -152,7 +152,7 @@
 
     li {
       @extend %text-font;
-      margin-bottom: $paragraph-spacer;
+      margin-bottom: $paragraph-spacer * 2;
 
       .attribute-label {
         @extend %special-label;
