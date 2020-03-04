@@ -21,6 +21,21 @@ FactoryBot.define do
       end
     end
 
+    trait :inline_promoted_mp3_file_1 do
+      file { File.open((Rails.root + "spec/test_support/audio/ice_cubes.mp3")) }
+      after(:build) do |asset|
+        asset.file_attacher.set_promotion_directives(promote: :inline, create_derivatives: :inline)
+      end
+    end
+
+    trait :inline_promoted_mp3_file_2 do
+      file { File.open((Rails.root + "spec/test_support/audio/double_ice_cubes.mp3")) }
+      after(:build) do |asset|
+        asset.file_attacher.set_promotion_directives(promote: :inline, create_derivatives: :inline)
+      end
+    end
+
+
     trait :bg_derivatives do
       after(:build) do |asset|
         asset.file_attacher.set_promotion_directives(create_derivatives: :background)
