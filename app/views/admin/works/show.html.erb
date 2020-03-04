@@ -54,6 +54,11 @@
   <div class="nav nav-tabs" id="nav-tab" role="tablist">
     <a class="nav-item nav-link active" id="nav-metadata-tab" data-toggle="tab" href="#nav-metadata" role="tab" aria-controls="nav-home" aria-selected="true">Metadata</a>
     <a class="nav-item nav-link" id="nav-members-tab" data-toggle="tab" href="#nav-members" role="tab" aria-controls="nav-profile" aria-selected="false">Members</a>
+
+    <% if @work.genre && @work.genre.include?('Oral histories') %>
+      <a class="nav-item nav-link" id="nav-oral-histories-tab" data-toggle="tab" href="#nav-oral-histories" role="tab" aria-controls="nav-profile" aria-selected="false">Oral History</a>
+    <% end %>
+
   </div>
 </nav>
 
@@ -94,5 +99,39 @@
 
     <%= render "member_list_table", work: @work %>
   </div>
+
+  <% if @work.genre && @work.genre.include?('Oral histories') %>
+    <div class="tab-pane" id="nav-oral-histories" role="tabpanel" aria-labelledby="nav-oral-histories-tab">
+      <div class="card bg-light mb-3">
+        <h2 class="card-header h3">Combined Audio Derivative File</h2>
+        <div class="card-body">
+          <p><%= @work.members.to_a.select { |m| m.content_type && m.content_type.start_with?("audio/")}.count %>  Audio file(s) available</p>
+          <p>TBD: Create combined deriv; status/fingerprint of combined deriv; URL for combined deriv to use with OHMS</p>
+        </div>
+      </div>
+
+      <div class="card bg-light mb-3">
+        <h2 class="card-header h3">OHMS XML attached</h2>
+        <div class="card-body">
+          <dl class="row">
+            <% if @work.oral_history_content!.ohms_xml.present? %>
+              <dt class="col-sm-6">attached?</dt><dd class="col-sm-6"><span class="text-success font-weight-bold">YES</span></dd>
+              <dt class="col-sm-6">id</dt><dd class="col-sm-6"><%= @work.oral_history_content!.ohms_xml.record_id %></dd>
+              <dt class="col-sm-6">dt</dt><dd class="col-sm-6"><%= @work.oral_history_content!.ohms_xml.record_dt %></dd>
+              <dt class="col-sm-6">accession</dt><dd class="col-sm-6"><%= @work.oral_history_content!.ohms_xml.accession %></dd>
+            <% else %>
+              <dt class="col-sm-6">attached?</dt><dd class="col-sm-6"><span class="text-danger font-weight-bold">NO</span></dd>
+            <% end %>
+          </dl>
+          <hr>
+          <h3 class="h4">Upload New OHMS XML file</h3>
+          <%= form_with(url: submit_ohms_xml_admin_work_path(@work), local: true, multipart: true, method: :put) do %>
+            <%= file_field_tag 'ohms_xml', accept: "application/xml" %>
+            <%= submit_tag "Upload", class: "btn btn-primary" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
 </div>
 

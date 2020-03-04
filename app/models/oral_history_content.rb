@@ -21,7 +21,8 @@
 # expected to hold a hash of metadata on components of combined audio.
 #
 # There is a text/blob slot for the OHMS XML file, `ohms_xml_text`. It's not
-# a shrine file attachment, just a postgres `text` column.
+# a shrine file attachment, just a postgres `text` column. At #ohms_xml is an
+# object that provides access to elements from the parsed XML.
 #
 class OralHistoryContent < ApplicationRecord
   self.table_name = "oral_history_content"
@@ -39,6 +40,16 @@ class OralHistoryContent < ApplicationRecord
 
   def set_combined_audio_webm!(io)
     set_combined_audio!(combined_audio_webm_attacher, io, mime_type: "audio/webm", file_suffix: "webm")
+  end
+
+  # A OralHistoryContent::OhmsXml object that provides access to parts of XML we need.
+  #
+  # Note that this is cached with whatever content is loaded, if ohmx_xml_text changes,
+  # it'll be wrong. That doesn't really happen, we don't access this again right
+  # after setting ohms_xml_text before a page reload.
+  def ohms_xml
+    return nil unless ohms_xml_text.present?
+    @ohms_xml ||= OhmsXml.new(ohms_xml_text)
   end
 
   private
@@ -63,6 +74,27 @@ class OralHistoryContent < ApplicationRecord
     stored_file.delete if stored_file
     shrine_attacher.set(original)
     raise e
+  end
+
+  class OhmsXml
+    OHMS_NS = "https://www.weareavp.com/nunncenter/ohms"
+    attr_reader :xml
+
+    def initialize(xml_str)
+      @xml = Nokogiri::XML(xml_str)
+    end
+
+    def record_dt
+      @record_at ||= xml.at_xpath("//ohms:record", ohms: OHMS_NS)["dt"]
+    end
+
+    def record_id
+      @record_id ||= xml.at_xpath("//ohms:record", ohms: OHMS_NS)["id"]
+    end
+
+    def accession
+      @accession ||= xml.at_xpath("//ohms:record/ohms:accession", ohms: OHMS_NS).text
+    end
   end
 
 end
