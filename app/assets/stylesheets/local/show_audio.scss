@@ -145,14 +145,21 @@
   max-width: $long-max-readable-width;
 
    // based on scihist-results-list-values, see there.
-  ul.ohms-index-list {
+  div.ohms-index-list {
     margin-top: $paragraph-spacer;
+
     @extend .ml-4;
     max-width: $max-readable-width;
 
-    li {
-      @extend %text-font;
+    @extend %text-font;
+
+    p {
       margin-bottom: $paragraph-spacer * 2;
+    }
+
+    p.attribute {
+      padding-left: 0.66em;
+      text-indent: -0.66em;
 
       .attribute-label {
         @extend %special-label;
@@ -164,6 +171,15 @@
 
     .keywords {
       font-family: $font-family-sans-serif;
+      .badge {
+        // for some reason text-indent we used for hanging indent
+        // is being inherited, we have to stop it!
+        text-indent: initial;
+      }
     }
+  }
+
+  .ohms-index-point {
+    margin-bottom: $paragraph-spacer * 4;
   }
 }
