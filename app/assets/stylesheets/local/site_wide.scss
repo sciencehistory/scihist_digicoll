@@ -126,13 +126,24 @@ hr.brand {
     // and could use some more spacing, normally in bootstrap $line-height-computed / 2
     margin-bottom: $paragraph-spacer;
   }
+
+  // Longer text passages in our serif Abril font really need bigger line-height.
+  // For legacy reasons we have to do this as an !important override.
+  .long-text-line-height {
+    p {
+      line-height: $paragraph-line-height-long !important;
+      margin-bottom: ($paragraph-font-size * $paragraph-line-height-long / 2) !important;
+    }
+  }
 }
 
 .text-page {
   max-width: $max-readable-width;
   margin-right: auto;
   margin-left: auto;
-  p {
+  p, dd, dt {
+    line-height: $paragraph-line-height-long !important;
+    margin-bottom: ($paragraph-line-height-long / 2) !important;
     max-width: $max-readable-width;
   }
 }
