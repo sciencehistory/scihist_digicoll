@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="https://www.weareavp.com/nunncenter/ohms" xmlns="https://www.weareavp.com/nunncenter/ohms/ohms.xsd" version="5.4" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:element name="ROOT">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="record" minOccurs="1" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="version" type="xs:decimal" minOccurs="1" maxOccurs="1" />
+                            <xs:element name="date" minOccurs="1" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:attribute name="value" type="xs:string" />
+                                    <xs:attribute name="format" type="xs:string" />
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="date_nonpreferred_format" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="cms_record_id" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="title" type="xs:string" minOccurs="1" maxOccurs="1" />
+                            <xs:element name="accession" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="duration" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="collection_id" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="collection_name" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="series_id" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="series_name" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="repository" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="funding" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="repository_url" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="subject" minOccurs="0" maxOccurs="unbounded" type="xs:string" />
+                            <xs:element name="keyword" minOccurs="0" maxOccurs="unbounded" type="xs:string" />
+                            <xs:element name="interviewee" minOccurs="0" maxOccurs="unbounded" type="xs:string" />
+                            <xs:element name="interviewer" minOccurs="0" maxOccurs="unbounded" type="xs:string" />
+                            <xs:element name="format" minOccurs="0" maxOccurs="unbounded" type="xs:string" />
+                            <xs:element name="file_name" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="sync" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="sync_alt" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="transcript_alt_lang" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="translate" minOccurs="0" maxOccurs="1">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:integer">
+                                        <xs:minInclusive value="0" />
+                                        <xs:maxInclusive value="1" />
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="media_id" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="media_url" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="mediafile" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:all>
+                                        <xs:element name="host" minOccurs="0" maxOccurs="1">
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:enumeration value="Avalon" />
+                                                    <xs:enumeration value="Aviary" />
+                                                    <xs:enumeration value="Brightcove" />
+                                                    <xs:enumeration value="Kaltura" />
+                                                    <xs:enumeration value="SoundCloud" />
+                                                    <xs:enumeration value="Vimeo" />
+                                                    <xs:enumeration value="YouTube" />
+                                                    <xs:enumeration value="Other" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="avalon_target_domain" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                        <xs:element name="host_account_id" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                        <xs:element name="host_player_id" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                        <xs:element name="host_clip_id" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                        <xs:element name="clip_format" minOccurs="0" maxOccurs="1">
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:enumeration value="audio" />
+                                                    <xs:enumeration value="video" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                    </xs:all>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="kembed" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="language" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="user_notes" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="index" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="point" minOccurs="0" maxOccurs="unbounded">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="time" type="xs:int" minOccurs="0" maxOccurs="1" />
+                                                    <xs:element name="title" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                                    <xs:element name="title_alt" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                                    <xs:element name="partial_transcript" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                                    <xs:element name="partial_transcript_alt" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                                    <xs:element name="synopsis" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                                    <xs:element name="synopsis_alt" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                                    <xs:element name="keywords" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                                    <xs:element name="keywords_alt" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                                    <xs:element name="subjects" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                                    <xs:element name="subjects_alt" type="xs:string" minOccurs="0" maxOccurs="1" />
+                                                    <xs:element name="gpspoints" minOccurs="0" maxOccurs="unbounded">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element name="gps" minOccurs="0" maxOccurs="1" type="xs:string"></xs:element>
+                                                                <xs:element name='gps_zoom'>
+		                                                        	<xs:simpleType>
+			                                                            <xs:union>
+			                                                                <xs:simpleType>
+			                                                                    <xs:restriction base='xs:string'>
+			                                                                        <xs:length value='0'/>
+			                                                                    </xs:restriction>
+			                                                                </xs:simpleType>
+			                                                                <xs:simpleType>
+			                                                                    <xs:restriction base='xs:integer'>
+			                                                                    </xs:restriction>
+			                                                                </xs:simpleType>
+			                                                            </xs:union>
+			                                                        </xs:simpleType>
+			                                                    </xs:element>
+                                                                <xs:element name="gps_text" minOccurs="0" maxOccurs="1" type="xs:string"></xs:element>
+                                                                <xs:element name="gps_text_alt" minOccurs="0" maxOccurs="1" type="xs:string"></xs:element>
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+	                                                </xs:element>
+	                                                <xs:element name="hyperlinks" minOccurs="0" maxOccurs="unbounded">
+	                                                    <xs:complexType>
+	                                                        <xs:sequence>
+	                                                            <xs:element name="hyperlink" minOccurs="0" maxOccurs="1" type="xs:string"></xs:element>
+	                                                            <xs:element name="hyperlink_text" minOccurs="0" maxOccurs="1" type="xs:string"></xs:element>
+	                                                            <xs:element name="hyperlink_text_alt" minOccurs="0" maxOccurs="1" type="xs:string"></xs:element>
+	                                                        </xs:sequence>
+	                                                    </xs:complexType>
+	                                                </xs:element>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="type" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="rel" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="transcript" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="transcript_alt" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="rights" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="fmt" minOccurs="0" maxOccurs="1">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:enumeration value="audio" />
+                                        <xs:enumeration value="video" />
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="usage" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="userestrict" minOccurs="0" maxOccurs="1">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:integer">
+                                        <xs:minInclusive value="0" />
+                                        <xs:maxInclusive value="1" />
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="xmllocation" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="xmlfilename" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="collection_link" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="series_link" type="xs:string" minOccurs="0" maxOccurs="1" />
+                        </xs:sequence>
+                        <xs:attribute name="id" type="xs:int" use="required" />
+                        <xs:attribute name="dt" type="xs:date" use="required" />
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
+
