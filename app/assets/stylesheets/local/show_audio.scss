@@ -24,6 +24,7 @@
         margin-top: $paragraph-margin-bottom;
       }
     }
+
     .ohms-search {
       flex-basis: 100%;
 
@@ -41,6 +42,34 @@
 
       background-color: white;
       color: black;
+    }
+
+    .ohms-search-results {
+      .ohms-result-pagination {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        align-items: center;
+
+        margin: ($paragraph-spacer / 2) 0;
+
+        text-transform: uppercase;
+        letter-spacing: 0.035em;
+
+        strong {
+          font-weight: 600;
+        }
+      }
+
+      ol {
+        @extend %text-font-numerals;
+        list-style-position: inside;
+        padding-left: 0;
+        margin-bottom: 0;
+      }
+      a {
+        color: $body-color;
+      }
     }
   }
 

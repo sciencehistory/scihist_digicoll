@@ -119,7 +119,7 @@ Search.SearchResults.prototype.draw =  function(pageNumber) {
 
   var html =  "<div class='ohms-search-results'>" +
     "<div class='ohms-result-pagination'>" +
-      "<span class='showing'>Showing " +  fromItem + " - " + toItem + " of " + this.results.length + "</span> " +
+      "<span class='showing'>Showing <strong>" +  fromItem + "</strong> - <strong>" + toItem + "</strong> of <strong>" + this.results.length + "</strong></span> " +
       "<span class='nav'>" +
         '<div class="btn-group btn-group-sm" role="group" aria-label="Basic example">' +
             this.prevButtonHtml() +
