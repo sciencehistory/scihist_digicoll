@@ -39,6 +39,8 @@ var Search = {
     return "<span class=\"ohms-highlight text-danger\">" + match + "</span>";
   },
 
+  // a SearchResults object or empty
+  currentResults: undefined,
 
   // Returns 'result' objects, how do we make one of them?
   // context, tab id, id.
@@ -46,8 +48,7 @@ var Search = {
   // looks through all objects that are .ohms-transcript-line,
   // that works for our DOM. Should we add a data- hook?
   //
-  // Highlights every hit. For every hit, also calls
-  // the addSearchResult hook with a result object.
+  // Highlights every hit, results a list of result objects.
   searchTranscript: function(query) {
     var _self = this;
 
@@ -68,7 +69,7 @@ var Search = {
     // 3: after match
     var find_re = new RegExp("((?:\\S*\\s+\\S*){0,1})(" + query + ")((?:\\s*\\S+\\s*){0,4})")
 
-    $(".ohms-transcript-line").each(function() {
+    return $(".ohms-transcript-line").map(function() {
       var line = $(this);
 
       var lineId = this.id;
@@ -82,26 +83,76 @@ var Search = {
           return _self.wrapInHighlight(str);
         }));
 
-        // And callback to put in result list
-        _self.addSearchResult({
+        return {
           targetId: lineId,
           highlightedMatch: highlightedMatch
-        });
+        }
       }
-    });
-  },
-
-  addSearchResult: function(resultObj) {
-    $(document).find("*[data-ohms-search-results]").append(
-      "<li><a href='#' data-ohms-scroll-to-id='" + resultObj.targetId + "'>" + resultObj.highlightedMatch + "</a></li>"
-    );
+    }).get(); // plain array not jQuery object
   },
 
   clearSearchResults: function() {
     $(document).find("*[data-ohms-search-results]").empty();
     $(document).find('.ohms-highlight').contents().unwrap();
+    this.currentResults = undefined;
   }
+
 }
+
+Search.SearchResults = function(domContainer, results) {
+    this.domContainer = domContainer;
+    this.results = results;
+
+    this.resultsPerPage = 5;
+
+    this.pageNumber = 1;
+}
+
+// First argument is optional page number, if passed in it is set as instance state.
+Search.SearchResults.prototype.draw =  function(pageNumber) {
+  if (pageNumber) { this.pageNumber = pageNumber; }
+
+  var fromItem = ((this.pageNumber - 1) * this.resultsPerPage) + 1;
+  var toItem = Math.min(this.pageNumber * this.resultsPerPage, this.results.length);
+  var resultsSlice = this.results.slice(fromItem - 1, toItem);
+
+
+  var html =  "<div class='ohms-search-results'>" +
+    "<div class='ohms-result-pagination'>" +
+      "<span class='showing'>Showing " +  fromItem + " - " + toItem + " of " + this.results.length + "</span> " +
+      "<span class='nav'>" +
+        '<div class="btn-group btn-group-sm" role="group" aria-label="Basic example">' +
+            this.prevButtonHtml() +
+            this.nextButtonHtml() +
+        '</div>' +
+      "</span>" +
+    "</div>" +
+    "<ol start=" + fromItem + ">" +
+      resultsSlice.map(function(resultObj) {
+        return "<li><a href='#' data-ohms-scroll-to-id='" + resultObj.targetId + "'>" + resultObj.highlightedMatch + "</a></li>"
+      }).join("\n") +
+    "</ol>" +
+  "</div>";
+
+  $(this.domContainer).html(html);
+};
+
+Search.SearchResults.prototype.prevButtonHtml = function() {
+  return '<button type="button" class="btn btn-outline-secondary" title="Previous page" aria-label="Previous page" ' +
+            ((this.pageNumber <= 1) ? " disabled " : ('data-ohms-page-link="' + (this.pageNumber - 1) + '"')) +
+          '>' +
+              '<i class="fa fa-chevron-left" aria-hidden="true"></i>' +
+          '</button>';
+}
+
+Search.SearchResults.prototype.nextButtonHtml = function() {
+  return '<button type="button" class="btn btn-outline-secondary" title="Next page" aria-label="Next page" ' +
+            ((this.pageNumber * this.resultsPerPage >= this.results.length) ? " disabled " : ('data-ohms-page-link="' + (this.pageNumber + 1) + '"')) +
+          '>' +
+              '<i class="fa fa-chevron-right" aria-hidden="true"></i>' +
+          '</button>';
+}
+
 
 $(document).on("click", "*[data-ohms-scroll-to-id]", function(event) {
   event.preventDefault();
@@ -112,5 +163,28 @@ $(document).on("click", "*[data-ohms-scroll-to-id]", function(event) {
   document.getElementById(id).scrollIntoView({behavior: "smooth", block: "center"});
 });
 
+$(document).on("submit", "*[data-ohms-search-form]", function(event) {
+  event.preventDefault();
 
-window.Search = Search;
+  Search.clearSearchResults();
+
+  var query = $(event.target).find("*[data-ohms-input-query]").val();
+
+  Search.currentResults = new OhmsSearch.SearchResults(
+    $("*[data-ohms-search-results]").get(0),
+    Search.searchTranscript(query)
+  );
+
+  Search.currentResults.draw();
+});
+
+$(document).on("click", "*[data-ohms-page-link]", function(event) {
+  event.preventDefault();
+
+  var page = $(this).data("ohmsPageLink");
+
+  Search.currentResults.draw(page);
+});
+
+
+window.OhmsSearch = Search;
