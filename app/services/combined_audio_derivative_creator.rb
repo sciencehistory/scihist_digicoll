@@ -1,13 +1,14 @@
 require 'tempfile'
 
 
-Response = Struct.new(:webm_file, :mp3_file, :fingerprint, :start_times, keyword_init: true)
 #
 # Generate the combined audio derivatives for a
 # given oral history work.
 #
 # some_work = Work.find_by_friendlier_id(friendlier_id)
 # CombinedAudioDerivativeCreator.new(some_work).generate
+#
+# Returns a struct in which webm_file and mp3_file each refers to a TempFile.
 #
 # Sample output:
 # <struct Response
@@ -21,10 +22,12 @@ Response = Struct.new(:webm_file, :mp3_file, :fingerprint, :start_times, keyword
 
 class CombinedAudioDerivativeCreator
 
+  Response = Struct.new(:webm_file, :mp3_file, :fingerprint, :start_times, keyword_init: true)
+
   attr_reader :work
 
   def initialize(work)
-    @cmd = TTY::Command.new(printer: :null)
+    @cmd = TTY::Command.new()
     @work = work
   end
 
@@ -35,7 +38,6 @@ class CombinedAudioDerivativeCreator
     ['mp3', 'webm'].each do |format|
       output_files[format] = output_file(format)
       ffmpeg_args = args_for_ffmpeg(output_files[format].path)
-      log "Creating #{format} using: #{ffmpeg_args.join(" ")}"
       @cmd.run(*ffmpeg_args, binmode: true)
     end
 
@@ -68,13 +70,10 @@ class CombinedAudioDerivativeCreator
     @components ||= begin
       result = []
       audio_member_files.each do |original_file|
-        log "Downloading #{original_file.metadata['filename']}"
         new_temp_file = Tempfile.new(['temp_', original_file.metadata['filename'].downcase], :encoding => 'binary')
         original_file.open(rewindable:false) do |input_audio_io|
           new_temp_file.write input_audio_io.read until input_audio_io.eof?
         end
-
-        log "Finished downloading #{original_file.metadata['filename']}"
         result << new_temp_file
       end
       result
@@ -157,14 +156,14 @@ class CombinedAudioDerivativeCreator
   def fingerprint
     @fingerprint ||= begin
       digests = audio_members.map(&:sha512).compact
+      uuids   = audio_members.pluck(:id)
       unless digests.length == audio_members.length
         raise RuntimeError, 'This item is missing a sha512'
       end
-      Digest::MD5.hexdigest(([work.title, work.friendlier_id] + digests).join)
+      Digest::MD5.hexdigest((
+        [work.title, work.friendlier_id] + digests + uuids
+      ).join)
     end
   end
 
-  def log(msg)
-    Rails.logger.debug(msg)
-  end
 end
