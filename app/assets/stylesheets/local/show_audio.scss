@@ -1,19 +1,46 @@
 .work-show-audio {
 
-  .now-playing-container {
+  .audio-navbar {
     position: sticky;
-    top: 0.5rem;
+    top: 0;
     z-index: 1;
+
+    display: flex;
+    flex-wrap: wrap;
 
     margin-top: 2rem;
 
     background-color: $brand-dark-grey;
     color: white;
-    padding: 1rem;
 
-    audio {
-      width: 100%;
-      margin-top: $paragraph-margin-bottom;
+    .now-playing-container {
+      flex-basis: 66%;
+      flex-grow: 2;
+
+      padding: 1rem;
+
+      audio {
+        width: 100%;
+        margin-top: $paragraph-margin-bottom;
+      }
+    }
+    .ohms-search {
+      flex-basis: 100%;
+
+      @include media-breakpoint-up(lg) {
+        // when we're two column, fit this next to player
+        flex-basis: 33%;
+        flex-grow: 1;
+      }
+
+
+
+      border-radius: 0.66rem;
+      border: 0.33rem solid $brand-dark-grey;
+      padding: 0.66rem;
+
+      background-color: white;
+      color: black;
     }
   }
 

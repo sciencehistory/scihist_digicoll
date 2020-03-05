@@ -9,15 +9,37 @@
 
   <%= WorkTitleAndDates.new(@work).display %>
 
-  <div class="now-playing-container" data-role="now-playing-container">
-    <div class="now-playing-info" data-role="now-playing-info">
-        <i class="fa fa-volume-up" aria-hidden="true"></i> <span class="current-track-label" data-role="current-track-label"></span>
-    </div>
+  <div class="audio-navbar">
+    <div class="now-playing-container"  data-role="now-playing-container">
+      <div class="now-playing-info" data-role="now-playing-info">
+          <i class="fa fa-volume-up" aria-hidden="true"></i> <span class="current-track-label" data-role="current-track-label"></span>
+      </div>
 
-    <audio controls controlsList="nodownload" data-role="audio-elem" >
-        <source src=""  type="audio/mpeg"/>
-        <source src=""  type="audio/webm"/>
-    </audio>
+      <audio controls controlsList="nodownload" data-role="audio-elem" >
+          <source src=""  type="audio/mpeg"/>
+          <source src=""  type="audio/webm"/>
+      </audio>
+
+      <div>
+        <a href="#" class="btn btn-light">Transcript</a>
+        <a href="#" class="btn btn-light">Segments</a>
+        <a href="#" class="btn btn-light">Downloads</a>
+      </div>
+    </div>
+    <% if decorator.has_ohms_transcript? || decorator.has_ohms_index? %>
+      <div class="ohms-search">
+        Search Transcript
+        <form data-ohms-search-form="true">
+          <div class="input-group">
+            <input type="text" class="form-control form-control-sm" placeholder="Search transcript" aria-label="Search transcript" data-ohms-input-query="true">
+            <div class="input-group-append">
+              <button class="btn btn-sm btn-emphasis" type="button">Search</button>
+            </div>
+          </div>
+        </form>
+        <div data-ohms-search-results="true"></div>
+      </div>
+    <% end %>
   </div>
 
   <div class="bottom">
