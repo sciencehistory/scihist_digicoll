@@ -186,5 +186,12 @@ $(document).on("click", "*[data-ohms-page-link]", function(event) {
   Search.currentResults.draw(page);
 });
 
+$(document).on("click", "*[data-ohms-clear-search]", function(event) {
+  event.preventDefault();
+
+  $("*[data-ohms-input-query]").val("");
+  Search.clearSearchResults();
+});
+
 
 window.OhmsSearch = Search;
