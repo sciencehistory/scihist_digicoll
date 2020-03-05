@@ -4,16 +4,20 @@ describe "Combined Audio" do
   # We need to set the friendlier_id explicitly, because it's part of the fingerprint recipe.
   let!(:work) { FactoryBot.create(:work, title: "top", friendlier_id: '1ciyp1i')}
 
-  let!(:audio_asset_1)  { create(:asset, :inline_promoted_mp3_file_1,
-    position: 1,
-    parent_id: work.id,
-    id: 'ddbd1a8d-c2eb-47b3-85a4-11b4ffb41719')
+  let!(:audio_asset_1)  { create(:asset, :inline_promoted_file,
+      position: 1,
+      parent_id: work.id,
+      id: 'ddbd1a8d-c2eb-47b3-85a4-11b4ffb41719',
+      file: File.open((Rails.root + "spec/test_support/audio/ice_cubes.mp3"))
+    )
   }
 
-  let!(:audio_asset_2)  { create(:asset, :inline_promoted_mp3_file_2,
-    position: 2,
-    parent_id: work.id,
-    id: 'df773502-56d7-4756-a58c-b1f479910e97')
+  let!(:audio_asset_2)  { create(:asset, :inline_promoted_file,
+      position: 2,
+      parent_id: work.id,
+      id: 'df773502-56d7-4756-a58c-b1f479910e97',
+      file: File.open((Rails.root + "spec/test_support/audio/double_ice_cubes.mp3"))
+    )
   }
 
   it "creates combined audio derivatives" do
