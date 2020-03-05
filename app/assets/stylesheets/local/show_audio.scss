@@ -51,7 +51,7 @@
         flex-wrap: wrap;
         align-items: center;
 
-        margin: ($paragraph-spacer / 2) 0;
+        margin-top: ($paragraph-spacer / 2);
 
         text-transform: uppercase;
         letter-spacing: 0.035em;
@@ -65,6 +65,8 @@
         @extend %text-font-numerals;
         list-style-position: inside;
         padding-left: 0;
+
+        margin-top: ($paragraph-spacer / 2);
         margin-bottom: 0;
       }
       a {
