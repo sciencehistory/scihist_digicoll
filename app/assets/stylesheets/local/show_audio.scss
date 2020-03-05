@@ -45,13 +45,18 @@
     }
 
     .ohms-search-results {
+      padding-top: ($paragraph-spacer / 2);
+
+      .ohms-no-results {
+        margin-top: ($paragraph-spacer / 2);
+        color: $brand-red;
+      }
+
       .ohms-result-pagination {
         display: flex;
         justify-content: space-between;
         flex-wrap: wrap;
         align-items: center;
-
-        margin-top: ($paragraph-spacer / 2);
 
         text-transform: uppercase;
         letter-spacing: 0.035em;

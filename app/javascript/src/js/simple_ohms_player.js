@@ -112,6 +112,15 @@ Search.SearchResults = function(domContainer, results) {
 Search.SearchResults.prototype.draw =  function(pageNumber) {
   if (pageNumber) { this.pageNumber = pageNumber; }
 
+  if (this.results.length == 0) {
+    $(this.domContainer).html(
+      "<div class='ohms-search-results'>" +
+        "<span class='ohms-no-results'>No results found.</span>" +
+      "</div>"
+    );
+    return;
+  }
+
   var fromItem = ((this.pageNumber - 1) * this.resultsPerPage) + 1;
   var toItem = Math.min(this.pageNumber * this.resultsPerPage, this.results.length);
   var resultsSlice = this.results.slice(fromItem - 1, toItem);
