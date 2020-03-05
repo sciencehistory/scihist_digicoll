@@ -118,15 +118,7 @@ Search.SearchResults.prototype.draw =  function(pageNumber) {
 
 
   var html =  "<div class='ohms-search-results'>" +
-    "<div class='ohms-result-pagination'>" +
-      "<span class='showing'>Showing <strong>" +  fromItem + "</strong> - <strong>" + toItem + "</strong> of <strong>" + this.results.length + "</strong></span> " +
-      "<span class='nav'>" +
-        '<div class="btn-group btn-group-sm" role="group" aria-label="Basic example">' +
-            this.prevButtonHtml() +
-            this.nextButtonHtml() +
-        '</div>' +
-      "</span>" +
-    "</div>" +
+    this.paginationHtml(fromItem, toItem) +
     "<ol start=" + fromItem + ">" +
       resultsSlice.map(function(resultObj) {
         return "<li><a href='#' data-ohms-scroll-to-id='" + resultObj.targetId + "'>" + resultObj.highlightedMatch + "</a></li>"
@@ -136,6 +128,22 @@ Search.SearchResults.prototype.draw =  function(pageNumber) {
 
   $(this.domContainer).html(html);
 };
+
+Search.SearchResults.prototype.paginationHtml = function(fromItem, toItem) {
+  if (this.resultsPerPage >= this.results.length ) {
+    return "";
+  }
+
+  return "<div class='ohms-result-pagination'>" +
+            "<span class='showing'>Showing <strong>" +  fromItem + "</strong> - <strong>" + toItem + "</strong> of <strong>" + this.results.length + "</strong></span> " +
+            "<span class='nav'>" +
+              '<div class="btn-group btn-group-sm" role="group" aria-label="Basic example">' +
+                  this.prevButtonHtml() +
+                  this.nextButtonHtml() +
+              '</div>' +
+            "</span>" +
+          "</div>";
+}
 
 Search.SearchResults.prototype.prevButtonHtml = function() {
   return '<button type="button" class="btn btn-outline-secondary" title="Previous page" aria-label="Previous page" ' +
