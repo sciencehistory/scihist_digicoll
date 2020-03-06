@@ -7,7 +7,7 @@ class Admin::WorksController < AdminController
   before_action :set_work,
     only: [:show, :edit, :update, :destroy,
            :reorder_members_form, :demote_to_asset, :publish, :unpublish,
-           :submit_ohms_xml]
+           :submit_ohms_xml, :create_combined_audio_derivatives]
 
   # GET /admin/works
   # GET /admin/works.json
@@ -95,6 +95,21 @@ class Admin::WorksController < AdminController
       redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: { error: "OHMS XML file was invalid and could not be accepted!" }
     end
   end
+
+
+  # Create_combined_audio_derivatives, if warranted.
+  # PATCH/PUT /admin/works/ab2323ac/create_combined_audio_derivatives
+  def create_combined_audio_derivatives
+    current = @work.oral_history_content!.combined_audio_fingerprint
+    if current != CombinedAudioDerivativeCreator.new(@work).fingerprint
+      CreateCombinedAudioDerivativesJob.perform_later(@work)
+      notice = "The combined audio derivatives are being created."
+    else
+      notice = "We already have up-to-date combined audio for this item."
+    end
+    redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: notice
+  end
+
 
   # PATCH/PUT /admin/works/1/publish
   #
