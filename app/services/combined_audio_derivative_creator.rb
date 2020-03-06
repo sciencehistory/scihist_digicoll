@@ -27,7 +27,7 @@ class CombinedAudioDerivativeCreator
   attr_reader :work
 
   def initialize(work)
-    @cmd = TTY::Command.new()
+
     @work = work
   end
 
@@ -38,7 +38,7 @@ class CombinedAudioDerivativeCreator
     ['mp3', 'webm'].each do |format|
       output_files[format] = output_file(format)
       ffmpeg_args = args_for_ffmpeg(output_files[format].path)
-      @cmd.run(*ffmpeg_args, binmode: true)
+      cmd.run(*ffmpeg_args, binmode: true)
     end
 
     resp = Response.new
@@ -53,6 +53,11 @@ class CombinedAudioDerivativeCreator
     resp
   end
 
+
+  def cmd
+     @cmd ||= TTY::Command.new()
+  end
+
   def output_file(format)
     Tempfile.new(['output', ".#{format}"], :encoding => 'binary')
   end
@@ -63,7 +68,7 @@ class CombinedAudioDerivativeCreator
       '-show_entries', 'format=duration', '-of',
       'default=noprint_wrappers=1:nokey=1'
     ] + [ path ]
-    @cmd.run(*options).out.strip.to_f
+    cmd.run(*options).out.strip.to_f
   end
 
   def components
@@ -147,7 +152,7 @@ class CombinedAudioDerivativeCreator
   def audio_members
     @audio_members ||= begin
       work.members.order(:position, :id).select do |member|
-        member.stored? && member.file.mime_type.start_with?('audio')
+        member.stored? && member.content_type && member.content_type.start_with?("audio/")
       end
     end
   end
