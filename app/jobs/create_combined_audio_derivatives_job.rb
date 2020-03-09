@@ -1,7 +1,9 @@
 class CreateCombinedAudioDerivativesJob < ApplicationJob
   def perform(work)
+    deriv_creator = CombinedAudioDerivativeCreator.new(work)
+    return unless deriv_creator.audio_members.count > 0
     # Generate the derivatives:
-    deriv_info = CombinedAudioDerivativeCreator.new(work).generate
+    deriv_info = deriv_creator.generate
     sidecar = work.oral_history_content!
     # Upload to s3, then unlink local files:
     sidecar.set_combined_audio_mp3!(deriv_info.mp3_file)
