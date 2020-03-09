@@ -105,40 +105,58 @@
       <div class="card bg-light mb-3">
         <h2 class="card-header h3">Combined Audio Derivative Files</h2>
         <div class="card-body">
-          <% if @work.members.to_a.select { |m| m.content_type && m.content_type.start_with?("audio/")}.count == 0 %>
+          <% if work_audio_members.count == 0 %>
             This oral history doesn't have any audio files associated with it.
           <% else %>
-            <% if @work.oral_history_content!.combined_audio_fingerprint.present? %>
-              <% if CombinedAudioDerivativeCreator.new(@work).fingerprint != @work.oral_history_content!.combined_audio_fingerprint %>
+            <% if combined_audio_fingerprint.present? %>
+              <% if CombinedAudioDerivativeCreator.new(@work).fingerprint != combined_audio_fingerprint %>
                 <p>
                   Combined audio derivatives exist for this oral history, but they are not up to date.
                 </p>
                 <p>
-                  <%= link_to "Regenerate combined audio derivatives", create_combined_audio_derivatives_admin_work_path(@work), method: "put", class: "btn btn-primary", data: { confirm: "Are you sure? This could take several minutes." } %>
+                  <%= link_to "Regenerate combined audio derivatives", create_combined_audio_derivatives_admin_work_path(@work), method: "put", class: "btn btn-primary" %>
                 </p>
               <% else %>
                 <p>
-                  The following combined audio derivatives are are up to date:
+                  The following combined audio derivatives are up to date:
+                </p>
+                  <ul>
+                    <li>
+                      mp3:
+                      <% if combined_mp3_audio.present? %>
+                        <small class="text-muted">
+                          <%= link_to combined_mp3_audio,  combined_mp3_audio %>
+                        </small>
+                      <% end %>
+                    </li>
+
+                    <!--
+                    <li>
+                      webm:
+                        <% if combined_webm_audio.present? %>
+                          <small class="text-muted">
+                            <%= link_to  combined_webm_audio, combined_webm_audio %>
+                          </small>
+                        <% end %>
+                    </li>
+                    -->
+                  </ul>
+                <p>
+                  Use the mp3 link as the OHMS Media URL.
                 </p>
                 <p>
-                  <%= link_to "mp3", @work.oral_history_content.combined_audio_mp3.url %>
-                </p>
-                <p>
-                  <%= link_to "webm", @work.oral_history_content.combined_audio_webm.url %>
-                </p>
-                <p>
-                  Their fingerprint is <code><%=@work.oral_history_content!.combined_audio_fingerprint %></code>.
+                  The fingerprint for these URLS is <code><%=@work.oral_history_content!.combined_audio_fingerprint %></code>.
                 </p>
               <% end %>
             <% else %>
               <p>
-                  This oral history has <%= @work.members.to_a.select { |m| m.content_type && m.content_type.start_with?("audio/")}.count %>  audio segment(s).
+                  This oral history has <%= work_audio_members.count %>  audio segment(s).
               </p>
               <p>
                 There are no combined audio derivatives for this oral history yet.
               </p>
               <p>
-                <%= link_to "Create combined audio derivatives", create_combined_audio_derivatives_admin_work_path(@work), method: "put", class: "btn btn-primary", data: { confirm: "Are you sure? This could take several minutes." } %>
+                <%= link_to "Create combined audio derivatives", create_combined_audio_derivatives_admin_work_path(@work), method: "put", class: "btn btn-primary" %>
               </p>
             <% end %>
           <% end %>
