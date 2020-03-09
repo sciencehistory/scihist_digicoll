@@ -399,4 +399,36 @@ class Admin::WorksController < AdminController
       admin_works_path
     end
     helper_method :cancel_url
+
+    def work_audio_members
+      @work.members.to_a.select do |m|
+        (m.is_a? Asset) && m.content_type && m.content_type.start_with?("audio/")
+      end
+    end
+    helper_method :work_audio_members
+
+    def combined_mp3_audio
+      return nil unless @work.genre.present?
+      return nil unless @work.genre.include?('Oral histories')
+      return nil unless work_audio_members.count > 0
+      oh_content = @work.oral_history_content!
+      oh_content.combined_audio_mp3&.url(public:true)
+    end
+    helper_method :combined_mp3_audio
+
+    def combined_webm_audio
+      return nil unless @work.genre.present?
+      return nil unless @work.genre.include?('Oral histories')
+      return nil unless work_audio_members.count > 0
+      oh_content = @work.oral_history_content!
+      oh_content.combined_audio_webm&.url(public:true)
+    end
+    helper_method :combined_webm_audio
+
+    def combined_audio_fingerprint
+      return nil unless @work.genre.present?
+      return nil unless @work.genre.include?('Oral histories')
+      @work.oral_history_content!.combined_audio_fingerprint
+    end
+    helper_method :combined_audio_fingerprint
 end
