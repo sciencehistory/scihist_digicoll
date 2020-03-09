@@ -22,34 +22,32 @@ require 'tempfile'
 
 class CombinedAudioDerivativeCreator
 
-  Response = Struct.new(:webm_file, :mp3_file, :fingerprint, :start_times, keyword_init: true)
+  Response = Struct.new(:webm_file, :mp3_file, :fingerprint, :start_times, :errors, keyword_init: true)
 
   attr_reader :work
 
   def initialize(work)
-
     @work = work
   end
 
   def generate
+    if components.length == 0
+      return Response.new(errors: "Could not assemble all the components.")
+    end
     output_files = {}
-
     # Create the two output files:
     ['mp3', 'webm'].each do |format|
       output_files[format] = output_file(format)
       ffmpeg_args = args_for_ffmpeg(output_files[format].path)
       cmd.run(*ffmpeg_args, binmode: true)
     end
-
     resp = Response.new
     resp.webm_file   = output_files['webm']
     resp.mp3_file    = output_files['mp3']
     resp.fingerprint = fingerprint
     resp.start_times = calculate_start_times
-
     # Before leaving, get rid of the downloaded originals:
     components.map!(&:unlink)
-
     resp
   end
 
@@ -75,11 +73,15 @@ class CombinedAudioDerivativeCreator
     @components ||= begin
       result = []
       audio_member_files.each do |original_file|
-        new_temp_file = Tempfile.new(['temp_', original_file.metadata['filename'].downcase], :encoding => 'binary')
-        original_file.open(rewindable:false) do |input_audio_io|
-          new_temp_file.write input_audio_io.read until input_audio_io.eof?
+        begin
+          new_temp_file = Tempfile.new(['temp_', original_file.metadata['filename'].downcase], :encoding => 'binary')
+          original_file.open(rewindable:false) do |input_audio_io|
+            new_temp_file.write input_audio_io.read until input_audio_io.eof?
+          end
+          result << new_temp_file
+        rescue Aws::S3::Errors::NotFound
+          return []
         end
-        result << new_temp_file
       end
       result
     end
@@ -103,7 +105,7 @@ class CombinedAudioDerivativeCreator
   # https://trac.ffmpeg.org/wiki/Map .
   # For now, the audio settings are hardwired.
   # This does not run the command; it just returns
-  # an array that can be passed to @cmd.run .
+  # an array that can be passed to cmd.run .
   def args_for_ffmpeg(output_file_path)
     # ffmpeg -y: overwrite the already-existing temp file
     ffmpeg_command = ['ffmpeg', '-y']
@@ -152,7 +154,7 @@ class CombinedAudioDerivativeCreator
   def audio_members
     @audio_members ||= begin
       work.members.order(:position, :id).select do |member|
-        member.stored? && member.content_type && member.content_type.start_with?("audio/")
+        (member.is_a? Asset) && member.stored? && member.content_type && member.content_type.start_with?("audio/")
       end
     end
   end

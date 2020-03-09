@@ -4,6 +4,11 @@ class CreateCombinedAudioDerivativesJob < ApplicationJob
     return unless deriv_creator.audio_members.count > 0
     # Generate the derivatives:
     deriv_info = deriv_creator.generate
+    if deriv_info.errors
+      Rails.logger.error("Unable to create combined audio derivatives for work #{work.friendlier_id}:")
+      Rails.logger.error(deriv_info.errors)
+      return
+    end
     sidecar = work.oral_history_content!
     # Upload to s3, then unlink local files:
     sidecar.set_combined_audio_mp3!(deriv_info.mp3_file)

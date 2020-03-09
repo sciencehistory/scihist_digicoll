@@ -97,13 +97,16 @@ class Admin::WorksController < AdminController
   end
 
 
-  # Create_combined_audio_derivatives, if warranted.
+  # Create_combined_audio_derivatives in the background, if warranted.
   # PATCH/PUT /admin/works/ab2323ac/create_combined_audio_derivatives
+  # Unfortunately, if the job fails for any reason, the user will not be notified.
   def create_combined_audio_derivatives
     current = @work.oral_history_content!.combined_audio_fingerprint
     if current != CombinedAudioDerivativeCreator.new(@work).fingerprint
+      # As things currently stand, the job can fail silently if e.g. the
+      # originals can't be downloaded from AWS for any reason.
       CreateCombinedAudioDerivativesJob.perform_later(@work)
-      notice = "The combined audio derivatives are being created."
+      notice = "The combined audio derivative job has been launched."
     else
       notice = "We already have up-to-date combined audio for this item."
     end
