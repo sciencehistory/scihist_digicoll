@@ -1,0 +1,56 @@
+<div class="card bg-light mb-3">
+  <h2 class="card-header h3">Combined Audio Derivative Files</h2>
+  <div class="card-body">
+    <% if work_audio_members.count == 0 %>
+      This oral history doesn't have any audio files associated with it.
+    <% else %>
+      <% if combined_audio_fingerprint.present? %>
+        <% if CombinedAudioDerivativeCreator.new(@work).fingerprint != combined_audio_fingerprint %>
+          <p class="alert-danger">
+            <i class="fa fa fa-thumbs-down" aria-hidden="true"></i>
+            Combined audio derivatives exist for this oral history, but they are out of date.
+          </p>
+          <p>
+            <%= link_to "Regenerate combined audio derivatives", create_combined_audio_derivatives_admin_work_path(@work), method: "put", class: "btn btn-primary" %>
+          </p>
+        <% else %>
+          <p class="alert-success">
+            <i class="fa fa fa-thumbs-up" aria-hidden="true"></i>
+            The combined audio derivatives for this oral history are up to date.</p>
+          </p>
+          <ul>
+            <% if combined_mp3_audio.present? %>
+              <li>
+                Use the following mp3 link as the OHMS Media URL:<br/>
+                <small class="text-muted">
+                  <%= link_to combined_mp3_audio,  combined_mp3_audio %>
+                </small>
+              </li>
+            <% end %>
+            <% if combined_webm_audio.present? %>
+              <li>
+                The corresponding webm link is provided for reference only:<br/>
+                <small class="text-muted">
+                  <%= link_to combined_webm_audio, combined_webm_audio %>
+                </small>
+              </li>
+            <% end %>
+          </ul>
+          <p>
+            Their fingerprint <code><%=@work.oral_history_content!.combined_audio_fingerprint %></code>.
+          </p>
+        <% end %>
+      <% else %>
+        <p>
+            This oral history has <%= work_audio_members.count %>  audio segment(s).
+        </p>
+        <p>
+          There are no combined audio derivatives for this oral history yet.
+        </p>
+        <p>
+          <%= link_to "Create combined audio derivatives", create_combined_audio_derivatives_admin_work_path(@work), method: "put", class: "btn btn-primary" %>
+        </p>
+      <% end %>
+    <% end %>
+  </div>
+</div>
