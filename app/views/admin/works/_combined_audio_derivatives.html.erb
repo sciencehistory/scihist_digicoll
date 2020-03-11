@@ -16,7 +16,7 @@
         <% else %>
           <p class="alert-success p-3">
             <i class="fa fa fa-thumbs-up pr-1" aria-hidden="true"></i>
-            The combined audio derivatives for this oral history are up to date. Their fingerprint is <code class="border"><%=@work.oral_history_content!.combined_audio_fingerprint %></code>.</p>
+            The combined audio derivatives for this oral history are up to date. Their fingerprint is <code class="border"><%=combined_audio_fingerprint%></code>.</p>
           </p>
           <ul>
             <% if combined_mp3_audio.present? %>
