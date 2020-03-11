@@ -101,6 +101,15 @@ class Admin::WorksController < AdminController
   # PATCH/PUT /admin/works/ab2323ac/create_combined_audio_derivatives
   # Unfortunately, if the job fails for any reason, the user will not be notified.
   def create_combined_audio_derivatives
+    unless @work.genre.include? 'Oral histories'
+      redirect_to admin_work_path(@work), flash: { error: "This isn't an oral history." }
+      return
+    end
+    unless work_audio_members.present?
+      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: { error: "This oral history doesn't have any audio files." }
+      return
+    end
+
     current = @work.oral_history_content!.combined_audio_fingerprint
     if current != CombinedAudioDerivativeCreator.new(@work).fingerprint
       # As things currently stand, the job can fail silently if e.g. the
