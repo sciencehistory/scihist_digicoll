@@ -1,9 +1,14 @@
 require 'rails_helper'
 
+# Note: we have two Works controllers,
+# works_controller.rb
+# admin/works_controller.rb
+# This one tests only the second.
+
 # mostly we use feature tests, but some things can't easily be tested that way
 # Should this be a 'request' spec instead of a rspec 'controller' spec
 # (that is a rails 'functional' test)?
-RSpec.describe Admin::WorksController, :logged_in_user, type: :controller do
+RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue_adapter: :test do
   context "#demote_to_asset" do
     context "work not suitable" do
       context "becuase it has no parent" do
@@ -54,6 +59,39 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller do
       expect(flash[:error]).to include("OHMS XML file was invalid and could not be accepted")
 
       expect(work.reload.oral_history_content&.ohms_xml).not_to be_present
+    end
+  end
+
+  context "create audio derivatives" do
+    let(:no_audio_files) { FactoryBot.create(:work, genre: ["Oral histories"]) }
+    let!(:oral_history) { FactoryBot.create(:work,
+      genre: ["Oral histories"],
+      title: "Oral history with two interview audio segments")
+    }
+    let!(:audio_asset_1)  { create(:asset, :inline_promoted_file,
+        position: 1,
+        parent_id: oral_history.id,
+        file: File.open((Rails.root + "spec/test_support/audio/ice_cubes.mp3"))
+      )
+    }
+    let!(:audio_asset_2)  { create(:asset, :inline_promoted_file,
+        position: 2,
+        parent_id: oral_history.id,
+        file: File.open((Rails.root + "spec/test_support/audio/double_ice_cubes.mp3"))
+      )
+    }
+
+    it "only creates files if the item is an oral history" do
+      put :create_combined_audio_derivatives, params: { id: no_audio_files.friendlier_id }
+      expect(response).to redirect_to(admin_work_path(no_audio_files, anchor: "nav-oral-histories"))
+      expect(flash[:error]).to include("This oral history doesn't have any audio files.")
+    end
+
+    it "kicks off an audio derivatives job" do
+      expect(oral_history.members.map(&:stored?)).to match([true, true])
+      put :create_combined_audio_derivatives, params: { id: oral_history.friendlier_id }
+      expect(response).to redirect_to(admin_work_path(oral_history, anchor: "nav-oral-histories"))
+      expect(CreateCombinedAudioDerivativesJob).to have_been_enqueued
     end
   end
 
