@@ -187,6 +187,10 @@ $(document).on("submit", "*[data-ohms-search-form]", function(event) {
 
   var query = $(event.target).find("*[data-ohms-input-query]").val();
 
+  if (query == "") {
+    return;
+  }
+
   Search.currentResults = new OhmsSearch.SearchResults(
     $("*[data-ohms-search-results]").get(0),
     Search.searchTranscript(query)
