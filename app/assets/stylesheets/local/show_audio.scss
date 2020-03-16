@@ -145,17 +145,9 @@
   max-width: $long-max-readable-width;
   padding-bottom: 1.5rem;
 
-  .ohms-index-point.card .card-body {
-    // margin instead of padding seems to make slide animation smoother, for whatever reason.
-    padding: 0;
-    margin: $card-spacer-x;
-  }
-
-   // based on scihist-results-list-values, see there.
+  // based on scihist-results-list-values, see there.
   div.ohms-index-list {
     margin-top: $paragraph-spacer;
-
-    @extend .ml-4;
     max-width: $max-readable-width;
 
     @extend %text-font;
