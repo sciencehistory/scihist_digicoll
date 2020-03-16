@@ -105,7 +105,9 @@
 
 
     <div class="tab-pane" id="nav-oral-histories" role="tabpanel" aria-labelledby="nav-oral-histories-tab">
-      <%= render 'admin/works/combined_audio_derivatives' %>
+
+      <%= WorkCombinedAudioDerivatives.new(@work).display %>
+
       <div class="card bg-light mb-3">
         <h2 class="card-header h3">OHMS XML attached</h2>
         <div class="card-body">
