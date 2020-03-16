@@ -206,12 +206,11 @@
 
 .ohms-index-container {
   max-width: $long-max-readable-width;
+  padding-bottom: 1.5rem;
 
-   // based on scihist-results-list-values, see there.
+  // based on scihist-results-list-values, see there.
   div.ohms-index-list {
     margin-top: $paragraph-spacer;
-
-    @extend .ml-4;
     max-width: $max-readable-width;
 
     @extend %text-font;
@@ -240,9 +239,5 @@
         text-indent: initial;
       }
     }
-  }
-
-  .ohms-index-point {
-    margin-bottom: $paragraph-spacer * 4;
   }
 }

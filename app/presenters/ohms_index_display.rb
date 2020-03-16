@@ -21,4 +21,13 @@ class OhmsIndexDisplay < ViewModel
     safe_join(str.split("\n").collect {|s| [s, "<br>".html_safe]}.flatten)
   end
 
+  def accordion_element_id(index)
+    "ohmsAccordionElement#{index}"
+  end
+
+  def accordion_header_id(index)
+    "ohmsAccordionHeader#{index}"
+  end
+
+
 end

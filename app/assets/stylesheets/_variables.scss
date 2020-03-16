@@ -46,6 +46,7 @@ $brand-alt-header-weight: 700;
 
 // adelle-sans has a 600 semi-bold available. 700 is standard bold. 500 seems to be the same as 400=normal.
 $semi-bold-weight: 600;
+$badge-font-weight: $semi-bold-weight; // badges look better at our semi-bold with adelle-sans!
 
 // Maximum line length we judge to be readable at standard base font size.
 // Used to constrain some block text areas on large screens.
@@ -99,6 +100,7 @@ $danger: $brand-red;
 $warning: $brand-yellow;
 $primary: $brand-blue;
 $dark: $brand-dark-blue;
+$secondary: $brand-dark-grey;
 
 // $btn-primary-border: $brand-primary; // bootstrap 4 has no button borders already I think.
 // $btn-default-border: $brand-light-grey; // bootstrap 4 has no button borders already I think.
