@@ -175,3 +175,59 @@ hr.brand {
   border-left-color: $brand-light-grey;
   border-right-color: $brand-light-grey;
 }
+
+// Some custom overrides to bootstrap accordion style, to make it brand-specific
+// based on styles found at: https://www.sciencehistory.org/accessibility
+//
+// We're not gonna make all accordions like that, maybe messing up existing standard stuff,
+// but instead a custom override class.
+
+.scihist-accordion {
+  .card {
+    border: 2px solid $card-border-color;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+
+
+    .card-header {
+      background-color: initial;
+      border-bottom: 0;
+
+      button, a {
+        display: block;
+        width: 100%;
+        text-align: left;
+        color: $body-color;
+        font-weight: bold;
+
+        padding-left: 0;
+        padding-right: 0;
+
+        .toggle-icon {
+          line-height: 1.5; // for some reason makes it line up better
+        }
+
+        // make only plus or minus show up according to state
+        .fa-plus.toggle-icon {
+          display: none;
+        }
+        &.collapsed {
+          .fa-plus.toggle-icon {
+            display: inline-block;
+          }
+          .fa-minus.toggle-icon {
+            display: none;
+          }
+        }
+      }
+    }
+
+    .card-body {
+      margin: 0;
+      padding-top: 0;
+      //margin-top: 0;
+      //padding: 0 $btn-padding-x;
+    }
+  }
+}

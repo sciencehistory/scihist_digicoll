@@ -1,37 +1,47 @@
-<div class="ohms-index-container">
-  <% view.index_points.each do |index_point| %>
-    <div class="ohms-index-point">
-      <h3 class="ohms-index-point-title h4">
-        <a href="#" data-ohms-timestamp-s="<%= index_point.timestamp %>">
-          <span class="mr-3"><i class="fa fa-play-circle" aria-hidden="true"></i> <%= format_ohms_timestamp(index_point.timestamp) %></span> <%= index_point.title %>
-        </a>
-      </h3>
+<div class="accordion scihist-accordion ohms-index-container" id="ohmsIndexAccordionParent">
+  <% view.index_points.each_with_index do |index_point, index| %>
+    <div class="ohms-index-point card">
+      <div class="card-header" id="<%= view.accordion_header_id(index) %>">
+        <h3 class="ohms-index-point-title mb-0">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#<%= view.accordion_element_id(index) %>" aria-expanded="true" aria-controls="<%= view.accordion_element_id(index) %>">
+              <i class="fa fa-plus float-right toggle-icon" aria-hidden="true"></i>
+              <i class="fa fa-minus float-right toggle-icon" aria-hidden="true"></i>
+              <span class="mr-3"><%= format_ohms_timestamp(index_point.timestamp) %></span> <%= index_point.title %>
+          </button>
+        </h3>
+      </div>
 
-
-      <div class="ohms-index-list long-text-line-height">
-        <% if index_point.synopsis.present? %>
+      <div id="<%= view.accordion_element_id(index) %>" class="collapse card-body ohms-index-list long-text-line-height" aria-labelledby="<%= view.accordion_header_id(index) %>" data-parent="#ohmsIndexAccordionParent">
           <p>
-            <%= index_point.synopsis %>
+            <button type="button" class="btn btn-secondary" data-ohms-timestamp-s="<%= index_point.timestamp %>">
+              <i class="fa fa-play-circle mr-1" aria-hidden="true"></i> Play segment
+            </button>
           </p>
-        <% end %>
+
+          <% if index_point.synopsis.present? %>
+            <p>
+              <%= index_point.synopsis %>
+            </p>
+          <% end %>
 
 
-        <% if index_point.partial_transcript.present? %>
-          <p class="attribute">
-            <span class="attribute-label">Begins with</span>
-            <%= view.format_partial_transcript(index_point.partial_transcript) %>
-          </p>
-        <% end %>
+          <% if index_point.partial_transcript.present? %>
+            <p class="attribute">
+              <span class="attribute-label">Begins with</span>
+              <%= view.format_partial_transcript(index_point.partial_transcript) %>
+            </p>
+          <% end %>
 
-        <% if index_point.keywords.present? %>
-          <p class="attribute keywords">
-            <span class="attribute-label">Keywords</span>
-            <% index_point.keywords.each do |keyword| %>
-              <span class="badge badge-pill badge-dark"><%= keyword %></span>
-            <% end %>
-          </p>
-        <% end %>
+          <% if index_point.keywords.present? %>
+            <p class="attribute keywords">
+              <span class="attribute-label">Keywords</span>
+              <% index_point.keywords.each do |keyword| %>
+                <span class="badge badge-pill badge-dark"><%= keyword %></span>
+              <% end %>
+            </p>
+          <% end %>
       </div>
     </div>
   <% end %>
 </div>
+
