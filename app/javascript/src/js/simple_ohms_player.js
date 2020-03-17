@@ -95,6 +95,12 @@ var Search = {
     $(document).find("*[data-ohms-search-results]").empty();
     $(document).find('.ohms-highlight').contents().unwrap();
     this.currentResults = undefined;
+  },
+
+  scrollToId: function(domID) {
+    // without block:center, it ends up scrolling under our fixed navbar, gah!
+    // this seems to be good enough.
+    document.getElementById(domID).scrollIntoView({behavior: "smooth", block: "center"});
   }
 
 }
@@ -103,14 +109,14 @@ Search.SearchResults = function(domContainer, results) {
     this.domContainer = domContainer;
     this.results = results;
 
-    this.resultsPerPage = 5;
-
-    this.pageNumber = 1;
+    this.currentResultIndex = 1; // 1-based index into results
 }
 
-// First argument is optional page number, if passed in it is set as instance state.
-Search.SearchResults.prototype.draw =  function(pageNumber) {
-  if (pageNumber) { this.pageNumber = pageNumber; }
+// First argument is optional currentResultIndex, if passed in it is set as instance state.
+//
+// currentResultIndex is jumped to
+Search.SearchResults.prototype.draw =  function(currentResultIndex) {
+  if (currentResultIndex) { this.currentResultIndex = currentResultIndex; }
 
   if (this.results.length == 0) {
     $(this.domContainer).html(
@@ -121,30 +127,22 @@ Search.SearchResults.prototype.draw =  function(pageNumber) {
     return;
   }
 
-  var fromItem = ((this.pageNumber - 1) * this.resultsPerPage) + 1;
-  var toItem = Math.min(this.pageNumber * this.resultsPerPage, this.results.length);
-  var resultsSlice = this.results.slice(fromItem - 1, toItem);
-
 
   var html =  "<div class='ohms-search-results'>" +
-    this.paginationHtml(fromItem, toItem) +
-    "<ol start=" + fromItem + ">" +
-      resultsSlice.map(function(resultObj) {
-        return "<li><a href='#' data-ohms-scroll-to-id='" + resultObj.targetId + "'>" + resultObj.highlightedMatch + "</a></li>"
-      }).join("\n") +
-    "</ol>" +
+    this.navigationHtml() +
   "</div>";
 
   $(this.domContainer).html(html);
+
+  // currentResultIndex is 1-based
+  var result = this.results[this.currentResultIndex - 1];
+  Search.scrollToId(result.targetId);
 };
 
-Search.SearchResults.prototype.paginationHtml = function(fromItem, toItem) {
-  if (this.resultsPerPage >= this.results.length ) {
-    return "";
-  }
+Search.SearchResults.prototype.navigationHtml = function() {
 
-  return "<div class='ohms-result-pagination'>" +
-            "<span class='showing'>Showing <strong>" +  fromItem + "</strong> - <strong>" + toItem + "</strong> of <strong>" + this.results.length + "</strong></span> " +
+  return "<div class='ohms-result-navigation'>" +
+            "<span class='showing text-danger'>" + this.currentResultIndex + " / " + this.results.length + "</span> " +
             "<span class='nav'>" +
               '<div class="btn-group btn-group-sm" role="group" aria-label="Basic example">' +
                   this.prevButtonHtml() +
@@ -155,30 +153,21 @@ Search.SearchResults.prototype.paginationHtml = function(fromItem, toItem) {
 }
 
 Search.SearchResults.prototype.prevButtonHtml = function() {
-  return '<button type="button" class="btn btn-outline-secondary" title="Previous page" aria-label="Previous page" ' +
-            ((this.pageNumber <= 1) ? " disabled " : ('data-ohms-page-link="' + (this.pageNumber - 1) + '"')) +
+  return '<button type="button" class="btn btn-outline-secondary" title="Previous result" aria-label="Previous result" ' +
+            ((this.currentResultIndex <= 1) ? " disabled " : ('data-ohms-search-result-index="' + (this.currentResultIndex - 1) + '"')) +
           '>' +
               '<i class="fa fa-chevron-left" aria-hidden="true"></i>' +
           '</button>';
 }
 
 Search.SearchResults.prototype.nextButtonHtml = function() {
-  return '<button type="button" class="btn btn-outline-secondary" title="Next page" aria-label="Next page" ' +
-            ((this.pageNumber * this.resultsPerPage >= this.results.length) ? " disabled " : ('data-ohms-page-link="' + (this.pageNumber + 1) + '"')) +
+  return '<button type="button" class="btn btn-outline-secondary" title="Next result" aria-label="Next result" ' +
+            ((this.currentResultIndex >= this.results.length) ? " disabled " : ('data-ohms-search-result-index="' + (this.currentResultIndex + 1) + '"')) +
           '>' +
               '<i class="fa fa-chevron-right" aria-hidden="true"></i>' +
           '</button>';
 }
 
-
-$(document).on("click", "*[data-ohms-scroll-to-id]", function(event) {
-  event.preventDefault();
-
-  var id = this.dataset.ohmsScrollToId;
-  // without block:center, it ends up scrolling under our fixed navbar, gah!
-  // this seems to be good enough.
-  document.getElementById(id).scrollIntoView({behavior: "smooth", block: "center"});
-});
 
 $(document).on("submit", "*[data-ohms-search-form]", function(event) {
   event.preventDefault();
@@ -199,12 +188,12 @@ $(document).on("submit", "*[data-ohms-search-form]", function(event) {
   Search.currentResults.draw();
 });
 
-$(document).on("click", "*[data-ohms-page-link]", function(event) {
+$(document).on("click", "*[data-ohms-search-result-index]", function(event) {
   event.preventDefault();
 
-  var page = $(this).data("ohmsPageLink");
+  var resultIndex = $(this).data("ohmsSearchResultIndex");
 
-  Search.currentResults.draw(page);
+  Search.currentResults.draw(resultIndex);
 });
 
 $(document).on("click", "*[data-ohms-clear-search]", function(event) {
