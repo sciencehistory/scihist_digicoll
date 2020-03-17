@@ -170,16 +170,26 @@ Search.SearchResults.prototype.navigationHtml = function() {
 }
 
 Search.SearchResults.prototype.prevButtonHtml = function() {
+  var prevIndex = this.currentResultIndex - 1;
+  if (prevIndex <= 0) {
+    prevIndex = this.results.length;
+  }
+
   return '<button type="button" class="btn btn-outline-secondary" title="Previous result" aria-label="Previous result" ' +
-            ((this.currentResultIndex <= 1) ? " disabled " : ('data-ohms-search-result-index="' + (this.currentResultIndex - 1) + '"')) +
+            'data-ohms-search-result-index="' + prevIndex + '"' +
           '>' +
               '<i class="fa fa-chevron-left" aria-hidden="true"></i>' +
           '</button>';
 }
 
 Search.SearchResults.prototype.nextButtonHtml = function() {
+  var nextIndex = this.currentResultIndex + 1;
+  if (nextIndex > this.results.length) {
+    nextIndex = 1;
+  }
+
   return '<button type="button" class="btn btn-outline-secondary" title="Next result" aria-label="Next result" ' +
-            ((this.currentResultIndex >= this.results.length) ? " disabled " : ('data-ohms-search-result-index="' + (this.currentResultIndex + 1) + '"')) +
+            'data-ohms-search-result-index="' + nextIndex + '"' +
           '>' +
               '<i class="fa fa-chevron-right" aria-hidden="true"></i>' +
           '</button>';
