@@ -126,13 +126,24 @@ hr.brand {
     // and could use some more spacing, normally in bootstrap $line-height-computed / 2
     margin-bottom: $paragraph-spacer;
   }
+
+  // Longer text passages in our serif Abril font really need bigger line-height.
+  // For legacy reasons we have to do this as an !important override.
+  //
+  // p inside a div.long-text-line-height, or a p.long-text-line-height itself.
+  .long-text-line-height p, p.long-text-line-height {
+    line-height: $paragraph-line-height-long !important;
+    margin-bottom: ($paragraph-font-size * $paragraph-line-height-long / 2) !important;
+  }
 }
 
 .text-page {
   max-width: $max-readable-width;
   margin-right: auto;
   margin-left: auto;
-  p {
+  p, dd, dt {
+    line-height: $paragraph-line-height-long !important;
+    margin-bottom: ($paragraph-line-height-long / 2) !important;
     max-width: $max-readable-width;
   }
 }
@@ -163,4 +174,60 @@ hr.brand {
 .panel-default {
   border-left-color: $brand-light-grey;
   border-right-color: $brand-light-grey;
+}
+
+// Some custom overrides to bootstrap accordion style, to make it brand-specific
+// based on styles found at: https://www.sciencehistory.org/accessibility
+//
+// We're not gonna make all accordions like that, maybe messing up existing standard stuff,
+// but instead a custom override class.
+
+.scihist-accordion {
+  .card {
+    border: 2px solid $card-border-color;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+
+
+    .card-header {
+      background-color: initial;
+      border-bottom: 0;
+
+      button, a {
+        display: block;
+        width: 100%;
+        text-align: left;
+        color: $brand-dark-blue;
+        font-weight: bold;
+
+        padding-left: 0;
+        padding-right: 0;
+
+        .toggle-icon {
+          line-height: 1.5; // for some reason makes it line up better
+        }
+
+        // make only plus or minus show up according to state
+        .fa-plus.toggle-icon {
+          display: none;
+        }
+        &.collapsed {
+          .fa-plus.toggle-icon {
+            display: inline-block;
+          }
+          .fa-minus.toggle-icon {
+            display: none;
+          }
+        }
+      }
+    }
+
+    .card-body {
+      margin: 0;
+      padding-top: 0;
+      //margin-top: 0;
+      //padding: 0 $btn-padding-x;
+    }
+  }
 }

@@ -52,6 +52,15 @@ class OralHistoryContent < ApplicationRecord
     @ohms_xml ||= OhmsXml.new(ohms_xml_text)
   end
 
+  def has_ohms_transcript?
+    ohms_xml&.parsed&.at_xpath("//ohms:record/ohms:transcript[normalize-space(text())]", ohms: OhmsXml::OHMS_NS)
+  end
+
+  def has_ohms_index?
+    ohms_xml&.index_points&.present?
+  end
+
+
   private
 
   # Sets IO to given shrine attacher, writing directly to "store" storage,
@@ -75,26 +84,4 @@ class OralHistoryContent < ApplicationRecord
     shrine_attacher.set(original)
     raise e
   end
-
-  class OhmsXml
-    OHMS_NS = "https://www.weareavp.com/nunncenter/ohms"
-    attr_reader :xml
-
-    def initialize(xml_str)
-      @xml = Nokogiri::XML(xml_str)
-    end
-
-    def record_dt
-      @record_at ||= xml.at_xpath("//ohms:record", ohms: OHMS_NS)["dt"]
-    end
-
-    def record_id
-      @record_id ||= xml.at_xpath("//ohms:record", ohms: OHMS_NS)["id"]
-    end
-
-    def accession
-      @accession ||= xml.at_xpath("//ohms:record/ohms:accession", ohms: OHMS_NS).text
-    end
-  end
-
 end
