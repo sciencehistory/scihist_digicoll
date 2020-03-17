@@ -149,6 +149,9 @@ gem 'aws-sdk-ec2', '>=1.74'
 #gem 'aws-sdk-core'
 gem 'aws-sdk-core'
 
+# Used to clean up logs in production
+gem "lograge"
+
 
 ##
 # Added by blacklight. Not sure why rsolr isn't just a BL dependency.
@@ -170,5 +173,3 @@ gem 'aws-sdk-core'
  gem "citeproc-ruby", '~> 1.0'
  gem 'csl-styles', '~> 1.0' # Need to load the styles so we can use chicago
 
-# Used to clean up logs in production
- gem "lograge"
