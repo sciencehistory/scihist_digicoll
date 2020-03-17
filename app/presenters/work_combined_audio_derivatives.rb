@@ -13,31 +13,31 @@ class WorkCombinedAudioDerivatives < ViewModel
 
 
   def work_audio_members
-    @work.members.to_a.select do |m|
+    model.members.to_a.select do |m|
       (m.is_a? Asset) && m.content_type && m.content_type.start_with?("audio/")
     end
   end
 
   def combined_mp3_audio
-    return nil unless @work.genre.present?
-    return nil unless @work.genre.include?('Oral histories')
+    return nil unless model.genre.present?
+    return nil unless model.genre.include?('Oral histories')
     return nil unless work_audio_members.count > 0
-    oh_content = @work.oral_history_content!
+    oh_content = model.oral_history_content!
     oh_content.combined_audio_mp3&.url(public:true)
   end
 
   def combined_webm_audio
-    return nil unless @work.genre.present?
-    return nil unless @work.genre.include?('Oral histories')
+    return nil unless model.genre.present?
+    return nil unless model.genre.include?('Oral histories')
     return nil unless work_audio_members.count > 0
-    oh_content = @work.oral_history_content!
+    oh_content = model.oral_history_content!
     oh_content.combined_audio_webm&.url(public:true)
   end
 
   def combined_audio_fingerprint
-    return nil unless @work.genre.present?
-    return nil unless @work.genre.include?('Oral histories')
-    @work.oral_history_content!.combined_audio_fingerprint
+    return nil unless model.genre.present?
+    return nil unless model.genre.include?('Oral histories')
+    model.oral_history_content!.combined_audio_fingerprint
   end
 
 end

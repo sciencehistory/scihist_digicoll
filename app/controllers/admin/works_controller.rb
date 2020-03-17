@@ -101,16 +101,6 @@ class Admin::WorksController < AdminController
   # PATCH/PUT /admin/works/ab2323ac/create_combined_audio_derivatives
   # Unfortunately, if the job fails for any reason, the user will not be notified.
   def create_combined_audio_derivatives
-    unless @work.genre.include? 'Oral histories'
-      redirect_to admin_work_path(@work), flash: { error: "This isn't an oral history." }
-      return
-    end
-    unless work_audio_members.present?
-      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: { error: "This oral history doesn't have any audio files." }
-      return
-    end
-    # As things currently stand, the job can fail silently if e.g. the
-    # originals can't be downloaded from AWS for any reason.
     CreateCombinedAudioDerivativesJob.perform_later(@work)
     notice = "The combined audio derivative job has been launched."
     redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: notice
@@ -402,36 +392,4 @@ class Admin::WorksController < AdminController
       admin_works_path
     end
     helper_method :cancel_url
-
-    def work_audio_members
-      @work.members.to_a.select do |m|
-        (m.is_a? Asset) && m.content_type && m.content_type.start_with?("audio/")
-      end
-    end
-    helper_method :work_audio_members
-
-    def combined_mp3_audio
-      return nil unless @work.genre.present?
-      return nil unless @work.genre.include?('Oral histories')
-      return nil unless work_audio_members.count > 0
-      oh_content = @work.oral_history_content!
-      oh_content.combined_audio_mp3&.url(public:true)
-    end
-    helper_method :combined_mp3_audio
-
-    def combined_webm_audio
-      return nil unless @work.genre.present?
-      return nil unless @work.genre.include?('Oral histories')
-      return nil unless work_audio_members.count > 0
-      oh_content = @work.oral_history_content!
-      oh_content.combined_audio_webm&.url(public:true)
-    end
-    helper_method :combined_webm_audio
-
-    def combined_audio_fingerprint
-      return nil unless @work.genre.present?
-      return nil unless @work.genre.include?('Oral histories')
-      @work.oral_history_content!.combined_audio_fingerprint
-    end
-    helper_method :combined_audio_fingerprint
 end

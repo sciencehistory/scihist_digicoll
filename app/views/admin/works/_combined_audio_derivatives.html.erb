@@ -1,37 +1,37 @@
 <div class="card bg-light mb-3">
   <h2 class="card-header h3">Combined Audio Derivative Files</h2>
   <div class="card-body">
-    <% if work_audio_members.count == 0 %>
+    <% if view.work_audio_members.count == 0 %>
       This oral history doesn't have any audio files associated with it.
     <% else %>
-      <% if combined_audio_fingerprint.present? %>
-        <% if CombinedAudioDerivativeCreator.new(@work).fingerprint != combined_audio_fingerprint %>
+      <% if view.combined_audio_fingerprint.present? %>
+        <% if CombinedAudioDerivativeCreator.new(model).fingerprint != view.combined_audio_fingerprint %>
           <p class="alert-danger p-3">
             <i class="fa fa fa-thumbs-down pr-1" aria-hidden="true"></i>
             Combined audio derivatives exist for this oral history, but they are out of date.
           </p>
           <p>
-            <%= link_to "Regenerate combined audio derivatives", create_combined_audio_derivatives_admin_work_path(@work), method: "put", class: "btn btn-primary" %>
+            <%= link_to "Regenerate combined audio derivatives", create_combined_audio_derivatives_admin_work_path(model), method: "put", class: "btn btn-primary" %>
           </p>
         <% else %>
           <p class="alert-success p-3">
             <i class="fa fa fa-thumbs-up pr-1" aria-hidden="true"></i>
-            The combined audio derivatives for this oral history are up to date. Their fingerprint is <code class="border"><%=combined_audio_fingerprint%></code>.</p>
+            The combined audio derivatives for this oral history are up to date. Their fingerprint is <code class="border"><%= view.combined_audio_fingerprint%></code>.</p>
           </p>
           <ul>
-            <% if combined_mp3_audio.present? %>
+            <% if view.combined_mp3_audio.present? %>
               <li>
                 Use the following mp3 link as the OHMS Media URL:<br/>
                 <small>
-                  <%= link_to combined_mp3_audio,  combined_mp3_audio %>
+                  <%= link_to view.combined_mp3_audio,  view.combined_mp3_audio %>
                 </small>
               </li>
             <% end %>
-            <% if combined_webm_audio.present? %>
+            <% if view.combined_webm_audio.present? %>
               <li>
                 The corresponding webm link is provided for reference only:<br/>
                 <small>
-                  <%= link_to combined_webm_audio, combined_webm_audio %>
+                  <%= link_to view.combined_webm_audio, view.combined_webm_audio %>
                 </small>
               </li>
             <% end %>
@@ -39,13 +39,13 @@
         <% end %>
       <% else %>
         <p>
-            This oral history has <%= work_audio_members.count %>  audio segment(s).
+            This oral history has <%= view.work_audio_members.count %>  audio segment(s).
         </p>
         <p>
           There are no combined audio derivatives for this oral history yet.
         </p>
         <p>
-          <%= link_to "Create combined audio derivatives", create_combined_audio_derivatives_admin_work_path(@work), method: "put", class: "btn btn-primary" %>
+          <%= link_to "Create combined audio derivatives", create_combined_audio_derivatives_admin_work_path(model), method: "put", class: "btn btn-primary" %>
         </p>
       <% end %>
     <% end %>
