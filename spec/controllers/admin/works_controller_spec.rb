@@ -81,12 +81,6 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       )
     }
 
-    it "only creates files if the item is an oral history" do
-      put :create_combined_audio_derivatives, params: { id: no_audio_files.friendlier_id }
-      expect(response).to redirect_to(admin_work_path(no_audio_files, anchor: "nav-oral-histories"))
-      expect(flash[:error]).to include("This oral history doesn't have any audio files.")
-    end
-
     it "kicks off an audio derivatives job" do
       expect(oral_history.members.map(&:stored?)).to match([true, true])
       put :create_combined_audio_derivatives, params: { id: oral_history.friendlier_id }
