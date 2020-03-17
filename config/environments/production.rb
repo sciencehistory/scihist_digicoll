@@ -112,6 +112,13 @@ Rails.application.configure do
   # Send deprecation notices to registered listeners.
   config.active_support.deprecation = :notify
 
+  # Use Lograge to switch to single line logs
+  config.lograge.enable = true
+  # Add time to the lograte log format
+  config.lograge.custom_options = lambda do |event|
+    { time: Time.now }
+  end
+
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
 
