@@ -5,7 +5,7 @@
       This oral history doesn't have any audio files associated with it.
     <% else %>
       <% if view.combined_audio_fingerprint.present? %>
-        <% if CombinedAudioDerivativeCreator.new(model).fingerprint != view.combined_audio_fingerprint %>
+        <% if view.derivatives_up_to_date? %>
           <p class="alert-danger p-3">
             <i class="fa fa fa-thumbs-down pr-1" aria-hidden="true"></i>
             Combined audio derivatives exist for this oral history, but they are out of date.
