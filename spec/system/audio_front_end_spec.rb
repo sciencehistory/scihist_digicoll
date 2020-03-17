@@ -53,7 +53,7 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
     it "shows the page without error" do
       visit work_path(audio_assets.first.parent.friendlier_id)
 
-      click_on "Downloads"
+      find(".nav-tabs a", text: "Downloads").click
 
       within("*[data-role='audio-playlist-wrapper']") do
         expect(page).to have_css(".current-track-label", :text => "Track 1")
@@ -139,7 +139,7 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
       it "shows the edit button, and all child items, including unpublished ones." do
         visit work_path(audio_assets.first.parent.friendlier_id)
 
-        click_on "Downloads"
+        find(".nav-tabs a", text: "Downloads").click
 
         # Audio tracks:
         within("*[data-role='audio-playlist-wrapper']") do
