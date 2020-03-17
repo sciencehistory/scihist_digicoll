@@ -100,10 +100,20 @@ var Search = {
   // It would be lovely to just use built-in scrollIntoView, but we have
   // to scroll around the fixed navbar on top, so we end up using
   // some hacky jQuery stuff.
+  //
+  // Also switches to tab if necessary
   scrollToId: function(domID) {
     // without block:center, it ends up scrolling under our fixed navbar, gah!
     // this seems to be good enough.
     var element = document.getElementById(domID);
+
+    var tabPane = $(element).closest(".tab-pane");
+    if (tabPane) {
+      // annoyingly, have to get the actual tab link that corresponds to
+      // the pane
+      var tab = $(".nav-link[href='#" + tabPane.attr("id") + "']");
+      tab.tab("show");
+    }
 
     var elTop = $(element).offset().top;
     var navbarHeight = $(".audio-navbar").height();
