@@ -67,7 +67,7 @@ var Search = {
     // 1: before match
     // 2: match
     // 3: after match
-    var find_re = new RegExp("((?:\\S*\\s+\\S*){0,1})(" + query + ")((?:\\s*\\S+\\s*){0,4})")
+    var find_re = new RegExp("((?:\\S*\\s+\\S*){0,1})(" + query + ")((?:\\s*\\S+\\s*){0,4})", "gi")
 
     return $(".ohms-transcript-line").map(function() {
       var line = $(this);
