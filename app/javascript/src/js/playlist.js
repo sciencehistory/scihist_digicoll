@@ -6,23 +6,9 @@
 $( document ).ready(function() {
 
 	function SciHistAudioPlaylist(playlistWrapper) {
-	  this.playlistWrapper = $(playlistWrapper);
-
-	  this.firstTrack 		 = this.findByRole('track-listing')[0];
-	  this.audioElement    = this.findByRole('audio-elem')[0];
-
-	  this.audioElement.onended = this.playNextTrack.bind(this);
-	  this.playlistWrapper.on("click", "[data-role='play-link']", this.onTrackClick.bind(this));
-
-		this.loadTrack(this.firstTrack);
-	};
-
-	SciHistAudioPlaylist.prototype.playNextTrack = function() {
-		var nextTrack = this.playlistWrapper.find("[data-currently-selected='true']").next()[0];
-		if (nextTrack) {
-			this.loadTrack(nextTrack);
-			this.playAudio();
-		}
+		this.playlistWrapper = $(playlistWrapper);
+		this.audioElement    = this.findByRole('ohms-audio-elem')[0];
+		this.playlistWrapper.on("click", "[data-role='play-link']", this.onTrackClick.bind(this));
 	};
 
 	SciHistAudioPlaylist.prototype.onTrackClick = function(ev) {
@@ -43,23 +29,10 @@ $( document ).ready(function() {
 	};
 
 	SciHistAudioPlaylist.prototype.loadTrack = function(track) {
-		// css (for styling)
-		this.findByRole('track-listing').removeClass("currently-selected");
-		$(track).addClass("currently-selected");
-
-		// data attribute (for identifying the item).
-		this.findByRole('track-listing').attr('data-currently-selected', 'false');
-		$(track).attr('data-currently-selected', 'true');
-
-		this.findByRole('current-track-label').html( $(track).data('title'));
-
-		$(this.audioElement).find("source[type='audio/mpeg']").attr("src", $(track).data('mp3Url'));
-		$(this.audioElement).find("source[type='audio/webm']").attr("src", $(track).data('webmUrl'));
-
-		// Tell HTML audio to load new stuff
-		// See: https://stackoverflow.com/questions/9421505/switch-audio-source-with-jquery-and-html5-audio-tag
-		this.audioElement.pause();
-		this.audioElement.load();
+		var startTime = $(track).data('startTime');
+		if (startTime != -1) {
+			this.audioElement.currentTime = startTime;
+		}
 	};
 
 	$("[data-role='audio-playlist-wrapper']").each(function() {

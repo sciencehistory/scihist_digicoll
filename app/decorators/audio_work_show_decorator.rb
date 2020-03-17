@@ -83,4 +83,38 @@ class AudioWorkShowDecorator < Draper::Decorator
   def has_ohms_index?
     model&.oral_history_content&.has_ohms_index?
   end
+
+  def combined_mp3_audio
+    # oh_content = model.oral_history_content!
+    # oh_content.combined_audio_mp3&.url(public:true)
+    model&.oral_history_content&.combined_audio_mp3&.url(public:true)
+  end
+
+  def combined_webm_audio
+    # oh_content = model.oral_history_content!
+    # oh_content.combined_audio_webm&.url(public:true)
+    model&.oral_history_content&.combined_audio_webm&.url(public:true)
+  end
+
+  # An array of start times for each audio member.
+  # The key is the member uuid (NOT the friendlier id)
+  # The value is the offset in seconds into the combined audio.
+  # The first value in the array, if there is one,
+  # should ALWAYS be zero.
+  def start_times
+    @start_times ||= begin
+      metadata = model&.oral_history_content&.combined_audio_component_metadata
+      metadata ? metadata['start_times'].to_h : {}
+    end
+  end
+
+  # The start time or audio offset for a particular audio asset,
+  # relative to the entire oral history interview (the work as a whole).
+  # We're rounding to the nearest tenth of a second; easier to read.
+  # Returns -1 if there is no start time for this asset, or for any assets.
+  def start_time_for(audio_asset)
+    return -1 if start_times == {}
+    start_times[audio_asset.id]&.round(1) || -1
+  end
+
 end

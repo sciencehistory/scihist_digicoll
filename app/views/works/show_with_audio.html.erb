@@ -9,16 +9,18 @@
 
   <%= WorkTitleAndDates.new(@work).display %>
 
-  <div class="now-playing-container" data-role="now-playing-container">
-    <div class="now-playing-info" data-role="now-playing-info">
-        <i class="fa fa-volume-up" aria-hidden="true"></i> <span class="current-track-label" data-role="current-track-label"></span>
+  <% if decorator.combined_mp3_audio.present? %>
+    <div class="now-playing-container" data-role="now-playing-container" >
+      <audio controls controlsList="nodownload" data-role="ohms-audio-elem" >
+          <source src="<%= decorator.combined_mp3_audio%>"  type="audio/mpeg"/>
+          <source src="<%= decorator.combined_webm_audio%>"  type="audio/webm"/>
+      </audio>
     </div>
-
-    <audio controls controlsList="nodownload" data-role="audio-elem" >
-        <source src=""  type="audio/mpeg"/>
-        <source src=""  type="audio/webm"/>
-    </audio>
-  </div>
+  <% else %>
+    <div class="alert alert-warning" role="alert" data-role="no-audio-alert">
+       No audio is available for this oral history.
+    </div>
+  <% end %>
 
   <div class="bottom">
       <%= render "rights_and_social", work: @work %>
@@ -75,9 +77,10 @@
                 <div  class="track-listing" data-role="track-listing"
                       data-title="<%= track.title %>"
                       data-member-id="<%= track.id %>"
-                      data-original-url="<%= main_app.download_path(track.id) %>"
-                      data-mp3-url="<%=  track.derivative_for('small_mp3')&.url %>"
-                      data-webm-url="<%= track.derivative_for('webm')&.url      %>"
+                      data-original-url="<%= main_app.download_path(track.id)    %>"
+                      data-mp3-url="<%=  track.derivative_for('small_mp3')&.url  %>"
+                      data-webm-url="<%= track.derivative_for('webm')&.url       %>"
+                      data-start-time="<%= decorator.start_time_for(track)       %>"
                   >
                   <div class="icon">
                     <a class="title play-link" title="Listen to '<%= track.title%>'" aria-label="Listen to '<%= track.title%>'" href="#" data-role="play-link">
