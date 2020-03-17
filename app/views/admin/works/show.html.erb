@@ -101,14 +101,12 @@
   </div>
 
   <% if @work.genre && @work.genre.include?('Oral histories') %>
+
+
+
     <div class="tab-pane" id="nav-oral-histories" role="tabpanel" aria-labelledby="nav-oral-histories-tab">
-      <div class="card bg-light mb-3">
-        <h2 class="card-header h3">Combined Audio Derivative File</h2>
-        <div class="card-body">
-          <p><%= @work.members.to_a.select { |m| m.content_type && m.content_type.start_with?("audio/")}.count %>  Audio file(s) available</p>
-          <p>TBD: Create combined deriv; status/fingerprint of combined deriv; URL for combined deriv to use with OHMS</p>
-        </div>
-      </div>
+
+      <%= WorkCombinedAudioDerivatives.new(@work).display %>
 
       <div class="card bg-light mb-3">
         <h2 class="card-header h3">OHMS XML attached</h2>
