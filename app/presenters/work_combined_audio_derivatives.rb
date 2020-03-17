@@ -40,4 +40,8 @@ class WorkCombinedAudioDerivatives < ViewModel
     model.oral_history_content!.combined_audio_fingerprint
   end
 
+  def derivatives_up_to_date?
+    CombinedAudioDerivativeCreator.new(model).fingerprint != combined_audio_fingerprint
+  end
+
 end
