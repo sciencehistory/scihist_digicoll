@@ -83,4 +83,36 @@ describe OralHistoryContent do
       end
     end
   end
+
+
+  describe OralHistoryContent::OhmsXml do
+    let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml"}
+    let(:ohms_xml) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path))}
+
+    describe "#sync_timecodes" do
+      it "are as expected" do
+        # we'll just check a sampling, we have one-second interval granularity in XML
+        expect(ohms_xml.sync_timecodes.count).to eq(28)
+        expect(ohms_xml.sync_timecodes[13]).to eq({:word_number=>3, :seconds=>60, line_number: 13})
+        expect(ohms_xml.sync_timecodes[19]).to eq({:word_number=>14, :seconds=>120, :line_number=>19})
+
+        expect(ohms_xml.sync_timecodes[308]).to eq({:word_number=>2, :seconds=>1680, :line_number=>308})
+      end
+    end
+
+    describe "#index_points" do
+      it "are as expected" do
+        expect(ohms_xml.index_points).to be_present
+        expect(ohms_xml.index_points.count).to eq(7)
+
+        # spot check one
+        expect(ohms_xml.index_points.second.title).to eq("Growing up with Gordon Moore")
+        expect(ohms_xml.index_points.second.timestamp).to eq(212)
+        expect(ohms_xml.index_points.second.synopsis).to eq("Gordon Moore’s mother Myra. Gordon Moore moving to Redwood City. Getting into trouble with a wagon. Gordon Moore visiting Pescadero. Gordon Moore tinkering. Grammar school. Sequoia High School. Friends. Gordon Moore as a student.")
+        expect(ohms_xml.index_points.second.partial_transcript).to eq("BROCK:  That general store was just down the street, not too far from your family’s tavern?\nDUARTE:  Yes.  The general store is called Muzzi’s now.")
+        expect(ohms_xml.index_points.second.keywords).to eq(["Azores", "Gordon E. Moore", "Half Moon Bay", "Pescadero", "ranching", "San Mateo", "sheriff", "Walter E. Moore", "whaling", "Williamson family"])
+      end
+    end
+
+  end
 end

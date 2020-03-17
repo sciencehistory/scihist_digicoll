@@ -46,6 +46,7 @@ $brand-alt-header-weight: 700;
 
 // adelle-sans has a 600 semi-bold available. 700 is standard bold. 500 seems to be the same as 400=normal.
 $semi-bold-weight: 600;
+$badge-font-weight: $semi-bold-weight; // badges look better at our semi-bold with adelle-sans!
 
 // Maximum line length we judge to be readable at standard base font size.
 // Used to constrain some block text areas on large screens.
@@ -61,13 +62,22 @@ $transparent-background: rgba(0,0,0,0.25);
 
 $thumb-horizontal-margin: 4px;
 
+// These "paragraph" settings are all meant for use with our serif font, abril,
+// which we use for body/paragraph/'text' copy.
+//
 // abril is far too small at 16px, it's a small font. 17px abril looks more like
-// 16px other fonts. We use abril for body/paragraph/'text' copy.
-// 1.0625rem is 17px if 1rem is 16px -- 16px is awfully small for abril, 17px looks like 16px for other fonts.
-// bootstrap wants us to use rem, might have accessibility reasons for that.
+// 16px other fonts. 1.0625rem is 17px if 1rem is 16px --
+// bootstrap wants us to use rem, rather than fixed point size, for accessibility
+// user-resizing purposes.
+//
 $paragraph-font-size: 1.0625rem; // 17px if 1rem is 16px
+
+// We really need two differnet line spacing, LOTS of text needs the bigger -long one,
+// but briefer text is generally better with the other one, which for legacy reasons
+// ends up the default in lots of places.
 $paragraph-line-height: 1.2941176471; // 1.0625rem * this line-height is 22px if 1rem is 16px
-$paragraph-spacer: $paragraph-font-size * $paragraph_line_height / 2; // Should be about 22/2=11px if 1rem=16px
+$paragraph-line-height-long: 1.625; // based on values on sciencehistory.org
+$paragraph-spacer: $paragraph-font-size * $paragraph-line-height / 2; // Should be about 22/2=11px if 1rem=16px
 
 $navbar-margin-bottom: 22px;
 
@@ -90,6 +100,7 @@ $danger: $brand-red;
 $warning: $brand-yellow;
 $primary: $brand-blue;
 $dark: $brand-dark-blue;
+$secondary: $brand-dark-grey;
 
 // $btn-primary-border: $brand-primary; // bootstrap 4 has no button borders already I think.
 // $btn-default-border: $brand-light-grey; // bootstrap 4 has no button borders already I think.
