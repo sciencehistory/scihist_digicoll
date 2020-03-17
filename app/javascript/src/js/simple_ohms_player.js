@@ -97,12 +97,19 @@ var Search = {
     this.currentResults = undefined;
   },
 
+  // It would be lovely to just use built-in scrollIntoView, but we have
+  // to scroll around the fixed navbar on top, so we end up using
+  // some hacky jQuery stuff.
   scrollToId: function(domID) {
     // without block:center, it ends up scrolling under our fixed navbar, gah!
     // this seems to be good enough.
-    document.getElementById(domID).scrollIntoView({behavior: "smooth", block: "center"});
-  }
+    var element = document.getElementById(domID);
 
+    var elTop = $(element).offset().top;
+    var navbarHeight = $(".audio-navbar").height();
+
+    window.scrollTo({top: elTop - navbarHeight, behavior: "smooth"});
+  }
 }
 
 Search.SearchResults = function(domContainer, results) {
