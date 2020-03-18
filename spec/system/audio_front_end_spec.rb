@@ -7,6 +7,11 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
   let(:audio_file_path) { Rails.root.join("spec/test_support/audio/ice_cubes.mp3")}
   let(:audio_file_sha512) { Digest::SHA512.hexdigest(File.read(audio_file_path)) }
 
+
+  let(:combined_audio_file_path) {
+    Rails.root.join("spec/test_support/audio/double_ice_cubes.mp3")
+  }
+
   let!(:audio_assets) {
     (1..4).to_a.map do |i|
       create(:asset_with_faked_file, :mp3,
@@ -53,6 +58,10 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
     it "shows the page without error" do
       visit work_path(audio_assets.first.parent.friendlier_id)
 
+      # Because there is no combined audio derivative,
+      # we can't show the audio scrubber:
+      expect(page).not_to have_selector('audio')
+
       click_on "Downloads"
 
       within("*[data-role='audio-playlist-wrapper']") do
@@ -82,6 +91,35 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
 
       # No user is logged in, so there should not be any "Private" badges.
       expect(page).not_to have_css('.badge-warning[title=Private]')
+
+
+      #
+      # Add an oral_history_content sidecar object
+      # and populate it.
+      # Ideally this would be a separate #it block,
+      # but this ought to save a bit of testing time.
+      #
+      #
+      id_list = parent_work.
+        members.order(:position).
+        select{|x| x.content_type == 'audio/mpeg' && x.published? }.
+        map {|x| x.id}
+
+      parent_work.oral_history_content!.set_combined_audio_mp3!(File.open(combined_audio_file_path))
+      parent_work.oral_history_content.combined_audio_component_metadata = {"start_times"=>[
+        [id_list[0], 0],
+        [id_list[1], 0.5],
+        [id_list[2], 1]
+      ]}
+      parent_work.oral_history_content.save!
+
+      # Revisit the page:
+      visit work_path(parent_work.friendlier_id)
+      expect(page).to have_selector('audio')
+      expect(page).to have_selector(".track-listing[data-start-time=\"0\"]" , visible: false)
+      expect(page).to have_selector(".track-listing[data-start-time=\"0.5\"]" , visible: false)
+      expect(page).to have_selector(".track-listing[data-start-time=\"1\"]" , visible: false)
+
     end
   end
 
