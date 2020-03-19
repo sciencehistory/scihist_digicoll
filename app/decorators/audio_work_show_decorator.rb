@@ -111,10 +111,9 @@ class AudioWorkShowDecorator < Draper::Decorator
   # The start time or audio offset for a particular audio asset,
   # relative to the entire oral history interview (the work as a whole).
   # We're rounding to the nearest tenth of a second; easier to read.
-  # Returns -1 if there is no start time for this asset, or for any assets.
+  # Returns nil if there is no start time for this asset, or for any assets.
   def start_time_for(audio_asset)
-    return -1 if start_times == {}
-    start_times[audio_asset.id]&.round(1) || -1
+    start_times[audio_asset.id]&.round(1)
   end
 
 end
