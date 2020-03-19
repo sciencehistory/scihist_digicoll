@@ -119,6 +119,25 @@ var Search = {
     var navbarHeight = $(".audio-navbar").height();
 
     window.scrollTo({top: elTop - navbarHeight, behavior: "smooth"});
+  },
+
+  onSearchSubmit: function(event) {
+    event.preventDefault();
+
+    Search.clearSearchResults();
+
+    var query = $(event.target).find("*[data-ohms-input-query]").val();
+
+    if (query == "") {
+      return;
+    }
+
+    Search.currentResults = new OhmsSearch.SearchResults(
+      $("*[data-ohms-search-results]").get(0),
+      Search.searchTranscript(query)
+    );
+
+    Search.currentResults.draw();
   }
 }
 
@@ -197,22 +216,7 @@ Search.SearchResults.prototype.nextButtonHtml = function() {
 
 
 $(document).on("submit", "*[data-ohms-search-form]", function(event) {
-  event.preventDefault();
-
-  Search.clearSearchResults();
-
-  var query = $(event.target).find("*[data-ohms-input-query]").val();
-
-  if (query == "") {
-    return;
-  }
-
-  Search.currentResults = new OhmsSearch.SearchResults(
-    $("*[data-ohms-search-results]").get(0),
-    Search.searchTranscript(query)
-  );
-
-  Search.currentResults.draw();
+  Search.onSearchSubmit(event);
 });
 
 $(document).on("click", "*[data-ohms-search-result-index]", function(event) {
