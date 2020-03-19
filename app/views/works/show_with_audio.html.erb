@@ -80,20 +80,32 @@
                       data-original-url="<%= main_app.download_path(track.id)    %>"
                       data-mp3-url="<%=  track.derivative_for('small_mp3')&.url  %>"
                       data-webm-url="<%= track.derivative_for('webm')&.url       %>"
-                      data-start-time="<%= decorator.start_time_for(track)       %>"
+                      data-ohms-timestamp-s="<%= decorator.start_time_for(track) %>"
                   >
-                  <div class="icon">
-                    <a class="title play-link" title="Listen to '<%= track.title%>'" aria-label="Listen to '<%= track.title%>'" href="#" data-role="play-link">
-                      <i class="fa fa-play-circle" aria-hidden="true"></i>
-                    </a>
-                  </div>
+
+                  <% if decorator.start_time_for(track) %>
+                    <div class="icon">
+                      <a class="title play-link" title="Listen to '<%= track.title%>'" aria-label="Listen to '<%= track.title%>'" href="#" data-role="play-link">
+                        <i class="fa fa-play-circle" aria-hidden="true"></i>
+                      </a>
+                    </div>
+                  <% end %>
+
+
                   <div class="title">
-                    <a class="title play-link" title="Listen to '<%= track.title%>'" aria-label="Listen to '<%= track.title%>'" href="#" data-role="play-link">
-                          <%= track.title %>
-                          <% unless track.published? %>
-                            <span title="Private" class="badge badge-warning">Private</span>
-                          <% end %>
-                    </a>
+                    <% if decorator.start_time_for(track) %>
+                      <a class="title play-link" title="Listen to '<%= track.title%>'" aria-label="Listen to '<%= track.title%>'" href="#" data-role="play-link">
+                        <%= track.title %>
+                        <% unless track.published? %>
+                          <span title="Private" class="badge badge-warning">Private</span>
+                        <% end %>
+                      </a>
+                    <% else %>
+                        <%= track.title %>
+                        <% unless track.published? %>
+                          <span title="Private" class="badge badge-warning">Private</span>
+                        <% end %>
+                    <% end %>
                   </div>
                   <div class="action">
                     <%= DownloadDropdownDisplay.new(track, display_parent_work: track.parent, use_link:true).display %>

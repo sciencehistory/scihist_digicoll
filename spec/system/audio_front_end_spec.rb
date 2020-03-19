@@ -93,13 +93,10 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
       expect(page).not_to have_css('.badge-warning[title=Private]')
 
 
-      #
       # Add an oral_history_content sidecar object
       # and populate it.
-      # Ideally this would be a separate #it block,
-      # but this ought to save a bit of testing time.
-      #
-      #
+      # Ideally this would be a separate #it block.
+      # This ought to save a bit of testing time, though.
       id_list = parent_work.
         members.order(:position).
         select{|x| x.content_type == 'audio/mpeg' && x.published? }.
@@ -116,10 +113,9 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
       # Revisit the page:
       visit work_path(parent_work.friendlier_id)
       expect(page).to have_selector('audio')
-      expect(page).to have_selector(".track-listing[data-start-time=\"0\"]" , visible: false)
-      expect(page).to have_selector(".track-listing[data-start-time=\"0.5\"]" , visible: false)
-      expect(page).to have_selector(".track-listing[data-start-time=\"1\"]" , visible: false)
-
+      expect(page).to have_selector(".track-listing[data-ohms-timestamp-s=\"0\"]" , visible: false)
+      expect(page).to have_selector(".track-listing[data-ohms-timestamp-s=\"0.5\"]" , visible: false)
+      expect(page).to have_selector(".track-listing[data-ohms-timestamp-s=\"1\"]" , visible: false)
     end
   end
 
