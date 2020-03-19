@@ -13,7 +13,6 @@ import 'whatwg-fetch';
 // have promises, and IE11 is one, so.
 import 'promise-polyfill/src/polyfill';
 
-import '../src/js/playlist.js'
 import '../src/js/init_popovers.js';
 import '../src/js/accept_cookies_banner.js';
 import '../src/js/scihist_search_slideout.js';
