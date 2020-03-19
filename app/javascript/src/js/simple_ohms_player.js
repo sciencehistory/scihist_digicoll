@@ -42,7 +42,20 @@ var Search = {
   // a SearchResults object or empty
   currentResults: undefined,
 
-  // Returns 'result' objects, how do we make one of them?
+  // Returns a regular expression as a STRING (so it can be embedded inside other regexps),
+  // meant for searching the DOM for search query. Borrowed/modified from ohms-viewer code,
+  //
+  // I think they are meant to avoid matching on HTML tags, so we can search and replace
+  // the DOM to add highlight tags?
+  regexpStrForSearch: function(query) {
+    if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent) || navigator.userAgent.search("Firefox")) {
+        return "(?![^<>]*(([\/\"']|]]|\b)>))(" + escapeRegExp(query) + ')';
+    } else {
+        return '(?<!</?[^>]*|&[^;]*)(' + escapeRegExp(query) + ')';
+    }
+  },
+
+  // Returns array of 'result' objects, how do we standardize what that is?
   // context, tab id, id.
   //
   // looks through all objects that are .ohms-transcript-line,
@@ -52,12 +65,7 @@ var Search = {
   searchTranscript: function(query) {
     var _self = this;
 
-    // These are borrowed from ohms-viewer, trying to avoid HTML tags I think?
-    if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent) || navigator.userAgent.search("Firefox")) {
-        var reStr = "(?![^<>]*(([\/\"']|]]|\b)>))(" + escapeRegExp(query) + ')';
-    } else {
-        var reStr = '(?<!</?[^>]*|&[^;]*)(' + escapeRegExp(query) + ')';
-    }
+    var reStr = _self.regexpStrForSearch(query);
 
     // one we'll use for replacing with highlight. Used on HTML.
     var replace_re = new RegExp(reStr, 'gi');
@@ -84,11 +92,48 @@ var Search = {
         }));
 
         return {
+          tabId: "ohTranscriptTab",
           targetId: lineId,
           highlightedMatch: highlightedMatch
         }
       }
     }).get(); // plain array not jQuery object
+  },
+
+  // Like searchTranscript, but searches the Table Of Contents "index" content.
+  //
+  // Returns array of "result" objects.
+  //
+  // Highlights hits in index results.
+  searchIndex: function(query) {
+    var _self = this;
+
+    var reStr = new RegExp(_self.regexpStrForSearch(query), "gi");
+
+    return $(".ohms-index-point").map(function() {
+      var section = $(this);
+
+      var targetId = section.attr("id");
+      if (! targetId) { throw "can't record ohms search without finding a dom id " + section.get(0) }
+
+      var replacementMade = false;
+      var original = section.html();
+      var replacedContent = original.replace(reStr, function(str) {
+        replacementMade = true;
+        return _self.wrapInHighlight(str);
+      });
+
+      if (replacementMade) {
+        // there was a hit, so, highlight and include result
+
+        section.html(replacedContent);
+
+        return {
+          tabId: 'ohIndexTab',
+          targetId: targetId
+        };
+      }
+    }).get() // plain array not jQuery object
   },
 
   clearSearchResults: function() {
@@ -101,18 +146,28 @@ var Search = {
   // to scroll around the fixed navbar on top, so we end up using
   // some hacky jQuery stuff.
   //
-  // Also switches to tab if necessary
+  // Also importantly:
+  // * switches to a containing tab if necessary
+  // * Opens a containing bootstrap collapse if necessary (eg for Table of Contents/index section)
   scrollToId: function(domID) {
     // without block:center, it ends up scrolling under our fixed navbar, gah!
     // this seems to be good enough.
     var element = document.getElementById(domID);
 
+    // If it's in a tab, and the tab isn't currently shown, make it shown
     var tabPane = $(element).closest(".tab-pane");
     if (tabPane) {
       // annoyingly, have to get the actual tab link that corresponds to
       // the pane
       var tab = $(".nav-link[href='#" + tabPane.attr("id") + "']");
       tab.tab("show");
+    }
+
+    // If our target element CONTAINS a bootstrap collapsible that is collapsed,
+    // show it. This is intended for our ToC accordion.
+    var collapsible = $(element).find(".collapse");
+    if (collapsible && ! collapsible.hasClass("show")) {
+      collapsible.collapse("show");
     }
 
     var elTop = $(element).offset().top;
@@ -134,8 +189,9 @@ var Search = {
 
     Search.currentResults = new OhmsSearch.SearchResults(
       $("*[data-ohms-search-results]").get(0),
-      Search.searchTranscript(query)
+      Search.searchIndex(query)
     );
+
 
     Search.currentResults.draw();
   }
