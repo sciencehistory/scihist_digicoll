@@ -124,8 +124,11 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
         click_on "Track #{track_number}"
         scrubber_times << evaluate_script("document.getElementsByTagName('audio')[0].currentTime")
       end
-      expect(scrubber_times).to contain_exactly(0, 0, 0.5, 1)
-
+      # This doesn't need to be super precise.
+      # We just want a general reassurance
+      # that the playhead is moving
+      # when you click the links.
+      expect(scrubber_times.map {|x| (x*2).round }).to contain_exactly(0,0,1,2)
     end
   end
 
