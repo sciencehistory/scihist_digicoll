@@ -116,6 +116,16 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
       expect(page).to have_selector(".track-listing[data-ohms-timestamp-s=\"0\"]" , visible: false)
       expect(page).to have_selector(".track-listing[data-ohms-timestamp-s=\"0.5\"]" , visible: false)
       expect(page).to have_selector(".track-listing[data-ohms-timestamp-s=\"1\"]" , visible: false)
+
+      click_on "Downloads"
+      scrubber_times = []
+      scrubber_times << evaluate_script("document.getElementsByTagName('audio')[0].currentTime")
+      [1, 3, 4].each do |track_number|
+        click_on "Track #{track_number}"
+        scrubber_times << evaluate_script("document.getElementsByTagName('audio')[0].currentTime")
+      end
+      expect(scrubber_times).to contain_exactly(0, 0, 0.5, 1)
+
     end
   end
 
