@@ -1,6 +1,6 @@
 <div class="accordion scihist-accordion ohms-index-container" id="ohmsIndexAccordionParent">
   <% view.index_points.each_with_index do |index_point, index| %>
-    <div class="ohms-index-point card">
+    <div class="ohms-index-point card" id="<%= view.accordion_wrapper_id(index) %>">
       <div class="card-header" id="<%= view.accordion_header_id(index) %>">
         <h3 class="ohms-index-point-title mb-0">
           <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#<%= view.accordion_element_id(index) %>" aria-expanded="true" aria-controls="<%= view.accordion_element_id(index) %>">
