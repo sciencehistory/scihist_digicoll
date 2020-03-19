@@ -76,20 +76,6 @@
       word-break: break-word;
     }
 
-
-
-    .currently-selected {
-      background-color: $brand-bright-green;
-      color: $brand-dark-blue;
-      a.play-link,
-      a.play-link:link,
-      a.play-link:visited,
-      a.play-link:hover,
-      a.play-link:active,
-      div.dropdown a.download-link {
-        color: $brand-dark-blue;
-      }
-    }
   }
 
   .other-files {
