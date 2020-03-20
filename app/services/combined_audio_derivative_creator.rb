@@ -39,7 +39,7 @@ class CombinedAudioDerivativeCreator
     ['mp3', 'webm'].each do |format|
       output_files[format] = output_file(format)
       ffmpeg_args = args_for_ffmpeg(output_files[format].path)
-      cmd.run(*ffmpeg_args, binmode: true)
+      cmd.run(*ffmpeg_args, binmode: true, only_output_on_error: true)
     end
     resp = Response.new
     resp.webm_file   = output_files['webm']
@@ -53,7 +53,7 @@ class CombinedAudioDerivativeCreator
 
 
   def cmd
-     @cmd ||= TTY::Command.new()
+    @cmd ||= TTY::Command.new(output: Rails.logger)
   end
 
   def output_file(format)

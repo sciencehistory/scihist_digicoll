@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 describe "Combined Audio" do
-  # We need to set the friendlier_id explicitly, because it's part of the fingerprint recipe.
   let!(:work) { FactoryBot.create(:work, title: "Oral history with two interview audio segments")}
 
   let!(:audio_asset_1)  { create(:asset, :inline_promoted_file,
@@ -66,7 +65,6 @@ describe "Combined Audio" do
     audio_asset_1.position = 2
     audio_asset_1.save!
     audio_asset_2.save!
-    #work.save!
 
     combined_audio_info = CombinedAudioDerivativeCreator.new(work).generate
     expect(combined_audio_info.start_times.count).to eq 2
