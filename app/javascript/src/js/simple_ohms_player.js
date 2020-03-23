@@ -290,5 +290,29 @@ $(document).on("click", "*[data-ohms-clear-search]", function(event) {
   Search.clearSearchResults();
 });
 
+// After an accordion section change, sometimes the open section is scrolled out
+// of the viewport. This can happen occasionally even in an 'ordinary' situation
+// with bootstrap accordion, but our fixed navbar makes it even more likely that
+// the open section is hidden behind the navbar.
+//
+// We detect that condition, and scroll to reveal it. Only within
+// an .ohms-index-container, not affecting all bootstrap collapse/accordions.
+$(document).on("shown.bs.collapse", ".ohms-index-container", function(event) {
+  var indexSection = $(event.target).closest(".ohms-index-point").get(0);
+
+  if (!indexSection) { return; }
+
+  var targetViewportXPosition = indexSection.getBoundingClientRect().top;
+  var navbarHeight = $(".audio-navbar").height();
+
+  if (targetViewportXPosition <= navbarHeight) {
+    console.log("window.scrollY: " + window.scrollY);
+    console.log("targetViewportXPosition: "+ targetViewportXPosition);
+    console.log("navbarHeight: " + navbarHeight);
+
+    window.scrollTo({top: window.scrollY - (navbarHeight - targetViewportXPosition), behavior: "smooth"});
+  }
+});
+
 
 window.OhmsSearch = Search;
