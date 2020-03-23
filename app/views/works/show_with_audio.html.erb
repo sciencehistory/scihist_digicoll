@@ -10,18 +10,19 @@
   <%= WorkTitleAndDates.new(@work).display %>
 
   <div class="audio-navbar">
-    <% if decorator.combined_mp3_audio.present? %>
-      <div class="now-playing-container" data-role="now-playing-container" >
-        <audio controls controlsList="nodownload" data-role="ohms-audio-elem" >
-            <source src="<%= decorator.combined_mp3_audio%>"  type="audio/mpeg"/>
-            <source src="<%= decorator.combined_webm_audio%>"  type="audio/webm"/>
-        </audio>
-      </div>
-    <% else %>
-      <div class="alert alert-warning" role="alert" data-role="no-audio-alert">
-         This oral history is not properly prepared for the audio player. (Staff: please create a combined derivative.)
-      </div>
-    <% end %>
+
+    <div class="now-playing-container" data-role="now-playing-container" >
+        <% if decorator.combined_mp3_audio.present? %>
+          <audio controls controlsList="nodownload" data-role="ohms-audio-elem" >
+              <source src="<%= decorator.combined_mp3_audio%>"  type="audio/mpeg"/>
+              <source src="<%= decorator.combined_webm_audio%>"  type="audio/webm"/>
+          </audio>
+        <% else %>
+          <div class="alert alert-warning" role="alert" data-role="no-audio-alert">
+             This oral history is not properly prepared for the audio player. (Staff: please create a combined derivative.)
+          </div>
+        <% end %>
+    </div>
 
     <% if decorator.has_ohms_transcript? || decorator.has_ohms_index? %>
       <div class="ohms-search">
