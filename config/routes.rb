@@ -131,6 +131,7 @@ Rails.application.routes.draw do
         put "publish"
         put "unpublish"
         put "submit_ohms_xml"
+        put "create_combined_audio_derivatives"
       end
       collection do
         get 'batch_update', to: "works#batch_update_form"
