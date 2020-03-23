@@ -108,10 +108,13 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
         [id_list[1], 0.5],
         [id_list[2], 1]
       ]}
+
+      parent_work.oral_history_content.combined_audio_fingerprint = CombinedAudioDerivativeCreator.new(parent_work).fingerprint
       parent_work.oral_history_content.save!
 
       # Revisit the page:
       visit work_path(parent_work.friendlier_id)
+
       expect(page).to have_selector('audio')
       expect(page).to have_selector(".track-listing[data-ohms-timestamp-s=\"0\"]" , visible: false)
       expect(page).to have_selector(".track-listing[data-ohms-timestamp-s=\"0.5\"]" , visible: false)
