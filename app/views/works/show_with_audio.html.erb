@@ -58,13 +58,17 @@
 
         <% if decorator.has_ohms_transcript? %>
           <li class="nav-item">
-            <a class="nav-link" id="ohTranscriptTab" data-toggle="tab" href="#ohTranscript" role="tab" aria-controls="home" aria-selected="false">Transcript</a>
+            <a class="nav-link" id="ohTranscriptTab" data-toggle="tab" href="#ohTranscript" role="tab" aria-controls="home" aria-selected="false">
+              Transcript <span data-ohms-hitcount="transcript"></span>
+            </a>
           </li>
         <% end %>
 
         <% if decorator.has_ohms_index? %>
           <li class="nav-item">
-            <a class="nav-link" id="ohTocTab" data-toggle="tab" href="#ohToc" role="tab" aria-controls="profile" aria-selected="false">Table of Contents</a>
+            <a class="nav-link" id="ohTocTab" data-toggle="tab" href="#ohToc" role="tab" aria-controls="profile" aria-selected="false">
+              Table of Contents <span data-ohms-hitcount="index"></span>
+            </a>
           </li>
         <% end %>
 
