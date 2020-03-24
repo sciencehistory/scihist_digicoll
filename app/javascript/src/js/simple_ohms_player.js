@@ -39,8 +39,28 @@ var Search = {
     return "<span class=\"ohms-highlight text-danger\">" + match + "</span>";
   },
 
-  // a SearchResults object or empty
-  currentResults: undefined,
+  // After a search, we have a SearchResults object for Transcript, one
+  // for Index (ToC); and a resultsMode state that should be either 'transcript',
+  // or 'index' to tell us which is currently being displayed.
+
+  currentTranscriptResults: undefined,
+
+  currentIndexResults: undefined,
+
+  resultsMode: "transcript",
+
+  currentResults: function() {
+    // No idea why we need to say 'Search' instead of 'self' here.
+    if (Search.resultsMode == "index") {
+      return Search.currentIndexResults;
+    } else {
+      return Search.currentTranscriptResults;
+    }
+  },
+
+  drawResults: function(resultIndex) {
+    self.currentResults().draw(resultIndex);
+  },
 
   // Returns a regular expression as a STRING (so it can be embedded inside other regexps),
   // meant for searching the DOM for search query. Borrowed/modified from ohms-viewer code,
@@ -139,7 +159,8 @@ var Search = {
   clearSearchResults: function() {
     $(document).find("*[data-ohms-search-results]").empty();
     $(document).find('.ohms-highlight').contents().unwrap();
-    this.currentResults = undefined;
+    this.currentTranscriptResults = undefined;
+    this.currentIndexResults = undefined;
   },
 
   // It would be lovely to just use built-in scrollIntoView, but we have
@@ -187,19 +208,30 @@ var Search = {
       return;
     }
 
-    Search.currentResults = new OhmsSearch.SearchResults(
+    Search.currentTranscriptResults = new Search.SearchResults(
       $("*[data-ohms-search-results]").get(0),
-      Search.searchIndex(query)
+      Search.searchTranscript(query),
+      "transcript"
     );
 
+    Search.currentIndexResults = new Search.SearchResults(
+      $("*[data-ohms-search-results]").get(0),
+      Search.searchIndex(query),
+      "index"
+    );
 
-    Search.currentResults.draw();
+    Search.currentResults().draw();
   }
 }
 
-Search.SearchResults = function(domContainer, results) {
+Search.SearchResults = function(domContainer, results, mode) {
     this.domContainer = domContainer;
     this.results = results;
+    this.mode = mode;
+
+    if (this.mode != "index" && this.mode != "transcript") {
+      throw "third 'mode' arg must be 'index' or 'transcript'";
+    }
 
     this.currentResultIndex = 1; // 1-based index into results
 }
@@ -234,7 +266,10 @@ Search.SearchResults.prototype.draw =  function(currentResultIndex) {
 Search.SearchResults.prototype.navigationHtml = function() {
 
   return "<div class='ohms-result-navigation'>" +
-            "<span class='showing text-danger'>" + this.currentResultIndex + " / " + this.results.length + "</span> " +
+            "<span>" +
+              "<span class='search-mode'>" + this.mode +" — </span> " +
+              "<span class='showing text-danger'>" + this.currentResultIndex + " / " + this.results.length + "</span> " +
+            "</span>" +
             "<span class='nav'>" +
               '<div class="btn-group btn-group-sm" role="group" aria-label="Basic example">' +
                   this.prevButtonHtml() +
@@ -280,7 +315,7 @@ $(document).on("click", "*[data-ohms-search-result-index]", function(event) {
 
   var resultIndex = $(this).data("ohmsSearchResultIndex");
 
-  Search.currentResults.draw(resultIndex);
+  Search.currentResults().draw(resultIndex);
 });
 
 $(document).on("click", "*[data-ohms-clear-search]", function(event) {
@@ -311,6 +346,23 @@ $(document).on("shown.bs.collapse", ".ohms-index-container", function(event) {
     console.log("navbarHeight: " + navbarHeight);
 
     window.scrollTo({top: window.scrollY - (navbarHeight - targetViewportXPosition), behavior: "smooth"});
+  }
+});
+
+// After a tab switch, we need to switch the search mode if it was index or transcript
+// tab.
+
+$(document).on("shown.bs.tab", ".work-show-audio", function(event) {
+  if (event.target.id == "ohTocTab" && Search.resultsMode != "index") {
+    Search.resultsMode = "index";
+    // if (Search.currentResults()) {
+    //   Search.currentResults().draw();
+    // }
+  } else if (event.target.id == "ohTranscriptTab" && Search.resultsMode != "transcript") {
+    Search.resultsMode = "transcript";
+    // if (Search.currentResults()) {
+    //   Search.currentResults().draw();
+    // }
   }
 });
 
