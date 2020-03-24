@@ -47,11 +47,21 @@ var Search = {
 
   currentIndexResults: undefined,
 
-  resultsMode: "transcript",
+  resultsMode: function() {
+    if (this.resultsModeVal == undefined) {
+      if ($("#ohTranscript").length > 0) {
+        this.resultsModeVal = "transcript";
+      } else {
+        this.resultsModeVal = "index";
+      }
+    }
+
+    return this.resultsModeVal;
+  },
 
   currentResults: function() {
     // No idea why we need to say 'Search' instead of 'self' here.
-    if (Search.resultsMode == "index") {
+    if (Search.resultsMode() == "index") {
       return Search.currentIndexResults;
     } else {
       return Search.currentTranscriptResults;
@@ -366,13 +376,13 @@ $(document).on("shown.bs.collapse", ".ohms-index-container", function(event) {
 // After a tab switch, we need to switch the search mode if it was index or transcript
 // tab.
 $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
-  if (event.target.id == "ohTocTab" && Search.resultsMode != "index") {
-    Search.resultsMode = "index";
+  if (event.target.id == "ohTocTab" && Search.resultsMode() != "index") {
+    Search.resultsModeVal = "index";
     if (Search.currentResults()) {
       Search.currentResults().draw();
     }
-  } else if (event.target.id == "ohTranscriptTab" && Search.resultsMode != "transcript") {
-    Search.resultsMode = "transcript";
+  } else if (event.target.id == "ohTranscriptTab" && Search.resultsMode() != "transcript") {
+    Search.resultsModeVal = "transcript";
     if (Search.currentResults()) {
       Search.currentResults().draw();
     }
