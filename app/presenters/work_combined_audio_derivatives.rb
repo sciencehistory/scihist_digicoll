@@ -41,7 +41,7 @@ class WorkCombinedAudioDerivatives < ViewModel
   end
 
   def derivatives_up_to_date?
-    CombinedAudioDerivativeCreator.new(model).fingerprint != combined_audio_fingerprint
+    CombinedAudioDerivativeCreator.new(model).fingerprint == combined_audio_fingerprint
   end
 
 end
