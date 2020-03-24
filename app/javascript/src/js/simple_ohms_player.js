@@ -221,6 +221,7 @@ var Search = {
     );
 
     Search.currentResults().draw();
+    Search.currentResults().scrollToCurrentResult();
   }
 }
 
@@ -257,17 +258,19 @@ Search.SearchResults.prototype.draw =  function(currentResultIndex) {
   "</div>";
 
   $(this.domContainer).html(html);
+};
 
+Search.SearchResults.prototype.scrollToCurrentResult = function() {
   // currentResultIndex is 1-based
   var result = this.results[this.currentResultIndex - 1];
   Search.scrollToId(result.targetId);
-};
+}
 
 Search.SearchResults.prototype.navigationHtml = function() {
 
   return "<div class='ohms-result-navigation'>" +
             "<span>" +
-              "<span class='search-mode'>" + this.mode +" — </span> " +
+              "<span class='search-mode'>" + this.modeName() +" — </span> " +
               "<span class='showing text-danger'>" + this.currentResultIndex + " / " + this.results.length + "</span> " +
             "</span>" +
             "<span class='nav'>" +
@@ -277,6 +280,15 @@ Search.SearchResults.prototype.navigationHtml = function() {
               '</div>' +
             "</span>" +
           "</div>";
+}
+
+// human readable mode name. "index" is actually Table of Contents.
+Search.SearchResults.prototype.modeName = function() {
+  if (this.mode == "transcript") {
+    return "Transcript";
+  } else if (this.mode == "index") {
+    return "Table of Contents";
+  }
 }
 
 Search.SearchResults.prototype.prevButtonHtml = function() {
@@ -316,6 +328,7 @@ $(document).on("click", "*[data-ohms-search-result-index]", function(event) {
   var resultIndex = $(this).data("ohmsSearchResultIndex");
 
   Search.currentResults().draw(resultIndex);
+  Search.currentResults().scrollToCurrentResult();
 });
 
 $(document).on("click", "*[data-ohms-clear-search]", function(event) {
@@ -355,14 +368,14 @@ $(document).on("shown.bs.collapse", ".ohms-index-container", function(event) {
 $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
   if (event.target.id == "ohTocTab" && Search.resultsMode != "index") {
     Search.resultsMode = "index";
-    // if (Search.currentResults()) {
-    //   Search.currentResults().draw();
-    // }
+    if (Search.currentResults()) {
+      Search.currentResults().draw();
+    }
   } else if (event.target.id == "ohTranscriptTab" && Search.resultsMode != "transcript") {
     Search.resultsMode = "transcript";
-    // if (Search.currentResults()) {
-    //   Search.currentResults().draw();
-    // }
+    if (Search.currentResults()) {
+      Search.currentResults().draw();
+    }
   }
 });
 
