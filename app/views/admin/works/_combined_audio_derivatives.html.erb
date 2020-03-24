@@ -6,14 +6,6 @@
     <% else %>
       <% if view.combined_audio_fingerprint.present? %>
         <% if view.derivatives_up_to_date? %>
-          <p class="alert-danger p-3">
-            <i class="fa fa fa-thumbs-down pr-1" aria-hidden="true"></i>
-            Combined audio derivatives exist for this oral history, but they are out of date.
-          </p>
-          <p>
-            <%= link_to "Regenerate combined audio derivatives", create_combined_audio_derivatives_admin_work_path(model), method: "put", class: "btn btn-primary" %>
-          </p>
-        <% else %>
           <p class="alert-success p-3">
             <i class="fa fa fa-thumbs-up pr-1" aria-hidden="true"></i>
             The combined audio derivatives for this oral history are up to date. Their fingerprint is <code class="border"><%= view.combined_audio_fingerprint%></code>.</p>
@@ -36,6 +28,14 @@
               </li>
             <% end %>
           </ul>
+        <% else %>
+          <p class="alert-danger p-3">
+            <i class="fa fa fa-thumbs-down pr-1" aria-hidden="true"></i>
+            Combined audio derivatives exist for this oral history, but they are out of date.
+          </p>
+          <p>
+            <%= link_to "Regenerate combined audio derivatives", create_combined_audio_derivatives_admin_work_path(model), method: "put", class: "btn btn-primary" %>
+          </p>
         <% end %>
       <% else %>
         <p>
