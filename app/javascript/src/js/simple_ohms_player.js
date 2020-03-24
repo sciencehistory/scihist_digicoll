@@ -157,6 +157,7 @@ var Search = {
   },
 
   clearSearchResults: function() {
+    $(document).find("*[data-ohms-hitcount]").empty();
     $(document).find("*[data-ohms-search-results]").empty();
     $(document).find('.ohms-highlight').contents().unwrap();
     this.currentTranscriptResults = undefined;
@@ -208,17 +209,21 @@ var Search = {
       return;
     }
 
+    var transcriptResults = Search.searchTranscript(query);
     Search.currentTranscriptResults = new Search.SearchResults(
       $("*[data-ohms-search-results]").get(0),
-      Search.searchTranscript(query),
+      transcriptResults,
       "transcript"
     );
+    $("*[data-ohms-hitcount='transcript']").html('<span class="badge badge-danger">' + transcriptResults.length + '</span>');
 
+    var indexResults = Search.searchIndex(query);
     Search.currentIndexResults = new Search.SearchResults(
       $("*[data-ohms-search-results]").get(0),
-      Search.searchIndex(query),
+      indexResults,
       "index"
     );
+    $("*[data-ohms-hitcount='index']").html('<span class="badge badge-danger">' + indexResults.length + '</span>');
 
     Search.currentResults().draw();
     Search.currentResults().scrollToCurrentResult();
