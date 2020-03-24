@@ -65,8 +65,10 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
       click_on "Downloads"
 
       within("*[data-role='audio-playlist-wrapper']") do
-        expect(page).not_to have_css('.now-playing-container')
-        expect(page).to have_css("*[data-role='no-audio-alert']")
+        within('.now-playing-container') do
+          expect(page).to have_css("*[data-role='no-audio-alert']")
+        end
+
         track_listings = page.find_all('.track-listing')
         # The user is not logged in, and Track 2 is not published yet.
         # Thus, Track 2 should not be shown.
