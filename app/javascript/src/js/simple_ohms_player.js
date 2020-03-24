@@ -359,10 +359,6 @@ $(document).on("shown.bs.collapse", ".ohms-index-container", function(event) {
   var navbarHeight = $(".audio-navbar").height();
 
   if (targetViewportXPosition <= navbarHeight) {
-    console.log("window.scrollY: " + window.scrollY);
-    console.log("targetViewportXPosition: "+ targetViewportXPosition);
-    console.log("navbarHeight: " + navbarHeight);
-
     window.scrollTo({top: window.scrollY - (navbarHeight - targetViewportXPosition), behavior: "smooth"});
   }
 });
