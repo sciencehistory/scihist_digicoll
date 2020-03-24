@@ -271,7 +271,7 @@ Search.SearchResults.prototype.navigationHtml = function() {
   return "<div class='ohms-result-navigation'>" +
             "<span>" +
               "<span class='search-mode'>" + this.modeName() +" — </span> " +
-              "<span class='showing text-danger'>" + this.currentResultIndex + " / " + this.results.length + "</span> " +
+              "<a href='#' data-trigger='ohms-search-goto-current-result' class='showing text-danger'>" + this.currentResultIndex + " / " + this.results.length + "</a> " +
             "</span>" +
             "<span class='nav'>" +
               '<div class="btn-group btn-group-sm" role="group" aria-label="Basic example">' +
@@ -364,7 +364,6 @@ $(document).on("shown.bs.collapse", ".ohms-index-container", function(event) {
 
 // After a tab switch, we need to switch the search mode if it was index or transcript
 // tab.
-
 $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
   if (event.target.id == "ohTocTab" && Search.resultsMode != "index") {
     Search.resultsMode = "index";
@@ -377,6 +376,12 @@ $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
       Search.currentResults().draw();
     }
   }
+});
+
+// Clickig on the "X / Y" current result readout should scroll to current result
+$(document).on("click", "*[data-trigger='ohms-search-goto-current-result']", function(event) {
+  event.preventDefault();
+  Search.currentResults().scrollToCurrentResult();
 });
 
 
