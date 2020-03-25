@@ -45,38 +45,38 @@
         <div data-ohms-search-results="true"></div>
       </div>
     <% end %>
+
+    <ul class="nav ohms-nav-tabs" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active btn btn-emphasis" id="ohDescriptionTab" data-toggle="tab" href="#ohDescription" role="tab" aria-controls="home" aria-selected="true">
+          Description
+        </a>
+      </li>
+
+      <% if decorator.has_ohms_transcript? %>
+        <li class="nav-item">
+          <a class="nav-link btn btn-emphasis" id="ohTranscriptTab" data-toggle="tab" href="#ohTranscript" role="tab" aria-controls="home" aria-selected="false">
+            Transcript <span data-ohms-hitcount="transcript"></span>
+          </a>
+        </li>
+      <% end %>
+
+      <% if decorator.has_ohms_index? %>
+        <li class="nav-item">
+          <a class="nav-link btn btn-emphasis" id="ohTocTab" data-toggle="tab" href="#ohToc" role="tab" aria-controls="profile" aria-selected="false">
+            Table of Contents <span data-ohms-hitcount="index"></span>
+          </a>
+        </li>
+      <% end %>
+
+      <li class="nav-item">
+        <a class="nav-link btn btn-emphasis" id="ohDownloadsTab" data-toggle="tab" href="#ohDownloads" role="tab" aria-controls="contact" aria-selected="false">Downloads</a>
+      </li>
+    </ul>
+
   </div>
 
   <div class="bottom">
-      <ul class="nav nav-tabs mb-4" role="tablist">
-        <li class="nav-item">
-          <a class="nav-link active" id="ohDescriptionTab" data-toggle="tab" href="#ohDescription" role="tab" aria-controls="home" aria-selected="true">
-            Description
-          </a>
-        </li>
-
-
-        <% if decorator.has_ohms_transcript? %>
-          <li class="nav-item">
-            <a class="nav-link" id="ohTranscriptTab" data-toggle="tab" href="#ohTranscript" role="tab" aria-controls="home" aria-selected="false">
-              Transcript <span data-ohms-hitcount="transcript"></span>
-            </a>
-          </li>
-        <% end %>
-
-        <% if decorator.has_ohms_index? %>
-          <li class="nav-item">
-            <a class="nav-link" id="ohTocTab" data-toggle="tab" href="#ohToc" role="tab" aria-controls="profile" aria-selected="false">
-              Table of Contents <span data-ohms-hitcount="index"></span>
-            </a>
-          </li>
-        <% end %>
-
-        <li class="nav-item">
-          <a class="nav-link" id="ohDownloadsTab" data-toggle="tab" href="#ohDownloads" role="tab" aria-controls="contact" aria-selected="false">Downloads</a>
-        </li>
-      </ul>
-
       <div class="tab-content">
         <div class="tab-pane active" id="ohDescription" role="tabpanel" aria-labelledby="ohDescriptionTab">
           <%= WorkShowInfo.new(@work).display %>
