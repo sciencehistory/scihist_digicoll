@@ -85,15 +85,19 @@ class AudioWorkShowDecorator < Draper::Decorator
   end
 
   def combined_mp3_audio
-    # oh_content = model.oral_history_content!
-    # oh_content.combined_audio_mp3&.url(public:true)
     model&.oral_history_content&.combined_audio_mp3&.url(public:true)
   end
 
   def combined_webm_audio
-    # oh_content = model.oral_history_content!
-    # oh_content.combined_audio_webm&.url(public:true)
     model&.oral_history_content&.combined_audio_webm&.url(public:true)
+  end
+
+  def combined_audio_fingerprint
+    model&.oral_history_content&.combined_audio_fingerprint
+  end
+
+  def derivatives_up_to_date?
+    CombinedAudioDerivativeCreator.new(model).fingerprint == combined_audio_fingerprint
   end
 
   # An array of start times for each audio member.
