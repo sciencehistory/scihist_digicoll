@@ -9,6 +9,8 @@
 
   <%= WorkTitleAndDates.new(@work).display %>
 
+  <%= render "rights_and_social", work: @work %>
+
   <div class="audio-navbar">
 
     <div class="now-playing-container" data-role="now-playing-container" >
@@ -46,8 +48,6 @@
   </div>
 
   <div class="bottom">
-      <%= render "rights_and_social", work: @work %>
-
       <ul class="nav nav-tabs mb-4" role="tablist">
         <li class="nav-item">
           <a class="nav-link active" id="ohDescriptionTab" data-toggle="tab" href="#ohDescription" role="tab" aria-controls="home" aria-selected="true">

@@ -8,8 +8,6 @@
     display: flex;
     flex-wrap: wrap;
 
-    margin-top: 2rem;
-
     background-color: $brand-dark-grey;
     color: white;
 
@@ -84,9 +82,8 @@
     margin-top: 2rem;
   }
 
-  // hackily make it align on top with a hacky override
+  // hackily little bit less whitespace on top
   .rights-and-social {
-    padding-top: 0 !important;
     .rights-statement, .social-media {
       padding-top: 0 !important;
       margin-top: 0 !important;
