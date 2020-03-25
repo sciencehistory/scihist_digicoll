@@ -15,11 +15,32 @@
       flex-basis: 66%;
       flex-grow: 2;
 
-      padding: 1rem;
+      padding: 0 1rem;
 
       audio {
         width: 100%;
         margin-top: $paragraph-margin-bottom;
+      }
+    }
+
+    .ohms-nav-tabs {
+      padding: 0 1rem;
+
+      // make em look tab-like
+      .btn {
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+        border-bottom-color: $brand-dark-grey;
+
+        margin-right: 0.25rem;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+
+        &.active {
+          background-color: white;
+          border-color: white;
+          border-bottom-color: $brand-dark-grey;
+        }
       }
     }
 
