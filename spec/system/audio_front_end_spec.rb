@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "Audio front end", type: :system, js: true do # , solr:true do
+describe "Audio front end", type: :system, js: true do
   let!(:parent_work) do
     build(:public_work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
   end
@@ -108,10 +108,22 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
         [id_list[1], 0.5],
         [id_list[2], 1]
       ]}
-      parent_work.oral_history_content.save!
-
-      # Revisit the page:
       visit work_path(parent_work.friendlier_id)
+
+      # Oh, wait. The item does not have an
+      # up to date fingerprint. No audio tag should be shown.
+      expect(page).to have_css("*[data-role='no-audio-alert']")
+      expect(page).not_to have_selector('audio')
+
+      # OK, let's set the combined audio fingerprint.
+      fp = CombinedAudioDerivativeCreator.
+        new(parent_work).fingerprint
+      parent_work.oral_history_content.combined_audio_fingerprint = fp
+      parent_work.oral_history_content.save!
+      visit work_path(parent_work.friendlier_id)
+
+      # No we should see audio.
+      expect(page).not_to have_css("*[data-role='no-audio-alert']")
       expect(page).to have_selector('audio')
       expect(page).to have_selector(".track-listing[data-ohms-timestamp-s=\"0\"]" , visible: false)
       expect(page).to have_selector(".track-listing[data-ohms-timestamp-s=\"0.5\"]" , visible: false)

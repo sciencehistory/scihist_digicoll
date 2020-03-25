@@ -9,7 +9,7 @@
 
   <%= WorkTitleAndDates.new(@work).display %>
 
-  <% if decorator.combined_mp3_audio.present? %>
+  <% if decorator.combined_mp3_audio.present? && decorator.derivatives_up_to_date?%>
     <div class="now-playing-container" data-role="now-playing-container" >
       <audio controls controlsList="nodownload" data-role="ohms-audio-elem" >
           <source src="<%= decorator.combined_mp3_audio%>"  type="audio/mpeg"/>
@@ -18,7 +18,7 @@
     </div>
   <% else %>
     <div class="alert alert-warning" role="alert" data-role="no-audio-alert">
-       This oral history is not properly prepared for the audio player. (Staff: please create a combined derivative.)
+       This oral history is not properly prepared for the audio player. (Staff: the combined audio derivative is absent or obsolete, and needs to be created or recreated.)
     </div>
   <% end %>
 
