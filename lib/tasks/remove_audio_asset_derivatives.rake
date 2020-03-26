@@ -1,7 +1,7 @@
 namespace :scihist do
   desc """
-    Goes through all the derivatives and if they are audio, removes them.
-
+    Goes through all derivatives of assets where key is either 'webm' or 'small_mp3', and removes them.
+    NOTE: Remove this file once the task has been run in production; it won't be needed after that.
     bundle exec rake scihist:remove_audio_asset_derivatives
   """
 
