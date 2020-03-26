@@ -5,100 +5,87 @@
     top: 0;
     z-index: 1;
 
-    display: flex;
-    flex-wrap: wrap;
+    background-color: white;
 
-    background-color: $brand-dark-grey;
-    color: white;
+    .audio-navbar-controls {
+      display: flex;
+      flex-wrap: wrap;
 
-    .now-playing-container {
-      flex-basis: 66%;
-      flex-grow: 2;
+      background-color: $brand-dark-grey;
+      color: white;
 
-      padding: 0 1rem;
+      .now-playing-container {
+        flex-basis: 66%;
+        flex-grow: 2;
 
-      audio {
-        width: 100%;
-        margin-top: $paragraph-margin-bottom;
+        padding: 0 1rem;
+
+        audio {
+          width: 100%;
+          margin-top: $paragraph-margin-bottom;
+        }
       }
-    }
 
-    .ohms-nav-tabs {
-      padding: 0 1rem;
+      .ohms-search {
+        flex-basis: 100%;
 
-      // make em look tab-like
-      .btn {
-        border-bottom-right-radius: 0;
-        border-bottom-left-radius: 0;
-        border-bottom-color: $brand-dark-grey;
+        @include media-breakpoint-up(lg) {
+          // when we're two column, fit this next to player
+          flex-basis: 33%;
+          flex-grow: 1;
+        }
 
-        margin-right: 0.25rem;
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
 
-        &.active {
-          background-color: white;
-          border-color: white;
-          border-bottom-color: $brand-dark-grey;
+
+        border-radius: 0.66rem;
+        border: 0.33rem solid $brand-dark-grey;
+        padding: 0.66rem;
+
+        background-color: white;
+        color: black;
+      }
+
+      .ohms-search-results {
+        padding-top: ($paragraph-spacer / 2);
+
+        .search-mode {
+          text-transform: uppercase;
+          letter-spacing: 0.035em;
+        }
+
+
+        .ohms-no-results {
+          margin-top: ($paragraph-spacer / 2);
+          color: $brand-red;
+        }
+
+        .ohms-result-navigation {
+          display: flex;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          align-items: center;
+
+          strong {
+            font-weight: 600;
+          }
+        }
+
+        ol {
+          @extend %text-font-numerals;
+          list-style-position: inside;
+          padding-left: 0;
+
+          margin-top: ($paragraph-spacer / 2);
+          margin-bottom: 0;
+        }
+        a {
+          color: $body-color;
         }
       }
     }
 
-    .ohms-search {
-      flex-basis: 100%;
-
-      @include media-breakpoint-up(lg) {
-        // when we're two column, fit this next to player
-        flex-basis: 33%;
-        flex-grow: 1;
-      }
-
-
-
-      border-radius: 0.66rem;
-      border: 0.33rem solid $brand-dark-grey;
-      padding: 0.66rem;
-
-      background-color: white;
-      color: black;
-    }
-
-    .ohms-search-results {
-      padding-top: ($paragraph-spacer / 2);
-
-      .search-mode {
-        text-transform: uppercase;
-        letter-spacing: 0.035em;
-      }
-
-
-      .ohms-no-results {
-        margin-top: ($paragraph-spacer / 2);
-        color: $brand-red;
-      }
-
-      .ohms-result-navigation {
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        align-items: center;
-
-        strong {
-          font-weight: 600;
-        }
-      }
-
-      ol {
-        @extend %text-font-numerals;
-        list-style-position: inside;
-        padding-left: 0;
-
-        margin-top: ($paragraph-spacer / 2);
-        margin-bottom: 0;
-      }
-      a {
-        color: $body-color;
-      }
+    .nav {
+      margin-top: 1rem;
     }
   }
 
