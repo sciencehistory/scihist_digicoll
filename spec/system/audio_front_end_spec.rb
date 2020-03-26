@@ -20,12 +20,7 @@ describe "Audio front end", type: :system, js: true do
         parent: parent_work,
 
         # All of these are published except for the second one.
-        published: i != 2,
-
-        faked_derivatives: [
-            build(:faked_derivative, key: 'small_mp3', uploaded_file: build(:stored_uploaded_file, content_type: "audio/mpeg")),
-            build(:faked_derivative, key: 'webm',      uploaded_file: build(:stored_uploaded_file, content_type: "audio/webm"))
-        ]
+        published: i != 2
       )
     end
   }
@@ -75,13 +70,10 @@ describe "Audio front end", type: :system, js: true do
 
         download_links = page.find_all('.track-listing .dropdown-item', :visible => false).map { |x| x['href'] }
 
-        (0..2).to_a.map do |i|
-          expect(download_links.any? { |x| x.include? "#{published_audio_assets[i].friendlier_id}/small_mp3" }).to be true
-        end
-        # Original file + one derivatives + rights link:
-        expect(download_links.count).to eq published_audio_assets.count * ( 1 + 2)
-        # original and derivatives are served by the downloads controller:
-        expect(download_links.select{ |x| x.include? 'downloads'}.count).to eq published_audio_assets.count * 2
+        # Original file + rights link:
+        expect(download_links.count).to eq published_audio_assets.count * 2
+        # original is served by the downloads controller:
+        expect(download_links.select{ |x| x.include? 'downloads'}.count).to eq published_audio_assets.count
       end
 
       non_audio = page.find_all('.other-files .show-member-list-item')
@@ -160,12 +152,7 @@ describe "Audio front end", type: :system, js: true do
           parent: parent_work,
 
           # All of these are published except for the second one.
-          published: i != 2,
-
-          faked_derivatives: [
-              build(:faked_derivative, key: 'small_mp3', uploaded_file: build(:stored_uploaded_file, content_type: "audio/mpeg")),
-              build(:faked_derivative, key: 'webm',      uploaded_file: build(:stored_uploaded_file, content_type: "audio/webm"))
-          ]
+          published: i != 2
         )
       end
     }
