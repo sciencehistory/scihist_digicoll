@@ -49,10 +49,10 @@ var Search = {
 
   resultsMode: function() {
     if (this.resultsModeVal == undefined) {
-      if ($("#ohTranscript").length > 0) {
-        this.resultsModeVal = "transcript";
-      } else {
+      if ($("#ohToc").length > 0) {
         this.resultsModeVal = "index";
+      } else {
+        this.resultsModeVal = "transcript";
       }
     }
 
