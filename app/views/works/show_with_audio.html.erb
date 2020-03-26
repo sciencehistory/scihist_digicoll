@@ -53,18 +53,18 @@
         </a>
       </li>
 
-      <% if decorator.has_ohms_transcript? %>
-        <li class="nav-item">
-          <a class="nav-link btn btn-emphasis" id="ohTranscriptTab" data-toggle="tab" href="#ohTranscript" role="tab" aria-controls="home" aria-selected="false">
-            Transcript <span data-ohms-hitcount="transcript"></span>
-          </a>
-        </li>
-      <% end %>
-
       <% if decorator.has_ohms_index? %>
         <li class="nav-item">
           <a class="nav-link btn btn-emphasis" id="ohTocTab" data-toggle="tab" href="#ohToc" role="tab" aria-controls="profile" aria-selected="false">
             Table of Contents <span data-ohms-hitcount="index"></span>
+          </a>
+        </li>
+      <% end %>
+
+      <% if decorator.has_ohms_transcript? %>
+        <li class="nav-item">
+          <a class="nav-link btn btn-emphasis" id="ohTranscriptTab" data-toggle="tab" href="#ohTranscript" role="tab" aria-controls="home" aria-selected="false">
+            Transcript <span data-ohms-hitcount="transcript"></span>
           </a>
         </li>
       <% end %>
@@ -83,15 +83,15 @@
           <%= render "citation", work: @work  %>
         </div>
 
-        <% if decorator.has_ohms_transcript? %>
-          <div class="tab-pane long-text-line-height" id="ohTranscript" role="tabpanel" aria-labelledby="ohTranscriptTab">
-            <%= OhmsTranscriptDisplay.new(decorator.oral_history_content.ohms_xml).display %>
-          </div>
-        <% end %>
-
         <% if decorator.has_ohms_index? %>
           <div class="tab-pane" id="ohToc" role="tabpanel" aria-labelledby="ohTocTab">
             <%= OhmsIndexDisplay.new(decorator.oral_history_content.ohms_xml).display %>
+          </div>
+        <% end %>
+
+        <% if decorator.has_ohms_transcript? %>
+          <div class="tab-pane long-text-line-height" id="ohTranscript" role="tabpanel" aria-labelledby="ohTranscriptTab">
+            <%= OhmsTranscriptDisplay.new(decorator.oral_history_content.ohms_xml).display %>
           </div>
         <% end %>
 
