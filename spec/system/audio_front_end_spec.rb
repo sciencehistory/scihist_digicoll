@@ -188,7 +188,7 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
       it "shows the edit button, and all child items, including unpublished ones." do
         visit work_path(audio_assets.first.parent.friendlier_id)
 
-        find(".nav-tabs a", text: "Downloads").click
+        find(".nav a", text: "Downloads").click
 
         # Audio tracks:
         within("*[data-role='audio-playlist-wrapper']") do
