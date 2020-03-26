@@ -261,7 +261,8 @@ Search.SearchResults.prototype.draw =  function(currentResultIndex) {
   if (this.results.length == 0) {
     $(this.domContainer).html(
       "<div class='ohms-search-results'>" +
-        "<span class='ohms-no-results'>No results found.</span>" +
+        "<span class='search-mode'>" + this.modeName() +" — </span> " +
+        "<span class='ohms-no-results'>No results.</span>" +
       "</div>"
     );
     return;
