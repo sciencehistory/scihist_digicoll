@@ -6,7 +6,7 @@ namespace :scihist do
   """
 
   task :remove_audio_asset_derivatives => :environment do
-    progress_bar = ProgressBar.create(total: Work.where("json_attributes -> 'genre' ?  'Oral histories'").count, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
+    progress_bar = ProgressBar.create(total: Kithe::Derivative.where(key: ['webm', 'small_mp3']).count, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
     Kithe::Derivative.where(key: ['webm', 'small_mp3']).find_each(batch_size: 10) do |derivative|
       #Delete the derivative using ActiveRecord `destroy`:
       # shrine will take care of making sure
