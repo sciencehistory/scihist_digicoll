@@ -78,8 +78,6 @@
                       data-title="<%= track.title %>"
                       data-member-id="<%= track.id %>"
                       data-original-url="<%= main_app.download_path(track.id)    %>"
-                      data-mp3-url="<%=  track.derivative_for('small_mp3')&.url  %>"
-                      data-webm-url="<%= track.derivative_for('webm')&.url       %>"
                       data-ohms-timestamp-s="<%= decorator.start_time_for(track) %>"
                   >
 
