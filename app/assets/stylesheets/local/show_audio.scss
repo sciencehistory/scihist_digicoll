@@ -46,7 +46,7 @@
     margin-top: 0;
   }
 
-  .track-listings {
+  .track-listings, .combined-downloads {
     border-top: 3px solid $table-border-color;
 
    .track-listing {
@@ -76,6 +76,18 @@
       word-break: break-word;
     }
 
+  }
+
+
+  .combined-downloads {
+      margin-bottom: 1rem;
+  }
+
+  .combined-download {
+      border-top: $table-border-width solid $table-border-color;
+      padding: 0.5rem;
+      display: flex;
+      align-items: center;
   }
 
   .other-files {
