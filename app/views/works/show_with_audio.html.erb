@@ -70,7 +70,7 @@
 
         <div class="tab-pane" id="ohDownloads" role="tabpanel" aria-labelledby="oh-downloads-tab">
           <div>
-            <h2 class="attribute-sub-head sound-file-header"><%= pluralize(decorator.audio_members.count, 'sound file')%></h2>
+            <h2 class="attribute-sub-head sound-file-header"><%= pluralize(decorator.audio_members.count, 'separate interview segment')%></h2>
 
             <div class="sans-serif track-listings" data-role="track-listings" >
               <% decorator.audio_members.each do |track| %>
@@ -111,6 +111,22 @@
                 </div>
               <% end %>
             </div>
+
+            <% if decorator.audio_members.count > 1 %>
+              <h2 class="attribute-sub-head sound-file-header">
+                <%= decorator.audio_members.count == 2 ? "Both" : "All #{decorator.audio_members.count}" %>
+                segments as a single file
+              </h2>
+              <div class="combined-downloads">
+
+                <div class="sans-serif combined-download" >
+                  <a href="<%= decorator.combined_mp3_audio%>" download>Download mp3 format</a>
+                </div>
+                <div class="sans-serif combined-download">
+                  <a href="<%= decorator.combined_webm_audio%>" download>Download webm format</a>
+                </div>
+              </div>
+            <% end %>
           </div>
 
 
