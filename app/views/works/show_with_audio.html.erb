@@ -113,13 +113,17 @@
             </div>
 
             <% if decorator.audio_members.count > 1 %>
-              <h2 class="attribute-sub-head sound-file-header">
+              <h2 class="attribute-sub-head">
                 <%= decorator.audio_members.count == 2 ? "Both" : "All #{decorator.audio_members.count}" %>
                 segments as a single file
               </h2>
               <div class="combined-downloads">
                 <div class="sans-serif combined-download" >
-                  <a href="<%= decorator.combined_mp3_audio%>" download>Download mp3</a>
+                  <a href="<%= decorator.combined_mp3_audio%>" download>
+                    <i class="fa fa-download" aria-hidden="true"></i>
+                    Download
+                    <small>MP3 — <%= decorator.combined_mp3_audio_size %></small>
+                  </a>
                 </div>
               </div>
             <% end %>
