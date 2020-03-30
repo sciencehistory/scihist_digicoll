@@ -88,6 +88,10 @@ class AudioWorkShowDecorator < Draper::Decorator
     model&.oral_history_content&.combined_audio_mp3&.url(public:true)
   end
 
+  def combined_mp3_audio_size
+    number_to_human_size(model&.oral_history_content&.combined_audio_mp3&.size)
+  end
+
   def combined_webm_audio
     model&.oral_history_content&.combined_audio_webm&.url(public:true)
   end
