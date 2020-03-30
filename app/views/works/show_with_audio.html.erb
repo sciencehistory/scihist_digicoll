@@ -70,7 +70,13 @@
 
         <div class="tab-pane" id="ohDownloads" role="tabpanel" aria-labelledby="oh-downloads-tab">
           <div>
-            <h2 class="attribute-sub-head sound-file-header"><%= pluralize(decorator.audio_members.count, 'separate interview segment')%></h2>
+            <h2 class="attribute-sub-head sound-file-header">
+              <% if decorator.audio_members.count > 1 %>
+                <%= decorator.audio_members.count %> separate interview segments
+              <% else %>
+                1 interview segment
+              <% end %>
+            </h2>
 
             <div class="sans-serif track-listings" data-role="track-listings" >
               <% decorator.audio_members.each do |track| %>
