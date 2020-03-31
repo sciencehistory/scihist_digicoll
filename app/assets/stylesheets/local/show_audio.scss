@@ -71,7 +71,6 @@
         letter-spacing: 0.035em;
       }
 
-
       .ohms-no-results {
         margin-top: ($paragraph-spacer / 2);
         color: $brand-red;
@@ -188,6 +187,13 @@
   .work.chf-attributes {
     border-top: 0;
   }
+}
+
+.ohms-highlight {
+  background-color: $brand-red;
+  color: white;
+  padding-left: .1em;
+  padding-right: .1em;
 }
 
 .ohms-speaker {
