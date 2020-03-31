@@ -36,7 +36,7 @@ var escapeRegExp = function(string) {
 var Search = {
 
   wrapInHighlight: function(match) {
-    return "<span class=\"ohms-highlight text-danger\">" + match + "</span>";
+    return "<span class=\"ohms-highlight\">" + match + "</span>";
   },
 
   // After a search, we have a SearchResults object for Transcript, one
@@ -225,7 +225,7 @@ var Search = {
       transcriptResults,
       "transcript"
     );
-    $("*[data-ohms-hitcount='transcript']").html('<span class="badge badge-danger">' + transcriptResults.length + '</span>');
+    $("*[data-ohms-hitcount='transcript']").html('<span class="badge badge-pill badge-danger">' + transcriptResults.length + '</span>');
 
     var indexResults = Search.searchIndex(query);
     Search.currentIndexResults = new Search.SearchResults(
@@ -233,7 +233,7 @@ var Search = {
       indexResults,
       "index"
     );
-    $("*[data-ohms-hitcount='index']").html('<span class="badge badge-danger">' + indexResults.length + '</span>');
+    $("*[data-ohms-hitcount='index']").html('<span class="badge badge-pill badge-danger">' + indexResults.length + '</span>');
 
     Search.currentResults().draw();
     Search.currentResults().scrollToCurrentResult();
@@ -287,7 +287,7 @@ Search.SearchResults.prototype.navigationHtml = function() {
   return "<div class='ohms-result-navigation'>" +
             "<span>" +
               "<span class='search-mode'>" + this.modeName() +" — </span> " +
-              "<a href='#' data-trigger='ohms-search-goto-current-result' class='showing text-danger'>" + this.currentResultIndex + " / " + this.results.length + "</a> " +
+              "<a href='#' data-trigger='ohms-search-goto-current-result' class='showing'>" + this.currentResultIndex + " / " + this.results.length + "</a> " +
             "</span>" +
             "<span class='nav'>" +
               '<div class="btn-group btn-group-sm" role="group" aria-label="Basic example">' +
