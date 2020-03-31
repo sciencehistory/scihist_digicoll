@@ -136,7 +136,8 @@ describe "Audio front end", type: :system, js: true do
 
       # You should be able to download the combined audio derivs:
       expect(page).to have_content("All 3 segments as a single file")
-      expect(page).to have_content("Download mp3")
+      expect(page).to have_content("Optimized MP3")
+      expect(page).to have_content("25 KB")
 
     end
   end
