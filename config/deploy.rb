@@ -11,7 +11,7 @@
 # the local_env.yml file.
 
 # config valid only for current version of Capistrano
-lock '3.11.0'
+lock '3.11.2'
 
 # Make our EC2 server autodiscover available
 include CapServerAutodiscover
@@ -56,7 +56,7 @@ ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 # set :pty, true
 
 # Default value for :linked_files is []
-#set :linked_files, fetch(:linked_files, []).push('config/initializers/devise.rb', 'config/blacklight.yml', 'config/database.yml', 'config/fedora.yml', 'config/redis.yml', 'config/secrets.yml', 'config/solr.yml', 'config/local_env.yml')
+#set :linked_files, fetch(:linked_files, []).push('config/initializers/devise.rb', 'config/blacklight.yml', 'config/database.yml', 'config/redis.yml', 'config/secrets.yml', 'config/solr.yml', 'config/local_env.yml')
 
 set :linked_files, fetch(:linked_files, []).push('config/local_env.yml')
 

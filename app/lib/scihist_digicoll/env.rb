@@ -63,6 +63,16 @@ module ScihistDigicoll
     define_key :aws_access_key_id
     define_key :aws_secret_access_key
 
+    define_key :lockbox_master_key, default: -> {
+      # In production, we insist that local_env.yml contain
+      # a real 64-bit key; if none is defined, we fail at
+      # deploy time (see config/initializers/lockbox.rb).
+      #
+      # However, we do provide a dummy key for dev and test
+      # environments, which is a string of 64 zeros.
+      "0" * 64 if Rails.env.test? || Rails.env.development?
+    }
+
     define_key :aws_region, default: "us-east-1"
 
     # eg "https://digital.sciencehistory.org", or "http://localhost:3000".
@@ -174,22 +184,22 @@ module ScihistDigicoll
     # In production, different bucket keys are actual keys to look up actual bucket names in the Env
     # system (local_env.yml or ENV), usually a different bucket per key.
     #
-    def self.appropriate_shrine_storage(bucket_key:, mode: lookup!(:storage_mode), s3_storage_options: {})
+    def self.appropriate_shrine_storage(bucket_key:, mode: lookup!(:storage_mode), s3_storage_options: {}, prefix: nil)
       unless %I{s3_bucket_uploads s3_bucket_originals s3_bucket_derivatives
                 s3_bucket_on_demand_derivatives s3_bucket_dzi}.include?(bucket_key)
         raise ArgumentError.new("Unrecognized bucket_key: #{bucket_key}")
       end
 
       # used in dev_file and dev_s3 modes:
-      path_prefix = bucket_key.to_s.sub(/^s3_bucket_/, '')
+      shared_bucket_path_prefix = [bucket_key.to_s.sub(/^s3_bucket_/, ''), prefix].compact.join("/")
       mode = mode.to_s
 
       if mode == "dev_file"
-        Shrine::Storage::FileSystem.new("public", prefix: "shrine_storage_#{Rails.env}/#{path_prefix}")
+        Shrine::Storage::FileSystem.new("public", prefix: "shrine_storage_#{Rails.env}/#{shared_bucket_path_prefix}")
       elsif mode == "dev_s3"
         Shrine::Storage::S3.new({
           bucket:            lookup(:s3_dev_bucket),
-          prefix:            "#{lookup(:s3_dev_prefix)}/#{path_prefix}",
+          prefix:            "#{lookup(:s3_dev_prefix)}/#{shared_bucket_path_prefix}",
           access_key_id:     lookup(:aws_access_key_id),
           secret_access_key: lookup(:aws_secret_access_key),
           region:            lookup(:aws_region)
@@ -197,6 +207,7 @@ module ScihistDigicoll
       elsif mode == "production"
         Shrine::Storage::S3.new({
           bucket:            lookup(bucket_key),
+          prefix:            prefix,
           access_key_id:     lookup(:aws_access_key_id),
           secret_access_key: lookup(:aws_secret_access_key),
           region:            lookup(:aws_region)
@@ -239,6 +250,16 @@ module ScihistDigicoll
                                     })
     end
 
+    def self.shrine_combined_audio_derivatives_storage
+      # store in same bucket as derivatives, with separate prefix
+      @shrine_combined_audio_derivatives_storage ||=
+        appropriate_shrine_storage( bucket_key: :s3_bucket_derivatives,
+                                    prefix: "combined_audio_derivatives",
+                                    s3_storage_options: {
+                                      public: true
+                                    })
+    end
+
     def self.shrine_dzi_storage
       @shrine_dzi_storage ||=
         appropriate_shrine_storage( bucket_key: :s3_bucket_dzi,
@@ -253,10 +274,6 @@ module ScihistDigicoll
     end
 
     define_key :honeybadger_api_key
-
-    # Only used for our import from sufia script, username/password to fetch
-    # bytestreams from fedora.
-    define_key :import_fedora_auth
 
     # Used as the from (no_reply) and to (digital_tech, digital) email addresses
     # when sending notices about failed fixity check.

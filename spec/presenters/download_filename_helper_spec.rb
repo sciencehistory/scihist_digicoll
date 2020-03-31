@@ -69,16 +69,6 @@ describe DownloadFilenameHelper, type: :model do
     end
   end
 
-  describe "#suffix_for_content_type" do
-    it "audio/x-flac" do
-      expect(DownloadFilenameHelper.suffix_for_content_type("audio/x-flac")).to eq("flac")
-    end
-
-    it "audio/mpeg" do
-      expect(DownloadFilenameHelper.suffix_for_content_type("audio/mpeg")).to eq("mp3")
-    end
-  end
-
   describe "#filename_for_asset" do
     let(:derivative_key) { :thumb_mini }
     let(:asset) do
@@ -95,26 +85,6 @@ describe DownloadFilenameHelper, type: :model do
     it "can create for derivative" do
       # note ends with jpeg, not png, cause it's a jpeg derivative
       expect(DownloadFilenameHelper.filename_for_asset(asset, derivative: derivative)).to eq "plastics_make_the_#{asset.parent.friendlier_id}_12_#{asset.friendlier_id}_#{derivative.key}.jpeg"
-    end
-
-    describe "audio file" do
-      let(:derivative_key) { :small_mp3 }
-      let(:asset) do
-        create(:asset_with_faked_file,
-               title: "mark_h_0030_1-1.flac",
-               faked_content_type: "audio/x-flac",
-               faked_derivatives: [ build(:faked_derivative, key: derivative_key, uploaded_file: build(:stored_uploaded_file, content_type: "audio/mpeg")) ],
-               position: 12,
-               parent: create(:work, title: "Plastics make the package Dow makes the plastics"))
-      end
-
-      it "can create for original" do
-        expect(DownloadFilenameHelper.filename_for_asset(asset)).to eq "mark_h_0030_1-1.flac"
-      end
-
-      it "can create for derivative" do
-        expect(DownloadFilenameHelper.filename_for_asset(asset, derivative: derivative)).to eq "mark_h_0030_1-1.mp3"
-      end
     end
   end
 

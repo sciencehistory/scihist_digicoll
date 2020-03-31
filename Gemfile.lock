@@ -185,7 +185,7 @@ GEM
       csl (~> 1.5)
     cocoon (1.2.14)
     coderay (1.1.2)
-    concurrent-ruby (1.1.5)
+    concurrent-ruby (1.1.6)
     content_disposition (1.0.0)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
@@ -318,6 +318,7 @@ GEM
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
       ruby_dep (~> 1.2)
+    lockbox (0.3.1)
     loofah (2.4.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -348,7 +349,7 @@ GEM
       net-ssh (>= 2.6.5, < 6.0.0)
     net-ssh (5.2.0)
     nio4r (2.5.2)
-    nokogiri (1.10.7)
+    nokogiri (1.10.9)
       mini_portile2 (~> 2.4.0)
     oai (1.0.1)
       builder (>= 3.1.0)
@@ -660,6 +661,7 @@ DEPENDENCIES
   kaminari (~> 1.0)
   kithe!
   listen (>= 3.0.5, < 3.2)
+  lockbox
   oai (~> 1.0, >= 1.0.1)
   pdf-reader (~> 2.2)
   pg (>= 0.18, < 2.0)

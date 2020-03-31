@@ -21,6 +21,20 @@
     margin-top: 2rem;
   }
 
+  // hackily make it align on top with a hacky override
+  .rights-and-social {
+    padding-top: 0 !important;
+    .rights-statement, .social-media {
+      padding-top: 0 !important;
+      margin-top: 0 !important;
+    }
+  }
+
+  .tab-content {
+    // hacky, match attribute-table width
+    max-width: ($max-readable-width / 0.67);
+  }
+
   // When we're two column, add more spacer than default
   @include media-breakpoint-up(lg) {
     .col-files {
@@ -62,20 +76,6 @@
       word-break: break-word;
     }
 
-
-
-    .currently-selected {
-      background-color: $brand-bright-green;
-      color: $brand-dark-blue;
-      a.play-link,
-      a.play-link:link,
-      a.play-link:visited,
-      a.play-link:hover,
-      a.play-link:active,
-      div.dropdown a.download-link {
-        color: $brand-dark-blue;
-      }
-    }
   }
 
   .other-files {
@@ -103,5 +103,64 @@
 
   .work.chf-attributes {
     border-top: 0;
+  }
+}
+
+.ohms-speaker {
+  font-weight: bold;
+  @extend %special-label;
+  color: $brand-dark-blue;
+}
+
+// make room for and position the timecode links
+// This is more or less how standard OHMS viewer does it.
+.ohms-transcript-container {
+  position: relative;
+  padding-left: 5.5em;
+
+  .ohms-transcript-paragraph {
+    .ohms-transcript-timestamp {
+      font-family: $brand-sans-serif;
+      position: absolute;
+      left: 0;
+    }
+  }
+}
+
+.ohms-index-container {
+  max-width: $long-max-readable-width;
+  padding-bottom: 1.5rem;
+
+  // based on scihist-results-list-values, see there.
+  div.ohms-index-list {
+    margin-top: $paragraph-spacer;
+    max-width: $max-readable-width;
+
+    @extend %text-font;
+
+    p {
+      margin-bottom: $paragraph-spacer * 2;
+    }
+
+    p.attribute {
+      padding-left: 0.66em;
+      text-indent: -0.66em;
+
+      .attribute-label {
+        @extend %special-label;
+        margin-right: 0.66em;
+        font-weight: bold;
+        color: $brand-dark-blue;
+      }
+    }
+
+    .keywords {
+      font-family: $font-family-sans-serif;
+      .badge {
+        // for some reason text-indent we used for hanging indent
+        // is being inherited, we have to stop it!
+        text-indent: initial;
+      }
+    }
   }
 }

@@ -48,12 +48,14 @@
 
 
 <div class="table-responsive">
-  <table class="table" style="table-layout: fixed; font-size: 90%; min-width: 700px;">
+  <table class="table" style="table-layout: fixed; font-size: 90%; min-width: 55rem; word-break: break-word;">
     <thead>
       <tr>
-        <th style="width: 4rem;"></th>
+        <th style="width: 4.5rem;"></th>
         <th>title</th>
-        <th style="width: 7rem;">IDs</th>
+        <th style="width: 6rem;">bib #</th>
+        <th style="width: 6rem;">acc. #</th>
+        <th style="width: 8rem;">object id</th>
         <th style="width: 11rem;">status</th>
         <th style="width: 8rem;">status changed</th>
       </tr>
@@ -68,12 +70,19 @@
           <td>
             <%= link_to admin_digitization_queue_item.title, admin_digitization_queue_item_path(admin_digitization_queue_item) %>
             <% if admin_digitization_queue_item.additional_notes.present? %>
-              <p>
+              <p class="mb-0">
                 <%= admin_digitization_queue_item.additional_notes %>
               </p>
             <% end %>
+            <% if admin_digitization_queue_item.location.present? %>
+              <p class="mb-0">
+                <b>Location:</b> <%= admin_digitization_queue_item.location %>
+              </p>
+            <% end %>
           </td>
-          <td><%= [admin_digitization_queue_item.bib_number, admin_digitization_queue_item.accession_number, admin_digitization_queue_item.museum_object_id].collect(&:presence).compact.join(", ") %>  </td>
+          <td><%= admin_digitization_queue_item.bib_number %></td>
+          <td><%= admin_digitization_queue_item.accession_number %></td>
+          <td><%= admin_digitization_queue_item.museum_object_id %></td>
           <td>
              <%= DigitizationQueueItemStatusForm.new(admin_digitization_queue_item).display %>
           </td>
