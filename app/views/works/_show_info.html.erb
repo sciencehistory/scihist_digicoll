@@ -1,11 +1,11 @@
 <%# the right column of a work show page including description, metadata,
-    citation, related items.
+    related items.
 
     In a partial to make it easier to re-use in templates that differ in how
     they show media, but still need this.
 %>
 
-<div class="work-description">
+<div class="work-description long-text-line-height">
   <%= DescriptionDisplayFormatter.new(view.description).format  %>
 </div>
 

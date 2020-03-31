@@ -163,10 +163,13 @@
         }
     }
 
-    $featured-topics-box-width: 21.875rem;
-    $featured-topics-box-height: 21.875rem;
-    $featured-topics-box-margin: 3.6875rem;
+    $featured-topics-box-width: 18rem; // 21.875rem;
+    $featured-topics-box-height: 18rem; // 21.875rem;
+    $featured-topics-box-margin: 2.2rem; // 3.6875rem;
 
+    .featured-topics-wrapper {
+        background-color: $brand-dark-grey;
+    }
 
     .featured-topics-title-div {
         padding-top: 0.9375rem;
@@ -179,11 +182,16 @@
 
     .featured-topics-list {
         background-color: $brand-dark-grey;
-        padding-top: 2.125rem;
+        padding-top: $featured-topics-box-margin;
+        padding-bottom: $featured-topics-box-margin;
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
+        margin: auto;
+
+        // limit to 3x, for our 9 item list, 4x ends up being weird.
+        max-width: ($featured-topics-box-width * 3) + ($featured-topics-box-margin * 6);
 
         .featured-topic {
             position: relative;

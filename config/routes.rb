@@ -130,6 +130,8 @@ Rails.application.routes.draw do
         put "demote_to_asset"
         put "publish"
         put "unpublish"
+        put "submit_ohms_xml"
+        put "create_combined_audio_derivatives"
       end
       collection do
         get 'batch_update', to: "works#batch_update_form"
@@ -173,20 +175,22 @@ Rails.application.routes.draw do
       end
       member do
         post :add_comment
-        # not sure how to do this implicitly.
-        # delete :delete_comment
       end
     end
 
-    # TODO: investigate whether this could live in the
-    # resources :digitization_queue_items > member do block.
-    # Something like delete :delete_comment
-    # but with an additional :comment_id parameter.
-    # For now, just do the obvious:
+    resources :r_and_r_items do
+      member do
+        post :add_comment
+      end
+    end
+
     delete  "digitization_queue_items/:id/delete_comment/:comment_id",
       to: "digitization_queue_items#delete_comment",
-      as: "delete_comment"
+      as: "delete_digitization_queue_item_comment"
 
+    delete  "r_and_r_items/:id/delete_comment/:comment_id",
+      to: "r_and_r_items#delete_comment",
+      as: "delete_r_and_r_comment"
 
     resources :cart_items, param: :work_friendlier_id, only: [:index, :update, :destroy] do
       collection do

@@ -14,7 +14,12 @@ class Admin::DigitizationQueueItemsController < AdminController
 
   # GET /admin/digitization_queue_items/new
   def new
-    @admin_digitization_queue_item = Admin::DigitizationQueueItem.new
+    @admin_digitization_queue_item = Admin::DigitizationQueueItem.new(collecting_area: params[:collecting_area])
+    if params[:r_and_r_item]
+      r_and_r_item = Admin::RAndRItem.find(params[:r_and_r_item])
+      @admin_digitization_queue_item.r_and_r_item_id = r_and_r_item.id
+      r_and_r_item.fill_out_digitization_queue_item(@admin_digitization_queue_item)
+    end
   end
 
   # GET /admin/digitization_queue_items/1/edit
@@ -42,8 +47,9 @@ class Admin::DigitizationQueueItemsController < AdminController
   def update
     respond_to do |format|
       if update_with_action_comments(@admin_digitization_queue_item, admin_digitization_queue_item_params)
-        format.html { redirect_to @admin_digitization_queue_item, notice: 'Digitization queue item was successfully updated.' }
-        format.json { render text: "Something" }
+        notice = 'Digitization queue item was successfully updated.'
+        format.html { redirect_to @admin_digitization_queue_item, notice: notice }
+        format.json { render json: { notice: notice } }
       else
         format.html { render :edit }
         format.json { render json: @admin_digitization_queue_item.errors, status: :unprocessable_entity }
@@ -113,7 +119,8 @@ class Admin::DigitizationQueueItemsController < AdminController
       params.require(:admin_digitization_queue_item).permit(
         :title, :status, :accession_number, :museum_object_id, :bib_number, :location,
         :box, :folder, :dimensions, :materials, :copyright_status,
-        :scope, :instructions, :additional_notes, :collecting_area
+        :scope, :instructions, :additional_notes, :collecting_area,
+        :r_and_r_item_id
       )
     end
 

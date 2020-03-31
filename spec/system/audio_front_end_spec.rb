@@ -1,11 +1,16 @@
 require 'rails_helper'
 
-describe "Audio front end", type: :system, js: true do # , solr:true do
+describe "Audio front end", type: :system, js: true do
   let!(:parent_work) do
     build(:public_work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
   end
   let(:audio_file_path) { Rails.root.join("spec/test_support/audio/ice_cubes.mp3")}
   let(:audio_file_sha512) { Digest::SHA512.hexdigest(File.read(audio_file_path)) }
+
+
+  let(:combined_audio_file_path) {
+    Rails.root.join("spec/test_support/audio/double_ice_cubes.mp3")
+  }
 
   let!(:audio_assets) {
     (1..4).to_a.map do |i|
@@ -15,12 +20,7 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
         parent: parent_work,
 
         # All of these are published except for the second one.
-        published: i != 2,
-
-        faked_derivatives: [
-            build(:faked_derivative, key: 'small_mp3', uploaded_file: build(:stored_uploaded_file, content_type: "audio/mpeg")),
-            build(:faked_derivative, key: 'webm',      uploaded_file: build(:stored_uploaded_file, content_type: "audio/webm"))
-        ]
+        published: i != 2
       )
     end
   }
@@ -52,9 +52,16 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
   context "When you visit a work with audio assets" do
     it "shows the page without error" do
       visit work_path(audio_assets.first.parent.friendlier_id)
+
+      # Because there is no combined audio derivative,
+      # we can't show the audio scrubber:
+      expect(page).not_to have_selector('audio')
+
+      click_on "Downloads"
+
       within("*[data-role='audio-playlist-wrapper']") do
-        expect(page).to have_css(".current-track-label", :text => "Track 1")
-        audio_element = page.find('audio')
+        expect(page).not_to have_css('.now-playing-container')
+        expect(page).to have_css("*[data-role='no-audio-alert']")
         track_listings = page.find_all('.track-listing')
         # The user is not logged in, and Track 2 is not published yet.
         # Thus, Track 2 should not be shown.
@@ -63,13 +70,10 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
 
         download_links = page.find_all('.track-listing .dropdown-item', :visible => false).map { |x| x['href'] }
 
-        (0..2).to_a.map do |i|
-          expect(download_links.any? { |x| x.include? "#{published_audio_assets[i].friendlier_id}/small_mp3" }).to be true
-        end
-        # Original file + one derivatives + rights link:
-        expect(download_links.count).to eq published_audio_assets.count * ( 1 + 2)
-        # original and derivatives are served by the downloads controller:
-        expect(download_links.select{ |x| x.include? 'downloads'}.count).to eq published_audio_assets.count * 2
+        # Original file + rights link:
+        expect(download_links.count).to eq published_audio_assets.count * 2
+        # original is served by the downloads controller:
+        expect(download_links.select{ |x| x.include? 'downloads'}.count).to eq published_audio_assets.count
       end
 
       non_audio = page.find_all('.other-files .show-member-list-item')
@@ -79,6 +83,56 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
 
       # No user is logged in, so there should not be any "Private" badges.
       expect(page).not_to have_css('.badge-warning[title=Private]')
+
+
+      # Add an oral_history_content sidecar object
+      # and populate it.
+      # Ideally this would be a separate #it block.
+      # This ought to save a bit of testing time, though.
+      id_list = parent_work.
+        members.order(:position).
+        select{|x| x.content_type == 'audio/mpeg' && x.published? }.
+        map {|x| x.id}
+
+      parent_work.oral_history_content!.set_combined_audio_mp3!(File.open(combined_audio_file_path))
+      parent_work.oral_history_content.combined_audio_component_metadata = {"start_times"=>[
+        [id_list[0], 0],
+        [id_list[1], 0.5],
+        [id_list[2], 1]
+      ]}
+      visit work_path(parent_work.friendlier_id)
+
+      # Oh, wait. The item does not have an
+      # up to date fingerprint. No audio tag should be shown.
+      expect(page).to have_css("*[data-role='no-audio-alert']")
+      expect(page).not_to have_selector('audio')
+
+      # OK, let's set the combined audio fingerprint.
+      fp = CombinedAudioDerivativeCreator.
+        new(parent_work).fingerprint
+      parent_work.oral_history_content.combined_audio_fingerprint = fp
+      parent_work.oral_history_content.save!
+      visit work_path(parent_work.friendlier_id)
+
+      # No we should see audio.
+      expect(page).not_to have_css("*[data-role='no-audio-alert']")
+      expect(page).to have_selector('audio')
+      expect(page).to have_selector(".track-listing[data-ohms-timestamp-s=\"0\"]" , visible: false)
+      expect(page).to have_selector(".track-listing[data-ohms-timestamp-s=\"0.5\"]" , visible: false)
+      expect(page).to have_selector(".track-listing[data-ohms-timestamp-s=\"1\"]" , visible: false)
+
+      click_on "Downloads"
+      scrubber_times = []
+      scrubber_times << evaluate_script("document.getElementsByTagName('audio')[0].currentTime")
+      [1, 3, 4].each do |track_number|
+        click_on "Track #{track_number}"
+        scrubber_times << evaluate_script("document.getElementsByTagName('audio')[0].currentTime")
+      end
+      # This doesn't need to be super precise.
+      # We just want a general reassurance
+      # that the playhead is moving
+      # when you click the links.
+      expect(scrubber_times.map {|x| (x*2).round }).to contain_exactly(0,0,1,2)
     end
   end
 
@@ -98,12 +152,7 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
           parent: parent_work,
 
           # All of these are published except for the second one.
-          published: i != 2,
-
-          faked_derivatives: [
-              build(:faked_derivative, key: 'small_mp3', uploaded_file: build(:stored_uploaded_file, content_type: "audio/mpeg")),
-              build(:faked_derivative, key: 'webm',      uploaded_file: build(:stored_uploaded_file, content_type: "audio/webm"))
-          ]
+          published: i != 2
         )
       end
     }
@@ -135,6 +184,8 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
     describe "Logged in user" do
       it "shows the edit button, and all child items, including unpublished ones." do
         visit work_path(audio_assets.first.parent.friendlier_id)
+
+        click_on "Downloads"
 
         # Audio tracks:
         within("*[data-role='audio-playlist-wrapper']") do

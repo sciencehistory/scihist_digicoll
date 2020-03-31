@@ -47,20 +47,6 @@ class Asset < Kithe::Asset
     end
   end
 
-  # mono and 64k bitrate, nice and small, good enough for our voice-only
-  # Oral History interviews we're targetting. Our original might have been FLAC
-  # or might have been a probably larger MP3.
-  define_derivative('small_mp3', content_type: "audio") do |original_file|
-    Kithe::FfmpegTransformer.new(
-      bitrate: '64k', force_mono: true, output_suffix: 'mp3',
-    ).call(original_file)
-  end
-  define_derivative('webm', content_type: "audio") do |original_file|
-    Kithe::FfmpegTransformer.new(
-      bitrate: '64k',  force_mono: true, output_suffix: 'webm'
-    ).call(original_file)
-  end
-
   # Our DziFiles object to manage associated DZI (deep zoom, for OpenSeadragon
   # panning/zooming) file(s).
   #

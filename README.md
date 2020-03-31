@@ -95,6 +95,8 @@ Some other interesting/complicated sub-systems we've written documentation for:
 * [access-granted](https://github.com/chaps-io/access-granted) is used for some very simple authorization/permissions (right now just admins can do some things other logged in staff can not)
 * [blacklight](https://github.com/projectblacklight/blacklight) We are currently using Blacklight
   for the "end-user-facing" search, although we are using it in a very limited and customized fashion, not including a lot of things the BL generator wanted to include in our app, that we didn't plan on using.
+* [lockbox](https://github.com/ankane/lockbox) for encrypting our patron data in Admin::RAndRItem.
+  For rotating keys should private key need to be changed, see https://github.com/ankane/lockbox/issues/35
 
 ### Task to copy a Work from staging to your local dev instance
 
@@ -230,6 +232,10 @@ an S3 api request:
 Or to force-create DZI for specific assets named by friendlier_id:
 
     ./bin/rake scihist:create_dzi_for[11tdi3v,2eh2i28]
+
+Another exception is combined audio derivatives for oral histories. To create those (lazily):
+
+    ./bin/rake rake scihist:create_full_length_audio_derivatives
 
 ### Dev/test solr
 

@@ -1,5 +1,11 @@
 require 'rails_helper'
 
+# Note: we have two Works controllers,
+# works_controller.rb
+# admin/works_controller.rb
+# This one tests only the first.
+
+
 RSpec.describe WorksController, type: :controller do
   context "smoke tests" do
     context "standard work" do

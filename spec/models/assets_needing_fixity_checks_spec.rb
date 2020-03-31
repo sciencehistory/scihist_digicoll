@@ -16,8 +16,7 @@ describe ScihistDigicoll::AssetsNeedingFixityChecks do
     end
 
     it "is constructed sensibly" do
-      expected = """
-        SELECT kithe_models.id
+      expected_ending = """
         FROM \"kithe_models\"
         LEFT OUTER JOIN \"fixity_checks\"
         ON \"fixity_checks\".\"asset_id\" = \"kithe_models\".\"id\"
@@ -27,9 +26,9 @@ describe ScihistDigicoll::AssetsNeedingFixityChecks do
         LIMIT 1
       """.gsub(/\s+/, ' ').strip
 
-      actual = checker.send(:selected_assets_scope).to_sql.gsub(/\s+/, ' ').strip
+      actual = checker.send(:selected_assets_scope, limit: 1).to_sql.gsub(/\s+/, ' ').strip
 
-      expect(actual).to eq(expected), "\nexpected: #{expected}\n     got: #{actual}\n"
+      expect(actual).to end_with(expected_ending)
     end
   end
 
