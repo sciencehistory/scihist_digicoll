@@ -78,20 +78,19 @@
 
   }
 
-
-  .combined-downloads {
-      margin-bottom: 1rem;
+  .combined-audio-download-links {
+    border-top: 3px solid $table-border-color;
+    .combined-audio-download-icon-container {
+      padding-left: 1rem;
       i {
+        margin-top: 1rem;
         font-size: 150%;
-        margin-right: 1rem;
+        margin-right: 0.9rem;
       }
-  }
-
-  .combined-download {
-      border-top: $table-border-width solid $table-border-color;
-      padding: 0.5rem;
-      display: flex;
-      align-items: center;
+    }
+    .combined-audio-download-link-size {
+      padding-left: 3.5rem;
+    }
   }
 
   .other-files {
