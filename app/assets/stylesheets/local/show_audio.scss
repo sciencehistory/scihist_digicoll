@@ -5,105 +5,126 @@
     top: 0;
     z-index: 1;
 
-    display: flex;
-    flex-wrap: wrap;
-
     background-color: $brand-dark-grey;
     color: white;
 
-    .now-playing-container {
-      // as an element in it's parent flex
-      flex-basis: 66%;
-      flex-grow: 2;
+    // Make it go to full viewport width, even though it's parent is constrained
+    // with padding to match bootstrap grid.
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    @include media-breakpoint-up(md) {
+      padding-left: $grid-gutter-width / 2;
+      padding-right: $grid-gutter-width / 2;
+    }
 
-      //as a flex container for it's contents, an audio player (or error message),
-      //and a tab list.
+    .audio-navbar-contents {
+      // keep navbar contents the same width as our general contents,
+      // within the full-viewport background-color of the navbar.
+      max-width: $main-container-max-width;
+      margin-right: auto;
+      margin-left: auto;
+      @extend .col-md-12;
+
+
       display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      flex-wrap: wrap;
 
-      padding: 0 1rem;
+      .now-playing-container {
+        // as an element in it's parent flex
+        flex-basis: 66%;
+        flex-grow: 2;
 
-      audio {
-        width: 100%;
-        margin-top: $paragraph-margin-bottom;
-      }
-    }
-
-    .ohms-nav-tabs {
-      padding: 0 1rem;
-
-      // make em look tab-like
-      .btn {
-        border-bottom-right-radius: 0;
-        border-bottom-left-radius: 0;
-        border-bottom-color: $brand-dark-grey;
-
-        margin-right: 0.25rem;
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-
-        &.active {
-          background-color: white;
-          border-color: white;
-          border-bottom-color: $brand-dark-grey;
-        }
-      }
-    }
-
-    .ohms-search {
-      flex-basis: 100%;
-
-      @include media-breakpoint-up(lg) {
-        // when we're two column, fit this next to player
-        flex-basis: 33%;
-        flex-grow: 1;
-      }
-
-
-
-      border-radius: 0.66rem;
-      border: 0.33rem solid $brand-dark-grey;
-      padding: 0.66rem;
-
-      background-color: white;
-      color: black;
-    }
-
-    .ohms-search-results {
-      padding-top: ($paragraph-spacer / 2);
-
-      .search-mode {
-        text-transform: uppercase;
-        letter-spacing: 0.035em;
-      }
-
-      .ohms-no-results {
-        margin-top: ($paragraph-spacer / 2);
-        color: $brand-red;
-      }
-
-      .ohms-result-navigation {
+        //as a flex container for it's contents, an audio player (or error message),
+        //and a tab list.
         display: flex;
+        flex-direction: column;
         justify-content: space-between;
-        flex-wrap: wrap;
-        align-items: center;
 
-        strong {
-          font-weight: 600;
+        @include media-breakpoint-up(lg) {
+          padding: 0 1rem 0 0;
+        }
+
+        audio {
+          width: 100%;
+          margin-top: $paragraph-margin-bottom;
         }
       }
 
-      ol {
-        @extend %text-font-numerals;
-        list-style-position: inside;
-        padding-left: 0;
+      .ohms-nav-tabs {
+        padding: 0 1rem;
 
-        margin-top: ($paragraph-spacer / 2);
-        margin-bottom: 0;
+        // make em look tab-like
+        .btn {
+          border-bottom-right-radius: 0;
+          border-bottom-left-radius: 0;
+          border-bottom-color: $brand-dark-grey;
+
+          margin-right: 0.25rem;
+          padding-left: 0.75rem;
+          padding-right: 0.75rem;
+
+          &.active {
+            background-color: white;
+            border-color: white;
+            border-bottom-color: $brand-dark-grey;
+          }
+        }
       }
-      a {
-        color: $body-color;
+
+      .ohms-search {
+        flex-basis: 100%;
+
+        @include media-breakpoint-up(lg) {
+          // when we're two column, fit this next to player
+          flex-basis: 33%;
+          flex-grow: 1;
+        }
+
+
+
+        border-radius: 0.66rem;
+        border: 0.33rem solid $brand-dark-grey;
+        padding: 0.66rem;
+
+        background-color: white;
+        color: black;
+      }
+
+      .ohms-search-results {
+        padding-top: ($paragraph-spacer / 2);
+
+        .search-mode {
+          text-transform: uppercase;
+          letter-spacing: 0.035em;
+        }
+
+        .ohms-no-results {
+          margin-top: ($paragraph-spacer / 2);
+          color: $brand-red;
+        }
+
+        .ohms-result-navigation {
+          display: flex;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          align-items: center;
+
+          strong {
+            font-weight: 600;
+          }
+        }
+
+        ol {
+          @extend %text-font-numerals;
+          list-style-position: inside;
+          padding-left: 0;
+
+          margin-top: ($paragraph-spacer / 2);
+          margin-bottom: 0;
+        }
+        a {
+          color: $body-color;
+        }
       }
     }
   }
