@@ -86,14 +86,37 @@
           order: 0;
         }
 
-
-
         border-radius: 0.66rem;
         border: 0.33rem solid $brand-dark-grey;
         padding: 0.66rem;
 
         background-color: white;
         color: black;
+
+        .search-heading {
+          margin-bottom: 0;
+
+          a {
+            color: $brand-dark-blue;
+
+            //make appropriate toggle icon show up for state
+            .fa-caret-right.toggle-icon {
+              display: none;
+            }
+            &.collapsed {
+              .fa-caret-right.toggle-icon {
+                display: inline-block;
+              }
+              .fa-caret-down.toggle-icon {
+                display: none;
+              }
+            }
+          }
+        }
+
+        form {
+          margin-top: $headings-margin-bottom;
+        }
       }
 
       .ohms-search-results {
