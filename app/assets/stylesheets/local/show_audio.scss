@@ -86,9 +86,10 @@
           order: 0;
         }
 
-        border-radius: 0.66rem;
-        border: 0.33rem solid $brand-dark-grey;
+        border-radius: $border-radius;
+        border: 0px;
         padding: 0.66rem;
+        margin: 0.33rem 0;
 
         background-color: white;
         color: black;
