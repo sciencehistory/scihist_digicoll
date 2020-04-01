@@ -7,6 +7,9 @@
 
     background-color: $brand-dark-grey;
     color: white;
+    // material-design-like shadow, sorry we're just hacking it un-DRY.
+    // https://stackoverflow.com/questions/30533055/calculating-shadow-values-for-all-material-design-elevations
+    box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
 
     // Make it go to full viewport width, even though it's parent is constrained
     // with padding to match bootstrap grid.
@@ -51,28 +54,28 @@
       }
 
       .ohms-nav-tabs {
-        padding: 0 1rem;
+        margin-top: $paragraph-spacer;
 
-        // make em look tab-like
-        .btn {
-          border-bottom-right-radius: 0;
-          border-bottom-left-radius: 0;
-          border-bottom-color: $brand-dark-grey;
-
-          margin-right: 0.25rem;
-          padding-left: 0.75rem;
-          padding-right: 0.75rem;
-
-          &.active {
-            background-color: white;
-            border-color: white;
-            border-bottom-color: $brand-dark-grey;
+        // override style like a link, with colors we want, material design inspired tab style.
+        .btn-emphasis {
+          border-radius: 0;
+          border: 0;
+          &:not(.active):not(:hover):not(:focus) {
+            background-color: transparent;
+            color: $brand-bright-green
           }
+          &.active {
+            background-color: transparent;
+            color: white;
+            border-bottom: 3px solid white;
+          }
+
         }
       }
 
       .ohms-search {
         flex-basis: 100%;
+        align-self: self-start;
 
         @include media-breakpoint-up(lg) {
           // when we're two column, fit this next to player
