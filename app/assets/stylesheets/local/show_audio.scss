@@ -77,10 +77,13 @@
         flex-basis: 100%;
         align-self: self-start;
 
+        order: -1;
+
         @include media-breakpoint-up(lg) {
           // when we're two column, fit this next to player
           flex-basis: 33%;
           flex-grow: 1;
+          order: 0;
         }
 
 
