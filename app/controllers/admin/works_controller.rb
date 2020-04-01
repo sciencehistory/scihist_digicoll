@@ -116,6 +116,12 @@ class Admin::WorksController < AdminController
   def publish
     authorize! :publish, @work
 
+    if need_combined_audio_derivatives?
+      error = "Combined audio derivatives are absent or out of date. Please fix this before publishing this work."
+      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: { error: error }
+      return
+    end
+
     @work.class.transaction do
       @work.update!(published: true)
       @work.all_descendent_members.find_each do |member|
@@ -392,4 +398,22 @@ class Admin::WorksController < AdminController
       admin_works_path
     end
     helper_method :cancel_url
+
+    # If this work is an oral history,
+    # return true if the user needs to (re)calculate combined audio derivatives.
+    def need_combined_audio_derivatives?
+      return false
+      return false unless (@work.genre && @work.genre.include?('Oral histories'))
+      existing_fingerprint = @work.oral_history_content!.combined_audio_fingerprint
+      (existing_fingerprint != CombinedAudioDerivativeCreator.new(@work).fingerprint)
+    end
+
+    # To prevent accidentally publishing oral histories with out-of-date combined audio derivatives
+    def restrict_audio_member_edit?(member)
+      return false if member.work?
+      return false unless @work.published?
+      member.content_type && member.content_type.start_with?('audio')
+    end
+    helper_method :restrict_audio_member_edit?
+
 end
