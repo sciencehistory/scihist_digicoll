@@ -56,21 +56,32 @@
 
       <% if decorator.has_ohms_transcript? || decorator.has_ohms_index? %>
         <div class="ohms-search">
-          <h2 class="h6">Search</h2>
-          <form data-ohms-search-form="true">
-            <div class="input-group">
-              <input type="text" class="form-control form-control-sm" aria-label="Search transcript" data-ohms-input-query="true">
-              <div class="input-group-append">
-                <button class="btn btn-sm btn-secondary" type="button" aria-label="Clear search" title="Clear search" data-ohms-clear-search="true">
-                  <i class="fa fa-times" aria-hidden="true"></i>
-                </button>
-              </div>
-              <div class="input-group-append">
-                <button class="btn btn-sm btn-emphasis" type="submit">Search</button>
-              </div>
+
+
+            <h2 class="h6 search-heading">
+              <a data-toggle="collapse" href="#ohmsSearchCollapse" role="button" aria-expanded="true" aria-controls="ohmsSearchCollapse">
+                Search &nbsp;
+                <i class="fa fa-caret-right toggle-icon"  aria-hidden="true"></i>
+                <i class="fa fa-caret-down toggle-icon" aria-hidden="true"></i>
+              </a>
+            </h2>
+
+            <div class="collapse show" id="ohmsSearchCollapse">
+              <form data-ohms-search-form="true">
+                <div class="input-group">
+                  <input type="text" class="form-control form-control-sm" aria-label="Search transcript" data-ohms-input-query="true">
+                  <div class="input-group-append">
+                    <button class="btn btn-sm btn-secondary" type="button" aria-label="Clear search" title="Clear search" data-ohms-clear-search="true">
+                      <i class="fa fa-times" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                  <div class="input-group-append">
+                    <button class="btn btn-sm btn-emphasis" type="submit">Search</button>
+                  </div>
+                </div>
+              </form>
+              <div data-ohms-search-results="true"></div>
             </div>
-          </form>
-          <div data-ohms-search-results="true"></div>
         </div>
       <% end %>
     </div>
