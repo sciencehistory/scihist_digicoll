@@ -12,67 +12,68 @@
   <%= render "rights_and_social", work: @work %>
 
   <div class="audio-navbar">
+    <div class="audio-navbar-contents">
+      <div class="now-playing-container" data-role="now-playing-container" >
+          <% if decorator.combined_mp3_audio.present? %>
+            <audio controls controlsList="nodownload" data-role="ohms-audio-elem" >
+                <source src="<%= decorator.combined_mp3_audio%>"  type="audio/mpeg"/>
+                <source src="<%= decorator.combined_webm_audio%>"  type="audio/webm"/>
+            </audio>
+          <% else %>
+            <div class="alert alert-warning" role="alert" data-role="no-audio-alert">
+               This oral history is not properly prepared for the audio player. (Staff: please create a combined derivative.)
+            </div>
+          <% end %>
 
-    <div class="now-playing-container" data-role="now-playing-container" >
-        <% if decorator.combined_mp3_audio.present? %>
-          <audio controls controlsList="nodownload" data-role="ohms-audio-elem" >
-              <source src="<%= decorator.combined_mp3_audio%>"  type="audio/mpeg"/>
-              <source src="<%= decorator.combined_webm_audio%>"  type="audio/webm"/>
-          </audio>
-        <% else %>
-          <div class="alert alert-warning" role="alert" data-role="no-audio-alert">
-             This oral history is not properly prepared for the audio player. (Staff: please create a combined derivative.)
-          </div>
-        <% end %>
-
-      <ul class="nav ohms-nav-tabs" role="tablist">
-        <li class="nav-item">
-          <a class="nav-link active btn btn-emphasis" id="ohDescriptionTab" data-toggle="tab" href="#ohDescription" role="tab" aria-controls="home" aria-selected="true">
-            Description
-          </a>
-        </li>
-
-        <% if decorator.has_ohms_index? %>
+        <ul class="nav ohms-nav-tabs" role="tablist">
           <li class="nav-item">
-            <a class="nav-link btn btn-emphasis" id="ohTocTab" data-toggle="tab" href="#ohToc" role="tab" aria-controls="profile" aria-selected="false">
-              Table of Contents <span data-ohms-hitcount="index"></span>
+            <a class="nav-link active btn btn-emphasis" id="ohDescriptionTab" data-toggle="tab" href="#ohDescription" role="tab" aria-controls="home" aria-selected="true">
+              Description
             </a>
           </li>
-        <% end %>
 
-        <% if decorator.has_ohms_transcript? %>
+          <% if decorator.has_ohms_index? %>
+            <li class="nav-item">
+              <a class="nav-link btn btn-emphasis" id="ohTocTab" data-toggle="tab" href="#ohToc" role="tab" aria-controls="profile" aria-selected="false">
+                Table of Contents <span data-ohms-hitcount="index"></span>
+              </a>
+            </li>
+          <% end %>
+
+          <% if decorator.has_ohms_transcript? %>
+            <li class="nav-item">
+              <a class="nav-link btn btn-emphasis" id="ohTranscriptTab" data-toggle="tab" href="#ohTranscript" role="tab" aria-controls="home" aria-selected="false">
+                Transcript <span data-ohms-hitcount="transcript"></span>
+              </a>
+            </li>
+          <% end %>
+
           <li class="nav-item">
-            <a class="nav-link btn btn-emphasis" id="ohTranscriptTab" data-toggle="tab" href="#ohTranscript" role="tab" aria-controls="home" aria-selected="false">
-              Transcript <span data-ohms-hitcount="transcript"></span>
-            </a>
+            <a class="nav-link btn btn-emphasis" id="ohDownloadsTab" data-toggle="tab" href="#ohDownloads" role="tab" aria-controls="contact" aria-selected="false">Downloads</a>
           </li>
-        <% end %>
-
-        <li class="nav-item">
-          <a class="nav-link btn btn-emphasis" id="ohDownloadsTab" data-toggle="tab" href="#ohDownloads" role="tab" aria-controls="contact" aria-selected="false">Downloads</a>
-        </li>
-      </ul>
-    </div>
-
-    <% if decorator.has_ohms_transcript? || decorator.has_ohms_index? %>
-      <div class="ohms-search">
-        <h2 class="h6">Search</h2>
-        <form data-ohms-search-form="true">
-          <div class="input-group">
-            <input type="text" class="form-control form-control-sm" aria-label="Search transcript" data-ohms-input-query="true">
-            <div class="input-group-append">
-              <button class="btn btn-sm btn-secondary" type="button" aria-label="Clear search" title="Clear search" data-ohms-clear-search="true">
-                <i class="fa fa-times" aria-hidden="true"></i>
-              </button>
-            </div>
-            <div class="input-group-append">
-              <button class="btn btn-sm btn-emphasis" type="submit">Search</button>
-            </div>
-          </div>
-        </form>
-        <div data-ohms-search-results="true"></div>
+        </ul>
       </div>
-    <% end %>
+
+      <% if decorator.has_ohms_transcript? || decorator.has_ohms_index? %>
+        <div class="ohms-search">
+          <h2 class="h6">Search</h2>
+          <form data-ohms-search-form="true">
+            <div class="input-group">
+              <input type="text" class="form-control form-control-sm" aria-label="Search transcript" data-ohms-input-query="true">
+              <div class="input-group-append">
+                <button class="btn btn-sm btn-secondary" type="button" aria-label="Clear search" title="Clear search" data-ohms-clear-search="true">
+                  <i class="fa fa-times" aria-hidden="true"></i>
+                </button>
+              </div>
+              <div class="input-group-append">
+                <button class="btn btn-sm btn-emphasis" type="submit">Search</button>
+              </div>
+            </div>
+          </form>
+          <div data-ohms-search-results="true"></div>
+        </div>
+      <% end %>
+    </div>
   </div>
 
   <div class="bottom">
