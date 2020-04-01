@@ -12,8 +12,15 @@
     color: white;
 
     .now-playing-container {
+      // as an element in it's parent flex
       flex-basis: 66%;
       flex-grow: 2;
+
+      //as a flex container for it's contents, an audio player (or error message),
+      //and a tab list.
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
 
       padding: 0 1rem;
 
