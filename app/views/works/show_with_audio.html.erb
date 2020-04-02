@@ -117,13 +117,15 @@
                 </div>
               <% end %>
             </div>
-
-            <% if decorator.audio_members.count > 1 %>
+            <% if decorator.combined_mp3_audio.present? && decorator.derivatives_up_to_date?%>
               <h2 class="attribute-sub-head">
+                <% if decorator.audio_members.count == 1 %>
+                  Optimized audio
+                <% else %>
                 <%= decorator.audio_members.count == 2 ? "Both" : "All #{decorator.audio_members.count}" %>
                 segments as a single file
+                <% end %>
               </h2>
-
               <div class="combined-audio-download-links">
                 <div class="combined-audio-download-icon-container">
                   <a href="<%= decorator.combined_mp3_audio%>" download>
