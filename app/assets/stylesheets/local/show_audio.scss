@@ -70,7 +70,18 @@
             color: white;
             border-bottom: 3px solid white;
           }
-
+        }
+        // crazy CSS to try to make the tabs horizontally scroll properly
+        // on small screens
+        @include media-breakpoint-down(sm) {
+          flex-wrap: nowrap;
+          white-space: nowrap;
+          overflow-y: auto;
+          margin-left: -15px;
+          margin-right: -15px;
+          padding-left: 15px;
+          padding-right: 15px;
+          max-width: 100vw;
         }
       }
 
