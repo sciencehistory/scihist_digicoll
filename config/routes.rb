@@ -53,10 +53,12 @@ Rails.application.routes.draw do
   # some additional routes for various search behaviors too.
   get "/collections/:collection_id", to: "collection_show#index", as: :collection
   get "collections/:collection_id/range_limit" => "collection_show#range_limit"
+  get "collections/:collection_id/range_limit_panel" => "collection_show#range_limit_panel"
   get "collections/:collection_id/facet" => "collection_show#facet"
 
   get "focus/:slug", to: "featured_topic#index", as: :featured_topic
   get "focus/:slug/range_limit" => "featured_topic#range_limit"
+  get "focus/:slug/range_limit_panel" => "featured_topic#range_limit_panel"
   get "focus/:slug/facet" => "featured_topic#facet"
 
 
