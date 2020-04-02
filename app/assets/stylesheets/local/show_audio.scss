@@ -23,7 +23,8 @@
     .audio-navbar-contents {
       // keep navbar contents the same width as our general contents,
       // within the full-viewport background-color of the navbar.
-      max-width: $main-container-max-width;
+      // Calc needed for convoluted reasons trying to mimic bootstrap grid poorly. :(
+      max-width: calc(#{$main-container-max-width} - 30px);
       margin-right: auto;
       margin-left: auto;
       @extend .col-md-12;
