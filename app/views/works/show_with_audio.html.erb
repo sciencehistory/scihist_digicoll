@@ -70,7 +70,7 @@
 
         <div class="tab-pane" id="ohDownloads" role="tabpanel" aria-labelledby="oh-downloads-tab">
           <div>
-            <h2 class="attribute-sub-head sound-file-header"><%= pluralize(decorator.audio_members.count, 'separate interview segment')%></h2>
+            <h2 class="attribute-sub-head sound-file-header"><%= pluralize(decorator.audio_members.count, 'sound file')%></h2>
 
             <div class="sans-serif track-listings" data-role="track-listings" >
               <% decorator.audio_members.each do |track| %>
@@ -93,7 +93,10 @@
                   <div class="title">
                     <% if decorator.start_time_for(track) %>
                       <a class="title play-link" title="Listen to '<%= track.title%>'" aria-label="Listen to '<%= track.title%>'" href="#" data-role="play-link">
-                        <%= track.title %> (start: <%= (decorator.start_time_for(track) / 60).round(1) %> min., duration: <span data-role="track-duration"></span> min.)
+                        <%= track.title %>
+                        <small>
+                          (start: <%= (decorator.start_time_for(track) / 60).round(1) %> min., duration: <span data-role="track-duration"></span> min.)
+                        </small>
                         <% unless track.published? %>
                           <span title="Private" class="badge badge-warning">Private</span>
                         <% end %>
@@ -111,22 +114,6 @@
                 </div>
               <% end %>
             </div>
-
-            <% if decorator.audio_members.count > 1 %>
-              <h2 class="attribute-sub-head sound-file-header">
-                <%= decorator.audio_members.count == 2 ? "Both" : "All #{decorator.audio_members.count}" %>
-                segments as a single file
-              </h2>
-              <div class="combined-downloads">
-
-                <div class="sans-serif combined-download" >
-                  <a href="<%= decorator.combined_mp3_audio%>" download>Download mp3 format</a>
-                </div>
-                <div class="sans-serif combined-download">
-                  <a href="<%= decorator.combined_webm_audio%>" download>Download webm format</a>
-                </div>
-              </div>
-            <% end %>
           </div>
 
 

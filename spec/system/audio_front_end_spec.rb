@@ -125,7 +125,7 @@ describe "Audio front end", type: :system, js: true do
       scrubber_times = []
       scrubber_times << evaluate_script("document.getElementsByTagName('audio')[0].currentTime")
       [1, 3, 4].each do |track_number|
-        click_on "Track #{track_number}", match: :first
+        click_on "Track #{track_number}"
         scrubber_times << evaluate_script("document.getElementsByTagName('audio')[0].currentTime")
       end
       # This doesn't need to be super precise.
@@ -133,12 +133,6 @@ describe "Audio front end", type: :system, js: true do
       # that the playhead is moving
       # when you click the links.
       expect(scrubber_times.map {|x| (x*2).round }).to contain_exactly(0,0,1,2)
-
-      # You should be able to download the combined audio derivs:
-      expect(page).to have_content("All 3 segments as a single file")
-      expect(page).to have_content("Download mp3 format")
-      expect(page).to have_content("Download webm format")
-
     end
   end
 
