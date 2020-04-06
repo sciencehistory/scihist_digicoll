@@ -95,7 +95,7 @@
                       <a class="title play-link" title="Listen to '<%= track.title%>'" aria-label="Listen to '<%= track.title%>'" href="#" data-role="play-link">
                         <%= track.title %>
                         <small>
-                          (start: <%= (decorator.start_time_for(track) / 60).round(1) %> min., duration: <span data-role="track-duration"></span> min.)
+                          <%= decorator.start_time_for(track)%>
                         </small>
                         <% unless track.published? %>
                           <span title="Private" class="badge badge-warning">Private</span>

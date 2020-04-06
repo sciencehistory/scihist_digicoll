@@ -100,6 +100,7 @@ class AudioWorkShowDecorator < Draper::Decorator
     CombinedAudioDerivativeCreator.new(model).fingerprint == combined_audio_fingerprint
   end
 
+
   # An array of start times for each audio member.
   # The key is the member uuid (NOT the friendlier id)
   # The value is the offset in seconds into the combined audio.
@@ -112,12 +113,20 @@ class AudioWorkShowDecorator < Draper::Decorator
     end
   end
 
+
+  def formatted_duration total_seconds
+    hours = (total_seconds / (60 * 60)).to_i
+    minutes = ((total_seconds / 60) % 60).to_i
+    seconds = (total_seconds % 60).to_i
+    "#{ hours }:#{ minutes }:#{ seconds }"
+  end
+
   # The start time or audio offset for a particular audio asset,
   # relative to the entire oral history interview (the work as a whole).
   # We're rounding to the nearest tenth of a second; easier to read.
   # Returns nil if there is no start time for this asset, or for any assets.
   def start_time_for(audio_asset)
-    start_times[audio_asset.id]&.round(1)
+    formatted_duration(start_times[audio_asset.id])
   end
 
 end
