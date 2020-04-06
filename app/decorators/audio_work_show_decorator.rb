@@ -90,18 +90,22 @@ class AudioWorkShowDecorator < Draper::Decorator
     model&.oral_history_content&.combined_audio_mp3&.url(public:true)
   end
 
+  def combined_mp3_audio_download_filename
+    parts = [
+      DownloadFilenameHelper.first_three_words(model.title),
+      model.friendlier_id
+    ].collect(&:presence).compact
+    Pathname.new(parts.join("_")).sub_ext('.mp3').to_s
+  end
+
   def combined_mp3_audio_download
-    base = "Combined audio for #{model.title}".
-      gsub(/([[:space:]]|[[:punct:]])+/, '_').
-      downcase
-    filename = DownloadFilenameHelper.filename_with_suffix(base, content_type: 'audio/mpeg')
     model&.oral_history_content&.combined_audio_mp3&.url(
       public: false,
       expires_in: DOWNLOAD_URL_EXPIRES_IN,
       response_content_type: 'audio/mpeg',
       response_content_disposition: ContentDisposition.format(
         disposition: 'attachment',
-        filename: filename
+        filename: combined_mp3_audio_download_filename
       )
     )
   end
