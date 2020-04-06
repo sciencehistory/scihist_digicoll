@@ -390,6 +390,17 @@ $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
   }
 });
 
+// On small screens, our tab bar can scroll, with some tabs off screen.
+// Make sure a selected tab is fully on screen, in line with Material Design
+// tab UI recommendations. We can use simple built into browser HTML5 scrollIntoView.
+// If the thing is already fully in view -- including on large screens -- we're hoping it's
+// a no-op.
+$(document).on("shown.bs.tab", ".work-show-audio", function(event) {
+  var tabElement = document.getElementById(event.target.id);
+  console.log(tabElement.id);
+  tabElement.scrollIntoView({block: "nearest", inline: "nearest"});
+});
+
 // Clickig on the "X / Y" current result readout should scroll to current result
 $(document).on("click", "*[data-trigger='ohms-search-goto-current-result']", function(event) {
   event.preventDefault();
