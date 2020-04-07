@@ -1,6 +1,11 @@
 // JS we need for our local custom OHMS player func.
 //
 // Yeah, we'll use JQuery, sorry.
+//
+// TODO: put a `id` on .audio-navbar to use that instead.
+// More docs.
+// Separate data-ohms-timestamp-s into separate file?
+// A test.
 
 $(document).on("click", "*[data-ohms-timestamp-s]", function(event) {
   event.preventDefault();
@@ -34,6 +39,8 @@ var escapeRegExp = function(string) {
 //
 // We DO use JQuery at the moment, sorry.
 var Search = {
+
+  tabScrollPositions: {},
 
   wrapInHighlight: function(match) {
     return "<span class=\"ohms-highlight\">" + match + "</span>";
@@ -181,7 +188,11 @@ var Search = {
   // Also importantly:
   // * switches to a containing tab if necessary
   // * Opens a containing bootstrap collapse if necessary (eg for Table of Contents/index section)
-  scrollToId: function(domID) {
+  scrollToId: function(domID, scrollBehavior) {
+    if (scrollBehavior == undefined) {
+      scrollBehavior = "smooth";
+    }
+
     // without block:center, it ends up scrolling under our fixed navbar, gah!
     // this seems to be good enough.
     var element = document.getElementById(domID);
@@ -205,7 +216,7 @@ var Search = {
     var elTop = $(element).offset().top;
     var navbarHeight = $(".audio-navbar").height();
 
-    window.scrollTo({top: elTop - navbarHeight, behavior: "smooth"});
+    window.scrollTo({top: elTop - navbarHeight, behavior: scrollBehavior});
   },
 
   onSearchSubmit: function(event) {
@@ -397,15 +408,53 @@ $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
 // a no-op.
 $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
   var tabElement = document.getElementById(event.target.id);
-  console.log(tabElement.id);
   tabElement.scrollIntoView({block: "nearest", inline: "nearest"});
 });
+
 
 // Clickig on the "X / Y" current result readout should scroll to current result
 $(document).on("click", "*[data-trigger='ohms-search-goto-current-result']", function(event) {
   event.preventDefault();
   Search.currentResults().scrollToCurrentResult();
 });
+
+
+
+// Maintain scroll positions on tabs, kinda hacky
+$(document).on("hide.bs.tab", ".work-show-audio", function(event) {
+
+  // save scroll position, only if navbar is currently fixed to top due to scroll
+  var navbarIsFixed = (document.getElementsByClassName("audio-navbar")[0].getBoundingClientRect().top == 0);
+
+  if (navbarIsFixed) {
+    Search.tabScrollPositions[event.target.id] = window.scrollY;
+  } else {
+    Search.tabScrollPositions[event.target.id] = undefined;
+  }
+});
+$(document).on("shown.bs.tab", ".work-show-audio", function(event) {
+  // restore scroll position, or move to a reasonable starting point if first time on this tab.
+
+  var navbarIsFixed = (document.getElementsByClassName("audio-navbar")[0].getBoundingClientRect().top == 0);
+  var saved = Search.tabScrollPositions[event.target.id];
+
+  if (saved) {
+    window.scrollTo({top: saved})
+  } else if (! navbarIsFixed) {
+    // navbar isn't fixed to top anyway, don't worry about it, too weird if we try.
+    return;
+  } else {
+    // we don't have a saved position, but we're in position with fixed navbar at
+    // top of page -- move to top of fixed navbar at top of page in new tab.
+
+    // It's actually kind of hard to get the browsers to scorll to this position,
+    // this kind of hack seems to work, in this situation:
+
+    $(".audio-navbar").get(0).scrollIntoView({behavior: "auto", block: "end"});
+    $(".audio-navbar").get(0).scrollIntoView({behavior: "auto", block: "start"});
+  }
+});
+
 
 
 window.OhmsSearch = Search;
