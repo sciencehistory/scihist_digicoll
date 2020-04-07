@@ -105,10 +105,10 @@
                         data-role="play-link"
                         data-ohms-timestamp-s="<%= decorator.start_time_for(track) %>"
                       >
-                        <%= track.title %>
-                        <small>
-                          <%= decorator.start_time_for(track)%>
+                        <small class="m-3">
+                          <%= format_ohms_timestamp(decorator.start_time_for(track))%>
                         </small>
+                        <%= track.title %>
                         <% unless track.published? %>
                           <span title="Private" class="badge badge-warning">Private</span>
                         <% end %>
