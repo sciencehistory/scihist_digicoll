@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "Audio front end", type: :system, js: true do # , solr:true do
+describe "Audio front end", type: :system, js: true do
   let!(:parent_work) do
     build(:public_work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
   end
@@ -20,12 +20,7 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
         parent: parent_work,
 
         # All of these are published except for the second one.
-        published: i != 2,
-
-        faked_derivatives: [
-            build(:faked_derivative, key: 'small_mp3', uploaded_file: build(:stored_uploaded_file, content_type: "audio/mpeg")),
-            build(:faked_derivative, key: 'webm',      uploaded_file: build(:stored_uploaded_file, content_type: "audio/webm"))
-        ]
+        published: i != 2
       )
     end
   }
@@ -77,13 +72,10 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
 
         download_links = page.find_all('.track-listing .dropdown-item', :visible => false).map { |x| x['href'] }
 
-        (0..2).to_a.map do |i|
-          expect(download_links.any? { |x| x.include? "#{published_audio_assets[i].friendlier_id}/small_mp3" }).to be true
-        end
-        # Original file + one derivatives + rights link:
-        expect(download_links.count).to eq published_audio_assets.count * ( 1 + 2)
-        # original and derivatives are served by the downloads controller:
-        expect(download_links.select{ |x| x.include? 'downloads'}.count).to eq published_audio_assets.count * 2
+        # Original file + rights link:
+        expect(download_links.count).to eq published_audio_assets.count * 2
+        # original is served by the downloads controller:
+        expect(download_links.select{ |x| x.include? 'downloads'}.count).to eq published_audio_assets.count
       end
 
       non_audio = page.find_all('.other-files .show-member-list-item')
@@ -110,27 +102,54 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
         [id_list[1], 0.5],
         [id_list[2], 1]
       ]}
-      parent_work.oral_history_content.save!
-
-      # Revisit the page:
       visit work_path(parent_work.friendlier_id)
+
+      # Oh, wait. The item does not have an
+      # up to date fingerprint. No audio tag should be shown.
+      expect(page).to have_css("*[data-role='no-audio-alert']")
+      expect(page).not_to have_selector('audio')
+
+      # OK, let's set the combined audio fingerprint.
+      fp = CombinedAudioDerivativeCreator.
+        new(parent_work).fingerprint
+      parent_work.oral_history_content.combined_audio_fingerprint = fp
+      parent_work.oral_history_content.save!
+      visit work_path(parent_work.friendlier_id)
+
+      # No we should see audio.
+      expect(page).not_to have_css("*[data-role='no-audio-alert']")
       expect(page).to have_selector('audio')
-      expect(page).to have_selector(".track-listing[data-ohms-timestamp-s=\"0\"]" , visible: false)
-      expect(page).to have_selector(".track-listing[data-ohms-timestamp-s=\"0.5\"]" , visible: false)
-      expect(page).to have_selector(".track-listing[data-ohms-timestamp-s=\"1\"]" , visible: false)
 
       click_on "Downloads"
+
+      # click on icons to play
+      expect(page).to have_selector(".track-listing div.title a.play-link[data-ohms-timestamp-s=\"0\"]" )
+      expect(page).to have_selector(".track-listing div.title a.play-link[data-ohms-timestamp-s=\"0.5\"]")
+      expect(page).to have_selector(".track-listing div.title a.play-link[data-ohms-timestamp-s=\"1\"]")
+
+      # click on titles to play
+      expect(page).to have_selector(".track-listing div.icon a.play-link[data-ohms-timestamp-s=\"0\"]")
+      expect(page).to have_selector(".track-listing div.icon a.play-link[data-ohms-timestamp-s=\"0.5\"]")
+      expect(page).to have_selector(".track-listing div.icon a.play-link[data-ohms-timestamp-s=\"1\"]")
+
+      current_time_js = "document.getElementsByTagName('audio')[0].currentTime"
       scrubber_times = []
-      scrubber_times << evaluate_script("document.getElementsByTagName('audio')[0].currentTime")
+      scrubber_times << evaluate_script(current_time_js)
       [1, 3, 4].each do |track_number|
-        click_on "Track #{track_number}"
-        scrubber_times << evaluate_script("document.getElementsByTagName('audio')[0].currentTime")
+        click_on "Track #{track_number}", match: :first
+        scrubber_times << evaluate_script(current_time_js)
       end
       # This doesn't need to be super precise.
       # We just want a general reassurance
       # that the playhead is moving
       # when you click the links.
       expect(scrubber_times.map {|x| (x*2).round }).to contain_exactly(0,0,1,2)
+
+      # You should be able to download the combined audio derivs:
+      expect(page).to have_content("All 3 segments as a single file")
+      expect(page).to have_content("Optimized MP3")
+      expect(page).to have_content("25 KB")
+
     end
   end
 
@@ -150,12 +169,7 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
           parent: parent_work,
 
           # All of these are published except for the second one.
-          published: i != 2,
-
-          faked_derivatives: [
-              build(:faked_derivative, key: 'small_mp3', uploaded_file: build(:stored_uploaded_file, content_type: "audio/mpeg")),
-              build(:faked_derivative, key: 'webm',      uploaded_file: build(:stored_uploaded_file, content_type: "audio/webm"))
-          ]
+          published: i != 2
         )
       end
     }
