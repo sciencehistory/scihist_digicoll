@@ -2,7 +2,7 @@
 //
 // Yeah, we'll use JQuery, sorry.
 //
-// TODO: put a `id` on .audio-navbar to use that instead.
+// TODO:
 // More docs.
 // Separate data-ohms-timestamp-s into separate file?
 // A test.
@@ -214,7 +214,7 @@ var Search = {
     }
 
     var elTop = $(element).offset().top;
-    var navbarHeight = $(".audio-navbar").height();
+    var navbarHeight = $("#ohmsAudioNavbar").height();
 
     window.scrollTo({top: elTop - navbarHeight, behavior: scrollBehavior});
   },
@@ -378,7 +378,7 @@ $(document).on("shown.bs.collapse", ".ohms-index-container", function(event) {
   if (!indexSection) { return; }
 
   var targetViewportXPosition = indexSection.getBoundingClientRect().top;
-  var navbarHeight = $(".audio-navbar").height();
+  var navbarHeight = $("#ohmsAudioNavbar").height();
 
   if (targetViewportXPosition <= navbarHeight) {
     window.scrollTo({top: window.scrollY - (navbarHeight - targetViewportXPosition), behavior: "smooth"});
@@ -424,7 +424,7 @@ $(document).on("click", "*[data-trigger='ohms-search-goto-current-result']", fun
 $(document).on("hide.bs.tab", ".work-show-audio", function(event) {
 
   // save scroll position, only if navbar is currently fixed to top due to scroll
-  var navbarIsFixed = (document.getElementsByClassName("audio-navbar")[0].getBoundingClientRect().top == 0);
+  var navbarIsFixed = (document.getElementById("ohmsAudioNavbar").getBoundingClientRect().top == 0);
 
   if (navbarIsFixed) {
     Search.tabScrollPositions[event.target.id] = window.scrollY;
@@ -435,7 +435,7 @@ $(document).on("hide.bs.tab", ".work-show-audio", function(event) {
 $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
   // restore scroll position, or move to a reasonable starting point if first time on this tab.
 
-  var navbarIsFixed = (document.getElementsByClassName("audio-navbar")[0].getBoundingClientRect().top == 0);
+  var navbarIsFixed = (document.getElementById("ohmsAudioNavbar").getBoundingClientRect().top == 0);
   var saved = Search.tabScrollPositions[event.target.id];
 
   if (saved) {
@@ -450,8 +450,8 @@ $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
     // It's actually kind of hard to get the browsers to scorll to this position,
     // this kind of hack seems to work, in this situation:
 
-    $(".audio-navbar").get(0).scrollIntoView({behavior: "auto", block: "end"});
-    $(".audio-navbar").get(0).scrollIntoView({behavior: "auto", block: "start"});
+    document.getElementById("ohmsAudioNavbar").get(0).scrollIntoView({behavior: "auto", block: "end"});
+    document.getElementById("ohmsAudioNavbar").get(0).scrollIntoView({behavior: "auto", block: "start"});
   }
 });
 
