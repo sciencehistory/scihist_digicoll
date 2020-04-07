@@ -120,6 +120,7 @@ describe "Audio front end", type: :system, js: true do
 
       click_on "Downloads"
 
+
       # click on icons to play
       expect(page).to have_selector(".track-listing div.title a.play-link[data-ohms-timestamp-s=\"0\"]" )
       expect(page).to have_selector(".track-listing div.title a.play-link[data-ohms-timestamp-s=\"0.5\"]")
@@ -134,7 +135,7 @@ describe "Audio front end", type: :system, js: true do
       scrubber_times = []
       scrubber_times << evaluate_script(current_time_js)
       [1, 3, 4].each do |track_number|
-        click_on "Track #{track_number}"
+        page.find('a.play-link', text: "Track #{track_number}").click
         scrubber_times << evaluate_script(current_time_js)
       end
       # This doesn't need to be super precise.
