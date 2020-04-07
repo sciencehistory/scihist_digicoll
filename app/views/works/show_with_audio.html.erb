@@ -70,20 +70,31 @@
 
         <div class="tab-pane" id="ohDownloads" role="tabpanel" aria-labelledby="oh-downloads-tab">
           <div>
-            <h2 class="attribute-sub-head sound-file-header"><%= pluralize(decorator.audio_members.count, 'sound file')%></h2>
+            <h2 class="attribute-sub-head sound-file-header">
+              <% if decorator.audio_members.count > 1 %>
+                <%= decorator.audio_members.count %> separate interview segments
+              <% else %>
+                1 interview segment
+              <% end %>
+            </h2>
 
             <div class="sans-serif track-listings" data-role="track-listings" >
               <% decorator.audio_members.each do |track| %>
                 <div  class="track-listing" data-role="track-listing"
                       data-title="<%= track.title %>"
                       data-member-id="<%= track.id %>"
-                      data-original-url="<%= main_app.download_path(track.id)    %>"
-                      data-ohms-timestamp-s="<%= decorator.start_time_for(track) %>"
+                      data-original-url="<%= main_app.download_path(track.id) %>"
                   >
 
                   <% if decorator.start_time_for(track) %>
                     <div class="icon">
-                      <a class="title play-link" title="Listen to '<%= track.title%>'" aria-label="Listen to '<%= track.title%>'" href="#" data-role="play-link">
+                      <a
+                        class="title play-link"
+                        title="Listen to '<%= track.title%>'"
+                        aria-label="Listen to '<%= track.title%>'"
+                        href="#" data-role="play-link"
+                        data-ohms-timestamp-s="<%= decorator.start_time_for(track) %>"
+                      >
                         <i class="fa fa-play-circle" aria-hidden="true"></i>
                       </a>
                     </div>
@@ -92,7 +103,14 @@
 
                   <div class="title">
                     <% if decorator.start_time_for(track) %>
-                      <a class="title play-link" title="Listen to '<%= track.title%>'" aria-label="Listen to '<%= track.title%>'" href="#" data-role="play-link">
+                      <a
+                        class="title play-link"
+                        title="Listen to '<%= track.title%>'"
+                        aria-label="Listen to '<%= track.title%>'"
+                        href="#"
+                        data-role="play-link"
+                        data-ohms-timestamp-s="<%= decorator.start_time_for(track) %>"
+                      >
                         <%= track.title %>
                         <% unless track.published? %>
                           <span title="Private" class="badge badge-warning">Private</span>
@@ -111,6 +129,27 @@
                 </div>
               <% end %>
             </div>
+            <% if decorator.combined_mp3_audio.present? && decorator.derivatives_up_to_date?%>
+              <h2 class="attribute-sub-head">
+                <% if decorator.audio_members.count == 1 %>
+                  Optimized audio
+                <% else %>
+                <%= decorator.audio_members.count == 2 ? "Both" : "All #{decorator.audio_members.count}" %>
+                segments as a single file
+                <% end %>
+              </h2>
+              <div class="combined-audio-download-links">
+                <div class="combined-audio-download-icon-container">
+                  <a href="<%= decorator.combined_mp3_audio_download %>" download>
+                    <i class="fa fa-download" aria-hidden="true"></i>
+                    Optimized MP3
+                  </a>
+                </div>
+                <div class="combined-audio-download-link-size">
+                  <small><%= decorator.combined_mp3_audio_size %></small>
+                </div>
+              </div>
+            <% end %>
           </div>
 
 
