@@ -43,6 +43,16 @@ class OralHistoryContent
       end
     end
 
+    # Returns an ordered array of transcript lines
+    #
+    # TBD: filters footnotes out (later, does something... else with them)
+    #
+    def transcript_lines
+      @transcript_lines ||= begin
+        parsed.at_xpath("//ohms:transcript", ohms: OHMS_NS).text.split("\n")
+      end
+    end
+
     # Represents an ohms //index/point element, what ohms calls an index we might
     # really call a Table of Contents. We're not currently using all the elements,
     # only providing access to those we are.
