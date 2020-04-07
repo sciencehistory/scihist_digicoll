@@ -22,7 +22,7 @@ class OhmsTranscriptDisplay < ViewModel
   def display
     paragraphs = []
     current_paragraph = []
-    model.parsed.at_xpath("//ohms:transcript", ohms: OHMS_NS).text.split("\n").each_with_index do |line, index|
+    model.transcript_lines.each_with_index do |line, index|
       current_paragraph << { text: line, line_num: index + 1}
 
       if line.empty?
