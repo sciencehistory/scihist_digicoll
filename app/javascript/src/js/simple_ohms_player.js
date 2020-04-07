@@ -5,7 +5,6 @@
 // TODO:
 // More docs.
 // Separate data-ohms-timestamp-s into separate file?
-// A test.
 
 $(document).on("click", "*[data-ohms-timestamp-s]", function(event) {
   event.preventDefault();
