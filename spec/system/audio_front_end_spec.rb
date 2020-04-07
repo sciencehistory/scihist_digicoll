@@ -264,7 +264,7 @@ describe "Audio front end", type: :system, js: true do
         click_on "Search"
       end
 
-      expect(page).to have_content("Table of Contents — 1 / 7")
+      expect(page).to have_content(%r{Table of Contents — 1 / 7}i)
       expect(page).to have_selector("*[data-ohms-hitcount='index']", text: "7")
       expect(page).to have_selector("*[data-ohms-hitcount='transcript']", text: "43")
     end
