@@ -226,4 +226,33 @@ describe "Audio front end", type: :system, js: true do # , solr:true do
       end
     end
   end
+
+  describe "ohms-enabled" do
+    let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml" }
+    let(:parent_work) {
+      create(:public_work, rights: "http://creativecommons.org/publicdomain/mark/1.0/").tap do |work|
+        work.oral_history_content!.update(ohms_xml_text: File.read(ohms_xml_path))
+      end
+    }
+
+    it "can display, and search, without errors" do
+      visit work_path(audio_assets.first.parent.friendlier_id)
+
+      within(".ohms-nav-tabs") do
+        expect(page).to have_content("Description")
+        expect(page).to have_content("Table of Contents")
+        expect(page).to have_content("Transcript")
+        expect(page).to have_content("Downloads")
+      end
+
+      within("*[data-ohms-search-form]") do
+        page.find("*[data-ohms-input-query]").fill_in with: "Duarte"
+        click_on "Search"
+      end
+
+      expect(page).to have_content("Table of Contents — 1 / 7")
+      expect(page).to have_selector("*[data-ohms-hitcount='index']", text: "7")
+      expect(page).to have_selector("*[data-ohms-hitcount='transcript']", text: "43")
+    end
+  end
 end
