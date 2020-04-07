@@ -117,16 +117,25 @@ describe "Audio front end", type: :system, js: true do
       # No we should see audio.
       expect(page).not_to have_css("*[data-role='no-audio-alert']")
       expect(page).to have_selector('audio')
-      expect(page).to have_selector(".track-listing[data-ohms-timestamp-s=\"0\"]" , visible: false)
-      expect(page).to have_selector(".track-listing[data-ohms-timestamp-s=\"0.5\"]" , visible: false)
-      expect(page).to have_selector(".track-listing[data-ohms-timestamp-s=\"1\"]" , visible: false)
 
       click_on "Downloads"
+
+      # click on icons to play
+      expect(page).to have_selector(".track-listing div.title a.play-link[data-ohms-timestamp-s=\"0\"]" )
+      expect(page).to have_selector(".track-listing div.title a.play-link[data-ohms-timestamp-s=\"0.5\"]")
+      expect(page).to have_selector(".track-listing div.title a.play-link[data-ohms-timestamp-s=\"1\"]")
+
+      # click on titles to play
+      expect(page).to have_selector(".track-listing div.icon a.play-link[data-ohms-timestamp-s=\"0\"]")
+      expect(page).to have_selector(".track-listing div.icon a.play-link[data-ohms-timestamp-s=\"0.5\"]")
+      expect(page).to have_selector(".track-listing div.icon a.play-link[data-ohms-timestamp-s=\"1\"]")
+
+      current_time_js = "document.getElementsByTagName('audio')[0].currentTime"
       scrubber_times = []
-      scrubber_times << evaluate_script("document.getElementsByTagName('audio')[0].currentTime")
+      scrubber_times << evaluate_script(current_time_js)
       [1, 3, 4].each do |track_number|
         click_on "Track #{track_number}", match: :first
-        scrubber_times << evaluate_script("document.getElementsByTagName('audio')[0].currentTime")
+        scrubber_times << evaluate_script(current_time_js)
       end
       # This doesn't need to be super precise.
       # We just want a general reassurance

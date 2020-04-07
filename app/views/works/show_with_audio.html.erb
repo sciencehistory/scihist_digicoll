@@ -83,13 +83,18 @@
                 <div  class="track-listing" data-role="track-listing"
                       data-title="<%= track.title %>"
                       data-member-id="<%= track.id %>"
-                      data-original-url="<%= main_app.download_path(track.id)    %>"
-                      data-ohms-timestamp-s="<%= decorator.start_time_for(track) %>"
+                      data-original-url="<%= main_app.download_path(track.id) %>"
                   >
 
                   <% if decorator.start_time_for(track) %>
                     <div class="icon">
-                      <a class="title play-link" title="Listen to '<%= track.title%>'" aria-label="Listen to '<%= track.title%>'" href="#" data-role="play-link">
+                      <a
+                        class="title play-link"
+                        title="Listen to '<%= track.title%>'"
+                        aria-label="Listen to '<%= track.title%>'"
+                        href="#" data-role="play-link"
+                        data-ohms-timestamp-s="<%= decorator.start_time_for(track) %>"
+                      >
                         <i class="fa fa-play-circle" aria-hidden="true"></i>
                       </a>
                     </div>
@@ -98,7 +103,14 @@
 
                   <div class="title">
                     <% if decorator.start_time_for(track) %>
-                      <a class="title play-link" title="Listen to '<%= track.title%>'" aria-label="Listen to '<%= track.title%>'" href="#" data-role="play-link">
+                      <a
+                        class="title play-link"
+                        title="Listen to '<%= track.title%>'"
+                        aria-label="Listen to '<%= track.title%>'"
+                        href="#"
+                        data-role="play-link"
+                        data-ohms-timestamp-s="<%= decorator.start_time_for(track) %>"
+                      >
                         <%= track.title %>
                         <% unless track.published? %>
                           <span title="Private" class="badge badge-warning">Private</span>
