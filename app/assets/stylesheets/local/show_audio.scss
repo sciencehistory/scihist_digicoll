@@ -199,7 +199,7 @@
     margin-top: 0;
   }
 
-  .track-listings {
+  .track-listings, .combined-downloads {
     border-top: 3px solid $table-border-color;
 
    .track-listing {
@@ -229,6 +229,21 @@
       word-break: break-word;
     }
 
+  }
+
+  .combined-audio-download-links {
+    border-top: 3px solid $table-border-color;
+    .combined-audio-download-icon-container {
+      padding-left: 1rem;
+      i {
+        margin-top: 1rem;
+        font-size: 150%;
+        margin-right: 0.9rem;
+      }
+    }
+    .combined-audio-download-link-size {
+      padding-left: 3.5rem;
+    }
   }
 
   .other-files {

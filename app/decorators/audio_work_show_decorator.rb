@@ -2,6 +2,8 @@ class AudioWorkShowDecorator < Draper::Decorator
   delegate_all
   include Draper::LazyHelpers
 
+  DOWNLOAD_URL_EXPIRES_IN = 2.days.to_i
+
   # This is called by works_controller#show.
   def view_template
     'works/show_with_audio'
@@ -85,15 +87,43 @@ class AudioWorkShowDecorator < Draper::Decorator
   end
 
   def combined_mp3_audio
-    # oh_content = model.oral_history_content!
-    # oh_content.combined_audio_mp3&.url(public:true)
     model&.oral_history_content&.combined_audio_mp3&.url(public:true)
   end
 
+  def combined_mp3_audio_download_filename
+    parts = [
+      DownloadFilenameHelper.first_three_words(model.title),
+      model.friendlier_id
+    ].collect(&:presence).compact
+    Pathname.new(parts.join("_")).sub_ext('.mp3').to_s
+  end
+
+  def combined_mp3_audio_download
+    model&.oral_history_content&.combined_audio_mp3&.url(
+      public: false,
+      expires_in: DOWNLOAD_URL_EXPIRES_IN,
+      response_content_type: 'audio/mpeg',
+      response_content_disposition: ContentDisposition.format(
+        disposition: 'attachment',
+        filename: combined_mp3_audio_download_filename
+      )
+    )
+  end
+
+  def combined_mp3_audio_size
+    number_to_human_size(model&.oral_history_content&.combined_audio_mp3&.size)
+  end
+
   def combined_webm_audio
-    # oh_content = model.oral_history_content!
-    # oh_content.combined_audio_webm&.url(public:true)
     model&.oral_history_content&.combined_audio_webm&.url(public:true)
+  end
+
+  def combined_audio_fingerprint
+    model&.oral_history_content&.combined_audio_fingerprint
+  end
+
+  def derivatives_up_to_date?
+    CombinedAudioDerivativeCreator.new(model).fingerprint == combined_audio_fingerprint
   end
 
   # An array of start times for each audio member.

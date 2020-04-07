@@ -154,7 +154,7 @@ class CombinedAudioDerivativeCreator
   def audio_members
     @audio_members ||= begin
       work.members.order(:position, :id).select do |member|
-        (member.is_a? Asset) && member.stored? && member.content_type && member.content_type.start_with?("audio/")
+        (member.is_a? Asset) && member.published? && member.stored? && member.content_type && member.content_type.start_with?("audio/")
       end
     end
   end
