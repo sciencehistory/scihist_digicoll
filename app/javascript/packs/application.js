@@ -21,7 +21,10 @@ import '../src/js/scihist_viewer.js';
 import '../src/js/custom_google_analytics_events.js';
 import '../src/js/cart_control.js';
 import '../src/js/date_range_render_workaround.js';
+import '../src/js/tab_selection_in_anchor';
+
 import '../src/js/audio/play_at_timecode.js';
 import '../src/js/audio/ohms_player.js';
-import '../src/js/tab_selection_in_anchor';
+import '../src/js/audio/accordion_open_on_screen.js';
+import '../src/js/audio/navbar_tabs.js';
 
