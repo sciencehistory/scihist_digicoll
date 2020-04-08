@@ -50,7 +50,7 @@ $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
     // It's actually kind of hard to get the browsers to scorll to this position,
     // this kind of hack seems to work, in this situation:
 
-    document.getElementById("ohmsAudioNavbar").get(0).scrollIntoView({behavior: "auto", block: "end"});
-    document.getElementById("ohmsAudioNavbar").get(0).scrollIntoView({behavior: "auto", block: "start"});
+    document.getElementById("ohmsAudioNavbar").scrollIntoView({behavior: "auto", block: "end"});
+    document.getElementById("ohmsAudioNavbar").scrollIntoView({behavior: "auto", block: "start"});
   }
 });
