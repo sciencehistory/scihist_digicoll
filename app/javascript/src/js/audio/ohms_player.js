@@ -1,27 +1,51 @@
-// JS we need for our local custom OHMS player func.
+// JS for our local custom OHMS player functionality.
 //
-// Yeah, we'll use JQuery, sorry.
+// This is pretty much all about SEARCH. JS support for transcript/table-of-contents is
+// limited to supporting links to skip to certain timecode on player, see play_at_timecode.js for that.
 //
-// TODO:
-// More docs.
-// Separate data-ohms-timestamp-s into separate file?
-
-
-
-
-
-
-// Orginal OHMS viewer does searching server-side, and then only uses JS to highlight
-// findings in identified DOM IDs.
+// ## CHALLENGES
 //
-// We are trying to do the searching all client side instead. If it doesn't work out, we
-// can always go to server-side. We are also trying to do the code for searching ourselves,
-// instead of using an existing solution like https://markjs.io/
+// This JS has gotten kind of complex -- I am not an expert at figuring out how to structure
+// JS for maintainability, or even figuring out what advanced JS features can be used in our
+// webpacker pipeline while still supporting our browser targets. I have done my best.
+//
+// This is still JQuery-style Javascript, not trying to use any fancy front-end frameworks; didn't
+// understand enough about them to pull them off and be sure of my decisions. Initially tried doing
+// without JQuery with only plain old browser JS, but was too challenging for me too.
+//
+// Note that original/standard PHP OHMS viewer does searching server-side, and only uses
+// JS to find the relevant passages to add highlighting to in the DOM.
+//
+// However, we are doing all searching client-side instead, actually searching through the
+// DOM for hits. Seems to work out okay, but if it doesn't, say for performance reasons,
+// we can always switch to server-side. We are also writing the code to do the searching ourselves,
+// instead of trying to use a pre-built solution like https://markjs.io/, which would
+// be another option.
 //
 // Some of our search code is BASED on what original ohms-viewer uses for highlighting. The
 // ohms-viewer code seems to be located in https://github.com/uklibraries/ohms-viewer/blob/45e0ab6df2388ce4e9704c89ce16f4ece953e2de/js/toggleSwitch.js
 //
-// We DO use JQuery at the moment, sorry.
+// ## IMPLEMENTATION OVERVIEW
+//
+// First, we implement an object called `Search`, that has 'static' global functions and data for
+// search behavior, called on the global constant, for example `Search.wrapInHighlight(string`,
+// or `Search.resultsMode()` or `Search.drawResults()`.
+//
+// Secondly, we implement a more class-based type called `SearchResults`, an object of which
+// represents a single set of search results for either table-of-contents section (often called
+// "index" in code, as per original OHMS), or transcript section.
+//
+// It is initialized with a dom element that is the target for displaying search results,
+// a list of result objects, either "transcript" or "index" as a mode.
+//
+//     new Search.SearchResults($("*[data-ohms-search-results]").get(0), array_of_results, "transcript");
+//
+// Thirdly and finally, we have some JQuery event handlers to wire up interactive behavior for search,
+// including executing the search, and letting tab switches control which search mode we are in,
+// index or transcript.
+
+
+
 var Search = {};
 
 
@@ -194,6 +218,9 @@ Search.clearSearchResults = function() {
 //   * If id is in a bootstrap collapsed that isn't currently expanded, expand it.
 //     (intended for Table of Contents section)
 //
+// Second optional argument is either "smooth" or "auto", with "auto" being the
+// default. As in HTML5 scroll functions which it will be passed to, "smooth"
+// will do a visible smooth scroll, "auto" just jumps to position.
 Search.scrollToId = function(domID, scrollBehavior) {
   if (scrollBehavior == undefined) {
     scrollBehavior = "smooth";
@@ -262,19 +289,21 @@ Search.onSearchSubmit = function(event) {
 
 /*
 
-   SearchResults object, encapsulates a single result set (either transcript or index),
+   Search.SearchResults object, encapsulates a single result set (either transcript or index),
    and logic for for drawing the search results area.
 
    Also has a method scrollToCurrentResult which will scroll page to current result,
    switching to tabs etc if needed, using functionality in Search object.
 
-       var results = new SearchResults( , array_of_results, "transcript");
+       var results = new Search.SearchResults($("*[data-ohms-search-results]").get(0), array_of_results, "transcript");
        results.draw(); // draw results on screen
        results.draw(12); // switch to displaying result 12 and draw
        results.scrollToCurrentResult();
 
  */
 
+// Initialized with a dom element that is the container for rendering search results,
+// a list of result objects, either "transcript" or "index" as a mode.
 Search.SearchResults = function(domContainer, results, mode) {
     this.domContainer = domContainer;
     this.results = results;
