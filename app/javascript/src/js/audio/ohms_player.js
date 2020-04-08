@@ -6,24 +6,9 @@
 // More docs.
 // Separate data-ohms-timestamp-s into separate file?
 
-$(document).on("click", "*[data-ohms-timestamp-s]", function(event) {
-  event.preventDefault();
-
-  var seconds = this.dataset.ohmsTimestampS;
-
-  var html5Audio = $("*[data-role=now-playing-container] audio").get(0);
-
-  html5Audio.currentTime = seconds;
-  html5Audio.play();
-});
 
 
-// okay the SEARCH is the crazier part
 
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
-var escapeRegExp = function(string) {
-  return string.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-}
 
 
 // Orginal OHMS viewer does searching server-side, and then only uses JS to highlight
@@ -37,218 +22,258 @@ var escapeRegExp = function(string) {
 // ohms-viewer code seems to be located in https://github.com/uklibraries/ohms-viewer/blob/45e0ab6df2388ce4e9704c89ce16f4ece953e2de/js/toggleSwitch.js
 //
 // We DO use JQuery at the moment, sorry.
-var Search = {
+var Search = {};
 
-  tabScrollPositions: {},
 
-  wrapInHighlight: function(match) {
-    return "<span class=\"ohms-highlight\">" + match + "</span>";
-  },
+// A function to take a string and turn it into a regexp for that literal, escaping
+// any regexp special chars.
+//
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+Search.escapeRegExp = function(string) {
+  return string.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+};
 
-  // After a search, we have a SearchResults object for Transcript, one
-  // for Index (ToC); and a resultsMode state that should be either 'transcript',
-  // or 'index' to tell us which is currently being displayed.
+// Just wraps text in span.ohms-highlight. No escaping is done, input
+// can include HTML, it will be presered.
+Search.wrapInHighlight =  function(match) {
+  return "<span class=\"ohms-highlight\">" + match + "</span>";
+};
 
-  currentTranscriptResults: undefined,
+// After a search, we have a SearchResults object for Transcript, one
+// for Index (ToC); and a resultsMode state that should be either 'transcript',
+// or 'index' to tell us which is currently being displayed.
+Search.currentTranscriptResults = undefined;
+Search.currentIndexResults      = undefined;
 
-  currentIndexResults: undefined,
 
-  resultsMode: function() {
-    if (this.resultsModeVal == undefined) {
-      if ($("#ohToc").length > 0) {
-        this.resultsModeVal = "index";
-      } else {
-        this.resultsModeVal = "transcript";
-      }
-    }
-
-    return this.resultsModeVal;
-  },
-
-  currentResults: function() {
-    // No idea why we need to say 'Search' instead of 'self' here.
-    if (Search.resultsMode() == "index") {
-      return Search.currentIndexResults;
+// Returns "index" or "transcript" depending on which set of results we are currently
+// displaying. Lazily calculates it if needed.
+Search.resultsMode = function() {
+  if (this.resultsModeVal == undefined) {
+    if ($("#ohToc").length > 0) {
+      this.resultsModeVal = "index";
     } else {
-      return Search.currentTranscriptResults;
+      this.resultsModeVal = "transcript";
     }
-  },
-
-  drawResults: function(resultIndex) {
-    self.currentResults().draw(resultIndex);
-  },
-
-  // Returns a regular expression as a STRING (so it can be embedded inside other regexps),
-  // meant for searching the DOM for search query. Borrowed/modified from ohms-viewer code,
-  //
-  // I think they are meant to avoid matching on HTML tags, so we can search and replace
-  // the DOM to add highlight tags?
-  regexpStrForSearch: function(query) {
-    if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent) || navigator.userAgent.search("Firefox")) {
-        return "(?![^<>]*(([\/\"']|]]|\b)>))(" + escapeRegExp(query) + ')';
-    } else {
-        return '(?<!</?[^>]*|&[^;]*)(' + escapeRegExp(query) + ')';
-    }
-  },
-
-  // Returns array of 'result' objects, how do we standardize what that is?
-  // context, tab id, id.
-  //
-  // looks through all objects that are .ohms-transcript-line,
-  // that works for our DOM. Should we add a data- hook?
-  //
-  // Highlights every hit, results a list of result objects.
-  searchTranscript: function(query) {
-    var _self = this;
-
-    var reStr = _self.regexpStrForSearch(query);
-
-    // one we'll use for replacing with highlight. Used on HTML.
-    var replace_re = new RegExp(reStr, 'gi');
-    // one we'll use for capturing with some surrounding context, up to one word before and 4 after.
-    // Used on pure text. Capture groups will be:
-    // 0 (actual match, not capture group): result in context with before and after
-    // 1: before match
-    // 2: match
-    // 3: after match
-    var find_re = new RegExp("((?:\\S*\\s+\\S*){0,1})(" + query + ")((?:\\s*\\S+\\s*){0,4})", "gi")
-
-    return $(".ohms-transcript-line").map(function() {
-      var line = $(this);
-
-      var lineId = this.id;
-      var match = line.text().match(find_re);
-
-      if (match) {
-        var highlightedMatch = match[1] + _self.wrapInHighlight(match[2]) + match[3];
-
-        // Actually highlight in source HTML, using HTML-safe regexp.
-        line.html(line.html().replace(replace_re, function (str) {
-          return _self.wrapInHighlight(str);
-        }));
-
-        return {
-          tabId: "ohTranscriptTab",
-          targetId: lineId,
-          highlightedMatch: highlightedMatch
-        }
-      }
-    }).get(); // plain array not jQuery object
-  },
-
-  // Like searchTranscript, but searches the Table Of Contents "index" content.
-  //
-  // Returns array of "result" objects.
-  //
-  // Highlights hits in index results.
-  searchIndex: function(query) {
-    var _self = this;
-
-    var reStr = new RegExp(_self.regexpStrForSearch(query), "gi");
-
-    return $(".ohms-index-point").map(function() {
-      var section = $(this);
-
-      var targetId = section.attr("id");
-      if (! targetId) { throw "can't record ohms search without finding a dom id " + section.get(0) }
-
-      var replacementMade = false;
-      var original = section.html();
-      var replacedContent = original.replace(reStr, function(str) {
-        replacementMade = true;
-        return _self.wrapInHighlight(str);
-      });
-
-      if (replacementMade) {
-        // there was a hit, so, highlight and include result
-
-        section.html(replacedContent);
-
-        return {
-          tabId: 'ohIndexTab',
-          targetId: targetId
-        };
-      }
-    }).get() // plain array not jQuery object
-  },
-
-  clearSearchResults: function() {
-    $(document).find("*[data-ohms-hitcount]").empty();
-    $(document).find("*[data-ohms-search-results]").empty();
-    $(document).find('.ohms-highlight').contents().unwrap();
-    this.currentTranscriptResults = undefined;
-    this.currentIndexResults = undefined;
-  },
-
-  // It would be lovely to just use built-in scrollIntoView, but we have
-  // to scroll around the fixed navbar on top, so we end up using
-  // some hacky jQuery stuff.
-  //
-  // Also importantly:
-  // * switches to a containing tab if necessary
-  // * Opens a containing bootstrap collapse if necessary (eg for Table of Contents/index section)
-  scrollToId: function(domID, scrollBehavior) {
-    if (scrollBehavior == undefined) {
-      scrollBehavior = "smooth";
-    }
-
-    // without block:center, it ends up scrolling under our fixed navbar, gah!
-    // this seems to be good enough.
-    var element = document.getElementById(domID);
-
-    // If it's in a tab, and the tab isn't currently shown, make it shown
-    var tabPane = $(element).closest(".tab-pane");
-    if (tabPane) {
-      // annoyingly, have to get the actual tab link that corresponds to
-      // the pane
-      var tab = $(".nav-link[href='#" + tabPane.attr("id") + "']");
-      tab.tab("show");
-    }
-
-    // If our target element CONTAINS a bootstrap collapsible that is collapsed,
-    // show it. This is intended for our ToC accordion.
-    var collapsible = $(element).find(".collapse");
-    if (collapsible && ! collapsible.hasClass("show")) {
-      collapsible.collapse("show");
-    }
-
-    var elTop = $(element).offset().top;
-    var navbarHeight = $("#ohmsAudioNavbar").height();
-
-    window.scrollTo({top: elTop - navbarHeight, behavior: scrollBehavior});
-  },
-
-  onSearchSubmit: function(event) {
-    event.preventDefault();
-
-    Search.clearSearchResults();
-
-    var query = $(event.target).find("*[data-ohms-input-query]").val();
-
-    if (query == "") {
-      return;
-    }
-
-    var transcriptResults = Search.searchTranscript(query);
-    Search.currentTranscriptResults = new Search.SearchResults(
-      $("*[data-ohms-search-results]").get(0),
-      transcriptResults,
-      "transcript"
-    );
-    $("*[data-ohms-hitcount='transcript']").html('<span class="badge badge-pill badge-danger">' + transcriptResults.length + '</span>');
-
-    var indexResults = Search.searchIndex(query);
-    Search.currentIndexResults = new Search.SearchResults(
-      $("*[data-ohms-search-results]").get(0),
-      indexResults,
-      "index"
-    );
-    $("*[data-ohms-hitcount='index']").html('<span class="badge badge-pill badge-danger">' + indexResults.length + '</span>');
-
-    Search.currentResults().draw();
-    Search.currentResults().scrollToCurrentResult();
   }
-}
+
+  return this.resultsModeVal;
+};
+
+// Returns a SearchResults object (see below) for the set of
+// results we are currently dispaying (`currentIndexResults` or `currentTranscriptResults`)
+Search.currentResults = function() {
+  // No idea why we need to say 'Search' instead of 'self' here.
+  if (Search.resultsMode() == "index") {
+    return Search.currentIndexResults;
+  } else {
+    return Search.currentTranscriptResults;
+  }
+};
+
+// Draws current results for current results mode (transcript or index) -- makes
+// the search results show up on screen matching current state.
+Search.drawResults = function(resultIndex) {
+  self.currentResults().draw(resultIndex);
+};
+
+// Returns a regular expression as a STRING (so it can be embedded inside other regexps),
+// meant for searching the DOM for search query. Borrowed/modified from ohms-viewer code,
+//
+// I think they are meant to avoid matching on HTML tags, so we can search and replace
+// the DOM to add highlight tags?
+Search.regexpStrForSearch = function(query) {
+  if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent) || navigator.userAgent.search("Firefox")) {
+      return "(?![^<>]*(([\/\"']|]]|\b)>))(" + this.escapeRegExp(query) + ')';
+  } else {
+      return '(?<!</?[^>]*|&[^;]*)(' + this.escapeRegExp(query) + ')';
+  }
+};
+
+// Returns array of 'result' objects, how do we standardize what that is?
+// context, tab id, id.
+//
+// looks through all objects that are .ohms-transcript-line,
+// that works for our DOM. Should we add a data- hook?
+//
+// Highlights every hit, results a list of result objects.
+Search.searchTranscript = function(query) {
+  var _self = this;
+
+  var reStr = _self.regexpStrForSearch(query);
+
+  // one we'll use for replacing with highlight. Used on HTML.
+  var replace_re = new RegExp(reStr, 'gi');
+  // one we'll use for capturing with some surrounding context, up to one word before and 4 after.
+  // Used on pure text. Capture groups will be:
+  // 0 (actual match, not capture group): result in context with before and after
+  // 1: before match
+  // 2: match
+  // 3: after match
+  var find_re = new RegExp("((?:\\S*\\s+\\S*){0,1})(" + query + ")((?:\\s*\\S+\\s*){0,4})", "gi")
+
+  return $(".ohms-transcript-line").map(function() {
+    var line = $(this);
+
+    var lineId = this.id;
+    var match = line.text().match(find_re);
+
+    if (match) {
+      var highlightedMatch = match[1] + _self.wrapInHighlight(match[2]) + match[3];
+
+      // Actually highlight in source HTML, using HTML-safe regexp.
+      line.html(line.html().replace(replace_re, function (str) {
+        return _self.wrapInHighlight(str);
+      }));
+
+      return {
+        tabId: "ohTranscriptTab",
+        targetId: lineId,
+        highlightedMatch: highlightedMatch
+      }
+    }
+  }).get(); // plain array not jQuery object
+};
+
+// Like searchTranscript, but searches the Table Of Contents "index" content.
+//
+// Returns array of "result" objects.
+//
+// Highlights hits in index results.
+Search.searchIndex = function(query) {
+  var _self = this;
+
+  var reStr = new RegExp(_self.regexpStrForSearch(query), "gi");
+
+  return $(".ohms-index-point").map(function() {
+    var section = $(this);
+
+    var targetId = section.attr("id");
+    if (! targetId) { throw "can't record ohms search without finding a dom id " + section.get(0) }
+
+    var replacementMade = false;
+    var original = section.html();
+    var replacedContent = original.replace(reStr, function(str) {
+      replacementMade = true;
+      return _self.wrapInHighlight(str);
+    });
+
+    if (replacementMade) {
+      // there was a hit, so, highlight and include result
+
+      section.html(replacedContent);
+
+      return {
+        tabId: 'ohIndexTab',
+        targetId: targetId
+      };
+    }
+  }).get() // plain array not jQuery object
+};
+
+// Clears all search results state, restores to initial condition with no search
+// execcuted.
+Search.clearSearchResults = function() {
+  $(document).find("*[data-ohms-hitcount]").empty();
+  $(document).find("*[data-ohms-search-results]").empty();
+  $(document).find('.ohms-highlight').contents().unwrap();
+  this.currentTranscriptResults = undefined;
+  this.currentIndexResults = undefined;
+};
+
+// Scrolls browser to show domID passed in.
+//
+// While it would be lovely to just use built-in scrollIntoView, we need to take
+// care of a few things that doesn't:
+//
+//   * Avoid fixed navbar on top, we don't want to scroll so the thing we want
+//     to show is behind the navbar.
+//
+//   * If id is in a tab that isn't currently visible, switch to that tab.
+//
+//   * If id is in a bootstrap collapsed that isn't currently expanded, expand it.
+//     (intended for Table of Contents section)
+//
+Search.scrollToId = function(domID, scrollBehavior) {
+  if (scrollBehavior == undefined) {
+    scrollBehavior = "smooth";
+  }
+
+  // without block:center, it ends up scrolling under our fixed navbar, gah!
+  // this seems to be good enough.
+  var element = document.getElementById(domID);
+
+  // If it's in a tab, and the tab isn't currently shown, make it shown
+  var tabPane = $(element).closest(".tab-pane");
+  if (tabPane) {
+    // annoyingly, have to get the actual tab link that corresponds to
+    // the pane
+    var tab = $(".nav-link[href='#" + tabPane.attr("id") + "']");
+    tab.tab("show");
+  }
+
+  // If our target element CONTAINS a bootstrap collapsible that is collapsed,
+  // show it. This is intended for our ToC accordion.
+  var collapsible = $(element).find(".collapse");
+  if (collapsible && ! collapsible.hasClass("show")) {
+    collapsible.collapse("show");
+  }
+
+  var elTop = $(element).offset().top;
+  var navbarHeight = $("#ohmsAudioNavbar").height();
+
+  window.scrollTo({top: elTop - navbarHeight, behavior: scrollBehavior});
+};
+
+// Execute a search, in response to a search submit. Find transcript and index
+// results, set search results state, draw search results on screen.
+Search.onSearchSubmit = function(event) {
+  event.preventDefault();
+
+  Search.clearSearchResults();
+
+  var query = $(event.target).find("*[data-ohms-input-query]").val();
+
+  if (query == "") {
+    return;
+  }
+
+  var transcriptResults = Search.searchTranscript(query);
+  Search.currentTranscriptResults = new Search.SearchResults(
+    $("*[data-ohms-search-results]").get(0),
+    transcriptResults,
+    "transcript"
+  );
+  $("*[data-ohms-hitcount='transcript']").html('<span class="badge badge-pill badge-danger">' + transcriptResults.length + '</span>');
+
+  var indexResults = Search.searchIndex(query);
+  Search.currentIndexResults = new Search.SearchResults(
+    $("*[data-ohms-search-results]").get(0),
+    indexResults,
+    "index"
+  );
+  $("*[data-ohms-hitcount='index']").html('<span class="badge badge-pill badge-danger">' + indexResults.length + '</span>');
+
+  Search.currentResults().draw();
+  Search.currentResults().scrollToCurrentResult();
+};
+
+
+
+/*
+
+   SearchResults object, encapsulates a single result set (either transcript or index),
+   and logic for for drawing the search results area.
+
+   Also has a method scrollToCurrentResult which will scroll page to current result,
+   switching to tabs etc if needed, using functionality in Search object.
+
+       var results = new SearchResults( , array_of_results, "transcript");
+       results.draw(); // draw results on screen
+       results.draw(12); // switch to displaying result 12 and draw
+       results.scrollToCurrentResult();
+
+ */
 
 Search.SearchResults = function(domContainer, results, mode) {
     this.domContainer = domContainer;
@@ -344,10 +369,21 @@ Search.SearchResults.prototype.nextButtonHtml = function() {
 }
 
 
+/*
+
+  EVENT HANDLERS
+
+*/
+
+
+// Submitting the search form wil do a search
 $(document).on("submit", "*[data-ohms-search-form]", function(event) {
   Search.onSearchSubmit(event);
 });
 
+
+// Clicking on next or previous button will scroll to that result, and
+// re-draw the search results to show current result.
 $(document).on("click", "*[data-ohms-search-result-index]", function(event) {
   event.preventDefault();
 
@@ -357,13 +393,23 @@ $(document).on("click", "*[data-ohms-search-result-index]", function(event) {
   Search.currentResults().scrollToCurrentResult();
 });
 
+
+
+// Clickig on the "X / Y" current result readout should scroll to current result
+$(document).on("click", "*[data-trigger='ohms-search-goto-current-result']", function(event) {
+  event.preventDefault();
+  Search.currentResults().scrollToCurrentResult();
+});
+
+
+// Clicking on "x" clear search button will clear all search results
+// and restore to initial state.
 $(document).on("click", "*[data-ohms-clear-search]", function(event) {
   event.preventDefault();
 
   $("*[data-ohms-input-query]").val("");
   Search.clearSearchResults();
 });
-
 
 
 // After a tab switch, we need to switch the search mode if it was index or transcript
@@ -383,16 +429,4 @@ $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
 });
 
 
-
-
-// Clickig on the "X / Y" current result readout should scroll to current result
-$(document).on("click", "*[data-trigger='ohms-search-goto-current-result']", function(event) {
-  event.preventDefault();
-  Search.currentResults().scrollToCurrentResult();
-});
-
-
-
-
-
-window.OhmsSearch = Search;
+//window.OhmsSearch = Search;
