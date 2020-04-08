@@ -9,17 +9,22 @@ $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
 });
 
 
-// Maintain scroll positions on tabs, kinda hacky, when a tab is hidden, store
-// it's scroll position, so can be restored when it's switched back.
+// Maintain scroll positions on tabs, kinda hacky.
+
+// Will hold scrollY positions for each tab,
+var tabScrollPositions = {};
+
+
+// When a tab is hidden, store it's scroll position, so can be restored when it's switched back.
 $(document).on("hide.bs.tab", ".work-show-audio", function(event) {
 
   // save scroll position, only if navbar is currently fixed to top due to scroll
   var navbarIsFixed = (document.getElementById("ohmsAudioNavbar").getBoundingClientRect().top == 0);
 
   if (navbarIsFixed) {
-    Search.tabScrollPositions[event.target.id] = window.scrollY;
+    tabScrollPositions[event.target.id] = window.scrollY;
   } else {
-    Search.tabScrollPositions[event.target.id] = undefined;
+    tabScrollPositions[event.target.id] = undefined;
   }
 });
 
@@ -31,7 +36,7 @@ $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
   // restore scroll position, or move to a reasonable starting point if first time on this tab.
 
   var navbarIsFixed = (document.getElementById("ohmsAudioNavbar").getBoundingClientRect().top == 0);
-  var saved = Search.tabScrollPositions[event.target.id];
+  var saved = tabScrollPositions[event.target.id];
 
   if (saved) {
     window.scrollTo({top: saved})
