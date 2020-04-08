@@ -53,9 +53,10 @@ $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
     // top of page -- move to top of fixed navbar at top of page in new tab.
 
     // It's actually kind of hard to get the browsers to scorll to this position,
-    // this kind of hack seems to work, in this situation:
+    // this kind of hack seems to work, in this situation, first scroll all the way to top,
+    // then ask browser to scroll to our fixed navbar.
 
-    document.getElementById("ohmsAudioNavbar").scrollIntoView({behavior: "auto", block: "end"});
+    window.scrollTo({top: 0});
     document.getElementById("ohmsAudioNavbar").scrollIntoView({behavior: "auto", block: "start"});
   }
 });
