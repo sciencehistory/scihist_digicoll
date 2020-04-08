@@ -402,7 +402,6 @@ class Admin::WorksController < AdminController
     # If this work is an oral history,
     # return true if the user needs to (re)calculate combined audio derivatives.
     def need_combined_audio_derivatives?
-      return false
       return false unless (@work.genre && @work.genre.include?('Oral histories'))
       existing_fingerprint = @work.oral_history_content!.combined_audio_fingerprint
       (existing_fingerprint != CombinedAudioDerivativeCreator.new(@work).fingerprint)
