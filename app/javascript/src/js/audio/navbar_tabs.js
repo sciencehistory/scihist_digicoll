@@ -9,7 +9,12 @@ $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
 });
 
 
-// Maintain scroll positions on tabs, kinda hacky.
+
+/*
+
+   Maintain scroll positions when switching between tabs, kinda hacky.
+
+*/
 
 // Will hold scrollY positions for each tab,
 var tabScrollPositions = {};
