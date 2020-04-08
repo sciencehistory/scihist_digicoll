@@ -1,7 +1,9 @@
 // JS for our local custom OHMS player functionality.
 //
-// This is pretty much all about SEARCH. JS support for transcript/table-of-contents is
-// limited to supporting links to skip to certain timecode on player, see play_at_timecode.js for that.
+// This is pretty much all about SEARCH over OHMS transcript and table of contents.
+//
+// JS support for features in transcript/table-of-contents themselves consists just of
+// having links to skip to certain timecode on player, see play_at_timecode.js for that.
 //
 // ## CHALLENGES
 //
