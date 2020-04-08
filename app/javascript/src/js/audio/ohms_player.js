@@ -364,25 +364,7 @@ $(document).on("click", "*[data-ohms-clear-search]", function(event) {
   Search.clearSearchResults();
 });
 
-// After an accordion section change, sometimes the open section is scrolled out
-// of the viewport. This can happen occasionally even in an 'ordinary' situation
-// with bootstrap accordion, but our fixed navbar makes it even more likely that
-// the open section is hidden behind the navbar.
-//
-// We detect that condition, and scroll to reveal it. Only within
-// an .ohms-index-container, not affecting all bootstrap collapse/accordions.
-$(document).on("shown.bs.collapse", ".ohms-index-container", function(event) {
-  var indexSection = $(event.target).closest(".ohms-index-point").get(0);
 
-  if (!indexSection) { return; }
-
-  var targetViewportXPosition = indexSection.getBoundingClientRect().top;
-  var navbarHeight = $("#ohmsAudioNavbar").height();
-
-  if (targetViewportXPosition <= navbarHeight) {
-    window.scrollTo({top: window.scrollY - (navbarHeight - targetViewportXPosition), behavior: "smooth"});
-  }
-});
 
 // After a tab switch, we need to switch the search mode if it was index or transcript
 // tab.
@@ -400,15 +382,7 @@ $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
   }
 });
 
-// On small screens, our tab bar can scroll, with some tabs off screen.
-// Make sure a selected tab is fully on screen, in line with Material Design
-// tab UI recommendations. We can use simple built into browser HTML5 scrollIntoView.
-// If the thing is already fully in view -- including on large screens -- we're hoping it's
-// a no-op.
-$(document).on("shown.bs.tab", ".work-show-audio", function(event) {
-  var tabElement = document.getElementById(event.target.id);
-  tabElement.scrollIntoView({block: "nearest", inline: "nearest"});
-});
+
 
 
 // Clickig on the "X / Y" current result readout should scroll to current result
@@ -418,41 +392,6 @@ $(document).on("click", "*[data-trigger='ohms-search-goto-current-result']", fun
 });
 
 
-
-// Maintain scroll positions on tabs, kinda hacky
-$(document).on("hide.bs.tab", ".work-show-audio", function(event) {
-
-  // save scroll position, only if navbar is currently fixed to top due to scroll
-  var navbarIsFixed = (document.getElementById("ohmsAudioNavbar").getBoundingClientRect().top == 0);
-
-  if (navbarIsFixed) {
-    Search.tabScrollPositions[event.target.id] = window.scrollY;
-  } else {
-    Search.tabScrollPositions[event.target.id] = undefined;
-  }
-});
-$(document).on("shown.bs.tab", ".work-show-audio", function(event) {
-  // restore scroll position, or move to a reasonable starting point if first time on this tab.
-
-  var navbarIsFixed = (document.getElementById("ohmsAudioNavbar").getBoundingClientRect().top == 0);
-  var saved = Search.tabScrollPositions[event.target.id];
-
-  if (saved) {
-    window.scrollTo({top: saved})
-  } else if (! navbarIsFixed) {
-    // navbar isn't fixed to top anyway, don't worry about it, too weird if we try.
-    return;
-  } else {
-    // we don't have a saved position, but we're in position with fixed navbar at
-    // top of page -- move to top of fixed navbar at top of page in new tab.
-
-    // It's actually kind of hard to get the browsers to scorll to this position,
-    // this kind of hack seems to work, in this situation:
-
-    document.getElementById("ohmsAudioNavbar").get(0).scrollIntoView({behavior: "auto", block: "end"});
-    document.getElementById("ohmsAudioNavbar").get(0).scrollIntoView({behavior: "auto", block: "start"});
-  }
-});
 
 
 
