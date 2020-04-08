@@ -89,7 +89,7 @@
                   <% if decorator.start_time_for(track) %>
                     <div class="icon">
                       <a
-                        class="title play-link"
+                        class="play-link"
                         title="Listen to '<%= track.title%>'"
                         aria-label="Listen to '<%= track.title%>'"
                         href="#" data-role="play-link"
@@ -103,18 +103,19 @@
 
                   <div class="title">
                     <% if decorator.start_time_for(track) %>
-                      <a
-                        class="title play-link"
-                        title="Listen to '<%= track.title%>'"
-                        aria-label="Listen to '<%= track.title%>'"
-                        href="#"
-                        data-role="play-link"
-                        data-ohms-timestamp-s="<%= decorator.start_time_for(track) %>"
-                      >
-                        <span class="start-time mr-3">
-                          <%= format_ohms_timestamp(decorator.start_time_for(track))%>
-                        </span>
-                        <%= track.title %>
+                        <a
+                          class="title play-link"
+                          title="Listen to '<%= track.title%>'"
+                          aria-label="Listen to '<%= track.title%>'"
+                          href="#"
+                          data-role="play-link"
+                          data-ohms-timestamp-s="<%= decorator.start_time_for(track) %>"
+                        >
+                          <%= track.title %>
+                          <div class="start-time text-muted">
+                            starts at <%= format_ohms_timestamp(decorator.start_time_for(track))%>
+                          </div>
+                        </a>
                         <% unless track.published? %>
                           <span title="Private" class="badge badge-warning">Private</span>
                         <% end %>
