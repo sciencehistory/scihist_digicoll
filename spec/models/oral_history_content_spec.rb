@@ -114,5 +114,21 @@ describe OralHistoryContent do
       end
     end
 
+    describe "#transcript_lines" do
+      # an XML with footnotes so we can test them being stripped
+      let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/hanford_OH0139.xml"}
+
+      it "strips footnotes" do
+        expect(ohms_xml.transcript_lines).to be_present
+
+        all_text = ohms_xml.transcript_lines.join("\n")
+
+        expect(all_text).not_to match(%r{\[\[/?footnote\]\]})
+        expect(all_text).not_to match(%r{\[\[/?footnotes\]\]})
+
+        # with footnote omitted:
+        expect(all_text).to include("mail them to get a patent.\n")
+      end
+    end
   end
 end

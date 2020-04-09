@@ -1,7 +1,15 @@
 require 'rails_helper'
 
-describe "Featured Topic show page", type: :system, js: false, solr:true do
-  it "displays" do
+describe "Featured Topic show page", type: :system, js: false, solr:true, indexable_callbacks: true do
+  let!(:three_sample_works ) do
+    [
+      create(:public_work, title: "artillery", subject: ["Artillery"]),
+      create(:public_work, title: "lithographs", genre: ["Lithographs"]),
+      create(:private_work, title: "machinery", subject: ["Machinery"])
+    ]
+  end
+
+  it "smoke tests" do
     fake_definition =  {
         instruments_and_innovation: {
         title: "Instruments & Innovation",
@@ -16,5 +24,8 @@ describe "Featured Topic show page", type: :system, js: false, solr:true do
     expect(page).to have_title "Instruments & Innovation"
     expect(page).to have_selector("h1", text: 'Instruments & Innovation')
     expect(page).to have_selector("p", text: 'Fireballs')
+    expect(page).to have_content("artillery")
+    expect(page).to have_content("lithographs")
+    expect(page).not_to have_content("machinery")
   end
 end

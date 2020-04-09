@@ -43,6 +43,38 @@ class OralHistoryContent
       end
     end
 
+    # Returns an ordered array of transcript lines
+    #
+    # filters footnotes out (later, does something... else with them)
+    #
+    def transcript_lines
+      @transcript_lines ||= begin
+        text = parsed.at_xpath("//ohms:transcript", ohms: OHMS_NS).text
+
+        # take out footnote markers, with whitespace on either side, they
+        # look like `[[footnote]]1[[/footnote]]
+        text.gsub!(%r{ *\[\[footnote\]\]\d+\[\[/footnote\]\] *}, '')
+
+        # take out footnotes section itself, it looks like:
+        #
+        #      [[footnotes]]
+        #
+        #     [[note]]William E. Hanford (to E.I. DuPont de Nemours &amp; Co.), &quot;Polyamides,&quot; U.S.
+        #     Patent 2,281,576, issued 5 May 1942.[[/note]]
+        #
+        #      [[/footnotes]]
+        #
+        # Use a non-greedy .*? to try and be non-greedy
+        # and get a single footnotes block if there are unexpectedly two,
+        # instead of going all the way from beginning of one to end of the other.
+        #
+        # Need regexp multiline mode to match newlines with `.`
+        text.gsub!(%r{\[\[footnotes\]\].*?\[\[/footnotes\]\]}m, '')
+
+        text.split("\n")
+      end
+    end
+
     # Represents an ohms //index/point element, what ohms calls an index we might
     # really call a Table of Contents. We're not currently using all the elements,
     # only providing access to those we are.
