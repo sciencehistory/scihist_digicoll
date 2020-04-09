@@ -195,8 +195,14 @@
     }
   }
 
-  .sound-file-header {
-    margin-top: 0;
+  .tab-pane.downloads {
+    margin-bottom: 2rem;
+  }
+
+  .downloads-pdf {
+    .attribute-sub-head {
+      margin-top: 0;
+    }
   }
 
   .track-listings, .combined-downloads {
