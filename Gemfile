@@ -14,7 +14,7 @@ gem 'webpacker', '~> 4.0'
 gem "blacklight", "~> 7.0", ">= 7.1.0.alpha"
 gem "blacklight_range_limit", "~> 7.0" # version sync'd with blacklight
 
-gem "draper", "~> 3.0" # "decorators", which we use as view models
+gem "draper", "~> 4.0", ">= 4.0.1" # "decorators", which we use as view models
 
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
