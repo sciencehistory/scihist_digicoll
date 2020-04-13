@@ -143,7 +143,7 @@ class AudioWorkShowDecorator < Draper::Decorator
   # We're rounding to the nearest tenth of a second; easier to read.
   # Returns nil if there is no start time for this asset, or for any assets.
   def start_time_for(audio_asset)
-    start_times[audio_asset.id]&.round(1)
+    start_times[audio_asset.id]
   end
 
 end
