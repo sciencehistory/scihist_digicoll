@@ -52,17 +52,19 @@
    .track-listing {
       display: flex;
       align-items: center;
-
       border-top: $table-border-width solid $table-border-color;
-
       &>  div > a, & > div .dropdown-toggle {
         padding: $table-cell-padding;
       }
 
       .title {
+        padding-left:   0.5em;
+        padding-right:  0;
         flex-grow: 1;
-        .play-link {
-          display: block;
+        .start-time {
+          color: $body-color;
+          font-size: 85%;
+          padding-left:   0.5em;
         }
       }
     }
