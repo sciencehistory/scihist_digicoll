@@ -4,12 +4,12 @@ describe "Audio front end", type: :system, js: true do
   let!(:parent_work) do
     build(:public_work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
   end
-  let(:audio_file_path) { Rails.root.join("spec/test_support/audio/ice_cubes.mp3")}
+  let(:audio_file_path) { Rails.root.join("spec/test_support/audio/5-seconds-of-silence.mp3")}
   let(:audio_file_sha512) { Digest::SHA512.hexdigest(File.read(audio_file_path)) }
 
 
   let(:combined_audio_file_path) {
-    Rails.root.join("spec/test_support/audio/double_ice_cubes.mp3")
+    Rails.root.join("spec/test_support/audio/5-seconds-of-silence.mp3")
   }
 
   let!(:audio_assets) {
@@ -158,7 +158,7 @@ describe "Audio front end", type: :system, js: true do
     let!(:parent_work) do
       build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
     end
-    let(:audio_file_path) { Rails.root.join("spec/test_support/audio/ice_cubes.mp3")}
+    let(:audio_file_path) { Rails.root.join("spec/test_support/audio/5-seconds-of-silence.mp3")}
     let(:audio_file_sha512) { Digest::SHA512.hexdigest(File.read(audio_file_path)) }
 
     let!(:audio_assets) {
