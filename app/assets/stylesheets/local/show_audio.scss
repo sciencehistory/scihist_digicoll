@@ -229,10 +229,12 @@
         padding-left:   0.5em;
         padding-right:  0;
         flex-grow: 1;
+        .play-link {
+          display: block;
+        }
         .start-time {
           color: $body-color;
           font-size: 85%;
-          padding-left:   0.5em;
         }
       }
     }
