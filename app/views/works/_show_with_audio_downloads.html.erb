@@ -83,7 +83,7 @@
       <% if decorator.start_time_for(track) %>
         <div class="icon">
           <a
-            class="title play-link"
+            class="play-link"
             title="Listen to '<%= track.title%>'"
             aria-label="Listen to '<%= track.title%>'"
             href="#" data-role="play-link"
@@ -106,6 +106,9 @@
             data-ohms-timestamp-s="<%= decorator.start_time_for(track) %>"
           >
             <%= track.title %>
+            <div class="start-time">
+              starts at <%= format_ohms_timestamp(decorator.start_time_for(track))%>
+            </div>
             <% unless track.published? %>
               <span title="Private" class="badge badge-warning">Private</span>
             <% end %>
