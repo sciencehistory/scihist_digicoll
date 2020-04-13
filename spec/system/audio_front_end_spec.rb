@@ -146,10 +146,9 @@ describe "Audio front end", type: :system, js: true do
       expect(scrubber_times.map {|x| (x*2).round }).to contain_exactly(0,0,1,2)
 
       # You should be able to download the combined audio derivs:
-      expect(page).to have_content("All 3 segments as a single file")
-      expect(page).to have_content("Optimized MP3")
+      expect(page).to have_content("Complete Interview Audio File")
+      expect(page).to have_content("3 Separate Interview Segments")
       expect(page).to have_content("25 KB")
-
     end
   end
 
