@@ -13,12 +13,10 @@ domready(function() {
     $(`*[data-toggle="tab"][href="${anchor}"]`).tab("show")
   }
 
-  // when clicking on a bootstrap tab, put the relevant ID in anchor,
+  // when showing on a bootstrap tab, put the relevant ID in anchor,
   // without adding to browser history
-  $('*[data-toggle="tab"]').on("click", function(event) {
+  $(document).on("show.bs.tab", function(event) {
     window.history.replaceState(undefined, undefined, event.target.getAttribute("href"));
   });
-
-
 });
 
