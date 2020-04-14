@@ -84,6 +84,20 @@ describe OralHistoryContent do
     end
   end
 
+  describe "No OHMS Transcript" do
+    # ohms does a weird thing wehre it puts "No transcript." in an XML element, let's make sure
+    # we're catching it.
+    let(:oral_history_content) {
+      work.create_oral_history_content(
+        ohms_xml_text: File.read(Rails.root + "spec/test_support/ohms_xml/alyea_OH0010.xml")
+      )
+    }
+
+    it "knows it" do
+      expect(oral_history_content.has_ohms_transcript?).to be(false)
+    end
+  end
+
 
   describe OralHistoryContent::OhmsXml do
     let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml"}
