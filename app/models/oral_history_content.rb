@@ -53,11 +53,15 @@ class OralHistoryContent < ApplicationRecord
   end
 
   def has_ohms_transcript?
-    ohms_xml&.parsed&.at_xpath("//ohms:record/ohms:transcript[normalize-space(text())]", ohms: OhmsXml::OHMS_NS)
+    @has_ohms_transcript ||= begin
+      transcript_text = ohms_xml&.parsed&.at_xpath("//ohms:record/ohms:transcript[normalize-space(text())]", ohms: OhmsXml::OHMS_NS)
+      # OHMS gives you a transcript body that says "No transcript.", argh!
+      transcript_text && transcript_text.text != "No transcript."
+    end
   end
 
   def has_ohms_index?
-    ohms_xml&.index_points&.present?
+    @has_ohms_index ||= ohms_xml&.index_points&.present?
   end
 
 
