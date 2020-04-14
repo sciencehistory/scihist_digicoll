@@ -180,7 +180,7 @@ class Admin::WorksController < AdminController
   end
 
   def reorder_members_form
-    # For oral histories, don't allow the manual reorder_members_form to be displayed unless the work is published.
+    # For oral histories, don't allow the manual reorder_members_form to be displayed if the work is published.
     work = Work.find_by_friendlier_id!(params[:id])
     if  work.genre && work.genre.include?('Oral histories') && work.published?
       redirect_to admin_work_url(params[:id], anchor: "nav-members"), alert: "Please unpublish this oral history if you want to reorder its segments."
@@ -199,11 +199,11 @@ class Admin::WorksController < AdminController
   # alphbetically.
   def reorder_members
     # For oral histories, don't allow automatic alphabetical reordering of
-    # members unless the work is published
+    # members if the work is published
     # (this would invalidate their combined audio derivatives.)
     work = Work.find_by_friendlier_id!(params[:id])
     if  work.genre && work.genre.include?('Oral histories') && work.published?
-      redirect_to admin_work_url(params[:id], anchor: "nav-members"), alert: "Please unpublish this oral history if you want to reorder its segments. (1)"
+      redirect_to admin_work_url(params[:id], anchor: "nav-members"), alert: "Please unpublish this oral history if you want to reorder its segments."
       return
     end
 
@@ -418,19 +418,12 @@ class Admin::WorksController < AdminController
     end
 
     # If this work is an oral history,
-    # return true if the user needs to (re)calculate combined audio derivatives.
+    # return true if the user needs to
+    # (re)calculate combined audio derivatives.
+    # before the work can be published.
     def need_combined_audio_derivatives?
       return false unless work_is_oral_history
       existing_fingerprint = @work.oral_history_content!.combined_audio_fingerprint
       (existing_fingerprint != CombinedAudioDerivativeCreator.new(@work).fingerprint)
     end
-
-    # To prevent accidentally publishing oral histories with out-of-date combined audio derivatives
-    def restrict_audio_member_edit?(member)
-      return false if member.work?
-      return false unless @work.published?
-      member.content_type && member.content_type.start_with?('audio')
-    end
-    helper_method :restrict_audio_member_edit?
-
 end
