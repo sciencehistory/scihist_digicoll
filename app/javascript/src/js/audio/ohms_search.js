@@ -343,6 +343,11 @@ Search.SearchResults.prototype.draw =  function(currentResultIndex) {
 };
 
 Search.SearchResults.prototype.scrollToCurrentResult = function() {
+  if (this.results.length == 0 || !this.currentResultIndex) {
+    // Don't have results, can't scroll to them.
+    return;
+  }
+
   // currentResultIndex is 1-based
   var result = this.results[this.currentResultIndex - 1];
   Search.scrollToId(result.targetId);
