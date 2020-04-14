@@ -60,8 +60,10 @@ describe "Audio front end", type: :system, js: true do
       click_on "Downloads"
 
       within("*[data-role='audio-playlist-wrapper']") do
-        expect(page).not_to have_css('.now-playing-container')
-        expect(page).to have_css("*[data-role='no-audio-alert']")
+        within('.now-playing-container') do
+          expect(page).to have_css("*[data-role='no-audio-alert']")
+        end
+
         track_listings = page.find_all('.track-listing')
         # The user is not logged in, and Track 2 is not published yet.
         # Thus, Track 2 should not be shown.
@@ -146,10 +148,9 @@ describe "Audio front end", type: :system, js: true do
       expect(scrubber_times.map {|x| (x*2).round }).to contain_exactly(0,0,1,2)
 
       # You should be able to download the combined audio derivs:
-      expect(page).to have_content("All 3 segments as a single file")
-      expect(page).to have_content("Optimized MP3")
+      expect(page).to have_content("Complete Interview Audio File")
+      expect(page).to have_content("3 Separate Interview Segments")
       expect(page).to have_content("25 KB")
-
     end
   end
 
@@ -202,7 +203,7 @@ describe "Audio front end", type: :system, js: true do
       it "shows the edit button, and all child items, including unpublished ones." do
         visit work_path(audio_assets.first.parent.friendlier_id)
 
-        click_on "Downloads"
+        find(".nav a", text: "Downloads").click
 
         # Audio tracks:
         within("*[data-role='audio-playlist-wrapper']") do
@@ -238,6 +239,35 @@ describe "Audio front end", type: :system, js: true do
           end
         end
       end
+    end
+  end
+
+  describe "ohms-enabled" do
+    let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml" }
+    let(:parent_work) {
+      create(:public_work, rights: "http://creativecommons.org/publicdomain/mark/1.0/").tap do |work|
+        work.oral_history_content!.update(ohms_xml_text: File.read(ohms_xml_path))
+      end
+    }
+
+    it "can display, and search, without errors" do
+      visit work_path(audio_assets.first.parent.friendlier_id)
+
+      within(".ohms-nav-tabs") do
+        expect(page).to have_content("Description")
+        expect(page).to have_content("Table of Contents")
+        expect(page).to have_content("Transcript")
+        expect(page).to have_content("Downloads")
+      end
+
+      within("*[data-ohms-search-form]") do
+        page.find("*[data-ohms-input-query]").fill_in with: "Duarte"
+        click_on "Search"
+      end
+
+      expect(page).to have_content(%r{Table of Contents — 1 / 7}i)
+      expect(page).to have_selector("*[data-ohms-hitcount='index']", text: "7")
+      expect(page).to have_selector("*[data-ohms-hitcount='transcript']", text: "43")
     end
   end
 end
