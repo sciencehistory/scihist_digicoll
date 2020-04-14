@@ -180,6 +180,12 @@ class Admin::WorksController < AdminController
   end
 
   def reorder_members_form
+    # For oral histories, don't allow the manual reorder_members_form to be displayed unless the work is published.
+    work = Work.find_by_friendlier_id!(params[:id])
+    if  work.genre && work.genre.include?('Oral histories') && work.published?
+      redirect_to admin_work_url(params[:id], anchor: "nav-members"), alert: "Please unpublish this oral history if you want to reorder its segments."
+      return
+    end
   end
 
   # triggered from members reorder form,
@@ -192,6 +198,15 @@ class Admin::WorksController < AdminController
   # B) Accessed via HTTP get without params[:ordered_member_ids], we'll sort
   # alphbetically.
   def reorder_members
+    # For oral histories, don't allow automatic alphabetical reordering of
+    # members unless the work is published
+    # (this would invalidate their combined audio derivatives.)
+    work = Work.find_by_friendlier_id!(params[:id])
+    if  work.genre && work.genre.include?('Oral histories') && work.published?
+      redirect_to admin_work_url(params[:id], anchor: "nav-members"), alert: "Please unpublish this oral history if you want to reorder its segments. (1)"
+      return
+    end
+
     if params[:ordered_member_ids]
       ActiveRecord::Base.transaction do
         params[:ordered_member_ids].each_with_index do |id, index|
@@ -199,7 +214,6 @@ class Admin::WorksController < AdminController
         end
       end
     else # alphabetical
-      work = Work.find_by_friendlier_id!(params[:id])
       sorted_members = work.members.sort_by{ |member| member.title.downcase  }.to_a
       ActiveRecord::Base.transaction do
         sorted_members.each_with_index do |member, index|
@@ -399,10 +413,14 @@ class Admin::WorksController < AdminController
     end
     helper_method :cancel_url
 
+    def work_is_oral_history
+      @work.genre && @work.genre.include?('Oral histories')
+    end
+
     # If this work is an oral history,
     # return true if the user needs to (re)calculate combined audio derivatives.
     def need_combined_audio_derivatives?
-      return false unless (@work.genre && @work.genre.include?('Oral histories'))
+      return false unless work_is_oral_history
       existing_fingerprint = @work.oral_history_content!.combined_audio_fingerprint
       (existing_fingerprint != CombinedAudioDerivativeCreator.new(@work).fingerprint)
     end
