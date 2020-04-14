@@ -9,7 +9,7 @@ gem 'lockbox'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.2.4', ">= 5.2.4.2"
-gem 'webpacker', '~> 4.0'
+gem 'webpacker', '~> 5.0'
 
 gem "blacklight", "~> 7.0", ">= 7.1.0.alpha"
 gem "blacklight_range_limit", "~> 7.0" # version sync'd with blacklight
