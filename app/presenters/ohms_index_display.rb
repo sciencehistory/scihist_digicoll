@@ -29,5 +29,11 @@ class OhmsIndexDisplay < ViewModel
     "ohmsAccordionHeader#{index}"
   end
 
+  # The whole 'card' element we use as a target for search results
+  def accordion_wrapper_id(index)
+    "ohmsAccordionCard#{index}"
+  end
+
+
 
 end
