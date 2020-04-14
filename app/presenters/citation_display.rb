@@ -31,7 +31,14 @@ class CitationDisplay
 
   # reuse this style cause it's expensive to load. It appears to be concurrency-safe.
   def self.csl_chicago_style
-    @csl_chicago_style ||= ::CSL::Style.load("chicago-note-bibliography")
+    # We lock to the older styles for "16th edition", because the newer 17th edition styles,
+    # while improved, change things in ways we may have to change some of our code to accomodate,
+    # for now we'll just lock to style version that we originally developed with.
+    #
+    # See: https://github.com/inukshuk/csl-styles/issues/5
+    #
+    # You could say just `chicago-note-bibliography` to mean latest version available.
+    @csl_chicago_style ||= ::CSL::Style.load("chicago-note-bibliography-16th-edition")
   end
 
   # similar to csl_chicago_style
