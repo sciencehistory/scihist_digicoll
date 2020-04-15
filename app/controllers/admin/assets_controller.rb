@@ -13,7 +13,7 @@ class Admin::AssetsController < AdminController
     @asset = Asset.find_by_friendlier_id!(params[:id])
     if published_oral_history_asset?
       redirect_to admin_work_path(@asset.parent.friendlier_id, anchor: "nav-members"),
-        alert: "Please unpublish '#{@asset.parent.title}' before modifying its member assets."
+        alert: "Please unpublish '#{@asset.parent.title}' before modifying the interview segments."
       return
     end
   end
@@ -38,7 +38,7 @@ class Admin::AssetsController < AdminController
     @asset = Asset.find_by_friendlier_id!(params[:id])
     if published_oral_history_asset?
       redirect_to admin_work_path(@asset.parent.friendlier_id, anchor: "nav-members"),
-        alert: "Please unpublish '#{@asset.parent.title}' before deleting any of its member assets."
+        alert: "Please unpublish '#{@asset.parent.title}' before deleting any of the interview segments."
       return
     end
 
@@ -66,7 +66,7 @@ class Admin::AssetsController < AdminController
     @parent = Work.find_by_friendlier_id!(params[:parent_id])
     if @parent.genre && @parent.genre.include?('Oral histories') && @parent.published?
       redirect_to admin_work_url(params[:parent_id], anchor: "nav-members"),
-        alert: "Please unpublish '#{@parent.title}' before adding any more files to it."
+        alert: "Please unpublish '#{@parent.title}' before adding any more interview segments."
       return
     end
   end
@@ -107,7 +107,7 @@ class Admin::AssetsController < AdminController
 
     if published_oral_history_asset?
       redirect_to admin_work_url( @asset.parent.friendlier_id, anchor: "nav-members"),
-        alert: "Please unpublish '#{@asset.parent.title}' before modifying its member assets."
+        alert: "Please unpublish '#{@asset.parent.title}' before modifying its interview segments."
       return
     end
 

@@ -192,7 +192,7 @@ class Admin::WorksController < AdminController
     # For oral histories, don't allow the manual reorder_members_form to be displayed if the work is published.
     if work_is_oral_history? && @work.published?
       redirect_to admin_work_url(params[:id], anchor: "nav-members"),
-        alert: "Please unpublish '#{@work.title}' if you want to reorder its segments."
+        alert: "Please unpublish '#{@work.title}' if you want to reorder the interview segments."
       return
     end
   end
@@ -213,7 +213,7 @@ class Admin::WorksController < AdminController
     work = Work.find_by_friendlier_id!(params[:id])
     if  work_is_oral_history? && work.published?
       redirect_to admin_work_url(params[:id], anchor: "nav-members"),
-        alert: "Please unpublish '#{work.title}' if you want to reorder its segments."
+        alert: "Please unpublish '#{work.title}' if you want to reorder the interview segments."
       return
     end
 
