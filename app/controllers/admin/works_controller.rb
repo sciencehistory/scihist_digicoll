@@ -34,7 +34,8 @@ class Admin::WorksController < AdminController
       if @parent_work.genre &&
         @parent_work.genre.include?('Oral histories') &&
         @parent_work.published?
-        redirect_to admin_work_url(params[:parent_id], anchor: "nav-members"), alert: "Please unpublish '#{@parent_work.title}' if you want to add a child work to it."
+        redirect_to admin_work_url(params[:parent_id], anchor: "nav-members"),
+          alert: "Please unpublish '#{@parent_work.title}' if you want to add a child work to it."
         return
       end
 
@@ -190,7 +191,8 @@ class Admin::WorksController < AdminController
   def reorder_members_form
     # For oral histories, don't allow the manual reorder_members_form to be displayed if the work is published.
     if work_is_oral_history? && @work.published?
-      redirect_to admin_work_url(params[:id], anchor: "nav-members"), alert: "Please unpublish '#{@work.title}' if you want to reorder its segments."
+      redirect_to admin_work_url(params[:id], anchor: "nav-members"),
+        alert: "Please unpublish '#{@work.title}' if you want to reorder its segments."
       return
     end
   end
@@ -210,7 +212,8 @@ class Admin::WorksController < AdminController
     # (this would invalidate their combined audio derivatives.)
     work = Work.find_by_friendlier_id!(params[:id])
     if  work_is_oral_history? && work.published?
-      redirect_to admin_work_url(params[:id], anchor: "nav-members"), alert: "Please unpublish '#{work.title}' if you want to reorder its segments."
+      redirect_to admin_work_url(params[:id], anchor: "nav-members"),
+        alert: "Please unpublish '#{work.title}' if you want to reorder its segments."
       return
     end
 
