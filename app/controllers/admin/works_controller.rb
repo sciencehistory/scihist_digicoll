@@ -5,7 +5,7 @@
 # We'll probably handle `show` in a different controller, for now no show.
 class Admin::WorksController < AdminController
   before_action :set_work,
-    only: [:show, :edit, :update, :destroy,
+    only: [:show, :edit, :update, :destroy, :reorder_members,
            :reorder_members_form, :demote_to_asset, :publish, :unpublish,
            :submit_ohms_xml, :create_combined_audio_derivatives]
 
@@ -30,6 +30,14 @@ class Admin::WorksController < AdminController
 
     if params[:parent_id]
       @parent_work = Work.find_by_friendlier_id!(params[:parent_id])
+
+      if @parent_work.genre &&
+        @parent_work.genre.include?('Oral histories') &&
+        @parent_work.published?
+        redirect_to admin_work_url(params[:parent_id], anchor: "nav-members"), alert: "Please unpublish '#{@parent_work.title}' if you want to add a child work to it."
+        return
+      end
+
       @work.parent = @parent_work
       @work.contained_by = @parent_work.contained_by
       @work.position = (@parent_work.members.maximum(:position) || 0) + 1
@@ -181,9 +189,9 @@ class Admin::WorksController < AdminController
 
   def reorder_members_form
     # For oral histories, don't allow the manual reorder_members_form to be displayed if the work is published.
-    work = Work.find_by_friendlier_id!(params[:id])
-    if  work.genre && work.genre.include?('Oral histories') && work.published?
-      redirect_to admin_work_url(params[:id], anchor: "nav-members"), alert: "Please unpublish this oral history if you want to reorder its segments."
+    #work = Work.find_by_friendlier_id!(params[:id])
+    if work_is_oral_history? && @work.published?
+      redirect_to admin_work_url(params[:id], anchor: "nav-members"), alert: "Please unpublish '#{@work.title}' if you want to reorder its segments."
       return
     end
   end
@@ -202,8 +210,8 @@ class Admin::WorksController < AdminController
     # members if the work is published
     # (this would invalidate their combined audio derivatives.)
     work = Work.find_by_friendlier_id!(params[:id])
-    if  work.genre && work.genre.include?('Oral histories') && work.published?
-      redirect_to admin_work_url(params[:id], anchor: "nav-members"), alert: "Please unpublish this oral history if you want to reorder its segments."
+    if  work_is_oral_history? && work.published?
+      redirect_to admin_work_url(params[:id], anchor: "nav-members"), alert: "Please unpublish '#{work.title}' if you want to reorder its segments."
       return
     end
 
@@ -413,16 +421,19 @@ class Admin::WorksController < AdminController
     end
     helper_method :cancel_url
 
-    def work_is_oral_history
+    def work_is_oral_history?
       @work.genre && @work.genre.include?('Oral histories')
     end
+    helper_method :work_is_oral_history?
 
     # If this work is an oral history,
     # return true if the user needs to
     # (re)calculate combined audio derivatives.
     # before the work can be published.
     def need_combined_audio_derivatives?
-      return false unless work_is_oral_history
+      # Not an oral history? Then you don't need these derivatives.
+      return false unless work_is_oral_history?
+      # Now, are they up to date?
       existing_fingerprint = @work.oral_history_content!.combined_audio_fingerprint
       (existing_fingerprint != CombinedAudioDerivativeCreator.new(@work).fingerprint)
     end

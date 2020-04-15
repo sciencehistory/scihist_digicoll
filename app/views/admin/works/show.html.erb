@@ -1,4 +1,4 @@
-  <div class="d-flex justify-content-between">
+<div class="d-flex justify-content-between">
 
     <div>
       <div class="d-flex align-items-start mt-1">
@@ -17,8 +17,6 @@
         </div>
       </div>
     </div>
-
-
 
     <div class="d-flex">
       <% if can? :publish, @work %>
@@ -49,13 +47,12 @@
     </div>
 </div>
 
-
 <nav class="mb-2">
   <div class="nav nav-tabs" id="nav-tab" role="tablist">
     <a class="nav-item nav-link active" id="nav-metadata-tab" data-toggle="tab" href="#nav-metadata" role="tab" aria-controls="nav-home" aria-selected="true">Metadata</a>
     <a class="nav-item nav-link" id="nav-members-tab" data-toggle="tab" href="#nav-members" role="tab" aria-controls="nav-profile" aria-selected="false">Members</a>
 
-    <% if @work.genre && @work.genre.include?('Oral histories') %>
+    <% if work_is_oral_history? %>
       <a class="nav-item nav-link" id="nav-oral-histories-tab" data-toggle="tab" href="#nav-oral-histories" role="tab" aria-controls="nav-profile" aria-selected="false">Oral History</a>
     <% end %>
 
@@ -80,6 +77,21 @@
 
   </div>
   <div class="tab-pane" id="nav-members" role="tabpanel" aria-labelledby="nav-members-tab">
+    <% if work_is_oral_history? && @work.published? %>
+      <div class="admin-work-toolbar d-flex flex-wrap">
+        <div class="alert alert-secondary mb-2 small text-muted">
+          <p>This is a published oral history. To prevent any accidental harm to the OHMS metadata, many of the functions usually available on this page are disabled.
+          </p>
+          <p>If you want to add, remove, or reorder the members, please:</p>
+          <ul>
+            <li>unpublish the oral history</li>
+            <li>make any changes you need</li>
+            <li>regenerate the combined audio derivatives (in the "Oral History" tab)</li>
+            <li>republish the oral history.</li>
+        </div>
+      </div>
+    <% end %>
+
     <div class="admin-work-toolbar d-flex flex-wrap">
       <div class="alert alert-secondary mx-1">
         <h2 class="h4 alert-heading">Add New Members</h2>
@@ -100,9 +112,7 @@
     <%= render "member_list_table", work: @work %>
   </div>
 
-  <% if @work.genre && @work.genre.include?('Oral histories') %>
-
-
+  <% if work_is_oral_history? %>
 
     <div class="tab-pane" id="nav-oral-histories" role="tabpanel" aria-labelledby="nav-oral-histories-tab">
 
