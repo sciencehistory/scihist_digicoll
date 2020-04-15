@@ -12,7 +12,8 @@ class Admin::AssetsController < AdminController
   def edit
     @asset = Asset.find_by_friendlier_id!(params[:id])
     if published_oral_history_asset?
-      redirect_to admin_work_path(@asset.parent.friendlier_id, anchor: "nav-members"), alert: "Please unpublish '#{@asset.parent.title}' before modifying its member assets."
+      redirect_to admin_work_path(@asset.parent.friendlier_id, anchor: "nav-members"),
+        alert: "Please unpublish '#{@asset.parent.title}' before modifying its member assets."
       return
     end
   end
@@ -21,6 +22,7 @@ class Admin::AssetsController < AdminController
   # PATCH/PUT /works/1.json
   def update
     @asset = Asset.find_by_friendlier_id!(params[:id])
+
     respond_to do |format|
       if @asset.update(asset_params)
         format.html { redirect_to admin_asset_url(@asset), notice: 'Asset was successfully updated.' }
@@ -35,7 +37,8 @@ class Admin::AssetsController < AdminController
   def destroy
     @asset = Asset.find_by_friendlier_id!(params[:id])
     if published_oral_history_asset?
-      redirect_to admin_work_path(@asset.parent.friendlier_id, anchor: "nav-members"), alert: "Please unpublish '#{@asset.parent.title}' before deleting any of its member assets."
+      redirect_to admin_work_path(@asset.parent.friendlier_id, anchor: "nav-members"),
+        alert: "Please unpublish '#{@asset.parent.title}' before deleting any of its member assets."
       return
     end
 
@@ -62,7 +65,8 @@ class Admin::AssetsController < AdminController
   def display_attach_form
     @parent = Work.find_by_friendlier_id!(params[:parent_id])
     if @parent.genre && @parent.genre.include?('Oral histories') && @parent.published?
-      redirect_to admin_work_url(params[:parent_id], anchor: "nav-members"), alert: "Please unpublish '#{@parent.title}' before adding any more files to it."
+      redirect_to admin_work_url(params[:parent_id], anchor: "nav-members"),
+        alert: "Please unpublish '#{@parent.title}' before adding any more files to it."
       return
     end
   end
@@ -74,6 +78,7 @@ class Admin::AssetsController < AdminController
   # POST /admin/works/[parent_work.friendlier_id]/ingest
   def attach_files
     @parent = Work.find_by_friendlier_id!(params[:parent_id])
+
     current_position = @parent.members.maximum(:position) || 0
 
     files_params = (params[:cached_files] || []).
@@ -99,8 +104,10 @@ class Admin::AssetsController < AdminController
 
   def convert_to_child_work
     @asset = Asset.find_by_friendlier_id!(params[:id])
+
     if published_oral_history_asset?
-      redirect_to admin_work_url( @asset.parent.friendlier_id, anchor: "nav-members"), alert: "Please unpublish '#{@asset.parent.title}' before modifying its member assets."
+      redirect_to admin_work_url( @asset.parent.friendlier_id, anchor: "nav-members"),
+        alert: "Please unpublish '#{@asset.parent.title}' before modifying its member assets."
       return
     end
 
@@ -145,5 +152,4 @@ class Admin::AssetsController < AdminController
       @asset.parent.genre.include?('Oral histories') &&
       @asset.parent.published?
   end
-
 end
