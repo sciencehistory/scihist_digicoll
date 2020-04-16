@@ -192,7 +192,7 @@ GEM
     crass (1.0.6)
     csl (1.5.1)
       namae (~> 1.0)
-    csl-styles (1.0.1.9)
+    csl-styles (1.0.1.10)
       csl (~> 1.0)
     database_cleaner (1.8.4)
     db-query-matchers (0.10.0)
@@ -648,7 +648,7 @@ DEPENDENCIES
   citeproc-ruby (~> 1.0)
   cocoon
   content_disposition (~> 1.0)
-  csl-styles (= 1.0.1.9)
+  csl-styles (~> 1.0)
   database_cleaner (~> 1.7)
   db-query-matchers (< 2.0)
   devise (~> 4.5)
