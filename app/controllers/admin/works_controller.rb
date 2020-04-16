@@ -126,8 +126,8 @@ class Admin::WorksController < AdminController
     authorize! :publish, @work
 
     if need_combined_audio_derivatives?
-      error = "Combined audio derivatives are absent or out of date. Please fix this before publishing this work."
-      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: { error: error }
+      error = "Combined audio derivatives are absent or out of date. Please generate them before publishing this work."
+      redirect_to admin_work_path(@work, anchor: "nav-members"), flash: { error: error }
       return
     end
 
@@ -274,7 +274,7 @@ class Admin::WorksController < AdminController
     redirect_to admin_work_path(asset.parent, anchor: "nav-members"), notice: "Child work replaced with asset #{asset.title}"
   end
 
-  # Display a form for entry for batch editing all works in Cart. Covnenient
+  # Display a form for entry for batch editing all works in Cart. Convenient
   # to put it in WorksController so we can re-use our work form partials.
   def batch_update_form
     # just a dummy blank one to power the form, the BatchUpdateWorkForm
