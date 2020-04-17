@@ -127,7 +127,7 @@ class Admin::WorksController < AdminController
 
     if need_combined_audio_derivatives?
       error = "Combined audio derivatives are absent or out of date. Please generate them before publishing this work."
-      redirect_to admin_work_path(@work, anchor: "nav-members"), flash: { error: error }
+      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: { error: error }
       return
     end
 
@@ -439,4 +439,31 @@ class Admin::WorksController < AdminController
       existing_fingerprint = @work.oral_history_content!.combined_audio_fingerprint
       (existing_fingerprint != CombinedAudioDerivativeCreator.new(@work).fingerprint)
     end
+
+    def restrict_audio_member_edit?(member)
+      return false if member.work?
+      return false unless @work.published?
+      member.content_type && member.content_type.start_with?('audio')
+    end
+    helper_method :restrict_audio_member_edit?
+
+
+    # Certain edits to oral histories
+    # are prohibited if the work is published.
+    # This mostly happens here in the controller,
+    # but as a courtesy we're also trying not to display
+    # certain parts of the UI that would result in an
+    # error message anyway.
+    def ok_to_edit_this_member?(member)
+      # Restrictions only apply to oral histories.
+      return true unless work_is_oral_history?
+      # If the oral history isn't published, you can edit it.
+      return true unless @work.published?
+      # Also, child works are fine to edit -- they wouldn't affect the OHMS metadata.
+      return true if member.work?
+      # But you need to unpublish it if
+      return false
+    end
+    helper_method :ok_to_edit_this_member?
+
 end
