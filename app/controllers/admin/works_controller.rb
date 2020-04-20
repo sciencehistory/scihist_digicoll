@@ -127,7 +127,7 @@ class Admin::WorksController < AdminController
 
     if need_combined_audio_derivatives?
       error = "Combined audio derivatives are absent or out of date. Please generate them before publishing this work."
-      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: { error: error }
+      redirect_to admin_work_path(@work, anchor: "nav-members"), flash: { error: error }
       return
     end
 
