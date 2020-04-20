@@ -152,4 +152,5 @@ class Admin::AssetsController < AdminController
       @asset.parent.genre.include?('Oral histories') &&
       @asset.parent.published?
   end
+  helper_method :published_oral_history_asset?
 end
