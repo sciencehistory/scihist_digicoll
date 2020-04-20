@@ -51,7 +51,11 @@
   </h2>
   <div class="combined-audio-download-links">
     <div class="combined-audio-download-icon-container">
-      <a href="<%= decorator.combined_mp3_audio_download %>" download>
+      <a href="<%= decorator.combined_mp3_audio_download %>"
+        data-analytics-category="Work"
+        data-analytics-action="download_combined_audio_derivatives"
+        data-analytics-label="<%= @work.friendlier_id %>"
+        >
         <i class="fa fa-download" aria-hidden="true"></i>
         Web-quality MP3
       </a>
