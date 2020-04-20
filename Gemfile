@@ -8,18 +8,18 @@ ruby "~> #{File.read('.ruby-version').chomp.split('.').slice(0,3).join('.')}"
 gem 'lockbox'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.2.4', ">= 5.2.4.2"
+gem 'rails', '~> 6.0.0'
 gem 'webpacker', '~> 4.0'
 
 gem "blacklight", "~> 7.0", ">= 7.1.0.alpha"
 gem "blacklight_range_limit", "~> 7.0" # version sync'd with blacklight
 
-gem "draper", "~> 3.0" # "decorators", which we use as view models
+gem "draper", "~> 4.0", ">= 4.0.1" # "decorators", which we use as view models
 
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
-gem 'puma', '~> 3.12'
+gem 'puma', '~> 4.1'
 
 # resque+redis being used for activejob, maybe later for Rails.cache
 # resque-pool currently does not support resque 2.0 alas.
@@ -41,7 +41,7 @@ gem 'uglifier', '>= 1.3.0'
 # gem 'mini_racer', platforms: :ruby
 
 # Use CoffeeScript for .coffee assets and views
-gem 'coffee-rails', '~> 4.2'
+#gem 'coffee-rails', '~> 5.0'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'
 # Use Redis adapter to run Action Cable in production
@@ -53,7 +53,7 @@ gem 'jbuilder', '~> 2.5'
 # gem 'capistrano-rails', group: :development
 
 # Reduces boot times through caching; required in config/boot.rb
-gem 'bootsnap', '>= 1.1.0', require: false
+gem 'bootsnap', '>= 1.4.4', require: false
 
 gem 'bootstrap', '~> 4.3'
 gem 'sprockets-rails', '>= 2.3.2' # bootstrap gem requirement
@@ -73,7 +73,7 @@ gem 'simple_form', "~> 5.0"
 gem "cocoon"
 
 gem "browse-everything", "~> 1.0"
-gem "qa", "~> 5.0"
+gem "qa", "~> 5.2"
 gem "shrine", "~> 2.0" #, path: "../shrine"
 # shrine-compat endpoint to get uppy to direct upload to S3 with resumable multi-part upload
 gem "uppy-s3_multipart"
@@ -96,7 +96,7 @@ gem 'html_aware_truncation', '~> 1.0'
 
 gem "prawn", "~> 2.2" # creating PDFs
 gem "pdf-reader", "~> 2.2" # simple metadata extraction from pdfs
-gem 'rubyzip', '~> 1.2', require: 'zip' # for making zip files, needs explicit require 'zip' cause it's old and crotchety
+gem 'rubyzip', '~> 2.0'
 
 
 # Until oai 1.0 is released...
@@ -127,7 +127,7 @@ group :development do
 end
 
 group :test do
-  gem 'rspec-rails', '~> 3.8'
+  gem 'rspec-rails', '~> 4.0'
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '>= 2.15'
   gem 'selenium-webdriver'
