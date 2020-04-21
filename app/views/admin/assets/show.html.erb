@@ -4,8 +4,18 @@
   <p>In Work: <%= link_to @asset.parent.title, [:admin, @asset.parent] %> </p>
 <% end %>
 <p>
-  <%= link_to "Edit", edit_admin_asset_path(@asset), class: "btn btn-primary" %>
-  <%= link_to "Convert to child work", convert_to_child_work_admin_asset_path(@asset), method: "put", class: "btn btn-primary" %>
+  <% if published_oral_history_asset? %>
+    <div class="alert alert-secondary col-sm-6" role="alert">
+      <small>
+        <p>'<%= @asset.parent.title %>' is a published oral history. To protect OHMS derivatives and metadata, editing this asset is disabled while the oral history is published.
+        </p>
+      </small>
+    </div>
+  <% else %>
+    <%= link_to "Edit", edit_admin_asset_path(@asset), class: "btn btn-primary" %>
+    <%= link_to "Convert to child work", convert_to_child_work_admin_asset_path(@asset), method: "put", class: "btn btn-primary" %>
+  <% end %>
+
 </p>
 
 <div class="row">
