@@ -7,7 +7,8 @@ class Admin::WorksController < AdminController
   before_action :set_work,
     only: [:show, :edit, :update, :destroy,
            :reorder_members_form, :demote_to_asset, :publish, :unpublish,
-           :submit_ohms_xml, :create_combined_audio_derivatives]
+           :submit_ohms_xml, :download_ohms_xml,
+           :remove_ohms_xml, :create_combined_audio_derivatives]
 
   # GET /admin/works
   # GET /admin/works.json
@@ -96,6 +97,18 @@ class Admin::WorksController < AdminController
     end
   end
 
+  # PATCH/PUT /admin/works/ab2323ac/remove_ohms_xml
+  def remove_ohms_xml
+    @work.oral_history_content!.update!(ohms_xml_text: nil)
+    redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: "OHMS XML file removed."
+  end
+
+  # GET /admin/works/ab2323ac/download_ohms_xml
+  def download_ohms_xml
+    send_data @work.oral_history_content!.ohms_xml_text,
+      :type => 'text/xml; charset=UTF-8;',
+      :disposition => "attachment; filename='#{@work.oral_history_content!.ohms_xml.record_id}.xml'"
+  end
 
   # Create_combined_audio_derivatives in the background, if warranted.
   # PATCH/PUT /admin/works/ab2323ac/create_combined_audio_derivatives
