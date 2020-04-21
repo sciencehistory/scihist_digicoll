@@ -150,6 +150,6 @@ FactoryBot.define do
     end
 
     key { "thumb_mini" }
-    file_data { uploaded_file.to_json }
+    file_data { uploaded_file.as_json }
   end
 end
