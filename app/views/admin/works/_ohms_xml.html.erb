@@ -16,7 +16,7 @@
             <%= link_to "Download OHMS XML", download_ohms_xml_admin_work_path(@work),  class: "btn btn-primary" %>
           </div>
           <div class="col-sm">
-            <%= link_to "Remove OHMS XML", remove_ohms_xml_admin_work_path(@work), method: "put", class: "btn btn-primary btn-danger", data: { confirm: "Are you sure?" } %>
+            <%= link_to "Remove OHMS XML", remove_ohms_xml_admin_work_path(@work), method: "put", class: "btn btn-primary btn-danger", data: { confirm: "Are you sure you want to remove the OHMS XML file?" } %>
           </div>
         </div>
       <% else %>
