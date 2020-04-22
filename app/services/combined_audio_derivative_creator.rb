@@ -73,15 +73,11 @@ class CombinedAudioDerivativeCreator
     @components ||= begin
       result = []
       audio_member_files.each do |original_file|
-        begin
-          new_temp_file = Tempfile.new(['temp_', original_file.metadata['filename'].downcase], :encoding => 'binary')
-          original_file.open(rewindable:false) do |input_audio_io|
-            new_temp_file.write input_audio_io.read until input_audio_io.eof?
-          end
-          result << new_temp_file
-        rescue Aws::S3::Errors::NotFound
-          return []
+        new_temp_file = Tempfile.new(['temp_', original_file.metadata['filename'].downcase], :encoding => 'binary')
+        original_file.open(rewindable:false) do |input_audio_io|
+          new_temp_file.write input_audio_io.read until input_audio_io.eof?
         end
+        result << new_temp_file
       end
       result
     end
