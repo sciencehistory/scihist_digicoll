@@ -2,6 +2,7 @@
 #
 # Pretty bare-bones, does set a custom storage location path.
 class CombinedAudioUploader < Shrine
+    plugin :activerecord
 
     # File it by work id, include the original filename in the S3 key, but also
     # generated UUID and suffix. Locations on S3 will look something like:
