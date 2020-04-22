@@ -26,7 +26,7 @@ namespace :scihist do
 
       progress_bar.title = asset.friendlier_id
       asset.dzi_file.create
-    rescue Aws::S3::Errors::NotFound
+    rescue *FixityChecker::SHRINE_NOT_FOUND_ERRORS
       progress_bar.log("Missing original for #{asset.friendlier_id}")
     ensure
       progress_bar.increment
