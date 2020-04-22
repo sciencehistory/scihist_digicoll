@@ -107,7 +107,8 @@ class Admin::WorksController < AdminController
   def download_ohms_xml
     send_data @work.oral_history_content!.ohms_xml_text,
       :type => 'text/xml; charset=UTF-8;',
-      :disposition => "attachment; filename=#{@work.oral_history_content!.ohms_xml.accession}.xml"
+      :disposition => ContentDisposition.format(disposition: "attachment", filename: "#{@work.oral_history_content!.ohms_xml.accession}.xml")
+      #:disposition => "attachment; filename=#{@work.oral_history_content!.ohms_xml.accession}.xml"
   end
 
   # Create_combined_audio_derivatives in the background, if warranted.
