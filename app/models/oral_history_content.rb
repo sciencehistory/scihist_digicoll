@@ -79,8 +79,17 @@ class OralHistoryContent < ApplicationRecord
     # `attacher.attach(file, storage: :store)`  Or not sure if that should be `storage: :actual_name_of_store`
 
     original = shrine_attacher.get
-    stored_file = shrine_attacher.store!(io, metadata: {"mime_type" => mime_type, "filename" => "combined.#{file_suffix}"})
-    shrine_attacher.set(stored_file)
+    metadata = { "mime_type" => mime_type, "filename" => "combined.#{file_suffix}" }
+
+    if Shrine.version < Gem::Version.new("3.0")
+      # shrine 2.x way of writing directly to storage
+      stored_file = shrine_attacher.store!(io, metadata: metadata)
+      shrine_attacher.set(stored_file)
+    else
+      # shrine 3.x way of writing directly to storage
+      shrine_attacher.attach(io, metadata: metadata)
+    end
+
     self.save!
   rescue StandardError => e
     # clean up file if there was a problem
