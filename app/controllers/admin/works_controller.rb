@@ -106,6 +106,7 @@ class Admin::WorksController < AdminController
   # GET /admin/works/ab2323ac/download_ohms_xml
   def download_ohms_xml
     raw_interviewee = CitableAttributes.work_lookup(@work, "creator", "interviewee")
+
     # The first three words of an oral history tend to be "Oral History Interview"
     # so let's try and extract the interviewee for the filename:
     interviewee_last_name = raw_interviewee.
@@ -122,7 +123,7 @@ class Admin::WorksController < AdminController
 
     send_data @work.oral_history_content!.ohms_xml_text,
       :type => 'text/xml; charset=UTF-8;',
-      :disposition => "attachment; filename='#{basename}.xml'"
+      :disposition => "attachment; filename=#{basename}.xml"
   end
 
   # Create_combined_audio_derivatives in the background, if warranted.
