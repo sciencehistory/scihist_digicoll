@@ -5,7 +5,7 @@
 # We'll probably handle `show` in a different controller, for now no show.
 class Admin::WorksController < AdminController
   before_action :set_work,
-    only: [:show, :edit, :update, :destroy,
+    only: [:show, :edit, :update, :destroy, :reorder_members,
            :reorder_members_form, :demote_to_asset, :publish, :unpublish,
            :submit_ohms_xml, :download_ohms_xml,
            :remove_ohms_xml, :create_combined_audio_derivatives]
@@ -31,6 +31,15 @@ class Admin::WorksController < AdminController
 
     if params[:parent_id]
       @parent_work = Work.find_by_friendlier_id!(params[:parent_id])
+
+      if @parent_work.genre &&
+        @parent_work.genre.include?('Oral histories') &&
+        @parent_work.published?
+        redirect_to admin_work_url(params[:parent_id], anchor: "nav-members"),
+          alert: "Please unpublish '#{@parent_work.title}' if you want to add a child work to it."
+        return
+      end
+
       @work.parent = @parent_work
       @work.contained_by = @parent_work.contained_by
       @work.position = (@parent_work.members.maximum(:position) || 0) + 1
@@ -130,6 +139,12 @@ class Admin::WorksController < AdminController
   def publish
     authorize! :publish, @work
 
+    if need_combined_audio_derivatives?
+      error = "Combined audio derivatives are absent or out of date. Please generate them before publishing this work."
+      redirect_to admin_work_path(@work, anchor: "nav-members"), flash: { error: error }
+      return
+    end
+
     @work.class.transaction do
       @work.update!(published: true)
       @work.all_descendent_members.find_each do |member|
@@ -188,6 +203,12 @@ class Admin::WorksController < AdminController
   end
 
   def reorder_members_form
+    # For oral histories, don't allow the manual reorder_members_form to be displayed if the work is published.
+    if work_is_oral_history? && @work.published?
+      redirect_to admin_work_url(params[:id], anchor: "nav-members"),
+        alert: "Please unpublish '#{@work.title}' if you want to reorder the interview segments."
+      return
+    end
   end
 
   # triggered from members reorder form,
@@ -200,6 +221,16 @@ class Admin::WorksController < AdminController
   # B) Accessed via HTTP get without params[:ordered_member_ids], we'll sort
   # alphbetically.
   def reorder_members
+    # For oral histories, don't allow automatic alphabetical reordering of
+    # members if the work is published
+    # (this would invalidate their combined audio derivatives.)
+    work = Work.find_by_friendlier_id!(params[:id])
+    if  work_is_oral_history? && work.published?
+      redirect_to admin_work_url(params[:id], anchor: "nav-members"),
+        alert: "Please unpublish '#{work.title}' if you want to reorder the interview segments."
+      return
+    end
+
     if params[:ordered_member_ids]
       ActiveRecord::Base.transaction do
         params[:ordered_member_ids].each_with_index do |id, index|
@@ -207,7 +238,6 @@ class Admin::WorksController < AdminController
         end
       end
     else # alphabetical
-      work = Work.find_by_friendlier_id!(params[:id])
       sorted_members = work.members.sort_by{ |member| member.title.downcase  }.to_a
       ActiveRecord::Base.transaction do
         sorted_members.each_with_index do |member, index|
@@ -258,7 +288,7 @@ class Admin::WorksController < AdminController
     redirect_to admin_work_path(asset.parent, anchor: "nav-members"), notice: "Child work replaced with asset #{asset.title}"
   end
 
-  # Display a form for entry for batch editing all works in Cart. Covnenient
+  # Display a form for entry for batch editing all works in Cart. Convenient
   # to put it in WorksController so we can re-use our work form partials.
   def batch_update_form
     # just a dummy blank one to power the form, the BatchUpdateWorkForm
@@ -406,4 +436,48 @@ class Admin::WorksController < AdminController
       admin_works_path
     end
     helper_method :cancel_url
+
+    def work_is_oral_history?
+      @work.genre && @work.genre.include?('Oral histories')
+    end
+    helper_method :work_is_oral_history?
+
+    # If this work is an oral history,
+    # return true if the user needs to
+    # (re)calculate combined audio derivatives.
+    # before the work can be published.
+    def need_combined_audio_derivatives?
+      # Not an oral history? Then you don't need these derivatives.
+      return false unless work_is_oral_history?
+      # Now, are they up to date?
+      existing_fingerprint = @work.oral_history_content!.combined_audio_fingerprint
+      (existing_fingerprint != CombinedAudioDerivativeCreator.new(@work).fingerprint)
+    end
+
+    def restrict_audio_member_edit?(member)
+      return false if member.work?
+      return false unless @work.published?
+      member.content_type && member.content_type.start_with?('audio')
+    end
+    helper_method :restrict_audio_member_edit?
+
+
+    # Certain edits to oral histories
+    # are prohibited if the work is published.
+    # This mostly happens here in the controller,
+    # but as a courtesy we're also trying not to display
+    # certain parts of the UI that would result in an
+    # error message anyway.
+    def ok_to_edit_this_member?(member)
+      # Restrictions only apply to oral histories.
+      return true unless work_is_oral_history?
+      # If the oral history isn't published, you can edit it.
+      return true unless @work.published?
+      # Also, child works are fine to edit -- they wouldn't affect the OHMS metadata.
+      return true if member.work?
+      # But you need to unpublish it if
+      return false
+    end
+    helper_method :ok_to_edit_this_member?
+
 end

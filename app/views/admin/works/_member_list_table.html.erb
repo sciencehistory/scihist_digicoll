@@ -45,11 +45,21 @@
           <td class="datestamp"><%= l member.updated_at.to_date, format: :admin %></td>
           <td>
             <div class="dropdown dropdown-menu-right">
-              <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
+              <% if ok_to_edit_this_member?(member) %>
+                <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
+              <% else %>
+                <div class="alert alert-secondary p-1 m-1" role="alert">
+                  <small>
+                    Unpublish this work to edit.
+                  </small>
+                </div>
+              <% end %>
               <% if member.kind_of?(Work) %>
                 <%= admin_dropdown_for_work(member, labelled_by_id: "dropdownMenuButton") %>
               <% elsif member.kind_of?(Asset) %>
+                <% if ok_to_edit_this_member?(member) %>
                   <%= admin_dropdown_for_asset(member, labelled_by_id: "dropdownMenuButton") %>
+                <% end %>
               <% end %>
             </div>
           </td>
