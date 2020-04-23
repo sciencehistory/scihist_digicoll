@@ -38,7 +38,9 @@ describe FixityCheck do
     # copying over file_data from good_asset_2.
     good_asset.file_data = good_asset_2.file_data
     good_asset.save!
+    good_asset.reload
     expect(good_asset.file.url).to eq good_asset_2.file.url
+
     FixityChecker.new(good_asset).check
     latest_fixity_check = good_asset.fixity_checks[1]
     expect(good_asset.fixity_checks[0].checked_uri).not_to be == good_asset.fixity_checks[1].checked_uri
