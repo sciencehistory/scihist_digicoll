@@ -7,10 +7,9 @@ GIT
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: 67687ae183613616835b4fb9d38c5ee2aec3feac
-  branch: remove_audio_asset_derivatives
+  revision: d0e31f1831c2e6659dd7b23e221bc9fb04de5dea
   specs:
-    kithe (1.1.1)
+    kithe (1.1.2)
       attr_json (< 2.0.0)
       fastimage (~> 2.0)
       marcel
