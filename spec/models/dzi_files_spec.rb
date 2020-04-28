@@ -84,18 +84,20 @@ describe DziFiles do
     describe "non-image file" do
       describe "asset creation" do
         let(:asset) {
-          create(:asset_with_faked_file, faked_file: File.open((Rails.root + "spec/test_support/pdf/sample.pdf").to_s)).
-          tap {|a| a.dzi_file.create }
+          create(:asset_with_faked_file, faked_content_type: "audio/mpeg", faked_file: File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.mp3").to_s))
         }
 
         it "does not queue dzi creation" do
-          asset
+          expect {
+            asset.dzi_file.create
+          }.to raise_error(ArgumentError)
+
           expect(CreateDziJob).not_to have_been_enqueued.with(asset)
         end
       end
 
       describe "asset deletion" do
-        let(:asset) { create(:asset_with_faked_file, faked_file: File.open((Rails.root + "spec/test_support/pdf/sample.pdf").to_s)) }
+        let(:asset) { create(:asset_with_faked_file, faked_content_type: "audio/mpeg", faked_file: File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.mp3").to_s)) }
 
         it "does not raise" do
           asset.set_promotion_directives(delete: :inline)
