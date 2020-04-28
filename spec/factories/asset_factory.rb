@@ -91,6 +91,7 @@ FactoryBot.define do
         # Set our uploaded file
 
         uploaded_file = create(:stored_uploaded_file,
+          file: evaluator.faked_file,
           content_type: evaluator.faked_content_type,
           width: evaluator.faked_width,
           height: evaluator.faked_height,
@@ -150,6 +151,6 @@ FactoryBot.define do
     end
 
     key { "thumb_mini" }
-    file_data { uploaded_file.to_json }
+    file_data { uploaded_file.as_json }
   end
 end

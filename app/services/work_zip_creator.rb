@@ -1,4 +1,5 @@
 require 'open-uri'
+require 'zip'
 
 # Create a ZIP of full-size JPGs of all images in a work.
 #

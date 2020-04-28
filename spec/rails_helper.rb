@@ -82,7 +82,7 @@ RSpec.configure do |config|
   end
 
   # feature vs system? I'm confused.
-  config.before(:each, type: :feature) do
+  config.before(:each, type: /\A(feature|system)\Z/) do
     default_url_options[:host] = ScihistDigicoll::Env.app_url_base_parsed.host
   end
 
