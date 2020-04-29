@@ -65,7 +65,7 @@ gem 'font-awesome-rails', '~> 4.7'
 
 # temporary kithe indexing branch, for scihist_digicoll indexing branch, do not
 # intend to merge to master like this.
-gem 'kithe', git: "https://github.com/sciencehistory/kithe.git"
+gem 'kithe', ">= 2.0.0.alpha1", "< 3", git: "https://github.com/sciencehistory/kithe.git", branch: "v3.0-alpha"
 
 # temporary git master, we should get on an attr_json release once we're settled down
 gem "attr_json", git: "https://github.com/jrochkind/attr_json" #path: "../attr_json"
@@ -75,7 +75,7 @@ gem "cocoon"
 
 gem "browse-everything", "~> 1.0"
 gem "qa", "~> 5.2"
-gem "shrine", "~> 2.0" #, path: "../shrine"
+gem "shrine", "~> 3.0" #, path: "../shrine"
 # shrine-compat endpoint to get uppy to direct upload to S3 with resumable multi-part upload
 gem "uppy-s3_multipart"
 gem "content_disposition", "~> 1.0"
