@@ -43,19 +43,36 @@ class OralHistoryContent
       end
     end
 
+    def transcript_text
+       @transcript_text = parsed.at_xpath("//ohms:transcript", ohms: OHMS_NS).text
+    end
+
+
+    # Convert the footnotes section into an array the presenter can use. It looks like:
+    #
+    #      [[footnotes]]
+    #
+    #     [[note]]William E. Hanford (to E.I. DuPont de Nemours &amp; Co.), &quot;Polyamides,&quot; U.S.
+    #     Patent 2,281,576, issued 5 May 1942.[[/note]]
+    #
+    #      [[/footnotes]]
+    def footnotes_as_json
+      @footnote_array ||= begin
+        notes = transcript_text.scan(/\[\[footnotes\]\](.*)\[\[\/footnotes\]\]/m)[0][0]
+        return [] unless notes
+        note_strings = notes.scan(/\[\[note\]\](.*?)\[\[\/note\]\]/m).
+          map{ |x| x[0].gsub(/\s+/, ' ').strip }
+        JSON.pretty_generate(note_strings)
+      end
+    end
+
     # Returns an ordered array of transcript lines
-    #
-    # filters footnotes out (later, does something... else with them)
-    #
+    # Filters the footnotes out. References to the footnotes, however, are kept;
+    # these are dealt with in the presenter.
     def transcript_lines
       @transcript_lines ||= begin
-        text = parsed.at_xpath("//ohms:transcript", ohms: OHMS_NS).text
-
-        # take out footnote markers, with whitespace on either side, they
-        # look like `[[footnote]]1[[/footnote]]
-        text.gsub!(%r{ *\[\[footnote\]\]\d+\[\[/footnote\]\] *}, '')
-
-        # take out footnotes section itself, it looks like:
+        text = transcript_text
+        # take out footnotes section. It looks like:
         #
         #      [[footnotes]]
         #

@@ -325,6 +325,12 @@
       left: 0;
     }
   }
+
+  span.footnote {
+      color: $brand-red;
+      font-size: 90%;
+      cursor: pointer;
+  }
 }
 
 .ohms-index-container {
