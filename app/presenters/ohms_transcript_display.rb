@@ -35,6 +35,7 @@ class OhmsTranscriptDisplay < ViewModel
     paragraph_html_arr = paragraphs.collect do |p_arr|
       content_tag("p", class: "ohms-transcript-paragraph") do
         safe_join(p_arr.collect do |line|
+          line[:text] = process_footnote(line[:text])
           content_tag("span", format_ohms_line(line), class: "ohms-transcript-line", id: "ohms_line_#{line[:line_num]}")
         end)
       end
@@ -44,11 +45,49 @@ class OhmsTranscriptDisplay < ViewModel
   end
 
 
+  def display_footnotes
+    array_of_divs = model.footnote_array.each_with_index.map do |f, i|
+      (
+        "<div class=\"my-2\">" +
+          # An anchor so we can come down to the footnote section from the reference:
+          "<a name=\"footnote#{i + 1}\" id=\"footnote#{i + 1}\"></a>" +
+          # and a link so we can head back up to the reference:
+          "<a href=\"#sup#{i + 1}\">#{i + 1}.</a> #{f}" +
+        "</div>"
+      ).html_safe()
+    end
+    safe_join(array_of_divs)
+  end
+
   private
+
+  def footnote_html(number)
+    footnote_number = number.to_i
+    footnote_anchor = "<a name=\"sup#{number}\"></a>"
+    footnote_text = (model.footnote_array[footnote_number - 1]).html_safe
+    the_html = " <span class=\"footnote\" data-toggle=\"tooltip\" title=\"" +
+                  footnote_text.gsub('"', '&quot;') +
+                "\">" +
+                + footnote_anchor +
+                "<a href=\"#footnote#{number}\">" +
+                  "[" +
+                    number +
+                  "]" +
+                "</a>" +
+              "</span>"
+    the_html.html_safe()
+  end
+
+
+  def process_footnote(text)
+    return text unless match = text.match(%r{ *\[\[footnote\]\](\d+)\[\[/footnote\]\] *})
+    text.sub(match[0], footnote_html(match[1])).html_safe
+  end
 
   def sync_timecodes
     model.sync_timecodes
   end
+
 
   # * adds a timecode anchor if needed.
   # * Catches "speaker" notation and wraps in class.
