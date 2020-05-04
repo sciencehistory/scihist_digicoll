@@ -103,6 +103,13 @@ describe OralHistoryContent do
     let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml"}
     let(:ohms_xml) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path))}
 
+    #let(:ohms_xml_path_no_footnotes) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml"}
+    #let(:ohms_xml_no_footnotes) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path_no_footnotes))}
+
+    let(:ohms_xml_path_with_footnotes) { Rails.root + "spec/test_support/ohms_xml/hanford_OH0139.xml"}
+    let(:ohms_xml_with_footnotes) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path_with_footnotes))}
+
+
     describe "#sync_timecodes" do
       it "are as expected" do
         # we'll just check a sampling, we have one-second interval granularity in XML
@@ -129,19 +136,24 @@ describe OralHistoryContent do
     end
 
     describe "#transcript_lines" do
-      # an XML with footnotes so we can test them being stripped
-      let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/hanford_OH0139.xml"}
-
-      it "strips footnotes" do
-        expect(ohms_xml.transcript_lines).to be_present
-
-        all_text = ohms_xml.transcript_lines.join("\n")
-
-        expect(all_text).not_to match(%r{\[\[/?footnote\]\]})
+      it "strips footnote section from the text" do
+        expect(ohms_xml_with_footnotes.transcript_lines).to be_present
+        all_text = ohms_xml_with_footnotes.transcript_lines.join("\n")
         expect(all_text).not_to match(%r{\[\[/?footnotes\]\]})
-
-        # with footnote omitted:
-        expect(all_text).to include("mail them to get a patent.\n")
+      end
+      it "correctly outputs an empty array of footnotes when none are present" do
+        expect(ohms_xml.transcript_lines).to be_present
+        expect(ohms_xml.footnote_array).to eq []
+      end
+      it "keeps references to the footnotes in the text, if they are present" do
+        all_text = ohms_xml_with_footnotes.transcript_lines.join("\n")
+        expect(all_text).to match(/\[\[footnote\]\]1\[\[\/footnote\]\]/)
+        expect(all_text).to match(/\[\[footnote\]\]2\[\[\/footnote\]\]/)
+      end
+      it "makes footnotes available via the footnote array" do
+        expect(ohms_xml_with_footnotes.footnote_array.length).to eq 2
+        expect(ohms_xml_with_footnotes.footnote_array[0]).to match(/Polyamides/)
+        expect(ohms_xml_with_footnotes.footnote_array[1]).to match(/Lucille/)
       end
     end
   end

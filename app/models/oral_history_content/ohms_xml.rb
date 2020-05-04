@@ -48,21 +48,20 @@ class OralHistoryContent
     end
 
 
-    # Convert the footnotes section into an array the presenter can use. It looks like:
-    #
-    #      [[footnotes]]
-    #
-    #     [[note]]William E. Hanford (to E.I. DuPont de Nemours &amp; Co.), &quot;Polyamides,&quot; U.S.
-    #     Patent 2,281,576, issued 5 May 1942.[[/note]]
-    #
-    #      [[/footnotes]]
-    def footnotes_as_json
+    # An array of footnotes, such that [[footnote]]1[[/footnote]]
+    # corresponds to footnote_array[0].
+    # The raw xml has these footnotes spread out over a
+    # bunch of lines, but we try to output sensible whitespace.
+    # TODO: add test confirming that XML with no footnotes results in
+    # an empty array.
+    def footnote_array
       @footnote_array ||= begin
-        notes = transcript_text.scan(/\[\[footnotes\]\](.*)\[\[\/footnotes\]\]/m)[0][0]
-        return [] unless notes
-        note_strings = notes.scan(/\[\[note\]\](.*?)\[\[\/note\]\]/m).
+        footnotes_re = /\[\[footnotes\]\](.*)\[\[\/footnotes\]\]/m
+        return [] unless notes = transcript_text.scan(footnotes_re)[0]
+
+        one_footnote_re = /\[\[note\]\](.*?)\[\[\/note\]\]/m
+        notes[0].scan(one_footnote_re).
           map{ |x| x[0].gsub(/\s+/, ' ').strip }
-        JSON.pretty_generate(note_strings)
       end
     end
 
@@ -72,7 +71,8 @@ class OralHistoryContent
     def transcript_lines
       @transcript_lines ||= begin
         text = transcript_text
-        # take out footnotes section. It looks like:
+
+        # Take out footnotes section. It looks like:
         #
         #      [[footnotes]]
         #
@@ -88,8 +88,8 @@ class OralHistoryContent
         # Need regexp multiline mode to match newlines with `.`
         text.gsub!(%r{\[\[footnotes\]\].*?\[\[/footnotes\]\]}m, '')
 
-        text.split("\n")
-      end
+        text.html_safe().split("\n")
+        end
     end
 
     # Represents an ohms //index/point element, what ohms calls an index we might
