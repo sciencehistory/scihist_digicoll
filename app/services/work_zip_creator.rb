@@ -69,6 +69,9 @@ class WorkZipCreator
       end
     end
 
+    # tell the Tempfile to (re)open so it has a file handle open that can see what ruby-zip wrote
+    tmp_zipfile.open
+
     return tmp_zipfile
   ensure
     (derivative_files || []).each do |tmp_file|
