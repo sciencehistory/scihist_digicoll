@@ -44,15 +44,18 @@ class OhmsTranscriptDisplay < ViewModel
     content_tag("div", safe_join(paragraph_html_arr), class: "ohms-transcript-container")
   end
 
-
+  # Show all the footnotes at the bottom of the text.
+  # Might move this to the template.
   def display_footnotes
-    array_of_divs = model.footnote_array.each_with_index.map do |f, i|
+    array_of_divs = model.footnote_array.each_with_index.map do |footnote_text, i|
+      footnote_number = i + 1
       (
-        "<div class=\"my-2\">" +
+        "<div class=\"footnote-page-bottom-container\">" +
           # An anchor so we can come down to the footnote section from the reference:
-          "<a name=\"footnote#{i + 1}\" id=\"footnote#{i + 1}\"></a>" +
+          "<a name=\"footnote#{footnote_number}\" id=\"footnote#{footnote_number}\"></a>" +
           # and a link so we can head back up to the reference:
-          "<a href=\"#sup#{i + 1}\">#{i + 1}.</a> #{f}" +
+          "<a data-role=\"footnote-page-bottom\" data-footnote-index=\"#{footnote_number}\" href=\"#\" >" +
+          "#{footnote_number}.</a> #{footnote_text}" +
         "</div>"
       ).html_safe()
     end
@@ -61,33 +64,46 @@ class OhmsTranscriptDisplay < ViewModel
 
   private
 
+  # The HTML for the inline tooltip and footnote reference.
+  # Hovering over it will show the tooltip; clicking on it will take you to the
+  # corresponding footnote at the bottom of the page.
+  #
+  # This is loosely based on:
+  # http://hiphoff.com/creating-hover-over-footnotes-with-bootstrap/
   def footnote_html(number)
-    footnote_number = number.to_i
-    footnote_anchor = "<a name=\"sup#{number}\"></a>"
-    footnote_text = (model.footnote_array[footnote_number - 1]).html_safe
-    the_html = " <span class=\"footnote\" data-toggle=\"tooltip\" title=\"" +
-                  footnote_text.gsub('"', '&quot;') +
-                "\">" +
-                + footnote_anchor +
-                "<a href=\"#footnote#{number}\">" +
-                  "[" +
-                    number +
-                  "]" +
-                "</a>" +
-              "</span>"
+
+    # The text of the footnote. Escaped, as it'll be between quotes.
+    footnote_text = (model.footnote_array[number.to_i - 1]).gsub('"', '&quot;')
+
+    # Used to tie the footnote text with its number via aria-describedby.
+    screenreader_only_id = "footnote-text-#{number}"
+
+    # First, an anchor, so we can link back to this footnote:
+    the_html =  "<a name=\"footnote-reference#{number}\" id=\"footnote-reference#{number}\" ></a>" +
+      # Then, a screenreader-only footnote:
+      "<span class=\"sr-only\" id=\"#{screenreader_only_id}\" >#{number}. #{footnote_text}</span>" +
+      #
+      # Then, the actual tooltip (hidden until hover; not visible to mobile or screenreader users).
+      "<span class=\"footnote\" aria-hidden=\"true\" data-toggle=\"tooltip\" title=\"#{footnote_text}\">" +
+          # The actual footnote link:
+          "<a aria-describedby=\"#{screenreader_only_id}\" data-role=\"footnote-reference\" data-footnote-index=\"#{number}\" href=\"#\">" +
+            "[#{number}]" +
+          "</a>" +
+      "</span>"
+
     the_html.html_safe()
   end
 
-
-  def process_footnote(text)
-    return text unless match = text.match(%r{ *\[\[footnote\]\](\d+)\[\[/footnote\]\] *})
-    text.sub(match[0], footnote_html(match[1])).html_safe
+  # If a line doesn't contain a footnote, return it as is.
+  # If it does, add the tooltip and link to the bottom of the page.
+  def process_footnote(line_text)
+    return line_text unless match = line_text.match(%r{\[\[footnote\]\](\d+)\[\[/footnote\]\]})
+    line_text.sub(match[0], footnote_html(match[1])).html_safe
   end
 
   def sync_timecodes
     model.sync_timecodes
   end
-
 
   # * adds a timecode anchor if needed.
   # * Catches "speaker" notation and wraps in class.
