@@ -12,6 +12,17 @@ describe WorkZipCreator do
     )
   end
 
+  it "returns working File ready for reading" do
+    zip_file = WorkZipCreator.new(work).create
+
+    expect(zip_file).to be_present
+    expect(zip_file).to be_kind_of(Tempfile)
+    expect(zip_file.size).not_to eq(0)
+    expect(zip_file.size).to eq(File.size(zip_file.path))
+
+    expect(zip_file.lineno).to eq(0)
+  end
+
   it "builds zip" do
     zip_file = WorkZipCreator.new(work).create
 
