@@ -70,8 +70,13 @@ class OhmsTranscriptDisplay < ViewModel
   # This is loosely based on:
   # http://hiphoff.com/creating-hover-over-footnotes-with-bootstrap/
   def footnote_html(number)
+    raw_footnote = model.footnote_array[number.to_i - 1]  || ''
+    if raw_footnote == ''
+      Rails.logger.warn("WARNING: Reference to empty or missing footnote #{number} for OHMS transcript #{model.accession}")
+    end
+
     # The text of the footnote. Escaped, as it'll be between quotes.
-    footnote_text = (model.footnote_array[number.to_i - 1]).gsub('"', '&quot;')
+    footnote_text = raw_footnote.gsub('"', '&quot;')
 
     # Used to tie the footnote text with its number via aria-describedby.
     screenreader_only_id = "footnote-text-#{number}"
