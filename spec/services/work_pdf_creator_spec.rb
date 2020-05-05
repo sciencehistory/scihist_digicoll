@@ -11,6 +11,16 @@ describe WorkZipCreator do
     )
   end
 
+  it "returns working File ready for reading" do
+    pdf_file = WorkPdfCreator.new(work).create
+
+    expect(pdf_file).to be_present
+    expect(pdf_file).to be_kind_of(Tempfile)
+    expect(pdf_file.size).not_to eq(0)
+    expect(pdf_file.size).to eq(File.size(pdf_file.path))
+    expect(pdf_file.lineno).to eq(0)
+  end
+
   it "builds zip" do
     pdf_file = WorkPdfCreator.new(work).create
 
