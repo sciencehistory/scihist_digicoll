@@ -35,7 +35,6 @@ class OhmsTranscriptDisplay < ViewModel
     paragraph_html_arr = paragraphs.collect do |p_arr|
       content_tag("p", class: "ohms-transcript-paragraph") do
         safe_join(p_arr.collect do |line|
-          line[:text] = process_footnote(line[:text])
           content_tag("span", format_ohms_line(line), class: "ohms-transcript-line", id: "ohms_line_#{line[:line_num]}")
         end)
       end
@@ -71,14 +70,13 @@ class OhmsTranscriptDisplay < ViewModel
   # This is loosely based on:
   # http://hiphoff.com/creating-hover-over-footnotes-with-bootstrap/
   def footnote_html(number)
-
     # The text of the footnote. Escaped, as it'll be between quotes.
     footnote_text = (model.footnote_array[number.to_i - 1]).gsub('"', '&quot;')
 
     # Used to tie the footnote text with its number via aria-describedby.
     screenreader_only_id = "footnote-text-#{number}"
 
-    # First, an anchor, so we can link back to this footnote:
+    # # First, an anchor, so we can link back to this footnote:
     the_html =  "<a name=\"footnote-reference#{number}\" id=\"footnote-reference#{number}\" ></a>" +
       # Then, a screenreader-only footnote:
       "<span class=\"sr-only\" id=\"#{screenreader_only_id}\" >#{number}. #{footnote_text}</span>" +
@@ -90,16 +88,9 @@ class OhmsTranscriptDisplay < ViewModel
             "[#{number}]" +
           "</a>" +
       "</span>"
-
     the_html.html_safe()
   end
 
-  # If a line doesn't contain a footnote, return it as is.
-  # If it does, add the tooltip and link to the bottom of the page.
-  def process_footnote(line_text)
-    return line_text unless match = line_text.match(%r{\[\[footnote\]\](\d+)\[\[/footnote\]\]})
-    line_text.sub(match[0], footnote_html(match[1])).html_safe
-  end
 
   def sync_timecodes
     model.sync_timecodes
@@ -118,6 +109,13 @@ class OhmsTranscriptDisplay < ViewModel
         " ",
         $2
       ])
+    end
+
+    # deal with footnotes
+    footnote_re = %r{\[\[footnote\]\](\d+)\[\[\/footnote\]\]}
+    if footnote_match = ohms_line_str.match(footnote_re)
+      replacement = footnote_html(footnote_match[1])
+      ohms_line_str = ohms_line_str.sub(footnote_match[0], replacement).html_safe()
     end
 
     # possibly we need sync anchor html
