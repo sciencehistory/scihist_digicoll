@@ -43,22 +43,8 @@ class OhmsTranscriptDisplay < ViewModel
     content_tag("div", safe_join(paragraph_html_arr), class: "ohms-transcript-container")
   end
 
-  # Show all the footnotes at the bottom of the text.
-  # Might move this to the template.
-  def display_footnotes
-    array_of_divs = model.footnote_array.each_with_index.map do |footnote_text, i|
-      footnote_number = i + 1
-      (
-        "<div class=\"footnote-page-bottom-container\">" +
-          # An anchor so we can come down to the footnote section from the reference:
-          "<a name=\"footnote#{footnote_number}\" id=\"footnote#{footnote_number}\"></a>" +
-          # and a link so we can head back up to the reference:
-          "<a data-role=\"footnote-page-bottom\" data-footnote-index=\"#{footnote_number}\" href=\"#\" >" +
-          "#{footnote_number}.</a> #{footnote_text}" +
-        "</div>"
-      ).html_safe()
-    end
-    safe_join(array_of_divs)
+  def test_render
+    render "works/ohms_footnote_reference"
   end
 
   private
@@ -69,33 +55,16 @@ class OhmsTranscriptDisplay < ViewModel
   #
   # This is loosely based on:
   # http://hiphoff.com/creating-hover-over-footnotes-with-bootstrap/
+  #
   def footnote_html(number)
     raw_footnote = model.footnote_array[number.to_i - 1]  || ''
     if raw_footnote == ''
       Rails.logger.warn("WARNING: Reference to empty or missing footnote #{number} for OHMS transcript #{model.accession}")
     end
-
-    # The text of the footnote. Escaped, as it'll be between quotes.
-    footnote_text = raw_footnote.gsub('"', '&quot;')
-
-    # Used to tie the footnote text with its number via aria-describedby.
-    screenreader_only_id = "footnote-text-#{number}"
-
-    # # First, an anchor, so we can link back to this footnote:
-    the_html =  "<a name=\"footnote-reference#{number}\" id=\"footnote-reference#{number}\" ></a>" +
-      # Then, a screenreader-only footnote:
-      "<span class=\"sr-only\" id=\"#{screenreader_only_id}\" >#{number}. #{footnote_text}</span>" +
-      #
-      # Then, the actual tooltip (hidden until hover; not visible to mobile or screenreader users).
-      "<span class=\"footnote\" aria-hidden=\"true\" data-toggle=\"tooltip\" title=\"#{footnote_text}\">" +
-          # The actual footnote link:
-          "<a aria-describedby=\"#{screenreader_only_id}\" data-role=\"footnote-reference\" data-footnote-index=\"#{number}\" href=\"#\">" +
-            "[#{number}]" +
-          "</a>" +
-      "</span>"
-    the_html.html_safe()
+    render "works/ohms_footnote_reference",
+      footnote_text: raw_footnote.gsub('"', '&quot;'),
+      number: number
   end
-
 
   def sync_timecodes
     model.sync_timecodes
