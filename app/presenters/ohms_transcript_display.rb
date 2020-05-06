@@ -47,15 +47,8 @@ class OhmsTranscriptDisplay < ViewModel
     render "works/ohms_footnote_reference"
   end
 
-  private
 
   # The HTML for the inline tooltip and footnote reference.
-  # Hovering over it will show the tooltip; clicking on it will take you to the
-  # corresponding footnote at the bottom of the page.
-  #
-  # This is loosely based on:
-  # http://hiphoff.com/creating-hover-over-footnotes-with-bootstrap/
-  #
   def footnote_html(number)
     raw_footnote = model.footnote_array[number.to_i - 1]  || ''
     if raw_footnote == ''
@@ -65,6 +58,8 @@ class OhmsTranscriptDisplay < ViewModel
       footnote_text: raw_footnote.gsub('"', '&quot;'),
       number: number
   end
+
+  private
 
   def sync_timecodes
     model.sync_timecodes
