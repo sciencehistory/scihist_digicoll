@@ -52,8 +52,6 @@ class OralHistoryContent
     # corresponds to footnote_array[0].
     # The raw xml has these footnotes spread out over a
     # bunch of lines, but we try to output sensible whitespace.
-    # TODO: add test confirming that XML with no footnotes results in
-    # an empty array.
     def footnote_array
       @footnote_array ||= begin
         footnotes_re = /\[\[footnotes\]\](.*)\[\[\/footnotes\]\]/m
@@ -71,13 +69,17 @@ class OralHistoryContent
     def transcript_lines
       @transcript_lines ||= begin
         text = transcript_text
-
-        # Take out footnotes section. It looks like:
+        # Take out footnotes section; we don't need it in the transcrippt.
+        #
+        # Footnotes are output in `app/views/works/_ohms_footnotes_section.html.erb` using footnote_array.
+        #
+        # It looks like:
         #
         #      [[footnotes]]
         #
-        #     [[note]]William E. Hanford (to E.I. DuPont de Nemours &amp; Co.), &quot;Polyamides,&quot; U.S.
-        #     Patent 2,281,576, issued 5 May 1942.[[/note]]
+        #         [[note]]William E. Hanford [...] issued 5 May 1942.[[/note]]
+        #         [[note]] [ another footnote ...] [[/note]]
+        #         ( and so no)
         #
         #      [[/footnotes]]
         #
@@ -86,9 +88,11 @@ class OralHistoryContent
         # instead of going all the way from beginning of one to end of the other.
         #
         # Need regexp multiline mode to match newlines with `.`
+        #
+        #
         text.gsub!(%r{\[\[footnotes\]\].*?\[\[/footnotes\]\]}m, '')
 
-        text.html_safe().split("\n")
+        text.split("\n")
         end
     end
 
