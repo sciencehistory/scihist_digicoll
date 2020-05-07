@@ -88,12 +88,10 @@ class OralHistoryContent
         # instead of going all the way from beginning of one to end of the other.
         #
         # Need regexp multiline mode to match newlines with `.`
-        #
-        #
         text.gsub!(%r{\[\[footnotes\]\].*?\[\[/footnotes\]\]}m, '')
 
         text.split("\n")
-        end
+      end
     end
 
     # Represents an ohms //index/point element, what ohms calls an index we might
