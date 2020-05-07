@@ -106,11 +106,12 @@
           <div class="tab-pane long-text-line-height" id="ohTranscript" role="tabpanel" aria-labelledby="ohTranscriptTab">
             <%= OhmsTranscriptDisplay.new(decorator.oral_history_content.ohms_xml).display %>
             <% if decorator.oral_history_content.ohms_xml.footnote_array.length > 0 %>
-              <hr />
-              <%= render "ohms_footnotes_section", footnote_array: decorator.oral_history_content.ohms_xml.footnote_array  %>
+              <%= render "ohms_footnotes_section",
+                footnote_array: decorator.oral_history_content.ohms_xml.footnote_array  %>
             <% end %>
           </div>
         <% end %>
+
         <div class="tab-pane downloads" id="ohDownloads" role="tabpanel" aria-labelledby="ohDownloadsTab">
           <%= render 'show_with_audio_downloads', decorator: decorator %>
         </div>

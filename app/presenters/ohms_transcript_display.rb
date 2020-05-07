@@ -47,9 +47,15 @@ class OhmsTranscriptDisplay < ViewModel
     render "works/ohms_footnote_reference"
   end
 
-
   # The HTML for the inline tooltip and footnote reference.
+  # We use a template for this; even with dozens of footnotes,
+  # it doesn't appear to slow down the page load significantly.
   def footnote_html(number)
+    # OhmsXmlValidator is in charge of validating the footnotes at
+    # upload time and rejecting ones that are invalid.
+    # We can thus assume the footnotes are valid at display time;
+    # if the array of footnotes doesn't contain a footnote for `number`,
+    # we are *not* going to throw an error.
     raw_footnote = model.footnote_array[number.to_i - 1]  || ''
     if raw_footnote == ''
       Rails.logger.warn("WARNING: Reference to empty or missing footnote #{number} for OHMS transcript #{model.accession}")
@@ -80,7 +86,7 @@ class OhmsTranscriptDisplay < ViewModel
       ])
     end
 
-    # deal with footnotes
+    # replace each footnote reference [[footnote]]12[[/footnote]] with proper HTML
     footnote_re = %r{\[\[footnote\]\](\d+)\[\[\/footnote\]\]}
     if footnote_match = ohms_line_str.match(footnote_re)
       replacement = footnote_html(footnote_match[1])
