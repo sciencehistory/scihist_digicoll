@@ -105,10 +105,6 @@
         <% if decorator.has_ohms_transcript? %>
           <div class="tab-pane long-text-line-height" id="ohTranscript" role="tabpanel" aria-labelledby="ohTranscriptTab">
             <%= OhmsTranscriptDisplay.new(decorator.oral_history_content.ohms_xml).display %>
-            <% if decorator.oral_history_content.ohms_xml.footnote_array.length > 0 %>
-              <%= render "ohms_footnotes_section",
-                footnote_array: decorator.oral_history_content.ohms_xml.footnote_array  %>
-            <% end %>
           </div>
         <% end %>
 
