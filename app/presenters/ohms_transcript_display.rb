@@ -40,7 +40,16 @@ class OhmsTranscriptDisplay < ViewModel
       end
     end
 
-    content_tag("div", safe_join(paragraph_html_arr), class: "ohms-transcript-container")
+    transcript_html = content_tag("div", safe_join(paragraph_html_arr), class: "ohms-transcript-container")
+
+    if model.footnote_array.present?
+      transcript_html << content_tag("div") do
+        render "ohms_footnotes_section",
+          footnote_array: model.footnote_array
+      end
+    end
+
+    transcript_html
   end
 
   # The HTML for the inline tooltip and footnote reference.
