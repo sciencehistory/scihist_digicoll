@@ -102,10 +102,6 @@ describe OralHistoryContent do
   describe OralHistoryContent::OhmsXml do
     let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml"}
     let(:ohms_xml) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path))}
-
-    #let(:ohms_xml_path_no_footnotes) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml"}
-    #let(:ohms_xml_no_footnotes) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path_no_footnotes))}
-
     let(:ohms_xml_path_with_footnotes) { Rails.root + "spec/test_support/ohms_xml/hanford_OH0139.xml"}
     let(:ohms_xml_with_footnotes) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path_with_footnotes))}
 
@@ -150,6 +146,12 @@ describe OralHistoryContent do
         expect(all_text).to match(/\[\[footnote\]\]1\[\[\/footnote\]\]/)
         expect(all_text).to match(/\[\[footnote\]\]2\[\[\/footnote\]\]/)
       end
+      it "makes footnotes available via the footnote array" do
+        expect(ohms_xml_with_footnotes.footnote_array.length).to eq 2
+        expect(ohms_xml_with_footnotes.footnote_array[0]).to match(/Polyamides/)
+        expect(ohms_xml_with_footnotes.footnote_array[1]).to match(/Lucille/)
+      end
+
       it "makes footnotes available via the footnote array" do
         expect(ohms_xml_with_footnotes.footnote_array.length).to eq 2
         expect(ohms_xml_with_footnotes.footnote_array[0]).to match(/Polyamides/)

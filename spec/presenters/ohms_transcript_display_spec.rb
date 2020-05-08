@@ -27,13 +27,13 @@ describe OhmsTranscriptDisplay, type: :presenter do
     )
   end
 
-  it "properly renders footnotes" do
+  it "properly renders footnotes and references to them" do
     parsed = Nokogiri::HTML.fragment(ohms_transcript_display_with_footnotes.display)
     line_with_first_footnote = parsed.css("#ohms_line_503").to_s
 
     expect(line_with_first_footnote).to match /Nemours/
-    expect(line_with_first_footnote).to match /quot;Polyamides,&amp;quot;/
-    expect(line_with_first_footnote).to match /\[1\]/
+    expect(line_with_first_footnote).to include "\"Polyamides,\""
+    expect(line_with_first_footnote).to include "[1]"
 
     expect(parsed.css(".footnote").count).to eq 2
 
@@ -41,10 +41,11 @@ describe OhmsTranscriptDisplay, type: :presenter do
     expect(f_array [0]).to eq "William E. Hanford (to E.I. DuPont de Nemours & Co.), \"Polyamides,\" U.S. Patent 2,281,576, issued 5 May 1942."
     expect(f_array [1]).to eq "Howard N. and Lucille L. Sloane, A Pictorial History of American Mining: The adventure and drama of finding and extracting nature's wealth from the earth, from pre-Columbian times to the present (New York: Crown Publishers, Inc., 1970)."
 
+    # Footnotes themselves are HTML-escaped
     first_footnote = ohms_transcript_display_with_footnotes.footnote_html(1)
     expect(first_footnote).to match /Nemours/
-    expect(first_footnote).to match /quot;Polyamides,&amp;quot;/
-    expect(first_footnote).to match /\[1\]/
+    expect(first_footnote).to include "&quot;Polyamides,&quot;"
+    expect(first_footnote).to include "[1]"
   end
 
   # Footnotes and footnote references are expected
@@ -58,4 +59,24 @@ describe OhmsTranscriptDisplay, type: :presenter do
     expect { ohms_transcript_display_with_footnotes.footnote_html(42) }.not_to raise_error
   end
 
+  it "HTML in footnotes is escaped" do
+    bad_chars = [ "The mathematician's \"daughter\" proved that x > 4." ]
+    allow(ohms_xml_with_footnotes).to receive(:footnote_array).and_return(bad_chars)
+    resulting_footnote = ohms_transcript_display_with_footnotes.footnote_html(1)
+    expect(resulting_footnote).to include '1. The mathematician&#39;s &quot;daughter&quot; proved that x &gt; 4.'
+  end
+
+  it "Correctly handles several footnotes on one line -- and footnotes with spaces around the integer" do
+    allow(ohms_xml_with_footnotes).
+      to receive(:footnote_array).
+      and_return(["one", "two", "three"])
+    line = {
+      :text => "DUARTE: My grandfather Duarte [[footnote]] 1[[/footnote]] was Portuguese  [[footnote]]2 [[/footnote]] from the Azores  [[footnote]] 3   [[/footnote]] ",
+      :line_num=>10
+    }
+    formatted_line = ohms_transcript_display_with_footnotes.format_ohms_line(line)
+    expect(formatted_line).to include "[1]"
+    expect(formatted_line).to include "[2]"
+    expect(formatted_line).to include "[3]"
+  end
 end

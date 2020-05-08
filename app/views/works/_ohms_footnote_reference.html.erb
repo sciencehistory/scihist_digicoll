@@ -6,7 +6,6 @@ will take you to the corresponding footnote at the bottom of the page via JS.
 
 The tooltip hover is based on:
 http://hiphoff.com/creating-hover-over-footnotes-with-bootstrap/
-
 #%>
 
 <%# First, an anchor, so we can link back to this footnote #%>
@@ -14,7 +13,6 @@ http://hiphoff.com/creating-hover-over-footnotes-with-bootstrap/
 
 <%# Then, a screenreader-only footnote.
 Connected to the footnote link by aria-describedby.
-We may not need this; perhaps providing the link to footnotes at the bottom is plenty.
 #%>
 <span class="sr-only" id="footnote-text-<%=number%>" ><%= number %>. <%= footnote_text %></span>
 
