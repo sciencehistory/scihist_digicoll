@@ -43,10 +43,6 @@ class OhmsTranscriptDisplay < ViewModel
     content_tag("div", safe_join(paragraph_html_arr), class: "ohms-transcript-container")
   end
 
-  def test_render
-    render "works/ohms_footnote_reference"
-  end
-
   # The HTML for the inline tooltip and footnote reference.
   # We use a template for this; even with dozens of footnotes,
   # it doesn't appear to slow down the page load significantly.
@@ -56,16 +52,16 @@ class OhmsTranscriptDisplay < ViewModel
     # We can thus assume the footnotes are valid at display time;
     # if the array of footnotes doesn't contain a footnote for `number`,
     # we are *not* going to throw an error.
-    raw_footnote = model.footnote_array[number.to_i - 1]  || ''
-    if raw_footnote == ''
+    footnote_text = model.footnote_array[number.to_i - 1]  || ''
+    if footnote_text == ''
       Rails.logger.warn("WARNING: Reference to empty or missing footnote #{number} for OHMS transcript #{model.accession}")
     end
     render "works/ohms_footnote_reference",
-      footnote_text: raw_footnote.gsub('"', '&quot;'),
+      footnote_text: footnote_text,
       number: number
   end
 
-  private
+  #private
 
   def sync_timecodes
     model.sync_timecodes
@@ -87,10 +83,17 @@ class OhmsTranscriptDisplay < ViewModel
     end
 
     # replace each footnote reference [[footnote]]12[[/footnote]] with proper HTML
-    footnote_re = %r{\[\[footnote\]\](\d+)\[\[\/footnote\]\]}
-    if footnote_match = ohms_line_str.match(footnote_re)
-      replacement = footnote_html(footnote_match[1])
-      ohms_line_str = ohms_line_str.sub(footnote_match[0], replacement).html_safe()
+
+    # Use this to scan the line for any footnotes (there can be more than 1)
+    scan_line_for_footnotes_re =  %r{\[\[footnote\]\] *\d+? *\[\[\/footnote\]\]}
+    # Use this to separate out the actual footnote number
+    footnote_number_re = %r{\[\[footnote\]\] *(\d+?) *\[\[\/footnote\]\]}
+
+    ohms_line_str.scan(scan_line_for_footnotes_re).each do |match_to_replace|
+      footnote_number = match_to_replace.match(footnote_number_re)[1]
+      replacement = footnote_html(footnote_number)
+      # ohms_line_str needs to be marked as html_safe, as it contains HTML chars.
+      ohms_line_str = ohms_line_str.sub(match_to_replace, replacement).html_safe()
     end
 
     # possibly we need sync anchor html
@@ -106,4 +109,5 @@ class OhmsTranscriptDisplay < ViewModel
     # add em together with whitespace on end either way
     safe_join([sync_html, ohms_line_str, " \n"])
   end
+
 end
