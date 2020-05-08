@@ -47,8 +47,4 @@ OhmsFootnotes.jump = function(event, item_clicked, prefix) {
   event.preventDefault();
   var destination = jQuery('#' + prefix + item_clicked.data()['footnoteIndex'])
   window.scrollTo({top: destination.offset().top - jQuery("#ohmsAudioNavbar").height()});
-  // Flash the footnote
-  if (prefix == 'footnote') {
-    destination.parent().fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
-  }
 }
