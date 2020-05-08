@@ -54,7 +54,7 @@ class OralHistoryContent
     # bunch of lines, but we try to output sensible whitespace.
     def footnote_array
       @footnote_array ||= begin
-        footnotes_re = /\[\[footnotes\]\](.*)\[\[\/footnotes\]\]/m
+        footnotes_re = /\[\[footnotes\]\](.*?)\[\[\/footnotes\]\]/m
         return [] unless notes = transcript_text.scan(footnotes_re)[0]
 
         one_footnote_re = /\[\[note\]\](.*?)\[\[\/note\]\]/m
@@ -69,27 +69,7 @@ class OralHistoryContent
     def transcript_lines
       @transcript_lines ||= begin
         text = transcript_text
-        # Take out footnotes section; we don't need it in the transcrippt.
-        #
-        # Footnotes are output in `app/views/works/_ohms_footnotes_section.html.erb` using footnote_array.
-        #
-        # It looks like:
-        #
-        #      [[footnotes]]
-        #
-        #         [[note]]William E. Hanford [...] issued 5 May 1942.[[/note]]
-        #         [[note]] [ another footnote ...] [[/note]]
-        #         ( and so no)
-        #
-        #      [[/footnotes]]
-        #
-        # Use a non-greedy .*? to try and be non-greedy
-        # and get a single footnotes block if there are unexpectedly two,
-        # instead of going all the way from beginning of one to end of the other.
-        #
-        # Need regexp multiline mode to match newlines with `.`
         text.gsub!(%r{\[\[footnotes\]\].*?\[\[/footnotes\]\]}m, '')
-
         text.split("\n")
       end
     end
