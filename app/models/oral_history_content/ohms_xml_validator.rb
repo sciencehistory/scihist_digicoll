@@ -14,6 +14,10 @@ class OralHistoryContent
   class OhmsXmlValidator
     OHMS_NS = "https://www.weareavp.com/nunncenter/ohms"
 
+    FOOTNOTES_RE =     /\[\[footnotes\]\](.*?)\[\[\/footnotes\]\]/m
+    ONE_REFERENCE_RE = %r{\[\[footnote\]\] *(\d+?) *\[\[\/footnote\]\]}
+    ONE_FOOTNOTE_RE =   /\[\[note\]\](.*?)\[\[\/note\]\]/m
+
     attr_reader :errors
 
     def initialize(xml_str)
@@ -28,30 +32,34 @@ class OralHistoryContent
       self.class.xsd.validate(@doc).each do |error|
         @errors << "XSD validation error: #{error.message}"
       end
-
       @errors = @errors + footnote_errors
-
       return @errors.empty?
-
     rescue Nokogiri::XML::SyntaxError => e
       @errors << "#{e.class}: #{e.message}"
       return false
     end
 
     def footnote_errors
-      errors = []
-      text_lines = text.split("\n")
-      text_lines_with_footnotes =  text_lines.select{ |l| l.include?('[[footnote]]') }
-      text_lines_with_footnotes.each do |line|
-        footnote_re = %r{\[\[footnote\]\] *(\d+?) *\[\[\/footnote\]\]}
-        line.scan(footnote_re).each do |f_match|
-          footnote_reference_number = f_match[0].to_i
-          if footnote_array[footnote_reference_number - 1] == nil
-            errors << "Reference to missing footnote #{footnote_reference_number}"
-          end
+      result = []
+      referenced_footnotes = Set.new
+
+      # For each footnote reference
+      text.scan(ONE_REFERENCE_RE).each do |f_match|
+        footnote_reference_number = f_match[0].to_i
+        referenced_footnotes << footnote_reference_number
+        # make sure its footnote exists
+        if footnote_array[footnote_reference_number - 1] == nil
+          result << "Reference to missing footnote #{footnote_reference_number}"
         end
       end
-      errors
+
+      # and make sure each footnote has at least one reference to it
+      unreferenced_footnote_list = (1..footnote_array.count).to_set - referenced_footnotes
+      if unreferenced_footnote_list.count > 0
+        result << "Missing reference(s) to footnote(s): #{unreferenced_footnote_list.to_a.join(',')}"
+      end
+
+      result
     end
 
     # lazy load/parse
@@ -68,10 +76,8 @@ class OralHistoryContent
 
     def footnote_array
       @footnote_array ||= begin
-        footnotes_re = /\[\[footnotes\]\](.*)\[\[\/footnotes\]\]/m
-        return [] unless notes = text.scan(footnotes_re)[0]
-        one_footnote_re = /\[\[note\]\](.*?)\[\[\/note\]\]/m
-          notes[0].scan(one_footnote_re).
+        return [] unless notes = text.scan(FOOTNOTES_RE)[0]
+        notes[0].scan(ONE_FOOTNOTE_RE).
           map{ |x| x[0].gsub(/\s+/, ' ').strip }
       end
     end
