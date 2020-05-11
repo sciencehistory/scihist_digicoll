@@ -44,7 +44,7 @@ class OhmsTranscriptDisplay < ViewModel
 
     if model.footnote_array.present?
       transcript_html << content_tag("div") do
-        render "works/ohms_footnotes_section",
+        render '/presenters/ohms_footnotes_section',
           footnote_array: model.footnote_array
       end
     end
@@ -65,7 +65,7 @@ class OhmsTranscriptDisplay < ViewModel
     if footnote_text == ''
       Rails.logger.warn("WARNING: Reference to empty or missing footnote #{number} for OHMS transcript #{model.accession}")
     end
-    render "works/ohms_footnote_reference",
+    render '/presenters/ohms_footnote_reference',
       footnote_text: footnote_text,
       number: number
   end
