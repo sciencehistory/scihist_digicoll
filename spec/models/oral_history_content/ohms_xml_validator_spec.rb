@@ -90,6 +90,39 @@ describe OralHistoryContent::OhmsXmlValidator do
       expect(xml_str.scan(footnote_ref_re).count).to eq 2
       expect(validator.valid?).to be(true)
     end
+  end
 
+  describe "Footnote section present, but missing closing end tag" do
+    let(:unclosed_footnote_section) do
+       hanford_xml.
+        match(footnote_section_re)[0].
+        gsub('[[/footnotes]]', '')
+    end
+    let(:xml_str) { hanford_xml.sub(footnote_section_re, unclosed_footnote_section) }
+
+    it "is not valid" do
+      expect(hanford_xml.scan(footnote_section_re).count).to eq 1
+      expect(xml_str.scan(footnote_section_re).count).to eq 0
+      expect(validator.valid?).to be(false)
+      expect(validator.errors).to eq ["Footnote section is missing closing section."]
+    end
+  end
+
+  describe "unclosed footnote reference" do
+    let(:bad_footnote_ref) { "[[footnote]]note 1[[footnote]]" }
+    let(:xml_str) { hanford_xml.sub(footnote_ref_re, bad_footnote_ref) }
+    it "is not valid" do
+      expect(validator.valid?).to be(false)
+      expect(validator.errors).to eq ["Mismatched [[footnote]] tag(s) around footnote reference 2."]
+    end
+  end
+
+  describe "unclosed footnote" do
+    let(:bad_notes) { "[[note]]note 1[[/note]] \n [[/note]]unclosed note 2[[/note]] \n [[note]]note 3[[/note]]" }
+    let(:xml_str) { hanford_xml.sub(footnote_re, bad_notes) }
+    it "is not valid" do
+      expect(validator.valid?).to be(false)
+      expect(validator.errors).to eq ["Mismatched [[note]] tag(s) around [[note]] 2."]
+    end
   end
 end

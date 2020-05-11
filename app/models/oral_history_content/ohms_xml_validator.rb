@@ -14,9 +14,16 @@ class OralHistoryContent
   class OhmsXmlValidator
     OHMS_NS = "https://www.weareavp.com/nunncenter/ohms"
 
-    FOOTNOTES_RE =     /\[\[footnotes\]\](.*?)\[\[\/footnotes\]\]/m
-    ONE_REFERENCE_RE = %r{\[\[footnote\]\] *(\d+?) *\[\[\/footnote\]\]}
-    ONE_FOOTNOTE_RE =   /\[\[note\]\](.*?)\[\[\/note\]\]/m
+    FOOTNOTES_OPENING_RE =    /\[\[footnotes\]\]/
+    FOOTNOTES_CLOSING_RE =    /\[\[\/footnotes\]\]/
+    FOOTNOTE_REF_OPENING_RE = /\[\[footnote\]\]/
+    FOOTNOTE_REF_CLOSING_RE = /\[\[\/footnote\]\]/
+    FOOTNOTE_OPENING_RE =     /\[\[note\]\]/
+    FOOTNOTE_CLOSING_RE =     /\[\[\/note\]\]/
+
+    FOOTNOTES_SECTION_RE =    /\[\[footnotes\]\](.*?)\[\[\/footnotes\]\]/m
+    ONE_FOOTNOTE_RE =         /\[\[note\]\](.*?)\[\[\/note\]\]/m
+    ONE_REFERENCE_RE =        /\[\[footnote\]\] *(\d+?) *\[\[\/footnote\]\]/
 
     attr_reader :errors
 
@@ -40,6 +47,49 @@ class OralHistoryContent
     end
 
     def footnote_errors
+      # General tests before we check the mapping between references and footnotes:
+      if text.match(FOOTNOTES_OPENING_RE).present?
+        unless text.match(FOOTNOTES_CLOSING_RE).present?
+          return ['Footnote section is missing closing section.']
+        end
+      end
+
+      # Make sure each [[footnote]] and [[note]] tag
+      # can be matched up with its corresponding closing tag.
+      #
+      # Recipe:
+      #
+      # Split the string by opening tags,
+      # then make sure each chunk
+      # contains exactly one closing tag,
+      # except for the first chunk
+      # (before the first opening tag),
+      # which should have zero closing tags.
+      #
+      # This falls short of a full parser, of course,
+      # but that's likely overkill.
+      text.split(FOOTNOTE_REF_OPENING_RE).each_with_index do |x, i|
+        number_of_closing_tags = x.scan(FOOTNOTE_REF_CLOSING_RE).length
+        stray_closing_tag_before_first_opening_tag =
+          (i == 0 && number_of_closing_tags != 0)
+        stray_or_missing_closing_tag_after_opening_tag =
+          (i >  0 && number_of_closing_tags != 1)
+        if stray_closing_tag_before_first_opening_tag || stray_or_missing_closing_tag_after_opening_tag
+          return ["Mismatched [[footnote]] tag(s) around footnote reference #{i + 1}."]
+        end
+      end
+
+      text.split(FOOTNOTE_OPENING_RE).each_with_index do |x, i|
+        number_of_closing_tags = x.scan(FOOTNOTE_CLOSING_RE).length
+        stray_closing_tag_before_first_opening_tag =
+          (i == 0 && number_of_closing_tags > 0)
+        stray_or_missing_closing_tag_after_opening_tag =
+          (i > 0 && number_of_closing_tags != 1)
+        if stray_closing_tag_before_first_opening_tag || stray_or_missing_closing_tag_after_opening_tag
+          return ["Mismatched [[note]] tag(s) around [[note]] #{i + 1}."]
+        end
+      end
+
       result = []
       referenced_footnotes = Set.new
 
@@ -76,7 +126,7 @@ class OralHistoryContent
 
     def footnote_array
       @footnote_array ||= begin
-        return [] unless notes = text.scan(FOOTNOTES_RE)[0]
+        return [] unless notes = text.scan(FOOTNOTES_SECTION_RE)[0]
         notes[0].scan(ONE_FOOTNOTE_RE).
           map{ |x| x[0].gsub(/\s+/, ' ').strip }
       end
