@@ -44,7 +44,7 @@ class OhmsTranscriptDisplay < ViewModel
 
     if model.footnote_array.present?
       transcript_html << content_tag("div") do
-        render "ohms_footnotes_section",
+        render "works/ohms_footnotes_section",
           footnote_array: model.footnote_array
       end
     end
