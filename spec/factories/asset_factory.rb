@@ -1,4 +1,8 @@
 FactoryBot.define do
+
+  # Most of the derivatives stuff was written with kithe 1, it ought to actually be
+  # able to simplify a lot with kithe 2, but haven't fully yet.
+
   factory :asset, class: Asset do
     title { 'Test title' }
     published { true }
@@ -65,9 +69,10 @@ FactoryBot.define do
         # By default, we take every derivative defined in Kithe::Asset, if they
         # apply to this Asset, and just fake the original asset as the derivative.
         #
-        # You can pass in an empty array to have no derivatives, or an array of
-        # Kithe::Derivative instances (probably created with the :faked_derivative
-        # factory below, eg build(:faked_derivative)) for specific ones.
+        # You can pass in an empty Hash to have no derivatives, or shrine
+        # derivatives Hash for specific ones, eg:
+        #
+        #   { one: create(:stored_uploaded_file, content_type: "image/jpeg") }
         #
         # Nil means we'll create some by default in after(:build)
         faked_derivatives { nil }
@@ -102,8 +107,9 @@ FactoryBot.define do
 
         # Now add derivatives for any that work for our faked file type
         if evaluator.faked_derivatives.nil?
-          asset.class.derivative_definitions.each do |derivative_defn|
-            if derivative_defn.applies_to?(asset)
+          faked = {}
+          asset.file_attacher.kithe_derivative_definitions.each do |derivative_defn|
+            if derivative_defn.applies_to_content_type?(asset.content_type)
               # We're gonna lie and say the original is a derivative, it won't
               # be the right size, oh well. It also assumes all derivatives
               # result in an image of the same type which isn't true, it
@@ -111,14 +117,12 @@ FactoryBot.define do
               # When it's not, caller of this factory should supply their own
               # derivatives.
 
-              derivative = build(:faked_derivative, key: derivative_defn.key, uploaded_file: uploaded_file)
-              asset.derivatives << derivative
+              faked[derivative_defn.key.to_sym] = uploaded_file
             end
           end
+          asset.file_attacher.merge_derivatives(faked)
         else
-          evaluator.faked_derivatives.each do |derivative|
-            asset.derivatives << derivative
-          end
+          asset.file_attacher.merge_derivatives(evaluator.faked_derivatives)
         end
       end
     end
