@@ -58,7 +58,7 @@ FactoryBot.define do
     factory :asset_with_faked_file do
       transient do
         faked_file { File.open((Rails.root + "spec/test_support/images/30x30.png")) }
-        faked_content_type { "image/png" }
+        faked_content_type { "image/jpeg" }
         faked_width { 30 }
         faked_height { 30 }
 

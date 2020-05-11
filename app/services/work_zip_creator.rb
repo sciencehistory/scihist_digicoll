@@ -92,7 +92,7 @@ class WorkZipCreator
     if asset.content_type == "image/jpeg"
       asset.file
     else
-      asset.derivative_for(:download_full)&.file
+      asset.file_derivatives(:download_full)
     end
   end
 
@@ -107,8 +107,7 @@ class WorkZipCreator
                             where(published: true).
                             order(:position).
                             select do |m|
-                              deriv = m.leaf_representative&.derivative_for(:download_full)
-                              m.leaf_representative.content_type == "image/jpeg" || (deriv && deriv.file.present?)
+                              m.leaf_representative.content_type == "image/jpeg" && m.leaf_representative&.file_derivatives(:download_full)
                             end
   end
 

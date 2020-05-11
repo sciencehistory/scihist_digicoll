@@ -66,7 +66,7 @@ describe WorkZipCreator do
     let(:work) do
       create(:work,
         members: [
-          create(:asset_with_faked_file, faked_derivatives: []),
+          create(:asset_with_faked_file, faked_derivatives: {}),
           create(:asset_with_faked_file)
         ]
       )
