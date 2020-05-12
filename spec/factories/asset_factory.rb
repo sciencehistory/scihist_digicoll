@@ -140,21 +140,4 @@ FactoryBot.define do
     end
 
   end
-
-  # A Kithe::Derivative object with faked metadata/content-type for file attachment.
-  # It does have a real file attachment.
-  #
-  # To change the attached file/metadata/content-type, pass in a
-  # full Shrine::UploadedFile to the `uploaded_file` transient attribute -- probably
-  # created with our :stored_uploaded_file factory, as below by default, but maybe with additional attributes.
-  #
-  # Also note that you can pass in a `key`, otherwise it's thumb_mini.
-  factory :faked_derivative, class: Kithe::Derivative do
-    transient do
-      uploaded_file { build(:stored_uploaded_file) }
-    end
-
-    key { "thumb_mini" }
-    file_data { uploaded_file.as_json }
-  end
 end
