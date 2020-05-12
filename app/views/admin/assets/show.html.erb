@@ -20,7 +20,7 @@
 
 <div class="row">
   <div class="col-sm-6">
-    <% if @asset.derivative_for(:thumb_large) && @asset.derivative_for(:thumb_large_2X) %>
+    <% if @asset.file_derivatives[:thumb_large] && @asset.file_derivatives[:thumb_large_2X] %>
       <%= thumb_image_tag @asset, size: :large, style: "max-width: 100%" %>
     <% elsif ! @asset.stored? %>
       <p class="text-white bg-danger">
