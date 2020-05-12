@@ -45,11 +45,11 @@ class WorkSocialShareAttributes < ViewModel
   end
 
   def share_media_height
-    share_representative_derivative&.metadata.try { |h| h["height"] }
+    share_representative_derivative&.height
   end
 
   def share_media_width
-    share_representative_derivative&.metadata.try { |h| h["width"] }
+    share_representative_derivative&.width
   end
 
   def short_plain_description
