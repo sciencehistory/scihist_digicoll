@@ -103,7 +103,7 @@ class WorkZipCreator
   def members_to_include
     @members_to_include ||= work.
                             members.
-                            with_representative_derivatives.
+                            includes(:leaf_representative).
                             where(published: true).
                             order(:position).
                             select do |m|

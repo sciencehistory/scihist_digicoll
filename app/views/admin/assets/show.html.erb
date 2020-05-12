@@ -104,8 +104,8 @@
 
     <h2 class="mt-4">Derivatives</h2>
     <ul class="list-unstyled">
-      <% @asset.derivatives.sort_by(&:key).each do |derivative| %>
-        <li><%= link_to derivative.key, derivative.url %></li>
+      <% @asset.file_derivatives.each_pair do |key, derivative| %>
+        <li><%= link_to key, derivative.url %></li>
       <% end %>
     </ul>
   </div>
