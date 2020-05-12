@@ -20,42 +20,42 @@ module DownloadOptions
       # We don't use content_type in derivative option subheads,
       # cause it's in the main label. But do use it for original.
 
-      if dl_small = asset.derivative_for(:download_small)
+      if dl_small = asset.file_derivatives[:download_small]
         options << DownloadOption.with_formatted_subhead("Small JPG",
           url: download_derivative_path(asset, :download_small),
           analyticsAction: "download_jpg_small",
-          width: dl_small.width,
-          height: dl_small.height,
+          width: dl_small.metadata["width"],
+          height: dl_small.metadata["height"],
           size: dl_small.size
         )
       end
 
-      if dl_medium = asset.derivative_for(:download_medium)
+      if dl_medium = asset.file_derivatives[:download_medium]
         options << DownloadOption.with_formatted_subhead("Medium JPG",
           url: download_derivative_path(asset, :download_medium),
           analyticsAction: "download_jpg_medium",
-          width: dl_medium.width,
-          height: dl_medium.height,
+          width: dl_medium.metadata["width"],
+          height: dl_medium.metadata["height"],
           size: dl_medium.size
         )
       end
 
-      if dl_large = asset.derivative_for(:download_large)
+      if dl_large = asset.file_derivatives[:download_large]
         options << DownloadOption.with_formatted_subhead("Large JPG",
           url: download_derivative_path(asset, :download_large),
           analyticsAction: "download_jpg_large",
-          width: dl_large.width,
-          height: dl_large.height,
+          width: dl_large.metadata["width"],
+          height: dl_large.metadata["height"],
           size: dl_large.size
         )
       end
 
-      if dl_full = asset.derivative_for(:download_full)
+      if dl_full = asset.file_derivatives[:download_full]
         options << DownloadOption.with_formatted_subhead("Full-sized JPG",
           url: download_derivative_path(asset, :download_full),
           analyticsAction: "download_jpg_full",
-          width: dl_full.width,
-          height: dl_full.height,
+          width: dl_full.metadata["width"],
+          height: dl_full.metadata["height"],
           size: dl_full.size
         )
       end
