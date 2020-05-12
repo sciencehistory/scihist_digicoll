@@ -57,7 +57,7 @@ SitemapGenerator::Sitemap.create(
     member_representatives = w.members.find_all { |m| m.published }.slice(0, 1000).collect(&:leaf_representative)
 
     image_urls = member_representatives.collect do |asset|
-      asset.derivative_for("thumb_large_2X").try(:url)
+      asset.file_url("thumb_large_2X")
     end.compact
 
     add work_path(w), changefreq: 'monthly', lastmod: nil, images: image_urls.collect { |url| { loc: url } }
