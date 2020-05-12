@@ -102,12 +102,13 @@ class OralHistoryContent
     # It looks like: 1:|13(3)|19(14)|27(9)
     #
     # We believe that means:
-    # * `1:` -- 1 minute granularity, so each element is separated by one minute.
-    # * "13(3)" -- 13 line, 3rd word is 1s timecode (as it's first element and 1s granularity)
-    # * "19(14")  -- 19th line 14th word is 2s timecode
+    # * `1:`      -- 1 minute granularity: each timecode is separated by 60 seconds.
+    # * "13(3)"   -- Timecode 1: minute 1 ends at line 13, word 3.
+    # * "19(14)"  -- Timecode 2: minute 2 ends at line 19, word 14.
+    # * "27(9)"   -- Timecode 3: minute 3 ends at line 27, word 9.
     # * Etc.
     #
-    # OHMS seems to actually ignore the word position in placing marker, we may too.
+    # OHMS seems to actually ignore the word position in placing marker; we may too.
     def parse_sync!
       sync = parsed.at_xpath("//ohms:sync", ohms: OHMS_NS).text
       return {} unless sync.present?
