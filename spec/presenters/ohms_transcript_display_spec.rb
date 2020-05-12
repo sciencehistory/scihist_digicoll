@@ -79,4 +79,40 @@ describe OhmsTranscriptDisplay, type: :presenter do
     expect(formatted_line).to include "[2]"
     expect(formatted_line).to include "[3]"
   end
+
+  context "25-minute gap between two consecutive timecodes" do
+
+    let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/smythe_OH0042.xml"}
+    let(:parsed) { Nokogiri::HTML.fragment(ohms_transcript_display.display)}
+    let(:timecode_values) { ohms_transcript_display.sync_timecodes.values}
+    let(:start_line) { 1710 }
+    let(:end_line) {1725}
+
+    it "does not print out excess timecodes" do
+      # These lines contain 5 timecodes, with a big gap between the second and third:
+      area_around_blank_space = timecode_values.
+          select{ |li| li[:line_number] >= start_line && li[:line_number] <= end_line }
+      seconds_with_timecodes = area_around_blank_space.
+        map { |li| (li[:seconds]) }
+
+      # 17280 seconds - 15780 seconds == 25 minutes
+      expect(seconds_with_timecodes).to eq [15720, 15780, 17280, 17340, 17400]
+
+      # Print out the timecodes in each line.
+      # Lines with text, but no timecodes show up as blank strings.
+      timecodes_for_each_line = (start_line..end_line).to_a.
+        map{ |x| "#ohms_line_#{x} > .ohms-transcript-timestamp" }.
+        map{ |selector| parsed.css(selector).text }
+      # It only prints out the last timecode before the gap,
+      # and the first timecode after it.
+      expect(timecodes_for_each_line).to eq [
+        "04:22:00", "", "", "",
+        "04:23:00", "", "", "", "",
+        # .. a 25 minute gap is skipped over ...
+        "04:48:00", "",
+        "04:49:00", "", "",
+        "04:50:00", ""
+      ]
+    end
+  end
 end
