@@ -108,7 +108,7 @@ describe OralHistoryContent::OhmsXmlValidator do
     end
   end
 
-  describe "unclosed footnote reference" do
+  describe "two consecutive opening footnote reference tags" do
     let(:bad_footnote_ref) { "[[footnote]]note 1[[footnote]]" }
     let(:xml_str) { hanford_xml.sub(footnote_ref_re, bad_footnote_ref) }
     it "is not valid" do
