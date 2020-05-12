@@ -33,7 +33,7 @@ describe "Audio front end", type: :system, js: true do
     (5..8).to_a.map do |i|
       create(:asset_with_faked_file,
         title: "Regular file #{i}",
-        faked_derivatives: [],
+        faked_derivatives: {},
         position: i - 1,
 
         #5, #7 and #8 are published, but not #6:
@@ -183,7 +183,7 @@ describe "Audio front end", type: :system, js: true do
       (5..8).to_a.map do |i|
         create(:asset_with_faked_file,
           title: "Regular file #{i}",
-          faked_derivatives: [],
+          faked_derivatives: {},
           position: i - 1,
 
           #5, #7 and #8 are published, but not #6:
