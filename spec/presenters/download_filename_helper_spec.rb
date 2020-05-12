@@ -73,18 +73,18 @@ describe DownloadFilenameHelper, type: :model do
     let(:derivative_key) { :thumb_mini }
     let(:asset) do
       create(:asset_with_faked_file,
-             faked_derivatives: [ build(:faked_derivative, key: derivative_key, uploaded_file: build(:stored_uploaded_file, content_type: "image/jpeg")) ],
+             faked_derivatives: { derivative_key: build(:stored_uploaded_file, content_type: "image/jpeg") },
              position: 12,
              parent: create(:work, title: "Plastics make the package Dow makes the plastics"))
     end
-    let(:derivative) { asset.derivative_for(derivative_key) }
+
     it "can create for original" do
-      expect(DownloadFilenameHelper.filename_for_asset(asset)).to eq "plastics_make_the_#{asset.parent.friendlier_id}_12_#{asset.friendlier_id}.png"
+      expect(DownloadFilenameHelper.filename_for_asset(asset)).to eq "plastics_make_the_#{asset.parent.friendlier_id}_12_#{asset.friendlier_id}.jpeg"
     end
 
     it "can create for derivative" do
       # note ends with jpeg, not png, cause it's a jpeg derivative
-      expect(DownloadFilenameHelper.filename_for_asset(asset, derivative: derivative)).to eq "plastics_make_the_#{asset.parent.friendlier_id}_12_#{asset.friendlier_id}_#{derivative.key}.jpeg"
+      expect(DownloadFilenameHelper.filename_for_asset(asset, derivative_key: derivative_key)).to eq "plastics_make_the_#{asset.parent.friendlier_id}_12_#{asset.friendlier_id}_#{derivative_key}.jpeg"
     end
   end
 
