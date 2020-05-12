@@ -24,8 +24,8 @@ module DownloadOptions
         options << DownloadOption.with_formatted_subhead("Small JPG",
           url: download_derivative_path(asset, :download_small),
           analyticsAction: "download_jpg_small",
-          width: dl_small.metadata["width"],
-          height: dl_small.metadata["height"],
+          width: dl_small.width,
+          height: dl_small.height,
           size: dl_small.size
         )
       end
@@ -34,8 +34,8 @@ module DownloadOptions
         options << DownloadOption.with_formatted_subhead("Medium JPG",
           url: download_derivative_path(asset, :download_medium),
           analyticsAction: "download_jpg_medium",
-          width: dl_medium.metadata["width"],
-          height: dl_medium.metadata["height"],
+          width: dl_medium.width,
+          height: dl_medium.height,
           size: dl_medium.size
         )
       end
@@ -44,8 +44,8 @@ module DownloadOptions
         options << DownloadOption.with_formatted_subhead("Large JPG",
           url: download_derivative_path(asset, :download_large),
           analyticsAction: "download_jpg_large",
-          width: dl_large.metadata["width"],
-          height: dl_large.metadata["height"],
+          width: dl_large.width,
+          height: dl_large.height,
           size: dl_large.size
         )
       end
@@ -54,8 +54,8 @@ module DownloadOptions
         options << DownloadOption.with_formatted_subhead("Full-sized JPG",
           url: download_derivative_path(asset, :download_full),
           analyticsAction: "download_jpg_full",
-          width: dl_full.metadata["width"],
-          height: dl_full.metadata["height"],
+          width: dl_full.width,
+          height: dl_full.height,
           size: dl_full.size
         )
       end
