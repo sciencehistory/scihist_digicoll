@@ -55,8 +55,8 @@ class ViewerMemberInfoSerializer < ViewModel
 
 
   def thumb_src_attributes(asset)
-    derivative_1x_url = asset.derivative_for(THUMB_DERIVATIVE)&.url
-    derivative_2x_url = asset.derivative_for("#{THUMB_DERIVATIVE.to_s}_2X")&.url
+    derivative_1x_url = asset.file_url(THUMB_DERIVATIVE)
+    derivative_2x_url = asset.file_url("#{THUMB_DERIVATIVE.to_s}_2X")
     {
       thumbSrc: derivative_1x_url,
       thumbSrcset: "#{derivative_1x_url} 1x, #{derivative_2x_url} 2x"
