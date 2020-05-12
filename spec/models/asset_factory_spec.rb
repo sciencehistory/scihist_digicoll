@@ -41,10 +41,13 @@ describe "FactoryBot Asset factory" do
           "thumb_standard_2X", "download_large", "download_medium", "download_small",
           "download_full"].each do |key|
             deriv = asset.file_derivatives[key.to_sym]
+
             expect(deriv).to be_present
             expect(deriv.exists?).to be(true)
             expect(deriv.size > 0).to be(true)
             expect(deriv.metadata).to be_present
+
+            expect(deriv).to be_kind_of(AssetUploader::UploadedFile)
         end
       end
     end

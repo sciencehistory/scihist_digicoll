@@ -8,7 +8,7 @@ FactoryBot.define do
   #
   # The content-type and other metadata may not match the actual file, that's up
   # to you to specify/provide.
-  factory :stored_uploaded_file, class: Shrine::UploadedFile do
+  factory :stored_uploaded_file, class: ::AssetUploader::UploadedFile do
     transient do
       file { File.open((Rails.root + "spec/test_support/images/30x30.png")) }
       content_type { "image/png" }
@@ -33,7 +33,7 @@ FactoryBot.define do
       }
     end
 
-    initialize_with { Shrine::UploadedFile.new(
+    initialize_with { new(
       "id" => id,
       "storage" => storage,
       "metadata" => metadata
