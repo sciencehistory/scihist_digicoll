@@ -32,14 +32,14 @@ describe CatalogController, solr: true, indexable_callbacks: true do
         expect(page).to have_content(work1.title)
         expect(page).to have_content(work1.description)
         expect(page).to have_content /2 items/i
-        expect(page).to have_selector("img[src='#{work1.leaf_representative.derivative_for(:thumb_standard).url}']")
+        expect(page).to have_selector("img[src='#{work1.leaf_representative.file_url(:thumb_standard)}']")
         expect(page).to have_link(text: work1.title, href: work_path(work1))
       end
 
       within("#document_#{collection.friendlier_id}") do
         expect(page).to have_content(collection.title)
         expect(page).to have_content(collection.description)
-        expect(page).to have_selector("img[src='#{collection.leaf_representative.derivative_for(:thumb_standard).url}']")
+        expect(page).to have_selector("img[src='#{collection.leaf_representative.file_url(:thumb_standard)}']")
         expect(page).to have_content /1 item/i
         #expect(page).to have_link(text: collection.title, href: collection_path(work1))
       end
