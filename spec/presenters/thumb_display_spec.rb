@@ -37,8 +37,8 @@ describe ThumbDisplay do
   describe "asset with 'standard' size derivatives" do
     let(:argument) { build(:asset_with_faked_file)}
     it "renders img with srcset" do
-      standard_deriv    = argument.derivative_for(:thumb_standard)
-      standard_2x_deriv = argument.derivative_for(:thumb_standard_2X)
+      standard_deriv    = argument.file_derivatives[:thumb_standard]
+      standard_2x_deriv = argument.file_derivatives[:thumb_standard_2X]
 
       img_tag = rendered.at_css("img")
 
@@ -65,8 +65,8 @@ describe ThumbDisplay do
     let(:instance) { ThumbDisplay.new(argument, thumb_size: thumb_size) }
 
     it "renders" do
-      deriv    = argument.derivative_for("thumb_#{thumb_size}")
-      deriv_2x = argument.derivative_for("thumb_#{thumb_size}_2X")
+      deriv    = argument.file_derivatives[:"thumb_#{thumb_size}"]
+      deriv_2x = argument.file_derivatives[:"thumb_#{thumb_size}_2X"]
 
       img_tag = rendered.at_css("img")
 
@@ -83,8 +83,8 @@ describe ThumbDisplay do
       let(:instance) { ThumbDisplay.new(argument, thumb_size: thumb_size, lazy: true) }
 
       it "renders with lazysizes class and data- attributes" do
-        deriv    = argument.derivative_for("thumb_#{thumb_size}")
-        deriv_2x = argument.derivative_for("thumb_#{thumb_size}_2X")
+        deriv    = argument.file_derivatives[:"thumb_#{thumb_size}"]
+        deriv_2x = argument.file_derivatives[:"thumb_#{thumb_size}_2X"]
 
         img_tag = rendered.at_css("img")
 

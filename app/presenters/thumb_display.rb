@@ -135,11 +135,11 @@ class ThumbDisplay < ViewModel
   end
 
   def res_1x_url
-    @res_1x_url ||= asset.derivative_for("thumb_#{thumb_size}").try(:url)
+    @res_1x_url ||= asset.file_url("thumb_#{thumb_size}")
   end
 
   def res_2x_url
-    @res_2x_url ||= asset.derivative_for("thumb_#{thumb_size}_2X").try(:url)
+    @res_2x_url ||= asset.file_url("thumb_#{thumb_size}_2X")
   end
 
   def src_attributes
