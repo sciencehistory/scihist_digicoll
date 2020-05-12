@@ -46,7 +46,7 @@ module ImageHelper
     end
 
 
-    image_tag derivative.url,
+    image_tag derivative_url,
       srcset: "#{derivative_url} 1x, #{derivative_2x_url} 2x",
       **image_tag_options
   end
