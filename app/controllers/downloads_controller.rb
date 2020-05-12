@@ -60,13 +60,13 @@ class DownloadsController < ApplicationController
     # Tell shrine url method `public:false` to make sure we get a signed URL
     # that lets us set content-disposition and content-type, even if
     # it's public in S3.
-    redirect_to @derivative.file.url(
+    redirect_to @derivative.url(
       public: false,
       expires_in: URL_EXPIRES_IN,
       response_content_type: @derivative.content_type,
       response_content_disposition: ContentDisposition.format(
         disposition: content_disposition_mode,
-        filename: DownloadFilenameHelper.filename_for_asset(@asset, derivative: @derivative)
+        filename: DownloadFilenameHelper.filename_for_asset(@asset, derivative_key: params[:derivative_key].to_sym)
       )
     ), status: 302
   end
@@ -87,7 +87,7 @@ class DownloadsController < ApplicationController
 
   # sets @derivative (for derivatives action), raises RecordNotFound if we can't find it.
   def set_derivative
-    @derivative = @asset.derivative_for(params[:derivative_key])
+    @derivative = @asset.file_derivatives(params[:derivative_key].to_sym)
     unless @derivative
       # We could use custom subclass of RecordNotFound with machine-readable details
       raise ActiveRecord::RecordNotFound.new("Couldn't find Kithe::Derivative for '#{@asset.id}' with key '#{params[:derivative_key]}'",
