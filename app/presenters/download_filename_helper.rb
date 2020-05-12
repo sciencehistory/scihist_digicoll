@@ -24,17 +24,17 @@ class DownloadFilenameHelper
   #
   # Can do different things for different sorts of Assets, like speical audio file
   # handling.
-  def self.filename_for_asset(asset, derivative: nil)
+  def self.filename_for_asset(asset, derivative_key: nil)
     # audio files use their whole title instead of parents, with the intended
     # use case of Oral History, our only audio files at present, where archival
     # title is important.
     base = self.filename_base_for_asset(asset)
 
-    if derivative && !asset.content_type.start_with?("audio")
-      base = [base, derivative.key].join("_")
+    if derivative_key && !asset.content_type.start_with?("audio")
+      base = [base, derivative_key.to_s].join("_")
     end
 
-    content_type = if derivative
+    content_type = if derivative_key && derivative = asset.file_derivatives[derivative_key.to_sym]
       derivative.content_type
     else
       asset.content_type

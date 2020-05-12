@@ -48,12 +48,12 @@ describe DownloadsController do
 
     describe "good file" do
       let(:asset) { create(:asset_with_faked_file,
-                           faked_derivatives: [],
+                           faked_derivatives: {},
                            position: 12,
                            parent: create(:work, title: "Plastics make the package Dow makes the plastics"))
       }
       let(:expected_filename) {
-        "plastics_make_the_#{asset.parent.friendlier_id}_#{asset.position}_#{asset.friendlier_id}.png"
+        "plastics_make_the_#{asset.parent.friendlier_id}_#{asset.position}_#{asset.friendlier_id}.jpeg"
       }
 
       it "returns redirect" do
@@ -104,7 +104,7 @@ describe DownloadsController do
     end
 
     describe "derivative does not exist" do
-      let(:asset) { create(:asset_with_faked_file, faked_derivatives: []) }
+      let(:asset) { create(:asset_with_faked_file, faked_derivatives: {}) }
 
       it "raises not found" do
         expect {
@@ -115,7 +115,7 @@ describe DownloadsController do
 
     describe "good derivative" do
       let(:asset) { create(:asset_with_faked_file,
-                           faked_derivatives: [ build(:faked_derivative, uploaded_file: build(:stored_uploaded_file, content_type: "image/jpeg")) ],
+                           faked_derivatives: { :thumb_mini => build(:stored_uploaded_file, content_type: "image/jpeg") },
                            position: 12,
                            parent: create(:work, title: "Plastics make the package Dow makes the plastics"))
       }
