@@ -25,15 +25,15 @@ describe "Public work show page", type: :system, js: false do
         :work, :published, :with_complete_metadata, contained_by: [create(:collection)], parent: create(:work, :published), members: [
           create(:asset_with_faked_file,
             title: "First asset (representative)",
-            faked_derivatives: [],
+            faked_derivatives: {},
             position: 0),
           create(:asset_with_faked_file,
             title: "Second asset",
-            faked_derivatives: [],
+            faked_derivatives: {},
             position: 1),
           create(:asset_with_faked_file,
             title: "Third asset (private)",
-            faked_derivatives: [],
+            faked_derivatives: {},
             published: false,
             position: 2)
           ]
