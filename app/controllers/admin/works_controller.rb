@@ -102,7 +102,9 @@ class Admin::WorksController < AdminController
       redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: "OHMS XML file updated"
     else
       Rails.logger.debug("Could not accept invalid OHMS XML for work #{@work.friendlier_id}:\n  #{xml.slice(0, 60).gsub(/[\n\r]/, '')}...\n\n  #{validator.errors.join("\n  ")}")
-      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: { error: "OHMS XML file was invalid and could not be accepted!" }
+      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: {
+        error: "OHMS XML file was invalid and could not be accepted: #{validator.errors.join('; ')}"
+      }
     end
   end
 
