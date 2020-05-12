@@ -45,11 +45,11 @@ class WorkSocialShareAttributes < ViewModel
   end
 
   def share_media_height
-    share_representative_derivative&.height
+    share_representative_derivative&.metadata.try { |h| h["height"] }
   end
 
   def share_media_width
-    share_representative_derivative&.width
+    share_representative_derivative&.metadata.try { |h| h["width"] }
   end
 
   def short_plain_description
@@ -63,7 +63,7 @@ class WorkSocialShareAttributes < ViewModel
   private
 
   def share_representative_derivative
-    @share_representative_deriative ||= work&.leaf_representative&.derivative_for(:download_medium)
+    @share_representative_deriative ||= work&.leaf_representative&.file_derivatives&.dig(:download_medium)
   end
 
 end
