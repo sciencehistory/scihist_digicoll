@@ -4,6 +4,6 @@ class CollectionsListController < ApplicationController
     @collections = Collection.
       where("published = true").
       order(:title).
-      with_representative_derivatives
+      includes(:leaf_representative)
   end
 end

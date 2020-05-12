@@ -18,7 +18,7 @@
 #
 # Note that we will need to access the leaf_representative and it's
 # derivatives, so if displaying a list of multiple (as you usually will be), you should
-# eager load these, possibly with kithe `with_representative_derivatives` scope. You DO NOT
+# eager load these. You DO NOT
 # pass in the leaf_representative itself, pass in the member -- we need to know about it
 # to know what to display.
 #

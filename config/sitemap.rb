@@ -50,7 +50,7 @@ SitemapGenerator::Sitemap.create(
     add collection_path(c), changefreq: 'weekly', lastmod: nil
   end
 
-  Work.where(published: true).includes(:members => [:derivatives, { :leaf_representative => :derivatives}]).order("updated_at desc").find_each do |w|
+  Work.where(published: true).includes(:members => :leaf_representative).order("updated_at desc").find_each do |w|
 
     # spec says we can add at most 1000 image URLs for each page. Let's add large thumbs
     # of all members, trying to use same URLs we'll use for src in page.

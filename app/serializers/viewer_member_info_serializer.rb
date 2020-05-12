@@ -40,7 +40,7 @@ class ViewerMemberInfoSerializer < ViewModel
     @included_members ||= begin
       members = work.members.order(:position)
       members = members.where(published: true) if current_user.nil?
-      members.with_representative_derivatives.select do |member|
+      members.includes(:leaf_representative).select do |member|
         member.leaf_representative &&
         member.leaf_representative.content_type&.start_with?("image/") &&
         member.leaf_representative.stored?

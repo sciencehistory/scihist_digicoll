@@ -15,7 +15,7 @@ class WorkShowDecorator < Draper::Decorator
 
   def member_list_for_display
     @member_list_display ||= begin
-      members = model.members.with_representative_derivatives
+      members = model.members.includes(:leaf_representative)
       members = members.where(published: true) if current_user.nil?
       members = members.order(:position).to_a
       # If the representative image is the first item in the list, don't show it twice.

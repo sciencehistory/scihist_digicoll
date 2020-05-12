@@ -421,7 +421,7 @@ class Admin::WorksController < AdminController
         scope = scope.where("json_attributes ->> 'department' = :department", department: params[:q][:department])
       end
 
-      scope.with_representative_derivatives.page(params[:page]).per(20)
+      scope.includes(:leaf_representative).page(params[:page]).per(20)
     end
 
     def cancel_url

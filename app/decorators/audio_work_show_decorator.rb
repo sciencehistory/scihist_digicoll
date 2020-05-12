@@ -14,7 +14,7 @@ class AudioWorkShowDecorator < Draper::Decorator
   # The list of tracks for the playlist.
   def all_members
     @all_members ||= begin
-      members = model.members.with_representative_derivatives
+      members = model.members.includes(:leaf_representative)
       members = members.where(published: true) if current_user.nil?
       members.order(:position).to_a
     end
