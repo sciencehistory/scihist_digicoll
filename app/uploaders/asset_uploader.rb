@@ -1,4 +1,7 @@
 class AssetUploader < Kithe::AssetUploader
+  # gives us md5, sha1, sha512
+  plugin :kithe_checksum_signatures
+
   THUMB_WIDTHS = {
     mini: 54,
     large: 525,
