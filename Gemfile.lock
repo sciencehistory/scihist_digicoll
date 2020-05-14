@@ -7,7 +7,7 @@ GIT
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: 86314f9fdb6947899e044ee9e132004175800816
+  revision: efd1eb3c578b92239e2311f246d08e76a94f606f
   branch: kithe_derivatives
   specs:
     kithe (2.0.0.beta)
