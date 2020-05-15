@@ -111,8 +111,16 @@ class OhmsTranscriptDisplay < ViewModel
     if line[:line_num] == 1
       # give a 0 timecode
       sync_html = content_tag("a", format_ohms_timestamp(0), href: "#", class: "ohms-transcript-timestamp", data: { "ohms_timestamp_s" => 0})
-    elsif sync = sync_timecodes[line[:line_num]]
-      sync_html = content_tag("a", format_ohms_timestamp(sync[:seconds]), href: "#", class: "ohms-transcript-timestamp", data: { "ohms_timestamp_s" => sync[:seconds]})
+    elsif timecodes_for_line = sync_timecodes[line[:line_num]]
+      # Although we ignore consecutive timecodes, but
+      # it's possible to imagine a scenario in which
+      # two or more *non-consecutive* timecodes are
+      # associated with the same line.
+      #
+      # For now, the simplest thing that could work is just
+      # to display the first timecode associated with each line.
+      seconds = timecodes_for_line[0][:seconds]
+      sync_html = content_tag("a", format_ohms_timestamp(seconds), href: "#", class: "ohms-transcript-timestamp", data: { "ohms_timestamp_s" => seconds})
     end
 
     # add em together with whitespace on end either way

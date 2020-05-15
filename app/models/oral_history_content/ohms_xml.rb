@@ -94,37 +94,86 @@ class OralHistoryContent
 
     private
 
-    # A hash where key is an OHMS line number. Value is a Hash containing
-    # :word_number and :seconds .
-    #
-    # We parse the somewhat mystical OHMS <sync> element to get it.
+    # A hash where key is an OHMS line number. Value is a hash containing
+    # word_number and seconds.
+    def parse_sync!
+      remove_consecutive_timecodes(raw_timecodes)
+    end
+
+
+    # Parse the OHMS <sync> element.
     #
     # It looks like: 1:|13(3)|19(14)|27(9)
     #
-    # We believe that means:
     # * `1:`      -- 1 minute granularity: each timecode is separated by 60 seconds.
     # * "13(3)"   -- Timecode 1: minute 1 ends at line 13, word 3.
     # * "19(14)"  -- Timecode 2: minute 2 ends at line 19, word 14.
     # * "27(9)"   -- Timecode 3: minute 3 ends at line 27, word 9.
-    # * Etc.
-    #
-    # OHMS seems to actually ignore the word position in placing marker; we may too.
-    def parse_sync!
-      sync = parsed.at_xpath("//ohms:sync", ohms: OHMS_NS).text
-      return {} unless sync.present?
+    # * etc.
+    # Return a hash. The line number is the key. The value is an array of timecodes,
+    # each associating a word on that line (1-indexed) with an offset, in seconds,
+    # from the beginning of the combined audio derivative.
+    def raw_timecodes
+      @raw_timecodes ||= begin
+        sync = parsed.at_xpath("//ohms:sync", ohms: OHMS_NS).text
+        return {} unless sync.present?
 
-      interval_m, stamps = sync.split(":")
-      interval_m = interval_m.to_i
+        mbt, stamps = sync.split(":")
+        minutes_between_timecodes = mbt.to_i
 
-      stamps.split("|").enum_for(:each_with_index).collect do |stamp, index|
-        next if stamp.blank?
+        result = {}
 
-        stamp =~ /(\d+)\((\d+)\)/
-        line_num, word_num = $1, $2
-        next unless line_num.present? && word_num.present?
+        stamps.split("|").enum_for(:each_with_index).each do |stamp, index|
+          next if stamp.blank?
+          stamp =~ /(\d+)\((\d+)\)/
+          line_num, word_num = $1, $2
+          next unless line_num.present? && word_num.present?
 
-        [line_num.to_i, { word_number: word_num.to_i, seconds: index * interval_m * 60, line_number: line_num.to_i }]
-      end.compact.to_h
+          (result[line_num.to_i] ||= []) << {
+            word_number: word_num.to_i,
+            seconds: index * minutes_between_timecodes * 60,
+          }
+        end
+
+        result
+      end
     end
+
+    # Iterate over raw_timecodes.
+    # If any line has more than one timecode,
+    # remove all consecutive timecodes.
+    # Note: this can still result in more than one item being left
+    # in the array.
+    def remove_consecutive_timecodes(raw_timecodes)
+      raw_timecodes.select { |key, value| value.length > 1}.each do |k, timestamps |
+        word_numbers_to_keep = delete_neighbors(timestamps.map{|x| x[:word_number]})
+        if word_numbers_to_keep.empty?
+          raw_timecodes.delete(k)
+        else
+          raw_timecodes[k] = raw_timecodes[k].select do |rt|
+            word_numbers_to_keep.include?  rt[:word_number]
+          end
+        end
+      end
+      raw_timecodes
+    end
+
+    # Given an array of integers,
+    # delete *all* of them with a neighbor (one separated )
+    # Example: 1, 2, 3, 6, 18
+    # 1, 2, 3 are all neighbors, so we return [6, 18].
+    def delete_neighbors(ints)
+      result = ints.dup
+      neighbors = ints.sort.each_cons(2).
+        to_a.map {|a, b|  b - a  ==  1}.
+        each_with_index do |has_neighbor, i|
+        if has_neighbor
+          result.delete(ints[i])
+          result.delete(ints[i+1])
+        end
+      end
+      result
+    end
+
   end
 end
