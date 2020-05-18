@@ -45,7 +45,7 @@ describe WorkZipCreator do
     let(:callback_spy) { spy("callback") }
 
     it "triggers" do
-      pdf_file = WorkZipCreator.new(work, callback: callback_spy).create
+      pdf_file = WorkPdfCreator.new(work, callback: callback_spy).create
 
       expect(callback_spy).to have_received(:call).with(progress_total: 3, progress_i: 1)
       expect(callback_spy).to have_received(:call).with(progress_total: 3, progress_i: 3)
