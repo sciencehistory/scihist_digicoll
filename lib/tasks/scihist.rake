@@ -145,7 +145,7 @@ namespace :scihist do
         store.clear
 
         # for bookkeeping save storage please
-        store["_shrine_storage"] = ScihistDigicoll::Env.shrine_derivatives_storage.inspect
+        store["SHRINE_STORAGE_RECORDED"] = ScihistDigicoll::Env.shrine_derivatives_storage.inspect
 
         s3_iterator.each_s3_path do |s3_path|
           store[s3_path] = "true"
@@ -168,7 +168,7 @@ namespace :scihist do
 
         # kind of lame non-user-friendly, but it's what we got for now...
         puts "Checking for storage: #{ScihistDigicoll::Env.shrine_derivatives_storage.inspect}\n\n"
-        puts "DB was created for storage: #{store["_shrine_storage"]}"
+        puts "DB was created for storage: #{store["SHRINE_STORAGE_RECORDED"]}"
 
         progress_bar = ProgressBar.create(total: Kithe::Derivative.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
 
