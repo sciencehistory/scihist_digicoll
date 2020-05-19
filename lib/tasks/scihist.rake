@@ -124,4 +124,65 @@ namespace :scihist do
       Kithe::Model.find_by_friendlier_id(args[:friendlier_id]).update_index(writer: Traject::DebugWriter.new({}))
     end
   end
+
+  namespace :derivatives do
+    require 'sdbm'
+
+    desc "Dump all paths from storage (s3) to a SDBM file for analysis"
+
+    task :dump => :environment do
+      ENV["DESTINATION"] ||= "./derivative_paths.sdbm"
+
+
+      s3_iterator = S3PathIterator.new(
+        shrine_storage: ScihistDigicoll::Env.shrine_derivatives_storage,
+        show_progress_bar: true,
+        progress_bar_total: Kithe::Derivative.count
+      )
+
+      SDBM.open ENV["DESTINATION"] do |store|
+        # clear out all existing data
+        store.clear
+
+        # for bookkeeping save storage please
+        store["_shrine_storage"] = ScihistDigicoll::Env.shrine_derivatives_storage.inspect
+
+        s3_iterator.each_s3_path do |s3_path|
+          store[s3_path] = "true"
+        end
+      end
+    end
+
+
+    desc "check all derivative references exist as files on storage from SDBM produced by :dump"
+    task :check => :environment do
+      ENV["SOURCE"] ||= "./derivative_paths.sdbm"
+
+      progress_bar = ProgressBar.create(total: Kithe::Derivative.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
+      missing_count = 0
+      checked_count = 0
+
+      SDBM.open(ENV["SOURCE"]) do |store|
+        if store.empty?
+          raise ArgumentError.new("No data found in DB at #{ENV["SOURCE"]}, create it with scihist:derivatives:dump or set path in ENV SOURCE")
+        end
+
+        Kithe::Derivative.find_each do |derivative|
+          uploaded_file = derivative.file
+          s3_path = [uploaded_file.storage.prefix, uploaded_file.id].join("/")
+
+          unless store[s3_path]
+            missing_count += 1
+            progress_bar.log("Missing file: #{derivative.asset_id}:#{derivative.key}, #{derivative.file.url(public: true)}")
+          end
+
+          checked_count += 1
+          progress_bar.increment
+        end
+      end
+
+
+      puts "\n\nMissing derivative files: #{missing_count} out of #{checked_count} (#{(missing_count.to_f / checked_count * 100).round(2)}%)"
+    end
+  end
 end
