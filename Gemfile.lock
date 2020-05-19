@@ -7,7 +7,7 @@ GIT
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: d3c105f838e44fd173acc661093866e579a70e95
+  revision: cd6eb3d765dc315828a5ff3a9838bdc7da6a89eb
   branch: v3.0-progress
   specs:
     kithe (2.0.0.beta)
@@ -389,7 +389,7 @@ GEM
     pry-byebug (3.9.0)
       byebug (~> 11.0)
       pry (~> 0.13.0)
-    public_suffix (4.0.4)
+    public_suffix (4.0.5)
     puma (4.3.3)
       nio4r (~> 2.0)
     qa (5.3.1)
