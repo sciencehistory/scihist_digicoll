@@ -169,7 +169,7 @@ namespace :scihist do
 
         Kithe::Derivative.find_each do |derivative|
           uploaded_file = derivative.file
-          s3_path = [uploaded_file.storage.prefix, uploaded_file.id].join("/")
+          s3_path = [uploaded_file.storage.prefix, uploaded_file.id].compact.join("/")
 
           unless store[s3_path]
             missing_count += 1
