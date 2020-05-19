@@ -124,20 +124,4 @@ namespace :scihist do
       Kithe::Model.find_by_friendlier_id(args[:friendlier_id]).update_index(writer: Traject::DebugWriter.new({}))
     end
   end
-
-  namespace :derivatives do
-    desc "check all derivative references exist as files on storage"
-    task :check => :environment do
-      progress_bar = ProgressBar.create(total: Kithe::Derivative.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
-      missing_count = 0
-      Kithe::Derivative.find_each do |derivative|
-        unless derivative.file.exists?
-          missing_count += 1
-          progress_bar.log("Missing file: #{derivative.asset_id}:#{derivative.key}, #{derivative.file.url(public: true)}")
-        end
-        progress_bar.increment
-      end
-      puts "Missing derivative files: #{missing_count}"
-    end
-  end
 end
