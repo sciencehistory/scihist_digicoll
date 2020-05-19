@@ -21,4 +21,21 @@ class Asset < Kithe::Asset
 
   after_promotion DziFiles::ActiveRecordCallbacks, if: ->(asset) { asset.content_type&.start_with?("image/") }
   after_commit DziFiles::ActiveRecordCallbacks, only: [:update, :destroy]
+
+  # What is total number of derivatives referenced in our DB?
+  #
+  # Since they are now referenced as keys inside a JSON hash in Asset, it's a bit
+  # tricky to count. We use some rough SQL to ask postgres how many keys there are in
+  # `derivatives` hashes in `file_data` json hash in Assets.
+  #
+  # Seems to work. Might be a little bit expensive, does not use indexes and requires a complete
+  # table scan, but pg exact counts actually always require a table scan, and at our present
+  # scale this is still pretty quick.
+  #
+  # TODO: We should probably extract this to kithe.
+  def self.all_derivative_count
+    Kithe::Asset.connection.select_all(
+      "select count(*) from (SELECT id, jsonb_object_keys(file_data -> 'derivatives') FROM kithe_models WHERE kithe_model_type = 2) AS asset_derivative_keys;"
+    ).first["count"]
+  end
 end
