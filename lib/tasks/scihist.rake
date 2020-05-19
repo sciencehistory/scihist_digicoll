@@ -131,7 +131,7 @@ namespace :scihist do
     desc "Dump all paths from storage (s3) to a SDBM file for analysis"
 
     task :dump => :environment do
-      ENV["DESTINATION"] ||= "./derivative_paths.sdbm"
+      ENV["DESTINATION"] ||= "./tmp/derivative_paths.sdbm"
 
 
       s3_iterator = S3PathIterator.new(
@@ -156,7 +156,7 @@ namespace :scihist do
 
     desc "check all derivative references exist as files on storage from SDBM produced by :dump"
     task :check => :environment do
-      ENV["SOURCE"] ||= "./derivative_paths.sdbm"
+      ENV["SOURCE"] ||= "./tmp/derivative_paths.sdbm"
 
       missing_count = 0
       checked_count = 0
