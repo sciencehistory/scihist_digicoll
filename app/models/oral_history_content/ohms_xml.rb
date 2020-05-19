@@ -119,24 +119,30 @@ class OralHistoryContent
         return {} unless sync.present?
 
         mbt, stamps = sync.split(":")
-        minutes_between_timecodes = mbt.to_i
 
         result = {}
 
         stamps.split("|").enum_for(:each_with_index).each do |stamp, index|
-          next if stamp.blank?
-          stamp =~ /(\d+)\((\d+)\)/
-          line_num, word_num = $1, $2
-          next unless line_num.present? && word_num.present?
-
-          (result[line_num.to_i] ||= []) << {
-            word_number: word_num.to_i,
-            seconds: index * minutes_between_timecodes * 60,
-          }
+          next unless timecode_hash = process_one_timecode(stamp, index, mbt)
+          line_num = timecode_hash.delete(:line_number)
+          (result[line_num.to_i] ||= []) << timecode_hash
         end
 
         result
       end
+    end
+
+    def process_one_timecode(stamp, index, mbt)
+      minutes_between_timecodes = mbt.to_i
+      return nil if stamp.blank?
+      stamp =~ /(\d+)\((\d+)\)/
+      line_num, word_num = $1, $2
+      return nil unless line_num.present? && word_num.present?
+      {
+        line_number: line_num,
+        word_number: word_num.to_i,
+        seconds: index * minutes_between_timecodes * 60,
+      }
     end
 
     # Iterate over raw_timecodes.
