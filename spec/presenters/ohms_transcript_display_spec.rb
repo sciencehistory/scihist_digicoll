@@ -80,80 +80,16 @@ describe OhmsTranscriptDisplay, type: :presenter do
     expect(formatted_line).to include "[3]"
   end
 
-  context "real-world example: 25-minute gap between two consecutive timecodes" do
-    let(:ohms_ns) { "https://www.weareavp.com/nunncenter/ohms" }
-    let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/smythe_OH0042.xml"}
-    let(:parsed) { Nokogiri::HTML.fragment(ohms_transcript_display.display)}
-    let(:start_line) { 1710 }
-    let(:end_line) {1725}
-    let(:raw_timestamps) do
-      parsed = Nokogiri::XML(File.open(ohms_xml_path))
-      sync = parsed.at_xpath("//ohms:sync", ohms: ohms_ns).text
-      interval_m, stamps = sync.split(":")
-      stamps.split("|")
-    end
-    let(:raw_timestamps_around_gap) do
-      raw_timestamps.select do |ts|
-        line = ts.split("(")[0].to_i
-        line  >= start_line &&
-        line  <= end_line
-      end.to_a
-    end
-    let(:processed_timecodes) do
-      ohms_transcript_display.sync_timecodes.select do |line, timecodes|
-        line >= start_line &&
-        line <= end_line
-      end
-    end
-
-    it "correctly pares down the timecodes" do
-      # These 5 lines contain 29 timecodes, with
-      # 25 of them on the middle of the 5 lines:
-      expect(raw_timestamps_around_gap.to_a).to eq ["1710(1)", "1714(3)"] +
-        (1..25).map { |x| "1719(#{x})"} + # 25 consecutive timestamps in a row.
-        ["1721(1)", "1724(7)"]
-
-      # Meanwhile, on the front end:
-      expect(processed_timecodes).to eq({
-        1710=>[{:word_number=>1, :seconds=>15720}],
-        1714=>[{:word_number=>3, :seconds=>15780}],
-        # All the timestamps on 1719 are consecutive.
-        # So they get eliminated from the transcript display.
-        1721=>[{:word_number=>1, :seconds=>17340}],
-        1724=>[{:word_number=>7, :seconds=>17400}]
-      })
-    end
-
-    it "correctly assigns the timecodes to each line" do
-      # Print out the timecodes in each line.
-      # Lines with text, but no timecodes show up as blank strings.
-      shown_timecodes = (start_line..end_line).to_a.
-        map{ |x| "#ohms_line_#{x} > .ohms-transcript-timestamp" }.
-        map{ |selector| parsed.css(selector).text }
-
-      # It only prints out the last timecode before the gap,
-      # and the first timecode after it.
-      expect(shown_timecodes).to eq [
-        "04:22:00", "", "", "",
-        "04:23:00", "", "", "", "", "", "",
-        "04:49:00", "", "",
-        "04:50:00", ""
-      ]
-    end
-  end
-
   context "Various placements of timecodes" do
     let(:ohms_ns) { "https://www.weareavp.com/nunncenter/ohms" }
     let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/various_gaps.xml"}
     let(:parsed) { Nokogiri::HTML.fragment(ohms_transcript_display.display)}
-
     let(:raw_timestamps) do
       sync = Nokogiri::XML(File.open(ohms_xml_path)).
         at_xpath("//ohms:sync", ohms: ohms_ns).text
       interval_m, stamps = sync.split(":")
       stamps.split("|")
     end
-
     let(:raw_timestamps_for_lines) do
       raw_timestamps.select do |ts|
         line = ts.split("(")[0].to_i
@@ -161,20 +97,17 @@ describe OhmsTranscriptDisplay, type: :presenter do
         line  <= end_line
       end.to_a
     end
-
     let(:processed_timecodes) do
       ohms_transcript_display.sync_timecodes.select do |line, timecodes|
         line >= start_line &&
         line <= end_line
       end
     end
-
     let(:shown_timecodes) do
       (start_line..end_line).to_a.
         map{ |x| "#ohms_line_#{x} > .ohms-transcript-timestamp" }.
         map{ |selector| parsed.css(selector).text }
     end
-
     context "line without any timestamps" do
       let(:start_line) { 8 }
       let(:end_line)   { 8 }
@@ -184,7 +117,6 @@ describe OhmsTranscriptDisplay, type: :presenter do
         expect(shown_timecodes).to eq([""])
       end
     end
-
     context "first line is blank" do
       let(:start_line) { 1 }
       let(:end_line)   { 3 }
@@ -195,7 +127,6 @@ describe OhmsTranscriptDisplay, type: :presenter do
         expect(shown_timecodes).to eq(["00:00:00", "", ""])
       end
     end
-
     context "first word is free, although there are other timestamps on the first line" do
       let(:start_line) { 1 }
       let(:end_line)   { 3 }
@@ -207,7 +138,6 @@ describe OhmsTranscriptDisplay, type: :presenter do
         expect(shown_timecodes).to eq( ["00:00:00", "", ""])
       end
     end
-
     context "already a timestamp on the first word of the first line." do
       let(:start_line) { 1 }
       let(:end_line)   { 3 }
@@ -219,7 +149,6 @@ describe OhmsTranscriptDisplay, type: :presenter do
           to eq("<a href=\"#\" class=\"ohms-transcript-timestamp\" data-ohms-timestamp-s=\"120\">00:02:00</a>some text \n")
       end
     end
-
     context "line with two consecutive timestamps" do
       let(:start_line) { 3 }
       let(:end_line)   { 3 }
@@ -229,25 +158,47 @@ describe OhmsTranscriptDisplay, type: :presenter do
         expect(shown_timecodes).to eq( [""])
       end
     end
-
     context "line with two series of consecutive timestamps" do
-    let(:start_line) { 7 }
-    let(:end_line)   { 7 }
+      let(:start_line) { 7 }
+      let(:end_line)   { 7 }
       it "eliminates both series" do
         expect(raw_timestamps_for_lines.to_a).to eq ["7(2)", "7(3)", "7(8)", "7(9)"]
         expect(processed_timecodes).to eq({})
       end
     end
-
     context "two nonconsecutive timestamps on the same line" do
-    let(:start_line) { 14 }
-    let(:end_line)   { 14 }
+      let(:start_line) { 14 }
+      let(:end_line)   { 14 }
       it "keeps both, shows the first" do
         expect(raw_timestamps_for_lines.to_a).to eq ["14(1)", "14(3)"]
         expect(processed_timecodes).to eq({14=>[{:seconds=>600, :word_number=>1}, {:seconds=>660, :word_number=>3}]})
         expect(shown_timecodes).to eq(["00:10:00"])
       end
     end
-
+    context "real-world example w/ 25 minutes of silence" do
+      let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/smythe_OH0042.xml"}
+      let(:start_line) { 1710 }
+      let(:end_line)   { 1725 }
+        it "keeps both, shows the first" do
+          expect(raw_timestamps_for_lines.to_a).to eq(["1710(1)", "1714(3)"] +
+            (1..25).map { |x| "1719(#{x})"} + # 25 consecutive timestamps in a row.
+            ["1721(1)", "1724(7)"]
+          )
+          expect(processed_timecodes).to eq({
+            1710=>[{:word_number=>1, :seconds=>15720}],
+            1714=>[{:word_number=>3, :seconds=>15780}],
+            # All the timestamps on 1719 are consecutive.
+            # So they get eliminated from the transcript display.
+            1721=>[{:word_number=>1, :seconds=>17340}],
+            1724=>[{:word_number=>7, :seconds=>17400}]
+          })
+          expect(shown_timecodes).to eq([
+            "04:22:00", "", "", "",
+            "04:23:00", "", "", "", "", "", "",
+            "04:49:00", "", "",
+            "04:50:00", ""
+          ])
+      end
+    end
   end
 end
