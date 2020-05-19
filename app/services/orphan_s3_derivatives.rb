@@ -60,7 +60,7 @@ class OrphanS3Derivatives
 
       asset_id, derivative_key, shrine_path = parse_s3_path(s3_path)
 
-      if orphaned?(asset_id, derivative_key, shrine_path)
+      if shrine_path && orphaned?(asset_id, derivative_key, shrine_path)
         shrine_storage.delete(shrine_path)
         s3_iterator.log "deleted derivative file at: #{shrine_storage.bucket.name}: #{s3_path}"
         delete_count += 1
