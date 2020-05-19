@@ -54,7 +54,7 @@ SitemapGenerator::Sitemap.create(
 
     # spec says we can add at most 1000 image URLs for each page. Let's add large thumbs
     # of all members, trying to use same URLs we'll use for src in page.
-    member_representatives = w.members.find_all { |m| m.published }.slice(0, 1000).collect(&:leaf_representative)
+    member_representatives = w.members.find_all { |m| m.published? }.slice(0, 1000).collect(&:leaf_representative).compact
 
     image_urls = member_representatives.collect do |asset|
       asset.file_url("thumb_large_2X")
