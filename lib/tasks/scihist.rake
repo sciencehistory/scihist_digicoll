@@ -176,7 +176,7 @@ namespace :scihist do
           uploaded_file = derivative.file
           s3_path = [uploaded_file.storage.prefix, uploaded_file.id].compact.join("/")
 
-          unless store[s3_path]
+          unless store.has_key?(s3_path)
             missing_count += 1
             progress_bar.log("Missing file: #{derivative.asset_id}:#{derivative.key}, #{derivative.file.url(public: true)}")
           end
