@@ -2,6 +2,10 @@ class AssetUploader < Kithe::AssetUploader
   # gives us md5, sha1, sha512
   plugin :kithe_checksum_signatures
 
+  # Used by our browse_everything integration, let's us set a hash with remote
+  # URL location, to be fetched on promotion.
+  plugin :kithe_accept_remote_url
+
   THUMB_WIDTHS = {
     mini: 54,
     large: 525,
