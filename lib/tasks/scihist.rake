@@ -158,7 +158,6 @@ namespace :scihist do
     task :check => :environment do
       ENV["SOURCE"] ||= "./derivative_paths.sdbm"
 
-      progress_bar = ProgressBar.create(total: Kithe::Derivative.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
       missing_count = 0
       checked_count = 0
 
@@ -166,6 +165,12 @@ namespace :scihist do
         if store.empty?
           raise ArgumentError.new("No data found in DB at #{ENV["SOURCE"]}, create it with scihist:derivatives:dump or set path in ENV SOURCE")
         end
+
+        # kind of lame non-user-friendly, but it's what we got for now...
+        puts "Checking for storage: #{ScihistDigicoll::Env.shrine_derivatives_storage.inspect}\n\n"
+        puts "DB was created for storage: #{store["_shrine_storage"]}"
+
+        progress_bar = ProgressBar.create(total: Kithe::Derivative.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
 
         Kithe::Derivative.find_each do |derivative|
           uploaded_file = derivative.file
