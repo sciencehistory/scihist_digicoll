@@ -100,7 +100,6 @@ class OralHistoryContent
       remove_consecutive_timecodes(raw_timecodes)
     end
 
-
     # Parse the OHMS <sync> element.
     #
     # It looks like: 1:|13(3)|19(14)|27(9)
@@ -117,23 +116,19 @@ class OralHistoryContent
       @raw_timecodes ||= begin
         sync = parsed.at_xpath("//ohms:sync", ohms: OHMS_NS).text
         return {} unless sync.present?
-
-        mbt, stamps = sync.split(":")
-
+        minutes_between_timecodes, stamps = sync.split(":")
+        seconds_between_timnecodes = minutes_between_timecodes.to_i * 60
         result = {}
-
         stamps.split("|").enum_for(:each_with_index).each do |stamp, index|
-          next unless timecode_hash = process_one_timecode(stamp, index, mbt)
+          next unless timecode_hash = process_one_timecode(stamp, index, seconds_between_timnecodes)
           line_num = timecode_hash.delete(:line_number)
           (result[line_num.to_i] ||= []) << timecode_hash
         end
-
         result
       end
     end
 
-    def process_one_timecode(stamp, index, mbt)
-      minutes_between_timecodes = mbt.to_i
+    def process_one_timecode(stamp, index, seconds_between_timnecodes)
       return nil if stamp.blank?
       stamp =~ /(\d+)\((\d+)\)/
       line_num, word_num = $1, $2
@@ -141,31 +136,34 @@ class OralHistoryContent
       {
         line_number: line_num,
         word_number: word_num.to_i,
-        seconds: index * minutes_between_timecodes * 60,
+        seconds: index * seconds_between_timnecodes,
       }
     end
 
     # Iterate over raw_timecodes.
-    # If any line has more than one timecode,
-    # remove all consecutive timecodes.
+    # Remove all consecutive timecodes on the same line.
     # Note: this can still result in more than one item being left
     # in the array.
-    def remove_consecutive_timecodes(raw_timecodes)
-      raw_timecodes.select { |key, value| value.length > 1}.each do |k, timestamps |
-        word_numbers_to_keep = delete_neighbors(timestamps.map{|x| x[:word_number]})
+    def remove_consecutive_timecodes(timecode_hash)
+      # Skip over all lines with 1 or 0 timecodes...
+      timecode_hash.select { |key, value| value.length > 1}.each do |k, timecodes|
+        # Figure out which timecodes to keep
+        word_numbers_to_keep = delete_neighbors(timecodes.map{|x| x[:word_number]})
+
         if word_numbers_to_keep.empty?
-          raw_timecodes.delete(k)
+          timecode_hash.delete(k)
         else
-          raw_timecodes[k] = raw_timecodes[k].select do |rt|
-            word_numbers_to_keep.include?  rt[:word_number]
+          timecode_hash[k] = timecode_hash[k].select do |rt|
+            word_numbers_to_keep.include? rt[:word_number]
           end
         end
+
       end
-      raw_timecodes
+      timecode_hash
     end
 
-    # Given an array of integers,
-    # delete *all* of them with a neighbor (one separated )
+    # Given an array of distinct integers,
+    # delete *all* of them with a neighbor.
     # Example: 1, 2, 3, 6, 18
     # 1, 2, 3 are all neighbors, so we return [6, 18].
     def delete_neighbors(ints)

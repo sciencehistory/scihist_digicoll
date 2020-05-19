@@ -16,9 +16,7 @@ class OhmsTranscriptDisplay < ViewModel
   # We're also doing things somewhat different than OHMS when we coudn't figure out why it made
   # any sense (like a bare span for an empty line, or using span as a wrapper for p which is
   # probably illegal HTML)
-  #
-  # This is kinda dense code, but it works, not sure it would be cleaner with an view template,
-  # and should be more performant this way.
+
   def display
     paragraphs = []
     current_paragraph = []
@@ -106,9 +104,9 @@ class OhmsTranscriptDisplay < ViewModel
       ohms_line_str = ohms_line_str.sub(match_to_replace, replacement).html_safe()
     end
 
-    # If there are any timestamps associated with#
+    # If there are any timecodes associated with#
     # this line, pick one to show.
-    ts = timestamp_content_tag_for_line(line_number)
+    ts = timecode_content_tag_for_line(line_number)
 
     # add em together with whitespace on end either way
     safe_join([ts, ohms_line_str, " \n"])
@@ -117,7 +115,7 @@ class OhmsTranscriptDisplay < ViewModel
 
   # If there is a timestamp for this line, return its content_tag.
   # Otherwise, just a blank string.
-  def timestamp_content_tag_for_line(line_number)
+  def timecode_content_tag_for_line(line_number)
     tc = timecode_for_line(line_number)
     return '' unless tc
     content_tag(
@@ -145,7 +143,7 @@ class OhmsTranscriptDisplay < ViewModel
     # If this is the first line, try adding a zero timestamp
     # to the first word.
     if line_number == 1
-      timecodes_for_line = add_zero_timestamp(timecodes_for_line)
+      timecodes_for_line = add_zero_timecode(timecodes_for_line)
     end
 
     # Finally, just return the first timecode
@@ -153,20 +151,18 @@ class OhmsTranscriptDisplay < ViewModel
     timecodes_for_line.present? ? timecodes_for_line[0] : nil
   end
 
-
   # The first line is special: we want to add an
   # extra "zero-second" timestamp to it -- as long as
   # the first word doesn't already have
   # a timestamp associated with it.
-  def add_zero_timestamp(timecodes_for_first_line)
-    zero_timestamp = [{:word_number=>1, :seconds=>0}]
-    return zero_timestamp if timecodes_for_first_line.blank?
+  def add_zero_timecode(timecodes_for_first_line)
+    zero_timecode = [{:word_number=>1, :seconds=>0}]
+    return zero_timecode if timecodes_for_first_line.blank?
     first_word_is_free = (timecodes_for_first_line.none? { |k| k[:word_number] == 1 })
     if first_word_is_free
-      return zero_timestamp + timecodes_for_first_line
+      return zero_timecode + timecodes_for_first_line
     end
     # Otherwise just leave it as is.
     timecodes_for_first_line
   end
-
 end
