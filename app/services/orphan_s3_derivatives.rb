@@ -41,14 +41,7 @@ class OrphanS3Derivatives
   end
 
   def derivative_count
-    # Tricky SQL to ask postgres how many keys there are in `derivatives` hashes in
-    # `file_data` json hash in Assets. Seems to work. Might be a little bit
-    # expensive, require a complete table scan, but at our table size
-    # that's still not a big deal, and pg counts always do.
-
-    @derivatives_count ||= Kithe::Asset.connection.select_all(
-      "select count(*) from (SELECT id, jsonb_object_keys(file_data -> 'derivatives') FROM kithe_models WHERE kithe_model_type = 2) AS asset_derivative_keys;"
-    ).first["count"]
+    @derivatives_count ||= Asset.all_derivative_count
   end
 
   # Deletes all found orphans, outputing to console what was deleted.
