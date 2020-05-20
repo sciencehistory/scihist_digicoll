@@ -200,5 +200,40 @@ describe OhmsTranscriptDisplay, type: :presenter do
         ])
       end
     end
+    context "real world example w/ minute-1 timecode at word 1 and small pileup at line 3" do
+      let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/smythe_OH0042.xml"}
+      let(:start_line) { 1 }
+      let(:end_line)   { 5 }
+      it "does not add zero timestamp and eliminates pileup" do
+        #pp raw_timecodes_for_lines.to_a
+        expect(raw_timecodes_for_lines.to_a).to eq(["1(1)", "3(2)", "3(3)", "3(4)"])
+
+        #pp processed_timecodes
+        expect(processed_timecodes).to eq({1=>[{:word_number=>1, :seconds=>60}]})
+        #pp shown_timecodes
+
+        expect(shown_timecodes).to eq(["00:01:00", "", "", "", ""])
+
+        # expect(raw_timecodes_for_lines.to_a).to eq(["1710(1)", "1714(3)"] +
+        #   (1..25).map { |x| "1719(#{x})"} + # 25 consecutive timestamps in a row.
+        #   ["1721(1)", "1724(7)"]
+        # )
+        # expect(processed_timecodes).to eq({
+        #   1710=>[{:word_number=>1, :seconds=>15720}],
+        #   1714=>[{:word_number=>3, :seconds=>15780}],
+        #   # All the timestamps on 1719 are consecutive.
+        #   # So they get eliminated from the transcript display.
+        #   1721=>[{:word_number=>1, :seconds=>17340}],
+        #   1724=>[{:word_number=>7, :seconds=>17400}]
+        # })
+        # expect(shown_timecodes).to eq([
+        #   "04:22:00", "", "", "",
+        #   "04:23:00", "", "", "", "", "", "",
+        #   "04:49:00", "", "",
+        #   "04:50:00", ""
+        # ])
+      end
+
+    end
   end
 end
