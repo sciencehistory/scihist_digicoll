@@ -110,9 +110,9 @@ describe OralHistoryContent do
       it "are as expected" do
         # we'll just check a sampling, we have one-second interval granularity in XML
         expect(ohms_xml.sync_timecodes.count).to eq(28)
-        expect(ohms_xml.sync_timecodes[13]).to  eq([{:word_number=>3, :seconds=>60    }])
-        expect(ohms_xml.sync_timecodes[19]).to  eq([{:word_number=>14, :seconds=>120  }])
-        expect(ohms_xml.sync_timecodes[308]).to eq([{:word_number=>2, :seconds=>1680 }])
+        expect(ohms_xml.sync_timecodes[13]).to  eq([{:line_number=>"13", :seconds=>60,  :word_number=>3}])
+        expect(ohms_xml.sync_timecodes[19]).to  eq([{:line_number=>"19", :seconds=>120, :word_number=>14}])
+        expect(ohms_xml.sync_timecodes[308]).to eq([{:line_number=>"308", :seconds=>1680, :word_number=>2}])
       end
     end
 
