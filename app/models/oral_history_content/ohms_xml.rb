@@ -121,7 +121,7 @@ class OralHistoryContent
         result = {}
         stamps.split("|").enum_for(:each_with_index).each do |stamp, index|
           next unless timecode_hash = process_one_timecode(stamp, index, seconds_between_timnecodes)
-          line_num = timecode_hash.delete(:line_number)
+          line_num = timecode_hash[:line_number]
           (result[line_num.to_i] ||= []) << timecode_hash
         end
         result
