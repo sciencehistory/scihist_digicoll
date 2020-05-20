@@ -133,7 +133,7 @@ describe OhmsTranscriptDisplay, type: :presenter do
       it "assigns a zero timestamp" do
         expect(raw_timecodes_for_lines.to_a).to eq ["1(3)", "3(2)", "3(3)"]
         expect(processed_timecodes).to eq({
-            1=>[{:seconds=>60, :word_number=>3}]
+            1=>[{:line_number=>"1", :seconds=>60, :word_number=>3}]
         })
         expect(shown_timecodes).to eq( ["00:00:00", "", ""])
       end
@@ -171,7 +171,7 @@ describe OhmsTranscriptDisplay, type: :presenter do
       let(:end_line)   { 14 }
       it "keeps both, shows the first" do
         expect(raw_timecodes_for_lines.to_a).to eq ["14(1)", "14(3)"]
-        expect(processed_timecodes).to eq({14=>[{:seconds=>600, :word_number=>1}, {:seconds=>660, :word_number=>3}]})
+        expect(processed_timecodes).to eq({14=>[{:line_number=>"14", :seconds=>600, :word_number=>1}, {:line_number=>"14", :seconds=>660, :word_number=>3}]})
         expect(shown_timecodes).to eq(["00:10:00"])
       end
     end
@@ -184,13 +184,12 @@ describe OhmsTranscriptDisplay, type: :presenter do
           (1..25).map { |x| "1719(#{x})"} + # 25 consecutive timestamps in a row.
           ["1721(1)", "1724(7)"]
         )
+        # pp processed_timecodes
         expect(processed_timecodes).to eq({
-          1710=>[{:word_number=>1, :seconds=>15720}],
-          1714=>[{:word_number=>3, :seconds=>15780}],
-          # All the timestamps on 1719 are consecutive.
-          # So they get eliminated from the transcript display.
-          1721=>[{:word_number=>1, :seconds=>17340}],
-          1724=>[{:word_number=>7, :seconds=>17400}]
+          1710=>[{:line_number=>"1710", :word_number=>1, :seconds=>15720}],
+          1714=>[{:line_number=>"1714", :word_number=>3, :seconds=>15780}],
+          1721=>[{:line_number=>"1721", :word_number=>1, :seconds=>17340}],
+          1724=>[{:line_number=>"1724", :word_number=>7, :seconds=>17400}]
         })
         expect(shown_timecodes).to eq([
           "04:22:00", "", "", "",
@@ -205,35 +204,10 @@ describe OhmsTranscriptDisplay, type: :presenter do
       let(:start_line) { 1 }
       let(:end_line)   { 5 }
       it "does not add zero timestamp and eliminates pileup" do
-        #pp raw_timecodes_for_lines.to_a
         expect(raw_timecodes_for_lines.to_a).to eq(["1(1)", "3(2)", "3(3)", "3(4)"])
-
-        #pp processed_timecodes
-        expect(processed_timecodes).to eq({1=>[{:word_number=>1, :seconds=>60}]})
-        #pp shown_timecodes
-
+        expect(processed_timecodes).to eq(1=>[{:line_number=>"1", :seconds=>60, :word_number=>1}])
         expect(shown_timecodes).to eq(["00:01:00", "", "", "", ""])
-
-        # expect(raw_timecodes_for_lines.to_a).to eq(["1710(1)", "1714(3)"] +
-        #   (1..25).map { |x| "1719(#{x})"} + # 25 consecutive timestamps in a row.
-        #   ["1721(1)", "1724(7)"]
-        # )
-        # expect(processed_timecodes).to eq({
-        #   1710=>[{:word_number=>1, :seconds=>15720}],
-        #   1714=>[{:word_number=>3, :seconds=>15780}],
-        #   # All the timestamps on 1719 are consecutive.
-        #   # So they get eliminated from the transcript display.
-        #   1721=>[{:word_number=>1, :seconds=>17340}],
-        #   1724=>[{:word_number=>7, :seconds=>17400}]
-        # })
-        # expect(shown_timecodes).to eq([
-        #   "04:22:00", "", "", "",
-        #   "04:23:00", "", "", "", "", "", "",
-        #   "04:49:00", "", "",
-        #   "04:50:00", ""
-        # ])
       end
-
     end
   end
 end
