@@ -130,7 +130,7 @@ namespace :scihist do
 
     desc "Dump all paths from storage (s3) to a PSTORE file for analysis"
 
-    task :dump => :environment do
+    task :dump_paths => :environment do
       ENV["DESTINATION"] ||= "./tmp/derivative_paths.pstore"
 
 
@@ -157,15 +157,15 @@ namespace :scihist do
     end
 
 
-    desc "check all derivative references exist as files on storage from SDBM produced by :dump"
-    task :check => :environment do
+    desc "check all derivative references exist as files on storage from DB produced by :dump"
+    task :check_paths => :environment do
       ENV["SOURCE"] ||= "./tmp/derivative_paths.pstore"
 
       missing_count = 0
       checked_count = 0
 
       unless File.exist?(ENV['SOURCE'])
-        raise ArgumentError.new("No pstore DB found at #{ENV["SOURCE"]}, create it with scihist:derivatives:dump or set path in ENV SOURCE")
+        raise ArgumentError.new("No pstore DB found at #{ENV["SOURCE"]}, create it with scihist:derivatives:dump_paths or set path in ENV SOURCE")
       end
 
       store = PStore.new(ENV['SOURCE'])
