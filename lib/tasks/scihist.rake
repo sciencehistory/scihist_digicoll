@@ -126,12 +126,12 @@ namespace :scihist do
   end
 
   namespace :derivatives do
-    require 'sdbm'
+    require 'pstore'
 
-    desc "Dump all paths from storage (s3) to a SDBM file for analysis"
+    desc "Dump all paths from storage (s3) to a PSTORE file for analysis"
 
     task :dump => :environment do
-      ENV["DESTINATION"] ||= "./tmp/derivative_paths.sdbm"
+      ENV["DESTINATION"] ||= "./tmp/derivative_paths.pstore"
 
 
       s3_iterator = S3PathIterator.new(
@@ -140,10 +140,13 @@ namespace :scihist do
         progress_bar_total: Kithe::Derivative.count
       )
 
-      SDBM.open ENV["DESTINATION"] do |store|
-        # clear out all existing data
-        store.clear
+      if File.exist?(ENV['DESTINATION'])
+        FileUtils.rm(ENV['DESTINATION'])
+      end
 
+      store = PStore.new(ENV['DESTINATION'])
+
+      store.transaction do
         # for bookkeeping save storage please
         store["SHRINE_STORAGE_RECORDED"] = ScihistDigicoll::Env.shrine_derivatives_storage.inspect
 
@@ -156,16 +159,18 @@ namespace :scihist do
 
     desc "check all derivative references exist as files on storage from SDBM produced by :dump"
     task :check => :environment do
-      ENV["SOURCE"] ||= "./tmp/derivative_paths.sdbm"
+      ENV["SOURCE"] ||= "./tmp/derivative_paths.pstore"
 
       missing_count = 0
       checked_count = 0
 
-      SDBM.open(ENV["SOURCE"]) do |store|
-        if store.empty?
-          raise ArgumentError.new("No data found in DB at #{ENV["SOURCE"]}, create it with scihist:derivatives:dump or set path in ENV SOURCE")
-        end
+      unless File.exist?(ENV['SOURCE'])
+        raise ArgumentError.new("No pstore DB found at #{ENV["SOURCE"]}, create it with scihist:derivatives:dump or set path in ENV SOURCE")
+      end
 
+      store = PStore.new(ENV['SOURCE'])
+
+      store.transaction(true) do
         # kind of lame non-user-friendly, but it's what we got for now...
         puts "Checking for storage: #{ScihistDigicoll::Env.shrine_derivatives_storage.inspect}\n\n"
         puts "DB was created for storage: #{store["SHRINE_STORAGE_RECORDED"]}"
@@ -176,7 +181,7 @@ namespace :scihist do
           uploaded_file = derivative.file
           s3_path = [uploaded_file.storage.prefix, uploaded_file.id].compact.join("/")
 
-          unless store.has_key?(s3_path)
+          unless store.root?(s3_path)
             missing_count += 1
             progress_bar.log("Missing file: #{derivative.asset_id}:#{derivative.key}, #{derivative.file.url(public: true)}")
           end
@@ -185,7 +190,6 @@ namespace :scihist do
           progress_bar.increment
         end
       end
-
 
       puts "\n\nMissing derivative files: #{missing_count} out of #{checked_count} (#{(missing_count.to_f / checked_count * 100).round(2)}%)"
     end
