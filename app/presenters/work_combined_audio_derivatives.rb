@@ -11,17 +11,18 @@ class WorkCombinedAudioDerivatives < ViewModel
     render 'admin/works/combined_audio_derivatives', model: model, view: self
   end
 
+  def work_published_audio_members_available?
+    @work_published_audio_members_count ||= CombinedAudioDerivativeCreator.new(model).available_members?
+  end
 
-  def work_audio_members
-    model.members.to_a.select do |m|
-      (m.is_a? Asset) && m.content_type && m.content_type.start_with?("audio/")
-    end
+  def work_available_members_count
+    @work_available_members_count ||= CombinedAudioDerivativeCreator.new(model).available_members_count
   end
 
   def combined_mp3_audio
     return nil unless model.genre.present?
     return nil unless model.genre.include?('Oral histories')
-    return nil unless work_audio_members.count > 0
+    return nil unless work_published_audio_members_available?
     oh_content = model.oral_history_content!
     oh_content.combined_audio_mp3&.url(public:true)
   end
@@ -29,7 +30,7 @@ class WorkCombinedAudioDerivatives < ViewModel
   def combined_webm_audio
     return nil unless model.genre.present?
     return nil unless model.genre.include?('Oral histories')
-    return nil unless work_audio_members.count > 0
+    return nil unless work_published_audio_members_available?
     oh_content = model.oral_history_content!
     oh_content.combined_audio_webm&.url(public:true)
   end
