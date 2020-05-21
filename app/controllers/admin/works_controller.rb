@@ -126,7 +126,7 @@ class Admin::WorksController < AdminController
   # PATCH/PUT /admin/works/ab2323ac/create_combined_audio_derivatives
   # Unfortunately, if the job fails for any reason, the user will not be notified.
   def create_combined_audio_derivatives
-    if CombinedAudioDerivativeCreator.new(@work).audio_members.empty?
+    unless CombinedAudioDerivativeCreator.new(@work).available_members?
       redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: {
         error: "Combined audio derivatives cannot be created, because this oral history does not have any published audio segments."
       }
