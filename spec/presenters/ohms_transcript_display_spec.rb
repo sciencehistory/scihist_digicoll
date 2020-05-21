@@ -79,4 +79,135 @@ describe OhmsTranscriptDisplay, type: :presenter do
     expect(formatted_line).to include "[2]"
     expect(formatted_line).to include "[3]"
   end
+
+  context "Various placements of timecodes" do
+    let(:ohms_ns) { "https://www.weareavp.com/nunncenter/ohms" }
+    let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/various_gaps.xml"}
+    let(:parsed) { Nokogiri::HTML.fragment(ohms_transcript_display.display)}
+    let(:raw_timecodes) do
+      sync = Nokogiri::XML(File.open(ohms_xml_path)).
+        at_xpath("//ohms:sync", ohms: ohms_ns).text
+      interval_m, stamps = sync.split(":")
+      stamps.split("|")
+    end
+    let(:raw_timecodes_for_lines) do
+      raw_timecodes.select do |ts|
+        line = ts.split("(")[0].to_i
+        line  >= start_line &&
+        line  <= end_line
+      end.to_a
+    end
+    let(:processed_timecodes) do
+      ohms_transcript_display.sync_timecodes.select do |line, timecodes|
+        line >= start_line &&
+        line <= end_line
+      end
+    end
+    let(:shown_timecodes) do
+      (start_line..end_line).to_a.
+        map{ |x| "#ohms_line_#{x} > .ohms-transcript-timestamp" }.
+        map{ |selector| parsed.css(selector).text }
+    end
+    context "line without any timecodes" do
+      let(:start_line) { 8 }
+      let(:end_line)   { 8 }
+      it "doesn't show any." do
+        expect(raw_timecodes_for_lines.to_a).to eq []
+        expect(processed_timecodes).to eq({})
+        expect(shown_timecodes).to eq([""])
+      end
+    end
+    context "first line is blank" do
+      let(:start_line) { 1 }
+      let(:end_line)   { 3 }
+      it "assigns a zero timestamp" do
+        allow(ohms_transcript_display).to receive(:sync_timecodes).and_return({})
+        expect(ohms_transcript_display.format_ohms_line({text: "some text", line_num: 1})).
+          to eq("<a href=\"#\" class=\"ohms-transcript-timestamp\" data-ohms-timestamp-s=\"0\">00:00:00</a>some text \n")
+        expect(shown_timecodes).to eq(["00:00:00", "", ""])
+      end
+    end
+    context "first word is free, although there are other timecodes on the first line" do
+      let(:start_line) { 1 }
+      let(:end_line)   { 3 }
+      it "assigns a zero timestamp" do
+        expect(raw_timecodes_for_lines.to_a).to eq ["1(3)", "3(2)", "3(3)"]
+        expect(processed_timecodes).to eq({
+            1=>[{:line_number=>"1", :seconds=>60, :word_number=>3}]
+        })
+        expect(shown_timecodes).to eq( ["00:00:00", "", ""])
+      end
+    end
+    context "already a timestamp on the first word of the first line." do
+      let(:start_line) { 1 }
+      let(:end_line)   { 3 }
+      it "does not assign a zero timestamp " do
+        allow(ohms_transcript_display).to receive(:sync_timecodes).and_return(
+          { 1=>[{ :seconds=>120, :word_number=>1}] }
+        )
+        expect(ohms_transcript_display.format_ohms_line({text: "some text", line_num: 1})).
+          to eq("<a href=\"#\" class=\"ohms-transcript-timestamp\" data-ohms-timestamp-s=\"120\">00:02:00</a>some text \n")
+      end
+    end
+    context "line with two consecutive timestamps" do
+      let(:start_line) { 3 }
+      let(:end_line)   { 3 }
+      it "shows neither" do
+        expect(raw_timecodes_for_lines.to_a).to eq ["3(2)", "3(3)"]
+        expect(processed_timecodes).to eq({})
+        expect(shown_timecodes).to eq( [""])
+      end
+    end
+    context "line with two series of consecutive timecodes" do
+      let(:start_line) { 7 }
+      let(:end_line)   { 7 }
+      it "eliminates both series" do
+        expect(raw_timecodes_for_lines.to_a).to eq ["7(2)", "7(3)", "7(8)", "7(9)"]
+        expect(processed_timecodes).to eq({})
+      end
+    end
+    context "two nonconsecutive timestamps on the same line" do
+      let(:start_line) { 14 }
+      let(:end_line)   { 14 }
+      it "keeps both, shows the first" do
+        expect(raw_timecodes_for_lines.to_a).to eq ["14(1)", "14(3)"]
+        expect(processed_timecodes).to eq({14=>[{:line_number=>"14", :seconds=>600, :word_number=>1}, {:line_number=>"14", :seconds=>660, :word_number=>3}]})
+        expect(shown_timecodes).to eq(["00:10:00"])
+      end
+    end
+    context "real world example w/ 25 minutes of silence" do
+      let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/smythe_OH0042.xml"}
+      let(:start_line) { 1710 }
+      let(:end_line)   { 1725 }
+      it "doesn't show the pileup of timestamps" do
+        expect(raw_timecodes_for_lines.to_a).to eq(["1710(1)", "1714(3)"] +
+          (1..25).map { |x| "1719(#{x})"} + # 25 consecutive timestamps in a row.
+          ["1721(1)", "1724(7)"]
+        )
+        # pp processed_timecodes
+        expect(processed_timecodes).to eq({
+          1710=>[{:line_number=>"1710", :word_number=>1, :seconds=>15720}],
+          1714=>[{:line_number=>"1714", :word_number=>3, :seconds=>15780}],
+          1721=>[{:line_number=>"1721", :word_number=>1, :seconds=>17340}],
+          1724=>[{:line_number=>"1724", :word_number=>7, :seconds=>17400}]
+        })
+        expect(shown_timecodes).to eq([
+          "04:22:00", "", "", "",
+          "04:23:00", "", "", "", "", "", "",
+          "04:49:00", "", "",
+          "04:50:00", ""
+        ])
+      end
+    end
+    context "real world example w/ minute-1 timecode at word 1 and small pileup at line 3" do
+      let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/smythe_OH0042.xml"}
+      let(:start_line) { 1 }
+      let(:end_line)   { 5 }
+      it "does not add zero timestamp and eliminates pileup" do
+        expect(raw_timecodes_for_lines.to_a).to eq(["1(1)", "3(2)", "3(3)", "3(4)"])
+        expect(processed_timecodes).to eq(1=>[{:line_number=>"1", :seconds=>60, :word_number=>1}])
+        expect(shown_timecodes).to eq(["00:01:00", "", "", "", ""])
+      end
+    end
+  end
 end
