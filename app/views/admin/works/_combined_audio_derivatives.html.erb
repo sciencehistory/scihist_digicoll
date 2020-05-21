@@ -1,7 +1,8 @@
+<%# view is WorkCombinedAudioDerivatives #%>
 <div class="card bg-light mb-3">
   <h2 class="card-header h3">Combined Audio Derivative Files</h2>
   <div class="card-body">
-    <% if view.work_published_audio_members.empty? %>
+    <% unless view.work_published_audio_members_available? %>
       This oral history doesn't have any published audio segments associated with it.
       <%# (Thus, no point in showing the "Regenerate derivatives" button.) %>
     <% else %>
@@ -9,7 +10,7 @@
         <% if view.derivatives_up_to_date? %>
           <p class="alert-success p-3">
             <i class="fa fa fa-thumbs-up pr-1" aria-hidden="true"></i>
-            The combined audio derivatives, created from <%= view.work_published_audio_members.count %> published audio segments, are up to date. Their fingerprint is <code class="border"><%= view.combined_audio_fingerprint%></code>.</p>
+            The combined audio derivatives, created from <%= view.work_available_members_count %> published audio segments, are up to date. Their fingerprint is <code class="border"><%= view.combined_audio_fingerprint%></code>.</p>
           </p>
           <ul>
             <% if view.combined_mp3_audio.present? %>
@@ -43,7 +44,7 @@
         <% end %>
       <% else %>
         <p>
-            This oral history has <%= view.work_published_audio_members.count %> published audio segment(s).
+            This oral history has <%= view.work_available_members_count %> published audio segment(s).
         </p>
         <p>
           There are no combined audio derivatives for this oral history yet.
