@@ -90,7 +90,7 @@ class CombinedAudioDerivativeCreator
       duration_of_audio_file_in_seconds(f.path)
     end
     sum = 0
-    audio_member_ids = audio_members.map(&:id)
+    audio_member_ids = published_audio_members.map(&:id)
     end_points = durations.map {|i| sum += i}
     audio_member_ids.zip([0] + end_points)
   end
@@ -142,25 +142,24 @@ class CombinedAudioDerivativeCreator
       [output_file_path]
   end
 
-  def audio_member_files
-    audio_members.map { |asset| asset.file }
+  def available_members?
+    published_audio_members.present?
   end
 
-  # Filters out non-audio items
-  def audio_members
-    @audio_members ||= begin
-      work.members.order(:position, :id).select do |member|
-        (member.is_a? Asset) && member.published? && member.stored? && member.content_type && member.content_type.start_with?("audio/")
-      end
-    end
+  def available_members_count
+    published_audio_members.count
+  end
+
+  def audio_member_files
+    published_audio_members.map { |asset| asset.file }
   end
 
   # If this checksum changes, you need to regenerate the audio
   def fingerprint
     @fingerprint ||= begin
-      digests = audio_members.map(&:sha512).compact
-      uuids   = audio_members.pluck(:id)
-      unless digests.length == audio_members.length
+      digests = published_audio_members.map(&:sha512).compact
+      uuids   = published_audio_members.pluck(:id)
+      unless digests.length == published_audio_members.length
         raise RuntimeError, 'This item is missing a sha512'
       end
       Digest::MD5.hexdigest((
@@ -168,5 +167,15 @@ class CombinedAudioDerivativeCreator
       ).join)
     end
   end
+
+  private
+    # Filters out non-audio and unpublished items
+    def published_audio_members
+      @published_audio_members ||= begin
+        work.members.order(:position, :id).select do |member|
+          (member.is_a? Asset) && member.published? && member.stored? && member.content_type && member.content_type.start_with?("audio/")
+        end
+      end
+    end
 
 end
