@@ -2,7 +2,7 @@
 <div class="card bg-light mb-3">
   <h2 class="card-header h3">Combined Audio Derivative Files</h2>
   <div class="card-body">
-    <% unless view.work_published_audio_members_available? %>
+    <% unless view.work_available_members? %>
       This oral history doesn't have any published audio segments associated with it.
       <%# (Thus, no point in showing the "Regenerate derivatives" button.) %>
     <% else %>
