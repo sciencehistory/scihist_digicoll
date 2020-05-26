@@ -78,8 +78,10 @@ module CopyStaging
 
             if model_class <= Kithe::Asset
               restore_asset_file(model)
-            elsif model_class <= Kithe::Derivative
-              restore_derivative_file(model)
+
+              model.file_derivatives.each do |key, derivative_uploaded_file|
+                restore_derivative_file(derivative_uploaded_file, derivative_key: key, asset_id: model.friendlier_id)
+              end
             end
 
             # let's keep from getting too far in front of the thread pool --
@@ -110,10 +112,7 @@ module CopyStaging
 
       components << model_class.name
 
-      if model_class <= Kithe::Derivative
-        components << attributes["asset_id"]
-        components << attributes["key"]
-      elsif model_class <= Kithe::Model
+      if model_class <= Kithe::Model
         components << attributes["id"]
         components << attributes["friendlier_id"]
         components << attributes["title"].slice(0, 30)
@@ -131,12 +130,12 @@ module CopyStaging
       end
     end
 
-    def restore_derivative_file(derivative_model)
+    def restore_derivative_file(derivative_uploaded_file, asset_id:, derivative_key:)
       tracked_futures << Concurrent::Promises.future_on(thread_pool) do
-        puts "  -> Copying derivative file for #{derivative_model.class.name}/#{derivative_model.asset_id}/#{derivative_model.key}\n\n"
+        puts "  -> Copying derivative file for #{asset_id}/#{derivative_key}\n\n"
 
-        remote_file = Shrine::UploadedFile.new(derivative_model.file.data.merge("storage" => REMOTE_DERIVATIVES_STORAGE_KEY))
-        Shrine.storages[:kithe_derivatives].upload(remote_file, derivative_model.file.id)
+        remote_file = Shrine::UploadedFile.new(derivative_uploaded_file.data.merge("storage" => REMOTE_DERIVATIVES_STORAGE_KEY))
+        Shrine.storages[:kithe_derivatives].upload(remote_file, derivative_uploaded_file.id)
       end
     end
 
