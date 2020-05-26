@@ -16,9 +16,7 @@ class OhmsTranscriptDisplay < ViewModel
   # We're also doing things somewhat different than OHMS when we coudn't figure out why it made
   # any sense (like a bare span for an empty line, or using span as a wrapper for p which is
   # probably illegal HTML)
-  #
-  # This is kinda dense code, but it works, not sure it would be cleaner with an view template,
-  # and should be more performant this way.
+
   def display
     paragraphs = []
     current_paragraph = []
@@ -81,6 +79,7 @@ class OhmsTranscriptDisplay < ViewModel
   # * Makes sure there is whitespace at the end. Keep it all appropriately html safe.
   def format_ohms_line(line)
     ohms_line_str = line[:text]
+    line_number = line[:line_num]
 
     # catch speaker prefix
     if ohms_line_str =~ /\A([A-Z]+:) (.*)\Z/
@@ -105,18 +104,65 @@ class OhmsTranscriptDisplay < ViewModel
       ohms_line_str = ohms_line_str.sub(match_to_replace, replacement).html_safe()
     end
 
-    # possibly we need sync anchor html
-    sync_html = ""
-
-    if line[:line_num] == 1
-      # give a 0 timecode
-      sync_html = content_tag("a", format_ohms_timestamp(0), href: "#", class: "ohms-transcript-timestamp", data: { "ohms_timestamp_s" => 0})
-    elsif sync = sync_timecodes[line[:line_num]]
-      sync_html = content_tag("a", format_ohms_timestamp(sync[:seconds]), href: "#", class: "ohms-transcript-timestamp", data: { "ohms_timestamp_s" => sync[:seconds]})
-    end
+    # If there are any timecodes associated with#
+    # this line, pick one to show.
+    ts = timecode_content_tag_for_line(line_number)
 
     # add em together with whitespace on end either way
-    safe_join([sync_html, ohms_line_str, " \n"])
+    safe_join([ts, ohms_line_str, " \n"])
   end
 
+
+  # If there is a timestamp for this line, return its content_tag.
+  # Otherwise, just a blank string.
+  def timecode_content_tag_for_line(line_number)
+    tc = timecode_for_line(line_number)
+    return '' unless tc
+    content_tag(
+      "a",
+      format_ohms_timestamp(tc[:seconds]),
+      href: "#",
+      class: "ohms-transcript-timestamp",
+      data: { "ohms_timestamp_s" => tc[:seconds]}
+    )
+  end
+
+  # The OHMS editor allows us to associate one timecode per word.
+  # Our display, however, really only accomodates the display of one
+  # of these on the left of each line. This method picks at most one
+  # from the array of timecodes at sync_timecodes[line_number].
+  def timecode_for_line(line_number)
+
+    # Look up the timecodes for this line.
+    # They have already been processed in ohms_xml.rb
+    # to remove consecutive timecodes. In most cases,
+    # there will be either zero or one timecode in
+    # array timecodes_for_line.
+    timecodes_for_line = sync_timecodes[line_number]
+
+    # If this is the first line, try adding a zero timestamp
+    # to the first word.
+    if line_number == 1
+      timecodes_for_line = add_zero_timecode(timecodes_for_line)
+    end
+
+    # Finally, just return the first timecode
+    # associated with the line.
+    timecodes_for_line.present? ? timecodes_for_line[0] : nil
+  end
+
+  # The first line is special: we want to add an
+  # extra "zero-second" timestamp to it -- as long as
+  # the first word doesn't already have
+  # a timestamp associated with it.
+  def add_zero_timecode(timecodes_for_first_line)
+    zero_timecode = [{:word_number=>1, :seconds=>0}]
+    return zero_timecode if timecodes_for_first_line.blank?
+    first_word_is_free = (timecodes_for_first_line.none? { |k| k[:word_number] == 1 })
+    if first_word_is_free
+      return zero_timecode + timecodes_for_first_line
+    end
+    # Otherwise just leave it as is.
+    timecodes_for_first_line
+  end
 end
