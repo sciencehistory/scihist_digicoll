@@ -26,6 +26,8 @@ module ScihistDigicoll
     #
     # If nothing found registered with Rails Mime::Type, will return input.
     def self.humanized_content_type(content_type)
+      return content_type if content_type.blank?
+
       mime_obj = Mime::Type.lookup(content_type)
       return content_type unless mime_obj && mime_obj.symbol
 
