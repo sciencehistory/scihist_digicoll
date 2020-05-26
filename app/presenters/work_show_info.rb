@@ -107,7 +107,7 @@ class WorkShowInfo < ViewModel
     @related_works ||= Work.where(
         friendlier_id: related_url_filter.related_work_friendlier_ids,
         published: true
-      ).with_representative_derivatives.all
+      ).includes(:leaf_representative).all
   end
 
   def public_collections

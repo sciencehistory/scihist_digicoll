@@ -22,7 +22,7 @@ describe WorkSocialShareAttributes do
 
   describe "#share_media_url" do
     let(:work) { create(:work, representative: create(:asset_with_faked_file))}
-    let(:download_medium_derivative) { work.representative.derivative_for(:download_medium) }
+    let(:download_medium_derivative) { work.representative.file_derivatives[:download_medium] }
 
     it "direct link to 'medium' download derivative of representative" do
       parsed_uri = Addressable::URI.parse attributes.share_media_url
@@ -33,12 +33,12 @@ describe WorkSocialShareAttributes do
 
     it "has share_media_height" do
       expect(attributes.share_media_height).to be_present
-      expect(attributes.share_media_height).to eq download_medium_derivative.height
+      expect(attributes.share_media_height).to eq download_medium_derivative.metadata["height"]
     end
 
     it "has share_media_width" do
       expect(attributes.share_media_width).to be_present
-      expect(attributes.share_media_width).to eq download_medium_derivative.width
+      expect(attributes.share_media_width).to eq download_medium_derivative.metadata["width"]
     end
 
     describe "with no representative" do

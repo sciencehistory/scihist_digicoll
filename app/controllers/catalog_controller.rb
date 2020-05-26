@@ -29,7 +29,7 @@ class CatalogController < ApplicationController
 
   self.search_service_class = Kithe::BlacklightTools::BulkLoadingSearchService
   Kithe::BlacklightTools::BulkLoadingSearchService.bulk_load_scope =
-    -> { includes(:derivatives, :parent, leaf_representative: :derivatives)  }
+    -> { includes(:parent, :leaf_representative)  }
 
   # What ViewModel class to use for a given search result on the results screen, for
   # Work or Collection. Called by _document_list.

@@ -1,51 +1,12 @@
 class Asset < Kithe::Asset
-
   has_many :fixity_checks, foreign_key: "asset_id", inverse_of: "asset", dependent: :destroy
 
-  THUMB_WIDTHS = {
-    mini: 54,
-    large: 525,
-    standard: 208
-  }
+  set_shrine_uploader(AssetUploader)
 
-  IMAGE_DOWNLOAD_WIDTHS = {
-    large: 2880,
-    medium: 1200,
-    small: 800
-  }
+  THUMB_WIDTHS = AssetUploader::THUMB_WIDTHS
 
-  # define thumb derivatives for TIFF, PDF, and other image input: :thumb_mini, :thumb_mini_2X, etc.
-  THUMB_WIDTHS.each_pair do |key, width|
-    # Single-width thumbnails
-    define_derivative("thumb_#{key}", content_type: "image") do |original_file|
-      Kithe::VipsCliImageToJpeg.new(max_width: width, thumbnail_mode: true).call(original_file)
-    end
-    define_derivative("thumb_#{key}", content_type: "application/pdf") do |original_file|
-      Kithe::VipsCliPdfToJpeg.new(max_width: width).call(original_file)
-    end
-    # Double-width thumbnails
-    define_derivative("thumb_#{key}_2X", content_type: "image") do |original_file|
-      Kithe::VipsCliImageToJpeg.new(max_width: width * 2, thumbnail_mode: true).call(original_file)
-    end
-    define_derivative("thumb_#{key}_2X", content_type: "application/pdf") do |original_file|
-      Kithe::VipsCliPdfToJpeg.new(max_width: width * 2).call(original_file)
-    end
-  end
+  IMAGE_DOWNLOAD_WIDTHS = AssetUploader::IMAGE_DOWNLOAD_WIDTHS
 
-  # Define download derivatives for TIFF and other image input.
-  IMAGE_DOWNLOAD_WIDTHS.each_pair do |key, width|
-    define_derivative("download_#{key}", content_type: "image") do |original_file|
-      Kithe::VipsCliImageToJpeg.new(max_width: width).call(original_file)
-    end
-  end
-
-  # and a full size jpg
-  define_derivative("download_full", content_type: "image") do |original_file, record:|
-    # No need to do this if our original is a JPG
-    unless record.content_type == "image/jpeg"
-      Kithe::VipsCliImageToJpeg.new.call(original_file)
-    end
-  end
 
   # Our DziFiles object to manage associated DZI (deep zoom, for OpenSeadragon
   # panning/zooming) file(s).
@@ -60,4 +21,21 @@ class Asset < Kithe::Asset
 
   after_promotion DziFiles::ActiveRecordCallbacks, if: ->(asset) { asset.content_type&.start_with?("image/") }
   after_commit DziFiles::ActiveRecordCallbacks, only: [:update, :destroy]
+
+  # What is total number of derivatives referenced in our DB?
+  #
+  # Since they are now referenced as keys inside a JSON hash in Asset, it's a bit
+  # tricky to count. We use some rough SQL to ask postgres how many keys there are in
+  # `derivatives` hashes in `file_data` json hash in Assets.
+  #
+  # Seems to work. Might be a little bit expensive, does not use indexes and requires a complete
+  # table scan, but pg exact counts actually always require a table scan, and at our present
+  # scale this is still pretty quick.
+  #
+  # TODO: We should probably extract this to kithe.
+  def self.all_derivative_count
+    Kithe::Asset.connection.select_all(
+      "select count(*) from (SELECT id, jsonb_object_keys(file_data -> 'derivatives') FROM kithe_models WHERE kithe_model_type = 2) AS asset_derivative_keys;"
+    ).first["count"]
+  end
 end

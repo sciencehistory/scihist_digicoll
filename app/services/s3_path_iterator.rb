@@ -82,8 +82,6 @@ class S3PathIterator
       end
     end
 
-    progress_bar.finish if progress_bar
-
     return files_checked
   end
 
