@@ -20,7 +20,7 @@ module DownloadOptions
       # We don't use content_type in derivative option subheads,
       # cause it's in the main label. But do use it for original.
 
-      if dl_small = asset.derivative_for(:download_small)
+      if dl_small = asset.file_derivatives[:download_small]
         options << DownloadOption.with_formatted_subhead("Small JPG",
           url: download_derivative_path(asset, :download_small),
           analyticsAction: "download_jpg_small",
@@ -30,7 +30,7 @@ module DownloadOptions
         )
       end
 
-      if dl_medium = asset.derivative_for(:download_medium)
+      if dl_medium = asset.file_derivatives[:download_medium]
         options << DownloadOption.with_formatted_subhead("Medium JPG",
           url: download_derivative_path(asset, :download_medium),
           analyticsAction: "download_jpg_medium",
@@ -40,7 +40,7 @@ module DownloadOptions
         )
       end
 
-      if dl_large = asset.derivative_for(:download_large)
+      if dl_large = asset.file_derivatives[:download_large]
         options << DownloadOption.with_formatted_subhead("Large JPG",
           url: download_derivative_path(asset, :download_large),
           analyticsAction: "download_jpg_large",
@@ -50,7 +50,7 @@ module DownloadOptions
         )
       end
 
-      if dl_full = asset.derivative_for(:download_full)
+      if dl_full = asset.file_derivatives[:download_full]
         options << DownloadOption.with_formatted_subhead("Full-sized JPG",
           url: download_derivative_path(asset, :download_full),
           analyticsAction: "download_jpg_full",

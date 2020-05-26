@@ -44,12 +44,11 @@ class WorkPdfCreator
   def members_to_include
     @members_to_include ||= work.
                             members.
-                            with_representative_derivatives.
+                            includes(:leaf_representative).
                             where(published: true).
                             order(:position).
                             select do |m|
-                              deriv = m.leaf_representative&.derivative_for(DERIVATIVE_SOURCE)
-                              deriv && deriv.file.present?
+                              m.leaf_representative&.file_derivatives(DERIVATIVE_SOURCE.to_sym)
                             end
   end
 
@@ -100,8 +99,8 @@ class WorkPdfCreator
 
       pdf.start_new_page(size: [embed_width, embed_height], margin: 0)
 
-      # unfortunately making a temporary local file on disk in order to add it to jpg
-      tmp_file = member.leaf_representative.derivative_for(DERIVATIVE_SOURCE).file.open
+      # unfortunately making a temporary local file on disk in order to add it to PDF
+      tmp_file = member.leaf_representative.file_derivatives(DERIVATIVE_SOURCE.to_sym).open
       tmp_files << tmp_file
 
       pdf.image tmp_file, vposition: :center, position: :center, fit: [embed_width, embed_height]

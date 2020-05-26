@@ -6,7 +6,7 @@ class Admin::CartItemsController < AdminController
   def index
     # order by when it was added to cart descending i guess
     @works = current_user.works_in_cart.
-      with_representative_derivatives.
+      includes(:leaf_representative).
       page(params[:page]).per(20).
       order("cart_items.created_at desc")
   end

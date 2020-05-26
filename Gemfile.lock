@@ -7,10 +7,9 @@ GIT
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: a95f68ce1c3c46f548aea9a691bcbc7cc360bd8e
-  branch: v3.0-alpha
+  revision: 83581b09405b8440db7ab0ff8361252627ffe3ef
   specs:
-    kithe (2.0.0.pre.alpha2)
+    kithe (2.0.0.pre.beta1)
       attr_json (< 2.0.0)
       fastimage (~> 2.0)
       marcel
@@ -389,7 +388,7 @@ GEM
     pry-byebug (3.9.0)
       byebug (~> 11.0)
       pry (~> 0.13.0)
-    public_suffix (4.0.4)
+    public_suffix (4.0.5)
     puma (4.3.5)
       nio4r (~> 2.0)
     qa (5.3.1)
@@ -663,7 +662,7 @@ DEPENDENCIES
   jbuilder (~> 2.5)
   jquery-rails (~> 4.3)
   kaminari (~> 1.0)
-  kithe (>= 2.0.0.pre.alpha1, < 2.0.0.pre.b)!
+  kithe (>= 2.0.0.beta, < 3)!
   listen (>= 3.0.5, < 3.2)
   lockbox
   oai (~> 1.0, >= 1.0.1)

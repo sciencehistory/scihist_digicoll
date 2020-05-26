@@ -40,7 +40,7 @@ class ViewerMemberInfoSerializer < ViewModel
     @included_members ||= begin
       members = work.members.order(:position)
       members = members.where(published: true) if current_user.nil?
-      members.with_representative_derivatives.select do |member|
+      members.includes(:leaf_representative).select do |member|
         member.leaf_representative &&
         member.leaf_representative.content_type&.start_with?("image/") &&
         member.leaf_representative.stored?
@@ -55,8 +55,8 @@ class ViewerMemberInfoSerializer < ViewModel
 
 
   def thumb_src_attributes(asset)
-    derivative_1x_url = asset.derivative_for(THUMB_DERIVATIVE)&.url
-    derivative_2x_url = asset.derivative_for("#{THUMB_DERIVATIVE.to_s}_2X")&.url
+    derivative_1x_url = asset.file_url(THUMB_DERIVATIVE)
+    derivative_2x_url = asset.file_url("#{THUMB_DERIVATIVE.to_s}_2X")
     {
       thumbSrc: derivative_1x_url,
       thumbSrcset: "#{derivative_1x_url} 1x, #{derivative_2x_url} 2x"

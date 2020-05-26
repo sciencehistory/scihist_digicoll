@@ -63,7 +63,7 @@ class WorkSocialShareAttributes < ViewModel
   private
 
   def share_representative_derivative
-    @share_representative_deriative ||= work&.leaf_representative&.derivative_for(:download_medium)
+    @share_representative_deriative ||= work&.leaf_representative&.file_derivatives&.dig(:download_medium)
   end
 
 end

@@ -41,7 +41,7 @@ class OrphanS3Derivatives
   end
 
   def derivative_count
-    @derivatives_count ||= Kithe::Derivative.count
+    @derivatives_count ||= Asset.all_derivative_count
   end
 
   # Deletes all found orphans, outputing to console what was deleted.
@@ -80,19 +80,22 @@ class OrphanS3Derivatives
           s3_iterator.log "Reported max #{max_reports} orphans, not listing subsquent...\n"
         elsif orphans_found < max_reports
           asset = Asset.where(id: asset_id).first
+          derivative = asset && asset.file(derivative_key.to_sym)
 
           s3_iterator.log "orphaned derivative!"
           s3_iterator.log "  bucket: #{shrine_storage.bucket.name}"
           s3_iterator.log "  s3 path: #{s3_path}"
+          s3_iterator.log "  expected shrine id: #{shrine_path}"
           s3_iterator.log "  asset_id: #{asset_id}"
           s3_iterator.log "  derivative_key: #{derivative_key}"
           if asset.nil?
             s3_iterator.log "  asset missing"
+          elsif derivative.nil?
+            s3_iterator.log "  derivative shrine file missing, #{asset.friendlier_id}"
           else
             s3_iterator.log ""
-            deriv = Kithe::Derivative.where(asset_id: asset_id, key: derivative_key).first
-            s3_iterator.log "  derivative_pk: #{deriv&.id || 'missing'}"
-            s3_iterator.log "  derivative file path: #{deriv&.file&.id || 'missing'}"
+            s3_iterator.log "  asset friendlier_id: #{asset.friendlier_id}"
+            s3_iterator.log "  actual shrine id for #{derivative_key}: #{derivative.storage_key}:#{derivative.id}"
           end
           s3_iterator.log ""
         end
@@ -100,7 +103,7 @@ class OrphanS3Derivatives
     end
 
     $stderr.puts "\n\nTotal Asset count: #{Asset.count}"
-    $stderr.puts "Kithe::Derivative.count: #{derivative_count}"
+    $stderr.puts "Estimated expected derivative file count: #{derivative_count}"
     $stderr.puts "Checked #{files_checked} files on S3"
     $stderr.puts "Found #{orphans_found} orphan files\n"
   end
@@ -121,6 +124,6 @@ class OrphanS3Derivatives
   def orphaned?(asset_id, derivative_key, shrine_id)
     return true unless asset_id.present? && derivative_key.present?
 
-    ! Kithe::Derivative.where(asset_id: asset_id, key: derivative_key).where("file_data ->> 'id' = ?", shrine_id).exists?
+    ! Kithe::Asset.where(id: asset_id).where("file_data -> 'derivatives' -> ? ->> 'id' = ?", derivative_key, shrine_id).exists?
   end
 end

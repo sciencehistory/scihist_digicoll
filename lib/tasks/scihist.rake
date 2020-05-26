@@ -137,7 +137,7 @@ namespace :scihist do
       s3_iterator = S3PathIterator.new(
         shrine_storage: ScihistDigicoll::Env.shrine_derivatives_storage,
         show_progress_bar: true,
-        progress_bar_total: Kithe::Derivative.count
+        progress_bar_total: Asset.all_derivative_count
       )
 
       if File.exist?(ENV['DESTINATION'])
@@ -175,18 +175,19 @@ namespace :scihist do
         puts "Checking for storage: #{ScihistDigicoll::Env.shrine_derivatives_storage.inspect}\n\n"
         puts "DB was created for storage: #{store["SHRINE_STORAGE_RECORDED"]}"
 
-        progress_bar = ProgressBar.create(total: Kithe::Derivative.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
+        progress_bar = ProgressBar.create(total: Kithe::Asset.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
 
-        Kithe::Derivative.find_each do |derivative|
-          uploaded_file = derivative.file
-          s3_path = [uploaded_file.storage.prefix, uploaded_file.id].compact.join("/")
+        Kithe::Asset.find_each do |asset|
+          asset.file_derivatives.each_pair do |derivative_key, uploaded_file|
+            s3_path = [uploaded_file.storage.prefix, uploaded_file.id].compact.join("/")
 
-          unless store.root?(s3_path)
-            missing_count += 1
-            progress_bar.log("Missing file: #{derivative.asset_id}:#{derivative.key}, #{derivative.file.url(public: true)}")
+            unless store.root?(s3_path)
+              missing_count += 1
+              progress_bar.log("Missing file: #{asset.friendlier_id}:#{derivative_key}, #{uploaded_file.url(public: true)}")
+            end
+
+            checked_count += 1
           end
-
-          checked_count += 1
           progress_bar.increment
         end
       end

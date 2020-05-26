@@ -7,7 +7,7 @@ describe DownloadDropdownDisplay do
   describe "no derivatives existing" do
     let(:asset) do
       create(:asset_with_faked_file,
-            faked_derivatives: [],
+            faked_derivatives: {},
             parent: build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
       )
     end
@@ -34,11 +34,12 @@ describe DownloadDropdownDisplay do
   describe "with image file and derivatives" do
     let(:asset) do
       create(:asset_with_faked_file,
-        faked_derivatives: [
-          build(:faked_derivative, key: "download_small"),
-          build(:faked_derivative, key: "download_medium"),
-          build(:faked_derivative, key: "download_large"),
-          build(:faked_derivative, key: "download_full") ],
+        faked_derivatives: {
+          download_small: build(:stored_uploaded_file),
+          download_medium: build(:stored_uploaded_file),
+          download_large: build(:stored_uploaded_file),
+          download_full: build(:stored_uploaded_file)
+        },
         parent: build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
       )
     end
@@ -65,7 +66,7 @@ describe DownloadDropdownDisplay do
   describe "with a PDF file" do
     let(:asset) do
       create(:asset_with_faked_file, :pdf,
-        faked_derivatives: [],
+        faked_derivatives: {},
         parent: build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
       )
     end
@@ -108,7 +109,7 @@ describe DownloadDropdownDisplay do
     describe "with all image files" do
       let(:asset) do
         create(:asset_with_faked_file,
-              faked_derivatives: [])
+              faked_derivatives: {})
       end
 
       let(:parent_work) do
@@ -155,7 +156,7 @@ describe DownloadDropdownDisplay do
     describe "without image files" do
       let(:asset) do
         create(:asset_with_faked_file, :pdf,
-              faked_derivatives: [])
+              faked_derivatives: {})
       end
 
       let(:parent_work) do
@@ -177,7 +178,7 @@ describe DownloadDropdownDisplay do
         faked_content_type: "audio/x-flac",
         faked_height: nil,
         faked_width: nil,
-        faked_derivatives: [build(:faked_derivative, key: "small_mp3", uploaded_file: build(:stored_uploaded_file, content_type: "audio/mpeg"))],
+        faked_derivatives: { :small_mp3 => build(:stored_uploaded_file, content_type: "audio/mpeg") },
         parent: build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
       )
     end
