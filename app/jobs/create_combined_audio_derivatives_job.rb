@@ -1,7 +1,7 @@
 class CreateCombinedAudioDerivativesJob < ApplicationJob
   def perform(work)
     deriv_creator = CombinedAudioDerivativeCreator.new(work)
-    return unless deriv_creator.audio_members.count > 0
+    return unless deriv_creator.available_members?
     # Generate the derivatives:
     deriv_info = deriv_creator.generate
     if deriv_info.errors
