@@ -105,7 +105,10 @@ module ScihistDigicoll
     # set in ENV LOGINS_DISABLED or local_env.yml, to globally
     # prevent access to pages requiring authentication. May be useful
     # for maintenance tasks.
-    define_key :logins_disabled, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM, default: true
+    define_key :logins_disabled, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM, default: -> {
+      # temporarily disable in production
+      Rails.env.production?
+    }
 
     # For ActiveJob queue, among maybe other things.
     define_key :persistent_redis_host, default: "localhost:6379"
