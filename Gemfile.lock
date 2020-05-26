@@ -7,10 +7,9 @@ GIT
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: cd6eb3d765dc315828a5ff3a9838bdc7da6a89eb
-  branch: v3.0-progress
+  revision: 83581b09405b8440db7ab0ff8361252627ffe3ef
   specs:
-    kithe (2.0.0.beta)
+    kithe (2.0.0.pre.beta1)
       attr_json (< 2.0.0)
       fastimage (~> 2.0)
       marcel
