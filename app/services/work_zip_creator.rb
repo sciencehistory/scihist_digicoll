@@ -107,7 +107,7 @@ class WorkZipCreator
                             where(published: true).
                             order(:position).
                             select do |m|
-                              m.leaf_representative.content_type == "image/jpeg" && m.leaf_representative&.file_derivatives(:download_full)
+                              m.leaf_representative.content_type == "image/jpeg" || m.leaf_representative&.file_derivatives(:download_full)
                             end
   end
 
