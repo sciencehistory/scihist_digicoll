@@ -5,9 +5,9 @@ describe WorkZipCreator do
   let(:work) do
     create(:public_work,
       members: [
-        create(:asset_with_faked_file),
-        create(:asset_with_faked_file),
-        create(:public_work, representative: create(:asset_with_faked_file))
+        create(:asset_with_faked_file, faked_content_type: "image/tiff"),
+        create(:asset_with_faked_file, faked_content_type: "image/tiff"),
+        create(:public_work, representative: create(:asset_with_faked_file, faked_content_type: "image/tiff"))
       ]
     )
   end
@@ -66,8 +66,8 @@ describe WorkZipCreator do
     let(:work) do
       create(:work,
         members: [
-          create(:asset_with_faked_file, faked_derivatives: {}),
-          create(:asset_with_faked_file)
+          create(:asset_with_faked_file, faked_content_type: "image/tiff", faked_derivatives: {}),
+          create(:asset_with_faked_file, faked_content_type: "image/tiff")
         ]
       )
     end
