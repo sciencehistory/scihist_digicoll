@@ -48,24 +48,15 @@ module CopyStaging
       serialize_model(work)
     end
 
-    # A method called recursively, initially by #serialized_models, to get all children and derivatives
+    # A method called recursively, initially by #serialized_models, to get all children
     def serialize_model(model)
       model_attributes = model.attributes
-
-      derivatives = []
 
       if model.kind_of?(Kithe::Asset)
         # hacky workaround
         # https://github.com/sciencehistory/kithe/pull/75
         model_attributes.delete("representative_id")
         model_attributes.delete("leaf_representative_id")
-
-        # include derivatives
-        derivatives.concat(model.derivatives.collect do |d|
-          # don't include pk id for derivatives, not necessary to preserve that, and it's autoincrementing
-          # so more likely to conflict falsely.
-          { d.class.name => d.attributes.except("id") }
-        end)
       end
 
       mine = [{ model.class.name => model_attributes }]
@@ -74,7 +65,7 @@ module CopyStaging
         serialize_model(member)
       end
 
-      mine + children + derivatives
+      mine + children
     end
 
     def shrine_config(shrine_storage_key)
