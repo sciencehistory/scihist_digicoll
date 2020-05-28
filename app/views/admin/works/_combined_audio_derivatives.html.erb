@@ -53,6 +53,9 @@
           <%= link_to "Create combined audio derivatives", create_combined_audio_derivatives_admin_work_path(model), method: "put", class: "btn btn-primary" %>
         </p>
       <% end %>
+
+      Status: <%= view.combined_audio_creation_status %>
+
     <% end %>
   </div>
 </div>

@@ -64,6 +64,13 @@ class OralHistoryContent < ApplicationRecord
     @has_ohms_index ||= ohms_xml&.index_points&.present?
   end
 
+  def set_combined_audio_derivatives_creation_status(status_string)
+    puts "OK setting status string to #{status_string}"
+    self.combined_audio_derivatives_creation_status = status_string
+    self.combined_audio_derivatives_creation_status_changed_at = DateTime.now
+    self.save!
+  end
+
 
   private
 
@@ -95,6 +102,7 @@ class OralHistoryContent < ApplicationRecord
     # clean up file if there was a problem
     stored_file.delete if stored_file
     shrine_attacher.set(original)
+    set_combined_audio_derivatives_creation_status("Error: #{e}")
     raise e
   end
 end
