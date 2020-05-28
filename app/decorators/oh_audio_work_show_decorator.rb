@@ -1,4 +1,4 @@
-class AudioWorkShowDecorator < Draper::Decorator
+class OhAudioWorkShowDecorator < Draper::Decorator
   delegate_all
   include Draper::LazyHelpers
 
