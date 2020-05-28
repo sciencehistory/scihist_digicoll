@@ -5,7 +5,7 @@ class CreateCombinedAudioDerivativesJob < ApplicationJob
 
     sidecar = work.oral_history_content!
 
-    sidecar.set_combined_audio_derivatives_creation_status("Started")
+    sidecar.set_combined_audio_derivatives_creation_status("STARTED")
 
 
     # Generate the derivatives:
@@ -13,7 +13,7 @@ class CreateCombinedAudioDerivativesJob < ApplicationJob
     if deriv_info.errors
       Rails.logger.error("Unable to create combined audio derivatives for work #{work.friendlier_id}:")
       Rails.logger.error(deriv_info.errors)
-      set_combined_audio_derivatives_creation_status("Error: #{deriv_info.errors}")
+      set_combined_audio_derivatives_creation_status("ERROR")
       return
     end
     # Upload to s3, then unlink local files:
@@ -26,6 +26,6 @@ class CreateCombinedAudioDerivativesJob < ApplicationJob
     sidecar.combined_audio_component_metadata = { start_times: deriv_info.start_times }
 
     sidecar.save!
-    sidecar.set_combined_audio_derivatives_creation_status("Complete")
+    sidecar.set_combined_audio_derivatives_creation_status("DONE")
   end
 end

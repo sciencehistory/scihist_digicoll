@@ -10,7 +10,7 @@
         <% if view.derivatives_up_to_date? %>
           <p class="alert-success p-3">
             <i class="fa fa fa-thumbs-up pr-1" aria-hidden="true"></i>
-            The combined audio derivatives, created from <%= view.work_available_members_count %> published audio segments, are up to date. Their fingerprint is <code class="border"><%= view.combined_audio_fingerprint%></code>.</p>
+            The combined audio derivatives, created <%= distance_of_time_in_words(view.combined_audio_creation_date, Time.now) %> ago from <%= view.work_available_members_count %> published audio segments, are up to date. Their fingerprint is <code class="border"><%= view.combined_audio_fingerprint%></code>.</p>
           </p>
           <ul>
             <% if view.combined_mp3_audio.present? %>

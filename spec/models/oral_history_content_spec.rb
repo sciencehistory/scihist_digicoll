@@ -35,7 +35,7 @@ describe OralHistoryContent do
 
         time_since_error = Time.now.to_i - date_of_error.to_i
         expect(time_since_error).to be <= 600
-        expect(oral_history_content.combined_audio_derivatives_creation_status).to eq "Error: mock error"
+        expect(oral_history_content.combined_audio_derivatives_creation_status).to eq "ERROR"
         expect(oral_history_content.combined_audio_mp3).not_to be_present
       end
     end
@@ -43,8 +43,8 @@ describe OralHistoryContent do
 
   describe "#set_combined_audio_webm!" do
     it "can set" do
-      oral_history_content.set_combined_audio_derivatives_creation_status('All done!')
-      expect(oral_history_content.combined_audio_derivatives_creation_status).to eq('All done!')
+      oral_history_content.set_combined_audio_derivatives_creation_status('STARTED')
+      expect(oral_history_content.combined_audio_derivatives_creation_status).to eq('STARTED')
       date_changed = oral_history_content.combined_audio_derivatives_creation_status_changed_at
       expect(date_changed).to be_instance_of ActiveSupport::TimeWithZone
       time_since_changed = Time.now.to_i - date_changed.to_i

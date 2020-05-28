@@ -46,14 +46,21 @@ class WorkCombinedAudioDerivatives < ViewModel
   end
 
 
-  def combined_audio_creation_status
+  def combined_audio_creation_status_and_date
     @combined_audio_creation_status ||= begin
-      sidecar = model&.oral_history_content
-      status = sidecar&.combined_audio_derivatives_creation_status
-      date_time = sidecar&.combined_audio_derivatives_creation_status_changed_at
+      status = combined_audio_creation_status
       return nil if status.nil?
-      "#{status} as of #{date_time}"
+      "#{status} as of #{combined_audio_creation_date}"
     end
+  end
+
+  def combined_audio_creation_date
+    model&.oral_history_content&.combined_audio_derivatives_creation_status_changed_at
+  end
+
+
+  def combined_audio_creation_status
+    model&.oral_history_content&.combined_audio_derivatives_creation_status
   end
 
 end
