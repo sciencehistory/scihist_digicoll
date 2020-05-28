@@ -197,39 +197,6 @@ ALTER SEQUENCE public.fixity_checks_id_seq OWNED BY public.fixity_checks.id;
 
 
 --
--- Name: kithe_derivatives; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.kithe_derivatives (
-    id bigint NOT NULL,
-    key character varying NOT NULL,
-    file_data jsonb,
-    asset_id uuid NOT NULL,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
--- Name: kithe_derivatives_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.kithe_derivatives_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: kithe_derivatives_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.kithe_derivatives_id_seq OWNED BY public.kithe_derivatives.id;
-
-
---
 -- Name: kithe_model_contains; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -528,13 +495,6 @@ ALTER TABLE ONLY public.fixity_checks ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
--- Name: kithe_derivatives id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.kithe_derivatives ALTER COLUMN id SET DEFAULT nextval('public.kithe_derivatives_id_seq'::regclass);
-
-
---
 -- Name: on_demand_derivatives id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -606,14 +566,6 @@ ALTER TABLE ONLY public.digitization_queue_items
 
 ALTER TABLE ONLY public.fixity_checks
     ADD CONSTRAINT fixity_checks_pkey PRIMARY KEY (id);
-
-
---
--- Name: kithe_derivatives kithe_derivatives_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.kithe_derivatives
-    ADD CONSTRAINT kithe_derivatives_pkey PRIMARY KEY (id);
 
 
 --
@@ -713,20 +665,6 @@ CREATE INDEX index_fixity_checks_on_asset_id ON public.fixity_checks USING btree
 --
 
 CREATE INDEX index_fixity_checks_on_checked_uri ON public.fixity_checks USING btree (checked_uri);
-
-
---
--- Name: index_kithe_derivatives_on_asset_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_kithe_derivatives_on_asset_id ON public.kithe_derivatives USING btree (asset_id);
-
-
---
--- Name: index_kithe_derivatives_on_asset_id_and_key; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_kithe_derivatives_on_asset_id_and_key ON public.kithe_derivatives USING btree (asset_id, key);
 
 
 --
@@ -868,14 +806,6 @@ ALTER TABLE ONLY public.on_demand_derivatives
 
 
 --
--- Name: kithe_derivatives fk_rails_3dac8b4201; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.kithe_derivatives
-    ADD CONSTRAINT fk_rails_3dac8b4201 FOREIGN KEY (asset_id) REFERENCES public.kithe_models(id);
-
-
---
 -- Name: kithe_models fk_rails_403cce5c0d; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -965,5 +895,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200206194219'),
 ('20200220215652'),
 ('20200526135845');
+('20200527142734');
 
 
