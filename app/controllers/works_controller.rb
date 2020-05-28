@@ -30,7 +30,7 @@ class WorksController < ApplicationController
 
   def decorator
     @decorator ||= if has_audio_member?
-      AudioWorkShowDecorator.new(@work)
+      OhAudioWorkShowDecorator.new(@work)
     else
       WorkShowDecorator.new(@work)
     end
