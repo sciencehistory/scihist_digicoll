@@ -32,6 +32,8 @@ class OralHistoryContent < ApplicationRecord
   include CombinedAudioUploader::Attachment.new(:combined_audio_mp3, store: :combined_audio_derivatives)
   include CombinedAudioUploader::Attachment.new(:combined_audio_webm, store: :combined_audio_derivatives)
 
+  validates :combined_audio_derivatives_creation_status, inclusion: { in: ['STARTED', 'ERROR', 'DONE'], allow_blank: true }
+
   # Sets IO to be combined_audio_mp3, writing directly to "store" storage,
   # and *saves model*.
   def set_combined_audio_mp3!(io)
@@ -65,7 +67,6 @@ class OralHistoryContent < ApplicationRecord
   end
 
   def set_combined_audio_derivatives_creation_status(status_string)
-    puts "OK setting status string to #{status_string}"
     self.combined_audio_derivatives_creation_status = status_string
     self.combined_audio_derivatives_creation_status_changed_at = DateTime.now
     self.save!
