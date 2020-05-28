@@ -6,7 +6,7 @@ class OhAudioWorkShowDecorator < Draper::Decorator
 
   # This is called by works_controller#show.
   def view_template
-    'works/show_with_audio'
+    'works/oh_audio_work_show'
   end
 
 
