@@ -94,12 +94,16 @@ class OralHistoryContent
         @keywords = xml_node.at_xpath("./ohms:keywords", ohms: OHMS_NS)&.text&.split(";")
 
         @hyperlinks = xml_node.xpath("./ohms:hyperlinks", ohms: OHMS_NS).collect do |hyperlink_xml|
-          OpenStruct.new(
-            href: hyperlink_xml.at_xpath("./ohms:hyperlink", ohms: OHMS_NS)&.text&.strip,
-            text: hyperlink_xml.at_xpath("./ohms:hyperlink_text", ohms: OHMS_NS)&.text&.strip,
-          )
-        end
+          href = hyperlink_xml.at_xpath("./ohms:hyperlink", ohms: OHMS_NS)&.text&.strip&.presence
+          text = hyperlink_xml.at_xpath("./ohms:hyperlink_text", ohms: OHMS_NS)&.text&.strip&.presence
 
+          if href && text
+            OpenStruct.new(
+              href: href,
+              text: text
+            )
+          end
+        end.compact
       end
     end
 
