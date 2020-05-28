@@ -312,7 +312,9 @@ CREATE TABLE public.oral_history_content (
     combined_audio_component_metadata jsonb,
     ohms_xml_text text,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    combined_audio_derivatives_creation_status character varying,
+    combined_audio_derivatives_creation_status_changed_at timestamp without time zone
 );
 
 
@@ -961,6 +963,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20191210210454'),
 ('20200131161750'),
 ('20200206194219'),
-('20200220215652');
+('20200220215652'),
+('20200526135845');
 
 

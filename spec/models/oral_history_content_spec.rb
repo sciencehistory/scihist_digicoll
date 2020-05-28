@@ -29,13 +29,30 @@ describe OralHistoryContent do
           oral_history_content.set_combined_audio_mp3!(File.open(mp3_path))
         }.to raise_error("mock error")
 
-        expect(oral_history_content.changed?).to be(false)
+        date_of_error = oral_history_content.
+          combined_audio_derivatives_creation_status_changed_at
+        expect(date_of_error).to be_instance_of ActiveSupport::TimeWithZone
+
+        time_since_error = Time.now.to_i - date_of_error.to_i
+        expect(time_since_error).to be <= 600
+        expect(oral_history_content.combined_audio_derivatives_creation_status).to eq "Error: mock error"
         expect(oral_history_content.combined_audio_mp3).not_to be_present
       end
     end
   end
 
   describe "#set_combined_audio_webm!" do
+    it "can set" do
+      oral_history_content.set_combined_audio_derivatives_creation_status('All done!')
+      expect(oral_history_content.combined_audio_derivatives_creation_status).to eq('All done!')
+      date_changed = oral_history_content.combined_audio_derivatives_creation_status_changed_at
+      expect(date_changed).to be_instance_of ActiveSupport::TimeWithZone
+      time_since_changed = Time.now.to_i - date_changed.to_i
+      expect(time_since_changed).to be <= 600
+    end
+  end
+
+  describe "#set_combined_audio_derivatives_creation_status" do
     it "can set" do
       oral_history_content.set_combined_audio_webm!(File.open(webm_path))
 
