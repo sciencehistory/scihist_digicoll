@@ -71,7 +71,7 @@
                 A job to recreate them started <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
                 </p>
               <% end %>
-              <% if model&.oral_history_content&.error? %>
+              <% if model&.oral_history_content&.failed? %>
                 <p class="alert-danger p-3">
                 A job to recreate them failed <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
                 </p>
