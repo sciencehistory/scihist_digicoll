@@ -1,4 +1,4 @@
-class OralHistoryContent < ActiveRecord::Migration[5.2]
+class CreateOralHistoryContent< ActiveRecord::Migration[5.2]
   def change
     create_table :oral_history_content do |t|
       t.uuid :work_id, null: false, index: { unique: true }
