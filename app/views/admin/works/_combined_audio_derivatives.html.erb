@@ -61,17 +61,17 @@
           <p class="alert-danger p-3">
             <i class="fa fa fa-thumbs-down pr-1" aria-hidden="true"></i>
             Combined audio derivatives exist for this oral history, but they are out of date.
-              <% if view.job_status == "queued" %>
+              <% if model&.oral_history_content&.queued? %>
                 <p class="alert-info p-3">
                 A job to recreate them was added to the queue <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
                 </p>
               <% end %>
-              <% if view.job_status == "started" %>
+              <% if model&.oral_history_content&.started? %>
                 <p class="alert-info p-3">
                 A job to recreate them started <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
                 </p>
               <% end %>
-              <% if view.job_status == "error" %>
+              <% if model&.oral_history_content&.error? %>
                 <p class="alert-danger p-3">
                 A job to recreate them failed <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
                 </p>
