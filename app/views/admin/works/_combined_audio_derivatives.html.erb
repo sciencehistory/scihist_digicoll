@@ -16,24 +16,24 @@
           <% end %>
           <% if model&.oral_history_content&.queued?  %>
             <p class="alert-info p-3">
-              The combined audio derivatives will be recreated soon. The job was added to the queue <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
+              The combined audio derivatives will be recreated soon. The job was added to the queue <%=view.time_since_job_status_change %>.
             </p>
           <% end %>
           <% if model&.oral_history_content&.started?  %>
             <p class="alert-info p-3">
-              The combined audio derivatives are being recreated. The job started <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
+              The combined audio derivatives are being recreated. The job started <%=view.time_since_job_status_change %>.
             </p>
           <% end %>
           <% if model&.oral_history_content&.failed?  %>
             <p class="alert-danger p-3">
               <i class="fa fa fa-thumbs-down pr-1" aria-hidden="true"></i>
-              The combined audio derivatives were not recreated. The process failed <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
+              The combined audio derivatives were not recreated. The job failed <%=view.time_since_job_status_change %>.
             </p>
           <% end %>
           <% if model&.oral_history_content&.done?  %>
             <p class="alert-success p-3">
               <i class="fa fa fa-thumbs-up pr-1" aria-hidden="true"></i>
-                The combined audio derivatives, created <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago from <%= view.work_available_members_count %> published audio segments, are up to date. Their fingerprint is <code class="border"><%= view.combined_audio_fingerprint%></code>.
+                The combined audio derivatives, created <%=view.time_since_job_status_change %> from <%= view.work_available_members_count %> published audio segments, are up to date. Their fingerprint is <code class="border"><%= view.combined_audio_fingerprint%></code>.
             </p>
           <% end %>
           <ul>
@@ -61,22 +61,22 @@
           <p class="alert-danger p-3">
             <i class="fa fa fa-thumbs-down pr-1" aria-hidden="true"></i>
             Combined audio derivatives exist for this oral history, but they are out of date.
-              <% if model&.oral_history_content&.queued? %>
-                <p class="alert-info p-3">
-                A job to recreate them was added to the queue <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
-                </p>
-              <% end %>
-              <% if model&.oral_history_content&.started? %>
-                <p class="alert-info p-3">
-                A job to recreate them started <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
-                </p>
-              <% end %>
-              <% if model&.oral_history_content&.failed? %>
-                <p class="alert-danger p-3">
-                A job to recreate them failed <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
-                </p>
-              <% end %>
           </p>
+          <% if model&.oral_history_content&.queued? %>
+            <p class="alert-info p-3">
+            A job to recreate them was added to the queue <%=view.time_since_job_status_change %>.
+            </p>
+          <% end %>
+          <% if model&.oral_history_content&.started? %>
+            <p class="alert-info p-3">
+            A job to recreate them started <%=view.time_since_job_status_change %>.
+            </p>
+          <% end %>
+          <% if model&.oral_history_content&.failed? %>
+            <p class="alert-danger p-3">
+            A job to recreate them failed <%=view.time_since_job_status_change %>.
+            </p>
+          <% end %>
           <p>
             <%= link_to "Regenerate combined audio derivatives", create_combined_audio_derivatives_admin_work_path(model), method: "put", class: "btn btn-primary" %>
           </p>
@@ -87,17 +87,22 @@
         </p>
         <p>
           <% if model&.oral_history_content&.queued? %>
-            The combined audio derivatives will be created soon.
-            The job is in the queue as of
-            <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
+            <p class="alert-info p-3">
+              The combined audio derivatives will be created soon;
+              the job is in the queue as of <%=view.time_since_job_status_change %>.
+            </p>
           <% end %>
           <% if model&.oral_history_content&.started? %>
-            They are currently being created;
-            the process started <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
+            <p class="alert-info p-3">
+              They are currently being created;
+              the job started <%=view.time_since_job_status_change %>.
+            </p>
           <% end %>
           <% if model&.oral_history_content&.done? %>
-            Someone tried to create them,
-            but the process failed <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
+            <p class="alert-danger p-3">
+              Someone tried to create them,
+              but the job failed <%=view.time_since_job_status_change %>.
+            </p>
           <% end %>
         </p>
         <p>
