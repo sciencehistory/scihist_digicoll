@@ -131,9 +131,11 @@ class Admin::WorksController < AdminController
       }
       return
     end
-
     CreateCombinedAudioDerivativesJob.perform_later(@work)
-    notice = "The combined audio derivative job has been launched."
+    sidecar = @work.oral_history_content!
+    sidecar.combined_audio_derivatives_job_status = 'queued'
+    sidecar.save!
+    notice = "The combined audio derivative job has been added to the job queue."
     redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: notice
   end
 

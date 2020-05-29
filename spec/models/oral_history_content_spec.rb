@@ -30,32 +30,35 @@ describe OralHistoryContent do
         }.to raise_error("mock error")
 
         date_of_error = oral_history_content.
-          combined_audio_derivatives_creation_status_changed_at
+          combined_audio_derivatives_job_status_changed_at
+
+        expect(oral_history_content.combined_audio_derivatives_job_status).to eq "failed"
+
         expect(date_of_error).to be_instance_of ActiveSupport::TimeWithZone
 
         time_since_error = Time.now.to_i - date_of_error.to_i
         expect(time_since_error).to be <= 600
-        expect(oral_history_content.combined_audio_derivatives_creation_status).to eq "ERROR"
         expect(oral_history_content.combined_audio_mp3).not_to be_present
       end
     end
   end
 
-  describe "#set_combined_audio_webm!" do
-    it "can set" do
-      oral_history_content.set_combined_audio_derivatives_creation_status('STARTED')
-      expect(oral_history_content.combined_audio_derivatives_creation_status).to eq('STARTED')
-      date_changed = oral_history_content.combined_audio_derivatives_creation_status_changed_at
+
+  describe "combined_audio_derivatives_job_status" do
+    it "sets the date when you change the status" do
+      oral_history_content.combined_audio_derivatives_job_status = 'started'
+      oral_history_content.save!
+      expect(oral_history_content.combined_audio_derivatives_job_status).to eq('started')
+      date_changed = oral_history_content.combined_audio_derivatives_job_status_changed_at
       expect(date_changed).to be_instance_of ActiveSupport::TimeWithZone
       time_since_changed = Time.now.to_i - date_changed.to_i
       expect(time_since_changed).to be <= 600
     end
   end
 
-  describe "#set_combined_audio_derivatives_creation_status" do
+  describe "#set_combined_audio_webm!" do
     it "can set" do
       oral_history_content.set_combined_audio_webm!(File.open(webm_path))
-
       expect(oral_history_content.changed?).to be(false)
       expect(oral_history_content.combined_audio_webm).to be_present
       expect(oral_history_content.combined_audio_webm.read).to eq(File.read(webm_path, encoding: "BINARY"))

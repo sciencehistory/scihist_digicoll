@@ -45,22 +45,7 @@ class WorkCombinedAudioDerivatives < ViewModel
     CombinedAudioDerivativeCreator.new(model).fingerprint == combined_audio_fingerprint
   end
 
-
-  def combined_audio_creation_status_and_date
-    @combined_audio_creation_status ||= begin
-      status = combined_audio_creation_status
-      return nil if status.nil?
-      "#{status} as of #{combined_audio_creation_date}"
-    end
+  def job_status_time
+    model&.oral_history_content&.combined_audio_derivatives_job_status_changed_at
   end
-
-  def combined_audio_creation_date
-    model&.oral_history_content&.combined_audio_derivatives_creation_status_changed_at
-  end
-
-
-  def combined_audio_creation_status
-    model&.oral_history_content&.combined_audio_derivatives_creation_status
-  end
-
 end

@@ -32,7 +32,14 @@ class OralHistoryContent < ApplicationRecord
   include CombinedAudioUploader::Attachment.new(:combined_audio_mp3, store: :combined_audio_derivatives)
   include CombinedAudioUploader::Attachment.new(:combined_audio_webm, store: :combined_audio_derivatives)
 
-  validates :combined_audio_derivatives_creation_status, inclusion: { in: ['STARTED', 'ERROR', 'DONE'], allow_blank: true }
+  job_status_options = {
+    queued: 'queued',
+    started: 'started',
+    failed: 'failed',
+    done: 'done'
+  }
+
+  enum combined_audio_derivatives_job_status: job_status_options
 
   # Sets IO to be combined_audio_mp3, writing directly to "store" storage,
   # and *saves model*.
@@ -66,12 +73,11 @@ class OralHistoryContent < ApplicationRecord
     @has_ohms_index ||= ohms_xml&.index_points&.present?
   end
 
-  def set_combined_audio_derivatives_creation_status(status_string)
-    self.combined_audio_derivatives_creation_status = status_string
-    self.combined_audio_derivatives_creation_status_changed_at = DateTime.now
-    self.save!
-  end
 
+  def combined_audio_derivatives_job_status=(value)
+    super
+    self.combined_audio_derivatives_job_status_changed_at = DateTime.now
+  end
 
   private
 
@@ -103,7 +109,8 @@ class OralHistoryContent < ApplicationRecord
     # clean up file if there was a problem
     stored_file.delete if stored_file
     shrine_attacher.set(original)
-    set_combined_audio_derivatives_creation_status("Error: #{e}")
+    self.combined_audio_derivatives_job_status = "failed"
+    self.save!
     raise e
   end
 end
