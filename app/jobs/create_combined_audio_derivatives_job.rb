@@ -2,12 +2,7 @@ class CreateCombinedAudioDerivativesJob < ApplicationJob
   def perform(work)
     deriv_creator = CombinedAudioDerivativeCreator.new(work)
     return unless deriv_creator.available_members?
-
-      #sidecar.combined_audio_derivatives_job_status = 'started'
-      #sidecar.save!
-
     sidecar = work.oral_history_content!
-
     sidecar.combined_audio_derivatives_job_status = 'started'
     sidecar.save!
     # Generate the derivatives:
@@ -27,9 +22,7 @@ class CreateCombinedAudioDerivativesJob < ApplicationJob
     # Update fingerprint and metadata:
     sidecar.combined_audio_fingerprint = deriv_info.fingerprint
     sidecar.combined_audio_component_metadata = { start_times: deriv_info.start_times }
-
     sidecar.combined_audio_derivatives_job_status = 'done'
     sidecar.save!
-
   end
 end
