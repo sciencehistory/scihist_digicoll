@@ -85,7 +85,7 @@ gem 'slackistrano', "~> 4.0"
 gem "whenever" # automatic crontob maintenance, on capistrano deploys
 
 gem "ransack", "~> 2.1"
-gem "kaminari", "~> 1.0"
+gem "kaminari", "~> 1.2"
 gem 'bootstrap4-kaminari-views'
 
 gem 'devise', "~> 4.5" # user accounts and login
