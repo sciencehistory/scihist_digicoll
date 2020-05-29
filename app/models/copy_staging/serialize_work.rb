@@ -36,7 +36,8 @@ module CopyStaging
 
     # * The main work for this serializer
     # * all it's children (recursively, for multi-level nested)
-    # * All Kithe::Derivative models for any assets in that group
+    # * Any OralHistoryContent "sidecar" for main work (we don't bother checking children, cause
+    #   we don't do that with our data right now)
     #
     # They are all serialized as a one item hash, with model name as key, and
     # attributes as value.
@@ -52,11 +53,15 @@ module CopyStaging
     def serialize_model(model)
       model_attributes = model.attributes
 
+      oral_history_content = []
+
       if model.kind_of?(Kithe::Asset)
         # hacky workaround
         # https://github.com/sciencehistory/kithe/pull/75
         model_attributes.delete("representative_id")
         model_attributes.delete("leaf_representative_id")
+      elsif model.kind_of?(Work) && model.oral_history_content
+        oral_history_content << { model.oral_history_content.class.name => model.oral_history_content.attributes }
       end
 
       mine = [{ model.class.name => model_attributes }]
@@ -65,7 +70,7 @@ module CopyStaging
         serialize_model(member)
       end
 
-      mine + children
+      mine + children + oral_history_content
     end
 
     def shrine_config(shrine_storage_key)
