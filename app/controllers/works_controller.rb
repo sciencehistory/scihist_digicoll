@@ -29,15 +29,16 @@ class WorksController < ApplicationController
   private
 
   def decorator
-    @decorator ||= if has_audio_member?
-      AudioWorkShowDecorator.new(@work)
+    @decorator ||= if has_oh_audio_member?
+      OhAudioWorkShowDecorator.new(@work)
     else
       WorkShowDecorator.new(@work)
     end
   end
   helper_method :decorator
 
-  def has_audio_member?
+  # Is an Oral History with at least one audio member?
+  def has_oh_audio_member?
     # some pg JSON operators in our WHERE clause to pull out actually just
     # what we want.
     #
@@ -49,19 +50,23 @@ class WorksController < ApplicationController
     #
     # We use Arel.sql cause if we don't we get a deprecation message telling us:
     #     "Dangerous query method... Known-safe values can be passed by wrapping them in Arel.sql()""
-    @has_audio_member ||= begin
-      direct_types = @work.members.
-        where(published: true).
-        distinct.pluck(Arel.sql("file_data -> 'metadata' -> 'mime_type'")).
-        compact
+    @has_oh_audio_member ||= begin
+      if ! @work.genre && @work.genre.include?("Oral histories")
+        false
+      else
+        direct_types = @work.members.
+          where(published: true).
+          distinct.pluck(Arel.sql("file_data -> 'metadata' -> 'mime_type'")).
+          compact
 
-      indirect_types = @work.members.
-        where(published: true).
-        joins(:leaf_representative).
-        distinct.pluck(Arel.sql("leaf_representatives_kithe_models.file_data -> 'metadata' -> 'mime_type'")).
-        compact
+        indirect_types = @work.members.
+          where(published: true).
+          joins(:leaf_representative).
+          distinct.pluck(Arel.sql("leaf_representatives_kithe_models.file_data -> 'metadata' -> 'mime_type'")).
+          compact
 
-      (direct_types + indirect_types).any? { |t| t.start_with?("audio/")}
+        (direct_types + indirect_types).any? { |t| t.start_with?("audio/")}
+      end
     end
   end
 
