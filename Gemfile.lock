@@ -7,11 +7,12 @@ GIT
 
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: 83581b09405b8440db7ab0ff8361252627ffe3ef
+  revision: eece77bc8c0722ae783b960c9a223ab19ea077cd
   specs:
-    kithe (2.0.0.pre.beta1)
+    kithe (2.0.0.pre.rc1)
       attr_json (< 2.0.0)
       fastimage (~> 2.0)
+      fx (>= 0.5.0, < 1)
       marcel
       mini_mime
       pdf-reader (~> 2.0)
@@ -244,6 +245,9 @@ GEM
       rake
     font-awesome-rails (4.7.0.5)
       railties (>= 3.2, < 6.1)
+    fx (0.5.0)
+      activerecord (>= 4.0.0)
+      railties (>= 4.0.0)
     geocoder (1.6.2)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
