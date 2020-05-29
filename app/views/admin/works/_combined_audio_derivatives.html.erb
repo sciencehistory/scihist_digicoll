@@ -8,19 +8,34 @@
     <% else %>
       <% if view.combined_audio_fingerprint.present? %>
         <% if view.derivatives_up_to_date? %>
-          <p class="alert-success p-3">
-            <% if view.combined_audio_creation_status == "DONE" %>
+          <% if model&.oral_history_content&.combined_audio_derivatives_job_status_changed_at.nil? %>
+            <p class="alert-success p-3">
+                <i class="fa fa fa-thumbs-up pr-1" aria-hidden="true"></i>
+                  The combined audio derivatives, created from <%= view.work_available_members_count %> published audio segments, are up to date. Their fingerprint is <code class="border"><%= view.combined_audio_fingerprint%></code>.
+            </p>
+          <% end %>
+          <% if model&.oral_history_content&.queued?  %>
+            <p class="alert-info p-3">
+              The combined audio derivatives will be recreated soon. The job was added to the queue <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
+            </p>
+          <% end %>
+          <% if model&.oral_history_content&.started?  %>
+            <p class="alert-info p-3">
+              The combined audio derivatives are being recreated. The job started <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
+            </p>
+          <% end %>
+          <% if model&.oral_history_content&.failed?  %>
+            <p class="alert-danger p-3">
+              <i class="fa fa fa-thumbs-down pr-1" aria-hidden="true"></i>
+              The combined audio derivatives were not recreated. The process failed <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
+            </p>
+          <% end %>
+          <% if model&.oral_history_content&.done?  %>
+            <p class="alert-success p-3">
               <i class="fa fa fa-thumbs-up pr-1" aria-hidden="true"></i>
-                The combined audio derivatives, created <%= distance_of_time_in_words(view.combined_audio_creation_date, Time.now) %> ago from <%= view.work_available_members_count %> published audio segments, are up to date. Their fingerprint is <code class="border"><%= view.combined_audio_fingerprint%></code>.
-              <% elsif view.combined_audio_creation_status == "ERROR" %>
-                <i class="fa fa fa-thumbs-up pr-1" aria-hidden="true"></i>
-                The combined audio derivatives were not created. The process failed <%= distance_of_time_in_words(view.combined_audio_creation_date, Time.now) %> ago.</code>.
-              <% else # view.combined_audio_creation_status == "DONE" %>
-                <i class="fa fa fa-thumbs-up pr-1" aria-hidden="true"></i>
-                The combined audio derivatives are being recalculated. The job started <%= distance_of_time_in_words(view.combined_audio_creation_date, Time.now) %> ago.</code>.
-              <% end %>
-          </p>
-          </p>
+                The combined audio derivatives, created <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago from <%= view.work_available_members_count %> published audio segments, are up to date. Their fingerprint is <code class="border"><%= view.combined_audio_fingerprint%></code>.
+            </p>
+          <% end %>
           <ul>
             <% if view.combined_mp3_audio.present? %>
               <li>
@@ -46,11 +61,20 @@
           <p class="alert-danger p-3">
             <i class="fa fa fa-thumbs-down pr-1" aria-hidden="true"></i>
             Combined audio derivatives exist for this oral history, but they are out of date.
-              <% if view.combined_audio_creation_status == "ERROR" %>
-                Someone tried to create them, but the process failed <%= distance_of_time_in_words(view.combined_audio_creation_date, Time.now) %> ago.</code>
+              <% if view.job_status == "queued" %>
+                <p class="alert-info p-3">
+                A job to recreate them was added to the queue <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
+                </p>
               <% end %>
-              <% if view.combined_audio_creation_status == "STARTED" %>
-                The creation process started <%= distance_of_time_in_words(view.combined_audio_creation_date, Time.now) %> ago.</code>
+              <% if view.job_status == "started" %>
+                <p class="alert-info p-3">
+                A job to recreate them started <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
+                </p>
+              <% end %>
+              <% if view.job_status == "error" %>
+                <p class="alert-danger p-3">
+                A job to recreate them failed <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
+                </p>
               <% end %>
           </p>
           <p>
@@ -59,17 +83,22 @@
         <% end %>
       <% else %>
         <p>
-            This oral history has <%= view.work_available_members_count %> published audio segment(s).
+            This oral history has <%= view.work_available_members_count %> published audio segment(s). There are no combined audio derivatives for this oral history yet.
         </p>
         <p>
-          There are no combined audio derivatives for this oral history yet.
-          <% if view.combined_audio_creation_status == "ERROR" %>
-            Someone tried to create them, but the process failed <%= distance_of_time_in_words(view.combined_audio_creation_date, Time.now) %> ago.</code>
+          <% if model&.oral_history_content&.queued? %>
+            The combined audio derivatives will be created soon.
+            The job is in the queue as of
+            <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
           <% end %>
-          <% if view.combined_audio_creation_status == "STARTED" %>
-            They are currently being created; the process started <%= distance_of_time_in_words(view.combined_audio_creation_date, Time.now) %> ago.</code>
+          <% if model&.oral_history_content&.started? %>
+            They are currently being created;
+            the process started <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
           <% end %>
-
+          <% if model&.oral_history_content&.done? %>
+            Someone tried to create them,
+            but the process failed <%= distance_of_time_in_words(view.job_status_time, Time.now) %> ago.
+          <% end %>
         </p>
         <p>
           <%= link_to "Create combined audio derivatives", create_combined_audio_derivatives_admin_work_path(model), method: "put", class: "btn btn-primary" %>
