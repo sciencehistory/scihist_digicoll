@@ -48,4 +48,9 @@ class WorkCombinedAudioDerivatives < ViewModel
   def job_status_time
     model&.oral_history_content&.combined_audio_derivatives_job_status_changed_at
   end
+
+  def time_since_job_status_change
+    "#{ distance_of_time_in_words(job_status_time, Time.now) } ago"
+  end
+
 end
