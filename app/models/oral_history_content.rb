@@ -32,14 +32,12 @@ class OralHistoryContent < ApplicationRecord
   include CombinedAudioUploader::Attachment.new(:combined_audio_mp3, store: :combined_audio_derivatives)
   include CombinedAudioUploader::Attachment.new(:combined_audio_webm, store: :combined_audio_derivatives)
 
-  job_status_options = {
-    queued: 'queued',
-    started: 'started',
-    failed: 'failed',
-    done: 'done'
+  enum combined_audio_derivatives_job_status: {
+    queued:    'queued',
+    started:   'started',
+    failed:    'failed',
+    succeeded: 'succeeded'
   }
-
-  enum combined_audio_derivatives_job_status: job_status_options
 
   # Sets IO to be combined_audio_mp3, writing directly to "store" storage,
   # and *saves model*.

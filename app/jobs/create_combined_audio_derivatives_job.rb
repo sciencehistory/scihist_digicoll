@@ -22,7 +22,7 @@ class CreateCombinedAudioDerivativesJob < ApplicationJob
     # Update fingerprint and metadata:
     sidecar.combined_audio_fingerprint = deriv_info.fingerprint
     sidecar.combined_audio_component_metadata = { start_times: deriv_info.start_times }
-    sidecar.combined_audio_derivatives_job_status = 'done'
+    sidecar.combined_audio_derivatives_job_status = 'succeeded'
     sidecar.save!
   end
 end
