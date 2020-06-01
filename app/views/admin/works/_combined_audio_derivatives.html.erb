@@ -6,36 +6,13 @@
       This oral history doesn't have any published audio segments associated with it.
       <%# (Thus, no point in showing the "Regenerate derivatives" button.) %>
     <% else %>
+
       <% if view.combined_audio_fingerprint.present? %>
         <% if view.derivatives_up_to_date? %>
-          <% if model&.oral_history_content&.combined_audio_derivatives_job_status_changed_at.nil? %>
-            <p class="alert-success p-3">
-                <i class="fa fa fa-thumbs-up pr-1" aria-hidden="true"></i>
-                  The combined audio derivatives, created from <%= view.work_available_members_count %> published audio segments, are up to date. Their fingerprint is <code class="border"><%= view.combined_audio_fingerprint%></code>.
-            </p>
-          <% end %>
-          <% if model&.oral_history_content&.queued?  %>
-            <p class="alert-info p-3">
-              The combined audio derivatives will be recreated soon. The job was added to the queue <%=view.time_since_job_status_change %>.
-            </p>
-          <% end %>
-          <% if model&.oral_history_content&.started?  %>
-            <p class="alert-info p-3">
-              The combined audio derivatives are being recreated. The job started <%=view.time_since_job_status_change %>.
-            </p>
-          <% end %>
-          <% if model&.oral_history_content&.failed?  %>
-            <p class="alert-danger p-3">
-              <i class="fa fa fa-thumbs-down pr-1" aria-hidden="true"></i>
-              The combined audio derivatives were not recreated. The job failed <%=view.time_since_job_status_change %>.
-            </p>
-          <% end %>
-          <% if model&.oral_history_content&.done?  %>
-            <p class="alert-success p-3">
-              <i class="fa fa fa-thumbs-up pr-1" aria-hidden="true"></i>
-                The combined audio derivatives, created <%=view.time_since_job_status_change %> from <%= view.work_available_members_count %> published audio segments, are up to date. Their fingerprint is <code class="border"><%= view.combined_audio_fingerprint%></code>.
-            </p>
-          <% end %>
+          <p class="alert-success p-3">
+            <i class="fa fa fa-thumbs-up pr-1" aria-hidden="true"></i>
+              The combined audio derivatives, created from <%= view.work_available_members_count %> published audio segments, are up to date. Their fingerprint is <code class="border"><%= view.combined_audio_fingerprint%></code>.
+          </p>
           <ul>
             <% if view.combined_mp3_audio.present? %>
               <li>
@@ -54,61 +31,37 @@
               </li>
             <% end %>
           </ul>
-          <p>
-            <%= link_to "Regenerate combined audio derivatives", create_combined_audio_derivatives_admin_work_path(model), method: "put", class: "btn btn-primary" %>
-          </p>
         <% else %>
           <p class="alert-danger p-3">
             <i class="fa fa fa-thumbs-down pr-1" aria-hidden="true"></i>
             Combined audio derivatives exist for this oral history, but they are out of date.
-          </p>
-          <% if model&.oral_history_content&.queued? %>
-            <p class="alert-info p-3">
-            A job to recreate them was added to the queue <%=view.time_since_job_status_change %>.
-            </p>
-          <% end %>
-          <% if model&.oral_history_content&.started? %>
-            <p class="alert-info p-3">
-            A job to recreate them started <%=view.time_since_job_status_change %>.
-            </p>
-          <% end %>
-          <% if model&.oral_history_content&.failed? %>
-            <p class="alert-danger p-3">
-            A job to recreate them failed <%=view.time_since_job_status_change %>.
-            </p>
-          <% end %>
-          <p>
-            <%= link_to "Regenerate combined audio derivatives", create_combined_audio_derivatives_admin_work_path(model), method: "put", class: "btn btn-primary" %>
           </p>
         <% end %>
       <% else %>
         <p>
             This oral history has <%= view.work_available_members_count %> published audio segment(s). There are no combined audio derivatives for this oral history yet.
         </p>
-        <p>
-          <% if model&.oral_history_content&.queued? %>
-            <p class="alert-info p-3">
-              The combined audio derivatives will be created soon;
-              the job is in the queue as of <%=view.time_since_job_status_change %>.
-            </p>
-          <% end %>
-          <% if model&.oral_history_content&.started? %>
-            <p class="alert-info p-3">
-              They are currently being created;
-              the job started <%=view.time_since_job_status_change %>.
-            </p>
-          <% end %>
-          <% if model&.oral_history_content&.done? %>
-            <p class="alert-danger p-3">
-              Someone tried to create them,
-              but the job failed <%=view.time_since_job_status_change %>.
-            </p>
-          <% end %>
-        </p>
-        <p>
-          <%= link_to "Create combined audio derivatives", create_combined_audio_derivatives_admin_work_path(model), method: "put", class: "btn btn-primary" %>
+      <% end %>
+      <p>
+        <%= link_to "Generate (or regenerate) combined audio derivatives", create_combined_audio_derivatives_admin_work_path(model), method: "put", class: "btn btn-primary" %>
+      </p>
+
+      <% if view.show_in_progress_status? %>
+        <p class="<%= model&.oral_history_content&.failed? ? 'alert-danger' : 'alert-info' %>  p-3">
+          Attempting to create combined audio derivatives.
+          Job status:
+          <code><%= model&.oral_history_content&.combined_audio_derivatives_job_status %></code>
+          as of
+          <%= l model&.oral_history_content&.combined_audio_derivatives_job_status_changed_at, format: :admin %>
         </p>
       <% end %>
+
+      <% if model&.oral_history_content&.succeeded? && view.job_status_recently_changed? %>
+        <p class="alert-info p-3">
+          Combined audio derivatives were recently created or recreated. The job completed successfully at <%= l model&.oral_history_content&.combined_audio_derivatives_job_status_changed_at, format: :admin %>.
+        </p>
+      <% end %>
+
     <% end %>
   </div>
 </div>

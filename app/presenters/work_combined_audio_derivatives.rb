@@ -53,4 +53,15 @@ class WorkCombinedAudioDerivatives < ViewModel
     "#{ distance_of_time_in_words(job_status_time, Time.now) } ago"
   end
 
+  def show_in_progress_status?
+    model&.oral_history_content&.queued?  ||
+      model&.oral_history_content&.started? ||
+      model&.oral_history_content&.failed?
+  end
+  # Whether the derivatives were recently recreated.
+  def job_status_recently_changed?
+    return Time.now.to_i - job_status_time.to_i  < 60*60*24
+  end
+
+
 end
