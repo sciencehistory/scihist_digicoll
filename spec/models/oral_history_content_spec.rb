@@ -148,6 +148,23 @@ describe OralHistoryContent do
         expect(ohms_xml.index_points.second.partial_transcript).to eq("BROCK:  That general store was just down the street, not too far from your family’s tavern?\nDUARTE:  Yes.  The general store is called Muzzi’s now.")
         expect(ohms_xml.index_points.second.keywords).to eq(["Azores", "Gordon E. Moore", "Half Moon Bay", "Pescadero", "ranching", "San Mateo", "sheriff", "Walter E. Moore", "whaling", "Williamson family"])
       end
+
+      describe "with hyperlinks" do
+        let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/index_hyperlinks_example.xml" }
+
+        it "get parsed" do
+          no_hyperlinks = ohms_xml.index_points.first
+          has_hyperlinks = ohms_xml.index_points.second
+
+          expect(no_hyperlinks.hyperlinks).to eq([])
+
+          expect(has_hyperlinks.hyperlinks.collect(&:to_h)).to eq([
+            {:href=>"https://digital.sciencehistory.org/works/cf95jc49c", :text=>"Oral history interview with Hubert N. Alyea"},
+            {:href=>"https://digital.sciencehistory.org/works/g445cf063", :text=>"Oral history interview with William E. Hanford"},
+            {:href=>"https://digital.sciencehistory.org/works/1n79h560c", :text=>"Oral history interview with Malcolm M. Renfrew"}
+          ])
+        end
+      end
     end
 
     describe "#transcript_lines" do

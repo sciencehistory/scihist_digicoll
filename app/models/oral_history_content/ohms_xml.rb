@@ -83,12 +83,27 @@ class OralHistoryContent
       # timestamp is in seconds
       attr_reader :timestamp
 
+      # has data objects with href and text methods.
+      attr_reader :hyperlinks
+
       def initialize(xml_node)
         @timestamp = xml_node.at_xpath("./ohms:time", ohms: OHMS_NS).text.to_i
         @title = xml_node.at_xpath("./ohms:title", ohms: OHMS_NS)&.text&.strip || "[Missing]"
         @synopsis = xml_node.at_xpath("./ohms:synopsis", ohms: OHMS_NS)&.text&.strip
         @partial_transcript = xml_node.at_xpath("./ohms:partial_transcript", ohms: OHMS_NS)&.text&.strip
         @keywords = xml_node.at_xpath("./ohms:keywords", ohms: OHMS_NS)&.text&.split(";")
+
+        @hyperlinks = xml_node.xpath("./ohms:hyperlinks", ohms: OHMS_NS).collect do |hyperlink_xml|
+          href = hyperlink_xml.at_xpath("./ohms:hyperlink", ohms: OHMS_NS)&.text&.strip&.presence
+          text = hyperlink_xml.at_xpath("./ohms:hyperlink_text", ohms: OHMS_NS)&.text&.strip&.presence
+
+          if href && text
+            OpenStruct.new(
+              href: href,
+              text: text
+            )
+          end
+        end.compact
       end
     end
 

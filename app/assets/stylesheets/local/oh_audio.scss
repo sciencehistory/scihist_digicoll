@@ -342,7 +342,7 @@
       margin-bottom: $paragraph-spacer * 2;
     }
 
-    p.attribute {
+    .attribute {
       padding-left: 0.66em;
       text-indent: -0.66em;
 
@@ -352,6 +352,10 @@
         font-weight: bold;
         color: $brand-dark-blue;
       }
+    }
+
+    .ohms-hyperlinks ul {
+      padding-left: 0.66em;
     }
 
     .keywords {
