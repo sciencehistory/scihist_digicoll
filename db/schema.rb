@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_01_154653) do
+ActiveRecord::Schema.define(version: 2020_06_02_144008) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -153,7 +153,7 @@ ActiveRecord::Schema.define(version: 2020_06_01_154653) do
     t.text "ohms_xml_text"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text "searchable_plain_text_transcript"
+    t.text "searchable_transcript_source"
     t.index ["work_id"], name: "index_oral_history_content_on_work_id", unique: true
   end
 
