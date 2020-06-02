@@ -32,6 +32,13 @@ class OralHistoryContent < ApplicationRecord
   include CombinedAudioUploader::Attachment.new(:combined_audio_mp3, store: :combined_audio_derivatives)
   include CombinedAudioUploader::Attachment.new(:combined_audio_webm, store: :combined_audio_derivatives)
 
+  enum combined_audio_derivatives_job_status: {
+    queued:    'queued',
+    started:   'started',
+    failed:    'failed',
+    succeeded: 'succeeded'
+  }
+
   # Sets IO to be combined_audio_mp3, writing directly to "store" storage,
   # and *saves model*.
   def set_combined_audio_mp3!(io)
@@ -65,6 +72,11 @@ class OralHistoryContent < ApplicationRecord
   end
 
 
+  def combined_audio_derivatives_job_status=(value)
+    super
+    self.combined_audio_derivatives_job_status_changed_at = DateTime.now
+  end
+
   private
 
   # Sets IO to given shrine attacher, writing directly to "store" storage,
@@ -95,6 +107,8 @@ class OralHistoryContent < ApplicationRecord
     # clean up file if there was a problem
     stored_file.delete if stored_file
     shrine_attacher.set(original)
+    self.combined_audio_derivatives_job_status = "failed"
+    self.save!
     raise e
   end
 end

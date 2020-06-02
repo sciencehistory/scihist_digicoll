@@ -6,11 +6,12 @@
       This oral history doesn't have any published audio segments associated with it.
       <%# (Thus, no point in showing the "Regenerate derivatives" button.) %>
     <% else %>
+
       <% if view.combined_audio_fingerprint.present? %>
         <% if view.derivatives_up_to_date? %>
           <p class="alert-success p-3">
             <i class="fa fa fa-thumbs-up pr-1" aria-hidden="true"></i>
-            The combined audio derivatives, created from <%= view.work_available_members_count %> published audio segments, are up to date. Their fingerprint is <code class="border"><%= view.combined_audio_fingerprint%></code>.</p>
+              The combined audio derivatives, created from <%= view.work_available_members_count %> published audio segments, are up to date. Their fingerprint is <code class="border"><%= view.combined_audio_fingerprint%></code>.
           </p>
           <ul>
             <% if view.combined_mp3_audio.present? %>
@@ -30,29 +31,37 @@
               </li>
             <% end %>
           </ul>
-          <p>
-            <%= link_to "Regenerate combined audio derivatives", create_combined_audio_derivatives_admin_work_path(model), method: "put", class: "btn btn-primary" %>
-          </p>
         <% else %>
           <p class="alert-danger p-3">
             <i class="fa fa fa-thumbs-down pr-1" aria-hidden="true"></i>
             Combined audio derivatives exist for this oral history, but they are out of date.
           </p>
-          <p>
-            <%= link_to "Regenerate combined audio derivatives", create_combined_audio_derivatives_admin_work_path(model), method: "put", class: "btn btn-primary" %>
-          </p>
         <% end %>
       <% else %>
         <p>
-            This oral history has <%= view.work_available_members_count %> published audio segment(s).
-        </p>
-        <p>
-          There are no combined audio derivatives for this oral history yet.
-        </p>
-        <p>
-          <%= link_to "Create combined audio derivatives", create_combined_audio_derivatives_admin_work_path(model), method: "put", class: "btn btn-primary" %>
+            This oral history has <%= view.work_available_members_count %> published audio segment(s). There are no combined audio derivatives for this oral history yet.
         </p>
       <% end %>
+      <p>
+        <%= link_to "Generate (or regenerate) combined audio derivatives", create_combined_audio_derivatives_admin_work_path(model), method: "put", class: "btn btn-primary" %>
+      </p>
+
+      <% if view.show_in_progress_status? %>
+        <p class="<%= model&.oral_history_content&.failed? ? 'alert-danger' : 'alert-info' %>  p-3">
+          Attempting to create combined audio derivatives.
+          Job status:
+          <code><%= model&.oral_history_content&.combined_audio_derivatives_job_status %></code>
+          as of
+          <%= l model&.oral_history_content&.combined_audio_derivatives_job_status_changed_at, format: :admin %>
+        </p>
+      <% end %>
+
+      <% if model&.oral_history_content&.succeeded? && view.job_status_recently_changed? %>
+        <p class="alert-info p-3">
+          Combined audio derivatives were recently created or recreated. The job completed successfully at <%= l model&.oral_history_content&.combined_audio_derivatives_job_status_changed_at, format: :admin %>.
+        </p>
+      <% end %>
+
     <% end %>
   </div>
 </div>
