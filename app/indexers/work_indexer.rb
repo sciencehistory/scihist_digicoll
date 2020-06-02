@@ -95,5 +95,18 @@ class WorkIndexer < Kithe::Indexer
     # for now we index 'published', not sure if we'll move to ONLY indexing
     # things that are published.
     to_field "published_bsi", obj_extract("published?")
+
+
+    # Transcript text, use OHMS transcript if we got it, otherwise plaintext if
+    # we got it.
+    to_field "searchable_fulltext" do |rec, acc|
+      if rec.oral_history_content
+        if rec.oral_history_content.ohms_xml&.transcript_text.present?
+          acc << rec.oral_history_content.ohms_xml.transcript_text
+        elsif rec.oral_history_content.searchable_transcript_source
+          acc << searchable_transcript_source
+        end
+      end
+    end
   end
 end
