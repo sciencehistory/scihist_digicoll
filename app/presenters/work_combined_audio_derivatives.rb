@@ -45,4 +45,23 @@ class WorkCombinedAudioDerivatives < ViewModel
     CombinedAudioDerivativeCreator.new(model).fingerprint == combined_audio_fingerprint
   end
 
+  def job_status_time
+    model&.oral_history_content&.combined_audio_derivatives_job_status_changed_at
+  end
+
+  def time_since_job_status_change
+    "#{ distance_of_time_in_words(job_status_time, Time.now) } ago"
+  end
+
+  def show_in_progress_status?
+    model&.oral_history_content&.queued?  ||
+      model&.oral_history_content&.started? ||
+      model&.oral_history_content&.failed?
+  end
+  # Whether the derivatives were recently recreated.
+  def job_status_recently_changed?
+    return Time.now.to_i - job_status_time.to_i  < 60*60*24
+  end
+
+
 end

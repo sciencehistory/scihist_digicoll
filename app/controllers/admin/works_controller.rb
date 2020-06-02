@@ -124,7 +124,6 @@ class Admin::WorksController < AdminController
 
   # Create_combined_audio_derivatives in the background, if warranted.
   # PATCH/PUT /admin/works/ab2323ac/create_combined_audio_derivatives
-  # Unfortunately, if the job fails for any reason, the user will not be notified.
   def create_combined_audio_derivatives
     unless CombinedAudioDerivativeCreator.new(@work).available_members?
       redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: {
@@ -132,9 +131,11 @@ class Admin::WorksController < AdminController
       }
       return
     end
-
     CreateCombinedAudioDerivativesJob.perform_later(@work)
-    notice = "The combined audio derivative job has been launched."
+    sidecar = @work.oral_history_content!
+    sidecar.combined_audio_derivatives_job_status = 'queued'
+    sidecar.save!
+    notice = "The combined audio derivative job has been added to the job queue."
     redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: notice
   end
 
