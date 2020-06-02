@@ -101,10 +101,10 @@ class WorkIndexer < Kithe::Indexer
     # we got it.
     to_field "searchable_fulltext" do |rec, acc|
       if rec.oral_history_content
-        if rec.oral_history_content.ohms_xml&.transcript_text.present?
+        if rec.oral_history_content.has_ohms_transcript?
           acc << rec.oral_history_content.ohms_xml.transcript_text
-        elsif rec.oral_history_content.searchable_transcript_source
-          acc << searchable_transcript_source
+        elsif rec.oral_history_content.searchable_transcript_source.present?
+          acc << rec.oral_history_content.searchable_transcript_source
         end
       end
     end
