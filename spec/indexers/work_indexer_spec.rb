@@ -22,4 +22,57 @@ describe WorkIndexer do
       expect(output_hash["collection_id_ssim"]).to match [collection1.id, collection2.id]
     end
   end
+
+  describe "with oral history transcript" do
+    let(:work) { create(:work, oral_history_content: oral_history_content) }
+
+
+    describe "ohms xml with missing transcript" do
+      # this one has missing transcript...
+      let(:ohms_xml) { File.read(Rails.root + "spec/test_support/ohms_xml/alyea_OH0010.xml") }
+
+      let(:oral_history_content) { OralHistoryContent.new(ohms_xml_text: ohms_xml) }
+
+      it "has no searchable_fulltext" do
+        output_hash = WorkIndexer.new.map_record(work)
+        expect(output_hash["searchable_fulltext"]).to eq(nil)
+      end
+    end
+
+
+    describe "ohms xml with missing transcript and plaintext" do
+      # this one has missing transcript...
+      let(:ohms_xml) { File.read(Rails.root + "spec/test_support/ohms_xml/alyea_OH0010.xml") }
+
+      let(:oral_history_content) { OralHistoryContent.new(
+                                    searchable_transcript_source: "searchable_transcript_source",
+                                    ohms_xml_text: ohms_xml) }
+      it "indexes only searchable_transcript_source" do
+        output_hash = WorkIndexer.new.map_record(work)
+        expect(output_hash["searchable_fulltext"]).to eq(["searchable_transcript_source"])
+      end
+    end
+
+    describe "only searchable_transcript_source" do
+      let(:oral_history_content) { OralHistoryContent.new(searchable_transcript_source: "searchable_transcript_source") }
+
+      it "indexes searchable_transcript_source" do
+        output_hash = WorkIndexer.new.map_record(work)
+        expect(output_hash["searchable_fulltext"]).to eq(["searchable_transcript_source"])
+      end
+    end
+
+    describe "ohms_xml with transcript, and plaintext" do
+      let(:ohms_xml) { File.read(Rails.root + "spec/test_support/ohms_xml/smythe_OH0042.xml") }
+      let(:oral_history_content) { OralHistoryContent.new(
+                                  searchable_transcript_source: "searchable_transcript_source",
+                                  ohms_xml_text: ohms_xml) }
+
+      it "uses ohms_xml" do
+        output_hash = WorkIndexer.new.map_record(work)
+        expect(output_hash["searchable_fulltext"].length).to eq(1)
+        expect(output_hash["searchable_fulltext"].first).to start_with("[untranscribed pre-interview discussion]")
+      end
+    end
+  end
 end
