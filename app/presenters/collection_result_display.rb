@@ -2,25 +2,8 @@
 #
 # * requires a ChildCountDisplayFetcher for efficient fetching and provision of "N Items"
 # child count on display.
-class CollectionResultDisplay < ViewModel
+class CollectionResultDisplay < ResultDisplay
   valid_model_type_names "Collection"
-
-  attr_reader :child_counter, :solr_document
-
-  # @param collection [Collection]
-  # @param child_counter [ChildCountDisplayFetcher]
-  # @param solr_document [SolrDocument] Blacklight SolrDocument with solr result into
-  #
-  # Ignore other params we don't care about, such as cart_presence
-  def initialize(collection, child_counter:, solr_document:, **_unused_options)
-    @child_counter = child_counter
-    @solr_document = solr_document
-    super(collection)
-  end
-
-  def display
-    render "/presenters/index_result", model: model, view: self
-  end
 
   def display_genres
     link_to "Collections", collections_path
@@ -66,24 +49,5 @@ class CollectionResultDisplay < ViewModel
   def show_cart_control?
     false # never for collections
   end
-
-  # results in context highlights from solr, if available
-  # TODO this is copy pasted from work_result_display, we should have a common superclass or something?
-  def search_highlights
-    @search_highlights ||= begin
-      highlights = solr_document.has_highlight_field?("searchabe_fultext") && solr_document.highlight_field("searchable_fulltext")
-      if highlights
-        safe_join(
-        ["", *highlights, ""],
-        "…")
-      else
-        ""
-      end
-    end
-  end
-
-
-
-
 
 end
