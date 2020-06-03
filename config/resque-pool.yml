@@ -2,8 +2,8 @@ production:
   # Note: these three settings are
   # *always* defined, with zero as the default.
   # Hence, OK to use lookup!
-  "mailers,default": <%= ScihistDigcoll::Env.lookup!(:regular_job_worker_count) %>
-  "on_demand_derivatives": <%= ScihistDigcoll::Env.lookup!(:on_demand_job_worker_count)%>
-  "special_jobs": <%= ScihistDigcoll::Env.lookup!(:special_job_worker_count)%>
+  "mailers,default": <%= ScihistDigicoll::Env.lookup!(:regular_job_worker_count) %>
+  "on_demand_derivatives": <%= ScihistDigicoll::Env.lookup!(:on_demand_job_worker_count)%>
+  "special_jobs": <%= ScihistDigicoll::Env.lookup!(:special_job_worker_count)%>
 development:
   "*": 5
