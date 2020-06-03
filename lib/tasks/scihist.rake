@@ -94,16 +94,24 @@ namespace :scihist do
   namespace :solr do
     desc "sync all Works and Collections to solr index"
     task :reindex => :environment do
-      scope = Kithe::Model.where(kithe_model_type: ["collection", "work"]) # we don't index Assets
-      # we should pre-load contained_by_ids since the work indexer will use
-      scope = scope.includes(:contains_contained_by)
+      # We have to pre-fetch :oral_history_content for owrks, but don't have that
+      # for collection, so have to in two parts.
 
-      progress_bar = ProgressBar.create(total: scope.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
+
       Kithe::Indexable.index_with(batching: true) do
-        scope.find_each do |model|
-          progress_bar.title = "#{model.class.name}:#{model.friendlier_id}"
-          model.update_index
-          progress_bar.increment
+
+        progress_bar = ProgressBar.create(total: (Work.count + Collection.count), format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
+
+        [
+          Work.includes(:contains_contained_by, :oral_history_content),
+          Collection.includes(:contains_contained_by)
+        ].each do |scope|
+
+          scope.find_each do |model|
+            progress_bar.title = "#{model.class.name}:#{model.friendlier_id}"
+            model.update_index
+            progress_bar.increment
+          end
         end
       end
     end

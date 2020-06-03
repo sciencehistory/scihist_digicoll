@@ -226,6 +226,18 @@
     <field name="latest_year" type="int_sortmissinglast" stored="true" indexed="true" multiValued="false"/>
     <field name="earliest_year" type="int_sortmissinglast" stored="true" indexed="true" multiValued="false"/>
 
+    <!-- create a field for fulltext (eg oral history transcripts), let's try with omitNorms false.
+         stored=true is necessary for highlighting. Dont' expect to need multi-valued,
+         but I don't think it hurts in any way to allow it.
+
+
+         storeOffsetsWithPositions gets us faster highlighting for very large fields, in return for
+         somewhat larger index size.
+
+         https://lucene.apache.org/solr/guide/8_0/highlighting.html#Highlighting-SchemaOptionsandPerformanceConsiderations
+       -->
+    <field name="searchable_fulltext" type="text_en" stored="true" indexed="true" multiValued="true" omitNorms="true" storeOffsetsWithPositions="true"/>
+
     <!-- added by Science History Institute, a dynamic field that's good for string facets, using docValues fields -->
     <dynamicField name="*_facet" type="string_dv" multiValued="true"/>
 
