@@ -227,9 +227,7 @@
     <field name="earliest_year" type="int_sortmissinglast" stored="true" indexed="true" multiValued="false"/>
 
     <!-- create a field for fulltext (eg oral history transcripts), let's try with omitNorms false.
-         stored=true is necessary for highlighting. Dont' expect to need multi-valued,
-         but I don't think it hurts in any way to allow it.
-
+         stored=true is necessary for highlighting.
 
          storeOffsetsWithPositions gets us faster highlighting for very large fields, in return for
          somewhat larger index size.
