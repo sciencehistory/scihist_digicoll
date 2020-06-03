@@ -9,7 +9,9 @@ class CollectionResultDisplay < ViewModel
 
   # @param collection [Collection]
   # @param child_counter [ChildCountDisplayFetcher]
-  def initialize(collection, child_counter:, cart_presence:nil)
+  #
+  # Ignore other params we don't care about, such as cart_presence and solr_document
+  def initialize(collection, child_counter:, **_unused_options)
     @child_counter = child_counter
     # we don't use cart_presence, you can't put collections in cart at the moment.
     super(collection)
