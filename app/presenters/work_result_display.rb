@@ -20,7 +20,7 @@ class WorkResultDisplay < ViewModel
   end
 
   def display
-    render "/presenters/index_result", model: model, view: self
+    render "/presenters/index_result", model: model, solr_document: solr_document, view: self
   end
 
   def display_genres
@@ -47,6 +47,19 @@ class WorkResultDisplay < ViewModel
     ThumbDisplay.new(model.leaf_representative).display
   end
 
+  # results in context highlights from solr, if available
+  def search_highlights
+    @search_highlights ||= begin
+      highlights = solr_document.has_highlight_field?("searchable_fulltext") && solr_document.highlight_field("searchable_fulltext")
+      if highlights
+        safe_join(
+        ["", *highlights, ""],
+        "…")
+      else
+        ""
+      end
+    end
+  end
 
   def link_to_href
     work_path(model)
