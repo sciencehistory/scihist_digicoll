@@ -2,26 +2,10 @@
 #
 # * requires a a ChildCountDisplayFetcher for efficient fetching and provision of "N Items"
 # child count on display.
-class WorkResultDisplay < ViewModel
+class WorkResultDisplay < ResultDisplay
   valid_model_type_names "Work"
 
   delegate :additional_title
-
-  attr_reader :child_counter, :cart_presence, :solr_document
-
-  # @param work [Work]
-  # @param child_counter [ChildCountDisplayFetcher]
-  # @param cart_presence [CartPresence]
-  def initialize(work, solr_document:,child_counter:, cart_presence:)
-    @child_counter = child_counter
-    @cart_presence = cart_presence
-    @solr_document = solr_document
-    super(work)
-  end
-
-  def display
-    render "/presenters/index_result", model: model, solr_document: solr_document, view: self
-  end
 
   def display_genres
     @display_genres ||= safe_join(
@@ -45,20 +29,6 @@ class WorkResultDisplay < ViewModel
 
   def thumbnail_html
     ThumbDisplay.new(model.leaf_representative).display
-  end
-
-  # results in context highlights from solr, if available
-  def search_highlights
-    @search_highlights ||= begin
-      highlights = solr_document.has_highlight_field?("searchable_fulltext") && solr_document.highlight_field("searchable_fulltext")
-      if highlights
-        safe_join(
-        ["", *highlights, ""],
-        "…")
-      else
-        ""
-      end
-    end
   end
 
   def link_to_href
