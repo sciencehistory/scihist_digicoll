@@ -283,5 +283,17 @@ module ScihistDigicoll
 
     define_key :smtp_host
 
+    ##
+    #
+    # feature flags
+    #
+    ###
+
+    define_key "feature.fulltext_search", default: -> {
+      # for now default false in production true elsewhere
+      !Rails.env.production?
+    }
+
+
   end
 end
