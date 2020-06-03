@@ -95,6 +95,7 @@ class CatalogController < ApplicationController
   end
   helper SortHelperOverrides
 
+
   configure_blacklight do |config|
     ## Class for sending and receiving requests from a search index
     # config.repository_class = Blacklight::Solr::Repository
@@ -116,6 +117,25 @@ class CatalogController < ApplicationController
       qf: "text1_tesim^1000 text2_tesim^500 text3_tesim^100 text4_tesim^50 text_no_boost_tesim friendlier_id_ssi id",
       pf: "text1_tesim^1000 text2_tesim^500 text3_tesim^100 text4_tesim^50 text_no_boost_tesim friendlier_id_ssi id"
     }
+
+    # Rewrite for in-testing fulltext search/highlight feature
+    if ScihistDigicoll::Env.lookup("feature.fulltext_search")
+      config.default_solr_params.merge!(
+        qf: "text1_tesim^1000 text2_tesim^500 text3_tesim^100 text4_tesim^50 text_no_boost_tesim^10 friendlier_id_ssi id^10 searchable_fulltext^0.5",
+        pf: "text1_tesim^1000 text2_tesim^500 text3_tesim^100 text4_tesim^50 text_no_boost_tesim^10 friendlier_id_ssi id^10 searchable_fulltext^0.5",
+
+        # https://lucene.apache.org/solr/guide/8_0/highlighting.html
+        "hl" => "true",
+        "hl.method" => "unified",
+        "hl.fl" => "searchable_fulltext",
+        "hl.usePhraseHighlighter" => "true",
+        "hl.snippets" => 2,
+        "hl.encoder" => "html",
+        "hl.maxAnalyzedChars" => "300000", # ? need to look up longest current OH transcript
+        "hl.offsetSource" => "postings",
+      )
+    end
+
 
     # solr path which will be added to solr base url before the other solr params.
     #config.solr_path = 'select'
