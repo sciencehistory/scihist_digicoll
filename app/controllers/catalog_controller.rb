@@ -122,7 +122,7 @@ class CatalogController < ApplicationController
     if ScihistDigicoll::Env.lookup("feature.fulltext_search")
       config.default_solr_params.merge!(
         qf: "text1_tesim^1000 text2_tesim^500 text3_tesim^100 text4_tesim^50 text_no_boost_tesim^10 friendlier_id_ssi id^10 searchable_fulltext^0.5",
-        pf: "text1_tesim^1000 text2_tesim^500 text3_tesim^100 text4_tesim^50 text_no_boost_tesim^10 friendlier_id_ssi id^10 searchable_fulltext^0.5",
+        pf: "text1_tesim^1000 text2_tesim^500 text3_tesim^100 text4_tesim^50 text_no_boost_tesim^10 friendlier_id_ssi id^10 searchable_fulltext^5",
 
         # https://lucene.apache.org/solr/guide/8_0/highlighting.html
         "hl" => "true",
