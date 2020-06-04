@@ -24,10 +24,10 @@ class ResultDisplay < ViewModel
   def search_highlights
     @search_highlights ||= begin
       highlights = solr_document && solr_document.has_highlight_field?("searchable_fulltext") && solr_document.highlight_field("searchable_fulltext")
-      if highlights
+      if highlights.present?
         safe_join(
         ["", *highlights, ""],
-        "…")
+        " … ")
       else
         ""
       end
