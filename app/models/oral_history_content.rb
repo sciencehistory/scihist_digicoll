@@ -24,6 +24,18 @@
 # a shrine file attachment, just a postgres `text` column. At #ohms_xml is an
 # object that provides access to elements from the parsed XML.
 #
+# ## Auto-indexing
+#
+# Saving an OralHistoryContent object with changes to transcript text will by default
+# automatically cause solr reindex of associated work.
+#
+# Note this means if you are making large scale changes to OralHistoryContent objects,
+# there are no performance concerns, as the naive appraoch might issue an individual
+# SQL query for the work associated with each OralHistoryContent... and then issue
+# a separate non-batched solr update for each. The solution is eager-loading
+# associated works, and using kithe techniques to control auto-indexing: batch-updating,
+# or turning off auto-updating.
+#
 class OralHistoryContent < ApplicationRecord
   self.table_name = "oral_history_content"
 
@@ -88,6 +100,12 @@ class OralHistoryContent < ApplicationRecord
   # If the last save changed transcript, and we HAVE a work, and kithe configuration
   # is set up to auto-index that work... autoindex it.
   #
+  # Note this means if you are making large scale changes to OralHistoryContent objects,
+  # there are no performance concerns, as the naive appraoch might issue an individual
+  # SQL query for the work associated with each OralHistoryContent... and then issue
+  # a separate non-batched solr update for each. The solution is eager-loading
+  # associated works, and using kithe techniques to control auto-indexing: batch-updating,
+  # or turning off auto-updating.
   def after_commit_update_work_index_if_needed
     return unless (
       self.saved_change_to_attribute?(:ohms_xml_text) ||
