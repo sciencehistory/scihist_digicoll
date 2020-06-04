@@ -131,7 +131,10 @@ class CatalogController < ApplicationController
         "hl.usePhraseHighlighter" => "true",
         "hl.snippets" => 2,
         "hl.encoder" => "html",
-        "hl.maxAnalyzedChars" => "300000", # ? need to look up longest current OH transcript
+        # Biggest current transcript seems to be OH0624 with 817,139 chars.
+        # Set maxAnalyzed Chars to two million? I dunno. Solr suggests if we
+        # have things set up right, it ought to be able to handle very big, unclear.
+        "hl.maxAnalyzedChars" => "2000000",
         "hl.offsetSource" => "postings",
       )
     end
