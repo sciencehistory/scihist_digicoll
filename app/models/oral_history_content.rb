@@ -39,6 +39,8 @@ class OralHistoryContent < ApplicationRecord
     succeeded: 'succeeded'
   }
 
+  after_commit :after_commit_update_work_index_if_needed
+
   # Sets IO to be combined_audio_mp3, writing directly to "store" storage,
   # and *saves model*.
   def set_combined_audio_mp3!(io)
@@ -77,7 +79,24 @@ class OralHistoryContent < ApplicationRecord
     self.combined_audio_derivatives_job_status_changed_at = DateTime.now
   end
 
+
   private
+
+  # Kind of hacky way to trigger reindex of work when transcripts are changed here,
+  # since we now solr index transcripts. Called in after_commit hook.
+  #
+  # If the last save changed transcript, and we HAVE a work, and kithe configuration
+  # is set up to auto-index that work... autoindex it.
+  #
+  def after_commit_update_work_index_if_needed
+    return unless (
+      self.saved_change_to_attribute?(:ohms_xml_text) ||
+      self.saved_change_to_attribute?(:searchable_transcript_source)
+    )
+    return unless work && Kithe::Indexable.auto_callbacks?(work)
+
+    work.update_index
+  end
 
   # Sets IO to given shrine attacher, writing directly to "store" storage,
   # and *saves model*.
