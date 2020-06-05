@@ -2,7 +2,7 @@ namespace :scihist do
   desc """
     Goes through all the oral histories and adds transcripts from a file on the disk, for those missing them:
 
-    bundle exec rake scihist:create_full_length_audio_derivatives
+    bundle exec rake scihist:add_transcripts_to_oral_histories
   """
 
   task :add_transcripts_to_oral_histories => :environment do
@@ -15,7 +15,15 @@ namespace :scihist do
         progress_bar.increment
         next
       end
+
       filename = "#{files_location}#{accession_num}.txt"
+
+
+      # There might be an extra 0 in the filename:
+      filename = "#{files_location}#{accession_num.gsub(/^0+/, '')}.txt"  unless File.file?(filename)
+      # ... Or a missing one.
+      filename = "#{files_location}0#{accession_num}.txt" unless File.file?(filename)
+
       unless File.file?(filename)
         progress_bar.log("ERROR: #{w.title}: couldn't find a file on disk for #{accession_num}.")
         progress_bar.increment
