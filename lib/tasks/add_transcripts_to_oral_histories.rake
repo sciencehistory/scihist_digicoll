@@ -9,6 +9,13 @@ namespace :scihist do
     files_location = '/tmp/ohms_transcript_files/'
     progress_bar = ProgressBar.create(total: Work.where("json_attributes -> 'genre' ?  'Oral histories'").count, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
     Work.where("json_attributes -> 'genre' ?  'Oral histories'").find_each(batch_size: 10) do |w|
+
+      if w.oral_history_content!&.searchable_transcript_source.present?
+        progress_bar.log("INFO: #{w.title} already has a searchable transcript.")
+        progress_bar.increment
+        next
+      end
+
       accession_num =  w.external_id.find { |id| id.category == "interview" }&.value
       unless accession_num
         progress_bar.log("ERROR: #{w.title}: no accession number.")
@@ -17,8 +24,6 @@ namespace :scihist do
       end
 
       filename = "#{files_location}#{accession_num}.txt"
-
-
       # There might be an extra 0 in the filename:
       filename = "#{files_location}#{accession_num.gsub(/^0+/, '')}.txt"  unless File.file?(filename)
       # ... Or a missing one.
@@ -38,12 +43,6 @@ namespace :scihist do
         next
       end
 
-      if w.oral_history_content!&.searchable_transcript_source.present?
-        progress_bar.log("INFO: #{w.title} already has a searchable transcript.")
-        progress_bar.increment
-        next
-      end
-
       begin
         w.oral_history_content!.searchable_transcript_source = full_text
         w.oral_history_content.save!
@@ -52,9 +51,7 @@ namespace :scihist do
         progress_bar.increment
         next
       end
-
       progress_bar.increment
     end
   end
-
 end
