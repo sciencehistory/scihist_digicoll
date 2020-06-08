@@ -30,7 +30,7 @@ describe ResultDisplay do
       it "formats" do
         # Solr is html-escaping ALL the punctuation, I dunno, but okay.
         expect(presenter.search_highlights).to eq(
-          " … operated&#32;the&#32;<em>Potlatch</em>&#10;<em>Lumber</em>&#32;Company&#46;&#32; … the&#32;<em>Potlatch</em>&#32;<em>Lumber</em>&#32;Company&#44;&#32;who&#10;was&#32;a&#32;laird&#32;in&#32; … "
+          "…operated&#32;the&#32;<em>Potlatch</em>&#10;<em>Lumber</em>&#32;Company&#46;&#32; …the&#32;<em>Potlatch</em>&#32;<em>Lumber</em>&#32;Company&#44;&#32;who&#10;was&#32;a&#32;laird&#32;in&#32;…"
         )
       end
     end
@@ -53,7 +53,7 @@ describe ResultDisplay do
 
       it "formats" do
         expect(presenter.search_highlights).to eq(
-          " … operated&#32;the&#32;<em>Potlatch</em>&#10;<em>Lumber</em>&#32;Company&#46;&#32; … the&#32;<em>Potlatch</em>&#32;<em>Lumber</em>&#32;Company&#44;&#32;who&#10;was&#32;a&#32;laird&#32;in&#32; … "
+          "…operated&#32;the&#32;<em>Potlatch</em>&#10;<em>Lumber</em>&#32;Company&#46;&#32; …the&#32;<em>Potlatch</em>&#32;<em>Lumber</em>&#32;Company&#44;&#32;who&#10;was&#32;a&#32;laird&#32;in&#32;…"
         )
       end
     end
