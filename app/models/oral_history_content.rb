@@ -95,10 +95,10 @@ class OralHistoryContent < ApplicationRecord
   private
 
   # Kind of hacky way to trigger reindex of work when transcripts are changed here,
-  # since we now solr index transcripts. Called in after_commit hook.
+  # since we now index transcripts in solr. Called in after_commit hook.
   #
-  # If the last save changed transcript, and we HAVE a work, and kithe configuration
-  # is set up to auto-index that work... autoindex it.
+  # If the last save changed the transcript, and we HAVE a work, and kithe configuration
+  # is currently set up to auto-index that work... autoindex it.
   #
   # Note this means if you are making large scale changes to OralHistoryContent objects,
   # there are no performance concerns, as the naive appraoch might issue an individual
