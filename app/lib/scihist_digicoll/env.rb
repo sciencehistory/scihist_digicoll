@@ -281,6 +281,13 @@ module ScihistDigicoll
     define_key :digital_tech_email_address
     define_key :digital_email_address
 
+    # Used for sending mail, and if no queue is specified:
+    define_key :regular_job_worker_count, default: 0
+    # Used for generating PDFs or Zip files requested by users on the front end:
+    define_key :on_demand_job_worker_count, default: 0
+    # Used (infrequently) by additional job servers whose only purpose is to handle special tasks:
+    define_key :special_job_worker_count, default: 0
+
     define_key :smtp_host
 
     ##

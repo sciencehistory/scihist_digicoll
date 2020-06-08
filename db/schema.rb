@@ -153,6 +153,8 @@ ActiveRecord::Schema.define(version: 2020_06_02_144008) do
     t.text "ohms_xml_text"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "combined_audio_derivatives_job_status"
+    t.datetime "combined_audio_derivatives_job_status_changed_at"
     t.text "searchable_transcript_source"
     t.index ["work_id"], name: "index_oral_history_content_on_work_id", unique: true
   end
