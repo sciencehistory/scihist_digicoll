@@ -104,6 +104,33 @@ describe OralHistoryContent do
     end
   end
 
+  describe "auto-index of associated work" do
+    around do |example|
+      oral_history_content # trigger creation, then enable auto indexing callbacks
+      original = Kithe.indexable_settings.disable_callbacks
+      Kithe.indexable_settings.disable_callbacks = false
+
+      example.run
+
+      Kithe.indexable_settings.disable_callbacks = original
+    end
+
+    it "does not update_index if transcript did not change" do
+      expect(oral_history_content.work).not_to receive(:update_index)
+      oral_history_content.update(combined_audio_fingerprint: "fake")
+    end
+
+    it "does update_index if ohms_xml_text changed" do
+      expect(oral_history_content.work).to receive(:update_index)
+      oral_history_content.update(ohms_xml_text: File.open(Rails.root + "spec/test_support/ohms_xml/alyea_OH0010.xml"))
+    end
+
+    it "does update_index if searchable_transcript_source changed" do
+      expect(oral_history_content.work).to receive(:update_index)
+      oral_history_content.update(searchable_transcript_source: "fake")
+    end
+  end
+
   describe "No OHMS Transcript" do
     # ohms does a weird thing wehre it puts "No transcript." in an XML element, let's make sure
     # we're catching it.

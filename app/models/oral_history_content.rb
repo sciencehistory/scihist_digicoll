@@ -24,6 +24,18 @@
 # a shrine file attachment, just a postgres `text` column. At #ohms_xml is an
 # object that provides access to elements from the parsed XML.
 #
+# ## Auto-indexing
+#
+# Saving an OralHistoryContent object with changes to transcript text will by default
+# automatically cause solr reindex of associated work.
+#
+# Note this means if you are making large scale changes to OralHistoryContent objects,
+# there are no performance concerns, as the naive appraoch might issue an individual
+# SQL query for the work associated with each OralHistoryContent... and then issue
+# a separate non-batched solr update for each. The solution is eager-loading
+# associated works, and using kithe techniques to control auto-indexing: batch-updating,
+# or turning off auto-updating.
+#
 class OralHistoryContent < ApplicationRecord
   self.table_name = "oral_history_content"
 
@@ -38,6 +50,8 @@ class OralHistoryContent < ApplicationRecord
     failed:    'failed',
     succeeded: 'succeeded'
   }
+
+  after_commit :after_commit_update_work_index_if_needed
 
   # Sets IO to be combined_audio_mp3, writing directly to "store" storage,
   # and *saves model*.
@@ -77,7 +91,30 @@ class OralHistoryContent < ApplicationRecord
     self.combined_audio_derivatives_job_status_changed_at = DateTime.now
   end
 
+
   private
+
+  # Kind of hacky way to trigger reindex of work when transcripts are changed here,
+  # since we now index transcripts in solr. Called in after_commit hook.
+  #
+  # If the last save changed the transcript, and we HAVE a work, and kithe configuration
+  # is currently set up to auto-index that work... autoindex it.
+  #
+  # Note this means if you are making large scale changes to OralHistoryContent objects,
+  # there are no performance concerns, as the naive appraoch might issue an individual
+  # SQL query for the work associated with each OralHistoryContent... and then issue
+  # a separate non-batched solr update for each. The solution is eager-loading
+  # associated works, and using kithe techniques to control auto-indexing: batch-updating,
+  # or turning off auto-updating.
+  def after_commit_update_work_index_if_needed
+    return unless (
+      self.saved_change_to_attribute?(:ohms_xml_text) ||
+      self.saved_change_to_attribute?(:searchable_transcript_source)
+    )
+    return unless work && Kithe::Indexable.auto_callbacks?(work)
+
+    work.update_index
+  end
 
   # Sets IO to given shrine attacher, writing directly to "store" storage,
   # and *saves model*.
