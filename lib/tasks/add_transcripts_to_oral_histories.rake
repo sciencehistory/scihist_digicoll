@@ -3,17 +3,33 @@ namespace :scihist do
     Goes through all the oral histories and adds transcripts from a file on the disk, for those missing them:
 
     bundle exec rake scihist:add_transcripts_to_oral_histories
+    Files are assumed to exist at /tmp/ohms_transcript_files/.
+
+    To specify another location for files:
+    FILES_LOCATION=/tmp/some_other_dir/ bundle exec rake scihist:add_transcripts_to_oral_histories
+
+    To overwrite existing transcripts:
+    OVERWRITE=true bundle exec rake scihist:add_transcripts_to_oral_histories
   """
 
   task :add_transcripts_to_oral_histories => :environment do
-    files_location = '/tmp/ohms_transcript_files/'
-    progress_bar = ProgressBar.create(total: Work.where("json_attributes -> 'genre' ?  'Oral histories'").count, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
-    Work.where("json_attributes -> 'genre' ?  'Oral histories'").find_each(batch_size: 10) do |w|
 
-      if w.oral_history_content!&.searchable_transcript_source.present?
-        progress_bar.log("INFO: #{w.title} already has a searchable transcript.")
-        progress_bar.increment
-        next
+    files_location = ENV['FILES_LOCATION'].nil? ? '/tmp/ohms_transcript_files/' : ENV['FILES_LOCATION']
+    overwrite = ENV['OVERWRITE'].nil? ? false : (ENV['OVERWRITE'] == 'true')
+
+    unless File.directory?(files_location)
+      abort "ERROR: couldn't find the transcript files.\n"
+    end
+
+    progress_bar = ProgressBar.create(total: Work.where("json_attributes -> 'genre' ?  'Oral histories'").count, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
+    Work.where("json_attributes -> 'genre' ?  'Oral histories'").find_each do |w|
+
+
+      unless overwrite
+        if w.oral_history_content!&.searchable_transcript_source.present?
+          progress_bar.increment
+          next
+        end
       end
 
       accession_num =  w.external_id.find { |id| id.category == "interview" }&.value
