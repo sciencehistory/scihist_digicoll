@@ -25,9 +25,7 @@ class ResultDisplay < ViewModel
     @search_highlights ||= begin
       highlights = solr_document && solr_document.has_highlight_field?("searchable_fulltext") && solr_document.highlight_field("searchable_fulltext")
       if highlights.present?
-        safe_join(
-        ["", *highlights, ""],
-        " … ")
+        "…".html_safe + safe_join(highlights, " …") + "…".html_safe
       else
         ""
       end
