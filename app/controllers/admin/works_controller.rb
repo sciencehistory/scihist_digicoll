@@ -8,7 +8,8 @@ class Admin::WorksController < AdminController
     only: [:show, :edit, :update, :destroy, :reorder_members,
            :reorder_members_form, :demote_to_asset, :publish, :unpublish,
            :submit_ohms_xml, :download_ohms_xml,
-           :remove_ohms_xml, :create_combined_audio_derivatives]
+           :remove_ohms_xml, :submit_searchable_transcript_source, :download_searchable_transcript_source,
+           :remove_searchable_transcript_source, :create_combined_audio_derivatives]
 
   # GET /admin/works
   # GET /admin/works.json
@@ -119,7 +120,46 @@ class Admin::WorksController < AdminController
     send_data @work.oral_history_content!.ohms_xml_text,
       :type => 'text/xml; charset=UTF-8;',
       :disposition => ContentDisposition.format(disposition: "attachment", filename: "#{@work.oral_history_content!.ohms_xml.accession}.xml")
-      #:disposition => "attachment; filename=#{@work.oral_history_content!.ohms_xml.accession}.xml"
+  end
+
+  # PATCH/PUT /admin/works/ab2323ac/submit_ohms_xml
+  def submit_searchable_transcript_source
+    unless params[:searchable_transcript_source].present?
+      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: { error: "No file received" }
+      return
+    end
+
+    transcript = params[:searchable_transcript_source].read
+    # validator = OralHistoryContent::OhmsXmlValidator.new(xml)
+
+    # validation: remove HTML tags?
+    # Ensure the text is valid UTF8?
+
+    #if validator.valid?
+    @work.oral_history_content!.update!(searchable_transcript_source: transcript)
+    redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: "Full text has been updated."
+    #else
+    #  Rails.logger.debug("Could not accept invalid OHMS XML for work #{@work.friendlier_id}:\n  #{xml.slice(0, 60).gsub(/[\n\r]/, '')}...\n\n  #{validator.errors.join("\n  ")}")
+    #  redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: {
+    #    error: "OHMS XML file was invalid and could not be accepted: #{validator.errors.join('; ')}"
+    #  }
+    #end
+  end
+
+  # PATCH/PUT /admin/works/ab2323ac/remove_searchable_transcript_source
+  def remove_searchable_transcript_source
+    @work.oral_history_content!.update!(searchable_transcript_source: nil)
+    redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: "Full text has been removed."
+  end
+
+  # GET /admin/works/ab2323ac/download_searchable_transcript_source
+  def download_searchable_transcript_source
+    id = @work.external_id.find { |id| id.category == "interview" }&.value
+    id ||= @work.friendlier_id
+    filename =  "#{id}_transcript.txt"
+    send_data @work.oral_history_content!.searchable_transcript_source,
+      :type => 'text/plain; charset=UTF-8;',
+      :disposition => ContentDisposition.format(disposition: "attachment", filename: filename)
   end
 
   # Create_combined_audio_derivatives in the background, if warranted.
