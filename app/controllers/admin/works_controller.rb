@@ -132,13 +132,7 @@ class Admin::WorksController < AdminController
     transcript = params[:searchable_transcript_source].read
     # Very basic check for now. Not stripping HMTL tags,
     # even though they really don't belong in these transcripts.
-    #transcript_checks = [true]
-    transcript_checks = [
-      (params[:searchable_transcript_source].content_type.start_with?('text/')),
-      ((MimeMagic.by_magic(transcript).nil?)||(MimeMagic.by_magic(transcript).to_s.start_with? 'text/')),
-      transcript.valid_encoding?
-    ]
-    if transcript_checks.all?
+    if params[:searchable_transcript_source].content_type.start_with?('text/')
       @work.oral_history_content!.update!(searchable_transcript_source: transcript)
       redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: "Full text has been updated."
     else

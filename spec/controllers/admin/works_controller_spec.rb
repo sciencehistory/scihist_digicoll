@@ -76,7 +76,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       ])
     }
 
-    it "can add valid file" do
+    it "can add a file" do
       put :submit_searchable_transcript_source, params: {
         id: work.friendlier_id,
         searchable_transcript_source: Rack::Test::UploadedFile.new(transcript_path, "text/plain")
@@ -84,16 +84,6 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
       expect(flash[:error]).to be_blank
       expect(work.oral_history_content!.searchable_transcript_source).to be_present
-    end
-
-    it "refuses to add a PDF file" do
-      put :submit_searchable_transcript_source, params: {
-        id: work.friendlier_id,
-        searchable_transcript_source: Rack::Test::UploadedFile.new(pdf_path, "text/plain")
-      }
-      expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
-      expect(flash[:error]).to eq "Could not accept this file: it's not a text file."
-      expect(work.oral_history_content!.searchable_transcript_source).not_to be_present
     end
 
     it "can delete the file" do
