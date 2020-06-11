@@ -77,7 +77,6 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     }
 
     it "can add valid file" do
-      puts "Valid text file:"
       put :submit_searchable_transcript_source, params: {
         id: work.friendlier_id,
         searchable_transcript_source: Rack::Test::UploadedFile.new(transcript_path, "text/plain")
