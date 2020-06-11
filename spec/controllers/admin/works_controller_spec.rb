@@ -62,10 +62,62 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     end
   end
 
+
+
+  context "Adding, updating and removing full-text searches " do
+
+    let(:transcript_path) { Rails.root + "spec/test_support/text/0767.txt" }
+    let(:pdf_path) { Rails.root + "spec/test_support/pdf/sample.pdf" }
+
+    let(:work) { FactoryBot.create(:work,
+      genre: ["Oral histories"],
+      external_id: [
+        Work::ExternalId.new({"value"=>"0012",   "category"=>"interview"}),
+      ])
+    }
+
+    it "can add valid file" do
+      puts "Valid text file:"
+      put :submit_searchable_transcript_source, params: {
+        id: work.friendlier_id,
+        searchable_transcript_source: Rack::Test::UploadedFile.new(transcript_path, "text/plain")
+      }
+      expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
+      expect(flash[:error]).to be_blank
+      expect(work.oral_history_content!.searchable_transcript_source).to be_present
+    end
+
+    it "refuses to add a PDF file" do
+      put :submit_searchable_transcript_source, params: {
+        id: work.friendlier_id,
+        searchable_transcript_source: Rack::Test::UploadedFile.new(pdf_path, "text/plain")
+      }
+      expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
+      expect(flash[:error]).to eq "Could not accept this file: it's not a text file."
+      expect(work.oral_history_content!.searchable_transcript_source).not_to be_present
+    end
+
+    it "can delete the file" do
+      put :remove_searchable_transcript_source, params: {
+        id: work.friendlier_id#,
+      }
+      expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
+      expect(flash[:error]).to be_blank
+      expect(flash[:notice]).to match /has been removed/
+      expect(work.oral_history_content!.searchable_transcript_source).not_to be_present
+    end
+
+    it "can download the file" do
+      get :download_searchable_transcript_source, params: { id: work.friendlier_id }
+      expect(response.status).to eq 200
+      expect(response.header["Content-Disposition"]).to eq(
+        "attachment; filename=\"0012_transcript.txt\"; filename*=UTF-8''0012_transcript.txt"
+      )
+    end
+  end
+
   context "create audio derivatives",  logged_in_user: :admin do
     let(:no_audio_files) { FactoryBot.create(:work, genre: ["Oral histories"]) }
-    #build(:work, :published, published: false)
-    # TODO replace with build()
     let!(:oral_history) { FactoryBot.create(
       :work,
       :published,      # with the metadata necessary to publish it...
