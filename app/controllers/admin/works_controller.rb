@@ -3,6 +3,7 @@
 # Started with generated code from Rails 5.2 scaffold.
 #
 # We'll probably handle `show` in a different controller, for now no show.
+require 'mimemagic'
 class Admin::WorksController < AdminController
   before_action :set_work,
     only: [:show, :edit, :update, :destroy, :reorder_members,
@@ -128,22 +129,23 @@ class Admin::WorksController < AdminController
       redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: { error: "No file received" }
       return
     end
-
     transcript = params[:searchable_transcript_source].read
-    # validator = OralHistoryContent::OhmsXmlValidator.new(xml)
-
-    # validation: remove HTML tags?
-    # Ensure the text is valid UTF8?
-
-    #if validator.valid?
-    @work.oral_history_content!.update!(searchable_transcript_source: transcript)
-    redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: "Full text has been updated."
-    #else
-    #  Rails.logger.debug("Could not accept invalid OHMS XML for work #{@work.friendlier_id}:\n  #{xml.slice(0, 60).gsub(/[\n\r]/, '')}...\n\n  #{validator.errors.join("\n  ")}")
-    #  redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: {
-    #    error: "OHMS XML file was invalid and could not be accepted: #{validator.errors.join('; ')}"
-    #  }
-    #end
+    # Very basic check for now. Not stripping HMTL tags,
+    # even though they really don't belong in these transcripts.
+    transcript_checks = [
+      params[:searchable_transcript_source].content_type.start_with?('text/'),
+      (MimeMagic.by_magic(transcript).nil?) || (MimeMagic.by_magic(transcript).to_s.start_with? 'text/'),
+      transcript.valid_encoding?)
+    ]
+    if transcript_checks.all?
+      @work.oral_history_content!.update!(searchable_transcript_source: transcript)
+      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: "Full text has been updated."
+    else
+      Rails.logger.debug("Could not accept this file as a full-text transcript.  MimeMagic calls it a #{MimeMagic.by_magic(transcript).to_s}")
+      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: {
+        error: "Could not accept this file: it's not a text file."
+      }
+    end
   end
 
   # PATCH/PUT /admin/works/ab2323ac/remove_searchable_transcript_source
