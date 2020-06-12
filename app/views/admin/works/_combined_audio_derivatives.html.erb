@@ -3,10 +3,14 @@
   <h2 class="card-header h3">Combined Audio Derivative Files</h2>
   <div class="card-body">
     <% unless view.work_available_members? %>
-      This oral history doesn't have any published audio segments associated with it.
-      <%# (Thus, no point in showing the "Regenerate derivatives" button.) %>
+      <p class="alert-info p-3">This oral history doesn't have any published audio segments associated with it.</p>
+        <%= link_to "Publish all audio segments, then create the combined audio derivatives", create_combined_audio_derivatives_admin_work_path(model, :publish_all_audio_members_first => "true"),
+          method: "put",
+          data: { confirm: "This will publish all audio segments before kicking off the combined audio derivatives job. The work itelf will not be published." },
+          class: "btn btn-primary"#,
+          #[{ publish_all_audio_members_first: :true }]
+          %>
     <% else %>
-
       <% if view.combined_audio_fingerprint.present? %>
         <% if view.derivatives_up_to_date? %>
           <p class="alert-success p-3">
