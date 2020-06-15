@@ -3,7 +3,6 @@
 # Started with generated code from Rails 5.2 scaffold.
 #
 # We'll probably handle `show` in a different controller, for now no show.
-require 'mimemagic'
 class Admin::WorksController < AdminController
   before_action :set_work,
     only: [:show, :edit, :update, :destroy, :reorder_members,
@@ -136,7 +135,7 @@ class Admin::WorksController < AdminController
       @work.oral_history_content!.update!(searchable_transcript_source: transcript)
       redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: "Full text has been updated."
     else
-      Rails.logger.debug("Could not accept this file as a full-text transcript.  MimeMagic calls it a #{MimeMagic.by_magic(transcript).to_s}")
+      Rails.logger.debug("Could not accept this file as a full-text transcript for work #{@work.friendlier_id}")
       redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: {
         error: "Could not accept this file: it's not a text file."
       }
