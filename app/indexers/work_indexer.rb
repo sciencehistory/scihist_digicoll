@@ -102,7 +102,13 @@ class WorkIndexer < Kithe::Indexer
     to_field "searchable_fulltext" do |rec, acc|
       if rec.oral_history_content
         if rec.oral_history_content.has_ohms_transcript?
-          acc << rec.oral_history_content.ohms_xml.transcript_text
+          text = rec.oral_history_content.ohms_xml.transcript_text
+
+          # remove note references and footnotes markup
+          text.gsub!(%r{\[\[footnote\]\]\d+\[\[\/footnote\]\]}, '')
+          text.gsub!(%r{\[\[footnotes\]\]|\[\[\/footnotes\]\]|\[\[note\]\]|\[\[\/note\]\]}, '')
+
+          acc << text
         elsif rec.oral_history_content.searchable_transcript_source.present?
           acc << rec.oral_history_content.searchable_transcript_source
         end
