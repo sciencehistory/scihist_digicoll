@@ -2,22 +2,8 @@
 #
 # * requires a ChildCountDisplayFetcher for efficient fetching and provision of "N Items"
 # child count on display.
-class CollectionResultDisplay < ViewModel
+class CollectionResultDisplay < ResultDisplay
   valid_model_type_names "Collection"
-
-  attr_reader :child_counter
-
-  # @param collection [Collection]
-  # @param child_counter [ChildCountDisplayFetcher]
-  def initialize(collection, child_counter:, cart_presence:nil)
-    @child_counter = child_counter
-    # we don't use cart_presence, you can't put collections in cart at the moment.
-    super(collection)
-  end
-
-  def display
-    render "/presenters/index_result", model: model, view: self
-  end
 
   def display_genres
     link_to "Collections", collections_path
@@ -63,6 +49,5 @@ class CollectionResultDisplay < ViewModel
   def show_cart_control?
     false # never for collections
   end
-
 
 end

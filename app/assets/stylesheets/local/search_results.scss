@@ -184,6 +184,13 @@
       max-width: calc(67% - 1.75rem);
     }
 
+    .scihist-results-list-item-highlights {
+      em {
+        font-weight: bold;
+        font-style: normal;
+      }
+    }
+
 
     // When the screen is too small for thumb + metadata next to each other,
     // make em over/under. At sidebar collapse side, and also hackily trying to do
@@ -256,7 +263,7 @@
       }
     }
 
-    .scihist-results-list-item-description {
+    .scihist-results-list-item-description, .scihist-results-list-item-highlights {
       margin-top: $paragraph-spacer;
     }
 

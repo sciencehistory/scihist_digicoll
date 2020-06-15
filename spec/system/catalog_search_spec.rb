@@ -43,6 +43,9 @@ describe CatalogController, solr: true, indexable_callbacks: true do
         expect(page).to have_content /1 item/i
         #expect(page).to have_link(text: collection.title, href: collection_path(work1))
       end
+
+      # no fulltext search highlights here
+      expect(page).not_to have_selector(".scihist-results-list-item-highlights")
     end
   end
 
@@ -123,6 +126,27 @@ describe CatalogController, solr: true, indexable_callbacks: true do
       end
       within("#document_#{non_published_work.friendlier_id}") do
         expect(page).to have_content("Private")
+      end
+    end
+  end
+
+  describe "transcrpt search highlights" do
+    let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/hanford_OH0139.xml" }
+    let!(:published_work) do
+      create(:public_work, title: "an oral history", genre: "Oral histories", description: "this is a description").tap do |work|
+        work.oral_history_content!.update(ohms_xml_text: File.read(ohms_xml_path))
+        work.update_index
+      end
+    end
+
+    it "can find and highlight transcript matches" do
+      visit search_catalog_path(search_field: "all_fields", q: '"I graduated from Bristol High School"')
+      expect(page).to have_selector("#document_#{published_work.friendlier_id}")
+      within("#document_#{published_work.friendlier_id}") do
+        expect(page).to have_selector(".scihist-results-list-item-highlights em", text: "I graduated from Bristol High School")
+
+        expect(page).not_to have_selector(".scihist-results-list-item-description")
+        expect(page).not_to have_content(published_work.description)
       end
     end
   end

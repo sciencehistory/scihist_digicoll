@@ -2,25 +2,10 @@
 #
 # * requires a a ChildCountDisplayFetcher for efficient fetching and provision of "N Items"
 # child count on display.
-class WorkResultDisplay < ViewModel
+class WorkResultDisplay < ResultDisplay
   valid_model_type_names "Work"
 
   delegate :additional_title
-
-  attr_reader :child_counter, :cart_presence
-
-  # @param work [Work]
-  # @param child_counter [ChildCountDisplayFetcher]
-  # @param cart_presence [CartPresence]
-  def initialize(work, child_counter:, cart_presence:)
-    @child_counter = child_counter
-    @cart_presence = cart_presence
-    super(work)
-  end
-
-  def display
-    render "/presenters/index_result", model: model, view: self
-  end
 
   def display_genres
     @display_genres ||= safe_join(
@@ -45,7 +30,6 @@ class WorkResultDisplay < ViewModel
   def thumbnail_html
     ThumbDisplay.new(model.leaf_representative).display
   end
-
 
   def link_to_href
     work_path(model)
