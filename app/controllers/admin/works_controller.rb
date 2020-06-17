@@ -161,17 +161,36 @@ class Admin::WorksController < AdminController
   # Create_combined_audio_derivatives in the background, if warranted.
   # PATCH/PUT /admin/works/ab2323ac/create_combined_audio_derivatives
   def create_combined_audio_derivatives
-    unless CombinedAudioDerivativeCreator.new(@work).available_members?
-      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: {
-        error: "Combined audio derivatives cannot be created, because this oral history does not have any published audio segments."
-      }
+    members_just_published = 0
+    if params[:publish_all_audio_members_first] == 'true'
+      # Publish all the audio children of a work, so they can be included
+      # in the combined audio derivatives.
+      # Note: this *does* *not* publish the work itself.
+      @work.class.transaction do
+        @work.all_descendent_members.find_each do |member|
+          next unless member.content_type
+          next unless member.content_type.start_with?('audio')
+          member.update!(published: true)
+          members_just_published += 1
+        end
+      end
+    else
+      unless CombinedAudioDerivativeCreator.new(@work).available_members?
+        redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: {
+          error: "Combined audio derivatives cannot be created, because this oral history does not have any published audio segments."
+        }
       return
+      end
     end
+
     CreateCombinedAudioDerivativesJob.perform_later(@work)
     sidecar = @work.oral_history_content!
     sidecar.combined_audio_derivatives_job_status = 'queued'
     sidecar.save!
     notice = "The combined audio derivative job has been added to the job queue."
+    if members_just_published > 0
+      notice = "#{members_just_published} audio segments have been published, and the combined audio derivative job has been added to the job queue."
+    end
     redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: notice
   end
 

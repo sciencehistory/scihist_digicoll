@@ -22,4 +22,4 @@ collection:
   persist: <%= Rails.env.test? ? "false" : "true" %>
   dir: solr/config
   name: scihist_digicoll_<%= Rails.env %>
-version: 8.0.0
+version: 8.5.2
