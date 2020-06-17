@@ -60,11 +60,19 @@
       <% end %>
 
 
-      <% if model.description.present? %>
+
+      <% if view.search_highlights.present? %>
+        <div class="scihist-results-list-item-highlights">
+          <p>
+            <%= view.search_highlights %>
+          </p>
+        </div>
+      <% elsif model.description.present? %>
         <div class="scihist-results-list-item-description">
             <%= DescriptionDisplayFormatter.new(model.description, truncate:true).format %>
         </div>
       <% end %>
+
 
       <% if view.metadata_labels_and_values.present? %>
         <ul class="list-unstyled scihist-results-list-values">

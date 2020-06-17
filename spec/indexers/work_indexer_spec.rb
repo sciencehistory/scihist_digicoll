@@ -74,5 +74,33 @@ describe WorkIndexer do
         expect(output_hash["searchable_fulltext"].first).to start_with("[untranscribed pre-interview discussion]")
       end
     end
+
+    describe "with footnote tags" do
+      let(:ohms_xml) do
+        <<~EOS
+        <?xml version="1.0" encoding="UTF-8"?>
+        <ROOT xmlns="https://www.weareavp.com/nunncenter/ohms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.weareavp.com/nunncenter/ohms/ohms.xsd">
+        <record id="00089262" dt="2020-05-28">
+          <transcript>
+            A claim [[footnote]]1[[/footnote]]
+
+            [[footnotes]]
+              [[note]]A citation[[/note]]
+            [[/footnotes]]
+          </transcript>
+        </record>
+        </ROOT>
+        EOS
+      end
+      let(:oral_history_content) { OralHistoryContent.new(ohms_xml_text: ohms_xml) }
+
+      it "strips markup appropriately" do
+        output_hash = WorkIndexer.new.map_record(work)
+        expect(output_hash["searchable_fulltext"].length).to eq(1)
+        output = output_hash["searchable_fulltext"].first
+
+        expect(output.gsub(/\W+/, ' ').strip).to eq("A claim A citation")
+      end
+    end
   end
 end
