@@ -99,6 +99,8 @@ class WorkIndexer < Kithe::Indexer
 
     # Transcript text, use OHMS transcript if we got it, otherwise plaintext if
     # we got it.
+    #
+    # Also OHMS Table of Contents keywords
     to_field "searchable_fulltext" do |rec, acc|
       if rec.oral_history_content
         if rec.oral_history_content.has_ohms_transcript?
@@ -111,6 +113,12 @@ class WorkIndexer < Kithe::Indexer
           acc << text
         elsif rec.oral_history_content.searchable_transcript_source.present?
           acc << rec.oral_history_content.searchable_transcript_source
+        end
+
+        if rec.oral_history_content.has_ohms_index?
+          rec.oral_history_content.ohms_xml.index_points.each do |index_point|
+            acc << index_point.keywords.join("; ") if index_point.keywords.present?
+          end
         end
       end
     end
