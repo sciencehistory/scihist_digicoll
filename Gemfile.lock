@@ -404,7 +404,7 @@ GEM
       nokogiri (~> 1.6)
       rails (>= 5.0, < 6.1)
       rdf
-    rack (2.2.2)
+    rack (2.2.3)
     rack-protection (2.0.8.1)
       rack
     rack-proxy (0.6.5)
