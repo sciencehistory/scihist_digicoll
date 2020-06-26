@@ -292,14 +292,16 @@ module ScihistDigicoll
 
     ##
     #
-    # feature flags
+    # feature flags: We can use Env to be a place where feature flags that hide under-development
+    # features live.
     #
     ###
 
-    define_key "feature.fulltext_search", default: -> {
-      # for now default false in real production true elsewhere
-      ScihistDigicoll::Env.staging? || !Rails.env.production?
-    }
+    # Example:
+    # define_key "feature.fulltext_search", default: -> {
+    #   # for now default false in real production true elsewhere
+    #   ScihistDigicoll::Env.staging? || !Rails.env.production?
+    # }
 
 
   end
