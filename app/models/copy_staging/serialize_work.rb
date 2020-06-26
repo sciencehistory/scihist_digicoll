@@ -61,7 +61,7 @@ module CopyStaging
         model_attributes.delete("representative_id")
         model_attributes.delete("leaf_representative_id")
       elsif model.kind_of?(Work) && model.oral_history_content
-        oral_history_content << { model.oral_history_content.class.name => model.oral_history_content.attributes }
+        oral_history_content << { model.oral_history_content.class.name => model.oral_history_content.attributes.except("id") }
       end
 
       mine = [{ model.class.name => model_attributes }]
