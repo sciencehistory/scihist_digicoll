@@ -11,7 +11,7 @@
 # the local_env.yml file.
 
 # config valid only for current version of Capistrano
-lock '3.13.0'
+lock '~> 3.14'
 
 # Make our EC2 server autodiscover available
 include CapServerAutodiscover
