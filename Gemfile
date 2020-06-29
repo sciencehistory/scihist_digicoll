@@ -11,8 +11,12 @@ gem 'lockbox'
 gem 'rails', '~> 6.0.0'
 gem 'webpacker', '~> 5.0'
 
-
-gem "blacklight", "~> 7.0", ">= 7.1.0.alpha"
+# lock blacklight to current MINOR version. While BL minor version releases
+# are theoretically backwards compat, experience shows they often cause problems.
+# So you need to manually change this spec to allow updates when you want
+# to spend the time to update Blacklight to latest -- you will usually want to update
+# blacklight_range_limit to latest at same time.
+gem "blacklight", "~> 7.7.0"
 gem "blacklight_range_limit", "~> 7.0" # version sync'd with blacklight
 
 gem "draper", "~> 4.0", ">= 4.0.1" # "decorators", which we use as view models
