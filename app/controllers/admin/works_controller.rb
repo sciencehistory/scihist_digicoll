@@ -135,19 +135,23 @@ class Admin::WorksController < AdminController
     # make sure we have an OralHistoryContent sidecar
     @work.oral_history_content!
 
-    searcahble_transcript_source_error = nil
+    searchable_transcript_source_error = nil
 
     # Validate some things, add them to ActiveRecord errors
     unless params[:searchable_transcript_source].content_type.start_with?('text/')
-      searcahble_transcript_source_error = "Could not accept this file: it's not a text file."
+      searchable_transcript_source_error = "Could not accept this file: it's not a text file."
     end
 
-    if searcahble_transcript_source_error.nil?
+    if searchable_transcript_source_error.nil? && ! transcript.valid_encoding?
+      searchable_transcript_source_error = "Expected encoding #{transcript.encoding} on file, but does not look valid for #{transcript.encoding}!"
+    end
+
+    if searchable_transcript_source_error.nil?
       @work.oral_history_content.update!(searchable_transcript_source: transcript)
       redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: "Full text has been updated."
     else
       redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: {
-        error: searchable_transcript_source_error
+        error: "Transcript not updated: #{searchable_transcript_source_error}"
       }
     end
   end
