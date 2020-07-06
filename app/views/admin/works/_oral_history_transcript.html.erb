@@ -2,8 +2,17 @@
   <h2 class="card-header h3">Searchable transcript text
   </h2>
   <div class="card-body">
+    <% if flash[:searchable_transcript_source_error].present? %>
+      <p class="alert alert-danger">
+        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        <%= flash[:searchable_transcript_source_error] %>
+      </p>
+    <% end %>
+
+
     <div class="text-muted small mb-2">This is the transcript we use for searchable transcripts, as long as there is <strong>no</strong> OHMS XML transcript available.<br/>If there is an OHMS XML transcript, this file will <strong>not</strong> be used.
-  </div>
+    </div>
+
     <% if @work.oral_history_content!&.searchable_transcript_source.present? %>
       <dl class="row">
           <dt class="col-sm-6">present?</dt><dd class="col-sm-6"><span class="text-success font-weight-bold">YES</span></dd>
@@ -21,6 +30,7 @@
       <hr/>
     <% end %>
     <h3 class="h4">Upload new searchable transcript text</h3>
+
     <%= form_with(url: submit_searchable_transcript_source_admin_work_path(@work), local: true, multipart: true, method: :put) do %>
       <%= file_field_tag 'searchable_transcript_source', accept: "text/plain" %>
       <div class="small text-muted my-2">Use a plain text file with a <code>.txt</code> extension.</div>

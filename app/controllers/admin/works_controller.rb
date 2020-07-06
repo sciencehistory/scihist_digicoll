@@ -143,7 +143,7 @@ class Admin::WorksController < AdminController
     end
 
     if searchable_transcript_source_error.nil? && ! transcript.valid_encoding?
-      searchable_transcript_source_error = "Expected encoding #{transcript.encoding} on file, but does not look valid for #{transcript.encoding}!"
+      searchable_transcript_source_error = "Expected encoding #{transcript.encoding}, but does not look valid for #{transcript.encoding}!"
     end
 
     if searchable_transcript_source_error.nil?
@@ -151,7 +151,8 @@ class Admin::WorksController < AdminController
       redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: "Full text has been updated."
     else
       redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: {
-        error: "Transcript not updated: #{searchable_transcript_source_error}"
+        error: "Transcript not updated: #{searchable_transcript_source_error}",
+        searchable_transcript_source_error: "Transcript not updated: #{searchable_transcript_source_error}"
       }
     end
   end
