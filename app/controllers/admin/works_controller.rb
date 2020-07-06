@@ -129,15 +129,25 @@ class Admin::WorksController < AdminController
       return
     end
     transcript = params[:searchable_transcript_source].read
-    # Very basic check for now. Not stripping HMTL tags,
-    # even though they really don't belong in these transcripts.
-    if params[:searchable_transcript_source].content_type.start_with?('text/')
-      @work.oral_history_content!.update!(searchable_transcript_source: transcript)
+    # Assume UTF-8 if the browser/rails didn't tell us anything, as it apparently does not
+    transcript.force_encoding("UTF-8") if transcript.encoding == Encoding::BINARY
+
+    # make sure we have an OralHistoryContent sidecar
+    @work.oral_history_content!
+
+    searcahble_transcript_source_error = nil
+
+    # Validate some things, add them to ActiveRecord errors
+    unless params[:searchable_transcript_source].content_type.start_with?('text/')
+      searcahble_transcript_source_error = "Could not accept this file: it's not a text file."
+    end
+
+    if searcahble_transcript_source_error.nil?
+      @work.oral_history_content.update!(searchable_transcript_source: transcript)
       redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: "Full text has been updated."
     else
-      Rails.logger.debug("Could not accept this file as a full-text transcript for work #{@work.friendlier_id}")
       redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: {
-        error: "Could not accept this file: it's not a text file."
+        error: searchable_transcript_source_error
       }
     end
   end
