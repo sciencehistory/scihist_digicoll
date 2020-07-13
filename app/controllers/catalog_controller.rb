@@ -3,6 +3,7 @@
 require 'kithe/blacklight_tools/bulk_loading_search_service'
 
 class CatalogController < ApplicationController
+  before_action :redirect_hash_facet_params, only: :index
   before_action :redirect_legacy_query_urls, only: :index
 
   include BlacklightRangeLimit::ControllerOverride
@@ -410,6 +411,24 @@ class CatalogController < ApplicationController
     "exhibition_sim" => "exhibition_facet"
   }
 
+  # When posting on facebook, it modifies our facet params from eg `?f[facet_name][]=value` to
+  # `?f[facet_name][0]=value`. This breaks blacklight. We fix and REDIRECT to fixed URL, to
+  # maintain having one canonical URL.
+  #
+  # Future versions of Blacklight may accomodate these malformed URLs through an alternate
+  # strategy and not need this redirect: https://github.com/projectblacklight/blacklight/pull/2313
+  def redirect_hash_facet_params
+    if params[:f].respond_to?(:transform_values) && params[:f].values.any? { |x| x.is_a?(Hash) }
+      original_f_params = params[:f].to_unsafe_h
+      corrected_params = {}
+
+      corrected_params[:f] = original_f_params.transform_values do |value|
+        value.is_a?(Hash) ? value.values : value
+      end
+
+      redirect_to helpers.safe_params_merge_url(corrected_params), :status => :moved_permanently
+    end
+  end
 
   def redirect_legacy_query_urls
     corrected_params = {}
@@ -424,7 +443,7 @@ class CatalogController < ApplicationController
     end
 
     if corrected_params.present?
-      redirect_to helpers.safe_params_merge_url(corrected_params)
+      redirect_to helpers.safe_params_merge_url(corrected_params), :status => :moved_permanently
     end
   end
 end

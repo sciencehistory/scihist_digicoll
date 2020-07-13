@@ -27,4 +27,23 @@ RSpec.describe CatalogController, solr: true, type: :controller do
       end
     end
   end
+
+  describe "malformed URL params" do
+    describe "facet values as Hash" do
+      render_views
+
+      let(:malformed_facet_param) do
+        { f: { subject_facet: { "0" => "subject1", "1" => "subject2"}, author_facet:  ["author1", "author2"]} }
+      end
+
+      let(:corrected_facet_param) do
+        { f: { subject_facet: ["subject1", "subject2"], author_facet:  ["author1", "author2"]} }
+      end
+
+      it "redirects to be interprted properly" do
+        get :index, params: malformed_facet_param
+        expect(response).to redirect_to(search_catalog_url(corrected_facet_param))
+      end
+    end
+  end
 end
