@@ -112,9 +112,6 @@
       // aspect ratio, cause the dimensions are so responsive. This is just
       // a rough huge limit, if it's not working out just delete this and give up.
       max-height: 300vw;
-
-      // inline-block may be neccesary to get JS aspectratio setting to work
-      display: inline-block;
     }
 
     // A div of btn's
