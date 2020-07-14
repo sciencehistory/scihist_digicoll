@@ -45,5 +45,26 @@ RSpec.describe CatalogController, solr: true, type: :controller do
         expect(response).to redirect_to(search_catalog_url(corrected_facet_param))
       end
     end
+
+    describe "range value out of order" do
+      render_views
+
+      let(:out_of_order_range_params) do
+        {
+          range: {
+            year_facet_isim: {
+              begin: "2010",
+              end: "2000"
+            }
+          }
+        }
+      end
+
+      it "treats as if ordered properly" do
+        get :index, params: out_of_order_range_params
+        expect(response.status).to eq(200)
+        expect(response.body).to include("2000 to 2010")
+      end
+    end
   end
 end
