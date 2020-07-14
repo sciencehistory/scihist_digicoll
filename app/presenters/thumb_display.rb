@@ -107,7 +107,6 @@ class ThumbDisplay < ViewModel
     img_attributes = {
       alt: "",
       data: {
-        aspectratio: aspect_ratio
       }
     }
 
@@ -115,20 +114,24 @@ class ThumbDisplay < ViewModel
       # tell lazysizes.js to load with class, and put src/srcset only in
       # data- attributes, so the image will not be loaded immediately, but lazily
       # by lazysizes.js.
+
       img_attributes[:class] = "lazyload"
       img_attributes[:data].merge!(src_attributes)
     else
       img_attributes.merge!(src_attributes)
     end
 
-    tag("img", img_attributes)
+    content_tag("div", class: "img-aspectratio-container", style: "padding-bottom: #{aspect_ratio_padding_bottom};") do
+    #content_tag("div", class: "test-container") do
+      tag("img", img_attributes)
+    end
   end
 
-  # used for lazysizes-aspectratio
-  # https://github.com/aFarkas/lazysizes/tree/gh-pages/plugins/aspectratio
-  def aspect_ratio
+  # Used for padding bottom CSS aspect ratio trick
+  def aspect_ratio_padding_bottom
     if asset && asset.width && asset.height
-      "#{asset.width}/#{asset.height}"
+      height_over_width = asset.height.to_f / asset.width.to_f
+      "#{(height_over_width * 100.0).truncate(1)}%"
     else
       nil
     end
