@@ -100,11 +100,18 @@
       cursor: zoom-in;
       max-width: 100%;
 
+      // Bg will be covered up by actual image src once loaded, but serves
+      // as a placeholder before loaded, whether for lazy loaded or browser loaded
+      background-color: #AAA;
+
+      // If our JS is actually loading, add a stationary "spinner" kind of icon.
+      // Actual animated one used too much CPU when on the page so many times.
       &.lazyload, &.lazyloading {
-        background: #AAA asset-url('static-progress.svg') no-repeat;
-        background-position: center center;
-        background-size: 50%;
+         background: #AAA asset-url('static-progress.svg') no-repeat;
+         background-position: center center;
+         background-size: 50%;
       }
+
       min-height: 50px; // just so it's something big enough to see! Will distort very wide images.
 
       // sanity max-height to keep keep crazy long aspect ratio images from
