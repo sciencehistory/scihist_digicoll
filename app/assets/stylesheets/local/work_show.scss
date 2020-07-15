@@ -93,18 +93,25 @@
   .member-image-presentation {
     position: relative;
 
-    .thumb > a {
-      display: block;
+    .thumb {
+      display: block; // sometimes an 'a', normalize it to block
     }
     .thumb img {
       cursor: zoom-in;
       max-width: 100%;
 
+      // Bg will be covered up by actual image src once loaded, but serves
+      // as a placeholder before loaded, whether for lazy loaded or browser loaded
+      background-color: $brand-image-placeholder-color;
+
+      // If our JS is actually loading, add a stationary "spinner" kind of icon.
+      // Actual animated one used too much CPU when on the page so many times.
       &.lazyload, &.lazyloading {
-        background: #AAA asset-url('static-progress.svg') no-repeat;
-        background-position: center center;
-        background-size: 50%;
+         background: $brand-image-placeholder-color asset-url('static-progress.svg') no-repeat;
+         background-position: center center;
+         background-size: 50%;
       }
+
       min-height: 50px; // just so it's something big enough to see! Will distort very wide images.
 
       // sanity max-height to keep keep crazy long aspect ratio images from
@@ -112,9 +119,6 @@
       // aspect ratio, cause the dimensions are so responsive. This is just
       // a rough huge limit, if it's not working out just delete this and give up.
       max-height: 300vw;
-
-      // inline-block may be neccesary to get JS aspectratio setting to work
-      display: inline-block;
     }
 
     // A div of btn's

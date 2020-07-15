@@ -4,6 +4,4 @@
 // https://github.com/aFarkas/lazysizes#include-early
 
 import 'lazysizes';
-import 'lazysizes/plugins/aspectratio/ls.aspectratio.js'
-
 lazySizes.init();

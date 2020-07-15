@@ -317,7 +317,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       }
 
       &.lazyload, &.lazyloading, &.lazyloaded {
-        background: #AAA asset-url('static-progress.svg') no-repeat;
+        background: $brand-image-placeholder-color asset-url('static-progress.svg') no-repeat;
         background-size: 34px 34px;
         background-clip: content-box;
         background-position: center center;
