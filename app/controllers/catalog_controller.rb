@@ -5,6 +5,7 @@ require 'kithe/blacklight_tools/bulk_loading_search_service'
 class CatalogController < ApplicationController
   before_action :redirect_hash_facet_params, only: :index
   before_action :redirect_legacy_query_urls, only: :index
+  before_action :swap_range_limit_params_if_needed, only: :index
 
   include BlacklightRangeLimit::ControllerOverride
   # Blacklight wanted Blacklight::Controller included in ApplicationController,
@@ -445,5 +446,20 @@ class CatalogController < ApplicationController
     if corrected_params.present?
       redirect_to helpers.safe_params_merge_url(corrected_params), :status => :moved_permanently
     end
+  end
+
+  # If the user enters an impossible date range with begin after end, swap the dates by actually
+  # mutating `params` (ugly but it works), instead of letting blacklight_range_limit raise.
+  def swap_range_limit_params_if_needed
+    return if params.empty?
+
+    start_date = params.dig(:range, :year_facet_isim, :begin)
+    end_date   = params.dig(:range, :year_facet_isim, :end)
+
+    return unless start_date.present? && end_date.present?
+    return unless start_date.to_i > end_date.to_i
+
+    params['range']['year_facet_isim']['begin'] = end_date
+    params['range']['year_facet_isim']['end']   = start_date
   end
 end
