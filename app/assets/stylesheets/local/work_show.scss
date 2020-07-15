@@ -93,8 +93,8 @@
   .member-image-presentation {
     position: relative;
 
-    .thumb > a {
-      display: block;
+    .thumb {
+      display: block; // sometimes an 'a', normalize it to block
     }
     .thumb img {
       cursor: zoom-in;
