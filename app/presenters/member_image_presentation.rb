@@ -49,11 +49,11 @@ class MemberImagePresentation < ViewModel
 
     content_tag("div", class: "member-image-presentation") do
       private_label +
-      content_tag("div", class: "thumb") do
-        content_tag("a", href: view_href, data: view_data_attributes) do
-          ThumbDisplay.new(representative_asset, thumb_size: size, lazy: lazy).display
-        end
+
+      content_tag("a", class: "thumb", href: view_href, data: view_data_attributes) do
+        ThumbDisplay.new(representative_asset, thumb_size: size, lazy: lazy).display
       end +
+
       content_tag("div", class: "action-item-bar") do
         action_buttons_display
       end

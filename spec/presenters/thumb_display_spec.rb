@@ -63,37 +63,45 @@ describe ThumbDisplay do
     let(:thumb_size) { :mini }
     let(:argument) { build(:asset_with_faked_file)}
     let(:instance) { ThumbDisplay.new(argument, thumb_size: thumb_size) }
+    let(:expected_aspect_ratio) { (argument.height.to_f / argument.width.to_f * 100.0).truncate(1) }
 
     it "renders" do
       deriv    = argument.file_derivatives[:"thumb_#{thumb_size}"]
       deriv_2x = argument.file_derivatives[:"thumb_#{thumb_size}_2X"]
 
-      img_tag = rendered.at_css("img")
+      wrapper = rendered.at_css(".img-aspectratio-container")
+      expect(wrapper).to be_present
+      expect(wrapper["style"]).to eq("padding-bottom: #{expected_aspect_ratio}%;")
+
+      img_tag = wrapper.at_css("img")
 
       expect(img_tag).to be_present
       expect(img_tag["src"]).to eq(deriv.url)
       expect(img_tag["srcset"]).to eq("#{deriv.url} 1x, #{deriv_2x.url} 2x")
-
-      expect(img_tag["data-aspectratio"]).to eq "#{argument.width}/#{argument.height}"
     end
 
     describe "lazy load with lazysizes.js" do
       let(:thumb_size) { :mini }
       let(:argument) { build(:asset_with_faked_file)}
       let(:instance) { ThumbDisplay.new(argument, thumb_size: thumb_size, lazy: true) }
+      let(:expected_aspect_ratio) { (argument.height.to_f / argument.width.to_f * 100.0).truncate(1) }
+
 
       it "renders with lazysizes class and data- attributes" do
         deriv    = argument.file_derivatives[:"thumb_#{thumb_size}"]
         deriv_2x = argument.file_derivatives[:"thumb_#{thumb_size}_2X"]
 
-        img_tag = rendered.at_css("img")
+        wrapper = rendered.at_css(".img-aspectratio-container")
+        expect(wrapper).to be_present
+        expect(wrapper["style"]).to eq("padding-bottom: #{expected_aspect_ratio}%;")
+
+        img_tag = wrapper.at_css("img")
 
         expect(img_tag).to be_present
         expect(img_tag["src"]).not_to be_present
         expect(img_tag["srcset"]).not_to be_present
 
         expect(img_tag["class"]).to eq "lazyload"
-        expect(img_tag["data-aspectratio"]).to eq "#{argument.width}/#{argument.height}"
         expect(img_tag["data-src"]).to eq(deriv.url)
         expect(img_tag["data-srcset"]).to eq("#{deriv.url} 1x, #{deriv_2x.url} 2x")
       end
