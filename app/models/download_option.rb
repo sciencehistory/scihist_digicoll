@@ -26,7 +26,9 @@ class DownloadOption
 
     # Rails 'number_to_human_size' is actually specifically for computer storage unit size,
     # translates to KB or MB or GB etc.
-    parts << ActiveSupport::NumberHelper.number_to_human_size(size) if size.present?
+    #
+    # This is surprisingly slow, when we're doing it so many times. Experimentally try skipping it.
+    #parts << ActiveSupport::NumberHelper.number_to_human_size(size) if size.present?
 
     subhead = parts.join(" — ") # em-dash
 
