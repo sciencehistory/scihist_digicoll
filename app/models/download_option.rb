@@ -24,9 +24,8 @@ class DownloadOption
     parts << ScihistDigicoll::Util.humanized_content_type(content_type) if content_type.present?
     parts << "#{width.to_s} x #{height.to_s}px" if width.present? && height.present?
 
-    # Rails 'number_to_human_size' is actually specifically for computer storage unit size,
-    # translates to KB or MB or GB etc.
-    parts << ActiveSupport::NumberHelper.number_to_human_size(size) if size.present?
+    # translate bytes to KB or MB or GB etc.
+    parts << ScihistDigicoll::Util.simple_bytes_to_human_string(size) if size.present?
 
     subhead = parts.join(" — ") # em-dash
 
