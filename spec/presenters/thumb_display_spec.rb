@@ -80,6 +80,25 @@ describe ThumbDisplay do
       expect(img_tag["srcset"]).to eq("#{deriv.url} 1x, #{deriv_2x.url} 2x")
     end
 
+    describe "with no aspect ratio available" do
+      let(:argument) do
+        build(:asset_with_faked_file).tap do |asset|
+          thumb = asset.file("thumb_#{thumb_size}")
+          thumb.metadata.delete("height")
+          thumb.metadata.delete("width")
+          asset.save!
+        end
+      end
+
+      it "renders without aspectratio-container" do
+        wrapper = rendered.at_css(".img-aspectratio-container")
+        expect(wrapper).not_to be_present
+
+        img_tag = rendered.at_css("img")
+        expect(img_tag["src"]).to be_present
+      end
+    end
+
     describe "lazy load with lazysizes.js" do
       let(:thumb_size) { :mini }
       let(:argument) { build(:asset_with_faked_file)}

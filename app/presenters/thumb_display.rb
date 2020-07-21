@@ -83,6 +83,7 @@ class ThumbDisplay < ViewModel
     tag "img", alt: "", src: placeholder_img_url, width: "100%";
   end
 
+
   # A thumb 'img' tag that provides srcset wtih double-res image for better
   # display on high-res screens.
   #
@@ -121,22 +122,28 @@ class ThumbDisplay < ViewModel
       img_attributes.merge!(src_attributes)
     end
 
-    # the wrapper div with CSS aspect ratio hack helps reserve space on page before image is loaded.
-    # For lazy-loaded images -- but turns out, helpful even for immediate images, which may load slow
-    # or at any rate not yet be loaded when page is laid out. Minimize page jumping around.
-    content_tag("div", class: "img-aspectratio-container", style: "padding-bottom: #{aspect_ratio_padding_bottom};") do
+    if aspect_ratio_padding_bottom
+      # the wrapper div with CSS aspect ratio hack helps reserve space on page before image is loaded.
+      # For lazy-loaded images -- but turns out, helpful even for immediate images, which may load slow
+      # or at any rate not yet be loaded when page is laid out. Minimize page jumping around.
+      content_tag("div", class: "img-aspectratio-container", style: "padding-bottom: #{aspect_ratio_padding_bottom};") do
+        tag("img", img_attributes)
+      end
+    else
+      # don't have aspect ratio to reserve space pre-load, just image tag
       tag("img", img_attributes)
     end
   end
 
-  # Used for padding bottom CSS aspect ratio trick
+  # Used for padding bottom CSS aspect ratio trick. Get height and width from requested thumb.
   def aspect_ratio_padding_bottom
-    if asset && asset.width && asset.height
-      height_over_width = asset.height.to_f / asset.width.to_f
-      "#{(height_over_width * 100.0).truncate(1)}%"
-    else
-      nil
-    end
+    thumb = asset&.file("thumb_#{thumb_size}")
+
+    return nil unless thumb && thumb.width && thumb.height
+
+    height_over_width = thumb.height.to_f / thumb.width.to_f
+
+    "#{(height_over_width * 100.0).truncate(1)}%"
   end
 
   def res_1x_url
