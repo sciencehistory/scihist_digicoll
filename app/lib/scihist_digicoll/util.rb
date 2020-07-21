@@ -33,5 +33,40 @@ module ScihistDigicoll
 
       mime_obj.symbol.to_s.upcase
     end
+
+    # Quite similar to Rails' ActiveSupport::NumberHelper.number_to_human_size
+    # But it turns out that Rails `number_to_human_size` is pretty expensive, expensive
+    # enough to be a huge problem when we are calling this for each derivative for each member page
+    # on a work page when displaying.
+    #
+    # So this is a much simpler version, that doens't get all the edge cases quite as nice,
+    # or handle significant digits as nicely, and doesn't do I81n for units (that is
+    # perhaps the main slowdown in Rails), but works quite good enough and is so much faster.
+    #
+    # Implementation cribbed and adapted from a StackOverflow answer somewhere.
+    #
+    #   ScihistDigicoll::Util.simple_bytes_to_human_string
+    def self.simple_bytes_to_human_string(size)
+      # Technically since we are using 1024-base instead of 1000,
+      # we should use the correctly standardized KiB MiB etc.
+      # But to be consistent with Rails, we'll use the technically wrong
+      # but familiar legacy KB MB etc. (Which technically should refer to 1000-base)
+      #units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'Pib', 'EiB']
+      units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB']
+
+      return '0.0 B' if size == 0
+      exp = (Math.log(size) / Math.log(1024)).to_i
+      exp += 1 if (size.to_f / 1024 ** exp >= 1024 - 0.05)
+      exp = 6 if exp > 6
+
+      display_number = size.to_f / 1024 ** exp
+      display_units  = units[exp]
+
+      # Try to stick to no more than 3 significant digits; and not show `.0`.
+      decimal_places = (display_number > 99 || (display_number % 1 == 0)) ? 0 : 1
+
+      "%.#{decimal_places}f %s" % [display_number, display_units]
+    end
+
   end
 end
