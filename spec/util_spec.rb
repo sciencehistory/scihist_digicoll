@@ -11,4 +11,19 @@ describe ScihistDigicoll::Util do
     end
   end
 
+  describe "#simple_bytes_to_human_string" do
+    it "has correct units with no zero after decimal" do
+      expect(ScihistDigicoll::Util.simple_bytes_to_human_string(1024)).to eq("1 KB")
+    end
+
+    it "has correct units with decimals" do
+      expect(ScihistDigicoll::Util.simple_bytes_to_human_string(1124)).to eq("1.1 KB")
+      expect(ScihistDigicoll::Util.simple_bytes_to_human_string(98343434)).to eq("93.8 MB")
+      expect(ScihistDigicoll::Util.simple_bytes_to_human_string(2.48 * 1024 * 1024 * 1024)).to eq("2.5 GB")
+    end
+
+    it "has no decimal if three whole digits even if there is remainder" do
+      expect(ScihistDigicoll::Util.simple_bytes_to_human_string((200 * 1024) + 110)).to eq("200 KB") # not 200.1 KB
+    end
+  end
 end
