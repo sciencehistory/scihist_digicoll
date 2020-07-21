@@ -122,10 +122,15 @@ class ThumbDisplay < ViewModel
       img_attributes.merge!(src_attributes)
     end
 
-    # the wrapper div with CSS aspect ratio hack helps reserve space on page before image is loaded.
-    # For lazy-loaded images -- but turns out, helpful even for immediate images, which may load slow
-    # or at any rate not yet be loaded when page is laid out. Minimize page jumping around.
-    content_tag("div", class: "img-aspectratio-container", style: "padding-bottom: #{aspect_ratio_padding_bottom};") do
+    if aspect_ratio_padding_bottom
+      # the wrapper div with CSS aspect ratio hack helps reserve space on page before image is loaded.
+      # For lazy-loaded images -- but turns out, helpful even for immediate images, which may load slow
+      # or at any rate not yet be loaded when page is laid out. Minimize page jumping around.
+      content_tag("div", class: "img-aspectratio-container", style: "padding-bottom: #{aspect_ratio_padding_bottom};") do
+        tag("img", img_attributes)
+      end
+    else
+      # don't have aspect ratio to reserve space pre-load, just image tag
       tag("img", img_attributes)
     end
   end
