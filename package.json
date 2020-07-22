@@ -16,7 +16,6 @@
     "webpack-dev-server": "^3.9.0"
   },
   "resolutions": {
-    "lodash": ">= 4.17.13",
     "lodash.template": ">= 4.5.0",
     "js-yaml": ">= 3.13.1"
   },
