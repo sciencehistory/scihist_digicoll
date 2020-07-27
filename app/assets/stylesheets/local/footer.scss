@@ -52,6 +52,7 @@
 
     .fa {
       color: $brand-bright-green;
+      margin-right: 4px;
     }
 
     // dunno, ask communications
@@ -88,6 +89,7 @@
   }
 
   .footerprivacycopyright {
+    padding: 15px 0;
     color: $brand-bright-green;
     font-size: 12px;
     font-weight: 300;
