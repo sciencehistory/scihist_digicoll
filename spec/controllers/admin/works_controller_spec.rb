@@ -127,33 +127,11 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       )
     }
 
-    it "won't allow publication until combined audio derivs are created" do
-      put :publish, params: { id: oral_history.friendlier_id }
-      expect(response).to redirect_to(admin_work_path(oral_history, anchor: "nav-members"))
-      expect(flash[:error]).to match /absent or out of date/
-    end
-
     it "kicks off an audio derivatives job" do
       expect(oral_history.members.map(&:stored?)).to match([true, true])
       put :create_combined_audio_derivatives, params: { id: oral_history.friendlier_id }
       expect(response).to redirect_to(admin_work_path(oral_history, anchor: "nav-oral-histories"))
       expect(CreateCombinedAudioDerivativesJob).to have_been_enqueued
-    end
-  end
-
-  context "published audio history" do
-    let(:oral_history)  { create(:public_work, genre: ["Oral histories"]) }
-    let(:audio_asset_1) { create(:asset, parent_id: oral_history.id) }
-    it "locks down most of the functionality on the asset list page" do
-      get :reorder_members_form, params: { id: oral_history.friendlier_id }
-      expect(response).to redirect_to(admin_work_path(oral_history, anchor: "nav-members"))
-      expect(flash[:alert]).to match /Please unpublish.*reorder/
-      get :reorder_members, params: { id: oral_history.friendlier_id }
-      expect(response).to redirect_to(admin_work_path(oral_history, anchor: "nav-members"))
-      expect(flash[:alert]).to match /Please unpublish.*reorder/
-      get :new, params: { parent_id: oral_history.friendlier_id }
-      expect(response).to redirect_to(admin_work_path(oral_history, anchor: "nav-members"))
-      expect(flash[:alert]).to match /Please unpublish.*add/
     end
   end
 
