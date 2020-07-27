@@ -50,9 +50,11 @@
       </div>
     <% end %>
 
-    <p>
-      <%= link_to "Generate (or regenerate) combined audio derivatives", create_combined_audio_derivatives_admin_work_path(model), method: "put", class: "btn btn-primary" %>
-    </p>
+    <% if view.work_available_members? %>
+      <p>
+        <%= link_to "Generate combined audio derivatives", create_combined_audio_derivatives_admin_work_path(model), method: "put", class: "btn btn-primary" %>
+      </p>
+    <% end %>
 
     <% if view.show_in_progress_status? %>
       <p class="<%= model&.oral_history_content&.failed? ? 'alert-danger' : 'alert-info' %>  p-3">
