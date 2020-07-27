@@ -45,12 +45,21 @@
       color: white;
     }
 
-    // dunno, ask communications
-    .fa-map-marker {
+    strong {
+      font-weight: 700;
+      font-size: 1.125rem;
+    }
+
+    .fa {
       color: $brand-bright-green;
     }
 
-    div {
+    // dunno, ask communications
+    .fa-map-marker {
+      font-size: 1.375rem;
+    }
+
+    & > div {
       margin: 20px;
     }
   }
