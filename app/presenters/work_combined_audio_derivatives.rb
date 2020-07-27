@@ -41,8 +41,12 @@ class WorkCombinedAudioDerivatives < ViewModel
     model.oral_history_content!.combined_audio_fingerprint
   end
 
+  def current_required_fingerprint
+    @current_required_fingerprint ||= CombinedAudioDerivativeCreator.new(model).fingerprint
+  end
+
   def derivatives_up_to_date?
-    CombinedAudioDerivativeCreator.new(model).fingerprint == combined_audio_fingerprint
+    current_required_fingerprint == combined_audio_fingerprint
   end
 
   def job_status_time
