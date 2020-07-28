@@ -77,8 +77,12 @@ set :whenever_roles, [:cron]
 # When running rake tasks with `cap staging invoke:rake rake:task:name`, via
 # the capistrano-rake gem, run them on the jobs host, that's a good one for
 # putting extra work on.
+#
+# And if we have multiple jobs servers, we still only
+# want to execute on ONE of them, the one marked primary, or else just
+# first one listed. (can be overridden with env PRIMARY_ONLY=false)
 set :rake_roles, [:jobs]
-
+set :rake_primary_only, ENV["PRIMARY_ONLY"] || true
 
 # This is a no-op task, but our server definition script currently
 # outputs to console the server definitions, so a no-op task will do it.
