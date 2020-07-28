@@ -11,11 +11,6 @@ class Admin::AssetsController < AdminController
 
   def edit
     @asset = Asset.find_by_friendlier_id!(params[:id])
-    if published_oral_history_asset?
-      redirect_to admin_work_path(@asset.parent.friendlier_id, anchor: "nav-members"),
-        alert: "Please unpublish '#{@asset.parent.title}' before modifying the interview segments."
-      return
-    end
   end
 
   # PATCH/PUT /works/1
@@ -36,11 +31,6 @@ class Admin::AssetsController < AdminController
 
   def destroy
     @asset = Asset.find_by_friendlier_id!(params[:id])
-    if published_oral_history_asset?
-      redirect_to admin_work_path(@asset.parent.friendlier_id, anchor: "nav-members"),
-        alert: "Please unpublish '#{@asset.parent.title}' before deleting any of the interview segments."
-      return
-    end
 
     authorize! :destroy, @asset
 
@@ -64,11 +54,6 @@ class Admin::AssetsController < AdminController
 
   def display_attach_form
     @parent = Work.find_by_friendlier_id!(params[:parent_id])
-    if @parent.genre && @parent.genre.include?('Oral histories') && @parent.published?
-      redirect_to admin_work_url(params[:parent_id], anchor: "nav-members"),
-        alert: "Please unpublish '#{@parent.title}' before adding any more interview segments."
-      return
-    end
   end
 
   # Receives json hashes for direct uploaded files in params[:files],
@@ -105,12 +90,6 @@ class Admin::AssetsController < AdminController
   def convert_to_child_work
     @asset = Asset.find_by_friendlier_id!(params[:id])
 
-    if published_oral_history_asset?
-      redirect_to admin_work_url( @asset.parent.friendlier_id, anchor: "nav-members"),
-        alert: "Please unpublish '#{@asset.parent.title}' before modifying its interview segments."
-      return
-    end
-
     parent = @asset.parent
 
     new_child = Work.new(title: @asset.title)
@@ -145,12 +124,4 @@ class Admin::AssetsController < AdminController
 
     asset_params = params.require(:asset).permit(*allowed_params)
   end
-
-  def published_oral_history_asset?
-    @asset.parent &&
-      @asset.parent.genre &&
-      @asset.parent.genre.include?('Oral histories') &&
-      @asset.parent.published?
-  end
-  helper_method :published_oral_history_asset?
 end

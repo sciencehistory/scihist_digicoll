@@ -40,23 +40,4 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
       end
     end
   end
-
-  context "published audio history" do
-    let(:oral_history)   { create( :public_work, genre: ["Oral histories"]) }
-    let(:audio_asset_1)  { create(:asset, parent_id: oral_history.id ) }
-    it "locks down most of the functionality on the asset list page" do
-      get :edit, params: { id: audio_asset_1.friendlier_id }
-      expect(response).to redirect_to(admin_work_path(oral_history, anchor: "nav-members"))
-      expect(flash[:alert]).to match /Please unpublish.*modify/
-      get :destroy, params: { id: audio_asset_1.friendlier_id }
-      expect(response).to redirect_to(admin_work_path(oral_history, anchor: "nav-members"))
-      expect(flash[:alert]).to match /Please unpublish.*delet/
-      get :display_attach_form, params: { parent_id: oral_history.friendlier_id }
-      expect(response).to redirect_to(admin_work_path(oral_history, anchor: "nav-members"))
-      expect(flash[:alert]).to match /Please unpublish.*add/
-      get :convert_to_child_work, params: { id: audio_asset_1.friendlier_id }
-      expect(response).to redirect_to(admin_work_path(oral_history, anchor: "nav-members"))
-      expect(flash[:alert]).to match /Please unpublish.*modify/
-    end
-  end
 end
