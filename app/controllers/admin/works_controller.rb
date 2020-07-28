@@ -473,11 +473,4 @@ class Admin::WorksController < AdminController
       @work.genre && @work.genre.include?('Oral histories')
     end
     helper_method :work_is_oral_history?
-
-    def restrict_audio_member_edit?(member)
-      return false if member.work?
-      return false unless @work.published?
-      member.content_type && member.content_type.start_with?('audio')
-    end
-    helper_method :restrict_audio_member_edit?
 end
