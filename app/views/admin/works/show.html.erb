@@ -82,15 +82,9 @@
   <div class="tab-pane" id="nav-members" role="tabpanel" aria-labelledby="nav-members-tab">
     <% if work_is_oral_history? && @work.published? %>
       <div class="admin-work-toolbar d-flex flex-wrap">
-        <div class="alert alert-secondary mb-3 mt-2 mx-1 small text-muted">
-          <p>This is a published oral history. To protect OHMS derivatives and metadata, many of the functions usually available on this page are disabled.
-          </p>
-          <p>If you want to add, remove, or reorder interview segments, please:</p>
-          <ul>
-            <li>unpublish the oral history (this will unpublish all the segments as well);</li>
-            <li>make any changes you need to the segments of the oral history;</li>
-            <li>regenerate the combined audio derivatives (in the "Oral History" tab);</li>
-            <li>republish the oral history.</li>
+        <div class="alert alert-warning mb-3 mt-2 mx-1">
+          <i class="fa fa-warning"></i>
+          This is a published oral history. Be careful, adding, removing, reordering, or changing status of audio files may result in invalid combined audio derivative files and OHMS sync.
         </div>
       </div>
     <% end %>
@@ -98,24 +92,15 @@
     <div class="admin-work-toolbar d-flex flex-wrap">
       <div class="alert alert-secondary mx-1">
         <h2 class="h4 alert-heading">Add New Members</h2>
-
-        <% if work_is_oral_history? && @work.published?%>
-          <small>Please unpublish this oral history if you want to add segments to it.</small>
-        <% else %>
           From:
           <%= link_to "Files", admin_asset_ingest_path(@work), class: "btn btn-primary" %>
           <%= link_to "New Child Work", new_admin_work_path(parent_id: @work), class: "btn btn-primary" %>
-        <% end %>
       </div>
 
       <div class="alert alert-secondary mx-1">
         <h2 class="h4 alert-heading">Re-order Members</h2>
-        <% if work_is_oral_history? && @work.published?%>
-          <small>Please unpublish this oral history if you want to reorder its segments.</small>
-        <% else %>
-          <%= link_to "Manual", reorder_members_admin_work_path(@work), class: "btn btn-primary" %>
-          <%= link_to "Alphabetical", reorder_members_admin_work_path(@work), method: "put", class: "btn btn-primary", data: { confirm: "Re-ordering members alphabetically by title can't be undone" } %>
-        <% end %>
+        <%= link_to "Manual", reorder_members_admin_work_path(@work), class: "btn btn-primary" %>
+        <%= link_to "Alphabetical", reorder_members_admin_work_path(@work), method: "put", class: "btn btn-primary", data: { confirm: "Re-ordering members alphabetically by title can't be undone" } %>
       </div>
     </div>
 
