@@ -124,8 +124,6 @@ group :development do
   gem 'capistrano-passenger', '~> 0.2'
   gem 'capistrano-rails', '~> 1.2'
   gem 'capistrano-maintenance', '~> 1.0', require: false
-  gem 'capistrano-rake', require: false
-
 end
 
 group :test do
