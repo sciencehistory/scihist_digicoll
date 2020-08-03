@@ -4,8 +4,9 @@ class Asset < Kithe::Asset
   set_shrine_uploader(AssetUploader)
 
   THUMB_WIDTHS = AssetUploader::THUMB_WIDTHS
-
   IMAGE_DOWNLOAD_WIDTHS = AssetUploader::IMAGE_DOWNLOAD_WIDTHS
+
+  attr_json :admin_note, :text, array: true, default: -> { [] }
 
 
   # Our DziFiles object to manage associated DZI (deep zoom, for OpenSeadragon
