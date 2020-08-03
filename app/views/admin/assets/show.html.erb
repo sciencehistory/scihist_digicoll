@@ -89,8 +89,17 @@
           <% end %>
         </dl>
       </dd>
-    </dl>
 
+    <% if @asset.admin_note.present? %>
+      <dt class="col-sm-4">Admin Note</dt>
+      <dd class="col-sm-8">
+        <% @asset.admin_note.each do |note| %>
+          <%= simple_format note %>
+        <% end %>
+      </dd>
+    <% end %>
+
+    </dl>
 
     <h2 class="mt-4">Derivatives</h2>
     <ul class="list-unstyled">

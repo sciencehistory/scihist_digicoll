@@ -119,7 +119,7 @@ class Admin::AssetsController < AdminController
   private
 
   def asset_params
-    allowed_params = [:title]
+    allowed_params = [:title, {admin_note_attributes: []}]
     allowed_params << :published if can?(:publish, @asset)
 
     asset_params = params.require(:asset).permit(*allowed_params)
