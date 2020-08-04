@@ -20,6 +20,11 @@ describe "sitemap generator", js: false do
     $force_local_sitemap_generation = false
   end
 
+  after(:each) do
+    # reset rake task, weirdly.
+    Rake::Task["sitemap:create"].reenable
+  end
+
   before(:all) do
     #Rails.application.load_tasks
 
