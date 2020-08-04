@@ -150,7 +150,7 @@ describe "Audio front end", type: :system, js: true do
       # You should be able to download the combined audio derivs:
       expect(page).to have_content("Complete Interview Audio File")
       expect(page).to have_content("3 Separate Interview Segments")
-      expect(page).to have_content("25 KB")
+      expect(page).to have_content("2.25 KB")
     end
   end
 
