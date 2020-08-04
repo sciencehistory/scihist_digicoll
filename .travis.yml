@@ -18,6 +18,7 @@ cache:
   directories:
     - /home/travis/.rvm/
     - ./tmp/solr_dist
+    - vendor/bundle
 before_install:
   - gem install bundler
   - nvm install node
