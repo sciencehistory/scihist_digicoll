@@ -25,5 +25,10 @@ describe ScihistDigicoll::Util do
     it "has no decimal if three whole digits even if there is remainder" do
       expect(ScihistDigicoll::Util.simple_bytes_to_human_string((200 * 1024) + 110)).to eq("200 KB") # not 200.1 KB
     end
+
+    it "returns nil for nil" do
+      # this is rails number_to_human_size behavior
+      expect(ScihistDigicoll::Util.simple_bytes_to_human_string(nil)).to be_nil
+    end
   end
 end
