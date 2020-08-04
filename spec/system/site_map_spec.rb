@@ -98,4 +98,20 @@ describe "sitemap generator", js: false do
       expect(loc_with_url(sitemap_xml_doc, expected_pdf_url)).to be_present
     end
   end
+
+  describe "audio asset" do
+    let(:audio_asset) { create(:asset_with_faked_file, :mp3) }
+    let!(:work) { create(:work, :published, members: [audio_asset]) }
+
+    let(:expected_work_url) { work_url(work) }
+
+    it "should not include any image urls" do
+      Rake::Task["sitemap:create"].invoke
+
+      work_url = loc_with_url(sitemap_xml_doc, expected_work_url)
+      expect(work_url).to be_present
+
+      expect(work_url.parent.at_xpath("image:image", image: "http://www.google.com/schemas/sitemap-image/1.1")).not_to be_present
+    end
+  end
 end
