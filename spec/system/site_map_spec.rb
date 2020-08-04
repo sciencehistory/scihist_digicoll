@@ -78,4 +78,19 @@ describe "sitemap generator", js: false do
       ).not_to be_present
     end
   end
+
+  describe "PDF asset" do
+    let(:asset) { create(:asset_with_faked_file, :pdf) }
+    let!(:work) { create(:work, :published, representative: asset, members: [asset]) }
+
+    let(:expected_work_url) { work_url(work) }
+    let(:expected_pdf_url) { download_url(asset, disposition: :inline)}
+
+    it "lists PDF URL in sitemap" do
+      Rake::Task["sitemap:create"].invoke
+
+      expect(loc_with_url(sitemap_xml_doc, expected_work_url)).to be_present
+      expect(loc_with_url(sitemap_xml_doc, expected_pdf_url)).to be_present
+    end
+  end
 end

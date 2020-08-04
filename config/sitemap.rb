@@ -61,5 +61,13 @@ SitemapGenerator::Sitemap.create(
     end.compact
 
     add work_path(w), changefreq: 'monthly', lastmod: nil, images: image_urls.collect { |url| { loc: url } }
+
+    # Add direct URLs to PDFs. We're adding the app URL that will 302 redirect to S3, with headers for inline display.
+    pdf_members = member_representatives.find_all do |asset|
+      asset.content_type == "application/pdf"
+    end
+    pdf_members.each do |pdf_asset|
+      add download_path(pdf_asset, disposition: :inline)
+    end
   end
 end
