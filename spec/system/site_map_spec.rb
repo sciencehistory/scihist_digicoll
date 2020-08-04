@@ -36,6 +36,7 @@ describe "sitemap generator", js: false do
      xml.at_xpath("sitemap:urlset/sitemap:url/sitemap:loc[contains(text(), \"#{url}\")]", sitemap: "http://www.sitemaps.org/schemas/sitemap/0.9")
   end
 
+  let(:sitemap_path) { Rails.root + "public/" + ScihistDigicoll::Env.lookup!(:sitemap_path) + "sitemap.xml.gz" }
 
   let(:asset) { create(:asset_with_faked_file) }
   let!(:work) { create(:work, :published, representative: asset, members: [asset]) }
@@ -49,28 +50,33 @@ describe "sitemap generator", js: false do
 
   let(:expected_topic_url) { featured_topic_url(FeaturedTopic.all.first.slug) }
 
+  let(:sitemap_xml_doc) do
+    gz_stream = Zlib::GzipReader.open(sitemap_path)
+    xml = Nokogiri::XML(gz_stream.read)
+    gz_stream.close
+
+    xml
+  end
+
   it "smoke tests" do
     Rake::Task["sitemap:create"].invoke
 
-    sitemap_path = Rails.root + "public/" + ScihistDigicoll::Env.lookup!(:sitemap_path) + "sitemap.xml.gz"
-
     expect(File.exist?(sitemap_path)).to be(true)
 
-    Zlib::GzipReader.open(sitemap_path) do |gz_stream|
-      xml = Nokogiri::XML(gz_stream.read)
+    expect(loc_with_url(sitemap_xml_doc, expected_collection_url)).to be_present
+    expect(loc_with_url(sitemap_xml_doc, expected_topic_url)).to be_present
 
-      expect(loc_with_url(xml, expected_collection_url)).to be_present
-      expect(loc_with_url(xml, expected_topic_url)).to be_present
+    loc = loc_with_url(sitemap_xml_doc, expected_work_url)
+    expect(loc).to be_present
 
-      loc = loc_with_url(xml, expected_work_url)
-      expect(loc).to be_present
+    image_tag = loc.parent.at_xpath("image:image", image: "http://www.google.com/schemas/sitemap-image/1.1")
+    expect(image_tag.text).to be_present
 
-      image_tag = loc.parent.at_xpath("image:image", image: "http://www.google.com/schemas/sitemap-image/1.1")
-      expect(image_tag.text).to be_present
-
-      expect(
-        loc_with_url(xml, private_work_url)
-      ).not_to be_present
-    end
+    expect(
+      loc_with_url(sitemap_xml_doc, private_work_url)
+    ).not_to be_present
   end
+
+
+
 end
