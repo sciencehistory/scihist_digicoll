@@ -18,6 +18,8 @@ cache:
   directories:
     - /home/travis/.rvm/
     - ./tmp/solr_dist
+    # listing these specifically should not be needed since we have `bundler` and `yarn`
+    # listed above, but possibly is...
     - vendor/bundle
     - node_modules
 before_install:
