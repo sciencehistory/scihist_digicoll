@@ -32,7 +32,7 @@
             <ul class="list-unstyled">
               <% if member.kind_of?(Kithe::Asset) %>
                 <li ><small><%= member.content_type %></small></li>
-                <li><small><%= number_to_human_size(member.size) %></small></li>
+                <li><small><%= ScihistDigicoll::Util.simple_bytes_to_human_string(member.size) %></small></li>
               <% end %>
             </ul>
           </td>
