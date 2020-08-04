@@ -23,7 +23,7 @@
           <% end %>
         </dd>
         <% if @work.oral_history_content!&.searchable_transcript_source.present? %>
-          <dt class="col-sm-6">size</dt><dd class="col-sm-6"><%= number_to_human_size(@work.oral_history_content!&.searchable_transcript_source.bytesize)%></dd>
+          <dt class="col-sm-6">size</dt><dd class="col-sm-6"><%= ScihistDigicoll::Util.simple_bytes_to_human_string(@work.oral_history_content!&.searchable_transcript_source.bytesize)%></dd>
         <% end %>
     </dl>
 
