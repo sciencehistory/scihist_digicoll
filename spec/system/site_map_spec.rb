@@ -38,18 +38,6 @@ describe "sitemap generator", js: false do
 
   let(:sitemap_path) { Rails.root + "public/" + ScihistDigicoll::Env.lookup!(:sitemap_path) + "sitemap.xml.gz" }
 
-  let(:asset) { create(:asset_with_faked_file) }
-  let!(:work) { create(:work, :published, representative: asset, members: [asset]) }
-  let(:expected_work_url) { work_url(work) }
-
-  let!(:private_work) { create(:work, published: false) }
-  let(:private_work_url) { work_url(private_work) }
-
-  let!(:collection) { create(:collection) }
-  let(:expected_collection_url) { collection_url(collection) }
-
-  let(:expected_topic_url) { featured_topic_url(FeaturedTopic.all.first.slug) }
-
   let(:sitemap_xml_doc) do
     gz_stream = Zlib::GzipReader.open(sitemap_path)
     xml = Nokogiri::XML(gz_stream.read)
@@ -58,25 +46,36 @@ describe "sitemap generator", js: false do
     xml
   end
 
-  it "smoke tests" do
-    Rake::Task["sitemap:create"].invoke
+  describe "smoke test example" do
+    let(:asset) { create(:asset_with_faked_file) }
+    let!(:work) { create(:work, :published, representative: asset, members: [asset]) }
+    let(:expected_work_url) { work_url(work) }
 
-    expect(File.exist?(sitemap_path)).to be(true)
+    let!(:private_work) { create(:work, published: false) }
+    let(:private_work_url) { work_url(private_work) }
 
-    expect(loc_with_url(sitemap_xml_doc, expected_collection_url)).to be_present
-    expect(loc_with_url(sitemap_xml_doc, expected_topic_url)).to be_present
+    let!(:collection) { create(:collection) }
+    let(:expected_collection_url) { collection_url(collection) }
 
-    loc = loc_with_url(sitemap_xml_doc, expected_work_url)
-    expect(loc).to be_present
+    let(:expected_topic_url) { featured_topic_url(FeaturedTopic.all.first.slug) }
 
-    image_tag = loc.parent.at_xpath("image:image", image: "http://www.google.com/schemas/sitemap-image/1.1")
-    expect(image_tag.text).to be_present
+    it "produces sitemap" do
+      Rake::Task["sitemap:create"].invoke
 
-    expect(
-      loc_with_url(sitemap_xml_doc, private_work_url)
-    ).not_to be_present
+      expect(File.exist?(sitemap_path)).to be(true)
+
+      expect(loc_with_url(sitemap_xml_doc, expected_collection_url)).to be_present
+      expect(loc_with_url(sitemap_xml_doc, expected_topic_url)).to be_present
+
+      loc = loc_with_url(sitemap_xml_doc, expected_work_url)
+      expect(loc).to be_present
+
+      image_tag = loc.parent.at_xpath("image:image", image: "http://www.google.com/schemas/sitemap-image/1.1")
+      expect(image_tag.text).to be_present
+
+      expect(
+        loc_with_url(sitemap_xml_doc, private_work_url)
+      ).not_to be_present
+    end
   end
-
-
-
 end
