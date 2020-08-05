@@ -48,7 +48,7 @@ class OhAudioWorkShowDecorator < Draper::Decorator
       details << ScihistDigicoll::Util.humanized_content_type(asset.content_type)
     end
     if asset.size.present?
-      details << number_to_human_size(asset.size)
+      details << ScihistDigicoll::Util.simple_bytes_to_human_string(asset.size)
     end
 
     details.join(" — ")
@@ -111,7 +111,7 @@ class OhAudioWorkShowDecorator < Draper::Decorator
   end
 
   def combined_mp3_audio_size
-    number_to_human_size(model&.oral_history_content&.combined_audio_mp3&.size)
+    ScihistDigicoll::Util.simple_bytes_to_human_string(model&.oral_history_content&.combined_audio_mp3&.size)
   end
 
   def combined_webm_audio
