@@ -12,7 +12,6 @@ class WorkShowDecorator < Draper::Decorator
   # underneath, and excluding, the hero image.
   # As the audio members (if any) are already being "displayed"
   # in the playlist, we don't need them in this list.
-
   def member_list_for_display
     @member_list_display ||= begin
       members = model.members.includes(:leaf_representative)

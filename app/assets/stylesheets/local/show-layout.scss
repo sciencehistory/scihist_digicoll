@@ -112,5 +112,35 @@
     }
   }
 
+  &.work-show-file-list {
+    // hackily flush whitespace on top
+    .rights-and-social {
+      padding-top: 0 !important;
+      .rights-statement, .social-media {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+      }
+    }
 
+    .show-member-file-list-item {
+      display: flex;
+
+      & > div {
+        padding: $table-cell-padding;
+        border-top: $table-border-width solid $table-border-color;
+      }
+
+      .image {
+        width: 54px; // thumb_mini width
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      .title {
+        flex-grow: 1;
+        width: 100%;
+        word-break: break-word;
+      }
+    }
+  }
 }
