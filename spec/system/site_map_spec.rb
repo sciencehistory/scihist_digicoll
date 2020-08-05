@@ -20,6 +20,11 @@ describe "sitemap generator", js: false do
     $force_local_sitemap_generation = false
   end
 
+  after(:each) do
+    # reset rake task, weirdly.
+    Rake::Task["sitemap:create"].reenable
+  end
+
   before(:all) do
     #Rails.application.load_tasks
 
@@ -36,41 +41,77 @@ describe "sitemap generator", js: false do
      xml.at_xpath("sitemap:urlset/sitemap:url/sitemap:loc[contains(text(), \"#{url}\")]", sitemap: "http://www.sitemaps.org/schemas/sitemap/0.9")
   end
 
+  let(:sitemap_path) { Rails.root + "public/" + ScihistDigicoll::Env.lookup!(:sitemap_path) + "sitemap.xml.gz" }
 
-  let(:asset) { create(:asset_with_faked_file) }
-  let!(:work) { create(:work, :published, representative: asset, members: [asset]) }
-  let(:expected_work_url) { work_url(work) }
+  let(:sitemap_xml_doc) do
+    gz_stream = Zlib::GzipReader.open(sitemap_path)
+    xml = Nokogiri::XML(gz_stream.read)
+    gz_stream.close
 
-  let!(:private_work) { create(:work, published: false) }
-  let(:private_work_url) { work_url(private_work) }
+    xml
+  end
 
-  let!(:collection) { create(:collection) }
-  let(:expected_collection_url) { collection_url(collection) }
+  describe "smoke test example" do
+    let(:asset) { create(:asset_with_faked_file) }
+    let!(:work) { create(:work, :published, representative: asset, members: [asset]) }
+    let(:expected_work_url) { work_url(work) }
 
-  let(:expected_topic_url) { featured_topic_url(FeaturedTopic.all.first.slug) }
+    let!(:private_work) { create(:work, published: false) }
+    let(:private_work_url) { work_url(private_work) }
 
-  it "smoke tests" do
-    Rake::Task["sitemap:create"].invoke
+    let!(:collection) { create(:collection) }
+    let(:expected_collection_url) { collection_url(collection) }
 
-    sitemap_path = Rails.root + "public/" + ScihistDigicoll::Env.lookup!(:sitemap_path) + "sitemap.xml.gz"
+    let(:expected_topic_url) { featured_topic_url(FeaturedTopic.all.first.slug) }
 
-    expect(File.exist?(sitemap_path)).to be(true)
+    it "produces sitemap" do
+      Rake::Task["sitemap:create"].invoke
 
-    Zlib::GzipReader.open(sitemap_path) do |gz_stream|
-      xml = Nokogiri::XML(gz_stream.read)
+      expect(File.exist?(sitemap_path)).to be(true)
 
-      expect(loc_with_url(xml, expected_collection_url)).to be_present
-      expect(loc_with_url(xml, expected_topic_url)).to be_present
+      expect(loc_with_url(sitemap_xml_doc, expected_collection_url)).to be_present
+      expect(loc_with_url(sitemap_xml_doc, expected_topic_url)).to be_present
 
-      loc = loc_with_url(xml, expected_work_url)
+      loc = loc_with_url(sitemap_xml_doc, expected_work_url)
       expect(loc).to be_present
 
       image_tag = loc.parent.at_xpath("image:image", image: "http://www.google.com/schemas/sitemap-image/1.1")
       expect(image_tag.text).to be_present
 
       expect(
-        loc_with_url(xml, private_work_url)
+        loc_with_url(sitemap_xml_doc, private_work_url)
       ).not_to be_present
+    end
+  end
+
+  describe "PDF asset" do
+    let(:asset) { create(:asset_with_faked_file, :pdf) }
+    let!(:work) { create(:work, :published, representative: asset, members: [asset]) }
+
+    let(:expected_work_url) { work_url(work) }
+    let(:expected_pdf_url) { download_url(asset, disposition: :inline)}
+
+    it "lists PDF URL in sitemap" do
+      Rake::Task["sitemap:create"].invoke
+
+      expect(loc_with_url(sitemap_xml_doc, expected_work_url)).to be_present
+      expect(loc_with_url(sitemap_xml_doc, expected_pdf_url)).to be_present
+    end
+  end
+
+  describe "audio asset" do
+    let(:audio_asset) { create(:asset_with_faked_file, :mp3) }
+    let!(:work) { create(:work, :published, members: [audio_asset]) }
+
+    let(:expected_work_url) { work_url(work) }
+
+    it "should not include any image urls" do
+      Rake::Task["sitemap:create"].invoke
+
+      work_url = loc_with_url(sitemap_xml_doc, expected_work_url)
+      expect(work_url).to be_present
+
+      expect(work_url.parent.at_xpath("image:image", image: "http://www.google.com/schemas/sitemap-image/1.1")).not_to be_present
     end
   end
 end
