@@ -84,6 +84,11 @@ class Admin::CollectionsController < AdminController
           if hash[:description].present?
             hash[:description] = DescriptionSanitizer.new.sanitize(hash[:description])
           end
+
+          # remove empty representative_attributes so we don't create an empty Asset on that association
+          if hash[:representative_attributes] && hash[:representative_attributes].values.all?(&:blank?)
+            hash.delete(:representative_attributes)
+          end
         end
     end
 end
