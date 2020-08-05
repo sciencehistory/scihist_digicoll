@@ -52,7 +52,7 @@
       <dd class="col-sm-8"><%= @asset.content_type %></dd>
 
       <dt class="col-sm-4">File Size</dt>
-      <dd class="col-sm-8"><%= number_to_human_size(@asset.size) %></dd>
+      <dd class="col-sm-8"><%= ScihistDigicoll::Util.simple_bytes_to_human_string(@asset.size) %></dd>
 
 
       <dt class="col-sm-4">Signatures</dt>

@@ -47,6 +47,8 @@ module ScihistDigicoll
     #
     #   ScihistDigicoll::Util.simple_bytes_to_human_string
     def self.simple_bytes_to_human_string(size)
+      return nil if size.blank?
+
       # Technically since we are using 1024-base instead of 1000,
       # we should use the correctly standardized KiB MiB etc.
       # But to be consistent with Rails, we'll use the technically wrong
