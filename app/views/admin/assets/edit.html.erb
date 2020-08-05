@@ -1,4 +1,4 @@
-<%= simple_form_for(@asset, :html=> { novalidate: true, class: 'edit-work mx-auto admin-edit' }) do |f| %>
+<%= kithe_form_for(@asset, :html=> { novalidate: true, class: 'edit-work mx-auto admin-edit' }) do |f| %>
   <div class="admin-header sticky-top d-flex justify-content-between p-2 mb-4 mt-1 bg-light border">
     <div class="form-actions-label">
       <h1 class="h4">
@@ -28,6 +28,13 @@
 
   <div class="form-inputs">
     <%= f.input :title %>
+
+    <%= f.repeatable_attr_input(:admin_note, build: :at_least_one) do |input_name, value| %>
+      <div class="form-group">
+        <%= f.input_field :admin_note, name: input_name, value: value, as: :text, class: "form-control", rows: 4 %>
+      </div>
+    <% end %>
+
     <% if can? :publish, @asset %>
       <%= f.input :published %>
     <% end %>
