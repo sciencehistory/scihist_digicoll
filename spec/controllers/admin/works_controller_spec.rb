@@ -135,6 +135,26 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     end
   end
 
+  context "change oh available by request" do
+    let(:was_true_asset) { create(:asset_with_faked_file, :mp3, oh_available_by_request: true) }
+    let(:was_false_asset) { create(:asset_with_faked_file, :mp3, oh_available_by_request: false) }
+    let(:work) { create(:oral_history_work, members: [was_true_asset, was_false_asset])}
+
+    it "changes" do
+      put :update_oh_available_by_request, params: {
+        id: work.friendlier_id,
+        available_by_request: {
+          was_true_asset.id => "false",
+          was_false_asset.id => "true",
+          "no_such_id" => "true"
+        }
+      }
+      expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
+      expect(was_false_asset.reload.oh_available_by_request).to be true
+      expect(was_true_asset.reload.oh_available_by_request).to be false
+    end
+  end
+
   context "protected to logged in users" do
     context "without a logged-in user", logged_in_user: false do
       it "redirects to login" do
