@@ -187,7 +187,7 @@ class Admin::WorksController < AdminController
   def update_oh_available_by_request
     @work.transaction do
       params[:available_by_request]&.each_pair do |asset_pk, value|
-        @work.members.find{ |m| m.id == asset_pk}.update(oh_available_by_request: value)
+        @work.members.find{ |m| m.id == asset_pk}&.update(oh_available_by_request: value)
       end
     end
     redirect_to admin_work_path(@work, anchor: "nav-oral-histories")
