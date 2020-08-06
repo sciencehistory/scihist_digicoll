@@ -38,6 +38,12 @@
     <% if can? :publish, @asset %>
       <%= f.input :published %>
     <% end %>
+
+    <% if work_is_oral_history? %>
+      <%= f.input :oh_available_by_request, as: :boolean, label: "(Oral history) available by request" %>
+    <% end %>
+
+
   </div>
 <% end %>
 
