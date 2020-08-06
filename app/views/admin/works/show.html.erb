@@ -115,6 +115,7 @@
       <%= WorkCombinedAudioDerivatives.new(@work).display %>
       <%= render "ohms_xml",  work: @work %>
       <%= render "oral_history_transcript", work: @work %>
+      <%= WorkManageOralHistoryAvailableByRequest.new(@work).display %>
     </div>
   <% end %>
 </div>
