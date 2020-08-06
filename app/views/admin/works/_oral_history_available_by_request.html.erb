@@ -9,29 +9,34 @@
       Oral history assets that are not <code>published</code> but are available by request, after the potential patron fills out a form. At the moment, only <code>Free access, without internet release</code> level of access is supported, with assets delivered automatically without human intervention after the form is filled out.
     </div>
 
-    <%= form_with(url: update_oh_available_by_request_admin_work_path(view.work), method: :put, local: true) do %>
+    <% if view.private_asset_members.present? %>
+      <%= form_with(url: update_oh_available_by_request_admin_work_path(view.work), method: :put, local: true) do %>
 
-      <table class="table">
-        <% view.private_asset_members.each do |asset| %>
-          <tr>
-            <td>
-              <%= hidden_field_tag "available_by_request[#{asset.id}]", false %>
-              <%= check_box_tag "available_by_request[#{asset.id}]", true, asset.oh_available_by_request,
-                id: "available_by_request_#{asset.friendlier_id}",
-                title: "#{asset.title} is available by request" %>
-            </td>
-            <td>
-              <label for="<%= "available_by_request_#{asset.friendlier_id}" %>" class="w-100">
-                <%= asset.title %>
-              </label>
-            </td>
-            <td><%= asset.friendlier_id %></td>
-            <td><%= ScihistDigicoll::Util.humanized_content_type(asset.content_type) %></td>
-          </tr>
-        <% end %>
-      </table>
+        <table class="table">
+          <% view.private_asset_members.each do |asset| %>
+            <tr>
+              <td>
+                <%= hidden_field_tag "available_by_request[#{asset.id}]", false %>
+                <%= check_box_tag "available_by_request[#{asset.id}]", true, asset.oh_available_by_request,
+                  id: "available_by_request_#{asset.friendlier_id}",
+                  title: "#{asset.title} is available by request" %>
+              </td>
+              <td>
+                <label for="<%= "available_by_request_#{asset.friendlier_id}" %>" class="w-100">
+                  <%= asset.title %>
+                </label>
+              </td>
+              <td><%= asset.friendlier_id %></td>
+              <td><%= ScihistDigicoll::Util.humanized_content_type(asset.content_type) %></td>
+            </tr>
+          <% end %>
+        </table>
 
-      <%= submit_tag "Update", class: "btn btn-primary" %>
+        <%= submit_tag "Update", class: "btn btn-primary" %>
+      <% end %>
+    <% else %>
+      <hr>
+      <p>There are no unpublished assets.</p>
     <% end %>
   </div>
 </div>
