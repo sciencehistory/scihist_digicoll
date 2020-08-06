@@ -9,6 +9,6 @@ class WorkManageOralHistoryAvailableByRequest < ViewModel
 
 
   def private_asset_members
-    work.members.find_all { |m| m.kind_of?(Asset) && !m.published? }
+    @private_asset_members ||= work.members.find_all { |m| m.kind_of?(Asset) && !m.published? }
   end
 end
