@@ -9,7 +9,7 @@ class Admin::WorksController < AdminController
            :reorder_members_form, :demote_to_asset, :publish, :unpublish,
            :submit_ohms_xml, :download_ohms_xml,
            :remove_ohms_xml, :submit_searchable_transcript_source, :download_searchable_transcript_source,
-           :remove_searchable_transcript_source, :create_combined_audio_derivatives]
+           :remove_searchable_transcript_source, :create_combined_audio_derivatives, :update_oh_available_by_request]
 
   # GET /admin/works
   # GET /admin/works.json
@@ -181,6 +181,16 @@ class Admin::WorksController < AdminController
 
     notice = "The combined audio derivative job has been added to the job queue."
     redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: notice
+  end
+
+  # PUT /admin/works/ab2323ac/update_oh_available_by_request
+  def update_oh_available_by_request
+    @work.transaction do
+      params[:available_by_request]&.each_pair do |asset_pk, value|
+        @work.members.find{ |m| m.id == asset_pk}.update(oh_available_by_request: value)
+      end
+    end
+    redirect_to admin_work_path(@work, anchor: "nav-oral-histories")
   end
 
 
