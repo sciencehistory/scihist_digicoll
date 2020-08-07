@@ -90,12 +90,15 @@ Rails.application.configure do
     if ScihistDigicoll::Env.lookup(:smtp_host).nil?
       raise RuntimeError, "Please specify smtp_host in local_env.py so we can send emails."
     end
+
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {
-      address: ScihistDigicoll::Env.lookup(:smtp_host),
-      domain: 'sciencehistory.org',
-      ssl: false,
-      enable_starttls_auto: false
+      :address => "email-smtp.us-east-1.amazonaws.com",
+      :port => 587,
+      :user_name => ScihistDigicoll::Env.lookup(:ses_smtp_username)
+      :password =>  ScihistDigicoll::Env.lookup(:ses_smtp_password)
+      :authentication => :login,
+      :enable_starttls_auto => true
     }
   end
 
