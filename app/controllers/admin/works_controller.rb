@@ -186,6 +186,8 @@ class Admin::WorksController < AdminController
   # PUT /admin/works/ab2323ac/update_oh_available_by_request
   def update_oh_available_by_request
     @work.transaction do
+      @work.oral_history_content!.update( params.require(:oral_history_content).permit(:available_by_request_mode))
+
       params[:available_by_request]&.each_pair do |asset_pk, value|
         @work.members.find{ |m| m.id == asset_pk}&.update(oh_available_by_request: value)
       end
