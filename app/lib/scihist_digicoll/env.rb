@@ -294,8 +294,8 @@ module ScihistDigicoll
     define_key :digital_email_address
 
     # These are the credentials used for accessing Amazon's simple email server:
-    define_key :ses_smtp_username
-    define_key :ses_smtp_password
+    define_key :smtp_username
+    define_key :smtp_password
     define_key :smtp_host
 
     ##
