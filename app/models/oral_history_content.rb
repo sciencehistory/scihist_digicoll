@@ -51,6 +51,10 @@ class OralHistoryContent < ApplicationRecord
     succeeded: 'succeeded'
   }
 
+  # backed by a pg enum even. methods such as `available_by_request_off?` are available,
+  # along with scopes like `OralHistoryContent.available_by_request_automatic`
+  enum available_by_request_mode: {off: 'off', automatic: 'automatic', manual_review: 'manual_review'}, _prefix: :available_by_request
+
   after_commit :after_commit_update_work_index_if_needed
 
   # Sets IO to be combined_audio_mp3, writing directly to "store" storage,
