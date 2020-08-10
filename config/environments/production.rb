@@ -93,10 +93,10 @@ Rails.application.configure do
 
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {
-      :address => "email-smtp.us-east-1.amazonaws.com",
+      :address => ScihistDigicoll::Env.lookup(:smtp_host),
       :port => 587,
-      :user_name => ScihistDigicoll::Env.lookup(:ses_smtp_username),
-      :password =>  ScihistDigicoll::Env.lookup(:ses_smtp_password),
+      :user_name => ScihistDigicoll::Env.lookup(:smtp_username),
+      :password =>  ScihistDigicoll::Env.lookup(:smtp_password),
       :authentication => :login,
       :enable_starttls_auto => true
     }
