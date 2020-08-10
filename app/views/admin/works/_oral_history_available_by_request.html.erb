@@ -10,7 +10,17 @@
     </div>
 
     <% if view.private_asset_members.present? %>
-      <%= form_with(url: update_oh_available_by_request_admin_work_path(view.work), method: :put, local: true) do %>
+      <%= form_with(model: view.work.oral_history_content!, url: update_oh_available_by_request_admin_work_path(view.work), method: :put, local: true) do |f|  %>
+
+        <div class="form-group row mb-2">
+          <label for="oral_history_content_available_by_request_mode" class="col-sm-2 col-form-label">Available by request</label>
+          <div class="col-sm-10">
+            <%= f.select :available_by_request_mode,
+                    OralHistoryContent.available_by_request_modes.except(:manual_review).collect {|k, v| [k.humanize, v]},
+                    {},
+                    class: "custom-select" %>
+          </div>
+        </div>
 
         <table class="table">
           <% view.private_asset_members.each do |asset| %>
