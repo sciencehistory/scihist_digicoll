@@ -30,7 +30,17 @@
   </div>
 
   <div class="col-sm-6">
+
+      <% if !@asset.published? && work_is_oral_history? && @asset.oh_available_by_request %>
+        <div class="row">
+          <div class="col-sm-12 h3">
+            <span class="badge badge-warning">Un-published, but marked available by request</span>
+          </div>
+        </div>
+      <% end %>
+
     <dl class="row">
+
       <dt class="col-sm-4">Created</dt>
       <dd class="col-sm-8"><%= l @asset.created_at, format: :admin %></dd>
 
