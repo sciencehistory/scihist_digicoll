@@ -51,7 +51,17 @@ class OralHistoryContent < ApplicationRecord
     succeeded: 'succeeded'
   }
 
-  # backed by a pg enum even. methods such as `available_by_request_off?` are available,
+  # Some assets marked non-published in this work are still available by request. That feature needs to be turned
+  # on here at the work level, in one of two modes:
+  #
+  #   * automatic: after filling out request form, user gets access without human intervention
+  #   * manual_review: after filling out request form, request needs to be approved by human
+  #   * off: by request form feature not enabled
+  #
+  # Once enabled at the work level, individual assets also need their oh_available_by_request flag
+  # set, for extra sure this non-published asset is meant to be available by request.
+  #
+  # backed by a pg enum. methods such as `available_by_request_off?` are available,
   # along with scopes like `OralHistoryContent.available_by_request_automatic`
   enum available_by_request_mode: {off: 'off', automatic: 'automatic', manual_review: 'manual_review'}, _prefix: :available_by_request
 
