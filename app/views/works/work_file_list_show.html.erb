@@ -10,7 +10,21 @@
   <%= WorkTitleAndDates.new(@work).display %>
 
   <div class="show-hero show-file-list">
+    <h2 class="attribute-sub-head mt-0">Access this interview</h2>
+    <div class="d-lg-flex show-sub-head-body">
+      <div class="pr-3 pb-3 text-brand-serif">
+        The transcript and audio files for this Oral History can be immediately accessed after filling out a quick form. If you have any questions, contact...
+      </div>
+      <div class="pb-3 text-nowrap">
+        <%= link_to "Request Access", "javascript: alert('under construction, not yet implemented')", class: "btn btn-emphasis mb-2" %>
+      </div>
+    </div>
+
+
+
+
     <%= render "rights_and_social", work: @work %>
+
 
     <% decorator.member_list_for_display.each_with_index do |member, index| %>
         <div class="show-member-file-list-item">
