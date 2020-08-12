@@ -33,8 +33,13 @@
 
       <% if !@asset.published? && work_is_oral_history? && @asset.oh_available_by_request %>
         <div class="row">
-          <div class="col-sm-12 h3">
-            <span class="badge badge-warning">Un-published, but marked available by request</span>
+          <div class="col-sm-12">
+            <span class="h3">
+              <span class="badge badge-warning">Un-published, but marked available by request</span>
+            </span>
+              <% if @asset.parent %>
+                More info at <%= link_to "Work Oral History Management", admin_work_path(@asset.parent, anchor: "nav-oral-histories") %>
+              <% end %>
           </div>
         </div>
       <% end %>
