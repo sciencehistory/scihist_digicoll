@@ -24,49 +24,41 @@
       <% if can? :publish, @work %>
         <div class="m-2">
           <% if @work.published? %>
-            <% if @work.members.count > 1 %>
-              <div class="btn-group" role="group">
-                <button id="UnpublishButtonGroup" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Unpublish
-                </button>
-                <div class="dropdown-menu" aria-labelledby="UnpublishButtonGroup">
-                  <%= link_to "Also unpublish all members",
-                    unpublish_admin_work_path(:cascade => "true"),
-                    method: "put",
-                    class: "dropdown-item"
-                  %>
-                  <%= link_to "Leave members as they are",
-                    unpublish_admin_work_path(:cascade => "false"),
-                    method: "put",
-                    class: "dropdown-item"
-                  %>
-                </div>
+            <div class="btn-group" role="group">
+              <button id="UnpublishButtonGroup" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Unpublish
+              </button>
+              <div class="dropdown-menu" aria-labelledby="UnpublishButtonGroup">
+                <%= link_to "Also unpublish all members",
+                  unpublish_admin_work_path(:cascade => "true"),
+                  method: "put",
+                  class: "dropdown-item"
+                %>
+                <%= link_to "Leave members as they are",
+                  unpublish_admin_work_path(:cascade => "false"),
+                  method: "put",
+                  class: "dropdown-item"
+                %>
               </div>
-            <%else %>
-              PUBLISH WORK WITH NO MEMBERS
-            <% end %>
+            </div>
           <% else %>
-            <% if @work.members.count > 1 %>
-              <div class="btn-group" role="group">
-                <button id="publishButtonGroup" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Publish
-                </button>
-                <div class="dropdown-menu" aria-labelledby="publishButtonGroup">
-                  <%= link_to "Also publish all members",
-                    publish_admin_work_path(:cascade => "true"),
-                    method: "put",
-                    class: "dropdown-item"
-                  %>
-                  <%= link_to "Leave members as they are",
-                    publish_admin_work_path(:cascade => "false"),
-                    method: "put",
-                    class: "dropdown-item"
-                  %>
-                </div>
+            <div class="btn-group" role="group">
+              <button id="publishButtonGroup" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Publish
+              </button>
+              <div class="dropdown-menu" aria-labelledby="publishButtonGroup">
+                <%= link_to "Also publish all members",
+                  publish_admin_work_path(:cascade => "true"),
+                  method: "put",
+                  class: "dropdown-item"
+                %>
+                <%= link_to "Leave members as they are",
+                  publish_admin_work_path(:cascade => "false"),
+                  method: "put",
+                  class: "dropdown-item"
+                %>
               </div>
-            <% else %>
-              UNPUBLISH WORK WITH NO MEMBERS
-            <% end %>
+            </div>
           <% end %>
         </div>
       <% end %>
