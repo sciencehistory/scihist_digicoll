@@ -45,7 +45,7 @@ class CitableAttributes
 
   # Oral histories
   def treat_as_oral_history?
-    work.genre != nil && work.genre.include?('Oral histories')
+    work.is_oral_history?
   end
 
 

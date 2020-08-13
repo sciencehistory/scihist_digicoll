@@ -20,24 +20,21 @@ class WorkCombinedAudioDerivatives < ViewModel
   end
 
   def combined_mp3_audio
-    return nil unless model.genre.present?
-    return nil unless model.genre.include?('Oral histories')
+    return nil unless model.is_oral_history?
     return nil unless work_available_members?
     oh_content = model.oral_history_content!
     oh_content.combined_audio_mp3&.url(public:true)
   end
 
   def combined_webm_audio
-    return nil unless model.genre.present?
-    return nil unless model.genre.include?('Oral histories')
+    return nil unless model.is_oral_history?
     return nil unless work_available_members?
     oh_content = model.oral_history_content!
     oh_content.combined_audio_webm&.url(public:true)
   end
 
   def combined_audio_fingerprint
-    return nil unless model.genre.present?
-    return nil unless model.genre.include?('Oral histories')
+    return nil unless model.is_oral_history?
     model.oral_history_content!.combined_audio_fingerprint
   end
 
