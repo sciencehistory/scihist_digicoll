@@ -194,7 +194,7 @@ class Admin::WorksController < AdminController
     authorize! :publish, @work
     @work.class.transaction do
       @work.update!(published: true)
-      if params[:cascade] == "true"
+      unless params[:cascade] == "false"
         @work.all_descendent_members.find_each do |member|
           member.update!(published: true)
         end
