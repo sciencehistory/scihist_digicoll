@@ -11,11 +11,11 @@
 
   <div class="show-hero show-file-list">
 
-    <% if decorator.has_available_by_request_assets? %>
+    <% if decorator.available_by_request_assets.present? %>
       <h2 class="attribute-sub-head mt-0">Access this interview</h2>
       <div class="d-lg-flex show-sub-head-body">
         <div class="pr-3 pb-3 text-brand-serif">
-          Available upon request are X PDF transcripts, and Y audio files, which can be immediately accessed after filling out a quick form. If you have any questions, contact...
+          Available upon request are <%= decorator.available_by_request_summary %>, which can be immediately accessed after filling out a quick form. If you have any questions, contact...
         </div>
         <div class="pb-3 text-nowrap">
           <%= link_to "Request Access", "javascript: alert('under construction, not yet implemented')", class: "btn btn-emphasis mb-2" %>
