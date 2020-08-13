@@ -44,4 +44,11 @@ class WorkFileListShowDecorator < Draper::Decorator
     details.join(" — ")
   end
 
+  def has_available_by_request_assets?
+    model.is_oral_history? &&
+    model.oral_history_content &&
+    (! model.oral_history_content.available_by_request_off?) &&
+    (model.members.where("json_attributes -> 'oh_available_by_request' @> 'true'").where(published: false).count > 0)
+  end
+
 end
