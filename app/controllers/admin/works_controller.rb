@@ -468,9 +468,4 @@ class Admin::WorksController < AdminController
       admin_works_path
     end
     helper_method :cancel_url
-
-    def work_is_oral_history?
-      @work.genre && @work.genre.include?('Oral histories')
-    end
-    helper_method :work_is_oral_history?
 end
