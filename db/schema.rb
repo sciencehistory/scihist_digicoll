@@ -10,11 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_02_144008) do
+ActiveRecord::Schema.define(version: 2020_08_10_180533) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
+
+  create_enum :available_by_request_mode_type, [
+    "off",
+    "automatic",
+    "manual_review",
+  ]
 
 
   create_function :kithe_models_friendlier_id_gen, sql_definition: <<-SQL
@@ -156,6 +162,7 @@ ActiveRecord::Schema.define(version: 2020_06_02_144008) do
     t.string "combined_audio_derivatives_job_status"
     t.datetime "combined_audio_derivatives_job_status_changed_at"
     t.text "searchable_transcript_source"
+    t.enum "available_by_request_mode", default: "off", null: false, enum_name: "available_by_request_mode_type"
     t.index ["work_id"], name: "index_oral_history_content_on_work_id", unique: true
   end
 

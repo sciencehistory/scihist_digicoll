@@ -116,6 +116,11 @@ class Admin::AssetsController < AdminController
     redirect_to edit_admin_work_path(new_child), notice: "Asset promoted to child work #{new_child.title}"
   end
 
+  def work_is_oral_history?
+    @asset.parent.genre && @asset.parent.genre.include?('Oral histories')
+  end
+  helper_method :work_is_oral_history?
+
   private
 
   def asset_params
