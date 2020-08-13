@@ -46,11 +46,38 @@ class WorkFileListShowDecorator < Draper::Decorator
     details.join(" — ")
   end
 
-  def has_available_by_request_assets?
-    model.is_oral_history? &&
-    model.oral_history_content &&
-    (! model.oral_history_content.available_by_request_off?) &&
-    all_members.find { |member| member.kind_of?(Asset) && !member.published? && member.oh_available_by_request? }
+  def available_by_request_summary
+    parts = []
+
+    if available_by_request_pdf_count > 0
+      parts << helpers.pluralize(available_by_request_pdf_count,  "PDF transcript")
+    end
+
+    if available_by_request_audio_count > 0
+      parts << helpers.pluralize(available_by_request_audio_count,  "audio recording file")
+    end
+
+    parts.join(", and ")
+  end
+
+  def available_by_request_pdf_count
+    @available_by_request_pdf_count ||= available_by_request_assets.find_all { |asset| asset.content_type == "application/pdf" }.count
+  end
+
+  def available_by_request_audio_count
+    @available_by_request_audio_count ||= available_by_request_assets.find_all { |asset| asset.content_type.start_with?("audio/") }.count
+  end
+
+  def available_by_request_assets
+    @available_by_request_assets ||= begin
+      unless model.is_oral_history? &&
+            model.oral_history_content &&
+            (! model.oral_history_content.available_by_request_off?)
+        []
+      else
+        all_members.find_all { |member| member.kind_of?(Asset) && !member.published? && member.oh_available_by_request? }
+      end
+    end
   end
 
   private
