@@ -8,6 +8,10 @@ class Asset < Kithe::Asset
 
   attr_json :admin_note, :text, array: true, default: -> { [] }
 
+  # only used for oral histories, some assets marked non-published are still
+  # available after request form, with or without medidation by human approval.
+  attr_json :oh_available_by_request, :boolean
+
 
   # Our DziFiles object to manage associated DZI (deep zoom, for OpenSeadragon
   # panning/zooming) file(s).
