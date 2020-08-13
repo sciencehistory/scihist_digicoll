@@ -23,9 +23,11 @@ class WorkFileListShowDecorator < Draper::Decorator
   # Unlike standard show page, we don't have special treatment for representative hero.
   def member_list_for_display
     @member_list_display ||= begin
-      members = model.members.includes(:leaf_representative)
-      members = members.where(published: true) if current_user.nil?
-      members = members.order(:position).to_a
+      members = all_members
+
+      if current_user.nil?
+        members = members.find_all(&:published?)
+      end
 
       members
     end
@@ -48,7 +50,16 @@ class WorkFileListShowDecorator < Draper::Decorator
     model.is_oral_history? &&
     model.oral_history_content &&
     (! model.oral_history_content.available_by_request_off?) &&
-    (model.members.where("json_attributes -> 'oh_available_by_request' @> 'true'").where(published: false).count > 0)
+    all_members.find { |member| member.kind_of?(Asset) && !member.published? && member.oh_available_by_request? }
   end
+
+  private
+
+  # We need to slice and dice the members in a couple ways, so just load them all in,
+  # but we should never show this to the public
+  def all_members
+    @all_members = model.members.includes(:leaf_representative).order(:position).to_a
+  end
+
 
 end
