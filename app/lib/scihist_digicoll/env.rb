@@ -275,11 +275,7 @@ module ScihistDigicoll
 
     define_key :honeybadger_api_key
 
-    # Used as the from (no_reply) and to (digital_tech, digital) email addresses
-    # when sending notices about failed fixity check.
-    define_key :no_reply_email_address
-    define_key :digital_tech_email_address
-    define_key :digital_email_address
+
 
     # Used for sending mail, and if no queue is specified:
     define_key :regular_job_worker_count, default: 0
@@ -288,6 +284,18 @@ module ScihistDigicoll
     # Used (infrequently) by additional job servers whose only purpose is to handle special tasks:
     define_key :special_job_worker_count, default: 0
 
+
+    # OUTGOING EMAIL:
+
+    # From address:
+    define_key :no_reply_email_address
+    # To addresses (these are email lists maintained by IT.)
+    define_key :digital_tech_email_address
+    define_key :digital_email_address
+
+    # These are the credentials used for accessing Amazon's simple email server:
+    define_key :smtp_username
+    define_key :smtp_password
     define_key :smtp_host
 
     ##
