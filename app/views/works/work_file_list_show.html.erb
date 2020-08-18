@@ -9,6 +9,11 @@
 
   <div class="show-title">
     <%= WorkTitleAndDates.new(@work).display %>
+
+    <%# up here so it stays above request button in single-column mode %>
+    <div class="work-description long-text-line-height">
+      <%= DescriptionDisplayFormatter.new(@work.description).format  %>
+    </div>
   </div>
 
   <div class="show-hero show-file-list">
@@ -68,10 +73,6 @@
   </div>
 
   <div class="show-metadata">
-    <div class="work-description long-text-line-height">
-      <%= DescriptionDisplayFormatter.new(@work.description).format  %>
-    </div>
-
     <%= WorkShowInfo.new(@work).display %>
 
     <%= render "citation", work: @work  %>
