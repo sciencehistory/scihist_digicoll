@@ -15,7 +15,12 @@
   </div>
 
   <div class="show-metadata">
+    <div class="work-description long-text-line-height">
+      <%= DescriptionDisplayFormatter.new(@work.description).format  %>
+    </div>
+
     <%= WorkShowInfo.new(@work).display %>
+
     <%= render "citation", work: @work  %>
   </div>
 
