@@ -68,6 +68,10 @@ class WorkFileListShowDecorator < Draper::Decorator
     @available_by_request_audio_count ||= available_by_request_assets.find_all { |asset| asset.content_type.start_with?("audio/") }.count
   end
 
+  def multiple_files?
+    (decorator.available_by_request_pdf_count + decorator.available_by_request_audio_count > 1)
+  end
+
   def available_by_request_assets
     @available_by_request_assets ||= begin
       unless model.is_oral_history? &&
