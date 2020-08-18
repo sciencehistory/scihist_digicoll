@@ -50,11 +50,11 @@ class WorkFileListShowDecorator < Draper::Decorator
     parts = []
 
     if available_by_request_pdf_count > 0
-      parts << helpers.content_tag("b", helpers.pluralize(available_by_request_pdf_count,  "PDF transcript"))
+      parts << helpers.pluralize(available_by_request_pdf_count,  "PDF transcript")
     end
 
     if available_by_request_audio_count > 0
-      parts << helpers.content_tag("b", helpers.pluralize(available_by_request_audio_count,  "audio recording file"))
+      parts << helpers.pluralize(available_by_request_audio_count,  "audio recording file")
     end
 
     helpers.safe_join(parts, ", and ")
