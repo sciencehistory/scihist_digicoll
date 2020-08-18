@@ -22,13 +22,13 @@
       <h2 class="attribute-sub-head mt-0">Access this interview</h2>
       <div class="d-lg-flex show-sub-head-body request-section">
         <div class="pr-3 pb-3 text-brand-serif">
-          Available upon request
+          <p>Available upon request
             <%= decorator.multiple_files? ? "are" : "is" %>
-            <%= decorator.available_by_request_summary %>.
-            After submitting a brief form, you will receive immediate access to
-            <%= decorator.multiple_files? ? "these files" : "this file" %>.
-            If you have any questions about transcripts, recordings, or usage permissions, please
-            <%= link_to "contact the Center for Oral Histories", "https://www.sciencehistory.org/center-for-oral-history/contact" %>.
+            <%= decorator.available_by_request_summary %>.</p>
+            <p>After submitting a brief form, you will receive immediate access to
+            <%= decorator.multiple_files? ? "these files" : "this file" %>.</p>
+            <p>If you have any questions about transcripts, recordings, or usage permissions, please
+            <%= link_to "contact the Center for Oral Histories", "https://www.sciencehistory.org/center-for-oral-history/contact" %>.</p>
         </div>
         <div class="pb-3 text-nowrap">
           <%= link_to "Request Access", "javascript: alert('under construction, not yet implemented')", class: "btn btn-emphasis mb-2" %>
