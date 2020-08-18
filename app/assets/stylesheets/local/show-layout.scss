@@ -47,11 +47,11 @@
   // Big enough for grid, not so big that we need to constrain the image column
   // to be smaller than 50%
   @include media-breakpoint-up(md) {
-    .show-hero, .show-metadata, .show-title {
+    .show-hero, .show-metadata, .show-title, .show-file-list {
       width: 50%;
       display: inline-block;
     }
-    .show-hero {
+    .show-hero, .show-file-list {
       max-width: $max-image-column + $main-gutter-width;
       float: left;
       padding-right: $main-gutter-width;
@@ -65,7 +65,7 @@
   @media (min-width: $max-image-column-breakpoint) {
     // // some crazy CSS calc arithmatic to keep the main image and the thumbs under it
     // // at $max-image-column, with still column break centered.
-    .show-hero {
+    .show-hero, .show-file-list {
       max-width: $max-image-column + $main-gutter-width;
     }
     .show-title, .show-metadata {
