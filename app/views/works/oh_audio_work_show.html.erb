@@ -88,7 +88,9 @@
   <div class="bottom" id="ohmsScrollable">
       <div class="tab-content">
         <div class="tab-pane active" id="ohDescription" role="tabpanel" aria-labelledby="ohDescriptionTab">
-          <%= WorkTitleAndDates.new(@work).display %>
+          <div class="show-title">
+            <%= WorkTitleAndDates.new(@work).display %>
+          </div>
 
           <%= render "rights_and_social", work: @work %>
 
