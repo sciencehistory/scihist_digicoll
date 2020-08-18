@@ -20,7 +20,7 @@
 
     <% if decorator.available_by_request_assets.present? %>
       <h2 class="attribute-sub-head mt-0">Access this interview</h2>
-      <div class="d-lg-flex show-sub-head-body">
+      <div class="d-lg-flex show-sub-head-body request-section">
         <div class="pr-3 pb-3 text-brand-serif">
           Available upon request
             <%= (decorator.available_by_request_pdf_count + decorator.available_by_request_audio_count > 1) ? "are" : "is" %>
