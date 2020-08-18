@@ -51,7 +51,7 @@ describe "Public work show page", type: :system, js: false do
       visit work_path(work)
 
       # Don't show the edit button to users unless they're logged in.
-      expect(page).to have_no_css('a[text()="Edit"]')
+      expect(page).to have_no_css('a', text: "Edit")
 
       # No audio assets, so the playlist should not be present.
       expect(page.find_all(".show-page-audio-playlist-wrapper").count). to eq 0
@@ -81,6 +81,10 @@ describe "Public work show page", type: :system, js: false do
 
       within(".show-date") do
         expect(page).to have_selector("li", count: work.date_of_work.count)
+      end
+
+      within(".work-description") do
+        expect(page).to have_selector("p", text: /#{Regexp.escape(work.description.slice(0, 10))}/)
       end
 
       work.creator.each do |creator|
