@@ -1,5 +1,11 @@
-# Shows the basic metadata of a work in the public work display.
+# Display the right column of a work show page including, metadata attributes,
+# physical location, 'related items'.
 #
+# In a partial to make it easier to re-use in templates that differ in how
+# they show media, but still need this.
+#
+# For flexibility, does NOT include abstract/description, which usually comes
+# above here, or the "cite as" which usually comes below.
 class WorkShowInfo < ViewModel
   valid_model_type_names "Work"
 

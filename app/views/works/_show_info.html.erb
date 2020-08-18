@@ -1,13 +1,12 @@
-<%# the right column of a work show page including description, metadata,
-    related items.
+<%# the right column of a work show page including, metadata attributes,
+    physical location, 'related items'.
 
     In a partial to make it easier to re-use in templates that differ in how
     they show media, but still need this.
-%>
 
-<div class="work-description long-text-line-height">
-  <%= DescriptionDisplayFormatter.new(view.description).format  %>
-</div>
+    For flexibility, does NOT include abstract/description, which usually comes
+    above here, or the "cite as" which usually comes below.
+%>
 
 <table class="work chf-attributes">
 
