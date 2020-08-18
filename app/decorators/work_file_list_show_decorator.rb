@@ -57,7 +57,7 @@ class WorkFileListShowDecorator < Draper::Decorator
       parts << helpers.pluralize(available_by_request_audio_count,  "audio recording file")
     end
 
-    helpers.safe_join(parts, ", and ")
+    helpers.safe_join(parts, " and ")
   end
 
   def available_by_request_pdf_count
