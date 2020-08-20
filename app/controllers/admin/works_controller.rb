@@ -226,8 +226,10 @@ class Admin::WorksController < AdminController
 
     @work.class.transaction do
       @work.update!(published: false)
-      @work.all_descendent_members.find_each do |member|
-        member.update!(published: false)
+      unless params[:cascade] == "false"
+        @work.all_descendent_members.find_each do |member|
+          member.update!(published: false)
+        end
       end
     end
 

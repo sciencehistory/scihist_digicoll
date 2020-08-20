@@ -11,7 +11,7 @@ require 'rails_helper'
 RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue_adapter: :test do
   context "#demote_to_asset" do
     context "work not suitable" do
-      context "becuase it has no parent" do
+      context "because it has no parent" do
         let(:work) { FactoryBot.create(:work, :with_assets)}
 
         it "rejects" do
@@ -184,6 +184,17 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         expect(work.members.all? {|m| m.published?}).to be true
       end
 
+      it "does not change unpublished children unless requested" do
+        put :publish, params: { id: work.friendlier_id, cascade: 'false'}
+        expect(response.status).to redirect_to(admin_work_path(work))
+        work.reload
+        expect(work.published?).to be true
+        expect(work.members.all? {|m| m.published?}).to be false
+      end
+
+
+
+
       it "can delete, and deletes children" do
         put :destroy, params: { id: work.friendlier_id }
         expect(response.status).to redirect_to(admin_works_path)
@@ -237,6 +248,15 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
           work.reload
           expect(work.published?).to be false
           expect(work.members.none? {|m| m.published?}).to be true
+        end
+
+        it "does not change published children unless requested" do
+          put :unpublish, params: { id: work.friendlier_id, cascade: false }
+          expect(response.status).to redirect_to(admin_work_path(work))
+
+          work.reload
+          expect(work.published?).to be false
+          expect(work.members.all? {|m| m.published?}).to be true
         end
       end
     end
