@@ -1,0 +1,93 @@
+<% provide :page_title, construct_page_title(decorator.title) %>
+
+<% content_for :head do %>
+  <%= render "meta_tags", work: @work  %>
+  <%= tag "link", rel: "alternate", type: "application/xml", title: "OAI-DC metadata in XML", href: work_path(@work, format: "xml") %>
+<% end %>
+
+<div class="show-page-layout work-show work-show-file-list" itemscope itemtype="http://schema.org/CreativeWork" class="row">
+
+  <div class="show-title">
+    <%= WorkTitleAndDates.new(@work).display %>
+
+    <%# up here so it stays above request button in single-column mode %>
+    <div class="work-description long-text-line-height">
+      <%= DescriptionDisplayFormatter.new(@work.description).format  %>
+    </div>
+  </div>
+
+  <div class="show-file-list">
+
+    <% if decorator.available_by_request_assets.present? %>
+      <h2 class="attribute-sub-head mt-0">Access this interview</h2>
+      <div class="show-sub-head-body request-section">
+        <div class="pr-2 long-text-line-height">
+        <div class="pb-sm-3 pl-sm-3 text-nowrap float-sm-right">
+          <%= link_to "Request Access", "javascript: alert('under construction, not yet implemented')", class: "btn btn-emphasis mb-2" %>
+        </div>
+
+
+          <p class="text-brand-serif">Available upon request
+            <%= decorator.multiple_files? ? "are" : "is" %>
+            <%= decorator.available_by_request_summary %>.
+          </p>
+          <p class="text-brand-serif">After submitting a brief form, you will receive immediate access to
+            <%= decorator.multiple_files? ? "these files" : "this file" %>.
+            If you have any questions about transcripts, recordings, or usage permissions, please
+            <%= link_to "contact the Center for Oral History", "https://www.sciencehistory.org/center-for-oral-history/contact" %>.
+          </p>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="mb-4 pr-3">
+      <%= render "rights_and_social", work: @work %>
+    </div>
+
+    <% decorator.member_list_for_display.each_with_index do |member, index| %>
+        <div class="show-member-file-list-item">
+          <div class="image">
+            <%# lazyload all but first 6 images %>
+            <%= ThumbDisplay.new(member.leaf_representative, thumb_size: :mini, lazy: (index > 5)).display %>
+          </div>
+          <div class="title">
+            <div>
+              <%= link_to_if member.kind_of?(Asset),
+                             member.title,
+                             download_path(member, disposition: :inline) %>
+
+              <% unless member.published? %>
+                  <span title="Private" class="badge badge-warning">Private</span>
+              <% end %>
+            </div>
+            <% if member.kind_of?(Asset) %>
+              <div>
+                <small><%= decorator.asset_details(member) %></small>
+              </div>
+            <% end %>
+          </div>
+          <div class="action">
+            <% if member.kind_of?(Work) %>
+              <%= link_to "Info", work_path(member), class: "btn btn-primary" %>
+            <% else %>
+              <%= link_to "Download",
+                  download_path(member),
+                  class: "btn btn-primary",
+                  data: {
+                    analytics_category: "Work",
+                    analytics_action: "download",
+                    analytics_label: @work.friendlier_id
+                  } %>
+            <% end %>
+          </div>
+        </div>
+    <% end %>
+  </div>
+
+  <div class="show-metadata">
+    <%= WorkShowInfo.new(@work).display %>
+
+    <%= render "citation", work: @work  %>
+  </div>
+</div>
+
