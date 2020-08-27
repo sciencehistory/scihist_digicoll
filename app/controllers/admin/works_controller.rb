@@ -204,11 +204,12 @@ class Admin::WorksController < AdminController
   # recursive CTE so it'll be efficient-ish.
   def publish
     authorize! :publish, @work
-
     @work.class.transaction do
       @work.update!(published: true)
-      @work.all_descendent_members.find_each do |member|
-        member.update!(published: true)
+      if params[:cascade] == 'true'
+        @work.all_descendent_members.find_each do |member|
+          member.update!(published: true)
+        end
       end
     end
 
@@ -234,11 +235,12 @@ class Admin::WorksController < AdminController
   # recursive CTE so it'll be efficient-ish.
   def unpublish
     authorize! :publish, @work
-
     @work.class.transaction do
       @work.update!(published: false)
-      @work.all_descendent_members.find_each do |member|
-        member.update!(published: false)
+      if params[:cascade] == 'true'
+        @work.all_descendent_members.find_each do |member|
+          member.update!(published: false)
+        end
       end
     end
 
