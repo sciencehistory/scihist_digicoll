@@ -11,7 +11,7 @@ require 'rails_helper'
 RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue_adapter: :test do
   context "#demote_to_asset" do
     context "work not suitable" do
-      context "becuase it has no parent" do
+      context "because it has no parent" do
         let(:work) { FactoryBot.create(:work, :with_assets)}
 
         it "rejects" do
@@ -201,13 +201,24 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       let(:work) { create(:work, :published, published: false, members: [asset_child, work_child]) }
 
       it "can publish, and publishes children" do
-        put :publish, params: { id: work.friendlier_id }
+        put :publish, params: { id: work.friendlier_id, cascade: 'true' }
         expect(response.status).to redirect_to(admin_work_path(work))
 
         work.reload
         expect(work.published?).to be true
         expect(work.members.all? {|m| m.published?}).to be true
       end
+
+      it "does not change unpublished children unless requested" do
+        put :publish, params: { id: work.friendlier_id, cascade: 'false' }
+        expect(response.status).to redirect_to(admin_work_path(work))
+        work.reload
+        expect(work.published?).to be true
+        expect(work.members.all? {|m| m.published?}).to be false
+      end
+
+
+
 
       it "can delete, and deletes children" do
         put :destroy, params: { id: work.friendlier_id }
@@ -225,8 +236,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         let(:work) { create(:private_work, rights: nil, format: nil, genre: nil, department: nil, date_of_work: nil) }
 
         it "can not publish, displaying proper error and work form" do
-          put :publish, params: { id: work.friendlier_id }
-
+          put :publish, params: { id: work.friendlier_id, cascade: 'true' }
           expect(response.status).to be(200)
 
           expect(response.body).to include("Can&#39;t publish work: #{work.title}: Validation failed")
@@ -242,7 +252,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
           let(:work) { create(:work, :published, published: false, members: [work_child]) }
 
           it "can not publish, displaing proper error for child work" do
-            put :publish, params: { id: work.friendlier_id }
+            put :publish, params: { id: work.friendlier_id, cascade: 'true'}
             expect(response.status).to be(200)
             expect(response.body).to include("Can&#39;t publish work: #{work_child.title}: Validation failed")
           end
@@ -256,12 +266,21 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
 
 
         it "can unpublish, unpublishes children" do
-          put :unpublish, params: { id: work.friendlier_id }
+          put :unpublish, params: { id: work.friendlier_id, cascade: 'true' }
           expect(response.status).to redirect_to(admin_work_path(work))
 
           work.reload
           expect(work.published?).to be false
           expect(work.members.none? {|m| m.published?}).to be true
+        end
+
+        it "does not change published children unless requested" do
+          put :unpublish, params: { id: work.friendlier_id, cascade: 'false' }
+          expect(response.status).to redirect_to(admin_work_path(work))
+
+          work.reload
+          expect(work.published?).to be false
+          expect(work.members.all? {|m| m.published?}).to be true
         end
       end
     end
