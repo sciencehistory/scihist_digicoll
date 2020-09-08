@@ -184,6 +184,19 @@ module ScihistDigicoll
     # In production, different bucket keys are actual keys to look up actual bucket names in the Env
     # system (local_env.yml or ENV), usually a different bucket per key.
     #
+    # If you want to configure to have shrine treat the bucket as public (set public ACLs on upload
+    # and generate public URLs by default), and you might also want to set far-future cache
+    # headers, pass:
+    #
+    #      s3_storage_options: {
+    #        public: true,
+    #        upload_options: {
+    #          # since shrine urls should be at random unique keys, we can cache forever
+    #          cache_control: "max-age=31536000, public"
+    #        }
+    #      })
+    #
+    #
     def self.appropriate_shrine_storage(bucket_key:, mode: lookup!(:storage_mode), s3_storage_options: {}, prefix: nil)
       unless %I{s3_bucket_uploads s3_bucket_originals s3_bucket_derivatives
                 s3_bucket_on_demand_derivatives s3_bucket_dzi}.include?(bucket_key)
@@ -237,7 +250,12 @@ module ScihistDigicoll
       @shrine_derivatives_storage ||=
         appropriate_shrine_storage( bucket_key: :s3_bucket_derivatives,
                                     s3_storage_options: {
-                                      public: true
+                                      public: true,
+                                      upload_options: {
+                                        # derivatives are public and at unique random URLs, so
+                                        # can be cached far-future
+                                        cache_control: "max-age=31536000, public"
+                                      }
                                     })
     end
 
@@ -268,7 +286,7 @@ module ScihistDigicoll
                                       upload_options: {
                                         # our DZI's are all public right now, and at unique-to-content
                                         # URLs, cache forever.
-                                        cache_control: "max-age=31536000,public"
+                                        cache_control: "max-age=31536000, public"
                                       }
                                     })
     end
