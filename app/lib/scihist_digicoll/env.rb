@@ -259,6 +259,21 @@ module ScihistDigicoll
                                     })
     end
 
+    # RESTRICTED derivative storage. NOTE we haven't decided for sure yet where to put
+    # this in production. It's own bucket? A prefix inside of originals?
+    def self.shrine_restricted_derivatives_storage
+      @shrine_derivatives_storage ||=
+        appropriate_shrine_storage( bucket_key: :s3_bucket_restricted_derivatives,
+                                    s3_storage_options: {
+                                      public: true,
+                                      upload_options: {
+                                        # derivatives are public and at unique random URLs, so
+                                        # can be cached far-future
+                                        cache_control: "max-age=31536000, public"
+                                      }
+                                    })
+    end
+
     # Note we set shrine S3 storage to public, to upload with public ACLs
     def self.shrine_on_demand_derivatives_storage
       @shrine_on_demand_derivatives_storage ||=
