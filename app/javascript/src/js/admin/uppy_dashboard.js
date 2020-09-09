@@ -116,7 +116,9 @@ function kithe_createFileUploader(container) {
 
     row.appendChild(document.createElement("td")).innerText = size;
     row.appendChild(document.createElement("td")).innerHTML =
-      "<button type='button' data-cached-file-remove='true' class='btn btn-outline-primary'>Remove</button>";
+      "<a type='button' data-cached-file-remove='true' href='#' aria-label='Remove' title='Remove'>" +
+        "<i class='fa fa-times-circle' style='font-size: 150%' aria-hidden='true'></i>" +
+      "</a>";
 
     return row;
   }
