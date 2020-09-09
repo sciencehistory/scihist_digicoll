@@ -5,7 +5,11 @@
     word-wrap: break-word;
   }
 
-  .attach-files-table-size, .attach-files-table-remove {
-    width: 100px;
+  .attach-files-table-size {
+    width: 6.25rem;
+  }
+
+  .attach-files-table-remove {
+    width: 3rem;
   }
 }
