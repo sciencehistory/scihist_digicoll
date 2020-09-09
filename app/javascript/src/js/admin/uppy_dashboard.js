@@ -118,7 +118,7 @@ function kithe_createFileUploader(container) {
 
     // Storage type control, put in params keyed by file ID
     row.appendChild(document.createElement("td")).innerHTML =
-      "<select name='storage_type_for[" + shrineHash.id + "]' class='form-control'>" +
+      "<select name='storage_type_for[" + shrineHash.id + "]' class='form-control derivative-storage-type'>" +
         "<option>public</option><option>restricted</option>" +
       "</select>";
 
