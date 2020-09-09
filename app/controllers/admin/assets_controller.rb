@@ -71,7 +71,12 @@ class Admin::AssetsController < AdminController
       sort_by { |h| h && h.dig("metadata", "filename")}
 
     files_params.each do |file_data|
-      asset = Asset.new
+      asset = Asset.new()
+
+      if derivative_storage_type = params.dig(:storage_type_for, file_data["id"])
+        asset.derivative_storage_type = derivative_storage_type
+      end
+
       asset.position = (current_position += 1)
       asset.parent_id = @parent.id
       asset.file = file_data
