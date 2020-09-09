@@ -6,6 +6,18 @@ class AssetUploader < Kithe::AssetUploader
   # URL location, to be fetched on promotion.
   plugin :kithe_accept_remote_url
 
+
+  # Re-set shrine derivatives setting, to put DERIVATIVES on restricted storage
+  # if so configured. Only effects initial upload, if setting changes, some code
+  # needs to manually move files.
+  Attacher.derivatives_storage do |derivative_key|
+    if record.derivative_storage_type == "restricted"
+      :restricted_kithe_derivatives
+    else # public store
+      :kithe_derivatives
+    end
+  end
+
   THUMB_WIDTHS = {
     mini: 54,
     large: 525,
