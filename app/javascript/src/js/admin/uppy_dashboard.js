@@ -116,8 +116,11 @@ function kithe_createFileUploader(container) {
 
     row.appendChild(document.createElement("td")).innerText = size;
 
+    // Storage type control, put in params keyed by file ID
     row.appendChild(document.createElement("td")).innerHTML =
-      "<select class='form-control'><option>public</option><option>restricted</option></select>";
+      "<select name='storage_type_for[" + shrineHash.id + "]' class='form-control'>" +
+        "<option>public</option><option>restricted</option>" +
+      "</select>";
 
     row.appendChild(document.createElement("td")).innerHTML =
       "<button type='button' data-cached-file-remove='true' class='btn btn-link' aria-label='Remove' title='Remove'>" +
