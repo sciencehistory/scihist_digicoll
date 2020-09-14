@@ -198,7 +198,7 @@ module ScihistDigicoll
     #
     #
     def self.appropriate_shrine_storage(bucket_key:, mode: lookup!(:storage_mode), s3_storage_options: {}, prefix: nil)
-      unless %I{s3_bucket_uploads s3_bucket_originals s3_bucket_derivatives s3_bucket_restricted_derivatives
+      unless %I{s3_bucket_uploads s3_bucket_originals s3_bucket_derivatives
                 s3_bucket_on_demand_derivatives s3_bucket_dzi}.include?(bucket_key)
         raise ArgumentError.new("Unrecognized bucket_key: #{bucket_key}")
       end
@@ -259,19 +259,13 @@ module ScihistDigicoll
                                     })
     end
 
-    # RESTRICTED derivative storage. NOTE we haven't decided for sure yet where to put
-    # this in production. It's own bucket? A prefix inside of originals?
+    # RESTRICTED derivative storage. We keep these in a separate prefix in
+    # ORIGINALS bucket, since originals bucket already has the access restrictions
+    # we need, and backups, etc.
     def self.shrine_restricted_derivatives_storage
       @shrine_restricted_derivatives_storage ||=
-        appropriate_shrine_storage( bucket_key: :s3_bucket_restricted_derivatives,
-                                    s3_storage_options: {
-                                      public: true,
-                                      upload_options: {
-                                        # derivatives are public and at unique random URLs, so
-                                        # can be cached far-future
-                                        cache_control: "max-age=31536000, public"
-                                      }
-                                    })
+        appropriate_shrine_storage( bucket_key: :s3_bucket_originals,
+                                    prefix: "restricted_derivatives")
     end
 
     # Note we set shrine S3 storage to public, to upload with public ACLs
