@@ -115,8 +115,17 @@ function kithe_createFileUploader(container) {
     }
 
     row.appendChild(document.createElement("td")).innerText = size;
+
+    // Storage type control, put in params keyed by file ID
     row.appendChild(document.createElement("td")).innerHTML =
-      "<button type='button' data-cached-file-remove='true' class='btn btn-outline-primary'>Remove</button>";
+      "<select name='storage_type_for[" + shrineHash.id + "]' class='form-control derivative-storage-type'>" +
+        "<option>public</option><option>restricted</option>" +
+      "</select>";
+
+    row.appendChild(document.createElement("td")).innerHTML =
+      "<button type='button' data-cached-file-remove='true' class='btn btn-link' aria-label='Remove' title='Remove'>" +
+        "<i class='fa fa-times-circle' style='font-size: 180%' aria-hidden='true'></i>" +
+      "</button>";
 
     return row;
   }

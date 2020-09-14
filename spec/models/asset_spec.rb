@@ -11,4 +11,18 @@ describe Asset do
       expect(Asset.all_derivative_count).to eq(expected)
     end
   end
+
+  describe "restricted derivatives", queue_adapter: :inline do
+    let(:sample_file_location) {  Rails.root + "spec/test_support/images/20x20.png" }
+    let(:asset) { create(:asset, derivative_storage_type: "restricted") }
+    it "are stored in restricted derivatives location" do
+      asset.file = File.open(sample_file_location)
+      asset.save!
+      asset.reload
+
+      derivatives = asset.file_derivatives.values
+
+      expect(derivatives).to all(satisfy { |d| d.storage_key == :restricted_kithe_derivatives })
+    end
+  end
 end

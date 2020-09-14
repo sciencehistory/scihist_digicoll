@@ -3,9 +3,21 @@
     width: 100%;
     table-layout: fixed;
     word-wrap: break-word;
+
+    td {
+      vertical-align: middle;
+    }
   }
 
-  .attach-files-table-size, .attach-files-table-remove {
-    width: 100px;
+  .attach-files-table-size {
+    width: 6rem;
+  }
+
+  .attach-files-table-storage-type  {
+    width: 8rem;
+  }
+
+  .attach-files-table-remove {
+    width: 3rem;
   }
 }
