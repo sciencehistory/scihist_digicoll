@@ -18,6 +18,11 @@ class Asset < Kithe::Asset
   # bucket. Intended for non-published Oral History assets, eg "free access no internet release"
   attr_json :derivative_storage_type, :string, default: "public"
   validates :derivative_storage_type, inclusion: { in: ["public", "restricted"] }
+  DERIVATIVE_STORAGE_TYPE_LOCATIONS = {
+    "public" => :kithe_derivatives,
+    "restricted" => :restricted_kithe_derivatives
+  }.freeze
+
 
 
   # Our DziFiles object to manage associated DZI (deep zoom, for OpenSeadragon

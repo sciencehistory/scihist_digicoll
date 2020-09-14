@@ -12,9 +12,9 @@ class AssetUploader < Kithe::AssetUploader
   # needs to manually move files.
   Attacher.derivatives_storage do |derivative_key|
     if record.derivative_storage_type == "restricted"
-      :restricted_kithe_derivatives
+      Asset::DERIVATIVE_STORAGE_TYPE_LOCATIONS.fetch("restricted")
     else # public store
-      :kithe_derivatives
+      Asset::DERIVATIVE_STORAGE_TYPE_LOCATIONS.fetch("public")
     end
   end
 
