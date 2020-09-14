@@ -34,5 +34,12 @@ describe "EnsureCorrectDerivativesStorageJob" do
         expect(deriv.exists?).to be(true)
       end
     end
+
+    it "Deletes DZI files when ensuring restricted" do
+      expect(Shrine.storages[:dzi_storage]).to receive(:delete_prefixed).with(
+        asset.dzi_file.dzi_uploaded_file.id.sub(/\.dzi$/, "_files/")
+      )
+      job.perform_now
+    end
   end
 end

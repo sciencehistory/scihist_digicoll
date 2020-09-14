@@ -1,10 +1,17 @@
 # Derivatives can be stored in a "restricted" location or a "public" location. If the setting changes
 # or they have become out of sync, this job will fix it, moving/copying/deleting derivatives if required,
 # to now be in the right place.
+#
+# Also makes sure no DZI files for assets set to restricted derivatives
 class EnsureCorrectDerivativesStorageJob < ApplicationJob
 
   def perform(asset)
     ensure_correct_derivative_locations(asset)
+
+    if asset.derivative_storage_type == "restricted"
+      # no dzi files supported for restricted derivatives, as DZI storage is not secure!
+      asset.dzi_file.delete
+    end
   end
 
   private
