@@ -12,6 +12,13 @@ class Asset < Kithe::Asset
   # available after request form, with or without medidation by human approval.
   attr_json :oh_available_by_request, :boolean
 
+  # Most of our derivatives are kept in an S3 bucket with public access, even
+  # when the asset is in a non-published state. But actual confidential material
+  # that won't be published may need derivatives kept in a separate restricted access
+  # bucket. Intended for non-published Oral History assets, eg "free access no internet release"
+  attr_json :derivative_storage_type, :string, default: "public"
+  validates :derivative_storage_type, inclusion: { in: ["public", "restricted"] }
+
 
   # Our DziFiles object to manage associated DZI (deep zoom, for OpenSeadragon
   # panning/zooming) file(s).

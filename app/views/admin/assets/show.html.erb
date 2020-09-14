@@ -117,9 +117,21 @@
     </dl>
 
     <h2 class="mt-4">Derivatives</h2>
+
+    <p>
+      Derivative storage type set to: <code><%= @asset.derivative_storage_type %></code>
+    </p>
+
     <ul class="list-unstyled">
       <% @asset.file_derivatives.each_pair do |key, derivative| %>
-        <li><%= link_to key, derivative.url %></li>
+        <li>
+          <%= link_to key, derivative.url %>
+          <% if derivative.storage_key == :restricted_kithe_derivatives %>
+            <span class="badge badge-warning">on restricted storage</span>
+          <% elsif @asset.derivative_storage_type == "restricted" %>
+            <span class="badge badge-danger">unexpectedly on public storage</span>
+          <% end %>
+        </li>
       <% end %>
     </ul>
   </div>
