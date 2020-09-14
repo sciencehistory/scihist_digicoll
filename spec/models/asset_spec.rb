@@ -26,6 +26,17 @@ describe Asset do
       expect(asset.derivatives_in_correct_storage_location?).to be(true)
     end
 
+
+    describe "starting out public", queue_adapter: :test do
+      let(:asset) { create(:asset_with_faked_file) } # this creates faked derivatives too
+
+      it "kicks off ensure derivatives storage job when storage type changed" do
+        expect {
+          asset.update!(derivative_storage_type: "restricted")
+        }.to have_enqueued_job(EnsureCorrectDerivativesStorageJob)
+      end
+    end
+
     describe "with derivatives in wrong location" do
       let(:asset) do
         # create one with no derivatives
