@@ -24,7 +24,9 @@ describe "EnsureCorrectDerivativesStorageJob" do
       a
     end
 
-    it "copies and sets derivatives to correct location" do
+    it "moves derivatives to correct location" do
+      original_derivatives = asset.file_derivatives.values
+
       job.perform_now
 
       expect(asset.file_derivatives.values).to be_present
@@ -32,6 +34,10 @@ describe "EnsureCorrectDerivativesStorageJob" do
       asset.file_derivatives.values.each do |deriv|
         expect(deriv.storage_key).to eq(:restricted_kithe_derivatives)
         expect(deriv.exists?).to be(true)
+      end
+
+      original_derivatives.each do |deriv|
+        expect(deriv.exists?).to be(false)
       end
     end
 
