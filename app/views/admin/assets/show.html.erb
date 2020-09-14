@@ -119,7 +119,29 @@
     <h2 class="mt-4">Derivatives</h2>
 
     <p>
-      Derivative storage type set to: <code><%= @asset.derivative_storage_type %></code>
+      <%= simple_form_for(@asset, wrapper: :horizontal_form) do |f| %>
+
+        <p class="text-muted small mt-3">
+            Use the <b>restricted</b> storage type for confidential files such as restricted oral histories.
+            Otherwise, normally use <b>public</b> storage type. After changing Derivative Storage Type
+            it may take a few minutes for derivative locations to be updated.</p>
+        </p>
+
+        <div class="row mb-3">
+          <div class="col-sm-4">
+            <%= f.label :derivative_storage_type %>
+          </div>
+          <div class="col-sm-8">
+            <%= f.input_field :derivative_storage_type,
+              as: :select,
+              collection: Asset::DERIVATIVE_STORAGE_TYPE_LOCATIONS.keys,
+              include_blank: false,
+              class: "custom-select" %>
+          </div>
+        </div>
+
+        <%= f.button :submit, "Update Derivative Storage Type" %>
+      <% end %>
     </p>
 
     <ul class="list-unstyled">
