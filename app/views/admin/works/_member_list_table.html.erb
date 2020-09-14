@@ -40,6 +40,9 @@
           </td>
           <td>
             <%= link_to member.title, [:admin, member] %> <%= publication_badge(member) %>
+            <% if member.kind_of?(Asset) && member.derivative_storage_type == "restricted" %>
+              <span class="badge badge-warning">Restricted derivatives storage</span>
+            <% end %>
           </td>
           <td class="datestamp"><%= l member.created_at.to_date, format: :admin  %></td>
           <td class="datestamp"><%= l member.updated_at.to_date, format: :admin %></td>
