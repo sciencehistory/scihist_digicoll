@@ -39,6 +39,17 @@ class Asset < Kithe::Asset
   after_promotion DziFiles::ActiveRecordCallbacks, if: ->(asset) { asset.content_type&.start_with?("image/") }
   after_commit DziFiles::ActiveRecordCallbacks, only: [:update, :destroy]
 
+
+  # Ensure that recorded storage locations for all derivatives matches
+  # current #derivative_storage_type setting.  Returns false only if
+  # there are derivatives that exist, in wrong location.
+  def derivatives_in_correct_storage_location?
+    file_derivatives.blank? ||
+      file_derivatives.values.collect(&:storage_key).all?(
+        self.class::DERIVATIVE_STORAGE_TYPE_LOCATIONS.fetch(self.derivative_storage_type)
+      )
+  end
+
   # What is total number of derivatives referenced in our DB?
   #
   # Since they are now referenced as keys inside a JSON hash in Asset, it's a bit

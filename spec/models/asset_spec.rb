@@ -23,6 +23,30 @@ describe Asset do
       derivatives = asset.file_derivatives.values
 
       expect(derivatives).to all(satisfy { |d| d.storage_key == :restricted_kithe_derivatives })
+      expect(asset.derivatives_in_correct_storage_location?).to be(true)
+    end
+
+    describe "with derivatives in wrong location" do
+      let(:asset) do
+        # create one with no derivatives
+        a = create(:asset_with_faked_file,
+          derivative_storage_type: "restricted",
+          faked_derivatives: {})
+
+        derivatives_on_public_storage = {
+          "thumb_small" => a.file_attacher.upload_derivative("thumb_small", File.open(sample_file_location), storage: :kithe_derivatives, delete: false),
+          "thumb_large" => a.file_attacher.upload_derivative("thumb_large", File.open(sample_file_location), storage: :kithe_derivatives, delete: false),
+        }
+
+        a.file_attacher.set_derivatives(derivatives_on_public_storage)
+        a.save!
+
+        a
+      end
+
+      it "#derivatives_in_correct_storage_location? is false" do
+        expect(asset.derivatives_in_correct_storage_location?).to be(false)
+      end
     end
   end
 end
