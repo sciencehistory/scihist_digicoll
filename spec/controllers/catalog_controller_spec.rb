@@ -46,6 +46,20 @@ RSpec.describe CatalogController, solr: true, type: :controller do
       end
     end
 
+    describe "f param as string" do
+      it "returns http 400" do
+        get :index, params: { f: "bad" }
+        expect(response).to have_http_status(400)
+      end
+    end
+
+    describe "range param as string" do
+      it "returns http 400" do
+        get :index, params: { range: "bad" }
+        expect(response).to have_http_status(400)
+      end
+    end
+
     describe "range value out of order" do
       render_views
 
