@@ -31,7 +31,7 @@ class Asset < Kithe::Asset
     @dzi_file ||= DziFiles.new(self)
   end
 
-  after_promotion DziFiles::ActiveRecordCallbacks, if: ->(asset) { asset.content_type&.start_with?("image/") }
+  after_promotion DziFiles::ActiveRecordCallbacks, if: ->(asset) { asset.content_type&.start_with?("image/") && asset.derivative_storage_type == "public" }
   after_commit DziFiles::ActiveRecordCallbacks, only: [:update, :destroy]
 
   # What is total number of derivatives referenced in our DB?
