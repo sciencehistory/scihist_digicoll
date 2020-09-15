@@ -39,6 +39,7 @@ class RecentItems
 
   def fetch_bag
     @@bag ||= Work.where('published = true').
+      includes(:leaf_representative).
       order('updated_at desc').
       limit(@how_many_works_in_bag)
   end
