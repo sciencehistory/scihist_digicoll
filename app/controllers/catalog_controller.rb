@@ -3,6 +3,7 @@
 require 'kithe/blacklight_tools/bulk_loading_search_service'
 
 class CatalogController < ApplicationController
+  before_action :catch_bad_blacklight_params, only: :index
   before_action :redirect_hash_facet_params, only: :index
   before_action :redirect_legacy_query_urls, only: :index
   before_action :swap_range_limit_params_if_needed, only: :index
@@ -388,6 +389,29 @@ class CatalogController < ApplicationController
     # default 'mySuggester', uncomment and provide it below
     # config.autocomplete_suggester = 'mySuggester'
   end
+
+  # Some bad actors sometimes send query params that Blacklight doesn't expect and
+  # can't handle. They look like they are scanning for vulnerabilities which don't
+  # apply to us and it's fine that they get an error, but let's avoid them resulting
+  # in uncaught exceptions reported in our error tracker, while giving a nice error response.
+  #
+  # We use `respond_to?(:to_hash)` to try to allow either Hash or ActionController::Params,
+  # since it seems like in specs it can be straight Hash and this is a weird implementation detail.
+  #
+  # A render in a before_action will halt further processing, as intended.
+  def catch_bad_blacklight_params
+    # eg &range=expect%3A%2F%2Fdir
+    if params[:range] &&
+        !(params[:range].respond_to?(:to_hash) && params[:range].values.all? { |v| v.respond_to?(:to_hash) })
+      render plain: "Invalid URL query parameter range=#{params[:range].to_param}", status: 400
+    end
+
+    # eg &f=expect%3A%2F%2Fdir
+    if params[:f] && !params[:f].respond_to?(:to_hash)
+      render plain: "Invalid URL query parameter f=#{params[:f].to_param}", status: 400
+    end
+  end
+
 
   LEGACY_SORT_REDIRECTS = {
     "latest_year desc" => "newest_date",
