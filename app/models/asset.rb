@@ -16,9 +16,18 @@ class Asset < Kithe::Asset
   # when the asset is in a non-published state. But actual confidential material
   # that won't be published may need derivatives kept in a separate restricted access
   # bucket. Intended for non-published Oral History assets, eg "free access no internet release"
-  attr_json :derivative_storage_type, :string, default: "public"
+  #
+  # Set rails_attribute true so we get rails dirty tracking.
+  attr_json :derivative_storage_type, :string, default: "public", rails_attribute: true
+
   validates :derivative_storage_type, inclusion: { in: ["public", "restricted"] }
 
+  DERIVATIVE_STORAGE_TYPE_LOCATIONS = {
+    "public" => :kithe_derivatives,
+    "restricted" => :restricted_kithe_derivatives
+  }.freeze
+
+  after_update_commit :ensure_correct_derivatives_storage_after_change
 
   # Our DziFiles object to manage associated DZI (deep zoom, for OpenSeadragon
   # panning/zooming) file(s).
@@ -33,6 +42,17 @@ class Asset < Kithe::Asset
 
   after_promotion DziFiles::ActiveRecordCallbacks, if: ->(asset) { asset.content_type&.start_with?("image/") }
   after_commit DziFiles::ActiveRecordCallbacks, only: [:update, :destroy]
+
+
+  # Ensure that recorded storage locations for all derivatives matches
+  # current #derivative_storage_type setting.  Returns false only if
+  # there are derivatives that exist, in wrong location.
+  def derivatives_in_correct_storage_location?
+    file_derivatives.blank? ||
+      file_derivatives.values.collect(&:storage_key).all?(
+        self.class::DERIVATIVE_STORAGE_TYPE_LOCATIONS.fetch(self.derivative_storage_type)
+      )
+  end
 
   # What is total number of derivatives referenced in our DB?
   #
@@ -49,5 +69,13 @@ class Asset < Kithe::Asset
     Kithe::Asset.connection.select_all(
       "select count(*) from (SELECT id, jsonb_object_keys(file_data -> 'derivatives') FROM kithe_models WHERE kithe_model_type = 2) AS asset_derivative_keys;"
     ).first["count"]
+  end
+
+  # If derivative_storage_type changed in last save, fire off bg job
+  # to move derivatives to correct place.
+  def ensure_correct_derivatives_storage_after_change
+    if derivative_storage_type_previously_changed? && file_derivatives.present?
+      EnsureCorrectDerivativesStorageJob.perform_later(self)
+    end
   end
 end
