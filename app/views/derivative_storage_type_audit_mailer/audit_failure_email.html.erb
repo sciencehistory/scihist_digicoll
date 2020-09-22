@@ -6,7 +6,7 @@
 
     <ul>
       <% @auditor.incorrect_storage_locations.each do |asset| %>
-        <li><%= asset.friendlier_id %></li>
+        <li><%= link_to asset.friendlier_id, admin_asset_url(asset, host: mailer.hostname) %></li>
       <% end %>
     </ul>
 <% end %>
@@ -17,7 +17,7 @@
 
   <ul>
     <% @auditor.incorrectly_published.each do |asset| %>
-      <li><%= asset.friendlier_id %></li>
+      <li><%= link_to asset.friendlier_id, admin_asset_url(asset, host: mailer.hostname) %></li>
     <% end %>
   </ul>
 <% end %>

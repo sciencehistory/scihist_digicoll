@@ -17,7 +17,7 @@ class DerivativeStorageTypeAuditMailer < ApplicationMailer
     mail(
       from:         from_address,
       to:           to_address,
-      subject:      "Digital Collections Warning: Assets with unexpected derivative_storage_type state found",
+      subject:      "Digital Collections Warning: #{hostname}: Assets with unexpected derivative_storage_type state found",
       content_type: "text/html",
     )
   end
@@ -26,5 +26,4 @@ class DerivativeStorageTypeAuditMailer < ApplicationMailer
   def hostname
     ScihistDigicoll::Env.lookup!(:app_url_base)
   end
-
 end
