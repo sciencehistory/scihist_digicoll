@@ -69,6 +69,11 @@ class AssetDerivativeStorageTypeAuditor
         },
         tags: "derivative_storage_type"
       )
+
+      DerivativeStorageTypeAuditMailer.
+        with(asset_derivative_storage_type_auditor: self).
+        audit_failure_email
+        .deliver_now
     end
   end
 

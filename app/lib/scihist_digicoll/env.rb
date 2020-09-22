@@ -315,10 +315,10 @@ module ScihistDigicoll
     # OUTGOING EMAIL:
 
     # From address:
-    define_key :no_reply_email_address
+    define_key :no_reply_email_address, default: "no-reply@sciencehistory.org"
     # To addresses (these are email lists maintained by IT.)
-    define_key :digital_tech_email_address
-    define_key :digital_email_address
+    define_key :digital_tech_email_address, default: "digital-tech@sciencehistory.org"
+    define_key :digital_email_address, default: "digital@sciencehistory.org"
 
     # These are the credentials used for accessing Amazon's simple email server:
     define_key :smtp_username
