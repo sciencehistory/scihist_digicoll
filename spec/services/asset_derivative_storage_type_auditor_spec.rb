@@ -45,9 +45,11 @@ describe "AssetDerivativeStorageTypeAuditor" do
     end
 
     describe "#perform!" do
-      it "does not send honeybadger notification" do
+      it "does not send notifications" do
         expect(Honeybadger).not_to receive(:notify)
-        auditor.perform!
+        expect {
+          auditor.perform!
+        }.not_to change { ActionMailer::Base.deliveries.count }
       end
     end
   end
@@ -74,9 +76,12 @@ describe "AssetDerivativeStorageTypeAuditor" do
     end
 
     describe "#perform!" do
-      it "sends honeybadger notification" do
+      it "sends notifications" do
         expect(Honeybadger).to receive(:notify).with("Assets with unexpected derivative_storage_type state found", any_args)
-        auditor.perform!
+
+        expect {
+          auditor.perform!
+        }.to change { ActionMailer::Base.deliveries.count }.by(1)
       end
     end
   end
