@@ -1,0 +1,25 @@
+<p>Some assets have been found with unexpected derivative_storage_type values.</p>
+
+<% if @auditor.incorrect_storage_locations.present? %>
+    <h2>Inconsistent derivative locations</h2>
+    <p>These assets have derivatives that are not stored consistently with their selected derivative_storage_type</p>
+
+    <ul>
+      <% @auditor.incorrect_storage_locations.each do |asset| %>
+        <li><%= link_to asset.friendlier_id, admin_asset_url(asset, host: mailer.hostname) %></li>
+      <% end %>
+    </ul>
+<% end %>
+
+<% if @auditor.incorrectly_published.present? %>
+  <h2>Incorrectly published</h2>
+  <p>These assets are published, with derivative_storage_type == 'restricted', which we don't intend to do.</p>
+
+  <ul>
+    <% @auditor.incorrectly_published.each do |asset| %>
+      <li><%= link_to asset.friendlier_id, admin_asset_url(asset, host: mailer.hostname) %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+
