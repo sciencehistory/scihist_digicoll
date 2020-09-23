@@ -6,7 +6,6 @@
 class EnsureCorrectDerivativesStorageJob < ApplicationJob
 
   def perform(asset)
-    byebug
     ensure_correct_derivative_locations(asset)
   end
 
