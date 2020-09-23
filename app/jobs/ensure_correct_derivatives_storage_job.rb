@@ -53,9 +53,13 @@ class EnsureCorrectDerivativesStorageJob < ApplicationJob
   # are stored, couldn't figure out a good implementation without that.  There is
   # a risk this code will silently fail to delete derivatives on backup
   # if they aren't stored where it thinks!
+  #
+  # Also assumes buckets ARE versioned, and uses appropriate command to delete all
+  # versions.
   def remove_from_backup_bucket(asset)
     if backup_bucket = ScihistDigicoll::Env.derivatives_backup_bucket
-      bucket.objects(prefix: "#{asset.id}/").batch_delete!
+      prefix = "#{asset.id}/"
+      bucket.object_versions(prefix: prefix).batch_delete!
     end
   end
 end
