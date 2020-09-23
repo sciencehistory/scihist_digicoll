@@ -322,7 +322,7 @@ module ScihistDigicoll
           secret_access_key: lookup(:aws_secret_access_key),
           region: region)
 
-        Aws::S3::Bucket.new(name: bucket_name, client: @client)
+        Aws::S3::Bucket.new(name: bucket_name, client: client)
       elsif production?
         raise RuntimeError.new("In production tier, but missing derivatives backup bucket settings presumed to exist")
       end
@@ -344,7 +344,7 @@ module ScihistDigicoll
           secret_access_key: lookup(:aws_secret_access_key),
           region: region)
 
-        Aws::S3::Bucket.new(name: bucket_name, client: @client)
+        Aws::S3::Bucket.new(name: bucket_name, client: client)
       elsif production?
         raise RuntimeError.new("In production tier, but missing derivatives backup bucket settings presumed to exist")
       end
