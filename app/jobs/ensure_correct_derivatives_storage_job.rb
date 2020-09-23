@@ -6,12 +6,8 @@
 class EnsureCorrectDerivativesStorageJob < ApplicationJob
 
   def perform(asset)
+    byebug
     ensure_correct_derivative_locations(asset)
-
-    if asset.derivative_storage_type == "restricted"
-      # no dzi files supported for restricted derivatives, as DZI storage is not secure!
-      asset.dzi_file.delete
-    end
   end
 
   private
@@ -36,9 +32,10 @@ class EnsureCorrectDerivativesStorageJob < ApplicationJob
       attacher.atomic_persist           # persist changes if attachment has not changed in the meantime
       old_attacher.delete_derivatives   # delete old derivatives now re-uploaded
 
-      # and if we've been succesful, remove any public files from backup bucket too
+      # and if we've been succesful, remove DZI files, all versions, and all
+      # backup bucket versions...
       if asset.derivative_storage_type == "restricted"
-        remove_from_backup_bucket(asset)
+        remove_all_public_ancillary_files_and_versions(asset)
       end
     rescue Shrine::AttachmentChanged,   # attachment has changed during reuploading
            ActiveRecord::RecordNotFound # record has been deleted during reuploadin
@@ -49,17 +46,52 @@ class EnsureCorrectDerivativesStorageJob < ApplicationJob
     end
   end
 
-  # Remove from backup bucket. WARNING we make assumptions about where derivatives
-  # are stored, couldn't figure out a good implementation without that.  There is
-  # a risk this code will silently fail to delete derivatives on backup
-  # if they aren't stored where it thinks!
+  # If we have moved the file to `restricted` storage, we have a bunch of ancillary
+  # files that need to be deleted too!
   #
-  # Also assumes buckets ARE versioned, and uses appropriate command to delete all
-  # versions.
-  def remove_from_backup_bucket(asset)
+  #  * previous S3 'versions' on public derivatives bucket
+  #  * all versions on derivatives BACKUP bucket
+  #  * DZI files (we don't support restricted DZI files), including all versions
+  #  * all versions from DZI BACKUP bucket!
+  #
+  # Phew! WARNING In order to do this efficiently, we have t make some
+  # assumptions about where derivatives are stored, we assume they are stored under
+  # the Asset UUID PK prefix directly on buckets. If we change our design
+  # to store in a different place later, this runs the risk of silently failing
+  # to delete actual versions and files.
+  #
+  # Also assumes buckets ARE versioned, unclear if it will work properly
+  # otherwise.
+  #
+  # This is a bit hacky/fragile code, but best we could do for now.
+  def remove_all_public_ancillary_files_and_versions(asset)
+    # Where we assume derivatives are located for this asset...
+    derivative_prefix = [Shrine.storages[:kithe_derivatives].prefix, "#{asset.id}/"].compact.join("/")
+    dzi_prefix        = [Shrine.storages[:dzi_storage].prefix, "#{asset.id}/"].compact.join("/")
+
+    # remove all past versions from live derivatives bucket IF S3 (expected in production, not staging/dev/test)
+    if Shrine.storages[:kithe_derivatives].kind_of?(Shrine::Storage::S3)
+      Shrine.storages[:kithe_derivatives].bucket.object_versions(prefix: derivative_prefix).batch_delete!
+    end
+
+    # remove all versions from derivatives backup bucket if we have one
     if backup_bucket = ScihistDigicoll::Env.derivatives_backup_bucket
-      prefix = "#{asset.id}/"
-      bucket.object_versions(prefix: prefix).batch_delete!
+      backup_bucket.object_versions(prefix: derivative_prefix).batch_delete!
+    end
+
+    # remove DZI file in the normal more reliable way, regardless of storage type
+    if asset.dzi_file
+      asset.dzi_file.delete
+    end
+
+    # remove all versions of all DZI files from main DZI location IF on S3 (expected in production, not staging/dev/test)
+    if Shrine.storages[:dzi_storage].kind_of?(Shrine::Storage::S3)
+      Shrine.storages[:dzi_storage].bucket.object_versions(prefix: dzi_prefix).batch_delete!
+    end
+
+    # remove all versions from dzi backup bucket if we have one
+    if dzi_backup_bucket = ScihistDigicoll::Env.dzi_backup_bucket
+      dzi_backup_bucket.object_versions(prefix: dzi_prefix).batch_delete!
     end
   end
 end
