@@ -300,6 +300,29 @@ module ScihistDigicoll
                                     })
     end
 
+
+    # Returns an S3::Bucket for the derivatives backup, used by our derivative storage
+    # type mover to make sure non-public derivatives don't exist in backups either.
+    #
+    # Can return nil, except in production will raise instead of nil, to make sure
+    # we don't accidentally avoid deleting from backup bucket in production where
+    # we assume it must exist.
+    def self.derivatives_backup_bucket
+      bucket_name = lookup(:s3_derivatives_backup_bucket)
+      region      = lookup(:s3_backup_bucket_region)
+
+      if bucket_name && region
+        client = Aws::S3::Client.new(
+          access_key_id:     lookup(:aws_access_key_id),
+          secret_access_key: lookup(:aws_secret_access_key),
+          region: region)
+
+        Aws::S3::Bucket.new(name: bucket_name, client: @client)
+      elsif production?
+        raise RuntimeError.new("In production tier, but missing derivatives backup bucket settings presumed to exist")
+      end
+    end
+
     define_key :honeybadger_api_key
 
 

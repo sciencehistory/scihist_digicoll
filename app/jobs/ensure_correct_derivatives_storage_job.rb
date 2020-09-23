@@ -35,12 +35,27 @@ class EnsureCorrectDerivativesStorageJob < ApplicationJob
     begin
       attacher.atomic_persist           # persist changes if attachment has not changed in the meantime
       old_attacher.delete_derivatives   # delete old derivatives now re-uploaded
+
+      # and if we've been succesful, remove any public files from backup bucket too
+      if asset.derivative_storage_type == "restricted"
+        remove_from_backup_bucket(asset)
+      end
     rescue Shrine::AttachmentChanged,   # attachment has changed during reuploading
            ActiveRecord::RecordNotFound # record has been deleted during reuploadin
 
       # delete the derivatives we re-uploaded, cause they didn't end up
       # attacched and no longer apply
       attacher.delete_derivatives
+    end
+  end
+
+  # Remove from backup bucket. WARNING we make assumptions about where derivatives
+  # are stored, couldn't figure out a good implementation without that.  There is
+  # a risk this code will silently fail to delete derivatives on backup
+  # if they aren't stored where it thinks!
+  def remove_from_backup_bucket(asset)
+    if backup_bucket = ScihistDigicoll::Env.derivatives_backup_bucket
+      bucket.objects(prefix: "#{asset.id}/").batch_delete!
     end
   end
 end
