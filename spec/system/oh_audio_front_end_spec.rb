@@ -29,7 +29,7 @@ describe "Audio front end", type: :system, js: true do
     audio_assets.select {|a| a.published }
   }
 
-  let!(:regular_assets) {
+  let!(:image_assets) {
     (5..8).to_a.map do |i|
       create(:asset_with_faked_file,
         title: "Regular file #{i}",
@@ -44,8 +44,16 @@ describe "Audio front end", type: :system, js: true do
     end
   }
 
+  let(:pdf_asset) do
+    create(:asset_with_faked_file, :pdf,
+      faked_derivatives: {},
+      parent: parent_work
+    )
+  end
+
+
   before do
-    parent_work.representative = regular_assets[0]
+    parent_work.representative = pdf_asset
     parent_work.save!
   end
 
@@ -58,6 +66,24 @@ describe "Audio front end", type: :system, js: true do
       expect(page).not_to have_selector('audio')
 
       click_on "Downloads"
+
+
+      # In oh_audio_work_show_decorator.rb we specify that only PDFs should be linked.
+
+      #PDF has a link:
+      linked_pdf_transcripts = find_all('.show-member-list-item a').select { |x| x.text == pdf_asset.title }
+      expect(linked_pdf_transcripts.count).to eq 1
+      #linked_pdf_transcripts[0]
+
+      expect(linked_pdf_transcripts[0]['data-analytics-category']).to eq "Work"
+      expect(linked_pdf_transcripts[0]['data-analytics-action']  ).to eq "view_oral_history_transcript_pdf"
+      expect(linked_pdf_transcripts[0]['data-analytics-label']   ).to eq parent_work.friendlier_id
+      # 3 JPEGS: not linked
+
+
+      expect(find_all('.show-member-list-item a').select { |x| x.text == image_assets[0].title }.count).to eq 0
+      expect(find_all('.show-member-list-item a').select { |x| x.text == image_assets[1].title }.count).to eq 0
+      expect(find_all('.show-member-list-item a').select { |x| x.text == image_assets[2].title }.count).to eq 0
 
       within("*[data-role='audio-playlist-wrapper']") do
         within('.now-playing-container') do
@@ -81,7 +107,9 @@ describe "Audio front end", type: :system, js: true do
       non_audio = page.find_all('.other-files .show-member-list-item')
 
       # Don't show the unpublished non-audio asset (# 6) to the not-logged-in user.
-      expect(non_audio.count). to eq regular_assets.count {|a| a.published }
+      # (The + 1 accounts for the PDF, which is not an image but is also not audio.)
+      expect(non_audio.count). to eq image_assets.count {|a| a.published } + 1
+
 
       # No user is logged in, so there should not be any "Private" badges.
       expect(page).not_to have_css('.badge-warning[title=Private]')
@@ -179,7 +207,7 @@ describe "Audio front end", type: :system, js: true do
       audio_assets.select {|a| a.published }
     }
 
-    let!(:regular_assets) {
+    let!(:image_assets) {
       (5..8).to_a.map do |i|
         create(:asset_with_faked_file,
           title: "Regular file #{i}",
@@ -195,7 +223,7 @@ describe "Audio front end", type: :system, js: true do
     }
 
     before do
-      parent_work.representative = regular_assets[0]
+      parent_work.representative = image_assets[0]
       parent_work.save!
     end
 
@@ -225,12 +253,17 @@ describe "Audio front end", type: :system, js: true do
         # All files are listed, including the unpublished ones:
 
         other_files = page.find_all('.other-files .show-member-list-item')
-        expect(other_files.count).to eq regular_assets.count
+        #  All files = audio files + image files + 1 PDF file.
+        expect(other_files.count).to eq image_assets.count + 1
 
         # Thumbs corresponding to an unpublished asset are labeled:
         other_files.each do |file_listing|
           friendlier_id =  file_listing['data-member-id']
-          asset = regular_assets.select{ |ra| ra.friendlier_id == friendlier_id }.first
+          asset = image_assets.select{ |ra| ra.friendlier_id == friendlier_id }.first
+
+          # If the asset doesn't match any of the images, assume it's the PDF transcript:
+          asset = asset || pdf_asset
+
           expect(asset).not_to eq nil
           if asset.published?
             expect(file_listing).to have_no_css('.badge-warning[title=Private]')
