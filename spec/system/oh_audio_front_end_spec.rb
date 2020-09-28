@@ -175,6 +175,13 @@ describe "Audio front end", type: :system, js: true do
       # when you click the links.
       expect(scrubber_times.map {|x| (x*2).round }).to contain_exactly(0,0,1,2)
 
+      # Make sure we're sending a GA action when the user clicks on a track
+      page.find_all('a.play-link').each do |link|
+          expect(link['data-analytics-category']).to eq "Work"
+          expect(link['data-analytics-action']  ).to eq "play_oral_history_audio_segment"
+          expect(link['data-analytics-label']   ).to eq parent_work.friendlier_id
+      end
+
       # You should be able to download the combined audio derivs:
       expect(page).to have_content("Complete Interview Audio File")
       expect(page).to have_content("3 Separate Interview Segments")
