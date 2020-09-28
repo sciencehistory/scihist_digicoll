@@ -72,7 +72,10 @@ class OhAudioWorkShowDecorator < Draper::Decorator
     if member.content_type&.start_with?("image/")
       yield
     else
-      link_to download_path(member.leaf_representative, disposition: :inline) do
+      link_to download_path(member.leaf_representative, disposition: :inline),
+        'data-analytics-category' => 'Work',
+        'data-analytics-action' => "view_oral_history_transcript_pdf",
+        'data-analytics-label' => member.parent.friendlier_id do
         yield
       end
     end
