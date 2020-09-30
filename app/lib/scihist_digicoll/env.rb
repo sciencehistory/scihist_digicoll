@@ -311,19 +311,25 @@ module ScihistDigicoll
     #
     # Can return nil if not defined!
     def self.derivatives_backup_bucket
-      bucket_name = lookup(:s3_bucket_derivatives_backup)
-      region      = lookup(:s3_backup_bucket_region)
+      unless defined?(@derivatives_backup_bucket)
+        @derivatives_backup_bucket = begin
+          bucket_name = lookup(:s3_bucket_derivatives_backup)
+          region      = lookup(:s3_backup_bucket_region)
 
-      if bucket_name.present? && region.present?
-        client = Aws::S3::Client.new(
-          access_key_id:     lookup(:aws_access_key_id),
-          secret_access_key: lookup(:aws_secret_access_key),
-          region: region)
+          if bucket_name.present? && region.present?
+            client = Aws::S3::Client.new(
+              access_key_id:     lookup(:aws_access_key_id),
+              secret_access_key: lookup(:aws_secret_access_key),
+              region: region)
 
-        Aws::S3::Bucket.new(name: bucket_name, client: client)
-      elsif production?
-        raise RuntimeError.new("In production tier, but missing derivatives backup bucket settings presumed to exist")
+            Aws::S3::Bucket.new(name: bucket_name, client: client)
+          elsif production?
+            raise RuntimeError.new("In production tier, but missing derivatives backup bucket settings presumed to exist")
+          end
+        end
       end
+
+      @derivatives_backup_bucket
     end
 
     # Returns an S3::Bucket for the DZI backup, used by our derivative storage
@@ -331,17 +337,23 @@ module ScihistDigicoll
     #
     # Can return nil if no defined!
     def self.dzi_backup_bucket
-      bucket_name = lookup(:s3_bucket_dzi_backup)
-      region      = lookup(:s3_backup_bucket_region)
+      unless defined?(@dzi_backup_bucket)
+        @dzi_backup_bucket = begin
+          bucket_name = lookup(:s3_bucket_dzi_backup)
+          region      = lookup(:s3_backup_bucket_region)
 
-      if bucket_name.present? && region.present?
-        client = Aws::S3::Client.new(
-          access_key_id:     lookup(:aws_access_key_id),
-          secret_access_key: lookup(:aws_secret_access_key),
-          region: region)
+          if bucket_name.present? && region.present?
+            client = Aws::S3::Client.new(
+              access_key_id:     lookup(:aws_access_key_id),
+              secret_access_key: lookup(:aws_secret_access_key),
+              region: region)
 
-        Aws::S3::Bucket.new(name: bucket_name, client: client)
+            Aws::S3::Bucket.new(name: bucket_name, client: client)
+          end
+        end
       end
+
+      @dzi_backup_bucket
     end
 
 
