@@ -302,8 +302,8 @@ module ScihistDigicoll
 
 
     # Location of some backup buckets we sometimes need to purge files from
-    define_key :s3_derivatives_backup_bucket
-    define_key :s3_dzi_backup_bucket
+    define_key :s3_bucket_derivatives_backup
+    define_key :s3_bucket_dzi_backup
     define_key :s3_backup_bucket_region
 
     # Returns an S3::Bucket for the derivatives backup, used by our derivative storage
