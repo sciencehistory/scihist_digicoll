@@ -313,7 +313,7 @@ module ScihistDigicoll
     # we don't accidentally avoid deleting from backup bucket in production where
     # we assume it must exist.
     def self.derivatives_backup_bucket
-      bucket_name = lookup(:s3_derivatives_backup_bucket)
+      bucket_name = lookup(:s3_bucket_derivatives_backup)
       region      = lookup(:s3_backup_bucket_region)
 
       if bucket_name.present? && region.present?
@@ -335,7 +335,7 @@ module ScihistDigicoll
     # we don't accidentally avoid deleting from backup bucket in production where
     # we assume it must exist.
     def self.dzi_backup_bucket
-      bucket_name = lookup(:s3_dzi_backup_bucket)
+      bucket_name = lookup(:s3_bucket_dzi_backup)
       region      = lookup(:s3_backup_bucket_region)
 
       if bucket_name.present? && region.present?
