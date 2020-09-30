@@ -90,8 +90,12 @@
             class="play-link"
             title="Listen to '<%= track.title%>'"
             aria-label="Listen to '<%= track.title%>'"
-            href="#" data-role="play-link"
+            href="#"
+            data-role="play-link"
             data-ohms-timestamp-s="<%= decorator.start_time_for(track) %>"
+            data-analytics-category='Work'
+            data-analytics-action="play_oral_history_audio_segment"
+            data-analytics-label="<%= @work.friendlier_id %>"
           >
             <i class="fa fa-play-circle" aria-hidden="true"></i>
           </a>
@@ -108,6 +112,9 @@
             href="#"
             data-role="play-link"
             data-ohms-timestamp-s="<%= decorator.start_time_for(track) %>"
+            data-analytics-category='Work'
+            data-analytics-action="play_oral_history_audio_segment"
+            data-analytics-label="<%= @work.friendlier_id %>"
           >
             <%= track.title %>
             <div class="start-time">
