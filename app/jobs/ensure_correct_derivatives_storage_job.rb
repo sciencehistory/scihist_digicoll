@@ -88,14 +88,14 @@ class EnsureCorrectDerivativesStorageJob < ApplicationJob
     # remove all versions from derivatives backup bucket if we have one
     if backup_bucket = ScihistDigicoll::Env.derivatives_backup_bucket
       backup_bucket.object_versions(prefix: derivative_prefix).batch_delete!
-    elsif production?
+    elsif ScihistDigicoll::Env.production?
       raise RuntimeError.new("In production tier, but missing derivatives backup bucket settings presumed to exist")
     end
 
     # remove all versions from dzi backup bucket if we have one
     if dzi_backup_bucket = ScihistDigicoll::Env.dzi_backup_bucket
       dzi_backup_bucket.object_versions(prefix: dzi_prefix).batch_delete!
-    elsif production?
+    elsif ScihistDigicoll::Env.production?
       raise RuntimeError.new("In production tier, but missing derivatives backup bucket settings presumed to exist")
     end
   end
