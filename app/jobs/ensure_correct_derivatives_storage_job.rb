@@ -73,11 +73,6 @@ class EnsureCorrectDerivativesStorageJob < ApplicationJob
       Shrine.storages[:kithe_derivatives].bucket.object_versions(prefix: derivative_prefix).batch_delete!
     end
 
-    # remove all versions from derivatives backup bucket if we have one
-    if backup_bucket = ScihistDigicoll::Env.derivatives_backup_bucket
-      backup_bucket.object_versions(prefix: derivative_prefix).batch_delete!
-    end
-
     # remove DZI file in the normal more reliable way, regardless of storage type
     if asset.dzi_file
       asset.dzi_file.delete
@@ -88,9 +83,20 @@ class EnsureCorrectDerivativesStorageJob < ApplicationJob
       Shrine.storages[:dzi_storage].bucket.object_versions(prefix: dzi_prefix).batch_delete!
     end
 
+    # Backup bucket calls will raise if we are on production and can't find it, to be extra careful!
+
+    # remove all versions from derivatives backup bucket if we have one
+    if backup_bucket = ScihistDigicoll::Env.derivatives_backup_bucket
+      backup_bucket.object_versions(prefix: derivative_prefix).batch_delete!
+    elsif production?
+      raise RuntimeError.new("In production tier, but missing derivatives backup bucket settings presumed to exist")
+    end
+
     # remove all versions from dzi backup bucket if we have one
     if dzi_backup_bucket = ScihistDigicoll::Env.dzi_backup_bucket
       dzi_backup_bucket.object_versions(prefix: dzi_prefix).batch_delete!
+    elsif production?
+      raise RuntimeError.new("In production tier, but missing derivatives backup bucket settings presumed to exist")
     end
   end
 end
