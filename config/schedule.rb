@@ -16,6 +16,10 @@ every :day, :at => '2:00 am', roles: [:cron] do
   rake "blacklight:delete_old_searches[7]"
 end
 
+every :day, :at => '2:30 am', roles: [:cron] do
+  runner "AssetDerivativeStorageTypeAuditor.new.perform!"
+end
+
 every :tuesday, :at => '4:00 am', roles: [:cron] do
   rake "sitemap:create"
 end
