@@ -309,9 +309,7 @@ module ScihistDigicoll
     # Returns an S3::Bucket for the derivatives backup, used by our derivative storage
     # type mover to make sure non-public derivatives don't exist in backups either.
     #
-    # Can return nil, except in production will raise instead of nil, to make sure
-    # we don't accidentally avoid deleting from backup bucket in production where
-    # we assume it must exist.
+    # Can return nil if not defined!
     def self.derivatives_backup_bucket
       bucket_name = lookup(:s3_bucket_derivatives_backup)
       region      = lookup(:s3_backup_bucket_region)
@@ -331,9 +329,7 @@ module ScihistDigicoll
     # Returns an S3::Bucket for the DZI backup, used by our derivative storage
     # type mover to make sure non-public derivatives don't exist in backups either.
     #
-    # Can return nil, except in production will raise instead of nil, to make sure
-    # we don't accidentally avoid deleting from backup bucket in production where
-    # we assume it must exist.
+    # Can return nil if no defined!
     def self.dzi_backup_bucket
       bucket_name = lookup(:s3_bucket_dzi_backup)
       region      = lookup(:s3_backup_bucket_region)
@@ -345,8 +341,6 @@ module ScihistDigicoll
           region: region)
 
         Aws::S3::Bucket.new(name: bucket_name, client: client)
-      elsif production?
-        raise RuntimeError.new("In production tier, but missing derivatives backup bucket settings presumed to exist")
       end
     end
 
