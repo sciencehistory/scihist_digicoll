@@ -106,7 +106,7 @@ class AssetDerivativeStorageTypeAuditor
 
   # Get or create the report
   def report
-    @report ||= AssetDerivativeStorageTypeAuditLog.create!
+    @report ||= Admin::AssetDerivativeStorageTypeReport.create!
   end
 
   def log_start

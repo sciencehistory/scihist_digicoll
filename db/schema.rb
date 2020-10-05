@@ -63,7 +63,7 @@ ActiveRecord::Schema.define(version: 2020_10_02_160422) do
         END;
         $function$
   SQL
-  create_table "asset_derivative_storage_type_audit_logs", force: :cascade do |t|
+  create_table "asset_derivative_storage_type_reports", force: :cascade do |t|
     t.jsonb "data_for_report", default: {}
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

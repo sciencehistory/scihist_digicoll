@@ -51,8 +51,8 @@ describe "AssetDerivativeStorageTypeAuditor" do
           auditor.perform!
         }.not_to change { ActionMailer::Base.deliveries.count }
 
-        expect(AssetDerivativeStorageTypeAuditLog.count).to eq 1
-        report_data = AssetDerivativeStorageTypeAuditLog.first.data_for_report
+        expect(Admin::AssetDerivativeStorageTypeReport.count).to eq 1
+        report_data = Admin::AssetDerivativeStorageTypeReport.first.data_for_report
         expect(report_data['incorrectly_published_count']).to be_nil
         expect(report_data['incorrect_storage_locations_count']).to be_nil
         expect(report_data['start_time']).to be_present
@@ -90,8 +90,8 @@ describe "AssetDerivativeStorageTypeAuditor" do
           auditor.perform!
         }.to change { ActionMailer::Base.deliveries.count }.by(1)
 
-        expect(AssetDerivativeStorageTypeAuditLog.count).to eq 1
-        report_data = AssetDerivativeStorageTypeAuditLog.first.data_for_report
+        expect(Admin::AssetDerivativeStorageTypeReport.count).to eq 1
+        report_data = Admin::AssetDerivativeStorageTypeReport.first.data_for_report
         expect(report_data['incorrectly_published_count']).to eq 1
         expect(report_data['incorrect_storage_locations_count']).to eq 1
         expect(report_data[
