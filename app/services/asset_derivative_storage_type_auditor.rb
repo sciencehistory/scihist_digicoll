@@ -31,6 +31,7 @@
 class AssetDerivativeStorageTypeAuditor
   attr_reader :incorrect_storage_locations, :incorrectly_published
 
+  HOW_MANY_DAYS_TO_KEEP_REPORTS = 60
 
   def check_all
     reset
@@ -99,6 +100,7 @@ class AssetDerivativeStorageTypeAuditor
     check_all
     store_audit_results
     notify_if_failed
+    delete_stale_reports
     log_end
   end
 
@@ -120,6 +122,12 @@ class AssetDerivativeStorageTypeAuditor
   def log_into_report(data)
     report.data_for_report.update(data)
     report.save!
+  end
+
+  def delete_stale_reports
+    cutoff = HOW_MANY_DAYS_TO_KEEP_REPORTS.days.ago
+    Admin::AssetDerivativeStorageTypeReport.
+      where("created_at < ?", cutoff).destroy_all
   end
 
   def reset
