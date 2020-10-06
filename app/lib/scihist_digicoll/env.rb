@@ -58,7 +58,10 @@ module ScihistDigicoll
 
 
     # Rails-style db url, eg postgres://myuser:mypass@localhost/somedatabase
-    define_key :rails_database_url
+    define_key :rails_database_url, default: -> {
+      # heroku supplies this as just DATABASE_URL, let's take that too
+      ENV['DATABASE_URL']
+    }
 
     define_key :aws_access_key_id
     define_key :aws_secret_access_key
