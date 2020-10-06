@@ -1,0 +1,108 @@
+<h1 class="mb-4">Derivative Storage Report</h1>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md">
+      This report confirms that files that should not be accessible to the public are indeed locked down, and vice-versa.
+
+      To save space, we only list the total <em>number</em> of assets with problems, along with a short sample of actual links to some of those assets.
+
+      Reports are run nightly, but deleted after 60 days.
+
+    </div>
+  </div>
+</div>
+
+<div class="mt-5">
+  <h2 class="border-bottom">Recent reports</h2>
+  <table class="table admin-list">
+    <th>
+      Report ID
+    </th>
+    <th>
+      Started on
+    </th>
+    <th>
+      Ended at
+    </th>
+    <th>
+      Asserts published, but with restricted derivatives
+    </th>
+    <th>
+      Derivatives in the wrong location
+    </th>
+
+    <tbody>
+      <tr>
+          <td>
+          </td>
+          <td>
+            <p class="text-muted small"></div>
+          </td>
+          <td>
+            <p class="text-muted small">If this is present, the audit checked all assets.</div>
+          </td>
+          <td>
+            <p class="text-muted small">Derivatives that should *not* be locked down, but are. These belong to assets that are <em>published</em> but for whatever reason are being stored in our secure storage bucket.</div>
+          </td>
+          <td>
+            <p class="text-muted small">Derivatives that should be locked down but aren't. These belong to assets marked <em>restricted</em> (i.e. they and their derivatives should not be visible to the public under any circumstances) but, for whatever reason, are being stored in our public storage bucket.</div>
+          </td>
+        </tr>
+
+
+
+
+      <% @reports.each do |report| %>
+        <tr>
+          <td>
+              <%= report.id %>
+          </td>
+          <td>
+              <%= l(report.data_for_report['start_time'].to_datetime, format: :short) %>
+          </td>
+          <td>
+              <%= l(report.data_for_report['end_time'].to_datetime, format: :short) %>
+          </td>
+
+          <td>
+            <% if report.data_for_report['incorrectly_published_sample'].is_a? String %>
+              <span class="text-danger">
+                <i class="fa fa fa-thumbs-down" aria-hidden="true"></i>
+              </span>
+              <% report.data_for_report['incorrectly_published_sample'].split(",").each do |id| %>
+                <%= link_to(id, Asset.find_by_friendlier_id(id)) %>;
+              <% end %> [...]
+              <br/>(<%= report.data_for_report['incorrectly_published_count'] %> assets total had problems)
+            <% else %>
+              <span class="text-success">
+                <i class="fa fa fa-thumbs-up" aria-hidden="true"></i>
+              </span>
+              All assets good
+            <% end %>
+          </td>
+
+          <td>
+            <% if report.data_for_report['incorrect_storage_locations_sample'].is_a? String %>
+              <span class="text-danger">
+                <i class="fa fa fa-thumbs-down" aria-hidden="true"></i>
+              </span>
+              <% report.data_for_report['incorrect_storage_locations_sample'].split(",").each do |id| %>
+                <%= link_to(id, Asset.find_by_friendlier_id(id)) %>;
+              <% end %> [...]
+               <br/>(<%= report.data_for_report['incorrect_storage_locations_count'] %> assets total had problems)
+            <% else %>
+              <span class="text-success">
+                <i class="fa fa fa-thumbs-up" aria-hidden="true"></i>
+              </span>
+              All assets good
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+
+
+
+    </tbody>
+  </table>
+</div>
