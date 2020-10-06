@@ -56,6 +56,12 @@ module ScihistDigicoll
     end
 
 
+    # what env for honeybadger to log, if not given we'll use the `service_level` value
+    # (staging/production), or if that's not there either, just Rails.env (development, testing)
+    define_key :honeybadger_env, default: -> {
+      ScihistDigicoll::Env.lookup(:service_level) || Rails.env.to_s
+    }
+
 
     # Rails-style db url, eg postgres://myuser:mypass@localhost/somedatabase
     define_key :rails_database_url
