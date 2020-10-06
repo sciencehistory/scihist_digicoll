@@ -81,6 +81,8 @@ gem "shrine", "~> 3.0" #, path: "../shrine"
 gem "uppy-s3_multipart"
 gem "content_disposition", "~> 1.0"
 
+gem 'faster_s3_url', "< 2" # for generating s3 urls faster!
+
 # slack notifications on capistrano deploys
 gem 'slackistrano', "~> 4.0"
 gem "whenever" # automatic crontob maintenance, on capistrano deploys
