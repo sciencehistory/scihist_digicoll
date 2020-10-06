@@ -8,7 +8,7 @@
 # that won't work well (if it uses presigned s3 urls for everything, it'll be far too
 # slow
 #
-# 3) Notifies of any non-compliant Assets found, and records the result of the audit in ... TBD
+# 3) Notifies of any non-compliant Assets found, and records the result of the audit.
 #
 #
 #      auditor = AssetDerivativeStorageTypeAuditor.new
@@ -32,6 +32,10 @@ class AssetDerivativeStorageTypeAuditor
   attr_reader :incorrect_storage_locations, :incorrectly_published
 
   HOW_MANY_DAYS_TO_KEEP_REPORTS = 60
+
+  # We're storing a short list of sample friendlier_ids of assets with
+  # problems. How many?
+  PROBLEM_SAMPLE_SIZE = 10
 
   def check_all
     reset
@@ -60,7 +64,7 @@ class AssetDerivativeStorageTypeAuditor
       log_into_report({ incorrect_storage_locations_count: incorrect_storage_locations.count })
       log_into_report({
         incorrect_storage_locations_sample:
-          incorrect_storage_locations[0..10].
+          incorrect_storage_locations[0..PROBLEM_SAMPLE_SIZE-1].
           collect(&:friendlier_id).
           join(",")
         })
@@ -70,7 +74,7 @@ class AssetDerivativeStorageTypeAuditor
       log_into_report({ incorrectly_published_count: incorrectly_published.count })
       log_into_report({
         incorrectly_published_sample:
-          incorrectly_published[0..10].
+          incorrectly_published[0..PROBLEM_SAMPLE_SIZE-1].
           collect(&:friendlier_id).
           join(",")
         })
