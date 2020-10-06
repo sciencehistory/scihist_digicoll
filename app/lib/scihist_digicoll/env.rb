@@ -219,11 +219,11 @@ module ScihistDigicoll
         }.merge(s3_storage_options))
       elsif mode == "production"
         Shrine::Storage::S3.new({
-          bucket:            lookup(bucket_key),
+          bucket:            lookup!(bucket_key),
           prefix:            prefix,
           access_key_id:     lookup(:aws_access_key_id),
           secret_access_key: lookup(:aws_secret_access_key),
-          region:            lookup(:aws_region)
+          region:            lookup!(:aws_region)
         }.merge(s3_storage_options))
       else
         raise TypeError.new("unrecognized storage mode: #{mode}")
