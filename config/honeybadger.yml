@@ -1,6 +1,6 @@
 ---
 api_key: <%= ScihistDigicoll::Env.lookup(:honeybadger_api_key) %>
-env: <%= ScihistDigicoll::Env.lookup(:service_level) || Rails.env.to_s %>
+env: <%= ScihistDigicoll::Env.lookup(:honeybadger_env) %>
 feedback:
   enabled: true
 user_informer:
