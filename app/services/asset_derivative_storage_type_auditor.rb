@@ -31,8 +31,6 @@
 class AssetDerivativeStorageTypeAuditor
   attr_reader :incorrect_storage_locations, :incorrectly_published
 
-  HOW_MANY_DAYS_TO_KEEP_REPORTS = 60
-
   # We're storing a short list of sample friendlier_ids of assets with
   # problems. How many?
   PROBLEM_SAMPLE_SIZE = 10
@@ -129,9 +127,16 @@ class AssetDerivativeStorageTypeAuditor
   end
 
   def delete_stale_reports
-    cutoff = HOW_MANY_DAYS_TO_KEEP_REPORTS.days.ago
-    Admin::AssetDerivativeStorageTypeReport.
-      where("created_at < ?", cutoff).destroy_all
+    sql = """
+      SELECT old.id FROM asset_derivative_storage_type_reports old
+      WHERE old.id NOT IN (
+        SELECT id FROM asset_derivative_storage_type_reports new
+        ORDER BY created_at DESC
+        LIMIT 1 )
+    """
+    results = ActiveRecord::Base.connection.execute(sql)
+    ids = results.to_a.map {|row| row['id']}
+    Admin::AssetDerivativeStorageTypeReport.where(:id => ids).destroy_all
   end
 
   def reset

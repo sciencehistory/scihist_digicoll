@@ -107,4 +107,22 @@ describe "AssetDerivativeStorageTypeAuditor" do
     end
   end
 
+  describe "A series of reports are saved to the database" do
+    let(:cls) { Admin::AssetDerivativeStorageTypeReport }
+    let(:auditor) { AssetDerivativeStorageTypeAuditor.new }
+    let!(:series_of_reports) do
+      [
+        cls.create!(created_at: 1.days.ago),
+        cls.create!(created_at: 2.days.ago),
+        cls.create!(created_at: 3.days.ago),
+        cls.create!(created_at: 4.days.ago),
+      ]
+    end
+    it "auditor keeps only the most recent" do
+      expect(cls.count).to eq 4
+      auditor.perform!
+      expect(cls.count).to eq 1
+      expect(cls.first.created_at).to be_within(5.seconds).of Time.now
+    end
+  end
 end
