@@ -231,8 +231,8 @@ module ScihistDigicoll
         FasterS3Url::Shrine::Storage.new({
           bucket:            lookup!(bucket_key),
           prefix:            prefix,
-          access_key_id:     lookup(:aws_access_key_id),
-          secret_access_key: lookup(:aws_secret_access_key),
+          access_key_id:     lookup!(:aws_access_key_id),
+          secret_access_key: lookup!(:aws_secret_access_key),
           region:            lookup!(:aws_region)
         }.merge(s3_storage_options))
       else
