@@ -127,22 +127,11 @@ class AssetDerivativeStorageTypeAuditor
   end
 
   def delete_stale_reports
-    sql = """
-      SELECT old.id FROM asset_derivative_storage_type_reports old
-      WHERE old.id NOT IN (
-        SELECT id FROM asset_derivative_storage_type_reports new
-        ORDER BY created_at DESC
-        LIMIT 1 )
-    """
-    results = ActiveRecord::Base.connection.execute(sql)
-    ids = results.to_a.map {|row| row['id']}
-    Admin::AssetDerivativeStorageTypeReport.where(:id => ids).destroy_all
+    Admin::AssetDerivativeStorageTypeReport.where.not(id: report.id).destroy_all
   end
 
   def reset
     @incorrect_storage_locations = []
     @incorrectly_published = []
   end
-
-
 end
