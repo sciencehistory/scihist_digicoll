@@ -366,6 +366,9 @@ GEM
     orm_adapter (0.5.0)
     os (1.1.0)
     parslet (2.0.0)
+    passenger (6.0.6)
+      rack
+      rake (>= 0.8.1)
     pastel (0.7.4)
       equatable (~> 0.6)
       tty-color (~> 0.5)
@@ -390,8 +393,6 @@ GEM
       byebug (~> 11.0)
       pry (~> 0.13.0)
     public_suffix (4.0.6)
-    puma (5.0.2)
-      nio4r (~> 2.0)
     qa (5.4.0)
       activerecord-import
       deprecation
@@ -667,11 +668,11 @@ DEPENDENCIES
   listen (>= 3.0.5, < 3.2)
   lockbox
   oai (~> 1.0, >= 1.0.1)
+  passenger
   pdf-reader (~> 2.2)
   pg (>= 0.18, < 2.0)
   prawn (~> 2.2)
   pry-byebug
-  puma (~> 5.0)
   qa (~> 5.2)
   rails (~> 6.0.0)
   rails_autolink (~> 1.0)
