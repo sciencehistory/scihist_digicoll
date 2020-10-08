@@ -3,7 +3,8 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 # Include just the major/minor version of whatever we find in .ruby-version,
 # ie `~> 2.5` or `~> 2.6`, not including additional that may be in 2.3
-ruby "~> #{File.read('.ruby-version').chomp.split('.').slice(0,3).join('.')}"
+ruby "~> #{File.read(File.join(__dir__ , '.ruby-version')).chomp.split('.').slice(0,3).join('.')}"
+
 
 gem 'lockbox'
 
