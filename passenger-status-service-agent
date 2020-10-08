@@ -1,0 +1,78 @@
+#!/bin/bash
+# Copyright (c) 2015 Phusion
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+set -e
+
+function cleanup()
+{
+	set +e
+	local pids=`jobs -p`
+	if [[ "$pids" != "" ]]; then
+		kill $pids 2>/dev/null
+	fi
+	if [[ "$TEMPDIR" != "" ]]; then
+		rm -rf "$TEMPDIR"
+	fi
+}
+
+if [[ -e Gemfile ]]; then
+	BUNDLE_EXEC="bundle exec"
+else
+	BUNDLE_EXEC=
+fi
+LOG_PREFIX="passenger-status-service-agent"
+TEMPDIR=`mktemp -d /tmp/passenger-status-service-agent.XXXXXX`
+HOSTNAME=`hostname -f`
+INTERVAL=${INTERVAL:-10}
+
+if [[ "$DYNO" = "" ]]; then
+	echo "$LOG_PREFIX: will not be activated, because not running on Heroku."
+	exit 0
+fi
+if [[ "$STATUS_SERVICE_URL" = "" ]]; then
+	echo "ERROR: please set the STATUS_SERVICE_URL environment variable." >&2
+	exit 1
+fi
+if [[ "$STATUS_SERVICE_API_TOKEN" = "" ]]; then
+	echo "ERROR: please set the STATUS_SERVICE_API_TOKEN environment variable." >&2
+	exit 1
+fi
+
+trap cleanup EXIT
+
+while true; do
+	sleep $INTERVAL
+	echo "$LOG_PREFIX: Querying status"
+	if $BUNDLE_EXEC passenger-status > "$TEMPDIR/status.txt"; then
+		echo "$LOG_PREFIX: Posting to status service: $STATUS_SERVICE_URL"
+		if curl -u "api:$STATUS_SERVICE_API_TOKEN" --fail -sSL \
+			-F hostname=$HOSTNAME -F content=@"$TEMPDIR/status.txt" \
+			-o "$TEMPDIR/curl.txt" \
+			"$STATUS_SERVICE_URL"
+		then
+			CURL_OUTPUT="`cat \"$TEMPDIR/curl.txt\"`"
+			echo "$LOG_PREFIX: => $CURL_OUTPUT"
+			echo "$LOG_PREFIX: Success"
+		else
+			CURL_OUTPUT="`cat \"$TEMPDIR/curl.txt\"`"
+			echo "$LOG_PREFIX: => $CURL_OUTPUT" >&2
+		fi
+	fi
+done
