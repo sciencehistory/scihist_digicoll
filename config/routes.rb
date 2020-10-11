@@ -34,6 +34,9 @@ Rails.application.routes.draw do
     get "works/:id/:derivative_type", to: "on_demand_derivatives#on_demand_status", as: :on_demand_derivative_status
   end
 
+  get "works/:work_friendlier_id/request_oral_history_access", to: "oral_history_access_requests#new"
+  post "request_oral_history_access", to: "oral_history_access_requests#create", as: 'request_oral_history_access'
+
   # public-facing routes
   resources :works, only: [:show]
 
@@ -150,6 +153,7 @@ Rails.application.routes.draw do
     get "/works/:parent_id/ingest", to: "assets#display_attach_form", as: "asset_ingest"
     post "/works/:parent_id/ingest", to: "assets#attach_files"
 
+    get "oral_history_access_requests", to: "oral_history_access_requests#index"
 
     resources :collections, except: [:show]
 
