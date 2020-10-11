@@ -5,3 +5,6 @@ Rails.application.config.filter_parameters += [:password]
 
 Rails.application.config.filter_parameters += [:patron_email]
 Rails.application.config.filter_parameters += [:patron_name]
+Rails.application.config.filter_parameters += [:patron_institution]
+Rails.application.config.filter_parameters += [:intended_use]
+
