@@ -1,0 +1,64 @@
+<%= simple_form_for @oral_history_access_request,  :url => :request_oral_history_access  do |f| %>
+
+  <p>
+    To receive a transcript of "<%= @work.title %>" by email, please fill out the form below.
+  </p>
+
+  <p>
+    We consider your personal information will be  confidential and we will only use it for our records.
+  </p>
+
+  <p>
+    Please understand that your receipt of an electronic copy of an oral history indicates your agreement to abide by U.S. copyright law with regard to the reproduction and dissemination of the oral history. You are receiving a copy of this oral history and you are not permitted to reproduce it in any way without the permission of the Science History Institute.
+  </p>
+
+  <% if @oral_history_access_request.errors.any? %>
+    <div class="kithe-form-errors-top alert alert-danger mb-4" role="alert">
+      <h2 class="h4" class="alert-heading"><%= pluralize(@oral_history_access_request.errors.count, "error") %></h2>
+      <ol class="mb-0">
+        <% @oral_history_access_request.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ol>
+    </div>
+  <% end %>
+
+  <div class="form-inputs">
+    <div class="row">
+      <div class="col">
+        <%= f.input :patron_name,
+          hint: "Your name.",
+          label: "Name" %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :patron_email,
+          hint: "An email we can use to send you the oral history.",
+          label: "Email" %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :patron_institution,
+          label: "Your institution", hint: "Your institution, if applicable." %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :intended_use,
+          label: "Intended use", hint: "So that we can better understand our audience, please tell us how you plan to use the oral history you have requested." %>
+      </div>
+    </div>
+
+    <%= f.hidden_field :work_friendlier_id, value: @work.friendlier_id %>
+
+  <div class="form-actions mb-3">
+    <%= link_to "Cancel", work_path(@work.friendlier_id), class: "btn btn-outline-primary" %>
+    <%= f.button :submit, value: "#{f.object.new_record? ? 'Grant access' : 'Edit'}" %>
+  </div>
+</div>
+<% end %>
