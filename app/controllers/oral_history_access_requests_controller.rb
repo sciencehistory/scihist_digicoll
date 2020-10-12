@@ -1,7 +1,6 @@
 # PUBLIC FACING
 # Staff-facing actions are in app/controllers/admin/oral_history_access_requests_controller.rb
 class OralHistoryAccessRequestsController < ApplicationController
-  before_action :set_oral_history_access_request, only: [:show, :edit, :update, :destroy]
 
   # GET /works/4j03d097t/request_oral_history_access
   def new
@@ -16,14 +15,13 @@ class OralHistoryAccessRequestsController < ApplicationController
     @oral_history_access_request = Admin::OralHistoryAccessRequest.new(oral_history_access_request_params)
     @oral_history_access_request.work = @work
     if @oral_history_access_request.save
-      redirect_to work_path(@oral_history_access_request.work.friendlier_id), notice: 'Your request has been logged.'
+      redirect_to work_path(work_friendlier_id), notice: 'Your request has been logged.'
     else
      render :new
     end
   end
 
 private
-
   def set_oral_history_access_request
     @oral_history_access_request = Admin::OralHistoryAccessRequest.find(params[:id])
   end
