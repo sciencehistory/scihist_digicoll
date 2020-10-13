@@ -45,11 +45,18 @@ describe "AssetDerivativeStorageTypeAuditor" do
     end
 
     describe "#perform!" do
-      it "does not send notifications" do
+      it "does not send notifications, but logs the fact that the check took place" do
         expect(Honeybadger).not_to receive(:notify)
         expect {
           auditor.perform!
         }.not_to change { ActionMailer::Base.deliveries.count }
+
+        expect(Admin::AssetDerivativeStorageTypeReport.count).to eq 1
+        report_data = Admin::AssetDerivativeStorageTypeReport.first.data_for_report
+        expect(report_data['incorrectly_published_count']).to be_nil
+        expect(report_data['incorrect_storage_locations_count']).to be_nil
+        expect(report_data['start_time']).to be_present
+        expect(report_data['end_time']).to be_present
       end
     end
   end
@@ -76,14 +83,46 @@ describe "AssetDerivativeStorageTypeAuditor" do
     end
 
     describe "#perform!" do
-      it "sends notifications" do
+      it "sends notifications and logs report" do
         expect(Honeybadger).to receive(:notify).with("Assets with unexpected derivative_storage_type state found", any_args)
 
         expect {
           auditor.perform!
         }.to change { ActionMailer::Base.deliveries.count }.by(1)
+
+        expect(Admin::AssetDerivativeStorageTypeReport.count).to eq 1
+        report_data = Admin::AssetDerivativeStorageTypeReport.first.data_for_report
+        expect(report_data['incorrectly_published_count']).to eq 1
+        expect(report_data['incorrect_storage_locations_count']).to eq 1
+        expect(report_data[
+          'incorrectly_published_sample'
+        ]).to eq published_with_restricted_derivatives.friendlier_id
+        expect(report_data[
+          'incorrect_storage_locations_sample'
+        ]).to eq mismatched_storage_locations.friendlier_id
+
+        expect(report_data['start_time']).to be_present
+        expect(report_data['end_time']).to be_present
       end
     end
   end
 
+  describe "A series of reports are saved to the database" do
+    let(:cls) { Admin::AssetDerivativeStorageTypeReport }
+    let(:auditor) { AssetDerivativeStorageTypeAuditor.new }
+    let!(:series_of_reports) do
+      [
+        cls.create!(created_at: 1.days.ago),
+        cls.create!(created_at: 2.days.ago),
+        cls.create!(created_at: 3.days.ago),
+        cls.create!(created_at: 4.days.ago),
+      ]
+    end
+    it "auditor keeps only the most recent" do
+      expect(cls.count).to eq 4
+      auditor.perform!
+      expect(cls.count).to eq 1
+      expect(cls.first.created_at).to be_within(5.seconds).of Time.now
+    end
+  end
 end
