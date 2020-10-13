@@ -20,12 +20,12 @@
   <hr/>
 
   <h4>Started at</h4>
-  <p><%= l(@report.data_for_report['start_time'].to_datetime, format: :short) %></p>
+  <p><%= l(@data['start_time'].to_datetime, format: :short) %></p>
 
   <hr/>
   <h4>Completed successfully at</h4>
   <p class="text-muted small">If this date is present, the audit checked all assets.</p>
-  <p><%= l(@report.data_for_report['end_time'].to_datetime, format: :short) %></p>
+  <p><%= l(@data['end_time'].to_datetime, format: :short) %></p>
 
   <hr/>
   <h4>Asserts published, but with restricted derivatives</h4>
@@ -33,14 +33,15 @@
   <p class="text-muted small">Derivatives that should <strong>not</strong> be locked down, but are. These belong to assets that are <strong>published</strong> but for whatever reason are being stored in our secure storage bucket.</p>
 
   <p>
-    <% if @report.data_for_report['incorrectly_published_sample'].is_a? String %>
+    <% if @data['incorrectly_published_sample'].is_a? String %>
       <span class="text-danger">
         <i class="fa fa fa-thumbs-down" aria-hidden="true"></i>
       </span>
-      <% @report.data_for_report['incorrectly_published_sample'].split(",").each do |id| %>
-        <%= link_to(id, Asset.find_by_friendlier_id(id)) %>;
-      <% end %> [...]
-      <br/>(<%= @report.data_for_report['incorrectly_published_count'] %> assets total had problems)
+      <%= @incorrectly_published_sample_array.map { |id| link_to(id, work_path(id)) }.join(';').html_safe %>
+      <% if @data['incorrectly_published_count'] > @incorrectly_published_sample_array.length  %>
+        [...]
+      <% end %>
+      <br/>(<%= @data['incorrectly_published_count'] %> assets total had problems)
     <% else %>
       <span class="text-success">
         <i class="fa fa fa-thumbs-up" aria-hidden="true"></i>
@@ -53,14 +54,15 @@
   <h4>Derivatives in the wrong location</h4>
   <p class="text-muted small">Derivatives that <strong>should</strong> be locked down but aren't. These belong to assets marked <strong>restricted</strong> (i.e. they and their derivatives should not be visible to the public under any circumstances) but, for whatever reason, are being stored in our public storage bucket.</p>
   <p>
-    <% if @report.data_for_report['incorrect_storage_locations_sample'].is_a? String %>
+    <% if @data['incorrect_storage_locations_sample'].is_a? String %>
     <span class="text-danger">
       <i class="fa fa fa-thumbs-down" aria-hidden="true"></i>
     </span>
-    <% @report.data_for_report['incorrect_storage_locations_sample'].split(",").each do |id| %>
-      <%= link_to(id, Asset.find_by_friendlier_id(id)) %>;
-    <% end %> [...]
-     <br/>(<%= @report.data_for_report['incorrect_storage_locations_count'] %> assets total had problems)
+    <%= @incorrect_storage_locations_sample_array.map { |id| link_to(id, work_path(id)) }.join(';').html_safe %>
+    <% if @data['incorrect_storage_locations_count'] > @incorrect_storage_locations_sample_array.length  %>
+      [...]
+    <% end %>
+     <br/>(<%= @data['incorrect_storage_locations_count'] %> assets total had problems)
     <% else %>
     <span class="text-success">
       <i class="fa fa fa-thumbs-up" aria-hidden="true"></i>
