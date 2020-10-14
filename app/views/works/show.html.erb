@@ -33,8 +33,9 @@
 
   <% decorator.member_list_for_display.each_with_index do |member, index| %>
       <div class="show-member-list-item">
+        <%= member.leaf_representative.friendlier_id %>
         <%# lazyload all but first 6 images %>
-        <%= MemberImagePresentation.new(member, lazy: (index > 5)).display %>
+        <%# MemberImagePresentation.new(member, lazy: (index > 5)).display %>
       </div>
   <% end %>
 </div>
