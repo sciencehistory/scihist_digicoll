@@ -11,7 +11,8 @@ class OhAudioWorkShowDecorator < Draper::Decorator
 
 
 
-  # The list of tracks for the playlist.
+  # Cache the total list of published members, in other methods we'll search
+  # through this in-memory to get members for various spots on the page.
   def all_members
     @all_members ||= begin
       members = model.members.includes(:leaf_representative)
@@ -21,12 +22,12 @@ class OhAudioWorkShowDecorator < Draper::Decorator
   end
 
   # We don't want the leaf_representative, we want the direct representative member
-  # to pass to MemberImagePresenter. But instead of following the `representative`
-  # association, let's find it from the `members`, to avoid an extra fetch.
-  #
-  # Does assume your representative is one of your members, otherwise it won't find it.
+  # to pass to MemberImagePresenter.
   def representative_member
-    @representative_member ||= model.members.find { |m| m.id == model.representative_id }
+    # memoize with a value that could be nil....
+    return @representative_member if defined?(@representative_member)
+
+    @representative_member = all_members.find { |m| m.id == model.representative_id }
   end
 
   def audio_members
