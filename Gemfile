@@ -3,7 +3,8 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 # Include just the major/minor version of whatever we find in .ruby-version,
 # ie `~> 2.5` or `~> 2.6`, not including additional that may be in 2.3
-ruby "~> #{File.read('.ruby-version').chomp.split('.').slice(0,3).join('.')}"
+ruby "~> #{File.read(File.join(__dir__ , '.ruby-version')).chomp.split('.').slice(0,3).join('.')}"
+
 
 gem 'lockbox'
 
@@ -76,10 +77,12 @@ gem "cocoon"
 
 gem "browse-everything", "~> 1.0"
 gem "qa", "~> 5.2"
-gem "shrine", "~> 3.0" #, path: "../shrine"
+gem "shrine", "~> 3.3" #, path: "../shrine"
 # shrine-compat endpoint to get uppy to direct upload to S3 with resumable multi-part upload
 gem "uppy-s3_multipart"
 gem "content_disposition", "~> 1.0"
+
+gem 'faster_s3_url', "< 2" # for generating s3 urls faster!
 
 # slack notifications on capistrano deploys
 gem 'slackistrano', "~> 4.0"
@@ -140,6 +143,8 @@ group :test do
   gem "database_cleaner", "~> 1.7"
   gem "webmock", "~> 3.5"
   gem "db-query-matchers", "< 2.0"
+  # Used for Cap deployment to auto-lookup hosts from EC2 tags.
+  gem 'aws-sdk-ec2', '>=1.74'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
@@ -147,10 +152,6 @@ end
 # gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 
-# Used for Cap deployment
-gem 'aws-sdk-ec2', '>=1.74'
-#gem 'aws-sdk-core'
-gem 'aws-sdk-core'
 
 
 ##

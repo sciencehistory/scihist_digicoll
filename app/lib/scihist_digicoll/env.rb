@@ -1,6 +1,7 @@
 require 'socket'
 require "shrine/storage/file_system"
 require "shrine/storage/s3"
+require 'faster_s3_url/shrine/storage'
 
 
 module ScihistDigicoll
@@ -56,9 +57,18 @@ module ScihistDigicoll
     end
 
 
+    # what env for honeybadger to log, if not given we'll use the `service_level` value
+    # (staging/production), or if that's not there either, just Rails.env (development, testing)
+    define_key :honeybadger_env, default: -> {
+      ScihistDigicoll::Env.lookup(:service_level) || Rails.env.to_s
+    }
+
 
     # Rails-style db url, eg postgres://myuser:mypass@localhost/somedatabase
-    define_key :rails_database_url
+    define_key :rails_database_url, default: -> {
+      # heroku supplies this as just DATABASE_URL, let's take that too
+      ENV['DATABASE_URL']
+    }
 
     define_key :aws_access_key_id
     define_key :aws_secret_access_key
@@ -210,7 +220,7 @@ module ScihistDigicoll
       if mode == "dev_file"
         Shrine::Storage::FileSystem.new("public", prefix: "shrine_storage_#{Rails.env}/#{shared_bucket_path_prefix}")
       elsif mode == "dev_s3"
-        Shrine::Storage::S3.new({
+        FasterS3Url::Shrine::Storage.new({
           bucket:            lookup(:s3_dev_bucket),
           prefix:            "#{lookup(:s3_dev_prefix)}/#{shared_bucket_path_prefix}",
           access_key_id:     lookup(:aws_access_key_id),
@@ -218,12 +228,12 @@ module ScihistDigicoll
           region:            lookup(:aws_region)
         }.merge(s3_storage_options))
       elsif mode == "production"
-        Shrine::Storage::S3.new({
-          bucket:            lookup(bucket_key),
+        FasterS3Url::Shrine::Storage.new({
+          bucket:            lookup!(bucket_key),
           prefix:            prefix,
-          access_key_id:     lookup(:aws_access_key_id),
-          secret_access_key: lookup(:aws_secret_access_key),
-          region:            lookup(:aws_region)
+          access_key_id:     lookup!(:aws_access_key_id),
+          secret_access_key: lookup!(:aws_secret_access_key),
+          region:            lookup!(:aws_region)
         }.merge(s3_storage_options))
       else
         raise TypeError.new("unrecognized storage mode: #{mode}")

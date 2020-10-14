@@ -8,7 +8,7 @@
 # that won't work well (if it uses presigned s3 urls for everything, it'll be far too
 # slow
 #
-# 3) Notifies of any non-compliant Assets found, and records the result of the audit in ... TBD
+# 3) Notifies of any non-compliant Assets found, and records the result of the audit.
 #
 #
 #      auditor = AssetDerivativeStorageTypeAuditor.new
@@ -31,6 +31,9 @@
 class AssetDerivativeStorageTypeAuditor
   attr_reader :incorrect_storage_locations, :incorrectly_published
 
+  # We're storing a short list of sample friendlier_ids of assets with
+  # problems. How many?
+  PROBLEM_SAMPLE_SIZE = 10
 
   def check_all
     reset
@@ -52,13 +55,29 @@ class AssetDerivativeStorageTypeAuditor
     incorrect_storage_locations.present? || incorrectly_published.present?
   end
 
-  # def store_audit_results
-  #   AssetDerivativeStorageTypeCheck.create!(
-  #     passed: !failed_assets?
-  #     incorrect_storage_locations: incorrect_storage_locations,
-  #     incorrectly_published: incorrectly_published
-  #   )
-  # end
+  def store_audit_results
+    return unless failed_assets?
+
+    if incorrect_storage_locations.present?
+      log_into_report({ incorrect_storage_locations_count: incorrect_storage_locations.count })
+      log_into_report({
+        incorrect_storage_locations_sample:
+          incorrect_storage_locations[0..PROBLEM_SAMPLE_SIZE-1].
+          collect(&:friendlier_id).
+          join(",")
+        })
+    end
+
+    if incorrectly_published.present?
+      log_into_report({ incorrectly_published_count: incorrectly_published.count })
+      log_into_report({
+        incorrectly_published_sample:
+          incorrectly_published[0..PROBLEM_SAMPLE_SIZE-1].
+          collect(&:friendlier_id).
+          join(",")
+        })
+    end
+  end
 
   def notify_if_failed
     if failed_assets?
@@ -79,17 +98,40 @@ class AssetDerivativeStorageTypeAuditor
 
   # Checks, records, and notifies of failures
   def perform!
+    log_start
     check_all
-    #store_audit_results
+    store_audit_results
     notify_if_failed
+    delete_stale_reports
+    log_end
   end
 
   private
+
+  # Get or create the report
+  def report
+    @report ||= Admin::AssetDerivativeStorageTypeReport.create!
+  end
+
+  def log_start
+    log_into_report({ start_time: Time.now.to_s })
+  end
+
+  def log_end
+    log_into_report({ end_time:   Time.now.to_s })
+  end
+
+  def log_into_report(data)
+    report.data_for_report.update(data)
+    report.save!
+  end
+
+  def delete_stale_reports
+    Admin::AssetDerivativeStorageTypeReport.where.not(id: report.id).destroy_all
+  end
 
   def reset
     @incorrect_storage_locations = []
     @incorrectly_published = []
   end
-
-
 end
