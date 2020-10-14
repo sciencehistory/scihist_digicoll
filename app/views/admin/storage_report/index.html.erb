@@ -1,0 +1,73 @@
+<h1 class="mb-4">Derivative Storage Report</h1>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md">
+      This report confirms that files that should not be accessible to the public are indeed locked down, and vice-versa.
+      To save space, we only list the total <em>number</em> of assets with problems, along with a short sample of actual links to some of those assets.
+      Reports are run nightly, but we only keep the latest one.
+    </div>
+  </div>
+</div>
+
+<% if @report.nil? %>
+  <p>No reports found.</p>
+<% else %>
+  <h2 class="border-bottom">Latest report</h2>
+
+  <h4>Report id</h4>
+  <p><%= @report.id %></p>
+  <hr/>
+
+  <h4>Started at</h4>
+  <p><%= l(@data['start_time'].to_datetime, format: :short) %></p>
+
+  <hr/>
+  <h4>Completed successfully at</h4>
+  <p class="text-muted small">If this date is present, the audit checked all assets.</p>
+  <p><%= l(@data['end_time'].to_datetime, format: :short) %></p>
+
+  <hr/>
+  <h4>Asserts published, but with restricted derivatives</h4>
+
+  <p class="text-muted small">Derivatives that should <strong>not</strong> be locked down, but are. These belong to assets that are <strong>published</strong> but for whatever reason are being stored in our secure storage bucket.</p>
+
+  <p>
+    <% if @data['incorrectly_published_sample'].is_a? String %>
+      <span class="text-danger">
+        <i class="fa fa fa-thumbs-down" aria-hidden="true"></i>
+      </span>
+      <%= @incorrectly_published_sample_array.map { |id| link_to(id, work_path(id)) }.join(';').html_safe %>
+      <% if @data['incorrectly_published_count'] > @incorrectly_published_sample_array.length  %>
+        [...]
+      <% end %>
+      <br/>(<%= @data['incorrectly_published_count'] %> assets total had problems)
+    <% else %>
+      <span class="text-success">
+        <i class="fa fa fa-thumbs-up" aria-hidden="true"></i>
+      </span>
+      All assets OK
+    <% end %>
+  </p>
+
+  <hr/>
+  <h4>Derivatives in the wrong location</h4>
+  <p class="text-muted small">Derivatives that <strong>should</strong> be locked down but aren't. These belong to assets marked <strong>restricted</strong> (i.e. they and their derivatives should not be visible to the public under any circumstances) but, for whatever reason, are being stored in our public storage bucket.</p>
+  <p>
+    <% if @data['incorrect_storage_locations_sample'].is_a? String %>
+    <span class="text-danger">
+      <i class="fa fa fa-thumbs-down" aria-hidden="true"></i>
+    </span>
+    <%= @incorrect_storage_locations_sample_array.map { |id| link_to(id, work_path(id)) }.join(';').html_safe %>
+    <% if @data['incorrect_storage_locations_count'] > @incorrect_storage_locations_sample_array.length  %>
+      [...]
+    <% end %>
+     <br/>(<%= @data['incorrect_storage_locations_count'] %> assets total had problems)
+    <% else %>
+    <span class="text-success">
+      <i class="fa fa fa-thumbs-up" aria-hidden="true"></i>
+    </span>
+    All assets OK
+    <% end %>
+  </p>
+<% end %>
