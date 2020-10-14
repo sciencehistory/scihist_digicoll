@@ -157,7 +157,7 @@ ActiveRecord::Schema.define(version: 2020_10_07_183129) do
   end
 
   create_table "oral_history_access_requests", force: :cascade do |t|
-    t.uuid "work_id"
+    t.uuid "work_id", null: false
     t.text "patron_name_ciphertext"
     t.text "patron_email_ciphertext"
     t.text "patron_institution_ciphertext"
