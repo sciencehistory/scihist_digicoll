@@ -17,8 +17,8 @@ class WorkShowDecorator < Draper::Decorator
       members = model.members.includes(:leaf_representative)
       members = members.where(published: true) if current_user.nil?
 
-      # FOR TESTING PURPOSES ONLY DISPLAYING FIRST 50
-      members = members.limit(50)
+      # FOR TESTING PURPOSES ONLY DISPLAYING FIRST 5
+      members = members.limit(5)
 
       members = members.order(:position).to_a
       # If the representative image is the first item in the list, don't show it twice.
