@@ -31,7 +31,8 @@
     big representative image %>
   <div style="clear: left"></div>
 
-  <% decorator.member_list_for_display.each_with_index do |member, index| %>
+  <%# FOR TESTING PURPOSES ONLY DISPLAYING FIRST 50 %>
+  <% decorator.member_list_for_display.slice(0,50).each_with_index do |member, index| %>
       <div class="show-member-list-item">
         <%# lazyload all but first 6 images %>
         <%= MemberImagePresentation.new(member, lazy: (index > 5)).display %>
