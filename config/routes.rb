@@ -14,7 +14,6 @@ Rails.application.routes.draw do
   root 'homepage#index'
 
   match 'oai', to: "oai_pmh#index", via: [:get, :post], as: :oai_provider
-
   # https://github.com/plataformatec/devise/wiki/how-to:-change-the-default-sign_in-and-sign_out-routes
   # We aren't using :registration cause we don't want to allow self-registration,
   # We aren't using session cause we define em ourselves manually.
@@ -153,8 +152,6 @@ Rails.application.routes.draw do
     get "/works/:parent_id/ingest", to: "assets#display_attach_form", as: "asset_ingest"
     post "/works/:parent_id/ingest", to: "assets#attach_files"
 
-    get "oral_history_access_requests", to: "oral_history_access_requests#index"
-
     resources :collections, except: [:show]
 
     # Note "assets" is Rails reserved word for routing, oops. So we use
@@ -168,6 +165,8 @@ Rails.application.routes.draw do
     post "/asset_files/:asset_id/check_fixity", to: "assets#check_fixity", as: "check_fixity"
     get "/fixity_report", to: "assets#fixity_report", as: "fixity_report"
     get "/storage_report", to: "storage_report#index", as: "storage_report"
+    get "oral_history_access_requests", to: "oral_history_access_requests#index", as: "oral_history_access_requests"
+
 
     get "/batch_create", to: "batch_create#new", as: "batch_create" # step 1
     post "/batch_create", to: "batch_create#add_files" # step 2
