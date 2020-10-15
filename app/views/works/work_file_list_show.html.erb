@@ -25,10 +25,7 @@
         <div class="pb-sm-3 pl-sm-3 text-nowrap float-sm-right">
           <%= link_to "Request Access",
             request_oral_history_access_form_path(@work.friendlier_id),
-            class: "btn btn-emphasis mb-2",
-            analytics_category: 'Work',
-            analytics_action: "show_restricted_oral_history_request_form",
-            analytics_label: @work.friendlier_id
+            class: "btn btn-emphasis mb-2"
           %>
         </div>
 
