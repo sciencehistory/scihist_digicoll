@@ -24,12 +24,11 @@ class WorkShowDecorator < Draper::Decorator
   end
 
   # We don't want the leaf_representative, we want the direct representative member
-  # to pass to MemberImagePresenter. This will be an additional SQL fetch to
-  # member_list_for_display, but a small targetted one-result one.
+  # to pass to MemberImagePresenter. But instead of following the `representative`
+  # association, let's find it from the `members`, to avoid an extra fetch.
+  #
+  # Does assume your represnetative is one of your members, otherwise it won't find it.
   def representative_member
-    # memoize with a value that could be nil....
-    return @representative_member if defined?(@representative_member)
-
-    @representative_member = model.representative
+    @representative_member ||= model.members.find { |m| m.id == model.representative_id }
   end
 end
