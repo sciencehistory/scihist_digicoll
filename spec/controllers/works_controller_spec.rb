@@ -9,12 +9,13 @@ require 'rails_helper'
 RSpec.describe WorksController, type: :controller do
   context "smoke tests" do
     context "standard work" do
-      let(:work){ create(:public_work, :published, members: [create(:asset)]) }
+      render_views
+
+      let(:work){ create(:public_work, :published, members: [create(:asset_with_faked_file), create(:asset_with_faked_file)]) }
 
       before do
         work.representative = work.members.first
         work.save
-        allow(work.members.first).to receive(:content_type).and_return("audio/mpeg")
       end
 
 
