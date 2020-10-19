@@ -5,30 +5,19 @@ require 'csv'
 class Admin::OralHistoryAccessRequestsController < AdminController
   def index
     @oral_history_access_requests = Admin::OralHistoryAccessRequest.
-    where('created_at > ?', 3.months.ago).to_a
+    where('created_at > ?', 3.months.ago).order(created_at: :desc).to_a
   end
 
   def report
     scope = Admin::OralHistoryAccessRequest
 
-    puts params
-    # TODO: This doesn't quite slice the dates the way it should.
-    # Investigate.
-    start_date, end_date = nil
-    if params['Start'].present?
-      start_date = params['Start']['start_date']
-      scope = scope.where('created_at > ?', start_date)
-    end
-    if params['End'].present?
-      end_date = Time.parse(params['End']['end_date']) + 1.day
-      # puts end_date
-      # puts end_date.class
-      #puts "GOOOAT"
-      #puts(Time.parse(end_date))
-      #puts(Time.parse(end_date) + 1.day)
-      #puts(end_date + 1.day)
-      scope = scope.where('created_at <= ?', end_date)
-    end
+    start_date = params.dig('report', 'start_date')
+    scope = scope.where('created_at > ?', start_date) if start_date.present?
+
+    # add 24 hours to the end date, since
+    # we think of this as an inclusive date range.
+    end_date =  params.dig('report', 'end_date')
+    scope = scope.where('created_at <= ?', (Time.parse(end_date) + 1.day)) if end_date.present?
 
     date_label = Date.today.to_s
     data = []
@@ -40,7 +29,6 @@ class Admin::OralHistoryAccessRequestsController < AdminController
       "Institution",
       "Intended use",
     ]
-
 
     scope.find_each do |request|
       data << [
