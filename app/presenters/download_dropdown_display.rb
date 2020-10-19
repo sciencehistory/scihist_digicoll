@@ -80,7 +80,6 @@ class DownloadDropdownDisplay < ViewModel
     content_tag("div", class: "action-item viewer-navbar-btn btn-group downloads #{@use_link ? "dropdown" : "dropup"}") do
       link_or_button +
       content_tag("div", class: "dropdown-menu download-menu", "aria-labelledby" => menu_button_id) do
-        menu_items
       end
     end
   end
