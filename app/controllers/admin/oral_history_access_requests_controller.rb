@@ -11,6 +11,7 @@ class Admin::OralHistoryAccessRequestsController < AdminController
   def report
     scope = Admin::OralHistoryAccessRequest
 
+    puts params
     # TODO: This doesn't quite slice the dates the way it should.
     # Investigate.
     start_date, end_date = nil
@@ -19,7 +20,13 @@ class Admin::OralHistoryAccessRequestsController < AdminController
       scope = scope.where('created_at > ?', start_date)
     end
     if params['End'].present?
-      end_date = params['End']['end_date']
+      end_date = Time.parse(params['End']['end_date']) + 1.day
+      # puts end_date
+      # puts end_date.class
+      #puts "GOOOAT"
+      #puts(Time.parse(end_date))
+      #puts(Time.parse(end_date) + 1.day)
+      #puts(end_date + 1.day)
       scope = scope.where('created_at <= ?', end_date)
     end
 
@@ -27,6 +34,7 @@ class Admin::OralHistoryAccessRequestsController < AdminController
     data = []
     data << [
       "Date",
+      "Work",
       "Name of patron",
       "Email",
       "Institution",
@@ -37,6 +45,7 @@ class Admin::OralHistoryAccessRequestsController < AdminController
     scope.find_each do |request|
       data << [
         request.created_at,
+        request.work.title,
         request.patron_name,
         request.patron_email,
         request.patron_institution,
