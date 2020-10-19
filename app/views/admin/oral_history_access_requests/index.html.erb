@@ -2,47 +2,62 @@
 
 <p>This is the list of patron requests for restricted oral histories.</p>
 
-<div class="border p-2 mb-2">
-  To download a spreadsheet of all items, fill out this form.
-   <%= form_tag :action => 'report' do %>
-    <%= date_field("Start", "start_date", html5: true)%>
-    <%= date_field("End",   "end_date", html5: true)%>
-    <br/>
-    <%= submit_tag("Download report", format: :csv) %>
-    <br/><br/>
+
+<h2>Download a spreadsheet of all requests</h2>
+<div class="border p-2 mb-5">
+  <%= simple_form_for(:report, url: admin_oral_history_access_requests_report_path, method: :post) do |f| %>
+    <div class="row">
+      <div class="col">
+        <%= f.input :start_date,
+          as: :date, html5: true, required: false,
+          label: "Start date", hint: "Start date for report, if needed." %>
+      </div>
+      <div class="col">
+        <%= f.input :end_date,
+          as: :date, html5: true, required: false,
+          label: "End date", hint: "End date for report, if needed."  %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <%= f.button :submit, value: "Download report" %>
+      </div>
+    </div>
   <% end %>
 </div>
 
-<h2>Requests in the past 3 months:</h2>
-
-<% if @oral_history_access_requests.present? %>
-  <table class="table admin-list member-list">
-    <thead>
-      <tr class="d-flex">
-        <th class="col-1">Date</th>
-        <th class="col-2">Patron</th>
-        <th class="col-2">Oral History</th>
-        <th class="col-7">Intended use</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <% @oral_history_access_requests.each do |oh_request| %>
+<h2>Recent requests</h2>
+<div class="border p-2 mb-5">
+  <p>Requests fielded in the past 3 months:</p>
+  <% if @oral_history_access_requests.present? %>
+    <table class="table admin-list member-list">
+      <thead>
         <tr class="d-flex">
-          <td class="col-sm-1"><%= l(oh_request.created_at.to_date, format: :admin) %></td>
-          <td class="col-sm-2"><%= oh_request.patron_name %><% if oh_request.patron_institution.present? %>, <%= oh_request.patron_institution %> <% end %>
-
-          </td>
-          <td class="col-sm-2"><%= link_to(oh_request.work.title, work_path(oh_request.work.friendlier_id))%></td>
-          <td class="col-sm-7">
-            <small class="text-muted">
-             <%= oh_request.intended_use %>
-           </small>
-          </td>
+          <th class="col-1">Date</th>
+          <th class="col-2">Patron</th>
+          <th class="col-2">Oral History</th>
+          <th class="col-7">Intended use</th>
         </tr>
-      <%end %>
-    </tbody>
-  </table>
-<% else %>
-  <div>No requests so far.</div>
-<% end %>
+      </thead>
+
+      <tbody>
+        <% @oral_history_access_requests.each do |oh_request| %>
+          <tr class="d-flex">
+            <td class="col-sm-1"><small><%= l(oh_request.created_at.to_date, format: :admin) %></small></td>
+            <td class="col-sm-2"><%= oh_request.patron_name %><% if oh_request.patron_institution.present? %>, <%= oh_request.patron_institution %> <% end %>
+
+            </td>
+            <td class="col-sm-2"><%= link_to(oh_request.work.title, work_path(oh_request.work.friendlier_id))%></td>
+            <td class="col-sm-7">
+              <small class="text-muted">
+               <%= oh_request.intended_use %>
+             </small>
+            </td>
+          </tr>
+        <%end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div>No requests so far.</div>
+  <% end %>
+</div>

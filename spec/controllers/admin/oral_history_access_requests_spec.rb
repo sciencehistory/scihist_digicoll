@@ -20,25 +20,26 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, :logged_in_user, type
     end
 
     it "allows you to download the report, and correctly interprets start and end date params" do
-      puts access_request_array.map { |ar| ar.created_at.to_s }.to_a
-      params = {
-        "Start"=>{"start_date"=>"2020-09-21"},
-        "End"=>{"end_date"=>"2020-09-26"},
-        "commit"=>"Download report",
-        "controller"=>"admin/oral_history_access_requests",
-        "action"=>"report"
-      }
-      post :report, params: params
+      post :report
       expect(response.code).to eq "200"
       expect(response.headers["Content-Disposition"]).to match(/attachment; filename=.*oral_history_access_requests.*csv/)
       expect(response.media_type).to eq "text/csv"
       response_lines = response.body.lines
-      expect(response_lines.count).to eq 6
+      expect(response_lines.count).to eq 11
       expect(response_lines[0]).to eq  "Date,Work,Name of patron,Email,Institution,Intended use\n"
-      expect(response_lines[5]).to match  /Oral history interview with William John Bailey/
-      expect(response_lines[5]).to match  /Patron 8/
-      expect(response_lines[5]).to match  /patron@institution_8.com/
-      expect(response_lines[5]).to match  /Institution 8/
+      expect(response_lines[8]).to match  /Oral history interview with William John Bailey/
+      expect(response_lines[8]).to match  /Patron 8/
+      expect(response_lines[8]).to match  /patron@institution_8.com/
+      expect(response_lines[8]).to match  /Institution 8/
+      expect(response_lines[8]).to match  /I will write 8 books/
+    end
+
+    it "correctly interprets start and end date params" do
+      params = {"report"=>{"start_date"=>"2020-09-21", "end_date"=>"2020-09-26"}}
+      post :report, params: params
+      expect(response.media_type).to eq "text/csv"
+      response_lines = response.body.lines
+      expect(response_lines.count).to eq 6
       expect(response_lines[5]).to match  /I will write 8 books/
     end
   end
