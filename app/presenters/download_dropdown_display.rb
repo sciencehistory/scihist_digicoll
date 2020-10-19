@@ -181,7 +181,7 @@ class DownloadDropdownDisplay < ViewModel
     end
 
     if has_work_download_options?
-      elements << "<h3 class='dropdown-header'>Download all #{display_parent_work.members.length} images</h3>".html_safe
+      elements << "<h3 class='dropdown-header'>Download all #{display_parent_work.member_count} images</h3>".html_safe
       whole_work_download_options.each do |download_option|
         elements << format_download_option(download_option)
       end
