@@ -14,6 +14,14 @@ module DownloadOptions
       super(asset)
     end
 
+    def asset_friendlier_id
+      @asset_friendlier_id |= asset.friendlier_id
+    end
+
+    def cheaper_download_derivative_path(derivative_type)
+      "/downloads/#{asset_friendlier_id}/#{derivative_type}"
+    end
+
     def options
       options = []
 
@@ -22,7 +30,7 @@ module DownloadOptions
 
       if dl_small = asset.file_derivatives[:download_small]
         options << DownloadOption.with_formatted_subhead("Small JPG",
-          url: download_derivative_path(asset, :download_small),
+          url: cheaper_download_derivative_path(:download_small),
           analyticsAction: "download_jpg_small",
           width: dl_small.width,
           height: dl_small.height,
@@ -32,7 +40,7 @@ module DownloadOptions
 
       if dl_medium = asset.file_derivatives[:download_medium]
         options << DownloadOption.with_formatted_subhead("Medium JPG",
-          url: download_derivative_path(asset, :download_medium),
+          url: cheaper_download_derivative_path(:download_medium),
           analyticsAction: "download_jpg_medium",
           width: dl_medium.width,
           height: dl_medium.height,
@@ -42,7 +50,7 @@ module DownloadOptions
 
       if dl_large = asset.file_derivatives[:download_large]
         options << DownloadOption.with_formatted_subhead("Large JPG",
-          url: download_derivative_path(asset, :download_large),
+          url: cheaper_download_derivative_path(:download_large),
           analyticsAction: "download_jpg_large",
           width: dl_large.width,
           height: dl_large.height,
@@ -52,7 +60,7 @@ module DownloadOptions
 
       if dl_full = asset.file_derivatives[:download_full]
         options << DownloadOption.with_formatted_subhead("Full-sized JPG",
-          url: download_derivative_path(asset, :download_full),
+          url: cheaper_download_derivative_path(:download_full),
           analyticsAction: "download_jpg_full",
           width: dl_full.width,
           height: dl_full.height,
@@ -63,7 +71,7 @@ module DownloadOptions
       if asset.stored?
         options << DownloadOption.with_formatted_subhead("Original file",
           url: download_path(asset),
-          analyticsAction: "download_original",
+          analyticsAction: "/downloads/#{asset_friendlier_id}",
           content_type: asset.content_type,
           width: asset.width,
           height: asset.height,
@@ -73,6 +81,7 @@ module DownloadOptions
 
       return options
     end
+
 
   end
 end
