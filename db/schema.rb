@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_02_160422) do
+ActiveRecord::Schema.define(version: 2020_10_07_183129) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -156,6 +156,19 @@ ActiveRecord::Schema.define(version: 2020_10_02_160422) do
     t.index ["work_id"], name: "index_on_demand_derivatives_on_work_id"
   end
 
+  create_table "oral_history_access_requests", force: :cascade do |t|
+    t.uuid "work_id", null: false
+    t.text "patron_name_ciphertext"
+    t.text "patron_email_ciphertext"
+    t.text "patron_institution_ciphertext"
+    t.text "intended_use_ciphertext"
+    t.string "status"
+    t.text "notes"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["work_id"], name: "index_oral_history_access_requests_on_work_id"
+  end
+
   create_table "oral_history_content", force: :cascade do |t|
     t.uuid "work_id", null: false
     t.jsonb "combined_audio_mp3_data"
@@ -246,6 +259,7 @@ ActiveRecord::Schema.define(version: 2020_10_02_160422) do
   add_foreign_key "kithe_models", "kithe_models", column: "parent_id"
   add_foreign_key "kithe_models", "kithe_models", column: "representative_id"
   add_foreign_key "on_demand_derivatives", "kithe_models", column: "work_id"
+  add_foreign_key "oral_history_access_requests", "kithe_models", column: "work_id"
   add_foreign_key "oral_history_content", "kithe_models", column: "work_id"
   add_foreign_key "queue_item_comments", "digitization_queue_items"
   add_foreign_key "queue_item_comments", "r_and_r_items"
