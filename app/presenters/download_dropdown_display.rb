@@ -234,7 +234,7 @@ class DownloadDropdownDisplay < ViewModel
   def has_work_download_options?
     display_parent_work &&
     display_parent_work.member_count > 1 &&
-    display_parent_work.member_content_types.all? {|t| t.start_with?("image/")}
+    display_parent_work.member_content_types(mode: :query).all? {|t| t.start_with?("image/")}
   end
 
   def whole_work_download_options

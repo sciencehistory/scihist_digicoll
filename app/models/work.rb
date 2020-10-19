@@ -132,30 +132,61 @@ class Work < Kithe::Work
 
   # @returns [Array] of IANA/MIME content types from any members.
   #
-  # It will collect these by visiting each actual member, and then uniquing. Results are then
-  # _cached_, so subsequent calls will _not_ reflect any changes you've made to members or
-  # their content types -- unless you pass in `reset:false`.
+  # For children that are Works themselves, only includes the content-type of the single
+  # represnetative of that work, does not completely descend the hieararchy tree.
   #
-  # The Work model is a kind of architectural unfortunate place to put this, but it worked
-  # for being easily accessible from the DownloadDropdownDisplay, which is what this method
-  # is intended for. Multiple DownloadDropdownDisplays needed to get this value for the same
-  # work without re-calculating it. See https://github.com/sciencehistory/scihist_digicoll/pull/334
+  # This is something we need frequently, but is hard to do efficiently! This method provides
+  # two modes to do it, you need to choose the mode explicity.
   #
-  # Note that for this to be most performant, you have to have members => leaf_representatives
-  # eager-loaded, so it doesn't lead to an n+1 problem.
-  def member_content_types(reset: false)
-    @member_content_types = nil if reset
-    @member_content_types ||= begin
-      warned = false
+  # @option mode [Symbol], :query or :associaiton.
+  #
+  # :query will go to the database to execute a single relatievly efficient query to collect
+  # these. Great if you are doing it for a single Work, and does not require loading
+  # all #members and their #leaf_representatives into memory -- but would be an n+1 query
+  # problem if using this mode on a page of works.
+  #
+  # :association will do an in-memory scan of all #members and their #leaf_representatives.
+  # Find if you already have those associations in-memory, but will a terrible n+1
+  # (or even n^2+1) query if you don't. :association mode will actually raise a TypeError
+  # if you try using it WITHOUT associations pre-loaded, to avoid the dangerous mistake.
+  # That is, it wants you to have done: `Work.where(something).includes(members: :leaf_representative)`
+  #
+  # In either case, answer is memoized/cached on this Work instance, unless you call
+  # with `reset: true` to re-fetchc/re-calculate.
+  #
+  # This is kind of a complicated mess; and the Work model is kind of an architecturally
+  # unfortunate place to put this complicated mess, better to segregate in a decorator
+  # or something? But this worked for being easily accessible from the various places
+  # that needed it (and memoizing it in common), avoiding having to pass it down as
+  # an argument along a nested call-chain. Eg DownloadDropdownDisplay needs it.
+  def member_content_types(mode:, reset: false)
+    raise ArgumentError.new("mode must be :query or :association") unless [:query, :association].include?(mode)
 
-      members.collect do |member|
-        unless warned || member.association(:leaf_representative).loaded?
-          Rails.logger.warn("Calling Work#member_content_types without pre-loading members => leaf_representative may be dangerous to performance")
-          warned = true
+    if reset
+      @member_content_types = nil
+    end
+
+    @member_content_types ||= begin
+      if mode == :association
+        unless members.loaded?
+          raise TypeError.new("Calling member_content_types with mode: :association without pre-loaded members, performance problem")
         end
 
-        member.leaf_representative&.content_type
-      end.compact.uniq
+        members.collect do |member|
+          unless member.association(:leaf_representative).loaded?
+            raise TypeError.new("Calling member_content_types with mode: :association without pre-loaded members.leaf_representative, performance problem")
+          end
+
+          member.leaf_representative&.content_type
+        end.compact.uniq
+      else # mode == :query
+        self.members.
+          includes(:leaf_representative).
+          references(:leaf_representative).
+          pluck(Arel.sql("
+            DISTINCT leaf_representatives_kithe_models.file_data -> 'metadata' -> 'mime_type', kithe_models.file_data -> 'metadata' -> 'mime_type'"
+          )).flatten.compact.uniq
+      end
     end
   end
 
@@ -170,6 +201,11 @@ class Work < Kithe::Work
     @member_count = nil if reset
     @member_count ||= members.size
   end
+
+  # def members
+  #   byebug if $debugging
+  #   super
+  # end
 
   # We have enough checks for special treatment of oral history, it makes
   # sense to make a method to encapsulate it.
