@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DownloadOptions
   # Various resized JPG options for a single Asset of type "image/"
   #
