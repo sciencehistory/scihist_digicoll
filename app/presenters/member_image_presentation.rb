@@ -30,11 +30,13 @@
 # In general, we intend the front-end to NOT try to put these on the page at all,
 # we don't want to show people the placeholder, this is just a fail-safe to avoid
 # showing non-public content in case of other errors.
-class MemberImagePresentation < ViewModel
-  valid_model_type_names "Work", "Asset", "NilClass"
+class MemberImagePresentation < ApplicationComponent
+  #valid_model_type_names "Work", "Asset", "NilClass"
 
   alias_method :member, :model
   attr_reader :size, :lazy
+
+  delegate :can?, to: :helpers
 
   def initialize(member, size: :standard, lazy: false)
     @lazy = !!lazy
@@ -42,7 +44,7 @@ class MemberImagePresentation < ViewModel
     super(member)
   end
 
-  def display
+  def call
     if member.nil? || representative_asset.nil? || !user_has_access_to_asset?
       return not_available_placeholder
     end
