@@ -24,7 +24,7 @@ class Admin::OralHistoryAccessRequestsController < AdminController
     data << [
       "Date",
       "Work",
-      "Work URL"
+      "Work URL",
       "Name of patron",
       "Email",
       "Institution",
