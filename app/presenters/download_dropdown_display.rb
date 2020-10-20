@@ -39,8 +39,8 @@
 #
 # (This is a bit hacky)
 #
-class DownloadDropdownDisplay < ViewModel
-  valid_model_type_names "Asset", "NilClass"
+class DownloadDropdownDisplay < ApplicationComponent
+  #valid_model_type_names "Asset", "NilClass"
 
   alias_method :asset, :model
 
@@ -74,7 +74,7 @@ class DownloadDropdownDisplay < ViewModel
     super(asset)
   end
 
-  def display
+  def call
     # https://getbootstrap.com/docs/4.0/components/dropdowns/
     # viewer-navbar-btn and btn-group necessary for it to style correctly when embedded in viewer. :(
     content_tag("div", class: "action-item viewer-navbar-btn btn-group downloads #{@use_link ? "dropdown" : "dropup"}") do
