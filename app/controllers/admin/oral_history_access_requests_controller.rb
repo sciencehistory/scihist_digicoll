@@ -24,6 +24,7 @@ class Admin::OralHistoryAccessRequestsController < AdminController
     data << [
       "Date",
       "Work",
+      "Work URL"
       "Name of patron",
       "Email",
       "Institution",
@@ -34,6 +35,7 @@ class Admin::OralHistoryAccessRequestsController < AdminController
       data << [
         request.created_at,
         request.work.title,
+        work_url(request.work),
         request.patron_name,
         request.patron_email,
         request.patron_institution,
