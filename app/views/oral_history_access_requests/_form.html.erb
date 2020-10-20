@@ -1,19 +1,30 @@
 <%= simple_form_for @oral_history_access_request,  :url => :request_oral_history_access  do |f| %>
 
-  <p>
-    To receive a transcript of "<%= @work.title %>" by email, please fill out the form below.
+  <p class="mb-4">
+    To receive files for "<%= @work.title %>" by email, please fill out the form below.
   </p>
 
-  <p><small class="text-muted">
-    This oral history's copyright status is: <%= link_to RightsTerms.label_for(@work.rights), @work.rights %>. Your receipt of an electronic copy of an oral history indicates your agreement to abide by U.S. copyright law with regard to the reproduction and dissemination of the oral history. You are receiving a copy of this oral history and <strong>you are not permitted to reproduce it</strong> in any way without the permission of the Science History Institute.
-  </small>
-  </p>
+  <% if @work.rights.present? %>
+    <div class="mb-4">
+      <%= RightsIconDisplay.new(@work).display %>
+    </div>
+  <% end %>
 
-  <p>
-  <small class="text-muted">
-      <strong>We consider your personal information confidential.</strong> We will only use it for our records, and we will not share it with anyone outside the Science History Institute.
-  </small>
-  </p>
+
+  <div class="alert alert-info mb-4" role="alert">
+    <p class="sans-serif">
+        Your receipt of an electronic copy of an oral history indicates your agreement to abide by U.S. copyright law with regard to the reproduction and dissemination of the oral history. You are receiving a copy of this oral history and you are not permitted to reproduce it in any way without the permission of the Science History Institute.
+    </p>
+
+    <p class="sans-serif">We consider your personal information confidential. We will only use it for our records, and we will not share it with anyone outside the Science History Institute.
+    </p>
+
+    <p class="sans-serif mb-0">
+      If you have any questions about transcripts, recordings, or usage permissions, please <a href="https://www.sciencehistory.org/center-for-oral-history/contact">contact the Center for Oral History</a>.
+    </p>
+  </div>
+
+
   <% if @oral_history_access_request.errors.any? %>
     <div class="kithe-form-errors-top alert alert-danger mb-4" role="alert">
       <h2 class="h4" class="alert-heading"><%= pluralize(@oral_history_access_request.errors.count, "error") %></h2>
@@ -29,30 +40,31 @@
     <div class="row">
       <div class="col">
         <%= f.input :patron_name,
-          hint: "Your name.",
-          label: "Name" %>
+          label: "Your name" %>
       </div>
     </div>
 
     <div class="row">
       <div class="col">
         <%= f.input :patron_email,
-          hint: "An email we can use to send you the oral history.",
-          label: "Email" %>
+          hint: "Links to files will be emailed to this address",
+          label: "Your email address" %>
       </div>
     </div>
 
     <div class="row">
       <div class="col">
         <%= f.input :patron_institution,
-          label: "Your institution", hint: "Your institution, if applicable." %>
+          label: "Your institution", hint: "Optional" %>
       </div>
     </div>
 
     <div class="row">
       <div class="col">
         <%= f.input :intended_use,
-          label: "Intended use", hint: "So that we can better understand our audience, please tell us how you plan to use the oral history you have requested." %>
+          as: :text,
+          label: "Intended use",
+          hint: "So that we can better understand our audience, please tell us how you plan to use the oral history you have requested." %>
       </div>
     </div>
 
