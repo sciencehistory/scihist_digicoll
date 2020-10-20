@@ -62,7 +62,9 @@
     <div class="row">
       <div class="col">
         <%= f.input :intended_use,
-          label: "Intended use", hint: "So that we can better understand our audience, please tell us how you plan to use the oral history you have requested." %>
+          as: :text,
+          label: "Intended use",
+          hint: "So that we can better understand our audience, please tell us how you plan to use the oral history you have requested." %>
       </div>
     </div>
 
