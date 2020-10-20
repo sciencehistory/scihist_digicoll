@@ -6,8 +6,8 @@
 #
 # Or mode :dropdown_item, a smaller one-line display with a dropdown-item class
 # for bootstrap dropdowns.
-class RightsIconDisplay < ViewModel
-  valid_model_type_names "Work"
+class RightsIconDisplay < ApplicationComponent
+  #valid_model_type_names "Work"
 
   alias_method :work, :model
 
@@ -19,7 +19,7 @@ class RightsIconDisplay < ViewModel
     super(work)
   end
 
-  def display
+  def call
     return "" unless has_rights_statement?
 
     link_to(rights_url, target: "_blank", class: ['rights-statement', mode.to_s.dasherize]) do

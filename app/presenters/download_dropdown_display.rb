@@ -223,7 +223,7 @@ class DownloadDropdownDisplay < ApplicationComponent
   end
 
   def rights_statement_item
-    RightsIconDisplay.new(display_parent_work, mode: :dropdown_item).display
+    render RightsIconDisplay.new(display_parent_work, mode: :dropdown_item)
   end
 
   # have a parent work, with more than 1 child, and AT LEAST ONE of it's children are images,
