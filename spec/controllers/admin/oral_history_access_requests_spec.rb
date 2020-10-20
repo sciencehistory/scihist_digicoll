@@ -26,7 +26,7 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, :logged_in_user, type
       expect(response.media_type).to eq "text/csv"
       response_lines = response.body.lines
       expect(response_lines.count).to eq 11
-      expect(response_lines[0]).to eq  "Date,Work,Name of patron,Email,Institution,Intended use\n"
+      expect(response_lines[0]).to eq  "Date,Work,Work URL,Name of patron,Email,Institution,Intended use\n"
       expect(response_lines[8]).to match  /Oral history interview with William John Bailey/
       expect(response_lines[8]).to match  /Patron 8/
       expect(response_lines[8]).to match  /patron@institution_8.com/
