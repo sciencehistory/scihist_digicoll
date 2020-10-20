@@ -193,13 +193,13 @@ This is true whether the Asset is _published_ or not; its derivatives are in pub
 
 But for certain Assets which really _are_ sensitive (eg certain oral histories), the app supports marking `derivative_storage_type: "restricted"`.  For Assets so marked, derivatives will be stored in a different bucket with public access blocked. Signed S3 URLs can be delivered by the app for authorized users.
 
-In addition to marking an asset for restricted derivatives on ingest, it's derivative storage type can be changed by admins at any time. When an asset is moved to derivatives storage, a variety of files in public storage need to be deleted, including on backup S3 buckets, and s3 version history. The `EnsureCorrectDerivativeStorageTypeJob` is responsible for this, after being triggered by an `after_update_commit` callback on Asset model.
+In addition to marking an asset for restricted derivatives on ingest, its derivative storage type can be changed by admins at any time. When an asset is moved to derivatives storage, a variety of files in public storage need to be deleted, including on backup S3 buckets, and s3 version history. The `EnsureCorrectDerivativeStorageTypeJob` is responsible for this, after being triggered by an `after_update_commit` callback on Asset model.
 
 `derivative_storage_type: restricted` is not meant to be used with `published` assets -- there is no point to it, and it would be a performance problem.
 
 DZI files (for our viewer pan and zoom) are not supported for `derivative_storage_type: "restricted"`, as it would be challenging to get non-public DZI files to the viewer in an efficient way, and we don't have a use case at present.
 
-We have a nightly job intending to verify internal consistency of derivative storage type settings, and it's report can be seen in Admin dashboard.
+We have a nightly job intending to verify internal consistency of derivative storage type settings, and its report can be seen in Admin dashboard at `/admin/storage_report`.
 
 ## Deployment
 
