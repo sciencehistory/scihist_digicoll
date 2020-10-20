@@ -39,6 +39,8 @@ gem 'honeybadger', '~> 4.0'
 # https://github.com/sciencehistory/scihist_digicoll/issues/458
 gem "sprockets", "~> 4.0"
 
+gem "view_component", require: "view_component/engine"
+
 # Use SCSS for stylesheets
 gem 'sassc-rails', '~> 2.0'
 # Use Uglifier as compressor for JavaScript assets
