@@ -28,33 +28,29 @@
 
 <h2>Recent 3 months of requests</h2>
 <div class="border p-2 mb-5">
-  <% if @oral_history_access_requests.present? %>
-    <table class="table admin-list member-list">
-      <thead>
+  <table class="table admin-list member-list">
+    <thead>
+      <tr class="d-flex">
+        <th class="col-1">Date</th>
+        <th class="col-2">Patron</th>
+        <th class="col-2">Oral History</th>
+        <th class="col-7">Intended use</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @oral_history_access_requests.each do |oh_request| %>
         <tr class="d-flex">
-          <th class="col-1">Date</th>
-          <th class="col-2">Patron</th>
-          <th class="col-2">Oral History</th>
-          <th class="col-7">Intended use</th>
+          <td class="col-sm-1"><%= l(oh_request.created_at.to_date, format: :admin) %></td>
+          <td class="col-sm-2"><%= oh_request.patron_name %><% if oh_request.patron_institution.present? %>, <%= oh_request.patron_institution %> <% end %>
+
+          </td>
+          <td class="col-sm-2"><%= link_to(oh_request.work.title, work_path(oh_request.work.friendlier_id))%></td>
+          <td class="col-sm-7">
+             <%= oh_request.intended_use %>
+          </td>
         </tr>
-      </thead>
-
-      <tbody>
-        <% @oral_history_access_requests.each do |oh_request| %>
-          <tr class="d-flex">
-            <td class="col-sm-1"><%= l(oh_request.created_at.to_date, format: :admin) %></td>
-            <td class="col-sm-2"><%= oh_request.patron_name %><% if oh_request.patron_institution.present? %>, <%= oh_request.patron_institution %> <% end %>
-
-            </td>
-            <td class="col-sm-2"><%= link_to(oh_request.work.title, work_path(oh_request.work.friendlier_id))%></td>
-            <td class="col-sm-7">
-               <%= oh_request.intended_use %>
-            </td>
-          </tr>
-        <%end %>
-      </tbody>
-    </table>
-  <% else %>
-    <div>No requests so far.</div>
-  <% end %>
+      <%end %>
+    </tbody>
+  </table>
 </div>
