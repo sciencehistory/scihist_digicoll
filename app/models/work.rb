@@ -202,11 +202,6 @@ class Work < Kithe::Work
     @member_count ||= members.size
   end
 
-  # def members
-  #   byebug if $debugging
-  #   super
-  # end
-
   # We have enough checks for special treatment of oral history, it makes
   # sense to make a method to encapsulate it.
   def is_oral_history?
