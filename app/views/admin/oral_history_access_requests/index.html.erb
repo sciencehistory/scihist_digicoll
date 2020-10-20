@@ -42,15 +42,13 @@
       <tbody>
         <% @oral_history_access_requests.each do |oh_request| %>
           <tr class="d-flex">
-            <td class="col-sm-1"><small><%= l(oh_request.created_at.to_date, format: :admin) %></small></td>
+            <td class="col-sm-1"><%= l(oh_request.created_at.to_date, format: :admin) %></td>
             <td class="col-sm-2"><%= oh_request.patron_name %><% if oh_request.patron_institution.present? %>, <%= oh_request.patron_institution %> <% end %>
 
             </td>
             <td class="col-sm-2"><%= link_to(oh_request.work.title, work_path(oh_request.work.friendlier_id))%></td>
             <td class="col-sm-7">
-              <small class="text-muted">
                <%= oh_request.intended_use %>
-             </small>
             </td>
           </tr>
         <%end %>
