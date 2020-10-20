@@ -183,6 +183,24 @@ And `storage_mode` `production` is default in production, with different sorts o
 
 Regardless, object are generally stored in S3 (or file system) with paths beginning with the UUID pk of the Kithe::Asset they belong to.
 
+## Notes on File Security and Derivative Storage Type
+
+In production, our originals are stored in an S3 bucket that has public access blocked. After the app determines a user is authorized to access an original, a temporary signed S3 url is delivered for (eg) a download link, direct from S3.
+
+However, our _derivatives_ (eg thumbnails) are stored in an S3 bucket with public access. This allows us to use long-lasting persistent public S3 URLs to refer to these, that are the same for all pages/users. These are higher performance to generate than signed; also they can be cached, and their contents can be cached, in caches shared between page accesses and users. For these reasons it would also in the future be trivial to use with a CDN for higher performance and scalability.
+
+This is true whether the Asset is _published_ or not; its derivatives are in public-accessible S3.  This allows us to avoid having to try copying files from one bucket to another when publication status changes; it would be very hard to 'guess' at URLs for these unpublished things; and if someone did get a URL for pre-published materials they aren't normally particularly sensitive.
+
+But for certain Assets which really _are_ sensitive (eg certain oral histories), the app supports marking `derivative_storage_type: "restricted"`.  For Assets so marked, derivatives will be stored in a different bucket with public access blocked. Signed S3 URLs can be delivered by the app for authorized users.
+
+In addition to marking an asset for restricted derivatives on ingest, its derivative storage type can be changed by admins at any time. When an asset is moved to derivatives storage, a variety of files in public storage need to be deleted, including on backup S3 buckets, and s3 version history. The `EnsureCorrectDerivativeStorageTypeJob` is responsible for this, after being triggered by an `after_update_commit` callback on Asset model.
+
+`derivative_storage_type: restricted` is not meant to be used with `published` assets -- there is no point to it, and it would be a performance problem.
+
+DZI files (for our viewer pan and zoom) are not supported for `derivative_storage_type: "restricted"`, as it would be challenging to get non-public DZI files to the viewer in an efficient way, and we don't have a use case at present.
+
+We have a nightly job intending to verify internal consistency of derivative storage type settings, and its report can be seen in Admin dashboard at `/admin/storage_report`.
+
 ## Deployment
 
 We use [capistrano](https://github.com/capistrano/capistrano) to deploy our application.
