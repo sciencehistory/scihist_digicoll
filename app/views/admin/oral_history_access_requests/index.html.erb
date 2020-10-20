@@ -3,19 +3,19 @@
 <p>This is the list of patron requests for restricted oral histories.</p>
 
 
-<h2>Download a spreadsheet of all requests</h2>
+<h2>Download a spreadsheet of requests</h2>
 <div class="border p-2 mb-5">
   <%= simple_form_for(:report, url: admin_oral_history_access_requests_report_path, method: :post) do |f| %>
     <div class="row">
       <div class="col">
         <%= f.input :start_date,
           as: :date, html5: true, required: false,
-          label: "Start date", hint: "Start date for report, if needed." %>
+          label: "Start date" %>
       </div>
       <div class="col">
         <%= f.input :end_date,
           as: :date, html5: true, required: false,
-          label: "End date", hint: "End date for report, if needed."  %>
+          label: "End date"  %>
       </div>
     </div>
     <div class="row">
@@ -26,9 +26,8 @@
   <% end %>
 </div>
 
-<h2>Recent requests</h2>
+<h2>Recent 3 months of requests</h2>
 <div class="border p-2 mb-5">
-  <p>Requests fielded in the past 3 months:</p>
   <% if @oral_history_access_requests.present? %>
     <table class="table admin-list member-list">
       <thead>
