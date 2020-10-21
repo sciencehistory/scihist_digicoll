@@ -31,8 +31,10 @@ class OralHistoryDeliveryMailer < ApplicationMailer
     @request ||= params[:request]
   end
 
+  # Note: any value greater than 604800 will raise an exception.
+  # See https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/S3/Presigner.html
   def how_long_urls_will_be_valid
-    2.weeks.to_i
+    1.week.to_i
   end
 
 
