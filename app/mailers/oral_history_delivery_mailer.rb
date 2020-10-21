@@ -2,39 +2,27 @@ class OralHistoryDeliveryMailer < ApplicationMailer
 
   def oral_history_delivery_email
     raise ArgumentError.new("Required params[:request] missing") unless request.present?
-    #@request = params[:request]
-
     raise ArgumentError.new("Required patron email missing") unless request.patron_email.present?
-
-    # created_at:
-    #            patron_name: "Patron #{i}",
-    #            patron_email: "patron@institution_#{i}.com",
-    #            patron_institution: "Institution #{i}",
-    #            intended_use: "I will write #{i} books.",
-    #            work: work
-
-    from_address = ScihistDigicoll::Env.lookup(:no_reply_email_address)
-
-    unless from_address.present?
-      raise RuntimeError, 'Cannot send fixity error email; specify at least a "from" address'
-    end
-
-    mail(
-      from:         from_address,
-      to:           request.patron_email,
-      subject:      subject,
-      content_type: "text/html",
-    )
+    raise RuntimeError.new("Required from email address missing") unless from_address.present?
+    mail( from: from_address, to: to_address, subject: subject, content_type: "text/html")
   end
 
   def request
     @request ||= params[:request]
   end
 
+  def from_address
+    ScihistDigicoll::Env.lookup(:no_reply_email_address)
+  end
+
+  def to_address
+    request.patron_email
+  end
+
   # Note: any value greater than 604800 will raise an exception.
   # See https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/S3/Presigner.html
   def how_long_urls_will_be_valid
-    1.week.to_i
+    1.week.to_i - 10
   end
 
 
