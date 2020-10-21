@@ -14,8 +14,10 @@ class OralHistoryAccessRequestsController < ApplicationController
     @oral_history_access_request = Admin::OralHistoryAccessRequest.new(oral_history_access_request_params)
     @oral_history_access_request.work = @work
     if @oral_history_access_request.save
-      # redirect_to work_path(@work.friendlier_id), notice: 'Your request has been logged.'
-      render plain: "This functionality is not activated yet, and is only present for testing."
+      OralHistoryDeliveryJob.
+        new(@oral_history_access_request).
+        perform_now
+      redirect_to work_path(@work.friendlier_id), notice: "We have received your request. You should receive an email from us shortly with links to the files you requested."
     else
      render :new
     end
