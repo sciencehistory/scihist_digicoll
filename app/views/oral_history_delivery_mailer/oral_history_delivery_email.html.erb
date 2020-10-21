@@ -1,0 +1,17 @@
+<p>Dear <%= mailer.patron_name %>,</p>
+
+<p>Thanks for your recent visit to the <%= link_to "Science History Institute's digital collections website", mailer.hostname %>. At <%=mailer.created_at%>, you requested access to the files for <%= mailer.work_link %>. Good news: the files are ready for you to download.</p>
+
+<p>You can download the files any time in the next two weeks. (After that, these links will no longer work.)</p>
+
+<h1>Files for <%= mailer.work_link %>:</h1>
+
+<ul>
+  <% mailer.assets.each do |member| %>
+    <li><%= link_to member.title, download_url(member, host: mailer.hostname) %></li>
+  <% end %>
+</ul>
+
+<p>Verbiage verbiage verbiage.</p>
+
+
