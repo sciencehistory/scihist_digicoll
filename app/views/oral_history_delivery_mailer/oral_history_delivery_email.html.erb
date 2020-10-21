@@ -8,7 +8,16 @@
 
 <ul>
   <% mailer.assets.each do |member| %>
-    <li><%= link_to member.title, download_url(member, host: mailer.hostname) %></li>
+    <li><%= link_to member.title,
+      member.file.url(
+      public: false,
+      expires_in: mailer.how_long_urls_will_be_valid,
+      response_content_type: member.content_type,
+      response_content_disposition: ContentDisposition.format(
+        disposition: "inline", # not "attachment"
+        filename: DownloadFilenameHelper.filename_for_asset(member)
+      )
+    ) %></li>
   <% end %>
 </ul>
 

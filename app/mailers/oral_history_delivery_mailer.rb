@@ -31,6 +31,11 @@ class OralHistoryDeliveryMailer < ApplicationMailer
     @request ||= params[:request]
   end
 
+  def how_long_urls_will_be_valid
+    2.weeks.to_i
+  end
+
+
   def created_at
     request.created_at
   end
