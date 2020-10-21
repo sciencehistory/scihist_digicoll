@@ -145,6 +145,8 @@ group :test do
   gem "db-query-matchers", "< 2.0"
   # Used for Cap deployment to auto-lookup hosts from EC2 tags.
   gem 'aws-sdk-ec2', '>=1.74'
+
+  gem 'rails-controller-testing'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
