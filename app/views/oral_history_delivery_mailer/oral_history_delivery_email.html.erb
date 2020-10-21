@@ -2,8 +2,6 @@
 
 <p>Thanks for your recent visit to the <%= link_to "Science History Institute's digital collections website", mailer.hostname %>. At <%=mailer.created_at%>, you requested access to the files for <%= mailer.work_link %>. Good news: the files are ready for you to download.</p>
 
-<p>You can download the files any time in the next two weeks. (After that, these links will no longer work.)</p>
-
 <h1>Files for <%= mailer.work_link %>:</h1>
 
 <ul>
@@ -14,13 +12,13 @@
       expires_in: mailer.how_long_urls_will_be_valid,
       response_content_type: member.content_type,
       response_content_disposition: ContentDisposition.format(
-        disposition: "inline", # not "attachment"
+        disposition: "attachment",
         filename: DownloadFilenameHelper.filename_for_asset(member)
       )
     ) %></li>
   <% end %>
 </ul>
 
-<p>Verbiage verbiage verbiage.</p>
+<p>You can download the files any time in the week. After that, these links will no longer work.</p>
 
 

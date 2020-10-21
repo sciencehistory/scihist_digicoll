@@ -39,7 +39,7 @@ class OralHistoryDeliveryMailer < ApplicationMailer
   end
 
   def assets
-    work.members.select {|x| x.is_a? Asset}
+    work.members.select {|x| x.is_a? Asset}.order(:position)
   end
 
   def subject
