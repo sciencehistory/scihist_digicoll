@@ -29,7 +29,7 @@ class ViewerMemberInfoSerializer < ViewModel
         # if tilesource DZI is unavailable, give them a more reasonable sized JPG
         fallbackTileSource: { type: "image", url: download_derivative_path(asset, :download_medium, disposition: "inline") },
         thumbAspectRatio: ("#{asset.width.to_f / asset.height}" if asset.width && asset.height),
-        downloads: download_options(asset).as_json
+        downloads: []
       }.merge(thumb_src_attributes(asset))
     end
   end
