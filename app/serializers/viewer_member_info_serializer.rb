@@ -29,7 +29,7 @@ class ViewerMemberInfoSerializer < ViewModel
         # if tilesource DZI is unavailable, give them a more reasonable sized JPG
         fallbackTileSource: { type: "image", url: download_derivative_path(asset, :download_medium, disposition: "inline") },
         thumbAspectRatio: ("#{asset.width.to_f / asset.height}" if asset.width && asset.height),
-        downloads: []
+        downloads: [{"url":"/downloads/6q182k19f/download_small","label":"Small JPG","subhead":"800 x 1222px — 142 KB","analyticsAction":"download_jpg_small"},{"url":"/downloads/6q182k19f/download_medium","label":"Medium JPG","subhead":"1200 x 1833px — 339 KB","analyticsAction":"download_jpg_medium"},{"url":"/downloads/6q182k19f/download_large","label":"Large JPG","subhead":"2880 x 4399px — 2.3 MB","analyticsAction":"download_jpg_large"},{"url":"/downloads/6q182k19f/download_full","label":"Full-sized JPG","subhead":"5751 x 8784px — 8.4 MB","analyticsAction":"download_jpg_full"},{"url":"/downloads/6q182k19f","label":"Original file","subhead":"TIFF — 5751 x 8784px — 145 MB","analyticsAction":"download_original"}]
       }.merge(thumb_src_attributes(asset))
     end
   end
