@@ -1,24 +1,40 @@
-<p>Dear <%= mailer.patron_name %>,</p>
+<style>
+  html {
+    font-family: "abril-text", "Times New Roman", Times, serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-size: 1rem;
+    line-height: 1.3;
+  }
+  div.container {
+    margin-left: 20%;
+    margin-right: 20%;
+    padding: 15px;
+    border-width: 1px;
+    border-color: black;
+  }
+  div.header_background {
+    background-color: #222;
+  }
 
-<p>Thanks for your recent visit to the <%= link_to "Science History Institute's digital collections website", mailer.hostname %>. At <%=mailer.created_at%>, you requested access to the files for <%= mailer.work_link %>. Good news: the files are ready for you to download.</p>
-
-<h1>Files for <%= mailer.work_link %>:</h1>
-
-<ul>
-  <% mailer.assets.each do |member| %>
-    <li><%= link_to member.title,
-      member.file.url(
-      public: false,
-      expires_in: mailer.how_long_urls_will_be_valid,
-      response_content_type: member.content_type,
-      response_content_disposition: ContentDisposition.format(
-        disposition: "attachment",
-        filename: DownloadFilenameHelper.filename_for_asset(member)
-      )
-    ) %></li>
-  <% end %>
-</ul>
-
-<p>You can download the files any time in the week. After that, these links will no longer work.</p>
-
-
+  h1 {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    line-height: 1.2;
+    font-family: "adelle-sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  }
+</style>
+<div class="container">
+  <div class="header_background">
+    <img src="/assets/images/sci_logo-webheader_1x.png"/>
+  </div>
+  <p>Dear <%= mailer.patron_name %>,</p>
+  <p>Thanks for your recent visit to the <%= link_to "Science History Institute’s digital collections website", mailer.hostname %>. On <%=mailer.created_at.strftime("%m/%d/%Y")%>, you requested access to the files for <%= mailer.work_link %>. The files are ready for you to download.</p>
+  <h1>Files for <%= mailer.work_link %>:</h1>
+  <ul>
+    <% mailer.asset_links.each do |link| %>
+      <li><%= link_to link[:text], link[:url]%></li>
+    <% end %>
+  </ul>
+  <p>You can download the files any time in the next week. After that, these links will no longer work.</p>
+  <p>Your receipt of an electronic copy of an oral history indicates your agreement to abide by U.S. copyright law, as well as the rights statements accompanying this oral history, with regard to the reproduction and dissemination of this oral history.</p>
+  <p>If you have any questions about transcripts, recordings, or usage permissions, please contact the <%= link_to 'Center for Oral History', 'https://www.sciencehistory.org/center-for-oral-history/contact' %></p>.
+</div>

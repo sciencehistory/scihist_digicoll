@@ -42,6 +42,21 @@ class OralHistoryDeliveryMailer < ApplicationMailer
     work.members.order(:position).select {|x| x.is_a? Asset}
   end
 
+  def asset_links
+    assets.map do |asset|
+      url = asset.file.url(
+        public: false,
+        expires_in: how_long_urls_will_be_valid,
+        response_content_type: asset.content_type,
+        response_content_disposition: ContentDisposition.format(
+          disposition: "inline",
+          filename: DownloadFilenameHelper.filename_for_asset(asset)
+        )
+      )
+      { text: asset.title, url: url }
+    end
+  end
+
   def subject
     "Science History Institute: files from #{work.title}"
   end
