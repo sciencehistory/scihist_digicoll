@@ -6,11 +6,11 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
     let(:members) do
       [
         create(:asset_with_faked_file, :mp3, published: false,
-        oh_available_by_request: true, title: "Protected mp3", position: 0),
+          oh_available_by_request: true, title: "Protected mp3", position: 0),
         create(:asset_with_faked_file, :pdf, published: false,
-        oh_available_by_request: true,  title: "Protected PDF", position: 1),
-        create(:asset_with_faked_file,
-        :pdf, published: true, title: "Preview PDF", position: 2)
+          oh_available_by_request: true,  title: "Protected PDF", position: 1),
+        create(:asset_with_faked_file, :pdf, published: true,
+          title: "Preview PDF", position: 2)
       ]
     end
 
@@ -45,7 +45,6 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
 
     it "renders the body" do
       body = mail.body.encoded
-      puts body
       expect(body).to match "Dear Patron name"
       expect(body).to match "On 10/01/2020, you requested access"
       expect(body).to match /Files for.*Bailey/
