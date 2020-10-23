@@ -40,7 +40,7 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
     it "renders the headers" do
       expect(mail.subject).to eq("Science History Institute: files from Oral history interview with William John Bailey")
       expect(mail.to).to eq(["patron@institution.com"])
-      expect(mail.from).to eq(["no-reply@sciencehistory.org"])
+      expect(mail.from).to eq(["digital@sciencehistory.org"])
     end
 
     it "renders the body" do
