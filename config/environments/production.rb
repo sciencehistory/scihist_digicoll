@@ -79,7 +79,7 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = true
 
   # For images in emails:
-  config.action_mailer.asset_host = ScihistDigicoll::Env.app_url_base_parsed.host
+  config.action_mailer.asset_host = ScihistDigicoll::Env.app_url_base_parsed.to_s
 
 
   # service_level can be either production, staging, or nil,
