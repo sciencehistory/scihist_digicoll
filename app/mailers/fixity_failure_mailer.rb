@@ -5,7 +5,6 @@ class FixityFailureMailer < ApplicationMailer
     raise ArgumentError.new("Required params[:fixity_check] missing") unless params[:fixity_check]
     @fixity_check = params[:fixity_check]
     @asset = @fixity_check.asset
-    from_address = ScihistDigicoll::Env.lookup(:no_reply_email_address)
     to_address = [
         ScihistDigicoll::Env.lookup(:digital_tech_email_address),
         ScihistDigicoll::Env.lookup(:digital_email_address)
@@ -15,7 +14,6 @@ class FixityFailureMailer < ApplicationMailer
       raise RuntimeError, 'Cannot send fixity error email; specify at least a "from" and a "to" address.'
     end
     mail(
-      from:         from_address,
       to:           to_address,
       subject:      subject,
       content_type: "text/html",
