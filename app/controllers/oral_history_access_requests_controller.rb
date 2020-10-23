@@ -2,7 +2,7 @@
 # Staff-facing actions are in app/controllers/admin/oral_history_access_requests_controller.rb
 class OralHistoryAccessRequestsController < ApplicationController
 
-  # GET /works/4j03d097t/request_oral_history_access
+  # GET /works/4j03d09fr7t/request_oral_history_access
   def new
     @work = load_work(params['work_friendlier_id'])
     @oral_history_access_request = Admin::OralHistoryAccessRequest.new
@@ -17,7 +17,7 @@ class OralHistoryAccessRequestsController < ApplicationController
       OralHistoryDeliveryJob.
         new(@oral_history_access_request).
         perform_now
-      redirect_to work_path(@work.friendlier_id), notice: "We have received your request. You should receive an email from us shortly with links to the files you requested."
+      redirect_to work_path(@work.friendlier_id), notice: "Check your email! The files you requested are being sent to you."
     else
      render :new
     end
