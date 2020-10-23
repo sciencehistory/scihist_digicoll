@@ -24,7 +24,7 @@
 </style>
 <div class="container">
   <div class="header_background">
-    <img src="/assets/images/sci_logo-webheader_1x.png"/>
+    <%= image_tag "email_header.png", alt: "Science History Institute logo" %>
   </div>
   <p>Dear <%= mailer.patron_name %>,</p>
   <p>Thanks for your recent visit to the <%= link_to "Science History Institute’s digital collections website", mailer.hostname %>. On <%=mailer.created_at.strftime("%m/%d/%Y")%>, you requested access to the files for <%= mailer.work_link %>. The files are ready for you to download.</p>
