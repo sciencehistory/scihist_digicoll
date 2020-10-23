@@ -12,7 +12,7 @@ class OralHistoryDeliveryMailer < ApplicationMailer
   end
 
   def from_address
-    ScihistDigicoll::Env.lookup(:no_reply_email_address)
+    ScihistDigicoll::Env.lookup(:digital_collections_email_address)
   end
 
   def to_address
