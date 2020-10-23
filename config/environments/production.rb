@@ -78,6 +78,9 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
   config.action_mailer.raise_delivery_errors = true
 
+  # For images in emails:
+  config.action_mailer.asset_host = ScihistDigicoll::Env.app_url_base_parsed.host
+
 
   # service_level can be either production, staging, or nil,
   # and ScihistDigicoll::Env enforces that it has to be
