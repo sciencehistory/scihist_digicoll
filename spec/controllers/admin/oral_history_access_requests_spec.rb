@@ -26,12 +26,13 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, :logged_in_user, type
       expect(response.media_type).to eq "text/csv"
       csv_response = CSV.parse(response.body)
       expect(csv_response.count).to eq 11
-      expect(csv_response[0]).to contain_exactly('Date','Work','Work URL','Name of patron','Email','Institution','Intended use')
+      expect(csv_response[0]).to contain_exactly('Date','Work','Work URL', 'Oral History ID', 'Name of patron','Email','Institution','Intended use')
       expect(csv_response[8][1]).to match  /Oral history interview with William John Bailey/
       expect(csv_response[8][3]).to match  /Patron 8/
-      expect(csv_response[8][4]).to match  /patron@institution_8.com/
-      expect(csv_response[8][5]).to match  /Institution 8/
-      expect(csv_response[8][6]).to match  /I will write 8 books/
+      expect(csv_response[8][4]).to match  /0012/
+      expect(csv_response[8][5]).to match  /patron@institution_8.com/
+      expect(csv_response[8][6]).to match  /Institution 8/
+      expect(csv_response[8][7]).to match  /I will write 8 books/
     end
 
     it "correctly interprets start and end date params" do
@@ -40,7 +41,7 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, :logged_in_user, type
       expect(response.media_type).to eq "text/csv"
       csv_response = CSV.parse(response.body)
       expect(csv_response.count).to eq 6
-      expect(csv_response[5][6]).to match  /I will write 8 books/
+      expect(csv_response[5][6]).to match  /Institution 8/
     end
   end
 end
