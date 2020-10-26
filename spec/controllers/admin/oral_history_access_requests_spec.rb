@@ -19,28 +19,28 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, :logged_in_user, type
       end
     end
 
-    it "allows you to download the report, and correctly interprets start and end date params" do
+    it "allows you to download the report" do
       post :report
       expect(response.code).to eq "200"
       expect(response.headers["Content-Disposition"]).to match(/attachment; filename=.*oral_history_access_requests.*csv/)
       expect(response.media_type).to eq "text/csv"
-      response_lines = response.body.lines
-      expect(response_lines.count).to eq 11
-      expect(response_lines[0]).to eq  "Date,Work,Work URL,Name of patron,Email,Institution,Intended use\n"
-      expect(response_lines[8]).to match  /Oral history interview with William John Bailey/
-      expect(response_lines[8]).to match  /Patron 8/
-      expect(response_lines[8]).to match  /patron@institution_8.com/
-      expect(response_lines[8]).to match  /Institution 8/
-      expect(response_lines[8]).to match  /I will write 8 books/
+      csv_response = CSV.parse(response.body)
+      expect(csv_response.count).to eq 11
+      expect(csv_response[0]).to contain_exactly('Date','Work','Work URL','Name of patron','Email','Institution','Intended use')
+      expect(csv_response[8][1]).to match  /Oral history interview with William John Bailey/
+      expect(csv_response[8][3]).to match  /Patron 8/
+      expect(csv_response[8][4]).to match  /patron@institution_8.com/
+      expect(csv_response[8][5]).to match  /Institution 8/
+      expect(csv_response[8][6]).to match  /I will write 8 books/
     end
 
     it "correctly interprets start and end date params" do
       params = {"report"=>{"start_date"=>"2020-09-21", "end_date"=>"2020-09-26"}}
       post :report, params: params
       expect(response.media_type).to eq "text/csv"
-      response_lines = response.body.lines
-      expect(response_lines.count).to eq 6
-      expect(response_lines[5]).to match  /I will write 8 books/
+      csv_response = CSV.parse(response.body)
+      expect(csv_response.count).to eq 6
+      expect(csv_response[5][6]).to match  /I will write 8 books/
     end
   end
 end
