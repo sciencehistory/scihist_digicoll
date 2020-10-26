@@ -29,14 +29,8 @@ class WorkShowInfo < ViewModel
     )
   end
 
-  # Like chf_sufia, it only looks at content types from direct Asset children, it
-  # won't go down levels. That has been good enough.
   def humanized_content_types
-    @humanized_content_types ||= model.members.
-      find_all { |m| m.kind_of?(Asset) }.
-      map(&:content_type).
-      map { |a| ScihistDigicoll::Util.humanized_content_type(a) }.
-      uniq
+    @humanized_content_types ||= model.member_content_types(mode: :query).uniq.map { |a| ScihistDigicoll::Util.humanized_content_type(a) }
   end
 
   def related_urls_filtered

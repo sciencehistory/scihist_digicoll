@@ -10,6 +10,13 @@ FactoryBot.define do
       ]
     end
 
+    # Automatically set a representative if needed and possible
+    after(:build) do |work|
+      if work.representative.nil? && work.members.loaded?
+        work.representative = work.members.first
+      end
+    end
+
     trait :published do
       published { true }
       department { "Library" }
