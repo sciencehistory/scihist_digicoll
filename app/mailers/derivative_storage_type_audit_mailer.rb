@@ -20,8 +20,4 @@ class DerivativeStorageTypeAuditMailer < ApplicationMailer
     )
   end
 
-
-  def hostname
-    ScihistDigicoll::Env.lookup!(:app_url_base)
-  end
 end

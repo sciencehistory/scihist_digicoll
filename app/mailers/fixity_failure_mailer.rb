@@ -13,6 +13,7 @@ class FixityFailureMailer < ApplicationMailer
     unless to_address.present?
       raise RuntimeError, 'Cannot send fixity error email; specify a "to" address.'
     end
+
     mail(
       to:           to_address,
       subject:      subject,
@@ -22,10 +23,6 @@ class FixityFailureMailer < ApplicationMailer
 
   def subject
     "FIXITY CHECK FAILURE: #{ScihistDigicoll::Env.lookup!(:app_url_base)}, \"#{@asset.title}\" (asset #{@asset.friendlier_id})"
-  end
-
-  def hostname
-    ScihistDigicoll::Env.lookup!(:app_url_base)
   end
 
   def date
