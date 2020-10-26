@@ -25,6 +25,10 @@ class FixityFailureMailer < ApplicationMailer
     "FIXITY CHECK FAILURE: #{ScihistDigicoll::Env.lookup!(:app_url_base)}, \"#{@asset.title}\" (asset #{@asset.friendlier_id})"
   end
 
+  def hostname
+    ScihistDigicoll::Env.lookup!(:app_url_base)
+  end
+
   def date
     I18n.l @fixity_check.created_at, format: :admin
   end
