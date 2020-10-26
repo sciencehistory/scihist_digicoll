@@ -48,12 +48,6 @@ describe "work_file_list_show system test", type: :system, js: true do
 
       click_on 'Submit request'
 
-      #expect {
-      #  click_on 'Submit request'
-      #}.to change {
-      #  ActiveJob::Base.queue_adapter.enqueued_jobs.count
-      #}.by 1
-
       expect(Admin::OralHistoryAccessRequest.count).to eq 1
 
       new_req = Admin::OralHistoryAccessRequest.last
