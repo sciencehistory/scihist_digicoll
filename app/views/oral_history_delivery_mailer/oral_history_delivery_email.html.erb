@@ -23,9 +23,11 @@
   }
 </style>
 <div class="container">
-  <div class="header_background">
-    <%= image_tag "email_header.png", alt: "Science History Institute logo" %>
-  </div>
+  <!--
+    <div class="header_background">
+      <%#= image_tag "email_header.png", alt: "Science History Institute logo" %>
+    </div>
+  -->
   <p>Dear <%= mailer.patron_name %>,</p>
   <p>Thanks for your recent visit to the <%= link_to "Science History Institute’s digital collections website", mailer.hostname %>. On <%=mailer.created_at.strftime("%m/%d/%Y")%>, you requested access to the files for <%= mailer.work_link %>. The files are ready for you to download.</p>
   <h1>Files for <%= mailer.work_link %>:</h1>
