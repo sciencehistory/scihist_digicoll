@@ -17,7 +17,7 @@ class OralHistoryAccessRequestsController < ApplicationController
       OralHistoryDeliveryJob.
         new(@oral_history_access_request).
         perform_now
-      redirect_to work_path(@work.friendlier_id), notice: "Check your email! The files you requested are being sent to you."
+      redirect_to work_path(@work.friendlier_id), notice: "Check your email! We are sending you links to the files you requested."
     else
      render :new
     end
