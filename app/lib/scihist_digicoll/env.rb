@@ -383,11 +383,7 @@ module ScihistDigicoll
 
     # From address:
     define_key :no_reply_email_address, default: "no-reply@sciencehistory.org"
-<<<<<<< HEAD
-    define_key :digital_collections_email_address, default: "digital@sciencehistory.org"
-=======
 
->>>>>>> master
     # To addresses (these are email lists maintained by IT.)
     define_key :digital_tech_email_address, default: "digital-tech@sciencehistory.org"
     define_key :digital_email_address, default: "digital@sciencehistory.org"
