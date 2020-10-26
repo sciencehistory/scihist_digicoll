@@ -3,16 +3,11 @@ class OralHistoryDeliveryMailer < ApplicationMailer
   def oral_history_delivery_email
     raise ArgumentError.new("Required params[:request] missing") unless request.present?
     raise ArgumentError.new("Required patron email missing") unless request.patron_email.present?
-    raise RuntimeError.new("Required from email address missing") unless from_address.present?
-    mail( from: from_address, to: to_address, subject: subject, content_type: "text/html")
+    mail(to: to_address, subject: subject, content_type: "text/html")
   end
 
   def request
     @request ||= params[:request]
-  end
-
-  def from_address
-    ScihistDigicoll::Env.lookup(:digital_collections_email_address)
   end
 
   def to_address

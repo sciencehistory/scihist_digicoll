@@ -9,18 +9,18 @@ require 'rails_helper'
 RSpec.describe WorksController, type: :controller do
   context "smoke tests" do
     context "standard work" do
-      let(:work){ create(:public_work, :published, members: [create(:asset)]) }
+      render_views
 
-      before do
-        work.representative = work.members.first
-        work.save
-        allow(work.members.first).to receive(:content_type).and_return("audio/mpeg")
-      end
-
+      let(:work){ create(:public_work, :published, members: [create(:asset_with_faked_file), create(:asset_with_faked_file)]) }
 
       it "shows the work as expected" do
         get :show, params: { id: work.friendlier_id }, as: :html
         expect(response.status).to eq(200)
+
+        # We don't intend to ever actually load work.members, instead doing
+        # special purpose stuff in the decorator. It's too easy to load too
+        # much. let's test to make sure we don't.
+        expect(assigns[:work].members.loaded?).to be(false)
       end
 
       it 'allows user to download RIS citation' do
