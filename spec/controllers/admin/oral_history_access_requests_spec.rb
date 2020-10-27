@@ -1,8 +1,6 @@
 require 'rails_helper'
 RSpec.describe Admin::OralHistoryAccessRequestsController, :logged_in_user, type: :controller do
   describe "Oral History Access Request List Controller", logged_in_user: :admin do
-    render_views
-
     let(:work) { create(:oral_history_work) }
 
     let(:latest_date) {Time.parse("2020-10-01")}
@@ -21,8 +19,6 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, :logged_in_user, type
     end
 
     it "renders the list of requests even if an OH has no interview number" do
-      work.external_id.delete_if { |id| id.attributes['category'] == 'interview' }
-      work.save!
       get :index
       expect(response.code).to eq "200"
     end
