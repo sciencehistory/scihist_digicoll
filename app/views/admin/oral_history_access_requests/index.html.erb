@@ -47,7 +47,7 @@
           </td>
           <td class="col-sm-2"><%= link_to(oh_request.work.title, work_path(oh_request.work.friendlier_id))%></td>
           <td class="col-sm-1">
-            <%= @oral_history_numbers[oh_request.work.id] %>
+            <%= oh_request.oral_history_number %>
           </td>
           <td class="col-sm-6">
              <%= oh_request.intended_use %>

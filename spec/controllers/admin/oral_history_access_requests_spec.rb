@@ -1,6 +1,7 @@
 require 'rails_helper'
 RSpec.describe Admin::OralHistoryAccessRequestsController, :logged_in_user, type: :controller do
   describe "Oral History Access Request List Controller", logged_in_user: :admin do
+    render_views
 
     let(:work) { create(:oral_history_work) }
 
@@ -19,6 +20,13 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, :logged_in_user, type
       end
     end
 
+    it "renders the list of requests even if an OH has no interview number" do
+      work.external_id.delete_if { |id| id.attributes['category'] == 'interview' }
+      work.save!
+      get :index
+      expect(response.code).to eq "200"
+    end
+
     it "allows you to download the report" do
       post :report
       expect(response.code).to eq "200"
@@ -28,8 +36,8 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, :logged_in_user, type
       expect(csv_response.count).to eq 11
       expect(csv_response[0]).to contain_exactly('Date','Work','Work URL', 'Oral History ID', 'Name of patron','Email','Institution','Intended use')
       expect(csv_response[8][1]).to match  /Oral history interview with William John Bailey/
-      expect(csv_response[8][3]).to match  /Patron 8/
-      expect(csv_response[8][4]).to match  /0012/
+      expect(csv_response[8][3]).to match  /0012/
+      expect(csv_response[8][4]).to match  /Patron 8/
       expect(csv_response[8][5]).to match  /patron@institution_8.com/
       expect(csv_response[8][6]).to match  /Institution 8/
       expect(csv_response[8][7]).to match  /I will write 8 books/
