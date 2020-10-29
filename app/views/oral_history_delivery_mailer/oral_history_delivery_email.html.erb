@@ -1,42 +1,11 @@
-<style>
-  html {
-    font-family: "abril-text", "Times New Roman", Times, serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    font-size: 1rem;
-    line-height: 1.3;
-  }
-  div.container {
-    margin-left: 20%;
-    margin-right: 20%;
-    padding: 15px;
-    border-width: 1px;
-    border-color: black;
-  }
-  div.header_background {
-    background-color: #222;
-  }
-
-  h1 {
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    line-height: 1.2;
-    font-family: "adelle-sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  }
-</style>
-<div class="container">
-  <!--
-    <div class="header_background">
-      <%#= image_tag "email_header.png", alt: "Science History Institute logo" %>
-    </div>
-  -->
-  <p>Dear <%= mailer.patron_name %>,</p>
-  <p>Thanks for your recent visit to the <%= link_to "Science History Institute’s digital collections website", mailer.hostname %>. On <%=mailer.created_at.strftime("%m/%d/%Y")%>, you requested access to the files for <%= mailer.work_link %>. The files are ready for you to download.</p>
-  <h1>Files for <%= mailer.work_link %>:</h1>
-  <ul>
-    <% mailer.asset_links.each do |link| %>
-      <li><%= link_to link[:text], link[:url]%></li>
-    <% end %>
-  </ul>
-  <p>You can download the files any time in the next week. After that, these links will no longer work.</p>
-  <p>Your receipt of an electronic copy of an oral history indicates your agreement to abide by both U.S. copyright law and the rights statements accompanying this oral history with regard to reproducing or disseminating it.</p>
-  <p>If you have any questions about transcripts, recordings, or usage permissions, please contact the <%= link_to 'Center for Oral History', 'https://www.sciencehistory.org/center-for-oral-history/contact' %>.</p>
-</div>
+<p>Dear <%= mailer.patron_name %>,</p>
+<p>Thanks for your recent visit to the <%= link_to "Science History Institute’s digital collections website", mailer.hostname %>. On <%=mailer.created_at.strftime("%m/%d/%Y")%>, you requested access to the files for <%= mailer.work_link %>. The files are ready for you to download.</p>
+<h2>Files for <%= mailer.work_link %>:</h2>
+<ul>
+  <% mailer.asset_links.each do |link| %>
+    <li><%= link_to link[:text], link[:url]%></li>
+  <% end %>
+</ul>
+<p>You can download the files any time in the next week. After that, these links will no longer work.</p>
+<p>Your receipt of an electronic copy of an oral history indicates your agreement to abide by both U.S. copyright law and the rights statements accompanying this oral history with regard to reproducing or disseminating it.</p>
+<p>If you have any questions about transcripts, recordings, or usage permissions, please contact the <%= link_to 'Center for Oral History', 'https://www.sciencehistory.org/center-for-oral-history/contact' %>.</p>
