@@ -43,11 +43,7 @@ describe "work_file_list_show system test", type: :system, js: true do
       all("#{pr}intended_use").first.fill_in with: 'Fun & games'
 
       expect(Admin::OralHistoryAccessRequest.count).to eq 0
-
-      ActiveJob::Base.queue_adapter = :test
-
       click_on 'Submit request'
-
       expect(Admin::OralHistoryAccessRequest.count).to eq 1
 
       new_req = Admin::OralHistoryAccessRequest.last
