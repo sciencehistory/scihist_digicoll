@@ -1,0 +1,61 @@
+<h1>Oral history access requests</h1>
+
+<p>Patron requests for restricted oral histories.</p>
+
+
+<h2>Download a spreadsheet of requests</h2>
+<div class="border p-2 mb-5">
+  <%= simple_form_for(:report, url: admin_oral_history_access_requests_report_path, method: :post) do |f| %>
+    <div class="row">
+      <div class="col">
+        <%= f.input :start_date,
+          as: :date, html5: true, required: false,
+          label: "Start date" %>
+      </div>
+      <div class="col">
+        <%= f.input :end_date,
+          as: :date, html5: true, required: false,
+          label: "End date"  %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <%= f.button :submit, value: "Download report" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<h2>Recent 3 months of requests</h2>
+<div class="border p-2 mb-5">
+  <table class="table admin-list member-list">
+    <thead>
+      <tr class="d-flex">
+        <th class="col-1">Date</th>
+        <th class="col-3">Patron</th>
+        <th class="col-2">Oral History</th>
+        <th class="col-1">OH #</th>
+        <th class="col-5">Intended use</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @oral_history_access_requests.each do |oh_request| %>
+        <tr class="d-flex">
+          <td class="col-sm-1"><%= l(oh_request.created_at.to_date, format: :admin) %></td>
+          <td class="col-sm-3"><%= oh_request.patron_name %>
+            <% if oh_request.patron_institution.present? %>, <%= oh_request.patron_institution %><% end %>
+            (<%= oh_request.patron_email %>)
+          </td>
+          <td class="col-sm-2"><%= link_to(oh_request.work.title.delete_prefix("Oral history interview with "), work_path(oh_request.work.friendlier_id))%></td>
+          <td class="col-sm-1">
+            <%= oh_request.oral_history_number %>
+          </td>
+          <td class="col-sm-5">
+             <%= oh_request.intended_use %>
+          </td>
+        </tr>
+      <%end %>
+    </tbody>
+  </table>
+</div>
