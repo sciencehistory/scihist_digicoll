@@ -131,6 +131,19 @@ Rails.application.configure do
     config.logger    = ActiveSupport::TaggedLogging.new(logger)
   end
 
+  # Turn off all action_view logging in production, to give us cleaner more readable
+  # logs. Turns off lines such as:
+  #     Rendering works/index.html.erb within layouts/application
+  #     Rendered works/index.html.erb within layouts/application (2.0ms)
+  #
+  # https://stackoverflow.com/questions/12984984/how-to-prevent-rails-from-action-view-logging-in-production/61893582
+  # https://github.com/projectblacklight/blacklight/issues/2379
+  ActiveSupport::on_load :action_view do
+    %w{render_template render_partial render_collection}.each do |event|
+      ActiveSupport::Notifications.unsubscribe "#{event}.action_view"
+    end
+  end
+
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
