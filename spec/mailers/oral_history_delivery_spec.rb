@@ -2,7 +2,6 @@ require "rails_helper"
 
 RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
   describe "Sends out the items" do
-
     let(:members) do
       [
         create(:asset_with_faked_file, :mp3, published: false,
@@ -43,12 +42,17 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
       expect(mail.from).to eq(["digital@sciencehistory.org"])
     end
 
-    it "renders the body" do
+    it "renders the body; does not send items that are already publicly accessible" do
       body = mail.body.encoded
+      # puts body
       expect(body).to match "Dear Patron name"
       expect(body).to match "On 10/01/2020, you requested access"
       expect(body).to match /Files for.*Bailey/
-      expect(body).to match /Protected mp3.*Protected PDF.*Preview PDF/m
+      expect(body).to match /Protected mp3.*MP3 — 56.9 KB.*Protected PDF.*PDF — 7.4 KB/m
+      # The preview PDF is does not have oh_available_by_request set to true.
+      # Thus, it should not get sent out in the email.
+      expect(body).not_to match /Preview PDF/
     end
+
   end
 end
