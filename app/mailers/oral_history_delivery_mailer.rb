@@ -16,8 +16,8 @@ class OralHistoryDeliveryMailer < ApplicationMailer
 
   # Note: any value greater than 604800 will raise an exception.
   # See https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/S3/Presigner.html
-  def how_long_urls_will_be_valid
-    1.week.to_i - 10
+  def asset_expiration_time
+    1.week.to_i
   end
 
 
@@ -34,22 +34,30 @@ class OralHistoryDeliveryMailer < ApplicationMailer
   end
 
   def assets
-    work.members.order(:position).select {|x| x.is_a? Asset}
+    WorkFileListShowDecorator.new(work).available_by_request_assets.sort_by(&:position)
   end
 
-  def asset_links
-    assets.map do |asset|
-      url = asset.file.url(
-        public: false,
-        expires_in: how_long_urls_will_be_valid,
-        response_content_type: asset.content_type,
-        response_content_disposition: ContentDisposition.format(
-          disposition: "inline",
-          filename: DownloadFilenameHelper.filename_for_asset(asset)
-        )
-      )
-      { text: asset.title, url: url }
+  def download_label(asset)
+    details = []
+    details << ScihistDigicoll::Util.humanized_content_type(asset.content_type) if asset.content_type.present?
+    details << ScihistDigicoll::Util.simple_bytes_to_human_string(asset.size) if asset.size.present?
+    if details.present?
+      "#{asset.title} (#{details.join(" — ")})"
+    else
+      asset.title
     end
+  end
+
+  def download_url(asset)
+    asset.file.url(
+      public: false,
+      expires_in: asset_expiration_time,
+      response_content_type: asset.content_type,
+      response_content_disposition: ContentDisposition.format(
+        disposition: "inline",
+        filename: DownloadFilenameHelper.filename_for_asset(asset)
+      )
+    )
   end
 
   def subject
@@ -60,11 +68,4 @@ class OralHistoryDeliveryMailer < ApplicationMailer
     ScihistDigicoll::Env.lookup!(:app_url_base)
   end
 
-  def work_url
-    @work_url ||= "#{hostname}#{Rails.application.routes.url_helpers.work_path(work.friendlier_id)}"
-  end
-
-  def work_link
-    "<a href=\"#{work_url}\">#{work.title}</a>".html_safe
-  end
 end
