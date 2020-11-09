@@ -9,7 +9,9 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
         create(:asset_with_faked_file, :pdf, published: false,
           oh_available_by_request: true,  title: "Protected PDF", position: 1),
         create(:asset_with_faked_file, :pdf, published: true,
-          title: "Preview PDF", position: 2)
+          title: "Preview PDF", position: 2),
+        create(:asset_with_faked_file, :pdf, published: false,
+          title: "We will get sued if you send this out.", position: 3)
       ]
     end
 
@@ -52,6 +54,8 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
       # The preview PDF is does not have oh_available_by_request set to true.
       # Thus, it should not get sent out in the email.
       expect(body).not_to match /Preview PDF/
+
+      expect(body).not_to match /We will get sued/
     end
 
   end
