@@ -7,6 +7,8 @@ on:
     branches: [ '**' ]
 
 env:
+  # these are all referenced in our app's database.yml for test
+  POSTGRES_HOST: localhost
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: postgres
 
