@@ -22,24 +22,24 @@ jobs:
 
     runs-on: ubuntu-latest
 
-steps:
-    - uses: actions/checkout@v2
+    steps:
+        - uses: actions/checkout@v2
 
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        bundler-cache: true
-        # should take ruby version from .ruby-version,
-        # bundler-cache should be save to use cause we
-        # have a checked in Gemfile.lock
+        - name: Set up Ruby
+          uses: ruby/setup-ruby@v1
+          with:
+            bundler-cache: true
+            # should take ruby version from .ruby-version,
+            # bundler-cache should be save to use cause we
+            # have a checked in Gemfile.lock
 
-    - name: Set up app
-      run: |
-        yarn install
+        - name: Set up app
+          run: |
+            yarn install
 
-    - name: Run tests
-      run: |
-        bundle exec rspec
+        - name: Run tests
+          run: |
+            bundle exec rspec
 
 
 
