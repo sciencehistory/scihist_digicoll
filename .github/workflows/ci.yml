@@ -37,6 +37,7 @@ jobs:
 
         - name: Set up app
           run: |
+            RAILS_ENV=test bundle exec rails db:create
             yarn install
 
         - name: Run tests
