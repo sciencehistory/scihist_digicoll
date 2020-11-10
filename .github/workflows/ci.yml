@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ '**' ]
+
+env:
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+
+jobs:
+  tests:
+    services:
+      db:
+        image: postgres:9.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+
+    runs-on: ubuntu-latest
+
+steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+        # should take ruby version from .ruby-version,
+        # bundler-cache should be save to use cause we
+        # have a checked in Gemfile.lock
+
+    - name: Set up app
+      run: |
+        yarn install
+
+    - name: Run tests
+      run: |
+        bundle exec rspec
+
+
+
+
