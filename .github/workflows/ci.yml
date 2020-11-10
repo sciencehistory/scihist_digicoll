@@ -37,7 +37,7 @@ jobs:
 
         - name: Install apt dependencies
           run: |
-            sudo apt-fast -y install libvips-tools ffmpeg mediainfo
+            sudo apt-get -y install libvips-tools ffmpeg mediainfo
 
         - name: Set up app
           run: |
