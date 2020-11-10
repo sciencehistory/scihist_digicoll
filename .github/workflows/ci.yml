@@ -44,9 +44,13 @@ jobs:
             RAILS_ENV=test bundle exec rails db:create
             yarn install
 
+        # This cache probably doesn't actually save us any time, but it hopes to save
+        # us being throttled by apache foundation servers unhappy that solr_wrapper
+        # is downloading solr over and over again.
         - name: Cache solr install
           uses: actions/cache@v2
           with:
+            # these paths specified in .solr_wrapper.yml:
             path: |
               tmp/solr_dist
               tmp/solr_test
