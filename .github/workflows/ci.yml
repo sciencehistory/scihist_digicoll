@@ -44,6 +44,14 @@ jobs:
             RAILS_ENV=test bundle exec rails db:create
             yarn install
 
+        - name: Cache solr install
+          uses: actions/cache@v2
+          with:
+            path: |
+              tmp/solr_dist
+              tmp/solr_test
+            key: ${{ runner.os }}-solr-${{ hashFiles('.solr_wrapper.yml') }}
+
         - name: Run tests
           run: |
             bundle exec rspec
