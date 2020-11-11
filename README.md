@@ -1,6 +1,6 @@
 # Science History Institute Digital Collections
 
-[![Build Status](https://travis-ci.com/sciencehistory/scihist_digicoll.svg?branch=master)](https://travis-ci.com/sciencehistory/scihist_digicoll)
+[![Build Status](https://travis-ci.com/sciencehistory/scihist_digicoll.svg?branch=master)](https://github.com/sciencehistory/scihist_digicoll/actions?query=workflow%3ACI+branch%3Amaster)
 
 In progress re-write of our Digital Collections application.
 
