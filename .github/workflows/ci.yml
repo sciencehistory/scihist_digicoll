@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ '**' ]
+
+env:
+  # these are all referenced in our app's database.yml for test
+  POSTGRES_HOST: localhost
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+
+jobs:
+  tests:
+    services:
+      db:
+        image: postgres:9.6
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+
+    runs-on: ubuntu-latest
+
+    steps:
+        - uses: actions/checkout@v2
+
+        - name: Set up Ruby
+          uses: ruby/setup-ruby@v1
+          with:
+            bundler-cache: true
+            # should take ruby version from .ruby-version,
+            # bundler-cache should be save to use cause we
+            # have a checked in Gemfile.lock
+
+        - name: Install apt dependencies
+          run: |
+            sudo apt-get -y install libvips-tools ffmpeg mediainfo
+
+        - name: Set up app
+          run: |
+            RAILS_ENV=test bundle exec rails db:create
+            yarn install
+
+        # This cache probably doesn't actually save us any time, but it hopes to save
+        # us being throttled by apache foundation servers unhappy that solr_wrapper
+        # is downloading solr over and over again.
+        - name: Cache solr install
+          uses: actions/cache@v2
+          with:
+            # these paths specified in .solr_wrapper.yml:
+            path: |
+              tmp/solr_dist
+              tmp/solr_test
+            key: ${{ runner.os }}-solr-${{ hashFiles('.solr_wrapper.yml') }}
+
+        - name: Run tests
+          run: |
+            bundle exec rspec
+
+
+
+
