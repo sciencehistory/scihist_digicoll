@@ -2,7 +2,7 @@
 # Staff-facing actions are in app/controllers/admin/oral_history_access_requests_controller.rb
 class OralHistoryAccessRequestsController < ApplicationController
 
-  # GET /works/4j03d097t/request_oral_history_access
+  # GET /works/4j03d09fr7t/request_oral_history_access
   def new
     @work = load_work(params['work_friendlier_id'])
     @oral_history_access_request = Admin::OralHistoryAccessRequest.new
@@ -14,8 +14,10 @@ class OralHistoryAccessRequestsController < ApplicationController
     @oral_history_access_request = Admin::OralHistoryAccessRequest.new(oral_history_access_request_params)
     @oral_history_access_request.work = @work
     if @oral_history_access_request.save
-      # redirect_to work_path(@work.friendlier_id), notice: 'Your request has been logged.'
-      render plain: "This functionality is not activated yet, and is only present for testing."
+      OralHistoryDeliveryJob.
+        new(@oral_history_access_request).
+        perform_now
+      redirect_to work_path(@work.friendlier_id), notice: "Check your email! We are sending you links to the files you requested."
     else
      render :new
     end
