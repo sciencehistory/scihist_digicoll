@@ -1,7 +1,9 @@
 class Work < Kithe::Work
   # will trigger automatic solr indexing in callbacks
-  self.kithe_indexable_mapper = WorkIndexer.new
 
+  if ScihistDigicoll::Env.lookup(:index_works)
+    self.kithe_indexable_mapper = WorkIndexer.new
+  end
 
   belongs_to :digitization_queue_item, optional: true, class_name: "Admin::DigitizationQueueItem"
 

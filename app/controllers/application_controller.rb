@@ -17,7 +17,7 @@ class ApplicationController < ActionController::Base
     redirect_to redirect_path, alert: "You don't have permission to access requested page."
   end
 
-  # around_action :batch_kithe_indexable
+  around_action :batch_kithe_indexable
 
   def batch_kithe_indexable
     Kithe::Indexable.index_with(batching: true) do
