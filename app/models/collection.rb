@@ -5,7 +5,7 @@
 # automatically deletes the thumb (which automatically deletes the stored file)
 class Collection < Kithe::Collection
   # automatic Solr indexing on save
-  if ScihistDigicoll::Env.lookup(:index_works) == 'true'
+  if ScihistDigicoll::Env.lookup(:solr_indexing) == 'true'
     self.kithe_indexable_mapper = CollectionIndexer.new
   end
 
