@@ -179,7 +179,7 @@ module ScihistDigicoll
       # production we have no default, local env has to supply it
     }
 
-    define_key :solr_indexing, default: true
+    define_key :solr_indexing, default: "true"
 
     # Supplied only on production servers, should have form 'UA-XXXXX-Y'
     define_key :google_analytics_property_id
