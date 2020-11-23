@@ -1,14 +1,4 @@
-libtiff5-dev
-libtiff5
-libgsf-1-dev
-libgsf-bin
-libexpat1-dev
-libpoppler-glib8
-libpoppler-glib-dev
 ffmpeg
-mediainfo
 ghostscript
-libgs-dev
-libfftw3-dev
-libcogl-pango-dev
 libvips-tools
+mediainfo
