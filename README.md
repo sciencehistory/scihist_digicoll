@@ -2,9 +2,9 @@
 
 [![Build Status](https://github.com/sciencehistory/scihist_digicoll/workflows/CI/badge.svg?branch=master)](https://github.com/sciencehistory/scihist_digicoll/actions?query=workflow%3ACI+branch%3Amaster)
 
-In progress re-write of our Digital Collections application.
+The current live/production Science History Institute Digital Collections application. A rewrite of a previous app based on sufia, this one is not.
 
-This one is based on the [kithe](https://github.com/sciencehistory/kithe) toolkit, being developed in tandem.
+This one is based on the [kithe](https://github.com/sciencehistory/kithe) toolkit, which was developed in tandem with this app.
 
 ## Development Setup
 
