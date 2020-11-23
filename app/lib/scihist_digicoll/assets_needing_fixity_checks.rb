@@ -20,7 +20,7 @@ module ScihistDigicoll
   #
   class AssetsNeedingFixityChecks
     BATCH_FETCH_SIZE = 1000
-    DEFAULT_PERIOD_IN_DAYS  = 7 # in days
+    DEFAULT_PERIOD_IN_DAYS  = 90 # in days
     attr_reader :cycle_length
 
     # @param cycle_length [Integer] We will prepare for checking 1/cycle_length
