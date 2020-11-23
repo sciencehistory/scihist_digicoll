@@ -179,6 +179,9 @@ module ScihistDigicoll
       # production we have no default, local env has to supply it
     }
 
+    # If false, we will NOT write to solr on changes to Works/Collections/Assets.
+    # Useful for when solr is not present in a testing/staging environment, and we
+    # want to make it still possible to do admin work.
     define_key :solr_indexing, default: "true"
 
     # Supplied only on production servers, should have form 'UA-XXXXX-Y'
