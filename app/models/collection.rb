@@ -5,7 +5,9 @@
 # automatically deletes the thumb (which automatically deletes the stored file)
 class Collection < Kithe::Collection
   # automatic Solr indexing on save
-  self.kithe_indexable_mapper = CollectionIndexer.new
+  if ScihistDigicoll::Env.lookup(:solr_indexing) == 'true'
+    self.kithe_indexable_mapper = CollectionIndexer.new
+  end
 
   validates :related_url, array_inclusion: {
     proc: ->(v) { ScihistDigicoll::Util.valid_url?(v) } ,
