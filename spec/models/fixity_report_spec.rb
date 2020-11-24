@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 describe FixityReport do
+  let(:fixity_check_period_in_seconds) { (ScihistDigicoll::AssetsNeedingFixityChecks::DEFAULT_PERIOD_IN_DAYS * 1.day) }
+
   # A recent asset with a file with no checks
   let!(:recent_asset_no_checks) { create(:asset_image_with_correct_sha512, friendlier_id: '000') }
 
@@ -8,7 +10,7 @@ describe FixityReport do
   let(:old_asset) { create(
     :asset_image_with_correct_sha512,
     friendlier_id: '111',
-    created_at: Time.now() - 10000000,
+    created_at: Time.now() - (fixity_check_period_in_seconds + 4.days)
   ) }
   # Three assets ingested today, two with files
   let(:recent_asset_with_file_1) { create(:asset_image_with_correct_sha512, friendlier_id: '222') }
@@ -16,14 +18,17 @@ describe FixityReport do
   # ... and one without.
   let!(:recent_asset_no_file) { create(:asset) }
 
-  # Let's check the 3 assets with files a bunch of times.
+  # Let's create check records for the 3 assets with files a bunch of times.
+  # The going back by 15% of fixity_check_period_in_seconds is a little bit arbitrary,
+  # as is the other setup, just creating data of a certain shape that we then write
+  # tests on. This setup code is a bit baroque and could be improved.
   let!(:twenty_checks) do
     (0..19).to_a.map do |x|
       the_asset = [old_asset, recent_asset_with_file_1, recent_asset_with_file_2][ x % 3 ]
       create(:fixity_check,
         asset: the_asset,
         checked_uri: the_asset.file.url,
-        created_at: Time.now() - 100000 * ( x + 1 ),
+        created_at: Time.now() - (fixity_check_period_in_seconds * 0.15) * ( x + 1 ),
         passed: [
           true, false, true, true, true, true, false, true, true, true,
           true, true, true, true, false, true, true, true, false, true][x]
