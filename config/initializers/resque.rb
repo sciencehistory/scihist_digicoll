@@ -1,1 +1,1 @@
-Resque.redis = ScihistDigicoll::Env.lookup!(:persistent_redis_host)
+Resque.redis = ScihistDigicoll::Env.persistent_redis_connection!
