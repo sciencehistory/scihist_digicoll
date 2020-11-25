@@ -139,16 +139,18 @@ module ScihistDigicoll
     def self.persistent_redis_connection!
       connection = lookup(:persistent_redis_host)&.yield_self {|value| Redis.new(url: "redis://#{value}")}
 
-      unless connection
-        # We didn't get it from there, look for the args in ENV
-        if ENV['REDIS_TLS_URL']
-          # need to set up for secure connection with no SSL verification, https://devcenter.heroku.com/articles/securing-heroku-redis
-          connection = Redis.new(url: ENV['REDIS_TLS_URL'], ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE })
-        elsif ENV['REDIS_URL']
-          connection = Redis.new(url: ENV['REDIS_URL'])
-        end
+      if (!connection) && (ENV['REDIS_TLS_URL'] || ENV['REDIS_URL'])
+        # We didn't get it from there, look for the args in ENV, sometimes heroku provides it in REDIS_TLS_URL
+        # (preferable to get a secure connection if available) other times just REDIS_URL -- which heroku may or may
+        # not supply a secure `rediss:` url for -- seems to change on differnet apps -- heroku is getting sloppy here.
+
+        # if it is a rediss secure connection, need to set for SSL verification, for self-signed cert.
+        # https://devcenter.heroku.com/articles/securing-heroku-redis
+        # If it was a cleartext `redis:` connection, the ssl_params will just be ignored.
+        connection = Redis.new(url: (ENV['REDIS_TLS_URL'] || ENV['REDIS_URL']), ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE })
       end
 
+      # Still didn't find one? Probably in dev, just use default redis location.
       connection ||= Redis.new(url: "redis://localhost:6379")
     end
 
