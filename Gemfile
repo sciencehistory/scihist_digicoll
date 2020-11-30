@@ -113,6 +113,9 @@ gem 'sane_patch', '< 2.0' # time-limited monkey patches
 
 gem 'activerecord-postgres_enum', '~> 1.3' # can record postgres enums in schema.rb dump
 
+# a heroku plugin https://devcenter.heroku.com/articles/rails-autoscale
+# This should be removed if we aren't using heroku or the rails autoscale heroku add-on.
+gem 'rails_autoscale_agent'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
