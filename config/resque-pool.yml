@@ -2,8 +2,19 @@ production:
   # Note: these three settings are
   # *always* defined, with zero as the default.
   # Hence, OK to use lookup!
-  "mailers,default": <%= ScihistDigicoll::Env.lookup!(:regular_job_worker_count) %>
-  "on_demand_derivatives": <%= ScihistDigicoll::Env.lookup!(:on_demand_job_worker_count)%>
+
+  # "default" queue is mostly ingest-related at present.
+
+  # Prioritize mailers and default, but if you're free it's okay to work on on_demand_derivatives.
+  # Usually more of these than the on_demand_job_worker_count, to make ingest work take priority
+  # if contested.
+  "mailers,default,on_demand_derivatives": <%= ScihistDigicoll::Env.lookup!(:regular_job_worker_count) %>
+
+  # Prioritize on_demand_derivatives, but if you're free it's okay to work on mailers and default.
+  "on_demand_derivatives,mailers,default": <%= ScihistDigicoll::Env.lookup!(:on_demand_job_worker_count)%>
+
+  # usually 0 workers, can be used for special temporary purposes.
   "special_jobs": <%= ScihistDigicoll::Env.lookup!(:special_job_worker_count)%>
+
 development:
   "*": 5
