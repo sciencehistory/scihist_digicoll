@@ -81,7 +81,9 @@ class WorkPdfCreator
         chunk_path = File.join(working_directory, "pdf_chunk#{chunk_index}.pdf")
         chunk_filepaths << chunk_path
 
-        make_prawn_pdf(source_members: members_chunk, index_start_offset: chunk_index * BATCH_SIZE).render_file(chunk_path)
+        prawn_pdf = make_prawn_pdf(source_members: members_chunk, index_start_offset: chunk_index * BATCH_SIZE)
+        prawn_pdf.render_file(chunk_path)
+        prawn_pdf = nil # try to help ruby GC know to get rid of this
 
         chunk_index += 1
       end
