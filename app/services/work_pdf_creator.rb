@@ -23,7 +23,7 @@ class WorkPdfCreator
 
   # for memory consumption, we first make PDFs of at most BATCH_SIZE pages, then
   # combine them.
-  BATCH_SIZE = 50
+  BATCH_SIZE = 30
 
   attr_reader :work, :callback
 
