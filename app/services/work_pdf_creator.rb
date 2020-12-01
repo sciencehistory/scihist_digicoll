@@ -16,7 +16,7 @@ class WorkPdfCreator
   PAGE_WIDTH = 612
   PAGE_HEIGHT = 792
 
-  DERIVATIVE_SOURCE = "download_large"
+  DERIVATIVE_SOURCE = "download_medium"
 
   attr_reader :work, :callback
 
