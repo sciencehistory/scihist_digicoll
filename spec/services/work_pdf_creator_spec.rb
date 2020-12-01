@@ -21,13 +21,17 @@ describe WorkZipCreator do
     expect(pdf_file.lineno).to eq(0)
   end
 
-  it "builds zip" do
+  it "builds zip with metadata" do
     pdf_file = WorkPdfCreator.new(work).create
+
+    expect(pdf_file).to be_kind_of(Tempfile)
+    expect(File.exists?(pdf_file.path)).to be(true)
 
     reader = PDF::Reader.new(pdf_file.path)
     expect(reader.pages.count).to eq 3
 
     metadata = reader.info
+    expect(metadata).to be_present
 
     expect(metadata[:Title]).to eq work.title
     expect(metadata[:Creator]).to eq "Science History Institute"

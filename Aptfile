@@ -1,3 +1,7 @@
 libvips-tools
 mediainfo
 imagemagick
+# poppler-utls was probably already getting installed as a dependency
+# of above anyway, but we need `pdfunite` command line util from it, so we'll
+# list it explicitly.
+poppler-utils
