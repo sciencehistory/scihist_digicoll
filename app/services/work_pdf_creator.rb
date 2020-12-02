@@ -19,7 +19,7 @@ class WorkPdfCreator
   PAGE_WIDTH = 612
   PAGE_HEIGHT = 792
 
-  DERIVATIVE_SOURCE = "download_medium"
+  DERIVATIVE_SOURCE = "download_large"
 
   # for memory consumption, we first make PDFs of at most BATCH_SIZE pages, then
   # combine them.
