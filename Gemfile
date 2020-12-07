@@ -71,6 +71,8 @@ gem 'font-awesome-rails', '~> 4.7'
 # temporary kithe indexing branch, for scihist_digicoll indexing branch, do not
 # intend to merge to master like this.
 gem 'kithe', ">= 2.0.0.beta", "< 3", git: "https://github.com/sciencehistory/kithe.git"
+gem "traject", github: "traject/traject", branch: "basic_auth"
+
 
 gem 'simple_form', "~> 5.0"
 gem "cocoon"
