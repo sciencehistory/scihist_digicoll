@@ -21,7 +21,7 @@ describe WorkZipCreator do
     expect(pdf_file.lineno).to eq(0)
   end
 
-  it "builds zip with metadata" do
+  it "builds zip" do
     pdf_file = WorkPdfCreator.new(work).create
 
     expect(pdf_file).to be_kind_of(Tempfile)
@@ -29,6 +29,16 @@ describe WorkZipCreator do
 
     reader = PDF::Reader.new(pdf_file.path)
     expect(reader.pages.count).to eq 3
+  ensure
+    if pdf_file
+      pdf_file.close
+      pdf_file.unlink
+    end
+  end
+
+  it "sets metadata on zip", skip: "feature not currently feasible" do
+    pdf_file = WorkPdfCreator.new(work).create
+    reader = PDF::Reader.new(pdf_file.path)
 
     metadata = reader.info
     expect(metadata).to be_present
