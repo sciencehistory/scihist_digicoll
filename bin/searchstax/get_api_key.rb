@@ -35,19 +35,16 @@ puts
 # from SearchStax docs.
 
 
-post_body = JSON.dump({ "username" => username, "password" => password})
+http_response = HTTP.
+  headers("Content-Type" => "application/json").
+  post("https://app.searchstax.com/api/rest/v2/obtain-auth-token/",
+        json: { "username" => username, "password" => password})
 
-curl_command = %{curl --silent --show-error -H "Content-Type: application/json" -X POST \
-       -d #{Shellwords.escape post_body} \
-       https://app.searchstax.com/api/rest/v2/obtain-auth-token/}
-
-
-json_response = `#{curl_command}`
-
+json_response = http_response.body.to_s
 parsed_response = JSON.parse(json_response)
 
-unless parsed_response["token"] && !parsed_response["token"].empty?
-  $stderr.puts "Could not get token from SearchStax: #{json_response}"
+unless http_response.status.success? && parsed_response["token"] && !parsed_response["token"].empty?
+  $stderr.puts "Could not get token from SearchStax: #{http_response.code} #{json_response}"
   exit 1
 end
 
@@ -57,27 +54,23 @@ end
 # https://www.searchstax.com/docs/staxapi2/#key
 
 
-
-
 token = parsed_response["token"]
 
 $stderr.puts "Token acquired: #{token}"
 
 post_body = JSON.dump({ "scope" => ["deployment.dedicateddeployment"] })
 
-curl_command = %{curl --silent --show-error --request POST "https://app.searchstax.com/api/rest/v2/account/#{account_name}/apikey/" \
-  --header "Authorization: Token #{token}" \
-  --header "Content-Type: application/json" \
-  --data "{
-    \\"scope\\":[\\"deployment.dedicateddeployment\\"]
-}"}
+http_response = HTTP.
+  headers("Content-Type" => "application/json", "Authorization" => "Token #{token}").
+  post("https://app.searchstax.com/api/rest/v2/account/#{account_name}/apikey/",
+       json: {"scope" => ["deployment.dedicateddeployment"]})
 
 
-json_response = `#{curl_command}`
+json_response = http_response.body.to_s
 parsed_response = JSON.parse(json_response)
 
-unless parsed_response["apikey"] && !parsed_response["apikey"].empty?
-  $stderr.puts "Could not get apikey from SearchStax: #{json_response}"
+unless http_response.status.success? && parsed_response["apikey"] && !parsed_response["apikey"].empty?
+  $stderr.puts "Could not get apikey from SearchStax: #{http_response.code} #{json_response}"
   exit 1
 end
 
@@ -91,24 +84,21 @@ $stderr.puts "\n\nAssociating with deployment..."
 #
 # https://www.searchstax.com/docs/staxapi2/#addkeytodeployment
 
-curl_command = %{
-  curl --silent --show-error --request POST "https://app.searchstax.com/api/rest/v2/account/#{account_name}/apikey/associate/" \
-  --header "Authorization: Token #{token}" \
-  --header "Content-Type: application/json" \
-  --data "{
-    \\"apikey\\": \\"#{api_key}\\",
-    \\"deployment\\": \\"#{searchstax_deployment_uid}\\"
-}"
-}
 
-puts "\n\n#{curl_command}\n\n"
+http_response = HTTP.
+  headers("Content-Type" => "application/json", "Authorization" => "Token #{token}").
+  post("https://app.searchstax.com/api/rest/v2/account/#{account_name}/apikey/associate/",
+       json: {
+        "apikey" => api_key,
+        "deployment" => searchstax_deployment_uid
+       })
 
 
-json_response = `#{curl_command}`
+json_response = http_response.body.to_s
 parsed_response = JSON.parse(json_response)
 
-unless parsed_response["deployments"].is_a?(Array) && parsed_response["deployments"].include?(searchstax_deployment_id)
-  $stderr.puts "Could not associate apikey with deployment: #{json_response}"
+unless http_response.status.success? && parsed_response["deployments"].is_a?(Array) && parsed_response["deployments"].include?(searchstax_deployment_id)
+  $stderr.puts "Could not associate apikey with deployment: #{http_response.code} #{json_response}"
   exit 1
 end
 
