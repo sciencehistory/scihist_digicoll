@@ -72,6 +72,9 @@ gem 'font-awesome-rails', '~> 4.7'
 # intend to merge to master like this.
 gem 'kithe', ">= 2.0.0.beta", "< 3", git: "https://github.com/sciencehistory/kithe.git"
 
+# temporarily using master traject
+gem "traject", github: "traject/traject"
+
 gem 'simple_form', "~> 5.0"
 gem "cocoon"
 
