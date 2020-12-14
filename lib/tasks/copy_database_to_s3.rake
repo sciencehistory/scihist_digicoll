@@ -11,7 +11,7 @@ namespace :scihist do
 
   task :copy_database_to_s3 => :environment do
     cmd = TTY::Command.new(output: Rails.logger)
-    get_database_url_args = ['heroku', 'pg:backups:url']
+    get_database_url_args = ['heroku', 'pg:backups:url', '--app', 'scihist-digicoll-2']
     result =  cmd.run!(*get_database_url_args, only_output_on_error: true)
     if result.failure?
       raise RuntimeError, "Unable to obtain the URL of the latest database backup."
