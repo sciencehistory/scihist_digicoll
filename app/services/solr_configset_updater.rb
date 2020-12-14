@@ -68,7 +68,7 @@ class SolrConfigsetUpdater
   # @param overwrite send overwrite=true if true, only has meaning in Solr 8.7+
   def upload(configset_name: collection_name, overwrite: false)
     create_temp_zip_file do |tmp_zip_file|
-      http_response = http_client!.post(
+      http_response = http_client.post(
         "#{solr_uri.to_s}/admin/configs?action=UPLOAD&name=#{configset_name}#{'&overwrite=true' if overwrite}",
         body: tmp_zip_file.read
       )
@@ -85,7 +85,7 @@ class SolrConfigsetUpdater
   #
   # @return [Array<String>]
   def list
-    http_response = http_client!.get("#{solr_uri.to_s}/admin/configs?action=LIST&omitHeader=true")
+    http_response = http_client.get("#{solr_uri.to_s}/admin/configs?action=LIST&omitHeader=true")
 
     unless http_response.status.success?
       raise SolrError.new(http_response.body.to_s)
@@ -96,7 +96,7 @@ class SolrConfigsetUpdater
 
   # deletes a config set with `/admin/configs?action=DELETE&name=myConfigSet`
   def delete(configset_name)
-    http_response = http_client!.get("#{solr_uri.to_s}/admin/configs?action=DELETE&name=#{configset_name}&omitHeader=true")
+    http_response = http_client.get("#{solr_uri.to_s}/admin/configs?action=DELETE&name=#{configset_name}&omitHeader=true")
 
     unless http_response.status.success?
       raise SolrError.new(http_response.body.to_s)
@@ -108,7 +108,7 @@ class SolrConfigsetUpdater
   # COPIES an existing config set to a new name, using API
   # `/admin/configs?action=CREATE&name=myConfigSet&baseConfigSet=predefinedTemplate`
   def create(from:, to:)
-    http_response = http_client!.get("#{solr_uri.to_s}/admin/configs?action=CREATE&name=#{to}&baseConfigSet=#{from}")
+    http_response = http_client.get("#{solr_uri.to_s}/admin/configs?action=CREATE&name=#{to}&baseConfigSet=#{from}")
 
     unless http_response.status.success?
       raise SolrError.new(http_response.body.to_s)
@@ -120,7 +120,7 @@ class SolrConfigsetUpdater
   # reloads the @collection_name with /admin/collections?action=RELOAD&name=newCollection
   # Does not support `async` reloading at present.
   def reload
-    http_response = http_client!.get("#{solr_uri.to_s}/admin/collections?action=RELOAD&name=#{collection_name}")
+    http_response = http_client.get("#{solr_uri.to_s}/admin/collections?action=RELOAD&name=#{collection_name}")
 
     unless http_response.status.success?
       raise SolrError.new(http_response.body.to_s)
@@ -132,7 +132,7 @@ class SolrConfigsetUpdater
   # @return [String] current configName set for @collection_name, obtained via
   #   /admin/collections?action=CLUSTERSTATUS aPI
   def config_name
-    http_response = http_client!.get("#{solr_uri.to_s}/admin/collections?action=CLUSTERSTATUS&collection=#{collection_name}")
+    http_response = http_client.get("#{solr_uri.to_s}/admin/collections?action=CLUSTERSTATUS&collection=#{collection_name}")
 
     unless http_response.status.success?
       raise SolrError.new(http_response.body.to_s)
@@ -144,7 +144,7 @@ class SolrConfigsetUpdater
   # changes the configName for @collection_name using API
   # /admin/collections?action=MODIFYCOLLECTION&collection=<collection-name>&collection.configName=<newName>
   def config_name=(new_config_name)
-    http_response = http_client!.get("#{solr_uri.to_s}/admin/collections?action=MODIFYCOLLECTION&collection=#{collection_name}&collection.configName=#{new_config_name}")
+    http_response = http_client.get("#{solr_uri.to_s}/admin/collections?action=MODIFYCOLLECTION&collection=#{collection_name}&collection.configName=#{new_config_name}")
 
     unless http_response.status.success?
       raise SolrError.new(http_response.body.to_s)
@@ -260,7 +260,7 @@ class SolrConfigsetUpdater
   def upload_and_create_collection(configset_name: collection_name, num_shards: 1)
     self.upload(configset_name: configset_name)
 
-    http_response = http_client!.get("#{solr_uri.to_s}/admin/collections?action=CREATE&name=#{collection_name}&collection.configName=#{configset_name}&numShards=#{num_shards}")
+    http_response = http_client.get("#{solr_uri.to_s}/admin/collections?action=CREATE&name=#{collection_name}&collection.configName=#{configset_name}&numShards=#{num_shards}")
 
     unless http_response.status.success?
       raise SolrError.new(http_response.body.to_s)
@@ -303,13 +303,14 @@ class SolrConfigsetUpdater
   end
 
   # initializes an http-rb client, with basic_auth if specified
-  def http_client!
-    client = HTTP
-    if solr_basic_auth_user || solr_basic_auth_pass
-      client = client.basic_auth(user: solr_basic_auth_user, pass: solr_basic_auth_pass)
+  def http_client
+    @http_client ||= begin
+      client = HTTP
+      if solr_basic_auth_user || solr_basic_auth_pass
+        client = client.basic_auth(user: solr_basic_auth_user, pass: solr_basic_auth_pass)
+      end
+      client
     end
-
-    client
   end
 
   # Can be called with a block in which case it will yield a Tempfile, and
