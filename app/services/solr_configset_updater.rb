@@ -31,14 +31,17 @@ require 'http'
 # https://lucene.apache.org/solr/guide/8_6/configsets-api.html
 # some parts of https://lucene.apache.org/solr/guide/8_6/collection-management.html#collection-management
 class SolrConfigsetUpdater
-  SOLR_CONF_DIRECTORY = "./solr/config"
-
   attr_reader :collection_name, :conf_dir, :solr_uri, :solr_basic_auth_user, :solr_basic_auth_pass
 
-  # @param solr_url [String] Should be a Solr url ending in /solr, eg
-  #   `https://user:pass@example.org:1234/solr`. As you can see, can optionally
+  # @param collection_name [String] The collection in Solr this instance will be operating upon.
+  #
+  # @param solr_url [String] Location of Solr Cloud instance. Should be a Solr url ending
+  #    in /solr, eg `https://user:pass@example.org:1234/solr`. As you can see, can optionally
   #   include user/pass in URI.
-  def initialize(collection_name:, solr_url:, conf_dir: SOLR_CONF_DIRECTORY)
+  #
+  # @param conf_dir [String] String local path on disk of solr configuration
+  #   directory we will be uploading to a Solr Cloud configset. Eg `./solr/conf`.
+  def initialize(collection_name:, solr_url:, conf_dir:)
     @collection_name = collection_name
     @conf_dir = conf_dir.to_s
     @solr_uri = URI.parse(solr_url.chomp("/"))
@@ -50,7 +53,7 @@ class SolrConfigsetUpdater
     end
   end
 
-  # scihist_digicoll configuration
+  # instantiates a SolrConfigsetUpdater using standard values for scihist_digicoll configuration
   def self.configured
     SolrConfigsetUpdater.new(
         solr_url: ScihistDigicoll::Env.solr_base_url,
@@ -79,6 +82,8 @@ class SolrConfigsetUpdater
   end
 
   # lists all config sets from `/admin/configs?action=LIST&omitHeader=true`
+  #
+  # @return [Array<String>]
   def list
     http_response = http_client!.get("#{solr_uri.to_s}/admin/configs?action=LIST&omitHeader=true")
 
@@ -113,7 +118,7 @@ class SolrConfigsetUpdater
   end
 
   # reloads the @collection_name with /admin/collections?action=RELOAD&name=newCollection
-  # Does not support `async` at present.
+  # Does not support `async` reloading at present.
   def reload
     http_response = http_client!.get("#{solr_uri.to_s}/admin/collections?action=RELOAD&name=#{collection_name}")
 
@@ -148,6 +153,10 @@ class SolrConfigsetUpdater
     http_response
   end
 
+  # Uses a strategy where configset is named with timestamp suffix.
+  #
+  # Uploads confiset, switches to collection to use it, reloads collection, deletes
+  # old configset.
   def replace_configset_timestamped
     old_name = config_name
     new_name = configset_timestamp_name
@@ -162,6 +171,13 @@ class SolrConfigsetUpdater
     "#{collection_name}_#{Time.now.utc.iso8601}"
   end
 
+  # Uses a strategy where configset is named with a digest hash of it's contents.
+  # After calculating digest, checks to see if already up to date, if so return immediately
+  # without doigng anything.
+  #
+  # Otherwise load configset, switching collection to use it, reload collection, delete
+  # prior configset.
+  #
   # @return false if no update was needed, else new config_set name.
   def replace_configset_digest
     old_name = config_name
@@ -180,14 +196,28 @@ class SolrConfigsetUpdater
     return new_name
   end
 
+  # A name that can be used for a config set based on collection name and a
+  # digest fingerprint of config directory contents, used by #replace_configset_digest
+  #
+  # @return [String]
   def configset_digest_name
     "#{collection_name}_#{conf_dir_digest}"
   end
 
-  # keep the same name by doing a multi-part swap of names, more expensive
-  # than other choices, may leave things in an unexpected state on failure, probably not a great choice,
-  # but does result in a consistent config name.
-  # but doing what Alex Halovic suggests at: https://dev.lucene.apache.narkive.com/HI7lTF0o/jira-created-solr-12925-configsets-api-should-allow-update-of-existing-configset#post4
+  # Uses a strategy of updating configset wthat keeps confiset name consistent
+  # over time, by doing a multi-step swap of names, working around
+  # inability in Solr pre 8.7 to overwrite existing configset name.
+  #
+  # This involves more steps than #replace_configset_digest or #replace_configset_timestamp.
+  # It also may leave things in an unstable state if crashed in the middle.
+  # This is mostly here for illustration. It is using the strategy Alex
+  # Halovic suggests at: https://dev.lucene.apache.narkive.com/HI7lTF0o/jira-created-solr-12925-configsets-api-should-allow-update-of-existing-configset#post4
+  #
+  # Copy existing configset to temporary name; switch collection to use temporary name;
+  # delete configset at standard name; upload new config under standard name;
+  # switch collection back to standard-named configset; delete temporary name.
+  #
+  #
   def replace_configset_swap
     current_name = self.config_name
     temp_name = "#{current_name}_temp"
