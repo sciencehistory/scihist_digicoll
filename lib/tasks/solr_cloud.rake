@@ -8,11 +8,11 @@ namespace :scihist do
   # for config content.
   namespace :solr_cloud do
 
-    desc "upload solr config as configset, without attaching it to collection"
-    task :upload_configset => :environment do
+    desc "Create collection using on-disk configuration files, bootstrap on empty solr"
+    task :create_collection => :environment do
       updater = SolrConfigsetUpdater.configured
 
-      updater.upload(configset_name: updater.configset_digest_name)
+      updater.upload_and_create_collection(configset_name: updater.configset_digest_name)
     end
 
     desc "upload configset and (re-)attach to collection, only if it is not already up to date"
