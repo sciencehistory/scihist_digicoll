@@ -1,35 +1,74 @@
 require 'zip'
 require 'http'
 
-# We have our solr configuration files at solr/config. We want to upload
-# the to a solr instance via solr cloud API's:
+# A utility class for working with Solr Cloud APIs to manage "config sets"
+# (Solr config directories uploaded to solr cloud), assign them to collections,
+# and update the config set assigned to a collection. We have a solr config
+# directory on local disk, and want to upload and update it as a config set
+# in the Solr Cloud instance.
 #
-#     https://lucene.apache.org/solr/guide/7_4/configsets-api.html#configsets-upload
+# To do this we implement wrappers for the entire Solr
+# [ConfigSet API](https://lucene.apache.org/solr/guide/8_6/configsets-api.html) and
+# just a couple relevant actions in the [Collections API](https://lucene.apache.org/solr/guide/8_6/collections-api.html)
+# Both kind of jammed into this one class -- but keep it simple, this code isn't
+# super elegantly designed, it's just enough to give us the tools we need for our use cases.
 #
-# Because prior to Solr 8.7 (released Nov 2020, which we don't have yet), there is no
-# way to overright an existing config-set, we need to do a weird dance to update
-# the config-set in-place without disturbing the existing Solr collections using it.
-# See:
+# This code is written to be perhaps extractable from this application, to general-purpose
+# shared code.
 #
-#     https://dev.lucene.apache.narkive.com/HI7lTF0o/jira-created-solr-12925-configsets-api-should-allow-update-of-existing-configset
+# An updater object is for a specific collection, in a specific Solr Cloud instance,
+# and using a specific local filesystem path as config directory source:
 #
-# Meanwhile, SearchStax docs and support encourage us to not use the standard Solr API's like
-# we are using here, but instead to use proprietary SearchStax API's like:
-#     https://www.searchstax.com/docs/staxapi2ZK/#zkcreate
+#     updater = SolrConfigsetUpdater.new(
+#       solr_url: ENV['solr_url'],
+#       collection_name: "myCollection",
+#       conf_dir: Rails.root + "solr/conf"
+#      )
+#      # Or for scihist-digicoll app specifically, get those values
+#      # from the standard configured places:
+#      updater = SolrConfigsetUpdater.configured
 #
-# However, those proprietary SearchStax API's are actually a lot more painful to use, and
-# of course aren't transferable to non-SearchStax deploys; I can't figure out
-# any reason not to use the standard Solr API's.
-# SearchStax says their use won't be logged By SearchStax (that seems fine?), and that
-# they "aren't secure", but we can access them via the same HTTP Basic Auth credentials
-# we are using anyway (SearchStax solr account with "admin" level access), and they are
-# available there whether we use them or not, it doens't seem a security issue to use them.
+# # API wrappers
 #
-# We are going to assume that the config_set name should match the collection name (Solr's conventional
-# default).
+# A bunch of methods straightforwardly wrap Solr API, which  can be useful in a console to
+# explore what's going on with config sets and collection settings, or can be used to
+# build whatever logic you want.
 #
-# https://lucene.apache.org/solr/guide/8_6/configsets-api.html
-# some parts of https://lucene.apache.org/solr/guide/8_6/collection-management.html#collection-management
+# ## Configset API
+#
+#     updater.list # list config sets
+#     updater.upload(config_set_name: "some_name") # upload from local dir to named config set
+#     updater.delete(config_set_name) # delete named config set name
+#     updater.create(from: source, to: dest) # the "create" Solr API call makes a config set copy
+#
+# ## Collection API
+#
+#     updater.config_name # configset name set currently set for collection
+#     updater.update_config_name(new_name) # change config set collection uses
+#     updater.reload # send reload to configured collection
+#     updater.create_collection(configset_name: name) # create a Solr collection using named config set
+#     updater.list_collections # list all collections in Solr instance
+#
+# # Higher-level logic composing those
+#
+# In Solr 8.7+, you are allowed to overwrite an existing configset, so updating config set for
+# an existing collection without downtime is straightforward:
+#
+#     updater.upload(config_set_name: name_used, overwrite_true)
+#     updater.reload
+#
+# The end. But we don't have Solr 8.7 yet, so various more complicated dances
+# are needed to get a collection config set updated. See #replace_configset_timestamped,
+# #replace_configest_digest, and #replace_configset_swap.
+#
+# Really #replace_configset_digest is a good algorithm, which you might want to use even
+# if you have Solr 8.7, because it can avoid doing an upload/rename unless config
+# content has actually changed, so is nice to use on every deploy similar to Rails migrations.
+#
+# Also, the shortcut #upload_and_create_collection is available to bootstrap
+# from having no collection created, to having a collection created based on your
+# local conf_dir directory.
+#
 class SolrConfigsetUpdater
   attr_reader :collection_name, :conf_dir, :solr_uri, :solr_basic_auth_user, :solr_basic_auth_pass
 
@@ -261,7 +300,13 @@ class SolrConfigsetUpdater
   #     updater.create_collection(configset_name: updater.configset_digest_name)
   def upload_and_create_collection(configset_name: collection_name, num_shards: 1)
     self.upload(configset_name: configset_name)
+    self.create_collection(configset_name: configset_name, num_shards: num_shards)
+  end
 
+  # Creates a collection under @collection_name via Solr Cloud API
+  # `/admin/collections?action=CREATE&name=name`, based on configset_name
+  # specified -- by default the collection_name itself.
+  def create_collection(configset_name: collection_name, num_shards: 1)
     http_response = http_client.get("#{solr_uri.to_s}/admin/collections?action=CREATE&name=#{collection_name}&collection.configName=#{configset_name}&numShards=#{num_shards}")
 
     unless http_response.status.success?
@@ -271,7 +316,18 @@ class SolrConfigsetUpdater
     http_response
   end
 
+  # List collections using Solr Cloud API `/admin/collections?action=LIST`
+  #
+  # @return [Array<String>]
+  def list_collections
+    http_response = http_client.get("#{solr_uri.to_s}/admin/collections?action=LIST")
 
+    unless http_response.status.success?
+      raise SolrError.new(http_response.body.to_s)
+    end
+
+    JSON.parse(http_response.body.to_s)["collections"]
+  end
 
   class SolrError < StandardError
     attr_reader :status, :response_body_json
