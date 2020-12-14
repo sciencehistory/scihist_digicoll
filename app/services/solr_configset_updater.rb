@@ -143,7 +143,7 @@ class SolrConfigsetUpdater
 
   # changes the configName for @collection_name using API
   # /admin/collections?action=MODIFYCOLLECTION&collection=<collection-name>&collection.configName=<newName>
-  def config_name=(new_config_name)
+  def change_config_name(new_config_name)
     http_response = http_client.get("#{solr_uri.to_s}/admin/collections?action=MODIFYCOLLECTION&collection=#{collection_name}&collection.configName=#{new_config_name}")
 
     unless http_response.status.success?
@@ -162,7 +162,7 @@ class SolrConfigsetUpdater
     new_name = configset_timestamp_name
 
     upload(configset_name: new_name)
-    self.config_name = new_name
+    change_config_name(new_name)
     reload
     delete(old_name)
   end
@@ -189,7 +189,7 @@ class SolrConfigsetUpdater
     end
 
     upload(configset_name: new_name)
-    self.config_name = new_name
+    change_config_name(new_name)
     reload
     delete(old_name)
 
@@ -223,20 +223,22 @@ class SolrConfigsetUpdater
     temp_name = "#{current_name}_temp"
 
     self.create(from: current_name, to: temp_name)
-    self.config_name = temp_name
+    self.change_config_name(temp_name)
     self.reload
     self.delete(current_name)
     self.upload(configset_name: current_name)
-    self.config_name = current_name
+    self.change_config_name(current_name)
     self.reload
     self.delete(temp_name)
   end
 
-  # renames a config set, changes collection to use new name, deletes old name.
+  # renames config set used by collection by: copying original configset name to
+  # new name; changing collection to use new name; reloading collection; removing
+  # configset at original name.
   def rename_config_name(to:)
     from = self.config_name
     self.create(from: from, to: to)
-    self.config_name = to
+    self.change_config_name(to)
     self.reload
     self.delete(from)
   end
