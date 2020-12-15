@@ -270,6 +270,7 @@ GEM
     hashdiff (1.0.1)
     hashery (2.1.2)
     hashie (4.1.0)
+    hirefire-resource (0.9.0)
     honeybadger (4.7.2)
     html_aware_truncation (1.0.0)
       nokogiri (~> 1.0)
@@ -658,6 +659,7 @@ DEPENDENCIES
   factory_bot_rails
   faster_s3_url (< 2)
   font-awesome-rails (~> 4.7)
+  hirefire-resource
   honeybadger (~> 4.0)
   html_aware_truncation (~> 1.0)
   jbuilder (~> 2.5)
