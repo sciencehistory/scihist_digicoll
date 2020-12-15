@@ -30,7 +30,7 @@ http basic auth)
 
 ...Will sync the solr config directory where you are running it.
 
-For more on SearchStax, see wiki at:
+For more on SearchStax, see our wiki on [Searchstax Solr](https://chemheritage.atlassian.net/l/c/NRZz1d6v)
 
 
 ## History of these config files
