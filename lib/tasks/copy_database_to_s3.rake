@@ -1,5 +1,6 @@
 require 'tty/command'
-require 'down'
+
+require 'tempfile'
 
 namespace :scihist do
   desc """
@@ -41,8 +42,17 @@ namespace :scihist do
      )
     aws_bucket = Aws::S3::Bucket.new(name: bucket, client: aws_client)
     aws_object = aws_bucket.object(file_path)
-    result = aws_object.put(body: cmd.run!('pg_dump', '-w', '--clean', ENV['DATABASE_URL']).out, storage_class: "STANDARD_IA")
-    puts "Successfully uploaded database: etag is #{result[:etag]}."
+
+    temp_file = Tempfile.new(['temp_database_dump','.sql'])
+    puts temp_file.path
+
+    cmd.run!('pg_dump', '-w', '--clean', ENV['DATABASE_URL'], :out => temp_file.path )
+
+    puts "Let's try uploading that temp file to aws..."
+    aws_object.upload_file(temp_file.path)
+    object.upload_file(file_path)
+    puts "Done!"
+    temp_file.unlink
   end
 
 end
