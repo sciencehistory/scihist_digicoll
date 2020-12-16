@@ -44,7 +44,7 @@ require 'http'
 # ## Collection API
 #
 #     updater.config_name # configset name set currently set for collection
-#     updater.update_config_name(new_name) # change config set collection uses
+#     updater.change_config_name(new_name) # change config set collection uses
 #     updater.reload # send reload to configured collection
 #     updater.create_collection(configset_name: name) # create a Solr collection using named config set
 #     updater.list_collections # list all collections in Solr instance
