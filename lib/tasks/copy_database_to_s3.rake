@@ -41,7 +41,8 @@ namespace :scihist do
      )
     aws_bucket = Aws::S3::Bucket.new(name: bucket, client: aws_client)
     aws_object = aws_bucket.object(file_path)
-    result = aws_object.put(body: cmd.run!('pg_dump', '-w', '--clean', "$DATABASE_URL").out, storage_class: "STANDARD_IA")
+    result = aws_object.put(body: cmd.run!('pg_dump', '-w', '--clean', ENV['DATABASE_URL']).out, storage_class: "STANDARD_IA")
+    puts "Successfully uploaded database: etag is #{result[:etag]}."
   end
 
 end
