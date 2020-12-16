@@ -24,6 +24,8 @@ namespace :scihist do
         heroku config:set HEROKU_API_KEY=`heroku auth:token`
   """
 
+  # wget -O - -o /dev/null  `heroku pg:backups:url` | pg_restore -f mydatabase.sql
+
   task :copy_database_to_s3 => :environment do
     region = ENV['REGION'] || 'us-west-2'
     bucket = ENV['BUCKET']  || 'chf-hydra-backup'
@@ -31,18 +33,15 @@ namespace :scihist do
     cmd = TTY::Command.new(output: Rails.logger)
     abort 'Please supply BACKUP_AWS_ACCESS_KEY_ID' unless ENV['BACKUP_AWS_ACCESS_KEY_ID'].is_a? String
     abort 'Please supply BACKUP_AWS_SECRET_ACCESS_KEY.' unless ENV['BACKUP_AWS_SECRET_ACCESS_KEY'].is_a? String
-    abort 'Please supply APP (the name of this heroku app).' unless ENV['APP'].is_a? String
-    puts "Requesting database URL"
-    result =  cmd.run!('heroku', 'pg:backups:url', '--app', ENV['APP'], only_output_on_error: true)
-    abort "Unable to obtain database URL." if result.failure?
+
     aws_client = Aws::S3::Client.new(
-      region:            region,
-      access_key_id:     ENV['BACKUP_AWS_ACCESS_KEY_ID'],
-      secret_access_key: ENV['BACKUP_AWS_SECRET_ACCESS_KEY']
-    )
+       region:            region,
+       access_key_id:     ENV['BACKUP_AWS_ACCESS_KEY_ID'],
+       secret_access_key: ENV['BACKUP_AWS_SECRET_ACCESS_KEY']
+     )
     aws_bucket = Aws::S3::Bucket.new(name: bucket, client: aws_client)
     aws_object = aws_bucket.object(file_path)
-    result = aws_object.put(body: Down.open(result.out), storage_class: "STANDARD_IA")
-    puts "Successfully uploaded database: etag is #{result[:etag]}."
+    result = aws_object.put(body: cmd.run!('pg_dump', '-w', '--clean', "$DATABASE_URL").out, storage_class: "STANDARD_IA")
   end
+
 end
