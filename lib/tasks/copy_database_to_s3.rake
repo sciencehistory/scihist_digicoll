@@ -30,7 +30,7 @@ namespace :scihist do
   task :copy_database_to_s3 => :environment do
     region = ENV['REGION'] || 'us-west-2'
     bucket = ENV['BUCKET']  || 'chf-hydra-backup'
-    file_path = ENV['FILE_PATH'] || 'PGSql/digcol_backup.dump'
+    file_path = ENV['FILE_PATH'] || 'PGSql/digcol_backup_2.sql'
     cmd = TTY::Command.new(output: Rails.logger)
     abort 'Please supply BACKUP_AWS_ACCESS_KEY_ID' unless ENV['BACKUP_AWS_ACCESS_KEY_ID'].is_a? String
     abort 'Please supply BACKUP_AWS_SECRET_ACCESS_KEY.' unless ENV['BACKUP_AWS_SECRET_ACCESS_KEY'].is_a? String
@@ -50,7 +50,6 @@ namespace :scihist do
 
     puts "Let's try uploading that temp file to aws..."
     aws_object.upload_file(temp_file.path)
-    object.upload_file(file_path)
     puts "Done!"
     temp_file.unlink
   end
