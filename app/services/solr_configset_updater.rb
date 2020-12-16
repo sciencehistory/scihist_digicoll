@@ -112,11 +112,7 @@ class SolrConfigsetUpdater
         body: tmp_zip_file.read
       )
 
-      unless http_response.status.success?
-        raise SolrError.new(http_response.body.to_s)
-      end
-
-      http_response
+      parse_and_verify_response(http_response)
     end
   end
 
@@ -126,22 +122,16 @@ class SolrConfigsetUpdater
   def list
     http_response = http_client.get("#{solr_uri.to_s}/admin/configs?action=LIST&omitHeader=true")
 
-    unless http_response.status.success?
-      raise SolrError.new(http_response.body.to_s)
-    end
+    parsed = parse_and_verify_response(http_response)
 
-    JSON.parse(http_response)["configSets"]
+    parsed["configSets"]
   end
 
   # deletes a config set with `/admin/configs?action=DELETE&name=myConfigSet`
   def delete(configset_name)
     http_response = http_client.get("#{solr_uri.to_s}/admin/configs?action=DELETE&name=#{configset_name}&omitHeader=true")
 
-    unless http_response.status.success?
-      raise SolrError.new(http_response.body.to_s)
-    end
-
-    http_response
+    parse_and_verify_response(http_response)
   end
 
   # COPIES an existing config set to a new name, using API
@@ -149,11 +139,7 @@ class SolrConfigsetUpdater
   def create(from:, to:)
     http_response = http_client.get("#{solr_uri.to_s}/admin/configs?action=CREATE&name=#{to}&baseConfigSet=#{from}")
 
-    unless http_response.status.success?
-      raise SolrError.new(http_response.body.to_s)
-    end
-
-    http_response
+    parse_and_verify_response(http_response)
   end
 
   # reloads the @collection_name with /admin/collections?action=RELOAD&name=newCollection
@@ -161,11 +147,7 @@ class SolrConfigsetUpdater
   def reload
     http_response = http_client.get("#{solr_uri.to_s}/admin/collections?action=RELOAD&name=#{collection_name}")
 
-    unless http_response.status.success?
-      raise SolrError.new(http_response.body.to_s)
-    end
-
-    http_response
+    parse_and_verify_response(http_response)
   end
 
   # @return [String] current configName set for @collection_name, obtained via
@@ -173,23 +155,34 @@ class SolrConfigsetUpdater
   def config_name
     http_response = http_client.get("#{solr_uri.to_s}/admin/collections?action=CLUSTERSTATUS&collection=#{collection_name}")
 
-    unless http_response.status.success?
-      raise SolrError.new(http_response.body.to_s)
-    end
+    parsed = parse_and_verify_response(http_response)
 
-    JSON.parse(http_response.body.to_s).dig("cluster", "collections", collection_name, "configName")
+    parsed.dig("cluster", "collections", collection_name, "configName")
   end
 
   # changes the configName for @collection_name using API
   # /admin/collections?action=MODIFYCOLLECTION&collection=<collection-name>&collection.configName=<newName>
+  #
+  # Warning sometimes errors leave things in an inconsistent state unless we change back,
+  # we try to recover from that.
+  #
+  # Note that if the configset had malformed or illegal XML configuration, the error seems to look
+  # something like:
+  #   org.apache.solr.client.solrj.impl.HttpSolrClient$RemoteSolrException:Error from server at $URL: Unable to reload core [$CORE_NAME]
   def change_config_name(new_config_name)
+    original_name = self.config_name
     http_response = http_client.get("#{solr_uri.to_s}/admin/collections?action=MODIFYCOLLECTION&collection=#{collection_name}&collection.configName=#{new_config_name}")
 
-    unless http_response.status.success?
-      raise SolrError.new(http_response.body.to_s)
+    parse_and_verify_response(http_response)
+  rescue SolrError => e
+    # We may have left things in an inconsistent state, try to change back, without
+    # catching error or anything.
+    begin
+      http_client.get("#{solr_uri.to_s}/admin/collections?action=MODIFYCOLLECTION&collection=#{collection_name}&collection.configName=#{original_name}")
+    rescue StandardError
     end
 
-    http_response
+    raise e
   end
 
   # Uses a strategy where configset is named with timestamp suffix.
@@ -309,11 +302,7 @@ class SolrConfigsetUpdater
   def create_collection(configset_name: collection_name, num_shards: 1)
     http_response = http_client.get("#{solr_uri.to_s}/admin/collections?action=CREATE&name=#{collection_name}&collection.configName=#{configset_name}&numShards=#{num_shards}")
 
-    unless http_response.status.success?
-      raise SolrError.new(http_response.body.to_s)
-    end
-
-    http_response
+    parse_and_verify_response(http_response)
   end
 
   # List collections using Solr Cloud API `/admin/collections?action=LIST`
@@ -322,27 +311,47 @@ class SolrConfigsetUpdater
   def list_collections
     http_response = http_client.get("#{solr_uri.to_s}/admin/collections?action=LIST")
 
-    unless http_response.status.success?
-      raise SolrError.new(http_response.body.to_s)
-    end
+    parsed = parse_and_verify_response(http_response)
 
-    JSON.parse(http_response.body.to_s)["collections"]
+    parsed["collections"]
   end
 
   class SolrError < StandardError
     attr_reader :status, :response_body_json
 
-    def initialize(solr_response_str)
-      json_response = JSON.parse(solr_response_str)
-      @status = json_response.dig("responseHeader", "status")
-      @response_body_json = json_response
-      super(json_response.dig("error", "msg") || solr_response_str)
-    rescue JSON::ParserError
-      super(solr_response_str)
+    def initialize(str, status:nil, response_body_json: nil)
+      @status = status
+      @response_body_json = response_body_json
+      super(str)
     end
   end
 
   protected
+
+  # returns JSON-parsed hash for succesful response.
+  #
+  # raises a SolrError if it looks like a bad response
+  #
+  # Bad responses sometimes but not always have a non-200 HTTP result code.
+  # A bad response may be a message in "failure", or in "error.msg", or maybe
+  # in neither. :(
+  #
+  # @param response [HTTP::Response] A solr API response with JSON body
+  def parse_and_verify_response(response)
+    parsed = JSON.parse(response.body.to_s)
+
+    if !response.status.success? || parsed["failure"]
+      raise SolrError.new(
+        parsed["failure"] || parsed.dig("error", "msg") || response.body.to_s,
+        status: response.status,
+        response_body_json: parsed
+      )
+    end
+
+    return parsed
+  rescue JSON::ParserError => e
+    raise SolrError.new("Could not parse: #{e.message}: #{response.body.to_s}")
+  end
 
   # Returns a digest fingerprint for entire config directory. Uses
   # SHA-256, truncates to first 7 digits by default, or you can specify.
