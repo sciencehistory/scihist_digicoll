@@ -14,5 +14,9 @@ if ENV['HIREFIRE_TOKEN']
     config.dyno(:worker) do
       HireFire::Macro::Resque.queue
     end
+
+    # for queue time-based web dyno scaling
+    # https://help.hirefire.io/article/49-logplex-queue-time
+    config.log_queue_metrics = true
   end
 end
