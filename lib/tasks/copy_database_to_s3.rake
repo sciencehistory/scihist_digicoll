@@ -4,53 +4,39 @@ require 'tempfile'
 
 namespace :scihist do
   desc """
-    Copy the latest copy of the database to a location on s3.
+    Dump the live database and upload it to s3.
 
     BACKUP_AWS_ACCESS_KEY_ID=joe \
     BACKUP_AWS_SECRET_ACCESS_KEY=schmo \
     APP=scihist-digicoll-2 \
     rake scihist:copy_database_to_s3
 
-    These params can be overridden:
+    The s3 destination parameters can also be overridden via ENV variables.:
       REGION=us-west-2
       BUCKET=chf-hydra-backup
-      FILE_PATH=PGSql/digcol_backup.dump
+      FILE_PATH=PGSql/digcol_backup_2.sql
 
-    Note: this is a Postgres binary .dump file, not ASCII SQL. You can convert it to regular sql like this: pg_restore -f mydatabase.sql latest.dump
-
-    Setup:
-      1) Install the Heroku CLI buildpack, then redeploy the app
-        heroku buildpacks:add heroku-community/cli
-      2) To give us access to the Heroku CLI, run:
-        heroku config:set HEROKU_API_KEY=`heroku auth:token`
   """
-
-  # wget -O - -o /dev/null  `heroku pg:backups:url` | pg_restore -f mydatabase.sql
-
   task :copy_database_to_s3 => :environment do
     region = ENV['REGION'] || 'us-west-2'
     bucket = ENV['BUCKET']  || 'chf-hydra-backup'
     file_path = ENV['FILE_PATH'] || 'PGSql/digcol_backup_2.sql'
-    cmd = TTY::Command.new(output: Rails.logger)
     abort 'Please supply BACKUP_AWS_ACCESS_KEY_ID' unless ENV['BACKUP_AWS_ACCESS_KEY_ID'].is_a? String
     abort 'Please supply BACKUP_AWS_SECRET_ACCESS_KEY.' unless ENV['BACKUP_AWS_SECRET_ACCESS_KEY'].is_a? String
-
     aws_client = Aws::S3::Client.new(
-       region:            region,
-       access_key_id:     ENV['BACKUP_AWS_ACCESS_KEY_ID'],
-       secret_access_key: ENV['BACKUP_AWS_SECRET_ACCESS_KEY']
-     )
+      region:            region,
+      access_key_id:     ENV['BACKUP_AWS_ACCESS_KEY_ID'],
+      secret_access_key: ENV['BACKUP_AWS_SECRET_ACCESS_KEY']
+    )
+    temp_file = Tempfile.new(['temp_database_dump','.sql'])
+    puts "Dumping database"
+    cmd = TTY::Command.new(output: Rails.logger)
+    cmd.run!('pg_dump', '-w', '--clean', ENV['DATABASE_URL'], :out => temp_file.path )
+    puts "Uploading database to s3."
     aws_bucket = Aws::S3::Bucket.new(name: bucket, client: aws_client)
     aws_object = aws_bucket.object(file_path)
-
-    temp_file = Tempfile.new(['temp_database_dump','.sql'])
-    puts temp_file.path
-
-    cmd.run!('pg_dump', '-w', '--clean', ENV['DATABASE_URL'], :out => temp_file.path )
-
-    puts "Let's try uploading that temp file to aws..."
     aws_object.upload_file(temp_file.path)
-    puts "Done!"
+    puts "Done."
     temp_file.unlink
   end
 
