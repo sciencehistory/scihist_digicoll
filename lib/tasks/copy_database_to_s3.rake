@@ -1,5 +1,4 @@
 require 'tty/command'
-
 require 'tempfile'
 
 namespace :scihist do
@@ -31,13 +30,18 @@ namespace :scihist do
     temp_file = Tempfile.new(['temp_database_dump','.sql'])
     puts "Dumping database"
     cmd = TTY::Command.new(output: Rails.logger)
+    time_created = Time.now.utc.to_s
     cmd.run!('pg_dump', '-w', '--clean', ENV['DATABASE_URL'], :out => temp_file.path )
     puts "Uploading database to s3."
     aws_bucket = Aws::S3::Bucket.new(name: bucket, client: aws_client)
     aws_object = aws_bucket.object(file_path)
-    aws_object.upload_file(temp_file.path)
-    puts "Done."
-    temp_file.unlink
+    result = aws_object.upload_file(
+      temp_file.path,
+      storage_class: "STANDARD_IA",
+      metadata: { "backup_time" => time_created}
+    )
+    raise RuntimeError, "Unable to upload the database to S3" unless result
+    puts "Done"
   end
 
 end
