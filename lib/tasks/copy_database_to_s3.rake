@@ -28,7 +28,7 @@ namespace :scihist do
       secret_access_key: ENV['BACKUP_AWS_SECRET_ACCESS_KEY']
     )
     puts "Dumping database"
-    cmd = TTY::Command.new(output: Rails.logger)
+    cmd = TTY::Command.new(output: Rails.logger, binmode: true)
     puts "Uploading database to s3."
     aws_bucket = Aws::S3::Bucket.new(name: bucket, client: aws_client)
     aws_object = aws_bucket.object(file_path)
