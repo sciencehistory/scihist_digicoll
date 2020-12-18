@@ -27,7 +27,6 @@ namespace :scihist do
       access_key_id:     ENV['BACKUP_AWS_ACCESS_KEY_ID'],
       secret_access_key: ENV['BACKUP_AWS_SECRET_ACCESS_KEY']
     )
-    puts "Dumping database"
     cmd = TTY::Command.new(printer: :null)
     puts "Uploading database to s3."
     aws_bucket = Aws::S3::Bucket.new(name: bucket, client: aws_client)
@@ -38,7 +37,7 @@ namespace :scihist do
         metadata: { "backup_time" => Time.now.utc.to_s}
       ) do |write_stream|
       cmd.run('pg_dump', '-w', '--clean', ENV['DATABASE_URL']) do |out, err|
-        write_stream << out if out
+        write_stream << out.force_encoding('UTF-8') if out
       end
     end
     raise RuntimeError.new "This is an exception" unless result
