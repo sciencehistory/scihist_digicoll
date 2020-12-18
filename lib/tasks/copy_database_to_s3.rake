@@ -40,6 +40,6 @@ namespace :scihist do
         write_stream << out.force_encoding('UTF-8') if out
       end
     end
-    raise RuntimeError.new "This is an exception" unless result
+    raise RuntimeError.new "Upload failed." unless result
   end
 end
