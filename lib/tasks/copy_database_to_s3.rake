@@ -27,21 +27,19 @@ namespace :scihist do
       access_key_id:     ENV['BACKUP_AWS_ACCESS_KEY_ID'],
       secret_access_key: ENV['BACKUP_AWS_SECRET_ACCESS_KEY']
     )
-    temp_file = Tempfile.new(['temp_database_dump','.sql'])
     puts "Dumping database"
     cmd = TTY::Command.new(output: Rails.logger)
-    time_created = Time.now.utc.to_s
-    cmd.run!('pg_dump', '-w', '--clean', ENV['DATABASE_URL'], :out => temp_file.path )
     puts "Uploading database to s3."
     aws_bucket = Aws::S3::Bucket.new(name: bucket, client: aws_client)
     aws_object = aws_bucket.object(file_path)
-    result = aws_object.upload_file(
-      temp_file.path,
-      storage_class: "STANDARD_IA",
-      metadata: { "backup_time" => time_created}
-    )
-    raise RuntimeError, "Unable to upload the database to S3" unless result
-    puts "Done"
+      result = aws_object.upload_stream(
+        storage_class: "STANDARD_IA",
+        metadata: { "backup_time" => Time.now.utc.to_s}
+      ) do |write_stream|
+      cmd.run('pg_dump', '-w', '--clean', ENV['DATABASE_URL']) do |out, err|
+        write_stream << out if out
+      end
+    end
+    raise RuntimeError.new "This is an exception" unless result
   end
-
 end
