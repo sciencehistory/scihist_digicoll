@@ -28,11 +28,12 @@ namespace :scihist do
       secret_access_key: ENV['BACKUP_AWS_SECRET_ACCESS_KEY']
     )
     puts "Dumping database"
-    cmd = TTY::Command.new(output: Rails.logger, binmode: true)
+    cmd = TTY::Command.new(printer: :null)
     puts "Uploading database to s3."
     aws_bucket = Aws::S3::Bucket.new(name: bucket, client: aws_client)
     aws_object = aws_bucket.object(file_path)
       result = aws_object.upload_stream(
+        content_type: "application/sql; charset=utf-8",
         storage_class: "STANDARD_IA",
         metadata: { "backup_time" => Time.now.utc.to_s}
       ) do |write_stream|
