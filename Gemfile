@@ -71,6 +71,7 @@ gem 'font-awesome-rails', '~> 4.7'
 # temporary kithe indexing branch, for scihist_digicoll indexing branch, do not
 # intend to merge to master like this.
 gem 'kithe', ">= 2.0.0.beta", "< 3", git: "https://github.com/sciencehistory/kithe.git"
+gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 
 gem 'simple_form', "~> 5.0"
 gem "cocoon"
