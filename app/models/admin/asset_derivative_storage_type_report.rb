@@ -2,5 +2,15 @@
 # in the correct buckets.
 
 class Admin::AssetDerivativeStorageTypeReport < ApplicationRecord
-  # Empty for now: all functionality is provided by the DB for now.
+  def incorrectly_published_sample_array
+    return [] if data_for_report['incorrectly_published_sample'].nil?
+    data_for_report['incorrectly_published_sample'].split(",")
+  end
+
+  def incorrect_storage_locations_sample_array
+    return [] if data_for_report['incorrect_storage_locations_sample'].nil?
+    data_for_report['incorrect_storage_locations_sample'].split(",")
+  end
+
 end
+
