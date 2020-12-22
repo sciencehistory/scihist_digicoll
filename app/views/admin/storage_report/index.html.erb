@@ -37,8 +37,8 @@
       <span class="text-danger">
         <i class="fa fa fa-thumbs-down" aria-hidden="true"></i>
       </span>
-      <%= @incorrectly_published_sample_array.map { |id| link_to(id, work_path(id)) }.join(';').html_safe %>
-      <% if @data['incorrectly_published_count'] > @incorrectly_published_sample_array.length  %>
+      <%= @report.incorrectly_published_sample_array.map { |id| link_to(id, work_path(id)) }.join(';').html_safe %>
+      <% if @data['incorrectly_published_count'] > @report.incorrectly_published_sample_array.length  %>
         [...]
       <% end %>
       <br/>(<%= @data['incorrectly_published_count'] %> assets total had problems)
@@ -58,8 +58,8 @@
     <span class="text-danger">
       <i class="fa fa fa-thumbs-down" aria-hidden="true"></i>
     </span>
-    <%= @incorrect_storage_locations_sample_array.map { |id| link_to(id, work_path(id)) }.join(';').html_safe %>
-    <% if @data['incorrect_storage_locations_count'] > @incorrect_storage_locations_sample_array.length  %>
+    <%= @report.incorrect_storage_locations_sample_array.map { |id| link_to(id, work_path(id)) }.join(';').html_safe %>
+    <% if @data['incorrect_storage_locations_count'] > @report.incorrect_storage_locations_sample_array.length  %>
       [...]
     <% end %>
      <br/>(<%= @data['incorrect_storage_locations_count'] %> assets total had problems)
