@@ -39,7 +39,7 @@ RSpec.describe Admin::StorageReportController, :logged_in_user, type: :controlle
         }
         Admin::AssetDerivativeStorageTypeReport.create( data_for_report: data)
       end
-      it "smoke test: can show the report" do
+      it "Shows the report without errors" do
         expect(Admin::AssetDerivativeStorageTypeReport.count).to eq 1
         get :index
         expect(response.code).to eq "200"
