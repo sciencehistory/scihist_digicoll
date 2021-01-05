@@ -81,4 +81,21 @@ RSpec.describe CatalogController, solr: true, type: :controller do
       end
     end
   end
+
+  describe "bad URL params  passed to range_limit -- should not happen under normal use." do
+    describe "range end missing" do
+      let(:out_of_order_range_params) do
+        {
+          "f"=>{"creator_facet"=>["Beckman, Arnold O."]},
+          "range_field"=>"year_facet_isim",
+          "range_start"=>"1931"
+        }
+      end
+
+      it "fails gracefully - no 500 error from blacklight" do
+        get :range_limit, params: out_of_order_range_params
+        expect(response.status).to eq(422) # or some other similar status
+      end
+    end
+  end
 end

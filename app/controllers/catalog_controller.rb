@@ -8,6 +8,8 @@ class CatalogController < ApplicationController
   before_action :redirect_legacy_query_urls, only: :index
   before_action :swap_range_limit_params_if_needed, only: :index
 
+  before_action :fail_if_bad_params, only: :range_limit
+
   include BlacklightRangeLimit::ControllerOverride
   # Blacklight wanted Blacklight::Controller included in ApplicationController,
   # we do it just here instead.
@@ -485,5 +487,14 @@ class CatalogController < ApplicationController
 
     params['range']['year_facet_isim']['begin'] = end_date
     params['range']['year_facet_isim']['end']   = start_date
+  end
+
+  # When a user (in practice, a bot) makes a call directly to /catalog/range_limit
+  # rather than the usual /catalog?q=&range, this bypasses the preprocessing normally
+  # performed by the `before_action` methods for #index, which supplies a
+  # range_start and range_end parameter and ensures they are in the correct order.
+  def fail_if_bad_params
+    # puts params['range_start']
+    # puts params['range_end']
   end
 end
