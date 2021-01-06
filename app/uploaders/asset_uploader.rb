@@ -35,7 +35,7 @@ class AssetUploader < Kithe::AssetUploader
   THUMB_WIDTHS.each_pair do |key, width|
     # Single-width thumbnails
     Attacher.define_derivative("thumb_#{key}", content_type: "image") do |original_file|
-      Kithe::VipsCliImageToJpeg.new(max_width: width, thumbnail_mode: true).call(original_file)
+      Kithe::VipsCliImageToJpegNoProfile.new(max_width: width, thumbnail_mode: true).call(original_file)
     end
 
     Attacher.define_derivative("thumb_#{key}", content_type: "application/pdf") do |original_file|
@@ -44,7 +44,7 @@ class AssetUploader < Kithe::AssetUploader
 
     # Double-width thumbnails
     Attacher.define_derivative("thumb_#{key}_2X", content_type: "image") do |original_file|
-      Kithe::VipsCliImageToJpeg.new(max_width: width * 2, thumbnail_mode: true).call(original_file)
+      Kithe::VipsCliImageToJpegNoProfile.new(max_width: width * 2, thumbnail_mode: true).call(original_file)
     end
 
     Attacher.define_derivative("thumb_#{key}_2X", content_type: "application/pdf") do |original_file|
@@ -55,7 +55,7 @@ class AssetUploader < Kithe::AssetUploader
   # Define download derivatives for TIFF and other image input.
   IMAGE_DOWNLOAD_WIDTHS.each_pair do |key, width|
     Attacher.define_derivative("download_#{key}", content_type: "image") do |original_file|
-      Kithe::VipsCliImageToJpeg.new(max_width: width).call(original_file)
+      Kithe::VipsCliImageToJpegNoProfile.new(max_width: width).call(original_file)
     end
   end
 
@@ -63,7 +63,7 @@ class AssetUploader < Kithe::AssetUploader
   Attacher.define_derivative("download_full", content_type: "image") do |original_file, attacher:|
     # No need to do this if our original is a JPG
     unless attacher.file.content_type == "image/jpeg"
-      Kithe::VipsCliImageToJpeg.new.call(original_file)
+      Kithe::VipsCliImageToJpegNoProfile.new.call(original_file)
     end
   end
 end
