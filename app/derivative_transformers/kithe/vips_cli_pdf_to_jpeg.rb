@@ -69,7 +69,14 @@ module Kithe
     # If you want to add a border later on, you want to pass in a
     # slightly smaller width to accomodate that.
     def thumbnail(width, input, output)
-      profile_normalization_args=["--eprofile", srgb_profile_path, "--delete"]
+      #
+      # Temporarily not using an export ICC profile. Using srgb_profile_path breaks the creation of thumbnails
+      # under VIPS 8.9 if the original file is *not* sRGB, which happens occasionally.
+      # http://manpages.ubuntu.com/manpages/bionic/man1/vipsthumbnail.1.html
+      # This is not meant as a long term solution.
+      # profile_normalization_args=["--eprofile", srgb_profile_path, "--delete"]
+      #
+      profile_normalization_args=["--delete"]
       vips_jpg_params="[Q=#{@jpeg_q },interlace,optimize_coding,strip]"
       args = if width
         # The image will be resized to fit within a box
