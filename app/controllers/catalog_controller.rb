@@ -496,7 +496,7 @@ class CatalogController < ApplicationController
   def screen_params_for_range_limit
     if (params['range_end'].nil?) ||
       (params['range_start'].nil?) ||
-      (params['range_start'].to_i < params['range_end'].to_i)
+      (params['range_start'].to_i > params['range_end'].to_i)
         render plain: "Calls to range_limit should have a range_start " +
           "and a range_end parameter, and range_start " +
           "should be before range_end.", status: 406
