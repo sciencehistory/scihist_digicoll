@@ -82,7 +82,7 @@ RSpec.describe CatalogController, solr: true, type: :controller do
     end
   end
 
-  describe "bad URL params  passed to range_limit -- should not happen under normal use." do
+  describe "bad URL params  passed to range_limit; should not happen under normal use" do
     describe "range end missing" do
       let(:out_of_order_range_params) do
         {
@@ -94,7 +94,7 @@ RSpec.describe CatalogController, solr: true, type: :controller do
 
       it "fails gracefully - no 500 error from blacklight" do
         get :range_limit, params: out_of_order_range_params
-        expect(response.status).to eq(422) # or some other similar status
+        expect(response.status).to eq(406)
       end
     end
   end
