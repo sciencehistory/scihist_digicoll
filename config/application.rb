@@ -14,10 +14,13 @@ require "sprockets/railtie"
 require "rails/test_unit/railtie"
 
 
-
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
+
+# require some things in our local lib we just want always available, even
+# though they aren't auto-loaded for reasons.
+require 'scihist_digicoll/env'
 
 module ScihistDigicoll
   class Application < Rails::Application
