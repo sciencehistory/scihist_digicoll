@@ -9,7 +9,7 @@ ruby "~> #{File.read(File.join(__dir__ , '.ruby-version')).chomp.split('.').slic
 gem 'lockbox'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.0.0'
+gem 'rails', '~> 6.1.1'
 gem 'webpacker', '~> 5.0'
 
 # lock blacklight to current MINOR version. While BL minor version releases
