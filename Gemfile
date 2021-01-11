@@ -118,7 +118,7 @@ gem 'activerecord-postgres_enum', '~> 1.3' # can record postgres enums in schema
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem 'solr_wrapper', "~> 2.1"
+  gem 'solr_wrapper', "~> 3.0", ">= 3.0.1"
 end
 
 group :development do
