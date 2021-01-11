@@ -16,7 +16,7 @@ class WorkFileListShowDecorator < Draper::Decorator
 
   # This is called by works_controller#show.
   def view_template
-    'works/work_file_list_show.html.erb'
+    'works/work_file_list_show'
   end
 
   # Public members, ordered.
