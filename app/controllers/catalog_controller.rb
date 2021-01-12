@@ -7,6 +7,7 @@ class CatalogController < ApplicationController
   before_action :redirect_hash_facet_params, only: :index
   before_action :redirect_legacy_query_urls, only: :index
   before_action :swap_range_limit_params_if_needed, only: :index
+  before_action :catch_bad_request_headers, only: :index
 
   before_action :screen_params_for_range_limit, only: :range_limit
 
@@ -411,6 +412,22 @@ class CatalogController < ApplicationController
     # eg &f=expect%3A%2F%2Fdir
     if params[:f] && !params[:f].respond_to?(:to_hash)
       render plain: "Invalid URL query parameter f=#{params[:f].to_param}", status: 400
+    end
+  end
+
+
+  # Out of the box, Blacklight allows for search results
+  # to be requested as (and served as) JSON.
+  # That feature is not working, and we have no plans to fix it,
+  # but as a courtesy (and to avoid noisy 500 errors) we're providing an actual
+  # 406 error message, consistent with the behavior on other controllers
+  # on our app that don't handle JSON requests.
+  # See discussion at:
+  # https://github.com/sciencehistory/scihist_digicoll/issues/201
+  # https://github.com/sciencehistory/scihist_digicoll/issues/924
+  def catch_bad_request_headers
+    if request.headers["accept"] == "application/json"
+      render plain: "Invalid request header: we do not provide a JSON version of our search results.", status: 406
     end
   end
 
