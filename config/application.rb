@@ -18,15 +18,19 @@ require "rails/test_unit/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-# require some things in our local lib we just want always available, even
-# though they aren't auto-loaded for reasons.
-require 'scihist_digicoll/env'
-
 module ScihistDigicoll
   class Application < Rails::Application
-    config.before_initialize do
-      # require our weird thing(s) in lib/, so non-rails integrated stuff (like whenever crontab)
-      # can get them, but we want Rails app to get them too.
+
+    config.before_configuration do
+      # We have some local classes in ./lib/, not autoloaded. We want them to be
+      # available to our app code, so we require them here in a before_configuration
+      # block, which works to make them available to rails app from early in boot.
+
+      # In ./lib because we need to reference them in boot process where auto-loaded classes
+      # shouldn't be accessed:
+      require 'scihist_digicoll/env'
+
+      # In ./lib because we need non-rails code, whenever crontab, to be able to get to it.
       require 'scihist_digicoll/asset_check_whenever_cron_time'
     end
 
