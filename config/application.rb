@@ -20,19 +20,19 @@ Bundler.require(*Rails.groups)
 
 module ScihistDigicoll
   class Application < Rails::Application
+    # We have some local classes in ./lib/, not autoloaded. We want them to be
+    # available to our app code, so we require them here in a before_configuration
+    # block, which works to make them available to rails app from early in boot.
+    # Because of Rails peculiarities, these need to happen inside class body, not
+    # at top of file.
 
-    config.before_configuration do
-      # We have some local classes in ./lib/, not autoloaded. We want them to be
-      # available to our app code, so we require them here in a before_configuration
-      # block, which works to make them available to rails app from early in boot.
+    # In ./lib because we need to reference them in boot process where auto-loaded classes
+    # shouldn't be accessed:
+    require 'scihist_digicoll/env'
 
-      # In ./lib because we need to reference them in boot process where auto-loaded classes
-      # shouldn't be accessed:
-      require 'scihist_digicoll/env'
-
-      # In ./lib because we need non-rails code, whenever crontab, to be able to get to it.
-      require 'scihist_digicoll/asset_check_whenever_cron_time'
-    end
+    # In ./lib because we need non-rails code, `whenever` config file, to be able to get to it,
+    # but still want to require it for rails app too.
+    require 'scihist_digicoll/asset_check_whenever_cron_time'
 
     # Initialize configuration defaults for originally generated Rails version,
     # or Rails version we have upgraded to and verified for new defaults.
