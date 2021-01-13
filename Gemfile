@@ -71,6 +71,7 @@ gem 'font-awesome-rails', '~> 4.7'
 # temporary kithe indexing branch, for scihist_digicoll indexing branch, do not
 # intend to merge to master like this.
 gem 'kithe', ">= 2.0.0.beta", "< 3", git: "https://github.com/sciencehistory/kithe.git"
+gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 
 gem 'simple_form', "~> 5.0"
 gem "cocoon"
@@ -117,7 +118,7 @@ gem 'activerecord-postgres_enum', '~> 1.3' # can record postgres enums in schema
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem 'solr_wrapper', "~> 2.1"
+  gem 'solr_wrapper', "~> 3.0", ">= 3.0.1"
 end
 
 group :development do
