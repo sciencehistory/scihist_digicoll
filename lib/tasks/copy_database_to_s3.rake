@@ -14,7 +14,6 @@ namespace :scihist do
       REGION=us-west-2
       BUCKET=chf-hydra-backup
       FILE_PATH=PGSql/digcol_backup.sql
-
   """
   task :copy_database_to_s3 => :environment do
     region = ENV['REGION'] || 'us-west-2'
@@ -25,7 +24,6 @@ namespace :scihist do
 
     # Don't overwrite the prod backup with a staging backup.
     abort 'This task should only be used in production' unless ENV['SERVICE_LEVEL'] == 'production'
-
     aws_client = Aws::S3::Client.new(
       region:            region,
       access_key_id:     ENV['BACKUP_AWS_ACCESS_KEY_ID'],
