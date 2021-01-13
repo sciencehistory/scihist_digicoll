@@ -163,3 +163,10 @@ $pagination-active-border-color:    $pagination-active-bg;
 
 $popover-font-size: 1rem;
 $popover-border-radius: 9px;
+
+// This variable is used in Blacklight gem CSS, and
+// causes a mysterious bug we don't entirely understand. We don't use the portion
+// of Blacklight CSS that is sometimes triggering a bug when it's compiled,
+// and we can workaround that bug by setting this variable to false.
+// https://github.com/projectblacklight/blacklight/issues/2414
+$logo-image: false;
