@@ -7,21 +7,25 @@ namespace :scihist do
 
     BACKUP_AWS_ACCESS_KEY_ID=joe \
     BACKUP_AWS_SECRET_ACCESS_KEY=schmo \
-    APP=scihist-digicoll-2 \
+    APP=scihist-digicoll \
     rake scihist:copy_database_to_s3
 
     The s3 destination parameters can also be overridden via ENV variables.:
       REGION=us-west-2
       BUCKET=chf-hydra-backup
-      FILE_PATH=PGSql/digcol_backup_2.sql
+      FILE_PATH=PGSql/digcol_backup.sql
 
   """
   task :copy_database_to_s3 => :environment do
     region = ENV['REGION'] || 'us-west-2'
     bucket = ENV['BUCKET']  || 'chf-hydra-backup'
-    file_path = ENV['FILE_PATH'] || 'PGSql/digcol_backup_2.sql'
+    file_path = ENV['FILE_PATH'] || 'PGSql/digcol_backup.sql'
     abort 'Please supply BACKUP_AWS_ACCESS_KEY_ID' unless ENV['BACKUP_AWS_ACCESS_KEY_ID'].is_a? String
     abort 'Please supply BACKUP_AWS_SECRET_ACCESS_KEY.' unless ENV['BACKUP_AWS_SECRET_ACCESS_KEY'].is_a? String
+
+    # Don't overwrite the prod backup with a staging backup.
+    abort 'This task should only be used in production' unless ENV['SERVICE_LEVEL'] == 'production'
+
     aws_client = Aws::S3::Client.new(
       region:            region,
       access_key_id:     ENV['BACKUP_AWS_ACCESS_KEY_ID'],
