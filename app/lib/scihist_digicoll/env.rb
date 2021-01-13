@@ -201,6 +201,10 @@ module ScihistDigicoll
       end
     }
 
+    # for legacy reasons this is a solr url WITH a collection name on the end, like
+    # https://example.org/solr/collection_name
+    #
+    # See also solr_base_url and solr_collection_name methods which give you the parts
     define_key :solr_url, default: ->{
       # Note the ports used in dev/test must match ports in .solr_wrapper
       # if you want testing to work right and dev instance to talk to solr-wrapper
@@ -212,6 +216,20 @@ module ScihistDigicoll
       end
       # production we have no default, local env has to supply it
     }
+
+    # config solr_url without collection_name, and without trailing slash
+    def self.solr_base_url
+      @solr_base_url ||= begin
+        parsed = URI.parse(lookup!(:solr_url))
+        parsed.path = parsed.path.gsub(%r{/solr/.*\Z}, "/solr")
+        parsed.to_s
+      end
+    end
+
+    # collection_name taken off the end of config solr_url
+    def self.solr_collection_name
+      @solr_collection_name ||= URI.parse(lookup!(:solr_url)).path.split("/").last
+    end
 
     # If false, we will NOT write to solr on changes to Works/Collections/Assets.
     # Useful for when solr is not present in a testing/staging environment, and we
