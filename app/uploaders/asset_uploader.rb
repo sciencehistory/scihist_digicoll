@@ -7,18 +7,6 @@ class AssetUploader < Kithe::AssetUploader
   plugin :kithe_accept_remote_url
 
 
-  USE_ICC_PROFILES = false
-  # Creating image derivatives for grayscale images using an sRGB ICC colorspace file
-  # causes vipsthumbnail to fail with a "Profile incompatible with image" error.
-  # This is just a temporary fix.
-  def self.image_converter_class
-    if USE_ICC_PROFILES
-      Kithe::VipsCliImageToJpeg
-    else
-      Kithe::VipsCliImageToJpegNoIccProfile
-    end
-  end
-
   # Re-set shrine derivatives setting, to put DERIVATIVES on restricted storage
   # if so configured. Only effects initial upload, if setting changes, some code
   # needs to manually move files.
@@ -43,16 +31,11 @@ class AssetUploader < Kithe::AssetUploader
   }
 
 
-
-
-
-
-
  # define thumb derivatives for TIFF, PDF, and other image input: :thumb_mini, :thumb_mini_2X, etc.
   THUMB_WIDTHS.each_pair do |key, width|
     # Single-width thumbnails
     Attacher.define_derivative("thumb_#{key}", content_type: "image") do |original_file|
-      image_converter_class.new(max_width: width, thumbnail_mode: true).call(original_file)
+      Kithe::VipsCliImageToJpeg.new(max_width: width, thumbnail_mode: true).call(original_file)
     end
 
     Attacher.define_derivative("thumb_#{key}", content_type: "application/pdf") do |original_file|
@@ -61,7 +44,7 @@ class AssetUploader < Kithe::AssetUploader
 
     # Double-width thumbnails
     Attacher.define_derivative("thumb_#{key}_2X", content_type: "image") do |original_file|
-      image_converter_class.new(max_width: width * 2, thumbnail_mode: true).call(original_file)
+      Kithe::VipsCliImageToJpeg.new(max_width: width * 2, thumbnail_mode: true).call(original_file)
     end
 
     Attacher.define_derivative("thumb_#{key}_2X", content_type: "application/pdf") do |original_file|
@@ -72,7 +55,7 @@ class AssetUploader < Kithe::AssetUploader
   # Define download derivatives for TIFF and other image input.
   IMAGE_DOWNLOAD_WIDTHS.each_pair do |key, width|
     Attacher.define_derivative("download_#{key}", content_type: "image") do |original_file|
-      image_converter_class.new(max_width: width).call(original_file)
+      Kithe::VipsCliImageToJpeg.new(max_width: width).call(original_file)
     end
   end
 
@@ -80,7 +63,7 @@ class AssetUploader < Kithe::AssetUploader
   Attacher.define_derivative("download_full", content_type: "image") do |original_file, attacher:|
     # No need to do this if our original is a JPG
     unless attacher.file.content_type == "image/jpeg"
-      image_converter_class.new.call(original_file)
+      Kithe::VipsCliImageToJpeg.new.call(original_file)
     end
   end
 end
