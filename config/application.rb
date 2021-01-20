@@ -36,7 +36,7 @@ module ScihistDigicoll
 
     # Initialize configuration defaults for originally generated Rails version,
     # or Rails version we have upgraded to and verified for new defaults.
-    config.load_defaults 6.0
+    config.load_defaults 6.1
 
     config.time_zone = "US/Eastern"
 
