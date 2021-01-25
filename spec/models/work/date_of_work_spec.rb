@@ -10,25 +10,26 @@ describe Work::DateOfWork, type: :model do
     it "requires present start date if qualifier" do
       model = Work::DateOfWork.new(start_qualifier: 'after')
       expect(model.valid?).to be(false)
-      expect(model.errors.find {|i| i == [:start,  "must be of format YYYY[-MM-DD]"]}).to be_present
+
+      expect(model.errors.find {|i| i.full_message == "Start must be of format YYYY[-MM-DD]"}).to be_present
     end
 
     it "requires well-formed start date" do
       model = Work::DateOfWork.new(start: 'bad date')
       expect(model.valid?).to be(false)
-      expect(model.errors.find {|i| i == [:start,  "must be of format YYYY[-MM-DD]"]}).to be_present
+      expect(model.errors.find {|i| i.full_message == "Start must be of format YYYY[-MM-DD]"}).to be_present
     end
 
     it "requires start date to be blank if undated qualifier" do
       model = Work::DateOfWork.new(start_qualifier: 'undated', start: "1990-01-01")
       expect(model.valid?).to be(false)
-      expect(model.errors.find {|i| i == [:start,  "should be left blank if you specify 'undated'."]}).to be_present
+      expect(model.errors.find {|i| i.full_message == "Start should be left blank if you specify 'undated'."}).to be_present
     end
 
     it "requires blank finish if undated start" do
       model = Work::DateOfWork.new(start_qualifier: 'undated', finish: "1990-01-01")
       expect(model.valid?).to be(false)
-      expect(model.errors.find {|i| i == [:finish,  "must be blank if 'undated'"]}).to be_present
+      expect(model.errors.find {|i| i.full_message == "Finish must be blank if 'undated'"}).to be_present
     end
   end
 end
