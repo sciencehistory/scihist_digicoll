@@ -9,7 +9,7 @@ ruby "~> #{File.read(File.join(__dir__ , '.ruby-version')).chomp.split('.').slic
 gem 'lockbox'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.0.0'
+gem 'rails', '~> 6.1.1'
 gem 'webpacker', '~> 5.0'
 
 # lock blacklight to current MINOR version. While BL minor version releases
@@ -70,7 +70,7 @@ gem 'font-awesome-rails', '~> 4.7'
 
 # temporary kithe indexing branch, for scihist_digicoll indexing branch, do not
 # intend to merge to master like this.
-gem 'kithe', ">= 2.0.0.beta", "< 3", git: "https://github.com/sciencehistory/kithe.git"
+gem 'kithe', "~> 2.0", ">= 2.0.2"
 gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 
 gem 'simple_form', "~> 5.0"
