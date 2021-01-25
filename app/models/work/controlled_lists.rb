@@ -97,6 +97,7 @@ class Work
       'Miller, Megan',
       'Muhlin, Jay',
       'Newhouse, Sarah',
+      'Pinkney, Annabel',
       'The University of Pennsylvania Libraries',
       'Tobias, Gregory',
       'Voelkel, James',
