@@ -33,4 +33,14 @@ describe "Featured Topic show page", type: :system, js: false, solr:true, indexa
     expect(page).to have_content("lithographs")
     expect(page).not_to have_content("machinery")
   end
+
+  it "searches, and keeps total count accurate" do
+    visit featured_topic_path(topic_id.to_s.dasherize, q: "artillery")
+
+    expect(page).to have_text("2 items")
+    expect(page).to have_text("1 entry found")
+
+    expect(page).to have_content("artillery")
+    expect(page).not_to have_content("lithographs")
+  end
 end
