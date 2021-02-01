@@ -9,9 +9,11 @@ describe "Featured Topic show page", type: :system, js: false, solr:true, indexa
     ]
   end
 
-  it "smoke tests" do
+  let(:topic_id) { :instruments_and_innovation }
+
+  before do
     fake_definition =  {
-        instruments_and_innovation: {
+        topic_id => {
         title: "Instruments & Innovation",
         genre: ["Scientific apparatus and instruments", "Lithographs"],
         subject: ["Artillery", "Machinery", "Chemical apparatus"],
@@ -20,7 +22,10 @@ describe "Featured Topic show page", type: :system, js: false, solr:true, indexa
       }
     }
     allow(FeaturedTopic).to receive(:definitions).and_return(fake_definition)
-    visit featured_topic_path('instruments-and-innovation')
+  end
+
+  it "smoke tests" do
+    visit featured_topic_path(topic_id.to_s.dasherize)
     expect(page).to have_title "Instruments & Innovation"
     expect(page).to have_selector("h1", text: 'Instruments & Innovation')
     expect(page).to have_selector("p", text: 'Fireballs')
