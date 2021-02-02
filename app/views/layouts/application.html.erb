@@ -52,6 +52,10 @@
   </head>
 
   <body class="<%= render_body_class %> scihist-main-layout">
+    <% if show_ie_unsupported_warning? %>
+      <%= render 'ie_unsupported_warning' %>
+    <% end %>
+
     <% if current_user %>
       <%= render 'front_end_admin_navbar' %>
     <% end %>
