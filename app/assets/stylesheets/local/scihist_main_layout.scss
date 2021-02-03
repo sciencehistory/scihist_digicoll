@@ -41,6 +41,35 @@ body.scihist-main-layout {
       max-width: 40vw;
       .facets {
         padding-bottom: 2rem;
+
+
+        /* Blacklight has CSS for facet collapse that TRIES to be extensibile/customizable,
+           but fails for our use case.  The facet component has a class facet-toggleable-md,
+           which actually means stay collapsed THROUGH bootstrap md breakpoint, so start
+           EXPANDED mode at `(min-width: 992px)` (lg)
+
+          But we want to expand EARLIER, at our own $layout-expand-up, which confusingly
+          is currenlty set to bootstrap `md` break point -- we want to EXPAND starting at `md`
+          breakpoint,  `(min-width: 768px)`, not wait until `lg` breakpoint as BL did.
+
+          BL defines a class facet-toggleable-lg that would do that... but in order to get
+          our HTML to use it, we'd have to override the whole blacklight  _facet_group.html.erb
+          template. Which we'd rather not do.
+
+          So we hackily do some overrides here, sorry but it works.
+
+          See the confusingly meta-programmed SCSS code at:
+            https://github.com/projectblacklight/blacklight/blob/851c68f0621f22c8602aba326c9a1057bff218cf/app/assets/stylesheets/blacklight/_facets.scss#L16-L37
+        */
+        .facets-collapse {
+          display: block !important;
+          width: 100% !important;
+        }
+        .navbar-toggler {
+           display: none !important;
+        }
+
+
       }
     }
   }
