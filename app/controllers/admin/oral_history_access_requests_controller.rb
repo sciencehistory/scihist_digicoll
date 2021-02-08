@@ -29,6 +29,7 @@ class Admin::OralHistoryAccessRequestsController < AdminController
       "Email",
       "Institution",
       "Intended use",
+      "Delivery status"
     ]
 
     scope.find_each do |request|
@@ -41,6 +42,7 @@ class Admin::OralHistoryAccessRequestsController < AdminController
         request.patron_email,
         request.patron_institution,
         request.intended_use,
+        request.delivery_status
       ]
     end
 
