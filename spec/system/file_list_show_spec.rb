@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "work_file_list_show system test", type: :system, js: true do
+describe "work_file_list_show system test", type: :system, js: true, queue_adapter: :test do
   let(:preview_pdf) { create(:asset_with_faked_file, :pdf, published: true) }
   let(:protected_pdf) { create(:asset_with_faked_file, :pdf, published: false, oh_available_by_request: true) }
   let(:protected_mp3) { create(:asset_with_faked_file, :mp3, published: false, oh_available_by_request: true) }
@@ -56,6 +56,8 @@ describe "work_file_list_show system test", type: :system, js: true do
       expect(new_req.delivery_status_automatic?).to be(true)
 
       expect(page).to have_text("We are sending you links to the files you requested.")
+
+      expect(ActionMailer::MailDeliveryJob).to have_been_enqueued
     end
   end
 
@@ -112,6 +114,8 @@ describe "work_file_list_show system test", type: :system, js: true do
       expect(new_req.delivery_status_pending?).to be(true)
 
       # expect(page).to have_text("Your request has been logged.")
+
+      expect(ActionMailer::MailDeliveryJob).to have_been_enqueued
     end
   end
 
