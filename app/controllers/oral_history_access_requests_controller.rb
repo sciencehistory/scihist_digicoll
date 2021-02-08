@@ -17,13 +17,16 @@ class OralHistoryAccessRequestsController < ApplicationController
       if @work.oral_history_content.available_by_request_automatic?
         @oral_history_access_request.update!(delivery_status: "automatic")
 
-        OralHistoryDeliveryJob.
-          new(@oral_history_access_request).
-          perform_now
+        OralHistoryDeliveryMailer.
+          with(request: @oral_history_access_request).
+          oral_history_delivery_email.
+          deliver_later
 
         redirect_to work_path(@work.friendlier_id), notice: "Check your email! We are sending you links to the files you requested."
       else # manual review
         redirect_to work_path(@work.friendlier_id), notice: "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll get back to you."
+
+
       end
     else
      render :new
