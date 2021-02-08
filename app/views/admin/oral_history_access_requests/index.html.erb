@@ -5,7 +5,7 @@
 
 <h2>Download a spreadsheet of requests</h2>
 <div class="border p-2 mb-5">
-  <%= simple_form_for(:report, url: admin_oral_history_access_requests_report_path, method: :post) do |f| %>
+  <%= simple_form_for(:report, url: report_admin_oral_history_access_requests_path, method: :post) do |f| %>
     <div class="row">
       <div class="col">
         <%= f.input :start_date,
