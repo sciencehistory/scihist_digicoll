@@ -25,10 +25,4 @@ class ApplicationController < ActionController::Base
     end
   end
 
-
-  def show_ie_unsupported_warning?
-    # #browser method comes from `browser` gem
-    browser.ie? && !cookies[:ieWarnDismiss]
-  end
-  helper_method :show_ie_unsupported_warning?
 end
