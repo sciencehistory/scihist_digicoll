@@ -35,7 +35,8 @@
         <th class="col-3">Patron</th>
         <th class="col-2">Oral History</th>
         <th class="col-1">OH #</th>
-        <th class="col-5">Intended use</th>
+        <th class="col-4">Intended use</th>
+        <th class="col-1">Delivery Status</th>
       </tr>
     </thead>
 
@@ -51,8 +52,11 @@
           <td class="col-sm-1">
             <%= oh_request.oral_history_number %>
           </td>
-          <td class="col-sm-5">
+          <td class="col-sm-4">
              <%= oh_request.intended_use %>
+          </td>
+          <td class="col-sm-1">
+            <%= oh_request.delivery_status %>
           </td>
         </tr>
       <%end %>
