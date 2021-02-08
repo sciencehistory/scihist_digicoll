@@ -216,11 +216,23 @@ class SolrConfigsetUpdater
     new_name = configset_digest_name
 
     if old_name == new_name
-      # we're good, it's already there
+      # we're good, we are already using this configuration
       return false
     end
 
-    upload(configset_name: new_name)
+    begin
+      upload(configset_name: new_name)
+    rescue SolrConfigsetUpdater::SolrError => e
+      # With our intended logic flow, there shouldn't be any way for it to already exist,
+      # but it happens sometimes, let's just ignore it if it does.
+      if e.message == "The configuration #{new_name} already exists in zookeeper"
+        # no-op
+      else
+        raise e
+      end
+    end
+
+    # set to use new name
     change_config_name(new_name)
     reload
     delete(old_name)
