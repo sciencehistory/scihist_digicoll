@@ -53,6 +53,7 @@ describe "work_file_list_show system test", type: :system, js: true do
       expect(new_req.patron_email).to eq "patron@library.org"
       expect(new_req.patron_institution).to eq "Some Library"
       expect(new_req.intended_use).to eq "Fun & games"
+      expect(new_req.delivery_status_automatic?).to be(true)
 
       expect(page).to have_text("We are sending you links to the files you requested.")
     end
@@ -92,6 +93,8 @@ describe "work_file_list_show system test", type: :system, js: true do
       click_on 'Request Access'
       pr = '#admin_oral_history_access_request_'
 
+      expect(page).to have_text("After submitting a brief form, your request will be reviewed and you will receive an email, usually within 3 business days.")
+
       all("#{pr}patron_name").first.fill_in  with: 'Joe Schmo'
       all("#{pr}patron_email").first.fill_in with: 'patron@library.org'
       all("#{pr}patron_institution").first.fill_in with: 'Some Library'
@@ -106,6 +109,7 @@ describe "work_file_list_show system test", type: :system, js: true do
       expect(new_req.patron_email).to eq "patron@library.org"
       expect(new_req.patron_institution).to eq "Some Library"
       expect(new_req.intended_use).to eq "Fun & games"
+      expect(new_req.delivery_status_pending?).to be(true)
 
       # expect(page).to have_text("Your request has been logged.")
     end
