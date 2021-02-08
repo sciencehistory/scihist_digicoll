@@ -46,7 +46,7 @@
           <td class="col-sm-1"><%= l(oh_request.created_at.to_date, format: :admin) %></td>
           <td class="col-sm-3"><%= oh_request.patron_name %>
             <% if oh_request.patron_institution.present? %>, <%= oh_request.patron_institution %><% end %>
-            (<%= oh_request.patron_email %>)
+            (<%= link_to oh_request.patron_email, "mailto:#{oh_request.patron_email}" %>)
           </td>
           <td class="col-sm-2"><%= link_to(oh_request.work.title.delete_prefix("Oral history interview with "), work_path(oh_request.work.friendlier_id))%></td>
           <td class="col-sm-1">
