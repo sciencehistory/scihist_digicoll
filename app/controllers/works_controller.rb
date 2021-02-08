@@ -29,7 +29,7 @@ class WorksController < ApplicationController
   private
 
   def decorator
-    @decorator ||= if @work.is_oral_history? && @work.oral_history_content&.available_by_request_automatic?
+    @decorator ||= if @work.is_oral_history? && ! @work.oral_history_content&.available_by_request_off?
       WorkFileListShowDecorator.new(@work)
     elsif has_oh_audio_member?
       OhAudioWorkShowDecorator.new(@work)
