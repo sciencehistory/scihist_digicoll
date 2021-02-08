@@ -103,6 +103,7 @@ gem 'html_aware_truncation', '~> 1.0'
 gem "prawn", "~> 2.2" # creating PDFs
 gem "pdf-reader", "~> 2.2" # simple metadata extraction from pdfs
 gem 'rubyzip', '~> 2.0'
+gem 'browser', '~> 5.0' # browser user-agent detection, maybe only for IE-unsupported warning.
 
 
 # Until oai 1.0 is released...
