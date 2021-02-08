@@ -24,9 +24,12 @@ class OralHistoryAccessRequestsController < ApplicationController
 
         redirect_to work_path(@work.friendlier_id), notice: "Check your email! We are sending you links to the files you requested."
       else # manual review
+        OralHistoryRequestNotificationMailer.
+          with(request: @oral_history_access_request).
+          notification_email.
+          deliver_later
+
         redirect_to work_path(@work.friendlier_id), notice: "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll get back to you."
-
-
       end
     else
      render :new
