@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+#
+# Adapted and combined from two sources, bash from skeleton from:
+#    https://gist.github.com/czardoz/b8bb58ad10f4063209bd
+#
+# With improved secret_key_id regexp from https://github.com/awslabs/git-secrets/blob/80230afa8c8bdeac766a0fece36f95ffaa0be778/git-secrets#L233-L242
+#
+# Tries to make sure there is are no AWS keys in a git commit
+
+
+if git rev-parse --verify HEAD >/dev/null 2>&1
+then
+    against=HEAD
+else
+    # Initial commit: diff against an empty tree object
+    EMPTY_TREE=$(git hash-object -t tree /dev/null)
+    against=$EMPTY_TREE
+fi
+
+# Redirect output to stderr.
+exec 1>&2
+
+# Check changed files for an AWS keys
+FILES=$(git diff --cached --name-only $against)
+
+# regexps taken from https://github.com/awslabs/git-secrets/blob/80230afa8c8bdeac766a0fece36f95ffaa0be778/git-secrets#L233-L242
+
+AWS_RE="(AWS|aws|Aws)?_?"
+QUOTE_RE="(\"|')"
+OPT_QUOTE_RE="${QUOTE_RE}?"
+CONNECT_RE="\s*(:|=>|=)\s*"
+
+AWS_SECRET_RE="${OPT_QUOTE_RE}${AWS_RE}(SECRET|secret|Secret)?_?(ACCESS|access|Access)?_?(KEY|key|Key)${OPT_QUOTE_RE}${CONNECT_RE}${OPT_QUOTE_RE}[A-Za-z0-9/\+=]{40}${OPT_QUOTE_RE}"
+
+if [ -n "$FILES" ]; then
+    KEY_ID=$(grep -E --with-filename --line-number '\b[A-Z0-9]{20}\b' $FILES)
+    KEY=$(grep -E --with-filename --line-number $AWS_SECRET_RE $FILES)
+
+    if [ -n "$KEY_ID" ] || [ -n "$KEY" ]; then
+        exec < /dev/tty # Capture input
+        echo "=========== Possible AWS Access Key IDs ==========="
+        echo "${KEY_ID}"
+        echo ""
+
+        echo "=========== Possible AWS Secret Access Keys ==========="
+        echo "${KEY}"
+        echo ""
+
+        while true; do
+            read -p "[AWS Key Check] Possible AWS keys found. Commit files anyway? (y/N) " yn
+            if [ "$yn" = "" ]; then
+                yn='N'
+            fi
+            case $yn in
+                [Yy] ) exit 0;;
+                [Nn] ) exit 1;;
+                * ) echo "Please answer y or n for yes or no.";;
+            esac
+        done
+        exec <&- # Release input
+    fi
+fi
+
+# Normal exit
+exit 0
