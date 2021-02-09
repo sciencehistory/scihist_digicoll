@@ -42,7 +42,7 @@
 
     <tbody>
       <% @oral_history_access_requests.each do |oh_request| %>
-        <tr class="d-flex">
+        <tr class="d-flex" data-request-id="<%= oh_request.id %>">
           <td class="col-sm-1"><%= l(oh_request.created_at.to_date, format: :admin) %></td>
           <td class="col-sm-3"><%= oh_request.patron_name %>
             <% if oh_request.patron_institution.present? %>, <%= oh_request.patron_institution %><% end %>
