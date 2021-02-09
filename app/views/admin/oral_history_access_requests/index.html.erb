@@ -56,7 +56,7 @@
              <%= oh_request.intended_use %>
           </td>
           <td class="col-sm-1">
-            <%= oh_request.delivery_status %>
+            <%= link_to oh_request.delivery_status, admin_oral_history_access_request_path(oh_request) %>
           </td>
         </tr>
       <%end %>

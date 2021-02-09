@@ -166,7 +166,10 @@ Rails.application.routes.draw do
     get "/fixity_report", to: "assets#fixity_report", as: "fixity_report"
     get "/storage_report", to: "storage_report#index", as: "storage_report"
 
-    resources :oral_history_access_requests, only: [:index] do
+    resources :oral_history_access_requests, only: [:index, :show] do
+      member do
+        post "respond"
+      end
       collection do
         post "report", to: "oral_history_access_requests#report"
       end
