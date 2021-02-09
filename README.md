@@ -33,6 +33,15 @@ Start a development Solr instance with `./bin/rake solr:start`.
 
 Run app with `./rails server`, it will be available at `http://localhost:3000`.
 
+### To use githoooks in repo
+
+There's a pre-commit hook in the repo to try and **catch you from accidentally
+commiting AWS keys**, to use, after `git clone` set your local copy to use the
+hooks that come with the repo:
+
+    git config core.hooksPath .githooks
+
+
 ### Local Env
 If you want to change defaults to our config/env variables (managed by `ScihistDigicoll::Env`), you can set them in your shell ENV (via .bash_profile, on the command line, or otherwise), OR you can create a `local_env.yml` or `local_env_development.yml` file. The latter may make sense if you don't want your particular settings to effect the test environment.
 

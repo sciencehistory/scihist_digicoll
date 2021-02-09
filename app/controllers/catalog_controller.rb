@@ -7,6 +7,9 @@ class CatalogController < ApplicationController
   before_action :redirect_hash_facet_params, only: :index
   before_action :redirect_legacy_query_urls, only: :index
   before_action :swap_range_limit_params_if_needed, only: :index
+  before_action :catch_bad_request_headers, only: :index
+
+  before_action :screen_params_for_range_limit, only: :range_limit
 
   include BlacklightRangeLimit::ControllerOverride
   # Blacklight wanted Blacklight::Controller included in ApplicationController,
@@ -413,6 +416,22 @@ class CatalogController < ApplicationController
   end
 
 
+  # Out of the box, Blacklight allows for search results
+  # to be requested as (and served as) JSON.
+  # That feature is not working, and we have no plans to fix it,
+  # but as a courtesy (and to avoid noisy 500 errors) we're providing an actual
+  # 406 error message, consistent with the behavior on other controllers
+  # on our app that don't handle JSON requests.
+  # See discussion at:
+  # https://github.com/sciencehistory/scihist_digicoll/issues/201
+  # https://github.com/sciencehistory/scihist_digicoll/issues/924
+  def catch_bad_request_headers
+    if request.headers["accept"] == "application/json"
+      render plain: "Invalid request header: we do not provide a JSON version of our search results.", status: 406
+    end
+  end
+
+
   LEGACY_SORT_REDIRECTS = {
     "latest_year desc" => "newest_date",
     "earliest_year asc" => "oldest_date",
@@ -485,5 +504,20 @@ class CatalogController < ApplicationController
 
     params['range']['year_facet_isim']['begin'] = end_date
     params['range']['year_facet_isim']['end']   = start_date
+  end
+
+  # When a user (in practice, a bot) makes a call directly to /catalog/range_limit
+  # rather than the usual /catalog?q=&range, this bypasses the preprocessing normally
+  # performed by the `before_action` methods for #index, which supplies a
+  # range_start and range_end parameter and ensures they are in the correct order,
+  # then makes a second request to #range_limit .
+  def screen_params_for_range_limit
+    if (params['range_end'].nil?) ||
+      (params['range_start'].nil?) ||
+      (params['range_start'].to_i > params['range_end'].to_i)
+        render plain: "Calls to range_limit should have a range_start " +
+          "and a range_end parameter, and range_start " +
+          "should be before range_end.", status: 406
+    end
   end
 end
