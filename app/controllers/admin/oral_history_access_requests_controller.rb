@@ -8,6 +8,42 @@ class Admin::OralHistoryAccessRequestsController < AdminController
     where('created_at > ?', 3.months.ago).order(created_at: :desc).to_a
   end
 
+  # GET /admin/oral_history_access_requests/:id
+  def show
+    @oral_history_access_request = Admin::OralHistoryAccessRequest.find(params[:id])
+  end
+
+  # accept or reject
+  # POST /admin/oral_history_access_requests/:id/respond
+  def respond
+    @oral_history_access_request = Admin::OralHistoryAccessRequest.find(params[:id])
+
+    disposition = params[:disposition]
+    custom_message = params.dig(:oral_history_access_request_approval, :message)
+
+    if disposition == "approve"
+      OralHistoryDeliveryMailer.
+        with(request: @oral_history_access_request, custom_message: custom_message).
+        oral_history_delivery_email.
+        deliver_later
+
+      @oral_history_access_request.update!(delivery_status: "approved")
+    else
+      # Let's just use the generic mailer with a text mail?
+      ActionMailer::Base.mail(
+        from: ScihistDigicoll::Env.lookup!(:oral_history_email_address),
+        to: @oral_history_access_request.patron_email,
+        subject: "Science History Institute: Your request",
+        body: custom_message
+      ).deliver_later
+
+      @oral_history_access_request.update!(delivery_status: "rejected")
+    end
+
+    redirect_to admin_oral_history_access_requests_path,
+      notice: "#{disposition.titlecase} email was sent to #{@oral_history_access_request.patron_email} for '#{@oral_history_access_request.work.title}'"
+  end
+
   def report
     scope = Admin::OralHistoryAccessRequest
 
