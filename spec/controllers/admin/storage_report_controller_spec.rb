@@ -26,5 +26,25 @@ RSpec.describe Admin::StorageReportController, :logged_in_user, type: :controlle
         expect(response.code).to eq "200"
       end
     end
+
+    context "a report  in the table with nil values" do
+      let!(:storage_report) do
+        data = {
+            start_time: Time.now.to_s,
+            end_time:   Time.now.to_s,
+            incorrectly_published_sample: nil,
+            incorrectly_published_count: nil,
+            incorrect_storage_locations_sample: nil,
+            incorrect_storage_locations_count: nil,
+        }
+        Admin::AssetDerivativeStorageTypeReport.create( data_for_report: data)
+      end
+      it "Shows the report without errors" do
+        expect(Admin::AssetDerivativeStorageTypeReport.count).to eq 1
+        get :index
+        expect(response.code).to eq "200"
+      end
+    end
+
   end
 end

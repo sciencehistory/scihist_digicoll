@@ -81,4 +81,38 @@ RSpec.describe CatalogController, solr: true, type: :controller do
       end
     end
   end
+
+  describe "bad URL params passed to range_limit (should not happen under normal use)" do
+    let(:no_start_params) do
+      {
+        "range_field"=>"year_facet_isim",
+        "range_start"=>"1931"
+      }
+    end
+    let(:no_end_params) do
+      {
+        "range_field"=>"year_facet_isim",
+        "range_start"=>"1931"
+      }
+    end
+    let(:end_before_start_params) do
+      {
+        "range_field"=>"year_facet_isim",
+        "range_start"=>"1940",
+        "range_end"=>"1930"
+      }
+    end
+    it "throws 406 unless start param is present" do
+      get :range_limit, params: no_start_params
+      expect(response.status).to eq(406)
+    end
+    it "throws 406 unless end param is present" do
+      get :range_limit, params: no_end_params
+      expect(response.status).to eq(406)
+    end
+    it "throws 406 if params out of order" do
+      get :range_limit, params: end_before_start_params
+      expect(response.status).to eq(406)
+    end
+  end
 end

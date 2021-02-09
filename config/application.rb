@@ -14,22 +14,29 @@ require "sprockets/railtie"
 require "rails/test_unit/railtie"
 
 
-
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
 module ScihistDigicoll
   class Application < Rails::Application
-    config.before_initialize do
-      # require our weird thing(s) in lib/, so non-rails integrated stuff (like whenever crontab)
-      # can get them, but we want Rails app to get them too.
-      require 'scihist_digicoll/asset_check_whenever_cron_time'
-    end
+    # We have some local classes in ./lib/, not autoloaded. We want them to be
+    # available to our app code, so we require them here in a before_configuration
+    # block, which works to make them available to rails app from early in boot.
+    # Because of Rails peculiarities, these need to happen inside class body, not
+    # at top of file.
+
+    # In ./lib because we need to reference them in boot process where auto-loaded classes
+    # shouldn't be accessed:
+    require 'scihist_digicoll/env'
+
+    # In ./lib because we need non-rails code, `whenever` config file, to be able to get to it,
+    # but still want to require it for rails app too.
+    require 'scihist_digicoll/asset_check_whenever_cron_time'
 
     # Initialize configuration defaults for originally generated Rails version,
     # or Rails version we have upgraded to and verified for new defaults.
-    config.load_defaults 6.0
+    config.load_defaults 6.1
 
     config.time_zone = "US/Eastern"
 

@@ -12,11 +12,18 @@ require 'open-uri'
 ##
 # Callback is a proc that takes keyword arguments `progress_total` and `progress_i` to receive progress info
 # for reporting to user.
+#
+# DEPENDS ON `pdfunite` command-line utility, which is installed with `poppler` which was a dependency
+# for our vips use anyway.
 class WorkPdfCreator
   PAGE_WIDTH = 612
   PAGE_HEIGHT = 792
 
   DERIVATIVE_SOURCE = "download_medium"
+
+  # for memory consumption, we first make PDFs of at most BATCH_SIZE pages, then
+  # combine them.
+  BATCH_SIZE = 30
 
   attr_reader :work, :callback
 
@@ -37,6 +44,10 @@ class WorkPdfCreator
 
   private
 
+  def total_page_count
+    @total_page_count ||= members_to_include.count
+  end
+
   # published members. pre-loads leaf_representative derivatives.
   # Limited to members whose leaf representative has a download_large derivative
   #
@@ -56,19 +67,39 @@ class WorkPdfCreator
     Tempfile.new(["pdf-#{work.friendlier_id}", ".pdf"]).tap { |t| t.binmode }
   end
 
-  def write_pdf_to_path(filepath)
-    make_prawn_pdf.render_file(filepath)
+  # We're going to make a PDF with prawn of up to 50 pages at a time -- to save memory, since prawn
+  # uses more memory making larger PDFs. Then we will join them all with commandline call-out to
+  # pdfunite (a command-line tool that comes with `poppler`), to the location specified.
+  #
+  # And we'll make sure to clean up any temporary files.
+  def write_pdf_to_path(output_filepath)
+    Dir.mktmpdir("scihist_digicoll_#{self.class.name}") do |working_directory|
+      chunk_filepaths = []
+
+      chunk_index = 0
+      members_to_include.each_slice(BATCH_SIZE) do |members_chunk|
+        chunk_path = File.join(working_directory, "pdf_chunk#{chunk_index}.pdf")
+        chunk_filepaths << chunk_path
+
+        prawn_pdf = make_prawn_pdf(source_members: members_chunk, index_start_offset: chunk_index * BATCH_SIZE)
+        prawn_pdf.render_file(chunk_path)
+        prawn_pdf = nil # try to help ruby GC know to get rid of this
+
+        chunk_index += 1
+      end
+
+      # Now we gotta combine all our separate PDF files into one big one, which pdfunite
+      # can do 'relatively' quickly and memory-efficiently. It also preserves PDF Info Dictionary from first PDF.
+      TTY::Command.new(printer: :null).run("pdfunite", *chunk_filepaths, output_filepath)
+    end
   end
 
-  def write_pdf_to_stream(io, callback: nil)
-    io.write make_prawn_pdf.render
-  end
 
   # you probably want {#write_pdf} instead. We intentionally write to disk
   # to not use huge RAM for our potentially huge PDFs.
   #
   # @returns [Prawn::Document]
-  def make_prawn_pdf
+  def make_prawn_pdf(source_members:, index_start_offset: 0)
     pdf = Prawn::Document.new(
       margin: 0,
       skip_page_creation: true,
@@ -87,11 +118,9 @@ class WorkPdfCreator
       }
     )
 
-    count = members_to_include.count
-
     tmp_files = []
 
-    members_to_include.each_with_index do |member, index|
+    source_members.each_with_index do |member, index|
       embed_width, embed_height = image_embed_dimensions(member.leaf_representative)
       # If they were missing, we do our best
       embed_width ||= PAGE_WIDTH
@@ -106,8 +135,8 @@ class WorkPdfCreator
       pdf.image tmp_file, vposition: :center, position: :center, fit: [embed_width, embed_height]
 
       # We don't really need to update on every page, the front-end is only polling every two seconds anyway
-      if callback && (index % 3 == 0 || index == count - 1)
-        callback.call(progress_total: count, progress_i: index + 1)
+      if callback && (index % 3 == 0 || index >= total_page_count - 1)
+        callback.call(progress_total: total_page_count, progress_i: index_start_offset + index + 1)
       end
     end
 
