@@ -26,7 +26,7 @@ describe RightsIconDisplay, type: :decorator do
       link = rendered.at_xpath("./a")
       expect(link).to be_present
 
-      expect(link["class"].split(" ")).to match(['rights-statement', 'large'])
+      expect(link["class"].split(" ")).to match(['rights-statement', 'large', 'rights-statements-org'])
 
       expect(link["href"]).to eq(work.rights)
       expect(link).to have_selector("img.rights-statement-logo[src*='rightsstatements-NoC.Icon-Only.dark']")
@@ -43,12 +43,45 @@ describe RightsIconDisplay, type: :decorator do
       link = rendered.at_xpath("./a")
       expect(link).to be_present
 
-      expect(link["class"].split(" ")).to match(['rights-statement', 'dropdown-item'])
+      expect(link["class"].split(" ")).to match(['rights-statement', 'dropdown-item', 'rights-statements-org'])
 
       expect(link["href"]).to eq(work.rights)
       expect(link).to have_selector("img.rights-statement-logo[src*='rightsstatements-NoC.Icon-Only.dark']")
 
       expect(link.inner_html).to include("Public Domain")
+    end
+  end
+
+  describe "CC license" do
+    let(:work) { build(:work, rights: "https://creativecommons.org/licenses/by-nc-nd/4.0/")}
+    let(:rendered) { Nokogiri::HTML.fragment( RightsIconDisplay.new(work).display ) }
+
+    it "renders" do
+      link = rendered.at_xpath("./a")
+      expect(link).to be_present
+
+      expect(link["class"].split(" ")).to match(['rights-statement', 'large', 'creative-commons-org'])
+
+      expect(link["href"]).to eq(work.rights)
+      expect(link).to have_selector("img.rights-statement-logo[src*='cc']")
+
+      expect(link.inner_html).to include("This work is licensed under a Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.")
+    end
+
+    context "dropdown-item mode" do
+      let(:rendered) { Nokogiri::HTML.fragment( RightsIconDisplay.new(work, mode: :dropdown_item).display ) }
+
+      it "renders" do
+        link = rendered.at_xpath("./a")
+        expect(link).to be_present
+
+        expect(link["class"].split(" ")).to match(['rights-statement', 'dropdown-item', 'creative-commons-org'])
+
+        expect(link["href"]).to eq(work.rights)
+        expect(link).to have_selector("img.rights-statement-logo[src*='cc']")
+
+        expect(link.inner_html).to include("BY-NC-ND 4.0")
+      end
     end
   end
 
