@@ -76,3 +76,16 @@ terms:
     active: true
     category: no_copyright
     short_label_html: Public<br>Domain
+
+# We now support CreativeCommons licenses as "rights terms" too, they have
+# have `category: creative_commons`, and may have slightly different attributes
+# than rightsstatement ones above.
+#
+# should still have label and short_label_html (will not actually include a <br> though)
+#
+
+  - id: https://creativecommons.org/licenses/by-nc-nd/4.0/
+    label: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.
+    category: creative_commons
+    active: true
+    short_label_html: BY-NC-ND 4.0

@@ -22,7 +22,10 @@ class RightsIconDisplay < ViewModel
   def display
     return "" unless has_rights_statement?
 
-    link_to(rights_url, target: "_blank", class: ['rights-statement', mode.to_s.dasherize]) do
+    # our CSS does different things for rightsstatement-style and creative_commons style.
+    layout_class = rights_category == "creative_commons" ? "creative-commons-org" : "rights-statements-org"
+
+    link_to(rights_url, target: "_blank", class: ['rights-statement', mode.to_s.dasherize, layout_class]) do
       image_tag(rights_icon, class: "rights-statement-logo") +
       " ".html_safe +
       content_tag("span", rights_icon_label, class: "rights-statement-label")
@@ -45,18 +48,27 @@ class RightsIconDisplay < ViewModel
   def rights_icon_label
     if mode == :dropdown_item
       (RightsTerms.short_label_inline_for(work.rights) || "").html_safe
+    elsif rights_category == "creative_commons"
+      # special long form
+      "This work is licensed under a #{RightsTerms.label_for(work.rights)}"
     else
       (RightsTerms.short_label_html_for(work.rights) || "").html_safe
     end
   end
 
+  def rights_category
+    RightsTerms.category_for(work.rights)
+  end
+
   # One of three SVG icons, depending on category, as recorded in our local list.
   def rights_icon
-    case RightsTerms.category_for(work.rights)
+    case rights_category
       when "in_copyright"
         "rightsstatements-InC.Icon-Only.dark.svg"
       when "no_copyright"
         "rightsstatements-NoC.Icon-Only.dark.svg"
+      when "creative_commons"
+        "cc.svg"
       else
         "rightsstatements-Other.Icon-Only.dark.svg"
       end

@@ -14,13 +14,26 @@
     margin-right: 0.5em;
     margin-top: 0.25rem;
   }
-  .rights-statement-label {
+
+  // for rightsstatements.org style, we have a few words, and we make them
+  // into a logo lockup. Not for creative-commons-org style.
+  &.rights-statements-org .rights-statement-label {
     display: inline-block;
     font-size: 1.1875rem;
     line-height: 1.375rem;
     text-transform: uppercase;
     letter-spacing: $small-caps-letter-spacing;
     font-weight: $semi-bold-weight;
+  }
+
+  &.creative-commons-org  {
+    line-height: $paragraph-line-height;
+    .rights-statement-label {
+      margin-top: 0.25rem;
+      a {
+        display: inline;
+      }
+    }
   }
 }
 
