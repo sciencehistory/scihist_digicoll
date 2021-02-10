@@ -55,7 +55,7 @@ describe "work_file_list_show system test", type: :system, js: true, queue_adapt
       expect(new_req.intended_use).to eq "Fun & games"
       expect(new_req.delivery_status_automatic?).to be(true)
 
-      expect(page).to have_text("We are sending you links to the files you requested.")
+      expect(page).to have_text("We are sending you links to the files you requested")
 
       expect(ActionMailer::MailDeliveryJob).to have_been_enqueued
     end
