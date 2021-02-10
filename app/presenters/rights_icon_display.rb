@@ -22,10 +22,27 @@ class RightsIconDisplay < ViewModel
   def display
     return "" unless has_rights_statement?
 
-    # our CSS does different things for rightsstatement-style and creative_commons style.
-    layout_class = rights_category == "creative_commons" ? "creative-commons-org" : "rights-statements-org"
+    if mode == :large
+      display_large
+    else
+      display_dropdown_item
+    end
+  end
 
+  # one line, all a link
+  def display_dropdown_item
     link_to(rights_url, target: "_blank", class: ['rights-statement', mode.to_s.dasherize, layout_class]) do
+      image_tag(rights_icon, class: "rights-statement-logo") +
+      " ".html_safe +
+      content_tag("span",
+                  (RightsTerms.short_label_inline_for(work.rights) || "").html_safe,
+                  class: "rights-statement-label")
+    end
+  end
+
+  # a sort of logotype lock-up, with an internal link, so we can put a "rel: license" on it for CC.
+  def display_large
+    content_tag("div", class: ['rights-statement', mode.to_s.dasherize, layout_class]) do
       image_tag(rights_icon, class: "rights-statement-logo") +
       " ".html_safe +
       content_tag("span", rights_icon_label, class: "rights-statement-label")
@@ -33,6 +50,12 @@ class RightsIconDisplay < ViewModel
   end
 
   private
+
+  # our CSS does different things for rightsstatement-style and creative_commons style, we want to
+  # give it a class so we can.
+  def layout_class
+    rights_category == "creative_commons" ? "creative-commons-org" : "rights-statements-org"
+  end
 
   def has_rights_statement?
     work.rights.present?
@@ -46,13 +69,11 @@ class RightsIconDisplay < ViewModel
   # HTML label (becuase it includes a <br> at the right point) for the rights statement,
   # from our local metadata, adapted from rightstatements.org
   def rights_icon_label
-    if mode == :dropdown_item
-      (RightsTerms.short_label_inline_for(work.rights) || "").html_safe
-    elsif rights_category == "creative_commons"
+    if rights_category == "creative_commons"
       # special long form
-      "This work is licensed under a #{RightsTerms.label_for(work.rights)}"
+      "This work is licensed under a ".html_safe + link_to(RightsTerms.label_for(work.rights), rights_url, target: "_blank", rel: "license")
     else
-      (RightsTerms.short_label_html_for(work.rights) || "").html_safe
+      link_to((RightsTerms.short_label_html_for(work.rights) || "").html_safe, rights_url, target: "_blank")
     end
   end
 
