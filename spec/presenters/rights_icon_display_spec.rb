@@ -36,22 +36,37 @@ describe RightsIconDisplay, type: :decorator do
       expect(link["href"]).to eq(work.rights)
       expect(link.inner_html).to include("Public<br>Domain")
     end
+
+    describe "dropdown-item mode" do
+      let(:work) { build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")}
+      let(:rendered) { Nokogiri::HTML.fragment( RightsIconDisplay.new(work, mode: :dropdown_item).display ) }
+
+      it "renders" do
+        link = rendered.at_xpath("./a")
+        expect(link).to be_present
+
+        expect(link["class"].split(" ")).to match(['rights-statement', 'dropdown-item', 'rights-statements-org'])
+
+        expect(link["href"]).to eq(work.rights)
+        expect(link).to have_selector("img.rights-statement-logo[src*='rightsstatements-NoC.Icon-Only.dark']")
+
+        expect(link.inner_html).to include("Public Domain")
+      end
+    end
   end
 
-  describe "dropdown-item mode" do
-    let(:work) { build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")}
-    let(:rendered) { Nokogiri::HTML.fragment( RightsIconDisplay.new(work, mode: :dropdown_item).display ) }
+  describe "needs alt attr in large render" do
+    let(:work) { build(:work, rights: "http://rightsstatements.org/vocab/InC-EDU/1.0/")}
+    let(:rendered) { Nokogiri::HTML.fragment( RightsIconDisplay.new(work, mode: :large).display ) }
 
     it "renders" do
-      link = rendered.at_xpath("./a")
-      expect(link).to be_present
+      container = rendered.at_css("div.rights-statement")
+      expect(container).to be_present
 
-      expect(link["class"].split(" ")).to match(['rights-statement', 'dropdown-item', 'rights-statements-org'])
+      expect(container.inner_text.strip).to eq("EducationalUse Permitted") # weird test value cause there's a BR tag in there that inner_text eliminates
 
-      expect(link["href"]).to eq(work.rights)
-      expect(link).to have_selector("img.rights-statement-logo[src*='rightsstatements-NoC.Icon-Only.dark']")
-
-      expect(link.inner_html).to include("Public Domain")
+      img = container.at_css("img")
+      expect(img["alt"]).to eq("In Copyright")
     end
   end
 

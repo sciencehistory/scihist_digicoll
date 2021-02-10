@@ -32,7 +32,7 @@ class RightsIconDisplay < ViewModel
   # one line, all a link
   def display_dropdown_item
     link_to(rights_url, target: "_blank", class: ['rights-statement', mode.to_s.dasherize, layout_class]) do
-      image_tag(rights_icon, class: "rights-statement-logo") +
+      image_tag(rights_icon, class: "rights-statement-logo", alt: RightsTerms.icon_alt_for(work.rights)) +
       " ".html_safe +
       content_tag("span",
                   (RightsTerms.short_label_inline_for(work.rights) || "").html_safe,
@@ -43,7 +43,7 @@ class RightsIconDisplay < ViewModel
   # a sort of logotype lock-up, with an internal link, so we can put a "rel: license" on it for CC.
   def display_large
     content_tag("div", class: ['rights-statement', mode.to_s.dasherize, layout_class]) do
-      image_tag(rights_icon, class: "rights-statement-logo") +
+      image_tag(rights_icon, class: "rights-statement-logo", alt: RightsTerms.icon_alt_for(work.rights)) +
       " ".html_safe +
       content_tag("span", rights_icon_label, class: "rights-statement-label")
     end
