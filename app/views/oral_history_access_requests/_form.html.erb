@@ -26,7 +26,7 @@
     <% end %>
 
     <p class="sans-serif mb-0">
-      If you have any questions about transcripts, recordings, or usage permissions, please <a href="https://www.sciencehistory.org/center-for-oral-history/contact">contact the Center for Oral History</a>.
+      If you have any questions about transcripts, recordings, or usage permissions, please contact the Center for Oral History at <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email)}" %>.
     </p>
   </div>
 
