@@ -8,6 +8,9 @@
 # "category" is used in our public UI to determine correct icon.
 # I think "active" may currently be ignored.
 #
+# icon_alt is important for accessibility when the icon conveys part of total label that
+# is missing from the short_label_html. :(
+#
 # Order matters, in that order listed is order they will show up in edit form select.
 
 terms:
@@ -22,48 +25,56 @@ terms:
     active: true
     category: in_copyright
     short_label_html: EU Orphan<br>Work
+    icon_alt: "In Copyright"
 
   - id: http://rightsstatements.org/vocab/InC-EDU/1.0/
     label: In Copyright - Educational Use Permitted
     active: true
     category: in_copyright
     short_label_html: Educational<br>Use Permitted
+    icon_alt: "In Copyright"
 
   - id: http://rightsstatements.org/vocab/InC-NC/1.0/
     label: In Copyright - Non-Commercial Use Permitted
     active: true
     category: in_copyright
     short_label_html: Non-Commercial<br>Use Permitted
+    icon_alt: "In Copyright"
 
   - id: http://rightsstatements.org/vocab/InC-RUU/1.0/
     label: In Copyright - Rights-holder(s) Unlocatable or Unidentifiable
     active: true
     category: in_copyright
     short_label_html: Unknown<br>Rightsholder
+    icon_alt: "In Copyright"
 
   - id: http://rightsstatements.org/vocab/NoC-CR/1.0/
     label: No Copyright - Contractual Restrictions
     active: true
     category: no_copyright
     short_label_html: Contractual<br>Restrictions
+    icon_alt: "No Copyright"
 
   - id: http://rightsstatements.org/vocab/NoC-NC/1.0/
     label: No Copyright - Non-Commercial Use Only
     active: true
     category: no_copyright
     short_label_html: Non-Commercial<br>Use Only
+    icon_alt: "No Copyright"
 
   - id: http://rightsstatements.org/vocab/NoC-OKLR/1.0/
     label: No Copyright - Other Known Legal Restrictions
     active: true
     category: no_copyright
     short_label_html: Other Legal<br>Restrictions
+    icon_alt: "No Copyright"
 
   - id: http://rightsstatements.org/vocab/NoC-US/1.0/
     label: No Copyright - United States
     active: true
     category: no_copyright
     short_label_html: In the<br>United States
+    icon_alt: "No Copyright"
 
   - id: http://rightsstatements.org/vocab/NKC/1.0/
     label: No Known Copyright
@@ -76,3 +87,18 @@ terms:
     active: true
     category: no_copyright
     short_label_html: Public<br>Domain
+
+# We now support CreativeCommons licenses as "rights terms" too, they have
+# have `category: creative_commons`, and may have slightly different attributes
+# than rightsstatement ones above.
+#
+# should still have label and short_label_html (will not actually include a <br> though)
+#
+# The "pictographs" attribute is an array of names of images, found in ./app/assets/images/cc_pictographs
+
+  - id: https://creativecommons.org/licenses/by-nc-nd/4.0/
+    label: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.
+    category: creative_commons
+    active: true
+    short_label_html: BY-NC-ND 4.0
+    pictographs: ['by.svg', 'nc.svg', 'nd.svg']
