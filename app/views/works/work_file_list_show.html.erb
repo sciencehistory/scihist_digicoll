@@ -17,7 +17,6 @@
   </div>
 
   <div class="show-file-list">
-
     <% if decorator.available_by_request_assets.present? %>
       <h2 class="attribute-sub-head mt-0">Access this interview</h2>
       <div class="show-sub-head-body request-section">
@@ -34,11 +33,23 @@
             <%= decorator.multiple_files? ? "are" : "is" %>
             <%= decorator.available_by_request_summary %>.
           </p>
-          <p class="text-brand-serif">After submitting a brief form, you will receive immediate access to
-            <%= decorator.multiple_files? ? "these files" : "this file" %>.
-            If you have any questions about transcripts, recordings, or usage permissions, please
-            <%= link_to "contact the Center for Oral History", "https://www.sciencehistory.org/center-for-oral-history/contact" %>.
-          </p>
+
+
+          <% if @work.oral_history_content.available_by_request_automatic? %>
+            <p class="alert alert-primary text-brand-serif">After submitting a brief form, you will receive immediate access to
+              <%= decorator.multiple_files? ? "these files" : "this file" %>.
+              If you have any questions about transcripts, recordings, or usage permissions, please
+              <%= link_to "contact the Center for Oral History", "https://www.sciencehistory.org/center-for-oral-history/contact" %>.
+            </p>
+          <% else # manual review %>
+            <div class="alert alert-primary">
+              <p class="text-brand-serif">After submitting a brief form, your request will be reviewed and you will receive an email, usually within 3 business days. Usage may be subject to restrictions by agreement with interviewee.</p>
+
+              <p> If you have any questions about transcripts, recordings, or usage permissions, please
+                <%= link_to "contact the Center for Oral History", "https://www.sciencehistory.org/center-for-oral-history/contact" %>.
+              </p>
+            </div>
+          <% end %>
         </div>
       </div>
     <% end %>

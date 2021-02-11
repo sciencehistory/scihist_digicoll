@@ -165,9 +165,15 @@ Rails.application.routes.draw do
     post "/asset_files/:asset_id/check_fixity", to: "assets#check_fixity", as: "check_fixity"
     get "/fixity_report", to: "assets#fixity_report", as: "fixity_report"
     get "/storage_report", to: "storage_report#index", as: "storage_report"
-    get "oral_history_access_requests", to: "oral_history_access_requests#index", as: "oral_history_access_requests"
-    post "oral_history_access_requests_report", to: "oral_history_access_requests#report", as: "oral_history_access_requests_report"
 
+    resources :oral_history_access_requests, only: [:index, :show] do
+      member do
+        post "respond"
+      end
+      collection do
+        post "report", to: "oral_history_access_requests#report"
+      end
+    end
 
     get "/batch_create", to: "batch_create#new", as: "batch_create" # step 1
     post "/batch_create", to: "batch_create#add_files" # step 2

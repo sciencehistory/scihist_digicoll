@@ -5,6 +5,8 @@ class Admin::OralHistoryAccessRequest < ApplicationRecord
   validates :patron_email, presence: true
   validates :intended_use, presence: true
 
+  enum delivery_status: %w{pending automatic approved rejected}.map {|v| [v, v]}.to_h, _prefix: :delivery_status
+
   def oral_history_number
     return nil if self.work.external_id.nil?
     oh_id =  self.work.external_id.find {|id| id.attributes["category"] == "interview"}

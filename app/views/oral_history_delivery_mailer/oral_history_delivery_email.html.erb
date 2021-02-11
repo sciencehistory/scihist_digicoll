@@ -1,5 +1,10 @@
 <p>Dear <%= mailer.patron_name %>,</p>
 <p>Thanks for your recent visit to the <%= link_to "Science History Institute’s digital collections website", mailer.hostname %>. On <%=mailer.created_at.strftime("%m/%d/%Y")%>, you requested access to the files for <%= link_to mailer.work.title, work_url(mailer.work.friendlier_id) %>. The files are ready for you to download.</p>
+
+<% if mailer.custom_message.present? %>
+  <%= simple_format mailer.custom_message %>
+<% end %>
+
 <h2>Files for <%= link_to mailer.work.title, work_url(mailer.work.friendlier_id) %>:</h2>
 <ul>
 

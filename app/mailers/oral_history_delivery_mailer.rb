@@ -1,4 +1,6 @@
 class OralHistoryDeliveryMailer < ApplicationMailer
+  default from: ScihistDigicoll::Env.lookup!(:oral_history_email_address)
+
 
   def oral_history_delivery_email
     raise ArgumentError.new("Required params[:request] missing") unless request.present?
@@ -8,6 +10,11 @@ class OralHistoryDeliveryMailer < ApplicationMailer
 
   def request
     @request ||= params[:request]
+  end
+
+  # warning `message` is a reserved method and param name for ActionMailer, don't override it!
+  def custom_message
+    @custom_message ||= params[:custom_message]
   end
 
   def to_address
