@@ -14,10 +14,23 @@ class OralHistoryAccessRequestsController < ApplicationController
     @oral_history_access_request = Admin::OralHistoryAccessRequest.new(oral_history_access_request_params)
     @oral_history_access_request.work = @work
     if @oral_history_access_request.save
-      OralHistoryDeliveryJob.
-        new(@oral_history_access_request).
-        perform_now
-      redirect_to work_path(@work.friendlier_id), notice: "Check your email! We are sending you links to the files you requested."
+      if @work.oral_history_content.available_by_request_automatic?
+        @oral_history_access_request.update!(delivery_status: "automatic")
+
+        OralHistoryDeliveryMailer.
+          with(request: @oral_history_access_request).
+          oral_history_delivery_email.
+          deliver_later
+
+        redirect_to work_path(@work.friendlier_id), notice: "Check your email! We are sending you links to the files you requested."
+      else # manual review
+        OralHistoryRequestNotificationMailer.
+          with(request: @oral_history_access_request).
+          notification_email.
+          deliver_later
+
+        redirect_to work_path(@work.friendlier_id), notice: "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll get back to you."
+      end
     else
      render :new
     end

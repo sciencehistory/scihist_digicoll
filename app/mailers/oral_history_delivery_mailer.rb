@@ -12,6 +12,11 @@ class OralHistoryDeliveryMailer < ApplicationMailer
     @request ||= params[:request]
   end
 
+  # warning `message` is a reserved method and param name for ActionMailer, don't override it!
+  def custom_message
+    @custom_message ||= params[:custom_message]
+  end
+
   def to_address
     request.patron_email
   end
