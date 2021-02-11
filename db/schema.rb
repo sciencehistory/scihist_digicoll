@@ -166,6 +166,7 @@ ActiveRecord::Schema.define(version: 2021_02_08_204049) do
     t.text "notes"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "delivery_status", default: "pending"
     t.index ["work_id"], name: "index_oral_history_access_requests_on_work_id"
   end
 
