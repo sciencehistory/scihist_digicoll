@@ -83,7 +83,13 @@ describe RightsIconDisplay, type: :decorator do
 
       expect(container.inner_text).to include("This work is licensed under a Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.")
 
-      link = container.at_css("a")
+      images = container.css("img")
+      expect(images.find {|i| i['src'].include?("/cc-")}).to be_present
+      expect(images.find {|i| i['src'].include?("/by-")}).to be_present
+      expect(images.find {|i| i['src'].include?("/nc-")}).to be_present
+      expect(images.find {|i| i['src'].include?("/nd-")}).to be_present
+
+      link = container.at_css(".rights-statement-label a")
       expect(link).to be_present
       expect(link["href"]).to eq(work.rights)
       expect(link.inner_html).to include("Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.")
