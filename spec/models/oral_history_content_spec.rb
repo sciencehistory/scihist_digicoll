@@ -43,6 +43,40 @@ describe OralHistoryContent do
     end
   end
 
+  describe "interviewee metadata" do
+    it "can be set" do
+      date =  [
+        {date: "1923", type: 'birth', place: 'poland'},
+        {date: "2223", type: 'death', place: 'finland'}
+      ]
+      school = [
+        {date: "1958", institution: 'Columbia University', degree: 'BA', discipline: 'Chemistry'},
+        {date: "1960", institution: 'Harvard University',  degree: 'MS', discipline: 'Physics'}
+      ]
+      job = [
+        {start: "1962", end: "1965", institution: 'Harvard University',  role: 'Junior Fellow, Society of Fellows'},
+        {start: "1965", end: "1968",  institution: 'Cornell University', role: 'Associate Professor, Chemistry'}
+      ]
+      honor =  [
+        {date: "1981", honor: 'Nobel Prize in Chemistry'},
+        {date: "1998", honor: 'Corresponding Member, Nordrhein-Westfälische Academy of Sciences'}
+      ]
+
+      oral_history_content.interviewee_date = date
+      oral_history_content.interviewee_school = school
+      oral_history_content.interviewee_job = job
+      oral_history_content.interviewee_honor =  honor
+
+      work.save!
+      work.reload
+
+      expect(oral_history_content.interviewee_date.to_json ).to eq(date.to_json)
+      expect(oral_history_content.interviewee_school.to_json).to eq(school.to_json)
+      expect(oral_history_content.interviewee_job.to_json   ).to eq(job.to_json)
+      expect(oral_history_content.interviewee_honor.to_json ).to eq(honor.to_json)
+
+    end
+  end
 
   describe "combined_audio_derivatives_job_status" do
     it "sets the date when you change the status" do

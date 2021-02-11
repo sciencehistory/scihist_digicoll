@@ -36,7 +36,9 @@
 # associated works, and using kithe techniques to control auto-indexing: batch-updating,
 # or turning off auto-updating.
 #
+require 'attr_json'
 class OralHistoryContent < ApplicationRecord
+  include AttrJson::Record
   self.table_name = "oral_history_content"
 
   belongs_to :work, inverse_of: :oral_history_content
@@ -50,6 +52,13 @@ class OralHistoryContent < ApplicationRecord
     failed:    'failed',
     succeeded: 'succeeded'
   }
+
+
+  #birth and death date and place. Not sure this is the right name for this object, but there you have it.
+  attr_json :interviewee_date,    OralHistoryContent::IntervieweeDate.to_type,   array: true, default: -> {[]}
+  attr_json :interviewee_school,  OralHistoryContent::IntervieweeSchool.to_type, array: true, default: -> {[]}
+  attr_json :interviewee_job,     OralHistoryContent::IntervieweeJob.to_type,    array: true, default: -> {[]}
+  attr_json :interviewee_honor,   OralHistoryContent::IntervieweeHonor.to_type,  array: true, default: -> {[]}
 
   # Some assets marked non-published in this work are still available by request. That feature needs to be turned
   # on here at the work level, in one of two modes:
