@@ -19,6 +19,12 @@
     <p class="sans-serif">We consider your personal information confidential. We will only use it for our records, and we will not share it with anyone outside the Science History Institute.
     </p>
 
+    <% if @work.oral_history_content.available_by_request_manual_review? %>
+      <p class="sans-serif">
+        After submitting a brief form, your request will be reviewed and you will receive an email, usually within 3 business days. Usage may subject to restrictions by agreement with interviewee.
+      </p>
+    <% end %>
+
     <p class="sans-serif mb-0">
       If you have any questions about transcripts, recordings, or usage permissions, please <a href="https://www.sciencehistory.org/center-for-oral-history/contact">contact the Center for Oral History</a>.
     </p>
