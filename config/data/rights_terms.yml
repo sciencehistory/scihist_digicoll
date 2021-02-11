@@ -94,9 +94,11 @@ terms:
 #
 # should still have label and short_label_html (will not actually include a <br> though)
 #
+# The "pictographs" attribute is an array of names of images, found in ./app/assets/images/cc_pictographs
 
   - id: https://creativecommons.org/licenses/by-nc-nd/4.0/
     label: Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.
     category: creative_commons
     active: true
     short_label_html: BY-NC-ND 4.0
+    pictographs: ['by.svg', 'nc.svg', 'nd.svg']

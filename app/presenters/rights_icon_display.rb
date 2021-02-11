@@ -32,7 +32,7 @@ class RightsIconDisplay < ViewModel
   # one line, all a link
   def display_dropdown_item
     link_to(rights_url, target: "_blank", class: ['rights-statement', mode.to_s.dasherize, layout_class]) do
-      image_tag(rights_icon, class: "rights-statement-logo", alt: RightsTerms.label_for(work.rights)) +
+      image_tag(rights_category_icon_src, class: "rights-statement-logo", alt: RightsTerms.label_for(work.rights)) +
       " ".html_safe +
       content_tag("span",
                   (RightsTerms.short_label_inline_for(work.rights) || "").html_safe,
@@ -43,7 +43,7 @@ class RightsIconDisplay < ViewModel
   # a sort of logotype lock-up, with an internal link, so we can put a "rel: license" on it for CC.
   def display_large
     content_tag("div", class: ['rights-statement', mode.to_s.dasherize, layout_class]) do
-      image_tag(rights_icon, class: "rights-statement-logo", alt: RightsTerms.icon_alt_for(work.rights)) +
+      large_graphical_element +
       " ".html_safe +
       content_tag("span", rights_icon_label, class: "rights-statement-label")
     end
@@ -77,19 +77,36 @@ class RightsIconDisplay < ViewModel
     end
   end
 
+  def large_graphical_element
+    if rights_category == "creative_commons"
+      images =  [image_tag(rights_category_icon_src, class: "rights-statement-logo", alt: "")]
+
+      (RightsTerms.metadata_for(work.rights)["pictographs"] || []).each do |pictograph_image|
+        images << image_tag("cc_pictographs/#{pictograph_image}", class: "rights-statement-logo", alt: "")
+      end
+
+      link_to rights_url, target: "_blank", alt: RightsTerms.label_for(work.rights), title: RightsTerms.label_for(work.rights) do
+        safe_join images
+      end
+    else
+      # just the category icon
+      image_tag(rights_category_icon_src, class: "rights-statement-logo", alt: RightsTerms.icon_alt_for(work.rights))
+    end
+  end
+
   def rights_category
     RightsTerms.category_for(work.rights)
   end
 
   # One of three SVG icons, depending on category, as recorded in our local list.
-  def rights_icon
+  def rights_category_icon_src
     case rights_category
       when "in_copyright"
         "rightsstatements-InC.Icon-Only.dark.svg"
       when "no_copyright"
         "rightsstatements-NoC.Icon-Only.dark.svg"
       when "creative_commons"
-        "cc.svg"
+        "cc_pictographs/cc.svg"
       else
         "rightsstatements-Other.Icon-Only.dark.svg"
       end
