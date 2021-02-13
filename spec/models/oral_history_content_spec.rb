@@ -46,34 +46,37 @@ describe OralHistoryContent do
   describe "interviewee metadata" do
     it "can be set" do
       date =  [
-        {date: "1923", type: 'birth', place: 'poland'},
-        {date: "2223", type: 'death', place: 'finland'}
+       OralHistoryContent::IntervieweeDate.new(date: '1923', type:'birth', place: 'poland'),
+       OralHistoryContent::IntervieweeDate.new(date: "2223", type: 'death', place: 'finland')
       ]
       school = [
-        {date: "1958", institution: 'Columbia University', degree: 'BA', discipline: 'Chemistry'},
-        {date: "1960", institution: 'Harvard University',  degree: 'MS', discipline: 'Physics'}
+        OralHistoryContent::IntervieweeSchool.new(date: "1958", institution: 'Columbia University', degree: 'BA', discipline: 'Chemistry'),
+        OralHistoryContent::IntervieweeSchool.new(date: "1960", institution: 'Harvard University',  degree: 'MS', discipline: 'Physics')
       ]
       job = [
-        {start: "1962", end: "1965", institution: 'Harvard University',  role: 'Junior Fellow, Society of Fellows'},
-        {start: "1965", end: "1968",  institution: 'Cornell University', role: 'Associate Professor, Chemistry'}
+        OralHistoryContent::IntervieweeJob.new({start: "1962", end: "1965", institution: 'Harvard University',  role: 'Junior Fellow, Society of Fellows'}),
+        OralHistoryContent::IntervieweeJob.new( {start: "1965", end: "1968",  institution: 'Cornell University', role: 'Associate Professor, Chemistry'})
       ]
       honor =  [
-        {date: "1981", honor: 'Nobel Prize in Chemistry'},
-        {date: "1998", honor: 'Corresponding Member, Nordrhein-Westfälische Academy of Sciences'}
+        OralHistoryContent::IntervieweeHonor.new(date: "1981", honor: 'Nobel Prize in Chemistry'),
+        OralHistoryContent::IntervieweeHonor.new(date: "1998", honor: 'Corresponding Member, Nordrhein-Westfälische Academy of Sciences')
       ]
+      work.oral_history_content!.interviewee_date = date
+      work.oral_history_content!.interviewee_school = school
+      work.oral_history_content!.interviewee_job = job
+      work.oral_history_content!.interviewee_honor =  honor
 
-      oral_history_content.interviewee_date = date
-      oral_history_content.interviewee_school = school
-      oral_history_content.interviewee_job = job
-      oral_history_content.interviewee_honor =  honor
+      #work.oral_history_content!.save!
+
+      #oral_history_content = nil
 
       work.save!
       work.reload
 
-      expect(oral_history_content.interviewee_date.to_json ).to eq(date.to_json)
-      expect(oral_history_content.interviewee_school.to_json).to eq(school.to_json)
-      expect(oral_history_content.interviewee_job.to_json   ).to eq(job.to_json)
-      expect(oral_history_content.interviewee_honor.to_json ).to eq(honor.to_json)
+      expect(work.oral_history_content!.interviewee_date.to_json).to   eq(date.to_json)
+      expect(work.oral_history_content!.interviewee_school.to_json).to eq(school.to_json)
+      expect(oral_history_content.interviewee_job.to_json   ).to       eq(job.to_json)
+      expect(work.oral_history_content!.interviewee_honor.to_json ).to eq(honor.to_json)
 
     end
   end
