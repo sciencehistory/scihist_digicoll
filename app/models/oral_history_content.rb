@@ -53,9 +53,9 @@ class OralHistoryContent < ApplicationRecord
     succeeded: 'succeeded'
   }
 
-
   #birth and death date and place. Not sure this is the right name for this object, but there you have it.
   attr_json :interviewee_date,    OralHistoryContent::IntervieweeDate.to_type,   array: true, default: -> {[]}
+
   attr_json :interviewee_school,  OralHistoryContent::IntervieweeSchool.to_type, array: true, default: -> {[]}
   attr_json :interviewee_job,     OralHistoryContent::IntervieweeJob.to_type,    array: true, default: -> {[]}
   attr_json :interviewee_honor,   OralHistoryContent::IntervieweeHonor.to_type,  array: true, default: -> {[]}

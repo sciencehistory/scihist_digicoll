@@ -1,5 +1,4 @@
 require 'rails_helper'
-
 describe OralHistoryContent do
   let(:work) { create(:work) }
   let(:oral_history_content) { work.create_oral_history_content }
@@ -46,8 +45,8 @@ describe OralHistoryContent do
   describe "interviewee metadata" do
     it "can be set" do
       date =  [
-       OralHistoryContent::IntervieweeDate.new(date: '1923', type:'birth', place: 'poland'),
-       OralHistoryContent::IntervieweeDate.new(date: "2223", type: 'death', place: 'finland')
+        OralHistoryContent::IntervieweeDate.new(date: '1923', category:'birth', place: 'poland',  ),
+        OralHistoryContent::IntervieweeDate.new(date: '2223', category: 'death', place: 'finland' )
       ]
       school = [
         OralHistoryContent::IntervieweeSchool.new(date: "1958", institution: 'Columbia University', degree: 'BA', discipline: 'Chemistry'),
@@ -61,23 +60,18 @@ describe OralHistoryContent do
         OralHistoryContent::IntervieweeHonor.new(date: "1981", honor: 'Nobel Prize in Chemistry'),
         OralHistoryContent::IntervieweeHonor.new(date: "1998", honor: 'Corresponding Member, Nordrhein-Westfälische Academy of Sciences')
       ]
-      work.oral_history_content!.interviewee_date = date
-      work.oral_history_content!.interviewee_school = school
-      work.oral_history_content!.interviewee_job = job
-      work.oral_history_content!.interviewee_honor =  honor
+      work.oral_history_content!.interviewee_date =  date
+      work.oral_history_content.interviewee_school = school
+      work.oral_history_content.interviewee_job =    job
+      work.oral_history_content.interviewee_honor =  honor
 
-      #work.oral_history_content!.save!
+      work.oral_history_content.save!
+      work.oral_history_content.reload
 
-      #oral_history_content = nil
-
-      work.save!
-      work.reload
-
-      expect(work.oral_history_content!.interviewee_date.to_json).to   eq(date.to_json)
-      expect(work.oral_history_content!.interviewee_school.to_json).to eq(school.to_json)
-      expect(oral_history_content.interviewee_job.to_json   ).to       eq(job.to_json)
-      expect(work.oral_history_content!.interviewee_honor.to_json ).to eq(honor.to_json)
-
+      expect(work.oral_history_content.interviewee_date).to   eq(date)
+      expect(work.oral_history_content.interviewee_school).to eq(school)
+      expect(work.oral_history_content.interviewee_job).to    eq(job)
+      expect(work.oral_history_content.interviewee_honor).to  eq(honor)
     end
   end
 
