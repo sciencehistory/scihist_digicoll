@@ -183,10 +183,7 @@ ActiveRecord::Schema.define(version: 2021_02_08_204049) do
     t.datetime "combined_audio_derivatives_job_status_changed_at"
     t.text "searchable_transcript_source"
     t.enum "available_by_request_mode", default: "off", null: false, enum_name: "available_by_request_mode_type"
-    t.jsonb "IntervieweeDate"
-    t.jsonb "IntervieweeSchool"
-    t.jsonb "IntervieweeJob"
-    t.jsonb "IntervieweeHonor"
+    t.jsonb "json_attributes", default: {}
     t.index ["work_id"], name: "index_oral_history_content_on_work_id", unique: true
   end
 
