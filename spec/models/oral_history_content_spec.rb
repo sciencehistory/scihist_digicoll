@@ -44,10 +44,8 @@ describe OralHistoryContent do
 
   describe "interviewee metadata" do
     it "can be set" do
-      date =  [
-        OralHistoryContent::IntervieweeDate.new(date: '1923', category:'birth', place: 'poland',  ),
-        OralHistoryContent::IntervieweeDate.new(date: '2223', category: 'death', place: 'finland' )
-      ]
+      birth =  OralHistoryContent::IntervieweeDate.new(date: '1923', place: 'poland',  )
+      death =  OralHistoryContent::IntervieweeDate.new(date: '2223', place: 'finland' )
       school = [
         OralHistoryContent::IntervieweeSchool.new(date: "1958", institution: 'Columbia University', degree: 'BA', discipline: 'Chemistry'),
         OralHistoryContent::IntervieweeSchool.new(date: "1960", institution: 'Harvard University',  degree: 'MS', discipline: 'Physics')
@@ -60,7 +58,9 @@ describe OralHistoryContent do
         OralHistoryContent::IntervieweeHonor.new(date: "1981", honor: 'Nobel Prize in Chemistry'),
         OralHistoryContent::IntervieweeHonor.new(date: "1998", honor: 'Corresponding Member, Nordrhein-Westfälische Academy of Sciences')
       ]
-      work.oral_history_content!.interviewee_date =  date
+
+      work.oral_history_content!.interviewee_birth = birth
+      work.oral_history_content.interviewee_death =  death
       work.oral_history_content.interviewee_school = school
       work.oral_history_content.interviewee_job =    job
       work.oral_history_content.interviewee_honor =  honor
@@ -68,7 +68,8 @@ describe OralHistoryContent do
       work.oral_history_content.save!
       work.oral_history_content.reload
 
-      expect(work.oral_history_content.interviewee_date).to   eq(date)
+      expect(work.oral_history_content.interviewee_birth.to_h).to  eq(birth.to_h)
+      expect(work.oral_history_content.interviewee_death.to_h).to  eq(death.to_h)
       expect(work.oral_history_content.interviewee_school).to eq(school)
       expect(work.oral_history_content.interviewee_job).to    eq(job)
       expect(work.oral_history_content.interviewee_honor).to  eq(honor)
