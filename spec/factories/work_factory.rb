@@ -210,6 +210,23 @@ FactoryBot.define do
       language { ['English'] }
       department { 'Center for Oral History' }
       created_at { DateTime.now }
+
+
+      trait :available_by_request do
+        transient do
+          available_by_request_mode { :manual_review }
+        end
+
+        members {[
+          build(:asset_with_faked_file, :pdf, published: true),
+          build(:asset_with_faked_file, :pdf, title: "audio_recording.mp3", published: false, oh_available_by_request: true),
+          build(:asset_with_faked_file, :mp3, title: "transcript.pdf", published: false, oh_available_by_request: true)
+        ]}
+        after(:build) do |work, evaluator|
+          work.representative = work.members.to_a.find {|w| w.published? }
+          work.oral_history_content!.available_by_request_mode = evaluator.available_by_request_mode
+        end
+      end
     end
   end
 end

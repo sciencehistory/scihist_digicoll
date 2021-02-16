@@ -21,20 +21,7 @@ class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
   end
 
   def create_sample_request
-    preview_pdf = FactoryBot.create(:asset_with_faked_file, :pdf, published: true)
-    protected_pdf = FactoryBot.create(:asset_with_faked_file, :pdf, title: "audio_recording.mp3", published: false, oh_available_by_request: true)
-    protected_mp3 =  FactoryBot.create(:asset_with_faked_file, :mp3, title: "transcript.pdf", published: false, oh_available_by_request: true)
-
-    work = FactoryBot.create(:oral_history_work, title: SAMPLE_WORK_TITLE, published: true).tap do |work|
-      work.members << preview_pdf
-      work.members << protected_pdf
-      work.members << protected_mp3
-
-      work.representative =  preview_pdf
-      work.save!
-
-      work.oral_history_content!.update(available_by_request_mode: :manual_review)
-    end
+    work = FactoryBot.create(:oral_history_work, :available_by_request, title: SAMPLE_WORK_TITLE, published: true)
 
     request = Admin::OralHistoryAccessRequest.create!(
       work: work,
