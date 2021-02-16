@@ -202,7 +202,7 @@ FactoryBot.define do
         ]
       }
       date_of_work { [ Work::DateOfWork.new(start: "1986-06-03") ] }
-      rights { "http://creativecommons.org/publicdomain/mark/1.0/" }
+      rights { "https://creativecommons.org/licenses/by-nc-nd/4.0/" }
       place  { [{category: "place_of_interview", value:"University of Maryland, College Park"}] }
       format { ['text'] }
       genre { ["Oral histories"] }
