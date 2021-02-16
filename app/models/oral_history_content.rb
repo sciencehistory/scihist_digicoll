@@ -116,24 +116,22 @@ class OralHistoryContent < ApplicationRecord
   end
 
   def interviewee_birth_place
-    birth = interviewee_date.find { |d| d.to_h['category'] == 'birth'}
-    return nil if birth.nil?
-    return birth.to_h['place']
+    return nil if interviewee_birth.nil?
+    interviewee_birth.to_h['place']
   end
   def interviewee_birth_date
-    birth = interviewee_date.find { |d| d.to_h['category'] == 'birth'}
-    return nil if birth.nil?
-    return birth.to_h['date']
+    birth = interviewee_birth
+    return nil if interviewee_birth.nil?
+    interviewee_birth.to_h['date']
   end
   def interviewee_death_place
-    death = interviewee_date.find { |d| d.to_h['category'] == 'death'}
-    return nil if death.nil?
-    return death.to_h['place']
+    return nil if interviewee_death.nil?
+    interviewee_death.to_h['place']
   end
   def interviewee_death_date
-    death = interviewee_date.find { |d| d.to_h['category'] == 'death'}
-    return nil if death.nil?
-    return death.to_h['date']
+    death = interviewee_death
+    return nil if interviewee_death.nil?
+    interviewee_death.to_h['date']
   end
 
   def interviewee_schools_sorted
