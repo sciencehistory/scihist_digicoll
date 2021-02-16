@@ -1,18 +1,29 @@
 <p>Dear <%= mailer.patron_name %>,</p>
-<p>Thanks for your recent visit to the <%= link_to "Science History Institute’s digital collections website", mailer.hostname %>. On <%=mailer.created_at.strftime("%m/%d/%Y")%>, you requested access to the files for <%= link_to mailer.work.title, work_url(mailer.work.friendlier_id) %>. The files are ready for you to download.</p>
+
+<p>Thank you for your recent visit to the <%= link_to "Science History Institute’s Digital Collections", mailer.hostname %>. Here are your requested files from <%= link_to mailer.work.title, work_url(mailer.work.friendlier_id) %>.
 
 <% if mailer.custom_message.present? %>
   <%= simple_format mailer.custom_message %>
 <% end %>
 
-<h2>Files for <%= link_to mailer.work.title, work_url(mailer.work.friendlier_id) %>:</h2>
 <ul>
-
   <% mailer.assets.each do |asset| %>
     <li><%= link_to mailer.download_label(asset), mailer.download_url(asset)%></li>
   <% end %>
-
 </ul>
-<p>You can download the files any time in the next week. After that, these links will no longer work.</p>
-<p>Your receipt of an electronic copy of an oral history indicates your agreement to abide by both U.S. copyright law and the rights statements accompanying this oral history with regard to reproducing or disseminating it.</p>
-<p>If you have any questions about transcripts, recordings, or usage permissions, please contact the <%= link_to 'Center for Oral History', 'https://www.sciencehistory.org/center-for-oral-history/contact' %>.</p>
+
+<p>These links are only valid for one week. Please download your files by <%= mailer.download_by_human_readable %>, when the links will expire.</p>
+
+<p>
+  Your receipt of an electronic copy of this oral history indicates your agreement to abide by U.S. copyright law and terms of licensing:
+
+  <% if mailer.work.rights.present? %>
+    <%= link_to RightsTerms.label_for(mailer.work.rights), mailer.work.rights %>.
+  <% else %>
+    <p>[Missing rights information, please contact the Center for Oral History.]</p>
+  <% end %>
+
+  Please credit the "Science History Institute."
+</p>
+
+<p>If you have any questions about transcripts, recordings, or usage permissions, please contact the Center for Oral History at <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}" %>.

@@ -34,8 +34,10 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
       )
     }
 
+    let(:staff_message) { "A message to you, Rudy."}
+
     let(:mail) { OralHistoryDeliveryMailer.
-      with(request: request).
+      with(request: request, custom_message: staff_message).
       oral_history_delivery_email }
 
     it "renders the headers" do
@@ -46,16 +48,20 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
 
     it "renders the body; does not send items that are already publicly accessible" do
       body = mail.body.encoded
-      # puts body
+
       expect(body).to match "Dear Patron name"
-      expect(body).to match "On 10/01/2020, you requested access"
-      expect(body).to match /Files for.*Bailey/
+      expect(body).to match /files from.*Bailey/
       expect(body).to match /Protected mp3.*MP3 — 56.9 KB.*Protected PDF.*PDF — 7.4 KB/m
+
+      expect(body).to match "Please download your files by #{(Date.today + 6.days).strftime("%A, %B %d")}"
+
+      expect(body).to include RightsTerms.label_for(work.rights)
+
+      expect(body).to include(staff_message)
+
       # The preview PDF is does not have oh_available_by_request set to true.
       # Thus, it should not get sent out in the email.
       expect(body).not_to match /Preview PDF/
-
-      expect(body).not_to match /We will get sued/
     end
 
   end
