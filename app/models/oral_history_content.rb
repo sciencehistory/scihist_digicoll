@@ -53,12 +53,16 @@ class OralHistoryContent < ApplicationRecord
     succeeded: 'succeeded'
   }
 
-  #birth and death date and place. Not sure this is the right name for this object, but there you have it.
-  attr_json :interviewee_date,    OralHistoryContent::IntervieweeDate.to_type,   array: true, default: -> {[]}
+
+  attr_json :interviewee_birth,    OralHistoryContent::IntervieweeBirth.to_type, default: -> {}
+  attr_json :interviewee_death,    OralHistoryContent::IntervieweeDeath.to_type, default: -> {}
 
   attr_json :interviewee_school,  OralHistoryContent::IntervieweeSchool.to_type, array: true, default: -> {[]}
   attr_json :interviewee_job,     OralHistoryContent::IntervieweeJob.to_type,    array: true, default: -> {[]}
   attr_json :interviewee_honor,   OralHistoryContent::IntervieweeHonor.to_type,  array: true, default: -> {[]}
+
+  attr_json :interviewee_pew_scholar, :boolean
+  attr_json :interviewee_pew_advisory_committee, :boolean
 
   # Some assets marked non-published in this work are still available by request. That feature needs to be turned
   # on here at the work level, in one of two modes:
@@ -115,24 +119,23 @@ class OralHistoryContent < ApplicationRecord
   end
 
   def interviewee_birth_place
-    birth = interviewee_date.find { |d| d.to_h['category'] == 'birth'}
-    return nil if birth.nil?
-    return birth.to_h['place']
+    return nil if interviewee_birth.nil?
+    interviewee_birth.to_h['place']
   end
+
   def interviewee_birth_date
-    birth = interviewee_date.find { |d| d.to_h['category'] == 'birth'}
-    return nil if birth.nil?
-    return birth.to_h['date']
+    return nil if interviewee_birth.nil?
+    interviewee_birth.to_h['date']
   end
+
   def interviewee_death_place
-    death = interviewee_date.find { |d| d.to_h['category'] == 'death'}
-    return nil if death.nil?
-    return death.to_h['place']
+    return nil if interviewee_death.nil?
+    interviewee_death.to_h['place']
   end
+
   def interviewee_death_date
-    death = interviewee_date.find { |d| d.to_h['category'] == 'death'}
-    return nil if death.nil?
-    return death.to_h['date']
+    return nil if interviewee_death.nil?
+    interviewee_death.to_h['date']
   end
 
   def interviewee_schools_sorted
