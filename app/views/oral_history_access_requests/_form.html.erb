@@ -18,7 +18,7 @@
       Your receipt of an electronic copy of this oral history indicates your agreement to abide by U.S. copyright law and terms of licensing:
 
         <% if @work.rights.present? %>
-          <%= link_to RightsTerms.label_for(@work.rights), @work.rights %>.
+          <%= link_to RightsTerms.label_for(@work.rights), @work.rights, class: "alert-link" %>.
         <% else %>
           <p>[Missing rights information, please contact the Center for Oral History.]</p>
         <% end %>
@@ -36,7 +36,7 @@
     <% end %>
 
     <p class="sans-serif mb-0">
-      If you have any questions about transcripts, recordings, or usage permissions, please contact the Center for Oral History at <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}" %>.
+      If you have any questions about transcripts, recordings, or usage permissions, please contact the Center for Oral History at <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}", class: "alert-link" %>.
     </p>
   </div>
 
