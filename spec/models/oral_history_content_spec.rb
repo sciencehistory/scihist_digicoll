@@ -44,8 +44,9 @@ describe OralHistoryContent do
 
   describe "interviewee metadata" do
     it "can be set" do
-      birth =  OralHistoryContent::IntervieweeDate.new(date: '1923', place: 'poland',  )
-      death =  OralHistoryContent::IntervieweeDate.new(date: '2223', place: 'finland' )
+      birth =  OralHistoryContent::IntervieweeBirth.new(date: '1923', place: 'poland',  )
+      death =  OralHistoryContent::IntervieweeDeath.new(date: '2223', place: 'finland' )
+
       school = [
         OralHistoryContent::IntervieweeSchool.new(date: "1958", institution: 'Columbia University', degree: 'BA', discipline: 'Chemistry'),
         OralHistoryContent::IntervieweeSchool.new(date: "1960", institution: 'Harvard University',  degree: 'MS', discipline: 'Physics')
@@ -68,8 +69,8 @@ describe OralHistoryContent do
       work.oral_history_content.save!
       work.oral_history_content.reload
 
-      expect(work.oral_history_content.interviewee_birth.to_h).to  eq(birth.to_h)
-      expect(work.oral_history_content.interviewee_death.to_h).to  eq(death.to_h)
+      expect(work.oral_history_content.interviewee_birth).to  eq(birth)
+      expect(work.oral_history_content.interviewee_death).to  eq(death)
       expect(work.oral_history_content.interviewee_school).to eq(school)
       expect(work.oral_history_content.interviewee_job).to    eq(job)
       expect(work.oral_history_content.interviewee_honor).to  eq(honor)
