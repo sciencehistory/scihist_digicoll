@@ -119,17 +119,18 @@ class OralHistoryContent < ApplicationRecord
     return nil if interviewee_birth.nil?
     interviewee_birth.to_h['place']
   end
+
   def interviewee_birth_date
-    birth = interviewee_birth
     return nil if interviewee_birth.nil?
     interviewee_birth.to_h['date']
   end
+
   def interviewee_death_place
     return nil if interviewee_death.nil?
     interviewee_death.to_h['place']
   end
+
   def interviewee_death_date
-    death = interviewee_death
     return nil if interviewee_death.nil?
     interviewee_death.to_h['date']
   end
