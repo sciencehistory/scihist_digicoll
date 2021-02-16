@@ -66,6 +66,9 @@ describe OralHistoryContent do
       work.oral_history_content.interviewee_job =    job
       work.oral_history_content.interviewee_honor =  honor
 
+       work.oral_history_content.interviewee_pew_scholar = true
+       work.oral_history_content.interviewee_pew_advisory_committee  = false
+
       work.oral_history_content.save!
       work.oral_history_content.reload
 
@@ -74,6 +77,8 @@ describe OralHistoryContent do
       expect(work.oral_history_content.interviewee_school).to eq(school)
       expect(work.oral_history_content.interviewee_job).to    eq(job)
       expect(work.oral_history_content.interviewee_honor).to  eq(honor)
+      expect(work.oral_history_content.interviewee_pew_scholar).to  eq(true)
+      expect(work.oral_history_content.interviewee_pew_advisory_committee).to  eq(false)
     end
   end
 
