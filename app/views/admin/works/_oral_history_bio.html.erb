@@ -66,12 +66,26 @@
         <div class="col-sm">
           <% work.oral_history_content.interviewee_awards_sorted.each do |award| %>
             <%= award.to_h['date'] %>:
-            <%= award.to_h['honor'] %>
+            <%= award.to_h['honor'] %><br/>
           <% end %>
         </div>
       </div>
 
+      <hr/>
 
+      <div class="row">
+        <div class="col-sm">
+          Other
+        </div>
+        <div class="col-sm">
+          <% if work.oral_history_content.interviewee_pew_scholar %>
+            Pew scholar <br/>
+          <% end %>
+          <% if work.oral_history_content.interviewee_pew_advisory_committee %>
+            Served on Pew Advisory Committee
+          <% end %>
+        </div>
+      </div>
 
     </div>
   </div>
