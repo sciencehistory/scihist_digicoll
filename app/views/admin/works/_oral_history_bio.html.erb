@@ -36,6 +36,7 @@
           <% work.oral_history_content.interviewee_schools_sorted.each do |school| %>
             <%= school.to_h['date'] %>:
             <%= school.to_h['degree'] %>,
+            <%= school.to_h['discipline'] %>,
             <%= school.to_h['institution'] %><br/>
           <% end %>
         </div>
