@@ -8,7 +8,7 @@ class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
 
   def oral_history_delivery_email
     OralHistoryDeliveryMailer.
-      with(request: oral_history_request).
+      with(request: oral_history_request, custom_message: "[[This is optional customized per-email instructions written by staff to patron, possibly including usage restrictions.]]").
       oral_history_delivery_email
   end
 
