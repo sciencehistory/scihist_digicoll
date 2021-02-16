@@ -61,6 +61,9 @@ class OralHistoryContent < ApplicationRecord
   attr_json :interviewee_job,     OralHistoryContent::IntervieweeJob.to_type,    array: true, default: -> {[]}
   attr_json :interviewee_honor,   OralHistoryContent::IntervieweeHonor.to_type,  array: true, default: -> {[]}
 
+  attr_json :interviewee_pew_scholar, :boolean
+  attr_json :interviewee_pew_advisory_committee, :boolean
+
   # Some assets marked non-published in this work are still available by request. That feature needs to be turned
   # on here at the work level, in one of two modes:
   #
