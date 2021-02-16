@@ -114,6 +114,39 @@ class OralHistoryContent < ApplicationRecord
     self.combined_audio_derivatives_job_status_changed_at = DateTime.now
   end
 
+  def interviewee_birth_place
+    birth = interviewee_date.find { |d| d.to_h['category'] == 'birth'}
+    return nil if birth.nil?
+    return birth.to_h['place']
+  end
+  def interviewee_birth_date
+    birth = interviewee_date.find { |d| d.to_h['category'] == 'birth'}
+    return nil if birth.nil?
+    return birth.to_h['date']
+  end
+  def interviewee_death_place
+    death = interviewee_date.find { |d| d.to_h['category'] == 'death'}
+    return nil if death.nil?
+    return death.to_h['place']
+  end
+  def interviewee_death_date
+    death = interviewee_date.find { |d| d.to_h['category'] == 'death'}
+    return nil if death.nil?
+    return death.to_h['date']
+  end
+
+  def interviewee_schools_sorted
+    return interviewee_school.sort_by { |hsh| hsh.to_h[:date] }
+  end
+
+  def interviewee_awards_sorted
+    return interviewee_honor.sort_by { |hsh| hsh.to_h[:date] }
+  end
+
+  def interviewee_jobs_sorted
+    return interviewee_job.sort_by { |hsh| hsh.to_h[:start] }
+  end
+
 
   private
 
