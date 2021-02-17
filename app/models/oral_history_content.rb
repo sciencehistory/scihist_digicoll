@@ -119,35 +119,48 @@ class OralHistoryContent < ApplicationRecord
   end
 
   def interviewee_birth_place
-    return nil if interviewee_birth.nil?
-    interviewee_birth.to_h['place']
+    @interviewee_birth_place ||= begin
+      return nil if interviewee_birth.nil?
+      interviewee_birth.to_h['place']
+    end
   end
 
   def interviewee_birth_date
-    return nil if interviewee_birth.nil?
-    interviewee_birth.to_h['date']
+    @interviewee_birth_date ||= begin
+      return nil if interviewee_birth.nil?
+      interviewee_birth.to_h['date']
+    end
   end
 
   def interviewee_death_place
-    return nil if interviewee_death.nil?
-    interviewee_death.to_h['place']
+    @interviewee_death_place ||= begin
+      return nil if interviewee_death.nil?
+      interviewee_death.to_h['place']
+    end
   end
 
   def interviewee_death_date
-    return nil if interviewee_death.nil?
-    interviewee_death.to_h['date']
+    @interviewee_death_date ||= begin
+      return nil if interviewee_death.nil?
+      interviewee_death.to_h['date']
   end
 
   def interviewee_schools_sorted
-    return interviewee_school.sort_by { |hsh| hsh.to_h[:date] }
+    @interviewee_schools_sorted ||= begin
+      interviewee_school.sort_by { |hsh| hsh.to_h[:date] }
+    end
   end
 
   def interviewee_awards_sorted
-    return interviewee_honor.sort_by { |hsh| hsh.to_h[:date] }
+    @interviewee_awards_sorted ||= begin
+      interviewee_honor.sort_by { |hsh| hsh.to_h[:date] }
+    end
   end
 
   def interviewee_jobs_sorted
-    return interviewee_job.sort_by { |hsh| hsh.to_h[:start] }
+    @interviewee_jobs_sorted ||= begin
+      interviewee_job.sort_by { |hsh| hsh.to_h[:start] }
+    end
   end
 
 
