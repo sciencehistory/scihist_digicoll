@@ -436,6 +436,11 @@ module ScihistDigicoll
     define_key :special_job_worker_count, default: 0
 
 
+    # SPECIFIC COLLECTION IDS
+    # Used to trigger custom controllers/UI for specific known collections
+    define_key :oral_history_collection_id, default: "gt54kn818"
+
+
     # OUTGOING EMAIL:
 
     # From address:

@@ -77,8 +77,10 @@ Rails.application.routes.draw do
   # Rails routing constraints feature to say if collection_id is a specific one, use
   # this other controller.
 
-  constraints(collection_id: "gt54kn818") do
-    concerns :collection_showable, controller: "collection_show_controllers/oral_history_collection"
+  if ScihistDigicoll::Env.lookup(:oral_history_collection_id)
+    constraints(collection_id: ScihistDigicoll::Env.lookup(:oral_history_collection_id)) do
+      concerns :collection_showable, controller: "collection_show_controllers/oral_history_collection"
+    end
   end
 
   # and our default collection show page routing
