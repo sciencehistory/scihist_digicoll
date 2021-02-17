@@ -25,6 +25,18 @@ module CollectionShowControllers
 
       # Some facets we don't use generally but we do want to use here.
       config.add_facet_field "interviewer_facet", label: "Interviewer", limit: 5
+
+      # to change order of keys in hash we basically need to hackily make a new
+      # hash.
+      key_order = config.facet_fields.keys
+
+      # make interviewer_facet second one
+      key_order.insert(1, "interviewer_facet") if key_order.delete("interviewer_facet")
+
+      # and "rights" facet last
+      key_order.insert(-1, "rights_facet") if key_order.delete("rights_facet")
+
+      config.facet_fields = config.facet_fields.slice(*key_order)
     end
   end
 end
