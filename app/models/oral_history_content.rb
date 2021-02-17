@@ -143,6 +143,7 @@ class OralHistoryContent < ApplicationRecord
     @interviewee_death_date ||= begin
       return nil if interviewee_death.nil?
       interviewee_death.to_h['date']
+    end
   end
 
   def interviewee_schools_sorted
