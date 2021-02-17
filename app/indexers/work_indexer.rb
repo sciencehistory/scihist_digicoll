@@ -18,6 +18,12 @@ class WorkIndexer < Kithe::Indexer
 
     to_field ["text3_tesim", "subject_facet"], obj_extract("subject")
 
+    # Interviewer out of creator facet for use specifically for Oral History collection
+    to_field "interviewer_facet" do |record, acc|
+      acc.concat record.creator.find_all { |creator| creator.category == "interviewer"}.collect(&:value)
+    end
+
+
     to_field "text4_tesim", obj_extract("description")
     to_field "text4_tesim", obj_extract("provenance")
 

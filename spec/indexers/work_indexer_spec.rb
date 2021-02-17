@@ -23,9 +23,17 @@ describe WorkIndexer do
     end
   end
 
-  describe "with oral history transcript" do
-    let(:work) { create(:work, oral_history_content: oral_history_content) }
+  describe "oral history" do
+    let(:work) { create(:oral_history_work) }
 
+    it "indexes interviewer_facet" do
+      output_hash = WorkIndexer.new.map_record(work)
+      expect(output_hash["interviewer_facet"]).not_to eq(nil)
+    end
+  end
+
+  describe "with oral history transcript" do
+    let(:work) { create(:oral_history_work, oral_history_content: oral_history_content) }
 
     describe "ohms xml with missing transcript" do
       # this one has missing transcript...
