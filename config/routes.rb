@@ -53,11 +53,40 @@ Rails.application.routes.draw do
 
   # Our collections show controller provides a Blacklight search, so needs
   # some additional routes for various search behaviors too.
-  get "/collections/:collection_id", to: "collection_show#index", as: :collection
-  get "collections/:collection_id/range_limit" => "collection_show#range_limit"
-  get "collections/:collection_id/range_limit_panel" => "collection_show#range_limit_panel"
-  get "collections/:collection_id/facet" => "collection_show#facet"
+  #
+  # Additioally, we define this as a "routing concern" (https://guides.rubyonrails.org/routing.html#routing-concerns)
+  # so we can *re-use* it for an overridden controller for *specific* collections, where we want
+  # a custom landing page. See oral history example below.
+  concern :collection_showable do |options|
+    options[:controller] ||= "collection_show"
 
+    # routing method name, needs ot be unique each time we use this.
+    # By default "collection" (eg collection_path collection_url), based on
+    # options[:controller]
+    options[:as] ||= options[:controller].to_s.sub(/_show$/, '').to_sym
+
+    get "collections/:collection_id", to: "#{options[:controller]}#index", as: options[:as]
+    get "collections/:collection_id/range_limit" => "#{options[:controller]}#range_limit"
+    get "collections/:collection_id/range_limit_panel" => "#{options[:controller]}#range_limit_panel"
+    get "collections/:collection_id/facet" => "#{options[:controller]}#facet"
+  end
+
+
+  # Overrides of collection show controller for specific collections with custom
+  # pages, needs to come BEFORE main collection routing, to take precedence. We use
+  # Rails routing constraints feature to say if collection_id is a specific one, use
+  # this other controller.
+
+  constraints(collection_id: "gt54kn818") do
+    concerns :collection_showable, controller: "collection_show_controllers/oral_history_collection"
+  end
+
+  # and our default collection show page routing
+  concerns :collection_showable
+
+
+  # and the special "featured topics" or "focuses" that appear like collections
+  # but are actually formed from canned searches.
   get "focus/:slug", to: "featured_topic#index", as: :featured_topic
   get "focus/:slug/range_limit" => "featured_topic#range_limit"
   get "focus/:slug/range_limit_panel" => "featured_topic#range_limit_panel"
