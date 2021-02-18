@@ -53,16 +53,12 @@ class OralHistoryContent < ApplicationRecord
     succeeded: 'succeeded'
   }
 
-
   attr_json :interviewee_birth,    OralHistoryContent::IntervieweeBirth.to_type, default: -> {}
   attr_json :interviewee_death,    OralHistoryContent::IntervieweeDeath.to_type, default: -> {}
 
   attr_json :interviewee_school,  OralHistoryContent::IntervieweeSchool.to_type, array: true, default: -> {[]}
   attr_json :interviewee_job,     OralHistoryContent::IntervieweeJob.to_type,    array: true, default: -> {[]}
   attr_json :interviewee_honor,   OralHistoryContent::IntervieweeHonor.to_type,  array: true, default: -> {[]}
-
-  attr_json :interviewee_pew_scholar, :boolean
-  attr_json :interviewee_pew_advisory_committee, :boolean
 
   # Some assets marked non-published in this work are still available by request. That feature needs to be turned
   # on here at the work level, in one of two modes:
@@ -121,7 +117,8 @@ class OralHistoryContent < ApplicationRecord
   def interviewee_birth_place
     @interviewee_birth_place ||= begin
       return nil if interviewee_birth.nil?
-      interviewee_birth.to_h['place']
+      data = interviewee_birth.to_h
+      "#{data['city']}, #{data['state'] || data['province']}, #{data['country']}"
     end
   end
 
@@ -135,7 +132,8 @@ class OralHistoryContent < ApplicationRecord
   def interviewee_death_place
     @interviewee_death_place ||= begin
       return nil if interviewee_death.nil?
-      interviewee_death.to_h['place']
+      data = interviewee_death.to_h
+      "#{data['city']}, #{data['state'] || data['province']}, #{data['country']}"
     end
   end
 
