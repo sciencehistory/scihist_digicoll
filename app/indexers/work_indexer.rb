@@ -102,6 +102,18 @@ class WorkIndexer < Kithe::Indexer
     # things that are published.
     to_field "published_bsi", obj_extract("published?")
 
+    # For oral histories, we want a facet with what features/media types are included.
+    # We use format including "Sound" as a proxy for whether there are audio recordings -- we
+    # don't currently have architecture to efficiently access whether there are actually any
+    # children of audio type, so we just count on 'format' being set appropriately.
+    #
+    # For OHMS transcript, we can actually check directly.
+    to_field "oh_feature_facet" do |rec, acc|
+      if rec.is_oral_history?
+        acc << "Audio recording" if rec.format&.include?("sound")
+        acc << "Synchronized transcript" if rec.oral_history_content&.has_ohms_transcript?
+      end
+    end
 
     # Transcript text, use OHMS transcript if we got it, otherwise plaintext if
     # we got it.
