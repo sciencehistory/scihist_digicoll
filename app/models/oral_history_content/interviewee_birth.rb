@@ -8,7 +8,10 @@ class OralHistoryContent
 
     # TODO validate `category` string can be either 'birth' or 'death'
     attr_json :date,  :string
-    attr_json :place, :string
+    attr_json :city, :string
+    attr_json :state, :string
+    attr_json :province, :string
+    attr_json :country, :string
 
   end
 end
