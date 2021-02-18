@@ -115,6 +115,19 @@ class WorkIndexer < Kithe::Indexer
       end
     end
 
+    to_field "oh_access_facet" do |rec, acc|
+      if rec.is_oral_history? && rec.oral_history_content
+        acc << case rec.oral_history_content.available_by_request_mode
+        when "automatic"
+          "Upon request"
+        when "manual_review"
+          "Upon request, review required"
+        when "off"
+          "Immediate"
+        end
+      end
+    end
+
     # Transcript text, use OHMS transcript if we got it, otherwise plaintext if
     # we got it.
     #
