@@ -13,6 +13,7 @@ module CollectionShowControllers
       config.facet_fields.delete("place_facet")
       config.facet_fields.delete("department_facet")
       config.facet_fields.delete("language_facet")
+      config.facet_fields.delete("format_facet") # we use oh_feature_facet instead
       config.facet_fields.delete("creator_facet") # we're going ot use Interviewer specifically instead
 
       # re-label "date" per stakeholder request
