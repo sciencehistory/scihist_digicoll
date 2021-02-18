@@ -212,8 +212,8 @@ FactoryBot.define do
       created_at { DateTime.now }
       oral_history_content {
         OralHistoryContent.new(
-          interviewee_birth:  OralHistoryContent::IntervieweeBirth.new(date: '1923', city: 'Place of Birth', state: 'AK', province: 'Province', country: 'United States'),
-          interviewee_death:  OralHistoryContent::IntervieweeDeath.new(date: '2223', city: 'Place of Death', state: 'AK', province: 'Province', country: 'United States' ),
+          interviewee_birth:  OralHistoryContent::DateAndPlace.new(date: '1923', city: 'Place of Birth', state: 'AK', province: 'Province', country: 'United States'),
+          interviewee_death:  OralHistoryContent::DateAndPlace.new(date: '2223', city: 'Place of Death', state: 'AK', province: 'Province', country: 'United States' ),
           interviewee_school: [
             OralHistoryContent::IntervieweeSchool.new(date: "1958", institution: 'Columbia University', degree: 'BA', discipline: 'Chemistry'),
             OralHistoryContent::IntervieweeSchool.new(date: "1960", institution: 'Harvard University',  degree: 'MS', discipline: 'Physics')
