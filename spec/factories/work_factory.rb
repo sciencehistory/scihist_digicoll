@@ -210,6 +210,13 @@ FactoryBot.define do
       language { ['English'] }
       department { 'Center for Oral History' }
       created_at { DateTime.now }
+
+      trait :ohms_xml do
+        transient do
+          ohms_xml_text { File.read(Rails.root + "spec/test_support/ohms_xml/smythe_OH0042.xml") }
+        end
+        oral_history_content { OralHistoryContent.new(ohms_xml_text: ohms_xml_text) }
+      end
     end
   end
 end
