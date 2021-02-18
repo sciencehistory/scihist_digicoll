@@ -30,6 +30,22 @@ describe WorkIndexer do
       output_hash = WorkIndexer.new.map_record(work)
       expect(output_hash["interviewer_facet"]).not_to eq(nil)
     end
+
+    describe "features facet" do
+      it "is empty without audio or ohms xml" do
+        output_hash = WorkIndexer.new.map_record(work)
+        expect(output_hash["oh_feature_facet"]).to eq(nil)
+      end
+
+      describe "with audio and ohms xml" do
+        let(:work) { create(:oral_history_work, :ohms_xml, format: ['text', 'sound']) }
+
+        it "has facet values" do
+          output_hash = WorkIndexer.new.map_record(work)
+          expect(output_hash["oh_feature_facet"]).to match(["Audio recording", "Synchronized transcript"])
+        end
+      end
+    end
   end
 
   describe "with oral history transcript" do
