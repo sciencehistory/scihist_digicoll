@@ -53,8 +53,8 @@ class OralHistoryContent < ApplicationRecord
     succeeded: 'succeeded'
   }
 
-  attr_json :interviewee_birth,    OralHistoryContent::IntervieweeBirth.to_type, default: -> {}
-  attr_json :interviewee_death,    OralHistoryContent::IntervieweeDeath.to_type, default: -> {}
+  attr_json :interviewee_birth,    OralHistoryContent::DateAndPlace.to_type, default: -> {}
+  attr_json :interviewee_death,    OralHistoryContent::DateAndPlace.to_type, default: -> {}
 
   attr_json :interviewee_school,  OralHistoryContent::IntervieweeSchool.to_type, array: true, default: -> {[]}
   attr_json :interviewee_job,     OralHistoryContent::IntervieweeJob.to_type,    array: true, default: -> {[]}
@@ -115,51 +115,37 @@ class OralHistoryContent < ApplicationRecord
   end
 
   def interviewee_birth_place
-    @interviewee_birth_place ||= begin
-      return nil if interviewee_birth.nil?
-      data = interviewee_birth.to_h
-      "#{data['city']}, #{data['state'] || data['province']}, #{data['country']}"
-    end
+    return nil if interviewee_birth.nil?
+    data = interviewee_birth.to_h
+    "#{data['city']}, #{data['state'] || data['province']}, #{data['country']}"
   end
 
   def interviewee_birth_date
-    @interviewee_birth_date ||= begin
-      return nil if interviewee_birth.nil?
-      interviewee_birth.to_h['date']
-    end
+    return nil if interviewee_birth.nil?
+    interviewee_birth.to_h['date']
   end
 
   def interviewee_death_place
-    @interviewee_death_place ||= begin
-      return nil if interviewee_death.nil?
-      data = interviewee_death.to_h
-      "#{data['city']}, #{data['state'] || data['province']}, #{data['country']}"
-    end
+    return nil if interviewee_death.nil?
+    data = interviewee_death.to_h
+    "#{data['city']}, #{data['state'] || data['province']}, #{data['country']}"
   end
 
   def interviewee_death_date
-    @interviewee_death_date ||= begin
-      return nil if interviewee_death.nil?
-      interviewee_death.to_h['date']
-    end
+    return nil if interviewee_death.nil?
+    interviewee_death.to_h['date']
   end
 
   def interviewee_schools_sorted
-    @interviewee_schools_sorted ||= begin
-      interviewee_school.sort_by { |hsh| hsh.to_h[:date] }
-    end
+    interviewee_school.sort_by { |hsh| hsh.to_h[:date] }
   end
 
   def interviewee_awards_sorted
-    @interviewee_awards_sorted ||= begin
-      interviewee_honor.sort_by { |hsh| hsh.to_h[:date] }
-    end
+    interviewee_honor.sort_by { |hsh| hsh.to_h[:date] }
   end
 
   def interviewee_jobs_sorted
-    @interviewee_jobs_sorted ||= begin
-      interviewee_job.sort_by { |hsh| hsh.to_h[:start] }
-    end
+    interviewee_job.sort_by { |hsh| hsh.to_h[:start] }
   end
 
 
