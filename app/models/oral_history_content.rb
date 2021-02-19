@@ -36,7 +36,6 @@
 # associated works, and using kithe techniques to control auto-indexing: batch-updating,
 # or turning off auto-updating.
 #
-require 'attr_json'
 class OralHistoryContent < ApplicationRecord
   include AttrJson::Record
   self.table_name = "oral_history_content"
@@ -115,37 +114,25 @@ class OralHistoryContent < ApplicationRecord
   end
 
   def interviewee_birth_place
-    return nil if interviewee_birth.nil?
-    data = interviewee_birth.to_h
-    "#{data['city']}, #{data['state'] || data['province']}, #{data['country']}"
-  end
-
-  def interviewee_birth_date
-    return nil if interviewee_birth.nil?
-    interviewee_birth.to_h['date']
+    return nil if (data = interviewee_birth).nil?
+    "#{data.city}, #{data.state || data.province}, #{data.country}"
   end
 
   def interviewee_death_place
-    return nil if interviewee_death.nil?
-    data = interviewee_death.to_h
-    "#{data['city']}, #{data['state'] || data['province']}, #{data['country']}"
-  end
-
-  def interviewee_death_date
-    return nil if interviewee_death.nil?
-    interviewee_death.to_h['date']
+    return nil if (data = interviewee_death).nil?
+    "#{data.city}, #{data.state || data.province}, #{data.country}"
   end
 
   def interviewee_schools_sorted
-    interviewee_school.sort_by { |hsh| hsh.to_h[:date] }
+    interviewee_school.sort_by { |hsh| hsh.date }
   end
 
   def interviewee_awards_sorted
-    interviewee_honor.sort_by { |hsh| hsh.to_h[:date] }
+    interviewee_honor.sort_by { |hsh| hsh.date }
   end
 
   def interviewee_jobs_sorted
-    interviewee_job.sort_by { |hsh| hsh.to_h[:start] }
+    interviewee_job.sort_by { |hsh| hsh.start }
   end
 
 
