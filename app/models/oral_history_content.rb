@@ -36,7 +36,6 @@
 # associated works, and using kithe techniques to control auto-indexing: batch-updating,
 # or turning off auto-updating.
 #
-require 'attr_json'
 class OralHistoryContent < ApplicationRecord
   include AttrJson::Record
   self.table_name = "oral_history_content"
@@ -53,16 +52,12 @@ class OralHistoryContent < ApplicationRecord
     succeeded: 'succeeded'
   }
 
-
-  attr_json :interviewee_birth,    OralHistoryContent::IntervieweeBirth.to_type, default: -> {}
-  attr_json :interviewee_death,    OralHistoryContent::IntervieweeDeath.to_type, default: -> {}
+  attr_json :interviewee_birth,    OralHistoryContent::DateAndPlace.to_type, default: -> {}
+  attr_json :interviewee_death,    OralHistoryContent::DateAndPlace.to_type, default: -> {}
 
   attr_json :interviewee_school,  OralHistoryContent::IntervieweeSchool.to_type, array: true, default: -> {[]}
   attr_json :interviewee_job,     OralHistoryContent::IntervieweeJob.to_type,    array: true, default: -> {[]}
   attr_json :interviewee_honor,   OralHistoryContent::IntervieweeHonor.to_type,  array: true, default: -> {[]}
-
-  attr_json :interviewee_pew_scholar, :boolean
-  attr_json :interviewee_pew_advisory_committee, :boolean
 
   # Some assets marked non-published in this work are still available by request. That feature needs to be turned
   # on here at the work level, in one of two modes:
@@ -119,49 +114,25 @@ class OralHistoryContent < ApplicationRecord
   end
 
   def interviewee_birth_place
-    @interviewee_birth_place ||= begin
-      return nil if interviewee_birth.nil?
-      interviewee_birth.to_h['place']
-    end
-  end
-
-  def interviewee_birth_date
-    @interviewee_birth_date ||= begin
-      return nil if interviewee_birth.nil?
-      interviewee_birth.to_h['date']
-    end
+    return nil if (data = interviewee_birth).nil?
+    "#{data.city}, #{data.state || data.province}, #{data.country}"
   end
 
   def interviewee_death_place
-    @interviewee_death_place ||= begin
-      return nil if interviewee_death.nil?
-      interviewee_death.to_h['place']
-    end
-  end
-
-  def interviewee_death_date
-    @interviewee_death_date ||= begin
-      return nil if interviewee_death.nil?
-      interviewee_death.to_h['date']
-    end
+    return nil if (data = interviewee_death).nil?
+    "#{data.city}, #{data.state || data.province}, #{data.country}"
   end
 
   def interviewee_schools_sorted
-    @interviewee_schools_sorted ||= begin
-      interviewee_school.sort_by { |hsh| hsh.to_h[:date] }
-    end
+    interviewee_school.sort_by { |hsh| hsh.date }
   end
 
   def interviewee_awards_sorted
-    @interviewee_awards_sorted ||= begin
-      interviewee_honor.sort_by { |hsh| hsh.to_h[:date] }
-    end
+    interviewee_honor.sort_by { |hsh| hsh.date }
   end
 
   def interviewee_jobs_sorted
-    @interviewee_jobs_sorted ||= begin
-      interviewee_job.sort_by { |hsh| hsh.to_h[:start] }
-    end
+    interviewee_job.sort_by { |hsh| hsh.start }
   end
 
 
