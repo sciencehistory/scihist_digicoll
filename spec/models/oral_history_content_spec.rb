@@ -2,6 +2,9 @@ require 'rails_helper'
 describe OralHistoryContent do
   let(:work) { create(:work) }
   let(:oral_history_content) { work.create_oral_history_content }
+
+  let(:work_with_oral_history_content) { create(:oral_history_work) }
+
   let(:mp3_path) { Rails.root + "spec/test_support/audio/ice_cubes.mp3" }
   let(:webm_path) { Rails.root + "spec/test_support/audio/smallest_webm.webm" }
 
@@ -42,43 +45,27 @@ describe OralHistoryContent do
     end
   end
 
-  describe "interviewee metadata" do
-    it "can be set" do
-      birth =  OralHistoryContent::IntervieweeBirth.new(date: '1923', place: 'poland',  )
-      death =  OralHistoryContent::IntervieweeDeath.new(date: '2223', place: 'finland' )
+  describe "interviewee metadata display methods" do
+    it "correctly format date info" do
+      ohc = work_with_oral_history_content.oral_history_content
+      expect(ohc.interviewee_birth_place).to  eq("Place of Birth, AK, United States")
+      expect(ohc.interviewee_death_place).to  eq("Place of Death, AK, United States")
+    end
+  end
 
-      school = [
-        OralHistoryContent::IntervieweeSchool.new(date: "1958", institution: 'Columbia University', degree: 'BA', discipline: 'Chemistry'),
-        OralHistoryContent::IntervieweeSchool.new(date: "1960", institution: 'Harvard University',  degree: 'MS', discipline: 'Physics')
-      ]
-      job = [
-        OralHistoryContent::IntervieweeJob.new({start: "1962", end: "1965", institution: 'Harvard University',  role: 'Junior Fellow, Society of Fellows'}),
-        OralHistoryContent::IntervieweeJob.new( {start: "1965", end: "1968",  institution: 'Cornell University', role: 'Associate Professor, Chemistry'})
-      ]
-      honor =  [
-        OralHistoryContent::IntervieweeHonor.new(date: "1981", honor: 'Nobel Prize in Chemistry'),
-        OralHistoryContent::IntervieweeHonor.new(date: "1998", honor: 'Corresponding Member, Nordrhein-Westfälische Academy of Sciences')
-      ]
 
-      work.oral_history_content!.interviewee_birth = birth
-      work.oral_history_content.interviewee_death =  death
-      work.oral_history_content.interviewee_school = school
-      work.oral_history_content.interviewee_job =    job
-      work.oral_history_content.interviewee_honor =  honor
+  describe "interviewee metadata validator" do
+    it "rejects bad dates" do
+      ohc = work_with_oral_history_content.oral_history_content
+      ohc.interviewee_birth.date = 'This is not a correct birth date.'
+      expect{ohc.save!}.to raise_error(ActiveRecord::RecordInvalid)
+      ohc.interviewee_birth.date = nil
+      expect{ohc.save!}.to raise_error(ActiveRecord::RecordInvalid)
 
-       work.oral_history_content.interviewee_pew_scholar = true
-       work.oral_history_content.interviewee_pew_advisory_committee  = false
-
-      work.oral_history_content.save!
-      work.oral_history_content.reload
-
-      expect(work.oral_history_content.interviewee_birth).to  eq(birth)
-      expect(work.oral_history_content.interviewee_death).to  eq(death)
-      expect(work.oral_history_content.interviewee_school).to eq(school)
-      expect(work.oral_history_content.interviewee_job).to    eq(job)
-      expect(work.oral_history_content.interviewee_honor).to  eq(honor)
-      expect(work.oral_history_content.interviewee_pew_scholar).to  eq(true)
-      expect(work.oral_history_content.interviewee_pew_advisory_committee).to  eq(false)
+      ohc.interviewee_job.first.start = 'This is not a correct date either.'
+      expect{ohc.save!}.to raise_error(ActiveRecord::RecordInvalid)
+      ohc.interviewee_job.first.start = nil
+      expect{ohc.save!}.to raise_error(ActiveRecord::RecordInvalid)
     end
   end
 
