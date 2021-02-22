@@ -136,6 +136,8 @@ module CopyStaging
 
         remote_file = Shrine::UploadedFile.new(derivative_uploaded_file.data.merge("storage" => REMOTE_DERIVATIVES_STORAGE_KEY))
         Shrine.storages[:kithe_derivatives].upload(remote_file, derivative_uploaded_file.id)
+      rescue Aws::S3::Errors::NoSuchKey => e
+        puts "   ERROR: Could not find file to copy `#{remote_file.id}` on #{Shrine.storages[REMOTE_DERIVATIVES_STORAGE_KEY].then {|s| [s.bucket&.name, s.prefix].compact.join('/')}}"
       end
     end
 

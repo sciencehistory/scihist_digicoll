@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_08_203855) do
+ActiveRecord::Schema.define(version: 2021_02_08_204049) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -183,6 +183,7 @@ ActiveRecord::Schema.define(version: 2021_02_08_203855) do
     t.datetime "combined_audio_derivatives_job_status_changed_at"
     t.text "searchable_transcript_source"
     t.enum "available_by_request_mode", default: "off", null: false, enum_name: "available_by_request_mode_type"
+    t.jsonb "json_attributes", default: {}
     t.index ["work_id"], name: "index_oral_history_content_on_work_id", unique: true
   end
 
