@@ -111,6 +111,7 @@ class WorkIndexer < Kithe::Indexer
     to_field "oh_feature_facet" do |rec, acc|
       if rec.is_oral_history?
         acc << "Audio recording" if rec.format&.include?("sound")
+        acc << "Transcript" if rec.format&.include?("text")
         acc << "Synchronized transcript" if rec.oral_history_content&.has_ohms_transcript?
       end
     end
