@@ -30,7 +30,7 @@ module CollectionShowControllers
 
       config.add_facet_field "oh_feature_facet", label: "Features"
 
-      config.add_facet_field "oh_access_facet", label: "Access level"
+      config.add_facet_field "oh_availability_facet", label: "Availability"
 
       # to change order of keys in hash we basically need to hackily make a new
       # hash.
