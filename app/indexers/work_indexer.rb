@@ -121,7 +121,7 @@ class WorkIndexer < Kithe::Indexer
         when "automatic"
           "Upon request"
         when "manual_review"
-          "Upon request, review required"
+          "Permission required"
         when "off"
           "Immediate"
         end
