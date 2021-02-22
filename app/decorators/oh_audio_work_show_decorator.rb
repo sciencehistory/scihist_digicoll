@@ -30,6 +30,11 @@ class OhAudioWorkShowDecorator < Draper::Decorator
     @representative_member = all_members.find { |m| m.id == model.representative_id }
   end
 
+  def pdf_transcript_member
+    # For now we're just assuming the first PDF found is it, which is not quite right. TODO.
+    @pdf_transcript_member = all_members.find { |m| m.leaf_representative&.content_type&.start_with?("application/pdf") }
+  end
+
   def audio_members
     @audio_members ||= all_members.select { |m| m.leaf_representative&.content_type&.start_with?("audio/") }
   end

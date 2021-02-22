@@ -45,6 +45,12 @@
                 Transcript <span data-ohms-hitcount="transcript"></span>
               </a>
             </li>
+          <% elsif decorator.pdf_transcript_member.present? %>
+            <li class="nav-item">
+              <a class="nav-link btn btn-emphasis" id="ohTranscriptPdfTab" data-toggle="tab" href="#ohTranscriptPdf" role="tab" aria-controls="home" aria-selected="false">
+                Transcript
+              </a>
+            </li>
           <% end %>
 
           <li class="nav-item">
@@ -113,7 +119,17 @@
           <div class="tab-pane long-text-line-height" id="ohTranscript" role="tabpanel" aria-labelledby="ohTranscriptTab">
             <%= OhmsTranscriptDisplay.new(decorator.oral_history_content.ohms_xml).display %>
           </div>
+        <% elsif decorator.pdf_transcript_member.present? %>
+          <div class="tab-pane pdf-transcript" id="ohTranscriptPdf" role="tabpanel" aria-labelledby="ohTranscriptPdfTab">
+            <object data="<%= decorator.pdf_transcript_member.file.url %>" type="application/pdf">
+              <%# content of object tag only shows up if browser can't do object tag for this content type %>
+              <p>Sorry, this transcript is in PDF format, and your browser does not support displaying PDF. You can download the Transcript PDF on the Downloads tab.</p>
+            </object>
+          </div>
         <% end %>
+
+
+
 
         <div class="tab-pane downloads" id="ohDownloads" role="tabpanel" aria-labelledby="ohDownloadsTab">
           <%= render 'show_with_audio_downloads', decorator: decorator %>

@@ -198,9 +198,16 @@
     }
   }
 
-  .tab-content {
+  .tab-pane:not(.pdf-transcript) {
     // hacky, match attribute-table width
     max-width: ($max-readable-width / 0.67);
+  }
+
+  .pdf-transcript object {
+    // try to make the embed <object> tag kind of take up a lot of space,
+    // full page of PDF, full screen, sort of kind of.
+    width: 100%;
+    height: 120vh;
   }
 
   // When we're two column, add more spacer than default
