@@ -116,7 +116,7 @@ class WorkIndexer < Kithe::Indexer
       end
     end
 
-    to_field "oh_access_facet" do |rec, acc|
+    to_field "oh_availability_facet" do |rec, acc|
       if rec.is_oral_history? && rec.oral_history_content
         acc << case rec.oral_history_content.available_by_request_mode
         when "automatic"
