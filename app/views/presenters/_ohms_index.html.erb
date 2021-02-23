@@ -13,9 +13,9 @@
 
       <div id="<%= view.accordion_element_id(index) %>" class="collapse card-body ohms-index-list long-text-line-height" aria-labelledby="<%= view.accordion_header_id(index) %>" data-parent="#ohmsIndexAccordionParent">
           <p>
-            <button type="button" class="btn btn-secondary" data-ohms-timestamp-s="<%= index_point.timestamp %>">
+            <%= link_to(url_for({anchor: "t=#{index_point.timestamp}"}), class:"btn btn-secondary", "data-ohms-timestamp-s" => index_point.timestamp) do %>
               <i class="fa fa-play-circle mr-1" aria-hidden="true"></i> Play segment
-            </button>
+            <% end %>
           </p>
 
           <% if index_point.synopsis.present? %>
