@@ -1,6 +1,8 @@
 // Allow timecodes to be in urls in fragment identifier, like #t=[number of seconds]
 //
 // And we'll jump to that timecode in our OH audio player.
+// Or #t=[seconds]&toc=true
+//   Will find a Table of Contents (toc) segment that starts with that timecode if possible, and expand to it too.
 //
 // This is influenced by w3c media fragment standard. https://www.w3.org/TR/media-frags/
 //
@@ -9,7 +11,8 @@
 //
 // * Note we also use `#`` fragment identifiers in somewhat inconsistent way, at `tab_selection_in_anchor.js`. `
 //
-// This file avoids using jQuery.
+// This file tries to avoid using jQuery, but has to for bootstrap accordion and tab controls
+// in bootstrap 4, caues they are jquery based.
 
 import domready from 'domready';
 
@@ -39,6 +42,20 @@ domready(function() {
       playPromise.catch(error => {
         console.log("Could not autoplay audio: " + error);
       });
+
+      if (hashParams["toc"] == "true") {
+        // try to find the ToC segment and open it up please
+        var button = document.querySelector('*[data-ohms-timestamp-s="' + hashParams["t"] + '"]');
+        var collapse = button && button.closest(".collapse");
+
+        if (collapse) {
+          // move to tab
+          $('*[href="#ohToc"]').tab("show");
+
+          // open section
+          $(collapse).collapse("show");
+        }
+      }
 
     }
   }
