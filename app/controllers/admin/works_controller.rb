@@ -7,7 +7,7 @@ class Admin::WorksController < AdminController
   before_action :set_work,
     only: [:show, :edit, :update, :destroy, :reorder_members,
            :reorder_members_form, :demote_to_asset, :publish, :unpublish,
-           :submit_ohms_xml, :download_ohms_xml,
+           :submit_ohms_xml, :download_ohms_xml, :oh_bio_form, :submit_oh_bio,
            :remove_ohms_xml, :submit_searchable_transcript_source, :download_searchable_transcript_source,
            :remove_searchable_transcript_source, :create_combined_audio_derivatives, :update_oh_available_by_request]
 
@@ -112,6 +112,50 @@ class Admin::WorksController < AdminController
       :type => 'text/xml; charset=UTF-8;',
       :disposition => ContentDisposition.format(disposition: "attachment", filename: "#{@work.oral_history_content!.ohms_xml.accession}.xml")
   end
+
+  # Bio metadata form
+  # GET "/admin/works/ab2323ac/oh_bio_form"
+  def oh_bio_form
+    @work.oral_history_content!
+    render :oh_bio_form
+  end
+
+  # PATCH/PUT /admin/works/ab2323ac/submit_oh_bio
+  def submit_oh_bio
+    @work.oral_history_content!
+
+    if @work.oral_history_content!.interviewee_birth.nil?
+      @work.oral_history_content!.interviewee_birth = OralHistoryContent::DateAndPlace.new()
+    end
+
+    if @work.oral_history_content!.interviewee_death.nil?
+      @work.oral_history_content!.interviewee_death = OralHistoryContent::DateAndPlace.new()
+    end
+    ohc_data = params['oral_history_content']
+
+    # I'm sure this can be dried up
+    @work.oral_history_content.interviewee_birth.date =     ohc_data['interviewee_birth_date']
+    @work.oral_history_content.interviewee_birth.city =     ohc_data['interviewee_birth_city']
+    @work.oral_history_content.interviewee_birth.province = ohc_data['interviewee_birth_province']
+    @work.oral_history_content.interviewee_birth.state =    ohc_data['interviewee_birth_state']
+    @work.oral_history_content.interviewee_birth.country =  ohc_data['interviewee_birth_country']
+
+    @work.oral_history_content.interviewee_death.date =     ohc_data['interviewee_death_date']
+    @work.oral_history_content.interviewee_death.city =     ohc_data['interviewee_death_city']
+    @work.oral_history_content.interviewee_death.province = ohc_data['interviewee_death_province']
+    @work.oral_history_content.interviewee_death.state =    ohc_data['interviewee_death_state']
+    @work.oral_history_content.interviewee_death.country =  ohc_data['interviewee_death_country']
+
+    unless @work.oral_history_content.valid?
+      render :oh_bio_form
+      return
+    end
+
+    @work.oral_history_content.save!
+
+    redirect_to admin_work_path(@work, :anchor => "nav-oral-histories-bio")
+  end
+
 
   # PATCH/PUT /admin/works/ab2323ac/submit_ohms_xml
   def submit_searchable_transcript_source

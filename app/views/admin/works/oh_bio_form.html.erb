@@ -1,0 +1,61 @@
+<%= form_with(model: @work.oral_history_content!, url: submit_oh_bio_admin_work_path(@work), local: true, method: :put) do |f| %>
+  <div class="admin-header sticky-top d-flex justify-content-between p-2 mb-4 mt-1 bg-light border">
+    <% if @work.leaf_representative.present? %>
+      <div class="mr-2">
+        <%= thumb_image_tag(@work.leaf_representative, size: :mini, image_missing_text: true) %>
+      </div>
+    <% end %>
+    <div class="mr-2">
+      <h1 class="h5">
+        <i>Editing bios for </i> <%= truncate(@work.title, length: 80) %> <i>(<%= @work.friendlier_id %>)</i>
+      </h1>
+    </div>
+  </div>
+
+  <div class="form-inputs">
+    <h3>Birth</h3>
+    <% if @work.oral_history_content.errors.attribute_names.include?(:interviewee_birth) %>
+      <div class="alert alert-danger mr-2">
+        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        <% @work.oral_history_content.interviewee_birth.errors.errors.each do |err| %>
+          <%= err.type %><br/>
+        <% end %>
+      </div>
+    <% end %>
+
+    Date
+    <%= text_field(:oral_history_content, :interviewee_birth_date, value:  @work.oral_history_content!.interviewee_birth.date ) %>
+    City
+    <%= text_field(:oral_history_content, :interviewee_birth_city, value:  @work.oral_history_content!.interviewee_birth.city ) %>
+    Province
+    <%= text_field(:oral_history_content, :interviewee_birth_province, value:  @work.oral_history_content!.interviewee_birth.province ) %>
+    State
+    <%= text_field(:oral_history_content, :interviewee_birth_state, value:  @work.oral_history_content!.interviewee_birth.state ) %>
+    Country
+    <%= text_field(:oral_history_content, :interviewee_birth_country, value:  @work.oral_history_content!.interviewee_birth.country ) %>
+    <br />
+
+    <h3>Death</h3>
+    <% if @work.oral_history_content.errors.attribute_names.include?(:interviewee_death) %>
+      <div class="alert alert-danger mr-2">
+        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        <% @work.oral_history_content.interviewee_death.errors.errors.each do |err| %>
+          <%= err.type %><br/>
+        <% end %>
+      </div>
+    <% end %>
+
+    Date
+    <%= text_field(:oral_history_content, :interviewee_death_date, value:  @work.oral_history_content!.interviewee_death.date ) %>
+    City
+    <%= text_field(:oral_history_content, :interviewee_death_city, value:  @work.oral_history_content!.interviewee_death.city ) %>
+    Province
+    <%= text_field(:oral_history_content, :interviewee_death_province, value:  @work.oral_history_content!.interviewee_death.province ) %>
+    State
+    <%= text_field(:oral_history_content, :interviewee_death_state, value:  @work.oral_history_content!.interviewee_death.state ) %>
+    Country
+    <%= text_field(:oral_history_content, :interviewee_death_country, value:  @work.oral_history_content!.interviewee_death.country ) %>
+    <br/>
+    <%= submit_tag "Save", class: "btn btn-primary" %>
+  </div>
+<% end %>

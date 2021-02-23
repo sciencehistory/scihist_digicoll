@@ -1,139 +1,56 @@
-<%#= kithe_form_for([:admin, work], :html=> { novalidate: true, class: 'edit-work mx-auto admin-edit' }) do |f| %>
-  <div class="card bg-light mb-3">
-    <h2 class="card-header h3">Interviewee bio
-    </h2>
-    <div class="card-body">
-      <%# if flash[:searchable_transcript_source_error].present? %>
-      <!--
-        <p class="alert alert-danger">
-          <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-          Errors would go here
-          <%= flash[:searchable_transcript_source_error] %>
-        </p>
-        -->
-      <%# end %>
-
-      <div class="row">
-        <div class="col-sm">
-          Dates
-        </div>
-        <div class="col-sm">
-          <%= work.oral_history_content.interviewee_birth_place%>, <%= work.oral_history_content.interviewee_birth_date%>
-          <% if work.oral_history_content.interviewee_death_date.present? && work.oral_history_content.interviewee_death_place.present? %>
-            &ndash;
-            <%= work.oral_history_content.interviewee_death_place%>, <%= work.oral_history_content.interviewee_death_date%>
-          <% end %>
-        </div>
+<%= link_to "Edit Biographies", oh_bio_form_admin_work_path(@work), class: "btn btn-primary mb-2" %>
+<div class="card bg-light mb-3">
+  <h2 class="card-header h3">Interviewee bio</h2>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-sm">
+        Dates
       </div>
-
-      <hr/>
-
-      <div class="row">
-        <div class="col-sm">
-          Education
-        </div>
-        <div class="col-sm">
-          <% work.oral_history_content.interviewee_schools_sorted.each do |school| %>
-            <%= school.to_h['date'] %>:
-            <%= school.to_h['degree'] %>,
-            <%= school.to_h['discipline'] %>,
-            <%= school.to_h['institution'] %><br/>
-          <% end %>
-        </div>
+      <div class="col-sm">
+        <%= work.oral_history_content.interviewee_birth_place%>, <%= work.oral_history_content.interviewee_birth.date%>
+        <% if work.oral_history_content.interviewee_death.present? %>
+          &ndash;
+          <%= work.oral_history_content.interviewee_death_place%>, <%= work.oral_history_content.interviewee_death.date%>
+        <% end %>
       </div>
-
-      <hr/>
-
-
-      <div class="row">
-        <div class="col-sm">
-          Career
-        </div>
-        <div class="col-sm">
-          <% work.oral_history_content.interviewee_jobs_sorted.each do |job| %>
-            <%= job.to_h['start'] %> &ndash; <%= job.to_h['end'] %>:
-            <%= job.to_h['role'] %>, <%= job.to_h['institution'] %><br/>
-          <% end %>
-        </div>
+    </div>
+    <hr/>
+    <div class="row">
+      <div class="col-sm">
+        Education
       </div>
-
-      <hr/>
-
-      <div class="row">
-        <div class="col-sm">
-          Awards
-        </div>
-        <div class="col-sm">
-          <% work.oral_history_content.interviewee_awards_sorted.each do |award| %>
-            <%= award.to_h['date'] %>:
-            <%= award.to_h['honor'] %><br/>
-          <% end %>
-        </div>
+      <div class="col-sm">
+        <% work.oral_history_content.interviewee_schools_sorted.each do |school| %>
+          <%= school&.to_h['date'] %>:
+          <%= school&.to_h['degree'] %>,
+          <%= school&.to_h['discipline'] %>,
+          <%= school&.to_h['institution'] %><br/>
+        <% end %>
       </div>
-
-      <hr/>
-
-      <div class="row">
-        <div class="col-sm">
-          Other
-        </div>
-        <div class="col-sm">
-          <% if work.oral_history_content.interviewee_pew_scholar %>
-            Pew scholar <br/>
-          <% end %>
-          <% if work.oral_history_content.interviewee_pew_advisory_committee %>
-            Served on Pew Advisory Committee
-          <% end %>
-        </div>
+    </div>
+    <hr/>
+    <div class="row">
+      <div class="col-sm">
+        Career
       </div>
-
+      <div class="col-sm">
+        <% work.oral_history_content.interviewee_jobs_sorted.each do |job| %>
+          <%= job.to_h['start'] %> &ndash; <%= job.to_h['end'] %>:
+          <%= job.to_h['role'] %>, <%= job.to_h['institution'] %><br/>
+        <% end %>
+      </div>
+    </div>
+    <hr/>
+    <div class="row">
+      <div class="col-sm">
+        Awards
+      </div>
+      <div class="col-sm">
+        <% work.oral_history_content.interviewee_awards_sorted.each do |award| %>
+          <%= award.to_h['date'] %>:
+          <%= award.to_h['honor'] %><br/>
+        <% end %>
+      </div>
     </div>
   </div>
-<!--
-  <div class="card bg-light mb-3">
-    <h2 class="card-header h3">Interviewer bio
-    </h2>
-
-
-    <div class="card-body">
-      <div class="row">
-        <div class="col-sm">
-          Birth date
-        </div>
-        <div class="col-sm">
-          <%#= f.repeatable_attr_input(:creator, build: :at_least_one) do |sub_form| %>
-          <%#= category_and_value(sub_form, category_list: Work::Creator::CATEGORY_VALUES,
-              input_data_attributes: { "scihist-qa-autocomplete" => qa_search_vocab_path("assign_fast", "all")}) %>
-          <#% end %>
-        </div>
-
-
-
-      </div>
-      <hr/>
-
-
-      <div class="row">
-        <div class="col-sm">
-          Key
-        </div>
-        <div class="col-sm">
-          Value
-        </div>
-      </div>
-      <hr/>
-
-      <div class="row">
-        <div class="col-sm">
-          Key
-        </div>
-        <div class="col-sm">
-          Value
-        </div>
-      </div>
-      <hr/>
-
-    </div>
-  </div>
--->
-<%# end %>
+</div>
