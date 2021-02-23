@@ -8,8 +8,11 @@ import domready from 'domready';
 domready(function() {
   // if there's an #anchor in the URL referencing a bootstrap tab, make that tab selected.
   // should we limit to only certain data tags instead of all bootstrap tab links?
+  //
+  // If there is an `=` in the anchor, we assume it's being used for some kind of query-param
+  // style thing, and not for this.
   const anchor = window.location.hash;
-  if (anchor) {
+  if (anchor && !anchor.includes('=')) {
     $(`*[data-toggle="tab"][href="${anchor}"]`).tab("show")
   }
 
