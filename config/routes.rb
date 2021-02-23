@@ -142,6 +142,8 @@ Rails.application.routes.draw do
         put "remove_searchable_transcript_source"
         put "create_combined_audio_derivatives"
         put "update_oh_available_by_request"
+        get "oh_bio_form"
+        put "submit_oh_bio"
       end
       collection do
         get 'batch_update', to: "works#batch_update_form"
