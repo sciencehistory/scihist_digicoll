@@ -16,6 +16,18 @@
             <%= link_to(url_for({anchor: "t=#{index_point.timestamp}"}), class:"btn btn-secondary", "data-ohms-timestamp-s" => index_point.timestamp) do %>
               <i class="fa fa-play-circle mr-1" aria-hidden="true"></i> Play segment
             <% end %>
+
+            <button class="btn btn-outline-secondary" type="button"
+              data-toggle="collapse" data-target="<%= "#collapseSegmentLink#{index}" %>"
+              aria-expanded="false" aria-controls="<%= "#collapseSegmentLink#{index}" %>">
+
+              <i class="fa fa-link mr-1" aria-hidden="true"></i> Link to segment
+            </button>
+
+            <div class="collapse alert alert-info" id="<%= "collapseSegmentLink#{index}" %>">
+              <h3 class="h4 alert-heading">Direct segment link</h3>
+              <%= link_to url_for(anchor: "t=#{index_point.timestamp}", only_path: false), url_for(anchor: "t=#{index_point.timestamp}", only_path: false), class: "alert-link" %>
+            </div>
           </p>
 
           <% if index_point.synopsis.present? %>
