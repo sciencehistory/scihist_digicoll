@@ -126,7 +126,6 @@ class Admin::WorksController < AdminController
     @work.oral_history_content!
     @work.oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new()
     @work.oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new()
-    byebug
 
     birth_data = params['oral_history_content']['interviewee_birth']
     death_data = params['oral_history_content']['interviewee_death']
@@ -154,6 +153,19 @@ class Admin::WorksController < AdminController
       @work.oral_history_content.interviewee_death.country =   death_data['country']
     else
       @work.oral_history_content.interviewee_death = nil
+    end
+
+
+    # Brute force for now; I'm sure there's a better way to do this.
+    @work.oral_history_content.interviewee_school = []
+    params['oral_history_content']['interviewee_school_attributes'].each do |k, v|
+      next if k == "_kithe_placeholder"
+      new_school = OralHistoryContent::IntervieweeSchool.new()
+      new_school.date =        v['date']
+      new_school.degree =      v['degree']
+      new_school.institution = v['institution']
+      new_school.discipline =  v['discipline']
+      @work.oral_history_content.interviewee_school << new_school
     end
 
     unless @work.oral_history_content.valid?

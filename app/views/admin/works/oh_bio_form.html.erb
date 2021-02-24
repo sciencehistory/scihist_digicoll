@@ -1,5 +1,16 @@
-<%= simple_form_for(@work.oral_history_content, url: submit_oh_bio_admin_work_path(@work), :html=> { novalidate: true, method: :put}) do |f| %>
+<%= kithe_form_for(@work.oral_history_content, url: submit_oh_bio_admin_work_path(@work), :html=> { novalidate: true, method: :put}) do |f| %>
   <div class="form-inputs">
+
+    <h3>Education</h3>
+    <%= f.repeatable_attr_input(:interviewee_school) do |sub_form| %>
+      <%= sub_form.input :degree %>
+      <!-- TODO make this a proper html5 date input -->
+      <%= sub_form.input :date %>
+      <!-- TODO use QA for this -->
+      <%= sub_form.input :institution %>
+      <%= sub_form.input :discipline %>
+    <% end %>
+
     <h3>Birth</h3>
 
     <% if @work.oral_history_content.errors.attribute_names.include?(:interviewee_birth) %>
