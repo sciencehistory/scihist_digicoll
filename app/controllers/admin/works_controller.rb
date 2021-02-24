@@ -122,29 +122,39 @@ class Admin::WorksController < AdminController
 
   # PATCH/PUT /admin/works/ab2323ac/submit_oh_bio
   def submit_oh_bio
+
     @work.oral_history_content!
+    @work.oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new()
+    @work.oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new()
+    byebug
 
-    if @work.oral_history_content!.interviewee_birth.nil?
-      @work.oral_history_content!.interviewee_birth = OralHistoryContent::DateAndPlace.new()
+    birth_data = params['oral_history_content']['interviewee_birth']
+    death_data = params['oral_history_content']['interviewee_death']
+
+    # I'm sure this can be dried up or just moved into methods on the date_and_place object
+    @work.oral_history_content.interviewee_birth.date =      birth_data['date']
+    @work.oral_history_content.interviewee_birth.city =      birth_data['city']
+    @work.oral_history_content.interviewee_birth.province =  birth_data['province']
+    @work.oral_history_content.interviewee_birth.state =     birth_data['date']
+    @work.oral_history_content.interviewee_birth.country =   birth_data['country']
+
+    interviewee_died = (
+      death_data['date'].present?     ||
+      death_data['city'].present?     ||
+      death_data['province'].present? ||
+      death_data['state'].present?    ||
+      death_data['country'].present?
+    )
+
+    if interviewee_died
+      @work.oral_history_content.interviewee_death.date =      death_data['date']
+      @work.oral_history_content.interviewee_death.city =      death_data['city']
+      @work.oral_history_content.interviewee_death.province =  death_data['province']
+      @work.oral_history_content.interviewee_death.state =     death_data['date']
+      @work.oral_history_content.interviewee_death.country =   death_data['country']
+    else
+      @work.oral_history_content.interviewee_death = nil
     end
-
-    if @work.oral_history_content!.interviewee_death.nil?
-      @work.oral_history_content!.interviewee_death = OralHistoryContent::DateAndPlace.new()
-    end
-    ohc_data = params['oral_history_content']
-
-    # I'm sure this can be dried up
-    @work.oral_history_content.interviewee_birth.date =     ohc_data['interviewee_birth_date']
-    @work.oral_history_content.interviewee_birth.city =     ohc_data['interviewee_birth_city']
-    @work.oral_history_content.interviewee_birth.province = ohc_data['interviewee_birth_province']
-    @work.oral_history_content.interviewee_birth.state =    ohc_data['interviewee_birth_state']
-    @work.oral_history_content.interviewee_birth.country =  ohc_data['interviewee_birth_country']
-
-    @work.oral_history_content.interviewee_death.date =     ohc_data['interviewee_death_date']
-    @work.oral_history_content.interviewee_death.city =     ohc_data['interviewee_death_city']
-    @work.oral_history_content.interviewee_death.province = ohc_data['interviewee_death_province']
-    @work.oral_history_content.interviewee_death.state =    ohc_data['interviewee_death_state']
-    @work.oral_history_content.interviewee_death.country =  ohc_data['interviewee_death_country']
 
     unless @work.oral_history_content.valid?
       render :oh_bio_form
@@ -152,7 +162,6 @@ class Admin::WorksController < AdminController
     end
 
     @work.oral_history_content.save!
-
     redirect_to admin_work_path(@work, :anchor => "nav-oral-histories-bio")
   end
 

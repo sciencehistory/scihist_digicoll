@@ -1,19 +1,7 @@
-<%= form_with(model: @work.oral_history_content!, url: submit_oh_bio_admin_work_path(@work), local: true, method: :put) do |f| %>
-  <div class="admin-header sticky-top d-flex justify-content-between p-2 mb-4 mt-1 bg-light border">
-    <% if @work.leaf_representative.present? %>
-      <div class="mr-2">
-        <%= thumb_image_tag(@work.leaf_representative, size: :mini, image_missing_text: true) %>
-      </div>
-    <% end %>
-    <div class="mr-2">
-      <h1 class="h5">
-        <i>Editing bios for </i> <%= truncate(@work.title, length: 80) %> <i>(<%= @work.friendlier_id %>)</i>
-      </h1>
-    </div>
-  </div>
-
+<%= simple_form_for(@work.oral_history_content, url: submit_oh_bio_admin_work_path(@work), :html=> { novalidate: true, method: :put}) do |f| %>
   <div class="form-inputs">
     <h3>Birth</h3>
+
     <% if @work.oral_history_content.errors.attribute_names.include?(:interviewee_birth) %>
       <div class="alert alert-danger mr-2">
         <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
@@ -23,17 +11,14 @@
       </div>
     <% end %>
 
-    Date
-    <%= text_field(:oral_history_content, :interviewee_birth_date, value:  @work.oral_history_content!.interviewee_birth.date ) %>
-    City
-    <%= text_field(:oral_history_content, :interviewee_birth_city, value:  @work.oral_history_content!.interviewee_birth.city ) %>
-    Province
-    <%= text_field(:oral_history_content, :interviewee_birth_province, value:  @work.oral_history_content!.interviewee_birth.province ) %>
-    State
-    <%= text_field(:oral_history_content, :interviewee_birth_state, value:  @work.oral_history_content!.interviewee_birth.state ) %>
-    Country
-    <%= text_field(:oral_history_content, :interviewee_birth_country, value:  @work.oral_history_content!.interviewee_birth.country ) %>
-    <br />
+    <%= f.simple_fields_for :interviewee_birth do |birth_form| %>
+      <%= birth_form.input :date, input_html: {:value => @work.oral_history_content!.interviewee_birth.date } %>
+      <%= birth_form.input :city, input_html: {:value => @work.oral_history_content!.interviewee_birth.city } %>
+      <%= birth_form.input :province, input_html: {:value => @work.oral_history_content!.interviewee_birth.province } %>
+      <%= birth_form.input :state, input_html: {:value => @work.oral_history_content!.interviewee_birth.state } %>
+      <%# see https://github.com/heartcombo/simple_form/issues/54 for country dropdown notes %>
+      <%= birth_form.input :country, input_html: {:value => @work.oral_history_content!.interviewee_birth.country },  :as => :text %>
+    <% end %>
 
     <h3>Death</h3>
     <% if @work.oral_history_content.errors.attribute_names.include?(:interviewee_death) %>
@@ -44,18 +29,13 @@
         <% end %>
       </div>
     <% end %>
-
-    Date
-    <%= text_field(:oral_history_content, :interviewee_death_date, value:  @work.oral_history_content!.interviewee_death.date ) %>
-    City
-    <%= text_field(:oral_history_content, :interviewee_death_city, value:  @work.oral_history_content!.interviewee_death.city ) %>
-    Province
-    <%= text_field(:oral_history_content, :interviewee_death_province, value:  @work.oral_history_content!.interviewee_death.province ) %>
-    State
-    <%= text_field(:oral_history_content, :interviewee_death_state, value:  @work.oral_history_content!.interviewee_death.state ) %>
-    Country
-    <%= text_field(:oral_history_content, :interviewee_death_country, value:  @work.oral_history_content!.interviewee_death.country ) %>
-    <br/>
+    <%= f.simple_fields_for :interviewee_death do |death_form| %>
+      <%= death_form.input :date, input_html: {:value => @work.oral_history_content!.interviewee_death&.date } %>
+      <%= death_form.input :city, input_html: {:value => @work.oral_history_content!.interviewee_death&.city } %>
+      <%= death_form.input :province, input_html: {:value => @work.oral_history_content!.interviewee_death&.province } %>
+      <%= death_form.input :state, input_html: {:value => @work.oral_history_content!.interviewee_death&.state } %>
+      <%= death_form.input :country, input_html: {:value => @work.oral_history_content!.interviewee_death&.country },  :as => :text %>
+    <% end %>
     <%= submit_tag "Save", class: "btn btn-primary" %>
-  </div>
 <% end %>
+
