@@ -8,5 +8,13 @@ class OralHistoryContent
     attr_json :institution, :string
     attr_json :degree,      :string
     attr_json :discipline,  :string
+
+    def update_from_hash(hsh)
+      self.date =        hsh['date']
+      self.degree =      hsh['degree']
+      self.institution = hsh['institution']
+      self.discipline =  hsh['discipline']
+    end
+
   end
 end

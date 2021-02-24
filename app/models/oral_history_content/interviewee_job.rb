@@ -8,5 +8,12 @@ class OralHistoryContent
     attr_json :institution, :string
     attr_json :role,        :string
 
+    def update_from_hash(hsh)
+      self.start =        hsh['start']
+      self.end =          hsh['end']
+      self.institution =  hsh['institution']
+      self.role =         hsh['role']
+    end
+
   end
 end
