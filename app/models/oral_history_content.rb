@@ -108,6 +108,13 @@ class OralHistoryContent < ApplicationRecord
   end
 
 
+  # This is required in order to use repeatable_attr_input .
+  # I'm assuming I'll be able to transfer some code from the controller into here shortly.
+  def interviewee_school_attributes=(some_arr)
+    puts some_arr
+  end
+
+
   def combined_audio_derivatives_job_status=(value)
     super
     self.combined_audio_derivatives_job_status_changed_at = DateTime.now
