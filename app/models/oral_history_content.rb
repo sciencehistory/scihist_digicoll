@@ -109,8 +109,14 @@ class OralHistoryContent < ApplicationRecord
 
 
   # This is required in order to use repeatable_attr_input .
-  # I'm assuming I'll be able to transfer some code from the controller into here shortly.
+  # These methods aren't actually called.
   def interviewee_school_attributes=(some_arr)
+    puts some_arr
+  end
+  def interviewee_job_attributes=(some_arr)
+    puts some_arr
+  end
+  def interviewee_honor_attributes=(some_arr)
     puts some_arr
   end
 

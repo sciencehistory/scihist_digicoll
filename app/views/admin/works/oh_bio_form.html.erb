@@ -11,6 +11,21 @@
       <%= sub_form.input :discipline %>
     <% end %>
 
+    <h3>Career</h3>
+    <%= f.repeatable_attr_input(:interviewee_job) do |sub_form| %>
+      <%= sub_form.input :start %>
+      <%= sub_form.input :end %>
+      <%= sub_form.input :institution %>
+      <%= sub_form.input :role %>
+    <% end %>
+
+    <h3>Awards</h3>
+    <%= f.repeatable_attr_input(:interviewee_honor) do |sub_form| %>
+      <%= sub_form.input :date %>
+      <%= sub_form.input :honor %>
+    <% end %>
+
+
     <h3>Birth</h3>
 
     <% if @work.oral_history_content.errors.attribute_names.include?(:interviewee_birth) %>

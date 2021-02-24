@@ -122,50 +122,39 @@ class Admin::WorksController < AdminController
 
   # PATCH/PUT /admin/works/ab2323ac/submit_oh_bio
   def submit_oh_bio
-
     @work.oral_history_content!
+
     @work.oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new()
-    @work.oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new()
-
     birth_data = params['oral_history_content']['interviewee_birth']
+    @work.oral_history_content.interviewee_birth.update_from_hash(birth_data)
+
+    @work.oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new()
     death_data = params['oral_history_content']['interviewee_death']
+    @work.oral_history_content.interviewee_death.update_from_hash(death_data)
+    @work.oral_history_content.interviewee_death = nil if @work.oral_history_content.interviewee_death.empty?
 
-    # I'm sure this can be dried up or just moved into methods on the date_and_place object
-    @work.oral_history_content.interviewee_birth.date =      birth_data['date']
-    @work.oral_history_content.interviewee_birth.city =      birth_data['city']
-    @work.oral_history_content.interviewee_birth.province =  birth_data['province']
-    @work.oral_history_content.interviewee_birth.state =     birth_data['date']
-    @work.oral_history_content.interviewee_birth.country =   birth_data['country']
-
-    interviewee_died = (
-      death_data['date'].present?     ||
-      death_data['city'].present?     ||
-      death_data['province'].present? ||
-      death_data['state'].present?    ||
-      death_data['country'].present?
-    )
-
-    if interviewee_died
-      @work.oral_history_content.interviewee_death.date =      death_data['date']
-      @work.oral_history_content.interviewee_death.city =      death_data['city']
-      @work.oral_history_content.interviewee_death.province =  death_data['province']
-      @work.oral_history_content.interviewee_death.state =     death_data['date']
-      @work.oral_history_content.interviewee_death.country =   death_data['country']
-    else
-      @work.oral_history_content.interviewee_death = nil
-    end
-
-
-    # Brute force for now; I'm sure there's a better way to do this.
     @work.oral_history_content.interviewee_school = []
     params['oral_history_content']['interviewee_school_attributes'].each do |k, v|
       next if k == "_kithe_placeholder"
       new_school = OralHistoryContent::IntervieweeSchool.new()
-      new_school.date =        v['date']
-      new_school.degree =      v['degree']
-      new_school.institution = v['institution']
-      new_school.discipline =  v['discipline']
+      new_school.update_from_hash(v)
       @work.oral_history_content.interviewee_school << new_school
+    end
+
+    @work.oral_history_content.interviewee_job = []
+    params['oral_history_content']['interviewee_job_attributes'].each do |k, v|
+      next if k == "_kithe_placeholder"
+      new_job = OralHistoryContent::IntervieweeJob.new()
+      new_job.update_from_hash(v)
+      @work.oral_history_content.interviewee_job << new_job
+    end
+
+    @work.oral_history_content.interviewee_honor = []
+    params['oral_history_content']['interviewee_honor_attributes'].each do |k, v|
+      next if k == "_kithe_placeholder"
+      new_honor = OralHistoryContent::IntervieweeHonor.new()
+      new_honor.update_from_hash(v)
+      @work.oral_history_content.interviewee_honor << new_honor
     end
 
     unless @work.oral_history_content.valid?
