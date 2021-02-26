@@ -1,67 +1,142 @@
 <%= kithe_form_for(@work.oral_history_content, url: submit_oh_bio_admin_work_path(@work), :html=> { novalidate: true, method: :put}) do |f| %>
   <div class="form-inputs">
 
-    <h3>Education</h3>
-    <%= f.repeatable_attr_input(:interviewee_school) do |sub_form| %>
-      <%= sub_form.input :degree %>
-      <!-- TODO make this a proper html5 date input -->
-      <%= sub_form.input :date %>
-      <!-- TODO use QA for this -->
-      <%= sub_form.input :institution %>
-      <%= sub_form.input :discipline %>
-    <% end %>
+    <div class="form-group">
+      <h3>Birth</h3>
 
-    <h3>Career</h3>
-    <%= f.repeatable_attr_input(:interviewee_job) do |sub_form| %>
-      <%= sub_form.input :start %>
-      <%= sub_form.input :end %>
-      <%= sub_form.input :institution %>
-      <%= sub_form.input :role %>
-    <% end %>
+      <% if @work.oral_history_content.errors.attribute_names.include?(:interviewee_birth) %>
+        <div class="alert alert-danger mr-2">
+          <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+          <% @work.oral_history_content.interviewee_birth.errors.errors.each do |err| %>
+            <%= err.type %><br/>
+          <% end %>
+        </div>
+      <% end %>
 
-    <h3>Awards</h3>
-    <%= f.repeatable_attr_input(:interviewee_honor) do |sub_form| %>
-      <%= sub_form.input :date %>
-      <%= sub_form.input :honor %>
-    <% end %>
+      <%= f.simple_fields_for :interviewee_birth do |birth_form| %>
 
+        <div class="row">
+          <div class="col">
+            <%= birth_form.input :date, input_html: {:value => @work.oral_history_content!.interviewee_birth.date } %>
+          </div>
+          <div class="col">
+            <%= birth_form.input :city, input_html: {:value => @work.oral_history_content!.interviewee_birth.city } %>
+          </div>
+          <div class="col">
+            <%= birth_form.input :province, input_html: {:value => @work.oral_history_content!.interviewee_birth.province } %>
+          </div>
+          <div class="col">
+            <%= birth_form.input :state, input_html: {:value => @work.oral_history_content!.interviewee_birth.state } %>
+          </div>
+          <div class="col">
+            <%# see https://github.com/heartcombo/simple_form/issues/54 for country dropdown notes %>
+            <%= birth_form.input :country, input_html: {:value => @work.oral_history_content!.interviewee_birth.country },  :as => :text %>
+          </div>
+        </div>
+      <% end %>
 
-    <h3>Birth</h3>
+      <h3>Death</h3>
+      <% if @work.oral_history_content.errors.attribute_names.include?(:interviewee_death) %>
+        <div class="alert alert-danger mr-2">
+          <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+          <% @work.oral_history_content.interviewee_death.errors.errors.each do |err| %>
+            <%= err.type %><br/>
+          <% end %>
+        </div>
+      <% end %>
+      <%= f.simple_fields_for :interviewee_death do |death_form| %>
+        <div class="row">
+          <div class="col">
+            <%= death_form.input :date, input_html: {:value => @work.oral_history_content!.interviewee_death&.date } %>
+          </div>
+          <div class="col">
+            <%= death_form.input :city, input_html: {:value => @work.oral_history_content!.interviewee_death&.city } %>
+          </div>
+          <div class="col">
+            <%= death_form.input :province, input_html: {:value => @work.oral_history_content!.interviewee_death&.province } %>
+          </div>
+          <div class="col">
+            <%= death_form.input :state, input_html: {:value => @work.oral_history_content!.interviewee_death&.state } %>
+          </div>
+          <div class="col">
+            <%= death_form.input :country, input_html: {:value => @work.oral_history_content!.interviewee_death&.country },  :as => :text %>
+           </div>
+      <% end %>
+    </div>
 
-    <% if @work.oral_history_content.errors.attribute_names.include?(:interviewee_birth) %>
-      <div class="alert alert-danger mr-2">
-        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-        <% @work.oral_history_content.interviewee_birth.errors.errors.each do |err| %>
-          <%= err.type %><br/>
+    <div class="form-group">
+      <%= f.repeatable_attr_input(:interviewee_school ) do |sub_form| %>
+        <% if sub_form.object.errors.present? %>
+          <div class="alert alert-danger mr-2">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            <%sub_form.object.errors.errors.each do |err| %>
+              <%= err.type %><br/>
+            <% end %>
+          </div>
         <% end %>
-      </div>
-    <% end %>
-
-    <%= f.simple_fields_for :interviewee_birth do |birth_form| %>
-      <%= birth_form.input :date, input_html: {:value => @work.oral_history_content!.interviewee_birth.date } %>
-      <%= birth_form.input :city, input_html: {:value => @work.oral_history_content!.interviewee_birth.city } %>
-      <%= birth_form.input :province, input_html: {:value => @work.oral_history_content!.interviewee_birth.province } %>
-      <%= birth_form.input :state, input_html: {:value => @work.oral_history_content!.interviewee_birth.state } %>
-      <%# see https://github.com/heartcombo/simple_form/issues/54 for country dropdown notes %>
-      <%= birth_form.input :country, input_html: {:value => @work.oral_history_content!.interviewee_birth.country },  :as => :text %>
-    <% end %>
-
-    <h3>Death</h3>
-    <% if @work.oral_history_content.errors.attribute_names.include?(:interviewee_death) %>
-      <div class="alert alert-danger mr-2">
-        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-        <% @work.oral_history_content.interviewee_death.errors.errors.each do |err| %>
-          <%= err.type %><br/>
+        <div class="row">
+          <div class="col">
+            <%= sub_form.input :degree %>
+          </div>
+          <div class="col">
+            <!-- TODO make this a proper html5 date input -->
+            <%= sub_form.input :date %>
+          </div>
+          <div class="col">
+            <%= sub_form.input( :institution,  input_html: { data: { "scihist-qa-autocomplete" => qa_search_vocab_path("assign_fast", "all")} }  ) %>
+          </div>
+          <div class="col">
+           <%= sub_form.input :discipline %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <div class="form-group">
+      <%= f.repeatable_attr_input(:interviewee_job) do |sub_form| %>
+        <% if sub_form.object.errors.present? %>
+          <div class="alert alert-danger mr-2">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            <%sub_form.object.errors.errors.each do |err| %>
+              <%= err.type %><br/>
+            <% end %>
+          </div>
         <% end %>
-      </div>
-    <% end %>
-    <%= f.simple_fields_for :interviewee_death do |death_form| %>
-      <%= death_form.input :date, input_html: {:value => @work.oral_history_content!.interviewee_death&.date } %>
-      <%= death_form.input :city, input_html: {:value => @work.oral_history_content!.interviewee_death&.city } %>
-      <%= death_form.input :province, input_html: {:value => @work.oral_history_content!.interviewee_death&.province } %>
-      <%= death_form.input :state, input_html: {:value => @work.oral_history_content!.interviewee_death&.state } %>
-      <%= death_form.input :country, input_html: {:value => @work.oral_history_content!.interviewee_death&.country },  :as => :text %>
-    <% end %>
+        <div class="row">
+          <div class="col">
+            <%= sub_form.input :start %>
+          </div>
+          <div class="col">
+            <%= sub_form.input :end %>
+          </div>
+          <div class="col">
+            <%= sub_form.input( :institution,  input_html: { data: { "scihist-qa-autocomplete" => qa_search_vocab_path("assign_fast", "all")} }  ) %>
+          </div>
+          <div class="col">
+            <%= sub_form.input :role %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <div class="form-group">
+      <%= f.repeatable_attr_input(:interviewee_honor ) do |sub_form| %>
+        <% if sub_form.object.errors.present? %>
+          <div class="alert alert-danger mr-2">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            <%sub_form.object.errors.errors.each do |err| %>
+              <%= err.type %><br/>
+            <% end %>
+          </div>
+        <% end %>
+        <div class="row">
+          <div class="col">
+            <%= sub_form.input :date %>
+          </div>
+          <div class="col">
+            <%= sub_form.input :honor %>
+          </div>
+        </div>
+      <% end %>
+    </div>
     <%= submit_tag "Save", class: "btn btn-primary" %>
 <% end %>
 
