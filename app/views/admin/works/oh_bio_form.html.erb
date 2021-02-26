@@ -1,9 +1,10 @@
+<h1>Interviewee bio</h1>
+<h5> for <%= @work.title %></h5>
 <%= kithe_form_for(@work.oral_history_content, url: submit_oh_bio_admin_work_path(@work), :html=> { novalidate: true, method: :put}) do |f| %>
   <div class="form-inputs">
 
     <div class="form-group">
-      <h3>Birth</h3>
-
+      <h3>Birth place and date</h3>
       <% if @work.oral_history_content.errors.attribute_names.include?(:interviewee_birth) %>
         <div class="alert alert-danger mr-2">
           <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
@@ -29,13 +30,12 @@
             <%= birth_form.input :state, input_html: {:value => @work.oral_history_content!.interviewee_birth.state } %>
           </div>
           <div class="col">
-            <%# see https://github.com/heartcombo/simple_form/issues/54 for country dropdown notes %>
-            <%= birth_form.input :country, input_html: {:value => @work.oral_history_content!.interviewee_birth.country },  :as => :text %>
+            <%= birth_form.input :country, priority: ["US","CA"], input_html: {:value => @work.oral_history_content!.interviewee_birth.country }, as: :country, :include_blank => "(select if none)" %>
           </div>
         </div>
       <% end %>
 
-      <h3>Death</h3>
+      <h3>Death place and date</h3>
       <% if @work.oral_history_content.errors.attribute_names.include?(:interviewee_death) %>
         <div class="alert alert-danger mr-2">
           <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
@@ -59,13 +59,15 @@
             <%= death_form.input :state, input_html: {:value => @work.oral_history_content!.interviewee_death&.state } %>
           </div>
           <div class="col">
-            <%= death_form.input :country, input_html: {:value => @work.oral_history_content!.interviewee_death&.country },  :as => :text %>
+            <%= death_form.input :country, priority: ["US","CA"], input_html: {:value => @work.oral_history_content!.interviewee_death&.country },  :as => :country, :include_blank => "(select if none)" %>
            </div>
       <% end %>
     </div>
 
+    <hr/>
+    <h3>Education</h3>
     <div class="form-group">
-      <%= f.repeatable_attr_input(:interviewee_school ) do |sub_form| %>
+      <%= f.repeatable_attr_input(:interviewee_school, simple_form_input_args: { :label => "" } ) do |sub_form| %>
         <% if sub_form.object.errors.present? %>
           <div class="alert alert-danger mr-2">
             <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
@@ -91,8 +93,11 @@
         </div>
       <% end %>
     </div>
+
+    <hr/>
+    <h3>Career</h3>
     <div class="form-group">
-      <%= f.repeatable_attr_input(:interviewee_job) do |sub_form| %>
+      <%= f.repeatable_attr_input(:interviewee_job, simple_form_input_args: { :label => "" }) do |sub_form| %>
         <% if sub_form.object.errors.present? %>
           <div class="alert alert-danger mr-2">
             <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
@@ -117,8 +122,10 @@
         </div>
       <% end %>
     </div>
+    <hr/>
+    <h3>Honors and awards</h3>
     <div class="form-group">
-      <%= f.repeatable_attr_input(:interviewee_honor ) do |sub_form| %>
+      <%= f.repeatable_attr_input(:interviewee_honor, simple_form_input_args: { :label => "" }) do |sub_form| %>
         <% if sub_form.object.errors.present? %>
           <div class="alert alert-danger mr-2">
             <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
