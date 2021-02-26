@@ -74,6 +74,7 @@ gem 'kithe', "~> 2.0", ">= 2.0.2"
 gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 
 gem 'simple_form', "~> 5.0"
+gem 'country_select'
 gem "cocoon"
 
 gem "browse-everything", "~> 1.0"
