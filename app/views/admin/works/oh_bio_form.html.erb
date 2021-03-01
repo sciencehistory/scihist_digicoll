@@ -78,14 +78,13 @@
         <% end %>
         <div class="row">
           <div class="col">
-            <%= sub_form.input :degree %>
-          </div>
-          <div class="col">
-            <!-- TODO make this a proper html5 date input -->
             <%= sub_form.input :date %>
           </div>
           <div class="col">
             <%= sub_form.input( :institution,  input_html: { data: { "scihist-qa-autocomplete" => qa_search_vocab_path("assign_fast", "all")} }  ) %>
+          </div>
+          <div class="col">
+            <%= sub_form.input :degree %>
           </div>
           <div class="col">
            <%= sub_form.input :discipline %>
