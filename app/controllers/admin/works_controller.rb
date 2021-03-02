@@ -165,25 +165,6 @@ class Admin::WorksController < AdminController
     end
 
     unless @work.oral_history_content.valid?
-
-      # repeatable_attr_input provides really helpful error handling,
-      # but we're using simple_fields_for for birth and death date,
-      # as these aren't repeatable.
-
-      @death_date_errors = ohc&.
-        interviewee_death&.errors&.
-        select { |e| e.attribute == :date}&.
-        collect { |e| e.type }&.
-        join('; ')
-      @death_date_errors = nil if @death_date_errors == ""
-
-      @birth_date_errors = ohc&.
-        interviewee_birth&.errors&.
-        select { |e| e.attribute == :date}&.
-        collect { |e| e.type }&.
-        join('; ')
-      @birth_date_errors = nil if @birth_date_errors == ""
-
       render :oh_biography_form
       return
     end
