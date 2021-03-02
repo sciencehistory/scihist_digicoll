@@ -124,11 +124,11 @@ class Admin::WorksController < AdminController
   def submit_oh_biography
     ohc = @work.oral_history_content!
 
-    data =  params['oral_history_content']['interviewee_birth'].
+    data =  params['oral_history_content']['interviewee_birth_attributes'].
       permit(:date, :city, :state, :province, :country).to_h
     ohc.interviewee_birth =  OralHistoryContent::DateAndPlace.new(data)
 
-    data =  params['oral_history_content']['interviewee_death'].
+    data =  params['oral_history_content']['interviewee_death_attributes'].
       permit(:date, :city, :state, :province, :country).to_h
     ohc.interviewee_death = if data.values().all? { |x| x.empty? }
       nil

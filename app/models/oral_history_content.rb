@@ -38,6 +38,7 @@
 #
 class OralHistoryContent < ApplicationRecord
   include AttrJson::Record
+  include AttrJson::NestedAttributes
   self.table_name = "oral_history_content"
 
   belongs_to :work, inverse_of: :oral_history_content
@@ -58,6 +59,13 @@ class OralHistoryContent < ApplicationRecord
   attr_json :interviewee_school,  OralHistoryContent::IntervieweeSchool.to_type, array: true, default: -> {[]}
   attr_json :interviewee_job,     OralHistoryContent::IntervieweeJob.to_type,    array: true, default: -> {[]}
   attr_json :interviewee_honor,   OralHistoryContent::IntervieweeHonor.to_type,  array: true, default: -> {[]}
+
+
+  attr_json_accepts_nested_attributes_for :interviewee_birth
+  attr_json_accepts_nested_attributes_for :interviewee_death
+  attr_json_accepts_nested_attributes_for :interviewee_school
+  attr_json_accepts_nested_attributes_for :interviewee_job
+  attr_json_accepts_nested_attributes_for :interviewee_honor
 
   # Some assets marked non-published in this work are still available by request. That feature needs to be turned
   # on here at the work level, in one of two modes:
@@ -106,17 +114,6 @@ class OralHistoryContent < ApplicationRecord
   def has_ohms_index?
     @has_ohms_index ||= ohms_xml&.index_points&.present?
   end
-
-
-  # This is required in order to use repeatable_attr_input .
-  # These methods aren't actually called.
-  def interviewee_school_attributes=(some_arr)
-  end
-  def interviewee_job_attributes=(some_arr)
-  end
-  def interviewee_honor_attributes=(some_arr)
-  end
-
 
   def combined_audio_derivatives_job_status=(value)
     super
