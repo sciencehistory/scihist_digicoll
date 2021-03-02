@@ -2,7 +2,9 @@
 # some sample data to preview
 require 'factory_bot_rails'
 
-
+# For ActionMailer preview functionality, in dev you can go to eg
+# http://localhost:3000/rails/mailers/oral_history_delivery_mailer/oral_history_delivery_email
+#
 class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
   SAMPLE_WORK_TITLE = "Sample OH Request work"
 
