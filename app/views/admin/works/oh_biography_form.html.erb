@@ -11,7 +11,7 @@
         <div class="col-sm">
           <%= birth_form.input :date,
             required: true,
-            error: @birth_date_errors, wrapper: :scihist_horizontal_form %>
+            wrapper: :scihist_horizontal_form %>
         </div>
         <div class="col-sm">
           <%= birth_form.input :city,
@@ -46,7 +46,7 @@
       <div class="row ml-2">
         <div class="col-sm">
           <%= death_form.input :date,
-            required: true, error: @death_date_errors,
+            required: true,
             wrapper: :scihist_horizontal_form %>
         </div>
         <div class="col-sm">
@@ -68,7 +68,6 @@
         </div>
         <div class="col-sm">
           <%= death_form.input :country, priority: ["US","CA"],
-            #selected: @work.oral_history_content!.interviewee_death&.country,
             include_blank: "(Leave country blank)",
             required: false,
             wrapper: :scihist_horizontal_form %>
