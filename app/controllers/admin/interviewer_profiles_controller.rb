@@ -24,7 +24,7 @@ class Admin::InterviewerProfilesController < AdminController
 
     respond_to do |format|
       if @admin_interviewer_profile.save
-        format.html { redirect_to @admin_interviewer_profile, notice: 'Interviewer profile was successfully created.' }
+        format.html { redirect_to admin_interviewer_profiles_path, notice: 'Interviewer profile was successfully created.' }
         format.json { render :show, status: :created, location: @admin_interviewer_profile }
       else
         format.html { render :new }
@@ -38,7 +38,7 @@ class Admin::InterviewerProfilesController < AdminController
   def update
     respond_to do |format|
       if @admin_interviewer_profile.update(admin_interviewer_profile_params)
-        format.html { redirect_to @admin_interviewer_profile, notice: 'Interviewer profile was successfully updated.' }
+        format.html { redirect_to admin_interviewer_profiles_path, notice: 'Interviewer profile was successfully updated.' }
         format.json { render :show, status: :ok, location: @admin_interviewer_profile }
       else
         format.html { render :edit }
