@@ -7,7 +7,7 @@ class Admin::WorksController < AdminController
   before_action :set_work,
     only: [:show, :edit, :update, :destroy, :reorder_members,
            :reorder_members_form, :demote_to_asset, :publish, :unpublish,
-           :submit_ohms_xml, :download_ohms_xml, :oh_bio_form, :submit_oh_bio,
+           :submit_ohms_xml, :download_ohms_xml, :oh_biography_form, :submit_oh_biography,
            :remove_ohms_xml, :submit_searchable_transcript_source, :download_searchable_transcript_source,
            :remove_searchable_transcript_source, :create_combined_audio_derivatives, :update_oh_available_by_request]
 
@@ -113,52 +113,78 @@ class Admin::WorksController < AdminController
       :disposition => ContentDisposition.format(disposition: "attachment", filename: "#{@work.oral_history_content!.ohms_xml.accession}.xml")
   end
 
-  # Bio metadata form
+  # Biographical metadata form
   # GET "/admin/works/ab2323ac/oh_bio_form"
-  def oh_bio_form
+  def oh_biography_form
     @work.oral_history_content!
-    render :oh_bio_form
+    render :oh_biography_form
   end
 
   # PATCH/PUT /admin/works/ab2323ac/submit_oh_bio
-  def submit_oh_bio
-    @work.oral_history_content!
+  def submit_oh_biography
+    ohc = @work.oral_history_content!
 
-    @work.oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new()
-    birth_data = params['oral_history_content']['interviewee_birth']
-    @work.oral_history_content.interviewee_birth.update_from_hash(birth_data)
+    data =  params['oral_history_content']['interviewee_birth'].
+      permit(:date, :city, :state, :province, :country).to_h
+    ohc.interviewee_birth =  OralHistoryContent::DateAndPlace.new(data)
 
-    @work.oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new()
-    death_data = params['oral_history_content']['interviewee_death']
-    @work.oral_history_content.interviewee_death.update_from_hash(death_data)
-    @work.oral_history_content.interviewee_death = nil if @work.oral_history_content.interviewee_death.empty?
+    data =  params['oral_history_content']['interviewee_death'].
+      permit(:date, :city, :state, :province, :country).to_h
+    ohc.interviewee_death = if data.values().all? { |x| x.empty? }
+      nil
+    else
+      OralHistoryContent::DateAndPlace.new(data)
+    end
 
-    @work.oral_history_content.interviewee_school = []
+    ohc.interviewee_school = []
+    ohc.interviewee_job = []
+    ohc.interviewee_honor = []
+
     params['oral_history_content']['interviewee_school_attributes'].each do |k, v|
       next if k == "_kithe_placeholder"
-      new_school = OralHistoryContent::IntervieweeSchool.new()
-      new_school.update_from_hash(v)
-      @work.oral_history_content.interviewee_school << new_school
+      data = v.permit(:date, :institution, :degree, :discipline).to_h
+      unless data.values().all? { |x| x.empty? }
+        ohc.interviewee_school <<  OralHistoryContent::IntervieweeSchool.new(data)
+      end
     end
 
-    @work.oral_history_content.interviewee_job = []
     params['oral_history_content']['interviewee_job_attributes'].each do |k, v|
       next if k == "_kithe_placeholder"
-      new_job = OralHistoryContent::IntervieweeJob.new()
-      new_job.update_from_hash(v)
-      @work.oral_history_content.interviewee_job << new_job
+      data = v.permit(:start, :end, :institution, :role).to_h
+      unless data.values().all? { |x| x.empty? }
+        ohc.interviewee_job <<  OralHistoryContent::IntervieweeJob.new(data)
+      end
     end
 
-    @work.oral_history_content.interviewee_honor = []
     params['oral_history_content']['interviewee_honor_attributes'].each do |k, v|
       next if k == "_kithe_placeholder"
-      new_honor = OralHistoryContent::IntervieweeHonor.new()
-      new_honor.update_from_hash(v)
-      @work.oral_history_content.interviewee_honor << new_honor
+      data = v.permit(:date, :honor).to_h
+      unless data.values().all? { |x| x.empty? }
+        ohc.interviewee_honor <<  OralHistoryContent::IntervieweeHonor.new(data)
+      end
     end
 
     unless @work.oral_history_content.valid?
-      render :oh_bio_form
+
+      # repeatable_attr_input provides really helpful error handling,
+      # but we're using simple_fields_for for birth and death date,
+      # as these aren't repeatable.
+
+      @death_date_errors = ohc&.
+        interviewee_death&.errors&.
+        select { |e| e.attribute == :date}&.
+        collect { |e| e.type }&.
+        join('; ')
+      @death_date_errors = nil if @death_date_errors == ""
+
+      @birth_date_errors = ohc&.
+        interviewee_birth&.errors&.
+        select { |e| e.attribute == :date}&.
+        collect { |e| e.type }&.
+        join('; ')
+      @birth_date_errors = nil if @birth_date_errors == ""
+
+      render :oh_biography_form
       return
     end
 

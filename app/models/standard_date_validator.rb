@@ -9,7 +9,7 @@ class StandardDateValidator < ActiveModel::Validator
     options[:fields].each do |field|
       value = record.send(field)
       unless value =~ nice_date
-        record.errors.add(:base, "Must be of format YYYY[-MM-DD]")
+        record.errors.add(field, "Must be of format YYYY[-MM-DD]")
       end
     end
   end
