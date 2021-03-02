@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Interviewer Profiles</h1>
+
+<%= link_to 'New Interviewer Profile', new_admin_interviewer_profile_path, class: "btn btn-outline-primary mb-3" %>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @admin_interviewer_profiles.each do |admin_interviewer_profile| %>
+      <tr>
+        <td><%= admin_interviewer_profile.name %></td>
+        <td>
+          <%= link_to 'Edit', edit_admin_interviewer_profile_path(admin_interviewer_profile), class: "btn btn-sm btn-outline-primary" %>
+          <%= link_to 'Destroy', admin_interviewer_profile, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-sm btn-outline-danger" %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+

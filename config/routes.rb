@@ -71,7 +71,6 @@ Rails.application.routes.draw do
   # download_derivative_url(asset, "thumb_small")
   get "downloads/:asset_id/:derivative_key", to: "downloads#derivative", as: :download_derivative
 
-
   ##
   # Blacklight-generated routes, that were then modified a bit by us to take
   # out stuff we're not using.
@@ -216,6 +215,8 @@ Rails.application.routes.draw do
         delete 'clear'
       end
     end
+
+    resources :interviewer_profiles, except: [:show]
 
 
     # These 'sub-apps' are for admin-use only, but since they are sub-apps
