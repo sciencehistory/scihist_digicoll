@@ -37,6 +37,7 @@ en:
   date:
     formats:
       admin: '%Y-%b-%d'
+      expiration_date: "%A, %B %d" # eg Monday, February 11
   time:
     formats:
       admin: '%Y-%b-%d %H:%M:%S %Z'
