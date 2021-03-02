@@ -1,23 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe "Oral History Access Request Administration", :logged_in_user, type: :system, queue_adapter: :test  do
-  let(:preview_pdf) { create(:asset_with_faked_file, :pdf, published: true) }
-  let(:protected_pdf) { create(:asset_with_faked_file, :pdf, published: false, oh_available_by_request: true) }
-  let(:protected_mp3) { create(:asset_with_faked_file, :mp3, published: false, oh_available_by_request: true) }
-
   let!(:work) do
-    create(:oral_history_work, published: true).tap do |work|
-      work.members << preview_pdf
-      work.members << protected_pdf
-      work.members << protected_mp3
-
-      work.representative =  preview_pdf
-      work.save!
-
-      work.oral_history_content!.update(available_by_request_mode: :manual_review)
-    end
+    create(:oral_history_work, :available_by_request, available_by_request_mode: :manual_review, published: true)
   end
-
 
   context "A request exists for a manual_review work" do
     let!(:oh_request) { Admin::OralHistoryAccessRequest.create!(

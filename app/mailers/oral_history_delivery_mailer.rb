@@ -27,6 +27,9 @@ class OralHistoryDeliveryMailer < ApplicationMailer
     1.week.to_i
   end
 
+  def download_by_human_readable
+    I18n.l(Date.today + 6.days, format: :expiration_date)
+  end
 
   def created_at
     request.created_at
