@@ -4,7 +4,7 @@ class Admin::InterviewerProfilesController < AdminController
   # GET /admin/interviewer_profiles
   # GET /admin/interviewer_profiles.json
   def index
-    @admin_interviewer_profiles = Admin::InterviewerProfile.order(:name).all
+    @admin_interviewer_profiles = Admin::InterviewerProfile.order(:name).page(params[:page]).per(100).all
   end
 
 
