@@ -4,6 +4,13 @@
 
 <%= link_to 'New Interviewer Profile', new_admin_interviewer_profile_path, class: "btn btn-outline-primary mb-3" %>
 
+<% if @admin_interviewer_profiles.total_count > 0 %>
+  <p>
+    <%= @admin_interviewer_profiles.offset_value + 1 %> - <%= @admin_interviewer_profiles.offset_value + @admin_interviewer_profiles.count %> of <%= @admin_interviewer_profiles.total_count %>
+  </p>
+<% end %>
+
+
 <table class="table">
   <thead>
     <tr>
@@ -25,5 +32,4 @@
   </tbody>
 </table>
 
-<br>
-
+<%= paginate @admin_interviewer_profiles, theme: 'twitter-bootstrap-4' %>
