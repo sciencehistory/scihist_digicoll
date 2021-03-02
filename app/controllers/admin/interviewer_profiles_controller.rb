@@ -65,6 +65,9 @@ class Admin::InterviewerProfilesController < AdminController
 
     # Only allow a list of trusted parameters through.
     def admin_interviewer_profile_params
-      params.require(:admin_interviewer_profile).permit(:name, :profile)
+      params.require(:admin_interviewer_profile).permit(:name, :profile).tap do |params|
+        # Sanitize desciprion to include only allowed HTML.
+        params[:profile] = DescriptionSanitizer.new.sanitize(params[:profile])
+      end
     end
 end
