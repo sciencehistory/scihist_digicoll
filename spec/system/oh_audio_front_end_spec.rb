@@ -192,7 +192,7 @@ describe "Audio front end", type: :system, js: true do
   describe "Public audio work show page (shown to a logged-in user)", :logged_in_user, type: :system, js: true do
 
     let!(:parent_work) do
-      build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
+      build(:oral_history_work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
     end
     let(:audio_file_path) { Rails.root.join("spec/test_support/audio/5-seconds-of-silence.mp3")}
     let(:audio_file_sha512) { Digest::SHA512.hexdigest(File.read(audio_file_path)) }
@@ -284,9 +284,11 @@ describe "Audio front end", type: :system, js: true do
 
   describe "ohms-enabled" do
     let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml" }
+    let(:interviewer_profile) { Admin::InterviewerProfile.create(name: "Smith, John", profile: "This has some <i>html</i>")}
+
     let(:parent_work) {
-      create(:public_work, rights: "http://creativecommons.org/publicdomain/mark/1.0/").tap do |work|
-        work.oral_history_content!.update(ohms_xml_text: File.read(ohms_xml_path))
+      create(:oral_history_work, rights: "http://creativecommons.org/publicdomain/mark/1.0/", published: true).tap do |work|
+        work.oral_history_content!.update(ohms_xml_text: File.read(ohms_xml_path), interviewer_profiles: [interviewer_profile])
       end
     }
 
@@ -308,6 +310,10 @@ describe "Audio front end", type: :system, js: true do
       expect(page).to have_content(%r{Table of Contents — 1 / 7}i)
       expect(page).to have_selector("*[data-ohms-hitcount='index']", text: "7")
       expect(page).to have_selector("*[data-ohms-hitcount='transcript']", text: "43")
+
+      click_on "Description"
+      expect(page).to have_selector("h2", text: "About the Interviewer")
+      expect(page).to have_text("This has some html")
     end
   end
 end
