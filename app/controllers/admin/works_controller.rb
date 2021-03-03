@@ -122,46 +122,53 @@ class Admin::WorksController < AdminController
 
   # PATCH/PUT /admin/works/ab2323ac/submit_oh_bio
   def submit_oh_biography
-    ohc = @work.oral_history_content!
+    sidecar = @work.oral_history_content!
+    form_params = params['oral_history_content']
 
-    data =  params['oral_history_content']['interviewee_birth_attributes'].
-      permit(:date, :city, :state, :province, :country).to_h
-    ohc.interviewee_birth =  OralHistoryContent::DateAndPlace.new(data)
+    # get the json_attr attribute names in advance.
+    date_and_place_attrs, school_attrs, job_attrs, honor_attrs = [
+      OralHistoryContent::DateAndPlace,
+      OralHistoryContent::IntervieweeSchool,
+      OralHistoryContent::IntervieweeJob,
+      OralHistoryContent::IntervieweeHonor,
+    ].map { |cls| cls.attr_json_registry.attribute_names }
 
-    data =  params['oral_history_content']['interviewee_death_attributes'].
-      permit(:date, :city, :state, :province, :country).to_h
-    ohc.interviewee_death = if data.values().all? { |x| x.empty? }
-      nil
-    else
+    sidecar.interviewee_birth = begin
+      data = form_params['interviewee_birth_attributes'].
+        permit(date_and_place_attrs).to_h
+      return nil if data.values.all?(&:empty?)
       OralHistoryContent::DateAndPlace.new(data)
     end
 
-    ohc.interviewee_school = []
-    ohc.interviewee_job = []
-    ohc.interviewee_honor = []
-
-    params['oral_history_content']['interviewee_school_attributes'].each do |k, v|
-      next if k == "_kithe_placeholder"
-      data = v.permit(:date, :institution, :degree, :discipline).to_h
-      unless data.values().all? { |x| x.empty? }
-        ohc.interviewee_school <<  OralHistoryContent::IntervieweeSchool.new(data)
-      end
+    sidecar.interviewee_death = begin
+      data = form_params['interviewee_death_attributes'].
+        permit(date_and_place_attrs).to_h
+      return nil if data.values.all?(&:empty?)
+      OralHistoryContent::DateAndPlace.new(data)
     end
 
-    params['oral_history_content']['interviewee_job_attributes'].each do |k, v|
+    sidecar.interviewee_school = []
+    form_params['interviewee_school_attributes'].each do |k, v|
       next if k == "_kithe_placeholder"
-      data = v.permit(:start, :end, :institution, :role).to_h
-      unless data.values().all? { |x| x.empty? }
-        ohc.interviewee_job <<  OralHistoryContent::IntervieweeJob.new(data)
-      end
+      data = v.permit(school_attrs).to_h
+      next if data.values.all?(&:empty?)
+      sidecar.interviewee_school <<  OralHistoryContent::IntervieweeSchool.new(data)
     end
 
-    params['oral_history_content']['interviewee_honor_attributes'].each do |k, v|
+    sidecar.interviewee_job = []
+    form_params['interviewee_job_attributes'].each do |k, v|
       next if k == "_kithe_placeholder"
-      data = v.permit(:date, :honor).to_h
-      unless data.values().all? { |x| x.empty? }
-        ohc.interviewee_honor <<  OralHistoryContent::IntervieweeHonor.new(data)
-      end
+      data = v.permit(job_attrs).to_h
+      next if data.values.all?(&:empty?)
+      sidecar.interviewee_job <<  OralHistoryContent::IntervieweeJob.new(data)
+    end
+
+    sidecar.interviewee_honor = []
+    form_params['interviewee_honor_attributes'].each do |k, v|
+      next if k == "_kithe_placeholder"
+      data = v.permit(honor_attrs).to_h
+      next if data.values.all?(&:empty?)
+      sidecar.interviewee_honor <<  OralHistoryContent::IntervieweeHonor.new(data)
     end
 
     unless @work.oral_history_content.valid?
