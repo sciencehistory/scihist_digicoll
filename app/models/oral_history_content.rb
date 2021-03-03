@@ -42,6 +42,8 @@ class OralHistoryContent < ApplicationRecord
 
   belongs_to :work, inverse_of: :oral_history_content
 
+  has_and_belongs_to_many :interviewer_profiles, class_name: "Admin::InterviewerProfile"
+
   include CombinedAudioUploader::Attachment.new(:combined_audio_mp3, store: :combined_audio_derivatives)
   include CombinedAudioUploader::Attachment.new(:combined_audio_webm, store: :combined_audio_derivatives)
 
