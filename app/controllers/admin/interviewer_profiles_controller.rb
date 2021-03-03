@@ -1,16 +1,17 @@
 class Admin::InterviewerProfilesController < AdminController
-  before_action :set_admin_interviewer_profile, only: [:edit, :update, :destroy]
+  before_action :set_interviewer_profile, only: [:edit, :update, :destroy]
 
   # GET /admin/interviewer_profiles
   # GET /admin/interviewer_profiles.json
   def index
-    @admin_interviewer_profiles = Admin::InterviewerProfile.order(:name).page(params[:page]).per(100).all
+    @interviewer_profiles = InterviewerProfile.order(:name).page(params[:page]).per(100).all
   end
 
 
   # GET /admin/interviewer_profiles/new
   def new
-    @admin_interviewer_profile = Admin::InterviewerProfile.new
+    byebug
+    @interviewer_profile = InterviewerProfile.new
   end
 
   # GET /admin/interviewer_profiles/1/edit
@@ -20,15 +21,15 @@ class Admin::InterviewerProfilesController < AdminController
   # POST /admin/interviewer_profiles
   # POST /admin/interviewer_profiles.json
   def create
-    @admin_interviewer_profile = Admin::InterviewerProfile.new(admin_interviewer_profile_params)
+    @interviewer_profile = InterviewerProfile.new(interviewer_profile_params)
 
     respond_to do |format|
-      if @admin_interviewer_profile.save
+      if @interviewer_profile.save
         format.html { redirect_to admin_interviewer_profiles_path, notice: 'Interviewer profile was successfully created.' }
-        format.json { render :show, status: :created, location: @admin_interviewer_profile }
+        format.json { render :show, status: :created, location: @interviewer_profile }
       else
         format.html { render :new }
-        format.json { render json: @admin_interviewer_profile.errors, status: :unprocessable_entity }
+        format.json { render json: @interviewer_profile.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -37,12 +38,12 @@ class Admin::InterviewerProfilesController < AdminController
   # PATCH/PUT /admin/interviewer_profiles/1.json
   def update
     respond_to do |format|
-      if @admin_interviewer_profile.update(admin_interviewer_profile_params)
+      if @interviewer_profile.update(interviewer_profile_params)
         format.html { redirect_to admin_interviewer_profiles_path, notice: 'Interviewer profile was successfully updated.' }
-        format.json { render :show, status: :ok, location: @admin_interviewer_profile }
+        format.json { render :show, status: :ok, location: @interviewer_profile }
       else
         format.html { render :edit }
-        format.json { render json: @admin_interviewer_profile.errors, status: :unprocessable_entity }
+        format.json { render json: @interviewer_profile.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -50,7 +51,7 @@ class Admin::InterviewerProfilesController < AdminController
   # DELETE /admin/interviewer_profiles/1
   # DELETE /admin/interviewer_profiles/1.json
   def destroy
-    @admin_interviewer_profile.destroy
+    @interviewer_profile.destroy
     respond_to do |format|
       format.html { redirect_to admin_interviewer_profiles_url, notice: 'Interviewer profile was successfully destroyed.' }
       format.json { head :no_content }
@@ -59,13 +60,13 @@ class Admin::InterviewerProfilesController < AdminController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_admin_interviewer_profile
-      @admin_interviewer_profile = Admin::InterviewerProfile.find(params[:id])
+    def set_interviewer_profile
+      @interviewer_profile = InterviewerProfile.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
-    def admin_interviewer_profile_params
-      params.require(:admin_interviewer_profile).permit(:name, :profile).tap do |params|
+    def interviewer_profile_params
+      params.require(:interviewer_profile).permit(:name, :profile).tap do |params|
         # Sanitize desciprion to include only allowed HTML.
         params[:profile] = DescriptionSanitizer.new.sanitize(params[:profile])
       end
