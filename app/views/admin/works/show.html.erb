@@ -146,6 +146,17 @@
       <%= WorkCombinedAudioDerivatives.new(@work).display %>
       <%= render "ohms_xml",  work: @work %>
       <%= render "oral_history_transcript", work: @work %>
+
+      <div class="card bg-light mb-3">
+        <h2 class="card-header h3">Interviewer Profiles</h2>
+        <div class="card-body">
+
+        <%= simple_form_for(@work.oral_history_content, url: "foo") do |f| %>
+          <%= f.association :interviewer_profiles, collection: Admin::InterviewerProfile.order(:name), hint: "Multiple select, hold down command on MacOS or control on Windows to select and deselect" %>
+          <%= submit_tag "Save Changes", class: "btn btn-primary mb-3" %>
+        <% end %>
+      </div>
+
       <%= WorkManageOralHistoryAvailableByRequest.new(@work).display %>
     </div>
   <% end %>
