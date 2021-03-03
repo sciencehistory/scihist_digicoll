@@ -284,7 +284,7 @@ describe "Audio front end", type: :system, js: true do
 
   describe "ohms-enabled" do
     let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml" }
-    let(:interviewer_profile) { Admin::InterviewerProfile.create(name: "Smith, John", profile: "This has some <i>html</i>")}
+    let(:interviewer_profile) { InterviewerProfile.create(name: "Smith, John", profile: "This has some <i>html</i>")}
 
     let(:parent_work) {
       create(:oral_history_work, rights: "http://creativecommons.org/publicdomain/mark/1.0/", published: true).tap do |work|

@@ -152,7 +152,7 @@
         <div class="card-body">
 
         <%= simple_form_for(@work.oral_history_content, url: update_oral_history_interviewer_profiles_admin_work_path(@work)) do |f| %>
-          <%= f.association :interviewer_profiles, collection: Admin::InterviewerProfile.order(:name), hint: "Multiple select, hold down command on MacOS or control on Windows to select and deselect" %>
+          <%= f.association :interviewer_profiles, collection: InterviewerProfile.order(:name), hint: "Multiple select, hold down command on MacOS or control on Windows to select and deselect" %>
           <%= submit_tag "Save Changes", class: "btn btn-primary mb-3" %>
         <% end %>
       </div>

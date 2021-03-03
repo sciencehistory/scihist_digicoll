@@ -1,5 +1,4 @@
-
-<%= simple_form_for(@admin_interviewer_profile) do |f| %>
+<%= simple_form_for([:admin, @interviewer_profile]) do |f| %>
   <%= f.error_notification %>
   <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
 
