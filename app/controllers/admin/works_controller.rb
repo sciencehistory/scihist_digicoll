@@ -122,9 +122,8 @@ class Admin::WorksController < AdminController
 
   # PATCH/PUT /admin/works/ab2323ac/submit_oh_bio
   def submit_oh_biography
-    sidecar = @work.oral_history_content!
+    oral_history_content = @work.oral_history_content!
     form_params = params['oral_history_content']
-
     # get the json_attr attribute names in advance.
     date_and_place_attrs, school_attrs, job_attrs, honor_attrs = [
       OralHistoryContent::DateAndPlace,
@@ -132,50 +131,43 @@ class Admin::WorksController < AdminController
       OralHistoryContent::IntervieweeJob,
       OralHistoryContent::IntervieweeHonor,
     ].map { |cls| cls.attr_json_registry.attribute_names }
-
-    sidecar.interviewee_birth = begin
+    oral_history_content.interviewee_birth = begin
       data = form_params['interviewee_birth_attributes'].
         permit(date_and_place_attrs).to_h
       return nil if data.values.all?(&:empty?)
       OralHistoryContent::DateAndPlace.new(data)
     end
-
-    sidecar.interviewee_death = begin
+    oral_history_content.interviewee_death = begin
       data = form_params['interviewee_death_attributes'].
         permit(date_and_place_attrs).to_h
       return nil if data.values.all?(&:empty?)
       OralHistoryContent::DateAndPlace.new(data)
     end
-
-    sidecar.interviewee_school = []
+    oral_history_content.interviewee_school = []
     form_params['interviewee_school_attributes'].each do |k, v|
       next if k == "_kithe_placeholder"
       data = v.permit(school_attrs).to_h
       next if data.values.all?(&:empty?)
-      sidecar.interviewee_school <<  OralHistoryContent::IntervieweeSchool.new(data)
+      oral_history_content.interviewee_school <<  OralHistoryContent::IntervieweeSchool.new(data)
     end
-
-    sidecar.interviewee_job = []
+    oral_history_content.interviewee_job = []
     form_params['interviewee_job_attributes'].each do |k, v|
       next if k == "_kithe_placeholder"
       data = v.permit(job_attrs).to_h
       next if data.values.all?(&:empty?)
-      sidecar.interviewee_job <<  OralHistoryContent::IntervieweeJob.new(data)
+      oral_history_content.interviewee_job <<  OralHistoryContent::IntervieweeJob.new(data)
     end
-
-    sidecar.interviewee_honor = []
+    oral_history_content.interviewee_honor = []
     form_params['interviewee_honor_attributes'].each do |k, v|
       next if k == "_kithe_placeholder"
       data = v.permit(honor_attrs).to_h
       next if data.values.all?(&:empty?)
-      sidecar.interviewee_honor <<  OralHistoryContent::IntervieweeHonor.new(data)
+      oral_history_content.interviewee_honor <<  OralHistoryContent::IntervieweeHonor.new(data)
     end
-
     unless @work.oral_history_content.valid?
       render :oh_biography_form
       return
     end
-
     @work.oral_history_content.save!
     redirect_to admin_work_path(@work, :anchor => "nav-oral-histories-bio")
   end
