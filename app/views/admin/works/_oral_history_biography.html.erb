@@ -1,6 +1,5 @@
-<%= link_to "Edit Biographies", oh_biography_form_admin_work_path(@work), class: "btn btn-primary mb-2" %>
 <div class="card bg-light mb-3">
-  <h2 class="card-header h3">Interviewee bio</h2>
+  <h2 class="card-header h3">Interviewee biography <%= link_to "Edit", oh_biography_form_admin_work_path(@work), class: "btn btn-primary" %></h2>
   <div class="card-body">
     <div class="row">
       <div class="col-sm">
