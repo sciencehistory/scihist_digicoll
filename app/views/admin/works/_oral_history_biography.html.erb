@@ -7,10 +7,10 @@
         Dates
       </div>
       <div class="col-sm">
-        <%= work.oral_history_content.interviewee_birth_place%>, <%= work.oral_history_content.interviewee_birth&.date%>
+        <%= work.oral_history_content.interviewee_birth %>
         <% if work.oral_history_content.interviewee_death.present? %>
           &ndash;
-          <%= work.oral_history_content.interviewee_death_place%>, <%= work.oral_history_content.interviewee_death&.date%>
+          <%= work.oral_history_content.interviewee_death%>
         <% end %>
       </div>
     </div>
