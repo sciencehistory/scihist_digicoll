@@ -136,17 +136,17 @@ class Admin::WorksController < AdminController
       OralHistoryContent::IntervieweeHonor,
     ].map { |cls| cls.attr_json_registry.attribute_names }
 
-    data = form_params['interviewee_birth_attributes'].
-      permit(date_and_place_attrs).to_h
-    if data.values.all?(&:empty?)
+    data =  form_params['interviewee_birth_attributes']&.
+      permit(date_and_place_attrs)&.to_h
+    if data.nil? || data.values.all?(&:empty?)
       oral_history_content.interviewee_birth = nil
     else
       oral_history_content.interviewee_birth = OralHistoryContent::DateAndPlace.new(data)
     end
 
-    data = form_params['interviewee_death_attributes'].
-      permit(date_and_place_attrs).to_h
-    if data.values.all?(&:empty?)
+    data =  form_params['interviewee_death_attributes']&.
+      permit(date_and_place_attrs)&.to_h
+    if data.nil? || data.values.all?(&:empty?)
       oral_history_content.interviewee_death = nil
     else
       oral_history_content.interviewee_death = OralHistoryContent::DateAndPlace.new(data)
