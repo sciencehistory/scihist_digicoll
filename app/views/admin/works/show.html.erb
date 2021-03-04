@@ -88,8 +88,6 @@
 
     <% if @work.is_oral_history? %>
       <a class="nav-item nav-link" id="nav-oral-histories-tab" data-toggle="tab" href="#nav-oral-histories" role="tab" aria-controls="nav-profile" aria-selected="false">Oral History</a>
-
-      <a class="nav-item nav-link" id="nav-oral-histories-bio-tab" data-toggle="tab" href="#nav-oral-histories-bio" role="tab" aria-controls="nav-profile" aria-selected="false">Bios</a>
     <% end %>
 
   </div>
@@ -145,14 +143,10 @@
   <% if @work.is_oral_history? %>
     <div class="tab-pane" id="nav-oral-histories" role="tabpanel" aria-labelledby="nav-oral-histories-tab">
       <%= WorkCombinedAudioDerivatives.new(@work).display %>
-      <%= render "ohms_xml",  work: @work %>
+      <%= render "oral_history_biography",  work: @work %>
+      <%= render "ohms_xml",                work: @work %>
       <%= render "oral_history_transcript", work: @work %>
       <%= WorkManageOralHistoryAvailableByRequest.new(@work).display %>
     </div>
-
-    <div class="tab-pane" id="nav-oral-histories-bio" role="tabpanel" aria-labelledby="nav-oral-histories-bio-tab">
-      <%= render "oral_history_biography", work: @work %>
-    </div>
-
   <% end %>
 </div>
