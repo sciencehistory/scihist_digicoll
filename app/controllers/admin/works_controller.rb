@@ -117,6 +117,10 @@ class Admin::WorksController < AdminController
   # GET "/admin/works/ab2323ac/oh_bio_form"
   def oh_biography_form
     @work.oral_history_content!
+    @work.oral_history_content.
+      interviewee_birth = OralHistoryContent::DateAndPlace.new
+    @work.oral_history_content.
+      interviewee_death = OralHistoryContent::DateAndPlace.new
     render :oh_biography_form
   end
 
@@ -131,18 +135,24 @@ class Admin::WorksController < AdminController
       OralHistoryContent::IntervieweeJob,
       OralHistoryContent::IntervieweeHonor,
     ].map { |cls| cls.attr_json_registry.attribute_names }
-    oral_history_content.interviewee_birth = begin
-      data = form_params['interviewee_birth_attributes'].
-        permit(date_and_place_attrs).to_h
-      return nil if data.values.all?(&:empty?)
-      OralHistoryContent::DateAndPlace.new(data)
+
+    data = form_params['interviewee_birth_attributes'].
+      permit(date_and_place_attrs).to_h
+    if data.values.all?(&:empty?)
+      oral_history_content.interviewee_birth = nil
+    else
+      oral_history_content.interviewee_birth = OralHistoryContent::DateAndPlace.new(data)
     end
-    oral_history_content.interviewee_death = begin
-      data = form_params['interviewee_death_attributes'].
-        permit(date_and_place_attrs).to_h
-      return nil if data.values.all?(&:empty?)
-      OralHistoryContent::DateAndPlace.new(data)
+
+    data = form_params['interviewee_death_attributes'].
+      permit(date_and_place_attrs).to_h
+    if data.values.all?(&:empty?)
+      oral_history_content.interviewee_death = nil
+    else
+      oral_history_content.interviewee_death = OralHistoryContent::DateAndPlace.new(data)
     end
+
+
     oral_history_content.interviewee_school = []
     form_params['interviewee_school_attributes'].each do |k, v|
       next if k == "_kithe_placeholder"
