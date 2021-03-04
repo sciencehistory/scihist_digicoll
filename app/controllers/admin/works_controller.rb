@@ -169,7 +169,7 @@ class Admin::WorksController < AdminController
       return
     end
     @work.oral_history_content.save!
-    redirect_to admin_work_path(@work, :anchor => "nav-oral-histories-bio")
+    redirect_to admin_work_path(@work, :anchor => "nav-oral-histories")
   end
 
 
