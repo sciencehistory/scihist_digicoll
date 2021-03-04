@@ -1,5 +1,6 @@
 <h1>Interviewee biography</h1>
 <h5> for <%= @work.title %></h5>
+
 <div class="ml-2">
   <%= kithe_form_for(@work.oral_history_content,
     url: submit_oh_biography_admin_work_path(@work),
@@ -21,16 +22,18 @@
       </div>
       <div class="row ml-2">
         <div class="col-sm">
-          <%= birth_form.input :province,
-            required: false,
+          <%= birth_form.input :state,
+            collection: ISO3166::Country.new('US').subdivisions.
+              map { |p| [ p[1].translations['en'], p[0] ] },
             wrapper: :scihist_horizontal_form %>
         </div>
         <div class="col-sm">
-          <%= birth_form.input :state,
+          <%= birth_form.input :province,
+            collection: ISO3166::Country.new('CA').subdivisions.
+              map  { |p| [ p[1].translations['en'], p[0] ] },
             required: false,
             wrapper: :scihist_horizontal_form %>
         </div>
-
         <div class="col-sm">
           <%= birth_form.input :country,
             priority: ["US","CA"],
@@ -52,20 +55,25 @@
         <div class="col-sm">
           <%= death_form.input :city,
             required: false,
-            wrapper: :scihist_horizontal_form %>
+            wrapper: :scihist_horizontal_form  %>
         </div>
       </div>
       <div class="row ml-2">
         <div class="col-sm">
-          <%= death_form.input :province,
+          <%= death_form.input :state,
+            collection: ISO3166::Country.new('US').subdivisions.
+              map  { |p| [ p[1].translations['en'], p[0] ] },
             required: false,
             wrapper: :scihist_horizontal_form %>
         </div>
         <div class="col-sm">
-          <%= death_form.input :state,
-          required: false,
-          wrapper: :scihist_horizontal_form %>
+          <%= death_form.input :province,
+            collection: ISO3166::Country.new('CA').subdivisions.
+              map  { |p| [ p[1].translations['en'], p[0] ] },
+            required: false,
+            wrapper: :scihist_horizontal_form %>
         </div>
+
         <div class="col-sm">
           <%= death_form.input :country, priority: ["US","CA"],
             include_blank: "(Leave country blank)",
