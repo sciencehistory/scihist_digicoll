@@ -1,17 +1,10 @@
 require 'rails_helper'
-
 RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :system, queue_adapter: :test  do
-
   let!(:work) { create(:oral_history_work, published: true) }
-
-
   it "interviewee bio data shows up" do
     visit admin_work_path(work, :anchor => "nav-oral-histories")
-
     interviewee_bio = find("h2", text: "Interviewee bio").ancestor('.card')
-
     within(interviewee_bio) do
-
       expect(page).to have_text("Edit")
       expect(page).to have_text("Interviewee biography")
       expect(page).to have_text("Place of Birth, CA, United States of America, 1923")
@@ -20,12 +13,9 @@ RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :sy
       expect(page).to have_text("1981: Nobel Prize in Chemistry")
       click_link "Edit"
     end
-
     honors = find("fieldset.oral_history_content_interviewee_honor")
-
     click_link "Add another Interviewee honor"
     click_link "Add another Interviewee honor"
-
     within(honors) do
       within find_all(".nested-fields")[2] do
         fill_in("Date", with: "2234")
@@ -37,7 +27,6 @@ RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :sy
       end
     end
     find('input[name="commit"]').click
-
     interviewee_bio = find("h2", text: "Interviewee bio").ancestor('.card')
     within(interviewee_bio) do
       expect(page).to have_text("Died: Place of Death, NU, Canada, 2223")
@@ -46,5 +35,4 @@ RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :sy
       click_link "Edit"
     end
   end
-
 end
