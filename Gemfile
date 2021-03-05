@@ -127,7 +127,7 @@ group :development do
   gem 'web-console', '>= 3.3.0'
   gem 'listen', '>= 3.0.5', '< 3.2'
   gem 'capistrano', '~> 3.8'
-  gem 'capistrano-bundler', '~> 1.2'
+  gem 'capistrano-bundler', '~> 2.0', ">= 2.0.1"
   gem 'capistrano-passenger', '~> 0.2'
   gem 'capistrano-rails', '~> 1.2'
   gem 'capistrano-maintenance', '~> 1.0', require: false
@@ -142,7 +142,7 @@ group :test do
   gem 'webdrivers'
   gem 'capybara-screenshot'
   gem 'factory_bot_rails'
-  gem "database_cleaner", "~> 1.7"
+  gem "database_cleaner", "~> 2.0"
   gem "webmock", "~> 3.5"
   gem "db-query-matchers", "< 2.0"
   # Used for Cap deployment to auto-lookup hosts from EC2 tags.
