@@ -118,9 +118,9 @@ class Admin::WorksController < AdminController
   def oh_biography_form
     @work.oral_history_content!
     @work.oral_history_content.
-      interviewee_birth = OralHistoryContent::DateAndPlace.new
+      interviewee_birth ||= OralHistoryContent::DateAndPlace.new
     @work.oral_history_content.
-      interviewee_death = OralHistoryContent::DateAndPlace.new
+      interviewee_death ||= OralHistoryContent::DateAndPlace.new
     render :oh_biography_form
   end
 
