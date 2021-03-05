@@ -6,10 +6,9 @@
         Dates
       </div>
       <div class="col-sm">
-        <%= work.oral_history_content.interviewee_birth %>
-        <% if work.oral_history_content.interviewee_death.present? %>
-          &ndash;
-          <%= work.oral_history_content.interviewee_death%>
+        Born: <%= work.oral_history_content.interviewee_birth %>
+        <% if work.oral_history_content.interviewee_death.present? %><br/>
+          Died: <%= work.oral_history_content.interviewee_death%>
         <% end %>
       </div>
     </div>

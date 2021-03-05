@@ -12,6 +12,7 @@
         <div class="col-sm">
           <%= birth_form.input :date,
             required: true,
+            hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
             wrapper: :scihist_horizontal_form %>
         </div>
         <div class="col-sm">
@@ -25,12 +26,14 @@
           <%= birth_form.input :state,
             collection: ISO3166::Country.new('US').subdivisions.
               map { |p| [ p[1].translations['en'], p[0] ] },
+              hint: 'Leave blank unless USA',
             wrapper: :scihist_horizontal_form %>
         </div>
         <div class="col-sm">
           <%= birth_form.input :province,
             collection: ISO3166::Country.new('CA').subdivisions.
               map  { |p| [ p[1].translations['en'], p[0] ] },
+              hint: 'Leave blank unless Canada',
             required: false,
             wrapper: :scihist_horizontal_form %>
         </div>
@@ -50,6 +53,7 @@
         <div class="col-sm">
           <%= death_form.input :date,
             required: true,
+            hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
             wrapper: :scihist_horizontal_form %>
         </div>
         <div class="col-sm">
@@ -64,6 +68,7 @@
             collection: ISO3166::Country.new('US').subdivisions.
               map  { |p| [ p[1].translations['en'], p[0] ] },
             required: false,
+            hint: 'Leave blank unless USA',
             wrapper: :scihist_horizontal_form %>
         </div>
         <div class="col-sm">
@@ -71,6 +76,7 @@
             collection: ISO3166::Country.new('CA').subdivisions.
               map  { |p| [ p[1].translations['en'], p[0] ] },
             required: false,
+            hint: 'Leave blank unless Canada',
             wrapper: :scihist_horizontal_form %>
         </div>
 
@@ -86,7 +92,9 @@
     <%= f.repeatable_attr_input(:interviewee_school, simple_form_input_args: { :label => "" }, build: :at_least_one) do |sub_form| %>
       <div class="row ml-2">
         <div class="col-sm">
-          <%= sub_form.input :date, wrapper: :scihist_horizontal_form %>
+          <%= sub_form.input :date,
+            hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
+            wrapper: :scihist_horizontal_form %>
         </div>
         <div class="col-sm">
           <%= sub_form.input :institution,  input_html: { data: { "scihist-qa-autocomplete" => qa_search_vocab_path("assign_fast", "corporate")}}, wrapper: :scihist_horizontal_form %>
@@ -106,10 +114,12 @@
     <%= f.repeatable_attr_input(:interviewee_job, simple_form_input_args: { :label => "" }, build: :at_least_one) do |sub_form| %>
       <div class="row ml-2">
         <div class="col-sm">
-          <%= sub_form.input :start, wrapper: :scihist_horizontal_form%>
+          <%= sub_form.input :start, wrapper: :scihist_horizontal_form,
+            hint: 'YYYY-MM-DD or YYYY-MM or YYYY'%>
         </div>
         <div class="col-sm">
-          <%= sub_form.input :end, wrapper: :scihist_horizontal_form %>
+          <%= sub_form.input :end, wrapper: :scihist_horizontal_form,
+            hint: 'YYYY-MM-DD or YYYY-MM or YYYY'%>
         </div>
       </div>
       <div class="row ml-2">
@@ -126,7 +136,9 @@
     <%= f.repeatable_attr_input(:interviewee_honor, simple_form_input_args: { :label => "" }, build: :at_least_one) do |sub_form| %>
       <div class="row ml-2">
         <div class="col-sm">
-          <%= sub_form.input :date, wrapper: :scihist_horizontal_form %>
+          <%= sub_form.input :date,
+            hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
+            wrapper: :scihist_horizontal_form %>
         </div>
         <div class="col">
           <%= sub_form.input :honor, wrapper: :scihist_horizontal_form %>
