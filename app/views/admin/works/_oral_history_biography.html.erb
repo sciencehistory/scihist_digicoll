@@ -41,12 +41,12 @@
     <hr/>
     <div class="row">
       <div class="col-sm">
-        Awards
+        Honors
       </div>
       <div class="col-sm">
-        <% work.oral_history_content.interviewee_awards_sorted.each do |award| %>
-          <%= award.to_h['date'] %>:
-          <%= award.to_h['honor'] %><br/>
+        <% work.oral_history_content.interviewee_honors_sorted.each do |honor| %>
+          <%= honor.to_h['date'] %>:
+          <%= honor.to_h['honor'] %><br/>
         <% end %>
       </div>
     </div>

@@ -131,15 +131,18 @@ class OralHistoryContent < ApplicationRecord
   end
 
   def interviewee_schools_sorted
-    interviewee_school.sort_by { |hsh| hsh.date }
+    return [] unless interviewee_school.present?
+    interviewee_school.sort_by { |hsh| hsh.date }.compact
   end
 
-  def interviewee_awards_sorted
-    interviewee_honor.sort_by { |hsh| hsh.date }
+  def interviewee_honors_sorted
+    return [] unless interviewee_honor.present?
+    interviewee_honor.sort_by { |hsh| hsh.date }.compact
   end
 
   def interviewee_jobs_sorted
-    interviewee_job.sort_by { |hsh| hsh.start }
+    return [] unless interviewee_job.present?
+    interviewee_job.sort_by { |hsh| hsh.start }.compact
   end
 
 

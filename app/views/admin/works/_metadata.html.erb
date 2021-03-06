@@ -269,7 +269,7 @@
       <%= work.representative.try(:title) %>
     </dd>
 
-    <% if @work.is_oral_history? %>
+    <% if @work.is_oral_history? && work.oral_history_content.present? %>
       <div class="alert alert-info" role="alert" >Note: You can edit the interviewee metadata below on the Oral History tab.</div>
       <dt>Interviee birth and death</dt>
       <dd>
@@ -282,10 +282,10 @@
       <dt>Interviee education</dt>
       <dd>
         <% work.oral_history_content.interviewee_schools_sorted.each do |school| %>
-          <%= school&.to_h['date'] %>:
-          <%= school&.to_h['degree'] %>,
-          <%= school&.to_h['discipline'] %>,
-          <%= school&.to_h['institution'] %><br/>
+          <%= school.to_h['date'] %>:
+          <%= school.to_h['degree'] %>,
+          <%= school.to_h['discipline'] %>,
+          <%= school.to_h['institution'] %><br/>
         <% end %>
       </dd>
       <dt>Interviee career</dt>
@@ -295,11 +295,11 @@
           <%= job.to_h['role'] %>, <%= job.to_h['institution'] %><br/>
         <% end %>
       </dd>
-      <dt>Interviee awards</dt>
+      <dt>Interviee honors</dt>
       <dd>
-        <% work.oral_history_content.interviewee_awards_sorted.each do |award| %>
-          <%= award.to_h['date'] %>:
-          <%= award.to_h['honor'] %><br/>
+        <% work.oral_history_content.interviewee_honors_sorted.each do |honor| %>
+          <%= honor.to_h['date'] %>:
+          <%= honor.to_h['honor'] %><br/>
         <% end %>
       </dd>
     <%end%>
