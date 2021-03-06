@@ -9,30 +9,78 @@ RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :sy
       expect(page).to have_text("Interviewee biography")
       expect(page).to have_text("Place of Birth, CA, United States of America, 1923")
       expect(page).to have_text("Died: Place of Death, NU, Canada, 2223")
+      expect(page).to have_text("1962 – 1965: Junior Fellow, Society of Fellows, Harvard University")
+      expect(page).to have_text("1965 – 1968: Associate Professor, Chemistry, Cornell University")
       expect(page).to have_text("MS, Physics, Harvard University")
       expect(page).to have_text("1981: Nobel Prize in Chemistry")
       click_link "Edit"
     end
+
+    fill_in('oral_history_content_interviewee_birth_attributes_date', with: '')
+    fill_in('oral_history_content_interviewee_birth_attributes_city', with: '')
+    select '', from: 'oral_history_content_interviewee_birth_attributes_state'
+    select '', from: 'oral_history_content_interviewee_birth_attributes_province'
+    find_by_id('oral_history_content_interviewee_birth_attributes_country').
+      find('option[value=""]').click
+
+
+    fill_in('oral_history_content_interviewee_death_attributes_date', with: '')
+    fill_in('oral_history_content_interviewee_death_attributes_city', with: '')
+    select '', from: 'oral_history_content_interviewee_death_attributes_state'
+    select '', from: 'oral_history_content_interviewee_death_attributes_province'
+    find_by_id('oral_history_content_interviewee_death_attributes_country').
+      find('option[value=""]').click
+
+
+    schools = find("fieldset.oral_history_content_interviewee_school")
+    within(schools) do
+      find_all('a.remove_fields')[0].click
+      find_all('a.remove_fields')[0].click
+      click_link "Add another Interviewee school"
+      within find_all(".nested-fields")[0] do
+        fill_in("Date", with: "1234")
+        fill_in("Institution", with: "Columbia University")
+        fill_in("Degree", with: "PhD")
+        fill_in("Discipline", with: "Physics")
+      end
+    end
+
     honors = find("fieldset.oral_history_content_interviewee_honor")
     click_link "Add another Interviewee honor"
     click_link "Add another Interviewee honor"
     within(honors) do
       within find_all(".nested-fields")[2] do
         fill_in("Date", with: "2234")
-        fill_in("Honor", with: "Beatified")
+        fill_in("Honor", with: "honor 1")
       end
       within find_all(".nested-fields")[3] do
         fill_in("Date", with: "2334-12-34")
-        fill_in("Honor", with: "Canonized")
+        fill_in("Honor", with: "honor 2")
       end
     end
+
+    jobs = find("fieldset.oral_history_content_interviewee_job")
+    within(jobs) do
+      find_all('a.remove_fields')[0].click
+      find_all('a.remove_fields')[0].click
+    end
+
     find('input[name="commit"]').click
+
     interviewee_bio = find("h2", text: "Interviewee bio").ancestor('.card')
     within(interviewee_bio) do
-      expect(page).to have_text("Died: Place of Death, NU, Canada, 2223")
-      expect(page).to have_text("2234: Beatified")
-      expect(page).to have_text("2334-12-34: Canonized")
-      click_link "Edit"
+      expect(page).to have_text("2234: honor 1")
+      expect(page).to have_text("2334-12-34: honor 2")
+      expect(page).to have_text("1234: PhD, Physics, Columbia University")
+      expect(page).not_to have_text("Place of Birth")
+      expect(page).not_to have_text("Died")
     end
+
+    work.reload
+    expect(work.oral_history_content.interviewee_birth).to be_nil
+    expect(work.oral_history_content.interviewee_death).to be_nil
+
+    expect(work.oral_history_content.interviewee_job).to eq []
+
   end
 end
