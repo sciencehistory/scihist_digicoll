@@ -18,6 +18,12 @@ class WorkIndexer < Kithe::Indexer
 
     to_field ["text3_tesim", "subject_facet"], obj_extract("subject")
 
+    # Interviewer out of creator facet for use specifically for Oral History collection
+    to_field "interviewer_facet" do |record, acc|
+      acc.concat record.creator.find_all { |creator| creator.category == "interviewer"}.collect(&:value)
+    end
+
+
     to_field "text4_tesim", obj_extract("description")
     to_field "text4_tesim", obj_extract("provenance")
 
@@ -96,6 +102,32 @@ class WorkIndexer < Kithe::Indexer
     # things that are published.
     to_field "published_bsi", obj_extract("published?")
 
+    # For oral histories, we want a facet with what features/media types are included.
+    # We use format including "Sound" as a proxy for whether there are audio recordings -- we
+    # don't currently have architecture to efficiently access whether there are actually any
+    # children of audio type, so we just count on 'format' being set appropriately.
+    #
+    # For OHMS transcript, we can actually check directly.
+    to_field "oh_feature_facet" do |rec, acc|
+      if rec.is_oral_history?
+        acc << "Audio recording" if rec.format&.include?("sound")
+        acc << "Transcript" if rec.format&.include?("text")
+        acc << "Synchronized transcript" if rec.oral_history_content&.has_ohms_transcript?
+      end
+    end
+
+    to_field "oh_availability_facet" do |rec, acc|
+      if rec.is_oral_history? && rec.oral_history_content
+        acc << case rec.oral_history_content.available_by_request_mode
+        when "automatic"
+          "Upon request"
+        when "manual_review"
+          "Permission required"
+        when "off"
+          "Immediate"
+        end
+      end
+    end
 
     # Transcript text, use OHMS transcript if we got it, otherwise plaintext if
     # we got it.
