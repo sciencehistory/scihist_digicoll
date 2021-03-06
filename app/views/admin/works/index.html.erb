@@ -63,12 +63,7 @@
   </div>
 <% end %>
 
-
-<% if @works.total_count > 0 %>
-  <p>
-    <%= @works.offset_value + 1 %> - <%= @works.offset_value + @works.count %> of <%= @works.total_count %>
-  </p>
-<% end %>
+<%= PageEntriesInfoDisplay.new(@works).display %>
 
 <table class="table admin-list">
   <thead>

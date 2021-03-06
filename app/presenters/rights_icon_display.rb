@@ -71,7 +71,7 @@ class RightsIconDisplay < ViewModel
   def rights_icon_label
     if rights_category == "creative_commons"
       # special long form
-      "This work is licensed under a ".html_safe + link_to(RightsTerms.label_for(work.rights), rights_url, target: "_blank", rel: "license")
+      "This work is licensed under a ".html_safe + link_to(RightsTerms.label_for(work.rights) + ".", rights_url, target: "_blank", rel: "license")
     else
       link_to((RightsTerms.short_label_html_for(work.rights) || "").html_safe, rights_url, target: "_blank")
     end

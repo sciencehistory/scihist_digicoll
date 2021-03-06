@@ -48,7 +48,7 @@ class WorkOaiDcSerialization
   # All of them that aren't CREATOR_ROLES except a few.
   # 'publisher' goes elsehwere, some others like manner_of and school_of aren't
   # really dc:contributors.
-  CONTRIBUTOR_ROLES = Work::Creator::CATEGORY_VALUES - CREATOR_ROLES - %w{manner_of school_of publisher}
+  CONTRIBUTOR_ROLES = Work::Creator::CATEGORY_VALUES - CREATOR_ROLES - %w{manner_of school_of publisher sponsor}
 
   attr_reader :work
 

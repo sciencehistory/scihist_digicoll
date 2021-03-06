@@ -1,22 +1,32 @@
 <%= simple_form_for @oral_history_access_request,  :url => :request_oral_history_access  do |f| %>
 
   <p class="mb-4">
-    To receive files for "<%= @work.title %>" by email, please fill out the form below.
-  </p>
+    To
 
-  <% if @work.rights.present? %>
-    <div class="mb-4">
-      <%= RightsIconDisplay.new(@work).display %>
-    </div>
-  <% end %>
+      <% if @work.oral_history_content.available_by_request_manual_review? %>
+        request access to
+      <% else %>
+        receive
+      <% end %>
+
+    files for "<%= @work.title %>" by email, please fill out the form below.
+  </p>
 
 
   <div class="alert alert-info mb-4" role="alert">
     <p class="sans-serif">
-        Your receipt of an electronic copy of an oral history indicates your agreement to abide by U.S. copyright law with regard to the reproduction and dissemination of the oral history. You are receiving a copy of this oral history and you are not permitted to reproduce it in any way without the permission of the Science History Institute.
+      Your receipt of an electronic copy of this oral history indicates your agreement to abide by U.S. copyright law and terms of licensing:
+
+        <% if @work.rights.present? %>
+          <%= link_to RightsTerms.label_for(@work.rights), @work.rights, class: "alert-link" %>.
+        <% else %>
+          <p>[Missing rights information, please contact the Center for Oral History.]</p>
+        <% end %>
+
+      Please credit the "Science History Institute."
     </p>
 
-    <p class="sans-serif">We consider your personal information confidential. We will only use it for our records, and we will not share it with anyone outside the Science History Institute.
+    <p class="sans-serif mt-3">We consider your personal information confidential. We will only use it for our records, and we will not share it with anyone outside the Science History Institute.
     </p>
 
     <% if @work.oral_history_content.available_by_request_manual_review? %>
@@ -26,7 +36,7 @@
     <% end %>
 
     <p class="sans-serif mb-0">
-      If you have any questions about transcripts, recordings, or usage permissions, please <a href="https://www.sciencehistory.org/center-for-oral-history/contact">contact the Center for Oral History</a>.
+      If you have any questions about transcripts, recordings, or usage permissions, please contact the Center for Oral History at <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}", class: "alert-link" %>.
     </p>
   </div>
 
