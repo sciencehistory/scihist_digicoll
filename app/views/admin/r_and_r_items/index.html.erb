@@ -64,11 +64,7 @@
 </div>
 
 
-<% if @admin_r_and_r_items.total_count > 0 %>
-  <p>
-    <%= @admin_r_and_r_items.offset_value + 1 %> - <%= @admin_r_and_r_items.offset_value + @admin_r_and_r_items.count %> of <%= @admin_r_and_r_items.total_count %>
-  </p>
-<% end %>
+<%= PageEntriesInfoDisplay.new(@admin_r_and_r_items).display %>
 
 <div class="table-responsive">
   <table class="table">
