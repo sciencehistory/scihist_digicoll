@@ -48,8 +48,8 @@ describe OralHistoryContent do
   describe "interviewee metadata display methods" do
     it "correctly format date info" do
       ohc = work_with_oral_history_content.oral_history_content
-      expect(ohc.interviewee_birth_place).to  eq("Place of Birth, AK, United States")
-      expect(ohc.interviewee_death_place).to  eq("Place of Death, AK, United States")
+      expect(ohc.interviewee_birth_place).to  eq("Place of Birth, CA, US")
+      expect(ohc.interviewee_death_place).to  eq("Place of Death, NU, CA")
     end
   end
 
