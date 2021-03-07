@@ -9,13 +9,23 @@ class OralHistoryContent
     attr_json :province, :string
     attr_json :country, :string
 
+    def state_name
+      return nil unless country == 'US'
+      ISO3166::Country.new(country).subdivisions[state]['translations']['en']
+    end
+
+    def province_name
+      return nil unless country == 'CA'
+      ISO3166::Country.new(country).subdivisions[province]['translations']['en']
+    end
+
     def to_s
       [
-        city,
-        state,
-        province,
-        ISO3166::Country.new(country),
         date,
+        city,
+        state_name,
+        province_name,
+        ISO3166::Country.new(country),
       ].select(&:present?).join(", ")
     end
 
