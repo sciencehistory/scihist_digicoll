@@ -63,6 +63,13 @@ RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :sy
     within(jobs) do
       find_all('a.remove_fields')[0].click
       find_all('a.remove_fields')[0].click
+      click_link "Add another Interviewee job"
+      within find_all(".nested-fields")[0] do
+        fill_in("Start", with: "2334-12-34")
+        fill_in("End", with: "2334-12-35")
+        fill_in("Role", with: "Sotheby's")
+        fill_in("Institution", with: "Head Auctioneer")
+      end
     end
 
     find('input[name="commit"]').click
@@ -77,10 +84,11 @@ RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :sy
     end
 
     work.reload
+
     expect(work.oral_history_content.interviewee_birth).to be_nil
     expect(work.oral_history_content.interviewee_death).to be_nil
-
-    expect(work.oral_history_content.interviewee_job).to eq []
-
+    expect(work.oral_history_content.interviewee_job.length).to eq 1
+    correct_jobs = "{\"end\"=>\"2334-12-35\", \"role\"=>\"Sotheby's\", \"start\"=>\"2334-12-34\", \"institution\"=>\"Head Auctioneer\"}"
+    expect(work.oral_history_content.interviewee_job.first.attributes.to_s ).to eq correct_jobs
   end
 end
