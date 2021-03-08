@@ -1,11 +1,24 @@
-<h1>Interviewee biography</h1>
-<h5> for <%= @work.title %></h5>
-
-<div class="ml-2">
-  <%= kithe_form_for(@work.oral_history_content,
-    url: submit_oh_biography_admin_work_path(@work),
-    html: { novalidate: true, method: :put},
-    class: 'edit-work mx-auto admin-edit') do |f| %>
+<%= kithe_form_for(@work.oral_history_content,
+  url: submit_oh_biography_admin_work_path(@work),
+  html: { novalidate: true, method: :put},
+  class: 'edit-work mx-auto admin-edit') do |f| %>
+  <div class="admin-header sticky-top d-flex justify-content-between p-2 mb-4 mt-1 bg-light border">
+    <% if @work.leaf_representative.present? %>
+      <div class="mr-2">
+        <%= thumb_image_tag(@work.leaf_representative, size: :mini, image_missing_text: true) %>
+      </div>
+    <% end %>
+    <div class="mr-2">
+      <h1 class="h5">
+        <i>Interviewee biography</i> for <%= truncate(@work.title, length: 80) %> <i>(<%= @work.friendlier_id %>)</i>
+      </h1>
+    </div>
+    <div class="form-actions">
+      <%= link_to 'Cancel', admin_work_path(@work, :anchor => "nav-oral-histories"), class: "btn btn-outline-primary my-1" %>
+      <%= submit_tag "Save", class: "btn btn-primary my-1" %>
+    </div>
+  </div>
+  <div class="ml-2">
     <h4>Birth</h4>
     <div class="border p-3 mb-3">
       <%= f.simple_fields_for :interviewee_birth do |birth_form| %>
@@ -153,6 +166,5 @@
         </div>
       </div>
     <% end %>
-    <%= submit_tag "Save", class: "btn btn-primary" %>
-  <% end %>
-</div>
+  </div>
+<% end %>
