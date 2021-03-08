@@ -71,6 +71,9 @@ gem 'font-awesome-rails', '~> 4.7'
 # temporary kithe indexing branch, for scihist_digicoll indexing branch, do not
 # intend to merge to master like this.
 gem 'kithe', "~> 2.0", ">= 2.0.2"
+# attr_son is a dependency of kithe, but we want to make sure it gets require'd directly
+# to avoid weird auto-loading issues.
+gem "attr_json", "~> 1.0"
 gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 
 gem 'simple_form', "~> 5.0"
