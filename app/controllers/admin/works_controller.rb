@@ -127,46 +127,28 @@ class Admin::WorksController < AdminController
   # PATCH/PUT /admin/works/ab2323ac/submit_oh_bio
   def submit_oh_biography
     oral_history_content = @work.oral_history_content!
-    form_params = params['oral_history_content']
-
-
-    ['birth', 'death'].each do |str|
-      attrs = OralHistoryContent::DateAndPlace.attr_json_registry.attribute_names
-      data =  form_params["interviewee_#{str}_attributes"]&.
-        permit(attrs)&.to_h
-      if data.nil? || data.values.all?(&:empty?)
-        oral_history_content.send("interviewee_#{str}=", nil)
-      else
-        oral_history_content.send("interviewee_#{str}=", OralHistoryContent::DateAndPlace.new(data))
-      end
-    end
-
+    oral_history_params = params['oral_history_content']
+    oral_history_content.interviewee_birth = new_item_from_params( nil,
+      oral_history_params["interviewee_birth_attributes"],
+      OralHistoryContent::DateAndPlace)
+    oral_history_content.interviewee_death = new_item_from_params( nil,
+      oral_history_params["interviewee_death_attributes"],
+      OralHistoryContent::DateAndPlace)
     ['school', 'job', 'honor'].each do |str|
       oral_history_content.send("interviewee_#{str}=", [])
     end
-
-
-    params['oral_history_content']["interviewee_school_attributes"]&.except("_kithe_placeholder").each do |k, v|
-      attrs = OralHistoryContent::IntervieweeSchool.attr_json_registry.attribute_names
-      data = v&.permit(attrs)&.to_h
-      next if data.nil? || data.values.all?(&:empty?)
-      oral_history_content.interviewee_school << OralHistoryContent::IntervieweeSchool.new(data)
+    oral_history_params["interviewee_school_attributes"].each do |k, v|
+      new_item = new_item_from_params(k, v, OralHistoryContent::IntervieweeSchool)
+      oral_history_content.interviewee_school << new_item unless new_item.nil?
     end
-
-    params['oral_history_content']["interviewee_job_attributes"]&.except("_kithe_placeholder").each do |k, v|
-      attrs = OralHistoryContent::IntervieweeJob.attr_json_registry.attribute_names
-      data = v&.permit(attrs)&.to_h
-      next if data.nil? || data.values.all?(&:empty?)
-      oral_history_content.interviewee_job << OralHistoryContent::IntervieweeJob.new(data)
+    oral_history_params["interviewee_job_attributes"].each do |k, v|
+      new_item = new_item_from_params(k, v, OralHistoryContent::IntervieweeJob)
+      oral_history_content.interviewee_job << new_item unless new_item.nil?
     end
-
-    params['oral_history_content']["interviewee_honor_attributes"]&.except("_kithe_placeholder").each do |k, v|
-      attrs = OralHistoryContent::IntervieweeHonor.attr_json_registry.attribute_names
-      data = v&.permit(attrs)&.to_h
-      next if data.nil? || data.values.all?(&:empty?)
-      oral_history_content.interviewee_honor << OralHistoryContent::IntervieweeHonor.new(data)
+    oral_history_params["interviewee_honor_attributes"].each do |k, v|
+      new_item = new_item_from_params(k, v, OralHistoryContent::IntervieweeHonor)
+      oral_history_content.interviewee_honor << new_item unless new_item.nil?
     end
-
     unless @work.oral_history_content.valid?
       render :oh_biography_form
       return
@@ -545,4 +527,18 @@ class Admin::WorksController < AdminController
       admin_works_path
     end
     helper_method :cancel_url
+
+
+    # Utility method to DRY up repetitive params cleanup inner loop.
+    # in interviewee biography logic.
+    # Looks up json_attr attribute names.
+    # If possible, creates a new object of class cls based on parameters.
+    # Returns nil if the parameters are all empty, or if k is '_kithe_placeholder'.
+    def new_item_from_params(key, parameters, cls)
+      permitted_params = cls.attr_json_registry.attribute_names
+      return nil if key == "_kithe_placeholder"
+      data = parameters&.permit(permitted_params)&.to_h
+      return nil if data.nil? || data.values.all?(&:empty?)
+      cls.new(data)
+    end
 end
