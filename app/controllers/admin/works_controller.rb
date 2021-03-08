@@ -155,7 +155,7 @@ class Admin::WorksController < AdminController
 
     params['oral_history_content']["interviewee_job_attributes"]&.except("_kithe_placeholder").each do |k, v|
       attrs = OralHistoryContent::IntervieweeJob.attr_json_registry.attribute_names
-      data = v&.permit(job_attrs)&.to_h
+      data = v&.permit(attrs)&.to_h
       next if data.nil? || data.values.all?(&:empty?)
       oral_history_content.interviewee_job << OralHistoryContent::IntervieweeJob.new(data)
     end
