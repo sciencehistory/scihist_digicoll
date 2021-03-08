@@ -270,7 +270,6 @@
     </dd>
 
     <% if @work.is_oral_history? && work.oral_history_content.present? %>
-      <div class="alert alert-info" role="alert" >Note: You can edit the interviewee metadata below on the Oral History tab.</div>
       <dt>Interviee birth and death</dt>
       <dd>
           <%= work.oral_history_content.interviewee_birth %>
