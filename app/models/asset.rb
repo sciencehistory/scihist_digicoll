@@ -43,6 +43,26 @@ class Asset < Kithe::Asset
   after_promotion DziFiles::ActiveRecordCallbacks, if: ->(asset) { asset.content_type&.start_with?("image/") && asset.derivative_storage_type == "public" }
   after_commit DziFiles::ActiveRecordCallbacks, only: [:update, :destroy]
 
+  # for ones we're importing from our ingest bucket via :remote_url, we want
+  # to schedule a future deletion from ingest bucket.
+  around_promotion :schedule_ingest_bucket_deletion, if: ->(asset) { asset.file.storage_key == :remote_url }
+
+  # Used as an around_promotion callback. If we're promoting a shrine cache file using remote_url storage, and
+  # the file is from our ingest_bucket, then add a record to table to schedule it's deletion in the future
+  # by an
+  def schedule_ingest_bucket_deletion
+    if self.file.storage_key == :remote_url && self.file.id.start_with?("https://#{ScihistDigicoll::Env.lookup(:ingest_bucket)}.s3.amazonaws.com")
+      ingest_bucket_file_url = self.file.id
+    end
+
+    yield
+
+    # schedule it for deletion if needed
+    if ingest_bucket_file_url
+      path = URI.parse(ingest_bucket_file_url).path
+      ScheduledIngestBucketDeletion.create!(path: path, asset: self, delete_after: Time.now + ScheduledIngestBucketDeletion::DELETE_AFTER_WINDOW)
+    end
+  end
 
   # Ensure that recorded storage locations for all derivatives matches
   # current #derivative_storage_type setting.  Returns false only if
