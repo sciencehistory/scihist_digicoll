@@ -11,8 +11,9 @@ en:
     error_notification:
       default_message: "Please review the problems below:"
     hints:
-      admin_interviewer_profile:
+      interviewer_profile:
         profile: "Allowed HTML tags: b, i, cite, a."
+        name: 'Recommend "Lastname, First I.", but legacy data may not match.'
 
     # Examples
     # labels:
