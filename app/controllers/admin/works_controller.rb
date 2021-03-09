@@ -9,7 +9,8 @@ class Admin::WorksController < AdminController
            :reorder_members_form, :demote_to_asset, :publish, :unpublish,
            :submit_ohms_xml, :download_ohms_xml,
            :remove_ohms_xml, :submit_searchable_transcript_source, :download_searchable_transcript_source,
-           :remove_searchable_transcript_source, :create_combined_audio_derivatives, :update_oh_available_by_request]
+           :remove_searchable_transcript_source, :create_combined_audio_derivatives, :update_oh_available_by_request,
+           :update_oral_history_interviewer_profiles]
 
   # GET /admin/works
   # GET /admin/works.json
@@ -192,6 +193,13 @@ class Admin::WorksController < AdminController
         @work.members.find{ |m| m.id == asset_pk}&.update(oh_available_by_request: value)
       end
     end
+    redirect_to admin_work_path(@work, anchor: "nav-oral-histories")
+  end
+
+  # PATCH /admin/works/ab2323ac/update_oral_history_interviewer_profiles
+  def update_oral_history_interviewer_profiles
+    @work.oral_history_content!.update( params.require(:oral_history_content).permit(interviewer_profile_ids: []))
+
     redirect_to admin_work_path(@work, anchor: "nav-oral-histories")
   end
 
