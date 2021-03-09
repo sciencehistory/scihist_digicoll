@@ -445,13 +445,7 @@ class Admin::WorksController < AdminController
 
     # update strong params for interviewee biographical info form
     def interviewee_bio_params
-      # due to an apparent but in permit_attr_json, we need to add on a `permit` on the end,
-      # with just whatever in it that doesn't actually exist, just to get things to be
-      # actually permitted. Shouldn't hurt.
-      Kithe::Parameters.new(params).
-        require(:oral_history_content).
-        permit_attr_json(OralHistoryContent).
-        permit(:does_not_exist_hack)
+      Kithe::Parameters.new(params).require(:oral_history_content).permit_attr_json(OralHistoryContent).permit
     end
 
     # Some of our query SQL is prepared by ransack, which automatically makes
