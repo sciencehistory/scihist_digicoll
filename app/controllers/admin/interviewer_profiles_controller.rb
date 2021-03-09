@@ -10,7 +10,6 @@ class Admin::InterviewerProfilesController < AdminController
 
   # GET /admin/interviewer_profiles/new
   def new
-    byebug
     @interviewer_profile = InterviewerProfile.new
   end
 
