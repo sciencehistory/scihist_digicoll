@@ -127,36 +127,12 @@ class Admin::WorksController < AdminController
   # PATCH/PUT /admin/works/ab2323ac/submit_oh_bio
   def submit_oh_biography
     oral_history_content = @work.oral_history_content!
-    oral_history_params = params['oral_history_content']
-    oral_history_content.interviewee_birth = new_item_from_params( nil,
-      oral_history_params["interviewee_birth_attributes"],
-      OralHistoryContent::DateAndPlace)
-    oral_history_content.interviewee_death = new_item_from_params( nil,
-      oral_history_params["interviewee_death_attributes"],
-      OralHistoryContent::DateAndPlace)
-    ['school', 'job', 'honor'].each do |str|
-      oral_history_content.send("interviewee_#{str}=", [])
-    end
-    oral_history_params["interviewee_school_attributes"].each do |k, v|
-      new_item = new_item_from_params(k, v, OralHistoryContent::IntervieweeSchool)
-      oral_history_content.interviewee_school << new_item unless new_item.nil?
-    end
-    oral_history_params["interviewee_job_attributes"].each do |k, v|
-      new_item = new_item_from_params(k, v, OralHistoryContent::IntervieweeJob)
-      oral_history_content.interviewee_job << new_item unless new_item.nil?
-    end
-    oral_history_params["interviewee_honor_attributes"].each do |k, v|
-      new_item = new_item_from_params(k, v, OralHistoryContent::IntervieweeHonor)
-      oral_history_content.interviewee_honor << new_item unless new_item.nil?
-    end
-    unless @work.oral_history_content.valid?
+    if oral_history_content.update!(interviewee_bio_params)
+      redirect_to admin_work_path(@work, :anchor => "nav-oral-histories")
+    else
       render :oh_biography_form
-      return
     end
-    @work.oral_history_content.save!
-    redirect_to admin_work_path(@work, :anchor => "nav-oral-histories")
   end
-
 
   # PATCH/PUT /admin/works/ab2323ac/submit_ohms_xml
   def submit_searchable_transcript_source
@@ -528,17 +504,43 @@ class Admin::WorksController < AdminController
     end
     helper_method :cancel_url
 
-
-    # Utility method to DRY up repetitive params cleanup inner loop.
-    # in interviewee biography logic.
-    # Looks up json_attr attribute names.
-    # If possible, creates a new object of class cls based on parameters.
-    # Returns nil if the parameters are all empty, or if k is '_kithe_placeholder'.
-    def new_item_from_params(key, parameters, cls)
-      permitted_params = cls.attr_json_registry.attribute_names
-      return nil if key == "_kithe_placeholder"
-      data = parameters&.permit(permitted_params)&.to_h
-      return nil if data.nil? || data.values.all?(&:empty?)
-      cls.new(data)
+    def interviewee_bio_params
+      arr = %w{birth death school job honor}.collect do |s|
+        param_name = "interviewee_#{s}".to_sym
+        [param_name, sanitize_interviewee_bio_param(param_name)]
+      end
+      Hash[arr]
     end
+
+    def sanitize_interviewee_bio_param(attr_name)
+      # where to look for everything
+      param_mapping = {
+        interviewee_birth:  [params[:oral_history_content][:interviewee_birth_attributes],  OralHistoryContent::DateAndPlace,      :single   ],
+        interviewee_death:  [params[:oral_history_content][:interviewee_death_attributes],  OralHistoryContent::DateAndPlace,      :single   ],
+        interviewee_school: [params[:oral_history_content][:interviewee_school_attributes], OralHistoryContent::IntervieweeSchool, :multiple ],
+        interviewee_job:    [params[:oral_history_content][:interviewee_job_attributes],    OralHistoryContent::IntervieweeJob,    :multiple ],
+        interviewee_honor:  [params[:oral_history_content][:interviewee_honor_attributes],  OralHistoryContent::IntervieweeHonor,  :multiple ],
+      }
+
+      # this could be done with a splat operator, but eh.
+      params, cls, single_or_multiple = param_mapping[attr_name]
+      attrs = cls.attr_json_registry.attribute_names
+
+      # For single values, just permit and null out if empty
+      return null_if_empty(params.permit(attrs)) if single_or_multiple == :single
+
+      # For multiple values, get rid of placeholder. Not sure why we should have to do this;
+      # if it's not permitted we should just be allowed to ignore it, right?
+      arr = params.except("_kithe_placeholder").values
+
+      # The inner params are of type ActiveSupport::HashWithIndifferentAccess,
+      # which we need to convert to a regular Parameters object if we want to pass it to update.
+      arr.map { |v| null_if_empty(ActionController::Parameters.new(v).permit(attrs)) }.compact
+    end
+
+    def null_if_empty(params)
+      return nil if params.values.all?(&:empty?)
+      params
+    end
+
 end
