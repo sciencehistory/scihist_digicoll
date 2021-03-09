@@ -68,6 +68,7 @@ class Admin::WorksController < AdminController
   # PATCH/PUT /admin/works/1.json
   def update
     respond_to do |format|
+      byebug
       if @work.update(work_params)
         format.html { redirect_to admin_work_path(@work), notice: 'Work was successfully updated.' }
         format.json { render :show, status: :ok, location: @work }
@@ -442,7 +443,16 @@ class Admin::WorksController < AdminController
       end
     end
 
-
+    # update strong params for interviewee biographical info form
+    def interviewee_bio_params
+      # due to an apparent but in permit_attr_json, we need to add on a `permit` on the end,
+      # with just whatever in it that doesn't actually exist, just to get things to be
+      # actually permitted. Shouldn't hurt.
+      Kithe::Parameters.new(params).
+        require(:oral_history_content).
+        permit_attr_json(OralHistoryContent).
+        permit(:does_not_exist_hack)
+    end
 
     # Some of our query SQL is prepared by ransack, which automatically makes
     # queries from specially named param fields.  (And also has conveniences
@@ -506,43 +516,5 @@ class Admin::WorksController < AdminController
     end
     helper_method :cancel_url
 
-    def interviewee_bio_params
-      arr = %w{birth death school job honor}.collect do |s|
-        param_name = "interviewee_#{s}".to_sym
-        [param_name, sanitize_interviewee_bio_param(param_name)]
-      end
-      Hash[arr]
-    end
-
-    def sanitize_interviewee_bio_param(attr_name)
-      # where to look for everything
-      param_mapping = {
-        interviewee_birth:  [params[:oral_history_content][:interviewee_birth_attributes],  OralHistoryContent::DateAndPlace,      :single   ],
-        interviewee_death:  [params[:oral_history_content][:interviewee_death_attributes],  OralHistoryContent::DateAndPlace,      :single   ],
-        interviewee_school: [params[:oral_history_content][:interviewee_school_attributes], OralHistoryContent::IntervieweeSchool, :multiple ],
-        interviewee_job:    [params[:oral_history_content][:interviewee_job_attributes],    OralHistoryContent::IntervieweeJob,    :multiple ],
-        interviewee_honor:  [params[:oral_history_content][:interviewee_honor_attributes],  OralHistoryContent::IntervieweeHonor,  :multiple ],
-      }
-
-      # this could be done with a splat operator, but eh.
-      params, cls, single_or_multiple = param_mapping[attr_name]
-      attrs = cls.attr_json_registry.attribute_names
-
-      # For single values, just permit and null out if empty
-      return null_if_empty(params.permit(attrs)) if single_or_multiple == :single
-
-      # For multiple values, get rid of placeholder. Not sure why we should have to do this;
-      # if it's not permitted we should just be allowed to ignore it, right?
-      arr = params.except("_kithe_placeholder").values
-
-      # The inner params are of type ActiveSupport::HashWithIndifferentAccess,
-      # which we need to convert to a regular Parameters object if we want to pass it to update.
-      arr.map { |v| null_if_empty(ActionController::Parameters.new(v).permit(attrs)) }.compact
-    end
-
-    def null_if_empty(params)
-      return nil if params.values.all?(&:empty?)
-      params
-    end
 
 end
