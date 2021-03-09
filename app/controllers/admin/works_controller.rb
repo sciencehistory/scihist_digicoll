@@ -127,7 +127,7 @@ class Admin::WorksController < AdminController
   # PATCH/PUT /admin/works/ab2323ac/submit_oh_bio
   def submit_oh_biography
     oral_history_content = @work.oral_history_content!
-    if oral_history_content.update!(interviewee_bio_params)
+    if oral_history_content.update(interviewee_bio_params)
       redirect_to admin_work_path(@work, :anchor => "nav-oral-histories")
     else
       render :oh_biography_form
@@ -441,6 +441,8 @@ class Admin::WorksController < AdminController
         end
       end
     end
+
+
 
     # Some of our query SQL is prepared by ransack, which automatically makes
     # queries from specially named param fields.  (And also has conveniences
