@@ -3,7 +3,7 @@ RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :sy
   let!(:work) { create(:oral_history_work, published: true) }
   it "interviewee bio data shows up" do
     visit admin_work_path(work, :anchor => "nav-oral-histories")
-    interviewee_bio = find("h2", text: "Interviewee bio").ancestor('.card')
+    interviewee_bio = find("h2", text: "Interviewee biography").ancestor('.card')
     within(interviewee_bio) do
       expect(page).to have_text("Edit")
       expect(page).to have_text("Interviewee biography")
@@ -15,6 +15,7 @@ RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :sy
       expect(page).to have_text("1981: Nobel Prize in Chemistry")
       click_link "Edit"
     end
+
 
     fill_in('oral_history_content_interviewee_birth_attributes_date', with: '')
     fill_in('oral_history_content_interviewee_birth_attributes_city', with: '')
@@ -74,7 +75,8 @@ RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :sy
 
     find('input[name="commit"]').click
 
-    interviewee_bio = find("h2", text: "Interviewee bio").ancestor('.card')
+    interviewee_bio = find("h2", text: "Interviewee biography").ancestor('.card')
+
     within(interviewee_bio) do
       expect(page).to have_text("2234: honor 1")
       expect(page).to have_text("2334-12-34: honor 2")
