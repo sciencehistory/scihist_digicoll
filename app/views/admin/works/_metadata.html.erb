@@ -268,39 +268,5 @@
     <dd>
       <%= work.representative.try(:title) %>
     </dd>
-
-    <% if @work.is_oral_history? && work.oral_history_content.present? %>
-      <dt>Interviee birth and death</dt>
-      <dd>
-          <%= work.oral_history_content.interviewee_birth %>
-          <% if work.oral_history_content.interviewee_death.present? %>
-            &ndash;
-            <%= work.oral_history_content.interviewee_death%>
-          <% end %>
-      </dd>
-      <dt>Interviee education</dt>
-      <dd>
-        <% work.oral_history_content.interviewee_schools_sorted.each do |school| %>
-          <%= school.to_h['date'] %>:
-          <%= school.to_h['degree'] %>,
-          <%= school.to_h['discipline'] %>,
-          <%= school.to_h['institution'] %><br/>
-        <% end %>
-      </dd>
-      <dt>Interviee career</dt>
-      <dd>
-        <% work.oral_history_content.interviewee_jobs_sorted.each do |job| %>
-          <%= job.to_h['start'] %> &ndash; <%= job.to_h['end'] %>:
-          <%= job.to_h['role'] %>, <%= job.to_h['institution'] %><br/>
-        <% end %>
-      </dd>
-      <dt>Interviee honors</dt>
-      <dd>
-        <% work.oral_history_content.interviewee_honors_sorted.each do |honor| %>
-          <%= honor.to_h['date'] %>:
-          <%= honor.to_h['honor'] %><br/>
-        <% end %>
-      </dd>
-    <%end%>
   </dl>
 </div>
