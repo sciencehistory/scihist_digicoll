@@ -68,7 +68,6 @@ class Admin::WorksController < AdminController
   # PATCH/PUT /admin/works/1.json
   def update
     respond_to do |format|
-      byebug
       if @work.update(work_params)
         format.html { redirect_to admin_work_path(@work), notice: 'Work was successfully updated.' }
         format.json { render :show, status: :ok, location: @work }
@@ -445,7 +444,18 @@ class Admin::WorksController < AdminController
 
     # update strong params for interviewee biographical info form
     def interviewee_bio_params
-      Kithe::Parameters.new(params).require(:oral_history_content).permit_attr_json(OralHistoryContent).permit
+      Kithe::Parameters.new(params).require(:oral_history_content).
+        permit_attr_json(OralHistoryContent).permit.tap do |params|
+        %w{birth death}.each do | name|
+          if params["interviewee_#{name}_attributes"].values.all?(&:empty?)
+            params["interviewee_#{name}"] = nil
+            params.delete("interviewee_#{name}_attributes")
+          end
+        end
+        %w{school job honor}.each do |name|
+          params["interviewee_#{name}_attributes"] = params["interviewee_#{name}_attributes"].reject {|k, v| v.values.all?(&:empty?) }.permit!
+        end
+      end
     end
 
     # Some of our query SQL is prepared by ransack, which automatically makes
