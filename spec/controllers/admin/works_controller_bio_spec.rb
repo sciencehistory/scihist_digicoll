@@ -8,7 +8,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     context "oral history bio" do
       let(:work) { create(:public_work) }
 
-      it "Properly sanitizes params and deletes birth and death properly" do
+      it "sanitizes params and deletes birth and death if empty" do
         put :submit_oh_biography, params: {
           "oral_history_content"=> {
             "interviewee_birth_attributes"=>{"date"=>"", "city"=>"", "state"=>"", "province"=>"", "country"=>""},
@@ -34,7 +34,6 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
 
             "id"=> work.friendlier_id
           }
-        work.reload
         expect(response.status).to redirect_to(admin_work_path(work, :anchor => "nav-oral-histories"))
         expect(work.oral_history_content.interviewee_birth).to be_nil
         expect(work.oral_history_content.interviewee_honor.map{|h| h.attributes}).to eq [
@@ -44,7 +43,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         ]
       end
 
-      it "Behaves sanely when a date is incorrect" do
+      it "does not throw an error when a date is incorrect" do
         put :submit_oh_biography, params: {
           "oral_history_content"=>{
             "interviewee_birth_attributes"=>{"date"=>"abc", "city"=>"", "state"=>"", "province"=>"", "country"=>""},
@@ -52,6 +51,29 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
             "interviewee_school_attributes"=>{"_kithe_placeholder"=>{"_destroy"=>"1"}},
             "interviewee_job_attributes"=>{"_kithe_placeholder"=>{"_destroy"=>"1"}},
             "interviewee_honor_attributes"=>{"_kithe_placeholder"=>{"_destroy"=>"1"}}
+          },
+          "id"=> work.friendlier_id
+        }
+        expect(response.status).to eq(200)
+      end
+
+
+      it "does not throw an error when death or birth info is missing from the params" do
+        put :submit_oh_biography, params: {
+          "oral_history_content"=>{
+            "interviewee_birth_attributes"=>{"date"=>"bad date", "city"=>"", "state"=>"", "province"=>"", "country"=>""},
+            "interviewee_school_attributes"=>{
+              "_kithe_placeholder"=>{"_destroy"=>"1"},
+              "0"=>{"date"=>"", "institution"=>"", "degree"=>"", "discipline"=>""}
+            },
+            "interviewee_job_attributes"=>{
+              "_kithe_placeholder"=>{"_destroy"=>"1"},
+              "0"=>{"start"=>"", "end"=>"", "institution"=>"", "role"=>""}
+            },
+            "interviewee_honor_attributes"=>{
+              "_kithe_placeholder"=>{"_destroy"=>"1"},
+              "0"=>{"date"=>"", "honor"=>""}
+            }
           },
           "id"=> work.friendlier_id
         }
