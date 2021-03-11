@@ -1,0 +1,35 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Interviewer Profiles</h1>
+
+<%= link_to 'New Interviewer Profile', new_admin_interviewer_profile_path, class: "btn btn-outline-primary mb-3" %>
+
+<% if @interviewer_profiles.total_count > 0 %>
+  <p>
+    <%= @interviewer_profiles.offset_value + 1 %> - <%= @interviewer_profiles.offset_value + @interviewer_profiles.count %> of <%= @interviewer_profiles.total_count %>
+  </p>
+<% end %>
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @interviewer_profiles.each do |interviewer_profile| %>
+      <tr>
+        <td><%= interviewer_profile.name %></td>
+        <td>
+          <%= link_to 'Edit', edit_admin_interviewer_profile_path(interviewer_profile), class: "btn btn-sm btn-outline-primary" %>
+          <%= link_to 'Destroy', admin_interviewer_profile_path(interviewer_profile), method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-sm btn-outline-danger" %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= paginate @interviewer_profiles, theme: 'twitter-bootstrap-4' %>

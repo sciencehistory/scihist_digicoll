@@ -110,6 +110,15 @@
   <%= AttributeTable::RowDisplay.new(:digitization_funder, values: [view.digitization_funder]).display %>
 </table>
 
+<% if view.oral_history_interviewer_profiles.present? %>
+  <h2 class="attribute-sub-head">About the <%= "Interviewer".pluralize(view.oral_history_interviewer_profiles.count) %></h2>
+
+  <div class="show-sub-head-body long-text-line-height">
+    <% view.oral_history_interviewer_profiles.each do |profile| %>
+      <%= DescriptionDisplayFormatter.new(profile.profile).format %>
+    <% end %>
+  </div>
+<% end %>
 
 <h2 class="attribute-sub-head">Physical location</h2>
 
@@ -180,3 +189,4 @@
     <% end %>
   </ul>
 <% end %>
+
