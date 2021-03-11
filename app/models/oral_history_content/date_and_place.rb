@@ -11,21 +11,24 @@ class OralHistoryContent
 
     def state_name
       return nil unless country == 'US'
-      ISO3166::Country.new(country).subdivisions[state]['translations']['en']
+      Work::PlaceLists::US_STATES.select { |st| st[1] == state }&.first&.first
     end
 
     def province_name
       return nil unless country == 'CA'
-      ISO3166::Country.new(country).subdivisions[province]['translations']['en']
+      Work::PlaceLists::CA_PROVINCES.select { |pr| pr[1] == province }&.first&.first
     end
 
+    def country_name
+      Work::PlaceLists::COUNTRIES.select { |co| co[1] == country }&.first&.first
+    end
     def to_s
       [
         date,
         city,
         state_name,
         province_name,
-        ISO3166::Country.new(country),
+        country_name,
       ].select(&:present?).join(", ")
     end
 
