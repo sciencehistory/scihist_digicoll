@@ -130,6 +130,10 @@ class Admin::WorksController < AdminController
     if oral_history_content.update(interviewee_bio_params)
       redirect_to admin_work_path(@work, :anchor => "nav-oral-histories")
     else
+      @work.oral_history_content.
+        interviewee_birth ||= OralHistoryContent::DateAndPlace.new
+      @work.oral_history_content.
+        interviewee_death ||= OralHistoryContent::DateAndPlace.new
       render :oh_biography_form
     end
   end
@@ -445,7 +449,8 @@ class Admin::WorksController < AdminController
     # update strong params for interviewee biographical info form
     def interviewee_bio_params
       tmp =  Kithe::Parameters.new(params).require(:oral_history_content).permit_attr_json(OralHistoryContent).permit
-      %w{birth death}.each do | name|
+      %w{birth death}.each do |name|
+        next if tmp["interviewee_#{name}_attributes"].nil?
         if tmp["interviewee_#{name}_attributes"].values.all?(&:empty?)
           tmp["interviewee_#{name}"] = nil
           tmp.delete("interviewee_#{name}_attributes")

@@ -18,152 +18,157 @@
       <%= submit_tag "Save", class: "btn btn-primary my-1" %>
     </div>
   </div>
-  <div class="ml-2">
-    <h4>Birth</h4>
-    <div class="border p-3 mb-3">
-      <%= f.simple_fields_for :interviewee_birth do |birth_form| %>
-        <div class="row ml-2">
-          <div class="col-sm">
-            <%= birth_form.input :date,
-              hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
-              wrapper: :scihist_horizontal_form %>
-          </div>
-          <div class="col-sm">
-            <%= birth_form.input :city,
-              required: false,
-              wrapper: :scihist_horizontal_form  %>
-          </div>
-        </div>
 
-        <!--
-
-              puts Work::PlaceLists::US_STATES
-    puts Work::PlaceLists::CA_PROVINCES
-      Work::PlaceLists::COUNTRIES
-
-    -->
-        <div class="row ml-2">
-          <div class="col-sm">
-            <%= birth_form.input :state,
-              collection: Work::PlaceLists::US_STATES,
-              hint: 'Leave blank unless USA',
-              wrapper: :scihist_horizontal_form %>
-          </div>
-          <div class="col-sm">
-            <%= birth_form.input :province,
-              collection: Work::PlaceLists::CA_PROVINCES,
-              hint: 'Leave blank unless Canada',
-              required: false,
-              wrapper: :scihist_horizontal_form %>
-          </div>
-          <div class="col-sm">
-            <%= birth_form.input :country,
-              collection: Work::PlaceLists::COUNTRIES,
-              required: false,
-              wrapper: :scihist_horizontal_form
-            %>
-          </div>
-        </div>
+  <% if @work.oral_history_content.errors.any? %>
+    <div class="kithe-form-errors-top alert alert-danger mb-4" role="alert">
+      <h2 class="h4" class="alert-heading"><%= pluralize(@work.oral_history_content.errors.count, "error") %> prevented this data from being saved</h2>
+      <ol class="mb-0">
+      <% @work.oral_history_content.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
       <% end %>
+    </ul>
     </div>
-    <h4>Death</h4>
-      <div class="border p-3 mb-3">
-        <%= f.simple_fields_for :interviewee_death do |death_form| %>
+  <% end %>
+  <div class="ml-2 form-inputs admin-edit">
+    <div class="oral-history-biography">
+      <h4>Birth</h4>
+      <div class="border p-3 mb-3 birth-fields">
+        <%= f.simple_fields_for :interviewee_birth do |birth_form| %>
           <div class="row ml-2">
             <div class="col-sm">
-              <%= death_form.input :date,
+              <%= birth_form.input :date,
                 hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
                 wrapper: :scihist_horizontal_form %>
             </div>
             <div class="col-sm">
-              <%= death_form.input :city,
+              <%= birth_form.input :city,
                 required: false,
                 wrapper: :scihist_horizontal_form  %>
             </div>
           </div>
           <div class="row ml-2">
             <div class="col-sm">
-              <%= death_form.input :state,
-              collection: Work::PlaceLists::US_STATES,
-              hint: 'Leave blank unless USA',
-              wrapper: :scihist_horizontal_form %>
+              <%= birth_form.input :state,
+                collection: Work::PlaceLists::US_STATES,
+                hint: 'Leave blank unless USA',
+                wrapper: :scihist_horizontal_form %>
             </div>
             <div class="col-sm">
-              <%= death_form.input :province,
-              collection: Work::PlaceLists::CA_PROVINCES,
-              hint: 'Leave blank unless Canada',
-              required: false,
-              wrapper: :scihist_horizontal_form %>
+              <%= birth_form.input :province,
+                collection: Work::PlaceLists::CA_PROVINCES,
+                hint: 'Leave blank unless Canada',
+                required: false,
+                wrapper: :scihist_horizontal_form %>
             </div>
             <div class="col-sm">
-              <%= death_form.input  :country,
-              collection: Work::PlaceLists::COUNTRIES,
-              required: false,
-              wrapper: :scihist_horizontal_form %>
-             </div>
+              <%= birth_form.input :country,
+                collection: Work::PlaceLists::COUNTRIES,
+                required: false,
+                wrapper: :scihist_horizontal_form
+              %>
+            </div>
           </div>
         <% end %>
       </div>
-    <h4>Education</h4>
-    <%= f.repeatable_attr_input(:interviewee_school, simple_form_input_args: { :label => "" }, build: :at_least_one) do |sub_form| %>
-      <div class="border p-3 mb-3">
-        <div class="row ml-2">
-          <div class="col-sm">
-            <%= sub_form.input :date,
-              hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
-              wrapper: :scihist_horizontal_form %>
+      <h4>Death</h4>
+        <div class="border p-3 mb-3 death-fields">
+          <%= f.simple_fields_for :interviewee_death do |death_form| %>
+            <div class="row ml-2">
+              <div class="col-sm">
+                <%= death_form.input :date,
+                  hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
+                  wrapper: :scihist_horizontal_form %>
+              </div>
+              <div class="col-sm">
+                <%= death_form.input :city,
+                  required: false,
+                  wrapper: :scihist_horizontal_form  %>
+              </div>
+            </div>
+            <div class="row ml-2">
+              <div class="col-sm">
+                <%= death_form.input :state,
+                collection: Work::PlaceLists::US_STATES,
+                hint: 'Leave blank unless USA',
+                wrapper: :scihist_horizontal_form %>
+              </div>
+              <div class="col-sm">
+                <%= death_form.input :province,
+                collection: Work::PlaceLists::CA_PROVINCES,
+                hint: 'Leave blank unless Canada',
+                required: false,
+                wrapper: :scihist_horizontal_form %>
+              </div>
+              <div class="col-sm">
+                <%= death_form.input  :country,
+                collection: Work::PlaceLists::COUNTRIES,
+                required: false,
+                wrapper: :scihist_horizontal_form %>
+               </div>
+            </div>
+          <% end %>
+        </div>
+      <h4>Education</h4>
+      <%= f.repeatable_attr_input(:interviewee_school, simple_form_input_args: { :label => "" }, build: :at_least_one) do |sub_form| %>
+        <div class="border p-3 mb-3">
+          <div class="row ml-2">
+            <div class="col-sm">
+              <%= sub_form.input :date,
+                hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
+                wrapper: :scihist_horizontal_form %>
+            </div>
+            <div class="col-sm">
+              <%= sub_form.input :institution,  input_html: { data: { "scihist-qa-autocomplete" => qa_search_vocab_path("assign_fast", "corporate")}}, wrapper: :scihist_horizontal_form %>
+            </div>
           </div>
-          <div class="col-sm">
-            <%= sub_form.input :institution,  input_html: { data: { "scihist-qa-autocomplete" => qa_search_vocab_path("assign_fast", "corporate")}}, wrapper: :scihist_horizontal_form %>
+          <div class="row ml-2">
+            <div class="col-sm">
+              <%= sub_form.input :degree, wrapper: :scihist_horizontal_form %>
+            </div>
+            <div class="col-sm">
+             <%= sub_form.input :discipline, wrapper: :scihist_horizontal_form %>
+            </div>
           </div>
         </div>
-        <div class="row ml-2">
-          <div class="col-sm">
-            <%= sub_form.input :degree, wrapper: :scihist_horizontal_form %>
+      <% end %>
+      <h4>Career</h4>
+      <%= f.repeatable_attr_input(:interviewee_job, simple_form_input_args: { :label => "" }, build: :at_least_one) do |sub_form| %>
+        <div class="border p-3 mb-3">
+          <div class="row ml-2">
+            <div class="col-sm">
+              <%= sub_form.input :start, wrapper: :scihist_horizontal_form,
+                hint: 'YYYY-MM-DD or YYYY-MM or YYYY'%>
+            </div>
+            <div class="col-sm">
+              <%= sub_form.input :end, wrapper: :scihist_horizontal_form,
+                hint: 'YYYY-MM-DD or YYYY-MM or YYYY'%>
+            </div>
           </div>
-          <div class="col-sm">
-           <%= sub_form.input :discipline, wrapper: :scihist_horizontal_form %>
-          </div>
-        </div>
-      </div>
-    <% end %>
-    <h4>Career</h4>
-    <%= f.repeatable_attr_input(:interviewee_job, simple_form_input_args: { :label => "" }, build: :at_least_one) do |sub_form| %>
-      <div class="border p-3 mb-3">
-        <div class="row ml-2">
-          <div class="col-sm">
-            <%= sub_form.input :start, wrapper: :scihist_horizontal_form,
-              hint: 'YYYY-MM-DD or YYYY-MM or YYYY'%>
-          </div>
-          <div class="col-sm">
-            <%= sub_form.input :end, wrapper: :scihist_horizontal_form,
-              hint: 'YYYY-MM-DD or YYYY-MM or YYYY'%>
-          </div>
-        </div>
-        <div class="row ml-2">
-          <div class="col-sm">
-            <%= sub_form.input :institution,  input_html: { data: { "scihist-qa-autocomplete" => qa_search_vocab_path("assign_fast", "corporate")} }, wrapper: :scihist_horizontal_form %>
-          </div>
-          <div class="col-sm">
-            <%= sub_form.input :role, wrapper: :scihist_horizontal_form %>
+          <div class="row ml-2">
+            <div class="col-sm">
+              <%= sub_form.input :institution,  input_html: { data: { "scihist-qa-autocomplete" => qa_search_vocab_path("assign_fast", "corporate")} }, wrapper: :scihist_horizontal_form %>
+            </div>
+            <div class="col-sm">
+              <%= sub_form.input :role, wrapper: :scihist_horizontal_form %>
+            </div>
           </div>
         </div>
-      </div>
-    <% end %>
-    <h4>Honors and awards</h4>
-    <%= f.repeatable_attr_input(:interviewee_honor, simple_form_input_args: { :label => "" }, build: :at_least_one) do |sub_form| %>
-      <div class="border p-3 mb-3">
-        <div class="row ml-2">
-          <div class="col-sm">
-            <%= sub_form.input :date,
-              hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
-              wrapper: :scihist_horizontal_form %>
-          </div>
-          <div class="col">
-            <%= sub_form.input :honor, wrapper: :scihist_horizontal_form %>
+      <% end %>
+      <h4>Honors and awards</h4>
+      <%= f.repeatable_attr_input(:interviewee_honor, simple_form_input_args: { :label => "" }, build: :at_least_one) do |sub_form| %>
+        <div class="border p-3 mb-3">
+          <div class="row ml-2">
+            <div class="col-sm">
+              <%= sub_form.input :date,
+                hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
+                wrapper: :scihist_horizontal_form %>
+            </div>
+            <div class="col">
+              <%= sub_form.input :honor, wrapper: :scihist_horizontal_form %>
+            </div>
           </div>
         </div>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
   </div>
 <% end %>
