@@ -17,6 +17,14 @@ RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :sy
     end
 
 
+    # Make sure date validation works on at least one of the dates.
+    # We assume if one works they all do.
+    fill_in('oral_history_content_interviewee_birth_attributes_date', with: '1937-07-1aa')
+
+    find('input[name="commit"]').click
+    expect(page).to have_text("Date Must be of format YYYY[-MM-DD]")
+
+
     fill_in('oral_history_content_interviewee_birth_attributes_date', with: '')
     fill_in('oral_history_content_interviewee_birth_attributes_city', with: '')
     select '', from: 'oral_history_content_interviewee_birth_attributes_state'
@@ -86,6 +94,7 @@ RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :sy
     end
 
     work.reload
+
 
     expect(work.oral_history_content.interviewee_birth).to be_nil
     expect(work.oral_history_content.interviewee_death).to be_nil

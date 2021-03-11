@@ -34,27 +34,32 @@
               wrapper: :scihist_horizontal_form  %>
           </div>
         </div>
+
+        <!--
+
+              puts Work::PlaceLists::US_STATES
+    puts Work::PlaceLists::CA_PROVINCES
+      Work::PlaceLists::COUNTRIES
+
+    -->
         <div class="row ml-2">
           <div class="col-sm">
             <%= birth_form.input :state,
-              collection: ISO3166::Country.new('US').subdivisions.
-                map { |p| [ p[1].translations['en'], p[0] ] },
-                hint: 'Leave blank unless USA',
+              collection: Work::PlaceLists::US_STATES,
+              hint: 'Leave blank unless USA',
               wrapper: :scihist_horizontal_form %>
           </div>
           <div class="col-sm">
             <%= birth_form.input :province,
-              collection: ISO3166::Country.new('CA').subdivisions.
-                map  { |p| [ p[1].translations['en'], p[0] ] },
-                hint: 'Leave blank unless Canada',
+              collection: Work::PlaceLists::CA_PROVINCES,
+              hint: 'Leave blank unless Canada',
               required: false,
               wrapper: :scihist_horizontal_form %>
           </div>
           <div class="col-sm">
             <%= birth_form.input :country,
-              priority: ["US","CA"],
+              collection: Work::PlaceLists::COUNTRIES,
               required: false,
-              include_blank: "(Leave country blank)",
               wrapper: :scihist_horizontal_form
             %>
           </div>
@@ -79,26 +84,22 @@
           <div class="row ml-2">
             <div class="col-sm">
               <%= death_form.input :state,
-                collection: ISO3166::Country.new('US').subdivisions.
-                  map  { |p| [ p[1].translations['en'], p[0] ] },
-                required: false,
-                hint: 'Leave blank unless USA',
-                wrapper: :scihist_horizontal_form %>
+              collection: Work::PlaceLists::US_STATES,
+              hint: 'Leave blank unless USA',
+              wrapper: :scihist_horizontal_form %>
             </div>
             <div class="col-sm">
               <%= death_form.input :province,
-                collection: ISO3166::Country.new('CA').subdivisions.
-                  map  { |p| [ p[1].translations['en'], p[0] ] },
-                required: false,
-                hint: 'Leave blank unless Canada',
-                wrapper: :scihist_horizontal_form %>
+              collection: Work::PlaceLists::CA_PROVINCES,
+              hint: 'Leave blank unless Canada',
+              required: false,
+              wrapper: :scihist_horizontal_form %>
             </div>
-
             <div class="col-sm">
-              <%= death_form.input :country, priority: ["US","CA"],
-                include_blank: "(Leave country blank)",
-                required: false,
-                wrapper: :scihist_horizontal_form %>
+              <%= death_form.input  :country,
+              collection: Work::PlaceLists::COUNTRIES,
+              required: false,
+              wrapper: :scihist_horizontal_form %>
              </div>
           </div>
         <% end %>
