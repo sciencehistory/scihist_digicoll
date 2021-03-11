@@ -444,18 +444,20 @@ class Admin::WorksController < AdminController
 
     # update strong params for interviewee biographical info form
     def interviewee_bio_params
-      Kithe::Parameters.new(params).require(:oral_history_content).
-        permit_attr_json(OralHistoryContent).permit.tap do |params|
-        %w{birth death}.each do | name|
-          if params["interviewee_#{name}_attributes"].values.all?(&:empty?)
-            params["interviewee_#{name}"] = nil
-            params.delete("interviewee_#{name}_attributes")
-          end
-        end
-        %w{school job honor}.each do |name|
-          params["interviewee_#{name}_attributes"] = params["interviewee_#{name}_attributes"].reject {|k, v| v.values.all?(&:empty?) }.permit!
+      tmp =  Kithe::Parameters.new(params).require(:oral_history_content).permit_attr_json(OralHistoryContent).permit
+      %w{birth death}.each do | name|
+        if tmp["interviewee_#{name}_attributes"].values.all?(&:empty?)
+          tmp["interviewee_#{name}"] = nil
+          tmp.delete("interviewee_#{name}_attributes")
         end
       end
+      %w{school job honor}.each do |name|
+        tmp["interviewee_#{name}_attributes"].reject! { |k, v| v.values.all?(&:empty?) }
+      end
+      %w{birth death school job honor}.each do |name|
+        tmp["interviewee_#{name}_attributes"]&.permit!
+      end
+      tmp
     end
 
     # Some of our query SQL is prepared by ransack, which automatically makes

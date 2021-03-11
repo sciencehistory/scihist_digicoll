@@ -6,49 +6,54 @@
         Dates
       </div>
       <div class="col-sm">
-        Born: <%= work.oral_history_content.interviewee_birth %>
+        <% if work.oral_history_content.interviewee_birth.present? %>
+          Born: <%= work.oral_history_content.interviewee_birth %>
+        <% end %>
         <% if work.oral_history_content.interviewee_death.present? %><br/>
           Died: <%= work.oral_history_content.interviewee_death%>
         <% end %>
       </div>
     </div>
-    <hr/>
-    <div class="row">
-      <div class="col-sm">
-        Education
+    <% if work&.oral_history_content&.interviewee_school.present? %>
+      <hr/>
+      <div class="row">
+        <div class="col-sm">
+          Education
+        </div>
+        <div class="col-sm">
+          <% work.oral_history_content.interviewee_school.sort_by { |hsh| hsh&.date }.compact.each do |school| %>
+            <%= school.date %><% if school.date.present?%>:<% end %>
+            <%= [school.degree, school.discipline, school.institution].join(', ') %><br/>
+          <% end %>
+        </div>
       </div>
-      <div class="col-sm">
-        <% work.oral_history_content.interviewee_schools_sorted.each do |school| %>
-          <%= school&.to_h['date'] %>:
-          <%= school&.to_h['degree'] %>,
-          <%= school&.to_h['discipline'] %>,
-          <%= school&.to_h['institution'] %><br/>
-        <% end %>
+    <% end %>
+    <% if work&.oral_history_content&.interviewee_job.present? %>
+      <hr/>
+      <div class="row">
+        <div class="col-sm">
+          Career
+        </div>
+        <div class="col-sm">
+          <% work.oral_history_content.interviewee_job.sort_by { |hsh| hsh&.start }.compact.each do |job| %>
+            <%= job.start %> &ndash; <%= job.end %><% if job.start.present? || job.end.present? %>:<% end %>
+            <%= [job.role, job.institution].join(', ') %><br/>
+          <% end %>
+        </div>
       </div>
-    </div>
-    <hr/>
-    <div class="row">
-      <div class="col-sm">
-        Career
+    <% end %>
+    <% if work&.oral_history_content&.interviewee_honor.present? %>
+      <hr/>
+      <div class="row">
+        <div class="col-sm">
+          Honors
+        </div>
+        <div class="col-sm">
+          <% work.oral_history_content.interviewee_honor.sort_by { |hsh| hsh&.date }.compact.each do |honor| %>
+            <%= honor.date %><% if honor.date.present? %>:<%end%> <%= honor.honor %><br/>
+          <% end %>
+        </div>
       </div>
-      <div class="col-sm">
-        <% work.oral_history_content.interviewee_jobs_sorted.each do |job| %>
-          <%= job.to_h['start'] %> &ndash; <%= job.to_h['end'] %>:
-          <%= job.to_h['role'] %>, <%= job.to_h['institution'] %><br/>
-        <% end %>
-      </div>
-    </div>
-    <hr/>
-    <div class="row">
-      <div class="col-sm">
-        Honors
-      </div>
-      <div class="col-sm">
-        <% work.oral_history_content.interviewee_honors_sorted.each do |honor| %>
-          <%= honor.to_h['date'] %>:
-          <%= honor.to_h['honor'] %><br/>
-        <% end %>
-      </div>
-    </div>
+    <% end %>
   </div>
 </div>
