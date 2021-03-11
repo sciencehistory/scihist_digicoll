@@ -7,7 +7,7 @@ RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :sy
     within(interviewee_bio) do
       expect(page).to have_text("Edit")
       expect(page).to have_text("Interviewee biography")
-      expect(page).to have_text("1923, Place of Birth, California, United States of America")
+      expect(page).to have_text("1923, Place of Birth, California, United States")
       expect(page).to have_text("Died: 2223, Place of Death, Nunavut, Canada")
       expect(page).to have_text("1962 – 1965: Junior Fellow, Society of Fellows, Harvard University")
       expect(page).to have_text("1965 – 1968: Associate Professor, Chemistry, Cornell University")
