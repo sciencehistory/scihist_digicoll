@@ -55,8 +55,8 @@ class OralHistoryContent < ApplicationRecord
     succeeded: 'succeeded'
   }
 
-  attr_json :interviewee_birth,    OralHistoryContent::DateAndPlace.to_type, default: -> {}
-  attr_json :interviewee_death,    OralHistoryContent::DateAndPlace.to_type, default: -> {}
+  attr_json :interviewee_birth,    OralHistoryContent::DateAndPlace.to_type, default: -> { OralHistoryContent::DateAndPlace.new }
+  attr_json :interviewee_death,    OralHistoryContent::DateAndPlace.to_type, default: -> { OralHistoryContent::DateAndPlace.new }
 
   attr_json :interviewee_school,  OralHistoryContent::IntervieweeSchool.to_type, array: true, default: -> {[]}
   attr_json :interviewee_job,     OralHistoryContent::IntervieweeJob.to_type,    array: true, default: -> {[]}
