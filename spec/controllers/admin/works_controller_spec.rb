@@ -63,6 +63,33 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
   end
 
 
+  context "Reorder members " do
+    let(:c)  { create(:asset_with_faked_file, :mp3, title: "c", position: 1) }
+    let(:b)  { create(:asset_with_faked_file, :mp3, title: "b", position: 2) }
+    let(:a)  { create(:asset_with_faked_file, :mp3, title: "a", position: 3) }
+    let(:work) { create(:oral_history_work, members: [c, b, a])}
+    it "can reorder by arbitrary order" do
+      expect( work.members.order(:position).map {|member| member.title}).to eq ['c', 'b', 'a']
+      put :reorder_members, params: {
+        "controller" => "admin/works",
+        "action" => "reorder_members",
+        "ordered_member_ids" => [a.id, b.id, c.id ],
+        "id" => work.friendlier_id
+      }
+      expect(response.status).to eq(302)
+      expect( work.members.order(:position).map {|member| member.title}).to eq ['a', 'b', 'c']
+    end
+    it "can reorder alphabetically" do
+      expect( work.members.order(:position).map {|member| member.title}).to eq ['c', 'b', 'a']
+      put :reorder_members, params: {
+        "controller" => "admin/works",
+        "action" => "reorder_members",
+        "id" => work.friendlier_id
+      }
+      expect(response.status).to eq(302)
+      expect( work.members.order(:position).map {|member| member.title}).to eq ['a', 'b', 'c']
+    end
+  end
 
   context "Adding, updating and removing full-text searches " do
 
