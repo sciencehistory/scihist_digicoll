@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe "Oral history work", :logged_in_user, queue_adapter: :test do
-  let(:work) { FactoryBot.create(:work, :with_complete_metadata, genre: ["Oral histories"]) }
+  let(:work) { FactoryBot.create(:oral_history_work) }
 
   describe "combined audio derivatives" do
     before do

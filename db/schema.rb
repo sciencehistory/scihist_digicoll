@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_08_204049) do
+ActiveRecord::Schema.define(version: 2021_03_03_165609) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -112,6 +112,18 @@ ActiveRecord::Schema.define(version: 2021_02_08_204049) do
     t.index ["asset_id", "checked_uri"], name: "by_asset_and_checked_uri"
     t.index ["asset_id"], name: "index_fixity_checks_on_asset_id"
     t.index ["checked_uri"], name: "index_fixity_checks_on_checked_uri"
+  end
+
+  create_table "interviewer_profiles", force: :cascade do |t|
+    t.string "name"
+    t.text "profile"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "interviewer_profiles_oral_history_content", id: false, force: :cascade do |t|
+    t.bigint "oral_history_content_id", null: false
+    t.bigint "interviewer_profile_id", null: false
   end
 
   create_table "kithe_model_contains", id: false, force: :cascade do |t|

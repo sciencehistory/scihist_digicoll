@@ -38,9 +38,12 @@
 #
 class OralHistoryContent < ApplicationRecord
   include AttrJson::Record
+  include AttrJson::NestedAttributes
   self.table_name = "oral_history_content"
 
   belongs_to :work, inverse_of: :oral_history_content
+
+  has_and_belongs_to_many :interviewer_profiles
 
   include CombinedAudioUploader::Attachment.new(:combined_audio_mp3, store: :combined_audio_derivatives)
   include CombinedAudioUploader::Attachment.new(:combined_audio_webm, store: :combined_audio_derivatives)
@@ -52,12 +55,19 @@ class OralHistoryContent < ApplicationRecord
     succeeded: 'succeeded'
   }
 
-  attr_json :interviewee_birth,    OralHistoryContent::DateAndPlace.to_type, default: -> {}
-  attr_json :interviewee_death,    OralHistoryContent::DateAndPlace.to_type, default: -> {}
+  attr_json :interviewee_birth,    OralHistoryContent::DateAndPlace.to_type, default: -> { OralHistoryContent::DateAndPlace.new }
+  attr_json :interviewee_death,    OralHistoryContent::DateAndPlace.to_type, default: -> { OralHistoryContent::DateAndPlace.new }
 
   attr_json :interviewee_school,  OralHistoryContent::IntervieweeSchool.to_type, array: true, default: -> {[]}
   attr_json :interviewee_job,     OralHistoryContent::IntervieweeJob.to_type,    array: true, default: -> {[]}
   attr_json :interviewee_honor,   OralHistoryContent::IntervieweeHonor.to_type,  array: true, default: -> {[]}
+
+
+  attr_json_accepts_nested_attributes_for :interviewee_birth
+  attr_json_accepts_nested_attributes_for :interviewee_death
+  attr_json_accepts_nested_attributes_for :interviewee_school
+  attr_json_accepts_nested_attributes_for :interviewee_job
+  attr_json_accepts_nested_attributes_for :interviewee_honor
 
   # Some assets marked non-published in this work are still available by request. That feature needs to be turned
   # on here at the work level, in one of two modes:
@@ -107,34 +117,10 @@ class OralHistoryContent < ApplicationRecord
     @has_ohms_index ||= ohms_xml&.index_points&.present?
   end
 
-
   def combined_audio_derivatives_job_status=(value)
     super
     self.combined_audio_derivatives_job_status_changed_at = DateTime.now
   end
-
-  def interviewee_birth_place
-    return nil if (data = interviewee_birth).nil?
-    "#{data.city}, #{data.state || data.province}, #{data.country}"
-  end
-
-  def interviewee_death_place
-    return nil if (data = interviewee_death).nil?
-    "#{data.city}, #{data.state || data.province}, #{data.country}"
-  end
-
-  def interviewee_schools_sorted
-    interviewee_school.sort_by { |hsh| hsh.date }
-  end
-
-  def interviewee_awards_sorted
-    interviewee_honor.sort_by { |hsh| hsh.date }
-  end
-
-  def interviewee_jobs_sorted
-    interviewee_job.sort_by { |hsh| hsh.start }
-  end
-
 
   private
 
