@@ -40,12 +40,8 @@
   <% end %>
 </div>
 
-<% if @admin_digitization_queue_items.total_count > 0 %>
-  <p>
-    <%= @admin_digitization_queue_items.offset_value + 1 %> - <%= @admin_digitization_queue_items.offset_value + @admin_digitization_queue_items.count %> of <%= @admin_digitization_queue_items.total_count %>
-  </p>
-<% end %>
 
+<%= PageEntriesInfoDisplay.new(@admin_digitization_queue_items).display %>
 
 <div class="table-responsive">
   <table class="table" style="table-layout: fixed; font-size: 90%; min-width: 55rem; word-break: break-word;">

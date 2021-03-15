@@ -71,6 +71,9 @@ gem 'font-awesome-rails', '~> 4.7'
 # temporary kithe indexing branch, for scihist_digicoll indexing branch, do not
 # intend to merge to master like this.
 gem 'kithe', "~> 2.0", ">= 2.0.2"
+# attr_son is a dependency of kithe, but we want to make sure it gets require'd directly
+# to avoid weird auto-loading issues.
+gem "attr_json", "~> 1.0"
 gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 
 gem 'simple_form', "~> 5.0"
@@ -127,7 +130,7 @@ group :development do
   gem 'web-console', '>= 3.3.0'
   gem 'listen', '>= 3.0.5', '< 3.2'
   gem 'capistrano', '~> 3.8'
-  gem 'capistrano-bundler', '~> 1.2'
+  gem 'capistrano-bundler', '~> 2.0', ">= 2.0.1"
   gem 'capistrano-passenger', '~> 0.2'
   gem 'capistrano-rails', '~> 1.2'
   gem 'capistrano-maintenance', '~> 1.0', require: false
@@ -142,7 +145,7 @@ group :test do
   gem 'webdrivers'
   gem 'capybara-screenshot'
   gem 'factory_bot_rails'
-  gem "database_cleaner", "~> 1.7"
+  gem "database_cleaner", "~> 2.0"
   gem "webmock", "~> 3.5"
   gem "db-query-matchers", "< 2.0"
   # Used for Cap deployment to auto-lookup hosts from EC2 tags.
