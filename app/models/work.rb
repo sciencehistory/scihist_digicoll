@@ -5,6 +5,9 @@ class Work < Kithe::Work
     self.kithe_indexable_mapper = WorkIndexer.new
   end
 
+  # for now forbid 'role' for Work, we only use it for asset
+  validates :role, absence: true
+
   belongs_to :digitization_queue_item, optional: true, class_name: "Admin::DigitizationQueueItem"
 
   has_many :on_demand_derivatives, inverse_of: :work, dependent: :destroy
