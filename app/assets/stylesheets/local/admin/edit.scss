@@ -30,7 +30,11 @@
   }
 
   // Give em a red bar alongside for visibility. Only top-level.
-  .form-inputs > .form-group.form-group-invalid {
+  .form-inputs > .form-group.form-group-invalid,
+  .oral-history-biography > .form-group.form-group-invalid,
+  .oral-history-biography  .birth-fields .form-group.form-group-invalid,
+  .oral-history-biography  .death-fields .form-group.form-group-invalid,
+   {
     border-left: 2px solid $danger;
     padding-left: 8px;
     margin-left: -11px;
@@ -40,5 +44,3 @@
     flex-shrink: 0;
   }
 }
-
-

@@ -7,7 +7,7 @@ class Admin::WorksController < AdminController
   before_action :set_work,
     only: [:show, :edit, :update, :destroy, :reorder_members,
            :reorder_members_form, :demote_to_asset, :publish, :unpublish,
-           :submit_ohms_xml, :download_ohms_xml,
+           :submit_ohms_xml, :download_ohms_xml, :oh_biography_form, :submit_oh_biography,
            :remove_ohms_xml, :submit_searchable_transcript_source, :download_searchable_transcript_source,
            :remove_searchable_transcript_source, :create_combined_audio_derivatives, :update_oh_available_by_request,
            :update_oral_history_interviewer_profiles]
@@ -112,6 +112,31 @@ class Admin::WorksController < AdminController
     send_data @work.oral_history_content!.ohms_xml_text,
       :type => 'text/xml; charset=UTF-8;',
       :disposition => ContentDisposition.format(disposition: "attachment", filename: "#{@work.oral_history_content!.ohms_xml.accession}.xml")
+  end
+
+  # Biographical metadata form
+  # GET "/admin/works/ab2323ac/oh_bio_form"
+  def oh_biography_form
+    @work.oral_history_content!
+    @work.oral_history_content.
+      interviewee_birth ||= OralHistoryContent::DateAndPlace.new
+    @work.oral_history_content.
+      interviewee_death ||= OralHistoryContent::DateAndPlace.new
+    render :oh_biography_form
+  end
+
+  # PATCH/PUT /admin/works/ab2323ac/submit_oh_bio
+  def submit_oh_biography
+    oral_history_content = @work.oral_history_content!
+    if oral_history_content.update(interviewee_bio_params)
+      redirect_to admin_work_path(@work, :anchor => "nav-oral-histories")
+    else
+      @work.oral_history_content.
+        interviewee_birth ||= OralHistoryContent::DateAndPlace.new
+      @work.oral_history_content.
+        interviewee_death ||= OralHistoryContent::DateAndPlace.new
+      render :oh_biography_form
+    end
   end
 
   # PATCH/PUT /admin/works/ab2323ac/submit_ohms_xml
@@ -292,7 +317,7 @@ class Admin::WorksController < AdminController
         end
       end
     else # alphabetical
-      sorted_members = work.members.sort_by{ |member| member.title.downcase  }.to_a
+      sorted_members = @work.members.sort_by{ |member| member.title.downcase  }.to_a
       ActiveRecord::Base.transaction do
         sorted_members.each_with_index do |member, index|
           member.update(position: index)
@@ -429,6 +454,25 @@ class Admin::WorksController < AdminController
       end
     end
 
+    # update strong params for interviewee biographical info form
+    def interviewee_bio_params
+      tmp =  Kithe::Parameters.new(params).require(:oral_history_content).permit_attr_json(OralHistoryContent).permit
+      %w{birth death}.each do |name|
+        next if tmp["interviewee_#{name}_attributes"].nil?
+        if tmp["interviewee_#{name}_attributes"].values.all?(&:empty?)
+          tmp["interviewee_#{name}"] = nil
+          tmp.delete("interviewee_#{name}_attributes")
+        end
+      end
+      %w{school job honor}.each do |name|
+        tmp["interviewee_#{name}_attributes"].reject! { |k, v| v.values.all?(&:empty?) }
+      end
+      %w{birth death school job honor}.each do |name|
+        tmp["interviewee_#{name}_attributes"]&.permit!
+      end
+      tmp
+    end
+
     # Some of our query SQL is prepared by ransack, which automatically makes
     # queries from specially named param fields.  (And also has conveniences
     # for sort UI especially).
@@ -490,4 +534,6 @@ class Admin::WorksController < AdminController
       admin_works_path
     end
     helper_method :cancel_url
+
+
 end
