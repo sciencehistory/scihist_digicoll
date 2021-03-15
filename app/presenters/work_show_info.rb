@@ -114,6 +114,18 @@ class WorkShowInfo < ViewModel
     model.contained_by.where(published: true)
   end
 
+  def oral_history_interviewer_profiles
+    return @oral_history_interviewer_profiles if defined?(@oral_history_interviewer_profiles)
+
+    if model.is_oral_history? && model.oral_history_content.present?
+      @oral_history_interviewer_profiles = model.oral_history_content.interviewer_profiles
+    else
+      @oral_history_interviewer_profiles = []
+    end
+
+    return @oral_history_interviewer_profiles
+  end
+
 
   private
 
