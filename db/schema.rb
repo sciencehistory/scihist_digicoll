@@ -148,6 +148,7 @@ ActiveRecord::Schema.define(version: 2021_03_09_152257) do
     t.bigint "digitization_queue_item_id"
     t.boolean "published", default: false, null: false
     t.integer "kithe_model_type", null: false
+    t.string "role"
     t.index ["friendlier_id"], name: "index_kithe_models_on_friendlier_id", unique: true
     t.index ["leaf_representative_id"], name: "index_kithe_models_on_leaf_representative_id"
     t.index ["parent_id"], name: "index_kithe_models_on_parent_id"

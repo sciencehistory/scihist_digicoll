@@ -6,6 +6,12 @@ class Asset < Kithe::Asset
   THUMB_WIDTHS = AssetUploader::THUMB_WIDTHS
   IMAGE_DOWNLOAD_WIDTHS = AssetUploader::IMAGE_DOWNLOAD_WIDTHS
 
+  # The 'role' column says what role an asset plays in the work, for instance
+  # the 'portrait' attached to an oral history. This is sort of an extension to PCDM,
+  # it's still a member, but it has a role on the relationship too. Initially we
+  # are using this so we can provide specialized interface for oral histories.
+  enum role: %w{portrait transcript front_matter}.collect {|v| [v, v]}.to_h, _prefix: true
+
   attr_json :admin_note, :text, array: true, default: -> { [] }
 
   # only used for oral histories, some assets marked non-published are still
