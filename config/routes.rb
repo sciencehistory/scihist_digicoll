@@ -172,6 +172,8 @@ Rails.application.routes.draw do
         put "remove_searchable_transcript_source"
         put "create_combined_audio_derivatives"
         put "update_oh_available_by_request"
+        get "oh_biography_form"
+        put "submit_oh_biography"
         patch "update_oral_history_interviewer_profiles"
       end
       collection do

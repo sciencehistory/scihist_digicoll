@@ -141,10 +141,10 @@
   </div>
 
   <% if @work.is_oral_history? %>
-
     <div class="tab-pane" id="nav-oral-histories" role="tabpanel" aria-labelledby="nav-oral-histories-tab">
       <%= WorkCombinedAudioDerivatives.new(@work).display %>
-      <%= render "ohms_xml",  work: @work %>
+      <%= render "oral_history_biography",  work: @work %>
+      <%= render "ohms_xml",                work: @work %>
       <%= render "oral_history_transcript", work: @work %>
 
       <div class="card bg-light mb-3">
