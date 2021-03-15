@@ -3,10 +3,6 @@ namespace :scihist do
   desc "validate all OHMS xml"
   task :check_ohms_xml_data => [:environment] do
 
-    # Don't know why, but invoking the name of the work class
-    # as a command allows us to load the OralHistory model.
-    # Try removing this line:
-    Work
 
     OralHistoryContent.find_each do |model|
       next if model.ohms_xml_text.nil?
