@@ -292,7 +292,7 @@ class Admin::WorksController < AdminController
         end
       end
     else # alphabetical
-      sorted_members = work.members.sort_by{ |member| member.title.downcase  }.to_a
+      sorted_members = @work.members.sort_by{ |member| member.title.downcase  }.to_a
       ActiveRecord::Base.transaction do
         sorted_members.each_with_index do |member, index|
           member.update(position: index)
