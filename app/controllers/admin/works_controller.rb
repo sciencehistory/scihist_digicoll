@@ -9,7 +9,8 @@ class Admin::WorksController < AdminController
            :reorder_members_form, :demote_to_asset, :publish, :unpublish,
            :submit_ohms_xml, :download_ohms_xml,
            :remove_ohms_xml, :submit_searchable_transcript_source, :download_searchable_transcript_source,
-           :remove_searchable_transcript_source, :create_combined_audio_derivatives, :update_oh_available_by_request]
+           :remove_searchable_transcript_source, :create_combined_audio_derivatives, :update_oh_available_by_request,
+           :update_oral_history_interviewer_profiles]
 
   # GET /admin/works
   # GET /admin/works.json
@@ -195,6 +196,13 @@ class Admin::WorksController < AdminController
     redirect_to admin_work_path(@work, anchor: "nav-oral-histories")
   end
 
+  # PATCH /admin/works/ab2323ac/update_oral_history_interviewer_profiles
+  def update_oral_history_interviewer_profiles
+    @work.oral_history_content!.update( params.require(:oral_history_content).permit(interviewer_profile_ids: []))
+
+    redirect_to admin_work_path(@work, anchor: "nav-oral-histories")
+  end
+
 
   # PATCH/PUT /admin/works/1/publish
   #
@@ -284,7 +292,7 @@ class Admin::WorksController < AdminController
         end
       end
     else # alphabetical
-      sorted_members = work.members.sort_by{ |member| member.title.downcase  }.to_a
+      sorted_members = @work.members.sort_by{ |member| member.title.downcase  }.to_a
       ActiveRecord::Base.transaction do
         sorted_members.each_with_index do |member, index|
           member.update(position: index)
