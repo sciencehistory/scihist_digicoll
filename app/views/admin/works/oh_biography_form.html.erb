@@ -156,23 +156,33 @@
       <% end %>
       <h4>Honors and awards</h4>
       <%= f.repeatable_attr_input(:interviewee_honor, simple_form_input_args: { :label => "" }, build: :at_least_one) do |sub_form| %>
-        <div class="border p-3 mb-3">
-          <div class="row ml-2">
-            <div class="col-md">
-              <%= sub_form.input :start_date,
-                label: "Start",
-                hint: 'YYYY-MM-DD or YYYY-MM or YYYY' %>
-            </div>
-
-            <div class="col-md">
-              <%= sub_form.input :end_date,
-                label: "End",
-                hint: 'optional, YYYY-MM-DD or YYYY-MM or YYYY' %>
-            </div>
+        <div class="border-bottom pb-3 mb-4">
+          <div class="form-row">
+              <div class="col-sm-2 col-form-label text-right">
+                <%= sub_form.label :start_date, label: "Start" %>
+              </div>
+              <div class="col-sm-4">
+                <%= sub_form.input :start_date,
+                  label: false,
+                  hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
+                  wrapper: :scihist_no_label_input %>
+              </div>
+              <div class="col-form-label col-sm-2 text-right">
+                <%= sub_form.label :end_date, label: "End" %>
+              </div>
+              <div class="col-sm-4">
+                <%= sub_form.input :end_date,
+                  label: false,
+                  hint: 'optional, YYYY[-MM[-DD]]',
+                  wrapper: :scihist_no_label_input %>
+              </div>
           </div>
-          <div class="row ml-2">
-            <div class="col-md">
-              <%= sub_form.input :honor %>
+          <div class="form-row">
+            <div class="col-md-2 col-form-label text-right">
+              <%= sub_form.label :honor %>
+            </div>
+            <div class="col-md-10">
+              <%= sub_form.input :honor, wrapper: :scihist_no_label_input %>
             </div>
           </div>
         </div>
