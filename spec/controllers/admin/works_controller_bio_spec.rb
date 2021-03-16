@@ -25,11 +25,11 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
 
             "interviewee_honor_attributes"=>{
               "_kithe_placeholder"=>{"_destroy"=>"1"},
-              "0"=>{"date"=>"1923", "honor"=>"Nobel Prize A"},
-              "1"=>{"date"=>"", "honor"=>""}, # should be deleted
-              "2"=>{"date"=>"1924", "honor"=>"Nobel Prize B"},
-              "3"=>{"date"=>nil, "honor"=>nil}, # delete this one too please
-              "4"=>{"date"=>"1925", "honor"=>"Nobel Prize C"},
+              "0"=>{"start_date"=>"1923", "end_date"=>"1925", "honor"=>"Nobel Prize A"},
+              "1"=>{"start_date"=>"", "end_date" => "", "honor"=>""}, # should be deleted
+              "2"=>{"start_date"=>"1924", "honor"=>"Nobel Prize B"},
+              "3"=>{"start_date"=>nil, "honor"=>nil}, # delete this one too please
+              "4"=>{"start_date"=>"1925", "honor"=>"Nobel Prize C"},
             }},
 
             "id"=> work.friendlier_id
@@ -37,9 +37,9 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         expect(response.status).to redirect_to(admin_work_path(work, :anchor => "nav-oral-histories"))
         expect(work.oral_history_content.interviewee_birth).to be_nil
         expect(work.oral_history_content.interviewee_honor.map{|h| h.attributes}).to eq [
-          {"date"=>"1923", "honor"=>"Nobel Prize A"},
-          {"date"=>"1924", "honor"=>"Nobel Prize B"},
-          {"date"=>"1925", "honor"=>"Nobel Prize C"}
+          {"start_date"=>"1923", "end_date" => "1925", "honor"=>"Nobel Prize A"},
+          {"start_date"=>"1924", "honor"=>"Nobel Prize B"},
+          {"start_date"=>"1925", "honor"=>"Nobel Prize C"}
         ]
       end
 
@@ -72,7 +72,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
             },
             "interviewee_honor_attributes"=>{
               "_kithe_placeholder"=>{"_destroy"=>"1"},
-              "0"=>{"date"=>"", "honor"=>""}
+              "0"=>{"start_date"=>"", "honor"=>""}
             }
           },
           "id"=> work.friendlier_id

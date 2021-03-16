@@ -12,7 +12,7 @@ RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :sy
       expect(page).to have_text("1962 – 1965: Junior Fellow, Society of Fellows, Harvard University")
       expect(page).to have_text("1965 – 1968: Associate Professor, Chemistry, Cornell University")
       expect(page).to have_text("MS, Physics, Harvard University")
-      expect(page).to have_text("1981: Nobel Prize in Chemistry")
+      expect(page).to have_text("1981, Nobel Prize in Chemistry")
       click_link "Edit"
     end
 
@@ -59,11 +59,11 @@ RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :sy
     click_link "Add another Interviewee honor"
     within(honors) do
       within find_all(".nested-fields")[2] do
-        fill_in("Date", with: "2234")
+        fill_in("Start", with: "2234")
         fill_in("Honor", with: "honor 1")
       end
       within find_all(".nested-fields")[3] do
-        fill_in("Date", with: "2334-12-34")
+        fill_in("Start", with: "2334-12-34")
         fill_in("Honor", with: "honor 2")
       end
     end
@@ -86,8 +86,8 @@ RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :sy
     interviewee_bio = find("h2", text: "Interviewee biography").ancestor('.card')
 
     within(interviewee_bio) do
-      expect(page).to have_text("2234: honor 1")
-      expect(page).to have_text("2334-12-34: honor 2")
+      expect(page).to have_text("2234, honor 1")
+      expect(page).to have_text("2334-12-34, honor 2")
       expect(page).to have_text("1234: PhD, Physics, Columbia University")
       expect(page).not_to have_text("Place of Birth")
       expect(page).not_to have_text("Died")
