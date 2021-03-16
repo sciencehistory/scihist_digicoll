@@ -1,13 +1,16 @@
-#require "countries"
 class OralHistoryContent
+
+  # Used for Birth and Death info
   class DateAndPlace
     include AttrJson::Model
-    validates_with StandardDateValidator, fields: [:date]
+
     attr_json :date,  :string
     attr_json :city, :string
     attr_json :state, :string
     attr_json :province, :string
     attr_json :country, :string
+
+    validates_with StandardDateValidator, fields: [:date]
 
     def state_name
       return nil unless country == 'US'
@@ -22,6 +25,7 @@ class OralHistoryContent
     def country_name
       Work::PlaceLists::COUNTRIES.select { |co| co[1] == country }&.first&.first
     end
+
     def to_s
       [
         date,
@@ -31,6 +35,5 @@ class OralHistoryContent
         country_name,
       ].select(&:present?).join(", ")
     end
-
   end
 end
