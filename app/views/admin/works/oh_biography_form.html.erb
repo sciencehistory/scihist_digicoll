@@ -158,13 +158,21 @@
       <%= f.repeatable_attr_input(:interviewee_honor, simple_form_input_args: { :label => "" }, build: :at_least_one) do |sub_form| %>
         <div class="border p-3 mb-3">
           <div class="row ml-2">
-            <div class="col-sm">
-              <%= sub_form.input :date,
-                hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
-                wrapper: :scihist_horizontal_form %>
+            <div class="col-md">
+              <%= sub_form.input :start_date,
+                label: "Start",
+                hint: 'YYYY-MM-DD or YYYY-MM or YYYY' %>
             </div>
-            <div class="col">
-              <%= sub_form.input :honor, wrapper: :scihist_horizontal_form %>
+
+            <div class="col-md">
+              <%= sub_form.input :end_date,
+                label: "End",
+                hint: 'optional, YYYY-MM-DD or YYYY-MM or YYYY' %>
+            </div>
+          </div>
+          <div class="row ml-2">
+            <div class="col-md">
+              <%= sub_form.input :honor %>
             </div>
           </div>
         </div>
