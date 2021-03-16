@@ -20,6 +20,10 @@ every :day, :at => '2:30 am', roles: [:cron] do
   runner "AssetDerivativeStorageTypeAuditor.new.perform!"
 end
 
+every :day, :at => "3:00 am", roles: [:cron] do
+  rake "scihist:scheduled_ingest_bucket_delete"
+end
+
 every :tuesday, :at => '4:00 am', roles: [:cron] do
   rake "sitemap:create"
 end
