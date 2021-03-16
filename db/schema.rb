@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_08_202756) do
+ActiveRecord::Schema.define(version: 2021_03_09_152257) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -239,6 +239,15 @@ ActiveRecord::Schema.define(version: 2021_03_08_202756) do
     t.datetime "updated_at", null: false
     t.text "patron_name_ciphertext"
     t.text "patron_email_ciphertext"
+  end
+
+  create_table "scheduled_ingest_bucket_deletions", force: :cascade do |t|
+    t.string "path"
+    t.datetime "delete_after"
+    t.uuid "asset_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["asset_id"], name: "index_scheduled_ingest_bucket_deletions_on_asset_id"
   end
 
   create_table "searches", id: :serial, force: :cascade do |t|
