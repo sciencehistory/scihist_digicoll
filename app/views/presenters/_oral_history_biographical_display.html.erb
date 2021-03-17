@@ -1,0 +1,81 @@
+<h2 class="attribute-sub-head">Interviewee biographical information</h2>
+
+  <table class="work chf-attributes">
+    <tbody>
+      <tr>
+        <th>Born</th>
+        <td><%= view.formatted_date_and_place(view.oral_history_content.interviewee_birth) %></td>
+      </tr>
+      <tr>
+        <th>Died</th>
+        <td><%= view.formatted_date_and_place(view.oral_history_content.interviewee_death) %></td>
+      </tr>
+    </tbody>
+  </table>
+
+<div>
+  <% if view.schools.present? %>
+    <h3 class="h4">Education</h3>
+
+    <div class="table-responsive mb-3">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th>Institution</th>
+            <th>Degree</th>
+            <th>Discipline</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% view.schools.each do |school| %>
+            <tr>
+              <td class="text-nowrap"><%= FormatSimpleDate.new(school.date).display %></td>
+              <td><%= school.institution %></td>
+              <td><%= school.degree %></td>
+              <td><%= school.discipline %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+
+  <% if view.grouped_jobs.present? %>
+    <h3 class="h4">Professional Experience</h3>
+    <div class="mb-3">
+      <% view.grouped_jobs.each_pair do |institution, jobs| %>
+        <h4 class="h6 mb-0 pt-2 border-top"><b><%= institution %></b></h4>
+          <ul class="d-table list-unstyled text-brand-serif mb-2 pl-3">
+            <% jobs.each do |job| %>
+              <li class="d-table-row">
+                <span class="d-table-cell p-2 text-nowrap"><%= FormatSimpleDate.new(job.start, job.end).display %></span>
+                <span class="d-table-cell p-2"><%= job.role %></span>
+              </li>
+            <% end %>
+          </ul>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if view.honors.present? %>
+    <h3 class="h4">Honors</h3>
+    <table class="table mb-3">
+      <thead>
+        <tr>
+          <th>Year(s)</th>
+          <th>Honor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% view.honors.each do |honor| %>
+          <tr>
+            <td class="text-nowrap"><%= FormatSimpleDate.new(honor.start_date, honor.end_date).display %></td>
+            <td><%= honor.honor %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+  <% end %>
+</div>
