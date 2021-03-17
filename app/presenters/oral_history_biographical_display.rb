@@ -12,11 +12,11 @@ class OralHistoryBiographicalDisplay < ViewModel
   end
 
   def schools
-    @schools ||= work.oral_history_content&.interviewee_school.sort_by(&:date)
+    @schools ||= (work.oral_history_content&.interviewee_school || []).sort_by(&:date)
   end
 
   def honors
-    @honors ||= work.oral_history_content&.interviewee_honor.sort_by(&:start_date)
+    @honors ||= (work.oral_history_content&.interviewee_honor || []).sort_by(&:start_date)
   end
 
   # Hash where key is institution, value is array of jobs at that institution.
