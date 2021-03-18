@@ -39,8 +39,21 @@ class OralHistoryBiographicalDisplay < ViewModel
     end
   end
 
+  def birth_info
+    @birth_info ||= formatted_date_and_place(oral_history_content&.interviewee_birth)
+  end
+
+  def death_info
+    @death_info ||=  formatted_date_and_place(oral_history_content&.interviewee_death)
+  end
+
+
+  private
+
   # @param date_and_place [OralHistoryContent::DateAndPlace]
   def formatted_date_and_place(date_and_place)
+    return nil if date_and_place.nil?
+
     date = FormatSimpleDate.new(date_and_place.date).display
     place = [date_and_place.city, date_and_place.state_name, date_and_place.province_name, date_and_place.country_name].compact.join(", ")
 
