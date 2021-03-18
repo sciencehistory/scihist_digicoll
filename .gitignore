@@ -49,4 +49,4 @@ public/__sitemaps/
 #A spot for developers to put miscellaneous scripts.
 /personal_bin/*
 
-app/exporters/data/
+bin/oh_microsite_import/data
