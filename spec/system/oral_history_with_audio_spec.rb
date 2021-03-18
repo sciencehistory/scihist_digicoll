@@ -1,9 +1,12 @@
 require 'rails_helper'
 
-describe "Audio front end", type: :system, js: true do
+# Testing the view that has an audio player, sometimes with OHMS. View currently uses
+# the class called OhAudioWorkShowDecorator
+describe "Oral history with audio display", type: :system, js: true do
   let!(:parent_work) do
-    build(:public_work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
+    build(:oral_history_work, published: true)
   end
+
   let(:audio_file_path) { Rails.root.join("spec/test_support/audio/5-seconds-of-silence.mp3")}
   let(:audio_file_sha512) { Digest::SHA512.hexdigest(File.read(audio_file_path)) }
 
@@ -58,7 +61,7 @@ describe "Audio front end", type: :system, js: true do
   end
 
   context "When you visit a work with audio assets" do
-    it "shows the page without error" do
+    it "shows audio assets appropriately" do
       visit work_path(audio_assets.first.parent.friendlier_id)
 
       # Because there is no combined audio derivative,
@@ -189,7 +192,7 @@ describe "Audio front end", type: :system, js: true do
     end
   end
 
-  describe "Public audio work show page (shown to a logged-in user)", :logged_in_user, type: :system, js: true do
+  describe "when you are logged-in staff", :logged_in_user, type: :system, js: true do
 
     let!(:parent_work) do
       build(:oral_history_work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
@@ -234,55 +237,51 @@ describe "Audio front end", type: :system, js: true do
       parent_work.save!
     end
 
-    describe "Logged in user" do
-      it "shows the edit button, and all child items, including unpublished ones." do
-        visit work_path(audio_assets.first.parent.friendlier_id)
+    it "shows the edit button, and all child items, including unpublished ones." do
+      visit work_path(audio_assets.first.parent.friendlier_id)
 
-        find(".nav a", text: "Downloads").click
+      find(".nav a", text: "Downloads").click
 
-        # Audio tracks:
-        within("*[data-role='audio-playlist-wrapper']") do
-          audio_assets.each do |audio_asset|
-            track_listing_css = ".track-listing[data-title=\"#{audio_asset.title}\"]"
-            # All tracks are displayed, including the unpublished ones:
-            expect(page).to have_css(track_listing_css)
-            if audio_asset.published?
-              expect(page).not_to have_css("#{track_listing_css} .badge-warning[title=Private]")
-            else
-              expect(page).to have_css("#{track_listing_css} .badge-warning[title=Private]")
-            end
+      # Audio tracks:
+      within("*[data-role='audio-playlist-wrapper']") do
+        audio_assets.each do |audio_asset|
+          track_listing_css = ".track-listing[data-title=\"#{audio_asset.title}\"]"
+          # All tracks are displayed, including the unpublished ones:
+          expect(page).to have_css(track_listing_css)
+          if audio_asset.published?
+            expect(page).not_to have_css("#{track_listing_css} .badge-warning[title=Private]")
+          else
+            expect(page).to have_css("#{track_listing_css} .badge-warning[title=Private]")
           end
         end
+      end
 
+      # Regular assets:
+      # All files are listed, including the unpublished ones:
 
-        # Regular assets:
+      other_files = page.find_all('.other-files .show-member-list-item')
+      #  All files = audio files + image files + 1 PDF file.
+      expect(other_files.count).to eq image_assets.count + 1
 
-        # All files are listed, including the unpublished ones:
+      # Thumbs corresponding to an unpublished asset are labeled:
+      other_files.each do |file_listing|
+        friendlier_id =  file_listing['data-member-id']
+        asset = image_assets.select{ |ra| ra.friendlier_id == friendlier_id }.first
 
-        other_files = page.find_all('.other-files .show-member-list-item')
-        #  All files = audio files + image files + 1 PDF file.
-        expect(other_files.count).to eq image_assets.count + 1
+        # If the asset doesn't match any of the images, assume it's the PDF transcript:
+        asset = asset || pdf_asset
 
-        # Thumbs corresponding to an unpublished asset are labeled:
-        other_files.each do |file_listing|
-          friendlier_id =  file_listing['data-member-id']
-          asset = image_assets.select{ |ra| ra.friendlier_id == friendlier_id }.first
-
-          # If the asset doesn't match any of the images, assume it's the PDF transcript:
-          asset = asset || pdf_asset
-
-          expect(asset).not_to eq nil
-          if asset.published?
-            expect(file_listing).to have_no_css('.badge-warning[title=Private]')
-          else
-            expect(file_listing).to have_css('.badge-warning[title=Private]')
-          end
+        expect(asset).not_to eq nil
+        if asset.published?
+          expect(file_listing).to have_no_css('.badge-warning[title=Private]')
+        else
+          expect(file_listing).to have_css('.badge-warning[title=Private]')
         end
       end
     end
   end
 
-  describe "ohms-enabled" do
+  describe "With OHMS synchronized transcript and ToC" do
     let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml" }
     let(:interviewer_profile) { InterviewerProfile.create(name: "Smith, John", profile: "This has some <i>html</i>")}
 
