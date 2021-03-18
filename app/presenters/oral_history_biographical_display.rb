@@ -54,9 +54,11 @@ class OralHistoryBiographicalDisplay < ViewModel
   def formatted_date_and_place(date_and_place)
     return nil if date_and_place.nil?
 
-    date = FormatSimpleDate.new(date_and_place.date).display
-    place = [date_and_place.city, date_and_place.state_name, date_and_place.province_name, date_and_place.country_name].compact.join(", ")
+    date = FormatSimpleDate.new(date_and_place.date).display.presence
+    place = [date_and_place.city, date_and_place.state_name, date_and_place.province_name, date_and_place.country_name].compact.join(", ").presence
 
-    [date, place].compact.join(" — ")
+    safe_join(
+      [date, place].compact.collect { |v| content_tag("div", v, class: "attribute")}
+    )
   end
 end
