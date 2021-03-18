@@ -29,6 +29,12 @@ dl.info {
   }
 }
 
+// the adelle-sans font has a really nice semi-bold at font-weight 600
+// let's supplement bootstrap;s font-weight-bold
+.font-weight-semi-bold {
+  font-weight: 600 !important;
+}
+
 form label {
   font-weight: $semi-bold-weight;
 }
