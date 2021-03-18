@@ -4,6 +4,8 @@ class OralHistoryBiographicalDisplay < ViewModel
   alias_method :work, :model
 
   def display
+    return "" unless has_biographical_info?
+
     render "/presenters/oral_history_biographical_display", model: model, view: self
   end
 
@@ -45,6 +47,10 @@ class OralHistoryBiographicalDisplay < ViewModel
 
   def death_info
     @death_info ||=  formatted_date_and_place(oral_history_content&.interviewee_death)
+  end
+
+  def has_biographical_info?
+    birth_info.present? || death_info.present? || schools.present? || grouped_jobs.present? || honors.present?
   end
 
 
