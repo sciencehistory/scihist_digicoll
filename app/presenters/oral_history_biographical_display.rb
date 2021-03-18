@@ -57,8 +57,13 @@ class OralHistoryBiographicalDisplay < ViewModel
     date = FormatSimpleDate.new(date_and_place.date).display.presence
     place = [date_and_place.city, date_and_place.state_name, date_and_place.province_name, date_and_place.country_name].compact.join(", ").presence
 
-    safe_join(
-      [date, place].compact.collect { |v| content_tag("div", v, class: "attribute")}
+    items = safe_join(
+      [date, place].compact.collect { |v| content_tag("li", v, class: "attribute")}
     )
+    if items.present?
+      content_tag("ul", items)
+    else
+      nil
+    end
   end
 end
