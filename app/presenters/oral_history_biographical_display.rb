@@ -46,14 +46,4 @@ class OralHistoryBiographicalDisplay < ViewModel
 
     [date, place].compact.join(" — ")
   end
-
-  private
-
-
-
-  # @input
-  def render_date(date_and_place)
-
-  end
-
 end
