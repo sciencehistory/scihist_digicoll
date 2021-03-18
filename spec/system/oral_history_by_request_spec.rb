@@ -1,6 +1,9 @@
 require 'rails_helper'
 
-describe "work_file_list_show system test", type: :system, js: true, queue_adapter: :test do
+# Testing Oral History show page for OH's with assets available only by request. These use
+# a different template than other ones.
+#
+describe "Oral History with by-request delivery", type: :system, js: true, queue_adapter: :test do
   let(:preview_pdf) { create(:asset_with_faked_file, :pdf, published: true) }
   let(:protected_pdf) { create(:asset_with_faked_file, :pdf, published: false, oh_available_by_request: true) }
   let(:protected_mp3) { create(:asset_with_faked_file, :mp3, published: false, oh_available_by_request: true) }
