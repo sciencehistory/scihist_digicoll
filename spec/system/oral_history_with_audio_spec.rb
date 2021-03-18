@@ -1,5 +1,7 @@
 require 'rails_helper'
 
+# Testing the view that has an audio player, sometimes with OHMS. View currently uses
+# the class called OhAudioWorkShowDecorator
 describe "Oral history with audio display", type: :system, js: true do
   let!(:parent_work) do
     build(:oral_history_work, published: true)
