@@ -1,17 +1,23 @@
 <h2 class="attribute-sub-head">Interviewee biographical information</h2>
 
-  <table class="work chf-attributes">
-    <tbody>
-      <tr>
-        <th>Born</th>
-        <td><%= view.formatted_date_and_place(view.oral_history_content.interviewee_birth) %></td>
-      </tr>
-      <tr>
-        <th>Died</th>
-        <td><%= view.formatted_date_and_place(view.oral_history_content.interviewee_death) %></td>
-      </tr>
-    </tbody>
-  </table>
+  <% if view.birth_info.present? || view.death_info.present? %>
+    <table class="work chf-attributes">
+      <tbody>
+        <% if view.birth_info.present? %>
+          <tr>
+            <th>Born</th>
+            <td><%= view.birth_info %></td>
+          </tr>
+        <% end %>
+        <% if view.death_info.present? %>
+          <tr>
+            <th>Died</th>
+            <td><%= view.death_info %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
 
 <div>
   <% if view.schools.present? %>
