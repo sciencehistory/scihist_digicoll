@@ -18,6 +18,6 @@ $EXPORT_CMD  < queries/death_state.sql      > data/death_state.json
 $EXPORT_CMD  < queries/death_province.sql   > data/death_province.json
 $EXPORT_CMD  < queries/death_country.sql    > data/death_country.json
 
-$EXPORT_CMD  < queries/honors.sql           > data/honors.json
-$EXPORT_CMD  < queries/education.sql        > data/eduction.json
+$EXPORT_CMD  < queries/education.sql        > data/education.json
 $EXPORT_CMD  < queries/career.sql           > data/career.json
+$EXPORT_CMD  < queries/honors.sql           |  gsed  's/\\\"/\"/g' >   data/honors.json
