@@ -1,13 +1,15 @@
 namespace :scihist do
   namespace :oh_microsite_import do
+    require 'scihist_digicoll/oh_microsite_import_utilities'
+    include OhMicrositeImportUtilities
+
     desc """
       Goes through all the oral histories and adds biographical metadata from files on the disk, for those missing them:
 
       bundle exec rake scihist:oh_microsite_import:import_interviewee_biographical_metadata
 
-      # bundle exec rake scihist:add_transcripts_to_oral_histories
+      TODO:
       # Files are assumed to exist at tmp/oh_microsite_export/data/.
-
       # To specify another location for files:
       # FILES_LOCATION=/tmp/some_other_dir/ bundle exec rake scihist:oh_microsite_import:import_interviewee_biographical_metadata
 
@@ -46,9 +48,11 @@ namespace :scihist do
             next
           end
           begin
+
             if %w{birth_date_1 birth_date_2 birth_city birth_state birth_province birth_country}.include? file_name
               w.oral_history_content!.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
             end
+
             if %w{birth_date_1 birth_date_2 death_city death_state death_province death_country}.include? file_name
               w.oral_history_content!.interviewee_death ||= OralHistoryContent::DateAndPlace.new
             end
@@ -60,69 +64,27 @@ namespace :scihist do
             when 'birth_date_2'
               pp relevant_rows
             when 'birth_city'
-              oral_history_content.interviewee_birth.city        = relevant_rows.first['birth_city']
+              oral_history_content.interviewee_birth.city         = relevant_rows.first['birth_city']
             when 'birth_state'
-              oral_history_content.interviewee_birth.state       = relevant_rows.first['birth_state']
+              oral_history_content.interviewee_birth.state        = relevant_rows.first['birth_state']
             when 'birth_province'
-              oral_history_content.interviewee_birth.province    = relevant_rows.first['birth_province']
+              oral_history_content.interviewee_birth.province     = relevant_rows.first['birth_province']
             when 'birth_country'
-              oral_history_content.interviewee_birth.country     = relevant_rows.first['birth_country']
+              oral_history_content.interviewee_birth.country      = relevant_rows.first['birth_country']
             when 'death_city'
-              oral_history_content.interviewee_death.city        = relevant_rows.first['death_city']
+              oral_history_content.interviewee_death.city         = relevant_rows.first['death_city']
             when 'death_state'
-              oral_history_content.interviewee_death.state       = relevant_rows.first['death_state']
+              oral_history_content.interviewee_death.state        = relevant_rows.first['death_state']
             when 'death_province'
-              oral_history_content.interviewee_death.province    = relevant_rows.first['death_province']
+              oral_history_content.interviewee_death.province     = relevant_rows.first['death_province']
             when 'death_country'
-              w.oral_history_content!.interviewee_death.country  = relevant_rows.first['death_country']
+              w.oral_history_content!.interviewee_death.country   = relevant_rows.first['death_country']
             when 'education'
-              w.oral_history_content.interviewee_school = relevant_rows.map do |row |
-                cleaner_date = row['date'].
-                  gsub(/\.000000$/, '').
-                  gsub(/ 00:00:00$/, '').
-                  gsub(/-01-01$/, '')
-
-                OralHistoryContent::IntervieweeSchool.new(
-                  institution: row['school_name'],
-                  date:   cleaner_date,
-                  discipline: row['discipline'],
-                  degree: row['degree']
-                )
-              end
+              w.oral_history_content.interviewee_school           = relevant_rows.map { |row|school_from_row(row) }
             when 'career'
-              w.oral_history_content.interviewee_job = relevant_rows.map do |row |
-                row['job_start_date'] = row['job_start_date'].
-                  gsub(/\.000000$/, '').
-                  gsub(/ 00:00:00$/, '').
-                  gsub(/-01-01$/, '')
-                row['job_end_date'] = row['job_end_date'].
-                  gsub(/\.000000$/, '').
-                  gsub(/ 00:00:00$/, '').
-                  gsub(/-01-01$/, '')
-                OralHistoryContent::IntervieweeJob.new(
-                  start: row['job_start_date'],
-                  end:  row['job_end_date'],
-                  institution: row['employer_name'],
-                  role: row['job_title']
-                )
-              end
+              w.oral_history_content.interviewee_job              = relevant_rows.map { |row | job_from_row(row) }
             when 'honors'
-              w.oral_history_content.interviewee_honor = relevant_rows.map do |row |
-                row['interviewee_honor_start_date'] = row['interviewee_honor_start_date'].
-                  gsub(/\.000000$/, '').
-                  gsub(/ 00:00:00$/, '').
-                  gsub(/-01-01$/, '')
-                row['interviewee_honor_end_date'] = row['interviewee_honor_end_date'].
-                  gsub(/\.000000$/, '').
-                  gsub(/ 00:00:00$/, '').
-                  gsub(/-01-01$/, '')
-                row.delete('interviewee_honor_end_date') if row['interviewee_honor_end_date'] == row['interviewee_honor_start_date']
-                OralHistoryContent::IntervieweeHonor.new(
-                  start_date: row['interviewee_honor_start_date'],
-                  end_date: row['interviewee_honor_end_date'],
-                  honor: row['interviewee_honor_description']
-                )
-              end
+              w.oral_history_content.interviewee_honor            = relevant_rows.map { |row | honor_from_row(row) }
             end # case
             w.oral_history_content.save!
           rescue StandardError => e
