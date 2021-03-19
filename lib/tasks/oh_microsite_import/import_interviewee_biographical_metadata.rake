@@ -15,11 +15,8 @@ namespace :scihist do
 
     task :import_interviewee_biographical_metadata => :environment do
 
-      files =  %w{name birth_date_1 birth_date_2 birth_city birth_state birth_province birth_country death_date_1 death_date_2 death_city death_state death_province death_country honors education career}
-      files =  %w{ birth_date_1 birth_date_2 birth_city birth_state birth_province birth_country}
-
+      files =  %w{name birth_date_1 birth_date_2 birth_city birth_state birth_province birth_country death_date_1 death_date_2 death_city death_state death_province death_country education career honors }
       total_oral_histories = Work.where("json_attributes -> 'genre' ?  'Oral histories'").count
-      puts total_oral_histories
 
       files.each do |file_name|
         file_path = "bin/oh_microsite_export/data/#{file_name}.json"
@@ -28,26 +25,27 @@ namespace :scihist do
           puts "Error parsing #{file_path}"
           next
         end
-        # puts parsed.count
+
+        puts "Starting #{file_name}"
 
         progress_bar = ProgressBar.create(total: total_oral_histories, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
+        #progress_bar = nil
+
         Work.where("json_attributes -> 'genre' ?  'Oral histories'").find_each do |w|
           accession_num =  w.external_id.find { |id| id.category == "interview" }&.value
           unless accession_num
-            progress_bar.log("ERROR: #{w.title}: no accession number.")
-            progress_bar.increment
+            progress_bar.log("ERROR: #{w.title}: no accession number.")  if progress_bar
+            progress_bar.increment  if progress_bar
             next
           end
           relevant_rows = parsed.select{|row| row['interview_number'] == accession_num}
 
-          puts "No #{file_name} rows found for #{w.title}" if relevant_rows.count == 0
-          next if relevant_rows.count == 0
-
+          if relevant_rows.count == 0
+            #puts "No #{file_name} rows found for #{w.title}" if relevant_rows.count == 0
+            progress_bar.increment  if progress_bar
+            next
+          end
           begin
-
-            #puts w.title
-            #puts relevant_rows.first['interviewee_name']
-
             if %w{birth_date_1 birth_date_2 birth_city birth_state birth_province birth_country}.include? file_name
               w.oral_history_content!.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
             end
@@ -77,14 +75,62 @@ namespace :scihist do
               oral_history_content.interviewee_death.province    = relevant_rows.first['death_province']
             when 'death_country'
               w.oral_history_content!.interviewee_death.country  = relevant_rows.first['death_country']
-            end
+            when 'education'
+              w.oral_history_content.interviewee_school = relevant_rows.map do |row |
+                cleaner_date = row['date'].
+                  gsub(/\.000000$/, '').
+                  gsub(/ 00:00:00$/, '').
+                  gsub(/-01-01$/, '')
+
+                OralHistoryContent::IntervieweeSchool.new(
+                  institution: row['school_name'],
+                  date:   cleaner_date,
+                  discipline: row['discipline'],
+                  degree: row['degree']
+                )
+              end
+            when 'career'
+              w.oral_history_content.interviewee_job = relevant_rows.map do |row |
+                row['job_start_date'] = row['job_start_date'].
+                  gsub(/\.000000$/, '').
+                  gsub(/ 00:00:00$/, '').
+                  gsub(/-01-01$/, '')
+                row['job_end_date'] = row['job_end_date'].
+                  gsub(/\.000000$/, '').
+                  gsub(/ 00:00:00$/, '').
+                  gsub(/-01-01$/, '')
+                OralHistoryContent::IntervieweeJob.new(
+                  start: row['job_start_date'],
+                  end:  row['job_end_date'],
+                  institution: row['employer_name'],
+                  role: row['job_title']
+                )
+              end
+            when 'honors'
+              w.oral_history_content.interviewee_honor = relevant_rows.map do |row |
+                row['interviewee_honor_start_date'] = row['interviewee_honor_start_date'].
+                  gsub(/\.000000$/, '').
+                  gsub(/ 00:00:00$/, '').
+                  gsub(/-01-01$/, '')
+                row['interviewee_honor_end_date'] = row['interviewee_honor_end_date'].
+                  gsub(/\.000000$/, '').
+                  gsub(/ 00:00:00$/, '').
+                  gsub(/-01-01$/, '')
+                row.delete('interviewee_honor_end_date') if row['interviewee_honor_end_date'] == row['interviewee_honor_start_date']
+                OralHistoryContent::IntervieweeHonor.new(
+                  start_date: row['interviewee_honor_start_date'],
+                  end_date: row['interviewee_honor_end_date'],
+                  honor: row['interviewee_honor_description']
+                )
+              end
+            end # case
             w.oral_history_content.save!
           rescue StandardError => e
-            progress_bar.log("ERROR: #{w.title}: unable to save #{w.title}. More info: #{e.inspect}")
-            progress_bar.increment
+            progress_bar.log("ERROR: #{w.title}: unable to save #{w.title}. More info: #{e.inspect}")  if progress_bar
+            progress_bar.increment if progress_bar
             next
           end
-          progress_bar.increment
+          progress_bar.increment if progress_bar
         end
       end
     end
