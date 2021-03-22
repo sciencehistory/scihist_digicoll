@@ -1,6 +1,10 @@
-read -s -p "Enter the password for the local database : " DATABASE_PASSWORD
-
+if [ -f "local_database_password.txt" ]; then
+    DATABASE_PASSWORD=`cat local_database_password.txt`
+else
+    read -s -p "Enter the password for the local database : " DATABASE_PASSWORD
+fi
 EXPORT_CMD="mysql -u `cat local_database_user.txt` -s `cat local_database_name.txt` -p$DATABASE_PASSWORD"
+
 
 $EXPORT_CMD  < queries/name.sql             > data/name.json
 

@@ -49,4 +49,8 @@ public/__sitemaps/
 #A spot for developers to put miscellaneous scripts.
 /personal_bin/*
 
+
 bin/oh_microsite_export/data
+bin/oh_microsite_export/local_database_name.txt
+bin/oh_microsite_export/local_database_password.txt
+bin/oh_microsite_export/local_database_user.txt
