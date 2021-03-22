@@ -1,5 +1,6 @@
 namespace :scihist do
   namespace :oh_microsite_import do
+
     require 'scihist_digicoll/oh_microsite_import_utilities'
     include OhMicrositeImportUtilities
 
@@ -17,7 +18,7 @@ namespace :scihist do
 
     task :import_interviewee_biographical_metadata => :environment do
 
-      files =  %w{name birth_date_1 birth_date_2 birth_city birth_state birth_province birth_country death_date_1 death_date_2 death_city death_state death_province death_country education career honors }
+      files =  %w{name birth_date_1 birth_date_2 birth_date_3 birth_city birth_state birth_province birth_country death_date_1 death_date_2 death_date_3 death_city death_state death_province death_country education career honors }
       total_oral_histories = Work.where("json_attributes -> 'genre' ?  'Oral histories'").count
 
       files.each do |file_name|
@@ -28,7 +29,7 @@ namespace :scihist do
           next
         end
 
-        puts "Starting #{file_name}"
+        #puts "Starting #{file_name}"
 
         progress_bar = ProgressBar.create(total: total_oral_histories, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
         #progress_bar = nil
@@ -49,20 +50,27 @@ namespace :scihist do
           end
           begin
 
-            if %w{birth_date_1 birth_date_2 birth_city birth_state birth_province birth_country}.include? file_name
+            if %w{birth_date_1 birth_date_2 birth_date_3 birth_city birth_state birth_province birth_country}.include? file_name
               w.oral_history_content!.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
             end
 
-            if %w{birth_date_1 birth_date_2 death_city death_state death_province death_country}.include? file_name
+            if %w{death_date_1 death_date_2 birth_date_3 death_city death_state death_province death_country}.include? file_name
               w.oral_history_content!.interviewee_death ||= OralHistoryContent::DateAndPlace.new
             end
 
             oral_history_content = w.oral_history_content!
             case file_name
-            when 'birth_date_1'
-              pp relevant_rows
-            when 'birth_date_2'
-              pp relevant_rows
+
+            # TODO: Investigate which interviewees, if any, have data stored in
+            # birth_date_1 and birth_date_2 and death_date_1 and death_date_2.
+            # Why are those tables present, and do we need to migrate them?
+
+            # when 'birth_date_1'
+            #   pp relevant_rows
+            # when 'birth_date_2'
+            #   pp relevant_rows
+            when 'birth_date_3'
+              oral_history_content.interviewee_birth.date         = clean_up_date_string(relevant_rows.first['birth_date_3'])
             when 'birth_city'
               oral_history_content.interviewee_birth.city         = relevant_rows.first['birth_city']
             when 'birth_state'
@@ -71,6 +79,12 @@ namespace :scihist do
               oral_history_content.interviewee_birth.province     = relevant_rows.first['birth_province']
             when 'birth_country'
               oral_history_content.interviewee_birth.country      = relevant_rows.first['birth_country']
+            # when 'death_date_1'
+            #   pp relevant_rows
+            # when 'death_date_2'
+            #   pp relevant_rows
+            when 'death_date_3'
+              oral_history_content.interviewee_death.date         = clean_up_date_string(relevant_rows.first['death_date_3'])
             when 'death_city'
               oral_history_content.interviewee_death.city         = relevant_rows.first['death_city']
             when 'death_state'
@@ -80,7 +94,7 @@ namespace :scihist do
             when 'death_country'
               w.oral_history_content!.interviewee_death.country   = relevant_rows.first['death_country']
             when 'education'
-              w.oral_history_content.interviewee_school           = relevant_rows.map { |row|school_from_row(row) }
+              w.oral_history_content.interviewee_school           = relevant_rows.map { |row| school_from_row(row) }
             when 'career'
               w.oral_history_content.interviewee_job              = relevant_rows.map { |row | job_from_row(row) }
             when 'honors'
