@@ -8,8 +8,12 @@ select
             'interview_entity_id',
             field_data_field_interviewee_name.entity_id,
 
+            'source_url',
+            CONCAT("https://oh.sciencehistory.org/node/", field_data_field_interviewee_name.entity_id),
+
             'interview_number',
             field_interview_number_value
+
         )
     )
 from
