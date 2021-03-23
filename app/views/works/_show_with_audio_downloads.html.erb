@@ -5,7 +5,7 @@
     <div class="other-files sans-serif">
       <% decorator.non_audio_members.each_with_index do |member, index| %>
 
-        <div class="show-member-list-item" data-member-id="<%= member.friendlier_id %>">
+        <div class="show-member-file-list-item" data-member-id="<%= member.friendlier_id %>">
           <div class="image">
             <%= decorator.link_to_non_audio_member(member) do %>
               <%# lazyload all but first 6 images %>
