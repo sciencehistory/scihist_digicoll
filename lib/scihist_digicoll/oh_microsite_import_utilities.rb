@@ -2,6 +2,9 @@
 # See:
 # scihist:oh_microsite_import:import_interviewee_biographical_metadata
 module OhMicrositeImportUtilities
+  # If a date is Jan. 1st, it's assumed to be an unspecified date within that year.
+  # Likewise, we don't care about exactly what time of day
+  # the interviewee started or quit a job, etc.
   def clean_up_date_string(date_str)
     date_str&.
       gsub(/\.000000$/, '')&.

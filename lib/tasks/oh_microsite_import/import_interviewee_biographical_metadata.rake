@@ -19,7 +19,12 @@ namespace :scihist do
     task :import_interviewee_biographical_metadata => :environment do
 
       files =  %w{name birth_date_1 birth_date_2 birth_date_3 birth_city birth_state birth_province birth_country death_date_1 death_date_2 death_date_3 death_city death_state death_province death_country education career honors }
-      total_oral_histories = Work.where("json_attributes -> 'genre' ?  'Oral histories'").count
+      all_oral_histories = Work.where("json_attributes -> 'genre' ?  'Oral histories'")
+
+      total_oral_histories = all_oral_histories.count
+
+      works_updated = []
+      errors = []
 
       files.each do |file_name|
         file_path = "bin/oh_microsite_export/data/#{file_name}.json"
@@ -30,11 +35,10 @@ namespace :scihist do
         end
 
         #puts "Starting #{file_name}"
+        #progress_bar = ProgressBar.create(total: total_oral_histories, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
+        progress_bar = nil
 
-        progress_bar = ProgressBar.create(total: total_oral_histories, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
-        #progress_bar = nil
-
-        Work.where("json_attributes -> 'genre' ?  'Oral histories'").find_each do |w|
+        all_oral_histories.find_each do |w|
           accession_num =  w.external_id.find { |id| id.category == "interview" }&.value
           unless accession_num
             progress_bar.log("ERROR: #{w.title}: no accession number.")  if progress_bar
@@ -60,6 +64,41 @@ namespace :scihist do
 
             oral_history_content = w.oral_history_content!
             case file_name
+
+            when 'name'
+              if 1 == 0
+                puts "Source info"
+                puts relevant_rows.first['interviewee_name']
+                puts relevant_rows.first['source_url']
+                puts !(relevant_rows.count > 1)
+                puts (relevant_rows.count > 0)
+
+                puts "Destination info:"
+                #puts accession_num
+                #puts w.title
+                puts "localhost:3000/admin/works/#{w.friendlier_id}/"
+                puts w.title.include? relevant_rows.first['interviewee_name']
+                puts "   "
+              end
+
+              if relevant_rows.empty?
+                errors << "Could not find source record for #{w.title} ( #{w.friendlier_id} ) "
+              end
+
+              if relevant_rows.count > 1
+                errors << "More than one source record for #{w.title} ( #{w.friendlier_id}) #{relevant_rows}"
+              end
+
+              works_updated << w
+
+              #pp oral_history_content.work
+              #pp admin_work_path(oral_history_content.work)
+              # pp relevant_rows.first.interviewee_name
+              # are there more than one relevant rows???
+              # Are thare less than one relevant rows???
+              # And all the destination items covered in the import?
+
+
 
             # TODO: Investigate which interviewees, if any, have data stored in
             # birth_date_1 and birth_date_2 and death_date_1 and death_date_2.
@@ -102,13 +141,24 @@ namespace :scihist do
             end # case
             w.oral_history_content.save!
           rescue StandardError => e
-            progress_bar.log("ERROR: #{w.title}: unable to save #{w.title}. More info: #{e.inspect}")  if progress_bar
-            progress_bar.increment if progress_bar
+            if progress_bar.nil?
+              puts "ERROR: #{w.title}"
+              puts e.inspect
+            else
+              progress_bar.log("ERROR: #{w.title}: unable to save #{w.title}. More info: #{e.inspect}")  if progress_bar
+              progress_bar.increment if progress_bar
+            end
             next
           end
           progress_bar.increment if progress_bar
         end
       end
+      if works_updated.count == all_oral_histories.count
+        puts "All oral histories in the digital collections were updated."
+      else
+        puts "Some oral histories in the digital collections were not updated."
+      end
+      puts "Other errors: #{errors}"
     end
   end
 end

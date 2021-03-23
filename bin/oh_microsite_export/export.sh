@@ -5,8 +5,8 @@ else
 fi
 EXPORT_CMD="mysql -u `cat local_database_user.txt` -s `cat local_database_name.txt` -p$DATABASE_PASSWORD"
 
-$EXPORT_CMD  < queries/name.sql             > data/name.json
 
+#Export:
 $EXPORT_CMD  < queries/birth_date_1.sql     > data/birth_date_1.json
 $EXPORT_CMD  < queries/birth_date_2.sql     > data/birth_date_2.json
 $EXPORT_CMD  < queries/birth_date_3.sql     > data/birth_date_3.json
@@ -25,4 +25,13 @@ $EXPORT_CMD  < queries/death_country.sql    > data/death_country.json
 
 $EXPORT_CMD  < queries/education.sql        > data/education.json
 $EXPORT_CMD  < queries/career.sql           > data/career.json
+
+# TODO: fix this bug.
 $EXPORT_CMD  < queries/honors.sql           |  gsed  's/\\\"/\"/g' >   data/honors.json
+
+
+# Verification: contains name, source URL, and interview number
+$EXPORT_CMD  < queries/name.sql             > data/name.json
+
+# We'll use this for the crosswalk to FAST headings
+$EXPORT_CMD  < queries/institutions.sql     > data/institutions.txt
