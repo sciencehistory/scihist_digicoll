@@ -8,5 +8,8 @@ user_informer:
   info: "Error ID: {{error_id}}"
 breadcrumbs:
   enabled: true
+exceptions:
+  ignore:
+    - 'ActionDispatch::Http::MimeNegotiation::InvalidType'
 
 # http://docs.honeybadger.io/ruby/gem-reference/configuration.html

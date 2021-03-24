@@ -1,7 +1,6 @@
 # PUBLIC FACING
 # Staff-facing actions are in app/controllers/admin/oral_history_access_requests_controller.rb
 class OralHistoryAccessRequestsController < ApplicationController
-
   # GET /works/4j03d09fr7t/request_oral_history_access
   def new
     @work = load_work(params['work_friendlier_id'])
@@ -48,7 +47,10 @@ private
     #   # No sense showing this form for a work that is either freely available
     #   # or locked down. (This should never happen, but just in case.)
     unless WorkFileListShowDecorator.new(work).available_by_request_assets.present?
-      raise RuntimeError, "You can't request this work using this form: it's either freely available or not available to the public."
+      Rails.logger.warn("/works/#{work.friendlier_id}/request_oral_history_access: Can't request oral history access, no eligible files.")
+
+      # ActionController::RoutingError will just tell Rails to render standard 404.
+      raise ActionController::RoutingError.new('Not Found')
     end
     work
   end
