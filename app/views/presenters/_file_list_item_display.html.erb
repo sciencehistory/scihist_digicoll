@@ -9,7 +9,7 @@
   <div class="title">
     <div>
       <%= view.maybe_view_link_to(member) do %>
-        <%= member.title %>
+        <%= view.member_label %>
       <% end %>
       <% unless member.published? %>
           <span title="Private" class="badge badge-warning">Private</span>
