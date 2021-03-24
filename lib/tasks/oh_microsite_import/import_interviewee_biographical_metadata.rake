@@ -1,5 +1,6 @@
 namespace :scihist do
   namespace :oh_microsite_import do
+    require 'sequel'
     require 'scihist_digicoll/oh_microsite_import_utilities'
     include OhMicrositeImportUtilities
     desc """
@@ -14,7 +15,13 @@ namespace :scihist do
       # FILES_LOCATION=/tmp/some_other_dir/ bundle exec rake scihist:oh_microsite_import:import_interviewee_biographical_metadata
     """
     task :import_interviewee_biographical_metadata => :environment do
+      DB = Sequel.connect( :adapter => 'mysql2',
+        :user =>     IO.read('bin/oh_microsite_export/local_database_user.txt'),
+        :password => IO.read('bin/oh_microsite_export/local_database_password.txt'),
+        :database => IO.read('bin/oh_microsite_export/local_database_name.txt')
+      )
       files = %w{name birth_date_1 birth_date_2 birth_date_3 birth_city birth_state birth_province birth_country death_date_1 death_date_2 death_date_3 death_city death_state death_province death_country education career honors}
+
       all_oral_histories = Work.where("json_attributes -> 'genre' ?  'Oral histories'")
       total_oral_histories = all_oral_histories.count
       works_updated = Set.new()
@@ -22,12 +29,8 @@ namespace :scihist do
       # Each metadata field is in its own JSON file.
       # We open each file in turn.
       files.each do |field|
-        file_path = "bin/oh_microsite_export/data/#{field}.json"
-        parsed = JSON.parse(File.read(file_path))
-        unless parsed.is_a? Array
-          puts "Error parsing #{file_path}"
-          next
-        end
+        results = DB[IO.read("bin/oh_microsite_export/queries/#{field}.sql")]
+
         #progress_bar = ProgressBar.create(total: total_oral_histories, format: "%a %t: |%B| %R/s %c/%u %p%% %e", title: field.ljust(15))
         progress_bar = nil
         # For each metatata field we iterate over the
@@ -41,7 +44,8 @@ namespace :scihist do
             progress_bar.increment  if progress_bar
             next
           end
-          relevant_rows = parsed.select{|row| row['interview_number'] == accession_num}
+
+          relevant_rows = results.to_a.select{|row| row[:interview_number] == accession_num}
           if relevant_rows.count == 0
             # No relevant rows for this particular field for this particular interviewee.
             progress_bar.increment  if progress_bar
@@ -64,7 +68,7 @@ namespace :scihist do
               end
             end
 
-            if relevant_rows.map{|r| r['interview_entity_id']}.uniq.count > 1
+            if relevant_rows.map{|r| r[:interview_entity_id]}.uniq.count > 1
               errors << "#{w.title} (#{w.friendlier_id}): Skipping #{field} since there was more than one source interview."
               next
             end
@@ -87,7 +91,7 @@ namespace :scihist do
         end
         # At this point all the oral histories have been updated with the metadata pertaining to `field`.
       end
-      # At this point all the oral histories have been updated.
+      # # At this point all the oral histories have been updated.
       puts "#{errors.join("\n")}"
       if works_updated.map(&:friendlier_id).sort == all_oral_histories.map(&:friendlier_id).sort
         puts "All oral histories in the digital collections were updated."
