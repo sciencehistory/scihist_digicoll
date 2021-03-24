@@ -29,6 +29,18 @@ class FileListItemDisplay < ViewModel
     render "/presenters/file_list_item_display", member: member, view: self
   end
 
+
+  # use label supplied by "role" if present, otherwise just the asset.title
+  # as usual.
+  def member_label
+    @member_label ||= if member.role.present?
+      t(member.role, scope: "asset_role_label", default: member.role.humanize )
+    else
+      member.title
+    end
+  end
+
+
   # Should we link thumbnail and title to a "view" link?
   #
   # Only for PDFs at present, but can expand later. We don't want to do
