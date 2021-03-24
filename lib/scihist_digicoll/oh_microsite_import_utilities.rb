@@ -61,14 +61,53 @@ module OhMicrositeImportUtilities
     end
 
     def self.education(oral_history_content, rows)
-      oral_history_content.interviewee_school            = rows.map { |row| school_from_row(row) }
+      oral_history_content.interviewee_school            = rows.map do |row|
+        OralHistoryContent::IntervieweeSchool.new(
+          date:         strip_time_info(row[:date]),
+          institution:  row[:school_name],
+          discipline:   row[:discipline],
+          degree:       row[:degree]
+        )
+      end
     end
+
     def self.career(oral_history_content, rows)
-      oral_history_content.interviewee_job              = rows.map { |row | job_from_row(row) }
+      oral_history_content.interviewee_job = rows.map do |row |
+        OralHistoryContent::IntervieweeJob.new(
+          start:        strip_time_info(row[:job_start_date]),
+          end:          strip_time_info(row[:job_end_date]),
+          institution:  row[:employer_name],
+          role:         row[:job_title]
+        )
+      end
     end
+
     def self.honors(oral_history_content, rows)
-      oral_history_content.interviewee_honor            = rows.map { |row | honor_from_row(row) }
+      oral_history_content.interviewee_honor = rows.map do |row |
+        OralHistoryContent::IntervieweeHonor.new(
+          start_date:   strip_time_info(row[:interviewee_honor_start_date]),
+          end_date:     strip_time_info(row[:interviewee_honor_end_date]),
+          honor:        row[:interviewee_honor_description]
+        )
+      end
     end
+
+  # submodule ends here
+  end
+
+  def oh_database
+    Sequel.connect(
+      :adapter => 'mysql2',
+      :user =>     IO.read('bin/oh_microsite_export/local_database_user.txt'),
+      :password => IO.read('bin/oh_microsite_export/local_database_password.txt'),
+      :database => IO.read('bin/oh_microsite_export/local_database_name.txt')
+    )
+  end
+
+  def select_rows(all_rows, work)
+    accession_num =  work.external_id.find { |id| id.category == "interview" }&.value
+    abort if accession_num.nil?
+    all_rows.to_a.select{|row| row[:interview_number] == accession_num}
   end
 
   # Strip time of day info from all these dates.
@@ -80,28 +119,13 @@ module OhMicrositeImportUtilities
   end
 
   def job_from_row(row)
-    OralHistoryContent::IntervieweeJob.new(
-      start:        strip_time_info(row[:job_start_date]),
-      end:          strip_time_info(row[:job_end_date]),
-      institution:  row[:employer_name],
-      role:         row[:job_title]
-    )
+
   end
   def honor_from_row(row)
     # TODO: remove this delete once we merge in the migration that contains the two dates for honors.
-    row.delete('interviewee_honor_end_date') if row[:interviewee_honor_end_date] == row[:interviewee_honor_start_date]
-    OralHistoryContent::IntervieweeHonor.new(
-      start_date:   strip_time_info(row[:interviewee_honor_start_date]),
-      end_date:     strip_time_info(row[:interviewee_honor_end_date]),
-      honor:        row[:interviewee_honor_description]
-    )
+
   end
   def school_from_row(row)
-    OralHistoryContent::IntervieweeSchool.new(
-      date:         strip_time_info(row[:date]),
-      institution:  row[:school_name],
-      discipline:   row[:discipline],
-      degree:       row[:degree]
-    )
+
   end
 end
