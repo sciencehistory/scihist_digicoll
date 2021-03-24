@@ -137,6 +137,7 @@
     width: 54px; // thumb_mini width
     padding-left: 0;
     padding-right: 0;
+    flex-shrink: 0;
   }
 
   .title {
