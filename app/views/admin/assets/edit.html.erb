@@ -29,7 +29,7 @@
   <div class="form-inputs">
     <%= f.input :title %>
 
-    <%= f.input :role, collection: Asset.roles.values.collect(&:humanize).collect(&:downcase), include_blank: "[unspecified]" %>
+    <%= f.input :role, collection: Asset.roles.values.collect { |v| [v.humanize.downcase, v] }, include_blank: "[unspecified]" %>
 
     <%= f.repeatable_attr_input(:admin_note, build: :at_least_one) do |input_name, value| %>
       <div class="form-group">
