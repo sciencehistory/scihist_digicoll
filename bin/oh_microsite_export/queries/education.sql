@@ -1,26 +1,13 @@
 select
-    JSON_ARRAYAGG(
-        JSON_OBJECT(
-            'interviewee_name',
-            field_interviewee_name_value,
-            'interview_entity_id',
-            field_data_field_interviewee_name.entity_id,
-            'interview_number',
-            field_data_field_interview_number.field_interview_number_value,
-            'education_id',
-            link.field_interviewee_education_value,
-            'discipline',
-            discipline_target.field_discipline_value,
-            'degree',
-            degree_target.field_degree_value,
-            'date',
-            date_target.field_year_value,
-            'school_id',
-            school_link.field_job_exp_institution_ref_nid,
-            'school_name',
-            school.title
-        )
-    )
+    field_interviewee_name_value interviewee_name,
+    field_data_field_interviewee_name.entity_id interview_entity_id,
+    field_data_field_interview_number.field_interview_number_value interview_number,
+    link.field_interviewee_education_value education_id,
+    discipline_target.field_discipline_value discipline,
+    degree_target.field_degree_value degree,
+    date_target.field_year_value date,
+    school_link.field_job_exp_institution_ref_nid school_id,
+    school.title school_name
 from
     field_data_field_interviewee_name,
     field_data_field_interview_number,

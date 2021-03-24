@@ -1,17 +1,8 @@
 select
-    JSON_ARRAYAGG(
-        JSON_OBJECT(
-            'interviewee_name',
-            field_interviewee_name_value,
-            'interview_entity_id',
-            field_data_field_interviewee_name.entity_id,
-            'interview_number',
-            field_data_field_interview_number.field_interview_number_value,
-
-            'death_country',
-            field_death_loc_country_select_value
-        )
-    )
+    field_interviewee_name_value interviewee_name,
+    field_data_field_interviewee_name.entity_id interview_entity_id,
+    field_data_field_interview_number.field_interview_number_value interview_number,
+    field_death_loc_country_select_value death_country
 from
     field_data_field_interviewee_name,
     field_data_field_interview_number,

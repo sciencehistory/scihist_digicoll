@@ -1,21 +1,8 @@
 select
-    JSON_ARRAYAGG(
-        JSON_OBJECT(
-
-            'interviewee_name',
-            field_interviewee_name_value,
-
-            'interview_entity_id',
-            field_data_field_interviewee_name.entity_id,
-
-            'source_url',
-            CONCAT("https://oh.sciencehistory.org/node/", field_data_field_interviewee_name.entity_id),
-
-            'interview_number',
-            field_interview_number_value
-
-        )
-    )
+    field_interviewee_name_value as interviewee_name,
+    field_data_field_interviewee_name.entity_id as interview_entity_id,
+    CONCAT("https://oh.sciencehistory.org/node/", field_data_field_interviewee_name.entity_id) as source_url,
+    field_interview_number_value as interview_number
 from
     field_data_field_interviewee_name,
     field_data_field_interview_number accession_number_table
