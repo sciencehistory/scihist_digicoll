@@ -271,8 +271,8 @@
     }
   }
 
-  .other-files {
-    border-top: 3px solid $table-border-color;
+  .show-member-file-list-item:first-child div {
+    border: none;
   }
 
   .work.chf-attributes {

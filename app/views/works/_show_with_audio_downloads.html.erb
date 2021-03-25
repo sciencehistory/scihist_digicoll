@@ -1,7 +1,5 @@
 <% if decorator.non_audio_members.present? %>
   <div class="downloads-pdf">
-    <h2 class="attribute-sub-head">Transcript (Published Version)</h2>
-
     <div class="other-files sans-serif">
       <% decorator.non_audio_members.each_with_index do |member, index| %>
         <%= FileListItemDisplay.new(member,
