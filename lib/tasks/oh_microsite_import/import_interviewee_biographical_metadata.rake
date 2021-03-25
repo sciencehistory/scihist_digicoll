@@ -16,46 +16,63 @@ namespace :scihist do
     """
     task :import_interviewee_biographical_metadata => :environment do
 
-      # If strict is true, proceed even if there are mismatches.
-      strict = false
-
       DB = oh_database()
 
-      files = ['name'] +
-      %w{ birth_date_1 birth_date_2 birth_date_3 birth_city birth_state birth_province birth_country } +
-      %w{ death_date_1 death_date_2 death_date_3 death_city death_state death_province death_country } +
-      %w{ education career honors}
 
       all_oral_histories = Work.where("json_attributes -> 'genre' ?  'Oral histories'")
-      total_oral_histories = all_oral_histories.count
-      works_updated = Set.new()
-      errors = []
-
+      mapping_errors = []
 
       # Start with a basic check of the mapping using the name.sql file.
-      results = DB[IO.read("bin/oh_microsite_export/queries/name.sql")]
+      names = DB[IO.read("bin/oh_microsite_export/queries/name.sql")]
+
+      destination_accession_numbers = []
+
       all_oral_histories.find_each do |w|
         accession_num =  w.external_id.find { |id| id.category == "interview" }&.value
         unless accession_num
-          errors << "ERROR: #{w.title} ( #{w.friendlier_id} ): no accession number."
+          mapping_errors << "ERROR: #{w.title} ( #{w.friendlier_id} ): no accession number."
           next
         end
-        relevant_rows = results.to_a.select{|row| row[:interview_number] == accession_num}
+        destination_accession_numbers << accession_num
+        relevant_rows = names.to_a.select{|row| row[:interview_number] == accession_num}
         if relevant_rows.empty?
-          errors << "#{w.title} (#{w.friendlier_id}): could not find source record."
+          mapping_errors << "#{w.title} (#{w.friendlier_id}): could not find source record."
         end
         if relevant_rows.length > 1
-          errors << "#{w.title} (#{w.friendlier_id}): More than one source record:\n#{relevant_rows.join("\n")}"
+          mapping_errors << "#{w.title} (#{w.friendlier_id}): more than one source record:\n#{relevant_rows.join("\n")}"
         end
       end
 
-      if strict && errors.present?
-        puts errors
+      puts "Source records: #{names.map(:interview_number).to_a.count}"
+      puts "Destination records: #{all_oral_histories.count}"
+      puts "Destination records with an accession number: #{destination_accession_numbers.count}"
+      puts "Source records without a destination record: #{names.map(:interview_number).to_a.reject{|id| destination_accession_numbers.include? id }.count}"
+
+      if mapping_errors.present?
+        puts "There were problems with the mapping." if mapping_errors.present?
+        puts "#{mapping_errors.join("\n")}"
         abort
       end
+
+      abort
+
+      validation_errors = []
+
+      files = %w{ birth_date_1 birth_date_2 birth_date_3 birth_city birth_state birth_province birth_country } +
+              %w{ death_date_1 death_date_2 death_date_3 death_city death_state death_province death_country } +
+      %w{ education career honors}
+
+
+      works_updated = Set.new()
+
+
       # We run each query in turn.
       files.each do |field|
-        progress_bar = ProgressBar.create(total: total_oral_histories, format: "%a %t: |%B| %R/s %c/%u %p%% %e", title: field.ljust(15))
+        progress_bar = ProgressBar.create(
+          total: all_oral_histories.count,
+          format: "%a %t: |%B| %R/s %c/%u %p%% %e",
+          title: field.ljust(15)
+        )
         results = DB[IO.read("bin/oh_microsite_export/queries/#{field}.sql")]
 
         #progress_bar = nil
@@ -72,7 +89,8 @@ namespace :scihist do
           end
           begin
             if relevant_rows.map{|r| r[:interview_entity_id]}.uniq.count > 1
-              errors << "#{w.title} (#{w.friendlier_id}): Skipping #{field} since there was more than one source interview."
+              validation_errors << "#{w.title} (#{w.friendlier_id}): Skipping #{field} since there was more than one source interview."
+              progress_bar.increment unless progress_bar.nil?
               next
             end
             # Call the appropriate updater method:
@@ -81,7 +99,7 @@ namespace :scihist do
             w.oral_history_content.save!
           rescue StandardError => e
             # Note any errors pertaining to a particular work and field.
-            errors << "#{w.title} (#{w.friendlier_id}): error with #{field}:\n#{e.inspect}"
+            validation_errors << "#{w.title} (#{w.friendlier_id}): error with #{field}:\n#{e.inspect}"
             if progress_bar.nil?
               puts "ERROR: #{w.title}: unable to save #{w.title}."
             else
@@ -98,13 +116,13 @@ namespace :scihist do
       end
       # At this point all the oral histories have been updated.
 
-      # Print out errors and exit
-      puts "#{errors.join("\n")}"
+      # Print out validation errors and exit
+      puts "#{validation_errors.join("\n")}"
       if works_updated.map(&:friendlier_id).sort == all_oral_histories.map(&:friendlier_id).sort
         puts "All oral histories in the digital collections were updated."
       else
         puts "Some oral histories in the digital collections were not updated:"
-        puts all_oral_histories.map(&:friendlier_id).reject!( works_updated.map(&:friendlier_id))
+        puts all_oral_histories.map(&:friendlier_id).reject( works_updated.map(&:friendlier_id))
       end
     end
   end
