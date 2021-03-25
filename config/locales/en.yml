@@ -76,3 +76,7 @@ en:
       admin/digitization_queue_item:
         museum_object_id: "Object ID (Past Perfect)"
 
+  asset_role_label:
+    transcript: "Transcript"
+    front_matter: "Front Matter and Index"
+
