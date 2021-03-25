@@ -8,6 +8,12 @@ namespace :scihist do
       progress_bar = ProgressBar.create(total: scope.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
 
       scope.find_each do |work|
+
+        if work.members.size == 0
+          # nevermind, we don't care
+          next
+        end
+
         pdfs = work.members.find_all {|a| a.is_a?(Asset) && a.content_type == "application/pdf"}
 
         # only PDF and it's published? Transcript
