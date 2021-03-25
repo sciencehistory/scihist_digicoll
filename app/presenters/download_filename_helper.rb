@@ -52,7 +52,7 @@ class DownloadFilenameHelper
   def self.filename_base_for_asset(asset)
     raise ArgumentError, 'Pass in an asset.' unless asset.is_a? Asset
     if asset.content_type && asset.content_type.start_with?("audio/") || asset.content_type == "application/pdf"
-      return [asset.original_filename, asset.friendlier_id].join("_")
+      return [File.basename(asset.original_filename, ".*"), asset.friendlier_id].join("_")
     end
 
     self.filename_base_from_parent(asset)
