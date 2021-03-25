@@ -86,6 +86,19 @@ describe DownloadFilenameHelper, type: :model do
       # note ends with jpeg, not png, cause it's a jpeg derivative
       expect(DownloadFilenameHelper.filename_for_asset(asset, derivative_key: derivative_key)).to eq "plastics_make_the_#{asset.parent.friendlier_id}_12_#{asset.friendlier_id}_#{derivative_key}.jpeg"
     end
-  end
 
+    describe "PDF asset" do
+      let(:asset) { create(:asset_with_faked_file, :pdf) }
+      it "uses original filename plus ID" do
+        expect(DownloadFilenameHelper.filename_for_asset(asset)).to eq("#{File.basename(asset.original_filename, '.*')}_#{asset.friendlier_id}#{File.extname(asset.original_filename)}")
+      end
+    end
+
+    describe "Audio asset" do
+      let(:asset) { create(:asset_with_faked_file, :mp3) }
+      it "uses original filename plus ID" do
+        expect(DownloadFilenameHelper.filename_for_asset(asset)).to eq("#{File.basename(asset.original_filename, '.*')}_#{asset.friendlier_id}#{File.extname(asset.original_filename)}")
+      end
+    end
+  end
 end
