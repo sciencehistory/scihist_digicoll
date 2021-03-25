@@ -25,9 +25,6 @@ class DownloadFilenameHelper
   # Can do different things for different sorts of Assets, like speical audio file
   # handling.
   def self.filename_for_asset(asset, derivative_key: nil)
-    # audio files use their whole title instead of parents, with the intended
-    # use case of Oral History, our only audio files at present, where archival
-    # title is important.
     base = self.filename_base_for_asset(asset)
 
     if derivative_key && !asset.content_type.start_with?("audio")
@@ -43,11 +40,21 @@ class DownloadFilenameHelper
     self.filename_with_suffix(base, content_type: content_type)
   end
 
+
+  # For image files, the original_filename is pretty opaque, derive
+  # a base filename from first words of title of parent work.
+  #
+  # But for audio and PDF, use original filename with friendlier_id for guaranteed uniqueness.
+  # Intended use case for these is oral history files, where the original filenames
+  # are possibly meaningful to users and usually unique -- but work titles all
+  # begin with "oral history"
+  #
   def self.filename_base_for_asset(asset)
     raise ArgumentError, 'Pass in an asset.' unless asset.is_a? Asset
-    if asset.content_type && asset.content_type.start_with?("audio/")
-      return asset.title
+    if asset.content_type && asset.content_type.start_with?("audio/") || asset.content_type == "application/pdf"
+      return [asset.original_filename, asset.friendlier_id].join("_")
     end
+
     self.filename_base_from_parent(asset)
   end
 
