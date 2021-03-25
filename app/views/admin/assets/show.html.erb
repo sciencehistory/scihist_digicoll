@@ -46,6 +46,11 @@
 
     <dl class="row">
 
+      <% if @asset.role.present? %>
+        <dt class="col-sm-4">Role</dt>
+        <dd class="col-sm-8"><span class="badge badge-info"><%= @asset.role.humanize.downcase %></span></dd>
+      <% end %>
+
       <dt class="col-sm-4">Created</dt>
       <dd class="col-sm-8"><%= l @asset.created_at, format: :admin %></dd>
 
