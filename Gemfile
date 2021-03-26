@@ -26,11 +26,6 @@ gem "draper", "~> 4.0", ">= 4.0.1" # "decorators", which we use as view models
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 
-# These two are just for the microsite import:
-gem 'mysql2'
-gem "sequel"
-# Remove after import!
-
 # Use Puma as the app server
 gem 'puma', '~> 5.0'
 

@@ -1,6 +1,5 @@
 namespace :scihist do
   namespace :oh_microsite_import do
-    require 'sequel'
     require 'scihist_digicoll/oh_microsite_import_utilities'
     include OhMicrositeImportUtilities
     desc """
@@ -16,14 +15,16 @@ namespace :scihist do
     """
     task :import_interviewee_biographical_metadata => :environment do
 
-      DB = oh_database()
-
-
       all_oral_histories = Work.where("json_attributes -> 'genre' ?  'Oral histories'")
       mapping_errors = []
 
       # Start with a basic check of the mapping using the name.sql file.
-      names = DB[IO.read("bin/oh_microsite_export/queries/name.sql")]
+      names = JSON.parse(File.read("bin/oh_microsite_export/data/name.json"))
+      unless names.is_a? Array
+        puts "Error parsing names data."
+        abort
+      end
+
 
       destination_accession_numbers = []
 
@@ -34,7 +35,7 @@ namespace :scihist do
           next
         end
         destination_accession_numbers << accession_num
-        relevant_rows = names.to_a.select{|row| row[:interview_number] == accession_num}
+        relevant_rows = names.to_a.select{|row| row['interview_number'] == accession_num}
         if relevant_rows.empty?
           mapping_errors << "#{w.title} (#{w.friendlier_id}): could not find source record."
         end
@@ -43,18 +44,16 @@ namespace :scihist do
         end
       end
 
-      puts "Source records: #{names.map(:interview_number).to_a.count}"
-      puts "Destination records: #{all_oral_histories.count}"
+      puts "Source records: #{names.count}"
+      puts "Source records without a destination record: #{names.map {|interview| interview['interview_number']}.reject{|id| destination_accession_numbers.include? id }.count}"
       puts "Destination records with an accession number: #{destination_accession_numbers.count}"
-      puts "Source records without a destination record: #{names.map(:interview_number).to_a.reject{|id| destination_accession_numbers.include? id }.count}"
+      puts "All destination records: #{all_oral_histories.count}"
 
       if mapping_errors.present?
         puts "There were problems with the mapping." if mapping_errors.present?
         puts "#{mapping_errors.join("\n")}"
         abort
       end
-
-      abort
 
       validation_errors = []
 
@@ -73,9 +72,10 @@ namespace :scihist do
           format: "%a %t: |%B| %R/s %c/%u %p%% %e",
           title: field.ljust(15)
         )
-        results = DB[IO.read("bin/oh_microsite_export/queries/#{field}.sql")]
-
         #progress_bar = nil
+
+        results = JSON.parse(File.read("bin/oh_microsite_export/data/#{field}.json"))
+
         # For each metatata field we iterate over the
         # entire list of oral histories. For each OH,
         # if the JSON file contains a value for the field, we set it.
@@ -117,13 +117,20 @@ namespace :scihist do
       # At this point all the oral histories have been updated.
 
       # Print out validation errors and exit
-      puts "#{validation_errors.join("\n")}"
+
+      if validation_errors.present?
+        puts "#{validation_errors.join("\n")}"
+      else
+        puts "No validation errors."
+      end
+
       if works_updated.map(&:friendlier_id).sort == all_oral_histories.map(&:friendlier_id).sort
         puts "All oral histories in the digital collections were updated."
       else
         puts "Some oral histories in the digital collections were not updated:"
         puts all_oral_histories.map(&:friendlier_id).reject( works_updated.map(&:friendlier_id))
       end
+
     end
   end
 end
