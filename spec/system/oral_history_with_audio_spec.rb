@@ -68,13 +68,35 @@ describe "Oral history with audio display", type: :system, js: true do
       # we can't show the audio scrubber:
       expect(page).not_to have_selector('audio')
 
-      click_on "Downloads"
 
+      click_on "Description"
+
+      # Biographical metadata, just test a sampling
+      expect(page).to have_selector("h2", text: "Interviewee biographical information")
+      expect(page).to have_text(FormatSimpleDate.new(parent_work.oral_history_content.interviewee_birth.date).display)
+      expect(page).to have_text(FormatSimpleDate.new(parent_work.oral_history_content.interviewee_birth.city).display)
+      expect(page).to have_text(FormatSimpleDate.new(parent_work.oral_history_content.interviewee_death.date).display)
+      expect(page).to have_text(FormatSimpleDate.new(parent_work.oral_history_content.interviewee_death.city).display)
+
+      expect(page).to have_text parent_work.oral_history_content.interviewee_job.first.institution
+      expect(page).to have_text parent_work.oral_history_content.interviewee_job.first.role
+      expect(page).to have_text parent_work.oral_history_content.interviewee_job.first.start.slice(0..3)
+
+      expect(page).to have_text parent_work.oral_history_content.interviewee_school.first.institution
+      expect(page).to have_text parent_work.oral_history_content.interviewee_school.first.date.slice(0..3)
+      expect(page).to have_text parent_work.oral_history_content.interviewee_school.first.degree
+      expect(page).to have_text parent_work.oral_history_content.interviewee_school.first.discipline
+
+      expect(page).to have_text parent_work.oral_history_content.interviewee_honor.first.start_date.slice(0..4)
+      expect(page).to have_text parent_work.oral_history_content.interviewee_honor.first.honor
+
+
+      click_on "Downloads"
 
       # In oh_audio_work_show_decorator.rb we specify that only PDFs should be linked.
 
       #PDF has a link:
-      linked_pdf_transcripts = find_all('.show-member-list-item a').select { |x| x.text == pdf_asset.title }
+      linked_pdf_transcripts = find_all('.show-member-file-list-item a').select { |x| x.text == pdf_asset.title }
       expect(linked_pdf_transcripts.count).to eq 1
       #linked_pdf_transcripts[0]
 
@@ -84,9 +106,9 @@ describe "Oral history with audio display", type: :system, js: true do
       # 3 JPEGS: not linked
 
 
-      expect(find_all('.show-member-list-item a').select { |x| x.text == image_assets[0].title }.count).to eq 0
-      expect(find_all('.show-member-list-item a').select { |x| x.text == image_assets[1].title }.count).to eq 0
-      expect(find_all('.show-member-list-item a').select { |x| x.text == image_assets[2].title }.count).to eq 0
+      expect(find_all('.show-member-file-list-item a').select { |x| x.text == image_assets[0].title }.count).to eq 0
+      expect(find_all('.show-member-file-list-item a').select { |x| x.text == image_assets[1].title }.count).to eq 0
+      expect(find_all('.show-member-file-list-item a').select { |x| x.text == image_assets[2].title }.count).to eq 0
 
       within("*[data-role='audio-playlist-wrapper']") do
         within('.now-playing-container') do
@@ -107,7 +129,7 @@ describe "Oral history with audio display", type: :system, js: true do
         expect(download_links.select{ |x| x.include? 'downloads'}.count).to eq published_audio_assets.count
       end
 
-      non_audio = page.find_all('.other-files .show-member-list-item')
+      non_audio = page.find_all('.other-files .show-member-file-list-item')
 
       # Don't show the unpublished non-audio asset (# 6) to the not-logged-in user.
       # (The + 1 accounts for the PDF, which is not an image but is also not audio.)
@@ -259,7 +281,7 @@ describe "Oral history with audio display", type: :system, js: true do
       # Regular assets:
       # All files are listed, including the unpublished ones:
 
-      other_files = page.find_all('.other-files .show-member-list-item')
+      other_files = page.find_all('.other-files .show-member-file-list-item')
       #  All files = audio files + image files + 1 PDF file.
       expect(other_files.count).to eq image_assets.count + 1
 

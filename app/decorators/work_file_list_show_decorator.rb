@@ -33,19 +33,6 @@ class WorkFileListShowDecorator < Draper::Decorator
     end
   end
 
-  def asset_details(asset)
-    details = []
-
-    if asset.content_type.present?
-      details << ScihistDigicoll::Util.humanized_content_type(asset.content_type)
-    end
-    if asset.size.present?
-      details << ScihistDigicoll::Util.simple_bytes_to_human_string(asset.size)
-    end
-
-    details.join(" — ")
-  end
-
   def available_by_request_summary
     parts = []
 

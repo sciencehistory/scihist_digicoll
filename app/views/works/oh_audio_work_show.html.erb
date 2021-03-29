@@ -100,6 +100,8 @@
 
           <%= WorkShowInfo.new(@work).display %>
 
+          <%= OralHistoryBiographicalDisplay.new(@work).display %>
+
           <%= render "citation", work: @work  %>
         </div>
 

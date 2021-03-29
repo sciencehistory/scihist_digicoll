@@ -11,10 +11,6 @@ class WorkTitleAndDates < ViewModel
   end
 
   def display_genres
-    safe_join(
-      model.genre.map { |g| link_to g, search_on_facet_path(:genre_facet, g) },
-      ", "
-    )
+    GenreLinkListDisplay.new(model.genre).display
   end
-
 end
