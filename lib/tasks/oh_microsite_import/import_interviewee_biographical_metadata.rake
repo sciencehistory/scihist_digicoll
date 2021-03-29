@@ -15,11 +15,13 @@ namespace :scihist do
     """
     task :import_interviewee_biographical_metadata => :environment do
 
+      files_location = ENV['FILES_LOCATION'].nil? ? '/tmp/ohms_microsite_import_data/' : ENV['FILES_LOCATION']
+
       all_oral_histories = Work.where("json_attributes -> 'genre' ?  'Oral histories'")
       mapping_errors = []
 
       # Start with a basic check of the mapping using the name.sql file.
-      names = JSON.parse(File.read("bin/oh_microsite_export/data/name.json"))
+      names = JSON.parse(File.read("#{files_location}/name.json"))
       unless names.is_a? Array
         puts "Error parsing names data."
         abort
@@ -74,7 +76,7 @@ namespace :scihist do
         )
         #progress_bar = nil
 
-        results = JSON.parse(File.read("bin/oh_microsite_export/data/#{field}.json"))
+        results = JSON.parse(File.read("#{files_location}/#{field}.json"))
 
         # For each metatata field we iterate over the
         # entire list of oral histories. For each OH,
