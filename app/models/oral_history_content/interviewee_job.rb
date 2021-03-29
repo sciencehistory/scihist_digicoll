@@ -6,5 +6,14 @@ class OralHistoryContent
     attr_json :end,         :string # date as yyyy(-mm(-dd))
     attr_json :institution, :string
     attr_json :role,        :string
+
+    def displayable_values
+      [
+        start,
+        self.end,
+        institution,
+        role
+      ].collect(&:presence).compact
+    end
   end
 end
