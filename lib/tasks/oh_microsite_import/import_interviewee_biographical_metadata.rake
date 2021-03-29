@@ -8,16 +8,23 @@ namespace :scihist do
 
       bundle exec rake scihist:oh_microsite_import:import_interviewee_biographical_metadata
 
-      TODO:
-      # Query files are assumed to exist at tmp/oh_microsite_export/queries/.
       # To specify another location for files:
       # FILES_LOCATION=/tmp/some_other_dir/ bundle exec rake scihist:oh_microsite_import:import_interviewee_biographical_metadata
+
+      # Update only a specific set of digital collections works, based on their friendlier_id:
+      bundle exec rake scihist:oh_microsite_import:import_interviewee_biographical_metadata[friendlier_id1,friendlier_id2,...]
     """
-    task :import_interviewee_biographical_metadata => :environment do
+    task :import_interviewee_biographical_metadata => :environment do |t, args|
+
+      if args.to_a.present?
+        destination_records = Kithe::Work.where(friendlier_id: args.to_a)
+      else
+        destination_records = Kithe::Work.where("json_attributes -> 'genre' ?  'Oral histories'")
+      end
+
 
       files_location = ENV['FILES_LOCATION'].nil? ? '/tmp/ohms_microsite_import_data/' : ENV['FILES_LOCATION']
 
-      all_oral_histories = Work.where("json_attributes -> 'genre' ?  'Oral histories'")
       mapping_errors = []
 
       # Start with a basic check of the mapping using the name.sql file.
@@ -30,7 +37,7 @@ namespace :scihist do
 
       destination_accession_numbers = []
 
-      all_oral_histories.find_each do |w|
+      destination_records.find_each do |w|
         accession_num =  w.external_id.find { |id| id.category == "interview" }&.value
         unless accession_num
           mapping_errors << "ERROR: #{w.title} ( #{w.friendlier_id} ): no accession number."
@@ -49,7 +56,7 @@ namespace :scihist do
       puts "Source records: #{names.count}"
       puts "Source records without a destination record: #{names.map {|interview| interview['interview_number']}.reject{|id| destination_accession_numbers.include? id }.count}"
       puts "Destination records with an accession number: #{destination_accession_numbers.count}"
-      puts "All destination records: #{all_oral_histories.count}"
+      puts "All destination records: #{destination_records.count}"
 
       if mapping_errors.present?
         puts "There were problems with the mapping." if mapping_errors.present?
@@ -70,7 +77,7 @@ namespace :scihist do
       # We run each query in turn.
       files.each do |field|
         progress_bar = ProgressBar.create(
-          total: all_oral_histories.count,
+          total: destination_records.count,
           format: "%a %t: |%B| %R/s %c/%u %p%% %e",
           title: field.ljust(15)
         )
@@ -82,7 +89,7 @@ namespace :scihist do
         # entire list of oral histories. For each OH,
         # if the JSON file contains a value for the field, we set it.
         # Otherwise, we move on to the next oral history.
-        all_oral_histories.find_each do |w|
+        destination_records.find_each do |w|
           relevant_rows = select_rows(results, w)
           if relevant_rows.count == 0
             # No relevant rows for this particular field for this particular interviewee.
@@ -127,7 +134,7 @@ namespace :scihist do
       end
 
       ids_of_works_updated =  works_updated.map(&:friendlier_id).sort
-      all_ids = all_oral_histories.map(&:friendlier_id).sort
+      all_ids = destination_records.map(&:friendlier_id).sort
 
       if ids_of_works_updated == all_ids
         puts "All oral histories in the digital collections were updated."
