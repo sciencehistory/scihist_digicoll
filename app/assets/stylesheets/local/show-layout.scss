@@ -121,26 +121,28 @@
         margin-top: 0 !important;
       }
     }
+  }
+}
 
-    .show-member-file-list-item {
-      display: flex;
+// Yeah, this has no parent selector, it's used on audio page too.
+.show-member-file-list-item {
+  display: flex;
 
-      & > div {
-        padding: $table-cell-padding;
-        border-top: $table-border-width solid $table-border-color;
-      }
+  & > div {
+    padding: $table-cell-padding;
+    border-top: $table-border-width solid $table-border-color;
+  }
 
-      .image {
-        width: 54px; // thumb_mini width
-        padding-left: 0;
-        padding-right: 0;
-      }
+  .image {
+    width: 54px; // thumb_mini width
+    padding-left: 0;
+    padding-right: 0;
+    flex-shrink: 0;
+  }
 
-      .title {
-        flex-grow: 1;
-        width: 100%;
-        word-break: break-word;
-      }
-    }
+  .title {
+    flex-grow: 1;
+    width: 100%;
+    word-break: break-word;
   }
 }
