@@ -8,12 +8,13 @@ module OhMicrositeImportUtilities
     end
     # TODO: deal with 3 birth and death dates.
     def self.birth_date_1(oral_history_content, rows)
-      # noop
+      oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
+      oral_history_content.interviewee_birth.date = strip_time_info(rows.first['birth_date_1'])
     end
     def self.birth_date_2(oral_history_content, rows)
-      # noop
+      oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
+      oral_history_content.interviewee_birth.date = strip_time_info(rows.first['birth_date_2'])
     end
-    # TODO some of hese have TIMEZONES too argh
     def self.birth_date_3(oral_history_content, rows)
       oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
       oral_history_content.interviewee_birth.date = strip_time_info(rows.first['birth_date_3'])
@@ -35,14 +36,16 @@ module OhMicrositeImportUtilities
       oral_history_content.interviewee_birth.country      = rows.first['birth_country']
     end
     def self.death_date_1(oral_history_content, rows)
-      # noop
+      oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new
+      oral_history_content.interviewee_death.date = strip_time_info(rows.first['death_date_1'])
     end
     def self.death_date_2(oral_history_content, rows)
-      # noop
+      oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new
+      oral_history_content.interviewee_death.date = strip_time_info(rows.first['death_date_2'])
     end
     def self.death_date_3(oral_history_content, rows)
       oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new
-      oral_history_content.interviewee_death.date         = strip_time_info(rows.first['death_date_3'])
+      oral_history_content.interviewee_death.date = strip_time_info(rows.first['death_date_3'])
     end
     def self.death_city(oral_history_content, rows)
       oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new
