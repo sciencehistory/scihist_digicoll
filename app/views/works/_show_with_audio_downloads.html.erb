@@ -1,7 +1,7 @@
-<% if decorator.non_audio_members.present? %>
+<% if decorator.file_list_members.present? %>
   <div class="downloads-pdf">
     <div class="other-files sans-serif">
-      <% decorator.non_audio_members.each_with_index do |member, index| %>
+      <% decorator.file_list_members.each_with_index do |member, index| %>
         <%= FileListItemDisplay.new(member,
               index: index,
               view_link_attributes: {
