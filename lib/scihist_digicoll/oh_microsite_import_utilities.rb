@@ -6,7 +6,6 @@ module OhMicrositeImportUtilities
     def self.name(oral_history_content, rows)
       # noop
     end
-    # TODO: deal with 3 birth and death dates.
     def self.birth_date_1(oral_history_content, rows)
       oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
       oral_history_content.interviewee_birth.date = strip_time_info(rows.first['birth_date_1'])
