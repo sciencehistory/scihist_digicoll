@@ -28,6 +28,28 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
 
       expect(page).to have_selector("h1", text: work.title)
 
+      # Biographical metadata, just test a sampling
+      expect(page).to have_selector("h2", text: "Interviewee biographical information")
+      expect(page).to have_text(FormatSimpleDate.new(work.oral_history_content.interviewee_birth.date).display)
+      expect(page).to have_text(FormatSimpleDate.new(work.oral_history_content.interviewee_birth.city).display)
+      expect(page).to have_text(FormatSimpleDate.new(work.oral_history_content.interviewee_death.date).display)
+      expect(page).to have_text(FormatSimpleDate.new(work.oral_history_content.interviewee_death.city).display)
+
+      expect(page).to have_text work.oral_history_content.interviewee_job.first.institution
+      expect(page).to have_text work.oral_history_content.interviewee_job.first.role
+      expect(page).to have_text work.oral_history_content.interviewee_job.first.start.slice(0..3)
+
+      expect(page).to have_text work.oral_history_content.interviewee_school.first.institution
+      expect(page).to have_text work.oral_history_content.interviewee_school.first.date.slice(0..3)
+      expect(page).to have_text work.oral_history_content.interviewee_school.first.degree
+      expect(page).to have_text work.oral_history_content.interviewee_school.first.discipline
+
+      expect(page).to have_text work.oral_history_content.interviewee_honor.first.start_date.slice(0..4)
+      expect(page).to have_text work.oral_history_content.interviewee_honor.first.honor
+
+
+      ## File request
+
       expect(page).to have_selector("h2", text: "Access this interview")
       expect(page).to have_text("1 PDF transcript and 1 audio recording file")
       expect(page).to have_selector(:link_or_button, 'Request Access')

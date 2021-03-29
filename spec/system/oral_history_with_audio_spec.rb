@@ -68,8 +68,30 @@ describe "Oral history with audio display", type: :system, js: true do
       # we can't show the audio scrubber:
       expect(page).not_to have_selector('audio')
 
-      click_on "Downloads"
 
+      click_on "Description"
+
+      # Biographical metadata, just test a sampling
+      expect(page).to have_selector("h2", text: "Interviewee biographical information")
+      expect(page).to have_text(FormatSimpleDate.new(parent_work.oral_history_content.interviewee_birth.date).display)
+      expect(page).to have_text(FormatSimpleDate.new(parent_work.oral_history_content.interviewee_birth.city).display)
+      expect(page).to have_text(FormatSimpleDate.new(parent_work.oral_history_content.interviewee_death.date).display)
+      expect(page).to have_text(FormatSimpleDate.new(parent_work.oral_history_content.interviewee_death.city).display)
+
+      expect(page).to have_text parent_work.oral_history_content.interviewee_job.first.institution
+      expect(page).to have_text parent_work.oral_history_content.interviewee_job.first.role
+      expect(page).to have_text parent_work.oral_history_content.interviewee_job.first.start.slice(0..3)
+
+      expect(page).to have_text parent_work.oral_history_content.interviewee_school.first.institution
+      expect(page).to have_text parent_work.oral_history_content.interviewee_school.first.date.slice(0..3)
+      expect(page).to have_text parent_work.oral_history_content.interviewee_school.first.degree
+      expect(page).to have_text parent_work.oral_history_content.interviewee_school.first.discipline
+
+      expect(page).to have_text parent_work.oral_history_content.interviewee_honor.first.start_date.slice(0..4)
+      expect(page).to have_text parent_work.oral_history_content.interviewee_honor.first.honor
+
+
+      click_on "Downloads"
 
       # In oh_audio_work_show_decorator.rb we specify that only PDFs should be linked.
 
