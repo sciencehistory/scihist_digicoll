@@ -59,7 +59,7 @@ namespace :scihist do
 
       files = %w{ birth_date_1 birth_date_2 birth_date_3 birth_city birth_state birth_province birth_country } +
               %w{ death_date_1 death_date_2 death_date_3 death_city death_state death_province death_country } +
-      %w{ education career honors}
+              %w{ education career honors }
 
 
       works_updated = Set.new()
@@ -124,11 +124,14 @@ namespace :scihist do
         puts "No validation errors."
       end
 
-      if works_updated.map(&:friendlier_id).sort == all_oral_histories.map(&:friendlier_id).sort
+      ids_of_works_updated =  works_updated.map(&:friendlier_id).sort
+      all_ids = all_oral_histories.map(&:friendlier_id).sort
+
+      if ids_of_works_updated == all_ids
         puts "All oral histories in the digital collections were updated."
       else
         puts "Some oral histories in the digital collections were not updated:"
-        puts all_oral_histories.map(&:friendlier_id).reject( works_updated.map(&:friendlier_id))
+        puts all_ids.reject {|fid| ids_of_works_updated.include? fid}
       end
 
     end
