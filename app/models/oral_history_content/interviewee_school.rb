@@ -6,5 +6,14 @@ class OralHistoryContent
     attr_json :institution, :string
     attr_json :degree,      :string
     attr_json :discipline,  :string
+
+    def displayable_values
+      [
+        date,
+        institution,
+        degree,
+        discipline
+      ].collect(&:presence).compact
+    end
   end
 end
