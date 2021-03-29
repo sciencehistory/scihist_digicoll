@@ -57,47 +57,16 @@
     </div>
 
     <% decorator.member_list_for_display.each_with_index do |member, index| %>
-        <div class="show-member-file-list-item">
-          <div class="image">
-            <%# lazyload all but first 6 images %>
-            <%= ThumbDisplay.new(member.leaf_representative, thumb_size: :mini, lazy: (index > 5)).display %>
-          </div>
-          <div class="title">
-            <div>
-              <%= link_to_if member.kind_of?(Asset),
-                             member.title,
-                             download_path(member, disposition: :inline) %>
-
-              <% unless member.published? %>
-                  <span title="Private" class="badge badge-warning">Private</span>
-              <% end %>
-            </div>
-            <% if member.kind_of?(Asset) %>
-              <div>
-                <small><%= decorator.asset_details(member) %></small>
-              </div>
-            <% end %>
-          </div>
-          <div class="action">
-            <% if member.kind_of?(Work) %>
-              <%= link_to "Info", work_path(member), class: "btn btn-primary" %>
-            <% else %>
-              <%= link_to "Download",
-                  download_path(member),
-                  class: "btn btn-primary",
-                  data: {
-                    analytics_category: "Work",
-                    analytics_action: "download",
-                    analytics_label: @work.friendlier_id
-                  } %>
-            <% end %>
-          </div>
-        </div>
+      <%= FileListItemDisplay.new(member, index: index, download_original_only: true).display %>
     <% end %>
   </div>
 
   <div class="show-metadata">
     <%= WorkShowInfo.new(@work).display %>
+
+    <% if @work.is_oral_history? %>
+      <%= OralHistoryBiographicalDisplay.new(@work).display %>
+    <% end %>
 
     <%= render "citation", work: @work  %>
   </div>

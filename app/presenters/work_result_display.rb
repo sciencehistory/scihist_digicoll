@@ -8,10 +8,7 @@ class WorkResultDisplay < ResultDisplay
   delegate :additional_title
 
   def display_genres
-    @display_genres ||= safe_join(
-      model.genre.map { |g| link_to g, search_on_facet_path(:genre_facet, g) },
-      ", "
-    )
+    @display_genres ||= GenreLinkListDisplay.new(model.genre).display
   end
 
   def display_dates
