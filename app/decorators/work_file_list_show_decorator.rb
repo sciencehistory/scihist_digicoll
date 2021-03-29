@@ -29,6 +29,9 @@ class WorkFileListShowDecorator < Draper::Decorator
         members = members.find_all(&:published?)
       end
 
+      # omit "portrait" role
+      members = members.find_all {|m| ! m.role_portrait? }
+
       members
     end
   end
