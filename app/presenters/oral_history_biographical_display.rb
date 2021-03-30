@@ -53,6 +53,10 @@ class OralHistoryBiographicalDisplay < ViewModel
     birth_info.present? || death_info.present? || schools.present? || grouped_jobs.present? || honors.present?
   end
 
+  def sanitized_honor_string(honor_str)
+    DescriptionSanitizer.new.sanitize(honor_str).html_safe
+  end
+
 
   private
 

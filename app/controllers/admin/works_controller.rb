@@ -470,6 +470,13 @@ class Admin::WorksController < AdminController
       %w{birth death school job honor}.each do |name|
         tmp["interviewee_#{name}_attributes"]&.permit!
       end
+
+      # HTML Sanitize the "honor" entry. Hacky code.
+      (tmp["interviewee_honor_attributes"] || []).each do |honor_attributes|
+        next unless honor_attributes.dig(1, "honor")
+        honor_attributes[1]["honor"] = DescriptionSanitizer.new.sanitize(honor_attributes[1]["honor"])
+      end
+
       tmp
     end
 
