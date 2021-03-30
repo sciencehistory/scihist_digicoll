@@ -15,17 +15,13 @@ $EXPORT_CMD  < queries/institutions.sql     > $EXPORT_DESTINATION/institutions.t
 $EXPORT_CMD  < queries/name.sql             > $EXPORT_DESTINATION/name.json
 
 # Biographical data export:
-$EXPORT_CMD  < queries/birth_date_1.sql     > $EXPORT_DESTINATION/birth_date_1.json
-$EXPORT_CMD  < queries/birth_date_2.sql     > $EXPORT_DESTINATION/birth_date_2.json
-$EXPORT_CMD  < queries/birth_date_3.sql     > $EXPORT_DESTINATION/birth_date_3.json
+$EXPORT_CMD  < queries/birth_date.sql       > $EXPORT_DESTINATION/birth_date.json
 $EXPORT_CMD  < queries/birth_city.sql       > $EXPORT_DESTINATION/birth_city.json
 $EXPORT_CMD  < queries/birth_state.sql      > $EXPORT_DESTINATION/birth_state.json
 $EXPORT_CMD  < queries/birth_province.sql   > $EXPORT_DESTINATION/birth_province.json
 $EXPORT_CMD  < queries/birth_country.sql    > $EXPORT_DESTINATION/birth_country.json
 
-$EXPORT_CMD  < queries/death_date_1.sql     > $EXPORT_DESTINATION/death_date_1.json
-$EXPORT_CMD  < queries/death_date_2.sql     > $EXPORT_DESTINATION/death_date_2.json
-$EXPORT_CMD  < queries/death_date_3.sql     > $EXPORT_DESTINATION/death_date_3.json
+$EXPORT_CMD  < queries/death_date.sql       > $EXPORT_DESTINATION/death_date.json
 $EXPORT_CMD  < queries/death_city.sql       > $EXPORT_DESTINATION/death_city.json
 $EXPORT_CMD  < queries/death_state.sql      > $EXPORT_DESTINATION/death_state.json
 $EXPORT_CMD  < queries/death_province.sql   > $EXPORT_DESTINATION/death_province.json
@@ -34,5 +30,3 @@ $EXPORT_CMD  < queries/death_country.sql    > $EXPORT_DESTINATION/death_country.
 $EXPORT_CMD  < queries/education.sql        > $EXPORT_DESTINATION/education.json
 $EXPORT_CMD  < queries/career.sql           > $EXPORT_DESTINATION/career.json
 $EXPORT_CMD  < queries/honors.sql           > $EXPORT_DESTINATION/honors.json
-
-

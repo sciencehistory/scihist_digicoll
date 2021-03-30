@@ -66,10 +66,9 @@ namespace :scihist do
 
       validation_errors = []
 
-      files = %w{ birth_date_1 birth_date_2 birth_date_3 birth_city birth_state birth_province birth_country } +
-              %w{ death_date_1 death_date_2 death_date_3 death_city death_state death_province death_country } +
+      files = %w{ birth_date birth_city birth_state birth_province birth_country } +
+              %w{ death_date death_city death_state death_province death_country } +
               %w{ education career honors }
-
 
       works_updated = Set.new()
 

@@ -3,20 +3,9 @@
 # scihist:oh_microsite_import:import_interviewee_biographical_metadata
 module OhMicrositeImportUtilities
   module Updaters
-    def self.name(oral_history_content, rows)
-      # noop
-    end
-    def self.birth_date_1(oral_history_content, rows)
+    def self.birth_date(oral_history_content, rows)
       oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
-      oral_history_content.interviewee_birth.date = keep_yyyy_mm_dd(rows.first['birth_date_1'])
-    end
-    def self.birth_date_2(oral_history_content, rows)
-      oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
-      oral_history_content.interviewee_birth.date = keep_yyyy_mm_dd(rows.first['birth_date_2'])
-    end
-    def self.birth_date_3(oral_history_content, rows)
-      oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
-      oral_history_content.interviewee_birth.date = keep_yyyy_mm_dd(rows.first['birth_date_3'])
+      oral_history_content.interviewee_birth.date = keep_yyyy_mm_dd(rows.first['birth_date'])
     end
     def self.birth_city(oral_history_content, rows)
       oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
@@ -34,17 +23,10 @@ module OhMicrositeImportUtilities
       oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
       oral_history_content.interviewee_birth.country      = rows.first['birth_country']
     end
-    def self.death_date_1(oral_history_content, rows)
+
+    def self.death_date(oral_history_content, rows)
       oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new
-      oral_history_content.interviewee_death.date = keep_yyyy_mm_dd(rows.first['death_date_1'])
-    end
-    def self.death_date_2(oral_history_content, rows)
-      oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new
-      oral_history_content.interviewee_death.date = keep_yyyy_mm_dd(rows.first['death_date_2'])
-    end
-    def self.death_date_3(oral_history_content, rows)
-      oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new
-      oral_history_content.interviewee_death.date = keep_yyyy_mm_dd(rows.first['death_date_3'])
+      oral_history_content.interviewee_death.date = keep_yyyy_mm_dd(rows.first['death_date'])
     end
     def self.death_city(oral_history_content, rows)
       oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new
@@ -106,6 +88,7 @@ module OhMicrositeImportUtilities
 
   # Strip time of day info from all these dates.
   def keep_yyyy_mm_dd(dt)
+    return nil if dt.nil?
     dt&.to_s[0...10]
   end
 
