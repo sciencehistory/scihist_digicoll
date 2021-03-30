@@ -11,6 +11,26 @@ Rails.application.routes.draw do
     end
   end
 
+
+
+  # Oral History legacy redirects, come first in routes file so they'll match first
+  # for requests to old oral history host oh.sciencehistory.org
+  OH_LEGACY_REDIRECTS = YAML.load_file(Rails.root + "config/oral_history_legacy_redirects.yml").freeze
+  constraints host: ScihistDigicoll::Env.lookup!(:oral_history_legacy_host) do
+    # OH home page, send to new OH collection page
+    root as: false, to: redirect { "#{ScihistDigicoll::Env.lookup!("app_url_base")}/collections/#{ScihistDigicoll::Env.lookup!("oral_history_collection_id")}"  }
+
+    # Does it match one of our OH_LEGACY_REDIRECTS? Then redirect it!
+    get '*path', constraints: ->(req) { OH_LEGACY_REDIRECTS.has_key?(req.path) }, to: redirect { |params, req|
+      "#{ScihistDigicoll::Env.lookup!("app_url_base")}#{OH_LEGACY_REDIRECTS[req.path]}"
+    }
+
+    # Is Oral history host but we don't recognize it? Give them the customly helpful
+    # legacy OH 404
+    get "*path", to: "static#oh_legacy_url_not_found"
+  end
+
+
   root 'homepage#index'
 
   match 'oai', to: "oai_pmh#index", via: [:get, :post], as: :oai_provider
@@ -301,5 +321,4 @@ Rails.application.routes.draw do
   %w(about contact faq policy).each do |page_label|
     get page_label, controller: 'static', action: page_label, as: page_label
   end
-
 end
