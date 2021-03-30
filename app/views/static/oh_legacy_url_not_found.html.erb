@@ -1,7 +1,16 @@
+<!-- getting our fontawesome icon font to show up on the oh.sciencehistory.org domain
+     is way harder than it's worth, because of CORS issues, that quickly have complciated
+     interactions with our deploy setup. We'll just take the easy way out and suppress font-awesome
+     icons, for this kind of odd 404 page. -->
+<style>
+  .fa {
+    display: none !important;
+  }
+</style>
+
 <div class="branded-body-font text-page collection-show">
 
   <h1 class='h2 error-headline'>
-    <i class="fa fa-warning" aria-hidden="true"></i>
     Sorry, we couldn't find that oral history content
   </h1>
 
