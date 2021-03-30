@@ -21,6 +21,11 @@ class FormatSimpleDate
   def initialize(start_date, end_date=nil)
     @start_date = start_date
     @end_date = end_date
+
+    # don't display it as a range if end date and start date are identical
+    if @start_date == @end_date
+      @end_date = nil
+    end
   end
 
   def display
