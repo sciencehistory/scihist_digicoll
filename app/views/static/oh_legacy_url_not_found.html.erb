@@ -18,7 +18,7 @@
 
   <p>We'd love to help you find what you're looking for. Feel free to email the Center for Oral History at
     <%= link_to(ScihistDigicoll::Env.lookup!(:oral_history_email_address), @report_mailto) %>, or you could try searching within our
-    <%= link_to "oral history collection", collection_path(ScihistDigicoll::Env.lookup!(:oral_history_collection_id)) %>:</p>
+    <%= link_to "oral history collection", collection_url(ScihistDigicoll::Env.lookup!(:oral_history_collection_id)) %>:</p>
 
 
     <div class="collection-search-form">
