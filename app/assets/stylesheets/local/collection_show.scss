@@ -5,6 +5,11 @@
 
   .collection-top {
     display: flex;
+
+    .show-title h1 a {
+      color: inherit; // underline is enough, the bright blue is too much
+    }
+
     .collection-desc {
       flex-grow: 1;
       flex-shrink: 1;
