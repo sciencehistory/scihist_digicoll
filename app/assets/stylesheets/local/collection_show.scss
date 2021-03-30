@@ -6,7 +6,7 @@
   .collection-top {
     display: flex;
 
-    .show-title h1 a {
+    a.title-link {
       color: inherit; // underline is enough, the bright blue is too much
     }
 
