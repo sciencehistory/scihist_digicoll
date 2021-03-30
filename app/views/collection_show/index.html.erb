@@ -9,7 +9,7 @@
         <header>
           <div class="show-genre"><%= link_to "Collections", collections_path %></div>
           <h1>
-            <%= link_to presenter.title, collection_path(collection) %> <%= publication_badge(presenter) %>
+            <%= link_to presenter.title, collection_path(collection), class: "title-link" %> <%= publication_badge(presenter) %>
             <% if can? :update, collection %>
               <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-outline-primary" %>
             <% end %>
