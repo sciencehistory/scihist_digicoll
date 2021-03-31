@@ -127,9 +127,7 @@
     }
 
     .oh-portrait {
-      max-width: 250px;
-      min-width: 200px;
-      margin-top: $paragraph-spacer;
+      width: $standard-thumb-width;
     }
     @include media-breakpoint-up(md) {
       .oh-portrait {
