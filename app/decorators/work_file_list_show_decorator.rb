@@ -36,6 +36,15 @@ class WorkFileListShowDecorator < Draper::Decorator
     end
   end
 
+  def portrait_asset
+    unless defined?(@portrait_asset)
+      @portrait_asset = all_members.find {|mem| mem.published? && mem.role_portrait? }&.leaf_representative
+    end
+
+    @portrait_asset
+  end
+
+
   def available_by_request_summary
     parts = []
 
