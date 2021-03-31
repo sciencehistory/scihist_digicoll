@@ -52,7 +52,7 @@ class WorkFileListShowDecorator < Draper::Decorator
   end
 
   def available_by_request_audio_count
-    @available_by_request_audio_count ||= available_by_request_assets.find_all { |asset| asset.content_type.start_with?("audio/") }.count
+    @available_by_request_audio_count ||= available_by_request_assets.find_all { |asset| asset.content_type&.start_with?("audio/") }.count
   end
 
   def multiple_files?
