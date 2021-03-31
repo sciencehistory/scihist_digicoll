@@ -149,11 +149,9 @@
 
     overflow-x: hidden;
 
-    $thumb-width: 13rem; // 208px at 16px==1rem
-
     .scihist-results-list-item-thumb {
-      flex-basis: $thumb-width;
-      width: $thumb-width; // Should match ImageServiceHelper::THUMB_BASE_WIDTHS[:standard]
+      flex-basis: $standard-thumb-width;
+      width: $standard-thumb-width; // Should match ImageServiceHelper::THUMB_BASE_WIDTHS[:standard]
       max-width: 33%; // on smaller screens, more space for text
       margin-right: 28px;
       flex-shrink: 0;
@@ -214,7 +212,7 @@
         display: block;
         text-align: left !important;
         top: 0;
-        left: $thumb-width + ($spacer / 2);
+        left: $standard-thumb-width + ($spacer / 2);
         right: 0;
       }
     }
