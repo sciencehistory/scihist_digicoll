@@ -70,11 +70,14 @@ module OhMicrositeImportUtilities
     def self.honors(oral_history_content, rows)
       sanitizer = DescriptionSanitizer.new()
       oral_history_content.interviewee_honor = rows.map do |row |
-        OralHistoryContent::IntervieweeHonor.new(
+        args = {
           start_date:   keep_yyyy(row['interviewee_honor_start_date']),
-          end_date:     keep_yyyy(row['interviewee_honor_end_date']),
           honor:        sanitizer.sanitize(row['interviewee_honor_description'])
-        )
+        }
+        if row['interviewee_honor_start_date'] != row['interviewee_honor_end_date']
+          args[:end_date] = keep_yyyy(row['interviewee_honor_end_date'])
+        end
+        OralHistoryContent::IntervieweeHonor.new(args)
       end
     end
 
