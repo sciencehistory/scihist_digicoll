@@ -9,5 +9,13 @@ class OralHistoryContent
     attr_json :honor, :string
 
     validates_with StandardDateValidator, fields: [:start_date, :end_date]
+
+    def displayable_values
+      [
+        start_date,
+        end_date,
+        honor
+      ].collect(&:presence).compact
+    end
   end
 end
