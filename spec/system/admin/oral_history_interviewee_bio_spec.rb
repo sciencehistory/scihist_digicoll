@@ -22,7 +22,7 @@ RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :sy
     fill_in('oral_history_content_interviewee_birth_attributes_date', with: '1937-07-1aa')
 
     find('input[name="commit"]').click
-    expect(page).to have_text("Date Must be of format YYYY[-MM-DD]")
+    expect(page).to have_text("Must be of format YYYY[-MM-DD]")
 
 
     fill_in('oral_history_content_interviewee_birth_attributes_date', with: '')

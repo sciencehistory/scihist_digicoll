@@ -64,6 +64,10 @@
   <div class="show-metadata">
     <%= WorkShowInfo.new(@work).display %>
 
+    <% if @work.is_oral_history? %>
+      <%= OralHistoryBiographicalDisplay.new(@work).display %>
+    <% end %>
+
     <%= render "citation", work: @work  %>
   </div>
 </div>

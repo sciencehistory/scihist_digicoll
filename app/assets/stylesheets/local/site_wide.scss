@@ -29,8 +29,21 @@ dl.info {
   }
 }
 
+// the adelle-sans font has a really nice semi-bold at font-weight 600
+// let's supplement bootstrap;s font-weight-bold
+.font-weight-semi-bold {
+  font-weight: 600 !important;
+}
+
 form label {
   font-weight: $semi-bold-weight;
+}
+
+th {
+  font-family: $font-family-sans-serif;
+  // Adelle font has a slightly less bold 600 that looks good.
+  font-weight: 600;
+  color: $brand-dark-blue;
 }
 
 // chemheritage.org uses these as default/standard h1-h6, but we're not
@@ -113,7 +126,7 @@ hr.brand {
 // We set 'p' tags within a .branded-body-font -- with some exceptions -- to use our serif font, and have
 // appropriate max-width and spacer for that font.
 .branded-body-font, .scihist-main-layout {
-  p:not(.collection-title):not(.sans-serif), dl:not(.sans-serif) dd, table:not(.sans-serif) td, table:not(.sans-serif) th, .serif {
+  p:not(.collection-title):not(.sans-serif), dl:not(.sans-serif) dd, table:not(.sans-serif) td, table:not(.sans-serif) tbody th, .serif {
     @extend %text-font;
     // super hacky sorry. :(
     .btn {
