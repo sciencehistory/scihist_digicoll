@@ -4,13 +4,15 @@ select
     field_data_field_interview_number.field_interview_number_value interview_number,
     desc_target.field_description_value interviewee_honor_description,
     date_target.field_date_span_value interviewee_honor_start_date,
-    date_target.field_date_span_value2 interviewee_honor_end_date
+    date_target.field_date_span_value2 interviewee_honor_end_date,
+    published.status published
 from
     field_data_field_interviewee_name,
     field_data_field_interview_number,
     field_data_field_interviewee_honors link,
     field_data_field_description desc_target,
-    field_data_field_date_span date_target
+    field_data_field_date_span date_target,
+    node published
 WHERE
     field_data_field_interviewee_name.entity_id =  field_data_field_interview_number.entity_id
 AND
@@ -28,3 +30,7 @@ AND
     link.field_interviewee_honors_value = date_target.entity_id
 AND
     link.field_interviewee_honors_value = date_target.entity_id
+AND
+    published.nid = field_data_field_interviewee_name.entity_id
+AND
+    published.status = 1
