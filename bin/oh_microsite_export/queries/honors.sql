@@ -15,11 +15,16 @@ WHERE
     field_data_field_interviewee_name.entity_id =  field_data_field_interview_number.entity_id
 AND
     field_data_field_interviewee_name.revision_id = field_data_field_interview_number.revision_id
+
 AND
     field_data_field_interviewee_name.entity_id =  link.entity_id
 AND
     field_data_field_interviewee_name.revision_id = link.revision_id
 AND
     link.field_interviewee_honors_value = desc_target.entity_id
+AND
+    link.field_interviewee_honors_value = desc_target.entity_id
+AND
+    link.field_interviewee_honors_value = date_target.entity_id
 AND
     link.field_interviewee_honors_value = date_target.entity_id
