@@ -39,4 +39,10 @@ describe FormatSimpleDate do
     end
   end
 
+  describe "start and end are identical" do
+    it "does not format as a range" do
+      expect(FormatSimpleDate.new("1947", "1947").display).to eq("1947")
+    end
+  end
+
 end
