@@ -122,6 +122,10 @@
       }
     }
 
+    .work-description {
+      max-width: $max-readable-width;
+    }
+
     .oh-portrait {
       max-width: 250px;
       min-width: 200px;
@@ -129,6 +133,7 @@
     }
     @include media-breakpoint-up(md) {
       .oh-portrait {
+        margin-top: 0;
         margin-left: $paragraph-spacer;
 
         float: right;
