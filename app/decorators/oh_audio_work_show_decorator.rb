@@ -89,6 +89,14 @@ class OhAudioWorkShowDecorator < Draper::Decorator
     CombinedAudioDerivativeCreator.new(model).fingerprint == combined_audio_fingerprint
   end
 
+  def portrait_asset
+    unless defined?(@portrait_asset)
+      @portrait_asset = all_members.find {|mem| mem.role_portrait? }.leaf_representative
+    end
+
+    @portrait_asset
+  end
+
   # An array of start times for each audio member.
   # The key is the member uuid (NOT the friendlier id)
   # The value is the offset in seconds into the combined audio.
