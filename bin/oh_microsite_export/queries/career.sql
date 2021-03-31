@@ -7,7 +7,8 @@ select
     date_target.field_date_span_value job_start_date,
     date_target.field_date_span_value2 job_end_date,
     employer_link.field_job_exp_institution_ref_nid employer_id,
-    employer.title employer_name
+    employer.title employer_name,
+    published.status published
 from
     field_data_field_interviewee_name,
     field_data_field_interview_number,
@@ -15,7 +16,8 @@ from
     field_data_field_job_title                          job_title,
     field_data_field_date_span                          date_target,
     field_data_field_job_exp_institution_ref            employer_link,
-    node                                                employer
+    node                                                employer,
+    node                                                published
 WHERE
     field_data_field_interviewee_name.entity_id    = field_data_field_interview_number.entity_id
 AND
@@ -38,3 +40,7 @@ AND
     link.field_interviewee_experience_revision_id   = employer_link.revision_id
 AND
     employer_link.field_job_exp_institution_ref_nid  = employer.nid
+AND
+    published.nid = field_data_field_interviewee_name.entity_id
+AND
+    published.status = 1
