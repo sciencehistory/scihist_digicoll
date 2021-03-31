@@ -3,8 +3,12 @@ require 'rails_helper'
 # Testing the view that has an audio player, sometimes with OHMS. View currently uses
 # the class called OhAudioWorkShowDecorator
 describe "Oral history with audio display", type: :system, js: true do
+  let(:portrait) { create(:asset_with_faked_file, role: "portrait")}
+
   let!(:parent_work) do
-    build(:oral_history_work, published: true)
+    build(:oral_history_work, published: true).tap do |work|
+      work.members << portrait
+    end
   end
 
   let(:audio_file_path) { Rails.root.join("spec/test_support/audio/5-seconds-of-silence.mp3")}
@@ -70,6 +74,9 @@ describe "Oral history with audio display", type: :system, js: true do
 
 
       click_on "Description"
+
+      # portrait
+      expect(page).to have_selector(".oh-portrait img[src='#{portrait.file_url(:thumb_standard)}']")
 
       # Biographical metadata, just test a sampling
       expect(page).to have_selector("h2", text: "Interviewee biographical information")
