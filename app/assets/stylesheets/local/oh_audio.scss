@@ -198,6 +198,28 @@
     }
   }
 
+  .oh-portrait {
+    //width: $standard-thumb-width;
+    max-width: 250px;
+    min-width: 200px;
+  }
+
+  // Put portrait to the right of description when
+  // screen is wide enough.
+  @include media-breakpoint-up(md) {
+    .description-and-portrait {
+      display: flex;
+      justify-content: space-between;
+
+      .oh-portrait {
+        order: 2;
+
+        margin-top: $paragraph-spacer;
+        margin-left: $paragraph-spacer * 2;
+      }
+    }
+  }
+
   .tab-content {
     // hacky, match attribute-table width
     max-width: ($max-readable-width / 0.67);

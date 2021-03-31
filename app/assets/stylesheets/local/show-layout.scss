@@ -121,6 +121,22 @@
         margin-top: 0 !important;
       }
     }
+
+    .work-description {
+      max-width: $max-readable-width;
+    }
+
+    .oh-portrait {
+      width: $standard-thumb-width;
+    }
+    @include media-breakpoint-up(md) {
+      .oh-portrait {
+        margin-top: 0;
+        margin-left: $paragraph-spacer;
+
+        float: right;
+      }
+    }
   }
 }
 
