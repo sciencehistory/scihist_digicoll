@@ -11,6 +11,14 @@
     <%= WorkTitleAndDates.new(@work).display %>
 
     <%# up here so it stays above request button in single-column mode %>
+
+    <% if decorator.portrait_asset.present? %>
+      <div class="oh-portrait">
+        <%= ThumbDisplay.new(decorator.portrait_asset).display %>
+      </div>
+    <% end %>
+
+
     <div class="work-description long-text-line-height">
       <%= DescriptionDisplayFormatter.new(@work.description).format  %>
     </div>

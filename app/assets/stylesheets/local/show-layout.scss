@@ -121,6 +121,19 @@
         margin-top: 0 !important;
       }
     }
+
+    .oh-portrait {
+      max-width: 250px;
+      min-width: 200px;
+      margin-top: $paragraph-spacer;
+    }
+    @include media-breakpoint-up(md) {
+      .oh-portrait {
+        margin-left: $paragraph-spacer;
+
+        float: right;
+      }
+    }
   }
 }
 
