@@ -91,7 +91,7 @@ class OhAudioWorkShowDecorator < Draper::Decorator
 
   def portrait_asset
     unless defined?(@portrait_asset)
-      @portrait_asset = all_members.find {|mem| mem.role_portrait? }.leaf_representative
+      @portrait_asset = all_members.find {|mem| mem.role_portrait? }&.leaf_representative
     end
 
     @portrait_asset
