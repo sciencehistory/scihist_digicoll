@@ -18,8 +18,10 @@ namespace :scihist do
 
       if args.to_a.present?
         destination_records = Kithe::Work.where(friendlier_id: args.to_a)
+        destination_records_label = "the records provided"
       else
         destination_records = Kithe::Work.where("json_attributes -> 'genre' ?  'Oral histories'")
+        destination_records_label = "the digital collections"
       end
 
 
@@ -53,10 +55,10 @@ namespace :scihist do
         end
       end
 
-      puts "Source records: #{names.count}"
-      puts "Source records without a destination record: #{names.map {|interview| interview['interview_number']}.reject{|id| destination_accession_numbers.include? id }.count}"
+      puts "Source records: #{names.count} (excludes unpublished)"
+      puts "Source records still missing a matching destination record: #{names.map {|interview| interview['interview_number']}.reject{|id| destination_accession_numbers.include? id }.count}"
+      puts "Destination records: #{destination_records.count}"
       puts "Destination records with an accession number: #{destination_accession_numbers.count}"
-      puts "All destination records: #{destination_records.count}"
 
       if mapping_errors.present?
         puts "There were problems with the mapping." if mapping_errors.present?
@@ -136,9 +138,9 @@ namespace :scihist do
       all_ids = destination_records.map(&:friendlier_id).sort
 
       if ids_of_works_updated == all_ids
-        puts "All oral histories in the digital collections were updated."
+        puts "All oral histories in #{destination_records_label} were updated."
       else
-        puts "Some oral histories in the digital collections were not updated:"
+        puts "Some oral histories in #{destination_records_label} were not updated:"
         puts all_ids.reject {|fid| ids_of_works_updated.include? fid}
       end
 
