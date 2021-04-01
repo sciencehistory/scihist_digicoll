@@ -8,13 +8,13 @@ EXPORT_CMD="mysqlsh -u `cat local_database_user.txt` --database=`cat local_datab
 EXPORT_DESTINATION=/tmp/ohms_microsite_import_data
 
 
-# A text file for converting institution names to FAST headings
+# # A text file for converting institution names to FAST headings
 $EXPORT_CMD  < queries/institutions.sql     > $EXPORT_DESTINATION/institutions.txt
 
-# Mapping check: contains name, source URL, and interview number
+# Mapping check: contains name, source URL, source URL alias, and interview number
 $EXPORT_CMD  < queries/name.sql             > $EXPORT_DESTINATION/name.json
 
-# Biographical data export:
+# # Biographical data export:
 $EXPORT_CMD  < queries/birth_date.sql       > $EXPORT_DESTINATION/birth_date.json
 $EXPORT_CMD  < queries/birth_city.sql       > $EXPORT_DESTINATION/birth_city.json
 $EXPORT_CMD  < queries/birth_state.sql      > $EXPORT_DESTINATION/birth_state.json
@@ -30,3 +30,11 @@ $EXPORT_CMD  < queries/death_country.sql    > $EXPORT_DESTINATION/death_country.
 $EXPORT_CMD  < queries/education.sql        > $EXPORT_DESTINATION/education.json
 $EXPORT_CMD  < queries/career.sql           > $EXPORT_DESTINATION/career.json
 $EXPORT_CMD  < queries/honors.sql           > $EXPORT_DESTINATION/honors.json
+
+# Interviewers, with profiles:
+$EXPORT_CMD  < queries/interviewer.sql       > $EXPORT_DESTINATION/interviewer.json
+$EXPORT_CMD  < queries/interviewer_2.sql     > $EXPORT_DESTINATION/interviewer_2.json
+$EXPORT_CMD  < queries/interviewer_profile.sql       > $EXPORT_DESTINATION/interviewer_profile.json
+
+# Images, with captions and alt text:
+$EXPORT_CMD  < queries/image.sql             > $EXPORT_DESTINATION/image.json
