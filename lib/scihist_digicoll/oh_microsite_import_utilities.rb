@@ -2,28 +2,10 @@
 # See:
 # scihist:oh_microsite_import:import_interviewee_biographical_metadata
 
-
 require "shrine"
-require "shrine/storage/file_system"
-require "down"
-
-
 
 module OhMicrositeImportUtilities
   module Updaters
-
-    def self.image(oral_history_content, rows)
-      uploader  = IntervieweePortraitUploader.new({
-        work: oral_history_content.work,
-        filename: rows.first['filename'],
-        url:      rows.first['url'],
-        title:    rows.first['title'],
-        alt:      rows.first['alt'],
-        caption:  rows.first['caption']
-      })
-      uploader.maybe_upload_file
-      uploader.maybe_update_metadata
-    end
 
     def self.birth_date(oral_history_content, rows)
       oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
@@ -102,6 +84,25 @@ module OhMicrositeImportUtilities
         OralHistoryContent::IntervieweeHonor.new(args)
       end
     end
+
+    def self.interviewer(oral_history_content, rows)
+      profiles = InterviewerProfile.find(rows.map {|r| r['interviewer_id']})
+      oral_history_content.interviewer_profiles = profiles
+    end
+
+    def self.image(oral_history_content, rows)
+      uploader  = IntervieweePortraitUploader.new({
+        work: oral_history_content.work,
+        filename: rows.first['filename'],
+        url:      rows.first['url'],
+        title:    rows.first['title'],
+        alt:      rows.first['alt'],
+        caption:  rows.first['caption']
+      })
+      uploader.maybe_upload_file
+      uploader.maybe_update_metadata
+    end
+
 
   # submodule ends here
   end
