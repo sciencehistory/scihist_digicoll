@@ -34,9 +34,10 @@ class OhAudioWorkShowDecorator < Draper::Decorator
     @audio_members ||= all_members.select { |m| m.leaf_representative&.content_type&.start_with?("audio/") }
   end
 
-  def non_audio_members
-    @non_audio_members ||= all_members.select do |m|
-       !m.leaf_representative&.content_type&.start_with?("audio/")
+  def file_list_members
+    @file_list_members ||= all_members.select do |m|
+       !m.leaf_representative&.content_type&.start_with?("audio/") && # exclude audio
+       !m.role_portrait?  # exclude portrait role
      end
   end
 
@@ -86,6 +87,14 @@ class OhAudioWorkShowDecorator < Draper::Decorator
 
   def derivatives_up_to_date?
     CombinedAudioDerivativeCreator.new(model).fingerprint == combined_audio_fingerprint
+  end
+
+  def portrait_asset
+    unless defined?(@portrait_asset)
+      @portrait_asset = all_members.find {|mem| mem.role_portrait? }&.leaf_representative
+    end
+
+    @portrait_asset
   end
 
   # An array of start times for each audio member.

@@ -26,14 +26,18 @@ class OralHistoryContent
       Work::PlaceLists::COUNTRIES.select { |co| co[1] == country }&.first&.first
     end
 
-    def to_s
+    def displayable_values
       [
         date,
         city,
         state_name,
         province_name,
         country_name,
-      ].select(&:present?).join(", ")
+      ].collect(&:presence).compact
+    end
+
+    def to_s
+      displayable_values.join(", ")
     end
   end
 end

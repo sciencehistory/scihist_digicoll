@@ -154,5 +154,33 @@ class WorkIndexer < Kithe::Indexer
         end
       end
     end
+
+    # for oral histories, get biographical data. Some to same field as subject (text3_tesim), some
+    # to our general-purpose "text_no_boost_tesim"
+    each_record do |rec, context|
+      if rec.is_oral_history? && rec.oral_history_content
+        ohc = rec.oral_history_content
+
+        boosted_text = []
+        boosted_text.concat ohc.interviewee_school.collect(&:institution).compact if ohc.interviewee_school
+        boosted_text.concat ohc.interviewee_job.collect(&:institution).compact if ohc.interviewee_job
+        boosted_text.concat ohc.interviewee_honor.collect(&:honor).compact if ohc.interviewee_honor
+        boosted_text.uniq!
+
+        context.add_output("text3_tesim", *boosted_text)
+
+
+
+        standard_text = []
+        standard_text << ohc.interviewee_birth.displayable_values.join(", ") if ohc.interviewee_birth
+        standard_text << ohc.interviewee_death.displayable_values.join(", ") if ohc.interviewee_death
+        standard_text.concat ohc.interviewee_school.collect { |v| v.displayable_values.join(", ")} if ohc.interviewee_school
+        standard_text.concat ohc.interviewee_job.collect { |v| v.displayable_values.join(", ")} if ohc.interviewee_job
+        standard_text.concat ohc.interviewee_honor.collect { |v| v.displayable_values.join(", ")} if ohc.interviewee_honor
+        standard_text.uniq!
+
+        context.add_output("text_no_boost_tesim", *standard_text)
+      end
+    end
   end
 end

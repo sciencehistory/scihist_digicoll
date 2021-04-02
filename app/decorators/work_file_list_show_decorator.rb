@@ -29,9 +29,21 @@ class WorkFileListShowDecorator < Draper::Decorator
         members = members.find_all(&:published?)
       end
 
+      # omit "portrait" role
+      members = members.find_all {|m| ! m.role_portrait? }
+
       members
     end
   end
+
+  def portrait_asset
+    unless defined?(@portrait_asset)
+      @portrait_asset = all_members.find {|mem| mem.published? && mem.role_portrait? }&.leaf_representative
+    end
+
+    @portrait_asset
+  end
+
 
   def available_by_request_summary
     parts = []
@@ -52,7 +64,7 @@ class WorkFileListShowDecorator < Draper::Decorator
   end
 
   def available_by_request_audio_count
-    @available_by_request_audio_count ||= available_by_request_assets.find_all { |asset| asset.content_type.start_with?("audio/") }.count
+    @available_by_request_audio_count ||= available_by_request_assets.find_all { |asset| asset.content_type&.start_with?("audio/") }.count
   end
 
   def multiple_files?

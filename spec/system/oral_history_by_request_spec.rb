@@ -7,6 +7,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
   let(:preview_pdf) { create(:asset_with_faked_file, :pdf, published: true) }
   let(:protected_pdf) { create(:asset_with_faked_file, :pdf, published: false, oh_available_by_request: true) }
   let(:protected_mp3) { create(:asset_with_faked_file, :mp3, published: false, oh_available_by_request: true) }
+  let(:portrait) { create(:asset_with_faked_file, role: "portrait")}
 
 
   context "When you visit an OH with protected by request, automatic delivery assets" do
@@ -15,6 +16,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
         work.members << preview_pdf
         work.members << protected_pdf
         work.members << protected_mp3
+        work.members << portrait
 
         work.representative =  preview_pdf
         work.save!
@@ -27,6 +29,9 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       visit work_path(work.friendlier_id)
 
       expect(page).to have_selector("h1", text: work.title)
+
+      # portrait
+      expect(page).to have_selector(".oh-portrait img[src='#{portrait.file_url(:thumb_standard)}']")
 
       # Biographical metadata, just test a sampling
       expect(page).to have_selector("h2", text: "Interviewee biographical information")
@@ -46,7 +51,6 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
 
       expect(page).to have_text work.oral_history_content.interviewee_honor.first.start_date.slice(0..4)
       expect(page).to have_text work.oral_history_content.interviewee_honor.first.honor
-
 
       ## File request
 
