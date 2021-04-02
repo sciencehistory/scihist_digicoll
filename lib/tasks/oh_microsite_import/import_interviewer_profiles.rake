@@ -10,10 +10,10 @@ namespace :scihist do
 
       /tmp/ohms_microsite_import_data/interviewer_profile.json
 
-      bundle exec rake scihist:oh_microsite_import:import_interviewee_interviewer_profiles
+      bundle exec rake scihist:oh_microsite_import:import_interviewer_profiles
 
       # To specify another location for files:
-      # FILES_LOCATION=/tmp/some_other_dir/ bundle exec rake scihist:oh_microsite_import:import_interviewee_interviewer_profiles
+      # FILES_LOCATION=/tmp/some_other_dir/ bundle exec rake scihist:oh_microsite_import:import_interviewer_profiles
 
       This code assumes that:
         there are no interviewer profiles in the DB before our first import
@@ -32,14 +32,20 @@ namespace :scihist do
         format: "%a %t: |%B| %R/s %c/%u %p%% %e",
         title: "interviewer profiles"
       )
+      sanitizer = DescriptionSanitizer.new()
       profiles.each do |profile|
+        # Validation problem: profile
+        # can't be blank in destination,
+        # but it is often blank in the source.
+        profile_text = sanitizer.sanitize(profile['interviewer_profile'])
+        profile_text = "No profile for this interviewer." if profile_text.blank?
         begin
           prof = InterviewerProfile.find_or_initialize_by(id: profile['interviewer_id'])
           prof.name =  profile['interviewer_name']
-          prof.profile = profile['interviewer_profile']
+          prof.profile = profile_text
           prof.save!
         rescue StandardError => e
-          progress_bar.log("ERROR: #{profile['interviewer_name']}: unable to save.")
+          progress_bar.log("ERROR: #{profile['interviewer_name']}: unable to save: #{e.inspect}")
           next
         end
         progress_bar.increment
