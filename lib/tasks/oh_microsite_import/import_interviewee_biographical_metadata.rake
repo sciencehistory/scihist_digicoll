@@ -29,6 +29,8 @@ namespace :scihist do
 
       mapping_errors = []
 
+      url_mapping = {}
+
       # Start with a basic check of the mapping using the name.sql file.
       names = JSON.parse(File.read("#{files_location}/name.json"))
       unless names.is_a? Array
@@ -53,12 +55,23 @@ namespace :scihist do
         if relevant_rows.length > 1
           mapping_errors << "#{w.title} (#{w.friendlier_id}): more than one source record:\n#{relevant_rows.join("\n")}"
         end
+
+        url_mapping[relevant_rows.first['url_alias'].sub('https://oh.sciencehistory.org', '')] = "/works/#{w.friendlier_id}"
+
       end
+
+      File.open("#{files_location}/oral_history_legacy_redirects.yml", 'w') do |f|
+        f.write( url_mapping.map { | k, v | "#{k} : #{v}"}.join("\n"))
+      end
+
 
       puts "Source records: #{names.count} (excludes unpublished)"
       puts "Source records still missing a matching destination record: #{names.map {|interview| interview['interview_number']}.reject{|id| destination_accession_numbers.include? id }.count}"
       puts "Destination records: #{destination_records.count}"
       puts "Destination records with an accession number: #{destination_accession_numbers.count}"
+      puts
+      puts "URL redirects file is at #{files_location}/oral_history_legacy_redirects.yml. It will need to be checked into config."
+      puts
 
       if mapping_errors.present?
         puts "There were problems with the mapping." if mapping_errors.present?

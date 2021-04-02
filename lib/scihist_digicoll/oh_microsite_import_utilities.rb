@@ -143,7 +143,7 @@ module OhMicrositeImportUtilities
       if portrait.save
         @work.representative = portrait
         @work.save
-        sleep 10
+        sleep 5
       end
     end
 
