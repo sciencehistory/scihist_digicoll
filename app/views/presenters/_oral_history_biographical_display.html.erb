@@ -76,7 +76,7 @@
       <% view.honors.each do |honor| %>
         <tr>
           <td class="text-nowrap"><%= FormatSimpleDate.new(honor.start_date, honor.end_date).display %></td>
-          <td><%= honor.honor %></td>
+          <td><%= view.sanitized_honor_string(honor.honor) %></td>
         </tr>
       <% end %>
     </tbody>

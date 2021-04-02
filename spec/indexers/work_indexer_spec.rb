@@ -31,6 +31,18 @@ describe WorkIndexer do
       expect(output_hash["interviewer_facet"]).not_to eq(nil)
     end
 
+    it "indexes biographical information" do
+      output_hash = WorkIndexer.new.map_record(work)
+
+      boosted_values = (work.oral_history_content.interviewee_school.collect(&:institution) +
+        work.oral_history_content.interviewee_job.collect(&:institution) +
+        work.oral_history_content.interviewee_honor.collect(&:honor)).uniq
+      expect(output_hash["text3_tesim"]).to match(boosted_values)
+
+      # and a sampling of some others
+      expect(output_hash["text_no_boost_tesim"]).to include(work.oral_history_content.interviewee_birth.displayable_values.join(", "))
+    end
+
     describe "features facet" do
       it "has transcript value" do
         output_hash = WorkIndexer.new.map_record(work)
