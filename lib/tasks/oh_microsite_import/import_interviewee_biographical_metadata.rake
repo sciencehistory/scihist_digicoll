@@ -38,7 +38,7 @@ namespace :scihist do
         abort
       end
 
-
+      mismatches = []
       destination_accession_numbers = []
 
       destination_records.find_each do |w|
@@ -49,12 +49,16 @@ namespace :scihist do
         end
         destination_accession_numbers << accession_num
         relevant_rows = names.to_a.select{|row| row['interview_number'] == accession_num}
+
+        mismatches << w unless relevant_rows.length == 1
+
         if relevant_rows.empty?
           mapping_errors << "#{w.title} (#{w.friendlier_id}): could not find source record."
         end
         if relevant_rows.length > 1
           mapping_errors << "#{w.title} (#{w.friendlier_id}): more than one source record:\n#{relevant_rows.join("\n")}"
         end
+
 
         url_mapping[relevant_rows.first['url_alias'].sub('https://oh.sciencehistory.org', '')] = "/works/#{w.friendlier_id}"
 
@@ -74,16 +78,17 @@ namespace :scihist do
       puts
 
       if mapping_errors.present?
-        puts "There were problems with the mapping." if mapping_errors.present?
+        puts "There were problems with the mapping. The following list of items will not be migrated:" if mapping_errors.present?
         puts "#{mapping_errors.join("\n")}"
-        abort
       end
+
 
       validation_errors = []
 
       files = %w{ birth_date birth_city birth_state birth_province birth_country } +
               %w{ death_date death_city death_state death_province death_country } +
-              %w{ education career honors image interviewer}
+              #%w{ education career honors image interviewer}
+              %w{ education career honors interviewer}
 
       works_updated = Set.new()
 
@@ -104,12 +109,21 @@ namespace :scihist do
         # if the JSON file contains a value for the field, we set it.
         # Otherwise, we move on to the next oral history.
         destination_records.find_each do |w|
+
+          # Don't try to migrate this item if there are zero or several potential OHs in the microsite:
+          if mismatches.include? w
+            progress_bar.increment  if progress_bar
+            next
+          end
+
           relevant_rows = select_rows(results, w)
           if relevant_rows.count == 0
             # No relevant rows for this particular field for this particular interviewee.
             progress_bar.increment  if progress_bar
             next
           end
+
+          # OK, we have metadata for an interviewee. Let's try and update:
           begin
             if relevant_rows.map{|r| r[:interview_entity_id]}.uniq.count > 1
               validation_errors << "#{w.title} (#{w.friendlier_id}): Skipping #{field} since there was more than one source interview."
@@ -121,7 +135,7 @@ namespace :scihist do
               send(field, w.oral_history_content, relevant_rows)
             w.oral_history_content.save!
           rescue StandardError => e
-            # Note any errors pertaining to a particular work and field.
+            # Unable to apply the new metadata. Note any errors pertaining to a particular work and field.
             validation_errors << "#{w.title} (#{w.friendlier_id}): error with #{field}:\n#{e.inspect}"
             if progress_bar.nil?
               puts "ERROR: #{w.title}: unable to save #{w.title}."
@@ -139,8 +153,9 @@ namespace :scihist do
       end
       # At this point all the oral histories have been updated.
 
-      # Print out validation errors and exit
 
+
+      # Print out validation errors and exit:
       if validation_errors.present?
         puts "#{validation_errors.join("\n")}"
       else
