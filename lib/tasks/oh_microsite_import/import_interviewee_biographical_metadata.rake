@@ -50,6 +50,7 @@ namespace :scihist do
         destination_accession_numbers << accession_num
         relevant_rows = names.to_a.select{|row| row['interview_number'] == accession_num}
 
+        # TODO: clean this up a bit
         mismatches << w unless relevant_rows.length == 1
 
         if relevant_rows.empty?
@@ -59,8 +60,10 @@ namespace :scihist do
           mapping_errors << "#{w.title} (#{w.friendlier_id}): more than one source record:\n#{relevant_rows.join("\n")}"
         end
 
-
-        url_mapping[relevant_rows.first['url_alias'].sub('https://oh.sciencehistory.org', '')] = "/works/#{w.friendlier_id}"
+        if relevant_rows.length == 1
+          url_mapping[relevant_rows.first['url_alias'].sub('https://oh.sciencehistory.org', '')] = "/works/#{w.friendlier_id}"
+        end
+        # end TODO
 
       end
 
