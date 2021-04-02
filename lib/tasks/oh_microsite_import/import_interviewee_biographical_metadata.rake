@@ -70,7 +70,7 @@ namespace :scihist do
 
       files = %w{ birth_date birth_city birth_state birth_province birth_country } +
               %w{ death_date death_city death_state death_province death_country } +
-              %w{ education career honors }
+              %w{ education career honors interviewer}
 
       works_updated = Set.new()
 
