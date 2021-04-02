@@ -7,8 +7,7 @@ fi
 EXPORT_CMD="mysqlsh -u `cat local_database_user.txt` --database=`cat local_database_name.txt` --password=$DATABASE_PASSWORD --sql --result-format=json/array"
 EXPORT_DESTINATION=/tmp/ohms_microsite_import_data
 
-
-# # A text file for converting institution names to FAST headings
+# A text file for converting institution names to FAST headings
 $EXPORT_CMD  < queries/institutions.sql     > $EXPORT_DESTINATION/institutions.txt
 
 # Mapping check: contains name, source URL, source URL alias, and interview number
