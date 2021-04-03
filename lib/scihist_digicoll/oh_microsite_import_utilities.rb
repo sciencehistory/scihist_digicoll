@@ -160,7 +160,7 @@ module OhMicrositeImportUtilities
         position: next_open_position,
         parent_id: @work.id,
         published: @work.published,
-        role: portrait,
+        role: 'portrait',
         )
         portrait.file_attacher.set_promotion_directives(promote: "inline")
         portrait.file_attacher.set_promotion_directives(create_derivatives: "inline")
