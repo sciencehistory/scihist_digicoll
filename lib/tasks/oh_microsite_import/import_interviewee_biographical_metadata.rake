@@ -70,11 +70,13 @@ namespace :scihist do
       puts "URL redirects file is at #{files_location}/oral_history_legacy_redirects.yml. It will need to be checked into config."
       puts
 
+      less_than_one_match_errors << Work.find_by_friendlier_id('y02f8m6')
+
       no_accession_number_errors.each do |w|
         puts  "#{w.title} (#{w.friendlier_id}): no accession number."
       end
       less_than_one_match_errors.each do |w|
-        puts  "#{w.title} (#{w.friendlier_id}): could not find source record."
+        puts  "#{w.title} (#{w.friendlier_id}): could not find source record with ID \"#{w.external_id.find { |id| id.category == "interview" }&.value}\"."
       end
       double_match_errors.each do | w, v |
         puts  "#{w.title} (#{w.friendlier_id}): more than one source record:\n#{v.join("\n")}\n\n"
