@@ -131,7 +131,6 @@ module OhMicrositeImportUtilities
 
 
   class MappingErrors
-    attr_accessor :less_than_one_match_errors, :double_match_errors, :no_accession_number_errors
 
     def initialize()
       @less_than_one_match_errors = []
@@ -140,10 +139,14 @@ module OhMicrositeImportUtilities
     end
 
     def include?(work)
-      return true if @double_match_errors.keys().include? work.friendlier_id
-      return true if @less_than_one_match_errors.include? work.friendlier_id
       return true if @no_accession_number_errors.include? work.friendlier_id
+      return true if @less_than_one_match_errors.include? work.friendlier_id
+      return true if @double_match_errors.keys().include? work.friendlier_id
       false
+    end
+
+    def record_no_accession_number(work)
+      @no_accession_number_errors << work.friendlier_id
     end
 
     def record_no_match(work)
@@ -154,12 +157,8 @@ module OhMicrositeImportUtilities
       @double_match_errors[work.friendlier_id] = metadata
     end
 
-    def record_no_accession_number(work)
-      @no_accession_number_errors << work.friendlier_id
-    end
-
     def print_errors()
-      @less_than_one_match_errors.each do |id|
+      @no_accession_number_errors.each do |id|
         w = Work.find_by_friendlier_id(id)
         puts  "#{w.title} (#{w.friendlier_id}): no accession number."
       end
