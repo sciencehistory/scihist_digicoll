@@ -107,8 +107,13 @@ module OhMicrositeImportUtilities
   # submodule ends here
   end
 
+
+  def get_accession_number(work)
+    work.external_id.find { |id| id.category == "interview" }&.value
+  end
+
   def select_rows(all_rows, work)
-    accession_num =  work.external_id.find { |id| id.category == "interview" }&.value
+    accession_num = get_accession_number(work)
     abort if accession_num.nil?
     all_rows.to_a.select{|row| row['interview_number'] == accession_num}
   end
@@ -122,6 +127,54 @@ module OhMicrositeImportUtilities
   # For career / education / honor dates, we only care about years.
   def keep_yyyy(dt)
     dt&.to_s[0...4]
+  end
+
+
+  class MappingErrors
+    attr_accessor :less_than_one_match_errors, :double_match_errors, :no_accession_number_errors
+
+    def initialize()
+      @less_than_one_match_errors = []
+      @double_match_errors = {}
+      @no_accession_number_errors = []
+    end
+
+    def include?(work)
+      return true if @double_match_errors.keys().include? work.friendlier_id
+      return true if @less_than_one_match_errors.include? work.friendlier_id
+      return true if @no_accession_number_errors.include? work.friendlier_id
+      false
+    end
+
+    def record_no_match(work)
+      @less_than_one_match_errors << work.friendlier_id
+    end
+
+    def record_double_match(work, metadata)
+      @double_match_errors[work.friendlier_id] = metadata
+    end
+
+    def record_no_accession_number(work)
+      @no_accession_number_errors << work.friendlier_id
+    end
+
+    def print_errors()
+      @less_than_one_match_errors.each do |id|
+        w = Work.find_by_friendlier_id(id)
+        puts  "#{w.title} (#{w.friendlier_id}): no accession number."
+      end
+      puts ""
+      @less_than_one_match_errors.each do |id|
+        w = Work.find_by_friendlier_id(id)
+        puts  "#{w.title} (#{w.friendlier_id}): could not find source record with ID \"#{get_accession_number(w)}\"."
+      end
+      puts ""
+      @double_match_errors.each do | id, v |
+        w = Work.find_by_friendlier_id(id)
+        puts  "#{w.title} (#{w.friendlier_id}): more than one source record with ID \"#{get_accession_number(w)}\:\n#{v.join("\n")}\n\n"
+      end
+    end
+
   end
 
   class IntervieweePortraitUploader
