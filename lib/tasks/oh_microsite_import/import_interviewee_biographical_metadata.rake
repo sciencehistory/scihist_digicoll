@@ -42,7 +42,7 @@ namespace :scihist do
         mapping_errors.record_double_match(w, relevant_rows) if relevant_rows.length > 1
       end
       puts "Destination records: #{destination_records.count}"
-      mapping_errors.print_errors()
+      mapping_errors.print_errors_and_guesses(names)
 
 
       #PART 2: update records with good mappings.

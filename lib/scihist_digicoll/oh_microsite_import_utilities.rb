@@ -107,6 +107,9 @@ module OhMicrositeImportUtilities
   # submodule ends here
   end
 
+  def get_interviewee(work)
+    work.creator.find { |id| id.category == "interviewee" }&.value
+  end
 
   def get_accession_number(work)
     work.external_id.find { |id| id.category == "interview" }&.value
@@ -157,7 +160,7 @@ module OhMicrositeImportUtilities
       @double_match_errors[work.friendlier_id] = metadata
     end
 
-    def print_errors()
+    def print_errors_and_guesses(names)
       @no_accession_number_errors.each do |id|
         w = Work.find_by_friendlier_id(id)
         puts  "#{w.title} (#{w.friendlier_id}): no accession number."
@@ -166,11 +169,18 @@ module OhMicrositeImportUtilities
       @less_than_one_match_errors.each do |id|
         w = Work.find_by_friendlier_id(id)
         puts  "#{w.title} (#{w.friendlier_id}): could not find source record with ID \"#{get_accession_number(w)}\"."
+        potential_matches =  names.select {|row| row['interviewee_name'].include?(get_interviewee(w).split(/\W+/)[0] ) }
+        if potential_matches.present?
+          puts "Potential matches:"
+          potential_matches.each {|ma| puts "    #{ma['source_url']}: #{ma['interviewee_name']} (#{ma['interview_number']}) " }
+        end
+
+
       end
       puts ""
       @double_match_errors.each do | id, v |
         w = Work.find_by_friendlier_id(id)
-        puts  "#{w.title} (#{w.friendlier_id}): more than one source record with ID \"#{get_accession_number(w)}\:\n#{v.join("\n")}\n\n"
+        puts  "#{w.title} (#{w.friendlier_id}): more than one source record with ID \"#{get_accession_number(w)}\"\:\n#{v.join("\n")}\n\n"
       end
     end
 
