@@ -24,7 +24,6 @@ namespace :scihist do
 
 
       #PART 1: check mapping
-      unpublished_duplicates_to_ignore = []
 
       mapping_errors = MappingErrors.new()
       names = JSON.parse(File.read("#{files_location}/name.json"))
@@ -32,7 +31,11 @@ namespace :scihist do
         puts "Error parsing names data."
         abort
       end
-      puts "Published source records: #{names.count}"
+
+      microsite_interviews = MicrositeInterviews.new(names)
+
+      puts "Source records: #{names.count}"
+
       destination_records.find_each do |w|
         accession_num =  get_accession_number(w)
         unless accession_num
@@ -42,31 +45,28 @@ namespace :scihist do
         relevant_rows = names.to_a.select{|row| row['interview_number'] == accession_num}
         mapping_errors.record_no_match(w) if relevant_rows.empty?
 
-
         # SPECIAL CASE:
         # ONLY in the case of duplicate rows, *ignore* unpublished duplicates.
         if relevant_rows.length > 1
           relevant_rows.select{|arr| arr['published'] == 0}.each do |row|
-            unpublished_duplicates_to_ignore << row
+            microsite_interviews.record_unpublished_duplicate(row, w)
           end
-          rejected_rows = relevant_rows.reject!{|arr| arr['published'] == 0}
+          relevant_rows.reject!{|arr| arr['published'] == 0}
         end
         # END SPECIAL CASE.
 
         mapping_errors.record_double_match(w, relevant_rows) if relevant_rows.length > 1
 
+        if relevant_rows.length == 1
+          microsite_interviews.record_match(relevant_rows.first, w)
+        end
+
       end
+
+      microsite_interviews.print_statistics()
 
       puts "Destination records: #{destination_records.count}"
       mapping_errors.print_errors_and_guesses(names)
-
-      if unpublished_duplicates_to_ignore.present?
-        puts "Found the following unpublished duplicates:"
-        pp unpublished_duplicates_to_ignore
-      end
-
-      source_records_to_ignore = unpublished_duplicates_to_ignore.map {|v| v['interview_entity_id']}
-
 
 
       #PART 2: update records with good mappings.
@@ -75,6 +75,9 @@ namespace :scihist do
               %w{ death_date death_city death_state death_province death_country } +
               %w{ education career honors image interviewer}
       works_updated = Set.new()
+
+      node_ids_to_ignore = microsite_interviews.unpublished_duplicate_node_ids()
+
       metadata_files.each do |field|
         progress_bar = ProgressBar.create(
           total: destination_records.count,
@@ -83,6 +86,9 @@ namespace :scihist do
         )
         # progress_bar = nil
         results = JSON.parse(File.read("#{files_location}/#{field}.json"))
+
+        # Ignore metadata for interviews we don't want to import:
+        results.reject!{|arr| node_ids_to_ignore.include? arr['interview_entity_id'] }
 
         # For each metatata field we iterate over the
         # entire list of oral histories. For each OH,
@@ -93,10 +99,8 @@ namespace :scihist do
           if mapping_errors.include? w
             progress_bar.increment if progress_bar; next
           end
-          relevant_rows = select_rows(results, w)
 
-          # SPECIAL CASE: ignore metadata pertaining to these unpublished duplicates:
-          rejected_rows = relevant_rows.reject!{ |arr| unpublished_duplicates_to_ignore.include? arr['interview_entity_id'] }
+          relevant_rows = select_rows(results, w)
 
           # No relevant rows for this particular field for this particular interviewee.
           if relevant_rows.count == 0

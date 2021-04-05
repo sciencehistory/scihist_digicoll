@@ -132,6 +132,44 @@ module OhMicrositeImportUtilities
     dt&.to_s[0...4]
   end
 
+  class MicrositeInterviews
+
+    def initialize(all_items)
+      @all_items = all_items
+      @unpublished_duplicates = {}
+      @will_be_migrated = {}
+    end
+
+    def record_unpublished_duplicate(row, work)
+      @unpublished_duplicates[row['interview_entity_id']] = [work, row]
+    end
+
+    def record_match(row, work)
+      @will_be_migrated[row['interview_entity_id']] = [work, row]
+    end
+
+    def unpublished_duplicate_node_ids()
+      @unpublished_duplicates.keys()
+    end
+
+    def other_interviews_with_no_destination_record()
+      others = []
+      items_to_ignore = @unpublished_duplicates.keys() + @will_be_migrated.keys()
+      @all_items.each do |row|
+        others << row unless items_to_ignore.include? row['interview_entity_id']
+      end
+      others
+    end
+
+    def print_statistics()
+      puts "All microsite interviews: #{@all_items.count}"
+      puts "Unpublished duplicate interviews in the microsite: #{@unpublished_duplicates.count}"
+      puts "Other microsite interviews with no destination record:"
+      # puts other_interviews_with_no_destination_record()
+    end
+
+  end
+
 
   class MappingErrors
 
@@ -174,8 +212,6 @@ module OhMicrositeImportUtilities
           puts "Potential matches:"
           potential_matches.each {|ma| puts "    #{ma['source_url']}: #{ma['interviewee_name']} (#{ma['interview_number']}) " }
         end
-
-
       end
       puts ""
       @double_match_errors.each do | id, v |
