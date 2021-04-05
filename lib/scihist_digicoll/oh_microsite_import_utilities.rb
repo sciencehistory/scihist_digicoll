@@ -132,8 +132,11 @@ module OhMicrositeImportUtilities
     dt&.to_s[0...4]
   end
 
-  class MicrositeInterviews
 
+  # A helper class to help us keep track of the fate of each microsite OH.
+  # In particular, we want to keep track of ~44 "unpublished duplicate" interviews
+  # that will not be migrated.
+  class MicrositeInterviews
     def initialize(all_items)
       @all_items = all_items
       @unpublished_duplicates = {}
@@ -164,13 +167,20 @@ module OhMicrositeImportUtilities
     def print_statistics()
       puts "All microsite interviews: #{@all_items.count}"
       puts "Unpublished duplicate interviews in the microsite: #{@unpublished_duplicates.count}"
-      puts "Other microsite interviews with no destination record:"
-      # puts other_interviews_with_no_destination_record()
+      others = other_interviews_with_no_destination_record()
+      if others.present?
+        puts "Other microsite interviews with no destination record:"
+        puts others
+      else
+        puts "No other microsite interviews with no destination record."
+      end
     end
 
   end
 
 
+  # A helper class to help us keep track of any and all scihist_digicoll items
+  # for which we do not have exactly one corresponding microsite interview.
   class MappingErrors
 
     def initialize()
