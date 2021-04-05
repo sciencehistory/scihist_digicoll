@@ -14,5 +14,5 @@ AND
     field_data_field_interviewee_name.revision_id = accession_number_table.revision_id
 AND
     published.nid = field_data_field_interviewee_name.entity_id
-AND
-    published.status = 1
+-- AND
+--     published.status = 1

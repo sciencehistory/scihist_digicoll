@@ -24,6 +24,8 @@ namespace :scihist do
 
 
       #PART 1: check mapping
+      unpublished_duplicates_to_ignore = []
+
       mapping_errors = MappingErrors.new()
       names = JSON.parse(File.read("#{files_location}/name.json"))
       unless names.is_a? Array
@@ -39,10 +41,32 @@ namespace :scihist do
         end
         relevant_rows = names.to_a.select{|row| row['interview_number'] == accession_num}
         mapping_errors.record_no_match(w) if relevant_rows.empty?
+
+
+        # SPECIAL CASE:
+        # ONLY in the case of duplicate rows, *ignore* unpublished duplicates.
+        if relevant_rows.length > 1
+          relevant_rows.select{|arr| arr['published'] == 0}.each do |row|
+            unpublished_duplicates_to_ignore << row
+          end
+          rejected_rows = relevant_rows.reject!{|arr| arr['published'] == 0}
+        end
+        # END SPECIAL CASE.
+
         mapping_errors.record_double_match(w, relevant_rows) if relevant_rows.length > 1
+
       end
+
       puts "Destination records: #{destination_records.count}"
       mapping_errors.print_errors_and_guesses(names)
+
+      if unpublished_duplicates_to_ignore.present?
+        puts "Found the following unpublished duplicates:"
+        pp unpublished_duplicates_to_ignore
+      end
+
+      source_records_to_ignore = unpublished_duplicates_to_ignore.map {|v| v['interview_entity_id']}
+
 
 
       #PART 2: update records with good mappings.
@@ -70,6 +94,10 @@ namespace :scihist do
             progress_bar.increment if progress_bar; next
           end
           relevant_rows = select_rows(results, w)
+
+          # SPECIAL CASE: ignore metadata pertaining to these unpublished duplicates:
+          rejected_rows = relevant_rows.reject!{ |arr| unpublished_duplicates_to_ignore.include? arr['interview_entity_id'] }
+
           # No relevant rows for this particular field for this particular interviewee.
           if relevant_rows.count == 0
             progress_bar.increment  if progress_bar; next

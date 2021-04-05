@@ -40,9 +40,9 @@ AND
     field_data_field_interviewee_name.entity_id = image_caption.entity_id
 AND
     field_data_field_interviewee_name.revision_id = image_caption.revision_id
-AND
-    published.status = 1
-AND
-    image_metadata.status = 1
+-- AND
+--     published.status = 1
+-- AND
+--     image_metadata.status = 1
 ORDER BY
     field_data_field_interview_number.field_interview_number_value
