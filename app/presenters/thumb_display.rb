@@ -111,6 +111,10 @@ class ThumbDisplay < ViewModel
       }
     }
 
+    if asset.alt_text.present?
+      img_attributes[:alt] = asset.alt_text
+    end
+
     if lazy?
       # tell lazysizes.js to load with class, and put src/srcset only in
       # data- attributes, so the image will not be loaded immediately, but lazily

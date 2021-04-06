@@ -48,6 +48,17 @@ describe ThumbDisplay do
     end
   end
 
+  describe "with alt_text" do
+    let(:alt_text) { "This is alt text" }
+    let(:argument) { build(:asset_with_faked_file, alt_text: alt_text) }
+
+    it "renders alt attribute from model alt_text" do
+      img_tag = rendered.at_css("img")
+      expect(img_tag).to be_present
+      expect(img_tag["alt"]).to eq(alt_text)
+    end
+  end
+
   describe "specified placeholder image" do
     let(:argument) { build(:asset) }
     let(:instance) { ThumbDisplay.new(argument, placeholder_img_url: specified_img_url) }
