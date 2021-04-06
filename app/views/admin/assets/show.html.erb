@@ -60,6 +60,9 @@
       <dt class="col-sm-4">Orig. Filename</dt>
       <dd class="col-sm-8"><%= @asset&.file&.metadata.try { |h| h["filename"]} %></dd>
 
+      <dt class="col-sm-4">Alt text</dt>
+      <dd class="col-sm-8"><%= @asset.alt_text %></dd>
+
       <%if @asset.stored? && Shrine.storages[:store].try('bucket').try('name') %>
         <dt class="col-sm-4">File in s3</dt>
         <dd class="col-sm-8"><%= link_to @asset.file.url(public: true).split('/').last, S3ConsoleUri.new(@asset.file.url(public: true)).console_uri %></dd>

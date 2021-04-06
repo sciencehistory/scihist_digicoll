@@ -14,6 +14,11 @@ en:
       interviewer_profile:
         profile: "Allowed HTML tags: b, i, cite, a."
         name: 'Recommend "Lastname, First I.", but legacy data may not match.'
+      asset:
+        alt_text: "Alternative textual description for when asset can't be viewed directly, has accessibility uses."
+    labels:
+      asset:
+        alt_text: "Alt(ernative) text"
 
     # Examples
     # labels:

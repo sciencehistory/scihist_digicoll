@@ -26,6 +26,10 @@ class Asset < Kithe::Asset
   # Set rails_attribute true so we get rails dirty tracking.
   attr_json :derivative_storage_type, :string, default: "public", rails_attribute: true
 
+  # alt_text was added for Oral Histories portraits and migrating existing data,
+  # but can be used for any asset.
+  attr_json :alt_text, :string
+
   validates :derivative_storage_type, inclusion: { in: ["public", "restricted"] }
 
   DERIVATIVE_STORAGE_TYPE_LOCATIONS = {

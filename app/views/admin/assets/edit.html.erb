@@ -31,6 +31,8 @@
 
     <%= f.input :role, collection: Asset.roles.values.collect { |v| [v.humanize.downcase, v] }, include_blank: "[unspecified]" %>
 
+    <%= f.input :alt_text %>
+
     <%= f.repeatable_attr_input(:admin_note, build: :at_least_one) do |input_name, value| %>
       <div class="form-group">
         <%= f.input_field :admin_note, name: input_name, value: value, as: :text, class: "form-control", rows: 4 %>
