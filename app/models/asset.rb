@@ -30,6 +30,10 @@ class Asset < Kithe::Asset
   # but can be used for any asset.
   attr_json :alt_text, :string
 
+  # Caption also motivated by Oral Histories data migration, and is not
+  # really anticipated for any other use.
+  attr_json :caption, :string
+
   validates :derivative_storage_type, inclusion: { in: ["public", "restricted"] }
 
   DERIVATIVE_STORAGE_TYPE_LOCATIONS = {
