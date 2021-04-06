@@ -10,7 +10,7 @@
       the extra search options may be always visible.
 %>
 
-<%= form_tag search_catalog_path, method: :get, class: "search-form", role: "search" do %>
+<%= form_tag search_catalog_url, method: :get, class: "search-form", role: "search" do %>
   <%= hidden_field_tag :search_field, 'all_fields' %>
 
 

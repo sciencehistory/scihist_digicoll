@@ -440,6 +440,9 @@ module ScihistDigicoll
     # Used to trigger custom controllers/UI for specific known collections
     define_key :oral_history_collection_id, default: "gt54kn818"
 
+    # hostname for legacy Oral History microsite, we catch requests to this
+    # and redirect appropriately.
+    define_key :oral_history_legacy_host, default: "oh.sciencehistory.org"
 
     # OUTGOING EMAIL:
 

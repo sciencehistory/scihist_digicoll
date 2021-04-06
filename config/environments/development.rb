@@ -85,4 +85,9 @@ Rails.application.configure do
 
   # Uncomment if you wish to allow Action Cable access from any origin.
   # config.action_cable.disable_request_forgery_protection = true
+
+  # in development, allow the app to respond to our legacy oral history
+  # hostname, by default oh.sciencehistory.org. You might use /etc/hosts
+  # locally to test our legacy redirect functionality.
+  config.hosts << ScihistDigicoll::Env.lookup!(:oral_history_legacy_host)
 end

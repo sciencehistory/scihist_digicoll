@@ -1,0 +1,7 @@
+# TODO this is a placeholder, before we shut down the OH microsite we need to replace
+# this with complete real data.
+
+# KEY is old path on Oral History, VALUE is new path on Digital Collections for same work
+
+"/oral-histories/adams-alison-e-m": "/works/3417dff"
+"/oral-histories/pauling-linus-c": "/works/5h73px42w"
