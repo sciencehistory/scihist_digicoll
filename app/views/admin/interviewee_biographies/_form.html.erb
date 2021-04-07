@@ -36,132 +36,129 @@
       <%= f.input :name %>
 
 
-      <h2>Birth</h2>
-      <div class="p-3 mb-3 birth-fields">
-        <%= f.simple_fields_for :birth do |sub_form| %>
-          <div class="form-row">
+      <%= f.input(:birth, wrapper: :vertical_collection) do %>
+          <%= f.simple_fields_for :birth do |sub_form| %>
+            <div class="form-row">
 
-            <div class="col-md-2 col-form-label text-right">
-              <%= sub_form.label :date %>
-            </div>
-            <div class="col-md-4">
-              <%= sub_form.input :date,
-                hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
-                wrapper: :scihist_no_label_input %>
-            </div>
-            <div class="col-md-2 col-form-label text-right">
-              <%= sub_form.label :city %>
-            </div>
-            <div class="col-md-4">
-              <%= sub_form.input :city,
-                required: false,
-                wrapper: :scihist_no_label_input  %>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="col-md-2 col-form-label text-right">
-              <%= sub_form.label :state %>
+              <div class="col-md-2 col-form-label text-right">
+                <%= sub_form.label :date %>
+              </div>
+              <div class="col-md-4">
+                <%= sub_form.input :date,
+                  hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
+                  wrapper: :scihist_no_label_input %>
+              </div>
+              <div class="col-md-2 col-form-label text-right">
+                <%= sub_form.label :city %>
+              </div>
+              <div class="col-md-4">
+                <%= sub_form.input :city,
+                  required: false,
+                  wrapper: :scihist_no_label_input  %>
+              </div>
             </div>
 
-            <div class="col-md-4">
-              <%= sub_form.input :state,
-                collection: Work::PlaceLists::US_STATES,
-                hint: 'USA only',
-                wrapper: :scihist_no_label_input %>
+            <div class="form-row">
+              <div class="col-md-2 col-form-label text-right">
+                <%= sub_form.label :state %>
+              </div>
+
+              <div class="col-md-4">
+                <%= sub_form.input :state,
+                  collection: Work::PlaceLists::US_STATES,
+                  hint: 'USA only',
+                  wrapper: :scihist_no_label_input %>
+              </div>
+
+              <div class="col-md-2 col-form-label text-right">
+                <%= sub_form.label :province %>
+              </div>
+
+              <div class="col-md-4">
+                <%= sub_form.input :province,
+                  collection: Work::PlaceLists::CA_PROVINCES,
+                  hint: 'Canada only',
+                  required: false,
+                  wrapper: :scihist_no_label_input %>
+              </div>
+
+              <div class="col-md-2 col-form-label text-right">
+                <%= sub_form.label :country %>
+              </div>
+
+              <div class="col-md-10">
+                <%= sub_form.input :country,
+                  collection: Work::PlaceLists::COUNTRIES,
+                  required: false,
+                  wrapper: :scihist_no_label_input
+                %>
+              </div>
+            </div>
+          <% end %>
+      <% end %>
+
+      <%= f.input(:death, wrapper: :vertical_collection) do %>
+          <%= f.simple_fields_for :death do |sub_form| %>
+            <div class="form-row">
+
+              <div class="col-md-2 col-form-label text-right">
+                <%= sub_form.label :date %>
+              </div>
+              <div class="col-md-4">
+                <%= sub_form.input :date,
+                  hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
+                  wrapper: :scihist_no_label_input %>
+              </div>
+              <div class="col-md-2 col-form-label text-right">
+                <%= sub_form.label :city %>
+              </div>
+              <div class="col-md-4">
+                <%= sub_form.input :city,
+                  required: false,
+                  wrapper: :scihist_no_label_input  %>
+              </div>
             </div>
 
-            <div class="col-md-2 col-form-label text-right">
-              <%= sub_form.label :province %>
-            </div>
+            <div class="form-row">
+              <div class="col-md-2 col-form-label text-right">
+                <%= sub_form.label :state %>
+              </div>
 
-            <div class="col-md-4">
-              <%= sub_form.input :province,
-                collection: Work::PlaceLists::CA_PROVINCES,
-                hint: 'Canada only',
-                required: false,
-                wrapper: :scihist_no_label_input %>
-            </div>
+              <div class="col-md-4">
+                <%= sub_form.input :state,
+                  collection: Work::PlaceLists::US_STATES,
+                  hint: 'USA only',
+                  wrapper: :scihist_no_label_input %>
+              </div>
 
-            <div class="col-md-2 col-form-label text-right">
-              <%= sub_form.label :country %>
-            </div>
+              <div class="col-md-2 col-form-label text-right">
+                <%= sub_form.label :province %>
+              </div>
 
-            <div class="col-md-10">
-              <%= sub_form.input :country,
-                collection: Work::PlaceLists::COUNTRIES,
-                required: false,
-                wrapper: :scihist_no_label_input
-              %>
-            </div>
-          </div>
-        <% end %>
-      </div>
+              <div class="col-md-4">
+                <%= sub_form.input :province,
+                  collection: Work::PlaceLists::CA_PROVINCES,
+                  hint: 'Canada only',
+                  required: false,
+                  wrapper: :scihist_no_label_input %>
+              </div>
 
-      <h2>Death</h2>
-      <div class="p-3 mb-3 birth-fields">
-        <%= f.simple_fields_for :death do |sub_form| %>
-          <div class="form-row">
+              <div class="col-md-2 col-form-label text-right">
+                <%= sub_form.label :country %>
+              </div>
 
-            <div class="col-md-2 col-form-label text-right">
-              <%= sub_form.label :date %>
+              <div class="col-md-10">
+                <%= sub_form.input :country,
+                  collection: Work::PlaceLists::COUNTRIES,
+                  required: false,
+                  wrapper: :scihist_no_label_input
+                %>
+              </div>
             </div>
-            <div class="col-md-4">
-              <%= sub_form.input :date,
-                hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
-                wrapper: :scihist_no_label_input %>
-            </div>
-            <div class="col-md-2 col-form-label text-right">
-              <%= sub_form.label :city %>
-            </div>
-            <div class="col-md-4">
-              <%= sub_form.input :city,
-                required: false,
-                wrapper: :scihist_no_label_input  %>
-            </div>
-          </div>
+          <% end %>
+      <% end %>
 
-          <div class="form-row">
-            <div class="col-md-2 col-form-label text-right">
-              <%= sub_form.label :state %>
-            </div>
-
-            <div class="col-md-4">
-              <%= sub_form.input :state,
-                collection: Work::PlaceLists::US_STATES,
-                hint: 'USA only',
-                wrapper: :scihist_no_label_input %>
-            </div>
-
-            <div class="col-md-2 col-form-label text-right">
-              <%= sub_form.label :province %>
-            </div>
-
-            <div class="col-md-4">
-              <%= sub_form.input :province,
-                collection: Work::PlaceLists::CA_PROVINCES,
-                hint: 'Canada only',
-                required: false,
-                wrapper: :scihist_no_label_input %>
-            </div>
-
-            <div class="col-md-2 col-form-label text-right">
-              <%= sub_form.label :country %>
-            </div>
-
-            <div class="col-md-10">
-              <%= sub_form.input :country,
-                collection: Work::PlaceLists::COUNTRIES,
-                required: false,
-                wrapper: :scihist_no_label_input
-              %>
-            </div>
-          </div>
-        <% end %>
-      </div>
-
-      <h2>Education</h2>
-      <%= f.repeatable_attr_input(:school, simple_form_input_args: { :label => "" }, build: :at_least_one) do |sub_form| %>
+      <%= f.repeatable_attr_input(:school, simple_form_input_args: { :label => "Education" }, build: :at_least_one) do |sub_form| %>
         <div class="border-bottom pb-3 mb-4">
           <div class="form-row">
             <div class="col-md-2 col-form-label text-md-right">
@@ -196,8 +193,7 @@
         </div>
       <% end %>
 
-      <h2>Professional Experience</h2>
-      <%= f.repeatable_attr_input(:job, simple_form_input_args: { :label => "" }, build: :at_least_one) do |sub_form| %>
+      <%= f.repeatable_attr_input(:job, simple_form_input_args: { :label => "Professional experience" }, build: :at_least_one) do |sub_form| %>
         <div class="border-bottom pb-3 mb-4">
           <div class="form-row">
             <div class="col-md-2 col-form-label text-md-right">
@@ -234,8 +230,7 @@
         </div>
       <% end %>
 
-      <h2>Honors</h2>
-      <%= f.repeatable_attr_input(:honor, simple_form_input_args: { :label => "" }, build: :at_least_one) do |sub_form| %>
+      <%= f.repeatable_attr_input(:honor, simple_form_input_args: { :label => "Honors" }, build: :at_least_one) do |sub_form| %>
         <div class="border-bottom pb-3 mb-4">
           <div class="form-row">
               <div class="col-md-2 col-form-label text-right">
