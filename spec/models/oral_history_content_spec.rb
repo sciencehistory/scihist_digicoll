@@ -45,23 +45,6 @@ describe OralHistoryContent do
     end
   end
 
-  describe "interviewee metadata display methods" do
-    it "correctly format date info" do
-      ohc = work_with_oral_history_content.oral_history_content
-      expect(ohc.interviewee_birth.to_s).to eq("1923, Place of Birth, California, United States")
-      expect(ohc.interviewee_death.to_s).to eq("2223, Place of Death, Nunavut, Canada")
-    end
-  end
-
-  describe "interviewee metadata validator" do
-    it "rejects bad dates" do
-      ohc = work_with_oral_history_content.oral_history_content
-      ohc.interviewee_birth.date = 'This is not a correct birth date.'
-      expect{ohc.save!}.to raise_error(ActiveRecord::RecordInvalid)
-      ohc.interviewee_job.first.start = 'This is not a correct date either.'
-      expect{ohc.save!}.to raise_error(ActiveRecord::RecordInvalid)
-    end
-  end
 
   describe "combined_audio_derivatives_job_status" do
     it "sets the date when you change the status" do
