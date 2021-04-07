@@ -1,4 +1,4 @@
-class Admin::IntervieweeBiographiesController < ApplicationController
+class Admin::IntervieweeBiographiesController < AdminController
   before_action :set_interviewee_biography, only: [:edit, :update, :destroy]
 
   # GET /admin/interviewee_biographies
