@@ -1,10 +1,10 @@
 require 'rails_helper'
 
 describe OralHistoryBiographicalDisplay do
-  let(:presenter) { OralHistoryBiographicalDisplay.new(work)}
+  let(:presenter) { OralHistoryBiographicalDisplay.new(biography)}
 
-  describe "an empty work" do
-    let(:work) { create(:work, genre: ["Oral histories"])}
+  describe "an empty biography" do
+    let(:biography) { IntervieweeBiography.new }
 
     it "has empty results" do
       expect(presenter.schools).to eq([])
@@ -14,15 +14,15 @@ describe OralHistoryBiographicalDisplay do
   end
 
   describe "#grouped_jobs" do
-    let(:work) do
-      create(:oral_history_work).tap do |work|
-        work.oral_history_content.interviewee_job = [
+    let(:biography) do
+      IntervieweeBiography.new(
+        job: [
           {start: "1930", end: "1940", institution: 'Two University',  role: 'Professor'},
           {start: "1915", end: "1920", institution: 'One University',  role: 'Fellow'},
           {start: "1920", end: "1930", institution: 'Two University',  role: 'Executive'},
           {start: "1910", end: "1930", institution: 'One University',  role: 'Assistant'}
         ]
-      end
+      )
     end
 
     it "groups and sorts" do
@@ -32,5 +32,4 @@ describe OralHistoryBiographicalDisplay do
       expect(presenter.grouped_jobs["Two University"].collect(&:start)).to eq(["1920", "1930"])
     end
   end
-
 end
