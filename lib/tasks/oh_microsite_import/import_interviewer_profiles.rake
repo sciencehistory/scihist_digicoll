@@ -34,11 +34,9 @@ namespace :scihist do
       )
       sanitizer = DescriptionSanitizer.new()
       profiles.each do |profile|
-        # Validation problem: profile
-        # can't be blank in destination,
-        # but it is often blank in the source.
         profile_text = sanitizer.sanitize(profile['interviewer_profile'])
-        profile_text = "No profile for this interviewer." if profile_text.blank?
+        # There's no point in these profiles unless an interviewer actually has a profile.
+        next if profile_text.blank?
         begin
           prof = InterviewerProfile.find_or_initialize_by(id: profile['interviewer_id'])
           prof.name =  profile['interviewer_name']

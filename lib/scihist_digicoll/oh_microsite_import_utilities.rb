@@ -85,8 +85,10 @@ module OhMicrositeImportUtilities
       end
     end
 
+    # We are only migrating associations with interviewers who actually have bios.
+    # The list of interviewer names is already stored in the creator field of the Work.
     def self.interviewer(oral_history_content, rows)
-      profiles = InterviewerProfile.find(rows.map {|r| r['interviewer_id']})
+      profiles = InterviewerProfile.where(id: rows.map {|r| r['interviewer_id']})
       oral_history_content.interviewer_profiles = profiles
     end
 
@@ -251,7 +253,6 @@ module OhMicrositeImportUtilities
       if portrait.save
         @work.representative = portrait
         @work.save
-        sleep 5
       end
     end
 
