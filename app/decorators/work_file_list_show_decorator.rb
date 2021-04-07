@@ -44,6 +44,9 @@ class WorkFileListShowDecorator < Draper::Decorator
     @portrait_asset
   end
 
+  def interviewee_biographies
+    model.oral_history_content&.interviewee_biographies || []
+  end
 
   def available_by_request_summary
     parts = []
