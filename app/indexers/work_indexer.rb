@@ -159,12 +159,13 @@ class WorkIndexer < Kithe::Indexer
     # to our general-purpose "text_no_boost_tesim"
     each_record do |rec, context|
       if rec.is_oral_history? && rec.oral_history_content
-        ohc = rec.oral_history_content
+        biographies = rec.oral_history_content.interviewee_biographies
 
         boosted_text = []
-        boosted_text.concat ohc.interviewee_school.collect(&:institution).compact if ohc.interviewee_school
-        boosted_text.concat ohc.interviewee_job.collect(&:institution).compact if ohc.interviewee_job
-        boosted_text.concat ohc.interviewee_honor.collect(&:honor).compact if ohc.interviewee_honor
+
+        boosted_text.concat biographies.collect(&:school).flatten.collect(&:institution).compact
+        boosted_text.concat biographies.collect(&:job).flatten.collect(&:institution).compact
+        boosted_text.concat biographies.collect(&:honor).flatten.collect(&:honor).compact
         boosted_text.uniq!
 
         context.add_output("text3_tesim", *boosted_text)
@@ -172,11 +173,11 @@ class WorkIndexer < Kithe::Indexer
 
 
         standard_text = []
-        standard_text << ohc.interviewee_birth.displayable_values.join(", ") if ohc.interviewee_birth
-        standard_text << ohc.interviewee_death.displayable_values.join(", ") if ohc.interviewee_death
-        standard_text.concat ohc.interviewee_school.collect { |v| v.displayable_values.join(", ")} if ohc.interviewee_school
-        standard_text.concat ohc.interviewee_job.collect { |v| v.displayable_values.join(", ")} if ohc.interviewee_job
-        standard_text.concat ohc.interviewee_honor.collect { |v| v.displayable_values.join(", ")} if ohc.interviewee_honor
+        standard_text.concat biographies.collect(&:birth).collect { |b| b.displayable_values.join(", ") if b }.compact
+        standard_text.concat biographies.collect(&:death).collect { |d| d.displayable_values.join(", ") if d}.compact
+        standard_text.concat biographies.collect(&:school).flatten.collect { |v| v.displayable_values.join(", ")}
+        standard_text.concat biographies.collect(&:job).flatten.collect { |v| v.displayable_values.join(", ")}
+        standard_text.concat biographies.collect(&:honor).flatten.collect { |v| v.displayable_values.join(", ")}
         standard_text.uniq!
 
         context.add_output("text_no_boost_tesim", *standard_text)
