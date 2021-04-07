@@ -6,7 +6,7 @@ describe "Oral history with audio display", type: :system, js: true do
   let(:portrait) { create(:asset_with_faked_file, role: "portrait")}
 
   let!(:parent_work) do
-    build(:oral_history_work, published: true).tap do |work|
+    create(:oral_history_work, published: true).tap do |work|
       work.members << portrait
     end
   end
@@ -80,22 +80,22 @@ describe "Oral history with audio display", type: :system, js: true do
 
       # Biographical metadata, just test a sampling
       expect(page).to have_selector("h2", text: "Interviewee biographical information")
-      expect(page).to have_text(FormatSimpleDate.new(parent_work.oral_history_content.interviewee_birth.date).display)
-      expect(page).to have_text(FormatSimpleDate.new(parent_work.oral_history_content.interviewee_birth.city).display)
-      expect(page).to have_text(FormatSimpleDate.new(parent_work.oral_history_content.interviewee_death.date).display)
-      expect(page).to have_text(FormatSimpleDate.new(parent_work.oral_history_content.interviewee_death.city).display)
+      expect(page).to have_text(FormatSimpleDate.new(parent_work.oral_history_content.interviewee_biographies.first.birth.date).display)
+      expect(page).to have_text(FormatSimpleDate.new(parent_work.oral_history_content.interviewee_biographies.first.birth.city).display)
+      expect(page).to have_text(FormatSimpleDate.new(parent_work.oral_history_content.interviewee_biographies.first.death.date).display)
+      expect(page).to have_text(FormatSimpleDate.new(parent_work.oral_history_content.interviewee_biographies.first.death.city).display)
 
-      expect(page).to have_text parent_work.oral_history_content.interviewee_job.first.institution
-      expect(page).to have_text parent_work.oral_history_content.interviewee_job.first.role
-      expect(page).to have_text parent_work.oral_history_content.interviewee_job.first.start.slice(0..3)
+      expect(page).to have_text parent_work.oral_history_content.interviewee_biographies.first.job.first.institution
+      expect(page).to have_text parent_work.oral_history_content.interviewee_biographies.first.job.first.role
+      expect(page).to have_text parent_work.oral_history_content.interviewee_biographies.first.job.first.start.slice(0..3)
 
-      expect(page).to have_text parent_work.oral_history_content.interviewee_school.first.institution
-      expect(page).to have_text parent_work.oral_history_content.interviewee_school.first.date.slice(0..3)
-      expect(page).to have_text parent_work.oral_history_content.interviewee_school.first.degree
-      expect(page).to have_text parent_work.oral_history_content.interviewee_school.first.discipline
+      expect(page).to have_text parent_work.oral_history_content.interviewee_biographies.first.school.first.institution
+      expect(page).to have_text parent_work.oral_history_content.interviewee_biographies.first.school.first.date.slice(0..3)
+      expect(page).to have_text parent_work.oral_history_content.interviewee_biographies.first.school.first.degree
+      expect(page).to have_text parent_work.oral_history_content.interviewee_biographies.first.school.first.discipline
 
-      expect(page).to have_text parent_work.oral_history_content.interviewee_honor.first.start_date.slice(0..4)
-      expect(page).to have_text parent_work.oral_history_content.interviewee_honor.first.honor
+      expect(page).to have_text parent_work.oral_history_content.interviewee_biographies.first.honor.first.start_date.slice(0..4)
+      expect(page).to have_text parent_work.oral_history_content.interviewee_biographies.first.honor.first.honor
 
 
       click_on "Downloads"
