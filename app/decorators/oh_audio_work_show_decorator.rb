@@ -98,7 +98,7 @@ class OhAudioWorkShowDecorator < Draper::Decorator
   end
 
   def interviewee_biographies
-    @work.oral_history_content&.interviewee_biographies || []
+    model.oral_history_content&.interviewee_biographies || []
   end
 
   # An array of start times for each audio member.
