@@ -1,5 +1,7 @@
 FactoryBot.define do
   factory :interviewee_biography, class: IntervieweeBiography do
+    name { "John Smith"}
+
     birth { OralHistoryContent::DateAndPlace.new(date: '1923', city: 'Place of Birth', state: 'CA', country: 'US') }
 
     death { OralHistoryContent::DateAndPlace.new(date: '2223', city: 'Place of Death', province: 'NU', country: 'CA' ) }
