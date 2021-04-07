@@ -2,6 +2,8 @@ class IntervieweeBiography < ApplicationRecord
   include AttrJson::Record
   include AttrJson::NestedAttributes
 
+  has_and_belongs_to_many :oral_history_content
+
   attr_json :birth,    OralHistoryContent::DateAndPlace.to_type, default: -> { OralHistoryContent::DateAndPlace.new }
   attr_json :death,    OralHistoryContent::DateAndPlace.to_type, default: -> { OralHistoryContent::DateAndPlace.new }
 

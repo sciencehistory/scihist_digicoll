@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_07_142629) do
+ActiveRecord::Schema.define(version: 2021_04_07_182141) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -119,6 +119,13 @@ ActiveRecord::Schema.define(version: 2021_04_07_142629) do
     t.jsonb "json_attributes"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "interviewee_biographies_oral_history_content", id: false, force: :cascade do |t|
+    t.bigint "oral_history_content_id", null: false
+    t.bigint "interviewee_biography_id", null: false
+    t.index ["interviewee_biography_id"], name: "index_interviewee_biographies_oral_history_content_bio"
+    t.index ["oral_history_content_id"], name: "index_interviewee_biographies_oral_history_content_oh"
   end
 
   create_table "interviewer_profiles", force: :cascade do |t|
