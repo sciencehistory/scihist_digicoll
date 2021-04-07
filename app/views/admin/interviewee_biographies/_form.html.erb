@@ -1,0 +1,278 @@
+<%= kithe_form_for([:admin, @interviewee_biography],
+  html: { novalidate: true },
+  class: 'edit-work mx-auto admin-edit') do |f| %>
+  <div class="admin-header sticky-top d-flex justify-content-between p-2 mb-4 mt-1 bg-light border">
+    <div class="mr-2">
+      <h1 class="h3">
+        <% if @interviewee_biography.persisted? %>
+          Editing
+        <% else %>
+          New
+        <% end %>
+        Interviewee biography<% if @interviewee_biography.name.present? %>:
+          <%= @interviewee_biography.name %>
+        <% end %>
+      </h1>
+    </div>
+    <div class="form-actions">
+      <%= link_to 'Cancel', admin_interviewee_biographies_path, class: "btn btn-outline-primary my-1" %>
+      <%= submit_tag "Save", class: "btn btn-primary my-1" %>
+    </div>
+  </div>
+
+  <% if @interviewee_biography.errors.any? %>
+    <div class="kithe-form-errors-top alert alert-danger mb-4" role="alert">
+      <h2 class="h4" class="alert-heading"><%= pluralize(@interviewee_biography.errors.count, "error") %> prevented this data from being saved</h2>
+      <ol class="mb-0">
+      <% @interviewee_biography.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+    </div>
+  <% end %>
+
+  <div class="ml-2 form-inputs admin-edit">
+    <div class="oral-history-biography">
+
+      <%= f.input :name %>
+
+
+      <h2>Birth</h2>
+      <div class="p-3 mb-3 birth-fields">
+        <%= f.simple_fields_for :birth do |sub_form| %>
+          <div class="form-row">
+
+            <div class="col-md-2 col-form-label text-right">
+              <%= sub_form.label :date %>
+            </div>
+            <div class="col-md-4">
+              <%= sub_form.input :date,
+                hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
+                wrapper: :scihist_no_label_input %>
+            </div>
+            <div class="col-md-2 col-form-label text-right">
+              <%= sub_form.label :city %>
+            </div>
+            <div class="col-md-4">
+              <%= sub_form.input :city,
+                required: false,
+                wrapper: :scihist_no_label_input  %>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col-md-2 col-form-label text-right">
+              <%= sub_form.label :state %>
+            </div>
+
+            <div class="col-md-4">
+              <%= sub_form.input :state,
+                collection: Work::PlaceLists::US_STATES,
+                hint: 'USA only',
+                wrapper: :scihist_no_label_input %>
+            </div>
+
+            <div class="col-md-2 col-form-label text-right">
+              <%= sub_form.label :province %>
+            </div>
+
+            <div class="col-md-4">
+              <%= sub_form.input :province,
+                collection: Work::PlaceLists::CA_PROVINCES,
+                hint: 'Canada only',
+                required: false,
+                wrapper: :scihist_no_label_input %>
+            </div>
+
+            <div class="col-md-2 col-form-label text-right">
+              <%= sub_form.label :country %>
+            </div>
+
+            <div class="col-md-10">
+              <%= sub_form.input :country,
+                collection: Work::PlaceLists::COUNTRIES,
+                required: false,
+                wrapper: :scihist_no_label_input
+              %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <h2>Death</h2>
+      <div class="p-3 mb-3 birth-fields">
+        <%= f.simple_fields_for :death do |sub_form| %>
+          <div class="form-row">
+
+            <div class="col-md-2 col-form-label text-right">
+              <%= sub_form.label :date %>
+            </div>
+            <div class="col-md-4">
+              <%= sub_form.input :date,
+                hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
+                wrapper: :scihist_no_label_input %>
+            </div>
+            <div class="col-md-2 col-form-label text-right">
+              <%= sub_form.label :city %>
+            </div>
+            <div class="col-md-4">
+              <%= sub_form.input :city,
+                required: false,
+                wrapper: :scihist_no_label_input  %>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col-md-2 col-form-label text-right">
+              <%= sub_form.label :state %>
+            </div>
+
+            <div class="col-md-4">
+              <%= sub_form.input :state,
+                collection: Work::PlaceLists::US_STATES,
+                hint: 'USA only',
+                wrapper: :scihist_no_label_input %>
+            </div>
+
+            <div class="col-md-2 col-form-label text-right">
+              <%= sub_form.label :province %>
+            </div>
+
+            <div class="col-md-4">
+              <%= sub_form.input :province,
+                collection: Work::PlaceLists::CA_PROVINCES,
+                hint: 'Canada only',
+                required: false,
+                wrapper: :scihist_no_label_input %>
+            </div>
+
+            <div class="col-md-2 col-form-label text-right">
+              <%= sub_form.label :country %>
+            </div>
+
+            <div class="col-md-10">
+              <%= sub_form.input :country,
+                collection: Work::PlaceLists::COUNTRIES,
+                required: false,
+                wrapper: :scihist_no_label_input
+              %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <h2>Education</h2>
+      <%= f.repeatable_attr_input(:school, simple_form_input_args: { :label => "" }, build: :at_least_one) do |sub_form| %>
+        <div class="border-bottom pb-3 mb-4">
+          <div class="form-row">
+            <div class="col-md-2 col-form-label text-md-right">
+              <%= sub_form.label :date %>
+            </div>
+            <div class="col-md-4">
+              <%= sub_form.input :date,
+                hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
+                wrapper: :scihist_no_label_input %>
+            </div>
+            <div class="col-md-2 col-form-label text-md-right">
+              <%= sub_form.label :institution %>
+            </div>
+            <div class="col-md-4">
+              <%= sub_form.input :institution,  input_html: { data: { "scihist-qa-autocomplete" => qa_search_vocab_path("assign_fast", "corporate")}}, wrapper: :scihist_no_label_input %>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col-md-2 col-form-label text-md-right">
+              <%= sub_form.label :degree %>
+            </div>
+            <div class="col-md-4">
+              <%= sub_form.input :degree, wrapper: :scihist_no_label_input %>
+            </div>
+            <div class="col-md-2 col-form-label text-md-right">
+              <%= sub_form.label :discipline %>
+            </div>
+            <div class="col-md-4">
+             <%= sub_form.input :discipline, wrapper: :scihist_no_label_input %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <h2>Professional Experience</h2>
+      <%= f.repeatable_attr_input(:job, simple_form_input_args: { :label => "" }, build: :at_least_one) do |sub_form| %>
+        <div class="border-bottom pb-3 mb-4">
+          <div class="form-row">
+            <div class="col-md-2 col-form-label text-md-right">
+              <%= sub_form.label :start %>
+            </div>
+            <div class="col-md-4">
+              <%= sub_form.input :start, wrapper: :scihist_no_label_input,
+                hint: 'YYYY-MM-DD or YYYY-MM or YYYY'%>
+            </div>
+            <div class="col-md-2 col-form-label text-md-right">
+              <%= sub_form.label :end %>
+            </div>
+            <div class="col-md-4">
+              <%= sub_form.input :end, wrapper: :scihist_no_label_input,
+                hint: 'YYYY-MM-DD or YYYY-MM or YYYY'%>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col-md-2 col-form-label text-md-right">
+              <%= sub_form.label :institution %>
+            </div>
+
+            <div class="col-md-4">
+              <%= sub_form.input :institution,  input_html: { data: { "scihist-qa-autocomplete" => qa_search_vocab_path("assign_fast", "corporate")} }, wrapper: :scihist_no_label_input %>
+            </div>
+            <div class="col-md-2 col-form-label text-md-right">
+              <%= sub_form.label :role %>
+            </div>
+            <div class="col-md-4">
+              <%= sub_form.input :role, wrapper: :scihist_no_label_input %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <h2>Honors</h2>
+      <%= f.repeatable_attr_input(:honor, simple_form_input_args: { :label => "" }, build: :at_least_one) do |sub_form| %>
+        <div class="border-bottom pb-3 mb-4">
+          <div class="form-row">
+              <div class="col-md-2 col-form-label text-right">
+                <%= sub_form.label :start_date, label: "Start" %>
+              </div>
+              <div class="col-md-4">
+                <%= sub_form.input :start_date,
+                  label: false,
+                  hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
+                  wrapper: :scihist_no_label_input %>
+              </div>
+              <div class="col-form-label col-md-2 text-right">
+                <%= sub_form.label :end_date, label: "End" %>
+              </div>
+              <div class="col-md-4">
+                <%= sub_form.input :end_date,
+                  label: false,
+                  hint: 'optional, YYYY[-MM[-DD]]',
+                  wrapper: :scihist_no_label_input %>
+              </div>
+          </div>
+          <div class="form-row">
+            <div class="col-md-2 col-form-label text-right">
+              <%= sub_form.label :honor %>
+            </div>
+            <div class="col-md-10">
+              <%= sub_form.input :honor, hint: "Allowed HTML tags: b, i, cite, a.", wrapper: :scihist_no_label_input %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+
+
+
+

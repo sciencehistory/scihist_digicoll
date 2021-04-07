@@ -271,6 +271,7 @@ Rails.application.routes.draw do
     end
 
     resources :interviewer_profiles, except: [:show]
+    resources :interviewee_biographies, except: [:show]
 
 
     # These 'sub-apps' are for admin-use only, but since they are sub-apps

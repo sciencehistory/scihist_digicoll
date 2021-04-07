@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_09_152257) do
+ActiveRecord::Schema.define(version: 2021_04_07_142629) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -112,6 +112,13 @@ ActiveRecord::Schema.define(version: 2021_03_09_152257) do
     t.index ["asset_id", "checked_uri"], name: "by_asset_and_checked_uri"
     t.index ["asset_id"], name: "index_fixity_checks_on_asset_id"
     t.index ["checked_uri"], name: "index_fixity_checks_on_checked_uri"
+  end
+
+  create_table "interviewee_biographies", force: :cascade do |t|
+    t.string "name", null: false
+    t.jsonb "json_attributes"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "interviewer_profiles", force: :cascade do |t|
