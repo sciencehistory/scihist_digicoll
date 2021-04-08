@@ -1,7 +1,8 @@
 namespace :scihist do
   namespace :oh_microsite_import do
-    require 'scihist_digicoll/oh_microsite_import_utilities'
+    require 'scihist_digicoll/oh_microsite_import_utilities/oh_microsite_import_utilities'
     include OhMicrositeImportUtilities
+
     desc """
       Creates interviewer profiles based on data
       extracted from JSON files in a particular directory.
@@ -12,9 +13,6 @@ namespace :scihist do
 
       bundle exec rake scihist:oh_microsite_import:import_interviewer_profiles
 
-      # To specify another location for files:
-      # FILES_LOCATION=/tmp/some_other_dir/ bundle exec rake scihist:oh_microsite_import:import_interviewer_profiles
-
       This code assumes that:
         there are no interviewer profiles in the DB before our first import
         any interviewer profiles that do exist are ours to destroy at our pleasure
@@ -24,7 +22,6 @@ namespace :scihist do
 
     """
     task :import_interviewer_profiles => :environment do |t, args|
-      files_location = ENV['FILES_LOCATION'].nil? ? '/tmp/ohms_microsite_import_data/' : ENV['FILES_LOCATION']
       errors = []
       profiles = JSON.parse(File.read("#{files_location}/interviewer_profile.json"))
       progress_bar = ProgressBar.create(
@@ -35,8 +32,11 @@ namespace :scihist do
       sanitizer = DescriptionSanitizer.new()
       profiles.each do |profile|
         profile_text = sanitizer.sanitize(profile['interviewer_profile'])
-        # There's no point in these profiles unless an interviewer actually has a profile.
-        next if profile_text.blank?
+        if profile_text.blank?
+          # There's no point in these profiles unless an interviewer actually has a profile.
+          progress_bar.increment;
+          next
+        end
         begin
           prof = InterviewerProfile.find_or_initialize_by(id: profile['interviewer_id'])
           prof.name =  profile['interviewer_name']
@@ -48,7 +48,7 @@ namespace :scihist do
         end
         progress_bar.increment
       end
-      puts "There are now #{InterviewerProfile.count} interviewer profiles."
+      puts "\nThere are now #{InterviewerProfile.count} interviewer profiles."
     end
   end
 end
