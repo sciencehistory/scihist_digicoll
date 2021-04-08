@@ -22,7 +22,7 @@ do `content_for(:suppress_masthead_search, true)`
       </a>
 
 
-      <h1 class="masthead-title small-masthead-only"><%= link_to "Digital Collections", root_path %></h1>
+      <h1 class="masthead-title small-masthead-only"><%= link_to "Digital Collections", root_url %></h1>
 
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#top-navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -32,12 +32,12 @@ do `content_for(:suppress_masthead_search, true)`
 
     <div class="collapse navbar-collapse" id="top-navbar-collapse" role="navigation">
       <div class="masthead-right">
-        <h1 class="masthead-title large-masthead-only"><%= link_to "Digital Collections", root_path %></h1>
+        <h1 class="masthead-title large-masthead-only"><%= link_to "Digital Collections", root_url %></h1>
 
         <ul class="nav navbar-nav navbar-right">
-          <li class="navbar-item"><%= link_to "About", about_path, class: "nav-link" %></li>
-          <li class="navbar-item"><%= link_to "FAQ", faq_path, class: "nav-link" %></li>
-          <li class="navbar-item"><%= link_to "Contact", contact_path, class: "nav-link" %></li>
+          <li class="navbar-item"><%= link_to "About", about_url, class: "nav-link" %></li>
+          <li class="navbar-item"><%= link_to "FAQ", faq_url, class: "nav-link" %></li>
+          <li class="navbar-item"><%= link_to "Contact", contact_url, class: "nav-link" %></li>
         </ul>
 
         <% unless content_for(:suppress_masthead_search) %>

@@ -1,0 +1,61 @@
+<!-- getting our fontawesome icon font to show up on the oh.sciencehistory.org domain
+     is way harder than it's worth, because of CORS issues, that quickly have complciated
+     interactions with our deploy setup. We'll just take the easy way out and suppress font-awesome
+     icons, for this kind of odd 404 page. -->
+<style>
+  .fa {
+    display: none !important;
+  }
+</style>
+
+<div class="branded-body-font text-page collection-show">
+
+  <h1 class='h2 error-headline'>
+    Sorry, we couldn't find that oral history content
+  </h1>
+
+  <p>There have been some changes to our website. <b>We probably still have the content you are looking for</b>, but not at this location.</p>
+
+  <p>We'd love to help you find what you're looking for. Feel free to email the Center for Oral History at
+    <%= link_to(ScihistDigicoll::Env.lookup!(:oral_history_email_address), @report_mailto) %>, or you could try searching within our
+    <%= link_to "oral history collection", collection_url(ScihistDigicoll::Env.lookup!(:oral_history_collection_id)) %>:</p>
+
+
+    <div class="collection-search-form">
+        <h2 class="search-title">
+              Search within the Oral History Collection
+        </h2>
+
+        <%= form_tag collection_url(ScihistDigicoll::Env.lookup!(:oral_history_collection_id)), method: :get do |f| %>
+         <div class="input-group">
+            <%= search_field_tag :q, '', class: "q form-control",
+                id: "collectionQ",
+                autocomplete: "off",
+                placeholder: t("collection.search_form.search_field.placeholder"),
+                :"aria-label" => t('collection.search_form.search_field.label')
+            %>
+
+            <label class="sr-only" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
+
+            <div class="input-group-append">
+              <button type="submit" class="btn btn-emphasis" title="Search" id="search-submit-header">
+                <i class="fa fa-search" aria-hidden="true"></i>
+                <%= t('blacklight.search.form.submit') %>
+              </button>
+            </div>
+          </div>
+
+          <%= hidden_field_tag :sort, params[:sort], id: 'collection_sort' %>
+        <% end %>
+
+    </div>
+
+
+  <p>You tried to visit:</p>
+  <pre><%= @original_url %></pre>
+
+  <% if @original_referer.present? %>
+    <p>Referred from:</p>
+    <pre><%= @original_referer %></pre>
+  <% end %>
+</div>
