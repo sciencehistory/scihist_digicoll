@@ -2,9 +2,7 @@
 # See:
 # scihist:oh_microsite_import:import_interviewee_biographical_metadata
 
-require "shrine"
 module OhMicrositeImportUtilities
-
   def files_location
     ENV['FILES_LOCATION'].nil? ? '/tmp/ohms_microsite_import_data/' : ENV['FILES_LOCATION']
   end

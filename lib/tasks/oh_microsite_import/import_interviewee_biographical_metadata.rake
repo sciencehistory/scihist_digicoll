@@ -27,18 +27,13 @@ namespace :scihist do
       mapper.report()
       validation_errors = []
 
-      # ls /tmp/ohms_microsite_import_data/*.json
       metadata_files = %w{ birth_date birth_city birth_state birth_province birth_country } +
               %w{ death_date death_city death_state death_province death_country } +
               %w{ education career honors image interviewer}
       works_updated = Set.new()
       metadata_files.each do |field|
-        processor = FieldProcessor.new({
-          field:field, works: works,
-          mapper:mapper,
-          # TODO change results to rows
-          results: JSON.parse(File.read("#{files_location}/#{field}.json"))
-        })
+        rows = JSON.parse(File.read("#{files_location}/#{field}.json"))
+        processor = FieldProcessor.new(field:field, works: works, mapper:mapper, rows: rows)
         processor.process()
         validation_errors += processor.errors()
         works_updated     += processor.works_updated()
