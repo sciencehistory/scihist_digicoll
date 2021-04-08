@@ -2,6 +2,8 @@
 # See:
 # scihist:oh_microsite_import:import_interviewee_biographical_metadata
 
+require 'scihist_digicoll/oh_microsite_import_utilities/interviewee_portrait_uploader'
+
 module OhMicrositeImportUtilities
 
   # Strip time of day info from all these dates.
