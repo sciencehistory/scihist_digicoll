@@ -1,7 +1,6 @@
 # Utility methods for oral history microsite import.
 # See:
 # scihist:oh_microsite_import:import_interviewee_biographical_metadata
-
 require "shrine"
 
 module OhMicrositeImportUtilities
@@ -31,7 +30,13 @@ module OhMicrositeImportUtilities
     def maybe_update_metadata
       return if portrait_asset.nil?
       portrait_asset.title = @title
-      # and so on ...
+      portrait_asset.admin_note = [
+        "Title: \"#{@title}\"",
+        "Filename: \"#{@filename}\"",
+        "Downloaded from: \"#{@url}\"",
+        "Alt text: \"#{@alt}\"",
+        "Caption: \"#{@caption}\"",
+      ]
     end
 
     def new_portrait

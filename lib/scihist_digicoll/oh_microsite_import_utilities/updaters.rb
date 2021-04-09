@@ -17,6 +17,26 @@ module OhMicrositeImportUtilities
     dt&.to_s[0...4]
   end
 
+  # These methods each take an OralHistoryContent item, and an array of
+  # hashes (rows). In addition to the metadata used to actually update the
+  # OralHistoryContent, each hash also contains four extra rows for debugging:
+  # interviewee_name
+  # interviewee_entity_id (the Drupal node number,
+  #      the unique ID used by drupal to identify the interview
+  # interview_number (the key we use to match source and destination records
+  # published (whether or not the interview is published).
+  #
+  # Example of a row passed to the `honors` method below:
+  # {
+  #   "interviewee_name":"Tadeus Reichstein",
+  #   "interview_entity_id":5262, # this is
+  #   "interview_number":"0040",
+  #   "published":1
+  #   "interviewee_honor_description":"<p>Marcel-Benoist Prize</p>",
+  #   "interviewee_honor_start_date":"1947-01-01 00:00:00",
+  #   "interviewee_honor_end_date":"1947-01-01 00:00:00",
+  # },
+
   module Updaters
     def self.birth_date(oral_history_content, rows)
       oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new

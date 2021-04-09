@@ -9,37 +9,38 @@ module OhMicrositeImportUtilities
       @field, @works, @mapper, @rows = field, works, mapper, rows
       ghosts = @mapper.ghosts()
       @rows.reject! { |arr| ghosts.include? arr['interview_entity_id'] }
+      @errors = []
+      @works_updated = Set.new()
+      progress_bar
     end
 
     def process()
-      @errors = []
-      @works_updated = Set.new()
-      @progress_bar = ProgressBar.create( total: @works.count, format: "%a %t: |%B| %R/s %c/%u %p%% %e", title: @field.ljust(15) )
       no_source = @mapper.no_source()
       @works.find_each do |w|
         if no_source.include? w.friendlier_id
-          increment; next
+          increment
+          next
         end
-        relevant_rows = select_rows(@rows, w)
-        update_errors = work_update_errors(@field, w, relevant_rows)
-        if update_errors.present?
-          @errors << update_errors
-        else
-          @works_updated << w
-        end
+        update_work(@field, w)
         increment
       end
     end
 
-    def work_update_errors(field, w, relevant_rows)
-      return nil if relevant_rows.count == 0
+    def update_work(field, w)
+      relevant_rows = select_rows(@rows, w)
+      return if relevant_rows.empty?
       begin
         Updaters.send(field, w.oral_history_content, relevant_rows)
         w.oral_history_content.save!
       rescue StandardError => e
-        return "#{w.title} (#{w.friendlier_id}): error with #{field}:\n#{e.inspect}"
+        @errors << "#{w.title} (#{w.friendlier_id}): error with #{field}:\n#{e.inspect}"
+        return
       end
-      return nil
+      @works_updated << w
+    end
+
+    def progress_bar
+      @progress_bar ||= ProgressBar.create( total: @works.count, format: "%a %t: |%B| %R/s %c/%u %p%% %e", title: @field.ljust(15) )
     end
 
     def increment()
