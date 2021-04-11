@@ -54,9 +54,9 @@ module OhMicrositeImportUtilities
     # so that we don't bother attempting to import them later on.
     def remove_ghost_interviews()
       all_interview_numbers = @interviews.map {|i| i['interview_number']}.uniq.sort
-      all_interview_numbers.each do |inum|
+      all_interview_numbers.each do |interview_number|
         # the .dup is unneccessary, but makes the following easier to understand.
-        ghosts =  @interviews.select { |interviewee| interviewee['interview_number'] == inum }.dup
+        ghosts =  @interviews.select { |interviewee| interviewee['interview_number'] == interview_number }.dup
         next if ghosts.count < 2
         # a ghost needs to be unpublished and a duplicate
         ghosts.delete_if  {|interview| interview['published'] == 1 }
