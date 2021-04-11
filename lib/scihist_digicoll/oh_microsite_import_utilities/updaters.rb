@@ -14,6 +14,7 @@ module OhMicrositeImportUtilities
 
   # For career / education / honor dates, we only care about years.
   def keep_yyyy(dt)
+    return nil if dt.nil?
     dt&.to_s[0...4]
   end
 
@@ -120,6 +121,7 @@ module OhMicrositeImportUtilities
         if row['interviewee_honor_start_date'] != row['interviewee_honor_end_date']
           args[:end_date] = keep_yyyy(row['interviewee_honor_end_date'])
         end
+        return if args.values.all?(&:nil?)
         OralHistoryContent::IntervieweeHonor.new(args)
       end
     end
