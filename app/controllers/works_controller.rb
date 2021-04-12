@@ -29,7 +29,6 @@ class WorksController < ApplicationController
   private
 
   def decorator
-    byebug
     @decorator ||= if @work.is_oral_history? && @work.oral_history_content&.available_by_request_off? && has_oh_audio_member?
       # special OH audio player template
       OhAudioWorkShowDecorator.new(@work)
