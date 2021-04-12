@@ -11,11 +11,11 @@ class CatalogController < ApplicationController
 
   before_action :screen_params_for_range_limit, only: :range_limit
 
-  include BlacklightRangeLimit::ControllerOverride
   # Blacklight wanted Blacklight::Controller included in ApplicationController,
   # we do it just here instead.
   include Blacklight::Controller
   include Blacklight::Catalog
+  include BlacklightRangeLimit::ControllerOverride
 
   # Not totally sure why we need this, instead of Rails loading all helpers automatically
   helper LocalBlacklightHelpers
