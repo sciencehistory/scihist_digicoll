@@ -40,7 +40,7 @@ module OhMicrositeImportUtilities
     end
 
     def progress_bar
-      @progress_bar ||= ProgressBar.create( total: @works.count, format: "%a %t: |%B| %R/s %c/%u %p%% %e", title: @field.ljust(15) )
+      # @progress_bar ||= ProgressBar.create( total: @works.count, format: "%a %t: |%B| %R/s %c/%u %p%% %e", title: @field.ljust(15) )
     end
 
     def increment()
