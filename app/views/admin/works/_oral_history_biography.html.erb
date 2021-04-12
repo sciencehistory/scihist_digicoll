@@ -1,59 +1,9 @@
 <div class="card bg-light mb-3">
-  <h2 class="card-header h3">Interviewee biography <%= link_to "Edit", oh_biography_form_admin_work_path(@work), class: "btn btn-primary" %></h2>
+  <h2 class="card-header h3">Interviewee biography</h2>
   <div class="card-body">
-    <div class="row">
-      <div class="col-sm">
-        Dates
-      </div>
-      <div class="col-sm">
-        <% if work.oral_history_content.interviewee_birth.present? %>
-          Born: <%= work.oral_history_content.interviewee_birth %>
-        <% end %>
-        <% if work.oral_history_content.interviewee_death.present? %><br/>
-          Died: <%= work.oral_history_content.interviewee_death%>
-        <% end %>
-      </div>
-    </div>
-    <% if work&.oral_history_content&.interviewee_school.present? %>
-      <hr/>
-      <div class="row">
-        <div class="col-sm">
-          Education
-        </div>
-        <div class="col-sm">
-          <% work.oral_history_content.interviewee_school.sort_by { |hsh| hsh&.date || 0}.compact.each do |school| %>
-            <%= school.date %><% if school.date.present?%>:<% end %>
-            <%= [school.degree, school.discipline, school.institution].join(', ') %><br/>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
-    <% if work&.oral_history_content&.interviewee_job.present? %>
-      <hr/>
-      <div class="row">
-        <div class="col-sm">
-          Professional Experience
-        </div>
-        <div class="col-sm">
-          <% work.oral_history_content.interviewee_job.sort_by { |hsh| hsh&.start || 0 }.compact.each do |job| %>
-            <%= job.start %> &ndash; <%= job.end %><% if job.start.present? || job.end.present? %>:<% end %>
-            <%= [job.role, job.institution].join(', ') %><br/>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
-    <% if work&.oral_history_content&.interviewee_honor.present? %>
-      <hr/>
-      <div class="row">
-        <div class="col-sm">
-          Honors
-        </div>
-        <div class="col-sm">
-          <% work.oral_history_content.interviewee_honor.sort_by { |hsh| hsh&.start_date || 0 }.compact.each do |honor| %>
-            <%= honor.start_date %><% if honor.end_date.present? %> &ndash; <%=  honor.end_date %><% end %>, <%= honor.honor %><br/>
-          <% end %>
-        </div>
-      </div>
+    <%= simple_form_for(@work.oral_history_content, url: update_oral_history_content_admin_work_path(@work)) do |f| %>
+      <%= f.association :interviewee_biographies, collection: IntervieweeBiography.order(:name), hint: "Multiple select, hold down command on MacOS or control on Windows to select and deselect" %>
+      <%= submit_tag "Save Changes", class: "btn btn-primary mb-3" %>
     <% end %>
   </div>
 </div>
