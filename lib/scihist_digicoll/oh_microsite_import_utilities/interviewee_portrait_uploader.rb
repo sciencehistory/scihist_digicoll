@@ -12,7 +12,7 @@ module OhMicrositeImportUtilities
       @filename = args[:filename]
       @url      = args[:url]
       @title    = args[:title]
-      @alt      = args[:alt]
+      @alt_text = args[:alt_text]
       @caption  = args[:caption]
     end
 
@@ -29,14 +29,17 @@ module OhMicrositeImportUtilities
     # If the portrait already exists, update its metadata
     def maybe_update_metadata
       return if portrait_asset.nil?
+      portrait_asset['file_data']['metadata']['filename'] = @filename
       portrait_asset.title = @title
-      portrait_asset.admin_note = [
-        "Title: \"#{@title}\"",
-        "Filename: \"#{@filename}\"",
-        "Downloaded from: \"#{@url}\"",
-        "Alt text: \"#{@alt}\"",
-        "Caption: \"#{@caption}\"",
-      ]
+      portrait_asset.alt_text = DescriptionSanitizer.new.sanitize(@alt_text)
+      portrait_asset.caption = DescriptionSanitizer.new.sanitize(@caption)
+      # note = []
+      # note << "Original microsite title: \"#{@title}\""          if @title.present?
+      # note << "Downloaded from microsite URL: \"#{@url}\""  if @url.present?
+      # note << "Alt text: \"#{@alt_text}\""    if @alt_text.present?
+      # note << "Caption: \"#{@caption}\""      if @caption.present?
+      # portrait_asset.admin_note = note
+      portrait_asset.save!
     end
 
     def new_portrait
@@ -58,11 +61,11 @@ module OhMicrositeImportUtilities
     end
 
     def next_open_position
-      work.members.map{|mem| mem.position.to_i}.max + 1
+      @work.members.map{|mem| mem.position.to_i}.max + 1
     end
 
     def portrait_asset
-      work.members.find {|mem| mem.attributes['role'] == 'portrait'}
+      @portrait_asset ||= @work.members.find {|mem| mem.attributes['role'] == 'portrait'}
     end
   end
 end

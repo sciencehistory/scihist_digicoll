@@ -147,7 +147,7 @@ module OhMicrositeImportUtilities
         filename: rows.first['filename'],
         url:      rows.first['url'],
         title:    rows.first['title'],
-        alt:      rows.first['alt'],
+        alt_text: rows.first['alt'],
         caption:  rows.first['caption']
       })
       uploader.maybe_upload_file
