@@ -56,20 +56,6 @@ class OralHistoryContent < ApplicationRecord
     succeeded: 'succeeded'
   }
 
-  attr_json :interviewee_birth,    OralHistoryContent::DateAndPlace.to_type, default: -> { OralHistoryContent::DateAndPlace.new }
-  attr_json :interviewee_death,    OralHistoryContent::DateAndPlace.to_type, default: -> { OralHistoryContent::DateAndPlace.new }
-
-  attr_json :interviewee_school,  OralHistoryContent::IntervieweeSchool.to_type, array: true, default: -> {[]}
-  attr_json :interviewee_job,     OralHistoryContent::IntervieweeJob.to_type,    array: true, default: -> {[]}
-  attr_json :interviewee_honor,   OralHistoryContent::IntervieweeHonor.to_type,  array: true, default: -> {[]}
-
-
-  attr_json_accepts_nested_attributes_for :interviewee_birth
-  attr_json_accepts_nested_attributes_for :interviewee_death
-  attr_json_accepts_nested_attributes_for :interviewee_school
-  attr_json_accepts_nested_attributes_for :interviewee_job
-  attr_json_accepts_nested_attributes_for :interviewee_honor
-
   # Some assets marked non-published in this work are still available by request. That feature needs to be turned
   # on here at the work level, in one of two modes:
   #
