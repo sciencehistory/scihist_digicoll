@@ -29,7 +29,7 @@ class WorksController < ApplicationController
   private
 
   def decorator
-    @decorator ||= if @work.is_oral_history? && has_oh_audio_member? && @work.oral_history_content&.available_by_request_off?
+    @decorator ||= if @work.is_oral_history? && @work.oral_history_content&.available_by_request_off? && has_oh_audio_member?
       # special OH audio player template
       OhAudioWorkShowDecorator.new(@work)
     elsif @work.is_oral_history?
@@ -44,6 +44,9 @@ class WorksController < ApplicationController
 
   # Is an Oral History with at least one audio member?
   def has_oh_audio_member?
+    # memoize for boolean value
+    return @has_oh_audio_member if defined?(@has_oh_audio_member)
+
     # some pg JSON operators in our WHERE clause to pull out actually just
     # what we want.
     #
