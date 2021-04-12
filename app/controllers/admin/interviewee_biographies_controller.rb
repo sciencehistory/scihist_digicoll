@@ -69,6 +69,12 @@ class Admin::IntervieweeBiographiesController < AdminController
       %w{school job honor}.each do |name|
         tmp["#{name}_attributes"].reject! { |k, v| v.values.all?(&:empty?) }
       end
+
+      tmp["birth_attributes"].reject! {|k,v| v.blank? }
+      tmp.delete("birth_attributes") if tmp["birth_attributes"].blank?
+      tmp["death_attributes"].reject! {|k,v| v.blank? }
+      tmp.delete("death_attributes") if tmp["death_attributes"].blank?
+
       %w{birth death school job honor}.each do |name|
         tmp["#{name}_attributes"]&.permit!
       end
