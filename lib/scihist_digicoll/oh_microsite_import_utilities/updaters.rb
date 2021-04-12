@@ -39,79 +39,87 @@ module OhMicrositeImportUtilities
   # },
 
   module Updaters
-    def self.birth_date(oral_history_content, rows)
+    def self.birth_date(oral_history_content, rows, transformations: nil)
       oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
       oral_history_content.interviewee_birth.date = keep_yyyy_mm_dd(rows.first['birth_date'])
     end
 
-    def self.birth_city(oral_history_content, rows)
+    def self.birth_city(oral_history_content, rows, transformations: nil)
       oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
       oral_history_content.interviewee_birth.city         = rows.first['birth_city']
     end
 
-    def self.birth_state(oral_history_content, rows)
+    def self.birth_state(oral_history_content, rows, transformations: nil)
       oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
       oral_history_content.interviewee_birth.state        = rows.first['birth_state']
     end
 
-    def self.birth_province(oral_history_content, rows)
+    def self.birth_province(oral_history_content, rows, transformations: nil)
       oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
       oral_history_content.interviewee_birth.province     = rows.first['birth_province']
     end
 
-    def self.birth_country(oral_history_content, rows)
+    def self.birth_country(oral_history_content, rows, transformations: nil)
       oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
       oral_history_content.interviewee_birth.country      = rows.first['birth_country']
     end
 
-    def self.death_date(oral_history_content, rows)
+    def self.death_date(oral_history_content, rows, transformations: nil)
       oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new
       oral_history_content.interviewee_death.date = keep_yyyy_mm_dd(rows.first['death_date'])
     end
 
-    def self.death_city(oral_history_content, rows)
+    def self.death_city(oral_history_content, rows, transformations: nil)
       oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new
       oral_history_content.interviewee_death.city         = rows.first['death_city']
     end
 
-    def self.death_state(oral_history_content, rows)
+    def self.death_state(oral_history_content, rows, transformations: nil)
       oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new
       oral_history_content.interviewee_death.state        = rows.first['death_state']
     end
 
-    def self.death_province(oral_history_content, rows)
+    def self.death_province(oral_history_content, rows, transformations: nil)
       oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new
       oral_history_content.interviewee_death.province     = rows.first['death_province']
     end
 
-    def self.death_country(oral_history_content, rows)
+    def self.death_country(oral_history_content, rows, transformations: nil)
       oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new
       oral_history_content.interviewee_death.country   = rows.first['death_country']
     end
 
-    def self.education(oral_history_content, rows)
+    def self.education(oral_history_content, rows, transformations: nil)
       oral_history_content.interviewee_school            = rows.map do |row|
+        institution = row['school_name']
+        if transformations.present? && transformations[institution].present?
+          institution = transformations[institution]
+        end
         OralHistoryContent::IntervieweeSchool.new(
           date:         keep_yyyy(row['date']),
-          institution:  row['school_name'],
+          institution:  institution,
           discipline:   row['discipline'],
           degree:       row['degree']
         )
       end
     end
 
-    def self.career(oral_history_content, rows)
+    def self.career(oral_history_content, rows, transformations: nil)
       oral_history_content.interviewee_job = rows.map do |row |
+        institution = row['employer_name']
+        if transformations.present? && transformations[institution].present?
+          institution = transformations[institution]
+        end
         OralHistoryContent::IntervieweeJob.new(
           start:        keep_yyyy(row['job_start_date']),
           end:          keep_yyyy(row['job_end_date']),
-          institution:  row['employer_name'],
+          institution:  institution,
           role:         row['job_title']
         )
       end
     end
 
-    def self.honors(oral_history_content, rows)
+    def self.honors(oral_history_content, rows, transformations: nil)
       sanitizer = DescriptionSanitizer.new()
 
       honors = rows.map do |row |
@@ -136,12 +144,12 @@ module OhMicrositeImportUtilities
 
     # We are only migrating associations with interviewers who actually have bios.
     # The list of interviewer names is already stored in the creator field of the Work.
-    def self.interviewer(oral_history_content, rows)
+    def self.interviewer(oral_history_content, rows, transformations: nil)
       profiles = InterviewerProfile.where(id: rows.map {|r| r['interviewer_id']})
       oral_history_content.interviewer_profiles = profiles
     end
 
-    def self.image(oral_history_content, rows)
+    def self.image(oral_history_content, rows, transformations: nil)
       uploader  = IntervieweePortraitUploader.new({
         work: oral_history_content.work,
         filename: rows.first['filename'],

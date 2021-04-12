@@ -4,7 +4,7 @@
 
 module OhMicrositeImportUtilities
   def files_location
-    ENV['FILES_LOCATION'].nil? ? '/tmp/ohms_microsite_import_data/' : ENV['FILES_LOCATION']
+    ENV['FILES_LOCATION'].nil? ? '/tmp/ohms_microsite_import_data' : ENV['FILES_LOCATION']
   end
 
   def get_interviewee(work)
