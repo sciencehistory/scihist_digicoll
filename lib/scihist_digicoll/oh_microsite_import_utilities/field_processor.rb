@@ -26,11 +26,24 @@ module OhMicrositeImportUtilities
       end
     end
 
+    def transformations
+      transformed_fields = {
+        'education' => 'school_name',
+        'career'    => 'employer_name'
+      }
+
+      transformed_field = transformed_fields[@field]
+      return unless transformed_field.present?
+
+      transform_file_name = "#{transformed_field}_transforms.json"
+      @transformations ||= JSON.parse(File.read("#{files_location}/#{transform_file_name}"))
+    end
+
     def update_work(field, w)
       relevant_rows = select_rows(@rows, w)
       return if relevant_rows.empty?
       begin
-        Updaters.send(field, w.oral_history_content, relevant_rows)
+        Updaters.send(field, w.oral_history_content, relevant_rows, transformations: transformations)
         w.oral_history_content.save!
       rescue StandardError => e
         @errors << "#{w.title} (#{w.friendlier_id}): error with #{field}:\n#{e.inspect}"
@@ -40,7 +53,7 @@ module OhMicrositeImportUtilities
     end
 
     def progress_bar
-      # @progress_bar ||= ProgressBar.create( total: @works.count, format: "%a %t: |%B| %R/s %c/%u %p%% %e", title: @field.ljust(15) )
+      @progress_bar ||= ProgressBar.create( total: @works.count, format: "%a %t: |%B| %R/s %c/%u %p%% %e", title: @field.ljust(15) )
     end
 
     def increment()
