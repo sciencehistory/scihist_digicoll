@@ -113,7 +113,8 @@ module OhMicrositeImportUtilities
 
     def self.honors(oral_history_content, rows)
       sanitizer = DescriptionSanitizer.new()
-      oral_history_content.interviewee_honor = rows.map do |row |
+
+      honors = rows.map do |row |
         args = {
           start_date:   keep_yyyy(row['interviewee_honor_start_date']),
           honor:        sanitizer.sanitize(row['interviewee_honor_description'])
@@ -121,10 +122,17 @@ module OhMicrositeImportUtilities
         if row['interviewee_honor_start_date'] != row['interviewee_honor_end_date']
           args[:end_date] = keep_yyyy(row['interviewee_honor_end_date'])
         end
-        return if args.values.all?(&:nil?)
-        OralHistoryContent::IntervieweeHonor.new(args)
+
+        if args.values.all?(&:nil?)
+          nil
+        else
+          OralHistoryContent::IntervieweeHonor.new(args)
+        end
       end
+
+      oral_history_content.interviewee_honor = honors.compact
     end
+
 
     # We are only migrating associations with interviewers who actually have bios.
     # The list of interviewer names is already stored in the creator field of the Work.
