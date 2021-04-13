@@ -20,7 +20,7 @@ namespace :scihist do
         rows = JSON.parse(File.read("#{files_location}/#{field}.json"))
         processor = FieldProcessor.new(field:field, works: works, mapper:mapper, rows: rows)
         processor.process
-        errors += processor.errors;
+        errors += processor.errors
         works_updated  += processor.works_updated
       end
       final_reporting(errors, works_updated)
