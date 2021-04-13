@@ -136,6 +136,8 @@ class WorkIndexer < Kithe::Indexer
         obj_extract("oral_history_content", "interviewee_biographies",  "to_a", "job", "institution"),
         unique
 
+    to_field "oh_birth_country_facet", obj_extract("oral_history_content", "interviewee_biographies", "to_a", "birth", "country_name")
+
     # Transcript text, use OHMS transcript if we got it, otherwise plaintext if
     # we got it.
     #
