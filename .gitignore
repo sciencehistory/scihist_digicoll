@@ -48,3 +48,6 @@ public/__sitemaps/
 
 #A spot for developers to put miscellaneous scripts.
 /personal_bin/*
+
+# db name & credentials for local OH microsite import database
+/bin/oh_microsite_export/local_database*

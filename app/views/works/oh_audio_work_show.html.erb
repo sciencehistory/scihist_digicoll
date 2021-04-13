@@ -99,6 +99,9 @@
             <% if decorator.portrait_asset.present? %>
               <div class="oh-portrait">
                 <%= ThumbDisplay.new(decorator.portrait_asset).display %>
+                <% if decorator.portrait_asset.caption.present? %>
+                  <span class="text-muted"><%= decorator.portrait_asset.caption %></span>
+                <% end %>
               </div>
             <% end %>
 
