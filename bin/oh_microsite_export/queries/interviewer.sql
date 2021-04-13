@@ -23,7 +23,5 @@ AND
     oral_history.nid =  field_data_field_interview_number.entity_id
 AND
     oral_history.vid = field_data_field_interview_number.revision_id
--- AND
---     oral_history.status = 1
 ORDER BY
     oral_history.title

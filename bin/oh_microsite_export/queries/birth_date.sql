@@ -38,5 +38,3 @@ AND
 
 AND
     published.nid = field_data_field_interviewee_name.entity_id
--- AND
---     published.status = 1
