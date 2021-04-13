@@ -72,7 +72,10 @@
     <%= WorkShowInfo.new(@work).display %>
 
     <% if @work.is_oral_history? %>
-      <h2 class="attribute-sub-head">Interviewee biographical information</h2>
+
+      <% if decorator.interviewee_bioraphies.present? %>
+        <h2 class="attribute-sub-head">Interviewee biographical information</h2>
+      <% end %>
 
       <% decorator.interviewee_biographies.each do |bio| %>
         <% if decorator.interviewee_biographies.count > 1 %>
