@@ -55,6 +55,11 @@ class OralHistoryContent < ApplicationRecord
     succeeded: 'succeeded'
   }
 
+
+  ####
+  # legacy, we are in process of moving away from these direct interviewee attributes, for interviewee_biographies below
+  #
+
   attr_json :interviewee_birth,    OralHistoryContent::DateAndPlace.to_type, default: -> { OralHistoryContent::DateAndPlace.new }
   attr_json :interviewee_death,    OralHistoryContent::DateAndPlace.to_type, default: -> { OralHistoryContent::DateAndPlace.new }
 
@@ -68,6 +73,12 @@ class OralHistoryContent < ApplicationRecord
   attr_json_accepts_nested_attributes_for :interviewee_school
   attr_json_accepts_nested_attributes_for :interviewee_job
   attr_json_accepts_nested_attributes_for :interviewee_honor
+
+  #
+  ######
+
+  # in process to moving to this data model:
+  attr_json :interviewee_biographies, OralHistoryContent::IntervieweeBiography.to_type, array: true, default: -> { [] }
 
   # Some assets marked non-published in this work are still available by request. That feature needs to be turned
   # on here at the work level, in one of two modes:
