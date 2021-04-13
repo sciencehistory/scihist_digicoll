@@ -120,7 +120,7 @@ module OhMicrositeImportUtilities
     end
 
     def self.honors(oral_history_content, rows, transformations: nil)
-      sanitizer = DescriptionSanitizer.new()
+      sanitizer = DescriptionSanitizer.new
 
       honors = rows.map do |row |
         args = {

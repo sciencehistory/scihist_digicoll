@@ -7,15 +7,15 @@ module OhMicrositeImportUtilities
 
     def initialize(field:, works:, mapper:, rows:)
       @field, @works, @mapper, @rows = field, works, mapper, rows
-      ghosts = @mapper.ghosts()
+      ghosts = @mapper.ghosts
       @rows.reject! { |arr| ghosts.include? arr['interview_entity_id'] }
       @errors = []
-      @works_updated = Set.new()
+      @works_updated = Set.new
       progress_bar
     end
 
-    def process()
-      no_source = @mapper.no_source()
+    def process
+      no_source = @mapper.no_source
       @works.find_each do |w|
         if no_source.include? w.friendlier_id
           increment
@@ -56,7 +56,7 @@ module OhMicrositeImportUtilities
       @progress_bar ||= ProgressBar.create( total: @works.count, format: "%a %t: |%B| %R/s %c/%u %p%% %e", title: @field.ljust(15) )
     end
 
-    def increment()
+    def increment
       return unless @progress_bar
       @progress_bar.increment
     end

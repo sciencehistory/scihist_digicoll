@@ -19,7 +19,7 @@ module OhMicrositeImportUtilities
     # Try creating a portrait if none exists.
     def maybe_upload_file
       return unless portrait_asset.nil?
-      portrait = new_portrait()
+      portrait = new_portrait
       if portrait.save
         @work.representative = portrait
         @work.save
