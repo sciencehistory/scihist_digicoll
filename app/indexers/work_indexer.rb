@@ -129,6 +129,13 @@ class WorkIndexer < Kithe::Indexer
       end
     end
 
+    # We need the #to_a in there to get past the `ActiveRecord::Associations::CollectionProxy` cause it isn't
+    # REALLY an array. https://github.com/sciencehistory/kithe/issues/119
+    to_field "oh_institution_facet",
+        obj_extract("oral_history_content", "interviewee_biographies", "to_a", "school", "institution"),
+        obj_extract("oral_history_content", "interviewee_biographies",  "to_a", "job", "institution"),
+        unique
+
     # Transcript text, use OHMS transcript if we got it, otherwise plaintext if
     # we got it.
     #

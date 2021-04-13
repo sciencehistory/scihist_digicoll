@@ -45,6 +45,15 @@ describe WorkIndexer do
       )
     end
 
+    it "indexes biographical to institution facet" do
+      output_hash = WorkIndexer.new.map_record(work)
+
+      institutions = (work.oral_history_content.interviewee_biographies.collect(&:school).flatten.collect(&:institution) +
+        work.oral_history_content.interviewee_biographies.collect(&:job).flatten.collect(&:institution)).uniq
+
+      expect(output_hash["oh_institution_facet"]).to match_array(institutions)
+    end
+
     describe "features facet" do
       it "has transcript value" do
         output_hash = WorkIndexer.new.map_record(work)
