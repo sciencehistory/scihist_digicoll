@@ -10,8 +10,8 @@ module OhMicrositeImportUtilities
   class InterviewMapper
     attr_accessor :ghosts, :no_source
 
-    def initialize(interviews, works)
-      @interviews = interviews
+    def initialize(works)
+      @names = parse_names()
       @works = works
 
       # friendlier_ids of works with no source to migrate from:
@@ -23,9 +23,9 @@ module OhMicrositeImportUtilities
     end
 
     def construct_map()
-      remove_ghost_interviews
+      remove_ghosts
       @works.find_each do |w|
-        relevant_rows = select_rows(@interviews, w)
+        relevant_rows = select_rows(@names, w)
         if relevant_rows.empty?
           @no_source << w.friendlier_id; next
         end
@@ -49,14 +49,14 @@ module OhMicrositeImportUtilities
     # which are artefacts of an *earlier* migration.
     # Ideally, we would delete these from the microsite pre-emptively,
     # *before* attemptint the migration.
-    # Removes ghost interviews from @interviews,
+    # Removes ghost interviews from @names,
     # and store their `interview_entity_id` in @ghosts
     # so that we don't bother attempting to import them later on.
-    def remove_ghost_interviews()
-      all_interview_numbers = @interviews.map {|i| i['interview_number']}.uniq.sort
+    def remove_ghosts()
+      all_interview_numbers = @names.map {|i| i['interview_number']}.uniq.sort
       all_interview_numbers.each do |interview_number|
         # the .dup is unneccessary, but makes the following easier to understand.
-        ghosts =  @interviews.select { |interviewee| interviewee['interview_number'] == interview_number }.dup
+        ghosts =  @names.select { |interviewee| interviewee['interview_number'] == interview_number }.dup
         next if ghosts.count < 2
         # a ghost needs to be unpublished and a duplicate
         ghosts.delete_if  {|interview| interview['published'] == 1 }
@@ -67,7 +67,7 @@ module OhMicrositeImportUtilities
 
     def remove_ghost(ghost)
       @ghosts << ghost['interview_entity_id']
-      @interviews.delete_if {|interview| interview['interview_entity_id'] == ghost['interview_entity_id'] }
+      @names.delete_if {|interview| interview['interview_entity_id'] == ghost['interview_entity_id'] }
     end
 
     # These are interviews in the microsite
@@ -75,10 +75,18 @@ module OhMicrositeImportUtilities
     # that we can migrate to.
     def unaccounted_for()
       migrated = @matches.values.flatten
-      @interviews.select do |inte|
+      @names.select do |inte|
         !(migrated.include? inte['interview_entity_id']) && !(@ghosts.include? inte['interview_entity_id'])
       end
     end
 
+    def parse_names()
+      names = JSON.parse(File.read("#{files_location}/name.json"))
+      unless names.is_a? Array
+        puts "Error parsing names data."
+        abort
+      end
+      @names = names
+    end
   end
 end
