@@ -50,7 +50,4 @@ public/__sitemaps/
 /personal_bin/*
 
 
-bin/oh_microsite_export/data
-bin/oh_microsite_export/local_database_name.txt
-bin/oh_microsite_export/local_database_password.txt
-bin/oh_microsite_export/local_database_user.txt
+/bin/oh_microsite_export/local_database*
