@@ -39,6 +39,11 @@ class Admin::IntervieweeBiographiesController < AdminController
       if @interviewee_biography.update(interviewee_biography_params)
         format.html { redirect_to admin_interviewee_biographies_path, notice: 'Interviewee biography was successfully updated.' }
         format.json { render :edit, status: :ok, location: @interviewee_biography }
+
+        # Associated works need to be reindexed on some Biography changes, but that isn't
+        # triggered automatically in model callbacks. We handle it here. There should only be one or two,
+        # so no problem to do it inline.
+        @interviewee_biography.oral_history_content&.collect(&:work)&.each(&:update_index)
       else
         format.html { render :edit }
         format.json { render json: @interviewee_biography.errors, status: :unprocessable_entity }

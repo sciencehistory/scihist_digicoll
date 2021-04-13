@@ -129,6 +129,10 @@ class WorkIndexer < Kithe::Indexer
       end
     end
 
+    # WARNING: changes to interviewee_biography data or links don't automatically trigger Work
+    # reindex, although may require a reindex of associated works. We handle it just in
+    # controller update actions.
+
     # We need the #to_a in there to get past the `ActiveRecord::Associations::CollectionProxy` cause it isn't
     # REALLY an array. https://github.com/sciencehistory/kithe/issues/119
     to_field "oh_institution_facet",
