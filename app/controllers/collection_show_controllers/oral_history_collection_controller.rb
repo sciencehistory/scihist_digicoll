@@ -29,6 +29,7 @@ module CollectionShowControllers
       config.add_facet_field "interviewer_facet", label: "Interviewer", limit: 5
 
       config.add_facet_field "oh_institution_facet", label: "Institution", limit: 5
+      config.add_facet_field "oh_birth_country_facet", label: "Birth Country", limit: 5
 
       config.add_facet_field "oh_feature_facet", label: "Features"
 
