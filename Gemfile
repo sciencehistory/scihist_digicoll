@@ -6,7 +6,6 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby "~> #{File.read(File.join(__dir__ , '.ruby-version')).chomp.split('.').slice(0,3).join('.')}"
 
 
-
 gem 'lockbox'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
@@ -25,7 +24,6 @@ gem "draper", "~> 4.0", ">= 4.0.1" # "decorators", which we use as view models
 
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
-
 # Use Puma as the app server
 gem 'puma', '~> 5.0'
 
