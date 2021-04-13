@@ -10,7 +10,7 @@ EXPORT_DESTINATION=/tmp/ohms_microsite_import_data
 # A text file for converting institution names to FAST headings
 $EXPORT_CMD  < queries/institutions.sql     > $EXPORT_DESTINATION/institutions.txt
 
-# A query to create URL mappings:
+# URL mappings:
 $EXPORT_CMD  < queries/url.sql             > $EXPORT_DESTINATION/url.json
 
 # Mapping check: contains name, source URL, source URL alias, and interview number
@@ -33,11 +33,9 @@ $EXPORT_CMD  < queries/education.sql        > $EXPORT_DESTINATION/education.json
 $EXPORT_CMD  < queries/career.sql           > $EXPORT_DESTINATION/career.json
 $EXPORT_CMD  < queries/honors.sql           > $EXPORT_DESTINATION/honors.json
 
-# Interviewers, with profiles:
-$EXPORT_CMD  < queries/interviewer.sql       > $EXPORT_DESTINATION/interviewer.json
-# Not used, but hanging on to this just in case:
-$EXPORT_CMD  < queries/interviewer_2.sql     > $EXPORT_DESTINATION/interviewer_2.json
-$EXPORT_CMD  < queries/interviewer_profile.sql       > $EXPORT_DESTINATION/interviewer_profile.json
-
-# Images, with captions and alt text:
+# Interviewee portraits
 $EXPORT_CMD  < queries/image.sql             > $EXPORT_DESTINATION/image.json
+
+# Interviewers and profiles:
+$EXPORT_CMD  < queries/interviewer.sql               > $EXPORT_DESTINATION/interviewer.json
+$EXPORT_CMD  < queries/interviewer_profile.sql       > $EXPORT_DESTINATION/interviewer_profile.json
