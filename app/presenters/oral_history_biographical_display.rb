@@ -54,7 +54,7 @@ class OralHistoryBiographicalDisplay < ViewModel
   end
 
   def sanitized_honor_string(honor_str)
-    DescriptionSanitizer.new.sanitize(honor_str).html_safe
+    DescriptionSanitizer.new.sanitize(honor_str)&.html_safe
   end
 
 
