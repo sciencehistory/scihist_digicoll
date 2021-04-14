@@ -44,6 +44,7 @@ class OralHistoryContent < ApplicationRecord
   belongs_to :work, inverse_of: :oral_history_content
 
   has_and_belongs_to_many :interviewer_profiles
+  has_and_belongs_to_many :interviewee_biographies
 
   include CombinedAudioUploader::Attachment.new(:combined_audio_mp3, store: :combined_audio_derivatives)
   include CombinedAudioUploader::Attachment.new(:combined_audio_webm, store: :combined_audio_derivatives)
@@ -55,19 +56,6 @@ class OralHistoryContent < ApplicationRecord
     succeeded: 'succeeded'
   }
 
-  attr_json :interviewee_birth,    OralHistoryContent::DateAndPlace.to_type, default: -> { OralHistoryContent::DateAndPlace.new }
-  attr_json :interviewee_death,    OralHistoryContent::DateAndPlace.to_type, default: -> { OralHistoryContent::DateAndPlace.new }
-
-  attr_json :interviewee_school,  OralHistoryContent::IntervieweeSchool.to_type, array: true, default: -> {[]}
-  attr_json :interviewee_job,     OralHistoryContent::IntervieweeJob.to_type,    array: true, default: -> {[]}
-  attr_json :interviewee_honor,   OralHistoryContent::IntervieweeHonor.to_type,  array: true, default: -> {[]}
-
-
-  attr_json_accepts_nested_attributes_for :interviewee_birth
-  attr_json_accepts_nested_attributes_for :interviewee_death
-  attr_json_accepts_nested_attributes_for :interviewee_school
-  attr_json_accepts_nested_attributes_for :interviewee_job
-  attr_json_accepts_nested_attributes_for :interviewee_honor
 
   # Some assets marked non-published in this work are still available by request. That feature needs to be turned
   # on here at the work level, in one of two modes:

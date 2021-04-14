@@ -7,10 +7,10 @@ class Admin::WorksController < AdminController
   before_action :set_work,
     only: [:show, :edit, :update, :destroy, :reorder_members,
            :reorder_members_form, :demote_to_asset, :publish, :unpublish,
-           :submit_ohms_xml, :download_ohms_xml, :oh_biography_form, :submit_oh_biography,
+           :submit_ohms_xml, :download_ohms_xml,
            :remove_ohms_xml, :submit_searchable_transcript_source, :download_searchable_transcript_source,
            :remove_searchable_transcript_source, :create_combined_audio_derivatives, :update_oh_available_by_request,
-           :update_oral_history_interviewer_profiles]
+           :update_oral_history_content]
 
   # GET /admin/works
   # GET /admin/works.json
@@ -114,31 +114,6 @@ class Admin::WorksController < AdminController
       :disposition => ContentDisposition.format(disposition: "attachment", filename: "#{@work.oral_history_content!.ohms_xml.accession}.xml")
   end
 
-  # Biographical metadata form
-  # GET "/admin/works/ab2323ac/oh_bio_form"
-  def oh_biography_form
-    @work.oral_history_content!
-    @work.oral_history_content.
-      interviewee_birth ||= OralHistoryContent::DateAndPlace.new
-    @work.oral_history_content.
-      interviewee_death ||= OralHistoryContent::DateAndPlace.new
-    render :oh_biography_form
-  end
-
-  # PATCH/PUT /admin/works/ab2323ac/submit_oh_bio
-  def submit_oh_biography
-    oral_history_content = @work.oral_history_content!
-    if oral_history_content.update(interviewee_bio_params)
-      redirect_to admin_work_path(@work, :anchor => "nav-oral-histories")
-    else
-      @work.oral_history_content.
-        interviewee_birth ||= OralHistoryContent::DateAndPlace.new
-      @work.oral_history_content.
-        interviewee_death ||= OralHistoryContent::DateAndPlace.new
-      render :oh_biography_form
-    end
-  end
-
   # PATCH/PUT /admin/works/ab2323ac/submit_ohms_xml
   def submit_searchable_transcript_source
     unless params[:searchable_transcript_source].present?
@@ -221,13 +196,14 @@ class Admin::WorksController < AdminController
     redirect_to admin_work_path(@work, anchor: "nav-oral-histories")
   end
 
-  # PATCH /admin/works/ab2323ac/update_oral_history_interviewer_profiles
-  def update_oral_history_interviewer_profiles
-    @work.oral_history_content!.update( params.require(:oral_history_content).permit(interviewer_profile_ids: []))
+  # PATCH /admin/works/ab2323ac/update_oral_history_content
+  def update_oral_history_content
+    @work.oral_history_content!.update(
+      params.require(:oral_history_content).permit(interviewer_profile_ids: [], interviewee_biography_ids: [])
+    )
 
     redirect_to admin_work_path(@work, anchor: "nav-oral-histories")
   end
-
 
   # PATCH/PUT /admin/works/1/publish
   #
@@ -452,32 +428,6 @@ class Admin::WorksController < AdminController
           end
         end
       end
-    end
-
-    # update strong params for interviewee biographical info form
-    def interviewee_bio_params
-      tmp =  Kithe::Parameters.new(params).require(:oral_history_content).permit_attr_json(OralHistoryContent).permit
-      %w{birth death}.each do |name|
-        next if tmp["interviewee_#{name}_attributes"].nil?
-        if tmp["interviewee_#{name}_attributes"].values.all?(&:empty?)
-          tmp["interviewee_#{name}"] = nil
-          tmp.delete("interviewee_#{name}_attributes")
-        end
-      end
-      %w{school job honor}.each do |name|
-        tmp["interviewee_#{name}_attributes"].reject! { |k, v| v.values.all?(&:empty?) }
-      end
-      %w{birth death school job honor}.each do |name|
-        tmp["interviewee_#{name}_attributes"]&.permit!
-      end
-
-      # HTML Sanitize the "honor" entry. Hacky code.
-      (tmp["interviewee_honor_attributes"] || []).each do |honor_attributes|
-        next unless honor_attributes.dig(1, "honor")
-        honor_attributes[1]["honor"] = DescriptionSanitizer.new.sanitize(honor_attributes[1]["honor"])
-      end
-
-      tmp
     end
 
     # Some of our query SQL is prepared by ransack, which automatically makes

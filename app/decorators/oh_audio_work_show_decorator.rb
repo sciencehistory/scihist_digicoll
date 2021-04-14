@@ -97,6 +97,10 @@ class OhAudioWorkShowDecorator < Draper::Decorator
     @portrait_asset
   end
 
+  def interviewee_biographies
+    model.oral_history_content&.interviewee_biographies || []
+  end
+
   # An array of start times for each audio member.
   # The key is the member uuid (NOT the friendlier id)
   # The value is the offset in seconds into the combined audio.
