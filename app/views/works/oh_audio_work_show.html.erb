@@ -113,7 +113,16 @@
 
           <%= WorkShowInfo.new(@work).display %>
 
-          <%= OralHistoryBiographicalDisplay.new(@work).display %>
+          <% if decorator.interviewee_biographies.present? %>
+            <h2 class="attribute-sub-head">Interviewee biographical information</h2>
+          <% end %>
+          <% decorator.interviewee_biographies.each do |bio| %>
+            <% if decorator.interviewee_biographies.count > 1 %>
+              <h3 class="h4"><%= bio.name %></h3>
+            <% end %>
+
+            <%= OralHistoryBiographicalDisplay.new(bio).display %>
+          <% end %>
 
           <%= render "citation", work: @work  %>
         </div>

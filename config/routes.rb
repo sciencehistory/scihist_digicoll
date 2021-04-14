@@ -192,9 +192,7 @@ Rails.application.routes.draw do
         put "remove_searchable_transcript_source"
         put "create_combined_audio_derivatives"
         put "update_oh_available_by_request"
-        get "oh_biography_form"
-        put "submit_oh_biography"
-        patch "update_oral_history_interviewer_profiles"
+        patch "update_oral_history_content"
       end
       collection do
         get 'batch_update', to: "works#batch_update_form"
@@ -271,6 +269,7 @@ Rails.application.routes.draw do
     end
 
     resources :interviewer_profiles, except: [:show]
+    resources :interviewee_biographies, except: [:show]
 
 
     # These 'sub-apps' are for admin-use only, but since they are sub-apps

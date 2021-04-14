@@ -1,7 +1,7 @@
 class OralHistoryBiographicalDisplay < ViewModel
-  valid_model_type_names "Work"
+  valid_model_type_names "IntervieweeBiography"
 
-  alias_method :work, :model
+  alias_method :biography, :model
 
   def display
     return "" unless has_biographical_info?
@@ -9,16 +9,13 @@ class OralHistoryBiographicalDisplay < ViewModel
     render "/presenters/oral_history_biographical_display", model: model, view: self
   end
 
-  def oral_history_content
-    work.oral_history_content!
-  end
 
   def schools
-    @schools ||= (work.oral_history_content&.interviewee_school || []).sort_by(&:date)
+    @schools ||= (biography.school || []).sort_by(&:date)
   end
 
   def honors
-    @honors ||= (work.oral_history_content&.interviewee_honor || []).sort_by(&:start_date)
+    @honors ||= (biography.honor || []).sort_by(&:start_date)
   end
 
   # Hash where key is institution, value is array of jobs at that institution.
@@ -29,7 +26,7 @@ class OralHistoryBiographicalDisplay < ViewModel
   def grouped_jobs
     @grouped_jobs ||= begin
       # groups will be an array of pairs, like [ [institution, [array]], [institution [array]], ...]
-      groups  = (work.oral_history_content&.interviewee_job || []).group_by {|job| job.institution }.to_a
+      groups  = (biography.job || []).group_by {|job| job.institution }.to_a
 
       groups.each do |institution, jobs|
         jobs.sort_by! {|job| job.start || 0 }
@@ -42,19 +39,21 @@ class OralHistoryBiographicalDisplay < ViewModel
   end
 
   def birth_info
-    @birth_info ||= formatted_date_and_place(oral_history_content&.interviewee_birth)
+    @birth_info ||= formatted_date_and_place(biography.birth)
   end
 
   def death_info
-    @death_info ||=  formatted_date_and_place(oral_history_content&.interviewee_death)
+    @death_info ||=  formatted_date_and_place(biography.death)
   end
 
   def has_biographical_info?
+    return false unless biography.present?
+
     birth_info.present? || death_info.present? || schools.present? || grouped_jobs.present? || honors.present?
   end
 
   def sanitized_honor_string(honor_str)
-    DescriptionSanitizer.new.sanitize(honor_str).html_safe
+    DescriptionSanitizer.new.sanitize(honor_str)&.html_safe
   end
 
 

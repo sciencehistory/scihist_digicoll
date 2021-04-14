@@ -103,7 +103,7 @@ namespace :scihist do
         progress_bar = ProgressBar.create(total: (Work.count + Collection.count), format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
 
         [
-          Work.includes(:contains_contained_by, :oral_history_content),
+          Work.includes(:contains_contained_by, :oral_history_content => :interviewee_biographies),
           Collection.includes(:contains_contained_by)
         ].each do |scope|
 
