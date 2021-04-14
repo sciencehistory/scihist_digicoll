@@ -46,45 +46,6 @@ describe OralHistoryContent do
   end
 
 
-  describe "new interviewee_biographies attribute" do
-    it "name can't be blank" do
-      ohc = work_with_oral_history_content.oral_history_content
-      ohc.interviewee_biographies = [{
-        birth:  OralHistoryContent::DateAndPlace.new(date: '1923', city: 'Place of Birth', state: 'CA', country: 'US'),
-      }]
-
-      expect(ohc.save).to be(false)
-      expect(ohc.errors.full_messages).to include("Interviewee biographies is invalid")
-      expect(ohc.interviewee_biographies.first.errors.full_messages).to include("Name can't be blank")
-    end
-
-    it "can create/save" do
-      ohc = work_with_oral_history_content.oral_history_content
-
-      ohc.interviewee_biographies = [{
-        name: "John Smith",
-        birth:  OralHistoryContent::DateAndPlace.new(date: '1923', city: 'Place of Birth', state: 'CA', country: 'US'),
-        death:  OralHistoryContent::DateAndPlace.new(date: '2223', city: 'Place of Death', province: 'NU', country: 'CA' ),
-        school: [
-          OralHistoryContent::IntervieweeSchool.new(date: "1958", institution: 'Columbia University', degree: 'BA', discipline: 'Chemistry'),
-          OralHistoryContent::IntervieweeSchool.new(date: "1960", institution: 'Harvard University',  degree: 'MS', discipline: 'Physics')
-        ],
-        job: [
-          OralHistoryContent::IntervieweeJob.new({start: "1962", end: "1965", institution: 'Harvard University',  role: 'Junior Fellow, Society of Fellows'}),
-          OralHistoryContent::IntervieweeJob.new( {start: "1965", end: "1968",  institution: 'Cornell University', role: 'Associate Professor, Chemistry'})
-        ],
-        honor: [
-          OralHistoryContent::IntervieweeHonor.new(start_date: "1981", honor: 'Nobel Prize in Chemistry'),
-          OralHistoryContent::IntervieweeHonor.new(start_date: "1998", honor: 'Corresponding Member, Nordrhein-Westfälische Academy of Sciences')
-        ]
-      }]
-
-      ohc.save!
-
-      expect(ohc.interviewee_biographies).to be_present
-    end
-  end
-
   describe "combined_audio_derivatives_job_status" do
     it "sets the date when you change the status" do
       oral_history_content.combined_audio_derivatives_job_status = 'started'
