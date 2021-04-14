@@ -6,15 +6,20 @@ module OhMicrositeImportUtilities
     attr_accessor :errors, :works_updated
 
     def initialize(field:, works:, mapper:, rows:)
+      @debug_fields = []
+      # @debug_fields = ['any']
       @field, @works, @mapper, @rows = field, works, mapper, rows
       ghosts = @mapper.ghosts
       @rows.reject! { |arr| ghosts.include? arr['interview_entity_id'] }
       @errors = []
       @works_updated = Set.new
-      progress_bar
+      progress_bar unless @debug_fields.present?
     end
 
     def process
+      return if @debug_fields.present? &&
+        @debug_fields != ['any'] &&
+        !(@debug_fields.include? @field)
       no_source = @mapper.no_source
       @works.find_each do |w|
         if no_source.include? w.friendlier_id
@@ -46,8 +51,15 @@ module OhMicrositeImportUtilities
         Updaters.send(field, w.oral_history_content, relevant_rows, transformations: transformations)
         w.oral_history_content.save!
       rescue StandardError => e
-        @errors << "#{w.title} (#{w.friendlier_id}): error with #{field}:\n#{e.inspect}"
-        return
+        if @debug_fields.present?
+          # debug mode: fail fast and provide accurate stacktrace
+          raise e
+          abort
+        else
+          # regular mode: list all errors for later debugging.
+          @errors << "#{w.title} (#{w.friendlier_id}): error with #{field}:\n#{e.inspect}"
+          return
+        end
       end
       @works_updated << w
     end
