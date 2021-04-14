@@ -199,9 +199,7 @@
   }
 
   .oh-portrait {
-    //width: $standard-thumb-width;
-    max-width: 250px;
-    min-width: 200px;
+    width: $standard-thumb-width;
   }
 
   // Put portrait to the right of description when
