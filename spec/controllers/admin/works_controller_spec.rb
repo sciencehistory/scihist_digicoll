@@ -187,6 +187,24 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         expect(was_true_asset.reload.oh_available_by_request).to be false
       end
     end
+
+    context "update interviewee biography" do
+      let(:interviewee_biography) { create(:interviewee_biography) }
+
+      it "reindexes the work" do
+        # cheesy hacky way to intercept solr index update method and ensure it happened
+        expect_any_instance_of(Work).to receive(:update_index)
+
+        put :update_oral_history_content, params: {
+          id: work.friendlier_id,
+          oral_history_content: {
+            interviewee_biography_ids: [interviewee_biography.id]
+          }
+        }
+
+        expect(work.oral_history_content.reload.interviewee_biography_ids).to eq([interviewee_biography.id])
+      end
+    end
   end
 
   context "protected to logged in users" do
