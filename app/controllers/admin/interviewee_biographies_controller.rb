@@ -72,7 +72,7 @@ class Admin::IntervieweeBiographiesController < AdminController
       tmp =  Kithe::Parameters.new(params).require(:interviewee_biography).permit_attr_json(IntervieweeBiography).permit(:name)
 
       %w{school job honor}.each do |name|
-        tmp["#{name}_attributes"].reject! { |k, v| v.values.all?(&:empty?) }
+        tmp["#{name}_attributes"]&.reject! { |k, v| v.values.all?(&:empty?) }
       end
 
       tmp["birth_attributes"].reject! {|k,v| v.blank? } if tmp["birth_attributes"]
