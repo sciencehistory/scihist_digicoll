@@ -44,6 +44,7 @@ module OhMicrositeImportUtilities
         bio = IntervieweeBiography.find(row['interview_entity_id'])
         bio.birth ||= OralHistoryContent::DateAndPlace.new
         bio.birth.date = keep_yyyy_mm_dd(row['birth_date'])
+        bio.save!
       end
     end
 
@@ -52,6 +53,7 @@ module OhMicrositeImportUtilities
         bio = IntervieweeBiography.find(row['interview_entity_id'])
         bio.birth ||= OralHistoryContent::DateAndPlace.new
         bio.birth.city = row['birth_city']
+        bio.save!
       end
     end
 
@@ -60,6 +62,7 @@ module OhMicrositeImportUtilities
         bio = IntervieweeBiography.find(row['interview_entity_id'])
         bio.birth ||= OralHistoryContent::DateAndPlace.new
         bio.birth.state = row['birth_state']
+        bio.save!
       end
     end
 
@@ -68,6 +71,7 @@ module OhMicrositeImportUtilities
         bio = IntervieweeBiography.find(row['interview_entity_id'])
         bio.birth ||= OralHistoryContent::DateAndPlace.new
         bio.birth.province     = row['birth_province']
+        bio.save!
       end
     end
 
@@ -76,6 +80,7 @@ module OhMicrositeImportUtilities
         bio = IntervieweeBiography.find(row['interview_entity_id'])
         bio.birth ||= OralHistoryContent::DateAndPlace.new
         bio.birth.country = row['birth_country']
+        bio.save!
       end
     end
 
@@ -84,6 +89,7 @@ module OhMicrositeImportUtilities
         bio = IntervieweeBiography.find(row['interview_entity_id'])
         bio.death ||= OralHistoryContent::DateAndPlace.new
         bio.death.date = keep_yyyy_mm_dd(row['death_date'])
+        bio.save!
       end
     end
 
@@ -92,6 +98,7 @@ module OhMicrositeImportUtilities
         bio = IntervieweeBiography.find(row['interview_entity_id'])
         bio.death ||= OralHistoryContent::DateAndPlace.new
         bio.death.city = row['death_city']
+        bio.save!
       end
     end
 
@@ -100,6 +107,7 @@ module OhMicrositeImportUtilities
         bio = IntervieweeBiography.find(row['interview_entity_id'])
         bio.death ||= OralHistoryContent::DateAndPlace.new
         bio.death.state = row['death_state']
+        bio.save!
       end
     end
 
@@ -108,6 +116,7 @@ module OhMicrositeImportUtilities
         bio = IntervieweeBiography.find(row['interview_entity_id'])
         bio.death ||= OralHistoryContent::DateAndPlace.new
         bio.death.province = row['death_province']
+        bio.save!
       end
     end
 
@@ -116,6 +125,7 @@ module OhMicrositeImportUtilities
         bio = IntervieweeBiography.find(row['interview_entity_id'])
         bio.death ||= OralHistoryContent::DateAndPlace.new
         bio.death.country = row['death_country']
+        bio.save!
       end
     end
 
@@ -133,6 +143,7 @@ module OhMicrositeImportUtilities
             degree:       row['degree']
           )
         end
+        bio.save!
       end
     end
 
@@ -150,6 +161,7 @@ module OhMicrositeImportUtilities
             role:         row['job_title']
           )
         end
+        bio.save!
       end
     end
 
@@ -172,6 +184,7 @@ module OhMicrositeImportUtilities
           end
         end
         bio.honor = honors.compact
+        bio.save!
       end
     end
 
