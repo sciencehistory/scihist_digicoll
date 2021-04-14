@@ -6,8 +6,9 @@ module OhMicrositeImportUtilities
     attr_accessor :errors, :works_updated
 
     def initialize(field:, works:, mapper:, rows:)
-      @debug_fields = []
-      # @debug_fields = ['any']
+      @debug_fields = [] # regular mode
+      # @debug_fields = ['any'] # supress progress bar and fail fast
+      # @debug_fields = ['birth_city'] #suppress progress bar, fail fast, and ignore all metadata except specified fields.
       @field, @works, @mapper, @rows = field, works, mapper, rows
       ghosts = @mapper.ghosts
       @rows.reject! { |arr| ghosts.include? arr['interview_entity_id'] }
@@ -49,7 +50,7 @@ module OhMicrositeImportUtilities
       return if relevant_rows.empty?
       begin
         Updaters.send(field, w.oral_history_content, relevant_rows, transformations: transformations)
-        w.oral_history_content.save!
+        w.oral_history_content.interviewee_biographies.each { |b| b.save! }
       rescue StandardError => e
         if @debug_fields.present?
           # debug mode: fail fast and provide accurate stacktrace
