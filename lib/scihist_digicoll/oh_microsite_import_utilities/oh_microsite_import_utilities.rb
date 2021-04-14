@@ -32,6 +32,30 @@ module OhMicrositeImportUtilities
     %w{ education career honors image interviewer}
   end
 
+  # Given an oral history and an asssociated interviewee's name and Drupal ID,
+  # make sure that the work is associated with an IntervieweeBiography for that
+  # interviewee.
+  def set_up_bio(work:, id:, name:)
+    bio = IntervieweeBiography.find_or_initialize_by(id: id)
+    bio.name = name
+    unless bio.oral_history_content.include? work.oral_history_content
+      bio.oral_history_content << work.oral_history_content
+    end
+    bio.save!
+    work.oral_history_content.save!
+  end
+
+  # Given a set of metadata for one or more interviewees, look up the pertinent
+  # bios, and use them as the keys of a hash:
+  # {bio_for_person_a => [[job data],[another job data][third job data], ... ] ...}
+  def get_bios(rows)
+    result = {}
+    rows.map {|r| r['interview_entity_id']}.sort.uniq.each do |id|
+      result[IntervieweeBiography.find(id)] = rows.filter {|r| id == r['interview_entity_id']}
+    end
+    result
+  end
+
   def final_reporting(errors, works_updated)
     if errors.present?
       puts "#{errors.join("\n")}"

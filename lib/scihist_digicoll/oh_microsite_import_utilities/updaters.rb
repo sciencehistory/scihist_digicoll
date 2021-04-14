@@ -40,105 +40,139 @@ module OhMicrositeImportUtilities
 
   module Updaters
     def self.birth_date(oral_history_content, rows, transformations: nil)
-      oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
-      oral_history_content.interviewee_birth.date = keep_yyyy_mm_dd(rows.first['birth_date'])
+      rows.each do |row|
+        bio = IntervieweeBiography.find(row['interview_entity_id'])
+        bio.birth ||= OralHistoryContent::DateAndPlace.new
+        bio.birth.date = keep_yyyy_mm_dd(row['birth_date'])
+      end
     end
 
     def self.birth_city(oral_history_content, rows, transformations: nil)
-      oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
-      oral_history_content.interviewee_birth.city         = rows.first['birth_city']
+      rows.each do |row|
+        bio = IntervieweeBiography.find(row['interview_entity_id'])
+        bio.birth ||= OralHistoryContent::DateAndPlace.new
+        bio.birth.city = row['birth_city']
+      end
     end
 
     def self.birth_state(oral_history_content, rows, transformations: nil)
-      oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
-      oral_history_content.interviewee_birth.state        = rows.first['birth_state']
+      rows.each do |row|
+        bio = IntervieweeBiography.find(row['interview_entity_id'])
+        bio.birth ||= OralHistoryContent::DateAndPlace.new
+        bio.birth.state = row['birth_state']
+      end
     end
 
     def self.birth_province(oral_history_content, rows, transformations: nil)
-      oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
-      oral_history_content.interviewee_birth.province     = rows.first['birth_province']
+      rows.each do |row|
+        bio = IntervieweeBiography.find(row['interview_entity_id'])
+        bio.birth ||= OralHistoryContent::DateAndPlace.new
+        bio.birth.province     = row['birth_province']
+      end
     end
 
     def self.birth_country(oral_history_content, rows, transformations: nil)
-      oral_history_content.interviewee_birth ||= OralHistoryContent::DateAndPlace.new
-      oral_history_content.interviewee_birth.country      = rows.first['birth_country']
+      rows.each do |row|
+        bio = IntervieweeBiography.find(row['interview_entity_id'])
+        bio.birth ||= OralHistoryContent::DateAndPlace.new
+        bio.birth.country = row['birth_country']
+      end
     end
 
     def self.death_date(oral_history_content, rows, transformations: nil)
-      oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new
-      oral_history_content.interviewee_death.date = keep_yyyy_mm_dd(rows.first['death_date'])
+      rows.each do |row|
+        bio = IntervieweeBiography.find(row['interview_entity_id'])
+        bio.death ||= OralHistoryContent::DateAndPlace.new
+        bio.death.date = keep_yyyy_mm_dd(row['death_date'])
+      end
     end
 
     def self.death_city(oral_history_content, rows, transformations: nil)
-      oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new
-      oral_history_content.interviewee_death.city         = rows.first['death_city']
+      rows.each do |row|
+        bio = IntervieweeBiography.find(row['interview_entity_id'])
+        bio.death ||= OralHistoryContent::DateAndPlace.new
+        bio.death.city = row['death_city']
+      end
     end
 
     def self.death_state(oral_history_content, rows, transformations: nil)
-      oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new
-      oral_history_content.interviewee_death.state        = rows.first['death_state']
+      rows.each do |row|
+        bio = IntervieweeBiography.find(row['interview_entity_id'])
+        bio.death ||= OralHistoryContent::DateAndPlace.new
+        bio.death.state = row['death_state']
+      end
     end
 
     def self.death_province(oral_history_content, rows, transformations: nil)
-      oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new
-      oral_history_content.interviewee_death.province     = rows.first['death_province']
+      rows.each do |row|
+        bio = IntervieweeBiography.find(row['interview_entity_id'])
+        bio.death ||= OralHistoryContent::DateAndPlace.new
+        bio.death.province = row['death_province']
+      end
     end
 
     def self.death_country(oral_history_content, rows, transformations: nil)
-      oral_history_content.interviewee_death ||= OralHistoryContent::DateAndPlace.new
-      oral_history_content.interviewee_death.country   = rows.first['death_country']
+      rows.each do |row|
+        bio = IntervieweeBiography.find(row['interview_entity_id'])
+        bio.death ||= OralHistoryContent::DateAndPlace.new
+        bio.death.country = row['death_country']
+      end
     end
 
     def self.education(oral_history_content, rows, transformations: nil)
-      oral_history_content.interviewee_school            = rows.map do |row|
-        institution = row['school_name']
-        if transformations.present? && transformations[institution].present?
-          institution = transformations[institution]
+      get_bios(rows).each_pair do |bio, bio_rows|
+        bio.school = bio_rows.map do |row|
+          institution = row['school_name']
+          if transformations.present? && transformations[institution].present?
+            institution = transformations[institution]
+          end
+          OralHistoryContent::IntervieweeSchool.new(
+            date:         keep_yyyy(row['date']),
+            institution:  institution,
+            discipline:   row['discipline'],
+            degree:       row['degree']
+          )
         end
-        OralHistoryContent::IntervieweeSchool.new(
-          date:         keep_yyyy(row['date']),
-          institution:  institution,
-          discipline:   row['discipline'],
-          degree:       row['degree']
-        )
       end
     end
 
     def self.career(oral_history_content, rows, transformations: nil)
-      oral_history_content.interviewee_job = rows.map do |row |
-        institution = row['employer_name']
-        if transformations.present? && transformations[institution].present?
-          institution = transformations[institution]
+      get_bios(rows).each_pair do |bio, bio_rows|
+        bio.job = bio_rows.map do |row |
+          institution = row['employer_name']
+          if transformations.present? && transformations[institution].present?
+            institution = transformations[institution]
+          end
+          OralHistoryContent::IntervieweeJob.new(
+            start:        keep_yyyy(row['job_start_date']),
+            end:          keep_yyyy(row['job_end_date']),
+            institution:  institution,
+            role:         row['job_title']
+          )
         end
-        OralHistoryContent::IntervieweeJob.new(
-          start:        keep_yyyy(row['job_start_date']),
-          end:          keep_yyyy(row['job_end_date']),
-          institution:  institution,
-          role:         row['job_title']
-        )
       end
     end
 
     def self.honors(oral_history_content, rows, transformations: nil)
       sanitizer = DescriptionSanitizer.new
+      get_bios(rows).each_pair do |bio, bio_rows|
+        honors = rows.map do |row |
+          args = {
+            start_date:   keep_yyyy(row['interviewee_honor_start_date']),
+            honor:        sanitizer.sanitize(row['interviewee_honor_description'])
+          }
+          if row['interviewee_honor_start_date'] != row['interviewee_honor_end_date']
+            args[:end_date] = keep_yyyy(row['interviewee_honor_end_date'])
+          end
 
-      honors = rows.map do |row |
-        args = {
-          start_date:   keep_yyyy(row['interviewee_honor_start_date']),
-          honor:        sanitizer.sanitize(row['interviewee_honor_description'])
-        }
-        if row['interviewee_honor_start_date'] != row['interviewee_honor_end_date']
-          args[:end_date] = keep_yyyy(row['interviewee_honor_end_date'])
+          if args.values.all?(&:nil?)
+            nil
+          else
+            OralHistoryContent::IntervieweeHonor.new(args)
+          end
         end
-
-        if args.values.all?(&:nil?)
-          nil
-        else
-          OralHistoryContent::IntervieweeHonor.new(args)
-        end
+        bio.honor = honors.compact
       end
-
-      oral_history_content.interviewee_honor = honors.compact
     end
 
 

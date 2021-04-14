@@ -29,6 +29,9 @@ module OhMicrositeImportUtilities
         if relevant_rows.empty?
           @no_source << w.friendlier_id; next
         end
+        relevant_rows.each do |row|
+          set_up_bio(work: w, id:row['interview_entity_id'] , name:row['interviewee_name'])
+        end
         @matches[w.friendlier_id] = relevant_rows.map {|row| row['interview_entity_id']}
       end
     end
