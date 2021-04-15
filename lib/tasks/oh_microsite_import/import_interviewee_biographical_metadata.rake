@@ -14,7 +14,7 @@ namespace :scihist do
       works = works_we_want(args)
       mapper = InterviewMapper.new(works)
       mapper.construct_map
-      mapper.report
+      mapper.run_report
       works_updated = Set.new; errors = []
       metadata_files.each do |field|
         rows = JSON.parse(File.read("#{files_location}/#{field}.json"))

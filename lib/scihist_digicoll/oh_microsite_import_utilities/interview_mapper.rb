@@ -4,14 +4,20 @@
 
 require "shrine"
 module OhMicrositeImportUtilities
-  # Attempts to establish a mapping between interviews in the microsite and interviews in the digital collections.
-  # "Ghosts", unpublished duplicate interviews in the microsite, are removed from the mapping first of all, so they can
-  # be ignored for the rest of the imprort. Then we sort
+  # Attempts to establish a mapping between interviews in the microsite
+  # and works in the digital collections.
+  # "Ghosts", unpublished duplicate interviews in the microsite, are
+  # removed from the mapping first of all, so they can
+  # be ignored for the rest of the import.
+  # Then we classify the remaining interviews into:
+  # Matches
+  # Works with no source interview (@no_source)
+  # Interviews with no destination work ()
   class InterviewMapper
     attr_accessor :ghosts, :no_source
 
     def initialize(works)
-      @names = parse_names()
+      @names = parse_names
       @works = works
 
       # friendlier_ids of works with no source to migrate from:
@@ -20,43 +26,47 @@ module OhMicrositeImportUtilities
       @ghosts = []
       # friendlier_id => [interview_entity_id, interview_entity_id_2]
       @matches = {}
+      # So we can keep track of any remaining mismatches and fix them
+      @report = []
     end
 
-    def construct_map()
+    def construct_map
       remove_ghosts
       @works.find_each do |w|
         relevant_rows = select_rows(@names, w)
         if relevant_rows.empty?
-          @no_source << w.friendlier_id; next
+          @no_source << w.friendlier_id
+          add_to_report(work: w)
+          next
         end
         relevant_rows.each do |row|
           set_up_bio(work: w, id:row['interview_entity_id'] , name:row['interviewee_name'])
+          add_to_report(row:row, work: w)
         end
         @matches[w.friendlier_id] = relevant_rows.map {|row| row['interview_entity_id']}
       end
     end
 
-    def report()
+    def run_report
+      puts "\"Ghost\" interviews: #{@ghosts.count}"
       puts "Matches: #{@matches.keys.count}"
-      the_others = unaccounted_for()
-      if the_others.count < 10
-        puts "Interviews with no destination work: \n #{the_others}"
-      else
-        puts "Interviews with no destination work: #{the_others.count}"
-      end
-      puts "Interviews with more than one source: #{@matches.values.select {|v| v.count > 1} }"
-      puts "Ghost interviews: #{@ghosts.count}"
+      puts "Works with no source interview:  #{@no_source.count}"
+      no_dest = calculate_no_dest
+      no_dest.each { |row| add_to_report(row: row) }
+      puts "Interviews with no destination work: #{no_dest.count}"
+      report_file_path = "#{files_location}/report.txt"
+      File.open(report_file_path, "w") { |f| f.write @report.join("\n") }
+      puts "See also #{report_file_path}."
     end
 
     # The microsite contains a number of unpublished duplicate records
     # which are artefacts of an *earlier* migration.
     # Ideally, we would delete these from the microsite pre-emptively,
     # *before* attemptint the migration.
-    # Removes ghost interviews from @names,
-    # and store their `interview_entity_id` in @ghosts
+    # This removes ghost interviews from @names
     # so that we don't bother attempting to import them later on.
-    def remove_ghosts()
-      all_interview_numbers = @names.map {|i| i['interview_number']}.uniq.sort
+    def remove_ghosts
+      all_interview_numbers = @names.map { |i| i['interview_number'] }.uniq.sort
       all_interview_numbers.each do |interview_number|
         # the .dup is unneccessary, but makes the following easier to understand.
         ghosts =  @names.select { |interviewee| interviewee['interview_number'] == interview_number }.dup
@@ -64,32 +74,59 @@ module OhMicrositeImportUtilities
         # a ghost needs to be unpublished and a duplicate
         ghosts.delete_if  {|interview| interview['published'] == 1 }
         next unless ghosts.present?
-        ghosts.each { |ghost| remove_ghost(ghost) }
+        ghosts.each do |ghost|
+          remove_ghost(ghost)
+          add_to_report(row: ghost, ghost:true)
+        end
       end
     end
+
 
     def remove_ghost(ghost)
       @ghosts << ghost['interview_entity_id']
       @names.delete_if {|interview| interview['interview_entity_id'] == ghost['interview_entity_id'] }
     end
 
-    # These are interviews in the microsite
-    # that have no destination interview in the digital collection
+    # Iterate through the source interviews to find any
+    # that have no destination work in the digital collection
     # that we can migrate to.
-    def unaccounted_for()
+    def calculate_no_dest
       migrated = @matches.values.flatten
-      @names.select do |inte|
-        !(migrated.include? inte['interview_entity_id']) && !(@ghosts.include? inte['interview_entity_id'])
-      end
+      result = @names.dup
+      result.delete_if { |i| migrated.include? i['interview_entity_id']}
+      result.delete_if { |i| @ghosts.include?  i['interview_entity_id']}
     end
 
-    def parse_names()
+    def parse_names
       names = JSON.parse(File.read("#{files_location}/name.json"))
       unless names.is_a? Array
         puts "Error parsing names data."
         abort
       end
       @names = names
+    end
+
+    def add_to_report (row:nil, work:nil, ghost:false)
+      if row.nil? && work.nil?
+        "Bad item added to report."
+        abort
+      end
+      if row.present?
+        name = row['interviewee_name'].split(' ').last
+        pub =  (row['published'] == 1) ? "PUBLISHED" : "NOT_PUBLISHED"
+        # ghosts are by definition unpublished, but
+        # we want to distinguish them from non-ghost unpublished items.
+        pub = "GHOST" if ghost
+        source = "/node/#{row['interview_number']}/"
+        dest = "NO_DEST"
+      end
+      if work.present?
+        name =  work.title.split(' ').last
+        pub = (work.published?) ? "PUBLISHED" : "NOT_PUBLISHED"
+        source ||= 'NO_SOURCE'
+        dest =  "/admin/works/#{work.friendlier_id}"
+      end
+      @report << [name, pub, source, dest].join(" ")
     end
   end
 end
