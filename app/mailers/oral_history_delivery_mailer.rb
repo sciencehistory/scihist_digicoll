@@ -1,5 +1,5 @@
 class OralHistoryDeliveryMailer < ApplicationMailer
-  default from: ScihistDigicoll::Env.lookup!(:oral_history_email_address)
+  default from: ScihistDigicoll::Env.lookup!(:oral_history_email_address), bcc: ScihistDigicoll::Env.lookup!(:oral_history_email_address)
 
 
   def oral_history_delivery_email

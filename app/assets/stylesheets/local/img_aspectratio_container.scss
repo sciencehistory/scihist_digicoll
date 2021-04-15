@@ -23,3 +23,8 @@
     height: 100%;
   }
 }
+
+// if it's in a figure, let's treat it as a figure-img
+.figure .img-aspectratio-container {
+  @extend .figure-img;
+}
