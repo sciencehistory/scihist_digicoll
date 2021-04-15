@@ -36,31 +36,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     end
   end
 
-  context "add an OHMS XML file" do
-    let(:valid_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml" }
 
-    let(:work) { FactoryBot.create(:work, genre: ["Oral histories"]) }
-
-    it "can add valid file" do
-      put :submit_ohms_xml, params: { id: work.friendlier_id, ohms_xml: Rack::Test::UploadedFile.new(valid_xml_path, "application/xml")}
-      expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
-      expect(flash[:error]).to be_blank
-
-      expect(work.reload.oral_history_content.ohms_xml).to be_present
-    end
-
-    it "can't add an invalid file" do
-      put :submit_ohms_xml, params: {
-        id: work.friendlier_id,
-        ohms_xml: Rack::Test::UploadedFile.new(StringIO.new("not > xml"), "application/xml", original_filename: "foo.xml")
-      }
-
-      expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
-      expect(flash[:error]).to include("OHMS XML file was invalid and could not be accepted")
-
-      expect(work.reload.oral_history_content&.ohms_xml).not_to be_present
-    end
-  end
 
 
   context "Reorder members " do
@@ -91,99 +67,143 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     end
   end
 
-  context "Adding, updating and removing full-text searches " do
+  context "Oral histories" do
+    let(:work) { create(:oral_history_work) }
 
-    let(:transcript_path) { Rails.root + "spec/test_support/text/0767.txt" }
-    let(:pdf_path) { Rails.root + "spec/test_support/pdf/sample.pdf" }
+    context "add an OHMS XML file" do
+      let(:valid_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml" }
 
-    let(:work) { FactoryBot.create(:work,
-      genre: ["Oral histories"],
-      external_id: [
-        Work::ExternalId.new({"value"=>"0012",   "category"=>"interview"}),
-      ])
-    }
+      it "can add valid file" do
+        put :submit_ohms_xml, params: { id: work.friendlier_id, ohms_xml: Rack::Test::UploadedFile.new(valid_xml_path, "application/xml")}
+        expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
+        expect(flash[:error]).to be_blank
 
-    it "can add a file" do
-      put :submit_searchable_transcript_source, params: {
-        id: work.friendlier_id,
-        searchable_transcript_source: Rack::Test::UploadedFile.new(transcript_path, "text/plain")
-      }
-      expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
-      expect(flash[:error]).to be_blank
-      expect(work.oral_history_content!.searchable_transcript_source).to be_present
-    end
+        expect(work.reload.oral_history_content.ohms_xml).to be_present
+      end
 
-    it "can delete the file" do
-      put :remove_searchable_transcript_source, params: {
-        id: work.friendlier_id#,
-      }
-      expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
-      expect(flash[:error]).to be_blank
-      expect(flash[:notice]).to match /has been removed/
-      expect(work.oral_history_content!.searchable_transcript_source).not_to be_present
-    end
-
-    it "can download the file" do
-      get :download_searchable_transcript_source, params: { id: work.friendlier_id }
-      expect(response.status).to eq 200
-      expect(response.header["Content-Disposition"]).to eq(
-        "attachment; filename=\"0012_transcript.txt\"; filename*=UTF-8''0012_transcript.txt"
-      )
-    end
-  end
-
-  context "create audio derivatives",  logged_in_user: :admin do
-    let(:no_audio_files) { FactoryBot.create(:work, genre: ["Oral histories"]) }
-    let!(:oral_history) { FactoryBot.create(
-      :work,
-      :published,      # with the metadata necessary to publish it...
-      published: false, # but not actually published.
-      genre: ["Oral histories"],
-      title: "Oral history with two interview audio segments")
-    }
-    let!(:audio_asset_1)  { create(:asset, :inline_promoted_file,
-        position: 1,
-        parent_id: oral_history.id,
-        file: File.open((Rails.root + "spec/test_support/audio/ice_cubes.mp3"))
-      )
-    }
-    let!(:audio_asset_2)  { create(:asset, :inline_promoted_file,
-        position: 2,
-        parent_id: oral_history.id,
-        file: File.open((Rails.root + "spec/test_support/audio/double_ice_cubes.mp3"))
-      )
-    }
-
-    it "kicks off an audio derivatives job" do
-      expect(oral_history.members.map(&:stored?)).to match([true, true])
-      put :create_combined_audio_derivatives, params: { id: oral_history.friendlier_id }
-      expect(response).to redirect_to(admin_work_path(oral_history, anchor: "nav-oral-histories"))
-      expect(CreateCombinedAudioDerivativesJob).to have_been_enqueued
-    end
-  end
-
-  context "change oh available by request" do
-    let(:was_true_asset) { create(:asset_with_faked_file, :mp3, oh_available_by_request: true) }
-    let(:was_false_asset) { create(:asset_with_faked_file, :mp3, oh_available_by_request: false) }
-    let(:work) { create(:oral_history_work, members: [was_true_asset, was_false_asset])}
-
-    it "changes" do
-      put :update_oh_available_by_request, params: {
-        id: work.friendlier_id,
-        oral_history_content: {
-          available_by_request_mode: "automatic"
-        },
-        available_by_request: {
-          was_true_asset.id => "false",
-          was_false_asset.id => "true",
-          "no_such_id" => "true"
+      it "can't add an invalid file" do
+        put :submit_ohms_xml, params: {
+          id: work.friendlier_id,
+          ohms_xml: Rack::Test::UploadedFile.new(StringIO.new("not > xml"), "application/xml", original_filename: "foo.xml")
         }
-      }
-      expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
 
-      expect(work.reload.oral_history_content.available_by_request_mode).to eq("automatic")
-      expect(was_false_asset.reload.oh_available_by_request).to be true
-      expect(was_true_asset.reload.oh_available_by_request).to be false
+        expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
+        expect(flash[:error]).to include("OHMS XML file was invalid and could not be accepted")
+
+        expect(work.reload.oral_history_content&.ohms_xml).not_to be_present
+      end
+    end
+
+    context "Adding, updating and removing full-text searches " do
+      let(:transcript_path) { Rails.root + "spec/test_support/text/0767.txt" }
+      let(:pdf_path) { Rails.root + "spec/test_support/pdf/sample.pdf" }
+
+      let(:work) { FactoryBot.create(:work,
+        genre: ["Oral histories"],
+        external_id: [
+          Work::ExternalId.new({"value"=>"0012",   "category"=>"interview"}),
+        ])
+      }
+
+      it "can add a file" do
+        put :submit_searchable_transcript_source, params: {
+          id: work.friendlier_id,
+          searchable_transcript_source: Rack::Test::UploadedFile.new(transcript_path, "text/plain")
+        }
+        expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
+        expect(flash[:error]).to be_blank
+        expect(work.oral_history_content!.searchable_transcript_source).to be_present
+      end
+
+      it "can delete the file" do
+        put :remove_searchable_transcript_source, params: {
+          id: work.friendlier_id#,
+        }
+        expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
+        expect(flash[:error]).to be_blank
+        expect(flash[:notice]).to match /has been removed/
+        expect(work.oral_history_content!.searchable_transcript_source).not_to be_present
+      end
+
+      it "can download the file" do
+        get :download_searchable_transcript_source, params: { id: work.friendlier_id }
+        expect(response.status).to eq 200
+        expect(response.header["Content-Disposition"]).to eq(
+          "attachment; filename=\"0012_transcript.txt\"; filename*=UTF-8''0012_transcript.txt"
+        )
+      end
+    end
+
+    context "create audio derivatives",  logged_in_user: :admin do
+      let!(:oral_history) { FactoryBot.create(
+        :work,
+        :published,      # with the metadata necessary to publish it...
+        published: false, # but not actually published.
+        genre: ["Oral histories"],
+        title: "Oral history with two interview audio segments")
+      }
+      let!(:audio_asset_1)  { create(:asset, :inline_promoted_file,
+          position: 1,
+          parent_id: oral_history.id,
+          file: File.open((Rails.root + "spec/test_support/audio/ice_cubes.mp3"))
+        )
+      }
+      let!(:audio_asset_2)  { create(:asset, :inline_promoted_file,
+          position: 2,
+          parent_id: oral_history.id,
+          file: File.open((Rails.root + "spec/test_support/audio/double_ice_cubes.mp3"))
+        )
+      }
+
+      it "kicks off an audio derivatives job" do
+        expect(oral_history.members.map(&:stored?)).to match([true, true])
+        put :create_combined_audio_derivatives, params: { id: oral_history.friendlier_id }
+        expect(response).to redirect_to(admin_work_path(oral_history, anchor: "nav-oral-histories"))
+        expect(CreateCombinedAudioDerivativesJob).to have_been_enqueued
+      end
+    end
+
+    context "change oh available by request" do
+      let(:was_true_asset) { create(:asset_with_faked_file, :mp3, oh_available_by_request: true) }
+      let(:was_false_asset) { create(:asset_with_faked_file, :mp3, oh_available_by_request: false) }
+      let(:work) { create(:oral_history_work, members: [was_true_asset, was_false_asset])}
+
+      it "changes" do
+        put :update_oh_available_by_request, params: {
+          id: work.friendlier_id,
+          oral_history_content: {
+            available_by_request_mode: "automatic"
+          },
+          available_by_request: {
+            was_true_asset.id => "false",
+            was_false_asset.id => "true",
+            "no_such_id" => "true"
+          }
+        }
+        expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
+
+        expect(work.reload.oral_history_content.available_by_request_mode).to eq("automatic")
+        expect(was_false_asset.reload.oh_available_by_request).to be true
+        expect(was_true_asset.reload.oh_available_by_request).to be false
+      end
+    end
+
+    context "update interviewee biography" do
+      let(:interviewee_biography) { create(:interviewee_biography) }
+
+      it "reindexes the work" do
+        # cheesy hacky way to intercept solr index update method and ensure it happened
+        expect_any_instance_of(Work).to receive(:update_index)
+
+        put :update_oral_history_content, params: {
+          id: work.friendlier_id,
+          oral_history_content: {
+            interviewee_biography_ids: [interviewee_biography.id]
+          }
+        }
+
+        expect(work.oral_history_content.reload.interviewee_biography_ids).to eq([interviewee_biography.id])
+      end
     end
   end
 
@@ -243,9 +263,6 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         expect(work.published?).to be true
         expect(work.members.all? {|m| m.published?}).to be false
       end
-
-
-
 
       it "can delete, and deletes children" do
         put :destroy, params: { id: work.friendlier_id }

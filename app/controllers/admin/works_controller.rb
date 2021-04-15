@@ -202,6 +202,12 @@ class Admin::WorksController < AdminController
       params.require(:oral_history_content).permit(interviewer_profile_ids: [], interviewee_biography_ids: [])
     )
 
+    # This action can update the which IntervieweeBiographies are linked, which changes
+    # indexing. Other OralHistoryContent could also be indexed. But there is no
+    # automatic model-callback based reindexing of Work based on changes in associated
+    # OralHistoryContent, so we trigger it here ourselves in controller action.
+    @work.update_index
+
     redirect_to admin_work_path(@work, anchor: "nav-oral-histories")
   end
 
