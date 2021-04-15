@@ -7,8 +7,12 @@ module OhMicrositeImportUtilities
     ENV['FILES_LOCATION'].nil? ? '/tmp/ohms_microsite_import_data' : ENV['FILES_LOCATION']
   end
 
-  def get_interviewee(work)
-    work.creator.find { |id| id.category == "interviewee" }&.value
+  def get_interviewees(work)
+    work.creator.select { |id| id.category == "interviewee" }.map(&:value)
+  end
+
+  def get_interviewers(work)
+    work.creator.select { |id| id.category == "interviewer" }.map(&:value)
   end
 
   def get_accession_number(work)
@@ -32,12 +36,26 @@ module OhMicrositeImportUtilities
     %w{ education career honors image interviewer}
   end
 
+  # If there's only one name in the digital collection, use that one.
+  # If there's more than one name, pick the one with the same first name as the one in the microsite.
+  # Remove any trailing dates, commas and dashes.
+  def name_recipe(microsite_name:, digicoll_names:)
+    if digicoll_names.count == 1
+      fast_name = digicoll_names.first
+    else
+      first_name = microsite_name.split(' ').first
+      fast_name = digicoll_names.find{|n| n.include? first_name}
+    end
+    # I'm removing the trailing dates.
+    fast_name.gsub(/[0-9 ,\-]+$/, '')
+  end
+
   # Given an oral history and an asssociated interviewee's name and Drupal ID,
   # make sure that the work is associated with an IntervieweeBiography for that
   # interviewee.
   def set_up_bio(work:, id:, name:)
     bio = IntervieweeBiography.find_or_initialize_by(id: id)
-    bio.name = name
+    bio.name = name_recipe(microsite_name:name, digicoll_names:get_interviewees(work))
     unless bio.oral_history_content.include? work.oral_history_content
       bio.oral_history_content << work.oral_history_content
     end
@@ -63,6 +81,19 @@ module OhMicrositeImportUtilities
       puts "No validation errors."
     end
     puts "Works updated: #{works_updated.count}"
+  end
+
+  # We only have 71 interviewers, as of the import, and these names
+  # are never seen by the public. So this doesn't have to be perfect.
+  # Let's resort to a quick-and-dirty recipe.
+  def interviewer_name_switcher(name)
+    exceptions = {
+     "John Kenly Smith, Jr." => "Smith, John Kenly Jr.",
+     "Peter J. T. Morris" => "Morris, Peter J. T.", # Think those are spaces? Think again.
+     "David van Keuren" => "van Keuren, David"
+    }
+    parts = name.split(" ")
+    exceptions[name] || "#{parts.last}, #{parts[0...-1].join (' ')}"
   end
 
 end
