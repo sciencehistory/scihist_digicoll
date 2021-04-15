@@ -33,6 +33,7 @@ class Admin::OralHistoryAccessRequestsController < AdminController
       ActionMailer::Base.mail(
         from: ScihistDigicoll::Env.lookup!(:oral_history_email_address),
         to: @oral_history_access_request.patron_email,
+        bcc: ScihistDigicoll::Env.lookup!(:oral_history_email_address),
         subject: "Science History Institute: Your request",
         body: custom_message
       ).deliver_later
