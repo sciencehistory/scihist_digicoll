@@ -129,6 +129,19 @@ class WorkIndexer < Kithe::Indexer
       end
     end
 
+    # WARNING: changes to interviewee_biography data or links don't automatically trigger Work
+    # reindex, although may require a reindex of associated works. We handle it just in
+    # controller update actions.
+
+    # We need the #to_a in there to get past the `ActiveRecord::Associations::CollectionProxy` cause it isn't
+    # REALLY an array. https://github.com/sciencehistory/kithe/issues/119
+    to_field "oh_institution_facet",
+        obj_extract("oral_history_content", "interviewee_biographies", "to_a", "school", "institution"),
+        obj_extract("oral_history_content", "interviewee_biographies",  "to_a", "job", "institution"),
+        unique
+
+    to_field "oh_birth_country_facet", obj_extract("oral_history_content", "interviewee_biographies", "to_a", "birth", "country_name")
+
     # Transcript text, use OHMS transcript if we got it, otherwise plaintext if
     # we got it.
     #

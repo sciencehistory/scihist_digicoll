@@ -86,5 +86,24 @@ RSpec.describe Admin::IntervieweeBiographiesController, :logged_in_user, type: :
         expect(response.status).to eq(200)
       end
     end
+
+    context "#update" do
+      let(:work) { create(:oral_history_work) }
+      let(:interviewee_biography) { work.oral_history_content.interviewee_biographies.first }
+
+      it "automatically triggeres a reindex of attached works" do
+        # cheesy hacky way to test this...
+        expect_any_instance_of(Work).to receive(:update_index)
+
+        patch :update, params: {
+          "id" => interviewee_biography.id,
+          "interviewee_biography" =>
+            { "birth_attributes"=>{"date"=>"1900", "city"=>"", "state"=>"", "province"=>"", "country"=>""} }
+        }
+      end
+
+    end
+
+
   end
 end
