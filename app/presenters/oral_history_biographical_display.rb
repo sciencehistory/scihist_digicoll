@@ -11,11 +11,11 @@ class OralHistoryBiographicalDisplay < ViewModel
 
 
   def schools
-    @schools ||= (biography.school || []).sort_by(&:date)
+    @schools ||= (biography.school || []).sort_by { |school| school&.date || "0" }
   end
 
   def honors
-    @honors ||= (biography.honor || []).sort_by(&:start_date)
+    @honors ||= (biography.honor || []).sort_by { |honor| honor&.start_date || "0" }
   end
 
   # Hash where key is institution, value is array of jobs at that institution.
@@ -29,10 +29,10 @@ class OralHistoryBiographicalDisplay < ViewModel
       groups  = (biography.job || []).group_by {|job| job.institution }.to_a
 
       groups.each do |institution, jobs|
-        jobs.sort_by! {|job| job.start || 0 }
+        jobs.sort_by! {|job| job.start || "0" }
       end
 
-      groups.sort_by! { |institution, jobs| jobs.first&.start || 0 }
+      groups.sort_by! { |institution, jobs| jobs.first&.start || "0" }
 
       groups.to_h
     end
