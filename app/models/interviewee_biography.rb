@@ -1,3 +1,6 @@
+# WARNING: changes to these objects don't automatically trigger Work reindex, although may
+# require a reindex of associated works. We handle it just in controller update actions.
+
 class IntervieweeBiography < ApplicationRecord
   include AttrJson::Record
   include AttrJson::NestedAttributes
