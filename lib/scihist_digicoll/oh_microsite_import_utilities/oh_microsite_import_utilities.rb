@@ -38,6 +38,8 @@ module OhMicrositeImportUtilities
 
   # If there's only one name in the digital collection, use that one.
   # If there's more than one name, pick the one with the same first name as the one in the microsite.
+  # if you can't find that name, give up.
+  #
   # Remove any trailing dates, commas and dashes.
   def name_recipe(microsite_name:, digicoll_names:)
     if digicoll_names.count == 1
@@ -45,6 +47,10 @@ module OhMicrositeImportUtilities
     else
       first_name = microsite_name.split(' ').first
       fast_name = digicoll_names.find{|n| n.include? first_name}
+      if fast_name.nil?
+        puts "Could not figure out a FAST name for #{microsite_name}"
+        fast_name = microsite_name
+      end
     end
     # I'm removing the trailing dates.
     fast_name.gsub(/[0-9 ,\-]+$/, '')
