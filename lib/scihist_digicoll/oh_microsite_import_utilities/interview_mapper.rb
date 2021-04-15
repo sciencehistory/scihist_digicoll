@@ -17,12 +17,13 @@ module OhMicrositeImportUtilities
     attr_accessor :ghosts, :no_source
 
     def initialize(works)
+      # interviews from the microsite database
       @names = parse_names
+      # destination works
       @works = works
-
-      # friendlier_ids of works with no source to migrate from:
+      # friendlier_ids of works with no source to migrate from
       @no_source = []
-      # unpublished duplicates we are going to ignore:
+      # unpublished duplicates we are going to ignore
       @ghosts = []
       # friendlier_id => [interview_entity_id, interview_entity_id_2]
       @matches = {}

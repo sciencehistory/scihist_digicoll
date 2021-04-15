@@ -6,9 +6,9 @@ module OhMicrositeImportUtilities
     attr_accessor :errors, :works_updated
 
     def initialize(field:, works:, mapper:, rows:)
-      # @debug_fields = ['honors'] # regular mode
+      @debug_fields = nil # regular mode
       # @debug_fields = ['any'] # supress progress bar and fail fast
-      # @debug_fields = ['birth_city'] #suppress progress bar, fail fast, and ignore all metadata except specified fields.
+      # @debug_fields = ['interviewer'] #suppress progress bar, fail fast, and ignore all metadata except specified fields.
       @field, @works, @mapper, @rows = field, works, mapper, rows
       ghosts = @mapper.ghosts
       @rows.reject! { |arr| ghosts.include? arr['interview_entity_id'] }
