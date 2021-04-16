@@ -115,19 +115,19 @@ module OhMicrositeImportUtilities
       if row.present?
         name = row['interviewee_name'].split(' ').last
         pub =  (row['published'] == 1) ? "PUBLISHED" : "NOT_PUBLISHED"
-        # ghosts are by definition unpublished, but
-        # we want to distinguish them from non-ghost unpublished items.
-        pub = "GHOST" if ghost
-        source = "/node/#{row['interview_number']}/"
+        ghost_status = ghost ? "GHOST" : "NOT_GHOST"
+        source = "https://oh.sciencehistory.org/node/#{row['interview_entity_id']}/"
         dest = "NO_DEST"
       end
+      # Overwrite with destination data, where possible:
       if work.present?
         name =  work.title.split(' ').last
-        pub = (work.published?) ? "PUBLISHED" : "NOT_PUBLISHED"
+        pub ||= (work.published?) ? "PUBLISHED" : "NOT_PUBLISHED"
+        ghost_status = ghost ? "GHOST" : "NOT_GHOST"
         source ||= 'NO_SOURCE'
-        dest =  "/admin/works/#{work.friendlier_id}"
+        dest =  "https://digital.sciencehistory.org/admin/works/#{work.friendlier_id}"
       end
-      @report << [name, pub, source, dest].join(" ")
+      @report << [name, pub, ghost_status, source, dest].join(" ")
     end
   end
 end
