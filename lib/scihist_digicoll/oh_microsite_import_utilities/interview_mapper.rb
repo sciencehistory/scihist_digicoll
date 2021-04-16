@@ -69,23 +69,18 @@ module OhMicrositeImportUtilities
     def remove_ghosts
       all_interview_numbers = @names.map { |i| i['interview_number'] }.uniq.sort
       all_interview_numbers.each do |interview_number|
-        # the .dup is unneccessary, but makes the following easier to understand.
+        # the .dup is unneccessary, but does make the following easier to understand.
         ghosts =  @names.select { |interviewee| interviewee['interview_number'] == interview_number }.dup
         next if ghosts.count < 2
         # a ghost needs to be unpublished and a duplicate
         ghosts.delete_if  {|interview| interview['published'] == 1 }
         next unless ghosts.present?
         ghosts.each do |ghost|
-          remove_ghost(ghost)
           add_to_report(row: ghost, ghost:true)
+          @ghosts << ghost['interview_entity_id']
+          @names.delete_if {|interview| interview['interview_entity_id'] == ghost['interview_entity_id'] }
         end
       end
-    end
-
-
-    def remove_ghost(ghost)
-      @ghosts << ghost['interview_entity_id']
-      @names.delete_if {|interview| interview['interview_entity_id'] == ghost['interview_entity_id'] }
     end
 
     # Iterate through the source interviews to find any

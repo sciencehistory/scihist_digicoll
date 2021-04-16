@@ -49,8 +49,7 @@ module OhMicrositeImportUtilities
       relevant_rows = select_rows(@rows, w)
       return if relevant_rows.empty?
       begin
-        Updaters.send(field, w.oral_history_content, relevant_rows, transformations: transformations)
-        w.oral_history_content.interviewee_biographies.each { |b| b.save! }
+        Updaters.send(field, w, relevant_rows, transformations: transformations)
       rescue StandardError => e
         if @debug_fields.present?
           # debug mode: fail fast and provide accurate stacktrace

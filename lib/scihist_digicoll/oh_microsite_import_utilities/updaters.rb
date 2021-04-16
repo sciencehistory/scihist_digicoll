@@ -39,7 +39,7 @@ module OhMicrositeImportUtilities
   # },
 
   module Updaters
-    def self.birth_date(oral_history_content, rows, transformations: nil)
+    def self.birth_date(w, rows, transformations: nil)
       rows.each do |row|
         bio = IntervieweeBiography.find(row['interview_entity_id'])
         bio.birth ||= OralHistoryContent::DateAndPlace.new
@@ -48,7 +48,7 @@ module OhMicrositeImportUtilities
       end
     end
 
-    def self.birth_city(oral_history_content, rows, transformations: nil)
+    def self.birth_city(w, rows, transformations: nil)
       rows.each do |row|
         bio = IntervieweeBiography.find(row['interview_entity_id'])
         bio.birth ||= OralHistoryContent::DateAndPlace.new
@@ -57,7 +57,7 @@ module OhMicrositeImportUtilities
       end
     end
 
-    def self.birth_state(oral_history_content, rows, transformations: nil)
+    def self.birth_state(w, rows, transformations: nil)
       rows.each do |row|
         bio = IntervieweeBiography.find(row['interview_entity_id'])
         bio.birth ||= OralHistoryContent::DateAndPlace.new
@@ -66,7 +66,7 @@ module OhMicrositeImportUtilities
       end
     end
 
-    def self.birth_province(oral_history_content, rows, transformations: nil)
+    def self.birth_province(w, rows, transformations: nil)
       rows.each do |row|
         bio = IntervieweeBiography.find(row['interview_entity_id'])
         bio.birth ||= OralHistoryContent::DateAndPlace.new
@@ -75,7 +75,7 @@ module OhMicrositeImportUtilities
       end
     end
 
-    def self.birth_country(oral_history_content, rows, transformations: nil)
+    def self.birth_country(w, rows, transformations: nil)
       rows.each do |row|
         bio = IntervieweeBiography.find(row['interview_entity_id'])
         bio.birth ||= OralHistoryContent::DateAndPlace.new
@@ -84,7 +84,7 @@ module OhMicrositeImportUtilities
       end
     end
 
-    def self.death_date(oral_history_content, rows, transformations: nil)
+    def self.death_date(w, rows, transformations: nil)
       rows.each do |row|
         bio = IntervieweeBiography.find(row['interview_entity_id'])
         bio.death ||= OralHistoryContent::DateAndPlace.new
@@ -93,7 +93,7 @@ module OhMicrositeImportUtilities
       end
     end
 
-    def self.death_city(oral_history_content, rows, transformations: nil)
+    def self.death_city(w, rows, transformations: nil)
       rows.each do |row|
         bio = IntervieweeBiography.find(row['interview_entity_id'])
         bio.death ||= OralHistoryContent::DateAndPlace.new
@@ -102,7 +102,7 @@ module OhMicrositeImportUtilities
       end
     end
 
-    def self.death_state(oral_history_content, rows, transformations: nil)
+    def self.death_state(w, rows, transformations: nil)
       rows.each do |row|
         bio = IntervieweeBiography.find(row['interview_entity_id'])
         bio.death ||= OralHistoryContent::DateAndPlace.new
@@ -111,7 +111,7 @@ module OhMicrositeImportUtilities
       end
     end
 
-    def self.death_province(oral_history_content, rows, transformations: nil)
+    def self.death_province(w, rows, transformations: nil)
       rows.each do |row|
         bio = IntervieweeBiography.find(row['interview_entity_id'])
         bio.death ||= OralHistoryContent::DateAndPlace.new
@@ -120,7 +120,7 @@ module OhMicrositeImportUtilities
       end
     end
 
-    def self.death_country(oral_history_content, rows, transformations: nil)
+    def self.death_country(w, rows, transformations: nil)
       rows.each do |row|
         bio = IntervieweeBiography.find(row['interview_entity_id'])
         bio.death ||= OralHistoryContent::DateAndPlace.new
@@ -129,7 +129,7 @@ module OhMicrositeImportUtilities
       end
     end
 
-    def self.education(oral_history_content, rows, transformations: nil)
+    def self.education(w, rows, transformations: nil)
       get_bios(rows).each_pair do |bio, bio_rows|
         bio.school = bio_rows.map do |row|
           institution = row['school_name']
@@ -147,7 +147,7 @@ module OhMicrositeImportUtilities
       end
     end
 
-    def self.career(oral_history_content, rows, transformations: nil)
+    def self.career(w, rows, transformations: nil)
       get_bios(rows).each_pair do |bio, bio_rows|
         bio.job = bio_rows.map do |row |
           institution = row['employer_name']
@@ -165,7 +165,7 @@ module OhMicrositeImportUtilities
       end
     end
 
-    def self.honors(oral_history_content, rows, transformations: nil)
+    def self.honors(w, rows, transformations: nil)
       sanitizer = DescriptionSanitizer.new
       get_bios(rows).each_pair do |bio, bio_rows|
         honors = bio_rows.map do |row |
@@ -191,19 +191,21 @@ module OhMicrositeImportUtilities
 
     # We are only migrating associations with interviewers who actually have bios.
     # The list of interviewer names is already stored in the creator field of the Work.
-    def self.interviewer(oral_history_content, rows, transformations: nil)
+    def self.interviewer(w, rows, transformations: nil)
       profiles = InterviewerProfile.where(id: rows.map {|r| r['interviewer_id']})
-      oral_history_content.interviewer_profiles = profiles
+      w.oral_history_content.interviewer_profiles = profiles
+      w.oral_history_content.save!
     end
 
-    def self.image(oral_history_content, rows, transformations: nil)
+    def self.image(w, rows, transformations: nil)
+      row = rows.first
       uploader  = IntervieweePortraitUploader.new({
-        work: oral_history_content.work,
-        filename: rows.first['filename'],
-        url:      rows.first['url'],
-        title:    rows.first['title'],
-        alt_text: rows.first['alt'],
-        caption:  rows.first['caption']
+        work:     w,
+        filename: row['filename'],
+        url:      row['url'],
+        title:    row['title'],
+        alt_text: row['alt'],
+        caption:  row['caption']
       })
       uploader.maybe_upload_file
       uploader.maybe_update_metadata
