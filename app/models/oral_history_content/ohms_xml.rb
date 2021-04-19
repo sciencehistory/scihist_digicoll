@@ -105,6 +105,12 @@ class OralHistoryContent
           end
         end.compact
       end
+
+      # We want to allow <i> tags, and strip/escape the rest appropriately.
+      def html_safe_title
+        Rails::Html::SafeListSanitizer.new.sanitize(title, tags: ['i']).html_safe
+      end
+
     end
 
     private
