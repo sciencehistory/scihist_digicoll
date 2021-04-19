@@ -510,14 +510,14 @@ class CitableAttributes
 
   class TreatAsOralHistory < StandardTreatment
 
-    def interviewee
-      memoize(:interviewee) do
+    def interviewees
+      memoize(:interviewees) do
         CitableAttributes.work_lookup(work, "creator", "interviewee")
       end
     end
 
-    def interviewer
-      memoize(:interviewer) do
+    def interviewers
+      memoize(:interviewers) do
         CitableAttributes.work_lookup(work, "creator", "interviewer")
       end
     end
@@ -529,10 +529,15 @@ class CitableAttributes
     end
 
     def title
-      return work.title if interviewee.blank? || interviewer.blank?
-      place = place_of_interview.blank? ? "" : "in #{normalize_place(place_of_interview.first)}"
-      time = original_date.nil? ? "" : "on #{original_date.strftime("%B %-d, %Y")}"
-      "#{parse_name(interviewee.first).format}, interviewed by #{parse_name(interviewer.first).format} #{place} #{time}"
+      return work.title if interviewees.blank? || interviewers.blank?
+
+      formatted_interviewees = interviewees.collect { |n| parse_name(n).format }.to_sentence
+      formatted_interviewers = interviewers.collect { |n| parse_name(n).format }.to_sentence
+
+      formatted_place = place_of_interview.blank? ? "" : "in #{normalize_place(place_of_interview.first)}"
+      formatted_time = original_date.nil? ? "" : "on #{original_date.strftime("%B %-d, %Y")}"
+
+      "#{formatted_interviewees}, interviewed by #{formatted_interviewers} #{formatted_place} #{formatted_time}"
     end
 
     def csl_type
