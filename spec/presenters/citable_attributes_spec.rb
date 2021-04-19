@@ -450,6 +450,27 @@ describe CitableAttributes do
           end
         end
 
+
+
+
+
+        describe "multiple interviewees and interviewers" do
+          let(:work) { build(:oral_history_work,
+                                creator: [
+                                  { category: "interviewer", value:"Bohning, James J." },
+                                  { category: "interviewer", value:"Van Keuren, David" },
+                                  { category: "interviewee", value:"Karle, Jerome" },
+                                  { category: "interviewee", value:"Karle, Isabella, 1921-2017" }
+                                ]
+          )}
+
+          it "are all included in title" do
+            expect(citable_attributes.title).to start_with(
+              "Jerome Karle and Isabella Karle, interviewed by James J. Bohning and David Van Keuren"
+            )
+          end
+        end
+
         # TODO check these once the renderer is implemented.
         describe "weird citation missing fields" do
           let(:work) { FactoryBot.build(:work, :with_complete_metadata,
