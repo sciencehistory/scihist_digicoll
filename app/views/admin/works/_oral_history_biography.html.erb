@@ -2,7 +2,7 @@
   <h2 class="card-header h3">Interviewee biography</h2>
   <div class="card-body">
     <%= simple_form_for(@work.oral_history_content, url: update_oral_history_content_admin_work_path(@work)) do |f| %>
-      <%= f.association :interviewee_biographies, collection: IntervieweeBiography.order(:name), hint: "Multiple select, hold down command on MacOS or control on Windows to select and deselect" %>
+      <%= f.association :interviewee_biographies, collection: IntervieweeBiography.order(:name), input_html: { "data-tom-select": "true" } %>
       <%= submit_tag "Save Changes", class: "btn btn-primary mb-3" %>
     <% end %>
   </div>

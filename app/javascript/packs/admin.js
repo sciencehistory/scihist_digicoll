@@ -11,3 +11,5 @@ import '../src/js/admin/simple_uppy_file_input';
 import '../src/js/admin/uppy_dashboard.js';
 import '../src/js/admin/qa_autocomplete.js';
 import '../src/js/admin/queue_status_submit.js';
+
+import '../src/js/admin/tom_select.js' // has CSS
