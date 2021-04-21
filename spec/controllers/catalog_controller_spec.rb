@@ -80,6 +80,15 @@ RSpec.describe CatalogController, solr: true, type: :controller do
         expect(response.body).to include("2000 to 2010")
       end
     end
+
+    describe "empty range param", solr: false do
+      let(:params) { { "range" => { "year_facet_isim" => nil } } }
+
+      it "responds with 400" do
+        get :index, params: params
+        expect(response.status).to eq(400)
+      end
+    end
   end
 
   describe "bad URL params passed to range_limit (should not happen under normal use)" do
