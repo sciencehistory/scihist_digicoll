@@ -4,11 +4,11 @@
 <div class="row recent-items-list no-gutters">
   <div class="recent-items-list-content">
     <% RecentItems.new.recent_items.each do |work| %>
-      <div class="recent-item">
+      <div class="recent-item" data-toggle="tooltip" title="<%= work.title %>" >
         <div class="recent-item-image-matte">
           <%= link_to work_path(work.friendlier_id) do %>
             <figure>
-              <%= ThumbDisplay.new(work.leaf_representative, thumb_size: :standard).display %>
+              <%= ThumbDisplay.new(work.leaf_representative, thumb_size: :standard, recent_items:true).display %>
               <figcaption>
                 <div class="recent-item-title-wrapper">
                   <p class="recent-item-title">
