@@ -123,4 +123,4 @@
       </div>
     <% end %>
 
-    <%= f.association :contained_by, collection: Collection.all.to_a.sort_by { |c| c.title.downcase } %>
+    <%= f.association :contained_by, collection: Collection.all.to_a.sort_by { |c| c.title.downcase }, input_html: { "data-tom-select": "true "} %>
