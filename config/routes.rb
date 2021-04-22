@@ -26,8 +26,8 @@ Rails.application.routes.draw do
     }
 
     # Is Oral history host but we don't recognize it? Give them the customly helpful
-    # legacy OH 404
-    get "*path", to: "static#oh_legacy_url_not_found"
+    # legacy OH 404 . Even ".pdf" links, give them a 404 in html.
+    get "*path", to: "static#oh_legacy_url_not_found", format: false, defaults: { format: "html" }
   end
 
 
