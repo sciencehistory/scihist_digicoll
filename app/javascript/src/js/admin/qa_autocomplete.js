@@ -112,16 +112,85 @@ function addAutocomplete(element) {
 
 // Uses jquery, assumes it exists in `window` for now.
 
-jQuery( document ).ready(function() {
-  // When an input is focused, see if it already has autocomplete plugin added,
-  // if not add it. This makes it work for suitable new input elements added
-  // to the DOM (in response to 'add another' links), even if they weren't
-  // there on page at load.
-  $("body").on("focus", "*[data-scihist-qa-autocomplete]", function(event) {
-    var el = $(event.target);
-    if (! el.data("autocomplete")) {
-      // hasn't already had autocomplete plugin added, so add it.
-      addAutocomplete(event.target)
-    }
+// jQuery( document ).ready(function() {
+//   // When an input is focused, see if it already has autocomplete plugin added,
+//   // if not add it. This makes it work for suitable new input elements added
+//   // to the DOM (in response to 'add another' links), even if they weren't
+//   // there on page at load.
+//   $("body").on("focus", "*[data-scihist-qa-autocomplete]", function(event) {
+//     var el = $(event.target);
+//     if (! el.data("autocomplete")) {
+//       // hasn't already had autocomplete plugin added, so add it.
+//       addAutocomplete(event.target)
+//     }
+//   });
+// });
+
+
+import domready from 'domready';
+import TomSelect from 'tom-select/dist/esm/tom-select'; // tom-select base
+import 'tom-select/dist/esm/plugins/restore_on_backspace/plugin'; // specific desired plugin(s)
+
+
+domready(function() {
+
+  // https://tom-select.js.org/examples/remote/
+  // value/text
+  document.querySelectorAll('*[data-scihist-qa-autocomplete]').forEach(function(input_el) {
+    var qa_search_url = input_el.getAttribute("data-scihist-qa-autocomplete");
+
+    // does createOnBlur break it all by itself?
+    //
+    // new TomSelect(input_el, {
+    //   create: true,
+    //   createOnBlur: true,
+    //   maxItems: 1,
+    //   load: function(query, callback) {
+    //     callback([
+    //       {value: "1", text: "value1"},
+    //       {value: "2", text: "value2" }
+    //     ]);
+    //   }
+    // });
+
+
+    new TomSelect(input_el,{
+      create: true,
+      createOnBlur: true,
+      persist: false,
+      openOnFocus: false,
+      closeAfterSelect: true,
+      loadThrottle: 600,
+      maxItems: 1,
+      plugins: ['restore_on_backspace'],
+      load: function(query, callback) {
+        var url = qa_search_url + "?q=" + encodeURIComponent(query);
+
+        fetch(url)
+          .then(response => response.json())
+          .then(json => {
+            // qa comes back as 'id', 'label', and 'value'
+            // we want to use 'value' as our actual value (the FAST heading), other apps might want 'id'
+            // (the FAST id). 'label' is what we want to SHOW though, it might be a "... USE ..." directive
+            // for instance.
+            callback(
+              json.map(function(obj) { return { value: obj.value, text: obj.label  } })
+            );
+          }).catch(()=>{
+            callback();
+          });
+      },
+      render: {
+        // once selected, we want to use the value not the the lable. For instance "label"
+        // might be "Warsaw (Duchy) USE Poland", but "value" is "Poland"
+        'item': function(data, escape) {
+          return '<div>' + escape(data.value) + '</div>';
+        }
+      }
+    });
   });
 });
+
+
+
+
