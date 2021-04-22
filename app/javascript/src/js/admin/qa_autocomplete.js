@@ -163,28 +163,45 @@ domready(function() {
       loadThrottle: 600,
       maxItems: 1,
       plugins: ['restore_on_backspace'],
+      searchField: 'label',
+      labelField: 'value',
       load: function(query, callback) {
         var url = qa_search_url + "?q=" + encodeURIComponent(query);
 
         fetch(url)
           .then(response => response.json())
           .then(json => {
-            // qa comes back as 'id', 'label', and 'value'
-            // we want to use 'value' as our actual value (the FAST heading), other apps might want 'id'
-            // (the FAST id). 'label' is what we want to SHOW though, it might be a "... USE ..." directive
-            // for instance.
+            // qa comes back as 'id', 'label', and 'value'.
+            //
+            // For FAST, id is a FAST internal id; value is the FAST authorized heading; and
+            // label is sometimes the same as value, but sometimes is a lead-in term
+            //
+            // eg
+            // id: "fst01206891"
+            // value: "Poland"
+            // label: "Warsaw (Duchy) use Poland"
+            //
+            // tom-select wants 'text' and 'value'. We're going to set "text" to value, but use a custom
+            // render to render the label instead of the value. This makes it stay as we want it
+            // on restore_on_backspace.
+
             callback(
-              json.map(function(obj) { return { value: obj.value, text: obj.label  } })
+              json
+              //json.map(function(obj) { return { value: obj.value, text: obj.value, label: obj.label, id: obj.id  } })
             );
           }).catch(()=>{
             callback();
           });
       },
       render: {
-        // once selected, we want to use the value not the the lable. For instance "label"
-        // might be "Warsaw (Duchy) USE Poland", but "value" is "Poland"
+        // once selected, we want to use the value not the the label. For instance "label"
+        // might be "Warsaw (Duchy) USE Poland", but "value" is "Poland". But we want to
+        // show the label in the option list.
         'item': function(data, escape) {
           return '<div>' + escape(data.value) + '</div>';
+        },
+        'option':  function(data, escape) {
+          return '<div>' + escape(data.label) + '</div>';
         }
       }
     });
