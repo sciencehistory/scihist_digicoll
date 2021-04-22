@@ -406,7 +406,7 @@ class CatalogController < ApplicationController
     # eg &range=expect%3A%2F%2Fdir
     if params[:range] &&
         !(params[:range].respond_to?(:to_hash) && params[:range].values.all? { |v| v.respond_to?(:to_hash) })
-      render plain: "Invalid URL query parameter range=#{params[:range].to_param}", status: 400
+      render plain: "Invalid URL query parameter range=#{params[:range].to_s}", status: 400
     end
 
     # eg &f=expect%3A%2F%2Fdir

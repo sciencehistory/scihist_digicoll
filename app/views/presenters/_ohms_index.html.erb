@@ -6,7 +6,7 @@
           <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#<%= view.accordion_element_id(index) %>" aria-expanded="true" aria-controls="<%= view.accordion_element_id(index) %>">
               <i class="fa fa-plus float-right toggle-icon" aria-hidden="true"></i>
               <i class="fa fa-minus float-right toggle-icon" aria-hidden="true"></i>
-              <span class="mr-3"><%= format_ohms_timestamp(index_point.timestamp) %></span> <%= index_point.title %>
+              <span class="mr-3"><%= format_ohms_timestamp(index_point.timestamp) %></span> <%= index_point.html_safe_title %>
           </button>
         </h3>
       </div>
