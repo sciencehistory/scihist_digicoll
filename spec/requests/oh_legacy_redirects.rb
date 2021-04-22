@@ -25,6 +25,23 @@ describe "Oral history legacy site redirects" do
     expect(response).to redirect_to("#{standard_base_url}#{known_item_target_path}")
   end
 
+  describe "case insensitivity of known items" do
+    it "redirects standard beckman url" do
+      get "/oral-histories/beckman-arnold-o-14A"
+      expect(response).to have_http_status(301) # moved permanently
+      expect(response).to redirect_to("#{standard_base_url}/works/sx61dn215")
+    end
+
+    it "redirects alternate case beckman seen on web" do
+      pending "implementation see https://github.com/sciencehistory/scihist_digicoll/issues/1093"
+
+      get "/oral-histories/beckman-arnold-o-14a"
+      expect(response).to have_http_status(301) # moved permanently
+      expect(response).to redirect_to("#{standard_base_url}/works/sx61dn215")
+    end
+  end
+
+
   it "handles unrecognized with a nice 404" do
     get "/some_url/never_heard_of_it"
     expect(response).to have_http_status(:not_found)
