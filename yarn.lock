@@ -7286,9 +7286,9 @@ toidentifier@1.0.0:
   integrity sha512-yaOH/Pk/VEhBWWTlhI+qXxDFXlejDGcQipMlyxda9nthulaxLZUNcUqFxokp0vcYnvteJln5FNQDRrxj3YcbVw==
 
 tom-select@^1.4.3:
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/tom-select/-/tom-select-1.4.3.tgz#d4167e0ad52e0ea478c5d39d282d372f2d09e23b"
-  integrity sha512-0/cRGSz0t3P/3p3MmuRjuWMGcQUTh9488yrICWD7eMGpB/pFCchNsXKWWO/c0R32IBucHivj00qU+e8pNN8Oeg==
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/tom-select/-/tom-select-1.5.0.tgz#a51212bee410d4375176f957dc116bd63f6ad0f1"
+  integrity sha512-6nv/dGswJNkyLVnzUwYF2+EeQXF9uy769paw6njk5DhG815+rlA8xHn4BLsbuOsGvemcNwl8mPi2QKs/hZINbQ==
 
 tough-cookie@~2.5.0:
   version "2.5.0"
