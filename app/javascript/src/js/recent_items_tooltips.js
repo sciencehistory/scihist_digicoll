@@ -1,3 +1,3 @@
 $( document ).ready(function() {
-    jQuery('[data-toggle="tooltip"]').tooltip();
+    jQuery('.recent-item[data-toggle="tooltip"]').tooltip();
 });

@@ -53,12 +53,12 @@ class ThumbDisplay < ViewModel
     thumb_size: :standard,
     placeholder_img_url: asset_path("placeholderbox.svg"),
     lazy: false,
-    recent_items: false)
+    alt_text_override: nil)
 
     @placeholder_img_url = placeholder_img_url
     @thumb_size = thumb_size.to_sym
     @lazy = lazy
-    @recent_items = recent_items
+    @alt_text_override = alt_text_override
 
     unless ALLOWED_THUMB_SIZES.include? thumb_size
       raise ArgumentError.new("thumb_size must be in #{ALLOWED_THUMB_SIZES}, but was '#{thumb_size}'")
@@ -116,14 +116,10 @@ class ThumbDisplay < ViewModel
       }
     }
 
-    if asset.alt_text.present?
+    if @alt_text_override.present?
+      img_attributes[:alt] = @alt_text_override
+    elsif asset.alt_text.present?
       img_attributes[:alt] = asset.alt_text
-    end
-
-    # For recent items thumbnails on the homepage, we *do* want to display an alt text for the image,
-    # so that screenreaders can see what the image is / links to.
-    if @recent_items
-      img_attributes[:alt] = asset.parent.title
     end
 
     if lazy?
