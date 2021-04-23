@@ -23,12 +23,12 @@ namespace :scihist do
         relevant_urls.each do |row|
           source_url = row['url_alias'].sub('https://oh.sciencehistory.org', '')
           destination_url = "/works/#{w.friendlier_id}"
-          puts  "#{source_url} : #{destination_url}"
+          puts  "\"#{source_url.downcase}\" : \"#{destination_url}\""
         end
         relevant_files.each do |row|
           destination_url = "/works/#{w.friendlier_id}"
-          puts  "#{row['pdf_url']} : #{destination_url}"      if row['pdf_url'].present?
-          puts  "#{row['abstract_url']} : #{destination_url}" if row['abstract_url'].present?
+          puts  "\"#{row['pdf_url'].downcase}\" : \"#{destination_url}\""      if row['pdf_url'].present?
+          puts  "\"#{row['abstract_url'].downcase}\" : \"#{destination_url}\"" if row['abstract_url'].present?
         end
       end
     end
