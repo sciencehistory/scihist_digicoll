@@ -8,7 +8,7 @@ module OhMicrositeImportUtilities
     def initialize(field:, works:, mapper:, rows:)
       @debug_fields = nil # regular mode
       # @debug_fields = ['any'] # supress progress bar and fail fast
-      @debug_fields = ['image'] #suppress progress bar, fail fast, and ignore all metadata except specified fields.
+      #@debug_fields = ['image'] #suppress progress bar, fail fast, and ignore all metadata except specified fields.
       @field, @works, @mapper, @rows = field, works, mapper, rows
       ghosts = @mapper.ghosts
       @rows.reject! { |arr| ghosts.include? arr['interview_entity_id'] }
