@@ -10,8 +10,11 @@ EXPORT_DESTINATION=/tmp/ohms_microsite_import_data
 # A text file for converting institution names to FAST headings
 $EXPORT_CMD  < queries/institutions.sql     > $EXPORT_DESTINATION/institutions.txt
 
-# URL mappings:
+# URL mappings: Drupal URL aliases to friendlier_ids
 $EXPORT_CMD  < queries/url.sql             > $EXPORT_DESTINATION/url.json
+# URL mappings: Drupal File urls to friendlier_ids
+$EXPORT_CMD  < queries/file.sql             > $EXPORT_DESTINATION/file.json
+
 
 # Mapping check: contains name, source URL, source URL alias, and interview number
 $EXPORT_CMD  < queries/name.sql             > $EXPORT_DESTINATION/name.json
