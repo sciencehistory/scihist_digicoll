@@ -38,11 +38,14 @@
     <%# lazysizes gets it's own "pack", loaded early without 'defer', per lazysizes doc suggestion %>
     <%= javascript_pack_tag 'lazysizes' %>
 
+    <%# sprockets 'application' js and css %>
     <%= stylesheet_link_tag    'application', media: 'all' %>
-
     <%= javascript_include_tag 'application', defer: true %>
+
+    <%# webpacker 'application' js, and 'admin' js and css %>
     <%= javascript_pack_tag 'application', defer: true %>
     <%= javascript_pack_tag 'admin', defer: true %>
+    <%= stylesheet_pack_tag "admin" %>
 
   </head>
 

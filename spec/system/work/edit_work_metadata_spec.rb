@@ -9,10 +9,10 @@ RSpec.describe "Edit work metadata form", :logged_in_user, type: :system, js: tr
   it "edits work" do
     visit edit_admin_work_path(work)
 
-    # Set collection to a new thing, unselect old thing
     original_collection = work.contained_by.first
-    find("#work_contained_by_ids option[value='#{original_collection.id}']").unselect_option
-    find("#work_contained_by_ids option[value='#{new_collection.id}']").select_option
+
+    # Set collection to a new thing only, using special tom_select helper
+    tom_select("#work_contained_by_ids", option_id: new_collection.id)
 
     # Set representative to a new thing
     new_representative = work.members.find {|m| m.id != work.representative_id}
