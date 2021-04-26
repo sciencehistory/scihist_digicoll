@@ -30,4 +30,11 @@ describe "Oral history legacy site redirects" do
     expect(response).to have_http_status(:not_found)
     expect(response).to render_template("static/oh_legacy_url_not_found")
   end
+
+  it "handles unrecognized .pdf link with a nice 404" do
+    get "/some_url/never_heard_of_it.pdf"
+    expect(response).to have_http_status(:not_found)
+    expect(response.media_type).to eq("text/html")
+    expect(response).to render_template("static/oh_legacy_url_not_found")
+  end
 end
