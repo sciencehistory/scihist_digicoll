@@ -33,21 +33,25 @@ $(document).on("hide.bs.tab", ".work-show-audio", function(event) {
   }
 });
 
-
-// Restore tab position on a tab when we switch back to it, or else try to get
+// Scroll position on tab change:
+//
+// 1) Normally, restore tab position on a tab when we switch back to it, or else try to get
 // us at the "top" of the tab, so you don't wind up looking at the footer on a short tab.
 // A bit hard to get right.
+//
+// 2) but if Audio is playing, scroll to corresponding position in transcript or ToC tab.
 $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
   // restore scroll position, or move to a reasonable starting point if first time on this tab.
 
+  var tabId = event.target.id;
   var navbarIsFixed = (document.getElementById("ohmsAudioNavbar").getBoundingClientRect().top == 0);
-  var saved = tabScrollPositions[event.target.id];
+  var saved = tabScrollPositions[tabId];
 
   if (saved) {
     window.scrollTo({top: saved})
   } else if (! navbarIsFixed) {
     // navbar isn't fixed to top anyway, don't worry about it, too weird if we try.
-    return;
+    // no-op.
   } else {
     // we don't have a saved position, but we're in position with fixed navbar at
     // top of page -- move to top of fixed navbar at top of page in new tab.
@@ -59,4 +63,66 @@ $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
     window.scrollTo({top: 0});
     document.getElementById("ohmsAudioNavbar").scrollIntoView({behavior: "auto", block: "start"});
   }
+
+  // OK, but now if audio is playing, and we're on transcript or ToC tab, we actually want to
+  // scroll to relevant portion...
+
+  var player = document.querySelector("audio[data-role=ohms-audio-elem]");
+  if (!player.paused) {
+    var timeCodeSeconds = player.currentTime;
+
+    if (tabId == "ohTranscriptTab") {
+      var anchor = findTranscriptAnchor(timeCodeSeconds);
+
+      if (anchor) {
+        scrollToElement(anchor);
+      }
+    } else if (tabId == "ohTocTab") {
+      var collapsible = findTocCollapsibleSection(timeCodeSeconds);
+      if (collapsible) {
+        if (collapsible.classList.contains("collapse")) {
+          $(collapsible).collapse("show");
+        }
+        // And scroll to the
+        scrollToElement(collapsible.closest(".card").querySelector(".card-header"));
+      }
+    }
+  }
 });
+
+
+function findTranscriptAnchor(timeInSeconds) {
+  return findOhmsTimestampElementIncluding(timeInSeconds, "a")
+}
+
+function findOhmsTimestampElementIncluding(timeInSeconds, baseSelector) {
+  var previousEl = undefined;
+  for (element of document.querySelectorAll(baseSelector + "[data-ohms-timestamp-s]")) {
+    if (element.getAttribute("data-ohms-timestamp-s") > timeInSeconds) {
+      return previousEl;
+    }
+    previousEl = element;
+  }
+  return undefined;
+}
+
+// Returns an element that you can call boostrap element.collapse()
+// on, for ToC section corresponding to timecode.
+function findTocCollapsibleSection(timeInSeconds) {
+  var button = findOhmsTimestampElementIncluding(timeInSeconds, "button");
+
+  // need to find it's parent collapsible
+  return button && button.closest("*[data-parent='#ohmsIndexAccordionParent']")
+}
+
+// What makes this slightly less than completely simple is allowing for
+// the fixed navbar on top; built-in browser functions will often wind
+// up scrolling it top of window, under navbar.
+//
+// We scroll to top of element with behavior "smooth"
+function scrollToElement(element) {
+  var targetDocumentXPosition = element.getBoundingClientRect().top + window.scrollY;
+  var navbarHeight = document.querySelector("#ohmsAudioNavbar").offsetHeight;
+
+  window.scrollTo({top: (targetDocumentXPosition - navbarHeight), behavior: "smooth"});
+}
