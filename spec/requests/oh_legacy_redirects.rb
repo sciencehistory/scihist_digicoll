@@ -33,8 +33,6 @@ describe "Oral history legacy site redirects" do
     end
 
     it "redirects alternate case beckman seen on web" do
-      pending "implementation see https://github.com/sciencehistory/scihist_digicoll/issues/1093"
-
       get "/oral-histories/beckman-arnold-o-14a"
       expect(response).to have_http_status(301) # moved permanently
       expect(response).to redirect_to("#{standard_base_url}/works/sx61dn215")
