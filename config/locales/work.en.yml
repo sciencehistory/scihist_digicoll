@@ -73,4 +73,4 @@ en:
         file_creator: "Select the individual, group, or organization responsible for producing the digital representation of the work, such as the digitizing agent or file author. If a desired entry is not available, contact the Digital Collections and Metadata Librarian. Recommended."
         admin_note: "Use for any internal notes about the digital object or physical work, such as copyright concerns, digitization errors, legacy metadata, etc. Record first initial, last name, and date with the note in case a follow-up is necessary."
         representative: "Select the file with media that represents this Work and is used as a thumbnail."
-        contained_by: "Select the named collection that the work is part of, if applicable. If a desired entry is not available, contact the Digital Collections and Metadata Librarian. To deselect a collection, use Ctrl-click or ⌘-click."
+        contained_by: "Select the named collection that the work is part of, if applicable. If a desired entry is not available, contact the Digital Collections and Metadata Librarian."
