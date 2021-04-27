@@ -72,7 +72,8 @@ RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :sy
     visit admin_work_path(work, :anchor => "nav-oral-histories")
     section = find("h2", text: "Interviewee biography").ancestor('.card')
     within(section) do
-      expect(find("select").value).to match_array(work.oral_history_content.interviewee_biographies.collect(&:id).collect(&:to_s))
+      # have to find hidden select, since it's covered by tom-select.js UI
+      expect(find("select", visible: :all).value).to match_array(work.oral_history_content.interviewee_biographies.collect(&:id).collect(&:to_s))
     end
   end
 end

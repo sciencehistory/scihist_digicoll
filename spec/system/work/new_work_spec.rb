@@ -164,7 +164,8 @@ RSpec.describe "New Work form", :logged_in_user, type: :system, js: true do
     end
 
     # Collection membership
-    find("#work_contained_by_ids option[value='#{collection.id}']").select_option
+    # have to use special tom_select helper
+    tom_select("#work_contained_by_ids", option_id: collection.id)
 
     click_button "Create Work"
 
