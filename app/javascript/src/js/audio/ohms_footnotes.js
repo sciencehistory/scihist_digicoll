@@ -10,7 +10,7 @@ jQuery(document).ready(function() {
 // Based on http://hiphoff.com/creating-hover-over-footnotes-with-bootstrap/
 OhmsFootnotes.setUpFootnoteEvents = function() {
   // Show the tooltip if you hover over a footnote referecne.
-  jQuery('[data-toggle="tooltip"]').each(function() {
+  jQuery('.ohms-transcript-container .footnote[data-toggle="tooltip"]').each(function() {
     var $elem = jQuery(this);
     $elem.tooltip({
         // sets the container to be the span
