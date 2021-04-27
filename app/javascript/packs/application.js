@@ -22,7 +22,7 @@ import '../src/js/custom_google_analytics_events.js';
 import '../src/js/cart_control.js';
 import '../src/js/date_range_render_workaround.js';
 import '../src/js/tab_selection_in_anchor';
-import '../src/js/recent_items_tooltips';
+import '../src/js/bootstrap_tooltips_activate';
 
 import '../src/js/audio/play_at_timecode.js';
 import '../src/js/audio/ohms_search.js';
