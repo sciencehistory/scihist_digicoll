@@ -34,12 +34,12 @@ namespace :scihist do
         profile_text = sanitizer.sanitize(profile['interviewer_profile'])
         if profile_text.blank?
           # There's no point in these profiles unless an interviewer actually has a profile.
-          progress_bar.increment;
+          progress_bar.increment
           next
         end
         begin
           prof = InterviewerProfile.find_or_initialize_by(id: profile['interviewer_id'])
-          prof.name =  profile['interviewer_name']
+          prof.name = interviewer_name_switcher(profile['interviewer_name'])
           prof.profile = profile_text
           prof.save!
         rescue StandardError => e
