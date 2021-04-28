@@ -49,6 +49,18 @@ describe WorkSocialShareAttributes do
         expect(attributes.share_media_height).to be_nil
         expect(attributes.share_media_width).to be_nil
       end
+
+      describe "oral history" do
+        let(:work) { build(:oral_history_work) }
+
+        it "has generic oral history icon" do
+          expect(attributes.share_media_url).to eq(helper.asset_url("scihist_oral_histories_thumb.jpg"))
+          # we were just too lazy to implement this for this edge case, and social
+          # media sites don't really NEED it.
+          expect(attributes.share_media_height).to be_nil
+          expect(attributes.share_media_width).to be_nil
+        end
+      end
     end
 
     describe "representative no derivative" do

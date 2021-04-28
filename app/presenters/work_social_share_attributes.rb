@@ -41,6 +41,9 @@ class WorkSocialShareAttributes < ViewModel
       end
 
       url
+    elsif work.is_oral_history?
+      # if no representative, give em the generic OH thumb
+      asset_url("scihist_oral_histories_thumb.jpg")
     end
   end
 
