@@ -1,6 +1,8 @@
-# KEY is old path on old Oral History microsite,
-# VALUE is new path on Digital Collections for same work
-
+# key is an old path to the oral history, or
+# to either of its pdfs on the oral history microsite.
+#
+# value is the new path to the corresponding work in the digital collections.
+#
 "/oral-histories/breslow-ronald-c" : "/works/vt150k099"
 "/sites/default/files/breslow_r_0181_full.pdf" : "/works/vt150k099"
 "/sites/default/files/breslow_r_0181_suppl.pdf" : "/works/vt150k099"
@@ -554,6 +556,7 @@
 "/oral-histories/chapman-edwin-r" : "/works/7io1exh"
 "/sites/default/files/chapman_er_0608_full.pdf" : "/works/7io1exh"
 "/sites/default/files/chapman_er_0608_suppl.pdf" : "/works/7io1exh"
+"/oral-histories/bowie-james-u" : "/works/grwtk2l"
 "/oral-histories/ngai-john-j" : "/works/f9b911a"
 "/sites/default/files/ngai_jj_0546_full.pdf" : "/works/f9b911a"
 "/sites/default/files/ngai_jj_0546_suppl.pdf" : "/works/f9b911a"

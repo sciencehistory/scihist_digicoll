@@ -61,7 +61,7 @@ module OhMicrositeImportUtilities
     end
 
     def next_open_position
-      @work.members.map{|mem| mem.position.to_i}.max + 1
+      (@work.members.maximum(:position) || 0) + 1
     end
 
     def portrait_asset
