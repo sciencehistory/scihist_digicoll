@@ -83,7 +83,7 @@ class Admin::WorksController < AdminController
   # PATCH/PUT /admin/works/ab2323ac/submit_ohms_xml
   def submit_ohms_xml
     unless params[:ohms_xml].present?
-      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: { error: "No file received" }
+      redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), flash: { error: "No file received" }
       return
     end
 
@@ -92,10 +92,10 @@ class Admin::WorksController < AdminController
 
     if validator.valid?
       @work.oral_history_content!.update!(ohms_xml_text: xml)
-      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: "OHMS XML file updated"
+      redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), notice: "OHMS XML file updated"
     else
       Rails.logger.debug("Could not accept invalid OHMS XML for work #{@work.friendlier_id}:\n  #{xml.slice(0, 60).gsub(/[\n\r]/, '')}...\n\n  #{validator.errors.join("\n  ")}")
-      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: {
+      redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), flash: {
         error: "OHMS XML file was invalid and could not be accepted: #{validator.errors.join('; ')}"
       }
     end
@@ -104,7 +104,7 @@ class Admin::WorksController < AdminController
   # PATCH/PUT /admin/works/ab2323ac/remove_ohms_xml
   def remove_ohms_xml
     @work.oral_history_content!.update!(ohms_xml_text: nil)
-    redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: "OHMS XML file removed."
+    redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), notice: "OHMS XML file removed."
   end
 
   # GET /admin/works/ab2323ac/download_ohms_xml
@@ -117,7 +117,7 @@ class Admin::WorksController < AdminController
   # PATCH/PUT /admin/works/ab2323ac/submit_ohms_xml
   def submit_searchable_transcript_source
     unless params[:searchable_transcript_source].present?
-      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: { error: "No file received" }
+      redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), flash: { error: "No file received" }
       return
     end
     transcript = params[:searchable_transcript_source].read
@@ -140,9 +140,9 @@ class Admin::WorksController < AdminController
 
     if searchable_transcript_source_error.nil?
       @work.oral_history_content.update!(searchable_transcript_source: transcript)
-      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: "Full text has been updated."
+      redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), notice: "Full text has been updated."
     else
-      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: {
+      redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), flash: {
         error: "Transcript not updated: #{searchable_transcript_source_error}",
         searchable_transcript_source_error: "Transcript not updated: #{searchable_transcript_source_error}"
       }
@@ -152,7 +152,7 @@ class Admin::WorksController < AdminController
   # PATCH/PUT /admin/works/ab2323ac/remove_searchable_transcript_source
   def remove_searchable_transcript_source
     @work.oral_history_content!.update!(searchable_transcript_source: nil)
-    redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: "Full text has been removed."
+    redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), notice: "Full text has been removed."
   end
 
   # GET /admin/works/ab2323ac/download_searchable_transcript_source
@@ -169,7 +169,7 @@ class Admin::WorksController < AdminController
   # PATCH/PUT /admin/works/ab2323ac/create_combined_audio_derivatives
   def create_combined_audio_derivatives
     unless CombinedAudioDerivativeCreator.new(@work).available_members?
-      redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), flash: {
+      redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), flash: {
         error: "Combined audio derivatives cannot be created, because this oral history does not have any published audio segments."
       }
       return
@@ -181,7 +181,7 @@ class Admin::WorksController < AdminController
     sidecar.save!
 
     notice = "The combined audio derivative job has been added to the job queue."
-    redirect_to admin_work_path(@work, anchor: "nav-oral-histories"), notice: notice
+    redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), notice: notice
   end
 
   # PUT /admin/works/ab2323ac/update_oh_available_by_request
@@ -193,7 +193,7 @@ class Admin::WorksController < AdminController
         @work.members.find{ |m| m.id == asset_pk}&.update(oh_available_by_request: value)
       end
     end
-    redirect_to admin_work_path(@work, anchor: "nav-oral-histories")
+    redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories")
   end
 
   # PATCH /admin/works/ab2323ac/update_oral_history_content
@@ -208,7 +208,7 @@ class Admin::WorksController < AdminController
     # OralHistoryContent, so we trigger it here ourselves in controller action.
     @work.update_index
 
-    redirect_to admin_work_path(@work, anchor: "nav-oral-histories")
+    redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories")
   end
 
   # PATCH/PUT /admin/works/1/publish
