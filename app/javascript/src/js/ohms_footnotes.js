@@ -1,13 +1,19 @@
 // JS for our local custom OHMS footnotes.
+// Based on http://hiphoff.com/creating-hover-over-footnotes-with-bootstrap/
+// Corresponging HTML is in:
+// app/views/presenters/_ohms_footnote_reference.html.erb
+
+// The selector we use for these is: data-toggle="ohms-tooltip"]
+// Note that generic Bootstrap tooltips are also being
+// used on the site: see app/javascript/src/js/bootstrap_tooltips_activate.js .
+
+
 var OhmsFootnotes = {};
 
 jQuery(document).ready(function() {
     OhmsFootnotes.setUpFootnoteEvents();
 });
 
-
-
-// Based on http://hiphoff.com/creating-hover-over-footnotes-with-bootstrap/
 OhmsFootnotes.setUpFootnoteEvents = function() {
   // Show the tooltip if you hover over a footnote referecne.
   jQuery('[data-toggle="ohms-tooltip"]').each(function() {
