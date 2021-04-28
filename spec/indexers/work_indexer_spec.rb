@@ -67,7 +67,7 @@ describe WorkIndexer do
 
         it "has facet values" do
           output_hash = WorkIndexer.new.map_record(work)
-          expect(output_hash["oh_feature_facet"]).to match_array(["Audio recording", "Synchronized transcript", "Transcript"])
+          expect(output_hash["oh_feature_facet"]).to match_array(["Audio recording", "Synchronized audio", "Transcript"])
         end
       end
     end
