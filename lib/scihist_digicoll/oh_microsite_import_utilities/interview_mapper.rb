@@ -91,6 +91,8 @@ module OhMicrositeImportUtilities
       result = @names.dup
       result.delete_if { |i| migrated.include? i['interview_entity_id']}
       result.delete_if { |i| @ghosts.include?  i['interview_entity_id']}
+      # just for clarity -- thew me for a loop
+      result
     end
 
     def parse_names
