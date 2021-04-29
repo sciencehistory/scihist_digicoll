@@ -11,7 +11,9 @@
     <div class="audio-navbar-contents">
       <div class="now-playing-container" data-role="now-playing-container">
         <h1 class="title h6">
-          <%= @work.title %>
+          <a href="#" data-toggle="linkShareModal" data-target="#audioLinkShare">
+            <i class="fa fa-link" aria-hidden="true"></i> <%= @work.title %>
+          </a>
         </h1>
         <% if decorator.combined_mp3_audio.present? && decorator.derivatives_up_to_date? %>
           <audio controls controlsList="nodownload" data-role="ohms-audio-elem" >
@@ -146,3 +148,43 @@
   </div>
 
 </div>
+
+
+<!-- modal dialog that will be shown by Javascript for showing links -->
+<div class="modal" tabindex="-1" role="dialog" id="audioLinkShare">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fa fa-link" aria-hidden="true"></i>  Share link to this page</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <div class="form-group">
+          <div class="input-group mb-3">
+            <input type="text" aria-label="URL to copy" class="form-control" id="linkDisplay" data-slot="shareURL" readonly value="<%= work_url(@work) %>">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" data-trigger="linkClipboardCopy">
+                <i class="fa fa-clipboard" aria-hidden="true"></i> Copy
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="includeTimecode" data-slot="timecode" data-trigger="updateLinkTimecode">
+          <label class="form-check-label" for="includeTimecode">
+            Start audio at <code data-slot="humanTimecode"></code>
+          </label>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
