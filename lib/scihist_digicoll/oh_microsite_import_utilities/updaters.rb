@@ -203,6 +203,14 @@ module OhMicrositeImportUtilities
       w.oral_history_content.save!
     end
 
+    # In a few cases, an interviewer is associated with an interview via a *session*:
+    def self.interviewer_2(w, rows, transformations: nil)
+      new_set = Set.new(w.oral_history_content.interviewer_profiles) +
+        Set.new(InterviewerProfile.where(id: rows.map {|r| r['interviewer_id']}))
+      w.oral_history_content.interviewer_profiles = new_set.to_a
+      w.oral_history_content.save!
+    end
+
     def self.image(w, rows, transformations: nil)
       row = rows.first
       uploader  = IntervieweePortraitUploader.new({
