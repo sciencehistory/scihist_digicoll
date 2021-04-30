@@ -166,6 +166,7 @@ module OhMicrositeImportUtilities
     end
 
     def self.honors(w, rows, transformations: nil)
+
       sanitizer = DescriptionSanitizer.new
       get_bios(rows).each_pair do |bio, bio_rows|
         honors = bio_rows.map do |row |
@@ -178,6 +179,11 @@ module OhMicrositeImportUtilities
           end
 
           if args.values.all?(&:nil?)
+            nil
+          elsif args.select{|x, y| y.present?}.keys == [:start_date]
+            # If there's only a date, and no other metadata,
+            # don't create an IntervieweeHonor.
+            # See https://github.com/sciencehistory/scihist_digicoll/issues/1109
             nil
           else
             OralHistoryContent::IntervieweeHonor.new(args)
