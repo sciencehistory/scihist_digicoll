@@ -170,8 +170,8 @@ module OhMicrositeImportUtilities
       sanitizer = DescriptionSanitizer.new
       get_bios(rows).each_pair do |bio, bio_rows|
         honors = bio_rows.map do |row |
-          desc = row['interviewee_honor_description'].
-            gsub("<em>",  "<i>").
+          desc = row['interviewee_honor_description']&.
+            gsub("<em>",  "<i>")&.
             gsub("</em>", "</i>")
           args = {
             start_date:   keep_yyyy(row['interviewee_honor_start_date']),
