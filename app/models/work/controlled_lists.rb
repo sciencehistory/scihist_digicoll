@@ -86,6 +86,7 @@ class Work
     ]
 
     FILE_CREATOR = [
+      'Auerbach, Jahna',
       'Brown, Will',
       'Center for Oral History',
       'Conservation Center for Art & Historic Artifacts',
