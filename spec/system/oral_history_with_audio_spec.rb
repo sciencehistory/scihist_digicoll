@@ -219,6 +219,34 @@ describe "Oral history with audio display", type: :system, js: true do
       expect(page).to have_content("3 Separate Interview Segments")
       expect(page).to have_content("2.2 KB")
     end
+
+    describe "with combined audio derivative" do
+      before do
+        parent_work.oral_history_content.combined_audio_mp3 = create(:stored_uploaded_file,
+          file: File.open((Rails.root + "spec/test_support/audio/ice_cubes.mp3")),
+          content_type: "audio/mpeg")
+        parent_work.oral_history_content.combined_audio_fingerprint = CombinedAudioDerivativeCreator.new(parent_work).fingerprint
+        parent_work.oral_history_content.save!
+      end
+
+      # not sure why we need to specify capybara port manually
+      let(:displayed_url) {
+        work_url(parent_work.friendlier_id, port: Capybara.current_session.server.port)
+      }
+
+      it "has popup with URL with timecode", js: true do
+        visit work_path(parent_work.friendlier_id)
+
+        click_on parent_work.title
+        expect(page).to have_text("Share link to this page")
+
+        within(".modal-content") do
+          expect(page).to have_field(readonly: true, with: displayed_url)
+          check "Start audio at 00:00:00"
+          expect(page).to have_field(readonly: true, with: "#{displayed_url}#t=0")
+        end
+      end
+    end
   end
 
   describe "when you are logged-in staff", :logged_in_user, type: :system, js: true do
