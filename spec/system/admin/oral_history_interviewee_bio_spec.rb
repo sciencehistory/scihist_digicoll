@@ -69,7 +69,7 @@ RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :sy
   end
 
   it "interviewee bio data shows up linked" do
-    visit admin_work_path(work, :anchor => "nav-oral-histories")
+    visit admin_work_path(work, :anchor => "tab=nav-oral-histories")
     section = find("h2", text: "Interviewee biography").ancestor('.card')
     within(section) do
       # have to find hidden select, since it's covered by tom-select.js UI

@@ -75,7 +75,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
 
       it "can add valid file" do
         put :submit_ohms_xml, params: { id: work.friendlier_id, ohms_xml: Rack::Test::UploadedFile.new(valid_xml_path, "application/xml")}
-        expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
+        expect(response).to redirect_to(admin_work_path(work, anchor: "tab=nav-oral-histories"))
         expect(flash[:error]).to be_blank
 
         expect(work.reload.oral_history_content.ohms_xml).to be_present
@@ -87,7 +87,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
           ohms_xml: Rack::Test::UploadedFile.new(StringIO.new("not > xml"), "application/xml", original_filename: "foo.xml")
         }
 
-        expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
+        expect(response).to redirect_to(admin_work_path(work, anchor: "tab=nav-oral-histories"))
         expect(flash[:error]).to include("OHMS XML file was invalid and could not be accepted")
 
         expect(work.reload.oral_history_content&.ohms_xml).not_to be_present
@@ -110,7 +110,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
           id: work.friendlier_id,
           searchable_transcript_source: Rack::Test::UploadedFile.new(transcript_path, "text/plain")
         }
-        expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
+        expect(response).to redirect_to(admin_work_path(work, anchor: "tab=nav-oral-histories"))
         expect(flash[:error]).to be_blank
         expect(work.oral_history_content!.searchable_transcript_source).to be_present
       end
@@ -119,7 +119,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         put :remove_searchable_transcript_source, params: {
           id: work.friendlier_id#,
         }
-        expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
+        expect(response).to redirect_to(admin_work_path(work, anchor: "tab=nav-oral-histories"))
         expect(flash[:error]).to be_blank
         expect(flash[:notice]).to match /has been removed/
         expect(work.oral_history_content!.searchable_transcript_source).not_to be_present
@@ -158,7 +158,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       it "kicks off an audio derivatives job" do
         expect(oral_history.members.map(&:stored?)).to match([true, true])
         put :create_combined_audio_derivatives, params: { id: oral_history.friendlier_id }
-        expect(response).to redirect_to(admin_work_path(oral_history, anchor: "nav-oral-histories"))
+        expect(response).to redirect_to(admin_work_path(oral_history, anchor: "tab=nav-oral-histories"))
         expect(CreateCombinedAudioDerivativesJob).to have_been_enqueued
       end
     end
@@ -180,7 +180,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
             "no_such_id" => "true"
           }
         }
-        expect(response).to redirect_to(admin_work_path(work, anchor: "nav-oral-histories"))
+        expect(response).to redirect_to(admin_work_path(work, anchor: "tab=nav-oral-histories"))
 
         expect(work.reload.oral_history_content.available_by_request_mode).to eq("automatic")
         expect(was_false_asset.reload.oh_available_by_request).to be true

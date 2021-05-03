@@ -38,7 +38,7 @@
               <span class="badge badge-warning">Un-published, but marked available by request</span>
             </span>
               <% if @asset.parent %>
-                More info at <%= link_to "Work Oral History Management", admin_work_path(@asset.parent, anchor: "nav-oral-histories") %>
+                More info at <%= link_to "Work Oral History Management", admin_work_path(@asset.parent, anchor: "tab=nav-oral-histories") %>
               <% end %>
           </div>
         </div>
