@@ -33,32 +33,6 @@ document.body.addEventListener("click", function (event) {
 });
 
 
-
-
-
-
-  //   if (tabId == "ohTranscriptTab") {
-  //     var anchor = findTranscriptAnchor(timeCodeSeconds);
-
-  //     if (anchor) {
-  //       scrollToElement(anchor);
-  //     }
-  //   } else if (tabId == "ohTocTab") {
-  //     var collapsible = findTocCollapsibleSection(timeCodeSeconds);
-  //     if (collapsible) {
-  //       if (collapsible.classList.contains("collapse")) {
-  //         $(collapsible).collapse("show");
-  //       }
-  //       // And scroll to the
-  //       scrollToElement(collapsible.closest(".card").querySelector(".card-header"));
-  //     }
-  //   }
-  // }
-
-
-
-
-
 function findTranscriptAnchor(timeInSeconds) {
   return findOhmsTimestampElementIncluding(timeInSeconds, "a")
 }
