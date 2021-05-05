@@ -3,6 +3,22 @@
 #
 # value is the new path to the corresponding work in the digital collections.
 #
+
+# PROJECTS:
+
+"/project-name/69" : "/collections/gt54kn818?f%5Bproject_facet%5D%5B%5D=Pew+Biomedical+Scholars"
+"/project-name/36" : "/collections/gt54kn818?f%5Bproject_facet%5D%5B%5D=Chemical+History+of+Electronics"
+"/project-name/38" : "/collections/gt54kn818?f%5Bproject_facet%5D%5B%5D=Mass+Spectrometry"
+"/project-name/43" : "/collections/gt54kn818?f%5Bproject_facet%5D%5B%5D=Scientific+and+Technical+Information+Systems"
+"/project-name/42" : "/collections/gt54kn818?f%5Bproject_facet%5D%5B%5D=REACH+Ambler"
+"/project-name/44" : "/collections/gt54kn818?f%5Bproject_facet%5D%5B%5D=Oral+History+of+the+Toxic+Substances+Control+Act"
+"/project-name/40" : "/collections/gt54kn818?f%5Bproject_facet%5D%5B%5D=Nanotechnology"
+"/project-name/66" : "/collections/gt54kn818?f%5Bproject_facet%5D%5B%5D=Atmospheric+Science"
+"/project-name/78" : "/collections/gt54kn818?f%5Bproject_facet%5D%5B%5D=Life+Sciences+Foundation"
+"/project-name/79" : "/collections/gt54kn818?f%5Bproject_facet%5D%5B%5D=Origins+of+Science+and+Technology+Studies"
+
+# OTHER URLS:
+
 "/oral-histories/breslow-ronald-c" : "/works/vt150k099"
 "/sites/default/files/breslow_r_0181_full.pdf" : "/works/vt150k099"
 "/sites/default/files/breslow_r_0181_suppl.pdf" : "/works/vt150k099"
@@ -489,6 +505,9 @@
 "/oral-histories/rice-francis-o" : "/works/f1881n180"
 "/sites/default/files/rice_fo_0006_full.pdf" : "/works/f1881n180"
 "/sites/default/files/rice_fo_0006_suppl.pdf" : "/works/f1881n180"
+"/oral-histories/oreffice-paul-f" : "/works/4bpxix6"
+"/sites/default/files/entire_oral_history_pdf/oreffice_pf_0143_full.pdf" : "/works/4bpxix6"
+"/sites/default/files/oreffice_pf_0143_suppl.pdf" : "/works/4bpxix6"
 "/oral-histories/garfield-eugene-0078" : "/works/dn39x231b"
 "/sites/default/files/garfield_e_0078_full.pdf" : "/works/dn39x231b"
 "/sites/default/files/garfield_e_0078_suppl.pdf" : "/works/dn39x231b"
@@ -592,6 +611,7 @@
 "/sites/default/files/lederberg_j_0107_full.pdf" : "/works/hm50ts803"
 "/sites/default/files/lederberg_j_0107_suppl.pdf" : "/works/hm50ts803"
 "/oral-histories/hannun-yosef-a" : "/works/uzh0kyb"
+"/oral-histories/hannun-yusuf-a" : "/works/uzh0kyb"
 "/sites/default/files/hannun_ya_0508_full.pdf" : "/works/uzh0kyb"
 "/sites/default/files/hannun_ya_0508_suppl.pdf" : "/works/uzh0kyb"
 "/oral-histories/macdonald-paul-m" : "/works/ogs4p2e"
@@ -743,6 +763,9 @@
 "/sites/default/files/mackinnon_r_0556_full.pdf" : "/works/1ix9cow"
 "/sites/default/files/mackinnon_r_0556_suppl.pdf" : "/works/1ix9cow"
 "/oral-histories/aitchison-jean" : "/works/eb9ongs"
+"/oral-histories/aitchison-thomas-m" : "/works/eb9ongs"
+"/sites/default/files/entire_oral_history_pdf/aitchison_tm_and_j_0200_full.pdf" : "/works/eb9ongs"
+"/sites/default/files/interview_pdf_abstract/aitchison_tm_and_j_0200_suppl.pdf" : "/works/eb9ongs"
 "/sites/default/files/entire_oral_history_pdf/aitchison_tm_and_j_0200_full.pdf" : "/works/eb9ongs"
 "/sites/default/files/interview_pdf_abstract/aitchison_tm_and_j_0200_suppl.pdf" : "/works/eb9ongs"
 "/oral-histories/thomas-john-b" : "/works/9y9exj9"
@@ -795,6 +818,7 @@
 "/oral-histories/karol-frederick-j" : "/works/tvr5ukp"
 "/sites/default/files/karol_fj_0125_full.pdf" : "/works/tvr5ukp"
 "/sites/default/files/karol_fj_0125_suppl.pdf" : "/works/tvr5ukp"
+"/oral-histories/folkers-karl-a" : "/works/369f1qt"
 "/oral-histories/clark-jr-worley-h" : "/works/yn2dg70"
 "/sites/default/files/clark_wh_0116_full.pdf" : "/works/yn2dg70"
 "/sites/default/files/clark_wh_0116_suppl.pdf" : "/works/yn2dg70"
@@ -993,6 +1017,9 @@
 "/oral-histories/herner-saul" : "/works/np193b29x"
 "/sites/default/files/herner_s_0164_full.pdf" : "/works/np193b29x"
 "/sites/default/files/herner_s_0164_suppl.pdf" : "/works/np193b29x"
+"/oral-histories/roberts-john-d" : "/works/rtbme0d"
+"/sites/default/files/entire_oral_history_pdf/roberts_jd_0069_1987full.pdf" : "/works/rtbme0d"
+"/sites/default/files/interview_pdf_abstract/roberts_jd_0069_1987suppl.pdf" : "/works/rtbme0d"
 "/oral-histories/johnstone-john-w" : "/works/4x51hk16n"
 "/sites/default/files/johnstone_jw_0156_full.pdf" : "/works/4x51hk16n"
 "/sites/default/files/johnstone_jw_0156_suppl.pdf" : "/works/4x51hk16n"
@@ -1444,6 +1471,7 @@
 "/sites/default/files/overduin_mj_0516_full.pdf" : "/works/wh3te3j"
 "/sites/default/files/overduin_mj_0516_suppl.pdf" : "/works/wh3te3j"
 "/oral-histories/horton-jay-d" : "/works/xt30n7c"
+"/oral-histories/stavropoulos-william-s" : "/works/evdjnrk"
 "/oral-histories/payne-gregory-s" : "/works/pdhqmmp"
 "/sites/default/files/payne_gs_0573_full.pdf" : "/works/pdhqmmp"
 "/sites/default/files/payne_gs_0573_suppl.pdf" : "/works/pdhqmmp"
@@ -1590,6 +1618,9 @@
 "/oral-histories/brewer-leo" : "/works/x633f188n"
 "/sites/default/files/entire_oral_history_pdf/brewer_l_0106_full.pdf" : "/works/x633f188n"
 "/sites/default/files/brewer_l_0106_suppl.pdf" : "/works/x633f188n"
+"/oral-histories/sarett-lewis-h" : "/works/t7iecnw"
+"/sites/default/files/sarett_lh_0149_full.pdf" : "/works/t7iecnw"
+"/sites/default/files/interview_pdf_abstract/sarett_lh_0149_suppl.pdf" : "/works/t7iecnw"
 "/oral-histories/baker-dale-b" : "/works/73666543r"
 "/sites/default/files/baker_db_0160_full.pdf" : "/works/73666543r"
 "/sites/default/files/baker_db_0160_suppl.pdf" : "/works/73666543r"

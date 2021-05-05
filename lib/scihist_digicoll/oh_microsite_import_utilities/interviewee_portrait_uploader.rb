@@ -29,31 +29,28 @@ module OhMicrositeImportUtilities
     # If the portrait already exists, update its metadata
     def maybe_update_metadata
       return if portrait_asset.nil?
-      portrait_asset['file_data']['metadata']['filename'] = @filename
       portrait_asset.title = @title
       portrait_asset.alt_text = DescriptionSanitizer.new.sanitize(@alt_text)
       portrait_asset.caption = DescriptionSanitizer.new.sanitize(@caption)
-      # note = []
-      # note << "Original microsite title: \"#{@title}\""          if @title.present?
-      # note << "Downloaded from microsite URL: \"#{@url}\""  if @url.present?
-      # note << "Alt text: \"#{@alt_text}\""    if @alt_text.present?
-      # note << "Caption: \"#{@caption}\""      if @caption.present?
-      # portrait_asset.admin_note = note
       portrait_asset.save!
     end
 
     def new_portrait
       portrait = Asset.new(
-        title: @title,
-        position: next_open_position,
-        parent_id: @work.id,
-        published: @work.published,
-        role: 'portrait',
+          title: @title,
+          alt_text: DescriptionSanitizer.new.sanitize(@alt_text),
+          caption: DescriptionSanitizer.new.sanitize(@caption),
+          position: next_open_position,
+          parent_id: @work.id,
+          published: @work.published,
+          role: 'portrait'
         )
         portrait.file_attacher.set_promotion_directives(promote: "inline")
         portrait.file_attacher.set_promotion_directives(create_derivatives: "inline")
         begin
-          portrait.file = { "id" => @url, "storage" => "remote_url" }
+          file_settings =  { "id" => @url, "storage" => "remote_url"}
+          file_settings['metadata'] = { "filename" => @filename} if @filename.present?
+          portrait.file = file_settings
         rescue Shrine::Error => shrine_error
           puts("Shrine error: #{shrine_error}")
         end

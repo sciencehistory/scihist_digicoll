@@ -166,18 +166,27 @@ module OhMicrositeImportUtilities
     end
 
     def self.honors(w, rows, transformations: nil)
+
       sanitizer = DescriptionSanitizer.new
       get_bios(rows).each_pair do |bio, bio_rows|
         honors = bio_rows.map do |row |
+          desc = row['interviewee_honor_description']&.
+            gsub("<em>",  "<i>")&.
+            gsub("</em>", "</i>")
           args = {
             start_date:   keep_yyyy(row['interviewee_honor_start_date']),
-            honor:        sanitizer.sanitize(row['interviewee_honor_description'])
+            honor:        sanitizer.sanitize(desc)
           }
           if row['interviewee_honor_start_date'] != row['interviewee_honor_end_date']
             args[:end_date] = keep_yyyy(row['interviewee_honor_end_date'])
           end
 
           if args.values.all?(&:nil?)
+            nil
+          elsif args.select{|x, y| y.present?}.keys == [:start_date]
+            # If there's only a date, and no other metadata,
+            # don't create an IntervieweeHonor.
+            # See https://github.com/sciencehistory/scihist_digicoll/issues/1109
             nil
           else
             OralHistoryContent::IntervieweeHonor.new(args)
@@ -194,6 +203,14 @@ module OhMicrositeImportUtilities
     def self.interviewer(w, rows, transformations: nil)
       profiles = InterviewerProfile.where(id: rows.map {|r| r['interviewer_id']})
       w.oral_history_content.interviewer_profiles = profiles
+      w.oral_history_content.save!
+    end
+
+    # In a few cases, an interviewer is associated with an interview via a *session*:
+    def self.interviewer_2(w, rows, transformations: nil)
+      new_set = Set.new(w.oral_history_content.interviewer_profiles) +
+        Set.new(InterviewerProfile.where(id: rows.map {|r| r['interviewer_id']}))
+      w.oral_history_content.interviewer_profiles = new_set.to_a
       w.oral_history_content.save!
     end
 

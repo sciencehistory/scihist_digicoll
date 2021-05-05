@@ -33,7 +33,7 @@ module OhMicrositeImportUtilities
   def metadata_files
     %w{ birth_date birth_city birth_state birth_province birth_country } +
     %w{ death_date death_city death_state death_province death_country } +
-    %w{ education career honors image interviewer}
+    %w{ education career honors image interviewer interviewer_2}
   end
 
   # If there's only one name in the digital collection, use that one.
