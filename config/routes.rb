@@ -20,6 +20,17 @@ Rails.application.routes.draw do
     # OH home page, send to new OH collection page
     root as: false, to: redirect { "#{ScihistDigicoll::Env.lookup!("app_url_base")}/collections/#{ScihistDigicoll::Env.lookup!("oral_history_collection_id")}"  }
 
+
+    # Links to search results in legacy OH site should redirct to search of OH collection.
+    # We only support basic query term, not fielded search or facets.
+    get "search/site/*query", to: redirect { |path_params, req|
+      "#{ScihistDigicoll::Env.lookup!("app_url_base")}/collections/#{ScihistDigicoll::Env.lookup!("oral_history_collection_id")}?q=#{path_params[:query]}"
+    }
+    get "search/oh/*query", to: redirect { |path_params, req|
+      "#{ScihistDigicoll::Env.lookup!("app_url_base")}/collections/#{ScihistDigicoll::Env.lookup!("oral_history_collection_id")}?q=#{path_params[:query]}"
+    }
+
+
     # Does it match one of our OH_LEGACY_REDIRECTS? Then redirect it!
     get '*path', constraints: ->(req) { OH_LEGACY_REDIRECTS.has_key?(req.path.downcase) }, to: redirect { |params, req|
       "#{ScihistDigicoll::Env.lookup!("app_url_base")}#{OH_LEGACY_REDIRECTS[req.path.downcase]}"
