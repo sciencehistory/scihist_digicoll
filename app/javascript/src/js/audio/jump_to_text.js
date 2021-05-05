@@ -37,7 +37,7 @@ domready(function() {
 
 
 function findTranscriptAnchor(timeInSeconds) {
-  return findOhmsTimestampElementIncluding(timeInSeconds, "a")
+  return findOhmsTimestampElementIncluding(timeInSeconds, "#ohTranscript a")
 }
 
 function findOhmsTimestampElementIncluding(timeInSeconds, baseSelector) {
@@ -48,13 +48,16 @@ function findOhmsTimestampElementIncluding(timeInSeconds, baseSelector) {
     }
     previousEl = element;
   }
-  return undefined;
+
+  // in case it's in last segment, need to return it here.
+  // This may also return last segment for weird non-matches.
+  return previousEl;
 }
 
 // Returns an element that you can call boostrap element.collapse()
 // on, for ToC section corresponding to timecode.
 function findTocCollapsibleSection(timeInSeconds) {
-  var button = findOhmsTimestampElementIncluding(timeInSeconds, "button");
+  var button = findOhmsTimestampElementIncluding(timeInSeconds, "#ohToc button");
 
   // need to find it's parent collapsible
   return button && button.closest("*[data-parent='#ohmsIndexAccordionParent']")
