@@ -39,6 +39,20 @@ describe "Oral history legacy site redirects" do
     end
   end
 
+  describe "search results link" do
+    it "redirects from /search/site/" do
+      get '/search/site/new%20york'
+      expect(response).to have_http_status(301) # moved permanently
+      expect(response).to redirect_to("#{standard_base_url}/collections/#{ScihistDigicoll::Env.lookup!(:oral_history_collection_id)}?q=new\%20york")
+    end
+
+    it "redirects from /search/oh/" do
+      get '/search/oh/new%20york'
+      expect(response).to have_http_status(301) # moved permanently
+      expect(response).to redirect_to("#{standard_base_url}/collections/#{ScihistDigicoll::Env.lookup!(:oral_history_collection_id)}?q=new\%20york")
+    end
+  end
+
 
   it "handles unrecognized with a nice 404" do
     get "/some_url/never_heard_of_it"
