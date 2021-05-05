@@ -58,10 +58,14 @@ export function goToTocCollapsible(collapsible) {
 // just less than timeInSeconds passed in, but you also pass in a baseSelector, what
 // kind of element/selector with data-ohms-timestamp-s
 export function findOhmsTimestampElementIncluding(timeInSeconds, baseSelector) {
+  var elements = document.querySelectorAll(baseSelector + "[data-ohms-timestamp-s]");
+
   var previousEl = undefined;
-  for (var element of document.querySelectorAll(baseSelector + "[data-ohms-timestamp-s]")) {
+  for (var element of elements) {
     if (element.getAttribute("data-ohms-timestamp-s") > timeInSeconds) {
-      return previousEl;
+      // if previousEl is empty, our timecode may have been BEFORE the first element, just
+      // do the first element, if we have one.
+      return previousEl ? previousEl : elements[0]
     }
     previousEl = element;
   }
