@@ -42,7 +42,7 @@ function findTranscriptAnchor(timeInSeconds) {
 
 function findOhmsTimestampElementIncluding(timeInSeconds, baseSelector) {
   var previousEl = undefined;
-  for (element of document.querySelectorAll(baseSelector + "[data-ohms-timestamp-s]")) {
+  for (var element of document.querySelectorAll(baseSelector + "[data-ohms-timestamp-s]")) {
     if (element.getAttribute("data-ohms-timestamp-s") > timeInSeconds) {
       return previousEl;
     }
