@@ -41,6 +41,7 @@ $EXPORT_CMD  < queries/image.sql             > $EXPORT_DESTINATION/image.json
 
 # Interviewers and profiles:
 $EXPORT_CMD  < queries/interviewer.sql               > $EXPORT_DESTINATION/interviewer.json
+$EXPORT_CMD  < queries/interviewer_2.sql             > $EXPORT_DESTINATION/interviewer_2.json
 $EXPORT_CMD  < queries/interviewer_profile.sql       > $EXPORT_DESTINATION/interviewer_profile.json
 
 cp json_mappings/fast_mappings.json                    $EXPORT_DESTINATION/all_transforms.json
