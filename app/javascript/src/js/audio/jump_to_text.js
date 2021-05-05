@@ -1,34 +1,38 @@
 // A "jump to text" button will scroll to portion of transcript matching current timecode
 // in player. OR if you are in ToC tab, open/scroll to segment of ToC matching current timecode.
 
-document.body.addEventListener("click", function (event) {
-  if (event.target.matches("*[data-trigger='ohms-jump-to-text']")) {
-    var player = document.querySelector("audio[data-role=ohms-audio-elem]");
-    var timeCodeSeconds = player.currentTime;
-    var activeTab = getActiveTab();
+import domready from 'domready';
 
-    if (activeTab.id == "ohTocTab") {
-      var collapsible = findTocCollapsibleSection(timeCodeSeconds);
-      if (collapsible) {
-        if (collapsible.classList.contains("collapse")) {
-          $(collapsible).collapse("show");
+domready(function() {
+  document.body.addEventListener("click", function (event) {
+    if (event.target.matches("*[data-trigger='ohms-jump-to-text']")) {
+      var player = document.querySelector("audio[data-role=ohms-audio-elem]");
+      var timeCodeSeconds = player.currentTime;
+      var activeTab = getActiveTab();
+
+      if (activeTab.id == "ohTocTab") {
+        var collapsible = findTocCollapsibleSection(timeCodeSeconds);
+        if (collapsible) {
+          if (collapsible.classList.contains("collapse")) {
+            $(collapsible).collapse("show");
+          }
+          // And scroll to the
+          scrollToElement(collapsible.closest(".card").querySelector(".card-header"));
         }
-        // And scroll to the
-        scrollToElement(collapsible.closest(".card").querySelector(".card-header"));
-      }
-    } else if (activeTab) {
-      // if we have anything else, jump to transcript point, activating
-      // transcript tab first if needed.
-      if (activeTab.id != "ohTranscriptTab") {
-        $('*[data-toggle="tab"][href="#ohTranscript"]').tab("show");
-      }
+      } else if (activeTab) {
+        // if we have anything else, jump to transcript point, activating
+        // transcript tab first if needed.
+        if (activeTab.id != "ohTranscriptTab") {
+          $('*[data-toggle="tab"][href="#ohTranscript"]').tab("show");
+        }
 
-      var element = findTranscriptAnchor(timeCodeSeconds);
-      if (element) {
-        scrollToElement(element);
+        var element = findTranscriptAnchor(timeCodeSeconds);
+        if (element) {
+          scrollToElement(element);
+        }
       }
     }
-  }
+  });
 });
 
 
