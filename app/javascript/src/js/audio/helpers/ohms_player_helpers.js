@@ -32,8 +32,8 @@ export function findTranscriptAnchor(timeInSeconds) {
 // Returns a ToC that corresponds to best timecode
 // link for timeInSeconds. That is, the segment that includes timeInseconds.
 //
-// Returns a button element  that you can call boostrap element.collapse()
-// on, for ToC section corresponding to timecode.
+// Returns a div element that has bootstrap collapsible(), which you can call
+// element.collapse() on, for the ToC section corresponding to timecode.
 export function findTocCollapsibleSection(timeInSeconds) {
   var button = findOhmsTimestampElementIncluding(timeInSeconds, "#ohToc button");
 
