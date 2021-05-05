@@ -1,6 +1,5 @@
- // OK, but now if audio is playing, and we're on transcript or ToC tab, we actually want to
-// scroll to relevant portion...
-
+// A "jump to text" button will scroll to portion of transcript matching current timecode
+// in player. OR if you are in ToC tab, open/scroll to segment of ToC matching current timecode.
 
 document.body.addEventListener("click", function (event) {
   if (event.target.matches("*[data-trigger='ohms-jump-to-text']")) {
