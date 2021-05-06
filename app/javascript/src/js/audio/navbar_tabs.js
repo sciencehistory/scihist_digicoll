@@ -33,21 +33,25 @@ $(document).on("hide.bs.tab", ".work-show-audio", function(event) {
   }
 });
 
-
-// Restore tab position on a tab when we switch back to it, or else try to get
+// Scroll position on tab change:
+//
+// 1) Normally, restore tab position on a tab when we switch back to it, or else try to get
 // us at the "top" of the tab, so you don't wind up looking at the footer on a short tab.
 // A bit hard to get right.
+//
+// 2) but if Audio is playing, scroll to corresponding position in transcript or ToC tab.
 $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
   // restore scroll position, or move to a reasonable starting point if first time on this tab.
 
+  var tabId = event.target.id;
   var navbarIsFixed = (document.getElementById("ohmsAudioNavbar").getBoundingClientRect().top == 0);
-  var saved = tabScrollPositions[event.target.id];
+  var saved = tabScrollPositions[tabId];
 
   if (saved) {
     window.scrollTo({top: saved})
   } else if (! navbarIsFixed) {
     // navbar isn't fixed to top anyway, don't worry about it, too weird if we try.
-    return;
+    // no-op.
   } else {
     // we don't have a saved position, but we're in position with fixed navbar at
     // top of page -- move to top of fixed navbar at top of page in new tab.
@@ -60,3 +64,5 @@ $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
     document.getElementById("ohmsAudioNavbar").scrollIntoView({behavior: "auto", block: "start"});
   }
 });
+
+

@@ -6,7 +6,7 @@ describe "Oral history with audio display", type: :system, js: true do
   let(:portrait) { create(:asset_with_faked_file, role: "portrait")}
 
   let!(:parent_work) do
-    create(:oral_history_work, published: true).tap do |work|
+    create(:oral_history_work, :ohms_xml, published: true).tap do |work|
       work.members << portrait
     end
   end
@@ -246,6 +246,28 @@ describe "Oral history with audio display", type: :system, js: true do
           expect(page).to have_field(readonly: true, with: "#{displayed_url}#t=0")
         end
       end
+    end
+  end
+
+  context "with combined audio and OHMS" do
+    before do
+      parent_work.oral_history_content.combined_audio_mp3 = create(:stored_uploaded_file,
+        file: File.open((Rails.root + "spec/test_support/audio/10-minutes-of-silence.mp3")),
+        content_type: "audio/mpeg")
+      parent_work.oral_history_content.combined_audio_fingerprint = CombinedAudioDerivativeCreator.new(parent_work).fingerprint
+      parent_work.oral_history_content.save!
+    end
+
+    it "can use 'jump to text' feature" do
+      visit work_path(parent_work.friendlier_id)
+
+      # to get player to 5:05, we're just going to hackily execute JS
+      page.execute_script(%q{document.querySelector("audio[data-role='ohms-audio-elem']").currentTime = 305;})
+
+      click_button "Jump to text"
+      expect(page).to have_text("00:05:00")
+      # since that's at the top of visible transcript, earlier minute should be scrolled off
+      expect(page).not_to have_text("00:04:00")
     end
   end
 

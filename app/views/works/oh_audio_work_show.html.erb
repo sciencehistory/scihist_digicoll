@@ -16,10 +16,15 @@
           </a>
         </h1>
         <% if decorator.combined_mp3_audio.present? && decorator.derivatives_up_to_date? %>
-          <audio controls controlsList="nodownload" data-role="ohms-audio-elem" >
-              <source src="<%= decorator.combined_mp3_audio%>"  type="audio/mpeg"/>
-              <source src="<%= decorator.combined_webm_audio%>"  type="audio/webm"/>
-          </audio>
+          <div class="d-flex" style="align-items: center">
+            <audio controls controlsList="nodownload" data-role="ohms-audio-elem" >
+                <source src="<%= decorator.combined_mp3_audio%>"  type="audio/mpeg"/>
+                <source src="<%= decorator.combined_webm_audio%>"  type="audio/webm"/>
+            </audio>
+            <div class="pl-3">
+              <button class="btn btn-emphasis btn-sm text-nowrap" data-trigger="ohms-jump-to-text">Jump to text</button>
+            </div>
+          </div>
         <% else %>
           <div class="alert alert-warning" role="alert" data-role="no-audio-alert">
              This oral history is not properly prepared for the audio player. (Staff: please create a combined derivative.)
