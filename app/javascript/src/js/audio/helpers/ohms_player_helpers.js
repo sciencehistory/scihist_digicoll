@@ -50,7 +50,7 @@ export function findTranscriptAnchor(timeInSeconds) {
 // Returns a div element that has bootstrap collapsible(), which you can call
 // element.collapse() on, for the ToC section corresponding to timecode.
 export function findTocCollapsibleSection(timeInSeconds) {
-  var button = findOhmsTimestampElementIncluding(timeInSeconds, "#ohToc button");
+  var button = findOhmsTimestampElementIncluding(timeInSeconds, "#ohToc a");
 
   // need to find it's parent collapsible
   return button && button.closest("*[data-parent='#ohmsIndexAccordionParent']")
