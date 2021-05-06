@@ -22,8 +22,32 @@ domready(function() {
 
   // clipboard copy button
   document.querySelector("*[data-area='media-link-share'] *[data-trigger='linkClipboardCopy']")?.addEventListener("click", function(event) {
+    var button = event.currentTarget;
     var display = document.querySelector("*[data-area='media-link-share'] *[data-slot='shareURL']");
-    navigator.clipboard.writeText(display.value);
+
+    navigator.clipboard.writeText(display.value).then(function() {
+      button.setAttribute("title", "Copied to clipboard");
+      button.classList.add("btn-outline-success");
+      button.classList.remove("btn-outline-secondary");
+
+
+      jQuery(button).tooltip({trigger: "manual"}).tooltip("show");
+
+      // remove em after a few seconds....
+      setTimeout(function() {
+        var jQueryButton = jQuery(button);
+
+        jQueryButton.tooltip("hide");
+        button.classList.add("btn-outline-secondary");
+        button.classList.remove("btn-outline-success");
+
+        jQueryButton.one('hidden.bs.tooltip', function(e) {
+          button.removeAttribute("title");
+          jQueryButton.tooltip("dispose");
+        });
+
+      }, 3500);
+    });
   });
 });
 
