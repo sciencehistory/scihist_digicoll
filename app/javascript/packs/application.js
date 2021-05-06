@@ -30,3 +30,4 @@ import '../src/js/audio/accordion_open_on_screen.js';
 import '../src/js/audio/navbar_tabs.js';
 import "../src/js/audio/timecode_in_anchor.js";
 import "../src/js/audio/share_link_modal.js";
+import '../src/js/audio/jump_to_text.js';
