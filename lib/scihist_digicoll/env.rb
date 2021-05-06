@@ -99,9 +99,6 @@ module ScihistDigicoll
       end
     }
 
-    define_key :institute_main_site_hostname, default: "www.sciencehistory.org"
-    define_key :institute_main_site_projects_page, default: "oral-history-projects"
-
     # Sometimes we need the individual parts of the app_base_url, returns a URI object
     # they can be obtained from.
     def self.app_url_base_parsed
