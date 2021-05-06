@@ -20,7 +20,7 @@ Connected to the footnote link by aria-describedby.
 hidden from screenreaders via aria-hidden="true";
 not accessible to phone / tablet users.)
 #%>
-<span class="footnote" aria-hidden="true" data-toggle="tooltip" title="<%= footnote_text %>">
+<span class="footnote" aria-hidden="true" data-toggle="ohms-tooltip" title="<%= footnote_text %>">
   <%# The actual footnote link #%>
   <a aria-describedby="footnote-text-<%=number%>" data-role="footnote-reference" data-footnote-index="<%=number%>" href="#">[<%= number %>]</a>
 </span>

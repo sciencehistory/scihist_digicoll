@@ -46,14 +46,19 @@ class ThumbDisplay < ViewModel
   #   but you may want to use the collection default image for collections, etc.
   # @param lazy [Boolean] default false. If true, will use data-src and data-srcset attributes,
   #   and NOT src/srcset direct attributes, for lazy loading with lazysizes.js.
+  # @param recent_items The ThumbDisplays used in the recent_itmes section of the homepage
+  # function slightly differently: they are intended to be visible on screenreaders, so we
+  # are allowing an alt text for them.
   def initialize(model,
     thumb_size: :standard,
     placeholder_img_url: asset_path("placeholderbox.svg"),
-    lazy: false)
+    lazy: false,
+    alt_text_override: nil)
 
     @placeholder_img_url = placeholder_img_url
     @thumb_size = thumb_size.to_sym
     @lazy = lazy
+    @alt_text_override = alt_text_override
 
     unless ALLOWED_THUMB_SIZES.include? thumb_size
       raise ArgumentError.new("thumb_size must be in #{ALLOWED_THUMB_SIZES}, but was '#{thumb_size}'")
@@ -111,7 +116,9 @@ class ThumbDisplay < ViewModel
       }
     }
 
-    if asset.alt_text.present?
+    if @alt_text_override.present?
+      img_attributes[:alt] = @alt_text_override
+    elsif asset.alt_text.present?
       img_attributes[:alt] = asset.alt_text
     end
 
