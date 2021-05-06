@@ -30,6 +30,7 @@ Rails.application.routes.draw do
       "#{ScihistDigicoll::Env.lookup!("app_url_base")}/collections/#{ScihistDigicoll::Env.lookup!("oral_history_collection_id")}?q=#{path_params[:query]}"
     }
 
+    get '/oral-histories/projects', to: redirect { 'https://www.sciencehistory.org/oral-history-projects' }
 
     # Does it match one of our OH_LEGACY_REDIRECTS? Then redirect it!
     get '*path', constraints: ->(req) { OH_LEGACY_REDIRECTS.has_key?(req.path.downcase) }, to: redirect { |params, req|
