@@ -80,7 +80,9 @@ export function findOhmsTimestampElementIncluding(timeInSeconds, baseSelector) {
 
   var previousEl = undefined;
   for (var element of elements) {
-    if (Math.trunc(element.getAttribute("data-ohms-timestamp-s")) >= Math.trunc(timeInSeconds)) {
+    // if we've found one PAST our timecode -- then the last one we found
+    // is the segment containing our timecode.
+    if (Math.trunc(element.getAttribute("data-ohms-timestamp-s")) > Math.trunc(timeInSeconds)) {
       // if previousEl is empty, our timecode may have been BEFORE the first element, just
       // do the first element, if we have one.
       return previousEl ? previousEl : elements[0]
