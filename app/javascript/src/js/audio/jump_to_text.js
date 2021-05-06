@@ -1,7 +1,7 @@
 // A "jump to text" button will scroll to portion of transcript matching current timecode
 // in player. OR if you are in ToC tab, open/scroll to segment of ToC matching current timecode.
 
-import {gotoTocTabAtTimecode, gotoTranscriptTimecode, getActiveTab} from "./helpers/ohms_player_helpers.js";
+import {gotoTocSegmentAtTimecode, gotoTranscriptTimecode, getActiveTab} from "./helpers/ohms_player_helpers.js";
 import domready from 'domready';
 
 domready(function() {
