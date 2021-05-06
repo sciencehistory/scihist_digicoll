@@ -1,7 +1,7 @@
 // A "jump to text" button will scroll to portion of transcript matching current timecode
 // in player. OR if you are in ToC tab, open/scroll to segment of ToC matching current timecode.
 
-import {findTranscriptAnchor, scrollToElement, findTocCollapsibleSection, getActiveTab, goToTocCollapsible} from "./helpers/ohms_player_helpers.js";
+import {gotoTocTabAtTimecode, gotoTranscriptTimecode, getActiveTab} from "./helpers/ohms_player_helpers.js";
 import domready from 'domready';
 
 domready(function() {
@@ -12,21 +12,14 @@ domready(function() {
       var activeTab = getActiveTab();
 
       if (activeTab.id == "ohTocTab") {
-        var collapsible = findTocCollapsibleSection(timeCodeSeconds);
-        if (collapsible) {
-          goToTocCollapsible(collapsible);
-        }
+        gotoTocSegmentAtTimecode(timeCodeSeconds)
       } else if (activeTab) {
         // if we have anything else, jump to transcript point, activating
         // transcript tab first if needed.
         if (activeTab.id != "ohTranscriptTab") {
           $('*[data-toggle="tab"][href="#ohTranscript"]').tab("show");
         }
-
-        var element = findTranscriptAnchor(timeCodeSeconds);
-        if (element) {
-          scrollToElement(element);
-        }
+        gotoTranscriptTimecode(timeCodeSeconds)
       }
     }
   });

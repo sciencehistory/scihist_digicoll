@@ -22,6 +22,21 @@ to be available. We try to avoid JQuery except for that.
  */
 
 
+// Does not switch to tab, assumes ToC tab is open.
+export function gotoTocSegmentAtTimecode(timeinSeconds) {
+  var collapsible = findTocCollapsibleSection(timeinSeconds);
+  if (collapsible) {
+    goToTocCollapsible(collapsible);
+  }
+}
+
+export function gotoTranscriptTimecode(timeInSeconds) {
+  var element = findTranscriptAnchor(timeInSeconds);
+  if (element) {
+    scrollToElement(element);
+  }
+}
+
 // Returns the <a> element from OHMS transcript that corresponds to best timecode
 // link for timeInSeconds. For finding place in transcript corresponding to seconds.
 export function findTranscriptAnchor(timeInSeconds) {
