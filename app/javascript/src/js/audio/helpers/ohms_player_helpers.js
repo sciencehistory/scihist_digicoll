@@ -61,11 +61,18 @@ export function findTocCollapsibleSection(timeInSeconds) {
 //
 // We will make sure that section is EXPANDED, and then SCROLL to it.
 export function goToTocCollapsible(collapsible) {
+  var elementScrollTarget = collapsible.closest(".card").querySelector(".card-header");
+
   if (collapsible.classList.contains("collapse")) {
     jQuery(collapsible).collapse("show");
+    // We have to wait until it's done being shown to scroll to it, to make
+    // sure we're scrolling to correct place.
+    jQuery(collapsible).one("shown.bs.collapse", function(event) {
+      scrollToElement(elementScrollTarget);
+    });
+  } else {
+    scrollToElement(elementScrollTarget);
   }
-  // And scroll to the
-  scrollToElement(collapsible.closest(".card").querySelector(".card-header"));
 }
 
 
