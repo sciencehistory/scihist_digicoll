@@ -34,6 +34,10 @@ class OhmsIndexDisplay < ViewModel
     "ohmsAccordionCard#{index}"
   end
 
+  def share_link_area_id(index)
+    "ohmsTocShareLink#{index}"
+  end
+
 
 
 end
