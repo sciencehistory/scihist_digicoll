@@ -8,9 +8,11 @@
 // can be clicked to advance to timecode, without changing the #fragmentIdentifier.
 
 import domready from 'domready';
+import {gotoTocSegmentAtTimecode, getActiveTab} from './helpers/ohms_player_helpers.js';
 
 domready(function() {
-  var timeCodeSeconds = window.location.hash.includes("=") && new URLSearchParams(window.location.hash.replace(/^#/, '')).get("t");
+  var hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  var timeCodeSeconds = window.location.hash.includes("=") && hashParams.get("t");
 
   if (timeCodeSeconds) {
     var player = document.querySelector("*[data-role=now-playing-container] audio");
@@ -23,6 +25,20 @@ domready(function() {
         player.addEventListener("loadedmetadata", function(event) {
           setupTimeSeek(player, timeCodeSeconds);
         });
+      }
+
+      // goto relevant toc segment if requested
+      if (hashParams.get("tab") == "ohToc") {
+
+        if (getActiveTab().id == "ohTocTab") {
+          gotoTocSegmentAtTimecode(timeCodeSeconds);
+        } else {
+          // not shown yet, other code will async make it shown, we have
+          // to say once it's shown, open and scroll  to toc segment.
+          jQuery('*[data-toggle="tab"][href="#ohToc"]').one('shown.bs.tab', function(event) {
+            gotoTocSegmentAtTimecode(timeCodeSeconds);
+          });
+        }
       }
     }
   }
