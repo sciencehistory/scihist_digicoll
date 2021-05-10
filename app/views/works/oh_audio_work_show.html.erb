@@ -155,7 +155,7 @@
         <div class="tab-pane mb-5" id="ohShare" role="tabpanel" data-area="media-link-share" aria-labelledby="ohShareTab">
           <h2 class="attribute-sub-head mt-0 mb-2">Share</h2>
           <div class="form-group">
-            <div class="input-group mb-3">
+            <div class="input-group mb-3" data-trigger="copyInputGroup">
               <div class="input-group-prepend">
                 <span class="input-group-text">
                   <i class="fa fa-link" aria-hidden="true"></i>
@@ -163,7 +163,7 @@
                 </span>
               </div>
 
-              <input type="text" aria-label="URL to copy" class="form-control" id="linkDisplay" data-slot="shareURL" readonly value="<%= work_url(@work) %>">
+              <input type="text" aria-label="URL to copy" class="form-control" data-slot="shareURL" readonly value="<%= work_url(@work) %>">
 
               <div class="input-group-append">
                 <button class="btn btn-outline-secondary" data-trigger="linkClipboardCopy">
