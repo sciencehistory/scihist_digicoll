@@ -241,6 +241,22 @@ describe "Oral history with audio display", type: :system, js: true do
       # since that's at the top of visible transcript, earlier minute should be scrolled off
       expect(page).not_to have_text("00:04:00")
     end
+
+    it "can use 'jump to text' feature for transcript tab" do
+      visit work_path(parent_work.friendlier_id)
+
+      click_on "Table of Contents"
+
+       # to get player to 5:05, we're just going to hackily execute JS
+      page.execute_script(%q{document.querySelector("audio[data-role='ohms-audio-elem']").currentTime = 305;})
+
+      click_button "Jump to text"
+      expect(page).to have_text("00:04:16") # nearest ToC section
+      expect(page).to have_text("Many family members are scientists.") # open synopsis for 04:16
+
+      # I guess capybara can see this even though it is scrolled under navabar.
+      #expect(page).not_to have_text("00:00:00") # earlier ToC section
+    end
   end
 
   describe "when you are logged-in staff", :logged_in_user, type: :system, js: true do
