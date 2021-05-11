@@ -381,5 +381,24 @@ describe "Oral history with audio display", type: :system, js: true do
       expect(page).to have_selector("h2", text: "About the Interviewer")
       expect(page).to have_text("This has some html")
     end
+
+    describe "table of contents direct link" do
+      let(:segment) { parent_work.oral_history_content.ohms_xml.index_points.second }
+      let(:segment_direct_url) do
+        # don't know why we need to specify capybara port to get the port that is actually
+        # being used and succesfully displayed in app.
+        work_url(parent_work.friendlier_id, anchor: "t=#{segment.timestamp}&tab=ohToc",
+          port: Capybara.current_session.server.port)
+      end
+
+      it "has table of contents segment direct link" do
+        visit work_path(parent_work.friendlier_id)
+
+        click_on "Table of Contents"
+        click_on segment.title
+        click_on "Share link"
+        expect(page).to have_field(readonly: true, with: segment_direct_url)
+      end
+    end
   end
 end
