@@ -35,7 +35,7 @@ class OrphanS3Derivatives
 
     @s3_iterator = S3PathIterator.new(
       shrine_storage: shrine_storage,
-      show_progress_bar: false, #show_progress_bar,
+      show_progress_bar: show_progress_bar,
       progress_bar_total: derivative_count
     )
   end
