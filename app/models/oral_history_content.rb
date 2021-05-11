@@ -16,7 +16,7 @@
 #     oral_history_content.set_commbined_audio_mp3!(io)
 #     oral_history_content.set_commbined_audio_webm!(io)
 #
-# There is a (yet-unused) string field `combined_audio_fingerprint` for fingerprinting
+# There is a string field `combined_audio_fingerprint` for fingerprinting
 # combined files for staleness, and a JSONB field combined_audio_component_metadata
 # expected to hold a hash of metadata on components of combined audio.
 #
