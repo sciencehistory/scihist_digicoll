@@ -37,7 +37,7 @@
                 </span>
               </div>
 
-              <input type="text" aria-label="URL to copy" class="form-control" data-slot="shareURL" readonly value="<%= work_url(@work, anchor: "t=#{index_point.timestamp}&tab=ohToc".html_safe) %>">
+              <input type="text" aria-label="URL to copy" class="form-control" data-slot="shareURL" readonly value="<%= view.direct_to_segment_link(index_point) %>">
 
               <div class="input-group-append">
                 <button class="btn btn-outline-secondary" data-trigger="linkClipboardCopy">
