@@ -242,6 +242,15 @@ describe "Oral history with audio display", type: :system, js: true do
       expect(page).not_to have_text("00:04:00")
     end
 
+    it "can link to timecode on transcript" do
+      visit work_path(parent_work.friendlier_id, anchor: "t=306")
+
+      # jump to 05:00 at top of page, on transcript tab
+
+      expect(page).to have_selector("#ohTranscript.tab-pane.active")
+      expect(page).to have_text("00:05:00")
+      expect(page).not_to have_text("00:04:00")
+    end
 
     it "has popup with URL with timecode" do
       # not sure why we need to specify capybara port manually to see what we expect
@@ -259,7 +268,7 @@ describe "Oral history with audio display", type: :system, js: true do
       end
     end
 
-    it "can use 'jump to text' feature for transcript tab" do
+    it "can use 'jump to text' feature for ToC tab" do
       visit work_path(parent_work.friendlier_id)
 
       click_on "Table of Contents"
@@ -273,6 +282,14 @@ describe "Oral history with audio display", type: :system, js: true do
 
       # I guess capybara can see this even though it is scrolled under navabar.
       #expect(page).not_to have_text("00:00:00") # earlier ToC section
+    end
+
+    it "can jump to specific ToC segment" do
+      visit work_path(parent_work.friendlier_id, anchor: "t=305&tab=ohToc")
+
+      expect(page).to have_selector("#ohToc.tab-pane.active")
+      expect(page).to have_text("00:04:16") # nearest ToC section
+      expect(page).to have_text("Many family members are scientists.") # open synopsis for 04:16
     end
   end
 
