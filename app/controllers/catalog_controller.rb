@@ -409,6 +409,14 @@ class CatalogController < ApplicationController
       render plain: "Invalid URL query parameter range=#{params[:range].to_s}", status: 400
     end
 
+    # escaped newline in range value, eg
+    #    range%5Byear_facet_isim%5D%5Bbegin%5D=1588%0A
+    # https://app.honeybadger.io/projects/58989/faults/79191107
+    if params[:range] &&
+        params[:range].values.collect(&:values).flatten.grep(/\n/).present?
+      render plain: "Invalid URL query parameter range=#{params[:range].to_s}", status: 400
+    end
+
     # eg &f=expect%3A%2F%2Fdir
     if params[:f] && !params[:f].respond_to?(:to_hash)
       render plain: "Invalid URL query parameter f=#{params[:f].to_unsafe_h.to_param}", status: 400

@@ -17,4 +17,15 @@ describe CatalogController, solr: true do
       expect(response.code).to eq("400")
     end
   end
+
+
+  # escaped newline in range value, eg
+  #    range%5Byear_facet_isim%5D%5Bbegin%5D=1588%0A
+  # https://app.honeybadger.io/projects/58989/faults/79191107
+  describe "newline in range facet" do
+    it "responds with 400" do
+      get "/catalog?range%5Byear_facet_isim%5D%5Bbegin%5D=1588%0A&range%5Byear_facet_isim%5D%5Bend%5D=2020%0A"
+      expect(response.code).to eq("400")
+    end
+  end
 end
