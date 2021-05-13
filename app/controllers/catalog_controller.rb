@@ -3,9 +3,9 @@
 require 'kithe/blacklight_tools/bulk_loading_search_service'
 
 class CatalogController < ApplicationController
-  before_action :catch_bad_blacklight_params, only: :index
   before_action :redirect_hash_facet_params, only: :index
   before_action :redirect_legacy_query_urls, only: :index
+  before_action :catch_bad_blacklight_params, only: :index
   before_action :swap_range_limit_params_if_needed, only: :index
   before_action :catch_bad_request_headers, only: :index
 
@@ -413,29 +413,40 @@ class CatalogController < ApplicationController
     #    range%5Byear_facet_isim%5D%5Bbegin%5D=1588%0A
     # https://app.honeybadger.io/projects/58989/faults/79191107
     if params[:range] &&
+        params[:range].is_a?(Hash) && params[:range].values.is_a?(Hash) &&
         params[:range].values.collect(&:values).flatten.grep(/\n/).present?
       render plain: "Invalid URL query parameter range=#{params[:range].to_s}", status: 400
     end
 
-    # eg &f=expect%3A%2F%2Fdir
-    if params[:f] && !params[:f].respond_to?(:to_hash)
-      render plain: "Invalid URL query parameter f=#{params[:f].to_unsafe_h.to_param}", status: 400
-    end
+    # facet param :f is a hash of keys and values, where each key is a facet name, and
+    # each value is an *array* of strings. Anything else, we should reject it as no good,
+    # because Blacklight is likely to raise an uncaught exception over it.
 
-    # params[:f] should be a hash, whose values are arrays of strings
-    # We have some things requesting with a weird array/hash value that messes
-    # up blacklight.
-    # https://app.honeybadger.io/projects/58989/faults/78909879/01F4Q6ZN3KVBPZ4BCG4Y36KJE5?page=0#notice-summary
+
+    # eg &f=expect%3A%2F%2Fdir
     if params[:f].present?
-      params[:f].each do |facet, values|
-        unless values.all? {|s| s.is_a?(String) }
-          render plain: "Invalid URL query parameter f=#{params[:f].to_unsafe_h.to_param}", status: 400
-          return
+      errmsg = lambda do
+        begin
+          "Invalid URL query parameter f=#{params[:f].to_unsafe_h.to_param}"
+        rescue StandardError
+          "Invalid URL query parameter f=#{params[:f]}"
+        end
+      end
+
+      if !params[:f].respond_to?(:to_hash)
+        render(plain: errmsg.call, status: 400) && return
+      end
+
+      params[:f].each do |facet, value|
+        unless facet.is_a?(String)
+          render(plain: errmsg.call, status: 400) && return
+        end
+
+        unless value.is_a?(Array) && value.all? {|v| v.is_a?(String)}
+          render(plain: errmsg.call, status: 400) && return
         end
       end
     end
-
-
   end
 
 
