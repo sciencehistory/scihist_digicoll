@@ -411,8 +411,23 @@ class CatalogController < ApplicationController
 
     # eg &f=expect%3A%2F%2Fdir
     if params[:f] && !params[:f].respond_to?(:to_hash)
-      render plain: "Invalid URL query parameter f=#{params[:f].to_param}", status: 400
+      render plain: "Invalid URL query parameter f=#{params[:f].to_unsafe_h.to_param}", status: 400
     end
+
+    # params[:f] should be a hash, whose values are arrays of strings
+    # We have some things requesting with a weird array/hash value that messes
+    # up blacklight.
+    # https://app.honeybadger.io/projects/58989/faults/78909879/01F4Q6ZN3KVBPZ4BCG4Y36KJE5?page=0#notice-summary
+    if params[:f].present?
+      params[:f].each do |facet, values|
+        unless values.all? {|s| s.is_a?(String) }
+          render plain: "Invalid URL query parameter f=#{params[:f].to_unsafe_h.to_param}", status: 400
+          return
+        end
+      end
+    end
+
+
   end
 
 
