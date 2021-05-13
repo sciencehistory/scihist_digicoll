@@ -8,17 +8,22 @@
 // can be clicked to advance to timecode, without changing the #fragmentIdentifier.
 
 import domready from 'domready';
-import {gotoTocSegmentAtTimecode, getActiveTab} from './helpers/ohms_player_helpers.js';
+import {gotoTocSegmentAtTimecode, gotoTranscriptTimecode} from './helpers/ohms_player_helpers.js';
 
 domready(function() {
   var hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   var timeCodeSeconds = window.location.hash.includes("=") && hashParams.get("t");
 
   if (timeCodeSeconds) {
+    if (history.scrollRestoration) {
+      history.scrollRestoration = 'manual';
+    }
+
     var player = document.querySelector("*[data-role=now-playing-container] audio");
     if (player) {
 
-      // player might not be in state where it can seek yet, if not then wait.
+      // player might not be in state where it can seek yet, if not then wait
+      // and seek when we can.
       if (player.readyState >=  player.HAVE_METADATA) {
         setupTimeSeek(player, timeCodeSeconds);
       } else {
@@ -27,22 +32,44 @@ domready(function() {
         });
       }
 
-      // goto relevant toc segment if requested
-      if (hashParams.get("tab") == "ohToc") {
+      // "tab" in anchor will cause other JS code in another file to switch to that tab.
+      //
+      // If tab in anchor is ToC, we expand to relevant segment.
+      //
+      // Otherwise, we need to switch to transcript tab and jump to relevant timecode.
 
-        if (getActiveTab().id == "ohTocTab") {
+      if (hashParams.get("tab") == "ohToc") {
+        execWhenTabActive("ohToc", function() {
           gotoTocSegmentAtTimecode(timeCodeSeconds);
-        } else {
-          // not shown yet, other code will async make it shown, we have
-          // to say once it's shown, open and scroll  to toc segment.
-          jQuery('*[data-toggle="tab"][href="#ohToc"]').one('shown.bs.tab', function(event) {
-            gotoTocSegmentAtTimecode(timeCodeSeconds);
-          });
+        });
+      } else {
+        if (hashParams.get("tab") != "ohTranscript") {
+          $(`*[data-toggle="tab"][href="#ohTranscript"]`).tab("show");
         }
+        execWhenTabActive("ohTranscript", function() {
+          gotoTranscriptTimecode(timeCodeSeconds);
+        });
       }
     }
   }
 });
+
+// Something has already executed bootstrap tab to switch to targetTabId. But maybe
+// it's finished it's transition, maybe it hasn't. We want to execute procArg
+// only once/if transition to tab is complete.
+function execWhenTabActive(targetTabId, procArg) {
+  var activeTabContentId = document.querySelector("#ohmsScrollable .tab-pane.active")?.id;
+
+  if (activeTabContentId == targetTabId) {
+    procArg();
+  } else {
+    // not shown yet, other code will async make it shown, we have
+    // to say once it's shown, open and scroll  to toc segment.
+    jQuery(`*[data-toggle="tab"][href="#${targetTabId}"]`).one('shown.bs.tab', function(event) {
+      procArg();
+    });
+  }
+}
 
 // Must be called when player is in a readyState where we can seek,
 // at least HAVE_METADATA. https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/readyState
