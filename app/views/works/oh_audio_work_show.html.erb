@@ -159,7 +159,7 @@
 
         <% if decorator.has_ohms_index? %>
           <div class="tab-pane" id="ohToc" role="tabpanel" aria-labelledby="ohTocTab">
-            <%= OhmsIndexDisplay.new(decorator.oral_history_content.ohms_xml).display %>
+            <%= OhmsIndexDisplay.new(decorator.oral_history_content.ohms_xml, work: @work).display %>
           </div>
         <% end %>
 

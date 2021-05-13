@@ -1,9 +1,10 @@
 require 'rails_helper'
 
 describe OhmsIndexDisplay, type: :presenter do
+  let(:work) { create(:oral_history_work)}
   let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml"}
   let(:ohms_xml) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path))}
-  let(:ohms_index_display) { OhmsIndexDisplay.new(ohms_xml) }
+  let(:ohms_index_display) { OhmsIndexDisplay.new(ohms_xml, work: work) }
 
   it "smoke test" do
     parsed = Nokogiri::HTML.fragment(ohms_index_display.display)
