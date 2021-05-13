@@ -83,7 +83,7 @@ class OrphanS3Derivatives
             derivative = asset && asset.file(derivative_key.to_sym)
 
             s3_iterator.log "orphaned derivative!"
-            s3_iterator.log "  bucket: #{shrine_storage.bucket.name}"
+            s3_iterator.log "  bucket: #{s3_iterator.s3_bucket_name}"
             s3_iterator.log "  s3 path: #{s3_path}"
             s3_iterator.log "  expected shrine id: #{shrine_path}"
             s3_iterator.log "  asset_id: #{asset_id}"
