@@ -7,7 +7,7 @@
   .audio-navbar {
     position: sticky;
     top: 0;
-    z-index: 1100; // make sure bootstrap popovers et al scroll UNDER
+    z-index: $zindex-fixed; // make sure bootstrap popovers et al scroll UNDER, but modal goes OVER
 
     background-color: $brand-dark-grey;
     color: white;
