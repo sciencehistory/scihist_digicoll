@@ -76,24 +76,11 @@ function execWhenTabActive(targetTabId, procArg) {
 function setupTimeSeek(player, timeCodeSeconds) {
   player.currentTime = timeCodeSeconds;
 
-  startPlaying(player);
-}
-
-// Now we want to play on page load (we think?), but Modern browsers don't let us play
-// before user has interacted with document. if we catch the error, we will sneakily
-// start playing as soon as they click anywhere. We are not trying to annoy
-// them, but think this may be what they want, needs more investigation.
-function startPlaying(player) {
   var playPromise  = player.play();
+
   if (playPromise !== undefined) {
     playPromise.catch(error => {
-      // Autoplay was prevented, let's start plaing on any click.
-      document.addEventListener("click",
-        function(event) {
-          player.play();
-        },
-        { once: true} // only execute once.
-      );
+      console.log(`could not autoplay: ${error}`);
     });
   }
 }
