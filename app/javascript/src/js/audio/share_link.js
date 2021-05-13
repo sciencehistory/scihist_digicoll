@@ -4,17 +4,15 @@
 
 import domready from 'domready';
 
-
-// on switching to share tab, make sure it's filled out with current time.
-// don't think we need to wait for domready on this, and we do need to make
-// sure we get it registered before anything switches tabs, including
-// tab_selection_in_anchor.js.
-$(document).on("shown.bs.tab", "#ohShareTab", function(event) {
-  setupTimecode();
-});
-
-
 domready(function() {
+  document.querySelector("*[data-toggle='linkShareModal']")?.addEventListener("click", function(event) {
+    event.preventDefault();
+    setupTimecode();
+    $('#audioLinkShare').modal();
+  });
+
+
+
   // Checkbox click to include timecode alters url
   document.querySelector("*[data-area='media-link-share'] *[data-trigger='updateLinkTimecode']")?.addEventListener("change", function(event) {
     updateUrlForTimecodeCheckbox(event.target);

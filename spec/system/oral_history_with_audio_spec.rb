@@ -249,7 +249,7 @@ describe "Oral history with audio display", type: :system, js: true do
 
       visit work_path(parent_work.friendlier_id)
 
-      click_on parent_work.title
+      click_on "Share link"
       expect(page).to have_text("Share link to this page")
 
       within(".modal-content") do
@@ -257,6 +257,7 @@ describe "Oral history with audio display", type: :system, js: true do
         check "Start audio at 00:00:00"
         expect(page).to have_field(readonly: true, with: "#{expected_displayed_url}#t=0")
       end
+    end
 
     it "can use 'jump to text' feature for transcript tab" do
       visit work_path(parent_work.friendlier_id)
