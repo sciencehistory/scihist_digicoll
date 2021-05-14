@@ -26,7 +26,7 @@ class OrphanS3Derivatives
   # We put some other things on the 'derivatives' s3, that we want to ignore and not consider orphaned
   IGNORE_PATH_PREFIXES = ["__sitemaps/"]
 
-  attr_reader :s3_iterator, :shrine_storage
+  attr_reader :s3_iterator, :shrine_storage, :files_checked, :orphans_found
 
   # @param show_progress_bar [Boolean], default true, should we show a progress
   #   bar with estimated progress.
@@ -41,7 +41,7 @@ class OrphanS3Derivatives
   end
 
   def derivative_count
-    @derivatives_count ||= Asset.all_derivative_count
+    @derivatives_count ||= Asset.all_derivative_count + OralHistoryContent.where.not(combined_audio_fingerprint: nil).count * 2
   end
 
   # Deletes all found orphans, outputing to console what was deleted.
@@ -55,7 +55,7 @@ class OrphanS3Derivatives
 
       if shrine_path && orphaned?(asset_id, derivative_key, shrine_path)
         shrine_storage.delete(shrine_path)
-        s3_iterator.log "deleted derivative file at: #{shrine_storage.bucket.name}: #{s3_path}"
+        s3_iterator.log "deleted derivative file at: #{bucket_name}: #{s3_path}"
         delete_count += 1
       end
     end
@@ -66,24 +66,21 @@ class OrphanS3Derivatives
   # set in an initializer, there will be a progress bar.
   def report_orphans
     max_reports = 40
-    orphans_found = 0
-
-    files_checked = s3_iterator.each_s3_path do |s3_path|
+    @orphans_found = 0
+    @files_checked = s3_iterator.each_s3_path do |s3_path|
       next if IGNORE_PATH_PREFIXES.any? {|p| s3_path.start_with?(p) }
-
       asset_id, derivative_key, shrine_path = parse_s3_path(s3_path)
       if orphaned?(asset_id, derivative_key, shrine_path)
-        orphans_found +=1
-
-        if orphans_found == max_reports
-          s3_iterator.log "Reported max #{max_reports} orphans, not listing subsquent...\n"
+        @orphans_found +=1
+        if @orphans_found == max_reports
+          s3_iterator.log "Reported max #{max_reports} orphans. Not listing subsequent.\n"
         elsif orphans_found < max_reports
           if asset_id != 'combined_audio_derivatives'
             asset = Asset.where(id: asset_id).first
             derivative = asset && asset.file(derivative_key.to_sym)
 
             s3_iterator.log "orphaned derivative!"
-            s3_iterator.log "  bucket: #{s3_iterator.s3_bucket_name}"
+            s3_iterator.log "  bucket: #{bucket_name}"
             s3_iterator.log "  s3 path: #{s3_path}"
             s3_iterator.log "  expected shrine id: #{shrine_path}"
             s3_iterator.log "  asset_id: #{asset_id}"
@@ -100,22 +97,36 @@ class OrphanS3Derivatives
           else
             work_id = derivative_key
             s3_iterator.log "orphaned combined audio derivative!"
-            s3_iterator.log "  bucket: #{shrine_storage.bucket.name}"
-            s3_iterator.log "  s3 path: #{s3_path}"
-            s3_iterator.log "  work id: #{work_id}"
+            if !(Work.where(id: work_id).present?)
+              s3_iterator.log "  Work is missing."
+              s3_iterator.log "  bucket: #{bucket_name}"
+              s3_iterator.log "  s3 path: #{s3_path}"
+            else
+              s3_iterator.log "  Work: #{Work.find(work_id).title}: #{shrine_path}"
+              s3_iterator.log "  S3 URL: https://s3.console.aws.amazon.com/s3/buckets/#{bucket_name}?prefix=combined_audio_derivatives/#{work_id}"
+            end
           end
           s3_iterator.log ""
         end
       end
     end
 
-    $stderr.puts "\n\nTotal Asset count: #{Asset.count}"
-    $stderr.puts "Estimated expected derivative file count: #{derivative_count}"
-    $stderr.puts "Checked #{files_checked} files on S3"
-    $stderr.puts "Found #{orphans_found} orphan files\n"
+    output_to_stderr "\n\nTotal Asset count: #{Asset.count}"
+    output_to_stderr "Estimated expected derivative file count: #{derivative_count}"
+    output_to_stderr "Checked #{@files_checked} files on S3"
+    output_to_stderr "Found #{@orphans_found} orphan files\n"
   end
 
   private
+
+  def output_to_stderr(text)
+    $stderr.puts text
+  end
+
+
+  def bucket_name
+    s3_iterator.s3_bucket_name
+  end
 
   def parse_s3_path(s3_path)
     s3_path =~ %r{(([^/]+)/([^/]+)/[^/]+)\Z}
@@ -135,31 +146,31 @@ class OrphanS3Derivatives
     asset_id == 'combined_audio_derivatives'
   end
 
-  # Attempts to looks up the work whose c.a.d this is.
-  # If we can't find the work or it doesn't have an oral_history_content, orphan.
+  # Attempts to looks up the oral history work whose c.a.d this is.
+  # If we can't find the work or it's not an oral history, orphan.
   # If it doesn't have an existing derivative in S3 corresponding to the file, orphan.
-  def orphaned_combined_audio_derivative?(derivative_key, shrine_id)
+  def orphaned_combined_audio_derivative?(derivative_key, shrine_path)
+    # find the work
     work_id = derivative_key
-    work = Work.find(work_id)
-    return true if Work.nil?
-    oral_history_content = work.oral_history_content
-    return true if oral_history_content.nil?
-    if shrine_id.end_with? 'mp3'
-      deriv = oral_history_content.combined_audio_mp3
-      return false if deriv.url.end_with?(shrine_id) && deriv.exists?
+    work = Work.where(id: work_id).first
+    return true unless work.present? && work.is_oral_history?
+
+    # find the deriv
+    deriv = if (shrine_path.end_with? 'mp3')
+      work.oral_history_content!.combined_audio_mp3
     else
-      deriv = oral_history_content.combined_audio_webm
-      return false if deriv.url.end_with?(shrine_id) && deriv.exists?
+      work.oral_history_content!.combined_audio_webm
     end
-    # if the file extension is not mp3 or webm, flag it as an orphan.
+
+    return false if deriv.present? && deriv.url.end_with?(shrine_path)
+
+    # ok, this is an orphaned combined audio deriv.
     true
   end
 
-  def orphaned?(asset_id, derivative_key, shrine_id)
+  def orphaned?(asset_id, derivative_key, shrine_path)
     return true unless asset_id.present? && derivative_key.present?
-
-    return orphaned_combined_audio_derivative?(derivative_key, shrine_id) if combined_audio_derivative?(asset_id)
-
-    ! Kithe::Asset.where(id: asset_id).where("file_data -> 'derivatives' -> ? ->> 'id' = ?", derivative_key, shrine_id).exists?
+    return orphaned_combined_audio_derivative?(derivative_key, shrine_path) if combined_audio_derivative?(asset_id)
+    ! Kithe::Asset.where(id: asset_id).where("file_data -> 'derivatives' -> ? ->> 'id' = ?", derivative_key, shrine_path).exists?
   end
 end
