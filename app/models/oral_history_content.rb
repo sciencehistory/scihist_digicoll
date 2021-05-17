@@ -142,21 +142,9 @@ class OralHistoryContent < ApplicationRecord
   # should we just use standard approach? This one requires *saving* the model to make
   # sure we avoid orphaned file in store.
   def set_combined_audio!(shrine_attacher, io, mime_type:, file_suffix:)
-    # In shrine 3.0, we may need to replacce attaccher.store! followed by attacher.set, with
-    # `attacher.attach(file, storage: :store)`  Or not sure if that should be `storage: :actual_name_of_store`
-
     original = shrine_attacher.get
     metadata = { "mime_type" => mime_type, "filename" => "combined.#{file_suffix}" }
-
-    if Shrine.version < Gem::Version.new("3.0")
-      # shrine 2.x way of writing directly to storage
-      stored_file = shrine_attacher.store!(io, metadata: metadata)
-      shrine_attacher.set(stored_file)
-    else
-      # shrine 3.x way of writing directly to storage
-      shrine_attacher.attach(io, metadata: metadata)
-    end
-
+    shrine_attacher.attach(io, metadata: metadata)
     self.save!
   rescue StandardError => e
     # clean up file if there was a problem
