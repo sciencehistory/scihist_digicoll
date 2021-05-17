@@ -147,8 +147,6 @@ class OralHistoryContent < ApplicationRecord
     shrine_attacher.attach(io, metadata: metadata)
     self.save!
   rescue StandardError => e
-    # clean up file if there was a problem
-    stored_file.delete if stored_file
     shrine_attacher.set(original)
     self.combined_audio_derivatives_job_status = "failed"
     self.save!
