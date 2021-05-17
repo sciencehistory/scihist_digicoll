@@ -8,15 +8,12 @@ describe "derivative creation" do
     pdf_asset.file.metadata['sha512'] = pdf_file_sha512
     pdf_asset.save!
     pdf_asset.create_derivatives
-    expect(pdf_asset.derivatives.pluck('key').sort).
-      to contain_exactly("thumb_large","thumb_large_2X",
-        "thumb_mini", "thumb_mini_2X",
-        "thumb_standard", "thumb_standard_2X"
+    expect(pdf_asset.file_derivatives.keys.sort).
+      to contain_exactly(:thumb_large,:thumb_large_2X,
+        :thumb_mini, :thumb_mini_2X,
+        :thumb_standard, :thumb_standard_2X
       )
-    widths = Hash[pdf_asset.derivatives.
-      collect { |d| [d.key.to_sym, d.file_data['metadata']['width']] }]
-
-    expect(widths[:thumb_mini]).to eq(54)
-    expect(widths[:thumb_large_2X]).to eq(1050)
+    expect(pdf_asset.file_derivatives[:thumb_mini].metadata['width']).to eq(54)
+    expect(pdf_asset.file_derivatives[:thumb_large_2X].metadata['width']).to eq(1050)
   end
 end
