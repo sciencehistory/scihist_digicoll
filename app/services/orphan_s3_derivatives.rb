@@ -145,11 +145,8 @@ class OrphanS3Derivatives
   end
 
 
-  # Combined audio derivatives are stored at an s3_path of:
-  # combined_audio_derivatives/9d3114be-fb66-43a8-9c25-2600aa4ea7b0/combined_be68ab9e9d1ef65e8f4bdf38586db718.webm
-  # The first chunk is parsed by parse_s3_path as the 'asset_id'.
-  def combined_audio_derivative?(asset_id)
-    asset_id == 'combined_audio_derivatives'
+  def combined_audio_derivative?(first_part_of_s3_path)
+    first_part_of_s3_path == 'combined_audio_derivatives'
   end
 
   # Attempts to looks up the oral history work whose c.a.d this is.
