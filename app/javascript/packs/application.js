@@ -23,10 +23,17 @@ import '../src/js/cart_control.js';
 import '../src/js/date_range_render_workaround.js';
 import '../src/js/tab_selection_in_anchor';
 
+
+// Generic tooltips
+import '../src/js/bootstrap_tooltips_activate';
+// and special OHMS footnotes tooltips
+import '../src/js/ohms_footnotes.js';
+
 import '../src/js/audio/play_at_timecode.js';
 import '../src/js/audio/ohms_search.js';
-import '../src/js/audio/ohms_footnotes.js';
 import '../src/js/audio/accordion_open_on_screen.js';
 import '../src/js/audio/navbar_tabs.js';
-
-
+import "../src/js/audio/timecode_in_anchor.js";
+import "../src/js/audio/share_link.js";
+import '../src/js/audio/jump_to_text.js';
+import "../src/js/audio/clipboard_copy_input.js";

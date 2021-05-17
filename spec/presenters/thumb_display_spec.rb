@@ -136,5 +136,17 @@ describe ThumbDisplay do
         expect(img_tag["data-srcset"]).to eq("#{deriv.url} 1x, #{deriv_2x.url} 2x")
       end
     end
+
+    describe "Provide alternate alt text to display" do
+      let(:thumb_size) { :standard }
+      let(:alt_text_override) {"Override regular alt text with this string."}
+      let(:argument) {  build(:asset_with_faked_file, alt_text: "this should get overridden") }
+      let(:instance) { ThumbDisplay.new(argument, thumb_size: thumb_size, alt_text_override: alt_text_override) }
+      it "overrides regular alt text on the image" do
+        img_tag = rendered.at_css("img")
+        expect(img_tag["alt"]).to eq(alt_text_override)
+      end
+    end
+
   end
 end

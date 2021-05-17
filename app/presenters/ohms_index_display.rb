@@ -4,8 +4,16 @@
 # which returns an array of IndexPoint data objects.
 #
 # Input is our OralHistoryContent::OhmsXml wrapper/helper object.
+#
+# Also need to pass in a Work, so we can generate direct links to segments.
 class OhmsIndexDisplay < ViewModel
   valid_model_type_names "OralHistoryContent::OhmsXml"
+  attr_reader :work
+
+  def initialize(ohms_xml, work:)
+    super(ohms_xml)
+    @work = work
+  end
 
   def display
     render "/presenters/ohms_index", model: model, view: self
@@ -32,6 +40,14 @@ class OhmsIndexDisplay < ViewModel
   # The whole 'card' element we use as a target for search results
   def accordion_wrapper_id(index)
     "ohmsAccordionCard#{index}"
+  end
+
+  def share_link_area_id(index)
+    "ohmsTocShareLink#{index}"
+  end
+
+  def direct_to_segment_link(index_point)
+    work && work_url(work, anchor: "t=#{index_point.timestamp}&tab=ohToc".html_safe)
   end
 
 

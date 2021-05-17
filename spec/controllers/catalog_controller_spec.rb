@@ -28,6 +28,7 @@ RSpec.describe CatalogController, solr: true, type: :controller do
     end
   end
 
+  # See more at bad_blacklight_requests_spec.rb
   describe "malformed URL params" do
     describe "facet values as Hash" do
       render_views
