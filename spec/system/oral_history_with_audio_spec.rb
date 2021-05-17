@@ -242,7 +242,33 @@ describe "Oral history with audio display", type: :system, js: true do
       expect(page).not_to have_text("00:04:00")
     end
 
-    it "can use 'jump to text' feature for transcript tab" do
+    it "can link to timecode on transcript" do
+      visit work_path(parent_work.friendlier_id, anchor: "t=306")
+
+      # jump to 05:00 at top of page, on transcript tab
+
+      expect(page).to have_selector("#ohTranscript.tab-pane.active")
+      expect(page).to have_text("00:05:00")
+      expect(page).not_to have_text("00:04:00")
+    end
+
+    it "has popup with URL with timecode" do
+      # not sure why we need to specify capybara port manually to see what we expect
+      expected_displayed_url = work_url(parent_work.friendlier_id, port: Capybara.current_session.server.port)
+
+      visit work_path(parent_work.friendlier_id)
+
+      click_on "Share link"
+      expect(page).to have_text("Share link to this page")
+
+      within(".modal-content") do
+        expect(page).to have_field(readonly: true, with: expected_displayed_url)
+        check "Start audio at 00:00:00"
+        expect(page).to have_field(readonly: true, with: "#{expected_displayed_url}#t=0")
+      end
+    end
+
+    it "can use 'jump to text' feature for ToC tab" do
       visit work_path(parent_work.friendlier_id)
 
       click_on "Table of Contents"
@@ -256,6 +282,14 @@ describe "Oral history with audio display", type: :system, js: true do
 
       # I guess capybara can see this even though it is scrolled under navabar.
       #expect(page).not_to have_text("00:00:00") # earlier ToC section
+    end
+
+    it "can jump to specific ToC segment" do
+      visit work_path(parent_work.friendlier_id, anchor: "t=305&tab=ohToc")
+
+      expect(page).to have_selector("#ohToc.tab-pane.active")
+      expect(page).to have_text("00:04:16") # nearest ToC section
+      expect(page).to have_text("Many family members are scientists.") # open synopsis for 04:16
     end
   end
 
@@ -380,6 +414,25 @@ describe "Oral history with audio display", type: :system, js: true do
       click_on "Description"
       expect(page).to have_selector("h2", text: "About the Interviewer")
       expect(page).to have_text("This has some html")
+    end
+
+    describe "table of contents direct link" do
+      let(:segment) { parent_work.oral_history_content.ohms_xml.index_points.second }
+      let(:segment_direct_url) do
+        # don't know why we need to specify capybara port to get the port that is actually
+        # being used and succesfully displayed in app.
+        work_url(parent_work.friendlier_id, anchor: "t=#{segment.timestamp}&tab=ohToc",
+          port: Capybara.current_session.server.port)
+      end
+
+      it "has table of contents segment direct link" do
+        visit work_path(parent_work.friendlier_id)
+
+        click_on "Table of Contents"
+        click_on segment.title
+        click_on "Share link"
+        expect(page).to have_field(readonly: true, with: segment_direct_url)
+      end
     end
   end
 end
