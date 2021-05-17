@@ -13,10 +13,39 @@
 
       <div id="<%= view.accordion_element_id(index) %>" class="collapse card-body ohms-index-list long-text-line-height" aria-labelledby="<%= view.accordion_header_id(index) %>" data-parent="#ohmsIndexAccordionParent">
           <p>
-            <button type="button" class="btn btn-secondary" data-ohms-timestamp-s="<%= index_point.timestamp %>">
+            <a href="#t=<%= index_point.timestamp %>" class="btn btn-secondary" data-ohms-timestamp-s="<%= index_point.timestamp %>">
               <i class="fa fa-play-circle mr-1" aria-hidden="true"></i> Play segment
+            </a>
+
+            <button class="btn btn-outline-secondary"
+                  data-toggle="collapse"
+                  href="#<%= view.share_link_area_id(index) %>"
+                  role="button"
+                  aria-expanded="false"
+                  aria-controls="collapseExample">
+              <i class="fa fa-share" aria-hidden="true"></i>
+              Share link
             </button>
           </p>
+
+          <div class="collapse" id="<%= view.share_link_area_id(index) %>">
+            <div class="input-group mb-3" data-trigger="copyInputGroup">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-link" aria-hidden="true"></i>
+                  <span class="sr-only">Link</span>
+                </span>
+              </div>
+
+              <input type="text" aria-label="URL to copy" class="form-control" data-slot="shareURL" readonly value="<%= view.direct_to_segment_link(index_point) %>">
+
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" data-trigger="linkClipboardCopy">
+                  <i class="fa fa-clipboard" aria-hidden="true"></i> Copy
+                </button>
+              </div>
+            </div>
+          </div>
 
           <% if index_point.synopsis.present? %>
             <p>

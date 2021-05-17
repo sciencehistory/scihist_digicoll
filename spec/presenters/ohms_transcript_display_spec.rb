@@ -23,7 +23,7 @@ describe OhmsTranscriptDisplay, type: :presenter do
 
     first_line = parsed.css("div.ohms-transcript-container > p.ohms-transcript-paragraph > span.ohms-transcript-line").first
     expect(first_line.to_html).to eq(
-      %Q{<span class="ohms-transcript-line" id="ohms_line_1"><a href="#" class="ohms-transcript-timestamp" data-ohms-timestamp-s="0">00:00:00</a><span class="ohms-speaker">BROCK:</span> This is an oral history interview with Ron Duarte taking place on 13 June \n</span>}
+      %Q{<span class="ohms-transcript-line" id="ohms_line_1"><a href="#t=0" class="ohms-transcript-timestamp" data-ohms-timestamp-s="0">00:00:00</a><span class="ohms-speaker">BROCK:</span> This is an oral history interview with Ron Duarte taking place on 13 June \n</span>}
     )
   end
 
@@ -123,7 +123,7 @@ describe OhmsTranscriptDisplay, type: :presenter do
       it "assigns a zero timestamp" do
         allow(ohms_transcript_display).to receive(:sync_timecodes).and_return({})
         expect(ohms_transcript_display.format_ohms_line({text: "some text", line_num: 1})).
-          to eq("<a href=\"#\" class=\"ohms-transcript-timestamp\" data-ohms-timestamp-s=\"0\">00:00:00</a>some text \n")
+          to eq("<a href=\"#t=0\" class=\"ohms-transcript-timestamp\" data-ohms-timestamp-s=\"0\">00:00:00</a>some text \n")
         expect(shown_timecodes).to eq(["00:00:00", "", ""])
       end
     end
@@ -146,7 +146,7 @@ describe OhmsTranscriptDisplay, type: :presenter do
           { 1=>[{ :seconds=>120, :word_number=>1}] }
         )
         expect(ohms_transcript_display.format_ohms_line({text: "some text", line_num: 1})).
-          to eq("<a href=\"#\" class=\"ohms-transcript-timestamp\" data-ohms-timestamp-s=\"120\">00:02:00</a>some text \n")
+          to eq("<a href=\"#t=120\" class=\"ohms-transcript-timestamp\" data-ohms-timestamp-s=\"120\">00:02:00</a>some text \n")
       end
     end
     context "line with two consecutive timestamps" do
