@@ -89,14 +89,15 @@
 
   .canned-queries {
     display: flex;
-    justify-content: space-between;
-
+    flex-wrap: wrap;
     margin: 2rem 0;
 
     a.q {
       display: flex;
       align-items: center;
       border: 1px solid $brand-dark-grey;
+      margin-right: $paragraph-spacer * 3;
+      margin-bottom: $paragraph-spacer;
 
       .number, .link {
         padding: 0 0.5rem;
