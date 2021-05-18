@@ -83,7 +83,7 @@
     flex-shrink: 1;
     min-width: 266px;
 
-    background-image: url(asset-path("oh_sm_thumb_test.jpeg"));
+    background-image: asset-url("oh_sm_thumb_test.jpeg");
     background-size: cover;
   }
 
