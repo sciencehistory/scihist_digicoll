@@ -1,0 +1,85 @@
+<% provide :page_title, construct_page_title(collection.title) %>
+
+<div itemscope itemtype="http://schema.org/CollectionPage" class="collection-show oral-history-collection-splash">
+
+
+  <div class="collection-top">
+    <div class="collection-desc clearfix">
+      <div class="show-title">
+        <header>
+          <div class="show-genre"><%= link_to "Collections", collections_path %></div>
+          <h1>
+            <%= link_to presenter.title, collection_path(collection), class: "title-link" %> <%= publication_badge(presenter) %>
+            <% if can? :update, collection %>
+              <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-outline-primary" %>
+            <% end %>
+          </h1>
+        </header>
+      </div>
+
+        <div class="show-metadata">
+          <% if current_staff_user? %>
+            <p class="show-item-count">
+              <%= "#{number_with_delimiter(presenter.public_count)} public #{'item'.pluralize(presenter.public_count)}, #{number_with_delimiter(presenter.all_count)} total" %>
+            </p>
+          <% else %>
+            <p class="show-item-count"><%= "#{number_with_delimiter(presenter.public_count)} #{'item'.pluralize(presenter.public_count)}" %></p>
+          <% end %>
+
+          <div class="collection-description long-text-line-height">
+            <%= DescriptionDisplayFormatter.new(presenter.description).format %>
+          </div>
+
+          <table class="collection-attributes chf-attributes">
+            <% presenter.opac_urls.each do |url| %>
+              <tr>
+                <td colspan="2"><%= link_to "View in library catalog", url %></td>
+              </tr>
+            <% end %>
+
+            <% if presenter.related_urls.present? %>
+              <tr>
+                <th>Related URL</th>
+                <td>
+                  <ul>
+                    <% presenter.related_urls.each do |url| %>
+                      <li class="attribute"><%= ExternalLinkDisplay.new(url).display %></li>
+                    <% end %>
+                  </ul>
+                </td>
+              </tr>
+            <% end %>
+          </table>
+        </div>
+    </div>
+
+    <div class="collection-splash-thumb">
+    </div>
+  </div>
+
+  <div class="collection-search-form">
+      <h2 class="search-title">
+            Search within the <%= presenter.title %>
+      </h2>
+
+      <%= form_tag "", method: :get do |f| %>
+       <div class="input-group">
+          <%= search_field_tag :q, '', class: "q form-control",
+              id: "collectionQ",
+              autocomplete: "off",
+              placeholder: t("collection.search_form.search_field.placeholder"),
+              :"aria-label" => t('collection.search_form.search_field.label')
+          %>
+
+          <label class="sr-only" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
+
+          <div class="input-group-append">
+            <button type="submit" class="btn btn-emphasis" title="Search" id="search-submit-header">
+              <i class="fa fa-search" aria-hidden="true"></i>
+              <%= t('blacklight.search.form.submit') %>
+            </button>
+          </div>
+        </div>
+      <% end %>
+  </div>
+</div>

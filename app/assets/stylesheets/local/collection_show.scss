@@ -70,3 +70,18 @@
   }
 }
 
+.oral-history-collection-splash {
+  .collection-desc {
+    max-width: $max-readable-width;
+  }
+  .collection-splash-thumb {
+    margin-left: 3rem;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 266px;
+
+    background-image: url(asset_path("oh_sm_thumb_test.jpeg"));
+    background-size: cover;
+  }
+}
