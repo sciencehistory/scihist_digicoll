@@ -19,12 +19,28 @@ module CollectionShowControllers
     end
     helper_method :splash_page_only?
 
-    # TODO this is just a mock up right now
-    #
     # Array of at most 3 people born on this day, returned as
     # IntervieweeBiography.
+    #
+    # We do a non-indexed query against postgres (using `%` and `like` to match end
+    # of yyyy-mm-dd string), but with ~1000 IntervieweeBiographies,
+    # it's not a big deal. we eager-load to avoid n+1.
+    #
+    # We could try to find some way to cache this since it only changes from day to day,
+    # but, for now we're seeing if maybe it's quick enough we don't need to bother.
     def born_on_this_day_biographies
-      @born_on_this_day ||= IntervieweeBiography.includes(oral_history_content: { work: :leaf_representative }).limit(3)
+      @born_on_this_day ||= begin
+        # TODO for testing, we're faking the date to get one with matches
+        #query_date = Date.today
+        query_date = Date.parse("2020-05-23")
+
+        IntervieweeBiography.
+          where("json_attributes -> 'birth' ->> 'date' like '%-#{query_date.strftime("%m-%d")}'").
+          includes(oral_history_content: { work: :leaf_representative }).
+          order("random()").
+          limit(3).
+          to_a
+      end
     end
     helper_method :born_on_this_day_biographies
 
