@@ -2,8 +2,22 @@
 # collection -- it's routed to for that collection in our routes.rb
 #
 # It lets us override configuration and views.
+#
+# index view is overridden to use splash page template for splash_page_only?
 module CollectionShowControllers
   class OralHistoryCollectionController < CollectionShowController
+
+
+    # If we have no query params (url after `?`) at all, we just show
+    # a splash page, not search results. Even an empty search query is
+    # enough to show search results too.
+    #
+    # We may still be doing a behind-the-scenes search for splash_page_only,
+    # to get facet counts to display next to canned queries.
+    def splash_page_only?
+      request.query_parameters.blank?
+    end
+    helper_method :splash_page_only?
 
     # Add and remove some facet fields from inherited default configuration
     configure_blacklight do |config|
