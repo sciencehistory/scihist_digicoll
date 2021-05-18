@@ -86,4 +86,27 @@
     background-image: url(asset_path("oh_sm_thumb_test.jpeg"));
     background-size: cover;
   }
+
+  .canned-queries {
+    display: flex;
+    justify-content: space-between;
+
+    margin: 2rem 0;
+
+    a.q {
+      display: flex;
+      align-items: center;
+      border: 1px solid $brand-dark-grey;
+
+      .number, .link {
+        padding: 0 0.5rem;
+      }
+
+      .number {
+        font-size: 1.75rem;
+        background-color: $brand-dark-grey;
+        color: white;
+      }
+    }
+  }
 }
