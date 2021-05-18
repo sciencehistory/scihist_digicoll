@@ -21,11 +21,12 @@ RSpec.describe FeaturedTopic, no_clean: true do
       expect(FeaturedTopic.all.count).to eq FeaturedTopic.definitions.count
     end
 
-    describe "constructs sensible queries for each topic" do
+    describe "constructs sensible queries for each topic (except those that are really just a link)" do
       FeaturedTopic.keys.each do |key|
         it "translates #{key}" do
-          result = FeaturedTopic.new(key).solr_fq
-          expect(result).to match EXPECTED_SHAPE
+          featured_topic = FeaturedTopic.new(key)
+          next unless featured_topic.path.include? 'focus'
+          expect(featured_topic.solr_fq).to match EXPECTED_SHAPE
         end
       end
     end
