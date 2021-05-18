@@ -96,8 +96,7 @@
       display: flex;
       align-items: center;
       border: 1px solid $brand-dark-grey;
-      margin-right: $paragraph-spacer * 3;
-      margin-bottom: $paragraph-spacer;
+      margin-right: 2rem;
 
       .number, .link {
         padding: 0 0.5rem;
@@ -139,8 +138,21 @@
       .project-thumb {
         width: 235px;
         margin-right: 1rem;
+        position: relative;
         img {
           max-width: 100%;
+        }
+        .count {
+          font-size: 120%;
+          position: absolute;
+          top: 0.5rem;
+          left: 0.5rem;
+
+          background-color: $brand-dark-grey;
+          color: white;
+
+          border-radius: 3em;
+          padding: 0 0.5em;
         }
       }
       .text {
