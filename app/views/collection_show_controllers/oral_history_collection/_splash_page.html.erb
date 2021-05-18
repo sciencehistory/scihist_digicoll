@@ -112,7 +112,7 @@
     <% end %>
   </div>
 
-  <div class="this-day">
+  <div class="this-day section">
     <h2 class="attribute-sub-head">Born on this day in history</h2>
     <div class="show-sub-head-body this-day-body">
       <% born_on_this_day_biographies.each do |bio| %>
@@ -123,6 +123,75 @@
         </div>
       <% end %>
     </div>
+  </div>
+
+  <div class="projects long-text-line-height section">
+    <h2 class="attribute-sub-head">Projects</h2>
+    <p>While individual oral histories can contribute to specific research goals and agendas, the strength of an oral history collection relies on the ability of individual oral histories to “speak” to each other. Learning about patterns of relationships and activities through the study of collective histories reveals much more about the scientific process and its products than any one oral history could do on its own.</p>
+
+    <div class="project">
+      <%= link_to({ f: { project_facet: ["Imagining Philadelphia's Energy Futures"] } }, class: "project-thumb") do %>
+        <%= image_tag("oh_sm_thumb_test.jpeg") %>
+      <% end %>
+
+      <div class="text">
+        <h3>
+          <%= link_to "Imagining Philadelphia’s Energy Futures",
+            { f: { project_facet: ["Imagining Philadelphia’s Energy Futures"] } }
+           %>
+        </h3>
+        <p>How do Philadelphians imagine a sustainable future for their city? This oral history and public education project examined energy, climate change, and the future of Philadelphia.</p>
+      </div>
+    </div>
+
+    <div class="project">
+      <%= link_to({ f: { project_facet: ["Nanotechnology"] } }, class: "project-thumb") do %>
+        <%= image_tag("oh_sm_thumb_test.jpeg") %>
+      <% end %>
+
+      <div class="text">
+        <h3>
+          <%= link_to "Nanotechnology",
+            { f: { project_facet: ["Nanotechnology"] } }
+           %>
+        </h3>
+
+        <p>This oral history series is an important resource for the history of nanotechnology, documenting the lives and career of key scientists and engineers that shaped and contributed to the contemporary practice of science and technology.</p>
+      </div>
+    </div>
+
+    <div class="project">
+      <%= link_to({ f: { project_facet: ["Oral History of the Toxic Substances Control Act"] } }, class: "project-thumb") do %>
+        <%= image_tag("oh_sm_thumb_test.jpeg") %>
+      <% end %>
+
+      <div class="text">
+        <h3>
+          <%= link_to "Oral History of the Toxic Substances Control Act",
+            { f: { project_facet: ["Oral History of the Toxic Substances Control Act"] } }
+           %>
+        </h3>
+        <p>Through oral history interviews with individuals involved in the process of writing and negotiating the Toxic Substances Control Act (TSCA), we gain their perspective on the law, its impact, and whether or not it will continue to be effective in the 21st century.</p>
+      </div>
+    </div>
+
+    <div class="project">
+      <%= link_to({ f: { project_facet: ["REACH Ambler"] } }, class: "project-thumb") do %>
+        <%= image_tag("oh_sm_thumb_test.jpeg") %>
+      <% end %>
+
+      <div class="text">
+        <h3>
+          <%= link_to "REACH Ambler",
+            { f: { project_facet: ["REACH Ambler"] } }
+           %>
+        </h3>
+
+        <p>Resources for Education and Action for Community Health in Ambler (REACH Ambler) brings into focus the history of Ambler, Pennsylvania, a town long affected by exposure to asbestos from the former Keasbey and Mattison asbestos plant. The oral histories conducted with local residents, community activists, and EPA officials for this project inform the exhibits, online resources, and related public programs all aimed at fostering an understanding of different perspectives on risk, health, and the environment.</p>
+      </div>
+    </div>
+
+    <%= link_to "More oral history projects...", "https://www.sciencehistory.org/oral-history-projects", class: "h3" %>
   </div>
 
 
