@@ -9,9 +9,9 @@ describe "Featured Topic show page", type: :system, js: false, solr:true, indexa
     ]
   end
 
-  let!(:oh_collection) do
-    create(:collection, friendlier_id: 'gt54kn818', title: 'Oral History Collection')
-  end
+  # let!(:oh_collection) do
+  #   create(:collection, friendlier_id: 'gt54kn818', title: 'Oral History Collection')
+  # end
 
   let(:fake_definition) do
     {
