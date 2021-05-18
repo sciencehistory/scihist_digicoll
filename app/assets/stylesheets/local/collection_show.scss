@@ -110,13 +110,14 @@
     }
   }
 
-  .this-day {
+  .section {
     margin: 2rem 0;
-
     h2 {
       margin-bottom: 1rem;
     }
+  }
 
+  .this-day {
     .this-day-body {
       display: flex;
 
@@ -124,6 +125,25 @@
         width: $standard-thumb-width;
 
         margin-right: 28px;
+      }
+    }
+  }
+
+  .projects {
+    .project {
+      display: flex;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+
+      .project-thumb {
+        width: 235px;
+        margin-right: 1rem;
+        img {
+          max-width: 100%;
+        }
+      }
+      .text {
+        flex-grow: 1
       }
     }
   }
