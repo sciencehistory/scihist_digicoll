@@ -5,7 +5,7 @@
   <div class="row no-gutters featured-topics-list">
       <% FeaturedTopic.all.each do |ft| %>
           <div class="featured-topic">
-            <%= link_to featured_topic_path(ft.slug) do %>
+            <%= link_to ft.path do %>
               <%= image_tag ft.thumb_asset_path, class: "featured-topic-image", width: "100%" %>
               <div class="featured-topic-title-wrapper">
                 <h3 class="featured-topic-title"><%= ft.title.upcase %></h3>
