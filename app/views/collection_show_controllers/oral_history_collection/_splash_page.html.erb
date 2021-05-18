@@ -83,5 +83,32 @@
     </div>
   </div>
 
+  <div class="canned-queries">
+    <%= link_to({ f: { oh_feature_facet: ["Synchronized audio"] } }, class: "q") do %>
+      <div class="number">
+        14
+      </div>
+      <div class="link">
+        Synchronized audio
+      </div>
+    <% end %>
 
+    <%= link_to({ f: { subject_facet: ["Women in science"] } }, class: "q") do %>
+      <div class="number">
+        96
+      </div>
+      <div class="link">
+        Women in science
+      </div>
+    <% end %>
+
+    <%= link_to({ f: { subject_facet: ["Nobel Prize winners"] } }, class: "q") do %>
+      <div class="number">
+        18
+      </div>
+      <div class="link">
+        Nobel Prize winners
+      </div>
+    <% end %>
+  </div>
 </div>
