@@ -109,4 +109,22 @@
       }
     }
   }
+
+  .this-day {
+    margin: 2rem 0;
+
+    h2 {
+      margin-bottom: 1rem;
+    }
+
+    .this-day-body {
+      display: flex;
+
+      .this-day-card {
+        width: $standard-thumb-width;
+
+        margin-right: 28px;
+      }
+    }
+  }
 }

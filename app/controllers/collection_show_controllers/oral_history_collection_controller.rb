@@ -19,6 +19,15 @@ module CollectionShowControllers
     end
     helper_method :splash_page_only?
 
+    # TODO this is just a mock up right now
+    #
+    # Array of at most 3 people born on this day, returned as
+    # IntervieweeBiography.
+    def born_on_this_day_biographies
+      @born_on_this_day ||= IntervieweeBiography.includes(oral_history_content: { work: :leaf_representative }).limit(3)
+    end
+    helper_method :born_on_this_day_biographies
+
     # Add and remove some facet fields from inherited default configuration
     configure_blacklight do |config|
 

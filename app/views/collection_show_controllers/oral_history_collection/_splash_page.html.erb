@@ -89,7 +89,7 @@
         14
       </div>
       <div class="link">
-        Synchronized audio
+        With synchronized audio
       </div>
     <% end %>
 
@@ -111,4 +111,19 @@
       </div>
     <% end %>
   </div>
+
+  <div class="this-day">
+    <h2 class="attribute-sub-head">Born on this day in history</h2>
+    <div class="show-sub-head-body this-day-body">
+      <% born_on_this_day_biographies.each do |bio| %>
+        <div class="this-day-card">
+          <div><%= ThumbDisplay.new(bio.oral_history_content.first.work.leaf_representative).display %></div>
+          <p><%= bio.name %><br>
+            Born <%= FormatSimpleDate.new(bio.birth.date).display  %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+
 </div>
