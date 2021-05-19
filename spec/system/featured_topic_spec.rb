@@ -9,8 +9,10 @@ describe "Featured Topic show page", type: :system, js: false, solr:true, indexa
     ]
   end
 
+  let(:oral_history_collection_id) { ScihistDigicoll::Env.lookup!(:oral_history_collection_id) }
+
   let!(:oh_collection) do
-    create(:collection, friendlier_id: 'gt54kn818', title: 'Oral History Collection')
+    create(:collection, friendlier_id: oral_history_collection_id, title: 'Oral History Collection')
   end
 
   let(:fake_definition) do
@@ -25,7 +27,7 @@ describe "Featured Topic show page", type: :system, js: false, solr:true, indexa
 
       :oral_histories => {
         title: "Oral Histories",
-        path: "/collections/gt54kn818"
+        path: "/collections/#{oral_history_collection_id}"
       }
     }
   end
