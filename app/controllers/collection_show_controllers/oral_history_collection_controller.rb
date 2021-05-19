@@ -7,6 +7,35 @@
 module CollectionShowControllers
   class OralHistoryCollectionController < CollectionShowController
 
+    # in splash_page_only mode, we'll fetch a facet count for each of these queries,
+    # to label our canned queries and projects with counts.
+    SPLASH_CANNED_QUERIES = {
+      synchronized_audio: 'oh_feature_facet:"Synchronized audio"',
+      women_in_science: 'subject_facet:"Women in science"',
+      nobel_prize: 'subject_facet:"Nobel Prize winners"',
+      nanotechnology: 'project_facet:"Nanotechnology"',
+      toxic_substances: 'project_facet:"Oral History of the Toxic Substances Control Act"',
+      reach_ambler: 'project_facet:"REACH Ambler"',
+      philadelphia_energy: 'project_facet:"Imagining Philadelphia\'s Energy Futures"'
+    }
+
+    def blacklight_config
+      if splash_page_only?
+        self.splash_page_blacklight_config
+      else
+        super
+      end
+    end
+
+    # Assuming we added a facet.query to solr query, we look up the count returned
+    # from the solr response.
+    def canned_query_count(key)
+      query = SPLASH_CANNED_QUERIES[key.to_sym]
+      raise ArgumentError.new("key must be in SPLASH_CANNED_QUERIES hash") if query.nil?
+      @response.facet_counts["facet_queries"][query]
+    end
+    helper_method :canned_query_count
+
 
     # If we have no query params (url after `?`) at all, we just show
     # a splash page, not search results. Even an empty search query is
@@ -87,5 +116,24 @@ module CollectionShowControllers
 
       config.facet_fields = config.facet_fields.slice(*key_order)
     end
+
+    # We're going to create a second blacklight_config based on the first, but
+    # for use when we are in splash_page_only mode, to get some counts we need,
+    # but not actually search results.
+    class_attribute :splash_page_blacklight_config
+    self.splash_page_blacklight_config = self.blacklight_config.inheritable_copy(self)
+    self.splash_page_blacklight_config.configure do |config|
+      # no rows, no ordinary search results needed
+      config.default_solr_params[:rows] = 0
+
+      # No normal facet_fields
+      config.facet_fields = []
+
+      # But some facet.query facet fields we'll use for fetching counts for
+      # our canned queries.
+      config.default_solr_params["facet.query"] = SPLASH_CANNED_QUERIES.values.dup
+    end
+
+
   end
 end

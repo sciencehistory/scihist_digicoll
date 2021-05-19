@@ -86,7 +86,7 @@
   <div class="canned-queries">
     <%= link_to({ f: { oh_feature_facet: ["Synchronized audio"] } }, class: "q") do %>
       <div class="number">
-        14
+        <%= canned_query_count(:synchronized_audio) %>
       </div>
       <div class="link">
         With synchronized audio
@@ -95,7 +95,7 @@
 
     <%= link_to({ f: { subject_facet: ["Women in science"] } }, class: "q") do %>
       <div class="number">
-        96
+        <%= canned_query_count(:women_in_science) %>
       </div>
       <div class="link">
         Women in science
@@ -104,7 +104,7 @@
 
     <%= link_to({ f: { subject_facet: ["Nobel Prize winners"] } }, class: "q") do %>
       <div class="number">
-        18
+        <%= canned_query_count(:nobel_prize) %>
       </div>
       <div class="link">
         Nobel Prize winners
@@ -139,7 +139,9 @@
 
     <div class="project">
       <%= link_to({ f: { project_facet: ["Imagining Philadelphia's Energy Futures"] } }, class: "project-thumb") do %>
-        <span class="count">9</span>
+        <span class="count">
+          <%= canned_query_count(:philadelphia_energy) %>
+        </span>
         <%= image_tag("oh_sm_thumb_test.jpg") %>
       <% end %>
 
@@ -155,7 +157,9 @@
 
     <div class="project">
       <%= link_to({ f: { project_facet: ["Nanotechnology"] } }, class: "project-thumb") do %>
-        <span class="count">11</span>
+        <span class="count">
+          <%= canned_query_count(:nanotechnology) %>
+        </span>
         <%= image_tag("oh_sm_thumb_test.jpg") %>
       <% end %>
 
@@ -172,7 +176,9 @@
 
     <div class="project">
       <%= link_to({ f: { project_facet: ["Oral History of the Toxic Substances Control Act"] } }, class: "project-thumb") do %>
-        <span class="count">14</span>
+        <span class="count">
+          <%= canned_query_count(:toxic_substances) %>
+        </span>
         <%= image_tag("oh_sm_thumb_test.jpg") %>
       <% end %>
 
@@ -188,7 +194,9 @@
 
     <div class="project">
       <%= link_to({ f: { project_facet: ["REACH Ambler"] } }, class: "project-thumb") do %>
-        <span class="count">21</span>
+        <span class="count">
+          <%= canned_query_count(:reach_ambler) %>
+        </span>
         <%= image_tag("oh_sm_thumb_test.jpg") %>
       <% end %>
 
