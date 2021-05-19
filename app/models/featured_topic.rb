@@ -228,7 +228,7 @@ class FeaturedTopic
     },
     :oral_histories => {
       title: "Oral Histories",
-      path: "/collections/gt54kn818"
+      path: "/collections/#{ScihistDigicoll::Env.lookup!(:oral_history_collection_id)}"
     },
     instruments_and_innovation: {
       title: "Instruments & Innovation",
@@ -283,7 +283,9 @@ class FeaturedTopic
     if definition.has_key?(:path)
       definition[:path]
     else
-      Rails.application.routes.url_helpers.featured_topic_path(slug)
+      # Hard-coding this, just for efficiency, instead of:
+      # Rails.application.routes.url_helpers.featured_topic_path(slug)
+      "focus/#{slug}"
     end
   end
 
