@@ -81,7 +81,7 @@
 
         .this-day-card {
           width: $standard-thumb-width;
-          margin: 0 2.2rem 2.2rem 2.2rem;
+          margin: 0 4.4rem 4.4rem 0;
         }
         .this-day-label {
           font-family: $brand-sans-serif;
@@ -101,6 +101,7 @@
           padding: 1em 1em;
           background-color: white;
           border: 1px solid $brand-dark-grey;
+          margin-bottom: 0;
         }
       }
     }
