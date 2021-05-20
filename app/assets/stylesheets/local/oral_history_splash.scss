@@ -30,44 +30,61 @@
     background-size: cover;
   }
 
-  .canned-queries {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 2rem 0;
+  .canned-queries-container {
+    background-color: $brand-light-grey;
+    padding-top: 2rem;
 
-    a.q {
+    .canned-queries {
       display: flex;
-      align-items: center;
-      border: 1px solid $brand-dark-grey;
-      margin-right: 2rem;
+      flex-wrap: wrap;
+      margin: 0 2rem 0 4rem;
 
-      .number, .link {
-        padding: 0 0.5rem;
+      a.q {
+        display: flex;
+        align-items: center;
+        background-color: white;
+        border: 1px solid $brand-dark-grey;
+        margin-right: 2rem;
+        margin-bottom: 2rem;
+
+        .number, .link {
+          padding: 0 0.5rem;
+        }
+
+        .number {
+          font-size: 1.75rem;
+          background-color: $brand-dark-grey;
+          color: white;
+        }
       }
-
-      .number {
-        font-size: 1.75rem;
-        background-color: $brand-dark-grey;
-        color: white;
-      }
-    }
-  }
-
-  .section {
-    margin: 2rem 0;
-    h2 {
-      margin-bottom: 1rem;
     }
   }
 
   .this-day {
+    background-color: $brand-dark-grey;
+    padding: 2rem 2rem 0 4rem;
+
     .this-day-body {
-      display: flex;
+      padding-top: 2rem;
+      display: inline-flex;
+      flex-wrap: wrap;
+      margin: 0 auto;
 
       .this-day-card {
         width: $standard-thumb-width;
-
-        margin-right: 28px;
+        margin: 0 2.2rem 2.2rem 2.2rem;
+      }
+      .this-day-text {
+        font-family: $brand-sans-serif;
+        font-weight: $semi-bold-weight;
+        text-transform: uppercase;
+        font-size: 0.875rem;  // 14px for 16px=1rem
+        line-height: normal;
+        letter-spacing: $small-caps-letter-spacing;
+        background-color: white;
+        padding: 1em 1em;
+        border: 1px solid $brand-dark-grey;
+        border-top: none;
       }
     }
   }
