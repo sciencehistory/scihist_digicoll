@@ -60,47 +60,48 @@
     }
   }
 
-  .this-day {
+  .this-day-container {
     background-color: $brand-dark-grey;
-
-    max-width: $main-container-max-width;
-    margin: 0 auto;
-
     padding: 2rem 0;
 
-    @include media-breakpoint-up('md') {
-      padding-right: $grid-gutter-width;
-      padding-left: $grid-gutter-width;
-    }
-
-    .this-day-body {
-      padding-top: 2rem;
-      display: inline-flex;
-      flex-wrap: wrap;
+    .this-day {
+      max-width: $main-container-max-width;
       margin: 0 auto;
 
-      .this-day-card {
-        width: $standard-thumb-width;
-        margin: 0 2.2rem 2.2rem 2.2rem;
+      @include media-breakpoint-up('md') {
+        padding-right: $grid-gutter-width;
+        padding-left: $grid-gutter-width;
       }
-      .this-day-label {
-        font-family: $brand-sans-serif;
-        font-weight: $semi-bold-weight;
-        text-transform: uppercase;
-        font-size: 0.875rem;  // 14px for 16px=1rem
-        line-height: normal;
-        letter-spacing: $small-caps-letter-spacing;
-        background-color: white;
-        padding: 1em 1em;
-        border: 1px solid $brand-dark-grey;
-        border-top: none;
-        margin-bottom: 0;
-      }
-      .this-day-text-desc {
-        @extend .text-muted;
-        padding: 1em 1em;
-        background-color: white;
-        border: 1px solid $brand-dark-grey;
+
+      .this-day-body {
+        padding-top: 2rem;
+        display: inline-flex;
+        flex-wrap: wrap;
+        margin: 0 auto;
+
+        .this-day-card {
+          width: $standard-thumb-width;
+          margin: 0 2.2rem 2.2rem 2.2rem;
+        }
+        .this-day-label {
+          font-family: $brand-sans-serif;
+          font-weight: $semi-bold-weight;
+          text-transform: uppercase;
+          font-size: 0.875rem;  // 14px for 16px=1rem
+          line-height: normal;
+          letter-spacing: $small-caps-letter-spacing;
+          background-color: white;
+          padding: 1em 1em;
+          border: 1px solid $brand-dark-grey;
+          border-top: none;
+          margin-bottom: 0;
+        }
+        .this-day-text-desc {
+          @extend .text-muted;
+          padding: 1em 1em;
+          background-color: white;
+          border: 1px solid $brand-dark-grey;
+        }
       }
     }
   }

@@ -102,40 +102,42 @@ we want the full width of the screen, no margins or padding. %>
   </div>
 
   <% if born_on_this_day_biographies.present? %>
-    <div class="this-day section">
-      <h2 class="brand-alt-h2 text-white">Born on this day in history</h2>
-      <div class="show-sub-head-body this-day-body">
-        <% born_on_this_day_biographies.each do |bio| %>
-          <div class="this-day-card">
-            <% if bio.oral_history_content.first.work.leaf_representative.content_type  &&
-                  bio.oral_history_content.first.work.leaf_representative.content_type != "application/pdf" %>
-              <%= link_to work_path(bio.oral_history_content.first.work) do %>
-                <%= ThumbDisplay.new(bio.oral_history_content.first.work.leaf_representative).display %>
+    <div class="this-day-container">
+      <div class="this-day">
+        <h2 class="brand-alt-h2 text-white">Born on this day in history</h2>
+        <div class="show-sub-head-body this-day-body">
+          <% born_on_this_day_biographies.each do |bio| %>
+            <div class="this-day-card">
+              <% if bio.oral_history_content.first.work.leaf_representative.content_type  &&
+                    bio.oral_history_content.first.work.leaf_representative.content_type != "application/pdf" %>
+                <%= link_to work_path(bio.oral_history_content.first.work) do %>
+                  <%= ThumbDisplay.new(bio.oral_history_content.first.work.leaf_representative).display %>
+                <% end %>
               <% end %>
-            <% end %>
 
-            <p class="this-day-label">
-              <%= link_to work_path(bio.oral_history_content.first.work) do %>
-                <%= bio.name %><br>
-                Born <%= FormatSimpleDate.new(bio.birth.date).display  %>
-              <% end %>
-            </p>
-
-            <% if bio.oral_history_content.first.work&.leaf_representative&.content_type.blank? ||
-                  bio.oral_history_content.first.work&.leaf_representative&.content_type == "application/pdf" %>
-
-              <p class="this-day-text-desc">
-                <%= truncate(bio.oral_history_content.first.work.description, length: 120, separator: ' ') %>
+              <p class="this-day-label">
+                <%= link_to work_path(bio.oral_history_content.first.work) do %>
+                  <%= bio.name %><br>
+                  Born <%= FormatSimpleDate.new(bio.birth.date).display  %>
+                <% end %>
               </p>
-            <% end %>
 
-          </div>
-        <% end %>
+              <% if bio.oral_history_content.first.work&.leaf_representative&.content_type.blank? ||
+                    bio.oral_history_content.first.work&.leaf_representative&.content_type == "application/pdf" %>
+
+                <p class="this-day-text-desc">
+                  <%= truncate(bio.oral_history_content.first.work.description, length: 120, separator: ' ') %>
+                </p>
+              <% end %>
+
+            </div>
+          <% end %>
+        </div>
       </div>
     </div>
   <% end %>
 
-  <div class="projects long-text-line-height section">
+  <div class="projects long-text-line-height">
     <h2 class="brand-alt-h2">Projects</h2>
     <p>While individual oral histories can contribute to specific research goals and agendas, the strength of an oral history collection relies on the ability of individual oral histories to “speak” to each other. Learning about patterns of relationships and activities through the study of collective histories reveals much more about the scientific process and its products than any one oral history could do on its own.</p>
 
