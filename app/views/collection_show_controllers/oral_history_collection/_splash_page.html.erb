@@ -70,46 +70,47 @@ we want the full width of the screen, no margins or padding. %>
     </div>
   </div>
 
-  <div class="canned-queries">
-    <%= link_to({ f: { oh_feature_facet: ["Synchronized audio"] } }, class: "q") do %>
-      <div class="number">
-        <%= canned_query_count(:synchronized_audio) %>
-      </div>
-      <div class="link">
-        With synchronized audio
-      </div>
-    <% end %>
+  <div class="canned-queries-container">
+    <div class="canned-queries">
+      <%= link_to({ f: { oh_feature_facet: ["Synchronized audio"] } }, class: "q") do %>
+        <div class="number">
+          <%= canned_query_count(:synchronized_audio) %>
+        </div>
+        <div class="link">
+          With synchronized audio
+        </div>
+      <% end %>
 
-    <%= link_to({ f: { subject_facet: ["Women in science"] } }, class: "q") do %>
-      <div class="number">
-        <%= canned_query_count(:women_in_science) %>
-      </div>
-      <div class="link">
-        Women in science
-      </div>
-    <% end %>
+      <%= link_to({ f: { subject_facet: ["Women in science"] } }, class: "q") do %>
+        <div class="number">
+          <%= canned_query_count(:women_in_science) %>
+        </div>
+        <div class="link">
+          Women in science
+        </div>
+      <% end %>
 
-    <%= link_to({ f: { subject_facet: ["Nobel Prize winners"] } }, class: "q") do %>
-      <div class="number">
-        <%= canned_query_count(:nobel_prize) %>
-      </div>
-      <div class="link">
-        Nobel Prize winners
-      </div>
-    <% end %>
+      <%= link_to({ f: { subject_facet: ["Nobel Prize winners"] } }, class: "q") do %>
+        <div class="number">
+          <%= canned_query_count(:nobel_prize) %>
+        </div>
+        <div class="link">
+          Nobel Prize winners
+        </div>
+      <% end %>
+    </div>
   </div>
 
   <% if born_on_this_day_biographies.present? %>
     <div class="this-day section">
-      <h2 class="attribute-sub-head">Born on this day in history</h2>
+      <h2 class="brand-alt-h2">Born on this day in history</h2>
       <div class="show-sub-head-body this-day-body">
         <% born_on_this_day_biographies.each do |bio| %>
           <div class="this-day-card">
-            <div>
-              <%= link_to work_path(bio.oral_history_content.first.work) do %>
-                <%= ThumbDisplay.new(bio.oral_history_content.first.work.leaf_representative).display %></div>
-              <% end %>
-            <p>
+            <%= link_to work_path(bio.oral_history_content.first.work) do %>
+              <%= ThumbDisplay.new(bio.oral_history_content.first.work.leaf_representative).display %>
+            <% end %>
+            <p class="this-day-text">
               <%= link_to work_path(bio.oral_history_content.first.work) do %>
                 <%= bio.name %><br>
                 Born <%= FormatSimpleDate.new(bio.birth.date).display  %></p>
@@ -121,7 +122,7 @@ we want the full width of the screen, no margins or padding. %>
   <% end %>
 
   <div class="projects long-text-line-height section">
-    <h2 class="attribute-sub-head">Projects</h2>
+    <h2 class="brand-alt-h2">Projects</h2>
     <p>While individual oral histories can contribute to specific research goals and agendas, the strength of an oral history collection relies on the ability of individual oral histories to “speak” to each other. Learning about patterns of relationships and activities through the study of collective histories reveals much more about the scientific process and its products than any one oral history could do on its own.</p>
 
     <div class="project">
