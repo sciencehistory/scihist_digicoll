@@ -106,7 +106,7 @@
   }
 
   .projects {
-    max-width: $main-container-max-width;
+    max-width: calc(235px + 2rem + #{$max-readable-width});
     margin: 0 auto;
 
     padding: 2rem 0;
