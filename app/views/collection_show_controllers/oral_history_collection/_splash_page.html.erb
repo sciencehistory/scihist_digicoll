@@ -107,14 +107,28 @@ we want the full width of the screen, no margins or padding. %>
       <div class="show-sub-head-body this-day-body">
         <% born_on_this_day_biographies.each do |bio| %>
           <div class="this-day-card">
-            <%= link_to work_path(bio.oral_history_content.first.work) do %>
-              <%= ThumbDisplay.new(bio.oral_history_content.first.work.leaf_representative).display %>
+            <% if bio.oral_history_content.first.work.leaf_representative.content_type  &&
+                  bio.oral_history_content.first.work.leaf_representative.content_type != "application/pdf" %>
+              <%= link_to work_path(bio.oral_history_content.first.work) do %>
+                <%= ThumbDisplay.new(bio.oral_history_content.first.work.leaf_representative).display %>
+              <% end %>
             <% end %>
-            <p class="this-day-text">
+
+            <p class="this-day-label">
               <%= link_to work_path(bio.oral_history_content.first.work) do %>
                 <%= bio.name %><br>
-                Born <%= FormatSimpleDate.new(bio.birth.date).display  %></p>
+                Born <%= FormatSimpleDate.new(bio.birth.date).display  %>
               <% end %>
+            </p>
+
+            <% if bio.oral_history_content.first.work&.leaf_representative&.content_type.blank? ||
+                  bio.oral_history_content.first.work&.leaf_representative&.content_type == "application/pdf" %>
+
+              <p class="this-day-text-desc">
+                <%= truncate(bio.oral_history_content.first.work.description, length: 120, separator: ' ') %>
+              </p>
+            <% end %>
+
           </div>
         <% end %>
       </div>
