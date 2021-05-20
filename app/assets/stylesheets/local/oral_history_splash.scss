@@ -1,0 +1,106 @@
+.full-width-homepage {
+    #masthead {
+        margin-bottom: 0 !important;
+    }
+
+    #mainContainer {
+        max-width: initial !important;
+        padding-left: 0    !important;
+        padding-right: 0   !important;
+    }
+    .container-fluid {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+.oral-history-collection-splash {
+  .collection-desc {
+    max-width: calc($max-readable-width + 6rem);
+    padding: 2rem 4rem 1rem 4rem;
+    margin: 0 auto;
+  }
+
+  .collection-splash-thumb {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 266px;
+
+    background-image: asset-url("oral_history_collection_splash.jpg");
+    background-size: cover;
+  }
+
+  .canned-queries {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 2rem 0;
+
+    a.q {
+      display: flex;
+      align-items: center;
+      border: 1px solid $brand-dark-grey;
+      margin-right: 2rem;
+
+      .number, .link {
+        padding: 0 0.5rem;
+      }
+
+      .number {
+        font-size: 1.75rem;
+        background-color: $brand-dark-grey;
+        color: white;
+      }
+    }
+  }
+
+  .section {
+    margin: 2rem 0;
+    h2 {
+      margin-bottom: 1rem;
+    }
+  }
+
+  .this-day {
+    .this-day-body {
+      display: flex;
+
+      .this-day-card {
+        width: $standard-thumb-width;
+
+        margin-right: 28px;
+      }
+    }
+  }
+
+  .projects {
+    .project {
+      display: flex;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+
+      .project-thumb {
+        width: 235px;
+        margin-right: 1rem;
+        position: relative;
+        img {
+          max-width: 100%;
+        }
+        .count {
+          font-size: 120%;
+          position: absolute;
+          top: 0.5rem;
+          left: 0.5rem;
+
+          background-color: $brand-dark-grey;
+          color: white;
+
+          border-radius: 3em;
+          padding: 0 0.5em;
+        }
+      }
+      .text {
+        flex-grow: 1
+      }
+    }
+  }
+}
