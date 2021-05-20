@@ -74,7 +74,7 @@
         width: $standard-thumb-width;
         margin: 0 2.2rem 2.2rem 2.2rem;
       }
-      .this-day-text {
+      .this-day-label {
         font-family: $brand-sans-serif;
         font-weight: $semi-bold-weight;
         text-transform: uppercase;
@@ -85,6 +85,13 @@
         padding: 1em 1em;
         border: 1px solid $brand-dark-grey;
         border-top: none;
+        margin-bottom: 0;
+      }
+      .this-day-text-desc {
+        @extend .text-muted;
+        padding: 1em 1em;
+        background-color: white;
+        border: 1px solid $brand-dark-grey;
       }
     }
   }
