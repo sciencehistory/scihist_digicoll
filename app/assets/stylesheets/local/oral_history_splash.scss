@@ -130,5 +130,9 @@
         flex-grow: 1
       }
     }
+
+    .more-projects {
+      @include font-size($h3-font-size);
+    }
   }
 }
