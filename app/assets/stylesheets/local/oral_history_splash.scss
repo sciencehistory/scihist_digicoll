@@ -16,7 +16,7 @@
 
 .oral-history-collection-splash {
   .collection-desc {
-    max-width: calc({$max-readable-width} + 6rem);
+    max-width: calc(#{$max-readable-width} + 6rem);
     padding: 2rem 15px 2rem 15px;
 
     @include media-breakpoint-up('md') {
