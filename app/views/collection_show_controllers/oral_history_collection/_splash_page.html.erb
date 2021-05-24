@@ -72,32 +72,35 @@ we want the full width of the screen, no margins or padding. %>
 
   <div class="canned-queries-container">
     <div class="canned-queries">
-      <%= link_to({ f: { oh_feature_facet: ["Synchronized audio"] } }, class: "q") do %>
-        <div class="number">
-          <%= canned_query_count(:synchronized_audio) %>
-        </div>
-        <div class="link">
-          With synchronized audio
-        </div>
-      <% end %>
+      <h2 class="canned-queries-heading">Featured interviews</h2>
+      <div class="canned-queries-body">
+        <%= link_to({ f: { oh_feature_facet: ["Synchronized audio"] } }, class: "q") do %>
+          <div class="number">
+            <%= canned_query_count(:synchronized_audio) %>
+          </div>
+          <div class="link">
+            With synchronized audio
+          </div>
+        <% end %>
 
-      <%= link_to({ f: { subject_facet: ["Women in science"] } }, class: "q") do %>
-        <div class="number">
-          <%= canned_query_count(:women_in_science) %>
-        </div>
-        <div class="link">
-          Women in science
-        </div>
-      <% end %>
+        <%= link_to({ f: { subject_facet: ["Women in science"] } }, class: "q") do %>
+          <div class="number">
+            <%= canned_query_count(:women_in_science) %>
+          </div>
+          <div class="link">
+            Women in science
+          </div>
+        <% end %>
 
-      <%= link_to({ f: { subject_facet: ["Nobel Prize winners"] } }, class: "q") do %>
-        <div class="number">
-          <%= canned_query_count(:nobel_prize) %>
-        </div>
-        <div class="link">
-          Nobel Prize winners
-        </div>
-      <% end %>
+        <%= link_to({ f: { subject_facet: ["Nobel Prize winners"] } }, class: "q") do %>
+          <div class="number">
+            <%= canned_query_count(:nobel_prize) %>
+          </div>
+          <div class="link">
+            Nobel Prize winners
+          </div>
+        <% end %>
+      </div>
     </div>
   </div>
 
