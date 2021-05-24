@@ -15,6 +15,26 @@
 }
 
 .oral-history-collection-splash {
+  // show/hide two different images...
+  .collection-splash-thumb {
+    display: none;
+  }
+  .collection-banner {
+    background-image: asset-url("oral_history_wide_banner.jpg");
+    background-size: cover;
+    background-position: center;
+    height: 6rem;
+  }
+  @include media-breakpoint-up('lg') {
+    .collection-splash-thumb {
+      display: block;
+    }
+    .collection-banner {
+      display: none;
+    }
+  }
+
+
   .collection-desc {
     max-width: calc(#{$max-readable-width} + 6rem);
     padding: 2rem 15px 2rem 15px;
