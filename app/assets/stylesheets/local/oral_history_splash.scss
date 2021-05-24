@@ -16,8 +16,14 @@
 
 .oral-history-collection-splash {
   .collection-desc {
-    max-width: calc($max-readable-width + 6rem);
-    padding: 2rem 4rem 2rem 4rem;
+    max-width: calc({$max-readable-width} + 6rem);
+    padding: 2rem 15px 2rem 15px;
+
+    @include media-breakpoint-up('md') {
+      padding-right: 4rem;
+      padding-left: 4rem;
+    }
+
     margin: 0 auto;
   }
 
@@ -34,6 +40,7 @@
     background-color: $brand-light-grey;
 
     .canned-queries {
+      padding: 0 15px;
       @include media-breakpoint-up('md') {
         padding-right: $grid-gutter-width;
         padding-left: $grid-gutter-width;
@@ -71,7 +78,7 @@
 
   .this-day-container {
     background-color: $brand-dark-grey;
-    padding-top: 0.9375rem;
+    padding: 0.9375rem 15px 0 15px;
 
     @include media-breakpoint-up('md') {
       padding-right: $grid-gutter-width;
@@ -116,7 +123,7 @@
   .projects {
     max-width: calc(235px + 2rem + #{$max-readable-width});
 
-    padding: 2rem 0;
+    padding: 2rem 15px;
 
     @include media-breakpoint-up('md') {
       padding-right: $grid-gutter-width;
