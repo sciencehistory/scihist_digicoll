@@ -32,28 +32,35 @@
 
   .canned-queries-container {
     background-color: $brand-light-grey;
-    padding-top: 2rem;
 
     .canned-queries {
-      display: flex;
-      flex-wrap: wrap;
       margin: 0 2rem 0 4rem;
 
-      a.q {
+      .canned-queries-heading {
+        @extend .brand-alt-h2;
+        padding: 0.9375rem 0;
+      }
+
+      .canned-queries-body {
         display: flex;
-        align-items: center;
-        background-color: white;
-        margin-right: 2rem;
-        margin-bottom: 2rem;
+        flex-wrap: wrap;
 
-        .number, .link {
-          padding: 0 0.5rem;
-        }
+        a.q {
+          display: flex;
+          align-items: center;
+          background-color: white;
+          margin-right: 2rem;
+          margin-bottom: 2rem;
 
-        .number {
-          font-size: 1.75rem;
-          background-color: $brand-dark-grey;
-          color: white;
+          .number, .link {
+            padding: 0 0.5rem;
+          }
+
+          .number {
+            font-size: 1.75rem;
+            background-color: $brand-dark-grey;
+            color: white;
+          }
         }
       }
     }
