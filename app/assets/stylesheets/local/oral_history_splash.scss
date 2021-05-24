@@ -34,7 +34,10 @@
     background-color: $brand-light-grey;
 
     .canned-queries {
-      margin: 0 2rem 0 4rem;
+      @include media-breakpoint-up('md') {
+        padding-right: $grid-gutter-width;
+        padding-left: $grid-gutter-width;
+      }
 
       .canned-queries-heading {
         @extend .brand-alt-h2;
