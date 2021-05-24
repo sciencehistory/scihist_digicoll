@@ -106,36 +106,34 @@ we want the full width of the screen, no margins or padding. %>
 
   <% if born_on_this_day_biographies.present? %>
     <div class="this-day-container">
-      <div class="this-day">
-        <h2 class="brand-alt-h2 text-white">Born on this day in history</h2>
-        <div class="show-sub-head-body this-day-body">
-          <% born_on_this_day_biographies.each do |bio| %>
-            <div class="this-day-card">
-              <% if bio.oral_history_content.first.work.leaf_representative.content_type  &&
-                    bio.oral_history_content.first.work.leaf_representative.content_type != "application/pdf" %>
-                <%= link_to work_path(bio.oral_history_content.first.work) do %>
-                  <%= ThumbDisplay.new(bio.oral_history_content.first.work.leaf_representative).display %>
-                <% end %>
+      <h2 class="brand-alt-h2 text-white">Born on this day in history</h2>
+      <div class="this-day-body">
+        <% born_on_this_day_biographies.each do |bio| %>
+          <div class="this-day-card">
+            <% if bio.oral_history_content.first.work.leaf_representative.content_type  &&
+                  bio.oral_history_content.first.work.leaf_representative.content_type != "application/pdf" %>
+              <%= link_to work_path(bio.oral_history_content.first.work) do %>
+                <%= ThumbDisplay.new(bio.oral_history_content.first.work.leaf_representative).display %>
               <% end %>
+            <% end %>
 
-              <p class="this-day-label">
-                <%= link_to work_path(bio.oral_history_content.first.work) do %>
-                  <%= bio.name %><br>
-                  Born <%= FormatSimpleDate.new(bio.birth.date).display  %>
-                <% end %>
+            <p class="this-day-label">
+              <%= link_to work_path(bio.oral_history_content.first.work) do %>
+                <%= bio.name %><br>
+                Born <%= FormatSimpleDate.new(bio.birth.date).display  %>
+              <% end %>
+            </p>
+
+            <% if bio.oral_history_content.first.work&.leaf_representative&.content_type.blank? ||
+                  bio.oral_history_content.first.work&.leaf_representative&.content_type == "application/pdf" %>
+
+              <p class="this-day-text-desc">
+                <%= truncate(strip_tags(bio.oral_history_content.first.work.description), length: 120, separator: ' ') %>
               </p>
+            <% end %>
 
-              <% if bio.oral_history_content.first.work&.leaf_representative&.content_type.blank? ||
-                    bio.oral_history_content.first.work&.leaf_representative&.content_type == "application/pdf" %>
-
-                <p class="this-day-text-desc">
-                  <%= truncate(strip_tags(bio.oral_history_content.first.work.description), length: 120, separator: ' ') %>
-                </p>
-              <% end %>
-
-            </div>
-          <% end %>
-        </div>
+          </div>
+        <% end %>
       </div>
     </div>
   <% end %>
