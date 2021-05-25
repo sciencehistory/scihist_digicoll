@@ -161,20 +161,20 @@ we want the full width of the screen, no margins or padding. %>
     </div>
 
     <div class="project">
-      <%= link_to({ f: { project_facet: ["Imagining Philadelphia's Energy Futures"] } }, class: "project-thumb") do %>
+      <%= link_to({ f: { project_facet: ["Mass Spectrometry"] } }, class: "project-thumb") do %>
         <span class="count">
-          <%= canned_query_count(:philadelphia_energy) %>
+          <%= canned_query_count(:mass_spectrometry) %>
         </span>
         <%= image_tag("oh_sm_thumb_test.jpg") %>
       <% end %>
 
       <div class="text">
         <h3>
-          <%= link_to "Imagining Philadelphia’s Energy Futures",
-            { f: { project_facet: ["Imagining Philadelphia's Energy Futures"] } }
+          <%= link_to "Mass Spectrometry",
+            { f: { project_facet: ["Mass Spectrometry"] } }
            %>
         </h3>
-        <p>How do Philadelphians imagine a sustainable future for their city? This oral history and public education project examined energy, climate change, and the future of Philadelphia.</p>
+        <p>These oral histories record the human dimensions related to the growth of mass spectrometry in academic, industrial, and governmental laboratories during the 20th century.</p>
       </div>
     </div>
 
