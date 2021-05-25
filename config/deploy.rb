@@ -160,22 +160,22 @@ namespace :scihist do
   end
   after "deploy:symlink:release", "scihist:resquepoolrestart"
 
-  desc "add solr_restart=true to your cap invocation (e.g. on first solr deploy), otherwise it will reload config files"
-  task :restart_or_reload_solr do
-    on roles(:solr) do
-      if ENV['solr_restart'] == "true"
-        execute :sudo, "/bin/systemctl restart solr"
-      else
-        # Note this is NOT using our solr variable in local_env.yml, it's just hard-coded
-        # where to restart, sorry.
-
-        # the querystring doesn't come through without the quotes
-        execute :curl, "-s", '"localhost:8983/solr/admin/cores?action=reload&core=scihist_digicoll"', "--write-out", '"\nhttp response status: %{http_code}\n"'
+  desc "load local solr config into solr cloud, running on a jobs server"
+  task :solr_cloud_sync_configset do
+    on primary(:jobs) do
+      within current_path do
+        with rails_env: fetch(:rails_env) do
+          begin
+            execute :rake, "scihist:solr_cloud:sync_configset"
+          raise StandardError => e
+            colors = SSHKit::Color.new($stderr)
+            $stderr.puts colors.colorize("ERROR: Could not sync configset! #{e}", :red)
+            $stderr.puts e.backtrace
+          end
+        end
       end
     end
   end
 
-  # Disable cap flow to restart/reload our EC2 solr, because it won't work with the
-  # production searchstax we are trying to swap in as an emergency measure.
-  #after "deploy:log_revision", "scihist:restart_or_reload_solr"
+  after "deploy:log_revision", "scihist:solr_cloud_sync_configset"
 end
