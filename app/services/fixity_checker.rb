@@ -70,12 +70,7 @@ class FixityChecker
     @expected_result ||= @asset.file.sha512
   end
 
-  SHRINE_NOT_FOUND_ERRORS = if Shrine.version < Gem::Version.new("3.0")
-    [Aws::S3::Errors::NotFound, Errno::ENOENT]
-  else
-    # in shrine 3.0, shrine helpfully standardizes
-    [Shrine::FileNotFound]
-  end
+  SHRINE_NOT_FOUND_ERRORS = [Shrine::FileNotFound]
 
   # Note: this recipe is copied from:
   # https://github.com/shrinerb/shrine/blob/1f67da86ba028c0464d80fd0a8c9bd4d9aec20be/lib/shrine/plugins/signature.rb#L101 .

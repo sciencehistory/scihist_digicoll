@@ -369,7 +369,7 @@ GEM
       net-ssh (>= 2.6.5, < 7.0.0)
     net-ssh (6.1.0)
     nio4r (2.5.7)
-    nokogiri (1.11.3)
+    nokogiri (1.11.4)
       mini_portile2 (~> 2.5.0)
       racc (~> 1.4)
     oai (1.1.0)
@@ -406,7 +406,7 @@ GEM
       byebug (~> 11.0)
       pry (~> 0.13.0)
     public_suffix (4.0.6)
-    puma (5.2.2)
+    puma (5.3.1)
       nio4r (~> 2.0)
     qa (5.6.0)
       activerecord-import
@@ -692,7 +692,7 @@ DEPENDENCIES
   pg (>= 0.18, < 2.0)
   prawn (~> 2.2)
   pry-byebug
-  puma (~> 5.0)
+  puma (~> 5.3)
   qa (~> 5.2)
   rails (~> 6.1.1)
   rails-controller-testing
