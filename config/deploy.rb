@@ -174,5 +174,8 @@ namespace :scihist do
       end
     end
   end
-  after "deploy:log_revision", "scihist:restart_or_reload_solr"
+
+  # Disable cap flow to restart/reload our EC2 solr, because it won't work with the
+  # production searchstax we are trying to swap in as an emergency measure.
+  #after "deploy:log_revision", "scihist:restart_or_reload_solr"
 end

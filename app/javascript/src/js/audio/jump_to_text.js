@@ -11,7 +11,8 @@ domready(function() {
       var timeCodeSeconds = player.currentTime;
       var activeTab = getActiveTab();
 
-      if (activeTab.id == "ohTocTab") {
+      // if we are on the Toc tab OR we don't have a transcript tab to go to.
+      if (activeTab.id == "ohTocTab" || !document.querySelector("#ohTranscript")) {
         gotoTocSegmentAtTimecode(timeCodeSeconds)
       } else if (activeTab) {
         // if we have anything else, jump to transcript point, activating
