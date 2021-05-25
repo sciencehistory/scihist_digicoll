@@ -16,7 +16,7 @@ module CollectionShowControllers
       nanotechnology: 'project_facet:"Nanotechnology"',
       toxic_substances: 'project_facet:"Oral History of the Toxic Substances Control Act"',
       reach_ambler: 'project_facet:"REACH Ambler"',
-      philadelphia_energy: 'project_facet:"Imagining Philadelphia\'s Energy Futures"'
+      mass_spectrometry: 'project_facet:"Mass Spectrometry"'
     }
 
     def blacklight_config
