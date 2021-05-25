@@ -59,9 +59,7 @@ module CollectionShowControllers
     # but, for now we're seeing if maybe it's quick enough we don't need to bother.
     def born_on_this_day_biographies
       @born_on_this_day ||= begin
-        # TODO for testing, we're faking the date to get one with matches
-        #query_date = Date.today
-        query_date = Date.parse("2020-05-23")
+        query_date = Date.today
 
         IntervieweeBiography.
           where("json_attributes -> 'birth' ->> 'date' like '%-#{query_date.strftime("%m-%d")}'").
