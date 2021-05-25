@@ -141,8 +141,6 @@
   }
 
   .projects {
-    max-width: calc(235px + 2rem + #{$max-readable-width});
-
     padding: 2rem 15px;
 
     @include media-breakpoint-up('md') {
@@ -158,26 +156,40 @@
 
       .project-thumb {
         width: 235px;
-        margin-right: 1rem;
+        margin-right: 2rem;
+        flex-shrink: 1;
         position: relative;
+
         img {
           max-width: 100%;
         }
+
         .count {
-          font-size: 120%;
           position: absolute;
           top: 0.5rem;
-          left: 0.5rem;
+          right: 0.5rem;
 
+          font-size: 120%;
           background-color: $brand-dark-grey;
           color: white;
-
           border-radius: 3em;
           padding: 0 0.5em;
         }
       }
+
       .text {
-        flex-grow: 1
+        flex-shrink: 3;
+        min-width: $max-readable-width / 2;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .project {
+        display: block;
+      }
+      .project-thumb {
+        display: block;
+        margin-bottom: 1rem;
       }
     }
 
