@@ -15,5 +15,9 @@ class OralHistoryContent
         discipline
       ].collect(&:presence).compact
     end
+
+    def blank?
+      displayable_values.blank?
+    end
   end
 end
