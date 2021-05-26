@@ -15,5 +15,9 @@ class OralHistoryContent
         role
       ].collect(&:presence).compact
     end
+
+    def blank?
+      displayable_values.blank?
+    end
   end
 end
