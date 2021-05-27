@@ -167,9 +167,9 @@ namespace :scihist do
         with rails_env: fetch(:rails_env) do
           begin
             execute :rake, "scihist:solr_cloud:sync_configset"
-          raise StandardError => e
+          rescue StandardError => e
             colors = SSHKit::Color.new($stderr)
-            $stderr.puts colors.colorize("ERROR: Could not sync configset! #{e}", :red)
+            $stderr.puts colors.colorize("ERROR: Could not sync configset! #{e}, backtrace:", :red)
             $stderr.puts e.backtrace
           end
         end
