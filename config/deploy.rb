@@ -1,8 +1,7 @@
 # Our roles:
-# :web - the box is running rails code & serving it over http
+# :web - the box running rails code & serving it over http
 # :app - the box is our primary app server
 # :jobs - the box is running our background jobs
-# :solr - the box is running our solr index
 #
 # Note we do not have a role for :db, because capistrano does nothing with
 # the db server (when it's a separate server), and doesn't even have access to it
@@ -36,7 +35,7 @@ set :server_autodiscover_application, "scihist_digicoll"
 # we use for capistrano stage.
 set :server_autodiscover_service_level, fetch(:stage)
 # Expect all of these to be set, or we will warn.
-set :server_autodiscover_expected_roles, [:web, :app, :jobs, :solr, :cron]
+set :server_autodiscover_expected_roles, [:web, :app, :jobs, :cron]
 
 
 
