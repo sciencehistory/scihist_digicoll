@@ -38,7 +38,7 @@ namespace :scihist do
         storage_class: "STANDARD_IA",
         metadata: { "backup_time" => Time.now.utc.to_s}
       ) do |write_stream|
-      cmd.run('pg_dump', '-w', '--clean', ENV['DATABASE_URL']) do |out, err|
+      cmd.run('pg_dump', '--no-owner', '--no-acl', '--clean', ENV['DATABASE_URL']) do |out, err|
         write_stream << out.force_encoding('UTF-8') if out
       end
     end
