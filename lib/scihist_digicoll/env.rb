@@ -368,11 +368,13 @@ module ScihistDigicoll
     end
 
 
-    # Location of some backup buckets we sometimes need to purge files from
+    # S3 buckets for backups. Mostly used in Rake tasks.
     define_key :s3_bucket_derivatives_backup
     define_key :s3_bucket_dzi_backup
-    define_key :s3_backup_bucket_region
 
+    define_key :s3_backup_bucket_region
+    define_key :s3_backup_access_key_id
+    define_key :s3_backup_secret_access_key
     # Returns an S3::Bucket for the derivatives backup, used by our derivative storage
     # type mover to make sure non-public derivatives don't exist in backups either.
     #
