@@ -119,6 +119,14 @@ gem 'sane_patch', '< 2.0' # time-limited monkey patches
 gem 'activerecord-postgres_enum', '~> 1.3' # can record postgres enums in schema.rb dump
 
 
+# For autoscaling on heroku via hirefire.io service, but hopefully won't cause any problems
+# when running not on heroku.
+#
+# https://help.hirefire.io/article/53-job-queue-ruby-on-rails
+# https://help.hirefire.io/article/49-logplex-queue-time
+# https://github.com/hirefire/hirefire-resource
+gem "hirefire-resource"
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]
