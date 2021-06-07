@@ -488,6 +488,8 @@ GEM
       redis-namespace (~> 1.6)
       sinatra (>= 0.9.2)
       vegas (~> 0.1.2)
+    resque-heroku-signals (2.0.0)
+      resque (= 2.0.0)
     resque-pool (0.7.1)
       rake (>= 10.0, < 14.0)
       resque (>= 1.22, < 3)
@@ -701,6 +703,7 @@ DEPENDENCIES
   rails_autolink (~> 1.0)
   ransack (~> 2.1)
   resque (~> 2.0)
+  resque-heroku-signals
   resque-pool
   rsolr (>= 1.0, < 3)
   rspec-rails (~> 4.0)

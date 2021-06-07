@@ -32,6 +32,7 @@ gem 'puma', '~> 5.3'
 # https://github.com/nevans/resque-pool/issues/170
 gem "resque", "~> 2.0"
 gem "resque-pool"
+gem "resque-heroku-signals" # gah, weirdly needed for graceful shutdown on heroku. https://github.com/resque/resque#heroku
 
 gem 'honeybadger', '~> 4.0'
 
