@@ -62,7 +62,9 @@ module CollectionShowControllers
         query_date = Date.today
 
         IntervieweeBiography.
-          where("json_attributes -> 'birth' ->> 'date' like '%-#{query_date.strftime("%m-%d")}'").
+          references(oral_history_content: :work).
+          where("interviewee_biographies.json_attributes -> 'birth' ->> 'date' like '%-#{query_date.strftime("%m-%d")}'").
+          where(oral_history_content: { kithe_models: { published: true}}).
           includes(oral_history_content: { work: :leaf_representative }).
           order("random()").
           limit(3).
