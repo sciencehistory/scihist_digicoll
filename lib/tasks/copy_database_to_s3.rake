@@ -21,7 +21,7 @@ namespace :scihist do
   task :copy_database_to_s3 => :environment do
     region = ScihistDigicoll::Env.lookup(:s3_backup_bucket_region)
     bucket   = ENV['BUCKET']     || 'chf-hydra-backup'
-    file_path = ENV['FILE_PATH'] || 'PGSql/digcol_backup.sql.gz'
+    file_path = ENV['FILE_PATH'] || "PGSql/heroku-scihist-digicoll-backup.sql.gz"
 
     # Don't overwrite the prod backup with a staging backup.
     abort 'This task should only be used in production' unless ScihistDigicoll::Env.lookup(:service_level) == 'production'
