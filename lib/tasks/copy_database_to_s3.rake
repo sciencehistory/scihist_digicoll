@@ -13,15 +13,15 @@ namespace :scihist do
 
     The s3 destination can also be temporarily
     overridden in the command line, for testing.
-    Careful: these won't work with heroku run rake, so you'll be using the defaults.
       BUCKET=chf-hydra-backup
-      FILE_PATH=PGSql/digcol_backup.sql.gz
+      S3_BACKUP_FILE_PATH=PGSql/digcol_backup.sql.gz
 
   """
   task :copy_database_to_s3 => :environment do
     region = ScihistDigicoll::Env.lookup(:s3_backup_bucket_region)
     bucket   = ENV['BUCKET']     || 'chf-hydra-backup'
-    file_path = ENV['FILE_PATH'] || "PGSql/heroku-scihist-digicoll-backup.sql.gz"
+    s3_backup_file_path = ScihistDigicoll::Env.lookup!(:s3_backup_file_path)
+
 
     # Don't overwrite the prod backup with a staging backup.
     abort 'This task should only be used in production' unless ScihistDigicoll::Env.lookup(:service_level) == 'production'
@@ -41,7 +41,7 @@ namespace :scihist do
     cmd.run!('gzip', '-c', temp_file_1.path, :out => temp_file_2.path )
 
     aws_bucket = Aws::S3::Bucket.new(name: bucket, client: aws_client)
-    aws_object = aws_bucket.object(file_path)
+    aws_object = aws_bucket.object(s3_backup_file_path)
     aws_object.upload_file(temp_file_2.path,
         content_type: "application/gzip",
         storage_class: "STANDARD_IA",
