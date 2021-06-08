@@ -3,14 +3,20 @@ require 'tempfile'
 
 namespace :scihist do
   desc """
-    Dump the live database and upload it to s3:
+    Dump the live database and upload it to s3.
+
+    Assumes the presence of db_dump, and of a working database URL (complete with credentials) at ENV['DATABASE_URL'].
+    We use it to back up our database from Heroku to s3, in a dyno spun up nightly by the Heroku Scheduler addon.
 
     bundle exec rake scihist:copy_database_to_s3
+    heroku run rake scihist:copy_database_to_s3 # although see caveat re: heroku run rake below.
 
     The s3 destination can also be temporarily
     overridden in the command line, for testing.
+    Careful: these won't work with heroku run rake, so you'll be using the defaults.
       BUCKET=chf-hydra-backup
       FILE_PATH=PGSql/digcol_backup.sql.gz
+
   """
   task :copy_database_to_s3 => :environment do
     region = ScihistDigicoll::Env.lookup(:s3_backup_bucket_region)
