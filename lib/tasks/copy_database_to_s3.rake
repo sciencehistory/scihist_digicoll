@@ -42,11 +42,17 @@ namespace :scihist do
 
     aws_bucket = Aws::S3::Bucket.new(name: bucket, client: aws_client)
     aws_object = aws_bucket.object(s3_backup_file_path)
-    aws_object.upload_file(temp_file_2.path,
+
+    raise "Backup file looks too small. (#{temp_file_2.size} bytes)." unless temp_file_2.size > 100000000
+
+    result = aws_object.upload_file(temp_file_2.path,
         content_type: "application/gzip",
         storage_class: "STANDARD_IA",
         metadata: { "backup_time" => Time.now.utc.to_s}
         )
+
+    raise "Upload failed" unless result
+
     temp_file_1.unlink
     temp_file_2.unlink
   end
