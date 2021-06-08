@@ -110,8 +110,8 @@ we want the full width of the screen, no margins or padding. %>
       <div class="this-day-body">
         <% born_on_this_day_biographies.each do |bio| %>
           <div class="this-day-card">
-            <% if bio.oral_history_content.first.work.leaf_representative.content_type  &&
-                  bio.oral_history_content.first.work.leaf_representative.content_type != "application/pdf" %>
+            <% if bio.oral_history_content.first.work.leaf_representative&.content_type  &&
+                  bio.oral_history_content.first.work.leaf_representative&.content_type != "application/pdf" %>
               <%= link_to work_path(bio.oral_history_content.first.work) do %>
                 <%= ThumbDisplay.new(bio.oral_history_content.first.work.leaf_representative).display %>
               <% end %>
