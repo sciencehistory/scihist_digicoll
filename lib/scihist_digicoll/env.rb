@@ -56,6 +56,14 @@ module ScihistDigicoll
       @production ||= lookup(:service_level) == "production"
     end
 
+    define_key :rails_log_level, default: -> {
+      # :info is one step less info than :debug, it's still a fairly large amount of info, including
+      # all requests. We're trying this as default in production.
+      #
+      # For non-production environments, we don't by default override Rails default.
+      :info if Rails.env.production?
+    }, system_env_transform: ->(str) { str.to_sym }
+
 
     # what env for honeybadger to log, if not given we'll use the `service_level` value
     # (staging/production), or if that's not there either, just Rails.env (development, testing)
