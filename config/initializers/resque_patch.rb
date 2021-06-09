@@ -23,3 +23,17 @@ SanePatch.patch('resque', '2.0.0') do
     end
   end
 end
+
+
+# TEMPORARY EXPERIMENTAL hackily override resque logging so it can log what we're interseted
+# in about graceful restart in the signal trap handling.
+module HackyDirectResqueWorkerLogging
+  # We're just going to log directly to stdout -- with no mutex, so under multi-threaded
+  # use log messages could step on each other. And without bothering to respect log_level.
+  #
+  # This is just a hacky debugging-for-now technique!
+  def log_with_severity(severity, message)
+    $stdout.puts "resque: #{severity}: #{message}"
+  end
+end
+Resque::Worker.prepend(HackyDirectResqueWorkerLogging)
