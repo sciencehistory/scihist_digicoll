@@ -14,13 +14,13 @@ namespace :scihist do
     The s3 destination can also be temporarily
     overridden in the command line, for testing.
       BUCKET=chf-hydra-backup
-      S3_BACKUP_FILE_PATH=PGSql/digcol_backup.sql.gz
+      S3_BACKUP_FILE_PATH=PGSql/heroku-scihist-digicoll-backup.sql.gz
 
   """
   task :copy_database_to_s3 => :environment do
     region = ScihistDigicoll::Env.lookup(:s3_backup_bucket_region)
-    bucket   = ENV['BUCKET']     || 'chf-hydra-backup'
-    s3_backup_file_path = ScihistDigicoll::Env.lookup!(:s3_backup_file_path)
+    bucket   = ENV['BUCKET']                         || 'chf-hydra-backup'
+    s3_backup_file_path = ENV['S3_BACKUP_FILE_PATH'] || ScihistDigicoll::Env.lookup!(:s3_backup_file_path)
 
 
     # Don't overwrite the prod backup with a staging backup.
