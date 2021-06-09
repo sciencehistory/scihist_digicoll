@@ -15,3 +15,20 @@ task 'resque:pool:setup' do
     Resque.redis.client.reconnect
   end
 end
+
+
+namespace :scihist do
+  namespace :resque do
+    desc "prune workers resque knows haven't sent a heartbeat in a while"
+    # resque is supposed to do this itself sometimes, but doesn't always.
+    task :prune_expired_workers do
+      expired = Resque::Worker.all_workers_with_expired_heartbeats
+      if expired.present?
+        $stderr.puts "pruning: #{expired}"
+        expired.each { |w| w.unregister_worker }
+      else
+        $stderr.puts "None found"
+      end
+    end
+  end
+end
