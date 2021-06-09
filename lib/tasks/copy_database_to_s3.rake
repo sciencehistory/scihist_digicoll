@@ -20,7 +20,7 @@ namespace :scihist do
   task :copy_database_to_s3 => :environment do
     region = ScihistDigicoll::Env.lookup(:s3_backup_bucket_region)
     bucket   = ENV['BUCKET']                         || 'chf-hydra-backup'
-    s3_backup_file_path = ENV['S3_BACKUP_FILE_PATH'] || ScihistDigicoll::Env.lookup!(:s3_backup_file_path)
+    s3_backup_file_path = ScihistDigicoll::Env.lookup!(:s3_backup_file_path)
 
 
     # Don't overwrite the prod backup with a staging backup.

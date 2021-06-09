@@ -372,6 +372,8 @@ module ScihistDigicoll
     define_key :s3_bucket_derivatives_backup
     define_key :s3_bucket_dzi_backup
 
+
+    define_key :s3_backup_file_path
     define_key :s3_backup_bucket_region
     define_key :s3_backup_access_key_id
     define_key :s3_backup_secret_access_key
