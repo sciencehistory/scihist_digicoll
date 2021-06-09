@@ -34,6 +34,10 @@ module ScihistDigicoll
     # but still want to require it for rails app too.
     require 'scihist_digicoll/asset_check_whenever_cron_time'
 
+    if ScihistDigicoll::Env.lookup("rails_log_level")
+      config.log_level = ScihistDigicoll::Env.lookup("rails_log_level")
+    end
+
     # Initialize configuration defaults for originally generated Rails version,
     # or Rails version we have upgraded to and verified for new defaults.
     config.load_defaults 6.1
