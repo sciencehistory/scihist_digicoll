@@ -179,6 +179,8 @@ module ScihistDigicoll
       # it'll just get out of sync.
     }
 
+    define_key :force_ssl, default: Rails.env.production?
+
     define_key :s3_sitemap_bucket, default: -> {
       # for now we keep Google sitemaps in our derivatives bucket
       ScihistDigicoll::Env.lookup(:s3_bucket_derivatives)
