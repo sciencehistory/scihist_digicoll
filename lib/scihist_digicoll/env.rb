@@ -179,7 +179,7 @@ module ScihistDigicoll
       # it'll just get out of sync.
     }
 
-    define_key :force_ssl, default: Rails.env.production?
+    define_key :force_ssl, default: Rails.env.production?, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
 
     define_key :s3_sitemap_bucket, default: -> {
       # for now we keep Google sitemaps in our derivatives bucket
