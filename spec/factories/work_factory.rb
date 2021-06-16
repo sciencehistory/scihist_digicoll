@@ -151,7 +151,7 @@ FactoryBot.define do
         [
           Work::AdditionalCredit.new({"name"=>"Douglas Lockard", "role"=>"photographed_by"}),
           Work::AdditionalCredit.new({"name"=>"Mark Backrath",   "role"=>"photographed_by"}),
-          Work::AdditionalCredit.new({"name"=>"Jocelyn R. McDaniel",   "role"=>"translator"})
+          Work::AdditionalCredit.new({"name"=>"Jocelyn R. McDaniel",   "role"=>"translated_by"})
         ]
       }
       physical_container {
