@@ -371,7 +371,7 @@ class SolrConfigsetUpdater
   # should be good enough our purpoes)
   def conf_dir_digest(truncate: 7)
     digest = []
-    Dir.glob("#{conf_dir}/**/*").each do |f|
+    Dir.glob("#{conf_dir}/**/*").sort.each do |f|
       digest.push(Digest::SHA1.hexdigest(File.open(f).read)) if File.file?(f)
     end
     digest = Digest::SHA1.hexdigest(digest.join(''))
