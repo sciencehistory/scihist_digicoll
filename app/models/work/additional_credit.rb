@@ -2,11 +2,11 @@ class Work
   class AdditionalCredit
     include AttrJson::Model
 
-    ROLES = ['photographed_by', 'translator']
+    ROLES = ['photographed_by', 'translated_by']
     NAMES = [
-      'Jocelyn R. McDaniel',
       'Douglas Lockard',
       'Gregory Tobias',
+      'Jocelyn R. McDaniel',
       'Mark Backrath',
       'Penn School of Medicine',
       'Will Brown'
@@ -27,7 +27,6 @@ class Work
     attr_json :name, :string
 
     def display_as
-      return "Translated by #{name}" if role == 'translator'
       "#{role.humanize} #{name}"
     end
   end
