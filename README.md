@@ -33,6 +33,8 @@ Start a development Solr instance with `./bin/rake solr:start`.
 
 Run app with `./rails server`, it will be available at `http://localhost:3000`.
 
+To interact with our deployment infrastructure on [heroku](heroku.com), see [Heroku Developer Setup](https://chemheritage.atlassian.net/l/c/FsTqq6DV) in our wiki.
+
 ### To use githoooks in repo
 
 There's a pre-commit hook in the repo to try and **catch you from accidentally
