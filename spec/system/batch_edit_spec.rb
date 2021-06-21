@@ -20,6 +20,9 @@ describe "Cart and Batch Edit", solr: true, indexable_callbacks: true, logged_in
   }
   let!(:work0) { create(:work, provenance: "provenance 0")}
 
+  let!(:collection) { FactoryBot.create(:collection) }
+
+
   it "smoke test" do
     visit search_catalog_path(search_field: "all_fields")
 
@@ -37,6 +40,8 @@ describe "Cart and Batch Edit", solr: true, indexable_callbacks: true, logged_in
     # Batch Update Form
     expect(page).to have_selector("h1", text: /Batch Edit/)
 
+    byebug
+
     # First try an intentional validation error and then fix it
     all("fieldset.work_external_id input[type=text]")[0].
       fill_in with: "id with no category"
@@ -52,6 +57,7 @@ describe "Cart and Batch Edit", solr: true, indexable_callbacks: true, logged_in
     all("fieldset.work_additional_title input[type=text]")[0].
       fill_in with: "batch edit additional title"
     fill_in "work[provenance]", with: "batch edit provenance"
+
     click_on("Update 2 Works")
 
     # Back to cart
