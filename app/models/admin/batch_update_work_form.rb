@@ -127,6 +127,10 @@ module Admin
       # Do it in a transaction, don't update any unless we can update them all.
       Work.transaction do
         relation.each do |each_work|
+          # contained_by_ids needs to be added to update_attributes
+          # each_work.contained_by_ids == []
+          byebug
+          relation.first.contained_by_ids
           update_attributes.each do |k, v|
             if v.kind_of?(Array)
               each_work.send("#{k}=", each_work.send(k) + v)
