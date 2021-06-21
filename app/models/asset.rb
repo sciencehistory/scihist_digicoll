@@ -34,6 +34,10 @@ class Asset < Kithe::Asset
   # really anticipated for any other use.
   attr_json :caption, :string
 
+  attr_json :transcription, :text
+  attr_json :english_translation, :text
+
+
   validates :derivative_storage_type, inclusion: { in: ["public", "restricted"] }
 
   DERIVATIVE_STORAGE_TYPE_LOCATIONS = {
