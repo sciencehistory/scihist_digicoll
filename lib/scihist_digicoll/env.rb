@@ -473,6 +473,8 @@ module ScihistDigicoll
     define_key :smtp_password
     define_key :smtp_host
 
+    define_key :rails_asset_host
+
     ##
     #
     # feature flags: We can use Env to be a place where feature flags that hide under-development
