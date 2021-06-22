@@ -41,7 +41,8 @@ Rails.application.configure do
   # CORS headers for fonts served on seperate asset_host
   config.public_file_server.headers = {
     'Access-Control-Allow-Origin' => ScihistDigicoll::Env.lookup(:app_url_base).chomp('/'),
-    'Vary' => "Origin"
+    'Vary' => "Origin",
+    'Cache-Control' => 'public, max-age=31536000' # 1 year, max accepted value. Assets are timestamped so cacheable forever.
   }
 
   # Specifies the header that your server uses for sending files.
