@@ -38,6 +38,12 @@ Rails.application.configure do
     config.asset_host = ScihistDigicoll::Env.lookup(:rails_asset_host)
   end
 
+  # CORS headers for fonts served on seperate asset_host
+  config.public_file_server.headers = {
+    'Access-Control-Allow-Origin' => ScihistDigicoll::Env.lookup(:app_url_base).chomp('/'),
+    'Vary' => "Origin"
+  }
+
   # Specifies the header that your server uses for sending files.
   # config.action_dispatch.x_sendfile_header = 'X-Sendfile' # for Apache
   # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for NGINX
