@@ -11,5 +11,6 @@ breadcrumbs:
 exceptions:
   ignore:
     - 'ActionDispatch::Http::MimeNegotiation::InvalidType'
+  rescue_rake: true
 
 # http://docs.honeybadger.io/ruby/gem-reference/configuration.html
