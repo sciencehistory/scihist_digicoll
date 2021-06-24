@@ -92,19 +92,29 @@ module Admin
       work.errors
     end
 
-    # Pull just non-blank ones out of the Work. We assume we only want to update
-    # things that are in attr_json, so we can use that as a list of what to check.
+    # Pull non-blank attributes out of the Work.
     #
     # @returns [Hash] key attribute name, value is the entered values to set or add
     # to every item in our update. Will be an array for multi-valued array fields,
     # otherwise a single hash or primitive.
     def update_attributes
-      Work.attr_json_registry.definitions.reduce({}) do |hash, attr_defn|
+      # Start with attr_json attributes.
+      attributes = Work.attr_json_registry.definitions.reduce({}) do |hash, attr_defn|
         value = work.send(attr_defn.name)
         if value.present?
           hash[attr_defn.name] = value
         end
         hash
+      end
+
+      # Adding any non- attr_json attributes --
+      # for now, just the collection ID.
+      non_attr_json_attributes = [:contained_by_ids]
+
+      attributes.tap do |a|
+        non_attr_json_attributes.each do |attr|
+          a[attr] = work.send(attr) if work.send(attr).present?
+        end
       end
     end
 
@@ -127,10 +137,6 @@ module Admin
       # Do it in a transaction, don't update any unless we can update them all.
       Work.transaction do
         relation.each do |each_work|
-          # contained_by_ids needs to be added to update_attributes
-          # each_work.contained_by_ids == []
-          byebug
-          relation.first.contained_by_ids
           update_attributes.each do |k, v|
             if v.kind_of?(Array)
               each_work.send("#{k}=", each_work.send(k) + v)
