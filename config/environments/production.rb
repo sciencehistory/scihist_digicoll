@@ -34,7 +34,23 @@ Rails.application.configure do
   # `config.assets.precompile` and `config.assets.version` have moved to config/initializers/assets.rb
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  config.asset_host = ScihistDigicoll::Env.app_url_base_parsed.to_s
+  if ScihistDigicoll::Env.lookup(:rails_asset_host).present?
+    config.asset_host = ScihistDigicoll::Env.lookup(:rails_asset_host)
+  end
+
+  # CORS headers for fonts served on seperate asset_host
+  config.public_file_server.headers = {
+    # Difficult getting this to work properly, can't really support multiple specifically
+    # allowed hostnames via the statis public_file_server.headers , and I don't think
+    # actually necessary for any kind of security:
+    #
+    # 'Access-Control-Allow-Origin' => ScihistDigicoll::Env.lookup(:app_url_base).chomp('/'),
+    # 'Vary' => "Origin",
+    #
+    # Instead we just:
+    'Access-Control-Allow-Origin' => "*",
+    'Cache-Control' => 'public, max-age=31536000' # 1 year, max accepted value. Assets are timestamped so cacheable forever.
+  }
 
   # Specifies the header that your server uses for sending files.
   # config.action_dispatch.x_sendfile_header = 'X-Sendfile' # for Apache
