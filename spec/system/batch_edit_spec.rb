@@ -19,9 +19,7 @@ describe "Cart and Batch Edit", solr: true, indexable_callbacks: true, logged_in
       creator: [{category: "contributor", value: "creator 2"}])
   }
   let!(:work0) { create(:work, provenance: "provenance 0")}
-
-  let!(:collection) { FactoryBot.create(:collection) }
-
+  let!(:collection) { FactoryBot.create(:collection, title: "Betz-Dearborn") }
 
   it "smoke test" do
     visit search_catalog_path(search_field: "all_fields")
@@ -40,8 +38,6 @@ describe "Cart and Batch Edit", solr: true, indexable_callbacks: true, logged_in
     # Batch Update Form
     expect(page).to have_selector("h1", text: /Batch Edit/)
 
-    byebug
-
     # First try an intentional validation error and then fix it
     all("fieldset.work_external_id input[type=text]")[0].
       fill_in with: "id with no category"
@@ -53,11 +49,13 @@ describe "Cart and Batch Edit", solr: true, indexable_callbacks: true, logged_in
     all("fieldset.work_external_id input[type=text]")[0].
       fill_in with: ""
 
+    # Add a collection:
+    all("div.work_contained_by input")[0].fill_in with: "Betz-Dearborn\n"
+
     # Now data that is good that we'll really save....
     all("fieldset.work_additional_title input[type=text]")[0].
       fill_in with: "batch edit additional title"
     fill_in "work[provenance]", with: "batch edit provenance"
-
     click_on("Update 2 Works")
 
     # Back to cart
@@ -71,11 +69,13 @@ describe "Cart and Batch Edit", solr: true, indexable_callbacks: true, logged_in
     expect(work1.provenance).to eq "batch edit provenance"
     expect(work1.creator).to eq([Work::Creator.new(category: "contributor", value: "creator 1")])
     expect(work1.description).to eq "description 1"
+    expect(work1.contained_by.first.title).to eq "Betz-Dearborn"
 
     expect(work2.additional_title).to eq(["additional title 2a", "additional title 2b", "batch edit additional title"])
     expect(work2.provenance).to eq "batch edit provenance"
     expect(work2.creator).to eq([Work::Creator.new(category: "contributor", value: "creator 2")])
     expect(work2.description).to eq "description 2"
+    expect(work2.contained_by.first.title).to eq "Betz-Dearborn"
 
     # work0 is unchanged
     expect(work0.provenance).to eq "provenance 0"
