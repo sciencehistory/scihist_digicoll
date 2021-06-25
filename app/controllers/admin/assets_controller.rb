@@ -130,6 +130,7 @@ class Admin::AssetsController < AdminController
 
   def asset_params
     allowed_params = [:title, :derivative_storage_type, :alt_text, :caption,
+      :transcription, :english_translation,
       :role, {admin_note_attributes: []}]
     allowed_params << :published if can?(:publish, @asset)
 
