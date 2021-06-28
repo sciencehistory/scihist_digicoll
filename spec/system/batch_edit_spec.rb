@@ -79,5 +79,18 @@ describe "Cart and Batch Edit", solr: true, indexable_callbacks: true, logged_in
 
     # work0 is unchanged
     expect(work0.provenance).to eq "provenance 0"
+
+
+    # Try going back to add a second association to the same collection:
+    click_on("Batch Edit")
+    expect(page).to have_selector("h1", text: /Batch Edit/)
+    all("div.work_contained_by input")[0].fill_in with: "Betz-Dearborn\n"
+    click_on("Update 2 Works")
+    work1.reload
+    work2.reload
+    # Check the works are only connected to the collection once:
+    expect(work1.contained_by.count).to eq 1
+    expect(work2.contained_by.count).to eq 1
+
   end
 end
