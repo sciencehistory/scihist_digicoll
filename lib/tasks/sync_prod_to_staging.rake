@@ -30,6 +30,8 @@ namespace :scihist do
       cmd.run("heroku pg:psql --app", STAGING_APP_NAME, in: BACKUP_FILENAME)
       Rake::Task["scihist:solr:reindex"].invoke("--app #{STAGING_APP_NAME}")
       Rake::Task["scihist:solr:delete_orphans"].invoke("--app #{STAGING_APP_NAME}")
+      puts "To sync the prod and staging S3 files from production to staging, you can run:"
+      puts "bin/scripts/sync_s3_files_to_staging.sh"
     ensure
       cmd.run("heroku maintenance:off --app", STAGING_APP_NAME)
       File.delete("heroku-scihist-digicoll-backup.sql")    if File.exist?(BACKUP_FILENAME)
