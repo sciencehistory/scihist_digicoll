@@ -92,6 +92,12 @@ module Admin
       work.errors
     end
 
+
+    # These associations can be batch-edited, but we enforce uniqueness on them.
+    def many_to_many_associations
+      [:contained_by_ids]
+    end
+
     # Pull non-blank attributes out of the Work.
     #
     # @returns [Hash] key attribute name, value is the entered values to set or add
@@ -107,12 +113,9 @@ module Admin
         hash
       end
 
-      # Adding any non- attr_json attributes --
-      # for now, just the collection ID.
-      non_attr_json_attributes = [:contained_by_ids]
-
+      # Now add non- attr_json attributes
       attributes.tap do |a|
-        non_attr_json_attributes.each do |attr|
+        many_to_many_associations.each do |attr|
           a[attr] = work.send(attr) if work.send(attr).present?
         end
       end
@@ -139,7 +142,11 @@ module Admin
         relation.each do |each_work|
           update_attributes.each do |k, v|
             if v.kind_of?(Array)
-              each_work.send("#{k}=", each_work.send(k) + v)
+              if many_to_many_associations.include? k
+                each_work.send("#{k}=", (each_work.send(k) + v).uniq)
+              else
+                each_work.send("#{k}=", each_work.send(k) + v)
+              end
             else
               each_work.send("#{k}=", v)
             end
