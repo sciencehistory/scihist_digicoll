@@ -79,7 +79,7 @@ describe "Cart and Batch Edit", solr: true, indexable_callbacks: true, logged_in
     expect(work1.provenance).to eq "batch edit provenance"
     expect(work1.creator).to eq([Work::Creator.new(category: "contributor", value: "creator 1")])
     expect(work1.description).to eq "description 1"
-    # Work 1 was already in collection 1, so this batch edit should not change that.
+    # Work 1 was already in collection 1: this batch edit should not change that.
     expect(work1.contained_by.map(&:title)).to eq ["collection_1"]
 
     expect(work2.additional_title).to eq(["additional title 2a", "additional title 2b", "batch edit additional title"])
@@ -88,8 +88,6 @@ describe "Cart and Batch Edit", solr: true, indexable_callbacks: true, logged_in
     expect(work2.description).to eq "description 2"
     # Work 2 should have collection 1 added to it.
     expect(work2.contained_by.first.title).to eq "collection_1"
-
-
 
     # Go back to add collection 2 to both works:
     click_on("Batch Edit")
@@ -100,7 +98,8 @@ describe "Cart and Batch Edit", solr: true, indexable_callbacks: true, logged_in
     work0.reload
     work1.reload
     work2.reload
-    # Both collections should now contain both works. Old collection affiliations are not overwritten, just added to.
+    # Old collection affiliations are not overwritten, just added to.
+    # Both collections should now contain both works.
     expect(work0.contained_by.map(&:title)).to eq []
     expect(work1.contained_by.map(&:title)).to eq ["collection_1", "collection_2"]
     expect(work2.contained_by.map(&:title)).to eq ["collection_1", "collection_2"]
