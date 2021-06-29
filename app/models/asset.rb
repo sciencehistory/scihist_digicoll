@@ -77,7 +77,7 @@ class Asset < Kithe::Asset
 
     # schedule it for deletion if needed
     if ingest_bucket_file_url
-      path = URI.parse(ingest_bucket_file_url).path.delete_prefix("/")
+      path = CGI.unescape(URI.parse(ingest_bucket_file_url).path.delete_prefix("/"))
       ScheduledIngestBucketDeletion.create!(path: path, asset: self, delete_after: Time.now + ScheduledIngestBucketDeletion::DELETE_AFTER_WINDOW)
     end
   end
