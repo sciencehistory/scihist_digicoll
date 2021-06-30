@@ -92,32 +92,21 @@ module Admin
       work.errors
     end
 
-
-    # These associations can be batch-edited, but we enforce uniqueness on them.
-    def many_to_many_associations
-      [:contained_by_ids]
-    end
-
-    # Pull non-blank attributes out of the Work.
+    # Pull just non-blank ones out of the Work. Everything that is in attr_json,
+    # plus some allow_listed others.
     #
     # @returns [Hash] key attribute name, value is the entered values to set or add
     # to every item in our update. Will be an array for multi-valued array fields,
     # otherwise a single hash or primitive.
     def update_attributes
-      # Start with attr_json attributes.
-      attributes = Work.attr_json_registry.definitions.reduce({}) do |hash, attr_defn|
-        value = work.send(attr_defn.name)
+      attribute_names = Work.attr_json_registry.definitions.collect(&:name) + [:contained_by_ids]
+
+      attribute_names.reduce({}) do |hash, attr_name|
+        value = work.send(attr_name)
         if value.present?
-          hash[attr_defn.name] = value
+          hash[attr_name] = value
         end
         hash
-      end
-
-      # Now add non- attr_json attributes
-      attributes.tap do |a|
-        many_to_many_associations.each do |attr|
-          a[attr] = work.send(attr) if work.send(attr).present?
-        end
       end
     end
 
@@ -142,11 +131,8 @@ module Admin
         relation.each do |each_work|
           update_attributes.each do |k, v|
             if v.kind_of?(Array)
-              if many_to_many_associations.include? k
-                each_work.send("#{k}=", (each_work.send(k) + v).uniq)
-              else
-                each_work.send("#{k}=", each_work.send(k) + v)
-              end
+              # if it's a repeatable, we uniq it, no reason to allow dups.
+              each_work.send("#{k}=", (each_work.send(k) + v).uniq)
             else
               each_work.send("#{k}=", v)
             end
