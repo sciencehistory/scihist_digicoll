@@ -17,11 +17,15 @@ namespace :scihist do
     end
 
     desc "Copy remote work from staging to local dev, with all data"
-    task :copy_data, :work_friendlier_id do |t, args|
+    task :copy_data, [:work_friendlier_id, :force_erase] => :environment do |t, args|
       heroku_app = ENV['HEROKU_APP'] || "scihist-digicoll-staging"
 
       unless args[:work_friendlier_id]
         raise ArgumentError, "missing :work_friendlier_id arg"
+      end
+
+      if args[:force_erase] == "true"
+        Work.find_by_friendlier_id(args[:work_friendlier_id])&.destroy
       end
 
       Tempfile.open do |tempfile|
