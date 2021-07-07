@@ -3,7 +3,9 @@ namespace :scihist do
   " and replace the staging database with it." +
   " Assumes: a) at least read access to the backup s3 bucket," +
   " and b) heroku credentials for the staging app." +
-  " bundle exec rake scihist:sync_prod_to_staging. " +
+
+  " bundle exec rake scihist:sync_prod_to_staging" +
+
   " ENV variables you can set: BACKUP_REGION; BACKUP_FOLDER; " +
   " BACKUP_BUCKET; BACKUP_FILENAME; STAGING_APP_NAME; and UNZIP_CMD"
   task :sync_prod_to_staging => :environment do
@@ -21,21 +23,18 @@ namespace :scihist do
     begin
       cmd.run("heroku maintenance:on --app", STAGING_APP_NAME)
       backup_location = { bucket:BACKUP_BUCKET, key:"#{BACKUP_FOLDER}/#{BACKUP_FILENAME}.gz" }
-
       Aws::S3::Client.new(region: BACKUP_REGION).
         get_object(backup_location, target: "#{BACKUP_FILENAME}.gz")
-
       cmd.run(UNZIP_CMD, "#{BACKUP_FILENAME}.gz")
       abort("Unable to get the backup file.") unless File.exist?(BACKUP_FILENAME)
       cmd.run("heroku pg:psql --app", STAGING_APP_NAME, in: BACKUP_FILENAME)
-      Rake::Task["scihist:solr:reindex"].invoke("--app #{STAGING_APP_NAME}")
-      Rake::Task["scihist:solr:delete_orphans"].invoke("--app #{STAGING_APP_NAME}")
+      cmd.run("heroku run rake scihist:solr:reindex scihist:solr:delete_orphans --app ", STAGING_APP_NAME)
       cmd.run("aws s3 sync s3://scihist-digicoll-production-originals s3://scihist-digicoll-staging-originals")
       cmd.run("aws s3 sync s3://scihist-digicoll-production-derivatives s3://scihist-digicoll-staging-derivatives")
     ensure
       cmd.run("heroku maintenance:off --app", STAGING_APP_NAME)
-      File.delete("heroku-scihist-digicoll-backup.sql")    if File.exist?(BACKUP_FILENAME)
-      File.delete("heroku-scihist-digicoll-backup.sql.gz") if File.exist?("#{BACKUP_FILENAME}.gz")
+      File.delete(BACKUP_FILENAME)         if File.exist?(BACKUP_FILENAME)
+      File.delete("#{BACKUP_FILENAME}.gz") if File.exist?("#{BACKUP_FILENAME}.gz")
     end
   end
 end
