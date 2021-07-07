@@ -12,6 +12,11 @@ gem 'lockbox'
 gem 'rails', '~> 6.1.1'
 gem 'webpacker', '~> 5.0'
 
+
+# New Relic monitoring tool
+gem 'newrelic_rpm'
+
+
 # lock blacklight to current MINOR version. While BL minor version releases
 # are theoretically backwards compat, experience shows they often cause problems.
 # So you need to manually change this spec to allow updates when you want
