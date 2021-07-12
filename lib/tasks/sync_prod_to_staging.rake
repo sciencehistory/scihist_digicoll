@@ -1,13 +1,13 @@
 namespace :scihist do
-  desc "Take the latest database backup from s3," +
-  " and replace the staging database with it." +
-  " Assumes: a) at least read access to the backup s3 bucket," +
-  " and b) heroku credentials for the staging app." +
+  desc "bundle exec rake scihist:sync_prod_to_staging" +
 
-  " bundle exec rake scihist:sync_prod_to_staging" +
+  " Downloads the latest database backup from s3;" +
+  " replaces the staging database with it; updates SOLR;"
+  " syncs originals and derivatives S3 buckets from prod to staging." +
 
-  " ENV variables you can set: BACKUP_REGION; BACKUP_FOLDER; " +
+  " ENV variables you can set: BACKUP_FOLDER; " +
   " BACKUP_BUCKET; BACKUP_FILENAME; STAGING_APP_NAME; and UNZIP_CMD"
+
   task :sync_prod_to_staging => :environment do
     BACKUP_BUCKET    = ENV['BACKUP_BUCKET']     || "chf-hydra-backup"
     BACKUP_FOLDER    = ENV['BACKUP_FOLDER']     || "PGSql"
