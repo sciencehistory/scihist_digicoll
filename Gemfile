@@ -13,9 +13,8 @@ gem 'rails', '~> 6.1.1'
 gem 'webpacker', '~> 5.0'
 
 
-# New Relic monitoring tool
-gem 'newrelic_rpm'
-
+#  Scout is a monitoring tool we are experimenting with
+gem 'scout_apm'
 
 # lock blacklight to current MINOR version. While BL minor version releases
 # are theoretically backwards compat, experience shows they often cause problems.
