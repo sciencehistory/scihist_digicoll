@@ -22,17 +22,14 @@ namespace :scihist do
     end
     cmd = TTY::Command.new(printer: :progress)
     begin
-      #puts "Heroku maintenance on."
-      #cmd.run("heroku maintenance:on --app", STAGING_APP_NAME)
+      puts "Heroku maintenance on."
+      cmd.run("heroku maintenance:on --app", STAGING_APP_NAME)
       if USE_BACKUP == 'true'
         puts "Downloading backup."
         cmd.run("aws s3 cp --no-progress s3://#{BACKUP_BUCKET}/#{BACKUP_FOLDER}/#{BACKUP_FILENAME}.sql.gz  #{BACKUP_FILENAME}.sql.gz")
 
-        # Comment out instructions to drop, create, or comment on psql extensions:
-        substitution = 's/(DROP|CREATE|COMMENT ON) EXTENSION/-- \1 EXTENSION/g'
-
         puts "Decompressing backup."
-        cmd.run("#{UNZIP_CMD} #{BACKUP_FILENAME}.sql.gz | sed -E '#{substitution}' > #{BACKUP_FILENAME}.sql")
+        cmd.run("#{UNZIP_CMD} #{BACKUP_FILENAME}.sql.gz > #{BACKUP_FILENAME}.sql")
         abort("Unable to get the backup file.") unless File.exist?("#{BACKUP_FILENAME}.sql")
 
         puts "Restoring backup to staging DB."
@@ -50,8 +47,8 @@ namespace :scihist do
       puts "Syncing derivatives."
       cmd.run("aws s3 sync --no-progress s3://scihist-digicoll-production-derivatives s3://scihist-digicoll-staging-derivatives")
     ensure
-      #puts "Heroku maintenance off."
-      #cmd.run("heroku maintenance:off --app", STAGING_APP_NAME)
+      puts "Heroku maintenance off."
+      cmd.run("heroku maintenance:off --app", STAGING_APP_NAME)
       File.delete("#{BACKUP_FILENAME}.sql")            if File.exist?("#{BACKUP_FILENAME}.sql")
       File.delete("#{BACKUP_FILENAME}.sql.gz")         if File.exist?("#{BACKUP_FILENAME}.sql.gz")
       puts "Done."
