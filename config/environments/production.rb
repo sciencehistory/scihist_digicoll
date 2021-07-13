@@ -162,7 +162,7 @@ Rails.application.configure do
   # https://stackoverflow.com/questions/12984984/how-to-prevent-rails-from-action-view-logging-in-production/61893582
   # https://github.com/projectblacklight/blacklight/issues/2379
   ActiveSupport::on_load :action_view do
-    %w{render_template render_partial render_collection}.each do |event|
+    %w{render_template render_partial render_collection render_layout}.each do |event|
       ActiveSupport::Notifications.unsubscribe "#{event}.action_view"
     end
   end
