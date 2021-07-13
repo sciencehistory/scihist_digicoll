@@ -14,28 +14,31 @@ namespace :scihist do
     BACKUP_FOLDER    = ENV['BACKUP_FOLDER']     || "PGSql"
     BACKUP_FILENAME  = ENV['BACKUP_FILENAME']   || "heroku-scihist-digicoll-backup"
     STAGING_APP_NAME = ENV['STAGING_APP_NAME']  || "scihist-digicoll-staging"
-    UNZIP_CMD        = ENV['UNZIP_CMD']         || "gunzip --force"
+    UNZIP_CMD        = ENV['UNZIP_CMD']         || "gunzip --to-stdout"
     USE_BACKUP       = ENV['USE_BACKUP']        || "true"
 
     if ['staging', 'production'].include? ScihistDigicoll::Env.lookup(:service_level)
       abort 'This task should only be used in development.'
     end
-    cmd = TTY::Command.new(printer: :null)
+    cmd = TTY::Command.new(printer: :progress)
     begin
-      puts "Heroku maintenance on."
-      cmd.run("heroku maintenance:on --app", STAGING_APP_NAME)
+      #puts "Heroku maintenance on."
+      #cmd.run("heroku maintenance:on --app", STAGING_APP_NAME)
       if USE_BACKUP == 'true'
         puts "Downloading backup."
         cmd.run("aws s3 cp --no-progress s3://#{BACKUP_BUCKET}/#{BACKUP_FOLDER}/#{BACKUP_FILENAME}.sql.gz  #{BACKUP_FILENAME}.sql.gz")
+
+        # Comment out instructions to drop, create, or comment on psql extensions:
+        substitution = 's/(DROP|CREATE|COMMENT ON) EXTENSION/-- \1 EXTENSION/g'
+
         puts "Decompressing backup."
-        cmd.run(UNZIP_CMD, "#{BACKUP_FILENAME}.sql.gz")
+        cmd.run("#{UNZIP_CMD} #{BACKUP_FILENAME}.sql.gz | sed -E '#{substitution}' > #{BACKUP_FILENAME}.sql")
         abort("Unable to get the backup file.") unless File.exist?("#{BACKUP_FILENAME}.sql")
-        # Heroku manages psql extensions for us, so we don't have permissions to edit them.
-        # This results in some harmless errors in the output of the db command.
-        # To avoid them, we comment out the lines in the script that attempt to drop / create / comment extensions.
-        cmd.run("sed -E 's/(DROP|CREATE|COMMENT ON) EXTENSION/-- \1 EXTENSION/g'  #{BACKUP_FILENAME}.sql >  #{BACKUP_FILENAME}_safe.sql")
+
         puts "Restoring backup to staging DB."
-        cmd.run("heroku pg:psql --app", STAGING_APP_NAME, in: "#{BACKUP_FILENAME}_safe.sql")
+        Rails.logger.silence do
+          cmd.run("heroku pg:psql --app", STAGING_APP_NAME, in: "#{BACKUP_FILENAME}.sql")
+        end
       else
         puts "Copying backup from prod to staging."
         cmd.run("heroku pg:copy scihist-digicoll-production::DATABASE_URL DATABASE_URL -a #{STAGING_APP_NAME}  --confirm #{STAGING_APP_NAME}")
@@ -47,10 +50,9 @@ namespace :scihist do
       puts "Syncing derivatives."
       cmd.run("aws s3 sync --no-progress s3://scihist-digicoll-production-derivatives s3://scihist-digicoll-staging-derivatives")
     ensure
-      puts "Heroku maintenance off."
-      cmd.run("heroku maintenance:off --app", STAGING_APP_NAME)
+      #puts "Heroku maintenance off."
+      #cmd.run("heroku maintenance:off --app", STAGING_APP_NAME)
       File.delete("#{BACKUP_FILENAME}.sql")            if File.exist?("#{BACKUP_FILENAME}.sql")
-      File.delete("#{BACKUP_FILENAME}_safe.sql")          if File.exist?("#{BACKUP_FILENAME}_safe.sql")
       File.delete("#{BACKUP_FILENAME}.sql.gz")         if File.exist?("#{BACKUP_FILENAME}.sql.gz")
       puts "Done."
     end
