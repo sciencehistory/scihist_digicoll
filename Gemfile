@@ -12,6 +12,10 @@ gem 'lockbox'
 gem 'rails', '~> 6.1.1'
 gem 'webpacker', '~> 5.0'
 
+
+#  Scout is a monitoring tool we are experimenting with
+gem 'scout_apm'
+
 # lock blacklight to current MINOR version. While BL minor version releases
 # are theoretically backwards compat, experience shows they often cause problems.
 # So you need to manually change this spec to allow updates when you want
@@ -25,13 +29,14 @@ gem "draper", "~> 4.0", ">= 4.0.1" # "decorators", which we use as view models
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
-gem 'puma', '~> 5.0'
+gem 'puma', '~> 5.3'
 
 # resque+redis being used for activejob, maybe later for Rails.cache
 # resque-pool currently does not support resque 2.0 alas.
 # https://github.com/nevans/resque-pool/issues/170
 gem "resque", "~> 2.0"
 gem "resque-pool"
+gem "resque-heroku-signals" # gah, weirdly needed for graceful shutdown on heroku. https://github.com/resque/resque#heroku
 
 gem 'honeybadger', '~> 4.0'
 
@@ -119,6 +124,14 @@ gem 'sane_patch', '< 2.0' # time-limited monkey patches
 gem 'activerecord-postgres_enum', '~> 1.3' # can record postgres enums in schema.rb dump
 
 
+# For autoscaling on heroku via hirefire.io service, but hopefully won't cause any problems
+# when running not on heroku.
+#
+# https://help.hirefire.io/article/53-job-queue-ruby-on-rails
+# https://help.hirefire.io/article/49-logplex-queue-time
+# https://github.com/hirefire/hirefire-resource
+gem "hirefire-resource"
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]
@@ -137,7 +150,7 @@ group :development do
 end
 
 group :test do
-  gem 'rspec-rails', '~> 4.0'
+  gem 'rspec-rails', '~> 5.0'
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '>= 2.15'
   gem 'selenium-webdriver'

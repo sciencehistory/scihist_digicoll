@@ -1,0 +1,223 @@
+<% provide :page_title, construct_page_title(collection.title) %>
+
+<% provide :body_classes, "full-width-homepage" %>
+
+<%#= The homepage's content goes directly into mainContainer;
+we want the full width of the screen, no margins or padding. %>
+<% content_for(:full_width_layout, true) %>
+
+<div itemscope itemtype="http://schema.org/CollectionPage" class="container-fluid collection-show oral-history-collection-splash">
+  <div class="collection-banner"></div>
+
+  <div class="collection-top row no-gutters">
+    <div class="collection-desc-container col-lg">
+      <div class="collection-desc">
+        <div class="show-title">
+          <header>
+            <div class="show-genre"><%= link_to "Collections", collections_path %></div>
+            <h1>
+              <%= link_to presenter.title, collection_path(collection), class: "title-link" %> <%= publication_badge(presenter) %>
+              <% if can? :update, collection %>
+                <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-outline-primary" %>
+              <% end %>
+            </h1>
+          </header>
+        </div>
+
+        <div class="show-metadata">
+          <% if current_staff_user? %>
+            <p class="show-item-count">
+              <%= "#{number_with_delimiter(presenter.public_count)} public #{'item'.pluralize(presenter.public_count)}, #{number_with_delimiter(presenter.all_count)} total" %>
+            </p>
+          <% else %>
+            <p class="show-item-count"><%= "#{number_with_delimiter(presenter.public_count)} #{'item'.pluralize(presenter.public_count)}" %></p>
+          <% end %>
+
+          <div class="collection-description long-text-line-height">
+            <%= DescriptionDisplayFormatter.new(presenter.description).format %>
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <h2 class="search-title h4">
+                Search within the collection
+          </h2>
+
+          <%= form_tag "", method: :get do |f| %>
+           <div class="input-group">
+              <%= search_field_tag :q, '', class: "q form-control",
+                  id: "collectionQ",
+                  autocomplete: "off",
+                  placeholder: t("collection.search_form.search_field.placeholder"),
+                  :"aria-label" => t('collection.search_form.search_field.label')
+              %>
+
+              <label class="sr-only" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
+
+              <div class="input-group-append">
+                <button type="submit" class="btn btn-emphasis" title="Search" id="search-submit-header">
+                  <i class="fa fa-search" aria-hidden="true"></i>
+                  <%= t('blacklight.search.form.submit') %>
+                </button>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="collection-splash-thumb col-lg">
+    </div>
+  </div>
+
+  <div class="canned-queries-container">
+    <div class="canned-queries">
+      <h2 class="canned-queries-heading">Starting points</h2>
+      <div class="canned-queries-body">
+        <%= link_to({ f: { subject_facet: ["Women in science"] } }, class: "q") do %>
+          <div class="number">
+            <%= canned_query_count(:women_in_science) %>
+          </div>
+          <div class="link">
+            Women in science
+          </div>
+        <% end %>
+
+        <%= link_to({ f: { subject_facet: ["Nobel Prize winners"] } }, class: "q") do %>
+          <div class="number">
+            <%= canned_query_count(:nobel_prize) %>
+          </div>
+          <div class="link">
+            Nobel Prize winners
+          </div>
+        <% end %>
+
+        <%= link_to({ f: { oh_feature_facet: ["Synchronized audio"] } }, class: "q") do %>
+          <div class="number">
+            <%= canned_query_count(:synchronized_audio) %>
+          </div>
+          <div class="link">
+            With synchronized audio
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <% if born_on_this_day_biographies.present? %>
+    <div class="this-day-container">
+      <h2 class="brand-alt-h2 text-white">Born on this day in history</h2>
+      <div class="this-day-body">
+        <% born_on_this_day_biographies.each do |bio| %>
+          <div class="this-day-card">
+            <% if bio.oral_history_content.first.work.leaf_representative&.content_type  &&
+                  bio.oral_history_content.first.work.leaf_representative&.content_type != "application/pdf" %>
+              <%= link_to work_path(bio.oral_history_content.first.work) do %>
+                <%= ThumbDisplay.new(bio.oral_history_content.first.work.leaf_representative).display %>
+              <% end %>
+            <% end %>
+
+            <p class="this-day-label">
+              <%= link_to work_path(bio.oral_history_content.first.work) do %>
+                <%= bio.name %><br>
+                Born <%= FormatSimpleDate.new(bio.birth.date).display  %>
+              <% end %>
+            </p>
+
+            <% if bio.oral_history_content.first.work&.leaf_representative&.content_type.blank? ||
+                  bio.oral_history_content.first.work&.leaf_representative&.content_type == "application/pdf" %>
+
+              <p class="this-day-text-desc">
+                <%= truncate(strip_tags(bio.oral_history_content.first.work.description), length: 120, separator: ' ') %>
+              </p>
+            <% end %>
+
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="projects long-text-line-height">
+    <h2 class="brand-alt-h2">Projects</h2>
+    <p>While individual oral histories can contribute to specific research goals and agendas, the strength of an oral history collection relies on the ability of individual oral histories to “speak” to each other. Learning about patterns of relationships and activities through the study of collective histories reveals much more about the scientific process and its products than any one oral history could do on its own.</p>
+
+    <div class="project">
+      <%= link_to({ f: { project_facet: ["Oral History of the Toxic Substances Control Act"] } }, class: "project-thumb") do %>
+        <span class="count">
+          <%= canned_query_count(:toxic_substances) %>
+        </span>
+        <%= image_tag("oral_history_projects/TSCA.jpg") %>
+      <% end %>
+
+      <div class="text">
+        <h3>
+          <%= link_to "Oral History of the Toxic Substances Control Act",
+            { f: { project_facet: ["Oral History of the Toxic Substances Control Act"] } }
+           %>
+        </h3>
+        <p>Through oral history interviews with individuals involved in the process of writing and negotiating the Toxic Substances Control Act (TSCA), we gain their perspective on the law, its impact, and whether or not it will continue to be effective in the 21st century.</p>
+      </div>
+    </div>
+
+    <div class="project">
+      <%= link_to({ f: { project_facet: ["Mass Spectrometry"] } }, class: "project-thumb") do %>
+        <span class="count">
+          <%= canned_query_count(:mass_spectrometry) %>
+        </span>
+        <%= image_tag("oral_history_projects/MassSpec.jpg") %>
+      <% end %>
+
+      <div class="text">
+        <h3>
+          <%= link_to "Mass Spectrometry",
+            { f: { project_facet: ["Mass Spectrometry"] } }
+           %>
+        </h3>
+        <p>These oral histories record the human dimensions related to the growth of mass spectrometry in academic, industrial, and governmental laboratories during the 20th century.</p>
+      </div>
+    </div>
+
+    <div class="project">
+      <%= link_to({ f: { project_facet: ["Nanotechnology"] } }, class: "project-thumb") do %>
+        <span class="count">
+          <%= canned_query_count(:nanotechnology) %>
+        </span>
+        <%= image_tag("oral_history_projects/Nanotech.jpg") %>
+      <% end %>
+
+      <div class="text">
+        <h3>
+          <%= link_to "Nanotechnology",
+            { f: { project_facet: ["Nanotechnology"] } }
+           %>
+        </h3>
+
+        <p>This oral history series is an important resource for the history of nanotechnology, documenting the lives and careers of key scientists and engineers who shaped and contributed to the contemporary practice of science and technology.</p>
+      </div>
+    </div>
+
+    <div class="project">
+      <%= link_to({ f: { project_facet: ["REACH Ambler"] } }, class: "project-thumb") do %>
+        <span class="count">
+          <%= canned_query_count(:reach_ambler) %>
+        </span>
+        <%= image_tag("oral_history_projects/Ambler.jpg") %>
+      <% end %>
+
+      <div class="text">
+        <h3>
+          <%= link_to "REACH Ambler",
+            { f: { project_facet: ["REACH Ambler"] } }
+           %>
+        </h3>
+
+        <p><a href="https://www.sciencehistory.org/reach-ambler" target="_blank">Resources for Education and Action for Community Health in Ambler (REACH Ambler)</a> brings into focus the history of Ambler, Pennsylvania, a town long affected by exposure to asbestos from the former Keasbey and Mattison asbestos plant. The oral histories conducted with local residents, community activists, and EPA officials for this project inform the exhibits, online resources, and related public programs all aimed at fostering an understanding of different perspectives on risk, health, and the environment.</p>
+      </div>
+    </div>
+
+    <%= link_to "More oral history projects...", "https://www.sciencehistory.org/oral-history-projects", class: "more-projects", target: "_blank" %>
+  </div>
+
+
+</div>

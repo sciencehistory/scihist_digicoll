@@ -10,8 +10,19 @@ describe "Collection show page", solr: true, indexable_callbacks: true do
         # doing these as separate creates after collection exists necessary for them to have collection
         # on save, so to get indexed properly
         #
-        create(:oral_history_work, published: true, title: "public work one", date_of_work: Work::DateOfWork.new(start: "2019"), contained_by: [col])
-        create(:oral_history_work, published: true, title: "public work two", date_of_work: Work::DateOfWork.new(start: "1900"), contained_by: [col])
+        # We will assign some that will show up on front page in counts
+        #
+        create(:oral_history_work,
+          published: true, title: "public work one",
+          date_of_work: Work::DateOfWork.new(start: "2019"),
+          subject: ["Nobel Prize winners"],
+          contained_by: [col])
+
+        create(:oral_history_work,
+          published: true, title: "public work two",
+          date_of_work: Work::DateOfWork.new(start: "1900"),
+          project: ["Nanotechnology"],
+          contained_by: [col])
       end
     end
 
@@ -19,6 +30,15 @@ describe "Collection show page", solr: true, indexable_callbacks: true do
       visit collection_path(collection)
 
       expect(page).to have_selector("h1", text: collection.title)
+
+
+      expect(page).to have_selector("a.q", text: /1\s+Nobel Prize winners/)
+
+      expect(page).to have_selector(".project", text: /1\s+Nanotechnology/)
+    end
+
+    it "searches" do
+      visit collection_path(collection, q: "")
 
       # has a facet specifically confiured just for oral history collection,
       # as a way of confirming we're using the OralHistoryCollectionController

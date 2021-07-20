@@ -2,10 +2,11 @@ class Work
   class AdditionalCredit
     include AttrJson::Model
 
-    ROLES = ['photographed_by']
+    ROLES = ['photographed_by', 'translated_by']
     NAMES = [
       'Douglas Lockard',
       'Gregory Tobias',
+      'Jocelyn R. McDaniel',
       'Mark Backrath',
       'Penn School of Medicine',
       'Will Brown'

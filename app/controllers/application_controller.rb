@@ -3,6 +3,8 @@ class ApplicationController < ActionController::Base
   # we pretty much only want to use CatalogController from Blacklight, so
   # are trying just doing these things there instead
   #
+  # See: https://github.com/projectblacklight/blacklight/issues/2095
+  #
   #      # Adds a few additional behaviors into the application controller
   #      include Blacklight::Controller
   #      layout :determine_layout if respond_to? :layout

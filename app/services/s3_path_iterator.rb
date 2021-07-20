@@ -85,15 +85,14 @@ class S3PathIterator
     return files_checked
   end
 
+  def s3_bucket_name
+    @s3_bucket_name ||= shrine_storage.bucket.name
+  end
 
   private
 
   def search_prefix
     @search_prefix ||= [shrine_storage.prefix, extra_prefix, ""].compact.collect {|h| h.sub(/\/\Z/, '') }.join("/")
-  end
-
-  def s3_bucket_name
-    @s3_bucket_name ||= shrine_storage.bucket.name
   end
 
   def s3_client

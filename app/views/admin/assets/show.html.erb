@@ -26,7 +26,30 @@
       <%= link_to "Download Original",
             @asset.file.url(response_content_disposition: ContentDisposition.format(disposition: :attachment, filename: DownloadFilenameHelper.filename_for_asset(@asset))),
             class: "btn btn-outline-primary btn-lg mt-4" %>
-      <% end %>
+    <% end %>
+
+
+    <% if @asset.transcription.present? || @asset.english_translation.present? %>
+      <ul class="nav nav-tabs mt-4" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <a class="nav-link active" id="transcription-tab" data-toggle="tab" href="#transcriptionText" role="tab" aria-controls="transcriptionText" aria-selected="true">Transcription</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="english-translation-tab" data-toggle="tab" href="#englishTranslationText" role="tab" aria-controls="englishTranslationText" aria-selected="false">English Translation</a>
+        </li>
+      </ul>
+      <div class="tab-content pt-2 pb-2 border-bottom" id="myTabContent">
+        <div class="tab-pane text-brand-serif show active" id="transcriptionText" role="tabpanel" aria-labelledby="transcription--tab">
+          <%= simple_format(html_escape(@asset.transcription)) %>
+        </div>
+        <div class="tab-pane text-brand-serif" id="englishTranslationText" role="tabpanel" aria-labelledby="english-translation-tab">
+          <%= simple_format(html_escape(@asset.english_translation)) %>
+        </div>
+      </div>
+    <% end %>
+
+
+
   </div>
 
   <div class="col-sm-6">

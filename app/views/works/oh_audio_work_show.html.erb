@@ -19,9 +19,11 @@
                 <source src="<%= decorator.combined_mp3_audio%>"  type="audio/mpeg"/>
                 <source src="<%= decorator.combined_webm_audio%>"  type="audio/webm"/>
             </audio>
-            <div class="pl-3">
-              <button class="btn btn-emphasis btn-sm text-nowrap" data-trigger="ohms-jump-to-text">Jump to text</button>
-            </div>
+            <% if decorator.has_ohms_index? || decorator.has_ohms_transcript? %>
+              <div class="pl-3">
+                <button class="btn btn-emphasis btn-sm text-nowrap" data-trigger="ohms-jump-to-text">Jump to text</button>
+              </div>
+            <% end %>
           </div>
         <% else %>
           <div class="alert alert-warning" role="alert" data-role="no-audio-alert">
@@ -97,7 +99,32 @@
             <%= WorkTitleAndDates.new(@work).display %>
           </div>
 
-          <%= render "rights_and_social", work: @work %>
+
+
+          <%# much like the rights_and_social partial, but we've exploded it
+              to fit in our custom share button %>
+          <div class="rights-and-social">
+            <% if @work.rights.present? %>
+              <%= RightsIconDisplay.new(@work).display %>
+            <% else %>
+              <%# hacky spacer to keep flexbox intact and social-media on the right even
+                  if there's no rights %>
+              <div class="rights-placeholder"></div>
+            <% end %>
+
+            <div>
+              <%= SocialShareDisplay.new(@work).display %>
+
+              <a href="#" class="btn btn-brand-dark rounded-sides" data-toggle="linkShareModal" data-target="#audioLinkShare">
+                <i class="fa fa-share" aria-hidden="true"></i>
+                Share link
+              </a>
+            </div>
+          </div>
+
+
+
+
 
 
           <div class="description-and-portrait">
@@ -134,7 +161,7 @@
 
         <% if decorator.has_ohms_index? %>
           <div class="tab-pane" id="ohToc" role="tabpanel" aria-labelledby="ohTocTab">
-            <%= OhmsIndexDisplay.new(decorator.oral_history_content.ohms_xml).display %>
+            <%= OhmsIndexDisplay.new(decorator.oral_history_content.ohms_xml, work: @work).display %>
           </div>
         <% end %>
 
@@ -149,5 +176,49 @@
         </div>
       </div>
   </div>
+</div>
 
+<%# modal for audioLinkShare button above %>
+<div class="modal" tabindex="-1" role="dialog" id="audioLinkShare">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Share link to this page</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" data-area="media-link-share">
+
+        <div class="form-group">
+          <div class="input-group mb-3" data-trigger="copyInputGroup">
+            <div class="input-group-prepend">
+              <span class="input-group-text">
+                <i class="fa fa-link" aria-hidden="true"></i>
+                <span class="sr-only">Link</span>
+              </span>
+            </div>
+
+            <input type="text" aria-label="URL to copy" class="form-control" data-slot="shareURL" readonly value="<%= work_url(@work) %>">
+
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary" data-trigger="linkClipboardCopy">
+                <i class="fa fa-clipboard" aria-hidden="true"></i> Copy
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="includeTimecode" data-slot="timecode" data-trigger="updateLinkTimecode">
+          <label class="form-check-label" for="includeTimecode">
+            Start audio at <code data-slot="humanTimecode"></code>
+          </label>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
