@@ -121,7 +121,7 @@ class OhmsTranscriptDisplay < ViewModel
     content_tag(
       "a",
       format_ohms_timestamp(tc[:seconds]),
-      href: "#",
+      href: "#t=#{tc[:seconds]}",
       class: "ohms-transcript-timestamp",
       data: { "ohms_timestamp_s" => tc[:seconds]}
     )

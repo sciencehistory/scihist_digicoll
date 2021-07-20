@@ -36,6 +36,10 @@ class OralHistoryContent
       ].collect(&:presence).compact
     end
 
+    def blank?
+      displayable_values.blank?
+    end
+
     def to_s
       displayable_values.join(", ")
     end

@@ -15,7 +15,7 @@ Rails.application.routes.draw do
 
   # Oral History legacy redirects, come first in routes file so they'll match first
   # for requests to old oral history host oh.sciencehistory.org
-  OH_LEGACY_REDIRECTS = YAML.load_file(Rails.root + "config/oral_history_legacy_redirects.yml").freeze
+  OH_LEGACY_REDIRECTS ||= YAML.load_file(Rails.root + "config/oral_history_legacy_redirects.yml").freeze
   constraints host: ScihistDigicoll::Env.lookup!(:oral_history_legacy_host) do
     # OH home page, send to new OH collection page
     root as: false, to: redirect { "#{ScihistDigicoll::Env.lookup!("app_url_base")}/collections/#{ScihistDigicoll::Env.lookup!("oral_history_collection_id")}"  }

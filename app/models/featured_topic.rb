@@ -226,9 +226,9 @@ class FeaturedTopic
       title: "Periodic Tables",
       description: "This digital collection features selected visual representations of the periodic table of the elements, with an emphasis on alternative layouts including circular, cylindrical, pyramidal, spiral, and triangular forms. Ranging in date from the 1860s to the 1990s, the materials provide a panorama of the historic evolution of the periodic table following Dmitri Mendeleev's initial 1869 design. Illustrations depicting chemical elements and concepts in atomic theory are also included in this collection."
     },
-    science_on_stamps: {
-      subject: ["Science on postage stamps"],
-      description: "This digital collection features selected postage stamps and other philatelic materials depicting various aspects of science: from molecules and chemical reactions to portraits of Nobel Prize laureates. Materials in this collection, dating from 1887 to 2000, include stamps and first day covers, as well as commemorative and postmarked envelopes and postcards. Most of the items were selected from the Witco Stamp Collection in the Institute's archives."
+    :oral_histories => {
+      title: "Oral Histories",
+      path: "/collections/#{ScihistDigicoll::Env.lookup!(:oral_history_collection_id)}"
     },
     instruments_and_innovation: {
       title: "Instruments & Innovation",
@@ -277,6 +277,16 @@ class FeaturedTopic
   # suitable for use in a URL, see also .from_slug.
   def slug
     category_key.to_s.dasherize
+  end
+
+  def path
+    if definition.has_key?(:path)
+      definition[:path]
+    else
+      # Hard-coding this, just for efficiency, instead of:
+      # Rails.application.routes.url_helpers.featured_topic_path(slug)
+      "focus/#{slug}"
+    end
   end
 
   def initialize(category_key)

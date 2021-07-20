@@ -51,7 +51,7 @@
     <%= content_for(:head) %>
   </head>
 
-  <body class="<%= render_body_class %> scihist-main-layout">
+  <body class="<%= render_body_class %> scihist-main-layout <%= content_for :body_classes %>">
     <% if show_ie_unsupported_warning? %>
       <%= render 'ie_unsupported_warning' %>
     <% end %>

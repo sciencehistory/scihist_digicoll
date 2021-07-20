@@ -3,9 +3,9 @@
 require 'kithe/blacklight_tools/bulk_loading_search_service'
 
 class CatalogController < ApplicationController
-  before_action :catch_bad_blacklight_params, only: :index
   before_action :redirect_hash_facet_params, only: :index
   before_action :redirect_legacy_query_urls, only: :index
+  before_action :catch_bad_blacklight_params, only: :index
   before_action :swap_range_limit_params_if_needed, only: :index
   before_action :catch_bad_request_headers, only: :index
 
@@ -121,7 +121,7 @@ class CatalogController < ApplicationController
     config.default_solr_params = {
       rows: 25,
       qf: "text1_tesim^1000 text2_tesim^500 text3_tesim^100 text4_tesim^50 text_no_boost_tesim^10 friendlier_id_ssi id^10 searchable_fulltext^0.5",
-      pf: "text1_tesim^1000 text2_tesim^500 text3_tesim^100 text4_tesim^50 text_no_boost_tesim^10 friendlier_id_ssi id^10 searchable_fulltext^5",
+      pf: "text1_tesim^1500 text2_tesim^1200 text3_tesim^600 text4_tesim^120 text_no_boost_tesim^55 friendlier_id_ssi id^55 searchable_fulltext^12",
 
 
       # HIGHLIGHTING-related params, full snippets from fulltext matches
@@ -403,15 +403,65 @@ class CatalogController < ApplicationController
   #
   # A render in a before_action will halt further processing, as intended.
   def catch_bad_blacklight_params
-    # eg &range=expect%3A%2F%2Fdir
-    if params[:range] &&
-        !(params[:range].respond_to?(:to_hash) && params[:range].values.all? { |v| v.respond_to?(:to_hash) })
-      render plain: "Invalid URL query parameter range=#{params[:range].to_s}", status: 400
+    # Lazily doing errmsg formatting as an inline proc, to avoid having to make another method.
+    # We want to try to output useful error message, but sometimes that raises too.
+    param_display = lambda do |param_hash|
+      begin
+        "Invalid URL query parameter f=#{param_hash.to_unsafe_h.to_param}"
+      rescue StandardError
+        "Invalid URL query parameter f=#{param_hash.to_s}"
+      end
     end
 
+
+
+    # Correct range facets look like:
+    # params[:range] == {"year_facet_isim"=>{"begin"=>"1900", "end"=>"1950"}}
+    # &range%5Byear_facet_isim%5D%5Bbegin%5D=1900&range%5Byear_facet_isim%5D%5Bend%5D=1950
+    #
+    # Can also be empty string values in there.
+    #
+    # Make sure it has that shape, or just abort, becuase it is likely to make blacklight_range_limit
+    # choke and uncaught excpetion 500.
+    #
+    # Additionally, newlines in values cause an error, just reject em too.
+
+    if params[:range].present?
+      unless params[:range].respond_to?(:to_hash)
+        render(plain: "Invalid URL query parameter range=#{param_display.call(params[:range])}", status: 400) && return
+      end
+
+      params[:range].each_pair do |_facet_key, range_limits|
+        unless range_limits.respond_to?(:to_hash) && range_limits[:begin].is_a?(String) && range_limits[:end].is_a?(String)
+          render(plain: "Invalid URL query parameter range=#{param_display.call(params[:range])}", status: 400) && return
+        end
+
+        if range_limits.values.grep(/\n/).present?
+          render(plain: "Invalid URL query parameter (newline) range=#{param_display.call(params[:range])}", status: 400) && return
+        end
+      end
+    end
+
+
+    # facet param :f is a hash of keys and values, where each key is a facet name, and
+    # each value is an *array* of strings. Anything else, we should reject it as no good,
+    # because Blacklight is likely to raise an uncaught exception over it.
+    #
     # eg &f=expect%3A%2F%2Fdir
-    if params[:f] && !params[:f].respond_to?(:to_hash)
-      render plain: "Invalid URL query parameter f=#{params[:f].to_param}", status: 400
+    if params[:f].present?
+      if !params[:f].respond_to?(:to_hash)
+        render(plain: "Invalid URL query parameter f=#{param_display.call(params[:f])}", status: 400) && return
+      end
+
+      params[:f].each do |facet, value|
+        unless facet.is_a?(String)
+          render(plain: "Invalid URL query parameter f=#{param_display.call(params[:f])}", status: 400) && return
+        end
+
+        unless value.is_a?(Array) && value.all? {|v| v.is_a?(String)}
+          render(plain: "Invalid URL query parameter f=#{param_display.call(params[:f])}", status: 400) && return
+        end
+      end
     end
   end
 
