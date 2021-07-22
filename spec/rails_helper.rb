@@ -101,9 +101,6 @@ RSpec.configure do |config|
     end
   end
 
-  require './spec/test_support/rspec_helper/tom_select'
-  config.include RspecHelper::TomSelect, type: :system
-
   # Get current_user to work in decorator (draper) specs when there is no logged in user,
   # where #current_user should be nil. Weird workaround with Draper.
   # https://github.com/drapergem/draper/issues/857

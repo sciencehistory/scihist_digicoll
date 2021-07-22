@@ -2,7 +2,7 @@ require 'rails_helper'
 
 # We're not gonna test every possible thing here, but a few
 RSpec.describe "Edit work metadata form", :logged_in_user, type: :system, js: true do
-  let!(:new_collection) { FactoryBot.create(:collection) }
+  let!(:new_collection) { FactoryBot.create(:collection, title: "new collection") }
   let(:work) { FactoryBot.create(:work, :with_complete_metadata, :with_collection, :with_assets, asset_count: 3) }
 
   # only gonna edit the tricky stuff for now
@@ -11,8 +11,12 @@ RSpec.describe "Edit work metadata form", :logged_in_user, type: :system, js: tr
 
     original_collection = work.contained_by.first
 
-    # Set collection to a new thing only, using special tom_select helper
-    tom_select("#work_contained_by_ids", option_id: new_collection.id)
+    # remove current collection, then add new_collection
+    within find("div.work_contained_by") do
+      find('div.select').click
+      find("div[data-value=\"#{work.contained_by_ids.first}\"] a").click
+      find('input').fill_in with: "#{new_collection.title}\n"
+    end
 
     # Set representative to a new thing
     new_representative = work.members.find {|m| m.id != work.representative_id}
