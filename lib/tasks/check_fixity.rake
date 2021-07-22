@@ -8,8 +8,8 @@ namespace :scihist do
   To run a full check of all assets with stored files:
     CYCLE_LENGTH=0 bundle exec rake scihist:check_fixity
 
-  To check 1/30th today instea dof 1/7th, checking all every 30 days:
-    CYCLE_LENGTH=30 bundle exec rake scihist:check_fixity
+  To check 1/90th today instead of 1/7th, checking all every 90 days:
+    CYCLE_LENGTH=90 bundle exec rake scihist:check_fixity
 
   To run checks, but leave stale checks around without pruning them:
     SKIP_PRUNE='true'  bundle exec rake scihist:check_fixity

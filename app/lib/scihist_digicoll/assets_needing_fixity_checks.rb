@@ -2,7 +2,7 @@ module ScihistDigicoll
   # This recipe is used in check_fixity.rake .
   #
   # Running fixity checks takes a while, so we want to spread
-  # the job out over a week or so. The current recipe will:
+  # the job out over 90 days or so. The current recipe will:
   #
   #  * Check all the assets if you run the rake task 7 times.
   #  * Check the same number of assets every day.
@@ -14,19 +14,32 @@ module ScihistDigicoll
   # Then come assets whose MOST RECENT CHECK is the OLDEST.
   #
   # If you run the check once a day, the items will be checked
-  # roughly once a week if cycle_length == 7.
+  # roughly four times a year if cycle_length == 90.
   #
   # Note: if you pass in 0 as the cycle length, you just get all the assets.
   #
   class AssetsNeedingFixityChecks
     BATCH_FETCH_SIZE = 1000
-    DEFAULT_PERIOD_IN_DAYS  = 90 # in days
+    DEFAULT_PERIOD_IN_DAYS  = 90
+
+    # The total number of assets isn't constant over the course of a fixity check cycle.
+    # Instead, it increases as we add assets to the site.
+    #
+    # This means that our *current* total tends to be less than the *average*
+    # total over the course of the entire cycle.
+    #
+    # We thus consistently end the cycle with a few unchecked assets, since we're only checking
+    # a fixed proportion of the total at the *beginning* of the cycle.
+    #
+    # Let's add 10% more assets to each check to try and correct this lag.
+    ADDITIONAL_CHECKS_MULTIPLIER = 1.1
+
     attr_reader :cycle_length
 
     # @param cycle_length [Integer] We will prepare for checking 1/cycle_length
     # assets, the ones most in need of checking (cause they have no checks on record
-    # or oldest checks on record). The idea is you want all assets to be checked weekly,
-    # you run nightly with cycle_length 7. Which is the default. `0` means "all assets".
+    # or oldest checks on record). The idea is you want all assets to be checked 4 times a year,
+    # you run nightly with cycle_length 90. Which is the default. `0` means "all assets".
     def initialize(cycle_length=DEFAULT_PERIOD_IN_DAYS)
       raise ArgumentError.new("cycle_length must be integer") unless cycle_length.kind_of?(Integer)
       @cycle_length = cycle_length
@@ -71,7 +84,7 @@ module ScihistDigicoll
     end
 
     def expected_num_to_check
-      @expected_num_to_check ||= (cycle_length == 0 ? Asset.count : Asset.count / cycle_length)
+      @expected_num_to_check ||= (cycle_length == 0 ? Asset.count : (Asset.count * ADDITIONAL_CHECKS_MULTIPLIER / cycle_length))
     end
 
     private
