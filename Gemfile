@@ -95,7 +95,6 @@ gem 'faster_s3_url', "< 2" # for generating s3 urls faster!
 
 # slack notifications on capistrano deploys
 gem 'slackistrano', "~> 4.0"
-gem "whenever" # automatic crontob maintenance, on capistrano deploys
 
 gem "ransack", "~> 2.1"
 gem "kaminari", "~> 1.2"
