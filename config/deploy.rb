@@ -66,13 +66,6 @@ set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache', '
 
 set :honeybadger_env, fetch(:stage)
 
-
-# Whenever, only deploy cronjobs on server(s) marked with Capistrano :cron role.
-# Right now our cronjobs are general maintenance tasks that _could_ run on any
-# server with the Rails app available. We set the "jobs" server to have "cron"
-# role.
-set :whenever_roles, [:cron]
-
 # When running rake tasks with `cap staging invoke:rake rake:task:name`, via
 # the capistrano-rake gem, run them on the jobs host, that's a good one for
 # putting extra work on.
