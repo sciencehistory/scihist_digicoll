@@ -41,7 +41,7 @@
     margin: auto;
     font-weight: 300;
 
-    a:hover, a:focus {
+    a, a:hover, a:focus {
       color: white;
     }
 
@@ -51,7 +51,6 @@
     }
 
     .fa {
-      color: $brand-bright-green;
       margin-right: 4px;
     }
 
@@ -78,12 +77,7 @@
       font-size: 24px;
 
       a, a:link, a:visited, a:hover, a:active {
-        color: $primary;
-        text-decoration: none;
-        transition-property: color;
-        transition-duration: 0.25s;
-        transition-timing-function: ease;
-        transition-delay: initial;
+        color: white;
       }
     }
   }

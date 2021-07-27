@@ -1,0 +1,7 @@
+<% if splash_page_only? %>
+  <%# render custom template, splash page only %>
+  <%= render "splash_page" %>
+<% else %>
+  <%# render parent controller mentioned explicitly by name, kind of hacky but it works %>
+  <%= render template: "/collection_show/index" %>
+<% end %>

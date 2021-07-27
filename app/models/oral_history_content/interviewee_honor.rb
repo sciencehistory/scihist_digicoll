@@ -17,5 +17,9 @@ class OralHistoryContent
         honor
       ].collect(&:presence).compact
     end
+
+    def blank?
+      displayable_values.blank?
+    end
   end
 end

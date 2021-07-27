@@ -92,17 +92,19 @@ module Admin
       work.errors
     end
 
-    # Pull just non-blank ones out of the Work. We assume we only want to update
-    # things that are in attr_json, so we can use that as a list of what to check.
+    # Pull just non-blank ones out of the Work. Everything that is in attr_json,
+    # plus some allow_listed others.
     #
     # @returns [Hash] key attribute name, value is the entered values to set or add
     # to every item in our update. Will be an array for multi-valued array fields,
     # otherwise a single hash or primitive.
     def update_attributes
-      Work.attr_json_registry.definitions.reduce({}) do |hash, attr_defn|
-        value = work.send(attr_defn.name)
+      attribute_names = Work.attr_json_registry.definitions.collect(&:name) + [:contained_by_ids]
+
+      attribute_names.reduce({}) do |hash, attr_name|
+        value = work.send(attr_name)
         if value.present?
-          hash[attr_defn.name] = value
+          hash[attr_name] = value
         end
         hash
       end
@@ -129,7 +131,8 @@ module Admin
         relation.each do |each_work|
           update_attributes.each do |k, v|
             if v.kind_of?(Array)
-              each_work.send("#{k}=", each_work.send(k) + v)
+              # if it's a repeatable, we uniq it, no reason to allow dups.
+              each_work.send("#{k}=", (each_work.send(k) + v).uniq)
             else
               each_work.send("#{k}=", v)
             end

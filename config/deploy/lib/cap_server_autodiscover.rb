@@ -81,7 +81,7 @@ module CapServerAutodiscover
     missing_roles = fetch(:server_autodiscover_expected_roles).collect(&:to_s) - roles_defined.collect(&:to_s)
     unless missing_roles == []
        puts Pastel.new.red("WARNING: Autodiscovered servers not found for roles: #{missing_roles.join(", ")}; may be an incomplete deploy")
-       puts "  => found servers for: #{roles_defined.empty? ? 'no roles' : roles_defined.join(', ')}\n\n"
+       puts "  => found servers for: #{roles_defined.empty? ? 'no roles' : roles_defined.to_a.join(', ')}\n\n"
     end
   end
 end

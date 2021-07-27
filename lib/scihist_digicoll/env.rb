@@ -56,6 +56,14 @@ module ScihistDigicoll
       @production ||= lookup(:service_level) == "production"
     end
 
+    define_key :rails_log_level, default: -> {
+      # :info is one step less info than :debug, it's still a fairly large amount of info, including
+      # all requests. We're trying this as default in production.
+      #
+      # For non-production environments, we don't by default override Rails default.
+      :info if Rails.env.production?
+    }, system_env_transform: ->(str) { str.to_sym }
+
 
     # what env for honeybadger to log, if not given we'll use the `service_level` value
     # (staging/production), or if that's not there either, just Rails.env (development, testing)
@@ -170,6 +178,8 @@ module ScihistDigicoll
       # In production we rely on local_env.yml to provide value, no default,
       # it'll just get out of sync.
     }
+
+    define_key :force_ssl, default: Rails.env.production?, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
 
     define_key :s3_sitemap_bucket, default: -> {
       # for now we keep Google sitemaps in our derivatives bucket
@@ -368,11 +378,15 @@ module ScihistDigicoll
     end
 
 
-    # Location of some backup buckets we sometimes need to purge files from
+    # S3 buckets for backups. Mostly used in Rake tasks.
     define_key :s3_bucket_derivatives_backup
     define_key :s3_bucket_dzi_backup
-    define_key :s3_backup_bucket_region
 
+
+    define_key :s3_backup_file_path
+    define_key :s3_backup_bucket_region
+    define_key :s3_backup_access_key_id
+    define_key :s3_backup_secret_access_key
     # Returns an S3::Bucket for the derivatives backup, used by our derivative storage
     # type mover to make sure non-public derivatives don't exist in backups either.
     #
@@ -458,6 +472,8 @@ module ScihistDigicoll
     define_key :smtp_username
     define_key :smtp_password
     define_key :smtp_host
+
+    define_key :rails_asset_host
 
     ##
     #

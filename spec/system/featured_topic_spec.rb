@@ -9,23 +9,35 @@ describe "Featured Topic show page", type: :system, js: false, solr:true, indexa
     ]
   end
 
-  let(:topic_id) { :instruments_and_innovation }
+  let(:oral_history_collection_id) { ScihistDigicoll::Env.lookup!(:oral_history_collection_id) }
 
-  before do
-    fake_definition =  {
-        topic_id => {
+  let!(:oh_collection) do
+    create(:collection, friendlier_id: oral_history_collection_id, title: 'Oral History Collection')
+  end
+
+  let(:fake_definition) do
+    {
+      :instruments_and_innovation => {
         title: "Instruments & Innovation",
         genre: ["Scientific apparatus and instruments", "Lithographs"],
         subject: ["Artillery", "Machinery", "Chemical apparatus"],
         description: "Fireballs!",
         description_html: "<em>Fireballs!</em>"
+      },
+
+      :oral_histories => {
+        title: "Oral Histories",
+        path: "/collections/#{oral_history_collection_id}"
       }
     }
+  end
+
+  before do
     allow(FeaturedTopic).to receive(:definitions).and_return(fake_definition)
   end
 
   it "smoke tests" do
-    visit featured_topic_path(topic_id.to_s.dasherize)
+    visit featured_topic_path(:instruments_and_innovation.to_s.dasherize)
     expect(page).to have_title "Instruments & Innovation"
     expect(page).to have_selector("h1", text: 'Instruments & Innovation')
     expect(page).to have_selector("p", text: 'Fireballs')
@@ -35,7 +47,7 @@ describe "Featured Topic show page", type: :system, js: false, solr:true, indexa
   end
 
   it "searches, and keeps total count accurate" do
-    visit featured_topic_path(topic_id.to_s.dasherize, q: "artillery")
+    visit featured_topic_path(:instruments_and_innovation.to_s.dasherize, q: "artillery")
 
     expect(page).to have_text("2 items")
     expect(page).to have_text("1 entry found")
@@ -43,4 +55,10 @@ describe "Featured Topic show page", type: :system, js: false, solr:true, indexa
     expect(page).to have_content("artillery")
     expect(page).not_to have_content("lithographs")
   end
+
+  it "can be set to an arbitrary URL by setting the path variable" do
+    visit FeaturedTopic.from_slug(:oral_histories).path
+    expect(page).to have_content(oh_collection.title)
+  end
+
 end
