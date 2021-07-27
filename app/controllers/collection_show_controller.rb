@@ -18,8 +18,10 @@ class CollectionShowController < CatalogController
     # using params[:collection_id] instead. This is obviously a departure from
     # the Rails standard.
 
+    unless (params[:id] && blacklight_config.facet_fields[params[:id]])
+      raise ActionController::RoutingError, 'Not Found'
+    end
     @facet = blacklight_config.facet_fields[params[:id]]
-    raise ActionController::RoutingError, 'Not Found' unless @facet
 
     @response = search_service.facet_field_response(@facet.key)
     @display_facet = @response.aggregations[@facet.field]
