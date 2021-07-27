@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<!-- a completely self-contained, very minimal, static HTML page we can use for offline maintenance, eg with heroku.
+     It has all styles inline, and any graphics used are located in the same directory. Completely
+     self-contained!
+
+     Oh, with the exception of our typekit fonts.
+-->
+
+<head>
+  <title>Offline for Maintenance — Science History Institute Digital Collections</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset='utf-8'>
+
+  <link rel="stylesheet" href="https://use.typekit.net/qmh2nkq.css">
+
+  <style media="all">
+    body {
+      font-family: "abril-text", "Times New Roman", Times, serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      font-size: 1rem;
+      line-height: 1.5;
+      margin: 0;
+      padding: 0;
+    }
+
+    .masthead {
+      padding: 16px 47px 0 32px;
+      margin-bottom: 10%;
+      background-color: #050939;
+      background-image: url(./scihist_top_nav_sym.png);
+      background-repeat: no-repeat;
+      background-position: right top;
+      display: flex;
+      justify-content: space-between;
+      align-items: stretch;
+      border-bottom: #050939 1px;
+      flex-wrap: wrap;
+    }
+
+    .masthead-title {
+      font-family: "abril-text", "Times New Roman", Times, serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      font-size: 30px;
+      margin: 0;
+      padding: 0;
+      line-height: normal;
+      color: white;
+    }
+
+    .masthead-right {
+      margin-left: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .masthead-title a {
+      color: white;
+      text-decoration: none;
+    }
+
+    h1, h2, h3 {
+      font-family: "adelle-sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      font-weight: 500;
+    }
+
+    .error-header {
+      color: #d8262e;
+      font-size: 2rem;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+
+    .content {
+      font-size: 17px;
+      max-width: 50rem;
+      margin-right: auto;
+      margin-left: auto;
+      padding: 0 1.375rem 1.375rem 1.375rem;
+    }
+
+  </style>
+</head>
+<body class='error-page s500'>
+
+  <!-- header -->
+  <nav id="masthead" class="masthead navbar navbar-expand-md navbar-dark bg-dark">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+
+      <a id="logo" href="https://www.sciencehistory.org" data-no-turbolink="true">
+          <image  src="sci_logo-webheader_1x.png",
+                  srcset="./sci_logo_1x.png 1x, ./sci_logo_2x.png 2x",
+                  class="large-masthead-only masthead-logo-large",
+                  alt="Science History Institute"
+          >
+      </a>
+
+    </div>
+
+    <div class="masthead-right">
+      <h1 class="masthead-title large-masthead-only"><a href="/">Digital Collections</a></h1>
+    </div>
+  </nav>
+  <!-- end header -->
+
+  <div class="content">
+    <h2 class="error-header">The Digital Collections are currently unavailable.</h2>
+    <p>Sorry, our systems are undergoing  maintenance. Please check back later.</p>
+    <p>You can contact us via email at <a href="mailto:digital@sciencehistory.org">digital@sciencehistory.org</a>.</p>
+  </div>
+</body>
+</html>

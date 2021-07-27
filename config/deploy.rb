@@ -1,8 +1,7 @@
 # Our roles:
-# :web - the box is running rails code & serving it over http
+# :web - the box running rails code & serving it over http
 # :app - the box is our primary app server
 # :jobs - the box is running our background jobs
-# :solr - the box is running our solr index
 #
 # Note we do not have a role for :db, because capistrano does nothing with
 # the db server (when it's a separate server), and doesn't even have access to it
@@ -36,7 +35,7 @@ set :server_autodiscover_application, "scihist_digicoll"
 # we use for capistrano stage.
 set :server_autodiscover_service_level, fetch(:stage)
 # Expect all of these to be set, or we will warn.
-set :server_autodiscover_expected_roles, [:web, :app, :jobs, :solr, :cron]
+set :server_autodiscover_expected_roles, [:web, :app, :jobs, :cron]
 
 
 
@@ -160,19 +159,22 @@ namespace :scihist do
   end
   after "deploy:symlink:release", "scihist:resquepoolrestart"
 
-  desc "add solr_restart=true to your cap invocation (e.g. on first solr deploy), otherwise it will reload config files"
-  task :restart_or_reload_solr do
-    on roles(:solr) do
-      if ENV['solr_restart'] == "true"
-        execute :sudo, "/bin/systemctl restart solr"
-      else
-        # Note this is NOT using our solr variable in local_env.yml, it's just hard-coded
-        # where to restart, sorry.
-
-        # the querystring doesn't come through without the quotes
-        execute :curl, "-s", '"localhost:8983/solr/admin/cores?action=reload&core=scihist_digicoll"', "--write-out", '"\nhttp response status: %{http_code}\n"'
+  desc "load local solr config into solr cloud, running on a jobs server"
+  task :solr_cloud_sync_configset do
+    on primary(:jobs) do
+      within current_path do
+        with rails_env: fetch(:rails_env) do
+          begin
+            execute :rake, "scihist:solr_cloud:sync_configset"
+          rescue StandardError => e
+            colors = SSHKit::Color.new($stderr)
+            $stderr.puts colors.colorize("ERROR: Could not sync configset! #{e}, backtrace:", :red)
+            $stderr.puts e.backtrace
+          end
+        end
       end
     end
   end
-  after "deploy:log_revision", "scihist:restart_or_reload_solr"
+
+  after "deploy:log_revision", "scihist:solr_cloud_sync_configset"
 end

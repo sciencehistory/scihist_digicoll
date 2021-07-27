@@ -34,6 +34,10 @@ class Asset < Kithe::Asset
   # really anticipated for any other use.
   attr_json :caption, :string
 
+  attr_json :transcription, :text
+  attr_json :english_translation, :text
+
+
   validates :derivative_storage_type, inclusion: { in: ["public", "restricted"] }
 
   DERIVATIVE_STORAGE_TYPE_LOCATIONS = {
@@ -73,7 +77,7 @@ class Asset < Kithe::Asset
 
     # schedule it for deletion if needed
     if ingest_bucket_file_url
-      path = URI.parse(ingest_bucket_file_url).path.delete_prefix("/")
+      path = CGI.unescape(URI.parse(ingest_bucket_file_url).path.delete_prefix("/"))
       ScheduledIngestBucketDeletion.create!(path: path, asset: self, delete_after: Time.now + ScheduledIngestBucketDeletion::DELETE_AFTER_WINDOW)
     end
   end
