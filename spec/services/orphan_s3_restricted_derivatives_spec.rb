@@ -14,28 +14,25 @@ describe OrphanS3RestrictedDerivatives do
           id: id_1,
           derivative_storage_type: "restricted",
           faked_derivatives: {
-             "download_full"   => create(:stored_uploaded_file, id: "restricted_derivatives/#{id_1}/download_full/download_full.jpg"),
-             "download_large"  => create(:stored_uploaded_file, id: "restricted_derivatives/#{id_1}/download_large/download_large.jpg"),
-             "download_medium" => create(:stored_uploaded_file, id: "restricted_derivatives/#{id_1}/download_medium/download_medium.jpg"),
-             "download_small"  => create(:stored_uploaded_file, id: "restricted_derivatives/#{id_1}/download_small/download_small.jpg")
+             "download_full"   => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "restricted_derivatives/#{id_1}/download_full/download_full.jpg"),
+             "download_large"  => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "restricted_derivatives/#{id_1}/download_large/download_large.jpg"),
+             "download_medium" => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "restricted_derivatives/#{id_1}/download_medium/download_medium.jpg"),
+             "download_small"  => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "restricted_derivatives/#{id_1}/download_small/download_small.jpg")
            }
         ),
         create(:asset_with_faked_file,
           id: id_2,
           derivative_storage_type: "restricted",
           faked_derivatives: {
-             "download_full"   => create(:stored_uploaded_file, id: "restricted_derivatives/#{id_2}/download_full/download_full.jpg"),
-             "download_large"  => create(:stored_uploaded_file, id: "restricted_derivatives/#{id_2}/download_large/download_large.jpg"),
-             "download_medium" => create(:stored_uploaded_file, id: "restricted_derivatives/#{id_2}/download_medium/download_medium.jpg"),
-             "download_small"  => create(:stored_uploaded_file, id: "restricted_derivatives/#{id_2}/download_small/download_small.jpg"),
+             "download_full"   => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "restricted_derivatives/#{id_2}/download_full/download_full.jpg"),
+             "download_large"  => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "restricted_derivatives/#{id_2}/download_large/download_large.jpg"),
+             "download_medium" => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "restricted_derivatives/#{id_2}/download_medium/download_medium.jpg"),
+             "download_small"  => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "restricted_derivatives/#{id_2}/download_small/download_small.jpg"),
           }
         )
       ]
     )
   end
-
-  let(:mp3_path) { Rails.root + "spec/test_support/audio/ice_cubes.mp3" }
-  let(:webm_path) { Rails.root + "spec/test_support/audio/smallest_webm.webm" }
 
   let(:image_deriv_file_paths) do
     [
@@ -87,8 +84,8 @@ describe OrphanS3RestrictedDerivatives do
     allow_any_instance_of(S3PathIterator).to receive(:s3_client).and_return(fake_aws_s3_client)
     allow_any_instance_of(S3PathIterator).to receive(:s3_bucket_name).and_return('s3.bucket')
     # Mute output. We just want to check the stats.
-    # allow_any_instance_of(S3PathIterator).to receive(:log).and_return(nil)
-    # allow_any_instance_of(OrphanS3Derivatives).to receive(:output_to_stderr).and_return(nil)
+    allow_any_instance_of(S3PathIterator).to receive(:log).and_return(nil)
+    allow_any_instance_of(OrphanS3RestrictedDerivatives).to receive(:output_to_stderr).and_return(nil)
   end
 
   describe "good image derivatives" do
@@ -97,21 +94,18 @@ describe OrphanS3RestrictedDerivatives do
     end
     it "checks all derivatives" do
       asset_1, asset_2 =  work.members
-      puts asset_1
 
       asset_1.file_derivatives.values.each do |deriv|
         expect(deriv.storage_key).to eq(:restricted_kithe_derivatives)
-        expect(deriv.exists?).to be(true)
       end
 
       asset_2.file_derivatives.values.each do |deriv|
         expect(deriv.storage_key).to eq(:restricted_kithe_derivatives)
-        expect(deriv.exists?).to be(true)
       end
 
-      orphan_checker.report_orphans
-      expect(orphan_checker.files_checked).to eq 8
-      expect(orphan_checker.orphans_found).to eq 0
+     orphan_checker.report_orphans
+     expect(orphan_checker.files_checked).to eq 8
+     expect(orphan_checker.orphans_found).to eq 0
     end
     it "doesn't delete anything" do
       orphan_checker.delete_orphans
