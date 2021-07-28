@@ -31,7 +31,6 @@ class OrphanS3RestrictedDerivatives
       next if IGNORE_PATH_PREFIXES.any? {|p| s3_path.start_with?(p) }
 
       asset_id, derivative_key, shrine_path = parse_s3_path(s3_path)
-
       if shrine_path && orphaned?(asset_id, derivative_key, shrine_path)
         shrine_storage.delete(shrine_path)
         s3_iterator.log "deleted derivative file at: #{bucket_name}: #{s3_path}"
@@ -72,13 +71,6 @@ class OrphanS3RestrictedDerivatives
   def report_orphaned_derivative(asset_id, derivative_key, shrine_path, s3_path)
     asset = Asset.where(id: asset_id).first
     derivative = asset && asset.file(derivative_key.to_sym)
-    #puts asset_id#
-
-    #goat = Asset.where(id: '0001d800-482d-4dcf-80b7-84f273580a13').first
-    #puts "goat id ", goat.id
-    #puts "goat id is asset id", goat.id == asset_id
-    #puts "goat is nil", goat.nil?
-    #puts "asset is nil", asset.nil?
 
     s3_iterator.log "orphaned derivative!"
     s3_iterator.log "  bucket: #{bucket_name}"
@@ -107,10 +99,10 @@ class OrphanS3RestrictedDerivatives
   end
 
   def parse_s3_path(s3_path)
-    s3_path =~ %r{(([^/]+)/([^/]+)/[^/]+)\Z}
-    shrine_path = $1
-    asset_pk = $2
-    derivative_key = $3
+    s3_path =~ %r{([^/]+)/([^/]+)/[^/]+\Z}
+    shrine_path = s3_path
+    asset_pk = $1
+    derivative_key = $2
     return [asset_pk, derivative_key, shrine_path]
   end
 
