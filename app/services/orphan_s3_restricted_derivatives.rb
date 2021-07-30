@@ -8,7 +8,6 @@ class OrphanS3RestrictedDerivatives
   #   bar with estimated progress.
   def initialize(show_progress_bar: true)
     @shrine_storage = ScihistDigicoll::Env.shrine_store_storage
-
     @s3_iterator = S3PathIterator.new(
       shrine_storage: shrine_storage,
       extra_prefix: 'restricted_derivatives',
@@ -17,10 +16,8 @@ class OrphanS3RestrictedDerivatives
     )
   end
 
-  # TODO: estimate number of restricted derivs.
   def derivative_count
-    1
-    # @derivatives_count ||= Asset.all_derivative_count
+    @derivatives_count ||= Asset.all_restricted_derivative_count
   end
 
   # Deletes all found orphans, outputing to console what was deleted.
@@ -29,10 +26,9 @@ class OrphanS3RestrictedDerivatives
     @delete_count = 0
     s3_iterator.each_s3_path do |s3_path|
       next if IGNORE_PATH_PREFIXES.any? {|p| s3_path.start_with?(p) }
-
       asset_id, derivative_key, shrine_path = parse_s3_path(s3_path)
       if shrine_path && orphaned?(asset_id, derivative_key, shrine_path)
-        shrine_storage.delete(shrine_path)
+        shrine_storage.delete(s3_path)
         s3_iterator.log "deleted derivative file at: #{bucket_name}: #{s3_path}"
         @delete_count += 1
       end
@@ -48,20 +44,20 @@ class OrphanS3RestrictedDerivatives
 
     @files_checked = s3_iterator.each_s3_path do |s3_path|
       next if IGNORE_PATH_PREFIXES.any? {|p| s3_path.start_with?(p) }
-      first_part, second_part, shrine_path = parse_s3_path(s3_path)
-      if orphaned?(first_part, second_part, shrine_path)
+      asset_id, derivative_key, shrine_path = parse_s3_path(s3_path)
+      if orphaned?(asset_id, derivative_key, shrine_path)
         @orphans_found +=1
         if @orphans_found == max_reports
           s3_iterator.log "Reported max #{max_reports} orphans. Not listing subsequent.\n"
         elsif orphans_found < max_reports
-          report_orphaned_derivative(first_part, second_part, shrine_path, s3_path)
+          report_orphaned_derivative(asset_id, derivative_key, shrine_path, s3_path)
           s3_iterator.log ""
         end
       end
     end
 
     output_to_stderr "\n\nTotal Asset count: #{Asset.count}"
-    output_to_stderr "Estimated expected derivative file count: #{derivative_count}"
+    output_to_stderr "Estimated restricted derivative file count: #{derivative_count}"
     output_to_stderr "Checked #{@files_checked} files on S3"
     output_to_stderr "Found #{@orphans_found} orphan files\n"
   end
@@ -87,7 +83,6 @@ class OrphanS3RestrictedDerivatives
       s3_iterator.log "  asset friendlier_id: #{asset.friendlier_id}"
       s3_iterator.log "  actual shrine id for #{derivative_key}: #{derivative.storage_key}:#{derivative.id}"
     end
-    exit
   end
 
   def output_to_stderr(text)
@@ -99,15 +94,18 @@ class OrphanS3RestrictedDerivatives
   end
 
   def parse_s3_path(s3_path)
-    s3_path =~ %r{([^/]+)/([^/]+)/[^/]+\Z}
-    shrine_path = s3_path
-    asset_pk = $1
-    derivative_key = $2
+    s3_path =~ %r{(([^/]+)/([^/]+)/[^/]+)\Z}
+
+    shrine_path = $1
+    asset_pk = $2
+    derivative_key = $3
+
     return [asset_pk, derivative_key, shrine_path]
   end
 
-  def orphaned?(first_part, derivative_key, shrine_path)
-    return true unless first_part.present? && derivative_key.present?
-    ! Kithe::Asset.where(id: first_part).where("file_data -> 'derivatives' -> ? ->> 'id' = ?", derivative_key, shrine_path).exists?
+  def orphaned?(asset_pk, derivative_key, shrine_path)
+    return true unless asset_pk.present? && derivative_key.present?
+    asset_exists = Kithe::Asset.where(id: asset_pk).where("file_data -> 'derivatives' -> ? ->> 'id' = ?", derivative_key, shrine_path).exists?
+    ! asset_exists
   end
 end

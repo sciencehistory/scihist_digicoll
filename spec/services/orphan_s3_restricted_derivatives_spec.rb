@@ -14,20 +14,20 @@ describe OrphanS3RestrictedDerivatives do
           id: id_1,
           derivative_storage_type: "restricted",
           faked_derivatives: {
-             "download_full"   => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "restricted_derivatives/#{id_1}/download_full/download_full.jpg"),
-             "download_large"  => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "restricted_derivatives/#{id_1}/download_large/download_large.jpg"),
-             "download_medium" => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "restricted_derivatives/#{id_1}/download_medium/download_medium.jpg"),
-             "download_small"  => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "restricted_derivatives/#{id_1}/download_small/download_small.jpg")
+             "download_full"   => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "#{id_1}/download_full/download_full.jpg"),
+             "download_large"  => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "#{id_1}/download_large/download_large.jpg"),
+             "download_medium" => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "#{id_1}/download_medium/download_medium.jpg"),
+             "download_small"  => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "#{id_1}/download_small/download_small.jpg")
            }
         ),
         create(:asset_with_faked_file,
           id: id_2,
           derivative_storage_type: "restricted",
           faked_derivatives: {
-             "download_full"   => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "restricted_derivatives/#{id_2}/download_full/download_full.jpg"),
-             "download_large"  => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "restricted_derivatives/#{id_2}/download_large/download_large.jpg"),
-             "download_medium" => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "restricted_derivatives/#{id_2}/download_medium/download_medium.jpg"),
-             "download_small"  => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "restricted_derivatives/#{id_2}/download_small/download_small.jpg"),
+             "download_full"   => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "#{id_2}/download_full/download_full.jpg"),
+             "download_large"  => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "#{id_2}/download_large/download_large.jpg"),
+             "download_medium" => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "#{id_2}/download_medium/download_medium.jpg"),
+             "download_small"  => create(:stored_uploaded_file, storage: :restricted_kithe_derivatives, id: "#{id_2}/download_small/download_small.jpg"),
           }
         )
       ]
