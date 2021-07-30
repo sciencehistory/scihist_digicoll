@@ -30,12 +30,12 @@ namespace :scihist do
 
       desc "delete orphaned public derivatives"
       task :derivatives => :environment do
-        OrphanS3RestrictedDerivatives.new(show_progress_bar: ENV['PROGRESS_BAR'] != "false").delete_orphans
+        OrphanS3Derivatives.new(show_progress_bar: ENV['PROGRESS_BAR'] != "false").delete_orphans
       end
 
       desc "delete orphaned restricted derivatives"
       task :restricted_derivatives => :environment do
-        OrphanS3Derivatives.new(show_progress_bar: ENV['PROGRESS_BAR'] != "false").delete_orphans
+        OrphanS3RestrictedDerivatives.new(show_progress_bar: ENV['PROGRESS_BAR'] != "false").delete_orphans
       end
 
       desc "delete orphaned DZI"

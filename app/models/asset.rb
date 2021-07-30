@@ -109,6 +109,12 @@ class Asset < Kithe::Asset
     ).first["count"]
   end
 
+  def self.all_restricted_derivative_count
+    Kithe::Asset.connection.select_all(
+      "SELECT count(*) FROM (SELECT row_to_json(jsonb_each(file_data -> 'derivatives')) -> 'value' ->> 'storage' as storage_key FROM kithe_models WHERE kithe_model_type = 2 ) as derivatives where storage_key = 'restricted_kithe_derivatives'"
+    ).first['count']
+  end
+
   # If derivative_storage_type changed in last save, fire off bg job
   # to move derivatives to correct place.
   def ensure_correct_derivatives_storage_after_change
