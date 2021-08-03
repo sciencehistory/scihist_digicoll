@@ -30,10 +30,6 @@ module ScihistDigicoll
     # shouldn't be accessed:
     require 'scihist_digicoll/env'
 
-    # In ./lib because we need non-rails code, `whenever` config file, to be able to get to it,
-    # but still want to require it for rails app too.
-    require 'scihist_digicoll/asset_check_whenever_cron_time'
-
     if ScihistDigicoll::Env.lookup("rails_log_level")
       config.log_level = ScihistDigicoll::Env.lookup("rails_log_level")
     end
