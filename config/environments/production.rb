@@ -155,20 +155,20 @@ Rails.application.configure do
   end
 
 
-  # Actually use lograge instead:
+  # Actually use lograge instead https://github.com/roidrage/lograge
 
   config.lograge.enabled = true
   #
-  # lograge customization: https://github.com/roidrage/lograge
-  #
-  #
   # custom_payload is merged into log data automatically
-  #   config.lograge.custom_payload do |controller|
-  #   {
-  #     host: controller.request.host,
-  #     user_id: controller.current_user.try(:id)
-  #   }
-  # end
+  config.lograge.custom_payload do |controller|
+    # default lograge in `path` would put just eg `/catalog`, we want the whole
+    # URL in there eg `/catalog?q=foo`, so we override. Alternately, you could
+    # of course add this as `fullpath` to have both.
+    # https://bibwild.wordpress.com/2021/08/04/logging-uri-query-params-with-lograge/
+    {
+      path: controller.request.fullpath
+    }
+  end
 
 
 
