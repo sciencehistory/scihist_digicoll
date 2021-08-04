@@ -73,6 +73,8 @@ gem 'jquery-rails', "~> 4.3"
 
 gem 'font-awesome-rails', '~> 4.7'
 
+gem "lograge", "< 2"
+
 # temporary kithe indexing branch, for scihist_digicoll indexing branch, do not
 # intend to merge to master like this.
 gem 'kithe', "~> 2.0", ">= 2.0.2"
