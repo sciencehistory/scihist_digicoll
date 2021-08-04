@@ -154,6 +154,29 @@ Rails.application.configure do
     config.logger    = ActiveSupport::TaggedLogging.new(logger)
   end
 
+
+  # Actually use lograge instead:
+
+  config.lograge.enabled = true
+  #
+  # lograge customization: https://github.com/roidrage/lograge
+  #
+  #
+  # custom_payload is merged into log data automatically
+  #   config.lograge.custom_payload do |controller|
+  #   {
+  #     host: controller.request.host,
+  #     user_id: controller.current_user.try(:id)
+  #   }
+  # end
+
+
+
+  # This default Rails log config probably doesn't do anything if we're using
+  # lograge anyway, but we leave it here in case we turn lograge off again,
+  # it reduces default Rails logging significantly, eliminating things
+  # we don't need.
+  #
   # Turn off all action_view logging in production, to give us cleaner more readable
   # logs. Turns off lines such as:
   #     Rendering works/index.html.erb within layouts/application
