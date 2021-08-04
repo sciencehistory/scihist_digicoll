@@ -28,4 +28,34 @@ describe CatalogController, solr: true do
       expect(response.code).to eq("400")
     end
   end
+
+  # Missing facet ID, e.g.
+  #    /collections/gt54kn818/facet
+  # https://app.honeybadger.io/projects/58989/faults/80390739
+  describe "missing facet id" do
+    let(:collection) { create(:collection) }
+    it "collections page search responds with 400" do
+      url = "/collections/#{collection.friendlier_id}/facet"
+      expect { get url }.
+        to raise_error(an_instance_of(ActionController::RoutingError).
+        and having_attributes(message: "Not Found"))
+    end
+    it "featured topic search responds with 400" do
+      fake_definition =  {
+          test_featured_topic: {
+          title: "Instruments & Innovation",
+          genre: ["Scientific apparatus and instruments", "Lithographs"],
+          subject: ["Artillery", "Machinery", "Chemical apparatus"],
+          description: "Fireballs!",
+          description_html: "<em>Fireballs!</em>"
+        }
+      }
+      allow(FeaturedTopic).to receive(:definitions).and_return(fake_definition)
+      expect(FeaturedTopic.from_slug(:test_featured_topic)).to be_a FeaturedTopic
+      url = "/focus/test_featured_topic/facet"
+      expect { get url}.
+        to raise_error(an_instance_of(ActionController::RoutingError).
+        and having_attributes(message: "Not Found"))
+    end
+  end
 end
