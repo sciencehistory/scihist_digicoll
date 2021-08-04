@@ -154,6 +154,29 @@ Rails.application.configure do
     config.logger    = ActiveSupport::TaggedLogging.new(logger)
   end
 
+
+  # Actually use lograge instead https://github.com/roidrage/lograge
+
+  config.lograge.enabled = true
+  #
+  # custom_payload is merged into log data automatically
+  config.lograge.custom_payload do |controller|
+    # default lograge in `path` would put just eg `/catalog`, we want the whole
+    # URL in there eg `/catalog?q=foo`, so we override. Alternately, you could
+    # of course add this as `fullpath` to have both.
+    # https://bibwild.wordpress.com/2021/08/04/logging-uri-query-params-with-lograge/
+    {
+      path: controller.request.fullpath
+    }
+  end
+
+
+
+  # This default Rails log config probably doesn't do anything if we're using
+  # lograge anyway, but we leave it here in case we turn lograge off again,
+  # it reduces default Rails logging significantly, eliminating things
+  # we don't need.
+  #
   # Turn off all action_view logging in production, to give us cleaner more readable
   # logs. Turns off lines such as:
   #     Rendering works/index.html.erb within layouts/application
