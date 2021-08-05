@@ -17,7 +17,9 @@ class OrphanS3RestrictedDerivatives
   end
 
   def derivative_count
-    @derivatives_count ||= Asset.all_restricted_derivative_count
+    @derivatives_count ||= Kithe::Asset.connection.select_all(
+      "SELECT count(*) FROM (SELECT row_to_json(jsonb_each(file_data -> 'derivatives')) -> 'value' ->> 'storage' as storage_key FROM kithe_models WHERE kithe_model_type = 2 ) as derivatives where storage_key = 'restricted_kithe_derivatives'"
+    ).first['count']
   end
 
   # Deletes all found orphans, outputing to console what was deleted.
