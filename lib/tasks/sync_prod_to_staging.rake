@@ -21,38 +21,44 @@ namespace :scihist do
     if ['staging', 'production'].include? ScihistDigicoll::Env.lookup(:service_level)
       abort 'This task should only be used in development.'
     end
-    cmd = TTY::Command.new(printer: :progress)
+    cmd = TTY::Command.new(printer: :pretty)
     begin
-      puts "Heroku maintenance on."
+      puts "\nHeroku maintenance on."
       cmd.run("heroku maintenance:on --app", STAGING_APP_NAME)
       if USE_BACKUP == 'true'
         Dir.mktmpdir do |tmpdir|
-          puts "Downloading backup."
+          puts "\nDownloading backup."
           cmd.run("aws s3 cp --no-progress s3://#{BACKUP_BUCKET}/#{BACKUP_FOLDER}/#{BACKUP_FILENAME}.sql.gz  #{tmpdir}/#{BACKUP_FILENAME}.sql.gz")
 
-          puts "Decompressing backup."
+          puts "\nDecompressing backup."
           cmd.run("#{UNZIP_CMD} #{tmpdir}/#{BACKUP_FILENAME}.sql.gz > #{tmpdir}/#{BACKUP_FILENAME}.sql")
           abort("Unable to get unzipped backup file!") unless File.exist?("#{tmpdir}/#{BACKUP_FILENAME}.sql")
 
-          puts "Restoring backup to staging DB."
-          Rails.logger.silence do
-            cmd.run("heroku pg:psql --app", STAGING_APP_NAME, in: "#{tmpdir}/#{BACKUP_FILENAME}.sql")
-          end
+          puts "\nRestoring backup to staging DB."
+
+          # This pg:psql load has a LOT of output, we suppress it. We could send to
+          # a log file or something instead if we wanted it.
+          cmd.run("heroku pg:psql --app", STAGING_APP_NAME, in: "#{tmpdir}/#{BACKUP_FILENAME}.sql", out: "/dev/null", err: "/dev/null")
         end
       else
-        puts "Copying backup from prod to staging."
+        puts "\nCopying backup from prod to staging."
         cmd.run("heroku pg:copy scihist-digicoll-production::DATABASE_URL DATABASE_URL -a #{STAGING_APP_NAME}  --confirm #{STAGING_APP_NAME}")
       end
-      puts "Updating SOLR."
-      cmd.run("heroku run rake scihist:solr:reindex scihist:solr:delete_orphans --app ", STAGING_APP_NAME)
-      puts "Syncing originals (with --delete)."
+
+      puts "\nUpdating Solr index."
+      # progress bar through TTY::Command just spams our console, alas.
+      cmd.run("heroku run PRORESS_BAR=false rake scihist:solr:reindex scihist:solr:delete_orphans --app ", STAGING_APP_NAME)
+
+
+      puts "\nSyncing S3 originals (with --delete)."
       cmd.run("aws s3 sync --no-progress --delete s3://scihist-digicoll-production-originals s3://scihist-digicoll-staging-originals")
-      puts "Syncing derivatives (with --delete)."
+
+      puts "\nSyncing S3 derivatives (with --delete)."
       cmd.run("aws s3 sync --no-progress --delete s3://scihist-digicoll-production-derivatives s3://scihist-digicoll-staging-derivatives")
     ensure
-      puts "Heroku maintenance off."
+      puts "\nHeroku maintenance off."
       cmd.run("heroku maintenance:off --app", STAGING_APP_NAME)
-      puts "Done."
+      puts "\nDone."
     end
   end
 end
