@@ -100,7 +100,9 @@ namespace :scihist do
 
       Kithe::Indexable.index_with(batching: true) do
 
-        progress_bar = ProgressBar.create(total: (Work.count + Collection.count), format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
+        unless ENV["PROGRESS_BAR"] == "false"
+          progress_bar = ProgressBar.create(total: (Work.count + Collection.count), format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
+        end
 
         [
           Work.includes(:contains_contained_by, :oral_history_content => :interviewee_biographies),
@@ -108,9 +110,9 @@ namespace :scihist do
         ].each do |scope|
 
           scope.find_each do |model|
-            progress_bar.title = "#{model.class.name}:#{model.friendlier_id}"
+            progress_bar.title = "#{model.class.name}:#{model.friendlier_id}" if progress_bar
             model.update_index
-            progress_bar.increment
+            progress_bar.increment if progress_bar
           end
         end
       end
