@@ -46,9 +46,8 @@ namespace :scihist do
       end
 
       puts "\nUpdating Solr index."
-      # progress bar through TTY::Command just spams our console, alas.
-      cmd.run("heroku run PRORESS_BAR=false rake scihist:solr:reindex scihist:solr:delete_orphans --app ", STAGING_APP_NAME)
-
+      # heroku --no-tty makes ruby-progressbar somewhat less spammy to our console,although not perfect, tolerable.
+      cmd.run("heroku run rake scihist:solr:reindex scihist:solr:delete_orphans --app ", STAGING_APP_NAME, "--no-tty")
 
       puts "\nSyncing S3 originals (with --delete)."
       cmd.run("aws s3 sync --no-progress --delete s3://scihist-digicoll-production-originals s3://scihist-digicoll-staging-originals")
