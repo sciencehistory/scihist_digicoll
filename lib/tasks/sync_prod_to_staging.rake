@@ -7,7 +7,8 @@ namespace :scihist do
 
   " ENV variables you can set: BACKUP_FOLDER; " +
   " BACKUP_BUCKET; BACKUP_FILENAME; STAGING_APP_NAME; and UNZIP_CMD."
-  " Preface the command with USE_BACKUP=false if you don't want to bother using the backup."
+  " Preface the command with USE_BACKUP=false to use direct heroku copy (faster) " +
+  "    instead of restoring from our off-heroku backup (tests backup)."
 
   task :sync_prod_to_staging => :environment do
     BACKUP_BUCKET    = ENV['BACKUP_BUCKET']     || "chf-hydra-backup"
