@@ -26,16 +26,18 @@ namespace :scihist do
       puts "Heroku maintenance on."
       cmd.run("heroku maintenance:on --app", STAGING_APP_NAME)
       if USE_BACKUP == 'true'
-        puts "Downloading backup."
-        cmd.run("aws s3 cp --no-progress s3://#{BACKUP_BUCKET}/#{BACKUP_FOLDER}/#{BACKUP_FILENAME}.sql.gz  #{BACKUP_FILENAME}.sql.gz")
+        Dir.mktmpdir do |tmpdir|
+          puts "Downloading backup."
+          cmd.run("aws s3 cp --no-progress s3://#{BACKUP_BUCKET}/#{BACKUP_FOLDER}/#{BACKUP_FILENAME}.sql.gz  #{tmpdir}/#{BACKUP_FILENAME}.sql.gz")
 
-        puts "Decompressing backup."
-        cmd.run("#{UNZIP_CMD} #{BACKUP_FILENAME}.sql.gz > #{BACKUP_FILENAME}.sql")
-        abort("Unable to get the backup file.") unless File.exist?("#{BACKUP_FILENAME}.sql")
+          puts "Decompressing backup."
+          cmd.run("#{UNZIP_CMD} #{tmpdir}/#{BACKUP_FILENAME}.sql.gz > #{tmpdir}/#{BACKUP_FILENAME}.sql")
+          abort("Unable to get unzipped backup file!") unless File.exist?("#{tmpdir}/#{BACKUP_FILENAME}.sql")
 
-        puts "Restoring backup to staging DB."
-        Rails.logger.silence do
-          cmd.run("heroku pg:psql --app", STAGING_APP_NAME, in: "#{BACKUP_FILENAME}.sql")
+          puts "Restoring backup to staging DB."
+          Rails.logger.silence do
+            cmd.run("heroku pg:psql --app", STAGING_APP_NAME, in: "#{tmpdir}/#{BACKUP_FILENAME}.sql")
+          end
         end
       else
         puts "Copying backup from prod to staging."
@@ -50,8 +52,6 @@ namespace :scihist do
     ensure
       puts "Heroku maintenance off."
       cmd.run("heroku maintenance:off --app", STAGING_APP_NAME)
-      File.delete("#{BACKUP_FILENAME}.sql")            if File.exist?("#{BACKUP_FILENAME}.sql")
-      File.delete("#{BACKUP_FILENAME}.sql.gz")         if File.exist?("#{BACKUP_FILENAME}.sql.gz")
       puts "Done."
     end
   end
