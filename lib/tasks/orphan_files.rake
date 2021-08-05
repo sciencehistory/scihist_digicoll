@@ -6,9 +6,14 @@ namespace :scihist do
         OrphanS3Originals.new(show_progress_bar: ENV['PROGRESS_BAR'] != "false").report_orphans
       end
 
-      desc "report any orphaned derivatives which do not correspond to an existing asset pk"
+      desc "report any orphaned public derivatives which do not correspond to an existing asset pk"
       task :derivatives => :environment do
         OrphanS3Derivatives.new(show_progress_bar: ENV['PROGRESS_BAR'] != "false").report_orphans
+      end
+
+      desc "report any orphaned restricted derivatives which do not correspond to an existing asset pk"
+      task :restricted_derivatives => :environment do
+        OrphanS3RestrictedDerivatives.new(show_progress_bar: ENV['PROGRESS_BAR'] != "false").report_orphans
       end
 
       desc "report any orphaned S3 tilesets which do not correspond to an existing asset pk/md5"
@@ -23,9 +28,14 @@ namespace :scihist do
         OrphanS3Originals.new(show_progress_bar: ENV['PROGRESS_BAR'] != "false").delete_orphans
       end
 
-      desc "delete orphaned derivatives"
+      desc "delete orphaned public derivatives"
       task :derivatives => :environment do
         OrphanS3Derivatives.new(show_progress_bar: ENV['PROGRESS_BAR'] != "false").delete_orphans
+      end
+
+      desc "delete orphaned restricted derivatives"
+      task :restricted_derivatives => :environment do
+        OrphanS3RestrictedDerivatives.new(show_progress_bar: ENV['PROGRESS_BAR'] != "false").delete_orphans
       end
 
       desc "delete orphaned DZI"
