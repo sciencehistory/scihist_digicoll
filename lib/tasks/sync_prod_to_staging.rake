@@ -6,7 +6,7 @@ namespace :scihist do
   " syncs originals and derivatives S3 buckets from prod to staging." +
 
   " ENV variables you can set: BACKUP_FOLDER; " +
-  " BACKUP_BUCKET; BACKUP_FILENAME; STAGING_APP_NAME; and UNZIP_CMD."
+  " BACKUP_BUCKET; BACKUP_FILENAME; STAGING_APP_NAME; and UNZIP_CMD." +
   " Preface the command with USE_BACKUP=false to use direct heroku copy (faster) " +
   "    instead of restoring from our off-heroku backup (tests backup)."
 
