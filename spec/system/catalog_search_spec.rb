@@ -7,7 +7,7 @@ require 'rails_helper'
 # trust that future versions of Blacklight wouldn't break our unit tests assumptions, a
 # full integration test on UI is safest and easiest.
 describe CatalogController, solr: true, indexable_callbacks: true do
-  describe "general smoke test with lots of features" do
+  describe "general smoke test with lots of features", queue_adapter: :inline do
     let!(:work1) do
       create(:public_work,
         description: 'priceless work',

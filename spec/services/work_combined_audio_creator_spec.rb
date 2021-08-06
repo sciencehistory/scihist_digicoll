@@ -19,7 +19,7 @@ describe "Combined Audio" do
 
   let(:cmd) { cmd = TTY::Command.new(printer: :null)}
 
-  it "creates combined audio derivatives" do
+  it "creates combined audio derivatives", queue_adapter: :inline do
     expect(work.members.map(&:stored?)).to match([true, true])
     combined_audio_info = CombinedAudioDerivativeCreator.new(work).generate
     expect(combined_audio_info.start_times.count).to eq 2
