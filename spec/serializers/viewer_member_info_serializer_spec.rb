@@ -8,7 +8,7 @@ describe ViewerMemberInfoSerializer, type: :decorator do
 
   let(:serializer) { ViewerMemberInfoSerializer.new(work) }
 
-  it "serializes" do
+  it "serializes", queue_adapter: :inline do
     serialized = serializer.as_hash
 
     expect(serialized).to be_kind_of(Array)
