@@ -53,9 +53,12 @@ class AssetUploader < Kithe::AssetUploader
   end
 
   # Define download derivatives for TIFF and other image input.
-  IMAGE_DOWNLOAD_WIDTHS.each_pair do |key, width|
-    Attacher.define_derivative("download_#{key}", content_type: "image") do |original_file|
-      Kithe::VipsCliImageToJpeg.new(max_width: width).call(original_file)
+  IMAGE_DOWNLOAD_WIDTHS.each_pair do |key, derivative_width|
+    Attacher.define_derivative("download_#{key}", content_type: "image") do |original_file, attacher:|
+      # only create download if it would be SMALLER than original, we don't want to lossily upscale!
+      if attacher.file.width > derivative_width
+        Kithe::VipsCliImageToJpeg.new(max_width: derivative_width).call(original_file)
+      end
     end
   end
 
