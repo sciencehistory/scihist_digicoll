@@ -20,6 +20,7 @@ class WorkPdfCreator
   PAGE_HEIGHT = 792
 
   DERIVATIVE_SOURCE = "download_medium"
+  FAILOVER_DERIVATIVE_SOURCE = "download_full" # if download_medium not available, perhaps cause orignal is small
 
   # for memory consumption, we first make PDFs of at most BATCH_SIZE pages, then
   # combine them.
@@ -59,7 +60,7 @@ class WorkPdfCreator
                             where(published: true).
                             order(:position).
                             select do |m|
-                              m.leaf_representative&.file_derivatives(DERIVATIVE_SOURCE.to_sym)
+                              m.leaf_representative&.file_derivatives(DERIVATIVE_SOURCE.to_sym) || m.leaf_representative&.file_derivatives(FAILOVER_DERIVATIVE_SOURCE.to_sym)
                             end
   end
 
@@ -129,7 +130,8 @@ class WorkPdfCreator
       pdf.start_new_page(size: [embed_width, embed_height], margin: 0)
 
       # unfortunately making a temporary local file on disk in order to add it to PDF
-      tmp_file = member.leaf_representative.file_derivatives(DERIVATIVE_SOURCE.to_sym).open
+      derivative = member.leaf_representative.file_derivatives(DERIVATIVE_SOURCE.to_sym) || member.leaf_representative.file_derivatives(FAILOVER_DERIVATIVE_SOURCE.to_sym)
+      tmp_file = derivative.open
       tmp_files << tmp_file
 
       pdf.image tmp_file, vposition: :center, position: :center, fit: [embed_width, embed_height]
