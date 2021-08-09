@@ -166,7 +166,7 @@ Rails.application.configure do
     # of course add this as `fullpath` to have both.
     # https://bibwild.wordpress.com/2021/08/04/logging-uri-query-params-with-lograge/
     {
-      path: controller.request.fullpath
+      path: controller.request.filtered_path
     }
   end
 
