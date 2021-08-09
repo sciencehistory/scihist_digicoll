@@ -12,6 +12,13 @@ describe Asset do
     end
   end
 
+  describe "initial checksum creation", queue_adapter: :inline do
+    let!(:asset) { create(:asset, :inline_promoted_file) }
+    it "checks the asset after storing it" do
+      expect(asset.fixity_checks.count).to eq 1
+    end
+  end
+
   describe "restricted derivatives", queue_adapter: :inline do
     let(:sample_file_location) {  Rails.root + "spec/test_support/images/20x20.png" }
     let(:asset) { create(:asset, derivative_storage_type: "restricted") }

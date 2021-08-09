@@ -59,6 +59,9 @@ class Asset < Kithe::Asset
   end
 
   after_promotion DziFiles::ActiveRecordCallbacks, if: ->(asset) { asset.content_type&.start_with?("image/") && asset.derivative_storage_type == "public" }
+
+  after_promotion :create_initial_checksum
+
   after_commit DziFiles::ActiveRecordCallbacks, only: [:update, :destroy]
 
   # for ones we're importing from our ingest bucket via :remote_url, we want
@@ -80,6 +83,13 @@ class Asset < Kithe::Asset
       path = CGI.unescape(URI.parse(ingest_bucket_file_url).path.delete_prefix("/"))
       ScheduledIngestBucketDeletion.create!(path: path, asset: self, delete_after: Time.now + ScheduledIngestBucketDeletion::DELETE_AFTER_WINDOW)
     end
+  end
+
+  # Create an initial checksum for the item.
+  # Ensures the file saved to s3 storage is identical
+  # to the one characterized at ingest.
+  def create_initial_checksum
+    SingleAssetCheckerJob.perform_later(self)
   end
 
   # Ensure that recorded storage locations for all derivatives matches
