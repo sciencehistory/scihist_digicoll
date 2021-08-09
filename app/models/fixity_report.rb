@@ -109,6 +109,20 @@ class FixityReport
     ])
   end
 
+
+  # an ActiveRecord relation corresponding to #not_recent_with_no_checks_or_stale_checks, but
+  # returning a relation you can get actual assets from, not just count.
+  def need_checks_assets_relation
+    build_query([
+      stored_file_sql,
+      "#{recent_asset_sql} = false",
+      "(#{stale_checks_sql}) OR (#{stale_checks_sql} is NULL)"
+    ], count_only: false)
+  end
+
+
+
+
   # Of the assets that have fixity checks, which has the OLDEST most recent
   # check, and what is it?
   #
@@ -174,6 +188,10 @@ class FixityReport
   end
 
   def check_count_having(conditions)
+    build_query(conditions, count_only: true)
+  end
+
+  def build_query(conditions, count_only:false)
     subquery = Asset.
       select("kithe_models.id").
       left_outer_joins(:fixity_checks).
@@ -181,6 +199,12 @@ class FixityReport
     conditions.each do |h|
       subquery = subquery.having(h)
     end
-    Asset.where(id: subquery).count
+    relation = Asset.where(id: subquery)
+
+    if count_only
+      relation.count
+    else
+      relation
+    end
   end
 end
