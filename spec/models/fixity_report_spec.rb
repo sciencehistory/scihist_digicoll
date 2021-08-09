@@ -150,6 +150,13 @@ describe FixityReport do
       # old_asset was ingested more than a day ago but it hasn't been checked for over a week.
       # Sound the alarm!
       expect(report.not_recent_with_no_checks_or_stale_checks).to eq 1
+
+      # and can we fetch the actual assets that correspond, with this other method?
+      found = []
+      report.need_checks_assets_relation.each do |asset|
+        found << asset
+      end
+      expect(found.length).to eq 1
     end
   end
 
