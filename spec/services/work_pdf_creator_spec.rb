@@ -21,7 +21,7 @@ describe WorkZipCreator do
     expect(pdf_file.lineno).to eq(0)
   end
 
-  it "builds zip" do
+  it "builds PDF" do
     pdf_file = WorkPdfCreator.new(work).create
 
     expect(pdf_file).to be_kind_of(Tempfile)
@@ -36,7 +36,33 @@ describe WorkZipCreator do
     end
   end
 
-  it "sets metadata on zip", skip: "feature not currently feasible" do
+  context "with resized downloads unavailable" do
+    before do
+      work.members.each do |member|
+        if member.kind_of?(Asset)
+          member.remove_derivatives(:download_small, :download_medium, :download_large)
+          member.update_derivatives(
+            download_full: create(:stored_uploaded_file)
+          )
+        end
+      end
+    end
+
+    it "still builds PDF with all images, using download_full" do
+      pdf_file = WorkPdfCreator.new(work).create
+      expect(pdf_file).to be_kind_of(Tempfile)
+
+      reader = PDF::Reader.new(pdf_file.path)
+      expect(reader.pages.count).to eq 3
+    ensure
+      if pdf_file
+        pdf_file.close
+        pdf_file.unlink
+      end
+    end
+  end
+
+  it "sets metadata on PDF", skip: "feature not currently feasible" do
     pdf_file = WorkPdfCreator.new(work).create
     reader = PDF::Reader.new(pdf_file.path)
 
