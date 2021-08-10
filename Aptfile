@@ -1,14 +1,4 @@
-# Removing libvips-tools
-# in favor of https://github.com/machinio/heroku-buildpack-vips
-# which gives us vips 8.10.2 .
-# We may want to switch back to libvips-tools
-# in the future and remove the buildpack.
-# libvips-tools
-
+libvips-tools
 mediainfo
 imagemagick
-
-# poppler-utls was probably already getting installed as a dependency
-# of above anyway, but we need `pdfunite` command line util from it, so we'll
-# list it explicitly.
 poppler-utils
