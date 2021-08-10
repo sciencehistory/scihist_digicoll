@@ -126,8 +126,8 @@ module CollectionShowControllers
       # no rows, no ordinary search results needed
       config.default_solr_params[:rows] = 0
 
-      # No normal facet_fields
-      config.facet_fields = []
+      # No normal facet_fields, clear em
+      config.facet_fields.clear
 
       # But some facet.query facet fields we'll use for fetching counts for
       # our canned queries.
