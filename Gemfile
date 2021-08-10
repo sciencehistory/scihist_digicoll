@@ -21,8 +21,8 @@ gem 'scout_apm'
 # So you need to manually change this spec to allow updates when you want
 # to spend the time to update Blacklight to latest -- you will usually want to update
 # blacklight_range_limit to latest at same time.
-gem "blacklight", "~> 7.7.0"
-gem "blacklight_range_limit", "~> 7.0" # version sync'd with blacklight
+gem "blacklight", "~> 7.19.2"
+gem "blacklight_range_limit", "~> 8.0" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
 gem "draper", "~> 4.0", ">= 4.0.1" # "decorators", which we use as view models
 
