@@ -50,10 +50,10 @@ namespace :scihist do
       cmd.run("heroku run rake scihist:solr:reindex scihist:solr:delete_orphans --app ", STAGING_APP_NAME, "--no-tty")
 
       puts "\nSyncing S3 originals (with --delete)."
-      cmd.run("aws s3 sync --no-progress --delete s3://scihist-digicoll-production-originals s3://scihist-digicoll-staging-originals")
+      cmd.run("aws s3 sync --only-show-errors --delete s3://scihist-digicoll-production-originals s3://scihist-digicoll-staging-originals")
 
       puts "\nSyncing S3 derivatives (with --delete)."
-      cmd.run("aws s3 sync --no-progress --delete s3://scihist-digicoll-production-derivatives s3://scihist-digicoll-staging-derivatives")
+      cmd.run("aws s3 sync --only-show-errors --delete s3://scihist-digicoll-production-derivatives s3://scihist-digicoll-staging-derivatives")
     ensure
       puts "\nHeroku maintenance off."
       cmd.run("heroku maintenance:off --app", STAGING_APP_NAME)
