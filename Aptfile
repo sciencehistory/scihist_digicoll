@@ -1,5 +1,12 @@
 mediainfo
 imagemagick
+
+# These three packages are required
+# by https://github.com/brandoncc/heroku-buildpack-vips
 libglib2.0-0
 libglib2.0-dev
 libpoppler-glib8
+
+# `poppler-utils` is not installed as a dependency of libpoppler-glib8,
+# and we need it for  `pdfunite`, which we use for on-demand PDF derivatives:
+poppler-utils
