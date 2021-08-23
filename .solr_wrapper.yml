@@ -22,7 +22,7 @@ collection:
   persist: <%= Rails.env.test? ? "false" : "true" %>
   dir: solr/config
   name: scihist_digicoll_<%= Rails.env %>
-version: 8.5.2
+version: 8.6.3
 
 # Use mirror url to keep CI tests from being blocked by
 # apache for too many solr downloads. We try to have CI cache
