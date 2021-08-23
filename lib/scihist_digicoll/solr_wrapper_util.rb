@@ -7,14 +7,18 @@ module ScihistDigicoll
       # do streaming, which SolrBuilder tries to use to download Solr. It can result in an inability
       # to download a Solr, with error "body has already been consumed"".
       #
-      # This is such a mess, we have to know to disable WebMock for downloading.
-      WebMock.disable! if defined?(WebMock)
+      # This is such a mess, we have to know to disable WebMock for downloading. But we only want to
+      # do that, and only re-enable it again, if we are actually in the middle of rspec right now!
+      #
+      # It turns out this is a prickly part of us trying to automatically bring up test solr
+      # when a test requires it. We'll try making sure WebMock and Rspec are actually loaded...
+      WebMock.disable! if defined?(WebMock) && defined?(RSpec) && defined?(SCIHIST_WEBMOCK_USED)
 
       instance.start
       instance.create(instance.config.collection_options)
 
     ensure
-      WebMock.enable! if defined?(WebMock)
+      WebMock.enable! if defined?(WebMock) && defined?(RSpec) && defined?(SCIHIST_WEBMOCK_USED)
     end
 
     # Pass in a solr_wrapper instance, we'll stop it, AND delete the collection
