@@ -30,3 +30,7 @@ version: 8.5.2
 # reaosns we haven't figured out, maybe this will help?
 
 mirror_url: http://lib-solr-mirror.princeton.edu/dist/
+# Will validate_false help, is it still insisting on getting checksum direct from apache?
+# That was supposed to be fixed in solr_wrapper, but it's somehow not in master
+# https://github.com/cbeer/solr_wrapper/commit/eaab9cd5bba2b5d3bc94f33c15cee089462089ae
+validate: false
