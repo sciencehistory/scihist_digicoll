@@ -23,3 +23,10 @@ collection:
   dir: solr/config
   name: scihist_digicoll_<%= Rails.env %>
 version: 8.5.2
+
+# Use mirror url to keep CI tests from being blocked by
+# apache for too many solr downloads. We try to have CI cache
+# solr download, but something still sometimes goes weird for
+# reaosns we haven't figured out, maybe this will help?
+
+mirror_url: http://lib-solr-mirror.princeton.edu/dist/
