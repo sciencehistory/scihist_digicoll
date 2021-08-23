@@ -3,8 +3,18 @@ module ScihistDigicoll
     # Pass in a solr_wrapper instance, we'll start it, AND create a collection
     # if specified in solr_wrapper config.
     def self.start_with_collection(instance)
+      # oy, since we're in test env, WebMock is enabled, and WebMock breaks http-rb's ability to
+      # do streaming, which SolrBuilder tries to use to download Solr. It can result in an inability
+      # to download a Solr, with error "body has already been consumed"".
+      #
+      # This is such a mess, we have to know to disable WebMock for downloading.
+      WebMock.disable! if defined?(WebMock)
+
       instance.start
       instance.create(instance.config.collection_options)
+
+    ensure
+      WebMock.enable! if defined?(WebMock)
     end
 
     # Pass in a solr_wrapper instance, we'll stop it, AND delete the collection
