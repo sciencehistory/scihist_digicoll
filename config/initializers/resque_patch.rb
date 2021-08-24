@@ -10,7 +10,7 @@
 #
 # We'll refuse to run and require manual review if resque is more than 2.0.0 -- maybe
 # resque will have fixed this itself, or changed in a way that makes the monkey-patch not work.
-SanePatch.patch('resque', '2.0.0') do
+SanePatch.patch('resque', '2.1.0') do
   Resque::DataStore
 
   module Resque
