@@ -8,10 +8,4 @@ class ApplicationJob < ActiveJob::Base
   # future-scheduled jobs, so we retry just once, immediately. Could have
   # a more sophisticated retry pattern with a back-end that supports future-scheduling.
   retry_on StandardError, attempts: 2, wait: 0
-
-
 end
-
-
-
-

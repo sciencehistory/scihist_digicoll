@@ -15,8 +15,6 @@
 #   https://github.com/roidrage/lograge/blob/1729eab7956bb95c5992e4adab251e4f93ff9280/lib/lograge.rb#L119
 # * An example of adding a notification/log line a different way:
 #
-
-
 class LocalActiveJobLogSubscriber < ActiveJob::LogSubscriber
   def enqueue_retry(event)
     job = event.payload[:job]
@@ -34,7 +32,6 @@ class LocalActiveJobLogSubscriber < ActiveJob::LogSubscriber
       end
     end
   end
-
 
   def retry_stopped(event)
     job = event.payload[:job]
@@ -85,5 +82,3 @@ ActiveJob::LogSubscriber.detach_from :active_job
 # for some reason API makes us specify inherit_all: true to make sure we
 # get existing event-handling events we weren't overriding!
 LocalActiveJobLogSubscriber.attach_to :active_job, inherit_all: true
-
-
