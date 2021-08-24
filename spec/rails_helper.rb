@@ -156,7 +156,7 @@ RSpec.configure do |config|
           $test_solr_started = false
         }
 
-        WebMock.allow_net_connect!
+        ScihistDigicoll::SpecUtil.allow_net_connect!
         ScihistDigicoll::SolrWrapperUtil.start_with_collection(SolrWrapper.instance)
 
         $test_solr_started = true
@@ -171,7 +171,7 @@ RSpec.configure do |config|
   end
 
   if ENV["WEBMOCK_ALLOW_CONNECT"] == "true"
-    WebMock.allow_net_connect!
+    ScihistDigicoll::SpecUtil.allow_net_connect!
   end
 
   # RSpec Rails can automatically mix in different behaviours to your tests
