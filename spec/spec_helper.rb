@@ -1,5 +1,6 @@
 require 'webmock/rspec'
 
+SCIHIST_WEBMOCK_USED = true
 
 # Have WebMock disable outgoing http connections, except for some locally configured
 # exceptions.
