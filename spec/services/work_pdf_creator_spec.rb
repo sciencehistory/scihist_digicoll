@@ -119,4 +119,17 @@ describe WorkZipCreator do
       end
     end
   end
+
+  describe "with no available published images" do
+    let(:work) {
+      create(:public_work, members: [create(:asset_with_faked_file, published: false)])
+    }
+
+    it "raises on create" do
+      expect{
+        WorkPdfCreator.new(work).create
+      }.to raise_error(WorkPdfCreator::PdfCreationFailure, /No PDF files to join/)
+    end
+  end
+
 end
