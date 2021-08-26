@@ -16,6 +16,8 @@ require 'open-uri'
 # DEPENDS ON `pdfunite` command-line utility, which is installed with `poppler` which was a dependency
 # for our vips use anyway.
 class WorkPdfCreator
+  class PdfCreationFailure < RuntimeError ; end
+
   PAGE_WIDTH = 612
   PAGE_HEIGHT = 792
 
@@ -98,7 +100,7 @@ class WorkPdfCreator
       end
 
       if chunk_filepaths.empty?
-        raise "#{self.class.name}: No PDF files to join; are there no suitable images in work? work: #{work.friendlier_id}; total_page_count: #{total_page_count}"
+        raise PdfCreationFailure, "#{self.class.name}: No PDF files to join; are there no suitable images in work? work: #{work.friendlier_id}; total_page_count: #{total_page_count}"
       end
 
       # Now we gotta combine all our separate PDF files into one big one, which pdfunite
