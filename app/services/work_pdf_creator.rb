@@ -46,8 +46,10 @@ class WorkPdfCreator
     return tempfile
   rescue StandardError => e
     # if we raised, clean up the tempfile first
-    tempfile.close
-    tempfile.unlink
+    if tempfile
+      tempfile.close
+      tempfile.unlink
+    end
 
     # re-raise
     raise e
