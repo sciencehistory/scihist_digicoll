@@ -36,11 +36,19 @@ class WorkPdfCreator
     @callback = callback
   end
 
+
   # Returns a Tempfile. Up to caller to close/unlink tempfile when done with it.
   def create
     tempfile = tmp_pdf_file!
     write_pdf_to_path(tempfile.path)
     return tempfile
+  rescue StandardError => e
+    # if we raised, clean up the tempfile first
+    tempfile.close
+    tempfile.unlink
+
+    # re-raise
+    raise e
   end
 
   private
@@ -87,6 +95,10 @@ class WorkPdfCreator
         prawn_pdf = nil # try to help ruby GC know to get rid of this
 
         chunk_index += 1
+      end
+
+      if chunk_filepaths.empty?
+        raise "#{self.class.name}: No PDF files to join; are there no suitable images in work? work: #{work.friendlier_id}; total_page_count: #{total_page_count}"
       end
 
       # Now we gotta combine all our separate PDF files into one big one, which pdfunite
