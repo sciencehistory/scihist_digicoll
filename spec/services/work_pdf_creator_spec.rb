@@ -128,7 +128,7 @@ describe WorkZipCreator do
     it "raises on create" do
       expect{
         WorkPdfCreator.new(work).create
-      }.to raise_error(RuntimeError, /No PDF files to join/)
+      }.to raise_error(WorkPdfCreator::PdfCreationFailure, /No PDF files to join/)
     end
   end
 
