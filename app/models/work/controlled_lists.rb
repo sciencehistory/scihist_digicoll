@@ -44,6 +44,7 @@ class Work
       'Glassware',
       'Handbooks and manuals',
       'Illustrated works',
+      'Illustrations',
       'Implements, utensils, etc.',
       'Lithographs',
       'Manuscripts',
