@@ -5,7 +5,6 @@ namespace :scihist do
       adjustments = {
         'Clothing & dress' => "Clothing and dress",
         "Documents" => "Records (Documents)",
-        "Illustrations" => "Illustrated works",
         "Medical equipment & supplies" => "Medical instruments and apparatus",
         "Money (Objects)" => "Money",
         "Negatives" => "Negatives (Photographs)",
