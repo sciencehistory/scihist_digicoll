@@ -41,9 +41,9 @@ describe WorkZipCreator do
       work.members.each do |member|
         if member.kind_of?(Asset)
           member.remove_derivatives(:download_small, :download_medium, :download_large)
-          member.update_derivatives(
+          member.update_derivatives({
             download_full: create(:stored_uploaded_file)
-          )
+          })
         end
       end
     end
