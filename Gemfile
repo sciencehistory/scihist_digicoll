@@ -151,9 +151,6 @@ group :test do
   gem "database_cleaner", "~> 2.0"
   gem "webmock", "~> 3.5"
   gem "db-query-matchers", "< 2.0"
-  # Used for Cap deployment to auto-lookup hosts from EC2 tags.
-  gem 'aws-sdk-ec2', '>=1.74'
-
   gem 'rails-controller-testing'
 end
 
