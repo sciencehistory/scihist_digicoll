@@ -60,9 +60,6 @@ gem 'jbuilder', '~> 2.5'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
-# Use Capistrano for deployment
-# gem 'capistrano-rails', group: :development
-
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
 
@@ -94,9 +91,6 @@ gem "uppy-s3_multipart"
 gem "content_disposition", "~> 1.0"
 
 gem 'faster_s3_url', "< 2" # for generating s3 urls faster!
-
-# slack notifications on capistrano deploys
-gem 'slackistrano', "~> 4.0"
 
 gem "ransack", "~> 2.1"
 gem "kaminari", "~> 1.2"
@@ -143,11 +137,6 @@ group :development do
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
   gem 'web-console', '>= 3.3.0'
   gem 'listen', '>= 3.0.5', '< 3.2'
-  gem 'capistrano', '~> 3.8'
-  gem 'capistrano-bundler', '~> 2.0', ">= 2.0.1"
-  gem 'capistrano-passenger', '~> 0.2'
-  gem 'capistrano-rails', '~> 1.2'
-  gem 'capistrano-maintenance', '~> 1.0', require: false
 end
 
 group :test do
