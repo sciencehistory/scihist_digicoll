@@ -2,7 +2,7 @@ module CopyStaging
   # Loads a work into the app, from JSON serialized via corresponding SerializeWork class.
   #
   # These are normally called by scihist:copy_staging_work rake tasks, which
-  # are called by `copy_data` capistrano task -- for copying a work from
+  # are called by the `heroku:copy_data` task -- for copying a work from
   # staging to local dev instance.
   #
   # This normally restores while preserving PK and friendlier_id ids; if there are
