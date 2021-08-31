@@ -111,11 +111,11 @@ Some other interesting/complicated sub-systems we've written documentation for:
 
 ### Task to copy a Work from staging to your local dev instance
 
-    ./bin/cap staging copy_data[$work_friendlier_id]
+   ./bin/rake heroku:copy_data[$work_friendlier_id]
 
 Will copy a work (and all it's children, and all derivatives of all) from staging to your local dev instance. It will keep pk's and friendlier_id's constant, so you need to make sure you don't have anything conflicting already in your local db.
 
-It can be slow, and the code has several hacky workarounds to make it work, but it works. See the [capistrano task](.//lib/capistrano/tasks/copy_data.rake), and the [rake tasks it uses](./lib/tasks/copy_staging_work.rake).
+It can be slow, and the code has several hacky workarounds to make it work, but it works.
 
 ### Writing tests
 
@@ -214,18 +214,15 @@ We have a nightly job intending to verify internal consistency of derivative sto
 
 ## Deployment
 
-We use [capistrano](https://github.com/capistrano/capistrano) to deploy our application.
+We deploy to heroku.
 
-    bundle exec cap staging deploy
-    bundle exec cap production deploy
+See on our wiki:
 
-We have set up capistrano to auto-discover what servers to deploy to, by using AWS api to list our EC2 servers, with certain tags. See our custom [CapServerAutodiscover](./config/deploy/lib/cap_server_autodiscover.rb) module for details.
+* [Heroku Developer Setup](https://chemheritage.atlassian.net/wiki/spaces/HDC/pages/1956806658/Heroku+developer+setup) -- with instructions for pushing code to heroku.
+* [Heroku operational components overview](https://chemheritage.atlassian.net/wiki/spaces/HDC/pages/1915748368/Heroku+Operational+Components+Overview) -- look at notes on preboot.
 
-To make this work, you need to have AWS credentaisl available -- for now, we use a special set of credentails just for cap deploy, the 'cap_deploy' user. You should get the credentails from Dan or AWS IAS console, and put them in a file at `./cap_aws_credentials.yml`. See/copy the example at [./cap_aws_credentials.yml.example](./cap_aws_credentials.yml.example).
+In this repo, the [heroku Procfile](./Procfile), including "release" phase for things that happen on deploy. https://devcenter.heroku.com/articles/release-phase
 
-To list servers auto-discovered from EC2 without doing a deploy, run `cap staging list_ec2_servers` or `cap production list_ec2_servers`.
-
-When deploying to a new server add the flag solr_restart=true to the deploy so Solr performs a full restart and loads the configuration files. Normal deploys only reload Solr.
 
 ## Rake tasks
 
@@ -235,11 +232,13 @@ When deploying to a new server add the flag solr_restart=true to the deploy so S
 * `./bin/rake scihist:solr:delete_orphans` deletes things from Solr that no longer exist in the db. Ordinarily not required, but if things somehow get out of sync.
 * `./bin/rake scihist:solr:delete_all` Meant for development/test only, deletes all documents from Solr.
 
-You can run these tasks on a remote deploy environment (will actually run on server identified with capistrano "jobs" role) using capistrano, eg:
+You can easily run these tasks on a remote deploy environment with heroku
 
-    bundle exec cap staging invoke:rake TASK="scihist:solr:reindex scihist:solr:delete_orphans"
+    heroku run rake scihist:solr:reindex scihist:solr:delete_orphans
+    heroku run rake scihist:solr:reindex scihist:solr:delete_orphans -r production
 
-So no need to actually `ssh` to production environment to trigger a reindex or cleanup. When executing via cap, the "progress bar" is a bit wonky (and not a bar), but it works.
+See [Heroku Developer Setup](https://chemheritage.atlassian.net/wiki/spaces/HDC/pages/1956806658/Heroku+developer+setup)
+
 
 ### Derivatives
 

@@ -1,7 +1,7 @@
 module CopyStaging
   # Serializes a work as JSON, along with info on storage buckets files are stored in.
   # Used by the scihist:copy_staging_work:serialize_work rake task, which is used by
-  # the `copy_data` capistrano task. This is normally run on a staging server.
+  # the `heroku:copy_data` rake task. This is normally run on a staging server.
   #
   # All of this is to copy works from staging to a local dev instance.
   #

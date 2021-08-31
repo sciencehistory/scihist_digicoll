@@ -3,9 +3,6 @@
 #
 # https://bibwild.wordpress.com/2014/10/02/non-digested-asset-names-in-rails-4-your-options/
 #
-# A better way to do this might be to have `cap` look in the generated sprockets manifest to figure
-# out the right filename to copy, but that is confusing, and this is what we have.
-
 # Every time assets:precompile is called, trigger umlaut:create_non_digest_assets afterwards.
 Rake::Task["assets:precompile"].enhance do
   Rake::Task["scihist:create_non_digest_assets"].invoke
