@@ -41,9 +41,9 @@ describe WorkZipCreator do
       work.members.each do |member|
         if member.kind_of?(Asset)
           member.remove_derivatives(:download_small, :download_medium, :download_large)
-          member.update_derivatives(
+          member.update_derivatives({
             download_full: create(:stored_uploaded_file)
-          )
+          })
         end
       end
     end
@@ -119,4 +119,17 @@ describe WorkZipCreator do
       end
     end
   end
+
+  describe "with no available published images" do
+    let(:work) {
+      create(:public_work, members: [create(:asset_with_faked_file, published: false)])
+    }
+
+    it "raises on create" do
+      expect{
+        WorkPdfCreator.new(work).create
+      }.to raise_error(WorkPdfCreator::PdfCreationFailure, /No PDF files to join/)
+    end
+  end
+
 end
