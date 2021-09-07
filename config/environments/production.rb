@@ -165,12 +165,13 @@ Rails.application.configure do
     # URL in there eg `/catalog?q=foo`, so we override. Alternately, you could
     # of course add this as `fullpath` to have both.
     # https://bibwild.wordpress.com/2021/08/04/logging-uri-query-params-with-lograge/
+    #
+    # Also we include some user-agent info, but compressed with device_detector gem
     {
-      path: controller.request.filtered_path
+      path: controller.request.filtered_path,
+      ua: CompactUserAgent.new(controller.request.user_agent).compact
     }
   end
-
-
 
   # This default Rails log config probably doesn't do anything if we're using
   # lograge anyway, but we leave it here in case we turn lograge off again,
