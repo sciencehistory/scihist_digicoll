@@ -16,6 +16,8 @@
 // If we actually had it as a dependency in webpacker, we'd want:
 //import Uppy from 'uppy';
 
+import delegateEvent from '../lib/delegate_event.js';
+
 
 function kithe_createFileUploader(container) {
   // Some variables that can be taken from data- attributes, or defaults.
@@ -168,12 +170,24 @@ function kithe_createFileUploader(container) {
   });
 
   // Make the remove button work on the cached file rows
-  cachedFileTableEl.addEventListener('click', function(event) {
-    if (event.target.getAttribute("data-cached-file-remove")) {
-      row = closest(event.target, function(el) { return el.tagName.toLowerCase() == "tr" });
-      row.parentNode.removeChild(row);
-    }
+  delegateEvent(cachedFileTableEl, "click", "*[data-cached-file-remove]", function(event) {
+    var row = closest(event.target, function(el) { return el.tagName.toLowerCase() == "tr" });
+    row.parentNode.removeChild(row);
   });
+
+
+
+
+//   // Make the remove button work on the cached file rows
+//   cachedFileTableEl.addEventListener('click', function(event) {
+// debugger;
+//     if (event.target.getAttribute("data-cached-file-remove]",
+
+//       ) {
+//       row = closest(event.target, function(el) { return el.tagName.toLowerCase() == "tr" });
+//       row.parentNode.removeChild(row);
+//     }
+//   });
 
   var handleDirectoryInput = function() {
     var fileList = this.files;
