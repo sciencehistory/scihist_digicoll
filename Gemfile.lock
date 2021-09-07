@@ -172,6 +172,7 @@ GEM
     declarative (0.0.20)
     deprecation (1.1.0)
       activesupport
+    device_detector (1.0.5)
     devise (4.8.0)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -680,6 +681,7 @@ DEPENDENCIES
   csl-styles (~> 1.0)
   database_cleaner (~> 2.0)
   db-query-matchers (< 2.0)
+  device_detector (~> 1.0)
   devise (~> 4.5)
   draper (~> 4.0, >= 4.0.1)
   factory_bot_rails
