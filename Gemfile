@@ -71,6 +71,7 @@ gem 'jquery-rails', "~> 4.3"
 gem 'font-awesome-rails', '~> 4.7'
 
 gem "lograge", "< 2"
+gem "device_detector", "~> 1.0" # user-agent parsing we use for logging
 
 # temporary kithe indexing branch, for scihist_digicoll indexing branch, do not
 # intend to merge to master like this.
