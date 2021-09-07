@@ -14,7 +14,7 @@ describe CompactUserAgent do
   describe "long bad user agent" do
     let(:user_agent) { "a quite very long and terrible user agent that is very very long" }
     # truncates
-    it { is_expected.to eq "a quite very lo" }
+    it { is_expected.to eq "a quite very long an" }
   end
 
   describe "googlebot mobile" do

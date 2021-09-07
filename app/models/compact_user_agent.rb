@@ -19,7 +19,7 @@ class CompactUserAgent
     ].collect(&:presence).compact.join("/").yield_self do |str|
       if str.presence == nil
         # if we couldn't parse, give em first 15 chars of thing,
-        user_agent&.slice(0, 15)
+        user_agent&.slice(0, 20)
       else
         str
       end
