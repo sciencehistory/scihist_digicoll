@@ -38,10 +38,13 @@ namespace :scihist do
         stdout, _stderr, status = Open3.capture3("heroku run RAILS_DISABLE_LOGGING=true rake scihist:copy_staging_work:serialize_work[#{args[:work_friendlier_id]}] --exit-code -a #{heroku_app} 2>/dev/null")
 
         if status != 0
-          raise "Remote heroku export failed?"
+          raise "Remote heroku export failed? #{stdout}"
         end
 
-        tempfile.write(stdout)
+        # it's hard to get rails and our gems (*cough* scout) to avoid polluting stdout,
+        # that we really mean just to be json we're going to parse. Let's try scanning
+        # to first `{` at the beginning of a line, which is hopefully our actual JSON.
+        tempfile.write(stdout.slice(stdout.index(/^\{/), stdout.length))
         tempfile.flush
 
         $stderr.puts "Loading..."
