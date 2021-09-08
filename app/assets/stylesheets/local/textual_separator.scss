@@ -1,0 +1,32 @@
+// kind of looks like an <hr> but with text in the middle, like
+//
+// ----------------------- Some label -----------------------
+//
+// CSS trick from https://stackoverflow.com/a/26634224
+//
+// Modified for our needs.
+
+.textual-separator {
+  display: flex;
+  align-items: center;
+  text-align: center;
+
+  // font-face: $brand-sans-serif;
+  // color: $brand-dark-grey;
+  @extend %special-label;
+}
+
+.textual-separator::before,
+.textual-separator::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid $brand-dark-grey;
+}
+
+.textual-separator:not(:empty)::before {
+  margin-right: .25em;
+}
+
+.textual-separator:not(:empty)::after {
+  margin-left: .25em;
+}

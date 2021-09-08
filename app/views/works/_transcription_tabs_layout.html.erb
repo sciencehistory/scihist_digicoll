@@ -42,7 +42,7 @@
     <div class="tab-pane" id="transcription" role="tabpanel" aria-labelledby="transcription-tab">
       <% decorator.transcription_texts.each do |text_obj| %>
         <% if decorator.transcription_texts.length > 1 %>
-          <h3>Image <%= text_obj.image_number %></h3>
+          <h3 class="textual-separator">Image <%= text_obj.image_number %></h3>
           <%= simple_format text_obj.text %>
         <% end %>
       <% end %>
@@ -53,7 +53,7 @@
     <div class="tab-pane" id="translation" role="tabpanel" aria-labelledby="translation-tab">
       <% decorator.translation_texts.each do |text_obj| %>
         <% if decorator.transcription_texts.length > 1 %>
-          <h3>Image <%= text_obj.image_number %></h3>
+          <h3 class="textual-separator">Image <%= text_obj.image_number %></h3>
           <%= simple_format text_obj.text %>
         <% end %>
       <% end %>
