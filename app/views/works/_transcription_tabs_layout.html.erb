@@ -43,8 +43,8 @@
       <% decorator.transcription_texts.each do |text_obj| %>
         <% if decorator.transcription_texts.length > 1 %>
           <h3 class="textual-separator">Image <%= text_obj.image_number %></h3>
-          <%= simple_format text_obj.text %>
         <% end %>
+        <%= simple_format text_obj.text %>
       <% end %>
     </div>
   <% end %>
@@ -54,8 +54,8 @@
       <% decorator.translation_texts.each do |text_obj| %>
         <% if decorator.transcription_texts.length > 1 %>
           <h3 class="textual-separator">Image <%= text_obj.image_number %></h3>
-          <%= simple_format text_obj.text %>
         <% end %>
+        <%= simple_format text_obj.text %>
       <% end %>
     </div>
   <% end %>
