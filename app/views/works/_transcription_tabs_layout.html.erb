@@ -1,7 +1,11 @@
 <%# we're using a rails partial layout to 'wrap' the show work 'metadata' section in the
     apparatus for tabs for transcription and translation. This should be a layout around
     a partial that actually has the unadorned metadata column, which will show up where we
-    'yield' below, wrapped in the actual tabs as well as tab panels for other content. %>
+    'yield' below, wrapped in the actual tabs as well as tab panels for other content.
+
+    NOTE: we count on a WorkShowDecorator being passed as 'decorator' local in render call,
+    so we can see if we have ech of transcriptions or translation. Kind o fmessy!
+%>
 
 <ul class="nav nav-tabs mt-4 mb-2">
   <li class="nav-item">
@@ -9,16 +13,22 @@
       Description
     </a>
   </li>
-  <li class="nav-item">
-    <a class="nav-link" id="description-tab" data-toggle="tab" href="#transcription" role="tab" aria-controls="transcription">
-      Transcription
-    </a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" id="translation-tab" data-toggle="tab" href="#translation" role="tab" aria-controls="translation" aria-selected="true">
-      English Translation
-    </a>
-  </li>
+
+  <% if decorator.transcription_texts.present? %>
+    <li class="nav-item">
+      <a class="nav-link" id="description-tab" data-toggle="tab" href="#transcription" role="tab" aria-controls="transcription">
+        Transcription
+      </a>
+    </li>
+  <% end %>
+
+  <% if decorator.translation_texts.present? %>
+    <li class="nav-item">
+      <a class="nav-link" id="translation-tab" data-toggle="tab" href="#translation" role="tab" aria-controls="translation" aria-selected="true">
+        English Translation
+      </a>
+    </li>
+  <% end %>
 </ul>
 
 <div class="tab-content">
@@ -28,21 +38,26 @@
 
   </div>
 
-  <div class="tab-pane" id="transcription" role="tabpanel" aria-labelledby="transcription-tab">
-    <% decorator.transcription_texts.each do |text_obj| %>
-      <% if decorator.transcription_texts.length > 1 %>
-        <h3>Image <%= text_obj.image_number %></h3>
-        <%= simple_format text_obj.text %>
+  <% if decorator.transcription_texts.present? %>
+    <div class="tab-pane" id="transcription" role="tabpanel" aria-labelledby="transcription-tab">
+      <% decorator.transcription_texts.each do |text_obj| %>
+        <% if decorator.transcription_texts.length > 1 %>
+          <h3>Image <%= text_obj.image_number %></h3>
+          <%= simple_format text_obj.text %>
+        <% end %>
       <% end %>
-    <% end %>
-  </div>
+    </div>
+  <% end %>
 
-  <div class="tab-pane" id="translation" role="tabpanel" aria-labelledby="translation-tab">
-    <% decorator.translation_texts.each do |text_obj| %>
-      <% if decorator.transcription_texts.length > 1 %>
-        <h3>Image <%= text_obj.image_number %></h3>
-        <%= simple_format text_obj.text %>
+  <% if decorator.translation_texts.present? %>
+    <div class="tab-pane" id="translation" role="tabpanel" aria-labelledby="translation-tab">
+      <% decorator.translation_texts.each do |text_obj| %>
+        <% if decorator.transcription_texts.length > 1 %>
+          <h3>Image <%= text_obj.image_number %></h3>
+          <%= simple_format text_obj.text %>
+        <% end %>
       <% end %>
-    <% end %>
-  </div>
+    </div>
+  <% end %>
+
 </div>
