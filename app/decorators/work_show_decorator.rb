@@ -26,7 +26,8 @@ class WorkShowDecorator < Draper::Decorator
   def transcription_texts
     @transcription_texts ||= ([representative_member] + member_list_for_display).compact.collect.with_index do |member, i|
       if member.kind_of?(Asset) && member.transcription.present?
-        OpenStruct.new(
+        TextPage.new(
+          member,
           image_number: i+1,
           text: member.transcription
         )
@@ -37,7 +38,8 @@ class WorkShowDecorator < Draper::Decorator
   def translation_texts
     @translation_texts ||= ([representative_member] + member_list_for_display).compact.collect.with_index do |member, i|
       if member.kind_of?(Asset) && member.english_translation.present?
-        OpenStruct.new(
+        TextPage.new(
+          member,
           image_number: i+1,
           text: member.english_translation
         )
@@ -59,4 +61,23 @@ class WorkShowDecorator < Draper::Decorator
 
     @representative_member = model.representative
   end
+
+  # just a little value class for the things we need to display an individual
+  # asset-page's worth of transcription or translation text
+  class TextPage
+    attr_reader :asset, :image_number, :text
+
+    def initialize(asset, image_number:, text:)
+      @asset = asset
+      @image_number = image_number
+      @text = text
+    end
+
+    def friendlier_id
+      asset.friendlier_id
+    end
+
+  end
+
+
 end
