@@ -1,0 +1,122 @@
+<h1 class="mb-4">Orphaned File Report</h1>
+
+<p>
+  Checks whether our stored files actually are have links to them somewhere in our database.
+  To save space, this report only lists the total <em>number</em> of "orphaned" files, along with a few sample links.
+  The report also tells you when the files were last checked. Reports are run nightly, but we only keep the latest one.
+</p>
+
+
+<% if @report.nil? %>
+  <p>No reports found.</p>
+<% else %>
+  <h2 class="border-bottom">Latest report</h2>
+  <h4>Report id</h4>
+  <p><%= @report.id %></p>
+  <hr/>
+  <h4>Started at</h4>
+  <p><%= l(@data['start_time']&.to_datetime, format: :short) if @data['start_time']%></p>
+  <hr/>
+  <h4>Completed successfully at</h4>
+  <p class="text-muted small">If this date is present, the audit checked all assets.</p>
+  <p><%= l(@data['end_time'].to_datetime, format: :short) if @data['end_time']%></p>
+  <hr/>
+
+
+  <h4>Originals</h4>
+  <p class="text-muted small">Original files without a corresponding asset in the database.</p>
+  <p>
+    <% if @data['orphaned_originals_count'] > 0 %>
+      <span class="text-danger">
+        <i class="fa fa fa-thumbs-down" aria-hidden="true"></i>There are <%= @data['orphaned_originals_count'] %> orphaned original files.
+      </span>
+      <ul>
+      <% @data['orphaned_originals_sample'].each_with_index do |path, i|%>
+      <li>
+        <%= link_to(path.split("/").last, Shrine.storages[:store].url(path)) %>
+        <%= '[...]' if (@data['orphaned_originals_count'] > @data['orphaned_originals_sample'].length) && i == @data['orphaned_originals_sample'].length - 1 %>
+      </li>
+
+      <% end %>
+      </ul>
+     
+    <% else %>
+      <span class="text-success">
+        <i class="fa fa fa-thumbs-up" aria-hidden="true"></i>
+      </span>
+      All original files OK.
+    <% end %>
+  </p>
+
+  <hr/>
+  <h4>Public derivatives</h4>
+  <p class="text-muted small">Public derivatives without a corresponding asset in the database.</p>
+  <p>
+    <% if @data['orphaned_public_derivatives_count'] > 0 %>
+      <span class="text-danger">
+        <i class="fa fa fa-thumbs-down" aria-hidden="true"></i>  There are <%= @data['orphaned_public_derivatives_count'] %> orphaned public derivatives.
+      </span>
+      <ul>
+        <% @data['orphaned_public_derivatives_sample'].each_with_index do |path, i|%>
+          <li>
+            <%= link_to(path.split("/").last, Shrine.storages[:kithe_derivatives].url(path)) %>
+            <%= '[...]' if (@data['orphaned_public_derivatives_count'] > @data['orphaned_public_derivatives_sample'].length) && i == @data['orphaned_public_derivatives_sample'].length - 1 %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <span class="text-success">
+        <i class="fa fa fa-thumbs-up" aria-hidden="true"></i>
+      </span>
+      All public derivatives OK
+    <% end %>
+  </p>
+
+  <hr/>
+  <h4>Restricted derivatives</h4>
+  <p class="text-muted small">Restricted derivatives without a corresponding asset in the database.</p>
+  <p>
+    <% if @data['orphaned_restricted_derivatives_count'] > 0  %>
+      <span class="text-danger">
+        <i class="fa fa fa-thumbs-down" aria-hidden="true"></i> There are <%= @data['orphaned_restricted_derivatives_count'] %> orphaned restricted derivatives.
+      </span>
+      <ul>
+        <% @data['orphaned_restricted_derivatives_sample'].each_with_index do |path, i|%>
+          <li>
+          <%= link_to(path.split("/").last, Shrine.storages[:restricted_kithe_derivatives].url(path)) %>
+          <%= '[...]' if (@data['orphaned_restricted_derivatives_count'] > @data['orphaned_restricted_derivatives_sample'].length) && i == @data['orphaned_restricted_derivatives_sample'].length - 1 %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <span class="text-success">
+        <i class="fa fa fa-thumbs-up" aria-hidden="true"></i>
+      </span>
+      All restricted derivatives OK
+    <% end %>
+  </p>
+
+  <hr/>
+  <h4>DZI tiles</h4>
+  <p class="text-muted small">Deep zoom tiles without a corresponding asset in the database.</p>
+  <p>
+    <% if @data['orphaned_dzi_count'] > 0 %>
+      <span class="text-danger"> 
+        <i class="fa fa fa-thumbs-down" aria-hidden="true"></i> There are <%= @data['orphaned_dzi_count'] %> orphaned deep zoom tiles:
+      </span>
+      <ul>
+        <% @data['orphaned_dzi_sample'].each_with_index do |path, i|%>
+          <li>
+            <%= link_to(path.split("/").last, Shrine.storages[:dzi_storage].url(path)) %>
+            <%= '[...]' if (@data['orphaned_dzi_count'] > @data['orphaned_dzi_sample'].length) && i == @data['orphaned_dzi_sample'].length - 1 %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <span class="text-success">
+        <i class="fa fa fa-thumbs-up" aria-hidden="true"></i>
+      </span>
+      All tiles OK
+    <% end %>
+  </p>
+<% end %>

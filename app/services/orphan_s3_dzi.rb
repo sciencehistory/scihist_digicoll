@@ -34,8 +34,10 @@
 # would require a reorganization of our many gigs of DZI files, which is hard to do on S3.
 class OrphanS3Dzi
 
-  attr_reader :s3_iterator, :shrine_storage, :show_progress_bar
+  attr_reader :s3_iterator, :shrine_storage, :show_progress_bar, :sample, :orphans_found
   def initialize(show_progress_bar: true)
+
+    @sample = []
     @shrine_storage = ScihistDigicoll::Env.shrine_dzi_storage
     @show_progress_bar = show_progress_bar
 
@@ -66,14 +68,16 @@ class OrphanS3Dzi
 
   def report_orphans
     max_reports = 20
-    orphans_found = 0
+    @orphans_found = 0
 
     files_checked = find_orphan_dzi_files do |asset_id:, md5:, shrine_id:, s3_path:|
-      orphans_found +=1
+      @orphans_found +=1
 
-      if orphans_found == max_reports
+      if @orphans_found == max_reports
         s3_iterator.log "Reported max #{max_reports} orphans, not listing subsquent...\n"
-      elsif orphans_found < max_reports
+      elsif @orphans_found < max_reports
+
+        @sample << s3_path
         asset = Asset.where(id: asset_id).first
 
         s3_iterator.log "orphaned DZI"

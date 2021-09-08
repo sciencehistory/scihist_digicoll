@@ -86,6 +86,7 @@
               <li><%= link_to "Job Queues", admin_resque_server_path %></li>
               <li><%= link_to "Fixity Report", admin_fixity_report_path %></li>
               <li><%= link_to "Storage Report", admin_storage_report_path %></li>
+              <li><%= link_to "Orphan Report", admin_orphan_report_path %></li>
               <li><hr></li>
               <% if current_user %>
                 <li><%= link_to("Logout", destroy_user_session_path, method: :delete) %></li>
