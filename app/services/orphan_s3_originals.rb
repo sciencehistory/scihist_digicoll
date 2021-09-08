@@ -17,11 +17,12 @@
 # report on all discovered orphaned files, or to actually _delete_ orphaned files.  This class
 # is normally called from a rake task.
 class OrphanS3Originals
-  attr_reader :s3_iterator, :shrine_storage
+  attr_reader :s3_iterator, :shrine_storage,  :orphans_found, :delete_count, :sample
 
   # @param show_progress_bar [Boolean], default true, should we show a progress
   #   bar with estimated progress.
   def initialize(show_progress_bar: true)
+    @sample = []
     @shrine_storage = ScihistDigicoll::Env.shrine_store_storage
 
     @s3_iterator = S3PathIterator.new(
@@ -39,17 +40,18 @@ class OrphanS3Originals
   # set in an initializer, there will be a progress bar.
   def report_orphans
     max_reports = 20
-    orphans_found = 0
+    @orphans_found = 0
 
     files_checked = s3_iterator.each_s3_path do |s3_key|
       asset_id, shrine_path = parse_s3_path(s3_key)
 
       if orphaned?(asset_id, shrine_path)
-        orphans_found +=1
+        @orphans_found +=1
 
-        if orphans_found == max_reports
+        if @orphans_found == max_reports
           s3_iterator.log "Reported max #{max_reports} orphans, not listing subsquent...\n"
-        elsif orphans_found < max_reports
+        elsif @orphans_found < max_reports
+          @sample << s3_key
           asset = Asset.where(id: asset_id).first
 
           s3_iterator.log "orphaned file!"
@@ -69,23 +71,23 @@ class OrphanS3Originals
 
     $stderr.puts "\n\nTotal Asset count: #{asset_count}"
     $stderr.puts "Checked #{files_checked} files on S3"
-    $stderr.puts "Found #{orphans_found} orphan files\n"
+    $stderr.puts "Found #{@orphans_found} orphan files\n"
   end
 
   # Deletes all found orphans, outputing to console what was deleted.
   # If obj initializer show_progress_bar, there will be a progress bar.
   def delete_orphans
-    delete_count = 0
+    @delete_count = 0
     s3_iterator.each_s3_path do |s3_key|
       asset_id, shrine_path = parse_s3_path(s3_key)
 
       if orphaned?(asset_id, shrine_path)
         shrine_storage.bucket.object(s3_key).delete
         s3_iterator.log "deleted: #{shrine_storage.bucket.name}: #{s3_key}"
-        delete_count += 1
+        @delete_count += 1
       end
     end
-    puts "Deleted #{delete_count} orphaned objects"
+    puts "Deleted #{@delete_count} orphaned objects"
   end
 
   private
