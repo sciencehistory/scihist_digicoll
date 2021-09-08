@@ -17,7 +17,11 @@
   </div>
 
   <div class="show-metadata">
-    <%= render 'work_metadata', work: @work %>
+    <%# metadata is wrapped in tabs including transcription and translation if present! %>
+    <%= render partial: 'work_metadata',
+          layout: ("transcription_tabs_layout" if decorator.has_transcription_or_translation?),
+          locals: { work: @work }
+      %>
   </div>
 
   <%# these next are not in a div so they can wrap around the bottom of the metadata

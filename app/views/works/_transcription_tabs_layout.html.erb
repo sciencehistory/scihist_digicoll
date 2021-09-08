@@ -1,0 +1,48 @@
+<%# we're using a rails partial layout to 'wrap' the show work 'metadata' section in the
+    apparatus for tabs for transcription and translation. This should be a layout around
+    a partial that actually has the unadorned metadata column, which will show up where we
+    'yield' below, wrapped in the actual tabs as well as tab panels for other content. %>
+
+<ul class="nav nav-tabs mt-4 mb-2">
+  <li class="nav-item">
+    <a class="nav-link active" id="description-tab" data-toggle="tab" href="#description" role="tab" aria-controls="description" aria-selected="true">
+      Description
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="description-tab" data-toggle="tab" href="#transcription" role="tab" aria-controls="transcription">
+      Transcription
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="translation-tab" data-toggle="tab" href="#translation" role="tab" aria-controls="translation" aria-selected="true">
+      English Translation
+    </a>
+  </li>
+</ul>
+
+<div class="tab-content">
+  <div class="tab-pane show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+
+    <%= yield %>
+
+  </div>
+
+  <div class="tab-pane" id="transcription" role="tabpanel" aria-labelledby="transcription-tab">
+    <% decorator.transcription_texts.each do |text_obj| %>
+      <% if decorator.transcription_texts.length > 1 %>
+        <h3>Image <%= text_obj.image_number %></h3>
+        <%= simple_format text_obj.text %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="tab-pane" id="translation" role="tabpanel" aria-labelledby="translation-tab">
+    <% decorator.translation_texts.each do |text_obj| %>
+      <% if decorator.transcription_texts.length > 1 %>
+        <h3>Image <%= text_obj.image_number %></h3>
+        <%= simple_format text_obj.text %>
+      <% end %>
+    <% end %>
+  </div>
+</div>
