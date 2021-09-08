@@ -56,7 +56,7 @@ class CompactUserAgent
   end
 
   def device_detector
-    DeviceDetector.new(user_agent)
+    @device_detector ||= DeviceDetector.new(user_agent)
   end
 
 end
