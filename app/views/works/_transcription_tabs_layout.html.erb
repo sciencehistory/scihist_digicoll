@@ -42,7 +42,7 @@
     <div class="tab-pane" id="transcription" role="tabpanel" aria-labelledby="transcription-tab">
       <% decorator.transcription_texts.each do |text_obj| %>
         <% if decorator.transcription_texts.length > 1 %>
-          <h3 class="textual-separator">
+          <h3 class="textual-separator text-page-separator">
             <%= link_to(
                 "#",
                  data: {
@@ -74,7 +74,19 @@
               analytics_action: "view",
               analytics_label: text_obj.asset.parent&.friendlier_id
             }) do %>
-              <h3 class="textual-separator">Image <%= text_obj.image_number %></h3>
+              <h3 class="textual-separator text-page-separator">
+                <%= link_to(
+                "#",
+                 data: {
+                  trigger: "scihist_image_viewer",
+                  member_id: text_obj.friendlier_id,
+                  analytics_category: "Work",
+                  analytics_action: "view",
+                  analytics_label: text_obj.asset.parent&.friendlier_id
+                }) do %>
+                  Image <%= text_obj.image_number %>
+                <% end %>
+              </h3>
             <% end %>
         <% end %>
         <%= simple_format text_obj.text %>
