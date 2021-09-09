@@ -43,15 +43,11 @@
       <% decorator.transcription_texts.each do |text_obj| %>
         <% if decorator.transcription_texts.length > 1 %>
           <h3 class="textual-separator text-page-separator">
-            <%= link_to(
-                "#",
-                 data: {
-                  trigger: "scihist_image_viewer",
-                  member_id: text_obj.friendlier_id,
-                  analytics_category: "Work",
-                  analytics_action: "view",
-                  analytics_label: text_obj.asset.parent&.friendlier_id
-                }) do %>
+          <%= link_to(
+            viewer_path(text_obj.asset.parent.friendlier_id, text_obj.asset.friendlier_id),
+            data: MemberImagePresentation.viewer_trigger_data_attrs(
+                member_id: text_obj.friendlier_id, work_id: text_obj.asset.parent&.friendlier_id
+          )) do %>
               Image <%= text_obj.image_number %>
             <% end %>
           </h3>
@@ -66,24 +62,17 @@
       <% decorator.translation_texts.each do |text_obj| %>
         <% if decorator.transcription_texts.length > 1 %>
           <%= link_to(
-            "#",
-             data: {
-              trigger: "scihist_image_viewer",
-              member_id: text_obj.friendlier_id,
-              analytics_category: "Work",
-              analytics_action: "view",
-              analytics_label: text_obj.asset.parent&.friendlier_id
-            }) do %>
+            viewer_path(text_obj.asset.parent.friendlier_id, text_obj.asset.friendlier_id),
+             data: MemberImagePresentation.viewer_trigger_data_attrs(
+                member_id: text_obj.friendlier_id, work_id: text_obj.asset.parent&.friendlier_id
+              )
+            ) do %>
               <h3 class="textual-separator text-page-separator">
                 <%= link_to(
-                "#",
-                 data: {
-                  trigger: "scihist_image_viewer",
-                  member_id: text_obj.friendlier_id,
-                  analytics_category: "Work",
-                  analytics_action: "view",
-                  analytics_label: text_obj.asset.parent&.friendlier_id
-                }) do %>
+                    viewer_path(text_obj.asset.parent.friendlier_id, text_obj.asset.friendlier_id),
+                    data: MemberImagePresentation.viewer_trigger_data_attrs(
+                      member_id: text_obj.friendlier_id, work_id: text_obj.asset.parent&.friendlier_id
+                )) do %>
                   Image <%= text_obj.image_number %>
                 <% end %>
               </h3>
