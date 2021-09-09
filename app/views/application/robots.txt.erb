@@ -17,6 +17,13 @@ Disallow: /collections/*/range_limit
 Disallow: /catalog/range_limit_panel
 Disallow: /collections/*/range_limit_panel
 
+# OK, let's try to disallow any search results that include facet limits,
+# to try to prevent these crawlers from tree-walking every possible
+# facet limit combination. 'nofollow' on the links would be my first choice
+# instead of this, but waiting on PR to Blacklight for that.
+# https://github.com/sciencehistory/scihist_digicoll/issues/1306
+Disallow: /catalog/*f%5B
+Disallow: /collections/*f%5B
 
 
 <% else %>
