@@ -10,12 +10,15 @@ User-agent: *
 # "more facets"
 Disallow: /catalog/facet/
 Disallow: /collections/*/facet/
+Disallow: /focus/*/facet
 # range-limit page normally only requested by AJAX for loading range limit info.
 Disallow: /catalog/range_limit
 Disallow: /collections/*/range_limit
+Disallow: /focus/*/range_limit
 # "View larger" link for range limit.
 Disallow: /catalog/range_limit_panel
 Disallow: /collections/*/range_limit_panel
+Disallow: /focus/*/range_limit_panel
 
 # OK, let's try to disallow any search results that include facet limits,
 # to try to prevent these crawlers from tree-walking every possible
@@ -27,8 +30,10 @@ Disallow: /collections/*/range_limit_panel
 # google robots.txt-validator suggests no, so we'll list both.
 Disallow: /catalog*f%5B
 Disallow: /catalog*f[
-Disallow: /collections*f%5B
-Disallow: /collections*f[
+Disallow: /collections/*f%5B
+Disallow: /collections/*f[
+Disallow: /focus/*f%5B
+Disallow: /focus/*f[
 
 
 <% else %>
