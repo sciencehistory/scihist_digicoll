@@ -52,7 +52,9 @@
             <% end %>
           </h3>
         <% end %>
-        <%= simple_format text_obj.text %>
+        <div class="long-text-line-height">
+          <%= simple_format text_obj.text %>
+        </div>
       <% end %>
     </div>
   <% end %>
@@ -78,7 +80,9 @@
               </h3>
             <% end %>
         <% end %>
-        <%= simple_format text_obj.text %>
+        <div class="long-text-line-height">
+          <%= simple_format text_obj.text %>
+        </div>
       <% end %>
     </div>
   <% end %>
