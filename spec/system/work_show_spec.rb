@@ -128,6 +128,40 @@ describe "Public work show page", type: :system, js: false do
       expect(page).to have_selector("h1", text: work.title)
     end
   end
+
+  describe "Multi-page work with transcription and translation", js: true do
+    let(:work) do
+      create(:public_work, :with_complete_metadata,
+        members: [
+          create(:asset_with_faked_file, position: 1, transcription: "This is file-1 transcription", english_translation: "This is file-1 translation"),
+          create(:asset_with_faked_file, position: 2, transcription: "This is file-2 transcription", english_translation: "This is file-2 translation")
+        ]
+      )
+    end
+
+    it "displays transcription and translation in tabs" do
+      visit work_path(work)
+
+      click_on "Transcription"
+
+      expect(page).to have_text(/IMAGE 1.*This is file-1 transcription.*IMAGE 2.*This is file-2 transcription/m)
+      expect(page).not_to have_text("This is file-1 translation")
+      expect(page).not_to have_text("This is file-2 translation")
+
+      expect(page).to have_link(text: "IMAGE 1", href: viewer_path(work, work.members.first.friendlier_id))
+      expect(page).to have_link(text: "IMAGE 2", href: viewer_path(work, work.members.second.friendlier_id))
+
+      click_on "English Translation"
+
+      expect(page).to have_text(/IMAGE 1.*This is file-1 translation.*IMAGE 2.*This is file-2 translation/m)
+      expect(page).not_to have_text("This is file-1 transcription")
+      expect(page).not_to have_text("This is file-2 transcription")
+
+      expect(page).to have_link(text: "IMAGE 1", href: viewer_path(work, work.members.first.friendlier_id))
+      expect(page).to have_link(text: "IMAGE 2", href: viewer_path(work, work.members.second.friendlier_id))
+    end
+  end
+
 end
 
 describe "Public work show page", :logged_in_user, type: :system, js: false do
