@@ -226,13 +226,19 @@ class DownloadDropdownDisplay < ViewModel
     RightsIconDisplay.new(display_parent_work, mode: :dropdown_item).display
   end
 
-  # have a parent work, with more than 1 child, and AT LEAST ONE of it's children are images,
+  # have a PUBLISHED parent work, with more than 1 child, and AT LEAST ONE of it's children are images,
   # provide multi-image downloads. These are the only whole-work-download options we provide at present.
+  #
+  # (Our current PDF and Zip creators only create for published items, they can't create
+  # for non-published items. But we don't have an easy way to efficiently access
+  # number of published child items, we just use the parent being unpublished as a proxy
+  # for "not ready")
   #
   # NOTE: We had been checking to make sure ALL members were images, but that was FAR
   # too resource intensive, it destroyed ramelli. Checking just one is okay though.
   def has_work_download_options?
     display_parent_work &&
+    display_parent_work.published? &&
     display_parent_work.member_count > 1 &&
     display_parent_work.member_content_types(mode: :query).all? {|t| t.start_with?("image/")}
   end
