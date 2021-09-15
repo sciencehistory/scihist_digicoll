@@ -142,6 +142,8 @@ describe "Public work show page", type: :system, js: false do
     it "displays transcription and translation in tabs" do
       visit work_path(work)
 
+      # if we are in small screen menu, we need to click on currently selected tab to open menu first!
+      click_on "Description"
       click_on "Transcription"
 
       expect(page).to have_text(/IMAGE 1.*This is file-1 transcription.*IMAGE 2.*This is file-2 transcription/m)
@@ -151,6 +153,8 @@ describe "Public work show page", type: :system, js: false do
       expect(page).to have_link(text: "IMAGE 1", href: viewer_path(work, work.members.first.friendlier_id))
       expect(page).to have_link(text: "IMAGE 2", href: viewer_path(work, work.members.second.friendlier_id))
 
+      # if we are in small screen menu, we need to click on currently selected tab to open menu first!
+      click_on "Transcription"
       click_on "English Translation"
 
       expect(page).to have_text(/IMAGE 1.*This is file-1 translation.*IMAGE 2.*This is file-2 translation/m)
