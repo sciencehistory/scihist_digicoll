@@ -6,7 +6,7 @@ RSpec.describe "ingest files to work", :logged_in_user, type: :system, js: true,
   # the hidden file input used by uppy, we can target directly, hacky, we're not fully testing
   # what the user actually does, but best way we figured out to test.
   def add_file_via_uppy_dashboard(file_path)
-    attach_file "files[]", file_path.to_s, make_visible: true
+    attach_file "files[]", file_path.to_s, make_visible: true, match: :first
   end
 
   it "can add files" do
