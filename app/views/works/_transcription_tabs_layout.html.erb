@@ -48,6 +48,7 @@
             data: MemberImagePresentation.viewer_trigger_data_attrs(
                 member_id: text_obj.friendlier_id, work_id: text_obj.asset.parent&.friendlier_id
           )) do %>
+              <i class="fa fa-search" aria-hidden="true"></i>
               Image <%= text_obj.image_number %>
             <% end %>
           </h3>
@@ -75,6 +76,7 @@
                     data: MemberImagePresentation.viewer_trigger_data_attrs(
                       member_id: text_obj.friendlier_id, work_id: text_obj.asset.parent&.friendlier_id
                 )) do %>
+                  <i class="fa fa-search" aria-hidden="true"></i>
                   Image <%= text_obj.image_number %>
                 <% end %>
               </h3>
