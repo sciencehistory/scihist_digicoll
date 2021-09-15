@@ -3,16 +3,10 @@ require 'rails_helper'
 RSpec.describe "ingest files to work", :logged_in_user, type: :system, js: true, queue_adapter: :test do
   let(:work) { FactoryBot.create(:work) }
 
-  # the hidden file input used by uppy, we can target directly, hacky, we're not fully testing
-  # what the user actually does, but best way we figured out to test.
-  def add_file_via_uppy_dashboard(file_path)
-    attach_file "files[]", file_path.to_s, make_visible: true, match: :first
-  end
-
   it "can add files" do
     visit admin_asset_ingest_path(work)
 
-    add_file_via_uppy_dashboard(Rails.root.join("spec/test_support/images/30x30.png"))
+    add_file_via_uppy_dashboard(input_name: "files[]", file_path: Rails.root.join("spec/test_support/images/30x30.png"))
 
     expect(page).to have_css(".attach-files-table td", text: /30x30\.png/)
 
@@ -31,7 +25,7 @@ RSpec.describe "ingest files to work", :logged_in_user, type: :system, js: true,
   it "can add a file with restricted derivative storage", queue_adapter: :inline do
     visit admin_asset_ingest_path(work)
 
-    add_file_via_uppy_dashboard(Rails.root.join("spec/test_support/images/20x20.png"))
+    add_file_via_uppy_dashboard(input_name: "files[]", file_path: Rails.root.join("spec/test_support/images/20x20.png"))
 
     expect(page).to have_css(".attach-files-table td", text: /20x20\.png/)
 
