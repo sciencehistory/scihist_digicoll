@@ -22,7 +22,7 @@ RSpec.describe "Edit Collection form", :logged_in_user, type: :system, queue_ada
     fill_in "collection[related_url_attributes][]", with: "http://example.org/edited"
 
     # # the hidden file input used by uppy, we can target directly...
-    attach_file "files[]", (Rails.root + "spec/test_support/images/20x20.png").to_s, make_visible: true
+    attach_file "files[]", (Rails.root + "spec/test_support/images/20x20.png").to_s, make_visible: true, match: :first
     expect(page).to have_text("Will be saved") # wait for direct upload to complete
 
     click_on "Update Collection"
