@@ -38,7 +38,6 @@ function kithe_createFileUploader(container) {
 
   var containerForm = closest(container, function(el) { return el.tagName.toLowerCase() == "form" });
   var cachedFileTableEl = containerForm.querySelector("*[data-toggle='cached-files-table']");
-  var directoryInput = containerForm.querySelector("*[data-toggle='directory-input']");
   var browseEverythingButton = containerForm.querySelector('*[data-toggle="kithe-browse-everything"]');
   var submitButton = containerForm.querySelector("*[data-toggle='kithe-upload-submit']");
 
@@ -58,6 +57,7 @@ function kithe_createFileUploader(container) {
       // We have really large files that could take a while, plus plenty of files
       // uppy can't get thumbs for anyway.
       disableThumbnailGenerator: true,
+      fileManagerSelectionType: "both"
     })
 
 
@@ -189,25 +189,6 @@ function kithe_createFileUploader(container) {
 //     }
 //   });
 
-  var handleDirectoryInput = function() {
-    var fileList = this.files;
-    for (var i = 0; i < fileList.length; i++) {
-      var file = fileList[i];
-      uppy.addFile({
-        name: file.name, // file name
-        type: file.type, // file type
-        data: file, // file blob
-      });
-
-      // Would be nice to remove files from html input, but it messes things up.
-      // We gave it no `name` so it shouldn't submit with form or anything.
-      //this.value = ""; // remove files from html input?
-    }
-  }
-
-  if (directoryInput) {
-    directoryInput.addEventListener("change", handleDirectoryInput, false);
-  }
 
   // Pretty hacky and not great way to try to disable submit button
   // when uploads are in progress.  https://github.com/transloadit/uppy/issues/1152
@@ -237,12 +218,6 @@ function kithe_createFileUploader(container) {
         } else {
           submitButton.removeAttribute("disabled");
         }
-      }
-
-      if (directoryInput && !uploadInProgress) {
-        // try zero-ing out the html file input, so mouseover won't show
-        // a list of files that we already processed and added to hidden inputs
-        directoryInput.value = "";
       }
     }
   };
