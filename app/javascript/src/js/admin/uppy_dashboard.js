@@ -42,7 +42,7 @@ function kithe_createFileUploader(container) {
   var browseEverythingButton = containerForm.querySelector('*[data-toggle="kithe-browse-everything"]');
   var submitButton = containerForm.querySelector("*[data-toggle='kithe-upload-submit']");
 
-  var uppy = Uppy.Core({
+  var uppy = new Uppy.Core({
       id: container.id,
       autoProceed: true,
       restrictions: uppyRestrictions
