@@ -9,7 +9,7 @@ RSpec.describe "New Collection form", :logged_in_user, type: :system, js: true, 
     fill_in "collection[related_url_attributes][]", with: "http://example.org"
 
     # the hidden file input used by uppy, we can target directly...
-    attach_file "files[]", (Rails.root + "spec/test_support/images/30x30.png").to_s, make_visible: true
+    add_file_via_uppy_dashboard input_name: "files[]", file_path: (Rails.root + "spec/test_support/images/30x30.png").to_s
 
     click_button "Create Collection"
 
@@ -36,7 +36,7 @@ RSpec.describe "New Collection form", :logged_in_user, type: :system, js: true, 
     fill_in "collection[related_url_attributes][]", with: "http://example.org"
 
     # the hidden file input used by uppy, we can target directly...
-    attach_file "files[]", (Rails.root + "spec/test_support/images/30x30.png").to_s, make_visible: true
+    add_file_via_uppy_dashboard input_name: "files[]", file_path: (Rails.root + "spec/test_support/images/30x30.png").to_s
 
     click_button "Create Collection"
     expect(page).to have_text("1 error prohibited this collection from being saved")
