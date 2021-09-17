@@ -169,6 +169,22 @@ class WorkIndexer < Kithe::Indexer
           end
         end
       end
+
+      if rec.members.any? {|mem| mem.asset? && mem.english_translation.present?}
+        acc << rec.members.map {|mem| mem.english_translation if mem.asset? }.compact.join(" ")
+      end
+      # Index the transcription into this if we can assume that the work is entirely in English.
+      if rec.members.any? {|mem| mem.asset? && mem.transcription.present?} && rec.language == ['en']
+        acc << rec.members.map {|mem| mem.transcription if mem.asset? }.compact.join(" ")
+      end
+    end
+
+
+    to_field "searchable_fulltext_language_agnostic" do |rec, acc|
+      # If the work contains some non-English language(s), then index the transcription into a fulltext language agnostic field.
+      if rec.members.any? {|mem| mem.asset? &&  mem.transcription.present?} && rec.language != ['en']
+        acc << rec.members.map {|mem| mem.transcription if mem.asset? }.compact.join(" ")
+      end
     end
 
     # for oral histories, get biographical data. Some to same field as subject (text3_tesim), some
