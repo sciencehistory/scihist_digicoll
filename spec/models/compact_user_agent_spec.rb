@@ -8,13 +8,13 @@ describe CompactUserAgent do
 
   describe "bad user agent" do
     let(:user_agent) { "bad user agent" }
-    it { is_expected.to eq "bad user agent" }
+    it { is_expected.to eq "bad_user_agent" }
   end
 
   describe "long bad user agent" do
     let(:user_agent) { "a quite very long and terrible user agent that is very very long" }
     # truncates
-    it { is_expected.to eq "a quite very long an" }
+    it { is_expected.to eq "a_quite_very_long_and_terrible_user_agent_that_is_" }
   end
 
   describe "googlebot mobile" do
@@ -24,12 +24,12 @@ describe CompactUserAgent do
 
   describe "yandex bot" do
     let(:user_agent) { %q{Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)} }
-    it { is_expected.to eq "bot:Yandex Bot"}
+    it { is_expected.to eq "bot:Yandex_Bot"}
   end
 
   describe "baidu bot" do
     let(:user_agent) { %q{Mozilla/5.0 (compatible; Baiduspider/2.0;+http://www.baidu.com/search/spider.html)} }
-    it { is_expected.to eq "bot:Baidu Spider"}
+    it { is_expected.to eq "bot:Baidu_Spider"}
   end
 
   describe "IE" do
