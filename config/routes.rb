@@ -12,6 +12,11 @@ Rails.application.routes.draw do
   end
 
 
+  # custom error pages
+  # https://www.marcelofossrj.com/recipe/2019/04/14/custom-errors.html
+  get "/404", to: "errors#not_found", :via => :all
+  get "/422", to: "errors#unacceptable", :via => :all
+  get "/500", to: "errors#internal_error", :via => :all
 
   # Oral History legacy redirects, come first in routes file so they'll match first
   # for requests to old oral history host oh.sciencehistory.org
