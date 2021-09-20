@@ -9,6 +9,6 @@ describe "Work#all_descendent_members" do
   let!(:unrelated_work){ FactoryBot.create(:work, title: "unrelated") }
 
   it "finds all" do
-    expect(work.all_descendent_members.to_a.collect(&:id)).to match([intermediate_work.id, asset.id])
+    expect(work.all_descendent_members.to_a.collect(&:id)).to match_array([intermediate_work.id, asset.id])
   end
 end
