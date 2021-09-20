@@ -2,7 +2,6 @@
 //
 //
 //= link_tree ../images
-//= link_directory ../html .html
 //
 //= link application.css
 //= link application.js
