@@ -67,7 +67,7 @@
     </div>
 
     <% decorator.member_list_for_display.each_with_index do |member, index| %>
-      <%= FileListItemDisplay.new(member, index: index, download_original_only: true).display %>
+      <%= render FileListItemComponent.new(member, index: index, download_original_only: true) %>
     <% end %>
   </div>
 

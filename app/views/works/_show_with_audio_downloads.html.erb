@@ -2,14 +2,14 @@
   <div class="downloads-pdf">
     <div class="other-files sans-serif">
       <% decorator.file_list_members.each_with_index do |member, index| %>
-        <%= FileListItemDisplay.new(member,
+        <%= render FileListItemComponent.new(member,
               index: index,
               view_link_attributes: {
                 'data-analytics-category' => 'Work',
                 'data-analytics-action' => "view_oral_history_transcript_pdf",
                 'data-analytics-label' => member.parent.friendlier_id
               }
-            ).display
+            )
         %>
       <% end %>
       <p><small>The published version of the transcript may diverge from the interview audio due to edits to the transcript made by staff of the Center for Oral History, often at the request of the interviewee, during the transcript review process.</small></p>
