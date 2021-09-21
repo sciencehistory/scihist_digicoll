@@ -71,7 +71,11 @@ RSpec.configure do |config|
   # https://viewcomponent.org/guide/testing.html#rspec-configuration
   config.include ViewComponent::TestHelpers, type: :component
   config.include Capybara::RSpecMatchers, type: :component
-
+  config.include Devise::Test::ControllerHelpers, type: :component
+  config.before(:each, type: :component) do
+    # for devise support according to ViewComponent docs.
+    @request = controller.request
+  end
 
   # and this applies to wrapped Rails 'system' tests, which rspec recommends
   # we use now over feature tests.
