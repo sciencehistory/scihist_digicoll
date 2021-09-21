@@ -8,7 +8,7 @@
 <div class="show-page-layout work-show work-show-file-list" itemscope itemtype="http://schema.org/CreativeWork" class="row">
 
   <div class="show-title">
-    <%= WorkTitleAndDates.new(@work).display %>
+    <%= render WorkTitleAndDatesComponent.new(@work) %>
 
     <%# up here so it stays above request button in single-column mode %>
     <div class="work-description long-text-line-height">
