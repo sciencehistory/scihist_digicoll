@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-describe DownloadDropdownDisplay do
-  let(:rendered) { Nokogiri::HTML.fragment(DownloadDropdownDisplay.new(asset, display_parent_work: asset.parent).display) }
+describe DownloadDropdownComponent, type: :component do
+  let(:rendered) { render_inline(DownloadDropdownComponent.new(asset, display_parent_work: asset.parent)) }
   let(:div) { rendered.at_css("div.action-item.downloads") }
 
   describe "no derivatives existing" do
@@ -104,7 +104,7 @@ describe DownloadDropdownDisplay do
   end
 
   describe "with parent work" do
-    let(:rendered) { Nokogiri::HTML.fragment(DownloadDropdownDisplay.new(asset, display_parent_work: parent_work).display) }
+    let(:rendered) { render_inline(DownloadDropdownComponent.new(asset, display_parent_work: parent_work)) }
 
     describe "with all image files" do
       let(:asset) do
@@ -154,7 +154,7 @@ describe DownloadDropdownDisplay do
       end
 
       describe "template_only" do
-        let(:rendered) { Nokogiri::HTML.fragment(DownloadDropdownDisplay.new(nil, display_parent_work: parent_work, viewer_template: true).display) }
+        let(:rendered) { render_inline(DownloadDropdownComponent.new(nil, display_parent_work: parent_work, viewer_template: true)) }
 
         it "renders only slot" do
           expect(div).to have_selector(".dropdown-header", text: "Download selected image")
@@ -186,7 +186,7 @@ describe DownloadDropdownDisplay do
   end
 
   describe "use_link" do
-    let(:rendered) { Nokogiri::HTML.fragment(DownloadDropdownDisplay.new(asset, display_parent_work: asset.parent, use_link: true).display) }
+    let(:rendered) { render_inline(DownloadDropdownComponent.new(asset, display_parent_work: asset.parent, use_link: true)) }
 
     let(:asset) do
       create(:asset_with_faked_file,

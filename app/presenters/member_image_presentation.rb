@@ -130,7 +130,7 @@ class MemberImagePresentation < ViewModel
   end
 
   def download_button
-    DownloadDropdownDisplay.new(representative_asset, display_parent_work: member.parent).display
+    render DownloadDropdownComponent.new(representative_asset, display_parent_work: member.parent)
   end
 
   def view_button

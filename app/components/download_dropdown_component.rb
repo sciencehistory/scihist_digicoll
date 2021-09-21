@@ -3,10 +3,10 @@
 # The standard menu also includes "rights" information, to put that next to
 # the downloads.
 #
-#     DownloadDropdownDisplay.new(asset, display_parent_work: work).display
+#     DownloadDropdownComponent.new(asset, display_parent_work: work)
 #
 #     # Don't know if it's a work or an asset?
-#     DownloadDropdownDisplay.new(member.leaf_representative, display_parent_work: work).display
+#     DownloadDropdownComponent.new(member.leaf_representative, display_parent_work: work)
 #
 # This class uses other "DownloadOptions" classes to actually figure out the
 # appropriate options for a given asset of given type and state, if you need
@@ -35,16 +35,12 @@
 # download links, but doesn't have any asset-specific links. Instead having a <div data-slot="selected-downloads">
 # for the JS to fill in.
 #
-#     DownloadDropdownDisplay.new(nil, display_parent_work: work, viewer_template: true).display
+#     DownloadDropdownComponent.new(nil, display_parent_work: work, viewer_template: true)
 #
 # (This is a bit hacky)
 #
-class DownloadDropdownDisplay < ViewModel
-  valid_model_type_names "Asset", "NilClass"
-
-  alias_method :asset, :model
-
-  attr_reader :display_parent_work
+class DownloadDropdownComponent < ApplicationComponent
+  attr_reader :display_parent_work, :asset
 
 
   # @param asset [Asset] asset to display download links for
@@ -71,10 +67,10 @@ class DownloadDropdownDisplay < ViewModel
 
     @display_parent_work = display_parent_work
     @use_link = use_link
-    super(asset)
+    @asset = asset
   end
 
-  def display
+  def call
     # https://getbootstrap.com/docs/4.0/components/dropdowns/
     # viewer-navbar-btn and btn-group necessary for it to style correctly when embedded in viewer. :(
     content_tag("div", class: "action-item viewer-navbar-btn btn-group downloads #{@use_link ? "dropdown" : "dropup"}") do

@@ -104,7 +104,7 @@ class FileListItemDisplay < ViewModel
         "analytics-label"  => member.parent.friendlier_id
       }
     else
-      DownloadDropdownDisplay.new(member, display_parent_work: member.parent, use_link:true).display
+      render DownloadDropdownComponent.new(member, display_parent_work: member.parent, use_link:true)
     end
   end
 end
