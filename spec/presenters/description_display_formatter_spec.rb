@@ -1,8 +1,11 @@
 require 'rails_helper'
 
 describe DescriptionDisplayFormatter, type: :model do
+  include ActionView::Helpers::SanitizeHelper
+
   url = "http://www.randomurl.org"
-  untouched = "<p><cite>These</cite><i>tags</i> <b>are</b><a href=\"#{url}\">OK</a>. </p>"
+  untouched = "<p><cite>These</cite> <i>tags</i> <b>are</b> <a href=\"#{url}\">OK</a>. </p>"
+  very_long_plain = "x " * 200
 
   describe "no truncation" do
     {
@@ -13,6 +16,7 @@ describe DescriptionDisplayFormatter, type: :model do
       "Adds\n\nreturns\nproperly" => "<p>Adds</p>\n\n<p>returns\n<br />properly</p>",
       "Strips <goat>unwanted tags </goat>" => "<p>Strips unwanted tags </p>",
       "Adds links to http://www.randomurl.org" => "<p>Adds links to <a href=\"http://www.randomurl.org\"><i class=\"fa fa-external-link\" aria-hidden=\"true\"></i>&nbsp;http://www.randomurl.org</a></p>",
+      very_long_plain => "<p>#{very_long_plain}</p>",
       nil => "",
       "" => "",
       untouched => untouched,
@@ -40,7 +44,7 @@ describe DescriptionDisplayFormatter, type: :model do
 
     it "can truncate to explicit value" do
       truncated = DescriptionDisplayFormatter.new(long_html_string, truncate: 20).format
-      expect(helpers.strip_tags(truncated).length).to be <= 20
+      expect(strip_tags(truncated).length).to be <= 20
     end
 
   end
@@ -54,7 +58,7 @@ describe DescriptionDisplayFormatter, type: :model do
     end
 
     it "has html tags removed" do
-      expect(formatted).to eq helpers.strip_tags(html_description)
+      expect(formatted).to eq strip_tags(html_description)
     end
 
     describe "with very long description" do

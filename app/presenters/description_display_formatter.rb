@@ -8,20 +8,24 @@ require 'rails_autolink'
 # Or for a plain-text description, with html tags stripped:
 #     DescriptionDisplayFormatter.new(work.description, truncate:true).format_plain
 #
-class DescriptionDisplayFormatter < ViewModel
+class DescriptionDisplayFormatter
+  include ActionView::Helpers::SanitizeHelper
+  include ActionView::Helpers::TextHelper
+
   DEFAULT_TRUNCATE = 220
 
-  valid_model_type_names 'String', 'NilClass'
+  attr_reader :description
 
   # @param str [String] description string
   # @option truncate [Integer,Boolean] truncate string to this amount, or `true` for default 220. Default value is nil, for not truncate.
-  def initialize(str, options ={})
-    @truncate = options.delete(:truncate)
-    @truncate = DEFAULT_TRUNCATE if @truncate == true
-    super
+  def initialize(description, truncate: false)
+    @description = description
+
+    truncate = DEFAULT_TRUNCATE if truncate == true
+    @truncate = truncate
   end
 
-  alias_method :description, :model
+
 
   def format
     return "".html_safe if description.blank?
