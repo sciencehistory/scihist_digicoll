@@ -19,7 +19,7 @@ domready(function() {
     var previewDiv       = fileInput.closest(".form-group").querySelector("*[data-toggle=scihist-simple-uppy-file-preview]");
     var hiddenInput      = fileInput.closest(".form-group").querySelector("*[data-toggle=scihist-simple-uppy-file-hidden]");
 
-    var uppy = Uppy.Core({
+    var uppy = new Uppy.Core({
       id: fileInput.id,
       autoProceed: true,
       restrictions: {

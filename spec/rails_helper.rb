@@ -7,6 +7,7 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 
+
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
 # run as spec files by default. This means that files in spec/support that end
@@ -20,7 +21,7 @@ require 'rspec/rails'
 # directory. Alternatively, in the individual `*_spec.rb` files, manually
 # require only the support files necessary.
 #
-# Dir[Rails.root.join('spec', 'support', '**', '*.rb')].each { |f| require f }
+Dir[Rails.root.join('spec', 'test_support', 'helper_ruby', '**', '*.rb')].each { |f| require f }
 
 require 'capybara/rspec'
 require 'capybara/rails'
@@ -100,6 +101,9 @@ RSpec.configure do |config|
       sign_in FactoryBot.create(:user)
     end
   end
+
+  # our own local custom helper
+  config.include UppyHelperMethods
 
   # Get current_user to work in decorator (draper) specs when there is no logged in user,
   # where #current_user should be nil. Weird workaround with Draper.

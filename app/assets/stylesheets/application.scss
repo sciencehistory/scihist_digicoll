@@ -28,6 +28,9 @@
 */
 @import 'blacklight/blacklight';
 
+@import "responsive-tabs/responsive-tabs";
+
+
 // Everything in ./local directory, including subdirs, in unpredictable (probably alphabetic) order.
 @import "local/**/*";
 
