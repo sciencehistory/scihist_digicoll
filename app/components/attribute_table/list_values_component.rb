@@ -2,21 +2,21 @@ module AttributeTable
   # Basically just takes a list of Strings and formats them into a <ul>, for our show page.
   #
   # Optionally can make each one a link to a search on a specified facet limit.
-  class ListValuesDisplay < ViewModel
-    valid_model_type_names "Array" # of String, but we can't enforce that at present
+  class ListValuesComponent < ApplicationComponent
+    delegate :search_on_facet_path, to: :helpers
 
-    attr_reader :link_to_facet
-    alias_method :string_array, :model
+    attr_reader :link_to_facet, :string_array
 
-    def initialize(model, link_to_facet: false)
+    def initialize(string_array, link_to_facet: false)
       @link_to_facet = link_to_facet
-      super(model)
+      @string_array = string_array
     end
 
+    def render?
+      string_array.present?
+    end
 
-    def display
-      return "" if string_array.blank?
-
+    def call
       content_tag("ul") do
         safe_join(
           string_array.map do |str|

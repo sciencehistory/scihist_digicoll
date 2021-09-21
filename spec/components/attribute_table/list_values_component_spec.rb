@@ -1,10 +1,14 @@
 require 'rails_helper'
 
-describe AttributeTable::ListValuesDisplay do
+describe AttributeTable::ListValuesComponent, type: :component do
+  # So we can use route helpers in our tests....
+  include Rails.application.routes.url_helpers
+  include SearchHelper
+
   let(:values) { ["one", "one & two", "'three' <>>> four >>>"] }
 
-  let(:displayer) { AttributeTable::ListValuesDisplay.new(values) }
-  let(:rendered) { Nokogiri::HTML.fragment(displayer.display)}
+  let(:displayer) { AttributeTable::ListValuesComponent.new(values) }
+  let(:rendered) { render_inline displayer }
 
   it "creates a <ul>" do
     expect(rendered).to have_selector("ul")
@@ -19,11 +23,11 @@ describe AttributeTable::ListValuesDisplay do
   end
 
   describe "link_to_facet" do
-    let(:displayer) { AttributeTable::ListValuesDisplay.new(values, link_to_facet: :subject_facet) }
+    let(:displayer) { AttributeTable::ListValuesComponent.new(values, link_to_facet: :subject_facet) }
 
     it "creates links to facet" do
       values.each do |v|
-        expect(rendered).to have_link(v, href: helper.search_on_facet_path(:subject_facet, v))
+        expect(rendered).to have_link(v, href: search_on_facet_path(:subject_facet, v))
       end
     end
   end
