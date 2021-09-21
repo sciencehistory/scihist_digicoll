@@ -8,7 +8,7 @@ class WorkResultDisplay < ResultDisplay
   delegate :additional_title
 
   def display_genres
-    @display_genres ||= GenreLinkListDisplay.new(model.genre).display
+    @display_genres ||= render(GenreLinkListComponent.new(model.genre))
   end
 
   def display_dates

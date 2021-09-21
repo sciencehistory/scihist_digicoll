@@ -1,10 +1,17 @@
 # Just displays a list of genres with links, for use on search results and work show page
-class GenreLinkListDisplay < ViewModel
-  valid_model_type_names "Array" # of String names
+class GenreLinkListComponent < ApplicationComponent
+  attr_reader :genre_list
 
-  alias_method :genre_list, :model
+  delegate :search_on_facet_path, to: :helpers
 
-  def display
+  def initialize(genre_list)
+    unless genre_list.is_a?(Array) && genre_list.all? {|e| e.is_a?(String)}
+      raise ArgumentError.new("arg must be an Array of Strings")
+    end
+    @genre_list = genre_list
+  end
+
+  def call
     safe_join(
       genre_list.map { |g| link_to g, link_for_genre(g) },
       ", "
