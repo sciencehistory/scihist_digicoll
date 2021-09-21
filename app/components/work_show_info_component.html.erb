@@ -10,45 +10,45 @@
 
 <table class="work chf-attributes">
 
-  <% view.grouped_creators.each do |category, values| %>
+  <% grouped_creators.each do |category, values| %>
     <%= AttributeTable::RowDisplay.new(category, values: values, link_to_facet: "creator_facet").display %>
   <% end %>
 
-  <% if view.provenance.present? %>
+  <% if provenance.present? %>
     <tr>
       <th>Provenance</th>
-      <td><%= render WorkProvenanceComponent.new(view.provenance) %></td>
+      <td><%= render WorkProvenanceComponent.new(provenance) %></td>
     </tr>
   <% end %>
 
 
-  <% view.grouped_places.each do |category, values| %>
+  <% grouped_places.each do |category, values| %>
     <%= AttributeTable::RowDisplay.new(category, values: values, link_to_facet: "place_facet").display %>
   <% end %>
 
-  <%= AttributeTable::RowDisplay.new(:format, values: view.format.map(&:titleize), link_to_facet: "format_facet", alpha_sort: true).display %>
+  <%= AttributeTable::RowDisplay.new(:format, values: format.map(&:titleize), link_to_facet: "format_facet", alpha_sort: true).display %>
 
 
-  <% if view.humanized_content_types.length > 0 %>
+  <% if humanized_content_types.length > 0 %>
     <tr>
       <th>Original file type</th>
       <td>
-          <%= view.humanized_content_types.join(", ") %>
+          <%= humanized_content_types.join(", ") %>
       </td>
     </tr>
   <% end %>
 
-  <%= AttributeTable::RowDisplay.new(:genre, values: view.genre, link_to_facet: "genre_facet", alpha_sort: true).display %>
-  <%= AttributeTable::RowDisplay.new(:medium, values: view.medium, link_to_facet: ("medium_facet" if current_staff_user?), alpha_sort: true).display %>
-  <%= AttributeTable::RowDisplay.new(:extent, values: view.extent).display %>
-  <%= AttributeTable::RowDisplay.new(:language, values: view.language, link_to_facet: "language_facet", alpha_sort: true).display %>
+  <%= AttributeTable::RowDisplay.new(:genre, values: genre, link_to_facet: "genre_facet", alpha_sort: true).display %>
+  <%= AttributeTable::RowDisplay.new(:medium, values: medium, link_to_facet: ("medium_facet" if current_staff_user?), alpha_sort: true).display %>
+  <%= AttributeTable::RowDisplay.new(:extent, values: extent).display %>
+  <%= AttributeTable::RowDisplay.new(:language, values: language, link_to_facet: "language_facet", alpha_sort: true).display %>
 
-  <% if view.inscription.present? %>
+  <% if inscription.present? %>
     <tr>
       <th>Inscription</th>
       <td>
         <ul>
-          <% view.inscription.each do |inscription| %>
+          <% inscription.each do |inscription| %>
           <li class="attribute"><%= inscription.display_as %></li>
           <% end %>
         </ul>
@@ -57,26 +57,26 @@
 
   <% end %>
 
-  <%= AttributeTable::RowDisplay.new(:subject, values: view.subject, link_to_facet: "subject_facet", alpha_sort: true).display %>
+  <%= AttributeTable::RowDisplay.new(:subject, values: subject, link_to_facet: "subject_facet", alpha_sort: true).display %>
 
-  <% if view.rights.present? %>
+  <% if rights.present? %>
     <tr>
       <th>Rights</th>
       <td>
-        <%= link_to RightsTerms.label_for(view.rights), view.rights, target: "_blank" %>
+        <%= link_to RightsTerms.label_for(rights), rights, target: "_blank" %>
       </td>
     </tr>
   <% end %>
 
 
-  <%= AttributeTable::RowDisplay.new(:rights_holder, values: [view.rights_holder]).display %>
+  <%= AttributeTable::RowDisplay.new(:rights_holder, values: [rights_holder]).display %>
 
-  <% if view.related_urls_filtered.present? %>
+  <% if related_urls_filtered.present? %>
     <tr>
       <th>Related URL</th>
       <td>
         <ul>
-          <% view.related_urls_filtered.each do |url| %>
+          <% related_urls_filtered.each do |url| %>
             <li class="attribute"><%= render ExternalLinkComponent.new(url) %></li>
           <% end %>
         </ul>
@@ -95,26 +95,26 @@
   </tr>
 
 
-  <% if view.additional_credit.present? %>
+  <% if additional_credit.present? %>
     <tr>
       <th>Additional credit</th>
       <td>
         <ul>
-          <% view.additional_credit.each do |credit| %>
+          <% additional_credit.each do |credit| %>
             <li class="attribute"><%= credit.display_as %></li>
           <% end %>
         </ul>
       </td>
     </tr>
   <% end %>
-  <%= AttributeTable::RowDisplay.new(:digitization_funder, values: [view.digitization_funder]).display %>
+  <%= AttributeTable::RowDisplay.new(:digitization_funder, values: [digitization_funder]).display %>
 </table>
 
-<% if view.oral_history_interviewer_profiles.present? %>
-  <h2 class="attribute-sub-head">About the <%= "Interviewer".pluralize(view.oral_history_interviewer_profiles.count) %></h2>
+<% if oral_history_interviewer_profiles.present? %>
+  <h2 class="attribute-sub-head">About the <%= "Interviewer".pluralize(oral_history_interviewer_profiles.count) %></h2>
 
   <div class="show-sub-head-body long-text-line-height">
-    <% view.oral_history_interviewer_profiles.each do |profile| %>
+    <% oral_history_interviewer_profiles.each do |profile| %>
       <%= DescriptionDisplayFormatter.new(profile.profile).format %>
     <% end %>
   </div>
@@ -123,15 +123,15 @@
 <h2 class="attribute-sub-head">Physical location</h2>
 
 <table class="work chf-attributes">
-  <%= AttributeTable::RowDisplay.new(:department, values: [view.department], link_to_facet: "department_facet").display %>
-  <%= AttributeTable::RowDisplay.new(:exhibition, values: view.exhibition, link_to_facet: "exhibition_facet", alpha_sort: true).display %>
+  <%= AttributeTable::RowDisplay.new(:department, values: [department], link_to_facet: "department_facet").display %>
+  <%= AttributeTable::RowDisplay.new(:exhibition, values: exhibition, link_to_facet: "exhibition_facet", alpha_sort: true).display %>
 
-  <% if view.contained_by.present? %>
+  <% if contained_by.present? %>
     <tr>
       <th>Collection</th>
       <td>
         <ul>
-          <% view.public_collections.each do |collection| %>
+          <% public_collections.each do |collection| %>
             <li class="attribute">
               <%= link_to collection.title, collection_path(collection) %>
             </li>
@@ -141,8 +141,8 @@
     </tr>
   <% end %>
 
-  <%= AttributeTable::RowDisplay.new(:project, values: view.project, link_to_facet: "project_facet", alpha_sort: true).display %>
-  <%= AttributeTable::RowDisplay.new(:series_arrangement, values: view.series_arrangement).display %>
+  <%= AttributeTable::RowDisplay.new(:project, values: project, link_to_facet: "project_facet", alpha_sort: true).display %>
+  <%= AttributeTable::RowDisplay.new(:series_arrangement, values: series_arrangement).display %>
 
   <% if @work.physical_container.present? %>
     <tr>
@@ -150,17 +150,17 @@
       <td>
         <ul>
           <li class="attribute">
-            <%= view.physical_container.display_as %>
+            <%= physical_container.display_as %>
           </li>
         </ul>
       </td>
     </tr>
   <% end %>
 
-  <% if view.links_to_opac.present? %>
+  <% if links_to_opac.present? %>
     <tr>
       <td colspan=2 class="catalog-links">
-        <% view.links_to_opac.each do |url| %>
+        <% links_to_opac.each do |url| %>
           <%= content_tag "a", "View in library catalog", href: url %>
         <% end %>
       </td>
@@ -168,11 +168,11 @@
   <% end %>
 </table>
 
-<% if view.related_works.present? %>
+<% if related_works.present? %>
   <h2 class="attribute-sub-head">Related Items</h2>
 
   <ul class="related-items show-sub-head-body list-unstyled">
-    <% view.related_works.each do |work| %>
+    <% related_works.each do |work| %>
       <li class="related-work">
         <div class="related-work-thumb">
           <%= link_to work_path(work.friendlier_id) do %>

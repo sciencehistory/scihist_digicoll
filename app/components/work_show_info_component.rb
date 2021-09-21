@@ -6,31 +6,33 @@
 #
 # For flexibility, does NOT include abstract/description, which usually comes
 # above here, or the "cite as" which usually comes below.
-class WorkShowInfo < ViewModel
-  valid_model_type_names "Work"
-
-
+class WorkShowInfoComponent < ApplicationComponent
+  # Delegate through to WORK
   delegate :additional_credit, :additional_title,
     :contained_by, :date_of_work, :department,
     :description, :digitization_funder, :extent, :exhibition,
     :format, :genre, :inscription, :language, :medium,
     :parent, :physical_container, :project, :provenance, :published?,
     :rights, :rights_holder, :series_arrangement,
-    :source, :subject, :title
+    :source, :subject, :title, to: :work
 
-  def display
-    render "/works/show_info", model: model, view: self
+  delegate :current_staff_user?, to: :helpers
+
+  attr_reader :work
+
+  def initialize(work:)
+    @work = work
   end
 
   def display_genres
     safe_join(
-      model.genre.map { |g| link_to g, search_on_facet_path(:genre_facet, g) },
+      work.genre.map { |g| link_to g, search_on_facet_path(:genre_facet, g) },
       ", "
     )
   end
 
   def humanized_content_types
-    @humanized_content_types ||= model.member_content_types(mode: :query).uniq.map { |a| ScihistDigicoll::Util.humanized_content_type(a) }
+    @humanized_content_types ||= work.member_content_types(mode: :query).uniq.map { |a| ScihistDigicoll::Util.humanized_content_type(a) }
   end
 
   def related_urls_filtered
@@ -43,7 +45,7 @@ class WorkShowInfo < ViewModel
       # bib_ids are supposed to be `b` followed by 7 numbers, but sometimes
       # extra digits get in, cause Siera staff UI wants to add em, but
       # they won't work for links to OPAC, phew.
-      bib_ids = (model.external_id || []).find_all do |external_id|
+      bib_ids = (work.external_id || []).find_all do |external_id|
         external_id.category == "bib"
       end.map(&:value).map { |id| id.slice(0,8) }
 
@@ -63,7 +65,7 @@ class WorkShowInfo < ViewModel
   # @returns [Hash] key a symbol Work::Creator category, value a list of String values
   def grouped_creators
     @grouped_creators ||= begin
-      grouped = model.creator.group_by(&:category).transform_values! do |value_array|
+      grouped = work.creator.group_by(&:category).transform_values! do |value_array|
         value_array.map(&:value)
       end
 
@@ -85,7 +87,7 @@ class WorkShowInfo < ViewModel
   # @returns [Hash] key a symbol Work::Place category, value a list of String values
   def grouped_places
     @grouped_places ||= begin
-      grouped = model.place.group_by(&:category).transform_values! do |value_array|
+      grouped = work.place.group_by(&:category).transform_values! do |value_array|
         value_array.map(&:value)
       end
 
@@ -111,14 +113,14 @@ class WorkShowInfo < ViewModel
   end
 
   def public_collections
-    model.contained_by.where(published: true)
+    work.contained_by.where(published: true)
   end
 
   def oral_history_interviewer_profiles
     return @oral_history_interviewer_profiles if defined?(@oral_history_interviewer_profiles)
 
-    if model.is_oral_history? && model.oral_history_content.present?
-      @oral_history_interviewer_profiles = model.oral_history_content.interviewer_profiles
+    if work.is_oral_history? && work.oral_history_content.present?
+      @oral_history_interviewer_profiles = work.oral_history_content.interviewer_profiles
     else
       @oral_history_interviewer_profiles = []
     end
@@ -131,7 +133,7 @@ class WorkShowInfo < ViewModel
 
 
   def related_url_filter
-    @related_url_filter ||= RelatedUrlFilter.new(model.related_url)
+    @related_url_filter ||= RelatedUrlFilter.new(work.related_url)
   end
 
 end
