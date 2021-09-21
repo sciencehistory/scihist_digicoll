@@ -30,11 +30,10 @@
 # In general, we intend the front-end to NOT try to put these on the page at all,
 # we don't want to show people the placeholder, this is just a fail-safe to avoid
 # showing non-public content in case of other errors.
-class MemberImagePresentation < ViewModel
-  valid_model_type_names "Work", "Asset", "NilClass"
+class MemberImageComponent < ApplicationComponent
+  attr_reader :size, :lazy, :member
 
-  alias_method :member, :model
-  attr_reader :size, :lazy
+  delegate :can?, to: :helpers
 
   # just an easy place to DRY this, good enough for now
   # These are data-* attributes that will trigger the viewer to open.
@@ -54,10 +53,10 @@ class MemberImagePresentation < ViewModel
   def initialize(member, size: :standard, lazy: false)
     @lazy = !!lazy
     @size = size
-    super(member)
+    @member = member
   end
 
-  def display
+  def call
     if member.nil? || representative_asset.nil? || !user_has_access_to_asset?
       return not_available_placeholder
     end

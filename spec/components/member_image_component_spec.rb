@@ -1,15 +1,15 @@
 require 'rails_helper'
 
-describe MemberImagePresentation, type: :decorator do
-  let(:rendered) { Nokogiri::HTML.fragment(presenter.display) }
+describe MemberImageComponent, type: :component do
+  let(:rendered) { render_inline(presenter) }
   let(:wrapper_div) { rendered.at_css("div.member-image-presentation") }
-  let(:presenter) { MemberImagePresentation.new(member) }
+  let(:presenter) { MemberImageComponent.new(member) }
 
   describe "with asset" do
     let(:member) { create(:asset_with_faked_file, parent: create(:work)) }
 
     describe "large size" do
-      let(:presenter) { MemberImagePresentation.new(member, size: :large) }
+      let(:presenter) { MemberImageComponent.new(member, size: :large) }
 
       it "has thumb, and two buttons" do
         expect(wrapper_div).to be_present
@@ -47,7 +47,7 @@ describe MemberImagePresentation, type: :decorator do
     let(:member) { create(:work, representative: create(:asset_with_faked_file)) }
 
     describe "large size" do
-      let(:presenter) { MemberImagePresentation.new(member, size: :large) }
+      let(:presenter) { MemberImageComponent.new(member, size: :large) }
 
       it "has thumb and THREE buttons" do
         expect(wrapper_div).to be_present

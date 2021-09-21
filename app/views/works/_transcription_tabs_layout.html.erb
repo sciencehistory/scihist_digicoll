@@ -45,7 +45,7 @@
           <h3 class="textual-separator text-page-separator">
           <%= link_to(
             viewer_path(text_obj.asset.parent.friendlier_id, text_obj.asset.friendlier_id),
-            data: MemberImagePresentation.viewer_trigger_data_attrs(
+            data: MemberImageComponent.viewer_trigger_data_attrs(
                 member_id: text_obj.friendlier_id, work_id: text_obj.asset.parent&.friendlier_id
           )) do %>
               <i class="fa fa-window-maximize" aria-hidden="true"></i>
@@ -66,14 +66,14 @@
         <% if decorator.transcription_texts.length > 1 %>
           <%= link_to(
             viewer_path(text_obj.asset.parent.friendlier_id, text_obj.asset.friendlier_id),
-             data: MemberImagePresentation.viewer_trigger_data_attrs(
+             data: MemberImageComponent.viewer_trigger_data_attrs(
                 member_id: text_obj.friendlier_id, work_id: text_obj.asset.parent&.friendlier_id
               )
             ) do %>
               <h3 class="textual-separator text-page-separator">
                 <%= link_to(
                     viewer_path(text_obj.asset.parent.friendlier_id, text_obj.asset.friendlier_id),
-                    data: MemberImagePresentation.viewer_trigger_data_attrs(
+                    data: MemberImageComponent.viewer_trigger_data_attrs(
                       member_id: text_obj.friendlier_id, work_id: text_obj.asset.parent&.friendlier_id
                 )) do %>
                   <i class="fa fa-window-maximize" aria-hidden="true"></i>

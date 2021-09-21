@@ -12,7 +12,7 @@
   </div>
 
   <div class="show-hero">
-    <%= MemberImagePresentation.new(decorator.representative_member, size: :large).display %>
+    <%= render MemberImageComponent.new(decorator.representative_member, size: :large) %>
     <%= render "rights_and_social", work: @work %>
   </div>
 
@@ -32,7 +32,7 @@
   <% decorator.member_list_for_display.each_with_index do |member, index| %>
       <div class="show-member-list-item">
         <%# lazyload all but first 6 images %>
-        <%= MemberImagePresentation.new(member, lazy: (index > 5)).display %>
+        <%= render MemberImageComponent.new(member, lazy: (index > 5)) %>
       </div>
   <% end %>
 </div>
