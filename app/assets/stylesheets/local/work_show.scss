@@ -33,6 +33,10 @@
     max-width: $max-readable-width;
   }
 
+  #transcription, #translation {
+    margin-top: $paragraph-spacer;
+  }
+
   // matches the attribute table, although it's not really a table.
   .show-sub-head-body {
     border-top: 3px solid $table-border-color;
@@ -87,6 +91,15 @@
       margin-top: 0;
       margin-bottom: 0;
     }
+  }
+
+  .text-page-separator a {
+    @extend %special-label;
+  }
+
+  .text-pages p {
+    margin-left: auto;
+    margin-right: auto;
   }
 
   // The "member image presentation" is a graphical component with a thumb, and action buttons -- usually view/download,
