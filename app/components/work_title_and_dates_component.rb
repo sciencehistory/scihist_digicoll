@@ -15,6 +15,6 @@ class WorkTitleAndDatesComponent < ApplicationComponent
 
 
   def display_genres
-    GenreLinkListDisplay.new(work.genre).display
+    render GenreLinkListComponent.new(work.genre)
   end
 end
