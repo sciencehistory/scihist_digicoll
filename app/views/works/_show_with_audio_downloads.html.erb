@@ -108,7 +108,7 @@
         <% end %>
       </div>
       <div class="action">
-        <%= DownloadDropdownDisplay.new(track, display_parent_work: track.parent, use_link:true).display %>
+        <%= render DownloadDropdownComponent.new(track, display_parent_work: track.parent, use_link:true) %>
       </div>
     </div>
   <% end %>

@@ -166,7 +166,7 @@ class Work < Kithe::Work
   # unfortunate place to put this complicated mess, better to segregate in a decorator
   # or something? But this worked for being easily accessible from the various places
   # that needed it (and memoizing it in common), avoiding having to pass it down as
-  # an argument along a nested call-chain. Eg DownloadDropdownDisplay needs it.
+  # an argument along a nested call-chain. Eg DownloadDropdownComponent needs it.
   def member_content_types(mode:, reset: false)
     raise ArgumentError.new("mode must be :query or :association") unless [:query, :association].include?(mode)
 
