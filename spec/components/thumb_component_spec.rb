@@ -1,9 +1,9 @@
 require 'rails_helper'
 
-describe ThumbDisplay do
+describe ThumbComponent, type: :component do
   let(:placeholder_selector) { "img[src*=placeholder]" }
-  let(:instance) { ThumbDisplay.new(argument) }
-  let(:rendered) { Nokogiri::HTML.fragment(instance.display) }
+  let(:instance) { ThumbComponent.new(argument) }
+  let(:rendered) { render_inline(instance) }
 
   describe "with nil argument" do
     let(:argument) { nil }
@@ -61,7 +61,7 @@ describe ThumbDisplay do
 
   describe "specified placeholder image" do
     let(:argument) { build(:asset) }
-    let(:instance) { ThumbDisplay.new(argument, placeholder_img_url: specified_img_url) }
+    let(:instance) { ThumbComponent.new(argument, placeholder_img_url: specified_img_url) }
 
     let(:specified_img_url) { "http://example.org/image.jpg" }
 
@@ -73,7 +73,7 @@ describe ThumbDisplay do
   describe "specified thumb size" do
     let(:thumb_size) { :mini }
     let(:argument) { build(:asset_with_faked_file)}
-    let(:instance) { ThumbDisplay.new(argument, thumb_size: thumb_size) }
+    let(:instance) { ThumbComponent.new(argument, thumb_size: thumb_size) }
     let(:expected_aspect_ratio) { (argument.height.to_f / argument.width.to_f * 100.0).truncate(1) }
 
     it "renders" do
@@ -113,7 +113,7 @@ describe ThumbDisplay do
     describe "lazy load with lazysizes.js" do
       let(:thumb_size) { :mini }
       let(:argument) { build(:asset_with_faked_file)}
-      let(:instance) { ThumbDisplay.new(argument, thumb_size: thumb_size, lazy: true) }
+      let(:instance) { ThumbComponent.new(argument, thumb_size: thumb_size, lazy: true) }
       let(:expected_aspect_ratio) { (argument.height.to_f / argument.width.to_f * 100.0).truncate(1) }
 
 
@@ -141,7 +141,7 @@ describe ThumbDisplay do
       let(:thumb_size) { :standard }
       let(:alt_text_override) {"Override regular alt text with this string."}
       let(:argument) {  build(:asset_with_faked_file, alt_text: "this should get overridden") }
-      let(:instance) { ThumbDisplay.new(argument, thumb_size: thumb_size, alt_text_override: alt_text_override) }
+      let(:instance) { ThumbComponent.new(argument, thumb_size: thumb_size, alt_text_override: alt_text_override) }
       it "overrides regular alt text on the image" do
         img_tag = rendered.at_css("img")
         expect(img_tag["alt"]).to eq(alt_text_override)

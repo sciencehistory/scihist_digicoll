@@ -130,7 +130,7 @@
           <div class="description-and-portrait">
             <% if decorator.portrait_asset.present? %>
               <figure class="oh-portrait figure">
-                <%= ThumbDisplay.new(decorator.portrait_asset).display %>
+                <%= render ThumbComponent.new(decorator.portrait_asset) %>
                 <% if decorator.portrait_asset.caption.present? %>
                   <figcaption class="figure-caption"><%= decorator.portrait_asset.caption %></figure>
                 <% end %>

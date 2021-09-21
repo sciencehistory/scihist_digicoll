@@ -65,7 +65,7 @@ class MemberImageComponent < ApplicationComponent
       private_label +
 
       content_tag("a", class: "thumb", href: view_href, data: view_data_attributes) do
-        ThumbDisplay.new(representative_asset, thumb_size: size, lazy: lazy).display
+        render ThumbComponent.new(representative_asset, thumb_size: size, lazy: lazy)
       end +
 
       content_tag("div", class: "action-item-bar") do

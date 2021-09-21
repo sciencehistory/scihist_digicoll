@@ -2,7 +2,7 @@
   <div class="image">
     <%= view.maybe_view_link_to(member) do %>
       <%# lazyload all but first 6 images %>
-      <%= ThumbDisplay.new(member.leaf_representative, thumb_size: :mini, lazy: (view.index > 5)).display %>
+      <%= render ThumbComponent.new(member.leaf_representative, thumb_size: :mini, lazy: (view.index > 5)) %>
     <% end %>
   </div>
 

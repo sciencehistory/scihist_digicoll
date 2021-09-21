@@ -2,11 +2,11 @@
 #
 # The Kithe::Asset provided as an arg will usually be a leaf_representative of a Work or Collection.
 #
-#     <%= ThumbDisplay.new(work.leaf_representative).display %>
+#     <%= ThumbComponent.new(work.leaf_representative).display %>
 #
 # In a search results list, leaf_representatives should be eager loaded to avoid n+1 queries in search results display.
 #
-# * ThumbDisplay uses `srcset` tag for high-res images on high-res displays, using our _2x derivatives.
+# * ThumbComponent uses `srcset` tag for high-res images on high-res displays, using our _2x derivatives.
 #
 # * By default it will display thumb size `standard`, suitable for use in results display, but you
 #   can supply any other thumb size we support, eg, :mini, :large, or for collections :collection_page
@@ -25,14 +25,11 @@
 #
 # ## Note: access control
 #
-# ThumbDisplay does NOT do any access control, it will display whatever you give it, if it can,
+# ThumbComponent does NOT do any access control, it will display whatever you give it, if it can,
 # even if not published with no logged in user. Access control should be done by caller.
-class ThumbDisplay < ViewModel
-  valid_model_type_names "Kithe::Asset", "NilClass"
+class ThumbComponent < ApplicationComponent
+  attr_accessor :placeholder_img_url, :thumb_size, :asset
 
-  attr_accessor :placeholder_img_url, :thumb_size
-
-  alias_method :asset, :model
 
   # collection_page for CollectionThumbAssets only, oh well we allow them all for now.
   ALLOWED_THUMB_SIZES = Asset::THUMB_WIDTHS.keys + [:collection_page]
@@ -46,15 +43,16 @@ class ThumbDisplay < ViewModel
   #   but you may want to use the collection default image for collections, etc.
   # @param lazy [Boolean] default false. If true, will use data-src and data-srcset attributes,
   #   and NOT src/srcset direct attributes, for lazy loading with lazysizes.js.
-  # @param recent_items The ThumbDisplays used in the recent_itmes section of the homepage
+  # @param recent_items The ThumbComponents used in the recent_itmes section of the homepage
   # function slightly differently: they are intended to be visible on screenreaders, so we
   # are allowing an alt text for them.
-  def initialize(model,
+  def initialize(asset,
     thumb_size: :standard,
-    placeholder_img_url: asset_path("placeholderbox.svg"),
+    placeholder_img_url: nil,
     lazy: false,
     alt_text_override: nil)
 
+    @asset = asset
     @placeholder_img_url = placeholder_img_url
     @thumb_size = thumb_size.to_sym
     @lazy = lazy
@@ -63,11 +61,9 @@ class ThumbDisplay < ViewModel
     unless ALLOWED_THUMB_SIZES.include? thumb_size
       raise ArgumentError.new("thumb_size must be in #{ALLOWED_THUMB_SIZES}, but was '#{thumb_size}'")
     end
-
-    super(model)
   end
 
-  def display
+  def call
     # for non-pdf/image assets, we currently just return a placeholder. We could in future
     # return a default audio/video icon thumb or something. At present we don't intend to use
     # a/v as representative images.
@@ -79,6 +75,12 @@ class ThumbDisplay < ViewModel
   end
 
   private
+
+  def placeholder_img_url
+    # have to apply default value here in lazy memoized, because
+    # path helper isn't available in ViewComponent initializer.
+    @placeholder_img_url ||= asset_path("placeholderbox.svg")
+  end
 
   def lazy?
     !!@lazy

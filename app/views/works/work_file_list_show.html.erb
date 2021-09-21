@@ -14,7 +14,7 @@
     <div class="work-description long-text-line-height">
       <% if decorator.portrait_asset.present? %>
         <figure class="figure oh-portrait">
-          <%= ThumbDisplay.new(decorator.portrait_asset).display %>
+          <%= render ThumbComponent.new(decorator.portrait_asset) %>
           <% if decorator.portrait_asset.caption.present? %>
             <figcaption class="figure-caption"><%= decorator.portrait_asset.caption %></figcaption>
           <% end %>

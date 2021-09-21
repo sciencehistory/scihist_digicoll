@@ -113,7 +113,7 @@ we want the full width of the screen, no margins or padding. %>
             <% if bio.oral_history_content.first.work.leaf_representative&.content_type  &&
                   bio.oral_history_content.first.work.leaf_representative&.content_type != "application/pdf" %>
               <%= link_to work_path(bio.oral_history_content.first.work) do %>
-                <%= ThumbDisplay.new(bio.oral_history_content.first.work.leaf_representative).display %>
+                <%= render ThumbComponent.new(bio.oral_history_content.first.work.leaf_representative) %>
               <% end %>
             <% end %>
 

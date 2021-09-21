@@ -21,7 +21,7 @@ class CollectionResultDisplay < ResultDisplay
   end
 
   def thumbnail_html
-    ThumbDisplay.new(model.leaf_representative, placeholder_img_url: asset_path("default_collection.svg")).display
+    render ThumbComponent.new(model.leaf_representative, placeholder_img_url: asset_path("default_collection.svg"))
   end
 
   def link_to_href

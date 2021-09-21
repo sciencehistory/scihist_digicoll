@@ -25,7 +25,7 @@ class WorkResultDisplay < ResultDisplay
   end
 
   def thumbnail_html
-    ThumbDisplay.new(model.leaf_representative).display
+    render ThumbComponent.new(model.leaf_representative)
   end
 
   def link_to_href
