@@ -6,6 +6,6 @@
   <%= DescriptionDisplayFormatter.new(work.description).format  %>
 </div>
 
-<%= WorkShowInfo.new(work).display %>
+<%= render WorkShowInfoComponent.new(work: work) %>
 
 <%= render "citation", work: work  %>
