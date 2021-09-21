@@ -14,8 +14,8 @@ module ImageHelper
   #
   # This maybe would be better in a presenter or something, but for now, rails helpers.
   #
-  # TODO: Unify with ThumbDisplay?  thumb_image_helper is only used on admin pages,
-  # and has the image_missing_text option, ThumbDisplay is for public-facing use,
+  # TODO: Unify with ThumbComponent?  thumb_image_helper is only used on admin pages,
+  # and has the image_missing_text option, ThumbComponent is for public-facing use,
   # but they are very similar.
   def thumb_image_tag(asset, size: :standard, image_missing_text: false, **image_tag_options)
     thumb_size = size.to_s

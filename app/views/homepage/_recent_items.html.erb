@@ -8,10 +8,10 @@
         <div class="recent-item-image-matte">
           <%= link_to work_path(work.friendlier_id) do %>
             <figure>
-              <%= ThumbDisplay.new(
+              <%= render ThumbComponent.new(
                 work.leaf_representative,
                 thumb_size: :standard,
-                alt_text_override: "#{work.title}").display
+                alt_text_override: "#{work.title}")
               %>
               <figcaption>
                 <div class="recent-item-title-wrapper">

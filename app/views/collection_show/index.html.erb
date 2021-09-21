@@ -57,7 +57,7 @@
 
     <% unless has_search_parameters? %>
       <div class="collection-thumb">
-        <%= ThumbDisplay.new(presenter.leaf_representative, thumb_size: :collection_page, placeholder_img_url: asset_path("default_collection.svg")).display %>
+        <%= render ThumbComponent.new(presenter.leaf_representative, thumb_size: :collection_page, placeholder_img_url: asset_path("default_collection.svg")) %>
       </div>
     <% end %>
   </div>
