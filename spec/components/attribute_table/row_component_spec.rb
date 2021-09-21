@@ -1,10 +1,10 @@
 require 'rails_helper'
 
-describe AttributeTable::RowDisplay, type: :decorator do
+describe AttributeTable::RowComponent, type: :component do
   let(:values) { ["one", "one & two", "'three' <>>> four >>>"] }
 
-  let(:displayer) { AttributeTable::RowDisplay.new(:place_of_publication, values: values) }
-  let(:rendered) { Nokogiri::HTML.fragment(displayer.display)}
+  let(:displayer) { AttributeTable::RowComponent.new(:place_of_publication, values: values) }
+  let(:rendered) { render_inline displayer }
 
   it "renders a row" do
     tr = rendered.at_css("tr")
@@ -18,7 +18,7 @@ describe AttributeTable::RowDisplay, type: :decorator do
 
   describe "alpha_sort" do
     let(:values) { ["b", "e", "a", "c", "d"]}
-    let(:displayer) { AttributeTable::RowDisplay.new(:place_of_publication, values: values, alpha_sort: true) }
+    let(:displayer) { AttributeTable::RowComponent.new(:place_of_publication, values: values, alpha_sort: true) }
     it 'sorts' do
       ordered_values = rendered.css("li.attribute").collect(&:text)
       expect(ordered_values).to eq ["a", "b", "c", "d", "e"]
@@ -28,14 +28,14 @@ describe AttributeTable::RowDisplay, type: :decorator do
   describe "with empty array input" do
     let(:values) { [] }
     it "renders empty string" do
-      expect(displayer.display).to eq("")
+      expect(rendered.to_html).to eq ""
     end
   end
 
   describe "with nil input" do
     let(:values) { nil }
     it "renders empty string" do
-      expect(displayer.display).to eq("")
+      expect(rendered.to_html).to eq ""
     end
   end
 

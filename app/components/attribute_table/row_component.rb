@@ -10,9 +10,9 @@ module AttributeTable
   # For now it will use rails #humanize to turn a symbol passed in as label
   # into a displayable string. In the future, we can add i18n if needed.
   #
-  #     RowDisplay.new(:subject, values: array_of_strings, link_to_facet: "subject_facet").display
+  #     <%= render RowComponent.new(:subject, values: array_of_strings, link_to_facet: "subject_facet") %>
   #
-  class RowDisplay < ViewModel
+  class RowComponent < ApplicationComponent
     attr_reader :label_sym, :values, :link_to_facet
 
     # @param alpha_sort [Boolean] if true, sort values alphabetically. Default false.
@@ -21,14 +21,13 @@ module AttributeTable
       @values = (values || []).reject {|v| v.blank? }
       @link_to_facet = link_to_facet
       @alpha_sort =  alpha_sort
-
-      # gotta give it something, we aren't really using this.
-      super("Foobar")
     end
 
-    def display
-      return "" unless values.present?
+    def render?
+      values.present?
+    end
 
+    def call
       content_tag("tr") do
         safe_join([
           content_tag("th", label_cell_content),
