@@ -1,11 +1,11 @@
 require 'rails_helper'
 
-describe RightsIconDisplay, type: :decorator do
+describe RightsIconComponent, type: :component do
   describe "with nil rights statement" do
     let(:work) { build(:work, rights: nil)}
 
     it "returns empty string" do
-      expect(RightsIconDisplay.new(work).display).to eq("")
+      expect(render_inline(RightsIconComponent.new(work: work)).to_html).to eq("")
     end
   end
 
@@ -14,13 +14,13 @@ describe RightsIconDisplay, type: :decorator do
     let(:work) { build(:work, rights: "")}
 
     it "returns empty string" do
-      expect(RightsIconDisplay.new(work).display).to eq("")
+      expect(render_inline(RightsIconComponent.new(work: work)).to_html).to eq("")
     end
   end
 
   describe "public domain item" do
     let(:work) { build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")}
-    let(:rendered) { Nokogiri::HTML.fragment( RightsIconDisplay.new(work).display ) }
+    let(:rendered) {  render_inline(RightsIconComponent.new(work: work)) }
 
     it "renders" do
       container = rendered.at_css("div.rights-statement")
@@ -39,7 +39,7 @@ describe RightsIconDisplay, type: :decorator do
 
     describe "dropdown-item mode" do
       let(:work) { build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")}
-      let(:rendered) { Nokogiri::HTML.fragment( RightsIconDisplay.new(work, mode: :dropdown_item).display ) }
+      let(:rendered) { render_inline(RightsIconComponent.new(work: work, mode: :dropdown_item)) }
 
       it "renders" do
         link = rendered.at_xpath("./a")
@@ -57,7 +57,7 @@ describe RightsIconDisplay, type: :decorator do
 
   describe "needs alt attr in large render" do
     let(:work) { build(:work, rights: "http://rightsstatements.org/vocab/InC-EDU/1.0/")}
-    let(:rendered) { Nokogiri::HTML.fragment( RightsIconDisplay.new(work, mode: :large).display ) }
+    let(:rendered) { render_inline(RightsIconComponent.new(work: work, mode: :large)) }
 
     it "renders" do
       container = rendered.at_css("div.rights-statement")
@@ -72,7 +72,7 @@ describe RightsIconDisplay, type: :decorator do
 
   describe "CC license" do
     let(:work) { build(:work, rights: "https://creativecommons.org/licenses/by-nc-nd/4.0/")}
-    let(:rendered) { Nokogiri::HTML.fragment( RightsIconDisplay.new(work).display ) }
+    let(:rendered) { render_inline(RightsIconComponent.new(work: work)) }
 
     it "renders" do
       container = rendered.at_css("div.rights-statement")
@@ -96,7 +96,7 @@ describe RightsIconDisplay, type: :decorator do
     end
 
     context "dropdown-item mode" do
-      let(:rendered) { Nokogiri::HTML.fragment( RightsIconDisplay.new(work, mode: :dropdown_item).display ) }
+      let(:rendered) {  render_inline(RightsIconComponent.new(work: work, mode: :dropdown_item)) }
 
       it "renders" do
         link = rendered.at_xpath("./a")

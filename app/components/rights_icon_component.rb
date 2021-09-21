@@ -1,25 +1,16 @@
-# Rights statement icon and text link, used on work show page.
-#
-# Can be mode :large (by default), a large-ish display trying to mimic
-# standard display from rightstatement.org, where the label is usually
-# two lines with an internal <br>.
-#
-# Or mode :dropdown_item, a smaller one-line display with a dropdown-item class
-# for bootstrap dropdowns.
-class RightsIconDisplay < ViewModel
-  valid_model_type_names "Work"
+# frozen_string_literal: true
 
-  alias_method :work, :model
+class RightsIconComponent < ApplicationComponent
+    attr_reader :mode, :work
 
-  attr_reader :mode
-
-  def initialize(work, mode: :large)
+  def initialize(work:, mode: :large)
     raise ArgumentError.new("mode must be :large or :dropdown_item") unless [:large, :dropdown_item].include?(mode)
+
+    @work = work
     @mode = mode
-    super(work)
   end
 
-  def display
+  def call
     return "" unless has_rights_statement?
 
     if mode == :large
@@ -111,5 +102,6 @@ class RightsIconDisplay < ViewModel
         "rightsstatements-Other.Icon-Only.dark.svg"
       end
   end
+
 
 end
