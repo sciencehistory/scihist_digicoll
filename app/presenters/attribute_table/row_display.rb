@@ -44,7 +44,7 @@ module AttributeTable
     end
 
     def value_cell_content
-      ListValuesDisplay.new((@alpha_sort ? values.sort : values), link_to_facet: link_to_facet).display
+      render ListValuesComponent.new((@alpha_sort ? values.sort : values), link_to_facet: link_to_facet)
     end
   end
 end
