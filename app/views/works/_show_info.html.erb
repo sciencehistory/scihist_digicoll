@@ -17,7 +17,7 @@
   <% if view.provenance.present? %>
     <tr>
       <th>Provenance</th>
-      <td><%= WorkProvenanceDisplay.new(view.provenance).display %></td>
+      <td><%= render WorkProvenanceComponent.new(view.provenance) %></td>
     </tr>
   <% end %>
 

@@ -1,9 +1,9 @@
 require 'rails_helper'
 
-describe WorkProvenanceDisplay do
+describe WorkProvenanceComponent, type: :component do
 
   it "returns an empty string if provenance is blank" do
-    expect(WorkProvenanceDisplay.new(nil).display). to eq ""
+    expect(render_inline(WorkProvenanceComponent.new(nil)).to_html). to eq ""
   end
 
   # Expected values don't have non-significant HTML newlines, so we can more easily
@@ -35,9 +35,7 @@ describe WorkProvenanceDisplay do
     ],
   ].each do |raw_value, expected_summary, expected_notes|
     it "correctly splits provenance '#{raw_value[0..30].gsub(/[\n\r]/, ' ')}...'" do
-
-      template_output = WorkProvenanceDisplay.new(raw_value).display
-      parsed_output = Nokogiri::HTML.fragment(template_output)
+      parsed_output = render_inline(WorkProvenanceComponent.new(raw_value))
 
       summary = parsed_output.css('.provenance-summary').inner_html.strip.gsub("\n", '')
       notes   = parsed_output.css('.provenance-notes').inner_html.strip.gsub("\n", '')

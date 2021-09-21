@@ -1,10 +1,20 @@
 # Display the provenance of a work on the front end:
-# WorkProvenanceDisplay.new(work.provenance).display
-class WorkProvenanceDisplay < ViewModel
-  valid_model_type_names 'String', 'NilClass'
+# WorkProvenanceComponent.new(work.provenance).display
+class WorkProvenanceComponent < ApplicationComponent
+  attr_reader :provenance_attribute
+
+  def initialize(provenance_attribute)
+    @provenance_attribute = provenance_attribute
+    @provenance_summary, @provenance_notes = split_provenance(@provenance_attribute) if @provenance_attribute.present?
+  end
+
+  def render?
+    provenance_attribute.present?
+  end
+
+
   def display
     return "" if model.blank?
-    @provenance_summary, @provenance_notes = split_provenance
     render "/presenters/work_provenance", model: model, view: self
   end
 
@@ -23,8 +33,8 @@ class WorkProvenanceDisplay < ViewModel
   #
   # The regular expression also captures extra blank space
   # before and after the match, as well as before and after the word "NOTES".
-  def split_provenance
-    model.split(/\s*\n\s*(?:NOTES|Notes):?\s*\n\s*/, 2)
+  def split_provenance(source_attr)
+    source_attr.split(/\s*\n\s*(?:NOTES|Notes):?\s*\n\s*/, 2)
   end
 
 end
