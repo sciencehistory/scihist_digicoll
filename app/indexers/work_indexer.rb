@@ -170,14 +170,14 @@ class WorkIndexer < Kithe::Indexer
         end
       end
 
-      acc << concatenated_asset_properties(rec, :english_translation)
+      acc.concat asset_property_array(rec, :english_translation)
 
       # Index the transcription here if we can assume that the work is entirely in English.
-      acc << concatenated_asset_properties(rec, :transcription) if rec.language == ['en']
+      acc.concat asset_property_array(rec, :transcription) if rec.language == ['en']
     end
 
     to_field "searchable_fulltext_language_agnostic" do |rec, acc|
-      acc << concatenated_asset_properties(rec, :transcription) if rec.language != ['en']
+      acc.concat asset_property_array(rec, :transcription) if rec.language != ['en']
     end
 
     # for oral histories, get biographical data. Some to same field as subject (text3_tesim), some
@@ -210,14 +210,7 @@ class WorkIndexer < Kithe::Indexer
     end
   end
 
-  # Iterate over a work's assets in order,
-  # looking for a given string property (e.g. :english_translation).
-  # If none found, return nil.
-  # Otherwise, return them joined with spaces.
-  # Assumes all assets have a "position" to sort on.
-  def concatenated_asset_properties(work, string_property)
-    work.members.order(:position).
-      map {|mem| mem.send(string_property) if mem.asset? }.
-      compact.join(" ").presence
+  def asset_property_array(work, string_property)
+    work.members.sort_by(&:position).map {|mem| mem.asset? && mem.send(string_property) }.compact
   end
 end
