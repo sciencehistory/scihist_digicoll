@@ -1,9 +1,5 @@
-class FileListItemDisplay < ViewModel
-  valid_model_type_names "Asset", "Work"
-
-  alias_method :member, :model
-
-  attr_reader :index, :view_link_attributes, :download_original_only
+class FileListItemComponent < ApplicationComponent
+  attr_reader :member, :index, :view_link_attributes, :download_original_only
 
   # @param index [integer] Need index so we know whether to lazy-load
   #
@@ -15,7 +11,7 @@ class FileListItemDisplay < ViewModel
   #   download menu component in the action column, there will be a single download
   #   button to download original.
   def initialize(member, index:, view_link_attributes: {}, download_original_only: false)
-    super(member)
+    @member = member
     @index = index
     @view_link_attributes = view_link_attributes
     @download_original_only = download_original_only
@@ -24,11 +20,6 @@ class FileListItemDisplay < ViewModel
       raise ArgumentError.new("parent must be pre-loaded to avoid n+1 queries please, on: #{member}")
     end
   end
-
-  def display
-    render "/presenters/file_list_item_display", member: member, view: self
-  end
-
 
   # use label supplied by "role" if present, otherwise just the asset.title
   # as usual.
