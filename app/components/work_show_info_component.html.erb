@@ -11,7 +11,7 @@
 <table class="work chf-attributes">
 
   <% grouped_creators.each do |category, values| %>
-    <%= AttributeTable::RowDisplay.new(category, values: values, link_to_facet: "creator_facet").display %>
+    <%= render AttributeTable::RowComponent.new(category, values: values, link_to_facet: "creator_facet") %>
   <% end %>
 
   <% if provenance.present? %>
@@ -23,10 +23,10 @@
 
 
   <% grouped_places.each do |category, values| %>
-    <%= AttributeTable::RowDisplay.new(category, values: values, link_to_facet: "place_facet").display %>
+    <%= render AttributeTable::RowComponent.new(category, values: values, link_to_facet: "place_facet") %>
   <% end %>
 
-  <%= AttributeTable::RowDisplay.new(:format, values: format.map(&:titleize), link_to_facet: "format_facet", alpha_sort: true).display %>
+  <%= render AttributeTable::RowComponent.new(:format, values: format.map(&:titleize), link_to_facet: "format_facet", alpha_sort: true) %>
 
 
   <% if humanized_content_types.length > 0 %>
@@ -38,10 +38,10 @@
     </tr>
   <% end %>
 
-  <%= AttributeTable::RowDisplay.new(:genre, values: genre, link_to_facet: "genre_facet", alpha_sort: true).display %>
-  <%= AttributeTable::RowDisplay.new(:medium, values: medium, link_to_facet: ("medium_facet" if current_staff_user?), alpha_sort: true).display %>
-  <%= AttributeTable::RowDisplay.new(:extent, values: extent).display %>
-  <%= AttributeTable::RowDisplay.new(:language, values: language, link_to_facet: "language_facet", alpha_sort: true).display %>
+  <%= render AttributeTable::RowComponent.new(:genre, values: genre, link_to_facet: "genre_facet", alpha_sort: true) %>
+  <%= render AttributeTable::RowComponent.new(:medium, values: medium, link_to_facet: ("medium_facet" if current_staff_user?), alpha_sort: true) %>
+  <%= render AttributeTable::RowComponent.new(:extent, values: extent) %>
+  <%= render AttributeTable::RowComponent.new(:language, values: language, link_to_facet: "language_facet", alpha_sort: true) %>
 
   <% if inscription.present? %>
     <tr>
@@ -57,7 +57,7 @@
 
   <% end %>
 
-  <%= AttributeTable::RowDisplay.new(:subject, values: subject, link_to_facet: "subject_facet", alpha_sort: true).display %>
+  <%= render AttributeTable::RowComponent.new(:subject, values: subject, link_to_facet: "subject_facet", alpha_sort: true) %>
 
   <% if rights.present? %>
     <tr>
@@ -69,7 +69,7 @@
   <% end %>
 
 
-  <%= AttributeTable::RowDisplay.new(:rights_holder, values: [rights_holder]).display %>
+  <%= render AttributeTable::RowComponent.new(:rights_holder, values: [rights_holder]) %>
 
   <% if related_urls_filtered.present? %>
     <tr>
@@ -107,7 +107,7 @@
       </td>
     </tr>
   <% end %>
-  <%= AttributeTable::RowDisplay.new(:digitization_funder, values: [digitization_funder]).display %>
+  <%= render AttributeTable::RowComponent.new(:digitization_funder, values: [digitization_funder]) %>
 </table>
 
 <% if oral_history_interviewer_profiles.present? %>
@@ -123,8 +123,8 @@
 <h2 class="attribute-sub-head">Physical location</h2>
 
 <table class="work chf-attributes">
-  <%= AttributeTable::RowDisplay.new(:department, values: [department], link_to_facet: "department_facet").display %>
-  <%= AttributeTable::RowDisplay.new(:exhibition, values: exhibition, link_to_facet: "exhibition_facet", alpha_sort: true).display %>
+  <%= render AttributeTable::RowComponent.new(:department, values: [department], link_to_facet: "department_facet") %>
+  <%= render AttributeTable::RowComponent.new(:exhibition, values: exhibition, link_to_facet: "exhibition_facet", alpha_sort: true) %>
 
   <% if contained_by.present? %>
     <tr>
@@ -141,8 +141,8 @@
     </tr>
   <% end %>
 
-  <%= AttributeTable::RowDisplay.new(:project, values: project, link_to_facet: "project_facet", alpha_sort: true).display %>
-  <%= AttributeTable::RowDisplay.new(:series_arrangement, values: series_arrangement).display %>
+  <%= render AttributeTable::RowComponent.new(:project, values: project, link_to_facet: "project_facet", alpha_sort: true) %>
+  <%= render AttributeTable::RowComponent.new(:series_arrangement, values: series_arrangement) %>
 
   <% if @work.physical_container.present? %>
     <tr>
