@@ -165,7 +165,12 @@ describe WorkIndexer do
 
   describe "with transcription and translation" do
     let(:assets) do
-      [1,2,3].map { |page| create(:asset, transcription: "transc_#{page}", english_translation: "transl_#{page}") }
+      [3,2,1].map { |page| create(
+        :asset,
+        transcription: "transc_#{page}",
+        english_translation: "transl_#{page}",
+        position: page
+        ) }
     end
     let(:english_only) do
       create(:public_work, language: ['en'], members: assets )
