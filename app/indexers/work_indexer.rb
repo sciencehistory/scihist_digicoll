@@ -170,21 +170,14 @@ class WorkIndexer < Kithe::Indexer
         end
       end
 
-      if rec.members.any? {|mem| mem.asset? && mem.english_translation.present?}
-        acc << rec.members.map {|mem| mem.english_translation if mem.asset? }.compact.join(" ")
-      end
-      # Index the transcription into this if we can assume that the work is entirely in English.
-      if rec.members.any? {|mem| mem.asset? && mem.transcription.present?} && rec.language == ['en']
-        acc << rec.members.map {|mem| mem.transcription if mem.asset? }.compact.join(" ")
-      end
+      acc << concatenated_asset_properties(rec, :english_translation)
+
+      # Index the transcription here if we can assume that the work is entirely in English.
+      acc << concatenated_asset_properties(rec, :transcription) if rec.language == ['en']
     end
 
-
     to_field "searchable_fulltext_language_agnostic" do |rec, acc|
-      # If the work contains some non-English language(s), then index the transcription into a fulltext language agnostic field.
-      if rec.members.any? {|mem| mem.asset? &&  mem.transcription.present?} && rec.language != ['en']
-        acc << rec.members.map {|mem| mem.transcription if mem.asset? }.compact.join(" ")
-      end
+      acc << concatenated_asset_properties(rec, :transcription) if rec.language != ['en']
     end
 
     # for oral histories, get biographical data. Some to same field as subject (text3_tesim), some
@@ -215,5 +208,16 @@ class WorkIndexer < Kithe::Indexer
         context.add_output("text_no_boost_tesim", *standard_text)
       end
     end
+  end
+
+  # Iterate over a work's assets in order,
+  # looking for a given string property (e.g. :english_translation).
+  # If none found, return nil.
+  # Otherwise, return them joined with spaces.
+  # Assumes all assets have a "position" to sort on.
+  def concatenated_asset_properties(work, string_property)
+    work.members.order(:position).
+      map {|mem| mem.send(string_property) if mem.asset? }.
+      compact.join(" ").presence
   end
 end
