@@ -1,0 +1,78 @@
+/**
+  ** This is adapted from very clever progressive-responsive bootstrap tabs code at:
+  *      https://github.com/localnetwork/bootstrap4-responsive-tabs
+  *
+  *  * Fixed a bug for bootstrap 4.6.0 https://github.com/localnetwork/bootstrap4-responsive-tabs/pull/2
+  *
+  *  * Turned it into a sass mixin, so we can REPEAT it more than once, for DIFFERENT breakpoints.
+  *    Because we needed a different one for our primary use case.
+  *
+  *   After creating the mixin, in this same file we create responsive tab classes at various
+  *   breakpoints with eg:
+  *
+  *       @include responsive-tabs("md", somePixels);
+  *
+  *   Which creates clases for eg `responsive-tabs-md`.
+  *
+  *   Then over in ./app/javascript/src/js/responsive-tabs/responsive-tabs.js
+  *    we
+  *   automatically apply responsive behavior to any bootstrap tabs
+  *   with `data-trigger="responsive-tabs-md" attribute (note the `-md` on the end)
+  *
+  *   In facct, we are currently creating responsive breakpoints for `responsive-tabs-md`
+  *   (original breakpoint from vendor), and `responsive-tabs-lg` at bootstrap breakpoint `lg`.
+  *
+  */
+
+
+@mixin responsive-tabs($suffix, $breakpoint) {
+    @media (min-width: #{$breakpoint - 1px}) {
+        .responsive-tabs-#{$suffix} .dropdown-arrow {
+            display: none;
+        }
+    }
+
+    @media screen and (max-width: #{$breakpoint}) {
+        .responsive-tabs-#{$suffix} {
+            position: relative;
+            border: 1px solid #ccc;
+        }
+        .responsive-tabs-#{$suffix} li {
+            width: 100%;
+            margin: 0 !important;
+        }
+        .responsive-tabs-#{$suffix} li > a {
+            display: none;
+            border: 0 !important;
+            border-radius: 0 !important;
+            // added by jrochkind, need to compensate for .nav-link in
+            // bootstrap 4.6 having a margin-bottom of -1px
+            // https://github.com/localnetwork/bootstrap4-responsive-tabs/pull/2
+            margin-bottom: 0 !important;
+        }
+        .responsive-tabs-#{$suffix}.open li > a, .responsive-tabs-#{$suffix} li > a.active {
+            display: block;
+        }
+        .responsive-tabs-#{$suffix} .dropdown-arrow {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            border: solid black;
+            border-width: 0 3px 3px 0;
+            display: inline-block;
+            padding: 3px;
+            vertical-align: middle;
+            transform: rotate(45deg);
+            -webkit-transform: rotate(45deg);
+            transition: all ease .5s;
+            cursor: pointer;
+        }
+        .responsive-tabs-#{$suffix}.open .dropdown-arrow {
+            transform: rotate(-135deg);
+            transition: all ease .5s;
+        }
+    }
+}
+
+@include responsive-tabs("md", map-get($grid-breakpoints, "md"));
+@include responsive-tabs("lg", map-get($grid-breakpoints, "lg"));

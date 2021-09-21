@@ -218,11 +218,27 @@ class WorkOaiDcSerialization
   # We are using a pretty big URL, thumb_large_2X (1050px; facebook recommends 1200px upload!)
   # our largest "thumb" type URL -- even PDFs get thumb-size derivatives.
   def appropriate_thumb_url
-    @appropriate_thumb_url ||= "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/downloads/#{work.leaf_representative.friendlier_id}/thumb_large_2X?disposition=inline"
+    unless defined?(@appropriate_thumb_url)
+      @appropriate_thumb_url = if work.leaf_representative
+        "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/downloads/#{work.leaf_representative.friendlier_id}/thumb_large_2X?disposition=inline"
+      else
+        nil
+      end
+    end
+
+    @appropriate_thumb_url
   end
 
   def full_jpg_url
-    @full_jpg_url ||= "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/downloads/#{work.leaf_representative.friendlier_id}/download_full?disposition=inline"
+    unless defined?(@full_jpg_url)
+      @full_jpg_url = if work.leaf_representative
+        "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/downloads/#{work.leaf_representative.friendlier_id}/download_full?disposition=inline"
+      else
+        nil
+      end
+    end
+
+    @full_jpg_url
   end
 
   def xmlns_attribs
