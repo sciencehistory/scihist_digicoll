@@ -627,7 +627,7 @@ GEM
       roda (>= 2.27, < 4)
     vegas (0.1.11)
       rack (>= 1.0.0)
-    view_component (2.39.0)
+    view_component (2.40.0)
       activesupport (>= 5.0.0, < 8.0)
       method_source (~> 1.0)
     warden (1.2.9)
@@ -727,6 +727,7 @@ DEPENDENCIES
   traject (>= 3.5)
   uglifier (>= 1.3.0)
   uppy-s3_multipart
+  view_component (~> 2.40)
   web-console (>= 3.3.0)
   webdrivers
   webmock (~> 3.5)
