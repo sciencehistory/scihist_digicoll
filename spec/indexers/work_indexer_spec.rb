@@ -186,7 +186,7 @@ describe WorkIndexer do
       output_hash = WorkIndexer.new.map_record(english_only)
       english  = output_hash["searchable_fulltext"]
       might_not_be_english = output_hash["searchable_fulltext_language_agnostic"]
-      expect(english).to eq(["transl_1 transl_2 transl_3", "transc_1 transc_2 transc_3"])
+      expect(english).to eq(["transl_1", "transl_2", "transl_3", "transc_1", "transc_2", "transc_3"])
       expect(might_not_be_english).to be_nil
     end
 
@@ -195,8 +195,8 @@ describe WorkIndexer do
         output_hash = WorkIndexer.new.map_record(work_with_translations)
         english  = output_hash["searchable_fulltext"]
         might_not_be_english = output_hash["searchable_fulltext_language_agnostic"]
-        expect(english).to eq(["transl_1 transl_2 transl_3"])
-        expect(might_not_be_english).to eq(["transc_1 transc_2 transc_3"])
+        expect(english).to eq( ["transl_1", "transl_2", "transl_3"])
+        expect(might_not_be_english).to eq(["transc_1", "transc_2", "transc_3"])
       end
     end
 
