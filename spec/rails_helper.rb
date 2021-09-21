@@ -23,6 +23,7 @@ require 'rspec/rails'
 #
 Dir[Rails.root.join('spec', 'test_support', 'helper_ruby', '**', '*.rb')].each { |f| require f }
 
+require "view_component/test_helpers"
 require 'capybara/rspec'
 require 'capybara/rails'
 
@@ -65,6 +66,12 @@ RSpec.configure do |config|
   # Capyabara.javascript_driver setting directly applies to 'feature' spec
   Capybara.default_driver = :rack_test # Faster but doesn't do Javascript
   Capybara.javascript_driver = $capybara_js_driver
+
+
+  # https://viewcomponent.org/guide/testing.html#rspec-configuration
+  config.include ViewComponent::TestHelpers, type: :component
+  config.include Capybara::RSpecMatchers, type: :component
+
 
   # and this applies to wrapped Rails 'system' tests, which rspec recommends
   # we use now over feature tests.
