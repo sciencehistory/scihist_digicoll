@@ -44,7 +44,7 @@
                 <td>
                   <ul>
                     <% presenter.related_urls.each do |url| %>
-                      <li class="attribute"><%= ExternalLinkDisplay.new(url).display %></li>
+                      <li class="attribute"><%= render ExternalLinkComponent.new(url) %></li>
                     <% end %>
                   </ul>
                 </td>
