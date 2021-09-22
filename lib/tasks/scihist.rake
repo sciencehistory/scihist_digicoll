@@ -104,9 +104,13 @@ namespace :scihist do
           progress_bar = ProgressBar.create(total: (Work.count + Collection.count), format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
         end
 
+        # We need to load all :members (children) of each work, since they have content that we need in
+        # the index, including transcription/translation text. This does slow down the bulk index
+        # a bit, but not too bad.
+
         [
-          Work.includes(:contains_contained_by, :members, :oral_history_content => :interviewee_biographies),
-          Collection.includes(:contains_contained_by)
+          Work.strict_loading.includes(:contains_contained_by, :members, :oral_history_content => :interviewee_biographies),
+          Collection.strict_loading.includes(:contains_contained_by)
         ].each do |scope|
           scope.find_each do |model|
             progress_bar.title = "#{model.class.name}:#{model.friendlier_id}" if progress_bar
