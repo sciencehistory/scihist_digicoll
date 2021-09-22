@@ -1,4 +1,4 @@
-<% provide :page_title, construct_page_title(decorator.title) %>
+<% provide :page_title, construct_page_title(work.title) %>
 
 <% content_for :head do %>
   <%= render "meta_tags", work: @work  %>
@@ -12,11 +12,11 @@
 
     <%# up here so it stays above request button in single-column mode %>
     <div class="work-description long-text-line-height">
-      <% if decorator.portrait_asset.present? %>
+      <% if portrait_asset.present? %>
         <figure class="figure oh-portrait">
-          <%= render ThumbComponent.new(decorator.portrait_asset) %>
-          <% if decorator.portrait_asset.caption.present? %>
-            <figcaption class="figure-caption"><%= decorator.portrait_asset.caption %></figcaption>
+          <%= render ThumbComponent.new(portrait_asset) %>
+          <% if portrait_asset.caption.present? %>
+            <figcaption class="figure-caption"><%= portrait_asset.caption %></figcaption>
           <% end %>
         </figure>
       <% end %>
@@ -27,7 +27,7 @@
   </div>
 
   <div class="show-file-list">
-    <% if decorator.available_by_request_assets.present? %>
+    <% if available_by_request_assets.present? %>
       <h2 class="attribute-sub-head mt-0">Access this interview</h2>
       <div class="show-sub-head-body request-section">
         <div class="pr-2 long-text-line-height">
@@ -40,14 +40,14 @@
 
 
           <p class="text-brand-serif">Available upon request
-            <%= decorator.multiple_files? ? "are" : "is" %>
-            <%= decorator.available_by_request_summary %>.
+            <%= multiple_files? ? "are" : "is" %>
+            <%= available_by_request_summary %>.
           </p>
 
 
           <% if @work.oral_history_content.available_by_request_automatic? %>
             <p class="alert alert-primary text-brand-serif">After submitting a brief form, you will receive immediate access to
-              <%= decorator.multiple_files? ? "these files" : "this file" %>.
+              <%= multiple_files? ? "these files" : "this file" %>.
               If you have any questions about transcripts, recordings, or usage permissions, contact the Center for Oral History at <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}" %>.
             </p>
           <% else # manual review %>
@@ -66,7 +66,7 @@
       <%= render "rights_and_social", work: @work %>
     </div>
 
-    <% decorator.member_list_for_display.each_with_index do |member, index| %>
+    <% member_list_for_display.each_with_index do |member, index| %>
       <%= render FileListItemComponent.new(member, index: index, download_original_only: true) %>
     <% end %>
   </div>
@@ -76,12 +76,12 @@
 
     <% if @work.is_oral_history? %>
 
-      <% if decorator.interviewee_biographies.present? %>
+      <% if interviewee_biographies.present? %>
         <h2 class="attribute-sub-head">Interviewee biographical information</h2>
       <% end %>
 
-      <% decorator.interviewee_biographies.each do |bio| %>
-        <% if decorator.interviewee_biographies.count > 1 %>
+      <% interviewee_biographies.each do |bio| %>
+        <% if interviewee_biographies.count > 1 %>
           <h3 class="h4"><%= bio.name %></h3>
         <% end %>
 
