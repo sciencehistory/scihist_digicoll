@@ -6,14 +6,7 @@ class WorksController < ApplicationController
   def show
     respond_to do |format|
       format.html {
-
-        # temporary shim while we switch each ViewModel to Component
-        comp = view_component
-        if comp.is_a?(ViewComponent::Base)
-          render comp
-        else
-          render template: template
-        end
+        render view_component
       }
 
       format.xml {
@@ -35,11 +28,9 @@ class WorksController < ApplicationController
 
   private
 
-  def view_component
-    decorator
-  end
 
-  def decorator
+  # We use a different ViewComponent depending on work characteristics, polymorophically kind of.
+  def view_component
     @decorator ||= if @work.is_oral_history? && @work.oral_history_content&.available_by_request_off? && has_oh_audio_member?
       # special OH audio player template
       WorkOhAudioShowComponent.new(@work)
@@ -51,7 +42,6 @@ class WorksController < ApplicationController
       WorkImageShowComponent.new(@work)
     end
   end
-  helper_method :decorator
 
   # Is an Oral History with at least one audio member?
   def has_oh_audio_member?
@@ -96,9 +86,4 @@ class WorksController < ApplicationController
   def check_auth
     authorize! :read, @work
   end
-
-  def template
-    @template ||= decorator.view_template
-  end
-
 end
