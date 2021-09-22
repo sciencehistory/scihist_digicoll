@@ -1,9 +1,13 @@
 require 'rails_helper'
 
-describe SocialShareDisplay do
+describe SocialShareComponent, type: :component do
+  def work_url(work)
+    controller.work_url(work)
+  end
+
   let(:work) { create(:work, :with_complete_metadata, representative: create(:asset_with_faked_file))}
-  let(:displayer) { SocialShareDisplay.new(work) }
-  let(:rendered) { Nokogiri::HTML.fragment( displayer.display )}
+  let(:displayer) { SocialShareComponent.new(work) }
+  let(:rendered) { render_inline displayer }
   let(:container_div) { rendered.at_css("div.social-media") }
 
 
@@ -12,11 +16,11 @@ describe SocialShareDisplay do
 
     facebook_link = container_div.at_css("a.facebook")
     expect(facebook_link).to be_present
-    expect(facebook_link['href']).to eq "javascript:window.open('https://facebook.com/sharer/sharer.php?u=#{CGI.escape helper.work_url(work)}')"
+    expect(facebook_link['href']).to eq "javascript:window.open('https://facebook.com/sharer/sharer.php?u=#{CGI.escape work_url(work)}')"
 
     twitter_link = container_div.at_css("a.twitter")
     expect(twitter_link).to be_present
-    expect(twitter_link['href']).to eq "https://twitter.com/intent/tweet/?url=#{CGI.escape helper.work_url(work)}"
+    expect(twitter_link['href']).to eq "https://twitter.com/intent/tweet/?url=#{CGI.escape work_url(work)}"
 
     pinterest_link = container_div.at_css("a.pinterest")
     expect(pinterest_link).to be_present
@@ -28,7 +32,7 @@ describe SocialShareDisplay do
     expect(pinterest_uri.query).to be_present
 
     pinterest_params = CGI.parse(pinterest_uri.query)
-    expect(pinterest_params["url"]).to eq [helper.work_url(work)]
+    expect(pinterest_params["url"]).to eq [work_url(work)]
     expect(pinterest_params["description"]).to eq ["#{work.title} - Science History Institute Digital Collections: #{work.description}"]
     expect(pinterest_params["media"]).to be_present
     expect(Addressable::URI.parse(pinterest_params["media"].first)).not_to be_relative
