@@ -6,15 +6,17 @@
 #
 # Note that the page being shared also needs the proper meta tags (mostly opengraph related) for
 # the social media sites to pick up good metadata!
-class SocialShareDisplay < ViewModel
-  valid_model_type_names "Work"
-
-  alias_method :work, :model
+class SocialShareComponent < ApplicationComponent
+  attr_reader :work
 
   delegate :page_title, :share_url, :share_media_url, :short_plain_description,
            :title_plus_description, to: :share_attributes
 
-  def display
+  def initialize(work)
+    @work = work
+  end
+
+  def call
     content_tag("div", class: "social-media") do
       safe_join([
         facebook_share_link,
