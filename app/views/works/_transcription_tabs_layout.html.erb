@@ -3,8 +3,8 @@
     a partial that actually has the unadorned metadata column, which will show up where we
     'yield' below, wrapped in the actual tabs as well as tab panels for other content.
 
-    NOTE: we count on a WorkShowDecorator being passed as 'decorator' local in render call,
-    so we can see if we have ech of transcriptions or translation. Kind o fmessy!
+    `component` local is passed in, which is s WorkImageShowComponent, kinda weird
+    but how it is for now.
 %>
 
 <ul class="nav nav-tabs mt-4 mb-2" data-trigger="responsive-tabs-lg">
@@ -14,7 +14,7 @@
     </a>
   </li>
 
-  <% if decorator.transcription_texts.present? %>
+  <% if component.transcription_texts.present? %>
     <li class="nav-item">
       <a class="nav-link" id="description-tab" data-toggle="tab" href="#transcription" role="tab" aria-controls="transcription">
         Transcription
@@ -22,7 +22,7 @@
     </li>
   <% end %>
 
-  <% if decorator.translation_texts.present? %>
+  <% if component.translation_texts.present? %>
     <li class="nav-item">
       <a class="nav-link" id="translation-tab" data-toggle="tab" href="#translation" role="tab" aria-controls="translation" aria-selected="true">
         English Translation
@@ -38,10 +38,10 @@
 
   </div>
 
-  <% if decorator.transcription_texts.present? %>
+  <% if component.transcription_texts.present? %>
     <div class="tab-pane" id="transcription" role="tabpanel" aria-labelledby="transcription-tab">
-      <% decorator.transcription_texts.each do |text_obj| %>
-        <% if decorator.transcription_texts.length > 1 %>
+      <% component.transcription_texts.each do |text_obj| %>
+        <% if component.transcription_texts.length > 1 %>
           <h3 class="textual-separator text-page-separator">
           <%= link_to(
             viewer_path(text_obj.asset.parent.friendlier_id, text_obj.asset.friendlier_id),
@@ -60,10 +60,10 @@
     </div>
   <% end %>
 
-  <% if decorator.translation_texts.present? %>
+  <% if component.translation_texts.present? %>
     <div class="tab-pane" id="translation" role="tabpanel" aria-labelledby="translation-tab">
-      <% decorator.translation_texts.each do |text_obj| %>
-        <% if decorator.transcription_texts.length > 1 %>
+      <% component.translation_texts.each do |text_obj| %>
+        <% if component.transcription_texts.length > 1 %>
           <%= link_to(
             viewer_path(text_obj.asset.parent.friendlier_id, text_obj.asset.friendlier_id),
              data: MemberImageComponent.viewer_trigger_data_attrs(
