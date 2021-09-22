@@ -1,26 +1,26 @@
-<% provide :page_title, construct_page_title(decorator.title) %>
+<% provide :page_title, construct_page_title(work.title) %>
 
 <% content_for :head do %>
-  <%= render "meta_tags", work: @work  %>
+  <%= render "meta_tags", work: work  %>
   <%= tag "link", rel: "alternate", type: "application/xml", title: "OAI-DC metadata in XML", href: work_path(@work, format: "xml") %>
 <% end %>
 
 <div class="show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
 
   <div class="show-title">
-    <%= render WorkTitleAndDatesComponent.new(@work) %>
+    <%= render WorkTitleAndDatesComponent.new(work) %>
   </div>
 
   <div class="show-hero">
-    <%= render MemberImageComponent.new(decorator.representative_member, size: :large) %>
-    <%= render "rights_and_social", work: @work %>
+    <%= render MemberImageComponent.new(representative_member, size: :large) %>
+    <%= render "rights_and_social", work: work %>
   </div>
 
   <div class="show-metadata">
     <%# metadata is wrapped in tabs including transcription and translation if present! %>
     <%= render partial: 'work_metadata',
-          layout: ("transcription_tabs_layout" if decorator.has_transcription_or_translation?),
-          locals: { work: @work, decorator: decorator }
+          layout: ("transcription_tabs_layout" if has_transcription_or_translation?),
+          locals: { work: work }
       %>
   </div>
 
@@ -29,7 +29,7 @@
     big representative image %>
   <div style="clear: left"></div>
 
-  <% decorator.member_list_for_display.each_with_index do |member, index| %>
+  <% member_list_for_display.each_with_index do |member, index| %>
       <div class="show-member-list-item">
         <%# lazyload all but first 6 images %>
         <%= render MemberImageComponent.new(member, lazy: (index > 5)) %>
@@ -38,4 +38,4 @@
 </div>
 
 <%# hidden modal used by viewer %>
-<%= render 'scihist_image_viewer/scihist_viewer_modal', work: decorator  %>
+<%= render 'scihist_image_viewer/scihist_viewer_modal', work: work  %>

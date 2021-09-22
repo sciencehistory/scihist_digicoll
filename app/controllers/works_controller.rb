@@ -6,7 +6,14 @@ class WorksController < ApplicationController
   def show
     respond_to do |format|
       format.html {
-        render template: template
+
+        # temporary shim while we switch each ViewModel to Component
+        comp = view_component
+        if comp.is_a?(ViewComponent::Base)
+          render comp
+        else
+          render template: template
+        end
       }
 
       format.xml {
@@ -28,6 +35,10 @@ class WorksController < ApplicationController
 
   private
 
+  def view_component
+    decorator
+  end
+
   def decorator
     @decorator ||= if @work.is_oral_history? && @work.oral_history_content&.available_by_request_off? && has_oh_audio_member?
       # special OH audio player template
@@ -37,7 +48,7 @@ class WorksController < ApplicationController
       WorkFileListShowDecorator.new(@work)
     else
       # standard image-based template.
-      WorkShowDecorator.new(@work)
+      WorkImageShowComponent.new(@work)
     end
   end
   helper_method :decorator
