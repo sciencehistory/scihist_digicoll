@@ -45,7 +45,7 @@ class WorksController < ApplicationController
       OhAudioWorkShowDecorator.new(@work)
     elsif @work.is_oral_history?
       # OH with no playable audio, either becuae it's by-request or it's not there at all.
-      WorkFileListShowDecorator.new(@work)
+      WorkFileListShowComponent.new(@work)
     else
       # standard image-based template.
       WorkImageShowComponent.new(@work)

@@ -10,13 +10,13 @@
 # include a link to the viewer here, and don't do DownloadOoptions, just
 # a single download button.
 #
-class WorkFileListShowDecorator < Draper::Decorator
-  delegate_all
-  include Draper::LazyHelpers
+class WorkFileListShowComponent < ApplicationComponent
+  delegate :construct_page_title, :current_user, to: :helpers
 
-  # This is called by works_controller#show.
-  def view_template
-    'works/work_file_list_show'
+  attr_reader :work
+
+  def initialize(work)
+    @work = work
   end
 
   # Public members, ordered.
@@ -45,7 +45,7 @@ class WorkFileListShowDecorator < Draper::Decorator
   end
 
   def interviewee_biographies
-    model.oral_history_content&.interviewee_biographies || []
+    work.oral_history_content&.interviewee_biographies || []
   end
 
   def available_by_request_summary
@@ -71,14 +71,14 @@ class WorkFileListShowDecorator < Draper::Decorator
   end
 
   def multiple_files?
-    (decorator.available_by_request_pdf_count + decorator.available_by_request_audio_count > 1)
+    (available_by_request_pdf_count + available_by_request_audio_count > 1)
   end
 
   def available_by_request_assets
     @available_by_request_assets ||= begin
-      unless model.is_oral_history? &&
-            model.oral_history_content &&
-            (! model.oral_history_content.available_by_request_off?)
+      unless work.is_oral_history? &&
+            work.oral_history_content &&
+            (! work.oral_history_content.available_by_request_off?)
         []
       else
         all_members.find_all { |member| member.kind_of?(Asset) && !member.published? && member.oh_available_by_request? }
@@ -91,7 +91,7 @@ class WorkFileListShowDecorator < Draper::Decorator
   # We need to slice and dice the members in a couple ways, so just load them all in,
   # but we should never show this to the public
   def all_members
-    @all_members = model.members.includes(:leaf_representative).order(:position).to_a
+    @all_members = work.members.includes(:leaf_representative).order(:position).to_a
   end
 
 
