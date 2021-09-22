@@ -20,7 +20,7 @@
     <%# metadata is wrapped in tabs including transcription and translation if present! %>
     <%= render partial: 'work_metadata',
           layout: ("transcription_tabs_layout" if has_transcription_or_translation?),
-          locals: { work: work }
+          locals: { work: work, component: self }
       %>
   </div>
 

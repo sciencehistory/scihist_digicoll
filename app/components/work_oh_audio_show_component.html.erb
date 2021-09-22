@@ -1,8 +1,8 @@
-<% provide :page_title, construct_page_title(decorator.title) %>
+<% provide :page_title, construct_page_title(work.title) %>
 
 <% content_for :head do %>
-  <%= render "meta_tags", work: @work  %>
-  <%= tag "link", rel: "alternate", type: "application/xml", title: "OAI-DC metadata in XML", href: work_path(@work, format: "xml") %>
+  <%= render "meta_tags", work: work  %>
+  <%= tag "link", rel: "alternate", type: "application/xml", title: "OAI-DC metadata in XML", href: work_path(work, format: "xml") %>
 <% end %>
 
 <div class="work-show work-show-audio" data-role="audio-playlist-wrapper" itemscope itemtype="http://schema.org/CreativeWork" class="row">
@@ -11,15 +11,15 @@
     <div class="audio-navbar-contents">
       <div class="now-playing-container" data-role="now-playing-container">
         <h1 class="title h6">
-          <%= @work.title %>
+          <%= work.title %>
         </h1>
-        <% if decorator.combined_mp3_audio.present? && decorator.derivatives_up_to_date? %>
+        <% if combined_mp3_audio.present? && derivatives_up_to_date? %>
           <div class="d-flex" style="align-items: center">
             <audio controls controlsList="nodownload" data-role="ohms-audio-elem" >
-                <source src="<%= decorator.combined_mp3_audio%>"  type="audio/mpeg"/>
-                <source src="<%= decorator.combined_webm_audio%>"  type="audio/webm"/>
+                <source src="<%= combined_mp3_audio%>"  type="audio/mpeg"/>
+                <source src="<%= combined_webm_audio%>"  type="audio/webm"/>
             </audio>
-            <% if decorator.has_ohms_index? || decorator.has_ohms_transcript? %>
+            <% if has_ohms_index? || has_ohms_transcript? %>
               <div class="pl-3">
                 <button class="btn btn-emphasis btn-sm text-nowrap" data-trigger="ohms-jump-to-text">Jump to text</button>
               </div>
@@ -38,7 +38,7 @@
             </a>
           </li>
 
-          <% if decorator.has_ohms_index? %>
+          <% if has_ohms_index? %>
             <li class="nav-item">
               <a class="nav-link btn btn-emphasis" id="ohTocTab" data-toggle="tab" href="#ohToc" role="tab" aria-controls="profile" aria-selected="false">
                 Table of Contents <span data-ohms-hitcount="index"></span>
@@ -46,7 +46,7 @@
             </li>
           <% end %>
 
-          <% if decorator.has_ohms_transcript? %>
+          <% if has_ohms_transcript? %>
             <li class="nav-item">
               <a class="nav-link btn btn-emphasis" id="ohTranscriptTab" data-toggle="tab" href="#ohTranscript" role="tab" aria-controls="home" aria-selected="false">
                 Transcript <span data-ohms-hitcount="transcript"></span>
@@ -60,7 +60,7 @@
         </ul>
       </div>
 
-      <% if decorator.has_ohms_transcript? || decorator.has_ohms_index? %>
+      <% if has_ohms_transcript? || has_ohms_index? %>
         <div class="ohms-search">
 
 
@@ -96,7 +96,7 @@
       <div class="tab-content">
         <div class="tab-pane active" id="ohDescription" role="tabpanel" aria-labelledby="ohDescriptionTab">
           <div class="show-title">
-            <%= render WorkTitleAndDatesComponent.new(@work) %>
+            <%= render WorkTitleAndDatesComponent.new(work) %>
           </div>
 
 
@@ -104,8 +104,8 @@
           <%# much like the rights_and_social partial, but we've exploded it
               to fit in our custom share button %>
           <div class="rights-and-social">
-            <% if @work.rights.present? %>
-              <%= render RightsIconComponent.new(work: @work) %>
+            <% if work.rights.present? %>
+              <%= render RightsIconComponent.new(work: work) %>
             <% else %>
               <%# hacky spacer to keep flexbox intact and social-media on the right even
                   if there's no rights %>
@@ -113,7 +113,7 @@
             <% end %>
 
             <div>
-              <%= render SocialShareComponent.new(@work) %>
+              <%= render SocialShareComponent.new(work) %>
 
               <a href="#" class="btn btn-brand-dark rounded-sides" data-toggle="linkShareModal" data-target="#audioLinkShare">
                 <i class="fa fa-share" aria-hidden="true"></i>
@@ -128,51 +128,51 @@
 
 
           <div class="description-and-portrait">
-            <% if decorator.portrait_asset.present? %>
+            <% if portrait_asset.present? %>
               <figure class="oh-portrait figure">
-                <%= render ThumbComponent.new(decorator.portrait_asset) %>
-                <% if decorator.portrait_asset.caption.present? %>
-                  <figcaption class="figure-caption"><%= decorator.portrait_asset.caption %></figure>
+                <%= render ThumbComponent.new(portrait_asset) %>
+                <% if portrait_asset.caption.present? %>
+                  <figcaption class="figure-caption"><%= portrait_asset.caption %></figure>
                 <% end %>
               </figure>
             <% end %>
 
             <div class="work-description long-text-line-height">
-              <%= DescriptionDisplayFormatter.new(@work.description).format  %>
+              <%= DescriptionDisplayFormatter.new(work.description).format  %>
             </div>
           </div>
 
 
-          <%= render WorkShowInfoComponent.new(work: @work) %>
+          <%= render WorkShowInfoComponent.new(work: work) %>
 
-          <% if decorator.interviewee_biographies.present? %>
+          <% if interviewee_biographies.present? %>
             <h2 class="attribute-sub-head">Interviewee biographical information</h2>
           <% end %>
-          <% decorator.interviewee_biographies.each do |bio| %>
-            <% if decorator.interviewee_biographies.count > 1 %>
+          <% interviewee_biographies.each do |bio| %>
+            <% if interviewee_biographies.count > 1 %>
               <h3 class="h4"><%= bio.name %></h3>
             <% end %>
 
             <%= OralHistoryBiographicalDisplay.new(bio).display %>
           <% end %>
 
-          <%= render "citation", work: @work  %>
+          <%= render "citation", work: work  %>
         </div>
 
-        <% if decorator.has_ohms_index? %>
+        <% if has_ohms_index? %>
           <div class="tab-pane" id="ohToc" role="tabpanel" aria-labelledby="ohTocTab">
-            <%= OhmsIndexDisplay.new(decorator.oral_history_content.ohms_xml, work: @work).display %>
+            <%= OhmsIndexDisplay.new(work.oral_history_content.ohms_xml, work: work).display %>
           </div>
         <% end %>
 
-        <% if decorator.has_ohms_transcript? %>
+        <% if has_ohms_transcript? %>
           <div class="tab-pane long-text-line-height" id="ohTranscript" role="tabpanel" aria-labelledby="ohTranscriptTab">
-            <%= OhmsTranscriptDisplay.new(decorator.oral_history_content.ohms_xml).display %>
+            <%= OhmsTranscriptDisplay.new(work.oral_history_content.ohms_xml).display %>
           </div>
         <% end %>
 
         <div class="tab-pane downloads" id="ohDownloads" role="tabpanel" aria-labelledby="ohDownloadsTab">
-          <%= render 'show_with_audio_downloads', decorator: decorator %>
+          <%= render 'show_with_audio_downloads', decorator: self %>
         </div>
       </div>
   </div>
@@ -199,7 +199,7 @@
               </span>
             </div>
 
-            <input type="text" aria-label="URL to copy" class="form-control" data-slot="shareURL" readonly value="<%= work_url(@work) %>">
+            <input type="text" aria-label="URL to copy" class="form-control" data-slot="shareURL" readonly value="<%= work_url(work) %>">
 
             <div class="input-group-append">
               <button class="btn btn-outline-secondary" data-trigger="linkClipboardCopy">

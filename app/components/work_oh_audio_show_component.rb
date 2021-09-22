@@ -1,21 +1,22 @@
-class OhAudioWorkShowDecorator < Draper::Decorator
-  delegate_all
-  include Draper::LazyHelpers
-
+# The Work#show variant for Oral Histories with playable audio files, which
+# show up in a fixed navbar.
+#
+class WorkOhAudioShowComponent < ApplicationComponent
   DOWNLOAD_URL_EXPIRES_IN = 2.days.to_i
 
-  # This is called by works_controller#show.
-  def view_template
-    'works/oh_audio_work_show'
+  delegate :construct_page_title, :current_user, to: :helpers
+
+  attr_reader :work
+
+  def initialize(work)
+    @work = work
   end
-
-
 
   # Cache the total list of published members, in other methods we'll search
   # through this in-memory to get members for various spots on the page.
   def all_members
     @all_members ||= begin
-      members = model.members.includes(:leaf_representative)
+      members = work.members.includes(:leaf_representative)
       members = members.where(published: true) if current_user.nil?
       members.order(:position).to_a
     end
@@ -27,7 +28,7 @@ class OhAudioWorkShowDecorator < Draper::Decorator
     # memoize with a value that could be nil....
     return @representative_member if defined?(@representative_member)
 
-    @representative_member = all_members.find { |m| m.id == model.representative_id }
+    @representative_member = all_members.find { |m| m.id == work.representative_id }
   end
 
   def audio_members
@@ -42,27 +43,27 @@ class OhAudioWorkShowDecorator < Draper::Decorator
   end
 
   def has_ohms_transcript?
-    model&.oral_history_content&.has_ohms_transcript?
+    work&.oral_history_content&.has_ohms_transcript?
   end
 
   def has_ohms_index?
-    model&.oral_history_content&.has_ohms_index?
+    work&.oral_history_content&.has_ohms_index?
   end
 
   def combined_mp3_audio
-    model&.oral_history_content&.combined_audio_mp3&.url(public:true)
+    work&.oral_history_content&.combined_audio_mp3&.url(public:true)
   end
 
   def combined_mp3_audio_download_filename
     parts = [
-      DownloadFilenameHelper.first_three_words(model.title),
-      model.friendlier_id
+      DownloadFilenameHelper.first_three_words(work.title),
+      work.friendlier_id
     ].collect(&:presence).compact
     Pathname.new(parts.join("_")).sub_ext('.mp3').to_s
   end
 
   def combined_mp3_audio_download
-    model&.oral_history_content&.combined_audio_mp3&.url(
+    work&.oral_history_content&.combined_audio_mp3&.url(
       public: false,
       expires_in: DOWNLOAD_URL_EXPIRES_IN,
       response_content_type: 'audio/mpeg',
@@ -74,19 +75,19 @@ class OhAudioWorkShowDecorator < Draper::Decorator
   end
 
   def combined_mp3_audio_size
-    ScihistDigicoll::Util.simple_bytes_to_human_string(model&.oral_history_content&.combined_audio_mp3&.size)
+    ScihistDigicoll::Util.simple_bytes_to_human_string(work&.oral_history_content&.combined_audio_mp3&.size)
   end
 
   def combined_webm_audio
-    model&.oral_history_content&.combined_audio_webm&.url(public:true)
+    work&.oral_history_content&.combined_audio_webm&.url(public:true)
   end
 
   def combined_audio_fingerprint
-    model&.oral_history_content&.combined_audio_fingerprint
+    work&.oral_history_content&.combined_audio_fingerprint
   end
 
   def derivatives_up_to_date?
-    CombinedAudioDerivativeCreator.new(model).fingerprint == combined_audio_fingerprint
+    CombinedAudioDerivativeCreator.new(work).fingerprint == combined_audio_fingerprint
   end
 
   def portrait_asset
@@ -98,7 +99,7 @@ class OhAudioWorkShowDecorator < Draper::Decorator
   end
 
   def interviewee_biographies
-    model.oral_history_content&.interviewee_biographies || []
+    work.oral_history_content&.interviewee_biographies || []
   end
 
   # An array of start times for each audio member.
@@ -108,7 +109,7 @@ class OhAudioWorkShowDecorator < Draper::Decorator
   # should ALWAYS be zero.
   def start_times
     @start_times ||= begin
-      metadata = model&.oral_history_content&.combined_audio_component_metadata
+      metadata = work&.oral_history_content&.combined_audio_component_metadata
       metadata ? metadata['start_times'].to_h : {}
     end
   end
