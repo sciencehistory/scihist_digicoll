@@ -1,10 +1,13 @@
-class WorkShowDecorator < Draper::Decorator
-  delegate_all
-  include Draper::LazyHelpers
+# The standard image-centered work show page, used for works by default, when
+# we don't have a special purpose work show page.
 
-  # This is called by works_controller#show.
-  def view_template
-    'works/show'
+class WorkImageShowComponent < ApplicationComponent
+  delegate :construct_page_title, :current_user, to: :helpers
+
+  attr_reader :work
+
+  def initialize(work)
+    @work = work
   end
 
   # Public members, ordered.
@@ -14,7 +17,7 @@ class WorkShowDecorator < Draper::Decorator
   # in the playlist, we don't need them in this list.
   def member_list_for_display
     @member_list_display ||= begin
-      members = model.members.includes(:leaf_representative)
+      members = work.members.includes(:leaf_representative)
       members = members.where(published: true) if current_user.nil?
       members = members.order(:position).to_a
       # If the representative image is the first item in the list, don't show it twice.
@@ -59,7 +62,7 @@ class WorkShowDecorator < Draper::Decorator
     # memoize with a value that could be nil....
     return @representative_member if defined?(@representative_member)
 
-    @representative_member = model.representative
+    @representative_member = work.representative
   end
 
   # just a little value class for the things we need to display an individual
@@ -78,6 +81,4 @@ class WorkShowDecorator < Draper::Decorator
     end
 
   end
-
-
 end
