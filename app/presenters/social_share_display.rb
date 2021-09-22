@@ -27,7 +27,7 @@ class SocialShareDisplay < ViewModel
   private
 
   def share_attributes
-    @share_attributes ||= WorkSocialShareAttributes.new(work)
+    @share_attributes ||= WorkSocialShareAttributes.new(work, view_context: view_context)
   end
 
   def facebook_share_link
