@@ -169,6 +169,15 @@ class WorkIndexer < Kithe::Indexer
           end
         end
       end
+
+      acc.concat asset_property_array(rec, :english_translation)
+
+      # Index the transcription here if we can assume that the work is entirely in English.
+      acc.concat asset_property_array(rec, :transcription) if rec.language == ['en']
+    end
+
+    to_field "searchable_fulltext_language_agnostic" do |rec, acc|
+      acc.concat asset_property_array(rec, :transcription) if rec.language != ['en']
     end
 
     # for oral histories, get biographical data. Some to same field as subject (text3_tesim), some
@@ -199,5 +208,9 @@ class WorkIndexer < Kithe::Indexer
         context.add_output("text_no_boost_tesim", *standard_text)
       end
     end
+  end
+
+  def asset_property_array(work, string_property)
+    work.members.sort_by(&:position).map {|mem| mem.asset? && mem.send(string_property) }.compact
   end
 end
