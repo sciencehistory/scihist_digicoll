@@ -58,14 +58,14 @@
      -->
 
   <types>
-    <!-- added by Science History Institute, int with sort missing last -->
+    <!-- added by Scinece History Institute, int with sort missing last -->
     <fieldType name="int_sortmissinglast" class="solr.IntPointField" docValues="true" sortMissingLast="true"/>
 
     <!-- added by Science History Institute, string field with docValues, good for faceting, or
          in the case of a single-valued field, sorting -->
     <fieldType name="string_dv" class="solr.StrField" indexed="true" stored="false" docValues="true" sortMissingLast="true"/>
 
-    <!-- end added by Science History Institute -->
+    <!-- end added by CHF -->
 
 
 
@@ -235,9 +235,6 @@
          https://lucene.apache.org/solr/guide/8_0/highlighting.html#Highlighting-SchemaOptionsandPerformanceConsiderations
        -->
     <field name="searchable_fulltext" type="text_en" stored="true" indexed="true" multiValued="true" omitNorms="true" storeOffsetsWithPositions="true"/>
-
-    <!-- Full text search *if* the work contains non-English text: -->
-    <field name="searchable_fulltext_language_agnostic" type="text" stored="true" indexed="true" multiValued="true" omitNorms="true" storeOffsetsWithPositions="true"/>
 
     <!-- added by Science History Institute, a dynamic field that's good for string facets, using docValues fields -->
     <dynamicField name="*_facet" type="string_dv" multiValued="true"/>
