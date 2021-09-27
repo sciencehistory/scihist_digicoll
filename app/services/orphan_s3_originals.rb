@@ -26,6 +26,7 @@ class OrphanS3Originals
 
     @s3_iterator = S3PathIterator.new(
       shrine_storage: shrine_storage,
+      extra_prefix: 'asset',
       show_progress_bar: show_progress_bar,
       progress_bar_total: asset_count
     )
