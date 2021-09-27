@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe WorkResultDisplay do
+describe SearchResult::WorkComponent, type: :component do
   RSpec::Matchers.define :include_link_to do |facet_param:,value:|
     match do |actual_array|
       actual_array.any? do |str|
@@ -9,7 +9,7 @@ describe WorkResultDisplay do
           (element = noko.children[0]) &&
           element.name == "a" &&
           element.text == value &&
-          element['href'] == helper.search_on_facet_path(facet_param, value)
+          element['href'] == controller.view_context.search_on_facet_path(facet_param, value)
       end
     end
 
@@ -35,7 +35,7 @@ describe WorkResultDisplay do
   )}
 
   let(:presenter) { described_class.new(work, child_counter: child_counter, cart_presence: cart_presence) }
-  let(:rendered) { Nokogiri::HTML.fragment(presenter.display) }
+  let(:rendered) { render_inline(presenter) }
 
   it "displays" do
     work.genre.each do |genre|
@@ -69,6 +69,10 @@ describe WorkResultDisplay do
   end
 
   describe "#metadata_labels_and_values" do
+    before do
+      rendered # trigger so we can get to methods to test em.
+    end
+
     it "includes subjects" do
       subjects = presenter.metadata_labels_and_values["Subject"]
 
@@ -81,6 +85,7 @@ describe WorkResultDisplay do
     end
 
     it "separates creators" do
+
       contributors = presenter.metadata_labels_and_values["Contributor"]
       expect(contributors).to be_present
       expect(contributors).to be_kind_of(Array)
