@@ -16,7 +16,7 @@ we want the full width of the screen, no margins or padding. %>
           <header>
             <div class="show-genre"><%= link_to "Collections", collections_path %></div>
             <h1>
-              <%= link_to presenter.title, collection_path(collection), class: "title-link" %> <%= publication_badge(presenter) %>
+              <%= link_to collection.title, collection_path(collection), class: "title-link" %> <%= publication_badge(collection) %>
               <% if can? :update, collection %>
                 <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-outline-primary" %>
               <% end %>
@@ -24,19 +24,7 @@ we want the full width of the screen, no margins or padding. %>
           </header>
         </div>
 
-        <div class="show-metadata">
-          <% if current_staff_user? %>
-            <p class="show-item-count">
-              <%= "#{number_with_delimiter(presenter.public_count)} public #{'item'.pluralize(presenter.public_count)}, #{number_with_delimiter(presenter.all_count)} total" %>
-            </p>
-          <% else %>
-            <p class="show-item-count"><%= "#{number_with_delimiter(presenter.public_count)} #{'item'.pluralize(presenter.public_count)}" %></p>
-          <% end %>
-
-          <div class="collection-description long-text-line-height">
-            <%= DescriptionDisplayFormatter.new(presenter.description).format %>
-          </div>
-        </div>
+        <%= render CollectionMetadataComponent.new(collection: collection, show_links: false) %>
 
         <div class="mt-5">
           <h2 class="search-title h4">
