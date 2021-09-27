@@ -96,6 +96,9 @@ describe DownloadDropdownComponent, type: :component do
 
     it "renders just original option" do
       expect(div).to be_present
+
+      expect(div).to have_selector("a.dropdown-item", text: /Original/)
+
       expect(div).not_to have_selector("a.dropdown-item", text: /Small JPG/)
       expect(div).not_to have_selector("a.dropdown-item", text: /Medium JPG/)
       expect(div).not_to have_selector("a.dropdown-item", text: /Large JPG/)
