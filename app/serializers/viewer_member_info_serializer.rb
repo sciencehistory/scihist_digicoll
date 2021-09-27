@@ -4,15 +4,16 @@
 #     ViewerMemberInfoSerializer.new(work).as_hash
 #
 #
-# It's a view model to easily get route helpers.
-class ViewerMemberInfoSerializer < ViewModel
+class ViewerMemberInfoSerializer
+  include Rails.application.routes.url_helpers
+
   THUMB_DERIVATIVE = :thumb_mini
 
-  attr_reader :work
+  attr_reader :work, :current_user
 
-  def initialize(work)
+  def initialize(work, current_user:nil)
     @work = work
-    super(work)
+    @current_user = current_user
   end
 
   def as_hash

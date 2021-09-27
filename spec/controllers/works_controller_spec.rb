@@ -46,13 +46,29 @@ RSpec.describe WorksController, type: :controller do
   end
 
   context("#viewer_images_info") do
-    let(:work) { create(:public_work, members: [create(:asset_with_faked_file)]) }
+    let(:unpublished_asset) { create(:asset_with_faked_file, published: false )}
+    let(:work) { create(:public_work, members: [create(:asset_with_faked_file), unpublished_asset]) }
 
     it "returns JSON" do
       get :viewer_images_info, params: { id: work.friendlier_id }, as: :json
       expect(response.status).to eq(200)
       expect(response.media_type).to eq "application/json"
-      expect(JSON.parse(response.body)).to be_kind_of(Array)
+
+      parsed = JSON.parse(response.body)
+
+      expect(parsed).to be_kind_of(Array)
+      expect(parsed.length).to eq 1
+    end
+
+    describe "with logged-in user", :logged_in_user do
+      it "includes unpublished items" do
+        get :viewer_images_info, params: { id: work.friendlier_id }, as: :json
+
+        parsed = JSON.parse(response.body)
+
+        expect(parsed).to be_kind_of(Array)
+        expect(parsed.length).to eq 2
+      end
     end
   end
 end

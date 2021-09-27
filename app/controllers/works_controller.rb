@@ -23,7 +23,7 @@ class WorksController < ApplicationController
   end
 
   def viewer_images_info
-    render json: ViewerMemberInfoSerializer.new(@work).as_hash
+    render json: ViewerMemberInfoSerializer.new(@work, current_user: current_user).as_hash
   end
 
   private
