@@ -181,6 +181,13 @@ describe WorkIndexer do
     let(:german_only) do
       create(:public_work, language: ['de'], members: assets )
     end
+    let(:no_assets) do
+      create(:public_work, members: [])
+    end
+
+    before do
+      allow(no_assets).to receive(:members).and_return(nil)
+    end
 
     it "indexes text known to be English in searchable_fulltext" do
       output_hash = WorkIndexer.new.map_record(english_only)
@@ -198,6 +205,14 @@ describe WorkIndexer do
         expect(english).to eq( ["transl_1", "transl_2", "transl_3"])
         expect(might_not_be_english).to eq(["transc_1", "transc_2", "transc_3"])
       end
+    end
+
+    it "correctly handles items without any assets" do
+      output_hash = WorkIndexer.new.map_record(no_assets)
+      english  = output_hash["searchable_fulltext"]
+      might_not_be_english = output_hash["searchable_fulltext_language_agnostic"]
+      expect(english).to be_nil
+      expect(might_not_be_english).to be_nil
     end
 
   end
