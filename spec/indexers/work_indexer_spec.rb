@@ -216,4 +216,5 @@ describe WorkIndexer do
     end
 
   end
+
 end

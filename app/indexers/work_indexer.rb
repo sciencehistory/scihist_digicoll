@@ -220,4 +220,5 @@ class WorkIndexer < Kithe::Indexer
     return [] unless work.members.present?
     work.members.sort_by { |m| m.position || 0 }.map {|mem| mem.asset? && mem.send(string_property) }.compact
   end
+
 end

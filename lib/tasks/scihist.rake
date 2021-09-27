@@ -105,9 +105,10 @@ namespace :scihist do
         end
 
         [
-          Work.includes(:contains_contained_by, :members, :oral_history_content => :interviewee_biographies),
+          Work.includes(:contains_contained_by, :oral_history_content => :interviewee_biographies),
           Collection.includes(:contains_contained_by)
         ].each do |scope|
+
           scope.find_each do |model|
             progress_bar.title = "#{model.class.name}:#{model.friendlier_id}" if progress_bar
             model.update_index
