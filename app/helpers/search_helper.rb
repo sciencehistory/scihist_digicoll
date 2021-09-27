@@ -13,16 +13,13 @@ module SearchHelper
       raise ArgumentError.new("No facet field defined for #{facet_field.inspect}. Defined fields are #{CatalogController.blacklight_config.facet_fields.keys.inspect}")
     end
 
-    # Trying to use existing Blacklight logic to actually create the `f: { facet_name: [value]}`
+    # Originally tried to use existing Blacklight logic to actually create the `f: { facet_name: [value]}`
     # query param, in case Blacklight does edge case things depending on configuration or whatever,
     # and for DRY.
     #
-    # But this took some reverse engineering, and is weird and convoluted code. If it breaks,
-    # it can be replaced simply by:
-    #
-    #     search_catalog_path(f: { facet_field => [facet_value] })
+    # But couldn't figure out how to do it in a way that didn't keep breaking in subsequent BL versions,
+    # we just hard-code assumed params we want in URL.
 
-    my_search_state = Blacklight::SearchState.new({}, CatalogController.blacklight_config)
-    search_catalog_path(my_search_state.reset.add_facet_params(facet_field, facet_value))
+    search_catalog_path(f: { facet_field => [facet_value] })
   end
 end

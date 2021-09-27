@@ -113,7 +113,7 @@ describe DownloadDropdownDisplay do
       end
 
       let(:parent_work) do
-        create(:work, members: [asset, build(:asset_with_faked_file), build(:asset_with_faked_file)])
+        create(:public_work, members: [asset, build(:asset_with_faked_file), build(:asset_with_faked_file)])
       end
 
       it "renders whole-work download options" do
@@ -136,6 +136,21 @@ describe DownloadDropdownDisplay do
         expect(pdf_option["data-analytics-category"]).to eq "Work"
         expect(pdf_option["data-analytics-action"]).to eq "download_pdf"
         expect(pdf_option["data-analytics-label"]).to eq parent_work.friendlier_id
+      end
+
+      describe "unpublished parent work" do
+        let(:parent_work) do
+          create(:work, published: false, members: [asset, build(:asset_with_faked_file), build(:asset_with_faked_file)])
+        end
+
+        # whole work download options are cached publically, they only include public
+        # members, and don't make sense on non-public work, and sometimes create errors
+        # if clicked there.
+        it "does not include whole-work download options" do
+          expect(div).not_to have_selector(".dropdown-header", text: "Download all 3 images")
+          expect(div).not_to have_selector("a.dropdown-item:contains('ZIP')")
+          expect(div).not_to have_selector("a.dropdown-item:contains('PDF')")
+        end
       end
 
       describe "template_only" do

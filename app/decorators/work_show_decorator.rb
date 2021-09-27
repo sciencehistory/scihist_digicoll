@@ -23,6 +23,35 @@ class WorkShowDecorator < Draper::Decorator
     end
   end
 
+  def transcription_texts
+    @transcription_texts ||= ([representative_member] + member_list_for_display).compact.collect.with_index do |member, i|
+      if member.kind_of?(Asset) && member.transcription.present?
+        TextPage.new(
+          member,
+          image_number: i+1,
+          text: member.transcription
+        )
+      end
+    end.compact
+  end
+
+  def translation_texts
+    @translation_texts ||= ([representative_member] + member_list_for_display).compact.collect.with_index do |member, i|
+      if member.kind_of?(Asset) && member.english_translation.present?
+        TextPage.new(
+          member,
+          image_number: i+1,
+          text: member.english_translation
+        )
+      end
+    end.compact
+  end
+
+  def has_transcription_or_translation?
+    transcription_texts.present? || translation_texts.present?
+  end
+
+
   # We don't want the leaf_representative, we want the direct representative member
   # to pass to MemberImagePresenter. This will be an additional SQL fetch to
   # member_list_for_display, but a small targetted one-result one.
@@ -32,4 +61,23 @@ class WorkShowDecorator < Draper::Decorator
 
     @representative_member = model.representative
   end
+
+  # just a little value class for the things we need to display an individual
+  # asset-page's worth of transcription or translation text
+  class TextPage
+    attr_reader :asset, :image_number, :text
+
+    def initialize(asset, image_number:, text:)
+      @asset = asset
+      @image_number = image_number
+      @text = text
+    end
+
+    def friendlier_id
+      asset.friendlier_id
+    end
+
+  end
+
+
 end

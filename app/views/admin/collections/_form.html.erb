@@ -51,6 +51,8 @@
 
       <%= f.fields_for :representative, (f.object.representative || f.object.build_representative) do |representative_f| %>
 
+        <%# file field gets handled by js in simple_uppy_file_input.js %>
+
         <%= representative_f.hidden_field :file,
                 value: collection&.representative&.cached_file_data,
                 id: "collection-thumbnail-upload-result",

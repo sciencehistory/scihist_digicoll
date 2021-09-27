@@ -3,7 +3,10 @@
      appropriate %>
 
 <form class="scihist-constraints-query applied-filter d-inline-block">
-    <%= render_hash_as_hidden_fields(search_state.params_for_search.except(:q, :qt, :page, :utf8)) %>
+    <%# include all existing filters etc in the search that will be submitted
+        with changed query text string, by using the component from Blacklight
+        to include as hidden fields: %>
+    <%= render Blacklight::HiddenSearchStateComponent.new(params: search_state.params_for_search.except(:q, :qt, :page, :utf8)) %>
 
     <div class="input-group input-group-sm">
       <div class="input-group-prepend">

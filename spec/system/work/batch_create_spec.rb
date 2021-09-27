@@ -18,8 +18,8 @@ RSpec.describe "batch create", :logged_in_user, type: :system, js: true, queue_a
 
 
     # the hidden file input used by uppy, we can target directly...
-    attach_file "files[]", (Rails.root + "spec/test_support/images/30x30.png").to_s, make_visible: true
-    attach_file "files[]", (Rails.root + "spec/test_support/images/20x20.png").to_s, make_visible: true
+    add_file_via_uppy_dashboard input_name: "files[]", file_path: (Rails.root + "spec/test_support/images/30x30.png").to_s
+    add_file_via_uppy_dashboard input_name: "files[]", file_path: (Rails.root + "spec/test_support/images/20x20.png").to_s
 
     expect(page).to have_css(".attach-files-table td", text: /30x30\.png/)
     expect(page).to have_css(".attach-files-table td", text: /20x20\.png/)

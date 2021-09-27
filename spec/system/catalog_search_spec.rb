@@ -150,4 +150,77 @@ describe CatalogController, solr: true, indexable_callbacks: true do
       end
     end
   end
+
+  describe "text query constraint as search field" do
+    let(:title) { "Match on this title" }
+    let(:subject) { "Chemistry" }
+    let(:year_i) { 1985 }
+    let(:year) { year_i.to_s }
+
+    let!(:work1) do
+      create(:public_work,
+        title: title,
+        date_of_work: Work::DateOfWork.new(start: year),
+        subject: [subject]
+      )
+    end
+
+    it "displays search form, and keeps constraints on submit" do
+      from_date = (year_i - 10).to_s
+      to_date   = (year_i + 10).to_s
+
+      visit search_catalog_path(search_field: "all_fields",
+        q: "match",
+        range: { year_facet_isim: { begin: from_date, end: to_date } },
+        f: { subject_facet: [subject] }
+      )
+
+      # now try to change the query in the little search form in constraint
+      # _query_constraint_as_form.html.erb
+      within("form.scihist-constraints-query") do
+        fill_in :q, with: title, fill_options: { clear: :backspace } # that fill_options nonsense seems to workaround a capybara bug
+        click_on "Go"
+      end
+
+      # keeps all the constraints plus has our new one
+      within(".constraints-container") do
+        expect(page).to have_text(/#{title}/i) # not sure why capybara thinks this was uppercase on page, oh well.
+        expect(page).to have_text("Subject #{subject}")
+        expect(page).to have_text("Date #{from_date} to #{to_date}")
+      end
+    end
+  end
+
+  describe "transcriptions and English translations, searchable via two fulltext indices" do
+    let(:assets) do
+      [ create(:asset,
+          transcription:       "Postkarte [stamps] Herr Prof. G. Bredig",
+          english_translation: "Postcard [stamps] Prof. G. Bredig"),
+        create(:asset,
+          transcription:       "Für Ihre Aufmerksamkeit zu meinem Geburtstag danke ich Ihnen.",
+          english_translation: "Thank you for wishing me a Happy Birthday.") ]
+    end
+    let(:works) do
+      [['de'], ['de','en'], ['en']].map do |languages|
+        create(:public_work, language: languages, members: assets).tap { |work| work.update_index }
+      end
+    end
+    it "shows matches from both full text indices, regardless of work language(s)" do
+      works.each do |postcard|
+        
+        visit search_catalog_path(search_field: "all_fields", q: '"Birthday"')
+        expect(page).to have_selector("#document_#{postcard.friendlier_id}")
+        within("#document_#{postcard.friendlier_id}") do
+          expect(page).to have_selector(".scihist-results-list-item-highlights em", text: "Birthday")
+        end
+
+        visit search_catalog_path(search_field: "all_fields", q: '"Geburtstag"')
+        expect(page).to have_selector("#document_#{postcard.friendlier_id}")
+        within("#document_#{postcard.friendlier_id}") do
+          expect(page).to have_selector(".scihist-results-list-item-highlights em", text: "Geburtstag")
+        end
+
+      end
+    end
+  end
 end

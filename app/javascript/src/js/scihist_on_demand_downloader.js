@@ -136,7 +136,7 @@ $( document ).ready(function() {
   ScihistOnDemandDownloader.prototype.handleError = function(error) {
     console.log("Error fetching on-demand derivative: " + error);
     this.getModal().find(".modal-body").html(
-      '<h1 class="h2"><i class="fa fa-warning text-danger" aria-hidden="true"></i> A software error occured.</h1>' +
+      '<h1 class="h2"><i class="fa fa-warning text-danger" aria-hidden="true"></i> A software error occurred.</h1>' +
       '<p class="text-danger">We\'re sorry, your download can not be delivered at this time.</p>'
     );
     this.getModal().modal("show");
