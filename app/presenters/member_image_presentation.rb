@@ -36,6 +36,21 @@ class MemberImagePresentation < ViewModel
   alias_method :member, :model
   attr_reader :size, :lazy
 
+  # just an easy place to DRY this, good enough for now
+  # These are data-* attributes that will trigger the viewer to open.
+  #
+  # @param member_id friendlier_id for Asset/member for image to load, eg asset.friendlier_id
+  # @param work_id: friendlier_id for actual containing work, eg `member.parent&.friendlier_id || representative_asset.friendlier_id`
+  def self.viewer_trigger_data_attrs(member_id:, work_id:)
+    {
+        trigger: "scihist_image_viewer",
+        member_id: member_id,
+        analytics_category: "Work",
+        analytics_action: "view",
+        analytics_label: work_id
+      }
+  end
+
   def initialize(member, size: :standard, lazy: false)
     @lazy = !!lazy
     @size = size
@@ -144,13 +159,10 @@ class MemberImagePresentation < ViewModel
   # to trigger image viewer
   def view_data_attributes
     if representative_asset&.content_type&.start_with?("image/")
-      {
-        trigger: "scihist_image_viewer",
+      self.class.viewer_trigger_data_attrs(
         member_id: member.friendlier_id,
-        analytics_category: "Work",
-        analytics_action: "view",
-        analytics_label: member.parent&.friendlier_id || representative_asset.friendlier_id
-      }
+        work_id: member.parent&.friendlier_id || representative_asset.friendlier_id
+      )
     else
       {}
     end

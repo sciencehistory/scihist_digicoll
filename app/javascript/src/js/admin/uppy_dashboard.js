@@ -16,6 +16,8 @@
 // If we actually had it as a dependency in webpacker, we'd want:
 //import Uppy from 'uppy';
 
+import delegateEvent from '../lib/delegate_event.js';
+
 
 function kithe_createFileUploader(container) {
   // Some variables that can be taken from data- attributes, or defaults.
@@ -36,11 +38,10 @@ function kithe_createFileUploader(container) {
 
   var containerForm = closest(container, function(el) { return el.tagName.toLowerCase() == "form" });
   var cachedFileTableEl = containerForm.querySelector("*[data-toggle='cached-files-table']");
-  var directoryInput = containerForm.querySelector("*[data-toggle='directory-input']");
   var browseEverythingButton = containerForm.querySelector('*[data-toggle="kithe-browse-everything"]');
   var submitButton = containerForm.querySelector("*[data-toggle='kithe-upload-submit']");
 
-  var uppy = Uppy.Core({
+  var uppy = new Uppy.Core({
       id: container.id,
       autoProceed: true,
       restrictions: uppyRestrictions
@@ -56,6 +57,7 @@ function kithe_createFileUploader(container) {
       // We have really large files that could take a while, plus plenty of files
       // uppy can't get thumbs for anyway.
       disableThumbnailGenerator: true,
+      fileManagerSelectionType: "both"
     })
 
 
@@ -168,32 +170,25 @@ function kithe_createFileUploader(container) {
   });
 
   // Make the remove button work on the cached file rows
-  cachedFileTableEl.addEventListener('click', function(event) {
-    if (event.target.getAttribute("data-cached-file-remove")) {
-      row = closest(event.target, function(el) { return el.tagName.toLowerCase() == "tr" });
-      row.parentNode.removeChild(row);
-    }
+  delegateEvent(cachedFileTableEl, "click", "*[data-cached-file-remove]", function(event) {
+    var row = closest(event.target, function(el) { return el.tagName.toLowerCase() == "tr" });
+    row.parentNode.removeChild(row);
   });
 
-  var handleDirectoryInput = function() {
-    var fileList = this.files;
-    for (var i = 0; i < fileList.length; i++) {
-      var file = fileList[i];
-      uppy.addFile({
-        name: file.name, // file name
-        type: file.type, // file type
-        data: file, // file blob
-      });
 
-      // Would be nice to remove files from html input, but it messes things up.
-      // We gave it no `name` so it shouldn't submit with form or anything.
-      //this.value = ""; // remove files from html input?
-    }
-  }
 
-  if (directoryInput) {
-    directoryInput.addEventListener("change", handleDirectoryInput, false);
-  }
+
+//   // Make the remove button work on the cached file rows
+//   cachedFileTableEl.addEventListener('click', function(event) {
+// debugger;
+//     if (event.target.getAttribute("data-cached-file-remove]",
+
+//       ) {
+//       row = closest(event.target, function(el) { return el.tagName.toLowerCase() == "tr" });
+//       row.parentNode.removeChild(row);
+//     }
+//   });
+
 
   // Pretty hacky and not great way to try to disable submit button
   // when uploads are in progress.  https://github.com/transloadit/uppy/issues/1152
@@ -223,12 +218,6 @@ function kithe_createFileUploader(container) {
         } else {
           submitButton.removeAttribute("disabled");
         }
-      }
-
-      if (directoryInput && !uploadInProgress) {
-        // try zero-ing out the html file input, so mouseover won't show
-        // a list of files that we already processed and added to hidden inputs
-        directoryInput.value = "";
       }
     }
   };

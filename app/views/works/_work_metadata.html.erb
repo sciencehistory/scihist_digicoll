@@ -1,0 +1,11 @@
+<%# the right-hand column of the standard work page, but under the 'header' area.
+    We extract to partial in part to make it easier to have the logic that adds
+    transcription/translation tabs when needed. %>
+
+<div class="work-description long-text-line-height">
+  <%= DescriptionDisplayFormatter.new(work.description).format  %>
+</div>
+
+<%= WorkShowInfo.new(work).display %>
+
+<%= render "citation", work: work  %>
