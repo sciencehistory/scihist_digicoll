@@ -7,11 +7,13 @@ module DownloadOptions
   # of the jpg download derivatives will exist, so they won't be included, and it'll just
   # add an 'original' link. Or for any other type that won't have standard image dl derivs,
   # and we only want an 'original' option.
-  class ImageDownloadOptions < ViewModel
-    alias_method :asset, :model
+  class ImageDownloadOptions
+    include Rails.application.routes.url_helpers
+
+    attr_reader :asset
 
     def initialize(asset)
-      super(asset)
+      @asset = asset
     end
 
     def options
