@@ -1,11 +1,13 @@
 require 'rails_helper'
 
-describe ResultDisplay do
+describe SearchResult::BaseComponent do
   describe "#search_highlights" do
     let(:work) { create(:work, :with_complete_metadata) }
     let(:child_counter) { ChildCountDisplayFetcher.new([work.friendlier_id]) }
 
-    let(:presenter) { ResultDisplay.new(work, child_counter: child_counter, solr_document: mocked_solr_document) }
+    let(:presenter) do
+      SearchResult::BaseComponent.new(work, child_counter: child_counter, solr_document: mocked_solr_document)
+    end
 
     describe "multiple snippets" do
       let(:mocked_solr_document) do
