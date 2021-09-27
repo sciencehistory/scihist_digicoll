@@ -19,16 +19,22 @@ class ResultDisplay < ViewModel
 
   # results in context highlights from solr, if available
   #
-  # If multiple highlight results, we join them together with elipses. We put elipses at beginning
+  # If multiple highlight results, we join them together with ellipses. We put ellipses at beginning
   # and end either way. html_safe string is returned, with the <em> tags around highlights.
   def search_highlights
     @search_highlights ||= begin
-      highlights = solr_document && solr_document.has_highlight_field?("searchable_fulltext") && solr_document.highlight_field("searchable_fulltext")
+      highlights = get_highlights("searchable_fulltext") + get_highlights("searchable_fulltext_language_agnostic")
       if highlights.present?
         "…".html_safe + safe_join(highlights, " …") + "…".html_safe
       else
         ""
       end
     end
+  end
+
+  def get_highlights(field)
+    return [] unless solr_document
+    return [] unless solr_document.has_highlight_field?(field)
+    solr_document.highlight_field(field)
   end
 end
