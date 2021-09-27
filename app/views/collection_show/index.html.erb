@@ -9,7 +9,7 @@
         <header>
           <div class="show-genre"><%= link_to "Collections", collections_path %></div>
           <h1>
-            <%= link_to presenter.title, collection_path(collection), class: "title-link" %> <%= publication_badge(presenter) %>
+            <%= link_to collection.title, collection_path(collection), class: "title-link" %> <%= publication_badge(collection) %>
             <% if can? :update, collection %>
               <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-outline-primary" %>
             <% end %>
@@ -18,46 +18,13 @@
       </div>
 
       <% unless has_search_parameters? %>
-        <div class="show-metadata">
-          <% if current_staff_user? %>
-            <p class="show-item-count">
-              <%= "#{number_with_delimiter(presenter.public_count)} public #{'item'.pluralize(presenter.public_count)}, #{number_with_delimiter(presenter.all_count)} total" %>
-            </p>
-          <% else %>
-            <p class="show-item-count"><%= "#{number_with_delimiter(presenter.public_count)} #{'item'.pluralize(presenter.public_count)}" %></p>
-          <% end %>
-
-          <div class="collection-description long-text-line-height">
-            <%= DescriptionDisplayFormatter.new(presenter.description).format %>
-          </div>
-
-          <table class="collection-attributes chf-attributes">
-            <% presenter.opac_urls.each do |url| %>
-              <tr>
-                <td colspan="2"><%= link_to "View in library catalog", url %></td>
-              </tr>
-            <% end %>
-
-            <% if presenter.related_urls.present? %>
-              <tr>
-                <th>Related URL</th>
-                <td>
-                  <ul>
-                    <% presenter.related_urls.each do |url| %>
-                      <li class="attribute"><%= render ExternalLinkComponent.new(url) %></li>
-                    <% end %>
-                  </ul>
-                </td>
-              </tr>
-            <% end %>
-          </table>
-        </div>
+        <%= render CollectionMetadataComponent.new(collection: collection) %>
       <% end %>
     </div>
 
     <% unless has_search_parameters? %>
       <div class="collection-thumb">
-        <%= render ThumbComponent.new(presenter.leaf_representative, thumb_size: :collection_page, placeholder_img_url: asset_path("default_collection.svg")) %>
+        <%= render ThumbComponent.new(collection.leaf_representative, thumb_size: :collection_page, placeholder_img_url: asset_path("default_collection.svg")) %>
       </div>
     <% end %>
   </div>
@@ -65,7 +32,7 @@
   <% unless has_search_parameters? %>
     <div class="collection-search-form">
         <h2 class="search-title">
-              Search within the <%= presenter.title %>
+              Search within the <%= collection.title %>
         </h2>
 
         <%= form_tag "", method: :get do |f| %>
