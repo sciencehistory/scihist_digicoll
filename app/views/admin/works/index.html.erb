@@ -92,7 +92,7 @@
             <%= admin_dropdown_for_work(work, labelled_by_id: "dropdownMenuButton") %>
           </div>
         </td>
-        <td><%= CartControl.new(work.friendlier_id, cart_presence: @cart_presence, label_sr_only: true).display %></td>
+        <td><%= render CartControlComponent.new(work.friendlier_id, cart_presence: @cart_presence, label_sr_only: true) %></td>
       </tr>
     <% end %>
   </tbody>
