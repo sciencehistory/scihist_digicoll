@@ -12,7 +12,7 @@ module ImageHelper
   #
   # We may switch where the image URLs come from (a redirect instead of direct S3?)
   #
-  # This maybe would be better in a presenter or something, but for now, rails helpers.
+  # This maybe would be better in a component or something, but for now, rails helpers.
   #
   # TODO: Unify with ThumbComponent?  thumb_image_helper is only used on admin pages,
   # and has the image_missing_text option, ThumbComponent is for public-facing use,

@@ -56,7 +56,7 @@ class WorkImageShowComponent < ApplicationComponent
 
 
   # We don't want the leaf_representative, we want the direct representative member
-  # to pass to MemberImagePresenter. This will be an additional SQL fetch to
+  # to pass to MemberImageComponent. This will be an additional SQL fetch to
   # member_list_for_display, but a small targetted one-result one.
   def representative_member
     # memoize with a value that could be nil....

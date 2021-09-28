@@ -40,9 +40,9 @@ class Admin::RAndRItem < ApplicationRecord
     files_sent_to_patron closed
    }
 
-  # Called by /app/views/presenters/_digitization_queue_item_status_form.html.erb
+  # Called by DigitizationQueueItemStatusFormComponent
   # Both this class and Admin::DigitizationQueueItem need to implement this,
-  # as the presenter is used to show the `status` of
+  # as the component is used to show the `status` of
   # instances of both classes.
   def available_statuses
     STATUSES
