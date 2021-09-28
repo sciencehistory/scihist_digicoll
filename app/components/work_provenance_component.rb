@@ -12,12 +12,6 @@ class WorkProvenanceComponent < ApplicationComponent
     provenance_attribute.present?
   end
 
-
-  def display
-    return "" if model.blank?
-    render "/presenters/work_provenance", model: model, view: self
-  end
-
   def provenance_summary
     DescriptionDisplayFormatter.new(@provenance_summary).format
   end

@@ -9,14 +9,9 @@ module OralHistory
       @biography = biography
     end
 
-    def display
-      render "/presenters/oral_history_biographical_display", model: model, view: self
-    end
-
     def render?
       has_biographical_info?
     end
-
 
     def schools
       @schools ||= (biography.school || []).sort_by { |school| school&.date || "0" }
