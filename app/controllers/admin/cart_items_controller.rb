@@ -18,7 +18,7 @@ class Admin::CartItemsController < AdminController
   # Adds or removes a work identified by friendlier_id from logged-in user's cart.
   # If params["toggle"] is sent as `1` will be added, otherwise removed.
   #
-  # Used for JS-powered checkbox to add/remove from cart, in CartControl ViewModel with associated JS.
+  # Used for JS-powered checkbox to add/remove from cart, in CartControlComponent with associated JS.
   #
   # ONLY returns a JSON response, no HTML response available, this is for support of our cart add/remove
   # JS.

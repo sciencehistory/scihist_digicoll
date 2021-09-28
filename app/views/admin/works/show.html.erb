@@ -12,7 +12,7 @@
             <p class="h4">Member in: <%= link_to "#{@work.parent.title} (#{@work.parent.friendlier_id})", admin_work_path(@work.parent) %></p>
           <% end %>
           <div>
-            <%= CartControl.new(@work.friendlier_id, cart_presence: @cart_presence).display %>
+            <%= render CartControlComponent.new(@work.friendlier_id, cart_presence: @cart_presence) %>
           </div>
         </div>
       </div>

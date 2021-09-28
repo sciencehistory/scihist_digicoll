@@ -1,5 +1,5 @@
 // We have a checkbox for admins for adding/removing Works from the 'cart'. The checkbox is provided by
-// CartControl ViewModel.
+// CartControlComponent
 //
 // This JS turns it into an auto-submit form, and handles errors, and updating the cart item count.
 //
