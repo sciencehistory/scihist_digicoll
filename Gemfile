@@ -25,8 +25,6 @@ gem 'scout_apm'
 gem "blacklight", "~> 7.19.2"
 gem "blacklight_range_limit", "~> 8.0" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
-gem "draper", "~> 4.0", ">= 4.0.1" # "decorators", which we use as view models
-
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
