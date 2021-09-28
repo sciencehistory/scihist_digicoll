@@ -3,11 +3,21 @@ require 'rails_helper'
 describe WorkIndexer do
   let(:work) { create(:work, :with_complete_metadata) }
 
+  let(:no_members) do
+    create(:public_work, members: [])
+  end
+
   it "indexes" do
     output_hash = WorkIndexer.new.map_record(work)
     expect(output_hash).to be_present
 
     expect(output_hash["model_pk_ssi"]).to eq([work.id])
+  end
+
+  it "doesn't raise if members are absent" do
+    output_hash = WorkIndexer.new.map_record(no_members)
+    expect(output_hash).to be_present
+    expect(output_hash["model_pk_ssi"]).to eq([no_members.id])
   end
 
   describe "with containers" do
@@ -181,12 +191,13 @@ describe WorkIndexer do
     let(:german_only) do
       create(:public_work, language: ['de'], members: assets )
     end
-    let(:no_assets) do
+  
+    let(:nil_members) do
       create(:public_work, members: [])
     end
 
     before do
-      allow(no_assets).to receive(:members).and_return(nil)
+      allow(nil_members).to receive(:members).and_return(nil)
     end
 
     it "indexes text known to be English in searchable_fulltext" do
@@ -208,11 +219,13 @@ describe WorkIndexer do
     end
 
     it "correctly handles items without any assets" do
-      output_hash = WorkIndexer.new.map_record(no_assets)
-      english  = output_hash["searchable_fulltext"]
-      might_not_be_english = output_hash["searchable_fulltext_language_agnostic"]
-      expect(english).to be_nil
-      expect(might_not_be_english).to be_nil
+      [nil_members, no_members].each do |work|
+        output_hash = WorkIndexer.new.map_record(work)
+        english  = output_hash["searchable_fulltext"]
+        might_not_be_english = output_hash["searchable_fulltext_language_agnostic"]
+        expect(english).to be_nil
+        expect(might_not_be_english).to be_nil
+      end
     end
 
   end

@@ -214,7 +214,7 @@ class WorkIndexer < Kithe::Indexer
   # @param string_property a property to collect from each member of the work 
   # @return [Array<String>] an array of strings containing the contents of @string_property for each member, in order.
   # @example Collect all non-null english translations from all members of my_work, in order:
-  #   get_string_from_each_member(my_work, :english_translation) #=> [english_translation_of_page_1, english_translation_of_page_2, english_translation_of_page_4]
+  #   get_string_from_each_member(my_work, :english_translation) #=> ["english_translation_of_page_1", "english_translation_of_page_2", "english_translation_of_page_4"]
   def get_string_from_each_member(work, string_property)
     # careful, work.members can be nil.
     return [] unless work.members.present?
