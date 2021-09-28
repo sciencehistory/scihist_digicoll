@@ -6,12 +6,12 @@
 #
 # Renders it's own form, NOT meant for use within an existing form!
 #
-#     <%= DigitizationQueueItemStatusForm.new(queue_item).display %>
+#     <%= render DigitizationQueueItemStatusFormComponent.new(queue_item) %>
 #
-class DigitizationQueueItemStatusForm < ViewModel
-  valid_model_type_names 'Admin::DigitizationQueueItem', 'Admin::RAndRItem'
+class DigitizationQueueItemStatusFormComponent < ApplicationComponent
+  attr_reader :model
 
-  def display
-    render "/presenters/digitization_queue_item_status_form", model: model, view: self
+  def initialize(model)
+    @model = model
   end
 end

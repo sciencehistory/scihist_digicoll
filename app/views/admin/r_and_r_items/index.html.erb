@@ -94,7 +94,7 @@
             <% end %>
           </td>
           <td scope="col" class="d-none d-sm-table-cell w-25 p-3">
-             <%= DigitizationQueueItemStatusForm.new(admin_r_and_r_item).display %>
+             <%= render DigitizationQueueItemStatusFormComponent.new(admin_r_and_r_item) %>
           </td>
           <td scope="col" class="d-none d-sm-table-cell" ><%= l(admin_r_and_r_item.deadline.to_date, format: :admin) if admin_r_and_r_item.deadline%></td>
 

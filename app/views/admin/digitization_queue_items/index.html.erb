@@ -80,7 +80,7 @@
           <td><%= admin_digitization_queue_item.accession_number %></td>
           <td><%= admin_digitization_queue_item.museum_object_id %></td>
           <td>
-             <%= DigitizationQueueItemStatusForm.new(admin_digitization_queue_item).display %>
+             <%= render DigitizationQueueItemStatusFormComponent.new(admin_digitization_queue_item) %>
           </td>
           <td><%= l(admin_digitization_queue_item.status_changed_at.to_date, format: :admin) %></td>
         </tr>
