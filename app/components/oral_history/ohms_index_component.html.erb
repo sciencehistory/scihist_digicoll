@@ -1,9 +1,9 @@
 <div class="accordion scihist-accordion ohms-index-container" id="ohmsIndexAccordionParent">
-  <% view.index_points.each_with_index do |index_point, index| %>
-    <div class="ohms-index-point card" id="<%= view.accordion_wrapper_id(index) %>">
-      <div class="card-header" id="<%= view.accordion_header_id(index) %>">
+  <% index_points.each_with_index do |index_point, index| %>
+    <div class="ohms-index-point card" id="<%= accordion_wrapper_id(index) %>">
+      <div class="card-header" id="<%= accordion_header_id(index) %>">
         <h3 class="ohms-index-point-title mb-0">
-          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#<%= view.accordion_element_id(index) %>" aria-expanded="false" aria-controls="<%= view.accordion_element_id(index) %>">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#<%= accordion_element_id(index) %>" aria-expanded="false" aria-controls="<%= accordion_element_id(index) %>">
               <i class="fa fa-plus float-right toggle-icon" aria-hidden="true"></i>
               <i class="fa fa-minus float-right toggle-icon" aria-hidden="true"></i>
               <span class="mr-3"><%= format_ohms_timestamp(index_point.timestamp) %></span> <%= index_point.html_safe_title %>
@@ -11,7 +11,7 @@
         </h3>
       </div>
 
-      <div id="<%= view.accordion_element_id(index) %>" class="collapse card-body ohms-index-list long-text-line-height" aria-labelledby="<%= view.accordion_header_id(index) %>" data-parent="#ohmsIndexAccordionParent">
+      <div id="<%= accordion_element_id(index) %>" class="collapse card-body ohms-index-list long-text-line-height" aria-labelledby="<%= accordion_header_id(index) %>" data-parent="#ohmsIndexAccordionParent">
           <p>
             <a href="#t=<%= index_point.timestamp %>" class="btn btn-secondary" data-ohms-timestamp-s="<%= index_point.timestamp %>">
               <i class="fa fa-play-circle mr-1" aria-hidden="true"></i> Play segment
@@ -19,7 +19,7 @@
 
             <button class="btn btn-outline-secondary"
                   data-toggle="collapse"
-                  href="#<%= view.share_link_area_id(index) %>"
+                  href="#<%= share_link_area_id(index) %>"
                   role="button"
                   aria-expanded="false"
                   aria-controls="collapseExample">
@@ -28,7 +28,7 @@
             </button>
           </p>
 
-          <div class="collapse" id="<%= view.share_link_area_id(index) %>">
+          <div class="collapse" id="<%= share_link_area_id(index) %>">
             <div class="input-group mb-3" data-trigger="copyInputGroup">
               <div class="input-group-prepend">
                 <span class="input-group-text">
@@ -37,7 +37,7 @@
                 </span>
               </div>
 
-              <input type="text" aria-label="URL to copy" class="form-control" data-slot="shareURL" readonly value="<%= view.direct_to_segment_link(index_point) %>">
+              <input type="text" aria-label="URL to copy" class="form-control" data-slot="shareURL" readonly value="<%= direct_to_segment_link(index_point) %>">
 
               <div class="input-group-append">
                 <button class="btn btn-outline-secondary" data-trigger="linkClipboardCopy">
@@ -57,7 +57,7 @@
           <% if index_point.partial_transcript.present? %>
             <p class="attribute">
               <span class="attribute-label">Begins with</span>
-              <%= view.format_partial_transcript(index_point.partial_transcript) %>
+              <%= format_partial_transcript(index_point.partial_transcript) %>
             </p>
           <% end %>
 
