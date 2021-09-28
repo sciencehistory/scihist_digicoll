@@ -70,9 +70,11 @@ module OralHistory
       if footnote_text == ''
         Rails.logger.warn("WARNING: Reference to empty or missing footnote #{number} for OHMS transcript #{ohms_xml.accession}")
       end
-      render '/presenters/ohms_footnote_reference',
+
+      render OralHistory::FootnoteReferenceComponent.new(
         footnote_text: footnote_text,
         number: number
+      )
     end
 
     #private
