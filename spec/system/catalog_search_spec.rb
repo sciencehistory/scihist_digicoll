@@ -191,4 +191,36 @@ describe CatalogController, solr: true, indexable_callbacks: true do
     end
   end
 
+  describe "transcriptions and English translations, searchable via two fulltext indices" do
+    let(:assets) do
+      [ create(:asset,
+          transcription:       "Postkarte [stamps] Herr Prof. G. Bredig",
+          english_translation: "Postcard [stamps] Prof. G. Bredig"),
+        create(:asset,
+          transcription:       "Für Ihre Aufmerksamkeit zu meinem Geburtstag danke ich Ihnen.",
+          english_translation: "Thank you for wishing me a Happy Birthday.") ]
+    end
+    let(:works) do
+      [['de'], ['de','en'], ['en']].map do |languages|
+        create(:public_work, language: languages, members: assets).tap { |work| work.update_index }
+      end
+    end
+    it "shows matches from both full text indices, regardless of work language(s)" do
+      works.each do |postcard|
+        
+        visit search_catalog_path(search_field: "all_fields", q: '"Birthday"')
+        expect(page).to have_selector("#document_#{postcard.friendlier_id}")
+        within("#document_#{postcard.friendlier_id}") do
+          expect(page).to have_selector(".scihist-results-list-item-highlights em", text: "Birthday")
+        end
+
+        visit search_catalog_path(search_field: "all_fields", q: '"Geburtstag"')
+        expect(page).to have_selector("#document_#{postcard.friendlier_id}")
+        within("#document_#{postcard.friendlier_id}") do
+          expect(page).to have_selector(".scihist-results-list-item-highlights em", text: "Geburtstag")
+        end
+
+      end
+    end
+  end
 end
