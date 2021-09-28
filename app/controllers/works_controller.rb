@@ -51,7 +51,7 @@ class WorksController < ApplicationController
     # some pg JSON operators in our WHERE clause to pull out actually just
     # what we want.
     #
-    # The Decorators are going to fetch members again anyway, we're kind of fetching
+    # The ViewComponents are going to fetch members again anyway, we're kind of fetching
     # content that will be fetched again -- but oh well, we do it nice and efficiently!
     #
     # We have to do two queries to get all the mime-types, one for where the direct member
