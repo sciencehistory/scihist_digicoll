@@ -18,7 +18,7 @@ RSpec.describe WorksController, type: :controller do
         expect(response.status).to eq(200)
 
         # We don't intend to ever actually load work.members, instead doing
-        # special purpose stuff in the decorator. It's too easy to load too
+        # special purpose stuff in the ViewComponent. It's too easy to load too
         # much. let's test to make sure we don't.
         expect(assigns[:work].members.loaded?).to be(false)
       end
