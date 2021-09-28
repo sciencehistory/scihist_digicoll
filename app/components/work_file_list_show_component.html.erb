@@ -85,7 +85,7 @@
           <h3 class="h4"><%= bio.name %></h3>
         <% end %>
 
-        <%= OralHistoryBiographicalDisplay.new(bio).display %>
+        <%= render OralHistory::BiographicalComponent.new(bio) %>
       <% end %>
     <% end %>
 

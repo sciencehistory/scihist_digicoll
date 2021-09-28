@@ -1,23 +1,23 @@
-<% if view.birth_info.present? || view.death_info.present? %>
+<% if birth_info.present? || death_info.present? %>
   <table class="work chf-attributes">
     <tbody>
-      <% if view.birth_info.present? %>
+      <% if birth_info.present? %>
         <tr>
           <th>Born</th>
-          <td><%= view.birth_info %></td>
+          <td><%= birth_info %></td>
         </tr>
       <% end %>
-      <% if view.death_info.present? %>
+      <% if death_info.present? %>
         <tr>
           <th>Died</th>
-          <td><%= view.death_info %></td>
+          <td><%= death_info %></td>
         </tr>
       <% end %>
     </tbody>
   </table>
 <% end %>
 
-<% if view.schools.present? %>
+<% if schools.present? %>
   <h3 class="h4">Education</h3>
 
   <div class="table-responsive mb-3">
@@ -31,7 +31,7 @@
         </tr>
       </thead>
       <tbody>
-        <% view.schools.each do |school| %>
+        <% schools.each do |school| %>
           <tr>
             <td class="text-nowrap"><%= FormatSimpleDate.new(school.date).display %></td>
             <td><%= school.institution %></td>
@@ -44,10 +44,10 @@
   </div>
 <% end %>
 
-<% if view.grouped_jobs.present? %>
+<% if grouped_jobs.present? %>
   <h3 class="h4">Professional Experience</h3>
   <div class="mb-3">
-    <% view.grouped_jobs.each_pair do |institution, jobs| %>
+    <% grouped_jobs.each_pair do |institution, jobs| %>
       <h4 class="h6 mb-0 pt-2 border-top font-weight-semi-bold"><%= institution %></h4>
         <ul class="d-table list-unstyled text-brand-serif mb-2 pl-3">
           <% jobs.each do |job| %>
@@ -61,7 +61,7 @@
   </div>
 <% end %>
 
-<% if view.honors.present? %>
+<% if honors.present? %>
   <h3 class="h4">Honors</h3>
   <table class="table mb-3">
     <thead>
@@ -71,10 +71,10 @@
       </tr>
     </thead>
     <tbody>
-      <% view.honors.each do |honor| %>
+      <% honors.each do |honor| %>
         <tr>
           <td class="text-nowrap"><%= FormatSimpleDate.new(honor.start_date, honor.end_date).display %></td>
-          <td><%= view.sanitized_honor_string(honor.honor) %></td>
+          <td><%= sanitized_honor_string(honor.honor) %></td>
         </tr>
       <% end %>
     </tbody>
