@@ -31,7 +31,7 @@ class WorksController < ApplicationController
 
   # We use a different ViewComponent depending on work characteristics, polymorophically kind of.
   def view_component
-    @decorator ||= if @work.is_oral_history? && @work.oral_history_content&.available_by_request_off? && has_oh_audio_member?
+    @view_component ||= if @work.is_oral_history? && @work.oral_history_content&.available_by_request_off? && has_oh_audio_member?
       # special OH audio player template
       WorkOhAudioShowComponent.new(@work)
     elsif @work.is_oral_history?
