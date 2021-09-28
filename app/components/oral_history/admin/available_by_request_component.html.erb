@@ -5,8 +5,8 @@
       <p>Make <b>marked non-published</b> assets be available anyway by request, after the patron fills out a form?</p>
     </div>
 
-    <% if view.allow_change_by_request? %>
-      <%= form_with(model: view.work.oral_history_content!, url: update_oh_available_by_request_admin_work_path(view.work), method: :put, local: true) do |f|  %>
+    <% if allow_change_by_request? %>
+      <%= form_with(model: work.oral_history_content!, url: update_oh_available_by_request_admin_work_path(work), method: :put, local: true) do |f|  %>
 
         <table class="table table-sm">
           <tr>
@@ -47,7 +47,7 @@
 
 
         <table class="table table-sm">
-          <% view.private_asset_members.each do |asset| %>
+          <% private_asset_members.each do |asset| %>
             <tr>
               <td style="width: 2rem">
                 <%= hidden_field_tag "available_by_request[#{asset.id}]", false %>

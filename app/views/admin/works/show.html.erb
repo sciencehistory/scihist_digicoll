@@ -157,7 +157,7 @@
         <% end %>
       </div>
 
-      <%= WorkManageOralHistoryAvailableByRequest.new(@work).display %>
+      <%= render OralHistory::Admin::AvailableByRequestComponent.new(work: @work) %>
     </div>
   <% end %>
 </div>
