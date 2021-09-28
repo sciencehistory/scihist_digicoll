@@ -161,7 +161,7 @@
 
         <% if has_ohms_index? %>
           <div class="tab-pane" id="ohToc" role="tabpanel" aria-labelledby="ohTocTab">
-            <%= OhmsIndexDisplay.new(work.oral_history_content.ohms_xml, work: work).display %>
+            <%= render OralHistory::OhmsIndexComponent.new(work.oral_history_content.ohms_xml, work: work) %>
           </div>
         <% end %>
 
