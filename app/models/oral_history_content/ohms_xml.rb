@@ -65,7 +65,7 @@ class OralHistoryContent
 
     # Returns an ordered array of transcript lines
     # Filters the footnotes out. References to the footnotes, however, are kept;
-    # these are dealt with in the presenter.
+    # these are dealt with in the view component.
     def transcript_lines
       @transcript_lines ||= begin
         text = transcript_text

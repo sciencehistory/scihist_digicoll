@@ -104,7 +104,7 @@ class WorkOaiDcSerialization
         end
 
         # Mime types in DC:format
-        # work_presenter.content_types.each do |ctype|
+        # work.content_types.each do |ctype|
         #   xml["dc"].format ctype
         # end
 

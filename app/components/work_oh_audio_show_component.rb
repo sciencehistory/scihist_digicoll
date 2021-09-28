@@ -23,7 +23,7 @@ class WorkOhAudioShowComponent < ApplicationComponent
   end
 
   # We don't want the leaf_representative, we want the direct representative member
-  # to pass to MemberImagePresenter.
+  # to pass to MemberImageComponent.
   def representative_member
     # memoize with a value that could be nil....
     return @representative_member if defined?(@representative_member)

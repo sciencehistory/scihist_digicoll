@@ -1,4 +1,4 @@
-# A ViewModel presenter that displays an image tag, for a thumbnail derivative for a given Kithe::Asset.
+# A component that displays an image tag, for a thumbnail derivative for a given Kithe::Asset.
 #
 # The Kithe::Asset provided as an arg will usually be a leaf_representative of a Work or Collection.
 #
