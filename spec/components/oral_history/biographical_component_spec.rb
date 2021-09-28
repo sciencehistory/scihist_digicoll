@@ -1,7 +1,8 @@
 require 'rails_helper'
 
-describe OralHistoryBiographicalDisplay do
-  let(:presenter) { OralHistoryBiographicalDisplay.new(biography)}
+describe OralHistory::BiographicalComponent, type: :component do
+  let(:presenter) { described_class.new(biography)}
+  let!(:rendered) { render_inline presenter }
 
   describe "an empty biography" do
     let(:biography) { IntervieweeBiography.new }
