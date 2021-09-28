@@ -12,7 +12,7 @@ module OralHistory
 
     attr_reader :ohms_xml
 
-    # @param ohmx_xml [OralHistoryContent::OhmsXml]
+    # @param ohms_xml [OralHistoryContent::OhmsXml]
     def initialize(ohms_xml)
       @ohms_xml = ohms_xml
     end
@@ -49,8 +49,7 @@ module OralHistory
 
       if ohms_xml.footnote_array.present?
         transcript_html << content_tag("div") do
-          render '/presenters/ohms_footnotes_section',
-            footnote_array: ohms_xml.footnote_array
+          render OralHistory::FootnotesSectionComponent.new(footnote_array: ohms_xml.footnote_array)
         end
       end
 
