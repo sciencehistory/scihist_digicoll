@@ -1,9 +1,7 @@
-<%# for historical reasons "decorator" is actually a WorkOhAudioShowComponent instance %>
-
-<% if decorator.file_list_members.present? %>
+<% if file_list_members.present? %>
   <div class="downloads-pdf">
     <div class="other-files sans-serif">
-      <% decorator.file_list_members.each_with_index do |member, index| %>
+      <% file_list_members.each_with_index do |member, index| %>
         <%= render FileListItemComponent.new(member,
               index: index,
               view_link_attributes: {
@@ -19,9 +17,9 @@
   </div>
 <% end %>
 
-<% if decorator.combined_mp3_audio.present? && decorator.derivatives_up_to_date?%>
+<% if combined_mp3_audio_url.present? && combined_derivatives_up_to_date?%>
   <h2 class="attribute-sub-head">
-    <% if decorator.audio_members.count == 1 %>
+    <% if audio_members.count == 1 %>
       Audio File <small class="text-muted">Web-quality download</small>
     <% else %>
       Complete Interview Audio File <small class="text-muted">Web-quality download</small>
@@ -29,40 +27,40 @@
   </h2>
   <div class="combined-audio-download-links">
     <div class="combined-audio-download-icon-container">
-      <a href="<%= decorator.combined_mp3_audio_download %>"
+      <a href="<%= combined_mp3_audio_download_url %>"
         data-analytics-category="Work"
         data-analytics-action="download_combined_audio_derivatives"
-        data-analytics-label="<%= @work.friendlier_id %>"
+        data-analytics-label="<%= work.friendlier_id %>"
         >
         <i class="fa fa-download" aria-hidden="true"></i>
         Web-quality MP3
       </a>
     </div>
     <div class="combined-audio-download-link-size">
-      <small><%= decorator.combined_mp3_audio_size %></small>
+      <small><%= combined_display_mp3_audio_size %></small>
     </div>
   </div>
 <% end %>
 
 
 <h2 class="attribute-sub-head sound-file-header">
-  <% if decorator.audio_members.count > 1 %>
-    <%= decorator.audio_members.count %> Separate Interview Segments
+  <% if audio_members.count > 1 %>
+    <%= audio_members.count %> Separate Interview Segments
   <% else %>
     1 Interview Segment
   <% end %>
-  <small class="text-muted">Archival-quality <%= "download".pluralize(decorator.audio_members.count) %></small>
+  <small class="text-muted">Archival-quality <%= "download".pluralize(audio_members.count) %></small>
 </h2>
 
 <div class="sans-serif track-listings" data-role="track-listings" >
-  <% decorator.audio_members.each do |track| %>
+  <% audio_members.each do |track| %>
     <div  class="track-listing" data-role="track-listing"
           data-title="<%= track.title %>"
           data-member-id="<%= track.id %>"
-          data-original-url="<%= main_app.download_path(track.id) %>"
+          data-original-url="<%= download_path(track.id) %>"
       >
 
-      <% if decorator.start_time_for(track) %>
+      <% if start_time_for(track) %>
         <div class="icon">
           <a
             class="play-link"
@@ -70,10 +68,10 @@
             aria-label="Listen to '<%= track.title%>'"
             href="#"
             data-role="play-link"
-            data-ohms-timestamp-s="<%= decorator.start_time_for(track) %>"
+            data-ohms-timestamp-s="<%= start_time_for(track) %>"
             data-analytics-category='Work'
             data-analytics-action="play_oral_history_audio_segment"
-            data-analytics-label="<%= @work.friendlier_id %>"
+            data-analytics-label="<%= work.friendlier_id %>"
           >
             <i class="fa fa-play-circle" aria-hidden="true"></i>
           </a>
@@ -82,21 +80,21 @@
 
 
       <div class="title">
-        <% if decorator.start_time_for(track) %>
+        <% if start_time_for(track) %>
           <a
             class="title play-link"
             title="Listen to '<%= track.title%>'"
             aria-label="Listen to '<%= track.title%>'"
             href="#"
             data-role="play-link"
-            data-ohms-timestamp-s="<%= decorator.start_time_for(track) %>"
+            data-ohms-timestamp-s="<%= start_time_for(track) %>"
             data-analytics-category='Work'
             data-analytics-action="play_oral_history_audio_segment"
-            data-analytics-label="<%= @work.friendlier_id %>"
+            data-analytics-label="<%= work.friendlier_id %>"
           >
             <%= track.title %>
             <div class="start-time">
-              starts at <%= format_ohms_timestamp(decorator.start_time_for(track))%>
+              starts at <%= format_ohms_timestamp(start_time_for(track))%>
             </div>
             <% unless track.published? %>
               <span title="Private" class="badge badge-warning">Private</span>
