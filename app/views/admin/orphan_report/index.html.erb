@@ -7,7 +7,10 @@
 </p>
 
 
-<% if @report.nil? %>
+
+
+
+<% if @report_available == false %>
   <p>No reports found.</p>
 <% else %>
   <h2 class="border-bottom">Latest report</h2>
@@ -36,10 +39,12 @@
         <%= link_to(path.split("/").last, Shrine.storages[:store].url(path)) %>
         <%= '[...]' if (@data['orphaned_originals_count'] > @data['orphaned_originals_sample'].length) && i == @data['orphaned_originals_sample'].length - 1 %>
       </li>
-
       <% end %>
       </ul>
-     
+      To delete orphaned originals:
+      <code>
+        rails runner 'OrphanS3Originals.new(show_progress_bar: false).delete_orphans'
+      </code>     
     <% else %>
       <span class="text-success">
         <i class="fa fa fa-thumbs-up" aria-hidden="true"></i>
@@ -64,6 +69,11 @@
           </li>
         <% end %>
       </ul>
+      To delete orphaned public derivatives:
+      <code>
+        rails runner 'OrphanS3Derivatives.new(show_progress_bar: false).delete_orphans' 
+      </code>
+
     <% else %>
       <span class="text-success">
         <i class="fa fa fa-thumbs-up" aria-hidden="true"></i>
@@ -88,6 +98,11 @@
           </li>
         <% end %>
       </ul>
+      To delete restricted derivatives:
+      <code>
+        rails runner 'OrphanS3RestrictedDerivatives.new(show_progress_bar: false).delete_orphans' 
+      </code>
+
     <% else %>
       <span class="text-success">
         <i class="fa fa fa-thumbs-up" aria-hidden="true"></i>
@@ -112,6 +127,10 @@
           </li>
         <% end %>
       </ul>
+      To delete orphaned deep zoom tiles:
+      <code>
+        rails runner 'OrphanS3Dzi.new(show_progress_bar: false).delete_orphans'
+      </code>
     <% else %>
       <span class="text-success">
         <i class="fa fa fa-thumbs-up" aria-hidden="true"></i>
