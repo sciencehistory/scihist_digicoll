@@ -24,7 +24,7 @@
 #
 class OrphanS3Derivatives
   # We put some other things on the 'derivatives' s3, that we want to ignore and not consider orphaned
-  IGNORE_PATH_PREFIXES = ["__sitemaps/"]
+  IGNORE_PATH_PREFIXES = ["__sitemaps/", "google"]
 
   attr_reader :s3_iterator, :shrine_storage, :files_checked, :orphans_found, :delete_count, :sample
 
@@ -51,11 +51,9 @@ class OrphanS3Derivatives
     @delete_count = 0
     s3_iterator.each_s3_path do |s3_path|
       next if IGNORE_PATH_PREFIXES.any? {|p| s3_path.start_with?(p) }
-
       asset_id, derivative_key, shrine_path = parse_s3_path(s3_path)
-
-      if shrine_path && orphaned?(asset_id, derivative_key, shrine_path)
-        shrine_storage.delete(shrine_path)
+      if orphaned?(asset_id, derivative_key, s3_path)
+        shrine_storage.delete(s3_path)
         s3_iterator.log "deleted derivative file at: #{bucket_name}: #{s3_path}"
         @delete_count += 1
       end
