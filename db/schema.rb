@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_07_182141) do
+ActiveRecord::Schema.define(version: 2021_09_01_190230) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -212,6 +212,12 @@ ActiveRecord::Schema.define(version: 2021_04_07_182141) do
     t.enum "available_by_request_mode", default: "off", null: false, enum_name: "available_by_request_mode_type"
     t.jsonb "json_attributes", default: {}
     t.index ["work_id"], name: "index_oral_history_content_on_work_id", unique: true
+  end
+
+  create_table "orphan_reports", force: :cascade do |t|
+    t.jsonb "data_for_report", default: {}
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "queue_item_comments", force: :cascade do |t|
