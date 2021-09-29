@@ -17,11 +17,13 @@
   </div>
 
   <div class="show-metadata">
-    <%# metadata is wrapped in tabs including transcription and translation if present! %>
-    <%= render partial: 'work_metadata',
-          layout: ("transcription_tabs_layout" if has_transcription_or_translation?),
-          locals: { work: work, component: self }
-      %>
+    <% if has_transcription_or_translation? %>
+      <%= render TranscriptionTabsComponent.new(translation_texts: translation_texts, transcription_texts: transcription_texts) do %>
+        <%= render 'work_metadata', work: work  %>
+      <% end %>
+    <% else %>
+      <%= render 'work_metadata', work: work  %>
+    <% end %>
   </div>
 
   <%# these next are not in a div so they can wrap around the bottom of the metadata

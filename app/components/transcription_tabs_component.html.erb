@@ -14,7 +14,7 @@
     </a>
   </li>
 
-  <% if component.transcription_texts.present? %>
+  <% if transcription_texts.present? %>
     <li class="nav-item">
       <a class="nav-link" id="description-tab" data-toggle="tab" href="#transcription" role="tab" aria-controls="transcription">
         Transcription
@@ -22,7 +22,7 @@
     </li>
   <% end %>
 
-  <% if component.translation_texts.present? %>
+  <% if translation_texts.present? %>
     <li class="nav-item">
       <a class="nav-link" id="translation-tab" data-toggle="tab" href="#translation" role="tab" aria-controls="translation" aria-selected="true">
         English Translation
@@ -34,14 +34,15 @@
 <div class="tab-content">
   <div class="tab-pane show active" id="description" role="tabpanel" aria-labelledby="description-tab">
 
-    <%= yield %>
+    <%# block passed in on render call! %>
+    <%= content %>
 
   </div>
 
-  <% if component.transcription_texts.present? %>
+  <% if transcription_texts.present? %>
     <div class="tab-pane" id="transcription" role="tabpanel" aria-labelledby="transcription-tab">
-      <% component.transcription_texts.each do |text_obj| %>
-        <% if component.transcription_texts.length > 1 %>
+      <% transcription_texts.each do |text_obj| %>
+        <% if transcription_texts.length > 1 %>
           <h3 class="textual-separator text-page-separator">
           <%= link_to(
             viewer_path(text_obj.asset.parent.friendlier_id, text_obj.asset.friendlier_id),
@@ -60,10 +61,10 @@
     </div>
   <% end %>
 
-  <% if component.translation_texts.present? %>
+  <% if translation_texts.present? %>
     <div class="tab-pane" id="translation" role="tabpanel" aria-labelledby="translation-tab">
-      <% component.translation_texts.each do |text_obj| %>
-        <% if component.transcription_texts.length > 1 %>
+      <% translation_texts.each do |text_obj| %>
+        <% if transcription_texts.length > 1 %>
           <%= link_to(
             viewer_path(text_obj.asset.parent.friendlier_id, text_obj.asset.friendlier_id),
              data: MemberImageComponent.viewer_trigger_data_attrs(
