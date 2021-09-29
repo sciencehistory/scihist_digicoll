@@ -85,6 +85,13 @@ describe OrphanS3Derivatives do
     ]
   end
 
+  let(:non_derivatives) do
+    [
+      "some_random/file.txt",
+      "some_other_random/file.txt",
+    ]
+  end
+
   let(:fake_aws_list_output) do
      Aws::S3::Types::ListObjectsOutput.new(
       is_truncated: false,   marker: '',
@@ -196,6 +203,21 @@ describe OrphanS3Derivatives do
       expect(orphan_checker.orphans_found).to eq 2
     end
     it "deletes stale derivatives" do
+      orphan_checker.delete_orphans
+      expect(orphan_checker.delete_count).to eq 2
+    end
+  end
+
+  describe "random non-derivatives" do
+    let(:file_paths) do
+      non_derivatives
+    end
+    it "identifies them" do
+      orphan_checker.report_orphans
+      expect(orphan_checker.files_checked).to eq 2
+      expect(orphan_checker.orphans_found).to eq 2
+    end
+    it "deletes them" do
       orphan_checker.delete_orphans
       expect(orphan_checker.delete_count).to eq 2
     end

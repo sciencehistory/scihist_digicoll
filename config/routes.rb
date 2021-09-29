@@ -233,6 +233,7 @@ Rails.application.routes.draw do
     post "/asset_files/:asset_id/check_fixity", to: "assets#check_fixity", as: "check_fixity"
     get "/fixity_report", to: "assets#fixity_report", as: "fixity_report"
     get "/storage_report", to: "storage_report#index", as: "storage_report"
+    get "/orphan_report", to: "orphan_report#index", as: "orphan_report"
 
     resources :oral_history_access_requests, only: [:index, :show] do
       member do

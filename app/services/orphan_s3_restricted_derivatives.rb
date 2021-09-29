@@ -2,11 +2,13 @@ class OrphanS3RestrictedDerivatives
   # We put some other things on the 'derivatives' s3, that we want to ignore and not consider orphaned
   IGNORE_PATH_PREFIXES = ["__sitemaps/"]
 
-  attr_reader :s3_iterator, :shrine_storage, :files_checked, :orphans_found, :delete_count
+  attr_reader :s3_iterator, :shrine_storage, :files_checked, :orphans_found, :delete_count, :sample
 
   # @param show_progress_bar [Boolean], default true, should we show a progress
   #   bar with estimated progress.
   def initialize(show_progress_bar: true)
+    
+    @sample = []
     @shrine_storage = ScihistDigicoll::Env.shrine_store_storage
     @s3_iterator = S3PathIterator.new(
       shrine_storage: shrine_storage,
@@ -52,6 +54,7 @@ class OrphanS3RestrictedDerivatives
         if @orphans_found == max_reports
           s3_iterator.log "Reported max #{max_reports} orphans. Not listing subsequent.\n"
         elsif orphans_found < max_reports
+          @sample << s3_path
           report_orphaned_derivative(asset_id, derivative_key, shrine_path, s3_path)
           s3_iterator.log ""
         end
