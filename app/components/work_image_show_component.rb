@@ -65,6 +65,22 @@ class WorkImageShowComponent < ApplicationComponent
     @representative_member = work.representative
   end
 
+  # A weird helper method to lset us conditionally sometimes wrap
+  # the work description in TranslationTabsComponent, other times not.
+  #
+  #   <%= maybe_wrap_with_component(wrapping_component: WrappingComponent.new, should_wrap: boolean) do %>
+  #      More content that may or may not be wrapped.
+  #   <% end %>
+  def maybe_wrap_with_component(wrapping_component:, should_wrap:)
+    if should_wrap
+      render wrapping_component do
+        yield
+      end
+    else
+      yield
+    end
+  end
+
   # just a little value class for the things we need to display an individual
   # asset-page's worth of transcription or translation text
   class TextPage
