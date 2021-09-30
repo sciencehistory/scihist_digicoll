@@ -4,6 +4,8 @@ class WorksController < ApplicationController
   before_action :set_work, :check_auth
 
   def show
+    @show_deai_header = true
+
     respond_to do |format|
       format.html {
         render template: template
