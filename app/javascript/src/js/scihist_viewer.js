@@ -251,7 +251,6 @@ ScihistImageViewer.prototype.setLocationUrl = function() {
   } else {
     newPath = currentPath + '/viewer/' + encodeURIComponent(selectedID);
   }
-
   history.replaceState({}, "", this.locationWithNewPath(newPath));
 };
 
@@ -268,7 +267,7 @@ ScihistImageViewer.prototype.locationWithNewPath = function(newPath) {
     newUrl += '?' + location.query;
   }
   if (location.hash) {
-    newUrl += '#' + location.hash;
+    newUrl += location.hash;
   }
   return newUrl;
 };
