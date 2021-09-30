@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe OnDemandDerivativesController, type: :request, queue_adapter: :test do
   let(:derivative_type) { "zip_file" }
-  let(:work) { create(:public_work) }
+  let(:work) { create(:public_work, members: [create(:asset_with_faked_file)]) }
 
   describe "initial request" do
     it "creates record and returns json" do
@@ -51,6 +51,24 @@ RSpec.describe OnDemandDerivativesController, type: :request, queue_adapter: :te
       expect(json["id"]).to eq record.id
       expect(json["status"]).to eq "success"
       expect(json["file_url"]).to be_kind_of String
+    end
+  end
+
+  describe "unsuitable file" do
+    let(:work) { create(:public_work) }
+
+    it "quickly returns error response" do
+      expect(OnDemandDerivativeCreatorJob).not_to receive(:perform_later)
+
+      get on_demand_derivative_status_path(work.friendlier_id, derivative_type)
+
+      expect(response).to have_http_status(403)
+
+      json = JSON.parse(response.body)
+
+      expect(json).to eq(
+        {"error_info"=>{"class"=>"ArgumentError", "message"=>"Can't create derivative with no public members"}, "status"=>"error"}
+      )
     end
   end
 
