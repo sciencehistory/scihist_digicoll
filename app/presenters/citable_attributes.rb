@@ -305,9 +305,7 @@ class CitableAttributes
 
     def container_title
       memoize(:container_title) do
-        if work.source.present?
-          work.source
-        elsif work.parent && work.parent.title.present?
+        if work.parent && work.parent.title.present?
           work.parent.title
         end
       end

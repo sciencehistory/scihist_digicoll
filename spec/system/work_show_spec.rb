@@ -75,7 +75,6 @@ describe "Public work show page", type: :system, js: false do
       end
 
       within(".part-of") do
-        expect(page).to have_selector("li", text: "Part of #{work.source}")
         expect(page).to have_link(work.parent.title)
       end
 

@@ -64,15 +64,13 @@ class WorkResultDisplay < ResultDisplay
     return @metadata_labels_and_values
   end
 
-  # An array of elements for "part of" listing, includes 'parent' in a link,
+  # An array of elements for "part of" listing, now including just possible "parent"
+  # title. (Used to sometimes include "source" string, but we eliminated that)
   # or "source" in italics
   def part_of_elements
     @part_of_elements ||= [].tap do |arr|
       if model.parent.present?
         arr << link_to(model.parent.title, work_path(model.parent))
-      end
-      if model.source.present?
-        arr << content_tag("i", model.source)
       end
     end
   end
