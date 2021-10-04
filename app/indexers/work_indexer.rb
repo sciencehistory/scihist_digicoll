@@ -44,7 +44,6 @@ class WorkIndexer < Kithe::Indexer
     to_field "text_no_boost_tesim", obj_extract("additional_credit"), transform(->(v) { "#{v.role}: #{v.name}" })
     to_field ["text_no_boost_tesim", "exhibition_facet"], obj_extract("exhibition")
     to_field ["text_no_boost_tesim", "project_facet"], obj_extract("project")
-    to_field "text_no_boost_tesim", obj_extract("source")
     to_field "text_no_boost_tesim", obj_extract("digitization_funder")
     to_field "text_no_boost_tesim", obj_extract("extent")
 
@@ -211,7 +210,7 @@ class WorkIndexer < Kithe::Indexer
   end
 
   # Iterate over all members of a work, collecting a string from each one. Return non-null strings in an array suitable for indexing.
-  # @param string_property a property to collect from each member of the work 
+  # @param string_property a property to collect from each member of the work
   # @return [Array<String>] an array of strings containing the contents of @string_property for each member, in order.
   # @example Collect all non-null english translations from all members of my_work, in order:
   #   get_string_from_each_member(my_work, :english_translation) #=> ["english_translation_of_page_1", "english_translation_of_page_2", "english_translation_of_page_4"]

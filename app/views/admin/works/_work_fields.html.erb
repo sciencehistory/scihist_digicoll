@@ -81,8 +81,6 @@
             class: "form-control input-primitive" %>
     <% end %>
 
-    <%= f.input :source %>
-
     <%= f.repeatable_attr_input :series_arrangement, build: :at_least_one %>
 
     <%# single, not array, so we need some slightly weird setup. Including we need at least one to exist:  %>
