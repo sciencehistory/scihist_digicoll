@@ -433,6 +433,24 @@ class Admin::WorksController < AdminController
             params[field] = DescriptionSanitizer.new.sanitize(params[field])
           end
         end
+
+        # remove leading and trailing spaces from ALL submitted values, I don't think
+        # it hurts anything on irrelevant values, and helps avoid operator error
+        # on our string attributes, including nested ones. If this ends up
+        # being too broad, we can correct and write more complex logic later!
+        recursive_strip_whitespace!(params)
+      end
+    end
+
+    # Recursively descend through nested array/hash, take all strings and mutate
+    # to strip! leading or trailing whitespace
+    def recursive_strip_whitespace!(obj)
+      if obj.is_a?(Hash) || obj.is_a?(ActionController::Parameters)
+        obj.values.each { |v| recursive_strip_whitespace!(v) }
+      elsif obj.is_a?(Array)
+        obj.each { |v| recursive_strip_whitespace!(v)}
+      elsif obj.is_a?(String)
+        obj.strip!
       end
     end
 
