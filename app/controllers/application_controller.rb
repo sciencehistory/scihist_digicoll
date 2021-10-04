@@ -27,6 +27,14 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  before_action do
+    timecode = Time.now.gmtime.to_i
+    Honeybadger.context({
+      :papertrail_url => "https://papertrailapp.com/events?focus=#{timecode}&selected=#{timecode}",
+      :request_id => request.uuid
+    })
+  end
+
 
   def show_ie_unsupported_warning?
     # #browser method comes from `browser` gem
