@@ -1,0 +1,13 @@
+<span class="provenance-summary">
+  <%= provenance_summary %>
+</span>
+<% unless provenance_notes.blank? %>
+  <a data-toggle="collapse" href="#collapseProvenanceNotes"
+    role="button" aria-expanded="false"
+    aria-controls="collapseProvenanceNotes">Show notes</a>
+  <div class="collapse" id="collapseProvenanceNotes">
+    <div class="provenance-notes">
+      <%= provenance_notes %>
+    </div>
+  </div>
+<% end %>

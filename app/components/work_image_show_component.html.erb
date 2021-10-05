@@ -1,0 +1,50 @@
+<% provide :page_title, construct_page_title(work.title) %>
+
+<% content_for :head do %>
+  <%= render "meta_tags", work: work  %>
+  <%= tag "link", rel: "alternate", type: "application/xml", title: "OAI-DC metadata in XML", href: work_path(@work, format: "xml") %>
+<% end %>
+
+<div class="show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
+
+  <div class="show-title">
+    <%= render WorkTitleAndDatesComponent.new(work) %>
+  </div>
+
+  <div class="show-hero">
+    <%= render MemberImageComponent.new(representative_member, size: :large) %>
+    <%= render "rights_and_social", work: work %>
+  </div>
+
+  <div class="show-metadata">
+      <%= maybe_wrap_with_component(
+            wrapping_component: TranscriptionTabsComponent.new(
+                                  translation_texts: translation_texts,
+                                  transcription_texts: transcription_texts
+                                ),
+            should_wrap: has_transcription_or_translation?) do %>
+
+        <div class="work-description long-text-line-height">
+          <%= DescriptionDisplayFormatter.new(work.description).format  %>
+        </div>
+        <%= render WorkShowInfoComponent.new(work: work) %>
+        <%= render "citation", work: work  %>
+
+      <% end %>
+  </div>
+
+  <%# these next are not in a div so they can wrap around the bottom of the metadata
+    div to take up all space. A bit hacky but it works. A clear hack to make sure they start after
+    big representative image %>
+  <div style="clear: left"></div>
+
+  <% member_list_for_display.each_with_index do |member, index| %>
+      <div class="show-member-list-item">
+        <%# lazyload all but first 6 images %>
+        <%= render MemberImageComponent.new(member, lazy: (index > 5)) %>
+      </div>
+  <% end %>
+</div>
+
+<%# hidden modal used by viewer %>
+<%= render 'scihist_image_viewer/scihist_viewer_modal', work: work  %>

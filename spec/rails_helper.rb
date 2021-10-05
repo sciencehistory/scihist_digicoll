@@ -23,6 +23,7 @@ require 'rspec/rails'
 #
 Dir[Rails.root.join('spec', 'test_support', 'helper_ruby', '**', '*.rb')].each { |f| require f }
 
+require "view_component/test_helpers"
 require 'capybara/rspec'
 require 'capybara/rails'
 
@@ -66,6 +67,16 @@ RSpec.configure do |config|
   Capybara.default_driver = :rack_test # Faster but doesn't do Javascript
   Capybara.javascript_driver = $capybara_js_driver
 
+
+  # https://viewcomponent.org/guide/testing.html#rspec-configuration
+  config.include ViewComponent::TestHelpers, type: :component
+  config.include Capybara::RSpecMatchers, type: :component
+  config.include Devise::Test::ControllerHelpers, type: :component
+  config.before(:each, type: :component) do
+    # for devise support according to ViewComponent docs.
+    @request = controller.request
+  end
+
   # and this applies to wrapped Rails 'system' tests, which rspec recommends
   # we use now over feature tests.
   #
@@ -104,15 +115,6 @@ RSpec.configure do |config|
 
   # our own local custom helper
   config.include UppyHelperMethods
-
-  # Get current_user to work in decorator (draper) specs when there is no logged in user,
-  # where #current_user should be nil. Weird workaround with Draper.
-  # https://github.com/drapergem/draper/issues/857
-  config.before(:each, type: :decorator) do |example|
-    unless example.metadata[:logged_in_user]
-      _stub_current_scope :user, nil
-    end
-  end
 
   # Let blocks or tests add (eg) `queue_adapter: :test` to determine Rails
   # ActiveJob queue adapter. :test, :inline:, or :async, presumably.

@@ -12,7 +12,7 @@
             <p class="h4">Member in: <%= link_to "#{@work.parent.title} (#{@work.parent.friendlier_id})", admin_work_path(@work.parent) %></p>
           <% end %>
           <div>
-            <%= CartControl.new(@work.friendlier_id, cart_presence: @cart_presence).display %>
+            <%= render CartControlComponent.new(@work.friendlier_id, cart_presence: @cart_presence) %>
           </div>
         </div>
       </div>
@@ -142,7 +142,7 @@
 
   <% if @work.is_oral_history? %>
     <div class="tab-pane" id="nav-oral-histories" role="tabpanel" aria-labelledby="nav-oral-histories-tab">
-      <%= WorkCombinedAudioDerivatives.new(@work).display %>
+      <%= render OralHistory::Admin::CombinedAudioDerivativesComponent.new(work: @work) %>
       <%= render "oral_history_biography",  work: @work %>
       <%= render "ohms_xml",                work: @work %>
       <%= render "oral_history_transcript", work: @work %>
@@ -157,7 +157,7 @@
         <% end %>
       </div>
 
-      <%= WorkManageOralHistoryAvailableByRequest.new(@work).display %>
+      <%= render OralHistory::Admin::AvailableByRequestComponent.new(work: @work) %>
     </div>
   <% end %>
 </div>

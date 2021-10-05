@@ -37,18 +37,18 @@ class CatalogController < ApplicationController
   Kithe::BlacklightTools::BulkLoadingSearchService.bulk_load_scope =
     -> { includes(:parent, :leaf_representative)  }
 
-  # What ViewModel class to use for a given search result on the results screen, for
+  # What ViewComponent class to use for a given search result on the results screen, for
   # Work or Collection. Called by _document_list.
-  def view_model_class_for(model)
+  def view_component_class_for(model)
     if model.kind_of?(Work)
-      WorkResultDisplay
+      SearchResult::WorkComponent
     elsif model.kind_of?(Collection)
-      CollectionResultDisplay
+      SearchResult::CollectionComponent
     else
       raise ArgumentError.new("Don't know proper search results ViewModel class for #{model}")
     end
   end
-  helper_method :view_model_class_for
+  helper_method :view_component_class_for
 
   module Blacklight::CatalogHelperBehavior
     # These three methods

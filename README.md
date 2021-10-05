@@ -102,6 +102,9 @@ Some other interesting/complicated sub-systems we've written documentation for:
 
 * [kithe](https://github.com/sciencehistory/kithe) of course provides a lot of digital-collections domain-specific functionality
   * which itself uses [attr_json](https://github.com/jrochkind/attr_json/) for modelling attributes as a single json column in the db, and [shrine](https://shrinerb.com) for file handling.
+* [view_component](https://github.com/github/view_component) we use extensively for organizing
+  our view layer logic. We also still have it mixed with plenty of standard partials, for legacy
+  reasons. Going forward, we'll use ViewComponents wherever it makes sense.
 * [devise](https://github.com/plataformatec/devise) is used for authentication/login
 * [access-granted](https://github.com/chaps-io/access-granted) is used for some very simple authorization/permissions (right now just admins can do some things other logged in staff can not)
 * [blacklight](https://github.com/projectblacklight/blacklight) We are currently using Blacklight

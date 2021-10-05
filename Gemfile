@@ -12,6 +12,7 @@ gem 'lockbox'
 gem 'rails', '~> 6.1.1'
 gem 'webpacker', '~> 5.0'
 
+gem "view_component", "~> 2.40", require: "view_component/engine"
 
 #  Scout is a monitoring tool we are experimenting with
 gem 'scout_apm'
@@ -23,8 +24,6 @@ gem 'scout_apm'
 # blacklight_range_limit to latest at same time.
 gem "blacklight", "~> 7.19.2"
 gem "blacklight_range_limit", "~> 8.0" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
-
-gem "draper", "~> 4.0", ">= 4.0.1" # "decorators", which we use as view models
 
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'

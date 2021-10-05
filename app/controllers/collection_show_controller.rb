@@ -53,12 +53,6 @@ class CollectionShowController < CatalogController
     authorize! :read, @collection
   end
 
-  # Technically overrides a Blacklight method, although we do our own thing with it
-  def presenter
-    @presenter ||= CollectionShowDecorator.new(collection)
-  end
-  helper_method :presenter
-
   def collection
     @collection
   end

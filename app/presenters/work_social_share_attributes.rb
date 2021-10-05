@@ -1,14 +1,38 @@
-# Get some things we need for social media metadata links and share links.
+# Produces metadata needed for opengraph share tags, and other social media sharing
+# APIs, to describe a work.
+#
+#     attributes = WorkSocialShareAttributes.new(work, view_context: self)
+#     attributes.page_title
+#     attributes.simple_title
+#     attributes.share_url
+#     attributes.share_media_url
+#     # etc
+#
+# The view_context is unfortunate -- if in a Rails view template, `self` will suffice, if
+# in a controller the method `view_context` works -- it turns out there are too many things
+# we need to create this metadata that are difficult without a Rails view_context. Including
+# using our existing Rails helpers, using Rails' helpers for rails static asset urls, etc.
 #
 # Used in SocialShareDisply, and also our meta tags that are picked up by social media sites
 # and others.
-class WorkSocialShareAttributes < ViewModel
-  valid_model_type_names "Work"
+#
+class WorkSocialShareAttributes
+  attr_reader :work, :view_context
 
-  alias_method :work, :model
+  delegate :content_for, :construct_page_title, :main_app, :asset_url, :work_url,
+    to: :view_context
+
+  def initialize(work, view_context:)
+    @work = work
+    @view_context = view_context
+  end
+
+  def call
+    raise "This object does not actually support rendering"
+  end
 
   def page_title
-    content_for(:page_title) || construct_page_title(work.title)
+    @page_title ||= content_for(:page_title) || construct_page_title(work.title)
   end
 
   def simple_title

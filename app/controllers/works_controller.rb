@@ -4,9 +4,11 @@ class WorksController < ApplicationController
   before_action :set_work, :check_auth
 
   def show
+    @show_deai_header = true
+
     respond_to do |format|
       format.html {
-        render template: template
+        render view_component
       }
 
       format.xml {
@@ -23,24 +25,25 @@ class WorksController < ApplicationController
   end
 
   def viewer_images_info
-    render json: ViewerMemberInfoSerializer.new(@work).as_hash
+    render json: ViewerMemberInfoSerializer.new(@work, current_user: current_user).as_hash
   end
 
   private
 
-  def decorator
-    @decorator ||= if @work.is_oral_history? && @work.oral_history_content&.available_by_request_off? && has_oh_audio_member?
+
+  # We use a different ViewComponent depending on work characteristics, polymorophically kind of.
+  def view_component
+    @view_component ||= if @work.is_oral_history? && @work.oral_history_content&.available_by_request_off? && has_oh_audio_member?
       # special OH audio player template
-      OhAudioWorkShowDecorator.new(@work)
+      WorkOhAudioShowComponent.new(@work)
     elsif @work.is_oral_history?
       # OH with no playable audio, either becuae it's by-request or it's not there at all.
-      WorkFileListShowDecorator.new(@work)
+      WorkFileListShowComponent.new(@work)
     else
       # standard image-based template.
-      WorkShowDecorator.new(@work)
+      WorkImageShowComponent.new(@work)
     end
   end
-  helper_method :decorator
 
   # Is an Oral History with at least one audio member?
   def has_oh_audio_member?
@@ -50,7 +53,7 @@ class WorksController < ApplicationController
     # some pg JSON operators in our WHERE clause to pull out actually just
     # what we want.
     #
-    # The Decorators are going to fetch members again anyway, we're kind of fetching
+    # The ViewComponents are going to fetch members again anyway, we're kind of fetching
     # content that will be fetched again -- but oh well, we do it nice and efficiently!
     #
     # We have to do two queries to get all the mime-types, one for where the direct member
@@ -85,9 +88,4 @@ class WorksController < ApplicationController
   def check_auth
     authorize! :read, @work
   end
-
-  def template
-    @template ||= decorator.view_template
-  end
-
 end
