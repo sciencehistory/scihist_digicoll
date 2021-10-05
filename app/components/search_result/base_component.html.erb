@@ -1,0 +1,91 @@
+<li id="document_<%= model.friendlier_id %>" class="scihist-results-list-item document <%# render_document_class generic_work %>" itemscope itemtype="<%# generic_model.itemtype %>">
+
+
+    <div class="scihist-results-list-item-thumb">
+      <%= link_to link_to_href do %>
+        <%= thumbnail_html %>
+      <% end %>
+      <%= display_num_children %>
+    </div>
+
+    <div class="scihist-results-list-item-content">
+      <% if display_genres.present? %>
+        <div class="scihist-results-list-item-genre">
+          <%= display_genres %>
+        </div>
+      <% end %>
+
+      <h2 class="scihist-results-list-item-head brand-alt-h2" itemprop="name">
+        <%= link_to model.title, link_to_href, itemprop: "url" %>
+        <%= publication_badge(model) %>
+      </h2>
+
+      <%if additional_title.present? %>
+        <div class="scihist-results-list-item-additional-titles">
+            <ul>
+              <% additional_title.each do |title| %>
+                <li><%= title %></li>
+              <% end %>
+            </ul>
+        </div>
+      <% end %>
+
+      <% if part_of_elements.present? %>
+        <div class="scihist-results-list-item-parents">
+          <ul>
+            <% part_of_elements.each do |element| %>
+              <li>
+                Part of <%= element %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <% if display_dates.present? %>
+        <div class="scihist-results-list-item-date">
+          <ul>
+            <% display_dates.each do |display_interval| %>
+              <li>
+                <span itemprop="date_created">
+                  <%= display_interval %>
+                </span>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+
+
+      <% if search_highlights.present? %>
+        <div class="scihist-results-list-item-highlights">
+          <p>
+            <%= search_highlights %>
+          </p>
+        </div>
+      <% elsif model.description.present? %>
+        <div class="scihist-results-list-item-description">
+            <%= DescriptionDisplayFormatter.new(model.description, truncate:true).format %>
+        </div>
+      <% end %>
+
+
+      <% if metadata_labels_and_values.present? %>
+        <ul class="list-unstyled scihist-results-list-values">
+          <% metadata_labels_and_values.each do |field_label, field_values| -%>
+              <li>
+                <span class="attribute-label"><%= field_label %></span>
+                <%= safe_join(field_values, ", ") %>
+              </li>
+          <% end %>
+        </ul>
+      <% end %>
+
+      <% if show_cart_control? %>
+        <p><%= render CartControlComponent.new(model.friendlier_id, cart_presence: cart_presence) %></p>
+      <% end %>
+
+    </div>
+</li>
+

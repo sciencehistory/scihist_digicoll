@@ -1,0 +1,87 @@
+<div class="accordion scihist-accordion ohms-index-container" id="ohmsIndexAccordionParent">
+  <% index_points.each_with_index do |index_point, index| %>
+    <div class="ohms-index-point card" id="<%= accordion_wrapper_id(index) %>">
+      <div class="card-header" id="<%= accordion_header_id(index) %>">
+        <h3 class="ohms-index-point-title mb-0">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#<%= accordion_element_id(index) %>" aria-expanded="false" aria-controls="<%= accordion_element_id(index) %>">
+              <i class="fa fa-plus float-right toggle-icon" aria-hidden="true"></i>
+              <i class="fa fa-minus float-right toggle-icon" aria-hidden="true"></i>
+              <span class="mr-3"><%= format_ohms_timestamp(index_point.timestamp) %></span> <%= index_point.html_safe_title %>
+          </button>
+        </h3>
+      </div>
+
+      <div id="<%= accordion_element_id(index) %>" class="collapse card-body ohms-index-list long-text-line-height" aria-labelledby="<%= accordion_header_id(index) %>" data-parent="#ohmsIndexAccordionParent">
+          <p>
+            <a href="#t=<%= index_point.timestamp %>" class="btn btn-secondary" data-ohms-timestamp-s="<%= index_point.timestamp %>">
+              <i class="fa fa-play-circle mr-1" aria-hidden="true"></i> Play segment
+            </a>
+
+            <button class="btn btn-outline-secondary"
+                  data-toggle="collapse"
+                  href="#<%= share_link_area_id(index) %>"
+                  role="button"
+                  aria-expanded="false"
+                  aria-controls="collapseExample">
+              <i class="fa fa-share" aria-hidden="true"></i>
+              Share link
+            </button>
+          </p>
+
+          <div class="collapse" id="<%= share_link_area_id(index) %>">
+            <div class="input-group mb-3" data-trigger="copyInputGroup">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-link" aria-hidden="true"></i>
+                  <span class="sr-only">Link</span>
+                </span>
+              </div>
+
+              <input type="text" aria-label="URL to copy" class="form-control" data-slot="shareURL" readonly value="<%= direct_to_segment_link(index_point) %>">
+
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" data-trigger="linkClipboardCopy">
+                  <i class="fa fa-clipboard" aria-hidden="true"></i> Copy
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <% if index_point.synopsis.present? %>
+            <p>
+              <%= index_point.synopsis %>
+            </p>
+          <% end %>
+
+
+          <% if index_point.partial_transcript.present? %>
+            <p class="attribute">
+              <span class="attribute-label">Begins with</span>
+              <%= format_partial_transcript(index_point.partial_transcript) %>
+            </p>
+          <% end %>
+
+          <% if index_point.keywords.present? %>
+            <p class="attribute keywords">
+              <span class="attribute-label">Keywords</span>
+              <% index_point.keywords.each do |keyword| %>
+                <span class="badge badge-pill badge-dark"><%= keyword %></span>
+              <% end %>
+            </p>
+          <% end %>
+
+          <% if index_point.hyperlinks.present? %>
+            <div class="attribute ohms-hyperlinks">
+              <h4 class="attribute-label">Related <%= "URL".pluralize(index_point.hyperlinks.count) %></h4>
+              <ul class="list-unstyled">
+                <% index_point.hyperlinks.each do |hyperlink| %>
+                  <li class="mb-2"><%= link_to hyperlink.text, hyperlink.href %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>
+

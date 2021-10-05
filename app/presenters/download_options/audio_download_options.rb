@@ -1,10 +1,12 @@
 module DownloadOptions
   # Download options for an asset of type "audio/", original and an mp3
-  class AudioDownloadOptions < ViewModel
-    alias_method :asset, :model
+  class AudioDownloadOptions
+    include Rails.application.routes.url_helpers
+
+    attr_reader :asset
 
     def initialize(asset)
-      super(asset)
+      @asset = asset
     end
 
     def options

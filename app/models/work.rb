@@ -163,10 +163,10 @@ class Work < Kithe::Work
   # with `reset: true` to re-fetchc/re-calculate.
   #
   # This is kind of a complicated mess; and the Work model is kind of an architecturally
-  # unfortunate place to put this complicated mess, better to segregate in a decorator
+  # unfortunate place to put this complicated mess, better to segregate in a ViewComponent
   # or something? But this worked for being easily accessible from the various places
   # that needed it (and memoizing it in common), avoiding having to pass it down as
-  # an argument along a nested call-chain. Eg DownloadDropdownDisplay needs it.
+  # an argument along a nested call-chain. Eg DownloadDropdownComponent needs it.
   def member_content_types(mode:, reset: false)
     raise ArgumentError.new("mode must be :query or :association") unless [:query, :association].include?(mode)
 
