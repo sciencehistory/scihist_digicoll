@@ -1,7 +1,6 @@
 module DigitizationQueueItemsHelper
   # just a hacky helper to show a dt/dd for a given Admin::DigitizationQueueItem field,
-  # if present, we could be using presenters, or something else. This gets us started
-  # with a basic show view.
+  # This gets us started with a basic show view.
   def queue_item_show_field(item, field, humanize_value: false, paragraphs: false, override_label: nil)
     value = item.send(field)
     if value.present?

@@ -5,7 +5,7 @@
   <%= link_to "Clear Cart", clear_admin_cart_items_path, class: "btn btn-outline-danger", data: { confirm: "Delete all items in cart?"}, method: "delete" %>
 </p>
 
-<%= PageEntriesInfoDisplay.new(@works).display %>
+<%= render PageEntriesInfoComponent.new(@works) %>
 
 <table class="table admin-list">
   <thead>

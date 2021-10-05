@@ -1,10 +1,18 @@
 require 'rails_helper'
 
-describe WorkSocialShareAttributes do
+# This view_context-needing object is kinda hard to test, things get a bit weird.
+#
+describe WorkSocialShareAttributes, type: :component do
+  include Rails.application.routes.url_helpers
+
+   def default_url_options
+    { host: "test.host" }
+   end
+
   let(:title) { "some work" }
   let(:description) { "This is a thing" }
   let(:work) { build(:work, title: title, description: description) }
-  let(:attributes) { WorkSocialShareAttributes.new(work) }
+  let(:attributes) { WorkSocialShareAttributes.new(work, view_context: controller.view_context) }
 
   describe "#page_title" do
     it "is correct" do
@@ -15,7 +23,7 @@ describe WorkSocialShareAttributes do
   describe "#share_url" do
     let(:work) { create(:work) }
     it "is correct" do
-      expect(attributes.share_url).to eq helper.work_url(work)
+      expect(attributes.share_url).to eq work_url(work)
       expect(Addressable::URI.parse(attributes.share_url)).not_to be_relative
     end
   end
@@ -54,7 +62,7 @@ describe WorkSocialShareAttributes do
         let(:work) { build(:oral_history_work) }
 
         it "has generic oral history icon" do
-          expect(attributes.share_media_url).to eq(helper.asset_url("scihist_oral_histories_thumb.jpg"))
+          expect(attributes.share_media_url).to eq(controller.view_context.asset_url("scihist_oral_histories_thumb.jpg"))
           # we were just too lazy to implement this for this edge case, and social
           # media sites don't really NEED it.
           expect(attributes.share_media_height).to be_nil
