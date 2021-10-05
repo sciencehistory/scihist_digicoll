@@ -46,7 +46,7 @@ private
     work = Work.find_by_friendlier_id!(friendlier_id)
     #   # No sense showing this form for a work that is either freely available
     #   # or locked down. (This should never happen, but just in case.)
-    unless WorkFileListShowDecorator.new(work).available_by_request_assets.present?
+    unless WorkFileListShowComponent.new(work).available_by_request_assets.present?
       Rails.logger.warn("/works/#{work.friendlier_id}/request_oral_history_access: Can't request oral history access, no eligible files.")
 
       # ActionController::RoutingError will just tell Rails to render standard 404.

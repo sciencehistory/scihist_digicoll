@@ -1,7 +1,6 @@
 // JS for our local custom OHMS footnotes.
 // Based on http://hiphoff.com/creating-hover-over-footnotes-with-bootstrap/
-// Corresponging HTML is in:
-// app/views/presenters/_ohms_footnote_reference.html.erb
+// Corresponging HTML is in OralHistory::FootnoteReferenceComponent
 
 // The selector we use for these is: data-toggle="ohms-tooltip"]
 // Note that generic Bootstrap tooltips are also being

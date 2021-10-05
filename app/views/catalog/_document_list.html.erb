@@ -7,6 +7,6 @@
 
 
   <% documents.collect { |solr_document| [solr_document, solr_document.model] if solr_document.model }.compact.each do |solr_document, model| %>
-    <%= view_model_class_for(model).new(model, solr_document: solr_document, child_counter: child_counter, cart_presence: cart_presence).display %>
+    <%= render view_component_class_for(model).new(model, solr_document: solr_document, child_counter: child_counter, cart_presence: cart_presence) %>
   <% end %>
 </ul>

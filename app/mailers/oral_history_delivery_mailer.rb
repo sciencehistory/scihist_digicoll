@@ -44,7 +44,7 @@ class OralHistoryDeliveryMailer < ApplicationMailer
   end
 
   def assets
-    WorkFileListShowDecorator.new(work).available_by_request_assets.sort_by(&:position)
+    WorkFileListShowComponent.new(work).available_by_request_assets.sort_by(&:position)
   end
 
   def download_label(asset)

@@ -1,0 +1,86 @@
+<%# we're using a rails partial layout to 'wrap' the show work 'metadata' section in the
+    apparatus for tabs for transcription and translation. This should be a layout around
+    a partial that actually has the unadorned metadata column, which will show up where we
+    'yield' below, wrapped in the actual tabs as well as tab panels for other content.
+
+    `component` local is passed in, which is s WorkImageShowComponent, kinda weird
+    but how it is for now.
+%>
+
+<ul class="nav nav-tabs mt-4 mb-2" data-trigger="responsive-tabs-lg">
+  <li class="nav-item">
+    <a class="nav-link active" id="description-tab" data-toggle="tab" href="#description" role="tab" aria-controls="description" aria-selected="true">
+      Description
+    </a>
+  </li>
+
+  <% if transcription_texts.present? %>
+    <li class="nav-item">
+      <a class="nav-link" id="description-tab" data-toggle="tab" href="#transcription" role="tab" aria-controls="transcription">
+        Transcription
+      </a>
+    </li>
+  <% end %>
+
+  <% if translation_texts.present? %>
+    <li class="nav-item">
+      <a class="nav-link" id="translation-tab" data-toggle="tab" href="#translation" role="tab" aria-controls="translation" aria-selected="true">
+        English Translation
+      </a>
+    </li>
+  <% end %>
+</ul>
+
+<div class="tab-content">
+  <div class="tab-pane show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+
+    <%# block passed in on render call! %>
+    <%= content %>
+
+  </div>
+
+  <% if transcription_texts.present? %>
+    <div class="tab-pane" id="transcription" role="tabpanel" aria-labelledby="transcription-tab">
+      <% transcription_texts.each do |text_obj| %>
+        <% if transcription_texts.length > 1 %>
+          <h3 class="textual-separator text-page-separator">
+          <%= link_to(
+            viewer_path(text_obj.asset.parent.friendlier_id, text_obj.asset.friendlier_id),
+            data: MemberImageComponent.viewer_trigger_data_attrs(
+                member_id: text_obj.friendlier_id, work_id: text_obj.asset.parent&.friendlier_id
+          )) do %>
+              <i class="fa fa-window-maximize" aria-hidden="true"></i>
+              Image <%= text_obj.image_number %>
+            <% end %>
+          </h3>
+        <% end %>
+        <div class="long-text-line-height text-pages">
+          <%= simple_format text_obj.text %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if translation_texts.present? %>
+    <div class="tab-pane" id="translation" role="tabpanel" aria-labelledby="translation-tab">
+      <% translation_texts.each do |text_obj| %>
+        <% if transcription_texts.length > 1 %>
+          <h3 class="textual-separator text-page-separator">
+            <%= link_to(
+                viewer_path(text_obj.asset.parent.friendlier_id, text_obj.asset.friendlier_id),
+                data: MemberImageComponent.viewer_trigger_data_attrs(
+                  member_id: text_obj.friendlier_id, work_id: text_obj.asset.parent&.friendlier_id
+            )) do %>
+              <i class="fa fa-window-maximize" aria-hidden="true"></i>
+              Image <%= text_obj.image_number %>
+            <% end %>
+          </h3>
+        <% end %>
+        <div class="long-text-line-height text-pages">
+          <%= simple_format text_obj.text %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+</div>

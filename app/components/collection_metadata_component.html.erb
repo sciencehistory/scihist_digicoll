@@ -1,0 +1,36 @@
+<div class="show-metadata">
+  <% if current_staff_user? %>
+    <p class="show-item-count">
+      <%= "#{number_with_delimiter(public_count)} public #{'item'.pluralize(public_count)}, #{number_with_delimiter(all_count)} total" %>
+    </p>
+  <% else %>
+    <p class="show-item-count"><%= "#{number_with_delimiter(public_count)} #{'item'.pluralize(public_count)}" %></p>
+  <% end %>
+
+  <div class="collection-description long-text-line-height">
+    <%= DescriptionDisplayFormatter.new(collection.description).format %>
+  </div>
+
+  <% if show_links && (opac_urls.present? || related_urls.present?) %>
+    <table class="collection-attributes chf-attributes">
+      <% opac_urls.each do |url| %>
+        <tr>
+          <td colspan="2"><%= link_to "View in library catalog", url %></td>
+        </tr>
+      <% end %>
+
+      <% if related_urls.present? %>
+        <tr>
+          <th>Related URL</th>
+          <td>
+            <ul>
+              <% related_urls.each do |url| %>
+                <li class="attribute"><%= render ExternalLinkComponent.new(url) %></li>
+              <% end %>
+            </ul>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+  <% end %>
+</div>

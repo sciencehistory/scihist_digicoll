@@ -41,7 +41,7 @@
 </div>
 
 
-<%= PageEntriesInfoDisplay.new(@admin_digitization_queue_items).display %>
+<%= render PageEntriesInfoComponent.new(@admin_digitization_queue_items) %>
 
 <div class="table-responsive">
   <table class="table" style="table-layout: fixed; font-size: 90%; min-width: 55rem; word-break: break-word;">
@@ -80,7 +80,7 @@
           <td><%= admin_digitization_queue_item.accession_number %></td>
           <td><%= admin_digitization_queue_item.museum_object_id %></td>
           <td>
-             <%= DigitizationQueueItemStatusForm.new(admin_digitization_queue_item).display %>
+             <%= render DigitizationQueueItemStatusFormComponent.new(admin_digitization_queue_item) %>
           </td>
           <td><%= l(admin_digitization_queue_item.status_changed_at.to_date, format: :admin) %></td>
         </tr>
