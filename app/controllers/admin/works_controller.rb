@@ -414,7 +414,7 @@ class Admin::WorksController < AdminController
     authorize! :publish, Work
 
     unless params[:publish].in?(["on", "off"])
-      raise ArgumentError.new("Need `in` param to be `on` or off`")
+      raise ArgumentError.new("Need `publish` param to be `on` or off`")
     end
 
     publish_value = params[:publish] == "on"
