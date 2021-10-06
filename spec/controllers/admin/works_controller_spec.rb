@@ -62,6 +62,21 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       expect(work.title).to eq("title")
       expect(work.creator.collect(&:value)).to contain_exactly("creator1", "publisher1")
     end
+
+    it "does NOT trim from specifically excluded fields" do
+      put :update, params: {
+        id: work.friendlier_id,
+        work: {
+          description: "paragraph1\nparagraph2\n",
+          admin_note_attributes: ["paragraph1\nparagraph2\n"]
+        }
+      }
+
+      work.reload
+
+      expect(work.description).to eq "paragraph1\nparagraph2\n"
+      expect(work.admin_note).to eq ["paragraph1\nparagraph2\n"]
+    end
   end
 
   context "Reorder members " do
