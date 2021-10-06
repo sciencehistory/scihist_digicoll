@@ -424,24 +424,26 @@ class Admin::WorksController < AdminController
     # This could be done in a form object or otherwise abstracted, but this is good
     # enough for now.
     def work_params
-      # Remove leading and trailing whitespace from values that may have been submitted
-      # from input forms where it's easy to accidentally include.
-      #
-      # It's a bit hard to do this without interfering with Rails ActionController::Parameters,
-      # but this seems to work here.
-      #
-      # We cast a pretty wide net, removing from MOST parameters. That seems to work,
-      # we can't think of any where it might cause a problem, but if it does, we
-      # can come back and try to make this more sophisticcated logic.
-      recursive_strip_whitespace!(params["work"])
+      @work_params ||= begin
+        # Remove leading and trailing whitespace from values that may have been submitted
+        # from input forms where it's easy to accidentally include.
+        #
+        # It's a bit hard to do this without interfering with Rails ActionController::Parameters,
+        # but this seems to work here.
+        #
+        # We cast a pretty wide net, removing from MOST parameters. That seems to work,
+        # we can't think of any where it might cause a problem, but if it does, we
+        # can come back and try to make this more sophisticcated logic.
+        recursive_strip_whitespace!(params["work"])
 
-      Kithe::Parameters.new(params).require(:work).permit_attr_json(Work).permit(
-        :title, :parent_id, :representative_id, :digitization_queue_item_id, :contained_by_ids => []
-      ).tap do |params|
-        # sanitize description & provenance
-        [:description, :provenance].each do |field|
-          if params[field].present?
-            params[field] = DescriptionSanitizer.new.sanitize(params[field])
+        Kithe::Parameters.new(params).require(:work).permit_attr_json(Work).permit(
+          :title, :parent_id, :representative_id, :digitization_queue_item_id, :contained_by_ids => []
+        ).tap do |params|
+          # sanitize description & provenance
+          [:description, :provenance].each do |field|
+            if params[field].present?
+              params[field] = DescriptionSanitizer.new.sanitize(params[field])
+            end
           end
         end
       end
