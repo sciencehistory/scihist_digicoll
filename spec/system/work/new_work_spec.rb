@@ -19,7 +19,7 @@ RSpec.describe "New Work form", :logged_in_user, type: :system, js: true do
   scenario "save, edit, and re-save new work" do
     visit new_admin_work_path
     # Single-value free text
-    %w(title description digitization_funder source rights_holder).each do |p|
+    %w(title description digitization_funder rights_holder).each do |p|
       fill_in "work[#{p}]", with: work.send(p)
     end
 
@@ -181,7 +181,7 @@ RSpec.describe "New Work form", :logged_in_user, type: :system, js: true do
       department date_of_work description external_id format
       file_creator genre inscription language medium
       physical_container place rights
-      rights_holder source subject title
+      rights_holder subject title
       exhibition project
     ).each do |prop|
       expect(newly_added_work.send(prop)).to eq work.send(prop)
