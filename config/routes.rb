@@ -214,6 +214,7 @@ Rails.application.routes.draw do
       collection do
         get 'batch_update', to: "works#batch_update_form"
         post 'batch_update'
+        put 'batch_publish_toggle'
       end
     end
 

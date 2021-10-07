@@ -410,6 +410,41 @@ class Admin::WorksController < AdminController
     redirect_to admin_cart_items_url, notice: "Updated works in Cart"
   end
 
+  def batch_publish_toggle
+    authorize! :publish, Work
+
+    unless params[:publish].in?(["on", "off"])
+      raise ArgumentError.new("Need `publish` param to be `on` or off`")
+    end
+
+    publish_value = params[:publish] == "on"
+
+    Work.transaction do
+      current_user.works_in_cart.find_each do |work|
+        work.update!(published: publish_value)
+        if params[:cascade] == 'true'
+          work.all_descendent_members.find_each do |member|
+            member.update!(published: true)
+          end
+        end
+      end
+    end
+
+    message = "#{publish_value ? "Published" : "UN-published"} all items"
+    message += " (and their members)" if params[:cascade]
+
+    redirect_to admin_cart_items_url, notice: message
+  rescue ActiveRecord::RecordInvalid => e
+    # probably because missing a field required for a work to be published, but
+    # could apply to a CHILD work, not just the parent you actually may have clicked 'publish'
+    # on.
+    #
+    # The work we're going to report and redirect to is just the FIRST one we encountered
+    # with an error, there could be more.
+    work = e.record
+    redirect_to admin_cart_items_url, flash: { error: "No changes made due to error: \"#{work.title}\" (#{work.friendlier_id}): #{e.message}" }
+  end
+
 
 
   private

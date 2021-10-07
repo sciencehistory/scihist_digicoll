@@ -67,6 +67,38 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     end
   end
 
+  context "#batch_publish_toggle", logged_in_user: :admin do
+    let(:publishable_work) { create(:work, :with_complete_metadata, published: false) }
+    let(:unpublishable_work) { create(:work, published: false) }
+
+    context "unpublishable works" do
+      before do
+        controller.current_user.works_in_cart << unpublishable_work
+      end
+      it "displays error on attempt to publish" do
+        put :batch_publish_toggle, params: { publish: "on" }
+
+        expect(response).to redirect_to(admin_cart_items_path)
+        expect(flash["error"]).to match /No changes made due to error/
+      end
+    end
+
+    context "publishable works" do
+      before do
+        controller.current_user.works_in_cart << publishable_work
+      end
+
+      it "publishes" do
+        put :batch_publish_toggle, params: { publish: "on" }
+
+        expect(response).to redirect_to(admin_cart_items_path)
+        expect(flash["error"]).to be_blank
+
+        expect(publishable_work.reload).to be_published
+      end
+    end
+  end
+
   context "Oral histories" do
     let(:work) { create(:oral_history_work) }
 
