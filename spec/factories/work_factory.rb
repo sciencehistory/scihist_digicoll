@@ -61,9 +61,6 @@ FactoryBot.define do
       rights {
         "http://rightsstatements.org/vocab/NoC-CR/1.0/"
       }
-      source {
-        'Source'
-      }
       creator {
         [
           Work::Creator.new({"value"=>"After 1", "category"=>"after"}),

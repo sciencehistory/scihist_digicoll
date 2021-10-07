@@ -22,14 +22,9 @@
     </ul>
   <% end %>
 
-  <% if parent.present? || source.present? %>
+  <% if parent.present? %>
     <ul class="part-of list-unstyled">
-      <% if parent.present? %>
-        <li>Part of <%= link_to parent.title, work_path(parent) %></li>
-      <% end %>
-      <% if source.present? %>
-        <li> Part of <i><%= source %></i></li>
-      <% end %>
+      <li>Part of <%= link_to parent.title, work_path(parent) %></li>
     </ul>
   <% end %>
 

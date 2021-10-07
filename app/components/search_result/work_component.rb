@@ -63,19 +63,16 @@ module SearchResult
       return @metadata_labels_and_values
     end
 
-    # An array of elements for "part of" listing, includes 'parent' in a link,
-    # or "source" in italics
+    # An array of elements for "part of" listing, includes 'parent' in a link.
+    #
+    # (Used to handle more possibilities is why this is written abstractly like this)
     def part_of_elements
-      @part_of_elements ||= [].tap do |arr|
-        if model.parent.present?
-          arr << link_to(model.parent.title, work_path(model.parent))
-        end
-        if model.source.present?
-          arr << content_tag("i", model.source)
-        end
+      if model.parent.present?
+        [link_to(model.parent.title, work_path(model.parent))]
+      else
+        []
       end
     end
-
 
     def show_cart_control?
       current_user.present?
