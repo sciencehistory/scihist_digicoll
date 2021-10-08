@@ -11,6 +11,7 @@ require 'rails_autolink'
 class DescriptionDisplayFormatter
   include ActionView::Helpers::SanitizeHelper
   include ActionView::Helpers::TextHelper
+  include ActionView::Helpers::UrlHelper
 
   DEFAULT_TRUNCATE = 220
 
@@ -84,10 +85,15 @@ class DescriptionDisplayFormatter
   #
   # We may later decide to overhaul the content such that
   # the content contains no bare links.
+  #
+  # TODO: the external-link icon, currently commented out, is getting escaped.
+  # Figure out how to fix this, while possibly getting rid of the deprecated auto_link
+  # method altogether.
   def turn_bare_urls_into_links(str)
-    auto_link(str, sanitize: false) do |text|
-      "<i class=\"fa fa-external-link\" aria-hidden=\"true\"></i>&nbsp;#{text}"
-    end
+    # auto_link(str, sanitize: false) do |text|
+    #   "<i class='fa fa-external-link' aria-hidden='true'></i>&nbsp;#{text}"
+    # end
+    auto_link(str, sanitize: false)
   end
 
 end # class
