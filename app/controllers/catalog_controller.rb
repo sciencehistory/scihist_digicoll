@@ -50,6 +50,41 @@ class CatalogController < ApplicationController
   end
   helper_method :view_component_class_for
 
+
+  # OVERRIDE of Blacklight method. Blacklight by default takes ANY kind
+  # of Solr error (could be Solr misconfiguraiton or down etc), and just swallows
+  # it, redirecting to Blacklight search page with a message "Sorry, I don't understand your search."
+  #
+  # This is wrong.  It's misleading feedback for user for something that is usually not
+  # something they can do something about, and it suppresses our error monitoring
+  # and potentially misleads our uptime checking.
+  #
+  # We just want to actually raise the error!
+  #
+  # Additionally, Blacklight/Rsolr wraps some errors that we don't want wrapped, mainly
+  # the Faraday timeout error -- we want to be able to distinguish it, so will unwrap it.
+  private def handle_request_error(exception)
+    if exception.is_a?(Blacklight::Exceptions::InvalidRequest)
+      # The exception we have can have a #cause, which can itelf have
+      # a #cause, etc.  Revealing exceptions which were previously rescued and
+      # re-raised. Look up the `cause` chain and if we have a Faraday::TimeoutError,
+      # raise it directly instead of the generic wrapping
+      # Blacklight::Exceptions::InvalidRequest!
+
+      e = exception
+      until e.cause.nil?
+        if e.kind_of?(Faraday::TimeoutError)
+          raise e
+        end
+        e = e.cause
+      end
+    end
+
+    # Raise the rescued exception, replacing default Blacklight behavior
+    # of rescuing with a message to end-user.
+    raise exception
+  end
+
   module Blacklight::CatalogHelperBehavior
     # These three methods
     # were outputting links (rel="alternate") in the HTML head tag that sent bots
