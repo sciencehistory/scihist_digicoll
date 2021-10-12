@@ -9,6 +9,7 @@ class ErrorsController < ApplicationController
      respond_to do |format|
        format.html { render status: 404, layout: false }
        format.json { render json: { error: "Resource not found" }, status: 404 }
+       format.any  { render plain: "Resource not found", status: 404 }
      end
    end
 
@@ -16,6 +17,7 @@ class ErrorsController < ApplicationController
      respond_to do |format|
        format.html { render status: 422, layout: false }
        format.json { render json: { error: "Params unacceptable" }, status: 422 }
+       format.any  { render plain: "Params unacceptable", status: 422 }
      end
    end
 
@@ -23,6 +25,7 @@ class ErrorsController < ApplicationController
      respond_to do |format|
        format.html { render status: 500, layout: false }
        format.json { render json: { error: "Internal server error" }, status: 500 }
+       format.any  { render plain: "Internal server error", status: 500 }
      end
    end
 end
