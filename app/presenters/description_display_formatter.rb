@@ -8,7 +8,7 @@
 #     DescriptionDisplayFormatter.new(work.description, truncate:true).format_plain
 #
 class DescriptionDisplayFormatter
-  include ActionView::Helpers::SanitizeHelper
+  # for simple_format and sanitize:
   include ActionView::Helpers::TextHelper
 
   DEFAULT_TRUNCATE = 220
