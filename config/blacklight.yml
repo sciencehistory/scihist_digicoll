@@ -7,3 +7,6 @@ test: &test
 production:
   adapter: solr
   url: <%= ScihistDigicoll::Env.lookup!(:solr_url) %>
+  # RSolr 2.3.0 actually translates read_timeout to faraday `timeout`.
+  # Future RSolr may want `timeout`.
+  read_timeout: 4
