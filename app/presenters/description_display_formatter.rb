@@ -1,4 +1,3 @@
-require 'rails_autolink'
 # Takes a description string (from a work.description) and formats it for display.
 # Ported from chf-sufia/app/helpers/description_formatter_helper.rb
 #
@@ -85,7 +84,7 @@ class DescriptionDisplayFormatter
   # We may later decide to overhaul the content such that
   # the content contains no bare links.
   def turn_bare_urls_into_links(str)
-    auto_link(str, sanitize: false) do |text|
+    Rinku.auto_link(str) do |text|
       "<i class=\"fa fa-external-link\" aria-hidden=\"true\"></i>&nbsp;#{text}"
     end
   end
