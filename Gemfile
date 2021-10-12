@@ -28,7 +28,7 @@ gem "blacklight_range_limit", "~> 8.0" # version no longer sync'd with blackligh
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
-gem 'puma', '~> 5.3'
+gem 'puma', '~> 5.5'
 
 # resque+redis being used for activejob, maybe later for Rails.cache
 # resque-pool currently does not support resque 2.0 alas.
