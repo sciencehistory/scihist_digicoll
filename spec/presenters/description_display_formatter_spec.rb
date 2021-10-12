@@ -16,6 +16,7 @@ describe DescriptionDisplayFormatter, type: :model do
       "Adds\n\nreturns\nproperly" => "<p>Adds</p>\n\n<p>returns\n<br />properly</p>",
       "Strips <goat>unwanted tags </goat>" => "<p>Strips unwanted tags </p>",
       "Adds links to http://www.randomurl.org" => "<p>Adds links to <a href=\"http://www.randomurl.org\"><i class=\"fa fa-external-link\" aria-hidden=\"true\"></i>&nbsp;http://www.randomurl.org</a></p>",
+      "Turns email address into link nobody@example.com" => '<p>Turns email address into link <a href="mailto:nobody@example.com">nobody@example.com</a></p>',
       very_long_plain => "<p>#{very_long_plain}</p>",
       nil => "",
       "" => "",
