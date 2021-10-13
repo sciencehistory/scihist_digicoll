@@ -22,8 +22,10 @@ class RightsIconComponent < ApplicationComponent
 
   # one line, all a link
   def display_dropdown_item
+    # since we're using short label, the icon needs an alt tag if appropriate to explain the icon.
+
     link_to(rights_url, target: "_blank", class: ['rights-statement', mode.to_s.dasherize, layout_class]) do
-      image_tag(rights_category_icon_src, class: "rights-statement-logo", alt: RightsTerms.label_for(work.rights)) +
+      image_tag(rights_category_icon_src, class: "rights-statement-logo", alt: RightsTerms.icon_alt_for(work.rights)) +
       " ".html_safe +
       content_tag("span",
                   (RightsTerms.short_label_inline_for(work.rights) || "").html_safe,
@@ -69,6 +71,8 @@ class RightsIconComponent < ApplicationComponent
   end
 
   def large_graphical_element
+    # creative commons can show multiple "bubble" icons, they don't need alt text
+    # becuase we display a complete textual label next to it.
     if rights_category == "creative_commons"
       images =  [image_tag(rights_category_icon_src, class: "rights-statement-logo", alt: "")]
 
@@ -80,7 +84,8 @@ class RightsIconComponent < ApplicationComponent
         safe_join images
       end
     else
-      # just the category icon
+      # just the category icon, it does need alt text because we just display a short label
+      # next to it, which doesn't include what the icon conveys.
       image_tag(rights_category_icon_src, class: "rights-statement-logo", alt: RightsTerms.icon_alt_for(work.rights))
     end
   end
