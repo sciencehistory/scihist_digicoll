@@ -55,7 +55,7 @@ describe RightsIconComponent, type: :component do
     end
   end
 
-  describe "needs alt attr in large render" do
+  describe "should not have alt attr in large render either" do
     let(:work) { build(:work, rights: "http://rightsstatements.org/vocab/InC-EDU/1.0/")}
     let(:rendered) { render_inline(RightsIconComponent.new(work: work, mode: :large)) }
 
@@ -66,7 +66,8 @@ describe RightsIconComponent, type: :component do
       expect(container.inner_text.strip).to eq("EducationalUse Permitted") # weird test value cause there's a BR tag in there that inner_text eliminates
 
       img = container.at_css("img")
-      expect(img["alt"]).to eq("In Copyright")
+      expect(img["alt"]).to eq("")
+      expect(img["aria-hidden"]).to eq "true"
     end
   end
 

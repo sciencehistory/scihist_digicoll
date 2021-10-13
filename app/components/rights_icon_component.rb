@@ -23,7 +23,7 @@ class RightsIconComponent < ApplicationComponent
   # one line, all a link
   def display_dropdown_item
     link_to(rights_url, target: "_blank", class: ['rights-statement', mode.to_s.dasherize, layout_class]) do
-      image_tag(rights_category_icon_src, class: "rights-statement-logo", alt: RightsTerms.label_for(work.rights)) +
+      image_tag(rights_category_icon_src, class: "rights-statement-logo", alt: "", "aria-hidden" => true) +
       " ".html_safe +
       content_tag("span",
                   (RightsTerms.short_label_inline_for(work.rights) || "").html_safe,
@@ -70,18 +70,18 @@ class RightsIconComponent < ApplicationComponent
 
   def large_graphical_element
     if rights_category == "creative_commons"
-      images =  [image_tag(rights_category_icon_src, class: "rights-statement-logo", alt: "")]
+      images =  [image_tag(rights_category_icon_src, class: "rights-statement-logo", alt: "", "aria-hidden" => true)]
 
       (RightsTerms.metadata_for(work.rights)["pictographs"] || []).each do |pictograph_image|
-        images << image_tag("cc_pictographs/#{pictograph_image}", class: "rights-statement-logo", alt: "")
+        images << image_tag("cc_pictographs/#{pictograph_image}", class: "rights-statement-logo", alt: "", "aria-hidden" => true)
       end
 
-      link_to rights_url, target: "_blank", alt: RightsTerms.label_for(work.rights), title: RightsTerms.label_for(work.rights) do
+      link_to rights_url, target: "_blank", title: RightsTerms.label_for(work.rights) do
         safe_join images
       end
     else
       # just the category icon
-      image_tag(rights_category_icon_src, class: "rights-statement-logo", alt: RightsTerms.icon_alt_for(work.rights))
+      image_tag(rights_category_icon_src, class: "rights-statement-logo", alt: "", "aria-hidden" => true)
     end
   end
 
