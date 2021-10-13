@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_01_190230) do
+ActiveRecord::Schema.define(version: 2021_10_13_184612) do
 
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
@@ -114,6 +115,27 @@ ActiveRecord::Schema.define(version: 2021_09_01_190230) do
     t.index ["checked_uri"], name: "index_fixity_checks_on_checked_uri"
   end
 
+  create_table "good_jobs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "queue_name"
+    t.integer "priority"
+    t.jsonb "serialized_params"
+    t.datetime "scheduled_at"
+    t.datetime "performed_at"
+    t.datetime "finished_at"
+    t.text "error"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "active_job_id"
+    t.text "concurrency_key"
+    t.text "cron_key"
+    t.uuid "retried_good_job_id"
+    t.index ["active_job_id", "created_at"], name: "index_good_jobs_on_active_job_id_and_created_at"
+    t.index ["concurrency_key"], name: "index_good_jobs_on_concurrency_key_when_unfinished", where: "(finished_at IS NULL)"
+    t.index ["cron_key", "created_at"], name: "index_good_jobs_on_cron_key_and_created_at"
+    t.index ["queue_name", "scheduled_at"], name: "index_good_jobs_on_queue_name_and_scheduled_at", where: "(finished_at IS NULL)"
+    t.index ["scheduled_at"], name: "index_good_jobs_on_scheduled_at", where: "(finished_at IS NULL)"
+  end
+
   create_table "interviewee_biographies", force: :cascade do |t|
     t.string "name", null: false
     t.jsonb "json_attributes"
@@ -147,7 +169,7 @@ ActiveRecord::Schema.define(version: 2021_09_01_190230) do
     t.index ["container_id"], name: "index_kithe_model_contains_on_container_id"
   end
 
-  create_table "kithe_models", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "kithe_models", id: :uuid, default: -> { "public.gen_random_uuid()" }, force: :cascade do |t|
     t.string "title", null: false
     t.string "type", null: false
     t.integer "position"

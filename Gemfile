@@ -37,6 +37,9 @@ gem "resque", "~> 2.0"
 gem "resque-pool"
 gem "resque-heroku-signals" # gah, weirdly needed for graceful shutdown on heroku. https://github.com/resque/resque#heroku
 
+# job queue
+gem 'good_job'
+
 gem 'honeybadger', '~> 4.0'
 
 # Until we get things working under sprockets 4, lock to sprockets 3
