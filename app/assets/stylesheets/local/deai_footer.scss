@@ -4,9 +4,16 @@
   padding-right: 1rem;
 
 
-  color: #050939;
+  // this is not our standard $body-color, but is a bit more readable contrast on the grey!
+  color: black;
 
   background-color: $brand-light-grey;
+
+  // Our standard link color isn't sufficient WCAG contrast over the dark grey background. :(
+  a {
+    color: $brand-dark-blue;
+    text-decoration: underline !important;
+  }
 
   p {
 
