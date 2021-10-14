@@ -9,6 +9,13 @@
 %>
 
 <table class="work chf-attributes">
+  <thead>
+    <tr class="sr-only">
+      <th scope="col">Property</th>
+      <th scope="col">Value</th>
+    </tr>
+  </thead>
+
 
   <% grouped_creators.each do |category, values| %>
     <%= render AttributeTable::RowComponent.new(category, values: values, link_to_facet: "creator_facet") %>
@@ -16,7 +23,7 @@
 
   <% if provenance.present? %>
     <tr>
-      <th>Provenance</th>
+      <th scope='row'>Provenance</th>
       <td><%= render WorkProvenanceComponent.new(provenance) %></td>
     </tr>
   <% end %>
@@ -31,7 +38,7 @@
 
   <% if humanized_content_types.length > 0 %>
     <tr>
-      <th>Original file type</th>
+      <th scope='row'>Original file type</th>
       <td>
           <%= humanized_content_types.join(", ") %>
       </td>
@@ -45,7 +52,7 @@
 
   <% if inscription.present? %>
     <tr>
-      <th>Inscription</th>
+      <th scope='row'>Inscription</th>
       <td>
         <ul>
           <% inscription.each do |inscription| %>
@@ -61,7 +68,7 @@
 
   <% if rights.present? %>
     <tr>
-      <th>Rights</th>
+      <th scope='row'>Rights</th>
       <td>
         <%= link_to RightsTerms.label_for(rights), rights, target: "_blank" %>
       </td>
@@ -73,7 +80,7 @@
 
   <% if related_urls_filtered.present? %>
     <tr>
-      <th>Related URL</th>
+      <th scope='row'>Related URL</th>
       <td>
         <ul>
           <% related_urls_filtered.each do |url| %>
@@ -86,7 +93,7 @@
 
   <%# hard-coded credit line instead of taking from record %>
   <tr>
-    <th>Credit line</th>
+    <th scope='row'>Credit line</th>
     <td>
       <ul>
         <li class="attribute credit_line">Courtesy of Science History Institute</li>
@@ -97,7 +104,7 @@
 
   <% if additional_credit.present? %>
     <tr>
-      <th>Additional credit</th>
+      <th scope='row'>Additional credit</th>
       <td>
         <ul>
           <% additional_credit.each do |credit| %>
@@ -128,7 +135,7 @@
 
   <% if contained_by.present? %>
     <tr>
-      <th>Collection</th>
+      <th scope='row'>Collection</th>
       <td>
         <ul>
           <% public_collections.each do |collection| %>
@@ -146,7 +153,7 @@
 
   <% if @work.physical_container.present? %>
     <tr>
-      <th>Physical container</th>
+      <th scope='row'>Physical container</th>
       <td>
         <ul>
           <li class="attribute">
