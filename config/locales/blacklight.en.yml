@@ -1,3 +1,7 @@
 en:
   blacklight:
     application_name: 'Science History Institute Digital Collections'
+    search:
+      form:
+        search_field:
+          label: "Search"
