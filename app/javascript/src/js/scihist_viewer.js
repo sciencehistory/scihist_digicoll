@@ -432,10 +432,10 @@ ScihistImageViewer.prototype.makeThumbnails = function(json) {
     }
 
     var calcPixelHeight = (_self.thumbWidth / config.thumbAspectRatio).toFixed(1);
-
     container.append(
       '<img class="lazyload viewer-thumb-img"' +
-            ' alt="" tabindex="0" role="button"' +
+            ' alt="Image ' + (index + 1) + '" aria-label="Image ' + (index + 1) + '"' +
+            'tabindex="0" role="button"' +
             ' data-member-id="' + config.memberId + '"' +
             ' data-trigger="change-viewer-source"' +
             ' data-src="' + config.thumbSrc + '"' +
