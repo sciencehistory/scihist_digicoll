@@ -35,7 +35,7 @@
   // styles that apply whether in masthead or home page, or just on homepage,
   // some are overridden below in .masthead
   .search-options {
-    h3, label {
+    .limit-dates-heading, label {
       @extend %special-label;
       display: inline;
       margin: 0 .66em 0 0;
