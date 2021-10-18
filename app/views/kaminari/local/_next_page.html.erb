@@ -8,6 +8,6 @@
 -%>
 <% unless current_page.last? %>
 <li class="page-item next">
-  <%= link_to_unless current_page.last?, raw(t 'views.pagination.next'), url, :rel => 'next', class: "page-link", :remote => remote %>
+  <%= link_to_unless current_page.last?, raw(t 'views.pagination.next'), url, :rel => 'next', class: "page-link", :remote => remote, "aria-label" => "Goto Next Page" %>
 </li>
 <% end %>

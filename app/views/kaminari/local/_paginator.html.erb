@@ -6,9 +6,10 @@
     remote:        data-remote
     paginator:     the paginator that renders the pagination tags inside
 -%>
+<%# accessibility:  https://www.a11ymatters.com/pattern/pagination/ -%>
 <%- pagination_class ||= '' %>
 <%= paginator.render do -%>
-<nav>
+<nav role="navigation" aria-label="Pagination Navigation">
   <ul class="pagination chf-pagination <%= pagination_class %>">
     <%= first_page_tag unless current_page.first? %>
     <%= prev_page_tag unless current_page.first? %>
