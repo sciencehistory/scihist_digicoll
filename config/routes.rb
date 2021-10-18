@@ -29,10 +29,10 @@ Rails.application.routes.draw do
     # Links to search results in legacy OH site should redirct to search of OH collection.
     # We only support basic query term, not fielded search or facets.
     get "search/site/*query", to: redirect { |path_params, req|
-      "#{ScihistDigicoll::Env.lookup!("app_url_base")}/collections/#{ScihistDigicoll::Env.lookup!("oral_history_collection_id")}?q=#{path_params[:query]}"
+      "#{ScihistDigicoll::Env.lookup!("app_url_base")}/collections/#{ScihistDigicoll::Env.lookup!("oral_history_collection_id")}?q=#{URI.encode_www_form_component(path_params[:query]).gsub("+", "%20")}"
     }
     get "search/oh/*query", to: redirect { |path_params, req|
-      "#{ScihistDigicoll::Env.lookup!("app_url_base")}/collections/#{ScihistDigicoll::Env.lookup!("oral_history_collection_id")}?q=#{path_params[:query]}"
+      "#{ScihistDigicoll::Env.lookup!("app_url_base")}/collections/#{ScihistDigicoll::Env.lookup!("oral_history_collection_id")}?q=#{URI.encode_www_form_component(path_params[:query]).gsub("+", "%20")}"
     }
 
     get '/oral-histories/projects', to: redirect('https://sciencehistory.org/oral-history-projects')

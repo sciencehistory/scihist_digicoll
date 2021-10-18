@@ -51,6 +51,12 @@ describe "Oral history legacy site redirects" do
       expect(response).to have_http_status(301) # moved permanently
       expect(response).to redirect_to("#{standard_base_url}/collections/#{ScihistDigicoll::Env.lookup!(:oral_history_collection_id)}?q=new\%20york")
     end
+
+    it "properly escapes redirect" do
+      get '/search/oh/Poun%C3%A9%20Saberi'
+      expect(response).to have_http_status(301)
+      expect(response).to redirect_to("#{standard_base_url}/collections/#{ScihistDigicoll::Env.lookup!(:oral_history_collection_id)}?q=Poun\%C3\%A9\%20Saberi")
+    end
   end
 
 
