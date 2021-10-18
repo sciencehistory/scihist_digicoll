@@ -30,7 +30,7 @@ module AttributeTable
     def call
       content_tag("tr") do
         safe_join([
-          content_tag("th", label_cell_content),
+          content_tag("th", label_cell_content, "scope" => "row"),
           content_tag("td", value_cell_content)
         ])
       end
