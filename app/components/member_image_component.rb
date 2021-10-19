@@ -68,23 +68,6 @@ class MemberImageComponent < ApplicationComponent
       return not_available_placeholder
     end
 
-    # Link around big poster image, when we're in "large" size it duplicates
-    # the "view" link, so should be hidden from accessible tech.
-    # https://www.sarasoueidan.com/blog/keyboard-friendlier-article-listings/.
-    #
-    # When we're in "small" size, it needs appropriate aria-label
-    thumb_link_attributes = {
-      class: "thumb",
-      href: view_href,
-      data: view_data_attributes,
-    }
-    if size == :large
-      thumb_link_attributes["tabindex"] = "-1"
-      thumb_link_attributes["aria-hidden"] = "true"
-    else
-      thumb_link_attributes["aria-label"] = view_action_aria_label
-    end
-
     content_tag("div", class: "member-image-presentation") do
       private_label +
       content_tag("a", **thumb_link_attributes) do
@@ -99,8 +82,26 @@ class MemberImageComponent < ApplicationComponent
 
   private
 
-  def view_action_aria_label
-    image_label ? "View #{image_label}" : "View"
+  # Link around big poster image, when we're in "large" size it duplicates
+  # the "view" link, so should be hidden from accessible tech.
+  # https://www.sarasoueidan.com/blog/keyboard-friendlier-article-listings/.
+  #
+  # When we're in "small" size, it needs appropriate aria-label
+  def thumb_link_attributes
+    thumb_link_attributes = {
+      class: "thumb",
+      href: view_href,
+      data: view_data_attributes,
+    }
+
+    if size == :large
+      thumb_link_attributes["tabindex"] = "-1"
+      thumb_link_attributes["aria-hidden"] = "true"
+    else
+      thumb_link_attributes["aria-label"] = image_label ? "View #{image_label}" : "View"
+    end
+
+    thumb_link_attributes
   end
 
   def private_label
