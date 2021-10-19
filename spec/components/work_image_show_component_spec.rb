@@ -23,11 +23,20 @@ describe WorkImageShowComponent, type: :component do
       it "displays only the second thumb in small list" do
         render_inline described_class.new(work)
 
-        # representative is hero thumb
+        # representative is hero thumb, which should have a "view" button, and have
+        # poster image with duplicate link taken out of accessible tech.
+        # https://www.sarasoueidan.com/blog/keyboard-friendlier-article-listings/.
+
         hero = page.first(".show-hero .member-image-presentation")
-        expect(hero.first("a.thumb")["data-member-id"]).to eq(asset1.friendlier_id)
-        expect(hero.first("a.thumb")["aria-label"]).to eq "View"
+        hero_poster = hero.first("a.thumb")
+
+        expect(hero_poster["data-member-id"]).to eq(asset1.friendlier_id)
+        expect(hero_poster["aria-label"]).to be_nil
+        expect(hero_poster["tabindex"]).to eq "-1"
+        expect(hero_poster["aria-hidden"]).to eq "true"
+
         expect(hero.first(".downloads button").text.strip).to eq "Download"
+        # this serves as download link for the whole item, "Download" label is sufficient
         expect(hero.first(".downloads button")["aria-label"]).to be_nil
 
         # only the second asset is included in the smaller thumb list
@@ -47,10 +56,11 @@ describe WorkImageShowComponent, type: :component do
       it "displays both thumbs in small thumb list" do
         render_inline described_class.new(work)
 
-        # representative is hero thumb
+        # representative is hero thumb, which has a Download and View link
         hero = page.first(".show-hero .member-image-presentation")
         expect(hero.first("a.thumb")["data-member-id"]).to eq(asset2.friendlier_id)
-        expect(hero.first("a.thumb")["aria-label"]).to eq "View"
+        expect(hero.first("a.thumb")["aria-label"]).to be_nil
+
         expect(hero.first(".downloads button").text.strip).to eq "Download"
         expect(hero.first(".downloads button")["aria-label"]).to be_nil
 

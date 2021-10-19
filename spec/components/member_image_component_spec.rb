@@ -17,6 +17,16 @@ describe MemberImageComponent, type: :component do
         expect(wrapper_div).to have_selector(".action-item-bar .action-item.downloads .btn")
         expect(wrapper_div).to have_selector(".action-item-bar .action-item.view .btn")
       end
+
+      it "hides poster image from accessible tech" do
+        # in large size, poster image link just duplicates the "view" link, it can/should be hidden
+        # https://www.sarasoueidan.com/blog/keyboard-friendlier-article-listings/.
+
+        poster_link = wrapper_div.at("a.thumb")
+        expect(poster_link["aria-label"]).to be_nil
+        expect(poster_link["tabindex"]).to eq "-1"
+        expect(poster_link["aria-hidden"]).to eq "true"
+      end
     end
 
     describe "small size" do
