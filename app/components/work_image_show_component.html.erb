@@ -40,8 +40,8 @@
 
   <% member_list_for_display.each_with_index do |member, index| %>
       <div class="show-member-list-item">
-        <%# lazyload all but first 6 images %>
-        <%= render MemberImageComponent.new(member, lazy: (index > 5)) %>
+        <%# lazyload all but first 6 images, supply an image_label for accessible labels %>
+        <%= render MemberImageComponent.new(member, lazy: (index > 5), image_label: image_label_for_member_at_list_index(member, index)) %>
       </div>
   <% end %>
 </div>

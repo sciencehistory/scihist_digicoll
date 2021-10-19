@@ -13,8 +13,13 @@ class WorkImageShowComponent < ApplicationComponent
   # Public members, ordered.
   # All the members to be displayed as thumbnails
   # underneath, and excluding, the hero image.
-  # As the audio members (if any) are already being "displayed"
-  # in the playlist, we don't need them in this list.
+  #
+  # When the first member in order was the representative, we eliminate it
+  # from this list, cause it looks messy when there are only say two
+  # images and one of them shows up twice!
+  #
+  # BUT when represnetative image is not first, we still repeat it here,
+  # cause it's more confusing not to in that case.
   def member_list_for_display
     @member_list_display ||= begin
       members = work.members.includes(:leaf_representative)
@@ -23,6 +28,31 @@ class WorkImageShowComponent < ApplicationComponent
       # If the representative image is the first item in the list, don't show it twice.
       members.delete_at(0) if members[0] == representative_member
       members
+    end
+  end
+
+  def representative_is_in_member_list?
+    unless defined?(@representative_in_member_list)
+      @representative_in_member_list = member_list_for_display.include?(representative_member)
+    end
+
+    @representative_in_member_list
+  end
+
+  # Largely for accessibility. Sometimes we have alt_text in db we can use.
+  #
+  # In other cases all we can do at present is call it eg "Image 5"
+  #
+  # We have a zero-based index in member_list_for_display. Add one to make a
+  # human 1-based index.
+  #
+  # If the member list does NOT include the represenentative index, that means
+  # it starts at image _2_ not image 1, so add another one.
+  def image_label_for_member_at_list_index(member, index)
+    if member&.leaf_representative&.alt_text&.present?
+      member.leaf_representative.alt_text
+    else
+      "Image #{index + 1 + (representative_is_in_member_list? ? 0 : 1)}"
     end
   end
 
