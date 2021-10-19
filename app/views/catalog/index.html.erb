@@ -11,5 +11,7 @@
 <% content_for(:sidebar) do %>
   <%= render 'search_sidebar' %>
 <% end %>
+<% content_for(:sidebar_aria_label) { t('blacklight.search.documents.aria.limit_search')  } %>
+<% content_for(:content_aria_label) { t('blacklight.search.documents.aria.search_results')  } %>
 
 <%= render 'search_results' %>
