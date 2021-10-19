@@ -40,7 +40,7 @@
 # (This is a bit hacky)
 #
 class DownloadDropdownComponent < ApplicationComponent
-  attr_reader :display_parent_work, :asset
+  attr_reader :display_parent_work, :asset, :aria_label
 
 
   # @param asset [Asset] asset to display download links for
@@ -54,10 +54,14 @@ class DownloadDropdownComponent < ApplicationComponent
   #   display_parent_work is also used for determining "rights" statement.
   # @param use_link [Boolean], default false, if true will make the link that opens the menu an
   #   ordinary hyperlink, instead of a button (used on audio playlist).
+  # @param aria_label [String] aria_label for the primary "Download" button, we
+  #   use to make it more specific like "Download Image 1" to avoid tons of
+  #   identical "Download" buttons on page.
   def initialize(asset,
       display_parent_work:,
       use_link: false,
-      viewer_template: false)
+      viewer_template: false,
+      aria_label: nil)
 
     if viewer_template
       raise ArgumentError.new("asset must be nil if template_only") unless asset.nil?
@@ -68,6 +72,7 @@ class DownloadDropdownComponent < ApplicationComponent
     @display_parent_work = display_parent_work
     @use_link = use_link
     @asset = asset
+    @aria_label = aria_label
   end
 
   def call
@@ -150,6 +155,10 @@ class DownloadDropdownComponent < ApplicationComponent
       "aria-expanded" => "false",
       "data-boundary": "viewport"
     }
+
+    if aria_label
+      options["aria-label"] = aria_label
+    end
 
     if @use_link
       options[:class] = "dropdown-toggle download-link"
