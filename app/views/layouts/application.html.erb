@@ -17,11 +17,6 @@
       top-level HTML making room for sidebar.
     * providing the blacklight shared/modal with DOM for Bootstrap modal skeleton that
       can be re-used by any JS that needs a modal.
-
-    Right now, even though we have separate layout for 'admin', we do _not_ segregate
-    our CSS and JS assets, only the single pipelined application.js and application.css,
-    with JS/CSS shared by both.  (Currently the general 'application' layout is not
-    loading our webpacker JS, but that could change.)
 %>
 
 <html lang="en" class="no-js">
@@ -65,7 +60,7 @@
     <%# Blacklight put a search form here, we include our own local one in scihist_masthead instead,
         integrated into the masthead -%>
 
-    <div id="mainContainer" class="container-fluid">
+    <main id="mainContainer" class="container-fluid">
       <%= content_for(:container_header) %>
       <%= render 'flash_message_display' %>
       <% if content_for? :full_width_layout %>
@@ -74,10 +69,14 @@
       <% else %>
         <div class="row">
           <% if content_for? :sidebar %>
-            <section id="content" role="main" class="order-last">
+            <section id="content" class="order-last"
+              <%= %Q{aria-label="#{content_for(:content_aria_label)}"}.html_safe if content_for(:content_aria_label) %>
+            >
               <%= yield %>
             </section>
-            <section id="sidebar" class="page-sidebar order-first">
+            <section id="sidebar" class="page-sidebar order-first"
+                <%= %Q{aria-label="#{content_for(:sidebar_aria_label)}"}.html_safe if content_for(:sidebar_aria_label) %>
+            >
               <%= content_for(:sidebar) %>
             </section>
           <% else %>
@@ -87,7 +86,7 @@
           <% end %>
         </div>
       <% end %>
-    </div>
+    </main>
 
     <%= render partial: 'shared/modal' %>
 
