@@ -31,7 +31,7 @@
 # we don't want to show people the placeholder, this is just a fail-safe to avoid
 # showing non-public content in case of other errors.
 class MemberImageComponent < ApplicationComponent
-  attr_reader :size, :lazy, :member
+  attr_reader :size, :lazy, :member, :image_label
 
   delegate :can?, to: :helpers
 
@@ -50,10 +50,17 @@ class MemberImageComponent < ApplicationComponent
       }
   end
 
-  def initialize(member, size: :standard, lazy: false)
+  # @param image_label [String] a very short label used for assistive technology
+  #    in many of our actually existing cases we don't have more than "Image 10" to say.
+  #    Will be used to construct labels like "View Image 10".  Will default to `alt_text` set on
+  #    Asset, if present. Not actually necessarily suitable "alt" text, instead
+  #    it's used to construct action labels like that!
+  def initialize(member, size: :standard, lazy: false, image_label: nil)
     @lazy = !!lazy
     @size = size
     @member = member
+
+    @image_label = image_label
   end
 
   def call
@@ -63,9 +70,8 @@ class MemberImageComponent < ApplicationComponent
 
     content_tag("div", class: "member-image-presentation") do
       private_label +
-
-      content_tag("a", class: "thumb", href: view_href, data: view_data_attributes) do
-        render ThumbComponent.new(representative_asset, thumb_size: size, lazy: lazy)
+      content_tag("a", class: "thumb", href: view_href, data: view_data_attributes, "aria-label" => view_action_aria_label) do
+        render ThumbComponent.new(representative_asset, thumb_size: size, lazy: lazy, alt_text_override: "")
       end +
 
       content_tag("div", class: "action-item-bar") do
@@ -75,6 +81,10 @@ class MemberImageComponent < ApplicationComponent
   end
 
   private
+
+  def view_action_aria_label
+    image_label ? "View #{image_label}" : "View"
+  end
 
   def private_label
     return ''.html_safe if member.published?
@@ -129,7 +139,7 @@ class MemberImageComponent < ApplicationComponent
   end
 
   def download_button
-    render DownloadDropdownComponent.new(representative_asset, display_parent_work: member.parent)
+    render DownloadDropdownComponent.new(representative_asset, display_parent_work: member.parent, aria_label: ("Download #{image_label}" if image_label))
   end
 
   def view_button
@@ -172,7 +182,7 @@ class MemberImageComponent < ApplicationComponent
     return "" unless member.kind_of?(Work)
 
     content_tag("div", class: "action-item info") do
-      link_to "Info", work_path(member), class: "btn btn-primary"
+      link_to "Info", work_path(member), class: "btn btn-primary", "aria-label" => ("Info on #{member.title}" if member.is_a?(Work))
     end
   end
 
