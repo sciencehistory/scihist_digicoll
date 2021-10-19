@@ -41,6 +41,15 @@ describe MemberImageComponent, type: :component do
         expect(wrapper_div).not_to have_selector(".action-item-bar .action-item.view .btn")
       end
     end
+
+    describe "image_label arg" do
+      let(:presenter) { MemberImageComponent.new(member, image_label: "Image 2") }
+
+      it "creates aria-labels on links" do
+        expect(wrapper_div.at("a.thumb")["aria-label"]).to eq "View Image 2"
+        expect(wrapper_div.at("div.downloads button")["aria-label"]).to eq "Download Image 2"
+      end
+    end
   end
 
   describe "with child work" do
@@ -55,7 +64,12 @@ describe MemberImageComponent, type: :component do
         expect(wrapper_div).to have_selector(".action-item-bar .action-item.downloads .btn")
         expect(wrapper_div).to have_selector(".action-item-bar .action-item.view .btn")
         expect(wrapper_div).to have_selector(".action-item-bar .action-item.info .btn")
+
+        # info button has aria-label
+        expect(wrapper_div.at(".action-item-bar .action-item.info .btn")["aria-label"]).to eq "Info on #{member.title}"
       end
+
+
     end
 
     describe "small size" do
@@ -63,6 +77,7 @@ describe MemberImageComponent, type: :component do
         expect(wrapper_div).to be_present
         expect(wrapper_div).to have_selector(".thumb img")
         expect(wrapper_div).to have_selector(".action-item-bar .action-item.info .btn")
+        expect(wrapper_div.at(".action-item-bar .action-item.info .btn")["aria-label"]).to eq "Info on #{member.title}"
 
         expect(wrapper_div).not_to have_selector(".action-item-bar .action-item.downloads .btn")
         expect(wrapper_div).not_to have_selector(".action-item-bar .action-item.view .btn")
