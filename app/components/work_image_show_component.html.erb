@@ -1,7 +1,7 @@
 <% provide :page_title, construct_page_title(work.title) %>
 
 <% content_for :head do %>
-  <%= render "meta_tags", work: work  %>
+  <%= render "works/meta_tags", work: work  %>
   <%= tag "link", rel: "alternate", type: "application/xml", title: "OAI-DC metadata in XML", href: work_path(@work, format: "xml") %>
 <% end %>
 
@@ -13,7 +13,7 @@
 
   <div class="show-hero">
     <%= render MemberImageComponent.new(representative_member, size: :large) %>
-    <%= render "rights_and_social", work: work %>
+    <%= render "works/rights_and_social", work: work %>
   </div>
 
   <div class="show-metadata">
@@ -28,7 +28,7 @@
           <%= DescriptionDisplayFormatter.new(work.description).format  %>
         </div>
         <%= render WorkShowInfoComponent.new(work: work) %>
-        <%= render "citation", work: work  %>
+        <%= render "works/citation", work: work  %>
 
       <% end %>
   </div>
