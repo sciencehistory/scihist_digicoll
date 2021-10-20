@@ -38,10 +38,10 @@
     big representative image %>
   <div style="clear: left"></div>
 
-  <% member_list_for_display.each_with_index do |member, index| %>
+  <% member_list_for_display.each_with_index do |member_for_thumb, index| %>
       <div class="show-member-list-item">
         <%# lazyload all but first 6 images, supply an image_label for accessible labels %>
-        <%= render MemberImageComponent.new(member, lazy: (index > 5), image_label: image_label_for_member_at_list_index(member, index)) %>
+        <%= render MemberImageComponent.new(member_for_thumb.member, lazy: (index > 5), image_label: member_for_thumb.image_label) %>
       </div>
   <% end %>
 </div>

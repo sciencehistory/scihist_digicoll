@@ -10,54 +10,48 @@ class WorkImageShowComponent < ApplicationComponent
     @work = work
   end
 
-  # Public members, ordered.
-  # All the members to be displayed as thumbnails
-  # underneath, and excluding, the hero image.
+  # Public members, ordered, to be displayed as thumbnails
+  # underneath the hero/representative image -- excluding the hero if it's the
+  # first item in ordered list, cause it looks messy to show it twice in a row,
+  # especially when we only have 2 or especially one member!
   #
-  # When the first member in order was the representative, we eliminate it
-  # from this list, cause it looks messy when there are only say two
-  # images and one of them shows up twice!
+  # We need to provide accessible labels to actions for images in list,
+  # and the best we can do is "Image 1", "Image 2", "Image 10" etc.
   #
-  # BUT when represnetative image is not first, we still repeat it here,
-  # cause it's more confusing not to in that case.
+  # What that label is depends on if we excluded the representative or not though.
+  # So we return MemberForThumbnailDisplay objects that have both the "member"
+  # (Work or Asset), AND it's accessible label eg "Image 5"
+  #
   def member_list_for_display
     @member_list_display ||= begin
+      members = ordered_viewable_members.dup
+
+      # If the representative image is the first item in the list, don't show it twice.
+      start_image_number = 1
+      if members[0] == representative_member
+        members.delete_at(0)
+        start_image_number = 2
+      end
+
+      members.collect.with_index do |member, index|
+        MemberForThumbnailDisplay.new(member: member, image_label: "Image #{start_image_number + index}")
+      end
+    end
+  end
+
+  # All DISPLAYABLE (to current user) members, in order, and
+  # with proper pre-fetches.
+  def ordered_viewable_members
+    @ordered_members ||= begin
       members = work.members.includes(:leaf_representative)
       members = members.where(published: true) if current_user.nil?
       members = members.order(:position).to_a
-      # If the representative image is the first item in the list, don't show it twice.
-      members.delete_at(0) if members[0] == representative_member
-      members
     end
   end
 
-  def representative_is_in_member_list?
-    unless defined?(@representative_in_member_list)
-      @representative_in_member_list = member_list_for_display.include?(representative_member)
-    end
-
-    @representative_in_member_list
-  end
-
-  # Largely for accessibility. Sometimes we have alt_text in db we can use.
-  #
-  # In other cases all we can do at present is call it eg "Image 5"
-  #
-  # We have a zero-based index in member_list_for_display. Add one to make a
-  # human 1-based index.
-  #
-  # If the member list does NOT include the represenentative index, that means
-  # it starts at image _2_ not image 1, so add another one.
-  def image_label_for_member_at_list_index(member, index)
-    if member&.leaf_representative&.alt_text&.present?
-      member.leaf_representative.alt_text
-    else
-      "Image #{index + 1 + (representative_is_in_member_list? ? 0 : 1)}"
-    end
-  end
 
   def transcription_texts
-    @transcription_texts ||= ([representative_member] + member_list_for_display).compact.collect.with_index do |member, i|
+    @transcription_texts ||= ordered_viewable_members.collect.with_index do |member, i|
       if member.kind_of?(Asset) && member.transcription.present?
         TextPage.new(
           member,
@@ -69,7 +63,7 @@ class WorkImageShowComponent < ApplicationComponent
   end
 
   def translation_texts
-    @translation_texts ||= ([representative_member] + member_list_for_display).compact.collect.with_index do |member, i|
+    @translation_texts ||= ordered_viewable_members.collect.with_index do |member, i|
       if member.kind_of?(Asset) && member.english_translation.present?
         TextPage.new(
           member,
@@ -108,6 +102,18 @@ class WorkImageShowComponent < ApplicationComponent
       end
     else
       yield
+    end
+  end
+
+  # Encapsulates a member (Asset or Work), and an `image_label` like
+  # "Image 5" that we use as a "best we've got" accessible label for
+  # acitons like "Download Image 5"
+  class MemberForThumbnailDisplay
+    attr_reader :member, :image_label
+
+    def initialize(member:, image_label:)
+      @member = member
+      @image_label = image_label
     end
   end
 
