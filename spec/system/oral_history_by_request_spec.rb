@@ -28,6 +28,8 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
     it "shows the page without error" do
       visit work_path(work.friendlier_id)
 
+      expect(page).to be_axe_clean
+
       expect(page).to have_selector("h1", text: work.title)
 
       # portrait
