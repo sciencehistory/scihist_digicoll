@@ -58,4 +58,12 @@ describe CatalogController, solr: true do
         and having_attributes(message: "Not Found"))
     end
   end
+
+  describe "attempt to inject in page param", solr: false do
+    it "responds with a 400" do
+      get "/catalog?page=21111111111111%22%20"
+      expect(response.code).to eq "400"
+      expect(response.body).to match(/illegal page query parameter/)
+    end
+  end
 end
