@@ -483,7 +483,11 @@ class CatalogController < ApplicationController
       end
     end
 
-
+    # someone trying to do an injection attack in the `page` param somehow
+    # triggered a Solr 400, let's nip it in the bud.
+    if params[:page].present? && params[:page] !~ /\A\d+\Z/
+      render(plain: "illegal page query parameter", status: 400) && return
+    end
 
     # Correct range facets look like:
     # params[:range] == {"year_facet_isim"=>{"begin"=>"1900", "end"=>"1950"}}
