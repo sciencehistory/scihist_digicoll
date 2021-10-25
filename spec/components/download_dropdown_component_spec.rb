@@ -31,6 +31,7 @@ describe DownloadDropdownComponent, type: :component do
     end
   end
 
+
   describe "with image file and derivatives" do
     let(:asset) do
       create(:asset_with_faked_file,
@@ -236,6 +237,28 @@ describe DownloadDropdownComponent, type: :component do
     let(:asset) { build(:asset) }
     it "renders without error" do
       expect(div).to be_present
+    end
+  end
+
+  describe "aria_label" do
+    let(:rendered) do
+      render_inline(DownloadDropdownComponent.new(asset, display_parent_work: asset.parent, aria_label: "This is aria_label"))
+    end
+
+
+    let(:asset) do
+      create(:asset_with_faked_file,
+        faked_derivatives: {
+          download_small: build(:stored_uploaded_file),
+          download_medium: build(:stored_uploaded_file),
+          download_large: build(:stored_uploaded_file),
+          download_full: build(:stored_uploaded_file)
+        },
+        parent: build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
+      )
+    end
+    it "includes aria_label" do
+      expect(div.at("button")["aria-label"]).to eq "This is aria_label"
     end
   end
 end
