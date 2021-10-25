@@ -453,6 +453,7 @@ module ScihistDigicoll
     # SPECIFIC COLLECTION IDS
     # Used to trigger custom controllers/UI for specific known collections
     define_key :oral_history_collection_id, default: "gt54kn818"
+    define_key :bredig_collection_id, default: "qfih5hl"
 
     # hostname for legacy Oral History microsite, we catch requests to this
     # and redirect appropriately.
