@@ -9,7 +9,7 @@
 
 require 'rails_helper'
 
-describe CatalogController, solr: true do
+describe CatalogController do
   # https://app.honeybadger.io/projects/58989/faults/78909879/01F4Q6ZN3KVBPZ4BCG4Y36KJE5?page=0#notice-summary
   describe "facet params that aren't expected strings" do
     it "responds with 400" do
@@ -59,7 +59,7 @@ describe CatalogController, solr: true do
     end
   end
 
-  describe "attempt to inject in page param", solr: false do
+  describe "attempt to inject in page param" do
     it "responds with a 400" do
       get "/catalog?page=21111111111111%22%20"
       expect(response.code).to eq "400"
