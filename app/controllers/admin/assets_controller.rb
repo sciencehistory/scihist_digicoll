@@ -35,9 +35,19 @@ class Admin::AssetsController < AdminController
     authorize! :destroy, @asset
 
     work = @asset.parent
+    if work.present? && work.representative == @asset && work.published?
+      respond_to do |format|
+        format.html { redirect_to admin_work_path(work.friendlier_id,
+          anchor: "tab=nav-members"),
+        notice: "Could not destroy asset '#{@asset.title}'. The work is published and this is its representative." }
+        format.json { render json: { error:  "Could not destroy asset '#{@asset.title}'. The work is published and this is its representative." }, status: 422 }
+      end
+      return
+    end
+    
     @asset.destroy
     respond_to do |format|
-      format.html { redirect_to admin_work_path(work.friendlier_id, anchor: "nav-members"), notice: "Asset '#{@asset.title}' was successfully destroyed." }
+      format.html { redirect_to admin_work_path(work.friendlier_id, anchor: "tab=nav-members"), notice: "Asset '#{@asset.title}' was successfully destroyed." }
       format.json { head :no_content }
     end
   end

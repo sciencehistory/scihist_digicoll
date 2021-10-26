@@ -3,9 +3,7 @@ require 'rails_helper'
 describe WorkIndexer do
   let(:work) { create(:work, :with_complete_metadata) }
 
-  let(:no_members) do
-    create(:public_work, members: [])
-  end
+  let(:no_members) { create(:public_work).tap { |w| work.update(members: [], published: false) } }
 
   it "indexes" do
     output_hash = WorkIndexer.new.map_record(work)
@@ -179,21 +177,22 @@ describe WorkIndexer do
         :asset,
         transcription: "transc_#{page}",
         english_translation: "transl_#{page}",
-        position: page
+        position: page,
+        published: true
         ) }
     end
     let(:english_only) do
-      create(:public_work, language: ['en'], members: assets )
+      create(:public_work, language: ['en']).tap {|w| w.update(members: w.members + assets)}
     end
     let(:bilingual) do
-      create(:public_work, language: ['en', 'de'], members: assets)
+      create(:public_work, language: ['en', 'de']).tap {|w| w.update(members: w.members + assets)}
     end
     let(:german_only) do
-      create(:public_work, language: ['de'], members: assets )
+      create(:public_work, language: ['de']).tap {|w| w.update(members: w.members + assets)}
     end
   
     let(:nil_members) do
-      create(:public_work, members: [])
+      create(:work, members: [])
     end
 
     before do

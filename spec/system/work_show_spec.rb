@@ -129,12 +129,15 @@ describe "Public work show page", type: :system, js: false do
   end
 
   describe "Multi-page work with transcription and translation", js: true do
-    let(:work) do
-      create(:public_work, :with_complete_metadata,
-        members: [
+    let(:members) do
+      [
           create(:asset_with_faked_file, position: 1, transcription: "This is file-1 transcription", english_translation: "This is file-1 translation"),
           create(:asset_with_faked_file, position: 2, transcription: "This is file-2 transcription", english_translation: "This is file-2 translation")
-        ]
+      ]
+    end
+    let(:work) do
+      create(:public_work, :with_complete_metadata,
+        members: members, representative: members[0]
       )
     end
 

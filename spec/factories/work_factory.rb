@@ -13,17 +13,22 @@ FactoryBot.define do
     # Automatically set a representative if needed and possible
     after(:build) do |work|
       if work.representative.nil? && work.members.loaded?
-        work.representative = work.members.first
+        work.representative = work.members.to_a.find {|w| w.published? }
       end
     end
 
     trait :published do
-      published { true }
+      members {  [ build(:asset_with_faked_file, published: true) ] }
       department { "Library" }
       rights { "http://creativecommons.org/publicdomain/mark/1.0/" }
       genre { ["Rare books"] }
       date_of_work { Work::DateOfWork.new(start: "2019") }
       format { ["text"] }
+      after(:build) do |work|
+        work.representative = work.members.first
+        work.published = true
+        work.save!
+      end
     end
 
     # shortcut for create(:work, :published) since we do it a lot
@@ -220,9 +225,9 @@ FactoryBot.define do
         end
 
         members {[
-          build(:asset_with_faked_file, :pdf, published: true),
-          build(:asset_with_faked_file, :pdf, title: "audio_recording.mp3", published: false, oh_available_by_request: true),
-          build(:asset_with_faked_file, :mp3, title: "transcript.pdf", published: false, oh_available_by_request: true)
+          build(:asset_with_faked_file, :pdf, published: true, title: 'Front matter'),
+          build(:asset_with_faked_file, :mp3, title: "audio_recording.mp3", published: false, oh_available_by_request: true),
+          build(:asset_with_faked_file, :pdf, title: "transcript.pdf", published: false, oh_available_by_request: true)
         ]}
         after(:build) do |work, evaluator|
           work.representative = work.members.to_a.find {|w| w.published? }
@@ -238,6 +243,16 @@ FactoryBot.define do
           work.oral_history_content.ohms_xml_text = evaluator.ohms_xml_text
         end
       end
+
+      trait :published do
+        members do
+          [ build(:asset_with_faked_file, :pdf, published: true) ]
+        end
+        after(:build) do |work|
+          work.update(published:true)
+        end
+      end
+      
     end
   end
 end

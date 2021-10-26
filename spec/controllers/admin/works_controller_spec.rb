@@ -22,7 +22,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         end
       end
 
-      context "becuase it has multiple assets" do
+      context "because it has multiple assets" do
         let(:parent_work) { FactoryBot.create(:work) }
         let(:work) { FactoryBot.create(:work, :with_assets, asset_count: 5, parent: parent_work)}
 
@@ -108,7 +108,8 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
   end
 
   context "#batch_publish_toggle", logged_in_user: :admin do
-    let(:publishable_work) { create(:work, :with_complete_metadata, published: false) }
+    let(:representative) {  build(:asset_with_faked_file, published: true)}
+    let(:publishable_work) { create(:work, :with_complete_metadata, published: false, members: [representative], representative: representative) }
     let(:unpublishable_work) { create(:work, published: false) }
 
     context "unpublishable works" do
@@ -207,24 +208,24 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     end
 
     context "create audio derivatives",  logged_in_user: :admin do
-      let!(:oral_history) { FactoryBot.create(
-        :work,
-        :published,      # with the metadata necessary to publish it...
-        published: false, # but not actually published.
-        genre: ["Oral histories"],
-        title: "Oral history with two interview audio segments")
-      }
+
       let!(:audio_asset_1)  { create(:asset, :inline_promoted_file,
           position: 1,
-          parent_id: oral_history.id,
+          title: "Audio asset 1",
           file: File.open((Rails.root + "spec/test_support/audio/ice_cubes.mp3"))
         )
       }
       let!(:audio_asset_2)  { create(:asset, :inline_promoted_file,
           position: 2,
-          parent_id: oral_history.id,
+          title: "Audio asset 2",
           file: File.open((Rails.root + "spec/test_support/audio/double_ice_cubes.mp3"))
         )
+      }      
+      let!(:oral_history) { FactoryBot.create(
+        :work,
+        genre: ["Oral histories"],
+        members: [audio_asset_1, audio_asset_2],
+        title: "Oral history with two interview audio segments")
       }
 
       it "kicks off an audio derivatives job" do
@@ -317,12 +318,17 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       # works that have the necessary metadata to be published, but aren't actually published yet
       let(:work_child) { build(:work, :published, published: false) }
       let(:asset_child) { build(:asset, published: false) }
-      let(:work) { create(:work, :published, published: false, members: [asset_child, work_child]) }
+      let(:work) do
+        create(:work, :published).tap do |w|
+          w.members += [asset_child, work_child]
+          w.published = false
+          w.save!
+        end
+      end
 
       it "can publish, and publishes children" do
         put :publish, params: { id: work.friendlier_id, cascade: 'true' }
         expect(response.status).to redirect_to(admin_work_path(work))
-
         work.reload
         expect(work.published?).to be true
         expect(work.members.all? {|m| m.published?}).to be true
@@ -334,6 +340,64 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         work.reload
         expect(work.published?).to be true
         expect(work.members.all? {|m| m.published?}).to be false
+      end
+
+      context "works without a published representative" do
+        context "work with nil representative" do
+          before do
+            work.update(representative: nil, published: false)
+          end
+          it "can't be published" do
+            put :publish, params: {
+              id: work.friendlier_id,
+            }
+            work.reload
+            expect(work.published?).to be false
+            expect(work.members.all? {|m| m.published?}).to be false
+          end
+        end
+
+        context "work with an unpublished asset representative" do
+          before do
+            work.update({representative: asset_child, published: false})
+            asset_child.update({published: false})
+          end
+          it "can't be published" do
+            put :publish, params: {
+              id: work.friendlier_id,
+            }
+            work.reload
+            expect(work.published?).to be false
+            expect(work.members.all? {|m| m.published?}).to be false
+          end
+        end
+
+        context "work with an unpublished child work representative" do
+          before do
+            work.update(representative: work_child, published: false)
+            work_child.update(published: false)
+          end
+          it "can't be published" do
+            put :publish, params: {
+              id: work.friendlier_id,
+            }
+            work.reload
+            expect(work.published?).to be false
+            expect(work.members.all? {|m| m.published?}).to be false
+          end
+        end
+      end
+
+      context "child work that is the representative of a published parent" do        
+        let!(:parent_work) { create(:work, :published, members:[child_work], representative:child_work, title: "Parent") }
+        let(:child_work) { create(:work, :published, title: "Representative") }
+        it "can't be removed" do
+          put :destroy, params: { id: child_work.friendlier_id}
+          expect(response).to redirect_to(admin_work_path(child_work, anchor: "tab=nav-members"))
+          expect(flash[:notice]).to match /Could not destroy work 'Representative'. 'Parent' is published and this is its representative./
+          expect(child_work.reload).to be_present
+          expect(parent_work.reload.representative).to eq child_work
+        end
       end
 
       it "can delete, and deletes children" do
@@ -364,8 +428,14 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         end
 
         describe "child work missing required fields" do
-          let(:work_child) { build(:private_work) }
-          let(:work) { create(:work, :published, published: false, members: [work_child]) }
+          let(:work_child) { build(:private_work, title: "the_child_work_title") }
+          let(:work) do
+            create(:work, :published).tap do |w|
+              w.members << work_child
+              w.published = false
+              w.save!
+            end
+          end
 
           it "can not publish, displaing proper error for child work" do
             put :publish, params: { id: work.friendlier_id, cascade: 'true'}

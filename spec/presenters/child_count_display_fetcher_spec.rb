@@ -24,7 +24,7 @@ describe ChildCountDisplayFetcher do
     end
 
     describe "with no members" do
-      let(:item) { create(:public_work) }
+      let(:item) { create(:public_work).tap {|w| w.update(members:[]) } } 
 
       it "returns zero" do
         expect(item_counter.member_count_for_friendlier_id(item.friendlier_id)).to eq(0)

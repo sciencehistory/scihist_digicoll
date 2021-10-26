@@ -11,6 +11,7 @@ class Admin::WorksController < AdminController
            :remove_ohms_xml, :submit_searchable_transcript_source, :download_searchable_transcript_source,
            :remove_searchable_transcript_source, :create_combined_audio_derivatives, :update_oh_available_by_request,
            :update_oral_history_content]
+  before_action :prevent_deleting_parent_representative, only: [:destroy]
 
   # GET /admin/works
   # GET /admin/works.json
@@ -266,7 +267,6 @@ class Admin::WorksController < AdminController
   # DELETE /works/1.json
   def destroy
     authorize! :destroy, @work
-
     @work.destroy
     respond_to do |format|
       format.html { redirect_to cancel_url, notice: "Work '#{@work.title}' was successfully destroyed." }
@@ -451,6 +451,16 @@ class Admin::WorksController < AdminController
     # Use callbacks to share common setup or constraints between actions.
     def set_work
       @work = Work.includes(:leaf_representative).find_by_friendlier_id!(params[:id])
+    end
+
+    def prevent_deleting_parent_representative
+      if @work.parent.present? && @work.parent.representative == @work && @work.parent.published?
+        respond_to do |format|
+          notice = "Could not destroy work '#{@work.title}'. '#{@work.parent.title}' is published and this is its representative."
+          format.html { redirect_to admin_work_path(@work.friendlier_id, anchor: "tab=nav-members"), notice: notice }
+          format.json { render json: { error: notice }, status: 422 }
+        end
+      end
     end
 
     # only allow whitelisted params through (TODO, we're allowing all work params!)

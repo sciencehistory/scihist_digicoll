@@ -13,7 +13,6 @@ describe WorkZipCreator do
 
   it "returns working File ready for reading" do
     pdf_file = WorkPdfCreator.new(work).create
-
     expect(pdf_file).to be_present
     expect(pdf_file).to be_kind_of(Tempfile)
     expect(pdf_file.size).not_to eq(0)
@@ -122,7 +121,7 @@ describe WorkZipCreator do
 
   describe "with no available published images" do
     let(:work) {
-      create(:public_work, members: [create(:asset_with_faked_file, published: false)])
+      create(:public_work).tap {|w| w.members.first.update(published:false)}
     }
 
     it "raises on create" do

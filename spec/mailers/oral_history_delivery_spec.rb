@@ -16,10 +16,8 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
     end
 
     let!(:work) do
-      create(:oral_history_work, published: true).tap do |work|
-        work.members = members
-        work.representative =  members[2]
-        work.save!
+      create(:oral_history_work, :published).tap do |work|
+        work.update!({ members: members, representative: members[2] })
         work.oral_history_content!.update(available_by_request_mode: :automatic)
       end
     end
