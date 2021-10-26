@@ -498,7 +498,8 @@ class CatalogController < ApplicationController
     # Make sure it has that shape, or just abort, becuase it is likely to make blacklight_range_limit
     # choke and uncaught excpetion 500.
     #
-    # Additionally, newlines in values cause an error, just reject em too.
+    # Additionally, newlines and other things that aren't just integers can cause an error too,
+    # just insist on \d+ or empty string only.
 
     if params[:range].present?
       unless params[:range].respond_to?(:to_hash)
@@ -506,12 +507,9 @@ class CatalogController < ApplicationController
       end
 
       params[:range].each_pair do |_facet_key, range_limits|
-        unless range_limits.respond_to?(:to_hash) && range_limits[:begin].is_a?(String) && range_limits[:end].is_a?(String)
+        unless range_limits.respond_to?(:to_hash) && range_limits[:begin].is_a?(String) && range_limits[:end].is_a?(String) &&
+          range_limits[:begin] =~ /\A\d*\z/ && range_limits[:end] =~ /\A\d*\z/
           render(plain: "Invalid URL query parameter range=#{param_display.call(params[:range])}", status: 400) && return
-        end
-
-        if range_limits.values.grep(/\n/).present?
-          render(plain: "Invalid URL query parameter (newline) range=#{param_display.call(params[:range])}", status: 400) && return
         end
       end
     end
