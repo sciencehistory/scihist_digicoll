@@ -20,7 +20,7 @@ class Collection < Kithe::Collection
   attr_json :related_url, :string, array: true
 
   attr_json :department, :string
-  validates :department, inclusion: { in: Work::ControlledLists::DEPARTMENT, allow_blank: true }
+  validates :department, presence: {}, inclusion: { in: Work::ControlledLists::DEPARTMENT, allow_blank: true }
 
   # Override the default ActiveRecord one to create a new Asset if it didn't exist already.
   # The default AR didn't work quite right because of STI and other reasons, but this works
