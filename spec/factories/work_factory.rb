@@ -25,7 +25,7 @@ FactoryBot.define do
       date_of_work { Work::DateOfWork.new(start: "2019") }
       format { ["text"] }
       after(:build) do |work|
-        work.representative = work.members.first
+        work.representative = work.members.first if work.representative.nil?
         work.published = true
         work.save!
       end
