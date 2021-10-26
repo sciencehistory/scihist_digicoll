@@ -120,6 +120,15 @@ Rails.application.routes.draw do
     end
   end
 
+
+  # and a special controller for bredig, that at least initially only has customized facets
+  if ScihistDigicoll::Env.lookup(:bredig_collection_id)
+    constraints(collection_id: ScihistDigicoll::Env.lookup(:bredig_collection_id)) do
+      concerns :collection_showable, controller: "collection_show_controllers/bredig_collection"
+    end
+  end
+
+
   # and our default collection show page routing
   concerns :collection_showable
 
