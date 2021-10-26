@@ -3,7 +3,7 @@
 <div class="footnote-list mx-1 mb-5">
     <% footnote_array.each_with_index.map do |footnote_text, i| %>
         <p class="footnote-page-bottom-container">
-            <a id="footnote<%= i + 1 %>" data-role="ohms-navbar-aware-internal-link" href="#footnote-reference<%= i + 1 %>" >
+            <a id="footnote-<%= i + 1 %>" data-role="ohms-navbar-aware-internal-link" href="#footnote-reference-<%= i + 1 %>" >
             <span id="footnote-text-<%= i + 1 %>"><%= i + 1 %>.</a> <%= footnote_text%></span>
         </p>
     <% end %>
