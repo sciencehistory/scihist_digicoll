@@ -7,9 +7,12 @@
     per_page:      number of items to fetch per page
     remote:        data-remote
 -%>
+<%# accessibility:  https://www.a11ymatters.com/pattern/pagination/ -%>
 <li class="page-item <%= ' active' if page.current? %>">
-  <%= link_to page, url, opts = {:class=> "page-link", :remote => remote, :rel => page.next? ? 'next' : page.prev? ? 'prev' : nil} %>
-  <% if page.current? %>
-    <span class="sr-only">(current)</span>
-  <% end %>
+  <%= link_to page, url, {
+        "aria-label" => (page.current? ? "Current Page. Page #{page.number}" : "Goto Page #{page.number}"),
+        "aria-current" => ("true" if page.current?),
+        :class=> "page-link",
+        :remote => remote,
+        :rel => page.next? ? 'next' : page.prev? ? 'prev' : nil} %>
 </li>

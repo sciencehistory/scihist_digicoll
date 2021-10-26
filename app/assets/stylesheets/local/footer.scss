@@ -45,7 +45,10 @@
       color: white;
     }
 
-    strong {
+    h2, strong {
+      color: inherit;
+      margin-bottom: 0;
+      line-height: inherit;
       font-weight: 700;
       font-size: 1.125rem;
     }

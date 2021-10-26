@@ -33,4 +33,13 @@ describe RightsTerms do
       expect(described_class.short_label_inline_for(id)).not_to include("br")
     end
   end
+
+  describe "category" do
+    it "is one of the legal ones for everything" do
+      RightsTerms.all_ids.each do |rights_id|
+        expect(RightsTerms.category_for(rights_id)).to be_in(["in_copyright", "no_copyright", "other", "creative_commons"])
+      end
+    end
+  end
+
 end

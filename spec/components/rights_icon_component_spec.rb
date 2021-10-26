@@ -55,18 +55,62 @@ describe RightsIconComponent, type: :component do
     end
   end
 
-  describe "needs alt attr in large render" do
-    let(:work) { build(:work, rights: "http://rightsstatements.org/vocab/InC-EDU/1.0/")}
+  describe "alt attr in large render" do
+    let(:rights_id) { "http://rightsstatements.org/vocab/InC-EDU/1.0/" }
+    let(:work) { build(:work, rights: rights_id)}
     let(:rendered) { render_inline(RightsIconComponent.new(work: work, mode: :large)) }
+    let(:container) { rendered.at_css("div.rights-statement") }
+    let(:image) { container.at_css("img") }
 
-    it "renders" do
-      container = rendered.at_css("div.rights-statement")
-      expect(container).to be_present
+    describe "http://rightsstatements.org/vocab/InC/1.0/" do
+      let(:rights_id) { "http://rightsstatements.org/vocab/InC/1.0/" }
+      it "has blank alt" do
+        expect(container).to be_present
+        expect(image["alt"]).to eq ""
+      end
+    end
 
-      expect(container.inner_text.strip).to eq("EducationalUse Permitted") # weird test value cause there's a BR tag in there that inner_text eliminates
+    describe "in copyright" do
+      RightsTerms.all_ids.
+      select { |id| RightsTerms.category_for(id) == "in_copyright"}.
+      reject {|id| id == "http://rightsstatements.org/vocab/InC/1.0/"}.each do |i_rights_id|
+        describe "#{i_rights_id}" do
+          let(:rights_id) { i_rights_id }
 
-      img = container.at_css("img")
-      expect(img["alt"]).to eq("In Copyright")
+          it "has correct alt text" do
+            expect(container).to be_present
+            expect(image["alt"]).to eq "In Copyright"
+          end
+        end
+      end
+    end
+
+    describe "no copyright" do
+      RightsTerms.all_ids.
+      select { |id| RightsTerms.category_for(id) == "no_copyright"}.each do |i_rights_id|
+        describe "#{i_rights_id}" do
+          let(:rights_id) { i_rights_id }
+
+          it "has correct alt text" do
+            expect(container).to be_present
+            expect(image["alt"]).to eq "No Copyright"
+          end
+        end
+      end
+    end
+
+    describe "unknown status" do
+      RightsTerms.all_ids.
+      select { |id| RightsTerms.category_for(id) == "other"}.each do |i_rights_id|
+        describe "#{i_rights_id}" do
+          let(:rights_id) { i_rights_id }
+
+          it "has correct alt text" do
+            expect(container).to be_present
+            expect(image["alt"]).to eq "Unknown Copyright Status"
+          end
+        end
+      end
     end
   end
 

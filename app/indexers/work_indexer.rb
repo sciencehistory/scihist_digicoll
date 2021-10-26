@@ -179,6 +179,13 @@ class WorkIndexer < Kithe::Indexer
       acc.concat get_string_from_each_member(rec, :transcription) if rec.language != ['en']
     end
 
+    # add a 'translation' token in bredig_feature_facet if we have any translations
+    to_field "bredig_feature_facet" do |rec, acc|
+      if rec.members && rec.members.any? {|m| m.is_a?(Asset) && m.english_translation.present? }
+        acc << "English Translation"
+      end
+    end
+
     # for oral histories, get biographical data. Some to same field as subject (text3_tesim), some
     # to our general-purpose "text_no_boost_tesim"
     each_record do |rec, context|
