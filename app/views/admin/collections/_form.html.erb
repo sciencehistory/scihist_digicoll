@@ -30,6 +30,8 @@
   <div class="form-inputs">
     <%= f.input :title %>
 
+    <%= f.input :department, collection: Work::ControlledLists::DEPARTMENT  %>
+
     <%= f.input :description, as: :text, input_html: { rows: 14 } %>
 
     <% if can? :publish, collection %>
