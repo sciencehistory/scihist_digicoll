@@ -4,7 +4,7 @@ require 'rails_helper'
 # a different template than other ones.
 #
 describe "Oral History with by-request delivery", type: :system, js: true, queue_adapter: :test do
-  # representative already provided by the factory
+  # Published representative PDF is already provided by the factory.
   let(:protected_pdf) { create(:asset_with_faked_file, :pdf, published: false, oh_available_by_request: true) }
   let(:protected_mp3) { create(:asset_with_faked_file, :mp3, published: false, oh_available_by_request: true) }
   let(:portrait) { create(:asset_with_faked_file, role: "portrait")}
@@ -19,7 +19,6 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
 
     it "shows the page without error" do
       visit work_path(work.friendlier_id)
-
       expect(page).to have_selector("h1", text: work.title)
 
       # portrait

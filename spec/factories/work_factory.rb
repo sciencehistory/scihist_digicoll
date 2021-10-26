@@ -25,7 +25,8 @@ FactoryBot.define do
       date_of_work { Work::DateOfWork.new(start: "2019") }
       format { ["text"] }
       after(:build) do |work|
-        work.representative = work.members.first if work.representative.nil?
+        # This after(:build) does NOT apparently inherit from non-published work factory.
+        work.representative = work.members.to_a.find {|w| w.published? } if work.representative.nil?
         work.published = true
         work.save!
       end
@@ -230,7 +231,7 @@ FactoryBot.define do
           build(:asset_with_faked_file, :pdf, title: "transcript.pdf", published: false, oh_available_by_request: true)
         ]}
         after(:build) do |work, evaluator|
-          work.representative = work.members.to_a.find {|w| w.published? }
+          work.representative = work.members.to_a.find {|w| w.published? } if work.representative.nil?
           work.oral_history_content!.available_by_request_mode = evaluator.available_by_request_mode
         end
       end
@@ -244,12 +245,19 @@ FactoryBot.define do
         end
       end
 
+      # We do need to explicitly set this:
+      # published NON-OH works need to specify a genre in order to publish the work,
+      # and the genre is set to  specify rare books.
       trait :published do
         members do
-          [ build(:asset_with_faked_file, :pdf, published: true) ]
+           [ build(:asset_with_faked_file, :pdf, published: true) ]
         end
+        genre { ["Oral histories"] }
         after(:build) do |work|
-          work.update(published:true)
+          # Yes, this is apparently needed, even though non-OH work factory  already has a similar trait.
+          work.representative = work.members.to_a.find {|w| w.published? } if work.representative.nil?
+          work.published = true
+          work.save!
         end
       end
       
