@@ -215,6 +215,15 @@ FactoryBot.define do
         )
       }
 
+      # have to override published trait from parent factory, to make sure we still
+      # have genre Oral histories! And also let's have some a member list more suitable
+      # for oral history
+      trait :published do
+        published { true}
+        members { [ build(:asset_with_faked_file, :pdf, published: true) ] }
+        genre { ["Oral histories"] }
+      end
+
       trait :available_by_request do
         transient do
           available_by_request_mode { :manual_review }
@@ -239,23 +248,6 @@ FactoryBot.define do
           work.oral_history_content.ohms_xml_text = evaluator.ohms_xml_text
         end
       end
-
-      # We do need to explicitly set this:
-      # published NON-OH works need to specify a genre in order to publish the work,
-      # and the genre is set to  specify rare books.
-      trait :published do
-        members do
-           [ build(:asset_with_faked_file, :pdf, published: true) ]
-        end
-        genre { ["Oral histories"] }
-        after(:build) do |work|
-          # Yes, this is apparently needed, even though non-OH work factory  already has a similar trait.
-          work.representative = work.members.to_a.find {|w| w.published? } if work.representative.nil?
-          work.published = true
-          work.save!
-        end
-      end
-
     end
   end
 end
