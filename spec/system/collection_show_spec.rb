@@ -20,6 +20,11 @@ describe "Collection show page", solr: true, indexable_callbacks: true do
     it "displays" do
       visit collection_path(collection)
 
+      # Blacklight has an illegal nav[role=region] we can't do anything about
+      # right now.
+      # https://github.com/projectblacklight/blacklight/pull/2491
+      expect(page).to be_axe_clean.excluding("nav[role=region]")
+
       expect(page).to have_selector("h1", text: collection.title)
 
       expect(page).to have_content("2 items") # one is not public
