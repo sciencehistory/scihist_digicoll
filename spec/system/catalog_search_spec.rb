@@ -26,6 +26,11 @@ describe CatalogController, solr: true, indexable_callbacks: true do
     it "loads" do
       visit search_catalog_path(search_field: "all_fields")
 
+      # Blacklight has an illegal nav[role=region] we can't do anything about
+      # right now.
+      # https://github.com/projectblacklight/blacklight/pull/2491
+      expect(page).to be_axe_clean.excluding("nav[role=region]")
+
       expect(page).to have_content("1 - 4 of 4")
 
       within("#document_#{work1.friendlier_id}") do
@@ -207,7 +212,7 @@ describe CatalogController, solr: true, indexable_callbacks: true do
     end
     it "shows matches from both full text indices, regardless of work language(s)" do
       works.each do |postcard|
-        
+
         visit search_catalog_path(search_field: "all_fields", q: '"Birthday"')
         expect(page).to have_selector("#document_#{postcard.friendlier_id}")
         within("#document_#{postcard.friendlier_id}") do

@@ -67,6 +67,12 @@ describe "Oral history with audio display", type: :system, js: true do
     it "shows audio assets appropriately" do
       visit work_path(audio_assets.first.parent.friendlier_id)
 
+      # Our tabs do not meet color contrast rules, we're ignoring for now.
+      # Smyth test data currently causes duplicate-id violations, filed at
+      # https://github.com/sciencehistory/scihist_digicoll/issues/1411, when that's
+      # fixed those rule skips can be removed.
+      expect(page).to be_axe_clean.excluding(".ohms-nav-tabs").skipping("duplicate-id", "duplicate-id-aria")
+
       # Because there is no combined audio derivative,
       # we can't show the audio scrubber:
       expect(page).not_to have_selector('audio')
