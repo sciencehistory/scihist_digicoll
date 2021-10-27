@@ -18,7 +18,8 @@ FactoryBot.define do
     end
 
     trait :published do
-      members {  [ build(:asset_with_faked_file, published: true) ] }
+      published { true }
+      members {  [ build(:asset_with_faked_file, published: true) ] } # published works need a representative now
       department { "Library" }
       rights { "http://creativecommons.org/publicdomain/mark/1.0/" }
       genre { ["Rare books"] }
@@ -260,7 +261,7 @@ FactoryBot.define do
           work.save!
         end
       end
-      
+
     end
   end
 end
