@@ -25,12 +25,6 @@ FactoryBot.define do
       genre { ["Rare books"] }
       date_of_work { Work::DateOfWork.new(start: "2019") }
       format { ["text"] }
-      after(:build) do |work|
-        # This after(:build) does NOT apparently inherit from non-published work factory.
-        work.representative = work.members.to_a.find {|w| w.published? } if work.representative.nil?
-        work.published = true
-        work.save!
-      end
     end
 
     # shortcut for create(:work, :published) since we do it a lot
