@@ -1,4 +1,7 @@
 require 'webmock/rspec'
+require 'axe-rspec'
+
+
 
 SCIHIST_WEBMOCK_USED = true
 
