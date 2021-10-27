@@ -4,15 +4,14 @@ require 'rails_helper'
 # a different template than other ones.
 #
 describe "Oral History with by-request delivery", type: :system, js: true, queue_adapter: :test do
-  # Published representative PDF is already provided by the factory.
+  let(:preview_pdf) { create(:asset_with_faked_file, :pdf, published: true) }
   let(:protected_pdf) { create(:asset_with_faked_file, :pdf, published: false, oh_available_by_request: true) }
   let(:protected_mp3) { create(:asset_with_faked_file, :mp3, published: false, oh_available_by_request: true) }
   let(:portrait) { create(:asset_with_faked_file, role: "portrait")}
 
   context "When you visit an OH with protected by request, automatic delivery assets" do
     let!(:work) do
-      create(:oral_history_work, :published).tap do |work|
-        work.members = work.members + [protected_pdf, protected_mp3, portrait]
+      build(:oral_history_work, :published, members: [preview_pdf, protected_pdf, protected_mp3, portrait], representative: preview_pdf).tap do |work|
         work.oral_history_content!.update(available_by_request_mode: :automatic)
       end
     end
@@ -53,7 +52,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       expect(page).to have_selector(:link_or_button, 'Request Access')
 
       within(".show-member-file-list-item") do
-        expect(page).to have_selector(:link, work.representative.title)
+        expect(page).to have_selector(:link, preview_pdf.title)
         expect(page).to have_selector(:link_or_button, "Download")
       end
 
@@ -87,8 +86,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
 
   context "When you visit an OH with protected by request, approved delivery assets" do
     let!(:work) do
-      create(:oral_history_work, :published).tap do |work|
-        work.members = work.members + [protected_pdf, protected_mp3]
+      create(:oral_history_work, :published, members: [preview_pdf, protected_pdf, protected_mp3], representative: preview_pdf).tap do |work|
         work.oral_history_content!.update(available_by_request_mode: :manual_review)
       end
     end
@@ -103,7 +101,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       expect(page).to have_selector(:link_or_button, 'Request Access')
 
       within(".show-member-file-list-item") do
-        expect(page).to have_selector(:link, work.representative.title)
+        expect(page).to have_selector(:link, preview_pdf.title)
         expect(page).to have_selector(:link_or_button, "Download")
       end
 
