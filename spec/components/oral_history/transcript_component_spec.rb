@@ -69,7 +69,8 @@ describe OralHistory::TranscriptComponent, type: :component do
     render_inline ohms_transcript_display_with_footnotes
 
     resulting_footnote = ohms_transcript_display_with_footnotes.footnote_html(1)
-    expect(resulting_footnote).to include '1. The mathematician&#39;s &quot;daughter&quot; proved that x &gt; 4.'
+
+    expect(resulting_footnote).to include 'The mathematician&#39;s &quot;daughter&quot; proved that x &gt; 4.'
   end
 
   it "Correctly handles several footnotes on one line -- and footnotes with spaces around the integer" do

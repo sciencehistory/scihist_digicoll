@@ -47,8 +47,10 @@ describe "Public work show page", type: :system, js: false do
 
 
     # REALLY doesn't test everything, just a sampling
-    it "smoke tests" do
+    it "smoke tests", js: true do
       visit work_path(work)
+
+      expect(page).to be_axe_clean
 
       # Don't show the edit button to users unless they're logged in.
       expect(page).to have_no_css('a', text: "Edit")
@@ -143,6 +145,8 @@ describe "Public work show page", type: :system, js: false do
 
     it "displays transcription and translation in tabs" do
       visit work_path(work)
+
+      expect(page).to be_axe_clean
 
       # if we are in small screen menu, we need to click on currently selected tab to open menu first!
       click_on "Description"

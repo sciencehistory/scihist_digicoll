@@ -36,20 +36,20 @@ OhmsFootnotes.setUpFootnoteEvents = function() {
         delay: {hide:400}
     });
   });
-  // If you click on a footnote reference, takes you up to the corresponding footnote.
-  jQuery('[data-role="footnote-reference"]').each(function() {
-      jQuery(this).click(function(event){ OhmsFootnotes.jump(event, jQuery(this), 'footnote') });
-  });
-  // Likewise, if you click on a footnote in the footnote section, takes you back up to the reference to it in the text.
-  jQuery('[data-role="footnote-page-bottom"]').each(function() {
-      jQuery(this).click(function(event){ OhmsFootnotes.jump(event, jQuery(this), 'footnote-reference') });
+
+  // If you click on a ohms-navbar-aware-internal-link, we need to scroll to there,
+  // but leaving space for ohms fixed navbar, that the browser ordinarily won't.
+  jQuery('[data-role="ohms-navbar-aware-internal-link"]').each(function() {
+      jQuery(this).click(function(event){
+        var anchor = this.attributes['href'] && this.attributes['href'].value;
+        OhmsFootnotes.jump(event, anchor)
+      });
   });
 }
 
-// Jump down to a footnote or up to a reference.
-// prefix is 'footnote-reference' for references, 'footnote' for footnote
-OhmsFootnotes.jump = function(event, item_clicked, prefix) {
+// Jump to a certain "#pageId", but leaving space for our fixed navbar on top.
+OhmsFootnotes.jump = function(event, destination) {
   event.preventDefault();
-  var destination = jQuery('#' + prefix + item_clicked.data()['footnoteIndex'])
+  var destination = jQuery(destination);
   window.scrollTo({top: destination.offset().top - jQuery("#ohmsAudioNavbar").height()});
 }
