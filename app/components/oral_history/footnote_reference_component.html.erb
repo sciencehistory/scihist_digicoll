@@ -1,16 +1,11 @@
-<%# First, an anchor, so we can link back to this footnote #%>
-<a name="footnote-reference<%= number %>" id="footnote-reference<%= number %>"></a>
+<a  class="footnote"
+    data-toggle="ohms-tooltip"
+    title="<%= footnote_text %>"
+    id="footnote-reference-<%= number %>"
+    aria-label="footnote <%= number %>"
+    aria-describedby="footnote-text-<%=number%>"
+    data-role="ohms-navbar-aware-internal-link"
+    href="#footnote-<%= number%>">
+  [<%= number %>]
+</a>
 
-<%# Then, a screenreader-only footnote.
-Connected to the footnote link by aria-describedby.
-#%>
-<span class="sr-only" id="footnote-text-<%=number%>" ><%= number %>. <%= footnote_text %></span>
-
-<%# Then, the actual tooltip (hidden until hover;
-hidden from screenreaders via aria-hidden="true";
-not accessible to phone / tablet users.)
-#%>
-<span class="footnote" aria-hidden="true" data-toggle="ohms-tooltip" title="<%= footnote_text %>">
-  <%# The actual footnote link #%>
-  <a aria-describedby="footnote-text-<%=number%>" data-role="footnote-reference" data-footnote-index="<%=number%>" href="#">[<%= number %>]</a>
-</span>
