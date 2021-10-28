@@ -200,9 +200,9 @@ class CatalogController < ApplicationController
       #
       "hl" => "true",
       "hl.method" => "unified",
-      "hl.fl" => "searchable_fulltext searchable_fulltext_language_agnostic",
+      "hl.fl" => SearchResult::BaseComponent::HIGHLIGHT_SOLR_FIELDS.join(" "),
       "hl.usePhraseHighlighter" => "true",
-      "hl.snippets" => 3,
+      "hl.snippets" => SearchResult::BaseComponent::MAX_HIGHLIGHT_SNIPPETS,
       "hl.encoder" => "html",
       # Biggest current transcript seems to be OH0624 with 817,139 chars.
       # Set maxAnalyzed Chars to two million? I dunno. Solr suggests if we
