@@ -28,7 +28,7 @@ module SearchResult
     # and end either way. html_safe string is returned, with the <em> tags around highlights.
     def search_highlights
       @search_highlights ||= begin
-        highlights = HIGHLIGHT_SOLR_FIELDS.collect {|field| get_highlights(field) }.flatten
+        highlights = HIGHLIGHT_SOLR_FIELDS.collect {|field| get_highlights(field) }.flatten.slice(0, MAX_HIGHLIGHT_SNIPPETS)
         if highlights.present?
           "…".html_safe + safe_join(highlights, " …") + "…".html_safe
         else
