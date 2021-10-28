@@ -33,6 +33,14 @@ describe WorkIndexer do
     end
   end
 
+  describe "desription with html" do
+    let(:work) { create(:work, description: "This originally had <b>html</b> and <a href='http://example.com'>stuff</a>.") }
+    it "is stripped to plaintext in index" do
+      output_hash = WorkIndexer.new.map_record(work)
+      expect(output_hash["description_text4_tesim"]).to eq ["This originally had html and stuff."]
+    end
+  end
+
   describe "oral history" do
     let(:work) { create(:oral_history_work, format: ['text']) }
 
@@ -191,7 +199,7 @@ describe WorkIndexer do
     let(:german_only) do
       create(:public_work, language: ['de'], members: assets )
     end
-  
+
     let(:nil_members) do
       create(:public_work, members: [])
     end
