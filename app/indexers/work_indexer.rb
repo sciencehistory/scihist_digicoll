@@ -196,7 +196,7 @@ class WorkIndexer < Kithe::Indexer
 
         boosted_text.concat biographies.collect(&:school).flatten.collect(&:institution).compact
         boosted_text.concat biographies.collect(&:job).flatten.collect(&:institution).compact
-        boosted_text.concat biographies.collect(&:honor).flatten.collect(&:honor).compact
+        boosted_text.concat biographies.collect(&:honor).flatten.collect(&:honor).compact.collect { |val| ActionView::Base.full_sanitizer.sanitize(val) }
         boosted_text.uniq!
 
         context.add_output("text3_tesim", *boosted_text)
