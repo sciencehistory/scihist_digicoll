@@ -24,7 +24,8 @@ class WorkIndexer < Kithe::Indexer
     end
 
 
-    to_field "text4_tesim", obj_extract("description")
+    # index description to it's own field for highlighting purposes
+    to_field "description_text4_tesim", obj_extract("description")
     to_field "text4_tesim", obj_extract("provenance")
 
     to_field ["text_no_boost_tesim", "language_facet"], obj_extract("language")
