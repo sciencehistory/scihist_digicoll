@@ -4,7 +4,9 @@ module SearchResult
   # Meant to be an abstract superclass, which holds the view template .html.erb too. Not meant to be
   # used directly, sub-classes are expected to implement some methods used by the view template.
   class BaseComponent < ApplicationComponent
-    HIGHLIGHT_SOLR_FIELDS = ["searchable_fulltext", "searchable_fulltext_language_agnostic"]
+    # note order matters here! The fields listed first will listed first in snippet, and preferred
+    # as far as first MAX_HIGHLIGHT_SNIPPETS included only.
+    HIGHLIGHT_SOLR_FIELDS = ["searchable_fulltext", "searchable_fulltext_language_agnostic", "description_text4_tesim"]
     MAX_HIGHLIGHT_SNIPPETS = 3
 
     attr_reader :model, :child_counter, :cart_presence, :solr_document
