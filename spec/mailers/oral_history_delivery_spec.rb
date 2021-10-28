@@ -2,25 +2,24 @@ require "rails_helper"
 
 RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
   describe "Sends out the items" do
-    let(:pdf_preview) do
-      create(:asset_with_faked_file, :pdf, published: true,
-          title: "Preview PDF", position: 1)
-    end
     let(:members) do
       [
-        pdf_preview,
         create(:asset_with_faked_file, :mp3, published: false,
-          oh_available_by_request: true, title: "Protected mp3", position: 2),
+          oh_available_by_request: true, title: "Protected mp3", position: 0),
         create(:asset_with_faked_file, :pdf, published: false,
-          oh_available_by_request: true,  title: "Protected PDF", position: 3),
+          oh_available_by_request: true,  title: "Protected PDF", position: 1),
+        create(:asset_with_faked_file, :pdf, published: true,
+          title: "Preview PDF", position: 2),
         create(:asset_with_faked_file, :pdf, published: false,
-          title: "We will get sued if you send this out.", position: 4)
+          title: "We will get sued if you send this out.", position: 3)
       ]
     end
 
     let!(:work) do
       create(:oral_history_work, :published).tap do |work|
-        work.update!({ members: members, representative: pdf_preview })
+        work.members = members
+        work.representative =  members[2]
+        work.save!
         work.oral_history_content!.update(available_by_request_mode: :automatic)
       end
     end
@@ -49,6 +48,7 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
 
     it "renders the body; does not send items that are already publicly accessible" do
       body = mail.body.encoded
+
       expect(body).to match "Dear Patron name"
       expect(body).to match /files from.*Bailey/
       expect(body).to match /Protected mp3.*MP3 — 56.9 KB.*Protected PDF.*PDF — 7.4 KB/m

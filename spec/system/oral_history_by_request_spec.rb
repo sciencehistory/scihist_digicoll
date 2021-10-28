@@ -9,6 +9,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
   let(:protected_mp3) { create(:asset_with_faked_file, :mp3, published: false, oh_available_by_request: true) }
   let(:portrait) { create(:asset_with_faked_file, role: "portrait")}
 
+
   context "When you visit an OH with protected by request, automatic delivery assets" do
     let!(:work) do
       build(:oral_history_work, :published, members: [preview_pdf, protected_pdf, protected_mp3, portrait], representative: preview_pdf).tap do |work|
@@ -86,7 +87,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
 
   context "When you visit an OH with protected by request, approved delivery assets" do
     let!(:work) do
-      create(:oral_history_work, :published, members: [preview_pdf, protected_pdf, protected_mp3], representative: preview_pdf).tap do |work|
+      build(:oral_history_work, :published, members: [preview_pdf, protected_pdf, protected_mp3], representative: preview_pdf).tap do |work|
         work.oral_history_content!.update(available_by_request_mode: :manual_review)
       end
     end
@@ -127,6 +128,8 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       expect(new_req.patron_institution).to eq "Some Library"
       expect(new_req.intended_use).to eq "Fun & games"
       expect(new_req.delivery_status_pending?).to be(true)
+
+
       expect(ActionMailer::MailDeliveryJob).to have_been_enqueued
     end
   end

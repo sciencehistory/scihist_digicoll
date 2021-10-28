@@ -3,7 +3,10 @@ require 'rails_helper'
 describe WorkIndexer do
   let(:work) { create(:work, :with_complete_metadata) }
 
-  let(:no_members) { create(:public_work).tap { |w| work.update(members: [], published: false) } }
+  # We try to prevent this case from existing with validation, but we test anyway.
+  let(:no_members) do
+    build(:public_work, members: [], representative: nil).tap {|w| w.save!(validate: false) }
+  end
 
   it "indexes" do
     output_hash = WorkIndexer.new.map_record(work)
@@ -177,22 +180,22 @@ describe WorkIndexer do
         :asset,
         transcription: "transc_#{page}",
         english_translation: "transl_#{page}",
-        position: page,
-        published: true
+        position: page
         ) }
     end
     let(:english_only) do
-      create(:public_work, language: ['en']).tap {|w| w.update(members: w.members + assets)}
+      create(:public_work, language: ['en'], members: assets )
     end
     let(:bilingual) do
-      create(:public_work, language: ['en', 'de']).tap {|w| w.update(members: w.members + assets)}
+      create(:public_work, language: ['en', 'de'], members: assets)
     end
     let(:german_only) do
-      create(:public_work, language: ['de']).tap {|w| w.update(members: w.members + assets)}
+      create(:public_work, language: ['de'], members: assets )
     end
-  
+
+    # We try to prevent this case from existing with validation, but we test anyway
     let(:nil_members) do
-      create(:work, members: [])
+      build(:public_work, members: [], representative: nil).tap {|w| w.save!(validate: false) }
     end
 
     before do

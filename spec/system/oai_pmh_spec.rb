@@ -77,4 +77,33 @@ RSpec.feature "OAI-PMH feed", js: false do
       expect(page.status_code).to eq 200
     end
   end
+
+  # While we try to keep this from happening at all via validation, let's still test
+  # it just as an extra failsafe, we don't want our OAI-PMH feed bombing.
+  describe "work with no representative" do
+    let!(:work_with_no_representative) { build(:work, :published, :with_complete_metadata, title: "no representative", members: [], representative: nil).tap {|w| w.save!(validate: false)} }
+
+    it "renders" do
+      visit(oai_provider_path(verb: "ListRecords", metadataPrefix: "oai_dc"))
+
+      expect(page.status_code).to eq 200
+
+      # parse strict, so we get an exception if it's not well-formed XML
+      xml = Nokogiri::XML(page.body) { |config| config.strict }
+
+      # validate XSD
+      schema = Nokogiri::XML::Schema(File.read(oai_pmh_xsd_path))
+      errors = schema.validate(xml)
+      expect(errors.count == 0)
+
+      records = xml.xpath("//oai:record", oai: "http://www.openarchives.org/OAI/2.0/")
+      expect(records.count).to eq (1)
+
+      record = records.first
+
+      # no image so no edm:object or edm:preview tags, that have thumbs/images
+      expect(record.xpath("//edm:object", edm: "http://www.europeana.eu/schemas/edm/")).not_to be_present
+      expect(record.xpath("//edm:preview", edm: "http://www.europeana.eu/schemas/edm/")).not_to be_present
+    end
+  end
 end
