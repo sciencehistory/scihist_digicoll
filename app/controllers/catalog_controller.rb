@@ -208,8 +208,6 @@ class CatalogController < ApplicationController
       # Set maxAnalyzed Chars to two million? I dunno. Solr suggests if we
       # have things set up right, it ought to be able to handle very big, unclear.
       "hl.maxAnalyzedChars" => "2000000",
-      "hl.offsetSource" => "postings",
-      #
       "hl.bs.type" => "WORD",
       "hl.fragsize" => "140",
       "hl.fragsizeIsMinimum" => "true"
