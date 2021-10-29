@@ -190,8 +190,8 @@ class CatalogController < ApplicationController
     ## Default parameters to send to solr for all search-like requests. See also SearchBuilder#processed_parameters
     config.default_solr_params = {
       rows: 25,
-      qf: "text1_tesim^1000 text2_tesim^500 text3_tesim^100 text4_tesim^50 text_no_boost_tesim^10 friendlier_id_ssi id^10 searchable_fulltext^0.5 searchable_fulltext_language_agnostic^0.5",
-      pf: "text1_tesim^1500 text2_tesim^1200 text3_tesim^600 text4_tesim^120 text_no_boost_tesim^55 friendlier_id_ssi id^55 searchable_fulltext^12 searchable_fulltext_language_agnostic^12",
+      qf: "text1_tesim^1000 text2_tesim^500 text3_tesim^100 text4_tesim^50 description_text4_tesim^50 text_no_boost_tesim^10 friendlier_id_ssi id^10 searchable_fulltext^0.5 searchable_fulltext_language_agnostic^0.5",
+      pf: "text1_tesim^1500 text2_tesim^1200 text3_tesim^600 text4_tesim^120 description_text4_tesim^120 text_no_boost_tesim^55 friendlier_id_ssi id^55 searchable_fulltext^12 searchable_fulltext_language_agnostic^12",
 
 
       # HIGHLIGHTING-related params, full snippets from fulltext matches
@@ -200,16 +200,14 @@ class CatalogController < ApplicationController
       #
       "hl" => "true",
       "hl.method" => "unified",
-      "hl.fl" => "searchable_fulltext searchable_fulltext_language_agnostic",
+      "hl.fl" => SearchResult::BaseComponent::HIGHLIGHT_SOLR_FIELDS.join(" "),
       "hl.usePhraseHighlighter" => "true",
-      "hl.snippets" => 3,
+      "hl.snippets" => SearchResult::BaseComponent::MAX_HIGHLIGHT_SNIPPETS,
       "hl.encoder" => "html",
       # Biggest current transcript seems to be OH0624 with 817,139 chars.
       # Set maxAnalyzed Chars to two million? I dunno. Solr suggests if we
       # have things set up right, it ought to be able to handle very big, unclear.
       "hl.maxAnalyzedChars" => "2000000",
-      "hl.offsetSource" => "postings",
-      #
       "hl.bs.type" => "WORD",
       "hl.fragsize" => "140",
       "hl.fragsizeIsMinimum" => "true"
