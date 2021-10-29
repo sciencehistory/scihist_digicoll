@@ -3,6 +3,7 @@ FactoryBot.define do
     title { 'Test title' }
     description { "Test collection description" }
     related_url { ["http://example.com"] }
+    department { "Archives" }
     published { true }
   end
 end

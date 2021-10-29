@@ -5,6 +5,7 @@ RSpec.describe "New Collection form", :logged_in_user, type: :system, js: true, 
     visit new_admin_collection_path
 
     fill_in "collection[title]", with: "New collection title"
+    select "Archives", :from => "collection[department]"
     fill_in "collection[description]", with: "New collection desc with <script>bad tag</script> and <b>bold</b>"
     fill_in "collection[related_url_attributes][]", with: "http://example.org"
 
@@ -34,6 +35,7 @@ RSpec.describe "New Collection form", :logged_in_user, type: :system, js: true, 
 
     fill_in "collection[description]", with: "entered description"
     fill_in "collection[related_url_attributes][]", with: "http://example.org"
+    select "Archives", :from => "collection[department]"
 
     # the hidden file input used by uppy, we can target directly...
     add_file_via_uppy_dashboard input_name: "files[]", file_path: (Rails.root + "spec/test_support/images/30x30.png").to_s
