@@ -9,7 +9,7 @@ class CollectionIndexer < Kithe::Indexer
 
     to_field "text1_tesim", obj_extract("title")
 
-    to_field "text4_tesim", obj_extract("description")
+    to_field "text4_tesim", obj_extract("description"), transform(->(val) { ActionView::Base.full_sanitizer.sanitize(val) })
 
     to_field "text_no_boost_tesim", obj_extract("related_url")
 
