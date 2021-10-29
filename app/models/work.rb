@@ -39,7 +39,7 @@ class Work < Kithe::Work
     work.validates_presence_of :department
     work.validates_presence_of :rights
   end
-  validate :has_published_representative, if: :published?
+
 
   attr_json :additional_title, :string, array: true, default: -> { [] }
   attr_json :external_id, Work::ExternalId.to_type, array: true, default: -> { [] }
@@ -214,16 +214,4 @@ class Work < Kithe::Work
   def is_oral_history?
     genre && genre.include?("Oral histories")
   end
-
-
-  private
-
-  # this just ensures the representative of a published work
-  # is published as well as present
-  def has_published_representative
-    unless representative&.published?
-      errors.add(:representative, "needs to be published for published works.")
-    end
-  end
-
 end

@@ -413,7 +413,8 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       context "work missing required fields for publication" do
         render_views
 
-        let(:work) { create(:private_work, rights: nil, format: nil, genre: nil, department: nil, date_of_work: nil) }
+        let(:representative) {  build(:asset_with_faked_file, published: true)}
+        let(:work) { create(:private_work, rights: nil, format: nil, genre: nil, department: nil, date_of_work: nil, members: [representative], representative: representative)}
 
         it "can not publish, displaying proper error and work form" do
           put :publish, params: { id: work.friendlier_id, cascade: 'true' }

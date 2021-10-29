@@ -12,7 +12,7 @@ class Admin::WorksController < AdminController
            :remove_searchable_transcript_source, :create_combined_audio_derivatives, :update_oh_available_by_request,
            :update_oral_history_content]
   before_action :prevent_deleting_parent_representative, only: [:destroy]
-
+  
   # GET /admin/works
   # GET /admin/works.json
   def index
@@ -220,6 +220,8 @@ class Admin::WorksController < AdminController
   # recursive CTE so it'll be efficient-ish.
   def publish
     authorize! :publish, @work
+    return unless check_for_representative
+
     @work.class.transaction do
       @work.update!(published: true)
       if params[:cascade] == 'true'
@@ -251,6 +253,7 @@ class Admin::WorksController < AdminController
   # recursive CTE so it'll be efficient-ish.
   def unpublish
     authorize! :publish, @work
+    return unless check_for_parent_representative
     @work.class.transaction do
       @work.update!(published: false)
       if params[:cascade] == 'true'
@@ -463,6 +466,7 @@ class Admin::WorksController < AdminController
       end
     end
 
+
     # only allow whitelisted params through (TODO, we're allowing all work params!)
     # Plus sanitization or any other mutation.
     #
@@ -577,5 +581,33 @@ class Admin::WorksController < AdminController
     end
     helper_method :cancel_url
 
+    def check_for_representative
+      if @work.representative.nil?
+        @work.errors.add(:base, "Can't publish '#{@work.title}': choose a published representative first.")
+      elsif !@work.representative.published?
+        @work.errors.add(:base, "Can't publish '#{@work.title}': publish its representative #{@work.representative.title} first.")
+      end
+      return true unless @work.errors.count > 0
+      respond_to do |format|
+        format.html { render :edit }
+        format.json { render json: @work.errors, status: :unprocessable_entity }
+      end
+      return false
+    end
 
+    def check_for_parent_representative
+      parent = @work.parent
+      return true if parent.nil?
+      puts parent.title
+
+      if parent.representative == @work && parent.published?
+        @work.errors.add(:base, "Can't unpublish '#{@work.title}': '#{parent.title}' is published and would be left without a representative. Unpublish '#{parent.title}' first.")
+      end
+      return true unless @work.errors.count > 0
+      respond_to do |format|
+        format.html { render :edit }
+        format.json { render json: @work.errors, status: :unprocessable_entity }
+      end
+      return false
+    end
 end
