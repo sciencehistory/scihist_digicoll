@@ -17,7 +17,7 @@ class Admin::AssetsController < AdminController
   # PATCH/PUT /works/1.json
   def update
     @asset = Asset.find_by_friendlier_id!(params[:id])
-
+    return unless parent_has_other_published_representative
     respond_to do |format|
       if @asset.update(asset_params)
         format.html { redirect_to admin_asset_url(@asset), notice: 'Asset was successfully updated.' }
@@ -143,7 +143,22 @@ class Admin::AssetsController < AdminController
       :transcription, :english_translation,
       :role, {admin_note_attributes: []}]
     allowed_params << :published if can?(:publish, @asset)
-
     asset_params = params.require(:asset).permit(*allowed_params)
+  end
+
+  # Prevent user from unpublishing an asset if it's the representative
+  # of a published parent.
+  def parent_has_other_published_representative
+    return true unless params['asset']['published'] == "0"
+    work = @asset.parent
+    return true if work.nil?
+    return true if (!work.published?)
+    return true if work.representative != @asset
+    @asset.errors.add(:base,  "Could not unpublish asset '#{@asset.title}'. Its parent is published and this is its representative. Unpublish the parent first.")
+    respond_to do |format|
+      format.html { render :edit }
+      format.json { render json: @asset.errors, status: :unprocessable_entity }
+    end
+    return false
   end
 end

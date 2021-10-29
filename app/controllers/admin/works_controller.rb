@@ -221,6 +221,9 @@ class Admin::WorksController < AdminController
   def publish
     authorize! :publish, @work
     return unless check_for_representative
+    if params[:cascade] != 'true'
+      return unless check_for_published_representative
+    end
 
     @work.class.transaction do
       @work.update!(published: true)
@@ -252,8 +255,8 @@ class Admin::WorksController < AdminController
   # fetches all children so rails callbacks will be called, but uses postgres
   # recursive CTE so it'll be efficient-ish.
   def unpublish
-    authorize! :publish, @work
-    return unless check_for_parent_representative
+    authorize! :publish, @work    
+    return unless check_for_parent_representative(:unpublish)
     @work.class.transaction do
       @work.update!(published: false)
       if params[:cascade] == 'true'
@@ -262,7 +265,6 @@ class Admin::WorksController < AdminController
         end
       end
     end
-
     redirect_to admin_work_url(@work)
   end
 
@@ -270,6 +272,7 @@ class Admin::WorksController < AdminController
   # DELETE /works/1.json
   def destroy
     authorize! :destroy, @work
+    return unless check_for_parent_representative(:destroy)
     @work.destroy
     respond_to do |format|
       format.html { redirect_to cancel_url, notice: "Work '#{@work.title}' was successfully destroyed." }
@@ -366,7 +369,7 @@ class Admin::WorksController < AdminController
     @work = Admin::BatchUpdateWorkForm.new(work_params)
 
     unless @work.update_works(current_user.works_in_cart.find_each)
-      # the form is based on @work, so re-rendered will show errors
+      # the form is based on @work, so re-rendered ill show errors
       render :batch_update_form
       return
     end
@@ -582,12 +585,8 @@ class Admin::WorksController < AdminController
     helper_method :cancel_url
 
     def check_for_representative
-      if @work.representative.nil?
-        @work.errors.add(:base, "Can't publish '#{@work.title}': choose a published representative first.")
-      elsif !@work.representative.published?
-        @work.errors.add(:base, "Can't publish '#{@work.title}': publish its representative #{@work.representative.title} first.")
-      end
-      return true unless @work.errors.count > 0
+      return true if @work.representative.present?
+      @work.errors.add(:base, "Can't publish '#{@work.title}': choose a published representative first.")
       respond_to do |format|
         format.html { render :edit }
         format.json { render json: @work.errors, status: :unprocessable_entity }
@@ -595,19 +594,27 @@ class Admin::WorksController < AdminController
       return false
     end
 
-    def check_for_parent_representative
-      parent = @work.parent
-      return true if parent.nil?
-      puts parent.title
-
-      if parent.representative == @work && parent.published?
-        @work.errors.add(:base, "Can't unpublish '#{@work.title}': '#{parent.title}' is published and would be left without a representative. Unpublish '#{parent.title}' first.")
-      end
-      return true unless @work.errors.count > 0
+    def check_for_published_representative
+      return true if @work.representative.published?
+      @work.errors.add(:base, "Can't publish '#{@work.title}': publish its representative #{@work.representative.title} first.")
       respond_to do |format|
         format.html { render :edit }
         format.json { render json: @work.errors, status: :unprocessable_entity }
       end
+      return false
+    end
+
+    def check_for_parent_representative(calling_method)
+      parent = @work.parent
+      return true if parent.nil?
+      if (parent.representative == @work) && parent.published?
+      end
+      if calling_method == :unpublish
+        msg = "Can't unpublish '#{@work.title}'"
+      else
+        msg = "Can't delete '#{@work.title}'"
+      end
+      redirect_to admin_work_path(@work), alert:  "#{msg}: '#{parent.title}' is published and would be left without a representative. Unpublish '#{parent.title}' first."  
       return false
     end
 end
