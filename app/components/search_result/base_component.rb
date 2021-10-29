@@ -4,6 +4,11 @@ module SearchResult
   # Meant to be an abstract superclass, which holds the view template .html.erb too. Not meant to be
   # used directly, sub-classes are expected to implement some methods used by the view template.
   class BaseComponent < ApplicationComponent
+    # note order matters here! The fields listed first will listed first in snippet, and preferred
+    # as far as first MAX_HIGHLIGHT_SNIPPETS included only.
+    HIGHLIGHT_SOLR_FIELDS = ["searchable_fulltext", "searchable_fulltext_language_agnostic", "description_text4_tesim"]
+    MAX_HIGHLIGHT_SNIPPETS = 3
+
     attr_reader :model, :child_counter, :cart_presence, :solr_document
 
     delegate :current_user, :publication_badge, :search_on_facet_path, to: :helpers
@@ -25,7 +30,7 @@ module SearchResult
     # and end either way. html_safe string is returned, with the <em> tags around highlights.
     def search_highlights
       @search_highlights ||= begin
-        highlights = get_highlights("searchable_fulltext") + get_highlights("searchable_fulltext_language_agnostic")
+        highlights = HIGHLIGHT_SOLR_FIELDS.collect {|field| get_highlights(field) }.flatten.slice(0, MAX_HIGHLIGHT_SNIPPETS)
         if highlights.present?
           "…".html_safe + safe_join(highlights, " …") + "…".html_safe
         else
