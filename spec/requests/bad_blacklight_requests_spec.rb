@@ -29,6 +29,15 @@ describe CatalogController do
     end
   end
 
+  # This was another one used as some kind of attempt at injection attack, which
+  # was causing a Solr 4xx
+  describe "weird attack in range value" do
+    it "responds with 400" do
+      get "/catalog?range%5Byear_facet_isim%5D%5Bbegin%5D=1989%27,(;))%23-%20--&range%5Byear_facet_isim%5D%5Bend%5D=1989%27,(;))%23-%20--"
+      expect(response.code).to eq("400")
+    end
+  end
+
   # Missing facet ID, e.g.
   #    /collections/gt54kn818/facet
   # https://app.honeybadger.io/projects/58989/faults/80390739
