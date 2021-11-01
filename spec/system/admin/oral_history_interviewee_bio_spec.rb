@@ -1,6 +1,6 @@
 require 'rails_helper'
 RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :system, queue_adapter: :test  do
-  let(:work) { create(:oral_history_work, published: true) }
+  let(:work) { create(:oral_history_work, :published) }
 
   it "can add an Interviewee Biography" do
     visit admin_interviewee_biographies_path
