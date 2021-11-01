@@ -22,7 +22,7 @@ describe "Collection list page", type: :system, js: false do
 
   it "shows published items, doesn't show others." do
     visit collections_path
-    expect(page).to have_selector("h1", text: 'All Collections')
+    expect(page).to have_selector("h1", text: 'Collections')
     expect(page).to have_selector(".collection-title", text: 'A Published')
     expect(page).to have_selector(".collection-title", text: 'B Published')
     expect(page).not_to have_content('Private')

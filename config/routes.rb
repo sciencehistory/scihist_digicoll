@@ -86,7 +86,10 @@ Rails.application.routes.draw do
   get '/works/:id/viewer/:viewer_member_id(.:format)' => 'works#show', as: :viewer
 
 
-  get '/collections', to: "collections_list#index", as: :collections
+  # note /filter says we might have a filter, otherwise an ID comes next from
+  # another route.
+  get '/collections(/filter/:department_filter)', to: "collections_list#index", as: :collections,
+    constraints: { department_filter: Regexp.union(CollectionsListController::DEPARTMENT_FILTERS.keys)}
 
   # Our collections show controller provides a Blacklight search, so needs
   # some additional routes for various search behaviors too.
