@@ -1,5 +1,22 @@
 <div class="collections-index">
-    <h1 class="collections-index-title brand-alt-h1">All Collections</h1>
+    <h1 class="collections-index-title brand-alt-h1">Collections</h1>
+
+    <nav aria-label="collection type filter">
+        <ul class="nav nav-pills flex-column flex-md-row mb-5 justify-content-center">
+          <li class="nav-item">
+            <%= link_to "All", collections_path,
+                    class: ["nav-link", ("active disabled" if current_page?(collections_path, check_parameters: true))] %>
+          </li>
+
+          <% CollectionsListController::DEPARTMENT_FILTERS.each_pair do |param, label| %>
+              <li class="nav-item">
+                <%= link_to label, collections_path(department_filter: param),
+                        class: ["nav-link", ("active disabled" if current_page?(collections_path(department_filter: param)))] %>
+              </li>
+          <% end %>
+        </ul>
+    </nav>
+
     <div class="collections-index-list">
         <% @collections.each do |col| %>
             <div class="collection">
