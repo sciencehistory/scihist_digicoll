@@ -12,15 +12,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
 
   context "When you visit an OH with protected by request, automatic delivery assets" do
     let!(:work) do
-      create(:oral_history_work, published: true).tap do |work|
-        work.members << preview_pdf
-        work.members << protected_pdf
-        work.members << protected_mp3
-        work.members << portrait
-
-        work.representative =  preview_pdf
-        work.save!
-
+      build(:oral_history_work, :published, members: [preview_pdf, protected_pdf, protected_mp3, portrait], representative: preview_pdf).tap do |work|
         work.oral_history_content!.update(available_by_request_mode: :automatic)
       end
     end
@@ -95,14 +87,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
 
   context "When you visit an OH with protected by request, approved delivery assets" do
     let!(:work) do
-      create(:oral_history_work, published: true).tap do |work|
-        work.members << preview_pdf
-        work.members << protected_pdf
-        work.members << protected_mp3
-
-        work.representative =  preview_pdf
-        work.save!
-
+      build(:oral_history_work, :published, members: [preview_pdf, protected_pdf, protected_mp3], representative: preview_pdf).tap do |work|
         work.oral_history_content!.update(available_by_request_mode: :manual_review)
       end
     end
@@ -144,7 +129,6 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       expect(new_req.intended_use).to eq "Fun & games"
       expect(new_req.delivery_status_pending?).to be(true)
 
-      # expect(page).to have_text("Your request has been logged.")
 
       expect(ActionMailer::MailDeliveryJob).to have_been_enqueued
     end

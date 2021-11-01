@@ -78,9 +78,8 @@ RSpec.feature "OAI-PMH feed", js: false do
     end
   end
 
-  # should not create an error, as long as it's possible in DB
   describe "work with no representative" do
-    let!(:work_with_no_representative) { create(:work, :with_complete_metadata, title: "no representative", published: true) }
+    let!(:work_with_no_representative) { create(:work, :published, :with_complete_metadata, title: "no representative", members: [], representative: nil) }
 
     it "renders" do
       visit(oai_provider_path(verb: "ListRecords", metadataPrefix: "oai_dc"))

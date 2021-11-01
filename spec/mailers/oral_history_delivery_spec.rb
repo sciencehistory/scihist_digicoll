@@ -2,23 +2,26 @@ require "rails_helper"
 
 RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
   describe "Sends out the items" do
+    let(:representative) do
+      create(:asset_with_faked_file, :pdf, published: true, title: "Preview PDF", position: 1) 
+    end
+    
     let(:members) do
       [
+        representative,
         create(:asset_with_faked_file, :mp3, published: false,
-          oh_available_by_request: true, title: "Protected mp3", position: 0),
+          oh_available_by_request: true, title: "Protected mp3", position: 2),
         create(:asset_with_faked_file, :pdf, published: false,
-          oh_available_by_request: true,  title: "Protected PDF", position: 1),
-        create(:asset_with_faked_file, :pdf, published: true,
-          title: "Preview PDF", position: 2),
+          oh_available_by_request: true,  title: "Protected PDF", position: 3),
         create(:asset_with_faked_file, :pdf, published: false,
-          title: "We will get sued if you send this out.", position: 3)
+          title: "We will get sued if you send this out.", position: 4)
       ]
     end
 
     let!(:work) do
-      create(:oral_history_work, published: true).tap do |work|
+      create(:oral_history_work, :published).tap do |work|
         work.members = members
-        work.representative =  members[2]
+        work.representative =  representative
         work.save!
         work.oral_history_content!.update(available_by_request_mode: :automatic)
       end
