@@ -15,50 +15,45 @@ $collection-index-box-margin: 17px;
     font-variant-numeric: lining-nums;
   }
 
+  // this is meant to look like search results, although we end up using
+  // different styles becuase our CSS is a bit out of control.
   .collections-index-list {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: -1 * $collection-index-box-margin; /* negate flex-item margins on outer border */
-    margin-bottom: $collection-index-box-margin;
-
     .collection {
-      position: relative;
-      width: $collection-index-box-width;
-      height: $collection-index-box-height;
-      margin: $collection-index-box-margin;
-
-      @include all-white-links;
-
-      .collection-title-wrapper {
-        /* overlay on image */
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 75px;
-        background-color: $dark;
-        padding: 10px;
-
-        .collection-title {
-          text-align: center;
-          line-height: 1.3; // try to fit three lines in space we have
+      @media (min-width: breakpoint-min('sm')) {
+        display: flex;
+        .members-count {
+          text-align: right;
         }
       }
 
-      p {
-        line-height: normal;
-      }
-    }
+      justify-content: center;
+      margin-bottom: 2.8125rem;
 
-    /* A 0-height box that spaces out columns to left-align items in
-       last column */
-    .collection-spacer {
-      visibility: hidden;
-      width: $collection-index-box-width;
-      height: 0;
-      margin: 0 $collection-index-box-margin;
+      .collection-thumb {
+        order: 1;
+        flex-shrink: 0;
+        flex-grow: 0;
+        margin-right: 2rem;
+        margin-bottom: 2rem;
+      }
+      .collection-thumb-img {
+        display: block;
+        width: $standard-thumb-width; //$collection-index-box-width;
+        height: $standard-thumb-width; //$collection-index-box-height;
+      }
+      .members-count {
+        @extend %special-label;
+        margin-top: .25rem;
+      }
+      .collection-desc {
+        order: 2;
+        width: $max-readable-width;
+        flex-shrink: 2;
+        .collection-title  {
+          @include font-size($h3-font-size);
+          a { color: $brand-dark-blue; }
+        }
+      }
     }
   }
 }

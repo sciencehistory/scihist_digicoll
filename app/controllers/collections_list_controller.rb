@@ -11,5 +11,7 @@ class CollectionsListController < ApplicationController
     if params[:department_filter]
       @collections = @collections.where("json_attributes ->> 'department' = ?", DEPARTMENT_FILTERS[params[:department_filter]])
     end
+
+    @child_count_display_fetcher = ChildCountDisplayFetcher.new(@collections.collect(&:friendlier_id))
   end
 end
