@@ -6,8 +6,8 @@ $collection-index-box-margin: 17px;
 
   .collections-index-title {
     text-align: center;
-    margin-top: 48px;
-    margin-bottom: 43px;
+    @extend .mt-3;
+    @extend .mb-3;
   }
 
   .show-item-count {
