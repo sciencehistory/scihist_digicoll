@@ -48,8 +48,8 @@ describe OralHistory::TranscriptComponent, type: :component do
     render_inline ohms_transcript_display_with_footnotes
 
     expect(ohms_xml_with_footnotes.footnote_array.count).to eq 0
-    expect { ohms_transcript_display_with_footnotes.footnote_html(1) }.not_to raise_error
-    expect { ohms_transcript_display_with_footnotes.footnote_html(42) }.not_to raise_error
+    expect { ohms_transcript_display_with_footnotes.footnote_text_for(1) }.not_to raise_error
+    expect { ohms_transcript_display_with_footnotes.footnote_text_for(42) }.not_to raise_error
   end
 
   it "Correctly handles several footnotes on one line -- and footnotes with spaces around the integer" do
