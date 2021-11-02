@@ -556,11 +556,11 @@ class Admin::WorksController < AdminController
 
     def cancel_url
       if @work && @work.parent
-        return admin_work_path(@work.parent, anchor: "admin-nav")
+        return admin_work_path(@work.parent)
       end
 
       if @work && @work.persisted?
-        return admin_work_path(@work, anchor: "admin-nav")
+        return admin_work_path(@work)
       end
 
       admin_works_path
