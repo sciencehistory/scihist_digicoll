@@ -37,10 +37,6 @@ describe OralHistory::TranscriptComponent, type: :component do
 
     expect(parsed.css(".footnote").count).to eq 2
 
-    f_array = ohms_xml_with_footnotes.footnote_array
-    expect(f_array [0]).to eq "William E. Hanford (to E.I. DuPont de Nemours & Co.), \"Polyamides,\" U.S. Patent 2,281,576, issued 5 May 1942."
-    expect(f_array [1]).to eq "Howard N. and Lucille L. Sloane, A Pictorial History of American Mining: The adventure and drama of finding and extracting nature's wealth from the earth, from pre-Columbian times to the present (New York: Crown Publishers, Inc., 1970)."
-
     # Footnotes themselves are HTML-escaped
     first_footnote = ohms_transcript_display_with_footnotes.footnote_html(1)
     expect(first_footnote).to match /Nemours/
