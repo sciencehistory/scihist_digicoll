@@ -36,12 +36,6 @@ describe OralHistory::TranscriptComponent, type: :component do
     expect(line_with_first_footnote).to include "[1]"
 
     expect(parsed.css(".footnote").count).to eq 2
-
-    # Footnotes themselves are HTML-escaped
-    first_footnote = ohms_transcript_display_with_footnotes.footnote_html(1)
-    expect(first_footnote).to match /Nemours/
-    expect(first_footnote).to include "&quot;Polyamides,&quot;"
-    expect(first_footnote).to include "[1]"
   end
 
   # Footnotes and footnote references are expected
@@ -56,17 +50,6 @@ describe OralHistory::TranscriptComponent, type: :component do
     expect(ohms_xml_with_footnotes.footnote_array.count).to eq 0
     expect { ohms_transcript_display_with_footnotes.footnote_html(1) }.not_to raise_error
     expect { ohms_transcript_display_with_footnotes.footnote_html(42) }.not_to raise_error
-  end
-
-  it "HTML in footnotes is escaped" do
-    bad_chars = [ "The mathematician's \"daughter\" proved that x > 4." ]
-    allow(ohms_xml_with_footnotes).to receive(:footnote_array).and_return(bad_chars)
-
-    render_inline ohms_transcript_display_with_footnotes
-
-    resulting_footnote = ohms_transcript_display_with_footnotes.footnote_html(1)
-
-    expect(resulting_footnote).to include 'The mathematician&#39;s &quot;daughter&quot; proved that x &gt; 4.'
   end
 
   it "Correctly handles several footnotes on one line -- and footnotes with spaces around the integer" do
