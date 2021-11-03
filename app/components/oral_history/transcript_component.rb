@@ -98,17 +98,17 @@ module OralHistory
         ])
       end
 
-      # replace each footnote reference [[footnote]]12[[/footnote]] with proper HTML
+      # replace each footnote reference [[footnote]]12[[/footnote]] with proper HTML,
+      # with a capture around the actual footnote number. eg `[[footnote]]3[[/footnote]]`
+      footnote_reference_regexp = %r{\[\[footnote\]\] *(\d+?) *\[\[\/footnote\]\]}
 
-      # Use this to scan the line for any footnotes (there can be more than 1)
-      scan_line_for_footnotes_re =  %r{\[\[footnote\]\] *\d+? *\[\[\/footnote\]\]}
-      # Use this to separate out the actual footnote number
-      footnote_number_re = %r{\[\[footnote\]\] *(\d+?) *\[\[\/footnote\]\]}
-
-      # ohms_line_str needs to be marked as html_safe, as it contains HTML chars.
-      # We have hopefully taken care of HTML escaping safety ourselves.
-      ohms_line_str = ohms_line_str.gsub(scan_line_for_footnotes_re) do |match_to_replace|
-        footnote_number = match_to_replace.match(footnote_number_re)[1]
+      # ohms_line_str needs to be marked as html_safe, as it contains intended HTML,
+      # and already was -- but the gsub will remove the html_safe marker.
+      # We have hopefully taken care of HTML escaping safety ourselves!
+      ohms_line_str = ohms_line_str.gsub(footnote_reference_regexp) do |match_to_replace|
+        # have to re-match to get footnote number out, becuase of
+        # weirdness with gsub block form, sorry.
+        footnote_number = match_to_replace.match(footnote_reference_regexp)[1]
 
         render OralHistory::FootnoteReferenceComponent.new(
           footnote_text: footnote_text_for(footnote_number),
