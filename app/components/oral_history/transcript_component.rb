@@ -105,17 +105,16 @@ module OralHistory
       # Use this to separate out the actual footnote number
       footnote_number_re = %r{\[\[footnote\]\] *(\d+?) *\[\[\/footnote\]\]}
 
-      ohms_line_str.scan(scan_line_for_footnotes_re).each do |match_to_replace|
+      # ohms_line_str needs to be marked as html_safe, as it contains HTML chars.
+      # We have hopefully taken care of HTML escaping safety ourselves.
+      ohms_line_str = ohms_line_str.gsub(scan_line_for_footnotes_re) do |match_to_replace|
         footnote_number = match_to_replace.match(footnote_number_re)[1]
 
-        replacement = render OralHistory::FootnoteReferenceComponent.new(
+        render OralHistory::FootnoteReferenceComponent.new(
           footnote_text: footnote_text_for(footnote_number),
           number: footnote_number
         )
-
-        # ohms_line_str needs to be marked as html_safe, as it contains HTML chars.
-        ohms_line_str = ohms_line_str.sub(match_to_replace, replacement).html_safe()
-      end
+      end.html_safe
 
       # If there are any timecodes associated with#
       # this line, pick one to show.
