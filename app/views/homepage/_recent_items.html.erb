@@ -4,17 +4,18 @@
   </div>
   <div class="row recent-items-list no-gutters">
       <% RecentItems.new.recent_items.each do |work| %>
-        <div class="recent-item" data-toggle="tooltip" title="<%= work.title %>" >
-
-          <%= link_to work_path(work.friendlier_id) do %>
-            <%= render ThumbComponent.new(
-              work.leaf_representative,
-              thumb_size: :standard,
-              alt_text_override: "#{work.title}")
-            %>
+          <%= link_to work_path(work.friendlier_id), class: "recent-item" do %>
+            <div class="image-wrapper">
+              <%= render ThumbComponent.new(
+                work.leaf_representative,
+                thumb_size: :standard,
+                alt_text_override: "#{work.title}")
+              %>
+            </div>
+            <div class="recent-title">
+              <%= truncate(work.title, length: 130) %>
+            </div>
           <%end%>
-
-        </div>
       <%end%>
   </div>
 </div>
