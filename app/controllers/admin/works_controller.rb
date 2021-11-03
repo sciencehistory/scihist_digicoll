@@ -11,7 +11,8 @@ class Admin::WorksController < AdminController
            :remove_ohms_xml, :submit_searchable_transcript_source, :download_searchable_transcript_source,
            :remove_searchable_transcript_source, :create_combined_audio_derivatives, :update_oh_available_by_request,
            :update_oral_history_content]
-
+  before_action :prevent_deleting_parent_representative, only: [:destroy]
+  
   # GET /admin/works
   # GET /admin/works.json
   def index
@@ -219,6 +220,17 @@ class Admin::WorksController < AdminController
   # recursive CTE so it'll be efficient-ish.
   def publish
     authorize! :publish, @work
+    
+    if @work.representative.nil?
+      prevent_publication_because_no_representative && return
+    end
+    
+    # If you only want to publish the work and not its members,
+    # make sure it already has a published representative
+    if params[:cascade] != 'true' && !@work.representative.published?
+      prevent_publication_because_no_published_representative && return
+    end
+
     @work.class.transaction do
       @work.update!(published: true)
       if params[:cascade] == 'true'
@@ -250,6 +262,10 @@ class Admin::WorksController < AdminController
   # recursive CTE so it'll be efficient-ish.
   def unpublish
     authorize! :publish, @work
+    if would_remove_representative?(@work.parent)
+      render_refused_remove_representative("Can't unpublish '#{@work.title}'") && return
+    end
+
     @work.class.transaction do
       @work.update!(published: false)
       if params[:cascade] == 'true'
@@ -258,7 +274,6 @@ class Admin::WorksController < AdminController
         end
       end
     end
-
     redirect_to admin_work_url(@work)
   end
 
@@ -266,7 +281,9 @@ class Admin::WorksController < AdminController
   # DELETE /works/1.json
   def destroy
     authorize! :destroy, @work
-
+    if would_remove_representative?(@work.parent)
+      render_refused_remove_representative("Can't delete '#{@work.title}'") && return
+    end
     @work.destroy
     respond_to do |format|
       format.html { redirect_to cancel_url, notice: "Work '#{@work.title}' was successfully destroyed." }
@@ -453,6 +470,17 @@ class Admin::WorksController < AdminController
       @work = Work.includes(:leaf_representative).find_by_friendlier_id!(params[:id])
     end
 
+    def prevent_deleting_parent_representative
+      if @work.parent.present? && @work.parent.representative == @work && @work.parent.published?
+        respond_to do |format|
+          notice = "Could not destroy work '#{@work.title}'. '#{@work.parent.title}' is published and this is its representative."
+          format.html { redirect_to admin_work_path(@work.friendlier_id, anchor: "tab=nav-members"), notice: notice }
+          format.json { render json: { error: notice }, status: 422 }
+        end
+      end
+    end
+
+
     # only allow whitelisted params through (TODO, we're allowing all work params!)
     # Plus sanitization or any other mutation.
     #
@@ -567,5 +595,28 @@ class Admin::WorksController < AdminController
     end
     helper_method :cancel_url
 
+    def prevent_publication_because_no_representative
+      @work.errors.add(:base, "Can't publish '#{@work.title}': choose a published representative first.")
+      respond_to do |format|
+        format.html { render :edit }
+        format.json { render json: @work.errors, status: :unprocessable_entity }
+      end
+    end
+
+    def prevent_publication_because_no_published_representative
+      @work.errors.add(:base, "Can't publish '#{@work.title}': publish its representative #{@work.representative.title} first.")
+      respond_to do |format|
+        format.html { render :edit }
+        format.json { render json: @work.errors, status: :unprocessable_entity }
+      end
+    end
+
+    def would_remove_representative?(parent)
+      parent&.published? && parent.representative == @work
+    end
+
+    def render_refused_remove_representative(message)
+      redirect_to admin_work_path(@work), alert:  "#{message}: '#{parent.title}' is published and would be left without a representative. Unpublish '#{parent.title}' first."  
+    end
 
 end

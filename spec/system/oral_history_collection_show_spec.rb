@@ -12,14 +12,14 @@ describe "Collection show page", solr: true, indexable_callbacks: true do
         #
         # We will assign some that will show up on front page in counts
         #
-        create(:oral_history_work,
-          published: true, title: "public work one",
+        create(:oral_history_work, :published,
+          title: "public work one",
           date_of_work: Work::DateOfWork.new(start: "2019"),
           subject: ["Nobel Prize winners"],
           contained_by: [col])
 
-        create(:oral_history_work,
-          published: true, title: "public work two",
+        create(:oral_history_work, :published,
+          title: "public work two",
           date_of_work: Work::DateOfWork.new(start: "1900"),
           project: ["Nanotechnology"],
           contained_by: [col])
