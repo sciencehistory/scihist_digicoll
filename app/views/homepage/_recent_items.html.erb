@@ -2,19 +2,17 @@
   <h2 class="brand-alt-h2">Recently Added</h2>
 </div>
 <div class="row recent-items-list no-gutters">
-  <div class="recent-items-list-content">
     <% RecentItems.new.recent_items.each do |work| %>
       <div class="recent-item" data-toggle="tooltip" title="<%= work.title %>" >
-        <div class="recent-item-image-matte">
-          <%= link_to work_path(work.friendlier_id) do %>
-            <%= render ThumbComponent.new(
-              work.leaf_representative,
-              thumb_size: :standard,
-              alt_text_override: "#{work.title}")
-            %>
-          <%end%>
-        </div>
+
+        <%= link_to work_path(work.friendlier_id) do %>
+          <%= render ThumbComponent.new(
+            work.leaf_representative,
+            thumb_size: :standard,
+            alt_text_override: "#{work.title}")
+          %>
+        <%end%>
+
       </div>
     <%end%>
-  </div>
 </div>
