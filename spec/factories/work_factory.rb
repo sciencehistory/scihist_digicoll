@@ -13,12 +13,13 @@ FactoryBot.define do
     # Automatically set a representative if needed and possible
     after(:build) do |work|
       if work.representative.nil? && work.members.loaded?
-        work.representative = work.members.first
+        work.representative = work.members.to_a.find {|w| w.published? }
       end
     end
 
     trait :published do
       published { true }
+      members {  [ build(:asset_with_faked_file, published: true) ] } # published works need a representative now
       department { "Library" }
       rights { "http://creativecommons.org/publicdomain/mark/1.0/" }
       genre { ["Rare books"] }
@@ -214,18 +215,27 @@ FactoryBot.define do
         )
       }
 
+      # have to override published trait from parent factory, to make sure we still
+      # have genre Oral histories! And also let's have some a member list more suitable
+      # for oral history
+      trait :published do
+        published { true}
+        members { [ build(:asset_with_faked_file, :pdf, published: true) ] }
+        genre { ["Oral histories"] }
+      end
+
       trait :available_by_request do
         transient do
           available_by_request_mode { :manual_review }
         end
 
         members {[
-          build(:asset_with_faked_file, :pdf, published: true),
-          build(:asset_with_faked_file, :pdf, title: "audio_recording.mp3", published: false, oh_available_by_request: true),
-          build(:asset_with_faked_file, :mp3, title: "transcript.pdf", published: false, oh_available_by_request: true)
+          build(:asset_with_faked_file, :pdf, published: true, title: 'Front matter'),
+          build(:asset_with_faked_file, :mp3, title: "audio_recording.mp3", published: false, oh_available_by_request: true),
+          build(:asset_with_faked_file, :pdf, title: "transcript.pdf", published: false, oh_available_by_request: true)
         ]}
         after(:build) do |work, evaluator|
-          work.representative = work.members.to_a.find {|w| w.published? }
+          work.representative = work.members.to_a.find {|w| w.published? } if work.representative.nil?
           work.oral_history_content!.available_by_request_mode = evaluator.available_by_request_mode
         end
       end

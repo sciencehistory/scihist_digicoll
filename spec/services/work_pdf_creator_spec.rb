@@ -121,9 +121,9 @@ describe WorkZipCreator do
   end
 
   describe "with no available published images" do
-    let(:work) {
-      create(:public_work, members: [create(:asset_with_faked_file, published: false)])
-    }
+    let(:work) do
+      build(:public_work, members: [create(:asset_with_faked_file, published: false)])
+    end
 
     it "raises on create" do
       expect{

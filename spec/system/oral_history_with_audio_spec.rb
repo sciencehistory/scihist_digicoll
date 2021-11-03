@@ -5,9 +5,7 @@ describe "Oral history with audio display", type: :system, js: true do
   let(:portrait) { create(:asset_with_faked_file, role: "portrait")}
 
   let!(:parent_work) do
-    create(:oral_history_work, :ohms_xml, published: true).tap do |work|
-      work.members << portrait
-    end
+    create(:oral_history_work, :published, :ohms_xml, members: [portrait])
   end
 
   let(:audio_file_path) { Rails.root.join("spec/test_support/audio/5-seconds-of-silence.mp3")}
@@ -392,7 +390,7 @@ describe "Oral history with audio display", type: :system, js: true do
     let(:interviewer_profile) { InterviewerProfile.create(name: "Smith, John", profile: "This has some <i>html</i>")}
 
     let(:parent_work) {
-      create(:oral_history_work, rights: "http://creativecommons.org/publicdomain/mark/1.0/", published: true).tap do |work|
+      create(:oral_history_work, :published, rights: "http://creativecommons.org/publicdomain/mark/1.0/").tap do |work|
         work.oral_history_content!.update(ohms_xml_text: File.read(ohms_xml_path), interviewer_profiles: [interviewer_profile])
       end
     }
