@@ -94,22 +94,23 @@
         }
     }
 
+    .home-page-title-div {
+        padding-top: 0.9375rem;
+        padding-left: 0.9375rem;
+        h2 {
+            margin-bottom:0;
+        }
+    }
+
     $recent-items-box-width: 8.75rem;
     $recent-items-box-height: 8.75rem;
     $recent-items-box-margin: 1.875rem;
 
-    .recent-items-title_div {
-      padding-left: 0.9375rem;
-      padding-top: 0.9375rem;
-      background-color: $brand-light-grey;
-      margin-bottom: 0;
-      h2 {
-        margin-bottom:0;
-      }
+    .recent-items-wrapper {
+        background-color: $brand-light-grey;
     }
 
     .recent-items-list {
-        background-color: $brand-light-grey;
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
@@ -135,15 +136,6 @@
 
     .featured-topics-wrapper {
         background-color: $brand-dark-grey;
-    }
-
-    .featured-topics-title-div {
-        padding-top: 0.9375rem;
-        padding-left: 2.125rem;
-        background-color: $brand-dark-grey;
-        h2 {
-            margin-bottom:0;
-        }
     }
 
     .featured-topics-list {
