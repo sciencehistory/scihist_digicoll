@@ -102,31 +102,72 @@
         }
     }
 
-    $recent-items-box-width: 10rem;
-    $recent-items-box-margin: 1.6rem;
+    $recent-items-box-width: 10.5rem;
+    $recent-items-box-margin: 1.28rem;
 
     .recent-items-wrapper {
         background-color: $brand-light-grey;
     }
 
     .recent-items-list {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
-        padding-left: 0.9375rem;
-        padding-right: 0.9375rem;
-        padding-top: 0.9375rem;
-        padding-bottom: 1.875rem;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      padding-left: 0.9375rem;
+      padding-right: 0.9375rem;
+      padding-top: 0.9375rem;
+      padding-bottom: 1.875rem;
 
-        .recent-item {
-            width: $recent-items-box-width;
-            min-width: $recent-items-box-width;
-            max-height: 2.2 * $recent-items-box-width;
-            overflow: hidden; // cut images off at no more than such an above aspect ratio
-            margin: $recent-items-box-margin;
+      .recent-item {
+        display: block;
+        width: $recent-items-box-width;
+        margin: $recent-items-box-margin;
+
+        // cut images off at no more than a certain aspect ratio
+        .image-wrapper {
+          max-height: 2.2 * $recent-items-box-width;
+          overflow: hidden;
         }
+
+        // A title box below image, that only shows up on hover/focus!
+        .recent-title {
+          // absolute positioned so when it is visible, it'll be "above" ordinary page flow,
+          // like a tooltip.
+          position: absolute;
+          width: $recent-items-box-width;
+
+          // Hide in a way we can animate visibility.
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 0.2s, visibility 0.2s;
+
+          // Make it look like a bootstrap tooltip, copied
+          // from bootstrap tooltip implementation
+          // We have to adjust font-size by 1/1.2, because we
+          // don't actually want it to be scaled up!
+          @include reset-text();
+          @include font-size(($tooltip-font-size * 0.833));
+          padding: ($tooltip-padding-y * 0.833) ($tooltip-padding-x * 0.833);
+          color: $tooltip-color;
+          text-align: center;
+          background-color: $tooltip-bg;
+        }
+
+        // Enlarge the image on hover/focus, which also makes
+        // the title box show up
+        transition: transform .2s;
+        &:hover, &:focus {
+          transform: scale(1.2);
+
+          .recent-title {
+            opacity: 1;
+            visibility: visible;
+            @extend .shadow-lg;
+          }
+        }
+      }
     }
 
     $featured-topics-box-width: 18rem; // 21.875rem;
