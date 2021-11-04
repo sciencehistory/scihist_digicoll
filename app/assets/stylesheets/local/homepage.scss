@@ -94,74 +94,80 @@
         }
     }
 
-    $recent-items-box-width: 8.75rem;
-    $recent-items-box-height: 8.75rem;
-    $recent-items-box-margin: 1.875rem;
+    .home-page-title-div {
+        padding-top: 0.9375rem;
+        padding-left: 0.9375rem;
+        h2 {
+            margin-bottom:0;
+        }
+    }
 
-    .recent-items-title_div {
-      padding-left: 0.9375rem;
-      padding-top: 0.9375rem;
-      background-color: $brand-light-grey;
-      margin-bottom: 0;
-      h2 {
-        margin-bottom:0;
-      }
+    $recent-items-box-width: 10.5rem;
+    $recent-items-box-margin: 1.28rem;
+
+    .recent-items-wrapper {
+        background-color: $brand-light-grey;
     }
 
     .recent-items-list {
-        background-color: $brand-light-grey;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        padding-left: 0.9375rem;
-        padding-right: 0.9375rem;
-        padding-top: 0.9375rem;
-        padding-bottom: 1.875rem;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      padding-left: 0.9375rem;
+      padding-right: 0.9375rem;
+      padding-top: 0.9375rem;
+      padding-bottom: 1.875rem;
 
-        .recent-item {
-            float:left;
-            position: relative;
-            width: $recent-items-box-width;
-            min-width: $recent-items-box-width;
-            height: $recent-items-box-height;
-            margin: $recent-items-box-margin;
-            overflow: hidden;
-            margin: 0;
+      .recent-item {
+        display: block;
+        width: $recent-items-box-width;
+        margin: $recent-items-box-margin;
 
-            .recent-item-image-matte {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: $brand-dark-grey;
-                img {
-                    width: 100%;
-                }
-            }
-
-            .recent-item-title-wrapper {
-                display: none;
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                color: $brand-dark-blue;
-                background-color: rgba(0, 0, 0, 0.7);
-
-                .recent-item-title {
-                    font-family: "adelle-sans", "Helvetica Neue", Helvetica, Arial, sans-serif, "Helvetica Neue", Helvetica, Arial, sans-serif;
-                    color: white;
-                    opacity: 1.0;
-                    text-align: center;
-                    font-weight: $semi-bold-weight;
-                    line-height: 1rem;
-                    font-size: 0.75rem;
-                    margin-bottom: 0;
-                }
-            }
+        // cut images off at no more than a certain aspect ratio
+        .image-wrapper {
+          max-height: 2.2 * $recent-items-box-width;
+          overflow: hidden;
         }
+
+        // A title box below image, that only shows up on hover/focus!
+        .recent-title {
+          // absolute positioned so when it is visible, it'll be "above" ordinary page flow,
+          // like a tooltip.
+          position: absolute;
+          width: $recent-items-box-width;
+
+          // Hide in a way we can animate visibility.
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 0.2s, visibility 0.2s;
+
+          // Make it look like a bootstrap tooltip, copied
+          // from bootstrap tooltip implementation
+          // We have to adjust font-size by 1/1.2, because we
+          // don't actually want it to be scaled up!
+          @include reset-text();
+          @include font-size(($tooltip-font-size * 0.833));
+          padding: ($tooltip-padding-y * 0.833) ($tooltip-padding-x * 0.833);
+          color: $tooltip-color;
+          text-align: center;
+          background-color: $tooltip-bg;
+        }
+
+        // Enlarge the image on hover/focus, which also makes
+        // the title box show up
+        transition: transform .2s;
+        &:hover, &:focus {
+          transform: scale(1.2);
+
+          .recent-title {
+            opacity: 1;
+            visibility: visible;
+            @extend .shadow-lg;
+          }
+        }
+      }
     }
 
     $featured-topics-box-width: 18rem; // 21.875rem;
@@ -170,15 +176,6 @@
 
     .featured-topics-wrapper {
         background-color: $brand-dark-grey;
-    }
-
-    .featured-topics-title-div {
-        padding-top: 0.9375rem;
-        padding-left: 2.125rem;
-        background-color: $brand-dark-grey;
-        h2 {
-            margin-bottom:0;
-        }
     }
 
     .featured-topics-list {

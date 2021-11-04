@@ -10,7 +10,7 @@ class RecentItems
   @@bag = nil
 
   def initialize
-    @how_many_works_to_show = 6
+    @how_many_works_to_show = 5
     @how_often_to_change = 60 * 10 # ten minutes in seconds.
     @how_many_works_in_bag = 50
   end
