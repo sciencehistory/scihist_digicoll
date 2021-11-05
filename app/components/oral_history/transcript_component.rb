@@ -24,6 +24,12 @@ module OralHistory
     # We're also doing things somewhat different than OHMS when we coudn't figure out why it made
     # any sense (like a bare span for an empty line, or using span as a wrapper for p which is
     # probably illegal HTML)
+    #
+    # OhmsXmlValidator is in charge of validating the footnotes at
+    # upload time and rejecting ones that are invalid.
+    # We can thus assume the footnotes are valid at display time;
+    # if the array of footnotes doesn't contain a footnote for `number`,
+    # we are *not* going to throw an error.
     def call
       paragraphs = []
       current_paragraph = []
@@ -56,24 +62,18 @@ module OralHistory
       transcript_html
     end
 
-    # The HTML for the inline tooltip and footnote reference.
-    # We use a template for this; even with dozens of footnotes,
-    # it doesn't appear to slow down the page load significantly.
-    def footnote_html(number)
-      # OhmsXmlValidator is in charge of validating the footnotes at
-      # upload time and rejecting ones that are invalid.
-      # We can thus assume the footnotes are valid at display time;
-      # if the array of footnotes doesn't contain a footnote for `number`,
-      # we are *not* going to throw an error.
+
+    # lookup footnote text that's been parsed from transcript,
+    # ensuring empty string instead of nil, and logging a warning
+    # if we can't find it.
+    def footnote_text_for(number)
       footnote_text = ohms_xml.footnote_array[number.to_i - 1]  || ''
+
       if footnote_text == ''
         Rails.logger.warn("WARNING: Reference to empty or missing footnote #{number} for OHMS transcript #{ohms_xml.accession}")
       end
 
-      render OralHistory::FootnoteReferenceComponent.new(
-        footnote_text: footnote_text,
-        number: number
-      )
+      footnote_text
     end
 
     #private
@@ -98,19 +98,23 @@ module OralHistory
         ])
       end
 
-      # replace each footnote reference [[footnote]]12[[/footnote]] with proper HTML
+      # replace each footnote reference [[footnote]]12[[/footnote]] with proper HTML,
+      # with a capture around the actual footnote number. eg `[[footnote]]3[[/footnote]]`
+      footnote_reference_regexp = %r{\[\[footnote\]\] *(\d+?) *\[\[\/footnote\]\]}
 
-      # Use this to scan the line for any footnotes (there can be more than 1)
-      scan_line_for_footnotes_re =  %r{\[\[footnote\]\] *\d+? *\[\[\/footnote\]\]}
-      # Use this to separate out the actual footnote number
-      footnote_number_re = %r{\[\[footnote\]\] *(\d+?) *\[\[\/footnote\]\]}
+      # ohms_line_str needs to be marked as html_safe, as it contains intended HTML,
+      # and already was -- but the gsub will remove the html_safe marker.
+      # We have hopefully taken care of HTML escaping safety ourselves!
+      ohms_line_str = ohms_line_str.gsub(footnote_reference_regexp) do |match_to_replace|
+        # have to re-match to get footnote number out, becuase of
+        # weirdness with gsub block form, sorry.
+        footnote_number = match_to_replace.match(footnote_reference_regexp)[1]
 
-      ohms_line_str.scan(scan_line_for_footnotes_re).each do |match_to_replace|
-        footnote_number = match_to_replace.match(footnote_number_re)[1]
-        replacement = footnote_html(footnote_number)
-        # ohms_line_str needs to be marked as html_safe, as it contains HTML chars.
-        ohms_line_str = ohms_line_str.sub(match_to_replace, replacement).html_safe()
-      end
+        render OralHistory::FootnoteReferenceComponent.new(
+          footnote_text: footnote_text_for(footnote_number),
+          number: footnote_number
+        )
+      end.html_safe
 
       # If there are any timecodes associated with#
       # this line, pick one to show.
