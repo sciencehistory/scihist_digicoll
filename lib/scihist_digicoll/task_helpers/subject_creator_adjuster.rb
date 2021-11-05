@@ -22,6 +22,7 @@ module ScihistDigicoll
         @metadata_map.fetch(value, value)
       end
 
+      # Update the work, but only if it has something that needs to be changed.
       def process_work(work)
         update_subject(work) unless (work.subject              & @keys_to_check_for).empty?
         update_creator(work) unless (work.creator.map(&:value) & @keys_to_check_for).empty?
