@@ -36,16 +36,6 @@ describe OralHistory::TranscriptComponent, type: :component do
     expect(line_with_first_footnote).to include "[1]"
 
     expect(parsed.css(".footnote").count).to eq 2
-
-    f_array = ohms_xml_with_footnotes.footnote_array
-    expect(f_array [0]).to eq "William E. Hanford (to E.I. DuPont de Nemours & Co.), \"Polyamides,\" U.S. Patent 2,281,576, issued 5 May 1942."
-    expect(f_array [1]).to eq "Howard N. and Lucille L. Sloane, A Pictorial History of American Mining: The adventure and drama of finding and extracting nature's wealth from the earth, from pre-Columbian times to the present (New York: Crown Publishers, Inc., 1970)."
-
-    # Footnotes themselves are HTML-escaped
-    first_footnote = ohms_transcript_display_with_footnotes.footnote_html(1)
-    expect(first_footnote).to match /Nemours/
-    expect(first_footnote).to include "&quot;Polyamides,&quot;"
-    expect(first_footnote).to include "[1]"
   end
 
   # Footnotes and footnote references are expected
@@ -58,19 +48,8 @@ describe OralHistory::TranscriptComponent, type: :component do
     render_inline ohms_transcript_display_with_footnotes
 
     expect(ohms_xml_with_footnotes.footnote_array.count).to eq 0
-    expect { ohms_transcript_display_with_footnotes.footnote_html(1) }.not_to raise_error
-    expect { ohms_transcript_display_with_footnotes.footnote_html(42) }.not_to raise_error
-  end
-
-  it "HTML in footnotes is escaped" do
-    bad_chars = [ "The mathematician's \"daughter\" proved that x > 4." ]
-    allow(ohms_xml_with_footnotes).to receive(:footnote_array).and_return(bad_chars)
-
-    render_inline ohms_transcript_display_with_footnotes
-
-    resulting_footnote = ohms_transcript_display_with_footnotes.footnote_html(1)
-
-    expect(resulting_footnote).to include 'The mathematician&#39;s &quot;daughter&quot; proved that x &gt; 4.'
+    expect { ohms_transcript_display_with_footnotes.footnote_text_for(1) }.not_to raise_error
+    expect { ohms_transcript_display_with_footnotes.footnote_text_for(42) }.not_to raise_error
   end
 
   it "Correctly handles several footnotes on one line -- and footnotes with spaces around the integer" do
