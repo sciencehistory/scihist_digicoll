@@ -1,11 +1,11 @@
 <a  class="footnote"
     data-toggle="ohms-tooltip"
     title="<%= footnote_text %>"
-    id="footnote-reference-<%= number %>"
     aria-label="footnote <%= number %>"
-    aria-describedby="footnote-text-<%=number%>"
     data-role="ohms-navbar-aware-internal-link"
-    href="#footnote-<%= number%>">
+    href="#footnote-<%= number%>"
+    aria-describedby="footnote-text-<%=number%>"
+    <% if is_first_reference %> id="footnote-reference-<%= number %>"<% end %>
+    >
   [<%= number %>]
 </a>
-

@@ -10,11 +10,12 @@ module OralHistory
 
     delegate :format_ohms_timestamp, to: :helpers
 
-    attr_reader :ohms_xml
+    attr_reader :ohms_xml, :references_already_output
 
     # @param ohms_xml [OralHistoryContent::OhmsXml]
     def initialize(ohms_xml)
       @ohms_xml = ohms_xml
+      @references_already_output = Set.new()
     end
 
     # Trying to display somewhat like OHMS does. We need to track lines separated by individual "\n", that
@@ -109,10 +110,10 @@ module OralHistory
         # have to re-match to get footnote number out, becuase of
         # weirdness with gsub block form, sorry.
         footnote_number = match_to_replace.match(footnote_reference_regexp)[1]
-
         render OralHistory::FootnoteReferenceComponent.new(
           footnote_text: footnote_text_for(footnote_number),
-          number: footnote_number
+          number: footnote_number,
+          is_first_reference: is_first_reference?(footnote_number)
         )
       end.html_safe
 
@@ -176,6 +177,15 @@ module OralHistory
       end
       # Otherwise just leave it as is.
       timecodes_for_first_line
+    end
+
+    # To prevent duplicate html ids, only output one html ID for
+    # each footnote reference. If there are several references to a footnote,
+    # only the first gets an html ID.
+    def is_first_reference?(ref_number)
+      already_been_output = @references_already_output.include?(ref_number)
+      @references_already_output << ref_number
+      !already_been_output
     end
   end
 end
