@@ -8,9 +8,16 @@ describe OralHistory::FootnoteReferenceComponent, type: :component do
     let(:number) { 1 }
 
     it "includes text in title attribute with proper escaping" do
-      result = render_inline described_class.new(footnote_text: footnote_text, number: number)
+      result = render_inline described_class.new(footnote_text: footnote_text, number: number, is_first_reference:true)
 
       expect(result.at_css("a")["title"]).to eq(footnote_text)
+      expect(result.at_css("a")['id']).to eq("footnote-reference-1")
     end
+
+    it "only includes an HTML id for the first reference" do
+      result = render_inline described_class.new(footnote_text: footnote_text, number: number, is_first_reference:false)
+      expect(result.at_css("a")['id']).to be_nil
+    end
+
   end
 end
