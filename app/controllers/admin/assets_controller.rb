@@ -40,7 +40,7 @@ class Admin::AssetsController < AdminController
     end
     @asset.destroy
     respond_to do |format|
-      format.html { redirect_to admin_work_path(work.friendlier_id, anchor: "tab=nav-members"), notice: "Asset '#{@asset.title}' was successfully destroyed." }
+      format.html { redirect_to admin_work_path(@asset.parent.friendlier_id, anchor: "tab=nav-members"), notice: "Asset '#{@asset.title}' was successfully destroyed." }
       format.json { head :no_content }
     end
   end
