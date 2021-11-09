@@ -22,8 +22,13 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
   describe "#destroy"  do
     let(:asset) { create(:asset, parent: create(:work) ) }
 
-    it "destroys", logged_in_user: :admin do
-      put :destroy, params: { id: asset.friendlier_id}
+    describe "as admin role", logged_in_user: :admin do
+      it "destroys" do
+        put :destroy, params: { id: asset.friendlier_id}
+
+        expect { asset.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        expect(response).to redirect_to(admin_work_path(asset.parent.friendlier_id, anchor: "tab=nav-members"))
+      end
     end
   end
 
