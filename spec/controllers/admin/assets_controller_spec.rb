@@ -19,6 +19,19 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
 
   let(:parent_work) { create(:work, published: false) }
 
+  describe "#destroy"  do
+    let(:asset) { create(:asset, parent: create(:work) ) }
+
+    describe "as admin role", logged_in_user: :admin do
+      it "destroys" do
+        put :destroy, params: { id: asset.friendlier_id}
+
+        expect { asset.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        expect(response).to redirect_to(admin_work_path(asset.parent.friendlier_id, anchor: "tab=nav-members"))
+      end
+    end
+  end
+
   describe "#attach_files" do
     it "creates and attaches Asset" do
       post :attach_files, params: { parent_id: parent_work, cached_files: cached_file_param }
@@ -38,7 +51,7 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
         expect(parent_work.members).to be_present
         expect(parent_work.members.all? { |m| m.published? }).to be true
       end
-      
+
       context "asset is the representative of the published parent", logged_in_user: :admin do
         let(:asset_child) { create(:asset_with_faked_file, published: true) }
         let(:unpublished_asset_child) { create(:asset_with_faked_file, published: false) }
