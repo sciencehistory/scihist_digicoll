@@ -8,11 +8,12 @@ module OralHistory
   # The tooltip hover is based on:
   # http://hiphoff.com/creating-hover-over-footnotes-with-bootstrap/
   class FootnoteReferenceComponent < ApplicationComponent
-    attr_reader :footnote_text, :number
+    attr_reader :footnote_text, :number, :show_dom_id
 
-    def initialize(footnote_text:, number:)
+    def initialize(footnote_text:, number:, show_dom_id:)
       @footnote_text = footnote_text
       @number = number
+      @show_dom_id = show_dom_id
     end
   end
 end
