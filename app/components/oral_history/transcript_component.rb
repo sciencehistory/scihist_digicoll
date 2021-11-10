@@ -113,7 +113,7 @@ module OralHistory
         render OralHistory::FootnoteReferenceComponent.new(
           footnote_text: footnote_text_for(footnote_number),
           number: footnote_number,
-          is_first_reference: is_first_reference?(footnote_number)
+          show_dom_id: is_first_reference?(footnote_number)
         )
       end.html_safe
 
