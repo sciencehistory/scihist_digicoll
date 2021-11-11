@@ -117,6 +117,8 @@
           all_text_timv^10
         </str>
 
+        <str name="bq">model_name_ssi:Collection^150.0 </str>
+
        <str name="author_qf">
           author_tesim
        </str>
