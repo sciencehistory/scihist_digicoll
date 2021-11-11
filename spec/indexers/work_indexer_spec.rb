@@ -3,7 +3,7 @@ require 'rails_helper'
 describe WorkIndexer do
   let(:work) { create(:work, :with_complete_metadata) }
 
-  let(:no_members) do
+  let(:no_members_work) do
     create(:public_work, members: [])
   end
 
@@ -15,9 +15,9 @@ describe WorkIndexer do
   end
 
   it "doesn't raise if members are absent" do
-    output_hash = WorkIndexer.new.map_record(no_members)
+    output_hash = WorkIndexer.new.map_record(no_members_work)
     expect(output_hash).to be_present
-    expect(output_hash["model_pk_ssi"]).to eq([no_members.id])
+    expect(output_hash["model_pk_ssi"]).to eq([no_members_work.id])
   end
 
   describe "with containers" do
@@ -190,26 +190,26 @@ describe WorkIndexer do
         position: page
         ) }
     end
-    let(:english_only) do
+    let(:english_only_work) do
       create(:public_work, language: ['en'], members: assets )
     end
-    let(:bilingual) do
+    let(:bilingual_work) do
       create(:public_work, language: ['en', 'de'], members: assets)
     end
-    let(:german_only) do
+    let(:german_only_work) do
       create(:public_work, language: ['de'], members: assets )
     end
 
-    let(:nil_members) do
+    let(:nil_members_work) do
       create(:public_work, members: [])
     end
 
     before do
-      allow(nil_members).to receive(:members).and_return(nil)
+      allow(nil_members_work).to receive(:members).and_return(nil)
     end
 
     it "indexes text known to be English in searchable_fulltext" do
-      output_hash = WorkIndexer.new.map_record(english_only)
+      output_hash = WorkIndexer.new.map_record(english_only_work)
       english  = output_hash["searchable_fulltext"]
       might_not_be_english = output_hash["searchable_fulltext_language_agnostic"]
       expect(english).to eq(["transl_1", "transl_2", "transl_3", "transc_1", "transc_2", "transc_3"])
@@ -217,7 +217,7 @@ describe WorkIndexer do
     end
 
     it "indexes transcriptions in searchable_fulltext_language_agnostic if we know the work isn't all in English" do
-      [german_only, bilingual].each do |work_with_translations|
+      [german_only_work, bilingual_work].each do |work_with_translations|
         output_hash = WorkIndexer.new.map_record(work_with_translations)
         english  = output_hash["searchable_fulltext"]
         might_not_be_english = output_hash["searchable_fulltext_language_agnostic"]
@@ -227,7 +227,7 @@ describe WorkIndexer do
     end
 
     it "correctly handles items without any assets" do
-      [nil_members, no_members].each do |work|
+      [nil_members_work, no_members_work].each do |work|
         output_hash = WorkIndexer.new.map_record(work)
         english  = output_hash["searchable_fulltext"]
         might_not_be_english = output_hash["searchable_fulltext_language_agnostic"]
