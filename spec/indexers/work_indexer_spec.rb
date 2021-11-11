@@ -187,7 +187,8 @@ describe WorkIndexer do
         :asset,
         transcription: "transc_#{page}",
         english_translation: "transl_#{page}",
-        position: page
+        position: page,
+        published: true
         ) }
     end
     let(:english_only_work) do
@@ -236,6 +237,22 @@ describe WorkIndexer do
       end
     end
 
-  end
+    describe "with unpublished assets" do
+      let(:assets) do
+        [3,2,1].map { |page| create(
+          :asset,
+          transcription: "transc_#{page}",
+          english_translation: "transl_#{page}",
+          position: page,
+          published: false
+          ) }
+      end
+      it "does not index" do
+        output_hash = WorkIndexer.new.map_record(bilingual_work)
 
+        expect(output_hash["searchable_fulltext_language_agnostic"]).to be_blank
+        expect(output_hash["searchable_fulltext"]).to be_blank
+      end
+    end
+  end
 end

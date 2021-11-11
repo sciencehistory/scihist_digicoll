@@ -171,14 +171,14 @@ class WorkIndexer < Kithe::Indexer
         end
       end
 
-      acc.concat get_string_from_each_member(rec, :english_translation)
+      acc.concat get_string_from_each_published_member(rec, :english_translation)
 
       # Index the transcription here if we can assume that the work is entirely in English.
-      acc.concat get_string_from_each_member(rec, :transcription) if rec.language == ['en']
+      acc.concat get_string_from_each_published_member(rec, :transcription) if rec.language == ['en']
     end
 
     to_field "searchable_fulltext_language_agnostic" do |rec, acc|
-      acc.concat get_string_from_each_member(rec, :transcription) if rec.language != ['en']
+      acc.concat get_string_from_each_published_member(rec, :transcription) if rec.language != ['en']
     end
 
     # add a 'translation' token in bredig_feature_facet if we have any translations
@@ -218,15 +218,18 @@ class WorkIndexer < Kithe::Indexer
     end
   end
 
-  # Iterate over all members of a work, collecting a string from each one. Return non-null strings in an array suitable for indexing.
+  # Iterate over all members of a work, collecting a string from each one that is published.
+  #
+  # Return non-null strings in an array suitable for indexing.
+  #
   # @param string_property a property to collect from each member of the work
   # @return [Array<String>] an array of strings containing the contents of @string_property for each member, in order.
   # @example Collect all non-null english translations from all members of my_work, in order:
   #   get_string_from_each_member(my_work, :english_translation) #=> ["english_translation_of_page_1", "english_translation_of_page_2", "english_translation_of_page_4"]
-  def get_string_from_each_member(work, string_property)
+  def get_string_from_each_published_member(work, string_property)
     # careful, work.members can be nil.
     return [] unless work.members.present?
-    work.members.sort_by { |m| m.position || 0 }.map {|mem| mem.asset? && mem.send(string_property) }.compact
+    work.members.sort_by { |m| m.position || 0 }.map {|mem| mem.asset? && mem.published?.presence && mem.send(string_property) }.compact
   end
 
 end
