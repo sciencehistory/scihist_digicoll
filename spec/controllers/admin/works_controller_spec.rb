@@ -342,63 +342,6 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         expect(work.members.all? {|m| m.published?}).to be false
       end
 
-      context "works without a published representative" do
-        context "work with nil representative" do
-          before do
-            work.update(representative: nil, published: false)
-          end
-          it "can't be published" do
-            put :publish, params: {
-              id: work.friendlier_id,
-            }
-            work.reload
-            expect(work.published?).to be false
-            expect(work.members.all? {|m| m.published?}).to be false
-          end
-        end
-
-        context "work with an unpublished asset representative" do
-          before do
-            work.update({representative: asset_child, published: false})
-            asset_child.update({published: false})
-          end
-          it "can't be published" do
-            put :publish, params: {
-              id: work.friendlier_id,
-            }
-            work.reload
-            expect(work.published?).to be false
-            expect(work.members.all? {|m| m.published?}).to be false
-          end
-        end
-
-        context "work with an unpublished child work representative" do
-          before do
-            work.update(representative: work_child, published: false)
-            work_child.update(published: false)
-          end
-          it "can't be published" do
-            put :publish, params: {
-              id: work.friendlier_id,
-            }
-            work.reload
-            expect(work.published?).to be false
-            expect(work.members.all? {|m| m.published?}).to be false
-          end
-        end
-      end
-
-      context "child work that is the representative of a published parent" do        
-        let!(:parent_work) { create(:work, :published, members:[child_work], representative:child_work, title: "Parent") }
-        let(:child_work) { create(:work, :published, title: "Representative") }
-        it "can't be removed" do
-          put :destroy, params: { id: child_work.friendlier_id}
-          expect(response).to redirect_to(admin_work_path(child_work, anchor: "tab=nav-members"))
-          expect(flash[:notice]).to match /Could not destroy work 'Representative'. 'Parent' is published and this is its representative./
-          expect(child_work.reload).to be_present
-          expect(parent_work.reload.representative).to eq child_work
-        end
-      end
 
       it "can delete, and deletes children" do
         put :destroy, params: { id: work.friendlier_id }
