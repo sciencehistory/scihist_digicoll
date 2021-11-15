@@ -17,9 +17,6 @@ class Admin::AssetsController < AdminController
   # PATCH/PUT /works/1.json
   def update
     @asset = Asset.find_by_friendlier_id!(params[:id])
-    if params['asset']['published'] == "0" && would_remove_representative?(@asset.parent)
-      prevent_unpublish_because_no_representative && return
-    end
 
     respond_to do |format|
       if @asset.update(asset_params)
@@ -35,9 +32,6 @@ class Admin::AssetsController < AdminController
   def destroy
     @asset = Asset.find_by_friendlier_id!(params[:id])
     authorize! :destroy, @asset
-    if would_remove_representative?(@asset.parent)
-      prevent_destroy_because_no_representative && return
-    end
 
     if @asset.parent
       # doing it this way will update @asset.parent.members in-memory, so it's consistent and the
@@ -148,23 +142,4 @@ class Admin::AssetsController < AdminController
     asset_params = params.require(:asset).permit(*allowed_params)
   end
 
-  def would_remove_representative?(parent)
-    parent&.published? && parent.representative == @asset
-  end
-
-  def prevent_unpublish_because_no_representative
-    @asset.errors.add(:base,  "Could not unpublish asset '#{@asset.title}'. Its parent is published and this is its representative. Unpublish the parent first.")
-    respond_to do |format|
-      format.html { render :edit }
-      format.json { render json: @asset.errors, status: :unprocessable_entity }
-    end
-  end
-
-  def prevent_destroy_because_no_representative
-    respond_to do |format|
-      format.html { redirect_to admin_work_path(@asset.parent.friendlier_id, anchor: "tab=nav-members"),
-        notice: "Could not delete asset '#{@asset.title}'. Its parent is published and this is its representative." }
-      format.json { render json: { error:  "Could not delete asset '#{@asset.title}'. The work is published and this is its representative." }, status: 422 }
-    end
-  end
 end
