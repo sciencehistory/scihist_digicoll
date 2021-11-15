@@ -70,7 +70,7 @@ class Asset < Kithe::Asset
   #   * update PARENT in solr on change, we don't index Assets, but do index
   #     some aspects of assets in their parent Works.
   #   * and only when allow-listed attributes we know we index on parent have changed
-  def update_index(mapper: kithe_indexable_mapper, writer:nil)
+  def update_index(mapper: kithe_indexable_mapper, writer:nil, **)
     if should_reindex_parent_after_save?
       # WEIRD workaround, in some cases the parent still this record in memory
       # even though it's been, and will use that in-memory list of members for
