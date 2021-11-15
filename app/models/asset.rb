@@ -72,9 +72,13 @@ class Asset < Kithe::Asset
   #   * and only when allow-listed attributes we know we index on parent have changed
   def update_index(mapper: kithe_indexable_mapper, writer:nil)
     if should_reindex_parent_after_save?
-      # WEIRD workaround, parent still has us in memory even though we're destroyed,
-      # need to make sure we're removed before reindex.
-      parent.members.reset if self.destroyed?
+      # WEIRD workaround, in some cases the parent still this record in memory
+      # even though it's been, and will use that in-memory list of members for
+      # indexing in Solr! If that's going on, we need to make sure to reset
+      # the association.
+      if self.destroyed? && parent.members.loaded? && parent.members.include?(self)
+        parent.members.reset
+      end
 
       RecordIndexUpdater.new(parent, mapper: mapper, writer: writer).update_index
     end
@@ -96,13 +100,16 @@ class Asset < Kithe::Asset
     if parent.nil?
       return false
     elsif self.destroyed?
-      # if we were destroyed with indexed_attributes, parent needs to be re-indexed
+      # if we were destroyed with indexed_attributes present, parent needs to be re-indexed
+      # to remove us from index.
       indexed_attributes.any? { |attr| self.send(attr).present? }
     elsif self.saved_change_to_published?
-      # if published status changed, we have to reindex if we HAVE any indexed attributes!
+      # if published status changed, we have to reindex if and only if we HAVE any indexed attributes,
+      # to include them in index.
       indexed_attributes.any? { |attr| self.send(attr).present? }
     else
-      # ordinary save (including create), did any attributes of interest CHANGE? then reindex parent.
+      # an ordinary save (including create), did any attributes of interest CHANGE? (Including removal)
+      # then we need to reindex parent to get them updated in index.
       indexed_attributes.any? { |attr| self.attr_json_changes.saved_change_to_attribute(attr).present? }
     end
   end
