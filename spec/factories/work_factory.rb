@@ -19,6 +19,7 @@ FactoryBot.define do
 
     trait :published do
       published { true }
+      published_at { Time.now - 86400}
       members {  [ build(:asset_with_faked_file, published: true) ] } # published works need a representative now
       department { "Library" }
       rights { "http://creativecommons.org/publicdomain/mark/1.0/" }
