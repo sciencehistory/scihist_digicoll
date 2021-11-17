@@ -276,61 +276,6 @@
       }
     }
 
-
-
-    .featured-collection-callouts{
-        padding-left: 0.9375rem;
-        padding-right: 0.9375rem;
-        padding-top: 0.9375rem;
-        padding-bottom: 1.875rem;
-    }
-
-    @include media-breakpoint-only(md) {
-        .featured-collection-callouts {
-            margin-top: 1.875rem;
-        }
-    }
-
-    @include media-breakpoint-up(md) {
-        .featured-collection-container {
-            background-color: white;
-            display: flex;
-            align-items: center;
-            .featured-collection-callouts {
-                margin-left: 10%;
-                margin-right: 2%;
-                h2 {
-                    margin-top: 0;
-                }
-            }
-        }
-    }
-    .featured-collection-image {
-        padding: 0;
-        .featured-collection-matte {
-            position: relative;
-            img {
-                width: 100%;
-            }
-            figure {
-                margin-bottom: 0;
-            }
-            figcaption {
-                position: absolute;
-                bottom: 0;
-                right: 0;
-                background: rgba(0, 0, 0, 0.25);
-                padding: 0.3125rem 1.5625rem;
-                font-weight: 300;
-                font-style: italic;
-                a {
-                    color: white;
-                    text-decoration: none;
-                    opacity: 1;
-                }
-            }
-        }
-    }
     .chf-callout-button {
         width: 100%;
         text-transform: uppercase;
