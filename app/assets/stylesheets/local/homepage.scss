@@ -239,6 +239,45 @@
         }
     }
 
+    .collections {
+      padding-bottom: 2.2rem;
+
+      .collections-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        .collection {
+          display: flex;
+          flex-direction: column;
+          margin: $collection-index-box-margin;
+          max-width: $collection-index-box-width;
+
+          .title {
+            font-size: 1.125rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            text-align: center;
+            color: white;
+            background-color: $dark;
+            padding: 0.625rem;
+          }
+        }
+      }
+      .button-area {
+        display: flex;
+        justify-content: center;
+        padding: $collection-index-box-margin;
+
+        .chf-callout-button {
+          width: ($collection-index-box-margin * 2 + $collection-index-box-width * 2 + 2px);
+          flex-shrink: 1;
+        }
+      }
+    }
+
+
+
     .featured-collection-callouts{
         padding-left: 0.9375rem;
         padding-right: 0.9375rem;
