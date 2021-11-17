@@ -1,8 +1,9 @@
-<div class="recent-items-wrapper">
-  <div class="row home-page-title-div no-gutters">
-    <h2 class="brand-alt-h2">Recently Added</h2>
+<div class="ribbon-section recent-items">
+  <div class="title-div">
+    <h2>Recently Added</h2>
   </div>
-  <div class="row recent-items-list no-gutters">
+
+  <div class="recent-items-list">
       <% RecentItems.new.recent_items.each do |work| %>
           <%= link_to work_path(work.friendlier_id), class: "recent-item" do %>
             <div class="image-wrapper">
