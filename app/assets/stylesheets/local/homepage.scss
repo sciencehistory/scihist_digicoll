@@ -107,7 +107,10 @@
         }
 
         .blurb {
-          padding: 0 1rem 1rem 1rem;
+          // styling copied from some large blurb text on www.sciencehistory.org.
+          font-size: 1.5rem;
+          max-width: 42rem;
+          padding: 1rem 1rem 2rem 1rem;
         }
       }
     }
@@ -263,7 +266,17 @@
             padding: 0.625rem;
           }
         }
+
+        /* A 0-height box that spaces out columns to left-align items in last column */
+        .spacer {
+          visibility: hidden;
+          width: $collection-index-box-width;
+          height: 0;
+          margin: 0 $collection-index-box-margin;
+        }
+
       }
+
       .button-area {
         display: flex;
         justify-content: center;
