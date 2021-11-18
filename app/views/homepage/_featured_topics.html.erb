@@ -5,7 +5,7 @@
 
   <div class="collections-list">
       <% FeaturedTopic.all.slice(0..3).in_groups_of(2).each do |group_of_two| %>
-        <div class="d-flex flex-wrap">
+        <div class="d-flex flex-wrap justify-content-center">
           <% group_of_two.each do |ft| %>
             <div class="collection featured-topic">
               <%= link_to ft.path do %>
