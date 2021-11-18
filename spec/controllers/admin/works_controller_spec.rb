@@ -320,12 +320,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       let(:work_child) { build(:work, :published, published: false) }
       let(:asset_child) { build(:asset, published: false) }
       let(:work) do
-        create(:work, :published).tap do |w|
-          w.members += [asset_child, work_child]
-          w.published = false          
-          w.published_at = nil
-          w.save!
-        end
+        create(:work, :published, published: false, published_at: false, members: [asset_child, work_child])
       end
 
       it "can publish, and publishes children" do
@@ -377,11 +372,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         describe "child work missing required fields" do
           let(:work_child) { build(:private_work, title: "the_child_work_title") }
           let(:work) do
-            create(:work, :published).tap do |w|
-              w.members << work_child
-              w.published = false
-              w.save!
-            end
+            create(:work, :published, members: [work_child], published:false)
           end
 
           it "can not publish, displaing proper error for child work" do
