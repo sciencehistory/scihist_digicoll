@@ -1,8 +1,9 @@
-<div class="featured-topics-wrapper">
-  <div class='row no-gutters home-page-title-div'>
-      <h2 class="brand-alt-h2">Featured Topics</h2>
+<div class="ribbon-section featured-topics">
+  <div class='title-div'>
+      <h2>Featured Topics</h2>
   </div>
-  <div class="row no-gutters featured-topics-list">
+
+  <div class="featured-topics-list">
       <% FeaturedTopic.all.each do |ft| %>
           <div class="featured-topic">
             <%= link_to ft.path do %>

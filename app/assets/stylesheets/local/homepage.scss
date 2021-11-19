@@ -94,18 +94,31 @@
         }
     }
 
-    .home-page-title-div {
-        padding-top: 0.9375rem;
-        padding-left: 0.9375rem;
+    .ribbon-section {
+      .title-div {
+        display: flex;
+        flex-direction: column;
+
         h2 {
-            margin-bottom:0;
+          @extend .brand-alt-h2;
+          padding: 1rem 1rem 1rem 1rem;
+          margin-bottom:0;
         }
+
+        .blurb {
+          // styling copied from some large blurb text on www.sciencehistory.org.
+          font-size: 1.5rem;
+          max-width: none;
+          padding: 1rem 1rem 2rem 1rem;
+        }
+      }
     }
+
 
     $recent-items-box-width: 10.5rem;
     $recent-items-box-margin: 1.28rem;
 
-    .recent-items-wrapper {
+    .recent-items {
         background-color: $brand-light-grey;
     }
 
@@ -174,13 +187,12 @@
     $featured-topics-box-height: 18rem; // 21.875rem;
     $featured-topics-box-margin: 2.2rem; // 3.6875rem;
 
-    .featured-topics-wrapper {
+    .featured-topics {
         background-color: $brand-dark-grey;
     }
 
     .featured-topics-list {
         background-color: $brand-dark-grey;
-        padding-top: $featured-topics-box-margin;
         padding-bottom: $featured-topics-box-margin;
         display: flex;
         flex-direction: row;
@@ -229,59 +241,44 @@
         }
     }
 
-    .featured-collection-callouts{
-        padding-left: 0.9375rem;
-        padding-right: 0.9375rem;
-        padding-top: 0.9375rem;
-        padding-bottom: 1.875rem;
+    .collections {
+      padding-bottom: 2.2rem;
+
+      .collections-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        .collection {
+          display: flex;
+          flex-direction: column;
+          margin: $collection-index-box-margin;
+          max-width: $collection-index-box-width;
+
+          .title {
+            font-size: 1.125rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            text-align: center;
+            color: white;
+            background-color: $dark;
+            padding: 0.625rem;
+          }
+        }
+      }
+
+      .button-area {
+        display: flex;
+        justify-content: center;
+        padding: $collection-index-box-margin $collection-index-box-margin 0 $collection-index-box-margin;
+
+        .chf-callout-button {
+          width: auto;
+          flex-shrink: 1;
+        }
+      }
     }
 
-    @include media-breakpoint-only(md) {
-        .featured-collection-callouts {
-            margin-top: 1.875rem;
-        }
-    }
-
-    @include media-breakpoint-up(md) {
-        .featured-collection-container {
-            background-color: white;
-            display: flex;
-            align-items: center;
-            .featured-collection-callouts {
-                margin-left: 10%;
-                margin-right: 2%;
-                h2 {
-                    margin-top: 0;
-                }
-            }
-        }
-    }
-    .featured-collection-image {
-        padding: 0;
-        .featured-collection-matte {
-            position: relative;
-            img {
-                width: 100%;
-            }
-            figure {
-                margin-bottom: 0;
-            }
-            figcaption {
-                position: absolute;
-                bottom: 0;
-                right: 0;
-                background: rgba(0, 0, 0, 0.25);
-                padding: 0.3125rem 1.5625rem;
-                font-weight: 300;
-                font-style: italic;
-                a {
-                    color: white;
-                    text-decoration: none;
-                    opacity: 1;
-                }
-            }
-        }
-    }
     .chf-callout-button {
         width: 100%;
         text-transform: uppercase;
