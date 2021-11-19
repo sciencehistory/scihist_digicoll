@@ -1,4 +1,12 @@
 class Asset < Kithe::Asset
+  # We set an indexer to turn on Kithe Solr auto-indexing... but
+  # we later override #update_index to index the PARENT WORK when
+  # we ourselves change -- we don't index Assets, but we do include
+  # some asset content in Works, so may need to re-index them.
+  if ScihistDigicoll::Env.lookup(:solr_indexing) == 'true'
+    self.kithe_indexable_mapper = Work.kithe_indexable_mapper
+  end
+
   has_many :fixity_checks, foreign_key: "asset_id", inverse_of: "asset", dependent: :destroy
 
   set_shrine_uploader(AssetUploader)
@@ -56,6 +64,54 @@ class Asset < Kithe::Asset
   #     asset.dzi_file.delete # normally handled by automatic lifecycle hooks
   def dzi_file
     @dzi_file ||= DziFiles.new(self)
+  end
+
+  # OVERRIDE of standard Kithe update index, to:
+  #   * update PARENT in solr on change, we don't index Assets, but do index
+  #     some aspects of assets in their parent Works.
+  #   * and only when allow-listed attributes we know we index on parent have changed
+  def update_index(mapper: kithe_indexable_mapper, writer:nil, **)
+    if should_reindex_parent_after_save?
+      # WEIRD workaround, in some cases the parent still this record in memory
+      # even though it's been, and will use that in-memory list of members for
+      # indexing in Solr! If that's going on, we need to make sure to reset
+      # the association.
+      if self.destroyed? && parent.members.loaded? && parent.members.include?(self)
+        parent.members.reset
+      end
+
+      RecordIndexUpdater.new(parent, mapper: mapper, writer: writer).update_index
+    end
+  end
+
+  # parent indexes attributes_of_interest from it's *published* child assets.
+  #
+  # We could reindex parent on ANY save of child... but can we do better,
+  # and only reindex if we actually need to?
+  #
+  # If we have a parent, figure out if our attributes of interest have changed
+  # in a way that that would effect parent indexing. Kind of tricky.
+  #
+  # It's better if we err on the side of indexing when we don't really need to,
+  # worse if we end up not indexing when we do!
+  #
+  # This may be "too clever"... but seems ok?
+  def should_reindex_parent_after_save?(indexed_attributes: [:transcription, :english_translation])
+    if parent.nil?
+      return false
+    elsif self.destroyed?
+      # if we were destroyed with indexed_attributes present, parent needs to be re-indexed
+      # to remove us from index.
+      indexed_attributes.any? { |attr| self.send(attr).present? }
+    elsif self.saved_change_to_published?
+      # if published status changed, we have to reindex if and only if we HAVE any indexed attributes,
+      # to include them in index.
+      indexed_attributes.any? { |attr| self.send(attr).present? }
+    else
+      # an ordinary save (including create), did any attributes of interest CHANGE? (Including removal)
+      # then we need to reindex parent to get them updated in index.
+      indexed_attributes.any? { |attr| self.attr_json_changes.saved_change_to_attribute(attr).present? }
+    end
   end
 
   after_promotion DziFiles::ActiveRecordCallbacks, if: ->(asset) { asset.content_type&.start_with?("image/") && asset.derivative_storage_type == "public" }

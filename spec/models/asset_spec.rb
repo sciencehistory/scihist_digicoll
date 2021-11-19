@@ -67,4 +67,97 @@ describe Asset do
       end
     end
   end
+
+  # we use webmock on the Solr connection as a way to test "did update get triggered?"
+  describe "changes can trigger re-index on parent work, ", indexable_callbacks: true do
+    # regex because we don't care about query params after like softCommit=true or whatever.
+    let(:solr_update_url_regex) { /^#{Regexp.escape(ScihistDigicoll::Env.lookup!(:solr_url) + "/update/json")}/ }
+
+    before do
+      # webmock
+      stub_request(:any, solr_update_url_regex)
+    end
+
+    describe "update asset" do
+      let(:asset) do
+        # save our initial asset without going to solr, we're not interested in that.
+        Kithe::Indexable.index_with(disable_callbacks: true) do
+          create(:asset, parent: create(:work))
+        end
+      end
+
+      it "re-indexes when relevant attribute changes" do
+        asset.english_translation = "translation"
+        asset.save!
+
+        expect(WebMock).to have_requested(:post, solr_update_url_regex)
+      end
+
+      it "does not re-index when relevant attributes did not change" do
+        asset.title = "new one"
+        asset.save!
+        expect(WebMock).not_to have_requested(:post, solr_update_url_regex)
+      end
+    end
+
+    describe "create new asset" do
+      let(:parent) do
+        Kithe::Indexable.index_with(disable_callbacks: true) do
+          create(:work)
+        end
+      end
+
+      it "does not re-index without relevant attributes" do
+        Asset.create!(title: "asset", parent: parent)
+        expect(WebMock).not_to have_requested(:post, solr_update_url_regex)
+      end
+
+      it "re-indexes with relevant attributes" do
+        Asset.create!(title: "asset", transcription: "transcription", parent: parent)
+        expect(WebMock).to have_requested(:post, solr_update_url_regex)
+      end
+    end
+
+    describe "destroy asset" do
+      let(:asset) do
+        # save our initial asset without going to solr, we're not interested in that.
+        Kithe::Indexable.index_with(disable_callbacks: true) do
+          create(:asset, parent: create(:work))
+        end
+      end
+
+      it "when no relevant attributes does not re-index " do
+        asset.destroy!
+        expect(WebMock).not_to have_requested(:post, solr_update_url_regex)
+      end
+
+      describe "when asset has relevant attributes" do
+        let(:asset) do
+          # save our initial asset without going to solr, we're not interested in that.
+          Kithe::Indexable.index_with(disable_callbacks: true) do
+            create(:asset, parent: create(:work), english_translation: "some translation")
+          end
+        end
+
+        it "re-indexes" do
+          asset.destroy!
+          expect(WebMock).to have_requested(:post, solr_update_url_regex)
+        end
+      end
+    end
+
+    describe "existing asset with indexed attributes" do
+      let(:asset) do
+        # save our initial asset without going to solr, we're not interested in that.
+        Kithe::Indexable.index_with(disable_callbacks: true) do
+          create(:asset, parent: create(:work), transcription: "some transcription")
+        end
+      end
+
+      it "is reindexed on published status change" do
+        asset.update!(published: !asset.published)
+        expect(WebMock).to have_requested(:post, solr_update_url_regex)
+      end
+    end
+  end
 end

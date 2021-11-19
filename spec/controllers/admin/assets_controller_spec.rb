@@ -29,6 +29,35 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
         expect { asset.reload }.to raise_error(ActiveRecord::RecordNotFound)
         expect(response).to redirect_to(admin_work_path(asset.parent.friendlier_id, anchor: "tab=nav-members"))
       end
+
+      describe "with content indexed in work" do
+        let(:asset) do
+          Kithe::Indexable.index_with(disable_callbacks: true) do
+            create(:asset, transcription: "transcription text to be deleted", published: true )
+          end
+        end
+        let!(:parent_work) do
+          Kithe::Indexable.index_with(disable_callbacks: true) do
+            create(:work, members: [asset, create(:asset, transcription: "to be retained", published: true)])
+          end
+        end
+
+
+        let(:solr_update_url_regex) { /^#{Regexp.escape(ScihistDigicoll::Env.lookup!(:solr_url) + "/update/json")}/ }
+
+        it "triggers correct work re-index", indexable_callbacks: true do
+          stub_request(:any, solr_update_url_regex)
+          put :destroy, params: { id: asset.friendlier_id}
+
+          # this is ugly way to test that transcription was NOT included in the
+          # work re-index, which was a bug we had to fix.
+          expect(WebMock).to have_requested(:post, solr_update_url_regex).with { |req|
+            record = JSON.parse(req.body).first
+            expect(record["searchable_fulltext_language_agnostic"]).to include("to be retained")
+            expect(record["searchable_fulltext_language_agnostic"]).not_to include("transcription text to be deleted")
+          }
+        end
+      end
     end
   end
 
