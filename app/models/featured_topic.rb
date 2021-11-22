@@ -14,11 +14,13 @@ class FeaturedTopic
   GENRE_FACET_SOLR_FIELD = 'genre_facet'
 
   class_attribute :definitions, instance_writer: false
+
   # Different featured topics, keyed by symbol. Value is a hash
   # listing titles, description, and genres and subjects.
   # A work is considered part of a of FeaturedTopic
   # if it has _any_ of the listed genres or _any_ of the listed subjects.
-
+  #
+  # FIRST FOUR, in order, will be featured on home page.
   self.definitions = {
     women_and_science: {
       title: "Women and Science",

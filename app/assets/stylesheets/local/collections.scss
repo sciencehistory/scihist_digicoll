@@ -4,11 +4,15 @@ $collection-index-box-margin: 17px;
 
 .collections-index {
 
-  .collections-index-title {
+  .index-title {
     text-align: center;
+    @extend .brand-alt-h1;
     @extend .mt-3;
-    @extend .mb-3;
+    &.featured-topics-title {
+      @extend .mb-5;
+    }
   }
+
 
   .show-item-count {
     @extend %text-font-numerals;
