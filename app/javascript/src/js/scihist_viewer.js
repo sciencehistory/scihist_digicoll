@@ -182,6 +182,10 @@ ScihistImageViewer.prototype.selectThumb = function(thumbElement) {
   var linkUrl = this.selectedThumbData.memberShowUrl;
   var tileSource = this.selectedThumbData.tileSource;
 
+  var transcriptionHtml = this.selectedThumbData.transcription_html;
+  var englishTranslationHtml = this.selectedThumbData.english_translation_html;
+
+
   // hide any currently visible alerts, they only apply to
   // previously current image.
   $(this.modal).find(".viewer-alert").remove();
@@ -194,6 +198,9 @@ ScihistImageViewer.prototype.selectThumb = function(thumbElement) {
   document.querySelector('*[data-hook="viewer-navbar-title-label"]').textContent = title;
   document.querySelector('*[data-hook="viewer-navbar-info-link"]').href = linkUrl;
   document.getElementsByClassName('viewer-pagination-numerator').item(0).textContent = humanIndex;
+
+  document.getElementById('transcription-container').innerHTML = transcriptionHtml;
+  document.getElementById('english-translation-container').innerHTML = englishTranslationHtml;
 
   $(this.modal).find(".downloads *[data-slot='selected-downloads']").html(this.downloadMenuItems(this.selectedThumbData));
 
@@ -500,7 +507,7 @@ ScihistImageViewer.prototype.initOpenSeadragon = function() {
   // own container. If we just change that to 'absolute', then it properly fills
   // the space of it's container on our page the way we want it to. There
   // must be a better way to do this, sorry for the hack.
-  this.viewer.container.style.position = "absolute";
+  //this.viewer.container.style.position = "absolute";
 
   // The OSD 'open' event is fired when it tries to request an image,
   // but hasn't neccesarily received it yet. Riiif can be really slow.
@@ -636,5 +643,17 @@ jQuery(document).ready(function($) {
         OpenSeadragon.requestFullScreen( document.body );
       }
     });
+
+    // hacky temporary implementation of our toggleable areas
+    $(document).on("change", "*[data-hook='viewer-area-toggle']", function(event) {
+      var element = $("#" + event.target["name"]);
+      if (event.target.checked) {
+        element.show();
+      } else {
+        element.hide();
+      }
+    });
+
+
   }
 });

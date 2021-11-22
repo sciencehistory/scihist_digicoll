@@ -79,6 +79,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
 
   .viewer-alert {
     position: absolute;
+    bottom: 0;
     z-index: 1;
   }
 
@@ -138,10 +139,11 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
 
   .viewer-image-and-navbar {
     // https://css-tricks.com/flexbox-truncated-text/
-    min-width: 0;
-    width: 100vw; // important to keep long child texts from overflowing on IE11
+    // min-width: 0;
+    // width: 100vw; // important to keep long child texts from overflowing on IE11
     // as a member of it's container flex
     flex-grow: 1;
+    flex-shrink: 1;
 
     // as a flex itself with content
     display: flex;
@@ -203,8 +205,11 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
 
     .viewer-image {
       flex-grow: 1;
+      overflow: scroll;
       // to be a anchor point for openseadragon viewer inside
       position: relative;
+
+      display: flex;
     }
 
     .viewer-image-loading {
@@ -222,6 +227,9 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     }
 
     .viewer-navbar {
+      flex-grow: 1;
+      flex-shrink: 1;
+
       // bootstrap btn-justified doens't seem to be working, and flex is
       // more powerful anyway.
       display: flex;

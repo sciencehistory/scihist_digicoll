@@ -6,6 +6,7 @@
 #
 class ViewerMemberInfoSerializer
   include Rails.application.routes.url_helpers
+  include ActionView::Helpers::TextHelper
 
   THUMB_DERIVATIVE = :thumb_mini
 
@@ -30,7 +31,9 @@ class ViewerMemberInfoSerializer
         # if tilesource DZI is unavailable, give them a more reasonable sized JPG
         fallbackTileSource: { type: "image", url: download_derivative_path(asset, :download_medium, disposition: "inline") },
         thumbAspectRatio: ("#{asset.width.to_f / asset.height}" if asset.width && asset.height),
-        downloads: download_options(asset).as_json
+        downloads: download_options(asset).as_json,
+        transcription_html: member.respond_to?(:transcription) && member.transcription.present? && simple_format(member.transcription),
+        english_translation_html: member.respond_to?(:english_translation) && member.english_translation.present? && simple_format(member.english_translation)
       }.merge(thumb_src_attributes(asset))
     end
   end
