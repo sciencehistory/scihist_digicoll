@@ -138,6 +138,7 @@ Rails.application.routes.draw do
 
   # and the special "featured topics" or "focuses" that appear like collections
   # but are actually formed from canned searches.
+  get "focus", to: "featured_topics_list#index", as: :featured_topics
   get "focus/:slug", to: "featured_topic#index", as: :featured_topic
   get "focus/:slug/range_limit" => "featured_topic#range_limit"
   get "focus/:slug/range_limit_panel" => "featured_topic#range_limit_panel"
