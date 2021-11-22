@@ -22,7 +22,7 @@ gem 'scout_apm'
 # So you need to manually change this spec to allow updates when you want
 # to spend the time to update Blacklight to latest -- you will usually want to update
 # blacklight_range_limit to latest at same time.
-gem "blacklight", "~> 7.19.2"
+gem "blacklight", "~> 7.21.0"
 gem "blacklight_range_limit", "~> 8.0" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
 # Use postgresql as the database for Active Record
@@ -74,7 +74,7 @@ gem "device_detector", "~> 1.0" # user-agent parsing we use for logging
 
 # temporary kithe indexing branch, for scihist_digicoll indexing branch, do not
 # intend to merge to master like this.
-gem 'kithe', "~> 2.0", ">= 2.0.2"
+gem 'kithe', "~> 2.2"
 # attr_son is a dependency of kithe, but we want to make sure it gets require'd directly
 # to avoid weird auto-loading issues.
 gem "attr_json", "~> 1.0"

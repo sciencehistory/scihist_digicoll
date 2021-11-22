@@ -136,6 +136,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         expect(flash["error"]).to be_blank
 
         expect(publishable_work.reload).to be_published
+        expect(publishable_work.published_at).to be_within(1.second).of Time.now
       end
     end
   end
@@ -319,11 +320,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       let(:work_child) { build(:work, :published, published: false) }
       let(:asset_child) { build(:asset, published: false) }
       let(:work) do
-        create(:work, :published).tap do |w|
-          w.members += [asset_child, work_child]
-          w.published = false
-          w.save!
-        end
+        create(:work, :published, published: false, published_at: false, members: [asset_child, work_child])
       end
 
       it "can publish, and publishes children" do
@@ -331,6 +328,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         expect(response.status).to redirect_to(admin_work_path(work))
         work.reload
         expect(work.published?).to be true
+        expect(work.published_at).to be_within(1.second).of Time.now
         expect(work.members.all? {|m| m.published?}).to be true
       end
 
@@ -374,11 +372,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         describe "child work missing required fields" do
           let(:work_child) { build(:private_work, title: "the_child_work_title") }
           let(:work) do
-            create(:work, :published).tap do |w|
-              w.members << work_child
-              w.published = false
-              w.save!
-            end
+            create(:work, :published, members: [work_child], published:false)
           end
 
           it "can not publish, displaing proper error for child work" do
