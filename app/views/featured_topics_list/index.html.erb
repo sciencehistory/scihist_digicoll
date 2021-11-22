@@ -1,0 +1,22 @@
+<%# we re-use some styles from the collections_list#index to style identically -%>
+<div class="collections-index">
+    <h1 class="index-title featured-topics-title">Featured Topics</h1>
+
+    <div class="collections-index-list">
+        <% @featured_topics.each do |topic| %>
+            <div class="collection">
+                <%= link_to featured_topic_path(topic.slug) do %>
+                  <%= image_tag topic.thumb_asset_path, class: "featured-topic-image", width: "100%", alt: "" %>
+                  <div class="collection-title-wrapper">
+                      <p class="collection-title"><%= topic.title %></p>
+                  </div>
+                <% end %>
+            </div>
+        <% end %>
+        <%# hack to keep our last line of collection teasers left-aligned, assuming
+        max four-columns %>
+        <div class="collection-spacer"></div>
+        <div class="collection-spacer"></div>
+        <div class="collection-spacer"></div>
+    </div>
+</div>
