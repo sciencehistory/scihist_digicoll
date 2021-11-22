@@ -32,7 +32,16 @@ class Admin::AssetsController < AdminController
   def destroy
     @asset = Asset.find_by_friendlier_id!(params[:id])
     authorize! :destroy, @asset
-    @asset.destroy
+
+    if @asset.parent
+      # doing it this way will update @asset.parent.members in-memory, so it's consistent and the
+      # destroyed work is not in the in-memory association, which can matter for instance
+      # for the automatic reindexing after this save!
+      @asset.parent.members.destroy(@asset)
+    else
+      @asset.destroy
+    end
+
     respond_to do |format|
       format.html { redirect_to admin_work_path(@asset.parent.friendlier_id, anchor: "tab=nav-members"), notice: "Asset '#{@asset.title}' was successfully destroyed." }
       format.json { head :no_content }

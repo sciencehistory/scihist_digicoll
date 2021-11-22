@@ -40,6 +40,7 @@ class Work < Kithe::Work
     work.validates_presence_of :rights
   end
 
+  before_validation :set_published_at
 
   attr_json :additional_title, :string, array: true, default: -> { [] }
   attr_json :external_id, Work::ExternalId.to_type, array: true, default: -> { [] }
@@ -214,4 +215,10 @@ class Work < Kithe::Work
   def is_oral_history?
     genre && genre.include?("Oral histories")
   end
+
+  private
+  def set_published_at
+    self.published_at = DateTime.now if published? && published_changed?
+  end
+
 end

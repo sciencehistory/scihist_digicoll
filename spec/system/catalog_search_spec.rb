@@ -26,10 +26,7 @@ describe CatalogController, solr: true, indexable_callbacks: true do
     it "loads" do
       visit search_catalog_path(search_field: "all_fields")
 
-      # Blacklight has an illegal nav[role=region] we can't do anything about
-      # right now.
-      # https://github.com/projectblacklight/blacklight/pull/2491
-      expect(page).to be_axe_clean.excluding("nav[role=region]")
+      expect(page).to be_axe_clean
 
       expect(page).to have_content("1 - 4 of 4")
 

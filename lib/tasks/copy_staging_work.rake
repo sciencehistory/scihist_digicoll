@@ -22,7 +22,9 @@ namespace :scihist do
     # on staging server.
     desc "restore Work from JSON serialized by :serialize_work"
     task :restore_work, [:json_file_path] => :environment do |t, args|
-      CopyStaging::RestoreWork.new(json_file: File.open(args[:json_file_path])).restore
+      Kithe::Indexable.index_with(batching: true) do
+        CopyStaging::RestoreWork.new(json_file: File.open(args[:json_file_path])).restore
+      end
     end
   end
 end
