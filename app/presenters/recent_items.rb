@@ -28,9 +28,9 @@ class RecentItems
   end
 
   def fetch_bag
-    Work.where('published = true').
+    Work.where(published: true).
       includes(:leaf_representative).
-      order(published_at: :desc, updated_at: :desc).
+      order(Arel.sql "published_at desc nulls last, updated_at desc").
       limit(@how_many_works_in_bag)
   end
 
