@@ -9,10 +9,14 @@ class RecentItems
   @@last_refresh = nil
   @@bag = nil
 
-  def initialize
-    @how_many_works_to_show = 5
-    @how_often_to_change = 60 * 10 # ten minutes in seconds.
-    @how_many_works_in_bag = 50
+  def initialize(
+    how_many_works_to_show: 5,
+    how_often_to_change:    60 * 10, # ten minutes in seconds
+    how_many_works_in_bag:  50 )
+
+    @how_many_works_to_show = how_many_works_to_show
+    @how_often_to_change = how_often_to_change 
+    @how_many_works_in_bag = how_many_works_in_bag
   end
 
   def recent_items
@@ -20,10 +24,23 @@ class RecentItems
     # The randomization function is seeded from @@last_refresh,
     # which is a class instance variable.
     # Hence, the shuffled selection is the same for all users at a given moment.
-    fetch_bag.shuffle(random: Random.new(@@last_refresh))[0... @how_many_works_to_show]
+    maybe_fetch_bag.shuffle(random: Random.new(@@last_refresh))[0... @how_many_works_to_show]
+  end
+
+  def fetch_bag
+    Work.where('published = true').
+      includes(:leaf_representative).
+      order(published_at: :desc, updated_at: :desc).
+      limit(@how_many_works_in_bag)
   end
 
   private
+
+  # Only runs if @@bag.nil?
+  # We set @@bag to nil every how_often_to_change seconds.
+  def maybe_fetch_bag
+      @@bag ||= fetch_bag
+  end
 
   # Don't contact the database more often than @how_often_to_change.
   def time_for_a_new_bag?
@@ -35,12 +52,5 @@ class RecentItems
 
   def still_fresh?
     (Time.now.to_i - @@last_refresh) < @how_often_to_change
-  end
-
-  def fetch_bag
-    @@bag ||= Work.where('published = true').
-      includes(:leaf_representative).
-      order('updated_at desc').
-      limit(@how_many_works_in_bag)
   end
 end
