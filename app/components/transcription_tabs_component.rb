@@ -8,8 +8,8 @@
 class TranscriptionTabsComponent < ApplicationComponent
   attr_reader :transcription_texts, :translation_texts
 
-  # @param transcription_pages [Array<WorkImageShowComponent::TextPage>]
-  # @param translation_pages [Array<WorkImageShowComponent::TextPage>]
+  # @param transcription_pages [Array<Work::TextPage>]
+  # @param translation_pages [Array<Work::TextPage>]
   def initialize(transcription_texts:, translation_texts:)
     @transcription_texts = transcription_texts
     @translation_texts = translation_texts

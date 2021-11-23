@@ -50,7 +50,7 @@
                 member_id: text_obj.friendlier_id, work_id: text_obj.asset.parent&.friendlier_id
           )) do %>
               <i class="fa fa-window-maximize" aria-hidden="true"></i>
-              Image <%= text_obj.image_number %>
+              <%= text_obj.page_label %>
             <% end %>
           </h3>
         <% end %>
@@ -72,7 +72,7 @@
                   member_id: text_obj.friendlier_id, work_id: text_obj.asset.parent&.friendlier_id
             )) do %>
               <i class="fa fa-window-maximize" aria-hidden="true"></i>
-              Image <%= text_obj.image_number %>
+              <%= text_obj.page_label %>
             <% end %>
           </h3>
         <% end %>
