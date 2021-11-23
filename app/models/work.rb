@@ -110,6 +110,16 @@ class Work < Kithe::Work
     Kithe::Model.where(sql)
   end
 
+  # All DISPLAYABLE (to current user) members, in order, and
+  # with proper pre-fetches.
+  def ordered_viewable_members(current_user:)
+    members = self.members.includes(:leaf_representative)
+    members = members.where(published: true) if current_user.nil?
+    members = members.order(:position).to_a
+
+    members
+  end
+
   # Ensures the optional sidecar OralHistoryContent is present if it wans't already
   # (saving to db if receiver is persisted), and returns it.
   #
