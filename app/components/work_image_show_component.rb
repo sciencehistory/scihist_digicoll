@@ -42,13 +42,8 @@ class WorkImageShowComponent < ApplicationComponent
   # All DISPLAYABLE (to current user) members, in order, and
   # with proper pre-fetches.
   def ordered_viewable_members
-    @ordered_members ||= begin
-      members = work.members.includes(:leaf_representative)
-      members = members.where(published: true) if current_user.nil?
-      members = members.order(:position).to_a
-    end
+    @ordered_members ||= work.ordered_viewable_members(current_user: current_user)
   end
-
 
   def transcription_texts
     @transcription_texts ||= Work::TextPage.compile(ordered_viewable_members, accessor: :transcription)
