@@ -281,8 +281,12 @@ class FeaturedTopic
     category_key.to_s.dasherize
   end
 
+  def redirect_path_type?
+    definition.has_key?(:path)
+  end
+
   def path
-    if definition.has_key?(:path)
+    if redirect_path_type?
       definition[:path]
     else
       # Hard-coding this, just for efficiency, instead of:
