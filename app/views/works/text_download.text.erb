@@ -1,0 +1,15 @@
+<%= strip_tags CitationDisplay.new(work).display %>
+
+Courtesy of the Science History Institute, prepared <%= localize(Time.now, format: :long) %>
+
+
+= <%= subtitle.upcase %> =
+
+<%- pages.each do |page| 0%>
+<%- if pages.length > 1 -%>
+== <%= page.page_label.upcase %> ==
+
+<%- end -%>
+<%= page.text.lstrip.rstrip %>
+
+<%- end -%>

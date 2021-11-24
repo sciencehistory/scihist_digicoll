@@ -71,4 +71,63 @@ RSpec.describe WorksController, type: :controller do
       end
     end
   end
+
+  ["transcription", "english_translation"].each do |trans_text_type|
+    context trans_text_type do
+      context "no suitable text" do
+        let(:work) { create(:public_work) }
+        it "404s" do
+          expect {
+            get trans_text_type, params: { id: work.friendlier_id }, as: :text
+          }.to raise_error(ActionController::RoutingError)
+        end
+      end
+
+      context "suitable text" do
+        render_views
+
+        let(:unpublished_asset) { create(:asset_with_faked_file, published: false, trans_text_type => "do not include me", position: 10) }
+
+        let(:work) { create(:public_work, title: "this is my work",
+          members: [
+            create(:asset_with_faked_file, trans_text_type => "text 2\n\nparagraph 2-2", position: 2),
+            create(:asset_with_faked_file, trans_text_type => "text 1\n\nparagraph 1-2", position: 1),
+            unpublished_asset
+          ])
+        }
+
+        let(:published_ordered_members) {
+          work.members.select(&:published).sort_by(&:position)
+        }
+
+        it "delivers" do
+          get trans_text_type, params: { id: work.friendlier_id }, as: :text
+
+          expect(response.headers["Content-Disposition"]).to include("this_is_my_#{work.friendlier_id}_#{trans_text_type}.txt")
+
+          expect(response.body).to include(work.title.titlecase)
+          expect(response.body).to include("== IMAGE 1 ==\n\n#{published_ordered_members.first.send(trans_text_type)}")
+          expect(response.body).to include("== IMAGE 2 ==\n\n#{published_ordered_members.second.send(trans_text_type)}")
+
+          expect(response.body).not_to include(unpublished_asset.send(trans_text_type))
+        end
+
+        context "unpublished work" do
+          let(:work) { create(:work, title: "this is my work", published: false,
+            members: [
+              create(:asset_with_faked_file, trans_text_type => "text 1\n\nparagraph 1-2", position: 1),
+            ])
+          }
+
+          it "denies access" do
+            get trans_text_type, params: { id: work.friendlier_id }, as: :text
+
+            expect(response).to redirect_to(new_user_session_path)
+            expect(flash.alert).to match /You don't have permission to access/
+          end
+        end
+      end
+    end
+  end
+
 end
