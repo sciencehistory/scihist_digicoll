@@ -6,11 +6,13 @@
 #       # description tab content
 #    end
 class TranscriptionTabsComponent < ApplicationComponent
-  attr_reader :transcription_texts, :translation_texts
+  attr_reader :transcription_texts, :translation_texts, :work
 
+  # @param work [Work]
   # @param transcription_pages [Array<Work::TextPage>]
   # @param translation_pages [Array<Work::TextPage>]
-  def initialize(transcription_texts:, translation_texts:)
+  def initialize(work:, transcription_texts:, translation_texts:)
+    @work = work
     @transcription_texts = transcription_texts
     @translation_texts = translation_texts
   end
