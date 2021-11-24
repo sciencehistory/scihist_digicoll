@@ -82,6 +82,17 @@ Rails.application.routes.draw do
     format: false,
     as: :viewer_images_info
 
+  get 'works/:id/transcription' => "works#transcription",
+    defaults: {format: 'txt'},
+    format: false,
+    as: :transcription_download
+
+  get 'works/:id/english_translation' => "works#english_translation",
+    defaults: {format: 'txt'},
+    format: false,
+    as: :english_translation
+
+
   # Make the viewer  URL lead to ordinary show page, so JS can pick it up and launch viewer.
   get '/works/:id/viewer/:viewer_member_id(.:format)' => 'works#show', as: :viewer
 

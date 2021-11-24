@@ -59,7 +59,16 @@ class DownloadFilenameHelper
   end
 
   def self.ris_download_name(work)
-    "#{first_three_words(work.title)}_#{work.friendlier_id}.ris"
+    work_download_name(work, suffix: "ris")
+  end
+
+  # A generic method to create names for work-level file downloads, based
+  # on [first three words of work]_[work friendlier id]_[optional additional specifier].[suffix]
+  def self.work_download_name(work, specifier_str:nil, suffix:)
+    parts = [first_three_words(work.title), work.friendlier_id]
+    parts << specifier_str if specifier_str
+
+    "#{parts.join('_')}.#{suffix}"
   end
 
   # Pass in a string, get the first three words separated by underscores, stripping punctuation.
