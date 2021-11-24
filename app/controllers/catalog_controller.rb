@@ -448,6 +448,18 @@ class CatalogController < ApplicationController
       field.if = ->(controller, field) { controller.current_user }
     end
 
+    config.add_sort_field("date_created_asc") do |field|
+      field.label = "date created \u25BC"
+      field.sort = "date_created_dtsi asc"
+      field.if = ->(controller, field) { controller.current_user }
+    end
+
+    config.add_sort_field("date_created_desc") do |field|
+      field.label = "date created \u25B2"
+      field.sort = "date_created_dtsi desc"
+      field.if = ->(controller, field) { controller.current_user }
+    end
+
 
     # If there are more than this many search results, no spelling ("did you
     # mean") suggestion is offered.
