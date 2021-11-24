@@ -233,51 +233,51 @@ describe CatalogController, solr: true, indexable_callbacks: true do
         create(:public_work).tap do |w|
           w.title = "published_at old"
           w.published_at = days_ago[5]
-          w.updated_at   = days_ago[5]
+          w.created_at   = days_ago[5]
           w.save(validate:false)
         end,
         create(:public_work).tap do |w|
           w.title = "published_at medium"
           w.published_at = days_ago[4]
-          w.updated_at   = days_ago[4]
+          w.created_at   = days_ago[4]
           w.save(validate:false)
         end,
         create(:public_work).tap do |w|
-          w.title = "published_at new, updated_at older"
+          w.title = "published_at new, created_at older"
           w.published_at = days_ago[3]
-          w.updated_at   = days_ago[3]
+          w.created_at   = days_ago[3]
           w.save(validate:false)
         end,
         create(:public_work).tap do |w|
-          w.title = "published_at new, updated_at newer"
+          w.title = "published_at new, created_at newer"
           w.published_at = days_ago[3]
-          w.updated_at   = days_ago[2]
+          w.created_at   = days_ago[2]
           w.save(validate:false)
         end,
         create(:public_work).tap do |w|
-          w.title = "published_at nil, updated_at older"
+          w.title = "published_at nil, created_at older"
           w.published_at = nil
-          w.updated_at   = days_ago[2]
+          w.created_at   = days_ago[2]
           w.save(validate:false)
         end,
         create(:public_work).tap do |w|
-          w.title = "published_at nil, updated_at newer"
+          w.title = "published_at nil, created_at newer"
           w.published_at = nil
-          w.updated_at   = days_ago[1]
+          w.created_at   = days_ago[1]
           w.save(validate:false)
         end
       ]
     end
-    it "default search shows them sorted correctly: first by published_at, then by updated_at" do
+    it "default search shows them sorted correctly: first by published_at, then by created_at" do
       visit search_catalog_path(search_field: "all_fields")
       titles_in_order =  page.find_all('.scihist-results-list-item-content h2 a').map {|link| link.text}
       expect(titles_in_order).to eq [
-        "published_at new, updated_at newer",
-        "published_at new, updated_at older",
+        "published_at new, created_at newer",
+        "published_at new, created_at older",
         "published_at medium",
         "published_at old",
-        "published_at nil, updated_at newer",
-        "published_at nil, updated_at older"
+        "published_at nil, created_at newer",
+        "published_at nil, created_at older"
       ]
     end
   end

@@ -423,7 +423,7 @@ class CatalogController < ApplicationController
 
     config.add_sort_field("recently_added") do |field|
       field.label = "recently added"
-      field.sort = "date_published_dtsi desc, date_modified_dtsi desc"
+      field.sort = "date_published_dtsi desc, date_created_dtsi desc"
       # will be used by our custom code as default sort when no query has been entered
       field.blank_query_default = true
     end
@@ -431,7 +431,7 @@ class CatalogController < ApplicationController
     # limit to just available for logged-in admins, with `if ` param
     config.add_sort_field("oldest_added") do |field|
       field.label = "oldest added"
-      field.sort = "date_published_dtsi asc, date_modified_dtsi asc"
+      field.sort = "date_published_dtsi asc, date_created_dtsi asc"
       field.if = ->(controller, field) { controller.current_user }
     end
 
