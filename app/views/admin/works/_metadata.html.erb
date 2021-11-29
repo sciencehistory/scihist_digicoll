@@ -37,6 +37,9 @@
     <dt>Created</dt>
     <dd><%= l @work.created_at, format: :admin %></dd>
 
+    <dt>Published</dt>
+    <dd><%= l(@work.published_at, format: :admin) if  @work.published_at.present? %></dd>
+
     <dt>Last Modified</dt>
     <dd><%= l @work.updated_at, format: :admin %></dd>
 
