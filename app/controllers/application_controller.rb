@@ -31,7 +31,8 @@ class ApplicationController < ActionController::Base
     timecode = Time.now.gmtime.to_i
     Honeybadger.context({
       :papertrail_url => "https://papertrailapp.com/events?focus=#{timecode}&selected=#{timecode}",
-      :request_id => request.uuid
+      :request_id => request.uuid,
+      :current_user_email => current_user&.email
     })
   end
 
