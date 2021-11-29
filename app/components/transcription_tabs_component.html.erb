@@ -42,7 +42,7 @@
   <% if transcription_texts.present? %>
     <div class="tab-pane" id="transcription" role="tabpanel" aria-labelledby="transcription-tab">
       <div class="d-flex justify-content-end">
-        <%= link_to work_transcription_download_path(work), class: "btn btn-primary" do %>
+        <%= link_to work_transcription_download_path(work), class: "btn btn-primary sq-corner" do %>
           <i class="fa fa-download" aria-hidden="true"></i> Download text file
         <% end %>
       </div>
@@ -69,7 +69,7 @@
   <% if translation_texts.present? %>
     <div class="tab-pane" id="translation" role="tabpanel" aria-labelledby="translation-tab">
       <div class="d-flex justify-content-end">
-        <%= link_to work_english_translation_download_path(work), class: "btn btn-primary" do %>
+        <%= link_to work_english_translation_download_path(work), class: "btn btn-primary sq-corner" do %>
           <i class="fa fa-download" aria-hidden="true"></i> Download text file
         <% end %>
       </div>
