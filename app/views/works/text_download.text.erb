@@ -1,4 +1,4 @@
-<%= strip_tags CitationDisplay.new(work).display %>
+<%= strip_tags CitationDisplay.new(work).display.chomp('.') %>
 
 Courtesy of the Science History Institute, prepared <%= localize(Time.now, format: :long) %>
 
