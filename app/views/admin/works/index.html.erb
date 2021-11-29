@@ -10,9 +10,9 @@
   <div class="row">
     <div class="input-group col-sm-10 mb-3">
       <div class="input-group-prepend">
-        <%= f.label :title_or_friendlier_id_cont, "In Title or ID", class: "input-group-text" %>
+        <%= label_tag "q[q]", "In Title or ID", class: "input-group-text" %>
       </div>
-      <%= f.search_field :title_or_friendlier_id_cont, class: "form-control" %>
+      <%= search_field_tag "q[q]", params[:q][:q], class: "form-control" %>
       <div class="input-group-append">
         <%= f.button "Search", class: "btn btn-primary" %>
       </div>
