@@ -428,13 +428,6 @@ class CatalogController < ApplicationController
       field.blank_query_default = true
     end
 
-    # limit to just available for logged-in admins, with `if ` param
-    config.add_sort_field("oldest_added") do |field|
-      field.label = "oldest added"
-      field.sort = "date_published_dtsi asc, date_created_dtsi asc"
-      field.if = ->(controller, field) { controller.current_user }
-    end
-
     config.add_sort_field("date_modified_desc") do |field|
       field.label = "date modified \u25BC"
       field.sort = "date_modified_dtsi desc"
@@ -568,7 +561,6 @@ class CatalogController < ApplicationController
     "earliest_year asc" => "oldest_date",
     "score desc, system_create_dtsi desc" => "relevance",
     "system_create_dtsi desc" => "recently_added",
-    "system_create_dtsi asc" => "oldest_added",
     "system_modified_dtsi desc" => "date_modified_desc",
     "system_modified_dtsi asc" => "date_modified_asc"
   }
