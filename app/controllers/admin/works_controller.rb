@@ -11,7 +11,7 @@ class Admin::WorksController < AdminController
            :remove_ohms_xml, :submit_searchable_transcript_source, :download_searchable_transcript_source,
            :remove_searchable_transcript_source, :create_combined_audio_derivatives, :update_oh_available_by_request,
            :update_oral_history_content]
-  
+
   # GET /admin/works
   # GET /admin/works.json
   def index
@@ -219,7 +219,7 @@ class Admin::WorksController < AdminController
   # recursive CTE so it'll be efficient-ish.
   def publish
     authorize! :publish, @work
-    
+
     @work.class.transaction do
       @work.update!(published: true)
       if params[:cascade] == 'true'
@@ -362,7 +362,11 @@ class Admin::WorksController < AdminController
   def batch_update
     @work = Admin::BatchUpdateWorkForm.new(work_params)
 
-    unless @work.update_works(current_user.works_in_cart.find_each)
+    # Since we're going to end up solr re-indexing em all, let's make sure
+    # and avoid n+1s.
+    works_scope = current_user.works_in_cart.strict_loading.for_batch_indexing
+
+    unless @work.update_works(works_scope.find_each)
       # the form is based on @work, so re-rendered will show errors
       render :batch_update_form
       return
