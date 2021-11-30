@@ -25,14 +25,16 @@ namespace :scihist do
         csv << ['identifier', 'title', 'date', 'description']
         booth_collection.contains.find_each(batch_size: 10) do |work|
           next unless (work.subject.include? 'Mint of the United States') || (extra_items.include? work.friendlier_id)
+          doc = Nokogiri::XML(WorkOaiDcSerialization.new(work).to_oai_dc)
           csv << ['identifier', 'title', 'date', 'description'].map do |column|
-            Nokogiri::XML(WorkOaiDcSerialization.new(work).to_oai_dc).
-              xpath("//dc:#{column}", dc:"http://purl.org/dc/elements/1.1/").
-              map(&:to_xml).join
+            values = doc.xpath("//dc:#{column}", dc:"http://purl.org/dc/elements/1.1/").
+              map{|v| v.text.squish}
+            raise "None of these columns should have more than one value" if values.count > 1
+            CGI.unescapeHTML(values.join)
           end
         end
       end
-      
+
       puts csv_string
     end
   end
