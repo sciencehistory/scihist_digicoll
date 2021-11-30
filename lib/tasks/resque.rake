@@ -21,7 +21,7 @@ namespace :scihist do
   namespace :resque do
     desc "prune workers resque knows haven't sent a heartbeat in a while"
     # resque is supposed to do this itself sometimes, but doesn't always.
-    task :prune_expired_workers do
+    task :prune_expired_workers => :environment do
       expired = Resque::Worker.all_workers_with_expired_heartbeats
       if expired.present?
         $stderr.puts "pruning: #{expired}"
