@@ -4,6 +4,9 @@
 # Since the member relation destroys children when parent is deleted, deleting a collection
 # automatically deletes the thumb (which automatically deletes the stored file)
 class Collection < Kithe::Collection
+
+  include RecordPublishedAt
+
   # automatic Solr indexing on save
   if ScihistDigicoll::Env.lookup(:solr_indexing) == 'true'
     self.kithe_indexable_mapper = CollectionIndexer.new
@@ -15,8 +18,6 @@ class Collection < Kithe::Collection
   }
 
   accepts_nested_attributes_for :representative
-
-  before_validation :set_published_at
 
   attr_json :description, :text
   attr_json :related_url, :string, array: true
@@ -47,11 +48,4 @@ class Collection < Kithe::Collection
   def build_representative
     self.representative = CollectionThumbAsset.new(title: "collection-thumbnail-placeholder", parent: self)
   end
-
-  private
-  def set_published_at
-    self.published_at = DateTime.now if published? && published_changed?
-  end
-
-
 end
