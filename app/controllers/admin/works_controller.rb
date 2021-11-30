@@ -366,6 +366,13 @@ class Admin::WorksController < AdminController
     # and avoid n+1s.
     works_scope = current_user.works_in_cart.strict_loading.for_batch_indexing
 
+    # Plus we ALSO need to pre-load contained_by if we're going to edit it!
+    # I don't feel like setting contained_by_ids ought to load or require
+    # loading contained_by... yet strict_loading said it did, works for now.
+    if work_params.has_key?(:contained_by_ids)
+      works_scope = works_scope.includes(:contained_by)
+    end
+
     unless @work.update_works(works_scope.find_each)
       # the form is based on @work, so re-rendered will show errors
       render :batch_update_form
