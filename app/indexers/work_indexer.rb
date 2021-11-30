@@ -84,9 +84,6 @@ class WorkIndexer < Kithe::Indexer
 
     # Note standard created_at, updated_at, and published are duplicated
     # in CollectionIndexer. Maybe we want to DRY it somehow.
-
-    # May want to switch to or add a 'date published' instead, right
-    # now we only have date added to DB, which is what we had in sufia.
     to_field "date_created_dtsi" do |rec, acc|
       if rec.created_at
         acc << rec.created_at.utc.iso8601
@@ -98,6 +95,14 @@ class WorkIndexer < Kithe::Indexer
         acc << rec.updated_at.utc.iso8601
       end
     end
+
+
+    to_field "date_published_dtsi" do |rec, acc|
+      if rec.published_at
+        acc << rec.published_at.utc.iso8601
+      end
+    end
+
 
     # for now we index 'published', not sure if we'll move to ONLY indexing
     # things that are published.
