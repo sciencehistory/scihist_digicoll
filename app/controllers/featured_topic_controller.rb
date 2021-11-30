@@ -38,6 +38,8 @@ class FeaturedTopicController < CatalogController
     @featured_topic ||= FeaturedTopic.from_slug(params[:slug]).tap do |ft|
       if ft.nil?
         raise ActionController::RoutingError.new("No Featured Topic matches `#{params[:slug]}`")
+      elsif ft.redirect_path_type?
+        raise ActionController::RoutingError.new("Featured topic for `#{params[:slug]}` is a :path redirect type, controller is not applicable")
       end
     end
   end

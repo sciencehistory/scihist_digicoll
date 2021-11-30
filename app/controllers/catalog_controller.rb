@@ -423,17 +423,9 @@ class CatalogController < ApplicationController
 
     config.add_sort_field("recently_added") do |field|
       field.label = "recently added"
-      field.sort = "date_created_dtsi desc"
+      field.sort = "date_published_dtsi desc, date_created_dtsi desc"
       # will be used by our custom code as default sort when no query has been entered
       field.blank_query_default = true
-    end
-
-    # limit to just available for logged-in admins, with `if ` param
-
-    config.add_sort_field("oldest_added") do |field|
-      field.label = "oldest added"
-      field.sort = "date_created_dtsi asc"
-      field.if = ->(controller, field) { controller.current_user }
     end
 
     config.add_sort_field("date_modified_desc") do |field|
@@ -445,6 +437,18 @@ class CatalogController < ApplicationController
     config.add_sort_field("date_modified_asc") do |field|
       field.label = "date modified \u25B2"
       field.sort = "date_modified_dtsi asc"
+      field.if = ->(controller, field) { controller.current_user }
+    end
+
+    config.add_sort_field("date_created_asc") do |field|
+      field.label = "date created \u25BC"
+      field.sort = "date_created_dtsi asc"
+      field.if = ->(controller, field) { controller.current_user }
+    end
+
+    config.add_sort_field("date_created_desc") do |field|
+      field.label = "date created \u25B2"
+      field.sort = "date_created_dtsi desc"
       field.if = ->(controller, field) { controller.current_user }
     end
 
@@ -557,7 +561,6 @@ class CatalogController < ApplicationController
     "earliest_year asc" => "oldest_date",
     "score desc, system_create_dtsi desc" => "relevance",
     "system_create_dtsi desc" => "recently_added",
-    "system_create_dtsi asc" => "oldest_added",
     "system_modified_dtsi desc" => "date_modified_desc",
     "system_modified_dtsi asc" => "date_modified_asc"
   }
