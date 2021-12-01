@@ -41,6 +41,11 @@
 
   <% if transcription_texts.present? %>
     <div class="tab-pane" id="transcription" role="tabpanel" aria-labelledby="transcription-tab">
+      <div class="d-flex justify-content-end">
+        <%= link_to work_transcription_download_path(work), class: "btn btn-primary sq-corner" do %>
+          <i class="fa fa-download" aria-hidden="true"></i> Download text file
+        <% end %>
+      </div>
       <% transcription_texts.each do |text_obj| %>
         <% if transcription_texts.length > 1 %>
           <h3 class="textual-separator text-page-separator">
@@ -50,7 +55,7 @@
                 member_id: text_obj.friendlier_id, work_id: text_obj.asset.parent&.friendlier_id
           )) do %>
               <i class="fa fa-window-maximize" aria-hidden="true"></i>
-              Image <%= text_obj.image_number %>
+              <%= text_obj.page_label %>
             <% end %>
           </h3>
         <% end %>
@@ -63,6 +68,13 @@
 
   <% if translation_texts.present? %>
     <div class="tab-pane" id="translation" role="tabpanel" aria-labelledby="translation-tab">
+      <div class="d-flex justify-content-end">
+        <%= link_to work_english_translation_download_path(work), class: "btn btn-primary sq-corner" do %>
+          <i class="fa fa-download" aria-hidden="true"></i> Download text file
+        <% end %>
+      </div>
+
+
       <% translation_texts.each do |text_obj| %>
         <% if transcription_texts.length > 1 %>
           <h3 class="textual-separator text-page-separator">
@@ -72,7 +84,7 @@
                   member_id: text_obj.friendlier_id, work_id: text_obj.asset.parent&.friendlier_id
             )) do %>
               <i class="fa fa-window-maximize" aria-hidden="true"></i>
-              Image <%= text_obj.image_number %>
+              <%= text_obj.page_label %>
             <% end %>
           </h3>
         <% end %>
