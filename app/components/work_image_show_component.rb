@@ -42,36 +42,15 @@ class WorkImageShowComponent < ApplicationComponent
   # All DISPLAYABLE (to current user) members, in order, and
   # with proper pre-fetches.
   def ordered_viewable_members
-    @ordered_members ||= begin
-      members = work.members.includes(:leaf_representative)
-      members = members.where(published: true) if current_user.nil?
-      members = members.order(:position).to_a
-    end
+    @ordered_members ||= work.ordered_viewable_members(current_user: current_user)
   end
 
-
   def transcription_texts
-    @transcription_texts ||= ordered_viewable_members.collect.with_index do |member, i|
-      if member.kind_of?(Asset) && member.transcription.present?
-        TextPage.new(
-          member,
-          image_number: i+1,
-          text: member.transcription
-        )
-      end
-    end.compact
+    @transcription_texts ||= Work::TextPage.compile(ordered_viewable_members, accessor: :transcription)
   end
 
   def translation_texts
-    @translation_texts ||= ordered_viewable_members.collect.with_index do |member, i|
-      if member.kind_of?(Asset) && member.english_translation.present?
-        TextPage.new(
-          member,
-          image_number: i+1,
-          text: member.english_translation
-        )
-      end
-    end.compact
+    @translation_texts ||= Work::TextPage.compile(ordered_viewable_members, accessor: :english_translation)
   end
 
   def has_transcription_or_translation?
@@ -115,22 +94,5 @@ class WorkImageShowComponent < ApplicationComponent
       @member = member
       @image_label = image_label
     end
-  end
-
-  # just a little value class for the things we need to display an individual
-  # asset-page's worth of transcription or translation text
-  class TextPage
-    attr_reader :asset, :image_number, :text
-
-    def initialize(asset, image_number:, text:)
-      @asset = asset
-      @image_number = image_number
-      @text = text
-    end
-
-    def friendlier_id
-      asset.friendlier_id
-    end
-
   end
 end
