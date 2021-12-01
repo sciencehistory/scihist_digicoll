@@ -11,7 +11,7 @@ class Admin::WorksController < AdminController
            :remove_ohms_xml, :submit_searchable_transcript_source, :download_searchable_transcript_source,
            :remove_searchable_transcript_source, :create_combined_audio_derivatives, :update_oh_available_by_request,
            :update_oral_history_content]
-  
+
   # GET /admin/works
   # GET /admin/works.json
   def index
@@ -219,7 +219,7 @@ class Admin::WorksController < AdminController
   # recursive CTE so it'll be efficient-ish.
   def publish
     authorize! :publish, @work
-    
+
     @work.class.transaction do
       @work.update!(published: true)
       if params[:cascade] == 'true'
@@ -522,10 +522,11 @@ class Admin::WorksController < AdminController
     #
     # https://github.com/activerecord-hackery/ransack
     #
-    # that includes our sorting, our main text query field, and also
+    # that includes our sorting, and also
     # 'published' and "include or exclude Child Works that match query"
     #
-    # But other things we add on in ordinary AR, see #index_work_search
+    # But other things we add on in ordinary AR, including even our main
+    # query field. see #index_work_search
     def ransack_object
       # weird ransack param, we want it to default to true
       if params.dig(:q, "parent_id_null").nil?
@@ -540,13 +541,25 @@ class Admin::WorksController < AdminController
 
 
     # Take a ransack object that already has an ActiveRecord scope
-    # with some of our search conditions in it, and add on the ones
-    # that were hard to do in Ransack -- mainly the ones that we want
-    # to use custom postgres JSON-related operators for.
+    # with some of our search conditions in it, and add on a bunch
+    # of other ones that were easier to do manually instead of
+    # fighting with ransack.
     #
-    # Also add on pagination and any eager-loading.
+    # * things related to our JSON fields
+    # * our main search query that we want to search UUID too, which
+    #   requires special code since it's not a string field.
+    # * pagination and eager-loading
     def index_work_search(ransack_object)
       scope = ransack_object.result
+
+      if params[:q][:q].present?
+        q = params[:q][:q]
+        scope = scope.where("(title ILIKE ? OR friendlier_id ILIKE ? OR id = ?)",
+          "%#{q}%",
+          "%#{q}%",
+          Work.type_for_attribute(:id).cast(q)
+        )
+      end
 
       if params[:q][:genre].present?
         # fancy postgres json operators, may not be using indexes not sure.
