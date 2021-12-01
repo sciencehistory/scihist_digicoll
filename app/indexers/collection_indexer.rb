@@ -25,6 +25,13 @@ class CollectionIndexer < Kithe::Indexer
       end
     end
 
+    to_field "date_published_dtsi" do |rec, acc|
+      if rec.published_at
+        acc << rec.published_at.utc.iso8601
+      end
+    end
+
+
     # for now we index 'published', not sure if we'll move to ONLY indexing
     # things that are published.
     to_field "published_bsi", obj_extract("published?")
