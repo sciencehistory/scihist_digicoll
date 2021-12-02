@@ -109,7 +109,7 @@ namespace :scihist do
         # a bit, but not too bad.
 
         [
-          Work.strict_loading.includes(:contains_contained_by, :members, :oral_history_content => :interviewee_biographies),
+          Work.strict_loading.for_batch_indexing,
           Collection.strict_loading.includes(:contains_contained_by)
         ].each do |scope|
           scope.find_each do |model|
