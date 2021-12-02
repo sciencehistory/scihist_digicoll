@@ -5,6 +5,11 @@ class Work < Kithe::Work
     self.kithe_indexable_mapper = WorkIndexer.new
   end
 
+  # pre-loads associations you need to pre-load to do bulk-indexing of multiple works without
+  # n+1 queries -- that is with Rails `strict_loading` on and without errors. That is, associations
+  # the WorkIndexer is going to want.  Often used with `strict_loading`.
+  scope :for_batch_indexing, -> { includes(:contains_contained_by, :members, :oral_history_content => :interviewee_biographies) }
+
   # for now forbid 'role' for Work, we only use it for asset
   validates :role, absence: true
 
