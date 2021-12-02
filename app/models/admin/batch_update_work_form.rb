@@ -126,32 +126,46 @@ module Admin
         return false
       end
 
+      updated_work_ids = []
+
       # Do it in a transaction, don't update any unless we can update them all.
       Work.transaction do
-        relation.each do |each_work|
-          update_attributes.each do |k, v|
-            if v.kind_of?(Array)
-              # if it's a repeatable, we uniq it, no reason to allow dups.
-              each_work.send("#{k}=", (each_work.send(k) + v).uniq)
-            else
-              each_work.send("#{k}=", v)
+        # turn off solr auto-indexing, we'll keep track of the IDs and send off background job(s)
+        # to reindex instead.  Cause it can be slow for a batch edit!
+        Kithe::Indexable.index_with(disable_callbacks: true) do
+          relation.each do |each_work|
+            update_attributes.each do |k, v|
+              if v.kind_of?(Array)
+                # if it's a repeatable, we uniq it, no reason to allow dups.
+                each_work.send("#{k}=", (each_work.send(k) + v).uniq)
+              else
+                each_work.send("#{k}=", v)
+              end
+
+              unless each_work.valid?
+                # This shouldn't normally happen because we already validated the batch entry input on it's own.
+                # But maybe one of the records started out invalid? Or unexpected things happen.
+                # Record it as a somewhat mysterious error on our dummy work so the form will show it, and abort our mission
+                # returning false.
+
+                work.errors.add(:base,"Some works in the cart couldn't be saved, they may have pre-existing problems. The batch update was not done.")
+                work.errors.add(:base, "#{each_work.title} (#{each_work.friendlier_id}): #{each_work.errors.full_messages.join(', ')}")
+                return false
+              end
+
+              each_work.save!
+
+              updated_work_ids << each_work.id
             end
-
-            unless each_work.valid?
-              # This shouldn't normally happen because we already validated the batch entry input on it's own.
-              # But maybe one of the records started out invalid? Or unexpected things happen.
-              # Record it as a somewhat mysterious error on our dummy work so the form will show it, and abort our mission
-              # returning false.
-
-              work.errors.add(:base,"Some works in the cart couldn't be saved, they may have pre-existing problems. The batch update was not done.")
-              work.errors.add(:base, "#{each_work.title} (#{each_work.friendlier_id}): #{each_work.errors.full_messages.join(', ')}")
-              return false
-            end
-
-            each_work.save!
           end
         end
       end
+
+      # Send off to bg job to reindex
+      updated_work_ids.uniq.each_slice(Kithe.indexable_settings.batching_mode_batch_size).each do |list_of_ids|
+        ReindexWorksJob.perform_later(list_of_ids)
+      end
+
       return true
     end
 
