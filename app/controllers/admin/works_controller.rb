@@ -379,7 +379,7 @@ class Admin::WorksController < AdminController
       return
     end
 
-    redirect_to admin_cart_items_url, notice: "Updated works in Cart"
+    redirect_to admin_cart_items_url, notice: "Updated works in Cart. It may take a few minutes for changes to be visible in public search."
   end
 
   def batch_publish_toggle
