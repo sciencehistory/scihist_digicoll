@@ -1,4 +1,7 @@
 class Asset < Kithe::Asset
+
+  include RecordPublishedAt
+
   # We set an indexer to turn on Kithe Solr auto-indexing... but
   # we later override #update_index to index the PARENT WORK when
   # we ourselves change -- we don't index Assets, but we do include

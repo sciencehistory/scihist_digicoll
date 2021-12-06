@@ -4,6 +4,9 @@
 # Since the member relation destroys children when parent is deleted, deleting a collection
 # automatically deletes the thumb (which automatically deletes the stored file)
 class Collection < Kithe::Collection
+
+  include RecordPublishedAt
+
   # automatic Solr indexing on save
   if ScihistDigicoll::Env.lookup(:solr_indexing) == 'true'
     self.kithe_indexable_mapper = CollectionIndexer.new
