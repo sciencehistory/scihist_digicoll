@@ -128,11 +128,12 @@ module Admin
 
       updated_work_ids = []
 
-      # Do it in a transaction, don't update any unless we can update them all.
-      Work.transaction do
-        # turn off solr auto-indexing, we'll keep track of the IDs and send off background job(s)
-        # to reindex instead.  Cause it can be slow for a batch edit!
-        Kithe::Indexable.index_with(disable_callbacks: true) do
+
+      # turn off solr auto-indexing, we'll keep track of the IDs and send off background job(s)
+      # to reindex instead.  Cause it can be slow for a batch edit!
+      Kithe::Indexable.index_with(disable_callbacks: true) do
+        # Do it in a transaction, don't update any unless we can update them all.
+        Work.transaction do
           relation.each do |each_work|
             update_attributes.each do |k, v|
               if v.kind_of?(Array)
