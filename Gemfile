@@ -63,7 +63,9 @@ gem 'jbuilder', '~> 2.5'
 gem 'bootsnap', '>= 1.4.4', require: false
 
 gem 'bootstrap', '~> 4.3'
-gem 'sprockets-rails', '>= 2.3.2' # bootstrap gem requirement
+# bootstrap gem requirement. Lock to 3.2.2 due to https://github.com/sciencehistory/scihist_digicoll/issues/1501
+# until https://github.com/rails/sprockets-rails/issues/488 is fixed.
+gem 'sprockets-rails', '= 3.2.2'
 
 gem 'jquery-rails', "~> 4.3"
 
