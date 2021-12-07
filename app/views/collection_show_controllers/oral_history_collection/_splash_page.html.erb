@@ -130,79 +130,27 @@ we want the full width of the screen, no margins or padding. %>
     <h2 class="brand-alt-h2">Projects</h2>
     <p>While individual oral histories can contribute to specific research goals and agendas, the strength of an oral history collection relies on the ability of individual oral histories to “speak” to each other. Learning about patterns of relationships and activities through the study of collective histories reveals much more about the scientific process and its products than any one oral history could do on its own.</p>
 
-    <div class="project">
-      <%= link_to({ f: { project_facet: ["Oral History of the Toxic Substances Control Act"] } }, class: "project-thumb") do %>
-        <span class="count">
-          <%= canned_query_count(:toxic_substances) %>
-        </span>
-        <%= image_tag("oral_history_projects/TSCA.jpg") %>
-      <% end %>
+    <% project_list.each do |collection| %>
+      <div class="project">
+        <%= link_to(collection_path(collection.friendlier_id), class: "project-thumb") do %>
+          <span class="count">
+            <%= count_for_project(collection) %>
+          </span>
+          <%= render ThumbComponent.new(
+                            collection.leaf_representative,
+                            thumb_size: :collection_page,
+                            placeholder_img_url: asset_path("default_collection.svg")
+          ) %>
+        <% end %>
 
-      <div class="text">
-        <h3>
-          <%= link_to "Oral History of the Toxic Substances Control Act",
-            { f: { project_facet: ["Oral History of the Toxic Substances Control Act"] } }
-           %>
-        </h3>
-        <p>Through oral history interviews with individuals involved in the process of writing and negotiating the Toxic Substances Control Act (TSCA), we gain their perspective on the law, its impact, and whether or not it will continue to be effective in the 21st century.</p>
+        <div class="text">
+          <h3>
+            <%= link_to collection.title, collection_path(collection.friendlier_id) %>
+          </h3>
+          <%= DescriptionDisplayFormatter.new(collection.description).format %>
+        </div>
       </div>
-    </div>
-
-    <div class="project">
-      <%= link_to({ f: { project_facet: ["Mass Spectrometry"] } }, class: "project-thumb") do %>
-        <span class="count">
-          <%= canned_query_count(:mass_spectrometry) %>
-        </span>
-        <%= image_tag("oral_history_projects/MassSpec.jpg") %>
-      <% end %>
-
-      <div class="text">
-        <h3>
-          <%= link_to "Mass Spectrometry",
-            { f: { project_facet: ["Mass Spectrometry"] } }
-           %>
-        </h3>
-        <p>These oral histories record the human dimensions related to the growth of mass spectrometry in academic, industrial, and governmental laboratories during the 20th century.</p>
-      </div>
-    </div>
-
-    <div class="project">
-      <%= link_to({ f: { project_facet: ["Nanotechnology"] } }, class: "project-thumb") do %>
-        <span class="count">
-          <%= canned_query_count(:nanotechnology) %>
-        </span>
-        <%= image_tag("oral_history_projects/Nanotech.jpg") %>
-      <% end %>
-
-      <div class="text">
-        <h3>
-          <%= link_to "Nanotechnology",
-            { f: { project_facet: ["Nanotechnology"] } }
-           %>
-        </h3>
-
-        <p>This oral history series is an important resource for the history of nanotechnology, documenting the lives and careers of key scientists and engineers who shaped and contributed to the contemporary practice of science and technology.</p>
-      </div>
-    </div>
-
-    <div class="project">
-      <%= link_to({ f: { project_facet: ["REACH Ambler"] } }, class: "project-thumb") do %>
-        <span class="count">
-          <%= canned_query_count(:reach_ambler) %>
-        </span>
-        <%= image_tag("oral_history_projects/Ambler.jpg") %>
-      <% end %>
-
-      <div class="text">
-        <h3>
-          <%= link_to "REACH Ambler",
-            { f: { project_facet: ["REACH Ambler"] } }
-           %>
-        </h3>
-
-        <p><a href="https://www.sciencehistory.org/reach-ambler" target="_blank">Resources for Education and Action for Community Health in Ambler (REACH Ambler)</a> brings into focus the history of Ambler, Pennsylvania, a town long affected by exposure to asbestos from the former Keasbey and Mattison asbestos plant. The oral histories conducted with local residents, community activists, and EPA officials for this project inform the exhibits, online resources, and related public programs all aimed at fostering an understanding of different perspectives on risk, health, and the environment.</p>
-      </div>
-    </div>
+    <% end %>
 
     <%= link_to "More oral history projects...", "https://www.sciencehistory.org/oral-history-projects", class: "more-projects", target: "_blank" %>
   </div>
