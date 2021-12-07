@@ -152,21 +152,36 @@ RSpec.configure do |config|
   #
   $test_solr_started = false
   config.before(:each, :solr) do
-    unless $test_solr_started
+    unless $test_solr_known_running
       begin
-        $stdout.write("(starting test solr)")
+        # check if something appears to already be running where we expect the solr
+        solr_port_open = begin
+          solr_url = URI.parse(ScihistDigicoll::Env.lookup!(:solr_url))
+          Socket.tcp(solr_url.host, solr_url.port, connect_timeout: 0.1).close
+          true
+        rescue SystemCallError
+          false
+        end
 
-        at_exit {
-          puts "Shutting down test solr..."
-          ScihistDigicoll::SolrWrapperUtil.stop_with_collection(SolrWrapper.instance)
-          $test_solr_started = false
-        }
+        if solr_port_open
+          $test_solr_known_running
+        else
+          # otherwise start one up, and plan to shut it down later.
+          $stdout.write("(starting test solr)")
 
-        ScihistDigicoll::SpecUtil.allow_net_connect!
-        ScihistDigicoll::SolrWrapperUtil.start_with_collection(SolrWrapper.instance)
+          at_exit {
+            puts "Shutting down test solr..."
+            ScihistDigicoll::SolrWrapperUtil.stop_with_collection(SolrWrapper.instance)
+            $test_solr_known_running = false
+            $test_solr_started = false
+          }
 
-        $test_solr_started = true
+          ScihistDigicoll::SpecUtil.allow_net_connect!
+          ScihistDigicoll::SolrWrapperUtil.start_with_collection(SolrWrapper.instance)
 
+          $test_solr_started = true
+          $test_solr_known_running = true
+        end
       ensure
         ScihistDigicoll::SpecUtil.disable_net_connect!
       end
