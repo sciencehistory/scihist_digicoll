@@ -6,17 +6,23 @@
 # index view is overridden to use splash page template for splash_page_only?
 module CollectionShowControllers
   class OralHistoryCollectionController < CollectionShowController
+    # "Projects" we want to list on splash page are actually "Collection" objects.
+    # We just hard-code their friendlier_id's here (should we make this configurable
+    # in ENV instead?)
+    NANOTECHNOLOGY_FRIENDLIER_ID = 'zedby6n'
+    MASS_SPECTROMETRY_FRIEDLIER_ID = 'htlihxv'
+    TOXIC_SUBSTANCES_FRIENDLIER_ID = 'olbbze5'
+    REACH_AMBLER_FRIENDLIER_ID = 'ycpwcmp'
+    # order matters, the order we want them displayed:
+    PROJECT_COLLECTION_FRIENDLIER_IDS =
+      [TOXIC_SUBSTANCES_FRIENDLIER_ID, MASS_SPECTROMETRY_FRIEDLIER_ID, NANOTECHNOLOGY_FRIENDLIER_ID, REACH_AMBLER_FRIENDLIER_ID]
 
     # in splash_page_only mode, we'll fetch a facet count for each of these queries,
-    # to label our canned queries and projects with counts.
+    # to label our canned queries with counts.
     SPLASH_CANNED_QUERIES = {
       synchronized_audio: 'oh_feature_facet:"Synchronized audio"',
       women_in_science: 'subject_facet:"Women in science"',
       nobel_prize: 'subject_facet:"Nobel Prize winners"',
-      nanotechnology: 'project_facet:"Nanotechnology"',
-      toxic_substances: 'project_facet:"Oral History of the Toxic Substances Control Act"',
-      reach_ambler: 'project_facet:"REACH Ambler"',
-      mass_spectrometry: 'project_facet:"Mass Spectrometry"'
     }
 
     def blacklight_config
@@ -25,6 +31,34 @@ module CollectionShowControllers
       else
         super
       end
+    end
+
+    # Collections we want to list as "projects", ordered by same order as their ids in
+    # PROJECT_COLLECTION_FRIENDLIER_IDS
+    helper_method def project_list
+      @project_list ||= Collection.includes(:leaf_representative).
+        where(friendlier_id: PROJECT_COLLECTION_FRIENDLIER_IDS).
+        sort_by { |c| PROJECT_COLLECTION_FRIENDLIER_IDS.index(c.friendlier_id) }
+    end
+
+    # some kinda ugly ActiveRecord/SQL to do one fetch to get public member counts for our
+    # project list in one fetch. Result will be hash where key is collection ID (UUID pk), and
+    # value is count of public members
+    #
+    # We don't have collection membership in Solr, or we could use our "canned queries" mechanism
+    # from existing Solr query, instead we have to do an additional SQL query here, and a
+    # kind of convoluted one at that.
+    #
+    # We're only doing published counts, even if user is logged in, not worth it.
+    def project_counts
+      @project_counts ||= Kithe::Model.joins(:contains_contained_by).
+        where(published: true, contains_contained_by: {container_id: project_list.collect(&:id) }).
+        group(:container_id).
+        count
+    end
+
+    helper_method def count_for_project(collection)
+      project_counts[collection.id].to_i
     end
 
     # Assuming we added a facet.query to solr query, we look up the count returned
