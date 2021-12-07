@@ -45,6 +45,12 @@
         h2 {
           margin-top: 0;
         }
+
+        .blurb {
+          margin-top: $paragraph-spacer !important;
+          margin-bottom: $paragraph-spacer * 2 !important;
+          font-size: $h5-font-size !important;
+        }
     }
 
     .search-container {
