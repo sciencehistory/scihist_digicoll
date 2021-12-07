@@ -33,7 +33,6 @@ class Work < Kithe::Work
   validates :format, array_inclusion: { in: ControlledLists::FORMAT }
   validates :genre, array_inclusion: { in: ControlledLists::GENRE  }
   validates :exhibition, array_inclusion: { in: ControlledLists::EXHIBITION  }
-  validates :project, array_inclusion: { in: ControlledLists::PROJECT  }
   validates :related_url, array_inclusion: {
     proc: ->(v) { ScihistDigicoll::Util.valid_url?(v) } ,
     message: "is not a valid url: %{rejected_values}"
@@ -66,7 +65,6 @@ class Work < Kithe::Work
 
   attr_json :department, :string
   attr_json :exhibition, :string, array: true, default: -> { [] }
-  attr_json :project, :string, array: true, default: -> { [] }
   attr_json :series_arrangement, :string, array: true, default: -> { [] }
   attr_json :physical_container, Work::PhysicalContainer.to_type
 
