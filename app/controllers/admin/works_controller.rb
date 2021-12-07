@@ -379,46 +379,7 @@ class Admin::WorksController < AdminController
       return
     end
 
-    redirect_to admin_cart_items_url, notice: "Updated works in Cart"
-    return
-
-    ####
-
-    unless @work.valid?
-      render :batch_update_form
-      return
-    end
-
-    update_attrs = Work.attr_json_registry.definitions.reduce({}) do |hash, attr_defn|
-      value = @work.send(attr_defn.name)
-      if value.present?
-        hash[attr_defn.name] = value
-      end
-      hash
-    end
-
-    Work.transaction do
-      current_user.works_in_cart.find_each do |work|
-        update_attrs.each do |k, v|
-          if v.kind_of?(Array)
-            work.send("#{k}=", work.send(k) + v)
-          else
-            work.send("#{k}=", v)
-          end
-
-          unless work.valid?
-            @work.errors.add(:base, "#{work.title} (#{work.friendlier_id}): #{work.errors.full_messages.join(', ')}")
-            flash.now[:error] = "Some works in the cart couldn't be saved, they may have pre-existing problems. The batch update was not done."
-            render :batch_update_form
-            return
-          end
-
-          work.save!
-        end
-      end
-    end
-
-    redirect_to admin_cart_items_url, notice: "Updated works in Cart"
+    redirect_to admin_cart_items_url, notice: "Updated works in Cart. It may take a few minutes for changes to be visible in public search."
   end
 
   def batch_publish_toggle
