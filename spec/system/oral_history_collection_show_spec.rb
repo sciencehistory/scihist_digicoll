@@ -17,20 +17,21 @@ describe "Collection show page", solr: true, indexable_callbacks: true do
           date_of_work: Work::DateOfWork.new(start: "2019"),
           subject: ["Nobel Prize winners"],
           contained_by: [col])
-
-        create(:oral_history_work, :published,
-          title: "public work two",
-          date_of_work: Work::DateOfWork.new(start: "1900"),
-          project: ["Nanotechnology"],
-          contained_by: [col])
       end
     end
 
+    let(:project) do
+      create(:collection, title: "Nanotechnology",
+        friendlier_id: CollectionShowControllers::OralHistoryCollectionController::NANOTECHNOLOGY_FRIENDLIER_ID,
+        description: "This is nanotechnology",
+        contains: [create(:oral_history_work, :published)])
+    end
+
     it "displays" do
+      project # trigger lazy creation
       visit collection_path(collection)
 
       expect(page).to have_selector("h1", text: collection.title)
-
 
       expect(page).to have_selector("a.q", text: /1\s+Nobel Prize winners/)
 
