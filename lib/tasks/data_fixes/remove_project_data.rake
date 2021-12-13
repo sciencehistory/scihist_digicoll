@@ -13,8 +13,10 @@ namespace :scihist do
           #
           # There would have been a way to do this in a single raw SQL if
           # we really wanted to.
-          work.json_attributes.delete("project")
-          work.save!
+          if work.json_attributes.has_key?("project")
+            work.json_attributes.delete("project")
+            work.save!
+          end
           progress_bar.increment
         end
       end
