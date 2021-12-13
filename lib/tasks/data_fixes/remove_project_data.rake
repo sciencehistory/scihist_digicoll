@@ -3,6 +3,7 @@ namespace :scihist do
     # We'll be removing the "project" attribute altogether, first
     # remove the data.
     task :remove_project_data => :environment do
+      progress_bar =  ProgressBar.create(total: Work.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
       Kithe::Indexable.index_with(batching: true) do
         Work.find_each do |work|
           # actually a bit hard to completely remove this key from the DB,
@@ -14,6 +15,7 @@ namespace :scihist do
           # we really wanted to.
           work.json_attributes.delete("project")
           work.save!
+          progress_bar.increment
         end
       end
     end
