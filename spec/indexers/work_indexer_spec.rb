@@ -149,13 +149,18 @@ describe WorkIndexer do
 
         expect(output_hash["searchable_fulltext"]).to be_present
         expect(output_hash["searchable_fulltext"].first).to start_with("[untranscribed pre-interview discussion]")
-        expect(output_hash["searchable_fulltext"].length).to eq(1 + index_toc_entries_count)
+        # exactly how many entries depends on how many toc entries have synopsis, keywords, etc.
+        expect(output_hash["searchable_fulltext"].length).to be > (1 + index_toc_entries_count)
       end
 
-      it "indexes ToC keywords" do
+      it "indexes ToC components" do
         output_hash = WorkIndexer.new.map_record(work)
-        some_keywords = work.oral_history_content.ohms_xml.index_points.second.keywords.join("; ")
-        expect(output_hash["searchable_fulltext"]).to include(some_keywords)
+
+        joined_keywords = work.oral_history_content.ohms_xml.index_points.collect { |ip| ip.keywords.join("; ") }.collect(&:presence).compact
+
+        expect(output_hash["searchable_fulltext"]).to include(*joined_keywords)
+        expect(output_hash["searchable_fulltext"]).to include(*work.oral_history_content.ohms_xml.index_points.collect(&:title).collect(&:presence).compact)
+        expect(output_hash["searchable_fulltext"]).to include(*work.oral_history_content.ohms_xml.index_points.collect(&:synopsis).collect(&:presence).compact)
       end
     end
 
