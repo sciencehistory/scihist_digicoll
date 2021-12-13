@@ -148,7 +148,6 @@
     </tr>
   <% end %>
 
-  <%= render AttributeTable::RowComponent.new(:project, values: project, link_to_facet: "project_facet", alpha_sort: true) %>
   <%= render AttributeTable::RowComponent.new(:series_arrangement, values: series_arrangement) %>
 
   <% if @work.physical_container.present? %>

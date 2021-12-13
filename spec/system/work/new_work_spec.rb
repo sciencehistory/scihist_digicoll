@@ -92,8 +92,8 @@ RSpec.describe "New Work form", :logged_in_user, type: :system, js: true do
       find("div.work_#{p} select option[value='#{val}']").select_option
     end
 
-    #Custom single-value selects (2)
-    %w(exhibition project).each do |p|
+    #Custom single-value selects (1)
+    %w(exhibition).each do |p|
       scrollToTop
 
       attr_name = Work.human_attribute_name(p)
@@ -182,7 +182,7 @@ RSpec.describe "New Work form", :logged_in_user, type: :system, js: true do
       file_creator genre inscription language medium
       physical_container place rights
       rights_holder subject title
-      exhibition project
+      exhibition
     ).each do |prop|
       expect(newly_added_work.send(prop)).to eq work.send(prop)
     end
