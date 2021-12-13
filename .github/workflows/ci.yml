@@ -57,9 +57,16 @@ jobs:
               tmp/solr_test
             key: ${{ runner.os }}-solr-${{ hashFiles('.solr_wrapper.yml') }}
 
+        - name: Start test Solr
+          env:
+            RAILS_ENV: test
+          run: |
+            bundle exec rake solr:start
+
         - name: Run tests
           run: |
             bundle exec rspec
+
 
 
 

@@ -57,7 +57,15 @@ Or by putting in a local_env[_development].yml file:
 
 ### Running tests
 
-`./bin/rspec`.
+Start the test solr (if you don't, test setup should do it for you if needed, but this is cleaner):
+
+  RAILS_ENV=test ./bin/rake solr:start
+
+Then:
+
+  ./bin/rspec
+
+(You can shut down or restart test solr with eg `RAILS_ENV=test ./bin/rake solr:stop` or `:restart`, as well as check on it's status with `:status`)
 
 ## Development Notes
 
