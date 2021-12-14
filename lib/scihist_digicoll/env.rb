@@ -468,6 +468,8 @@ module ScihistDigicoll
     # To addresses (these are email lists maintained by IT.)
     define_key :digital_tech_email_address, default: "digital-tech@sciencehistory.org"
     define_key :digital_email_address, default: "digital@sciencehistory.org"
+    # requested simple email alerting for Digitization Queue creation, unset to disable feature
+    define_key :digitization_queue_alerts_email_address, default: "digital@sciencehistory.org"
 
     # These are the credentials used for accessing Amazon's simple email server:
     define_key :smtp_username

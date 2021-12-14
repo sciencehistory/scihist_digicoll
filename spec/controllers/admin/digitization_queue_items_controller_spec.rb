@@ -55,5 +55,24 @@ RSpec.describe Admin::DigitizationQueueItemsController, :logged_in_user, type: :
       expect(bad_delete.request.flash[:notice]).to eq "You may not delete this comment."
       expect(Admin::QueueItemComment.count).to eq 1
     end
+
+    it "sends email on creation", queue_adapter: :test do
+      expect do
+        post :create, params: {
+            collecting_area: queue_item.collecting_area,
+            admin_digitization_queue_item: {
+              title: "new item #{Time.now}",
+              collecting_area: queue_item.collecting_area,
+              accession_number: queue_item.accession_number
+            }
+        }
+
+        expect(flash[:notice]).to match /Digitization queue item was successfully created/
+      end.to have_enqueued_job(ActionMailer::MailDeliveryJob).with { |class_name, action|
+        expect(class_name).to eq "DigitizationQueueMailer"
+        expect(action).to eq "new_item_email"
+      }
+    end
+
   end
 end
