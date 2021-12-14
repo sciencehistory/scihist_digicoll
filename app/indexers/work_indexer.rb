@@ -150,10 +150,12 @@ class WorkIndexer < Kithe::Indexer
 
     to_field "oh_birth_country_facet", obj_extract("oral_history_content", "interviewee_biographies", "to_a", "birth", "country_name")
 
-    # Transcript text, use OHMS transcript if we got it, otherwise plaintext if
+    # Oral History Transcript and Table of Contents elements to a highlighted field
+    #
+    # 1. Transcript text, use OHMS transcript if we got it, otherwise plaintext if
     # we got it.
     #
-    # Also OHMS Table of Contents keywords
+    # 2. If OHMS Table of Contents is present: title, synopsis, and keywords
     to_field "searchable_fulltext" do |rec, acc|
       if rec.oral_history_content
         if rec.oral_history_content.has_ohms_transcript?
@@ -171,6 +173,8 @@ class WorkIndexer < Kithe::Indexer
         if rec.oral_history_content.has_ohms_index?
           rec.oral_history_content.ohms_xml.index_points.each do |index_point|
             acc << index_point.keywords.join("; ") if index_point.keywords.present?
+            acc << index_point.title if index_point.title.present?
+            acc << index_point.synopsis if index_point.synopsis.present?
           end
         end
       end
