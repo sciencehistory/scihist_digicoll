@@ -1,0 +1,18 @@
+<h1>A new Digitization Queue Item has been created</h1>
+
+<dl>
+  <dt>Title</dt>
+  <dd>
+    <%= link_to @digitization_queue_item.title, admin_digitization_queue_item_url(@digitization_queue_item) %>
+  </dd>
+
+  <dt>Collecting Area</dt>
+  <dd><%= @digitization_queue_item.collecting_area.humanize %></dd>
+
+  <dt>Created</dt>
+  <dd><%= l(@digitization_queue_item.created_at, format: :admin) %></dd>
+
+  <dt>Application Environment</dt>
+  <dd><%= ScihistDigicoll::Env.lookup(:service_level) || "Unknown" %></dd>
+</dl>
+
