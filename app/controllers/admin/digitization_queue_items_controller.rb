@@ -33,6 +33,11 @@ class Admin::DigitizationQueueItemsController < AdminController
 
     respond_to do |format|
       if @admin_digitization_queue_item.save
+        # send an alert if email address is set
+        if ScihistDigicoll::Env.lookup(:digitization_queue_alerts_email_address)
+          DigitizationQueueMailer.with(digitization_queue_item: @admin_digitization_queue_item).new_item_email.deliver_later
+        end
+
         format.html { redirect_to admin_digitization_queue_items_url(@admin_digitization_queue_item.collecting_area), notice: 'Digitization queue item was successfully created.' }
         format.json { render :show, status: :created, location: admin_digitization_queue_items_url(@admin_digitization_queue_item.collecting_area) }
       else
