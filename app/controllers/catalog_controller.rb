@@ -174,8 +174,10 @@ class CatalogController < ApplicationController
 
   configure_blacklight do |config|
     ## Class for sending and receiving requests from a search index
-    # config.repository_class = Blacklight::Solr::Repository
-    #
+    # We overide to use custom sub-class for Solr HTTP retries
+    config.repository_class = Scihist::BlacklightSolrRepository
+
+
     ## Class for converting Blacklight's url parameters to into request parameters for the search index
     # config.search_builder_class = ::SearchBuilder
     #
