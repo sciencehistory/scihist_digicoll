@@ -125,6 +125,12 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     end
 
     context "publishable works" do
+      around do |example|
+        freeze_time do
+          example.run
+        end
+      end
+
       before do
         controller.current_user.works_in_cart << publishable_work
       end
@@ -136,7 +142,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         expect(flash["error"]).to be_blank
 
         expect(publishable_work.reload).to be_published
-        expect(publishable_work.published_at).to be_within(1.second).of Time.now
+        expect(publishable_work.published_at).to eq Time.now
       end
     end
   end
@@ -221,7 +227,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
           title: "Audio asset 2",
           file: File.open((Rails.root + "spec/test_support/audio/double_ice_cubes.mp3"))
         )
-      }      
+      }
       let!(:oral_history) { FactoryBot.create(
         :work,
         genre: ["Oral histories"],
@@ -323,21 +329,29 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         create(:work, :published, published: false, published_at: false, members: [asset_child, work_child])
       end
 
-      it "can publish, and publishes children" do
-        put :publish, params: { id: work.friendlier_id, cascade: 'true' }
-        expect(response.status).to redirect_to(admin_work_path(work))
-        work.reload
-        expect(work.published?).to be true
-        expect(work.published_at).to be_within(1.second).of Time.now
-        expect(work.members.all? {|m| m.published?}).to be true
-      end
+      describe "publishing" do
+        around do |example|
+          freeze_time do
+            example.run
+          end
+        end
 
-      it "does not change unpublished children unless requested" do
-        put :publish, params: { id: work.friendlier_id, cascade: 'false' }
-        expect(response.status).to redirect_to(admin_work_path(work))
-        work.reload
-        expect(work.published?).to be true
-        expect(work.members.all? {|m| m.published?}).to be false
+        it "can publish, and publishes children" do
+          put :publish, params: { id: work.friendlier_id, cascade: 'true' }
+          expect(response.status).to redirect_to(admin_work_path(work))
+          work.reload
+          expect(work.published?).to be true
+          expect(work.published_at).to eq Time.now
+          expect(work.members.all? {|m| m.published?}).to be true
+        end
+
+        it "does not change unpublished children unless requested" do
+          put :publish, params: { id: work.friendlier_id, cascade: 'false' }
+          expect(response.status).to redirect_to(admin_work_path(work))
+          work.reload
+          expect(work.published?).to be true
+          expect(work.members.all? {|m| m.published?}).to be false
+        end
       end
 
 

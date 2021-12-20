@@ -116,6 +116,9 @@ RSpec.configure do |config|
   # our own local custom helper
   config.include UppyHelperMethods
 
+  # From Rails, for freezing and manipulating time in tests
+  config.include ActiveSupport::Testing::TimeHelpers
+
   # Let blocks or tests add (eg) `queue_adapter: :test` to determine Rails
   # ActiveJob queue adapter. :test, :inline:, or :async, presumably.
   # eg `it "does something", queue_adapter: :inline`, or
