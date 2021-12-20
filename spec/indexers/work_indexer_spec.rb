@@ -74,11 +74,19 @@ describe WorkIndexer do
       expect(output_hash["oh_birth_country_facet"]).to eq(work.oral_history_content.interviewee_biographies.collect(&:birth).flatten.collect(&:country_name))
     end
 
-    it "indexes created, modified, and published dates" do
-      output_hash = WorkIndexer.new.map_record(no_members_work)
-      expect(Time.parse(output_hash["date_created_dtsi"  ].first)).to be_within(1.seconds).of Time.now
-      expect(Time.parse(output_hash["date_modified_dtsi" ].first)).to be_within(1.seconds).of Time.now
-      expect(Time.parse(output_hash["date_published_dtsi"].first)).to be_within(1.seconds).of Time.now
+    describe 'dates' do
+      around do |example|
+        freeze_time do
+          example.run
+        end
+      end
+
+      it "indexes created, modified, and published dates" do
+        output_hash = WorkIndexer.new.map_record(no_members_work)
+        expect(Time.parse(output_hash["date_created_dtsi"  ].first)).to eq Time.now
+        expect(Time.parse(output_hash["date_modified_dtsi" ].first)).to eq Time.now
+        expect(Time.parse(output_hash["date_published_dtsi"].first)).to eq Time.now
+      end
     end
 
     describe "features facet" do
