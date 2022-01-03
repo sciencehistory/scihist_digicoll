@@ -15,7 +15,16 @@ module ScihistDigicoll
       WebMock.disable! if defined?(WebMock) && defined?(RSpec) && defined?(SCIHIST_WEBMOCK_USED)
 
       instance.start
-      instance.create(instance.config.collection_options)
+
+      begin
+        instance.create(instance.config.collection_options)
+      rescue StandardError => e
+        # Only if we couldn't create it cause it already existed, let it slide.
+        unless e.message =~ /Core '#{instance.config.collection_options[:name]}' already exists!/
+          raise e
+        end
+      end
+
 
     ensure
       WebMock.enable! if defined?(WebMock) && defined?(RSpec) && defined?(SCIHIST_WEBMOCK_USED)
