@@ -5,8 +5,8 @@ require 'kithe/blacklight_tools/bulk_loading_search_service'
 class CatalogController < ApplicationController
   before_action :redirect_hash_facet_params, only: :index
   before_action :redirect_legacy_query_urls, only: :index
-  before_action :catch_bad_blacklight_params, only: :index
-  before_action :swap_range_limit_params_if_needed, only: :index
+  before_action :catch_bad_blacklight_params, only: [:index, :facet]
+  before_action :swap_range_limit_params_if_needed, only: [:index, :facet]
   before_action :catch_bad_request_headers, only: :index
 
   before_action :screen_params_for_range_limit, only: :range_limit
