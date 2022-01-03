@@ -36,6 +36,15 @@ describe CatalogController do
       get "/catalog?range%5Byear_facet_isim%5D%5Bbegin%5D=1989%27,(;))%23-%20--&range%5Byear_facet_isim%5D%5Bend%5D=1989%27,(;))%23-%20--"
       expect(response.code).to eq("400")
     end
+
+    describe "on a collection search" do
+      let(:collection) { create(:collection) }
+
+      it "responds with 400" do
+        get "/collections/#{collection.friendlier_id}/facet?id=subject_facet&range[year_facet_isim][end]=1894%27[0]"
+        expect(response.code).to eq("400")
+      end
+    end
   end
 
   # Missing facet ID, e.g.
