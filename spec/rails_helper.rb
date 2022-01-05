@@ -179,14 +179,14 @@ RSpec.configure do |config|
             $test_solr_started = false
           }
 
-          ScihistDigicoll::SpecUtil.allow_net_connect!
+
           ScihistDigicoll::SolrWrapperUtil.start_with_collection(SolrWrapper.instance)
 
           $test_solr_started = true
           $test_solr_known_running = true
         end
       ensure
-        ScihistDigicoll::SpecUtil.disable_net_connect!
+
       end
     end
   end

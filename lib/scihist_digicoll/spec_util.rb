@@ -12,11 +12,13 @@ module ScihistDigicoll
     #      ScihistDigicoll::SpecUtil.disable_net_connect!
     #    end
     def self.disable_net_connect!
+      # localhost connections are allowed for Capybara (standard instructions) -- and also for our solr connections.
+      # solr_wrapper sometimes wants to use 127.0.0.1 instead of localhost, so we need to explicitly mention
+      # that too.
+
       # chromedriver.storage.googleapis.com for `webdrivers` gem automatic downloading of chromedriver.
       # https://github.com/titusfortner/webdrivers/issues/4
-      #
-      # solr_wrapper wants to use 127.0.0.1 instead of localhost.
-      #
+
       # net_http_connect_on_start needed for reasons I don't totally understand
       # for "too many open files" error in capybara test that should be passing.
       # * https://stackoverflow.com/questions/59632283/chromedriver-capybara-too-many-open-files-socket2-for-127-0-0-1-port-951
