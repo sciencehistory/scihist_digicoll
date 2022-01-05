@@ -19,6 +19,10 @@ module Scihist
         # remove if already present, so we can add our own
         faraday_connection.builder.delete(Faraday::Request::Retry)
 
+        # remove so we can make sure it's there AND added AFTER our
+        # retry, so our retry can succesfully catch it's exceptions
+        faraday_connection.builder.delete(Faraday::Response::RaiseError)
+
         # add retry middleware with our own confiuration
         # https://github.com/lostisland/faraday/blob/main/docs/middleware/request/retry.md
         #
@@ -57,10 +61,6 @@ module Scihist
             # other things we could log include `env.url` and `env.response.body`
           end
         }
-
-        # remove so we can make sure it's there AND added AFTER our
-        # retry, so our retry can succesfully catch it's exceptions
-        faraday_connection.builder.delete(Faraday::Response::RaiseError)
 
         # important to add this AFTER retry, to make sure retry can
         # rescue and retry it's errors
