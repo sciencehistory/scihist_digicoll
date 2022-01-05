@@ -29,7 +29,6 @@ describe Scihist::BlacklightSolrRepository do
   describe "retry behavior", solr:true do
     let(:solr_select_url_regex) { /^#{Regexp.escape(ScihistDigicoll::Env.lookup!(:solr_url) + "/select")}/ }
 
-
     describe "with solr 400 response" do
       before do
         stub_request(:any, solr_select_url_regex).to_return(status: 400, body: "error")
@@ -58,6 +57,4 @@ describe Scihist::BlacklightSolrRepository do
       end
     end
   end
-
-
 end
