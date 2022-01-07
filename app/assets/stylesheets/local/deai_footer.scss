@@ -1,5 +1,6 @@
 .deai-footer {
-  padding-top: ($paragraph-font-size * $paragraph-line-height-long / 2) !important; // matches paragraph margin bottom please
+  padding-top: map-get($spacers, 3) !important;
+  padding-bottom: map-get($spacers, 3) !important;
   padding-left: 1rem;
   padding-right: 1rem;
 
@@ -21,7 +22,6 @@
     text-align: justify;
     margin-left: auto;
     margin-right: auto;
-
-
+    margin-bottom: 0 !important;
   }
 }
