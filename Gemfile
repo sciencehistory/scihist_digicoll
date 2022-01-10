@@ -185,5 +185,5 @@ end
 # end BL generated
 
 # we use for data structures for citation models, and for generating citations
- gem "citeproc-ruby", '~> 1.0'
- gem 'csl-styles', '~> 1.0' # Need to load the styles so we can use chicago
+ gem "citeproc-ruby", '~> 2.0'
+ gem 'csl-styles', '~> 2.0' # Need to load the styles so we can use chicago
