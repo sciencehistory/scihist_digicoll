@@ -55,6 +55,20 @@ describe Scihist::BlacklightSolrRepository do
 
         expect(WebMock).to have_requested(:any, solr_select_url_regex).times(3)
       end
+
+      it "logs retries twice" do
+        logged = []
+        allow(Rails.logger).to receive(:warn) do |log_str|
+          logged << log_str
+        end
+
+        expect {
+          response = repository.search
+        }.to raise_error(Blacklight::Exceptions::InvalidRequest)
+
+        expect(logged).to include /\AScihist::BlacklightSolrRepository: Retrying Solr request: HTTP 404: Faraday::ResourceNotFound: retry 1/
+        expect(logged).to include /\AScihist::BlacklightSolrRepository: Retrying Solr request: HTTP 404: Faraday::ResourceNotFound: retry 2/
+      end
     end
   end
 end

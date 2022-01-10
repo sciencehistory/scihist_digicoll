@@ -57,8 +57,12 @@ module Scihist
           ],
 
           retry_block: -> (env, options, retries_remaining, exc) do
-            Rails.logger.warn("Retrying Solr request: HTTP #{env["status"]}: #{exc.class}: retry #{options.max - retries_remaining}")
-            # other things we could log include `env.url` and `env.response.body`
+            Rails.logger.warn(<<-EOS.strip_heredoc
+              #{self.class}: Retrying Solr request: HTTP #{env&.status}: #{exc&.class}: retry #{options.max - retries_remaining}:\n\n\
+                url: #{env&.url&.to_s}
+                response: #{env&.response&.body&.slice(0, 150)}
+              EOS
+            )
           end
         }
 
