@@ -22,7 +22,7 @@ gem 'scout_apm'
 # So you need to manually change this spec to allow updates when you want
 # to spend the time to update Blacklight to latest -- you will usually want to update
 # blacklight_range_limit to latest at same time.
-gem "blacklight", "~> 7.21.0"
+gem "blacklight", "~> 7.22.0"
 gem "blacklight_range_limit", "~> 8.0" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
 # Use postgresql as the database for Active Record
