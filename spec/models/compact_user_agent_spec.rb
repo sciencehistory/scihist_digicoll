@@ -59,7 +59,7 @@ describe CompactUserAgent do
 
   describe "Opera Samsung" do
     let(:user_agent) { %q{Mozilla/5.0 (Linux; Android 10; SM-G970F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.62 Mobile Safari/537.36 OPR/63.3.3216.58675} }
-    it {is_expected.to eq "Opera Mobile-63/Android-10/GALAXY S10e"}
+    it {is_expected.to eq "Opera Mobile-63/Android-10/Galaxy S10e"}
   end
 
   describe "Edge Windows" do
