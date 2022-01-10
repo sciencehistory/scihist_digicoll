@@ -12,7 +12,7 @@ gem 'lockbox'
 gem 'rails', '~> 6.1.1'
 gem 'webpacker', '~> 5.0'
 
-gem "view_component", "~> 2.40", require: "view_component/engine"
+gem "view_component", "~> 2.47"
 
 #  Scout is a monitoring tool we are experimenting with
 gem 'scout_apm'
