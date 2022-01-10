@@ -132,6 +132,7 @@ gem "hirefire-resource"
 # https://github.com/ruby/irb/issues/43#issuecomment-758089211
 gem "irb", ">= 1.3.1"
 gem "reline", ">= 0.2.1"
+gem "warning", "~> 1.2" # managing ruby warning output
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
