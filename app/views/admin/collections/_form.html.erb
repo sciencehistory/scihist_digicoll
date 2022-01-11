@@ -95,6 +95,16 @@
       <% end %>
     </div>
 
+    <hr>
+
+    <h2>Funding Credit</h2>
+    <%# single embedded model, not array, so we need some weird and non-intuitive form setup, sorry.
+        Including we need at least one to exist:  %>
+    <%= f.fields_for :funding_credit, (f.object.funding_credit || f.object.build_funding_credit) do |sub_form| %>
+      <%= sub_form.input :name, required: false %>
+      <%= sub_form.input :url %>
+      <%= sub_form.input :image, collection: FundingCredit.image_collection_input  %>
+    <% end %>
 
   </div>
 <% end %>
