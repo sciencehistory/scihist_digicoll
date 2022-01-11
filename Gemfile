@@ -12,7 +12,7 @@ gem 'lockbox'
 gem 'rails', '~> 6.1.1'
 gem 'webpacker', '~> 5.0'
 
-gem "view_component", "~> 2.40", require: "view_component/engine"
+gem "view_component", "~> 2.47"
 
 #  Scout is a monitoring tool we are experimenting with
 gem 'scout_apm'
@@ -22,7 +22,7 @@ gem 'scout_apm'
 # So you need to manually change this spec to allow updates when you want
 # to spend the time to update Blacklight to latest -- you will usually want to update
 # blacklight_range_limit to latest at same time.
-gem "blacklight", "~> 7.21.0"
+gem "blacklight", "~> 7.22.0"
 gem "blacklight_range_limit", "~> 8.0" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
 # Use postgresql as the database for Active Record
@@ -132,6 +132,7 @@ gem "hirefire-resource"
 # https://github.com/ruby/irb/issues/43#issuecomment-758089211
 gem "irb", ">= 1.3.1"
 gem "reline", ">= 0.2.1"
+gem "warning", "~> 1.2" # managing ruby warning output
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -141,8 +142,8 @@ end
 
 group :development do
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
-  gem 'web-console', '>= 3.3.0'
-  gem 'listen', '>= 3.0.5', '< 3.2'
+  gem 'web-console', '>= 4.1.0'
+  gem 'listen', '~> 3.3'
 end
 
 group :test do
@@ -185,5 +186,5 @@ end
 # end BL generated
 
 # we use for data structures for citation models, and for generating citations
- gem "citeproc-ruby", '~> 1.0'
- gem 'csl-styles', '~> 1.0' # Need to load the styles so we can use chicago
+ gem "citeproc-ruby", '~> 2.0'
+ gem 'csl-styles', '~> 2.0' # Need to load the styles so we can use chicago
