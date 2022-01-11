@@ -732,7 +732,7 @@ DEPENDENCIES
   resque-heroku-signals
   resque-pool
   rinku (~> 2.0)
-  rsolr (>= 1.0, < 3)
+  rsolr (~> 2.0)
   rspec-rails (~> 5.0)
   rubyzip (~> 2.0)
   sane_patch (< 2.0)

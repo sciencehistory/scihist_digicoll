@@ -171,7 +171,9 @@ end
 
 ##
 # Added by blacklight. Not sure why rsolr isn't just a BL dependency.
-  gem 'rsolr', '>= 1.0', '< 3'
+  # We need RSolr 2.x to get faraday-based connection so we can customize
+  # middleware, so we customize dependency to require 2.x
+  gem 'rsolr', '~> 2.0'
   # gem 'popper_js' #popper shouldn't be needed, it's already a dep of BL 4. PR to BL?
 
   # Used only for autocomplete, which we aren't currently using.
