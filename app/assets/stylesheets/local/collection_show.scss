@@ -79,6 +79,21 @@
         aspect-ratio: 1;
       }
     }
+
+    // two-column with funding-credit on RIGHT on larger screens, this
+    // works out as a reasonable breakpoint for it.
+    @include media-breakpoint-up(lg) {
+      display: flex;
+      gap: $spacer;
+
+      .collection-funding-credit {
+        order: 2;
+        .funding-credit-image {
+          height: 100%;
+          max-height: 10rem;
+        }
+      }
+    }
   }
 
   #appliedParams.constraints-container {
