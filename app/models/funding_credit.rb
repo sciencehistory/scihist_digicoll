@@ -28,4 +28,8 @@ class FundingCredit
     with: /\A#{URI::DEFAULT_PARSER.make_regexp(%w[http https])}\z/,
     allow_blank: true,
     message: "must be valid http or https URL"}
+
+  def image_path
+    File.join("funding_credit", IMAGES[image][:path])
+  end
 end
