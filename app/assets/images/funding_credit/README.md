@@ -14,3 +14,15 @@ just hard-code them app source, in a constnat in FundingCredit, with images livi
 Once you add an image to source here, you reference it's path in the IMAGES constant in FundingCredit please.
 
 This is hacky, but we're not going to use this feature very much probably, it works for now.
+
+### Optomizing/minimizing images
+
+The kinds of images we use for logos should be very compressable without noticeable image quality loss. It makes sense to try to make the image as small in file size as it can be.
+
+Some images may be smaller as PNG or as JPG depending on nature of image.
+
+Also you can run images through the `imagemin` CLI util to do some standard file reduction (may want to start with a larger or non-lossy copy as source, but it probably doesn't matter much for most logo images).
+
+https://github.com/imagemin/imagemin-cli
+
+https://web.dev/use-imagemin-to-compress-images/
