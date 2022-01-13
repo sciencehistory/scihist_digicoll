@@ -43,7 +43,12 @@
             <% end %>
 
             <p>
-              Digitization and cataloging of this collection made possible by the generosity of
+              <% if collection.department == "Center for Oral History" %>
+                This oral history project
+              <% else %>
+                Digitization and cataloging of this collection
+              <% end %>
+                made possible by the generosity of
               <%= link_to_if collection.funding_credit.url.present?,
                     collection.funding_credit.name,
                     collection.funding_credit.url,
