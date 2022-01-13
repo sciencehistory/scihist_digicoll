@@ -74,8 +74,10 @@
       display: flex;
 
       .funding-credit-image {
+        // square image, have to set this explicitly for our aspect ratio
+        // trick for larger screensize below.
         height: 7rem;
-        aspect-ratio: 1;
+        width: 7rem;
         margin-right: map_get($spacers, 2);;
       }
     }
@@ -85,12 +87,19 @@
     @include media-breakpoint-up(lg) {
       display: flex;
 
-
       .collection-funding-credit {
         order: 2;
         margin-left: $spacer;
         .funding-credit-image {
+          // We want to say stretch to 100% height while preserving aspect ratio,
+          // but we need to support older browsers thatdon't do aspect-ratio CSS
+          // property yet... this manages to do the right thing on newer browsers
+          // with a reasonable fallback (no image resize at all) on older browsers.
           height: 100%;
+          width: auto;
+          object-fit: contain;
+          object-position: 0 0;
+
           max-height: 10rem;
         }
       }
