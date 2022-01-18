@@ -287,7 +287,7 @@ module ScihistDigicoll
       if mode == "dev_file"
         Shrine::Storage::FileSystem.new("public", prefix: "shrine_storage_#{Rails.env}/#{shared_bucket_path_prefix}")
       elsif mode == "dev_s3"
-        FasterS3Url::Shrine::Storage.new({
+        FasterS3Url::Shrine::Storage.new(**{
           bucket:            lookup(:s3_dev_bucket),
           prefix:            "#{lookup(:s3_dev_prefix)}/#{shared_bucket_path_prefix}",
           access_key_id:     lookup(:aws_access_key_id),
@@ -295,7 +295,7 @@ module ScihistDigicoll
           region:            lookup(:aws_region)
         }.merge(s3_storage_options))
       elsif mode == "production"
-        FasterS3Url::Shrine::Storage.new({
+        FasterS3Url::Shrine::Storage.new(**{
           bucket:            lookup!(bucket_key),
           prefix:            prefix,
           access_key_id:     lookup!(:aws_access_key_id),
