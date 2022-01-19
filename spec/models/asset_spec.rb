@@ -160,4 +160,21 @@ describe Asset do
       end
     end
   end
+
+
+  describe "logging" do
+    let(:asset) { create(:asset_with_faked_file, parent: create(:work)).tap(&:friendlier_id) }
+    let(:info_logged) { [] }
+    before do
+      allow(Rails.logger).to receive(:info) do |msg|
+        info_logged << msg
+      end
+    end
+
+    it "logs after destroy" do
+      asset.destroy!
+      expect(info_logged).to include /Asset Destroyed: pk=#{asset.id} friendlier_id=#{asset.friendlier_id} original_filename=#{asset.original_filename} created_at=#{asset.created_at.iso8601}/
+    end
+  end
+
 end
