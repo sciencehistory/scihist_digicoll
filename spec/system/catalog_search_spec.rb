@@ -11,6 +11,7 @@ describe CatalogController, solr: true, indexable_callbacks: true do
     let!(:work1) do
       create(:public_work,
         description: 'priceless work',
+        subject: ["one", "two", "three", "four", "five", "six"],
         representative: create(:asset, :inline_promoted_file, published: true),
         members: [create(:public_work), create(:public_work)])
     end
@@ -48,6 +49,14 @@ describe CatalogController, solr: true, indexable_callbacks: true do
 
       # no fulltext search highlights here
       expect(page).not_to have_selector(".scihist-results-list-item-highlights")
+
+      # Make sure facet "more" works -- Blacklight upgrades have given us regression
+      # here before.
+      within(".blacklight-subject_facet") do
+        click_on "Subject"
+        click_on "more"
+      end
+      expect(page).to have_selector("h1.modal-title", text: "Subject")
     end
   end
 
