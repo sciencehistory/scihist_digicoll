@@ -1,3 +1,5 @@
+# To conduct an audit, run OrphanAuditor.new.perform!
+# This will audit all derivatives, store it in DB, and remove any but the currently stored report in DB.
 class OrphanAuditor
   attr_reader :originals, :public_derivatives, :restricted_derivatives, :dzi
 
@@ -12,19 +14,19 @@ class OrphanAuditor
   end
 
   def orphans?
-    @tasks.values.any?{ |a| a.orphans_found > 0 }
+    @tasks.values.any?{ |a| a && a.orphans_found > 0 }
   end
 
   def store_audit_results
     results = {
-      orphaned_originals_count:  @tasks[:originals].orphans_found,
-      orphaned_originals_sample: @tasks[:originals].sample,
-      orphaned_public_derivatives_count:  @tasks[:public_derivatives].orphans_found,
-      orphaned_public_derivatives_sample: @tasks[:public_derivatives].sample,
-      orphaned_restricted_derivatives_count:  @tasks[:restricted_derivatives].orphans_found,
-      orphaned_restricted_derivatives_sample: @tasks[:restricted_derivatives].sample,
-      orphaned_dzi_count:  @tasks[:dzi].orphans_found,
-      orphaned_dzi_sample: @tasks[:dzi].sample,
+      orphaned_originals_count:  @tasks[:originals]&.orphans_found,
+      orphaned_originals_sample: @tasks[:originals]&.sample,
+      orphaned_public_derivatives_count:  @tasks[:public_derivatives]&.orphans_found,
+      orphaned_public_derivatives_sample: @tasks[:public_derivatives]&.sample,
+      orphaned_restricted_derivatives_count:  @tasks[:restricted_derivatives]&.orphans_found,
+      orphaned_restricted_derivatives_sample: @tasks[:restricted_derivatives]&.sample,
+      orphaned_dzi_count:  @tasks[:dzi]&.orphans_found,
+      orphaned_dzi_sample: @tasks[:dzi]&.sample,
     }
     results.each { |k, v| log_into_report( { k => v } ) }
   end
