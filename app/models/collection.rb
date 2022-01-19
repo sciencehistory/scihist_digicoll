@@ -25,6 +25,8 @@ class Collection < Kithe::Collection
   attr_json :department, :string
   validates :department, presence: {}, inclusion: { in: Work::ControlledLists::DEPARTMENT, allow_blank: true }
 
+  attr_json :funding_credit, FundingCredit.to_type
+
   # Override the default ActiveRecord one to create a new Asset if it didn't exist already.
   # The default AR didn't work quite right because of STI and other reasons, but this works
   # nicely, if representative_attributes come form form and a representative doesn't exist

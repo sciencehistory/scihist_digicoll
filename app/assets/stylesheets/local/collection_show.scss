@@ -35,31 +35,73 @@
     border-top: 0; // nope, not here.
   }
 
-  .collection-search-form {
-    margin: $spacer 0;
-    padding: ($spacer);
-    background-color: $bg-lightly-shaded;
-    display: inline-block;
+  // contains the search form and the funding_credit info which is sometimes next to it
+  .collection-control-area {
 
-    width: 100%;
-    max-width: $max-readable-width;
+    .collection-search-form {
+      margin: $spacer 0;
+      padding: ($spacer);
+      background-color: $bg-lightly-shaded;
+      display: inline-block;
 
-    .search-title {
-      font-size: $h4-font-size;
-      margin-bottom: $spacer;
-      font-weight: 600;
+      width: 100%;
+      max-width: $max-readable-width;
+
+      .search-title {
+        font-size: $h4-font-size;
+        margin-bottom: $spacer;
+        font-weight: 600;
+      }
+
+      .input-group {;
+        // hacky way to have extra rounded corners on search box, matching
+        // nav bar search box.
+        input[type=search] {
+          border-top-left-radius: $btn-border-radius;
+          border-bottom-left-radius: $btn-border-radius;
+        }
+        button:last-child {
+          border-top-right-radius: $btn-border-radius;
+          border-bottom-right-radius: $btn-border-radius;
+        }
+      }
     }
 
-    .input-group {;
-      // hacky way to have extra rounded corners on search box, matching
-      // nav bar search box.
-      input[type=search] {
-        border-top-left-radius: $btn-border-radius;
-        border-bottom-left-radius: $btn-border-radius;
+    .collection-funding-credit {
+      margin: $spacer 0;
+
+      @extend .long-text-line-height;
+      display: flex;
+
+      .funding-credit-image {
+        // square image, have to set this explicitly for our aspect ratio
+        // trick for larger screensize below.
+        height: 7rem;
+        width: 7rem;
+        margin-right: map_get($spacers, 2);;
       }
-      button:last-child {
-        border-top-right-radius: $btn-border-radius;
-        border-bottom-right-radius: $btn-border-radius;
+    }
+
+    // two-column with funding-credit on RIGHT on larger screens, this
+    // works out as a reasonable breakpoint for it.
+    @include media-breakpoint-up(lg) {
+      display: flex;
+
+      .collection-funding-credit {
+        order: 2;
+        margin-left: $spacer;
+        .funding-credit-image {
+          // We want to say stretch to 100% height while preserving aspect ratio,
+          // but we need to support older browsers thatdon't do aspect-ratio CSS
+          // property yet... this manages to do the right thing on newer browsers
+          // with a reasonable fallback (no image resize at all) on older browsers.
+          height: 100%;
+          width: auto;
+          object-fit: contain;
+          object-position: 0 0;
+
+          max-height: 10rem;
+        }
       }
     }
   }
