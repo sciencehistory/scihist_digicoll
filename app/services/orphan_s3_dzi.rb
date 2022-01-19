@@ -157,6 +157,11 @@ class OrphanS3Dzi
   # from the shrine storage already. We just want a complete good direct to S3 URL
   # as an identifier, it may not be accessible, it wont' use a CDN, etc.
   def s3_url_for_path(s3_path)
-    shrine_storage.bucket.object(s3_path).public_url
+    if shrine_storage.respond_to?(:bucket)
+      shrine_storage.bucket.object(s3_path).public_url
+    else
+      # we aren't S3 at all, not sure what we'll get...
+      shrine_storage.url(s3_path)
+    end
   end
 end
