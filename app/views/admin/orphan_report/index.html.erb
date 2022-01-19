@@ -34,12 +34,14 @@
         <i class="fa fa fa-thumbs-down" aria-hidden="true"></i>There are <%= @report.orphaned_originals_count %> orphaned original files.
       </span>
       <ul>
-      <% @report.orphaned_originals_sample.each_with_index do |url, i|%>
-      <li>
-        <%= link_to url.split("/").last, S3ConsoleUri.new(url).console_uri %>
-        <%= '[...]' if (@report.orphaned_originals_count > @report.orphaned_originals_sample.length) && i == @report.orphaned_originals_sample.length - 1 %>
-      </li>
-      <% end %>
+        <% @report.orphaned_originals_sample.each do |url|%>
+          <li>
+            <%= link_to url.split("/").last, S3ConsoleUri.new(url).console_uri %>
+          </li>
+        <% end %>
+        <% if @report.orphaned_originals_count > @report.orphaned_originals_sample.length %>
+          <li>[...]</li>
+        <% end %>
       </ul>
       To delete orphaned originals:
       <code>
@@ -62,11 +64,13 @@
         <i class="fa fa fa-thumbs-down" aria-hidden="true"></i>  There are <%= @report.orphaned_public_derivatives_count %> orphaned public derivatives.
       </span>
       <ul>
-        <% @report.orphaned_public_derivatives_sample.each_with_index do |url, i|%>
+        <% @report.orphaned_public_derivatives_sample.each do |url|%>
           <li>
             <%= link_to url.split("/").last, S3ConsoleUri.new(url).console_uri %>
-            <%= '[...]' if (@report.orphaned_public_derivatives_count > @report.orphaned_public_derivatives_sample.length) && i == @report.orphaned_public_derivatives_sample.length - 1 %>
           </li>
+        <% end %>
+        <% if @report.orphaned_public_derivatives_count > @report.orphaned_public_derivatives_sample.length %>
+          <li>[...]</li>
         <% end %>
       </ul>
       To delete orphaned public derivatives:
@@ -93,9 +97,11 @@
       <ul>
         <% @report.orphaned_restricted_derivatives_sample.each_with_index do |url, i|%>
           <li>
-          <%= link_to url.split("/").last, S3ConsoleUri.new(url).console_uri %>
-          <%= '[...]' if (@report.orphaned_restricted_derivatives_count > @report.orphaned_restricted_derivatives_sample.length) && i == @report.orphaned_restricted_derivatives_sample.length - 1 %>
+            <%= link_to url.split("/").last, S3ConsoleUri.new(url).console_uri %>
           </li>
+        <% end %>
+        <% if @report.orphaned_restricted_derivatives_count > @report.orphaned_restricted_derivatives_sample.length %>
+          <li>[...]</li>
         <% end %>
       </ul>
       To delete restricted derivatives:
@@ -123,8 +129,10 @@
         <% @report.orphaned_dzi_sample.each_with_index do |url, i|%>
           <li>
             <%= link_to url.split("/").last, S3ConsoleUri.new(url).console_uri %>
-            <%= '[...]' if (@report.orphaned_dzi_count > @report.orphaned_dzi_sample.length) && i == @report.orphaned_dzi_sample.length - 1 %>
           </li>
+        <% end %>
+        <% if @report.orphaned_dzi_count > @report.orphaned_dzi_sample.length %>
+          <li>[...]</li>
         <% end %>
       </ul>
       To delete orphaned deep zoom tiles:
