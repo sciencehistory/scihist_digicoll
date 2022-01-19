@@ -57,6 +57,8 @@ class Asset < Kithe::Asset
   }.freeze
 
   after_update_commit :ensure_correct_derivatives_storage_after_change
+  after_destroy_commit :log_destroyed
+
 
   # Our DziFiles object to manage associated DZI (deep zoom, for OpenSeadragon
   # panning/zooming) file(s).
@@ -184,5 +186,26 @@ class Asset < Kithe::Asset
     if derivative_storage_type_previously_changed? && file_derivatives.present?
       EnsureCorrectDerivativesStorageJob.perform_later(self)
     end
+  end
+
+  def log_destroyed
+    info = {
+      pk: self.id,
+      friendlier_id: self.friendlier_id,
+      original_filename: self.original_filename,
+      created_at: self.created_at&.iso8601,
+      location: self.file&.url(public: true)
+    }
+    if self.parent
+      info.merge!(
+        parent_friendlier_id: self.parent.friendlier_id,
+        parent_class: self.parent.class.name,
+        parent_title: "'#{self.parent.title}'"
+      )
+    end
+
+    info_str = info.collect { |k, v| "#{k}=#{v}" }.join(" ")
+
+    Rails.logger.info("Asset Destroyed: #{info_str}")
   end
 end
