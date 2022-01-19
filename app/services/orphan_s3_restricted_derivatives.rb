@@ -9,10 +9,9 @@ class OrphanS3RestrictedDerivatives
   def initialize(show_progress_bar: true)
 
     @sample = []
-    @shrine_storage = ScihistDigicoll::Env.shrine_store_storage
+    @shrine_storage = ScihistDigicoll::Env.shrine_restricted_derivatives_storage
     @s3_iterator = S3PathIterator.new(
       shrine_storage: shrine_storage,
-      extra_prefix: 'restricted_derivatives',
       show_progress_bar: show_progress_bar,
       progress_bar_total: derivative_count
     )
