@@ -79,15 +79,27 @@ class Admin::CollectionsController < AdminController
 
       params.
         require(:collection).
-        permit(*permitted_attributes, :representative_attributes => {}, :related_url_attributes => []).tap do |hash|
+        permit(*permitted_attributes,
+                :representative_attributes => {},
+                :funding_credit_attributes => {},
+                :related_url_attributes => []
+        ).tap do |hash|
+
           # sanitize description
           if hash[:description].present?
             hash[:description] = DescriptionSanitizer.new.sanitize(hash[:description])
           end
 
           # remove empty representative_attributes so we don't create an empty Asset on that association
+          # if we had nothing submitted, we still leave representative set though
           if hash[:representative_attributes] && hash[:representative_attributes].values.all?(&:blank?)
             hash.delete(:representative_attributes)
+          end
+
+          # if empty funding_credit_attributes, we actually want to delete funding_credit_attributes
+          if hash[:funding_credit_attributes] && hash[:funding_credit_attributes].values.all?(&:blank?)
+            # force delete of the thing with the actual non-attributes method, yeah, this is a hack.
+            hash[:funding_credit] = nil
           end
         end
     end
