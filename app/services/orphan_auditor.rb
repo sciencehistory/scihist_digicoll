@@ -30,7 +30,9 @@ class OrphanAuditor
   end
 
   def notify_if_failed
-     Honeybadger.notify("Orphaned items found. See report in the admin pages.") if orphans?
+    if orphans?
+      Honeybadger.notify("Orphaned items found. See report at #{File.join(ScihistDigicoll::Env.lookup(:app_url_base) || "", "/admin/orphan_report")}")
+    end
   end
 
   # Checks, records, and notifies of failures
