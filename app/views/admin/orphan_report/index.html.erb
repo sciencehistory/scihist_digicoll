@@ -36,7 +36,7 @@
       <ul>
       <% @report.orphaned_originals_sample.each_with_index do |url, i|%>
       <li>
-        <%= url.split("/").last %>
+        <%= link_to url.split("/").last, S3ConsoleUri.new(url).console_uri %>
         <%= '[...]' if (@report.orphaned_originals_count > @report.orphaned_originals_sample.length) && i == @report.orphaned_originals_sample.length - 1 %>
       </li>
       <% end %>
@@ -64,7 +64,7 @@
       <ul>
         <% @report.orphaned_public_derivatives_sample.each_with_index do |url, i|%>
           <li>
-            <%= url.split("/").last %>
+            <%= link_to url.split("/").last, S3ConsoleUri.new(url).console_uri %>
             <%= '[...]' if (@report.orphaned_public_derivatives_count > @report.orphaned_public_derivatives_sample.length) && i == @report.orphaned_public_derivatives_sample.length - 1 %>
           </li>
         <% end %>
@@ -93,7 +93,7 @@
       <ul>
         <% @report.orphaned_restricted_derivatives_sample.each_with_index do |url, i|%>
           <li>
-          <%= url.split("/").last %>
+          <%= link_to url.split("/").last, S3ConsoleUri.new(url).console_uri %>
           <%= '[...]' if (@report.orphaned_restricted_derivatives_count > @report.orphaned_restricted_derivatives_sample.length) && i == @report.orphaned_restricted_derivatives_sample.length - 1 %>
           </li>
         <% end %>
@@ -122,7 +122,7 @@
       <ul>
         <% @report.orphaned_dzi_sample.each_with_index do |url, i|%>
           <li>
-            <%= url.split("/").last %>
+            <%= link_to url.split("/").last, S3ConsoleUri.new(url).console_uri %>
             <%= '[...]' if (@report.orphaned_dzi_count > @report.orphaned_dzi_sample.length) && i == @report.orphaned_dzi_sample.length - 1 %>
           </li>
         <% end %>
