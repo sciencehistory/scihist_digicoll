@@ -7,12 +7,11 @@ class OrphanS3RestrictedDerivatives
   # @param show_progress_bar [Boolean], default true, should we show a progress
   #   bar with estimated progress.
   def initialize(show_progress_bar: true)
-    
+
     @sample = []
-    @shrine_storage = ScihistDigicoll::Env.shrine_store_storage
+    @shrine_storage = ScihistDigicoll::Env.shrine_restricted_derivatives_storage
     @s3_iterator = S3PathIterator.new(
       shrine_storage: shrine_storage,
-      extra_prefix: 'restricted_derivatives',
       show_progress_bar: show_progress_bar,
       progress_bar_total: derivative_count
     )
@@ -54,7 +53,7 @@ class OrphanS3RestrictedDerivatives
         if @orphans_found == max_reports
           s3_iterator.log "Reported max #{max_reports} orphans. Not listing subsequent.\n"
         elsif orphans_found < max_reports
-          @sample << s3_path
+          @sample << s3_url_for_path(s3_path)
           report_orphaned_derivative(asset_id, derivative_key, shrine_path, s3_path)
           s3_iterator.log ""
         end
@@ -112,5 +111,17 @@ class OrphanS3RestrictedDerivatives
     return true unless asset_pk.present? && derivative_key.present?
     asset_exists = Kithe::Asset.where(id: asset_pk).where("file_data -> 'derivatives' -> ? ->> 'id' = ?", derivative_key, shrine_path).exists?
     ! asset_exists
+  end
+
+  # note that the s3_path is complete path on bucket, it might include a prefix
+  # from the shrine storage already. We just want a complete good direct to S3 URL
+  # as an identifier, it may not be accessible, it wont' use a CDN, etc.
+  def s3_url_for_path(s3_path)
+    if shrine_storage.respond_to?(:bucket)
+      shrine_storage.bucket.object(s3_path).public_url
+    else
+      # we aren't S3 at all, not sure what we'll get...
+      shrine_storage.url(s3_path)
+    end
   end
 end
