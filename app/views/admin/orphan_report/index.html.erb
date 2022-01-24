@@ -3,7 +3,7 @@
 <p>
   Checks whether our stored files actually are have links to them somewhere in our database.
   To save space, this report only lists the total <em>number</em> of "orphaned" files, along with a few sample links.
-  The report also tells you when the files were last checked. Reports are run nightly, but we only keep the latest one.
+  The report also tells you when the files were last checked. Reports are run weekly, but we only keep the latest one.
 </p>
 
 
@@ -18,33 +18,35 @@
   <p><%= @report.id %></p>
   <hr/>
   <h4>Started at</h4>
-  <p><%= l(@data['start_time']&.to_datetime, format: :short) if @data['start_time']%></p>
+  <p><%= l(@report.start_time, format: :short) if @report.start_time %></p>
   <hr/>
   <h4>Completed successfully at</h4>
   <p class="text-muted small">If this date is present, the audit checked all assets.</p>
-  <p><%= l(@data['end_time'].to_datetime, format: :short) if @data['end_time']%></p>
+  <p><%= l(@report.end_time, format: :short) if @report.end_time %></p>
   <hr/>
 
 
   <h4>Originals</h4>
   <p class="text-muted small">Original files without a corresponding asset in the database.</p>
   <p>
-    <% if @data['orphaned_originals_count'] > 0 %>
+    <% if @report.orphaned_originals_count > 0 %>
       <span class="text-danger">
-        <i class="fa fa fa-thumbs-down" aria-hidden="true"></i>There are <%= @data['orphaned_originals_count'] %> orphaned original files.
+        <i class="fa fa fa-thumbs-down" aria-hidden="true"></i>There are <%= @report.orphaned_originals_count %> orphaned original files.
       </span>
       <ul>
-      <% @data['orphaned_originals_sample'].each_with_index do |path, i|%>
-      <li>
-        <%= link_to(path.split("/").last, Shrine.storages[:store].url(path)) %>
-        <%= '[...]' if (@data['orphaned_originals_count'] > @data['orphaned_originals_sample'].length) && i == @data['orphaned_originals_sample'].length - 1 %>
-      </li>
-      <% end %>
+        <% @report.orphaned_originals_sample.each do |url|%>
+          <li>
+            <%= link_to display_s3_url(url, storage: Shrine.storages[:store]), S3ConsoleUri.new(url).console_uri %>
+          </li>
+        <% end %>
+        <% if @report.orphaned_originals_count > @report.orphaned_originals_sample.length %>
+          <li>[...]</li>
+        <% end %>
       </ul>
       To delete orphaned originals:
       <code>
         rails runner 'OrphanS3Originals.new(show_progress_bar: false).delete_orphans'
-      </code>     
+      </code>
     <% else %>
       <span class="text-success">
         <i class="fa fa fa-thumbs-up" aria-hidden="true"></i>
@@ -57,21 +59,23 @@
   <h4>Public derivatives</h4>
   <p class="text-muted small">Public derivatives without a corresponding asset in the database.</p>
   <p>
-    <% if @data['orphaned_public_derivatives_count'] > 0 %>
+    <% if @report.orphaned_public_derivatives_count > 0 %>
       <span class="text-danger">
-        <i class="fa fa fa-thumbs-down" aria-hidden="true"></i>  There are <%= @data['orphaned_public_derivatives_count'] %> orphaned public derivatives.
+        <i class="fa fa fa-thumbs-down" aria-hidden="true"></i>  There are <%= @report.orphaned_public_derivatives_count %> orphaned public derivatives.
       </span>
       <ul>
-        <% @data['orphaned_public_derivatives_sample'].each_with_index do |path, i|%>
+        <% @report.orphaned_public_derivatives_sample.each do |url|%>
           <li>
-            <%= link_to(path.split("/").last, Shrine.storages[:kithe_derivatives].url(path)) %>
-            <%= '[...]' if (@data['orphaned_public_derivatives_count'] > @data['orphaned_public_derivatives_sample'].length) && i == @data['orphaned_public_derivatives_sample'].length - 1 %>
+            <%= link_to display_s3_url(url, storage: Shrine.storages[:kithe_derivatives]), S3ConsoleUri.new(url).console_uri %>
           </li>
+        <% end %>
+        <% if @report.orphaned_public_derivatives_count > @report.orphaned_public_derivatives_sample.length %>
+          <li>[...]</li>
         <% end %>
       </ul>
       To delete orphaned public derivatives:
       <code>
-        rails runner 'OrphanS3Derivatives.new(show_progress_bar: false).delete_orphans' 
+        rails runner 'OrphanS3Derivatives.new(show_progress_bar: false).delete_orphans'
       </code>
 
     <% else %>
@@ -86,21 +90,23 @@
   <h4>Restricted derivatives</h4>
   <p class="text-muted small">Restricted derivatives without a corresponding asset in the database.</p>
   <p>
-    <% if @data['orphaned_restricted_derivatives_count'] > 0  %>
+    <% if @report.orphaned_restricted_derivatives_count > 0  %>
       <span class="text-danger">
-        <i class="fa fa fa-thumbs-down" aria-hidden="true"></i> There are <%= @data['orphaned_restricted_derivatives_count'] %> orphaned restricted derivatives.
+        <i class="fa fa fa-thumbs-down" aria-hidden="true"></i> There are <%= @report.orphaned_restricted_derivatives_count %> orphaned restricted derivatives.
       </span>
       <ul>
-        <% @data['orphaned_restricted_derivatives_sample'].each_with_index do |path, i|%>
+        <% @report.orphaned_restricted_derivatives_sample.each_with_index do |url, i|%>
           <li>
-          <%= link_to(path.split("/").last, Shrine.storages[:restricted_kithe_derivatives].url(path)) %>
-          <%= '[...]' if (@data['orphaned_restricted_derivatives_count'] > @data['orphaned_restricted_derivatives_sample'].length) && i == @data['orphaned_restricted_derivatives_sample'].length - 1 %>
+            <%= link_to display_s3_url(url, storage: Shrine.storages[:restricted_kithe_derivatives]), S3ConsoleUri.new(url).console_uri %>
           </li>
+        <% end %>
+        <% if @report.orphaned_restricted_derivatives_count > @report.orphaned_restricted_derivatives_sample.length %>
+          <li>[...]</li>
         <% end %>
       </ul>
       To delete restricted derivatives:
       <code>
-        rails runner 'OrphanS3RestrictedDerivatives.new(show_progress_bar: false).delete_orphans' 
+        rails runner 'OrphanS3RestrictedDerivatives.new(show_progress_bar: false).delete_orphans'
       </code>
 
     <% else %>
@@ -115,16 +121,18 @@
   <h4>DZI tiles</h4>
   <p class="text-muted small">Deep zoom tiles without a corresponding asset in the database.</p>
   <p>
-    <% if @data['orphaned_dzi_count'] > 0 %>
-      <span class="text-danger"> 
-        <i class="fa fa fa-thumbs-down" aria-hidden="true"></i> There are <%= @data['orphaned_dzi_count'] %> orphaned deep zoom tiles:
+    <% if @report.orphaned_dzi_count > 0 %>
+      <span class="text-danger">
+        <i class="fa fa fa-thumbs-down" aria-hidden="true"></i> There are <%= @report.orphaned_dzi_count %> orphaned deep zoom tiles:
       </span>
       <ul>
-        <% @data['orphaned_dzi_sample'].each_with_index do |path, i|%>
+        <% @report.orphaned_dzi_sample.each_with_index do |url, i|%>
           <li>
-            <%= link_to(path.split("/").last, Shrine.storages[:dzi_storage].url(path)) %>
-            <%= '[...]' if (@data['orphaned_dzi_count'] > @data['orphaned_dzi_sample'].length) && i == @data['orphaned_dzi_sample'].length - 1 %>
+            <%= link_to display_s3_url(url, storage: Shrine.storages[:dzi_storage]), S3ConsoleUri.new(url).console_uri %>
           </li>
+        <% end %>
+        <% if @report.orphaned_dzi_count > @report.orphaned_dzi_sample.length %>
+          <li>[...]</li>
         <% end %>
       </ul>
       To delete orphaned deep zoom tiles:

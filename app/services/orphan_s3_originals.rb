@@ -52,7 +52,7 @@ class OrphanS3Originals
         if @orphans_found == max_reports
           s3_iterator.log "Reported max #{max_reports} orphans, not listing subsquent...\n"
         elsif @orphans_found < max_reports
-          @sample << s3_key
+          @sample << s3_url_for_path(s3_key)
           asset = Asset.where(id: asset_id).first
 
           s3_iterator.log "orphaned file!"
@@ -125,6 +125,15 @@ class OrphanS3Originals
     return [asset_id, shrine_id_value]
   end
 
-
-
+  # note that the s3_path is complete path on bucket, it might include a prefix
+  # from the shrine storage already. We just want a complete good direct to S3 URL
+  # as an identifier, it may not be accessible, it wont' use a CDN, etc.
+  def s3_url_for_path(s3_path)
+    if shrine_storage.respond_to?(:bucket)
+      shrine_storage.bucket.object(s3_path).public_url
+    else
+      # we aren't S3 at all, not sure what we'll get...
+      shrine_storage.url(s3_path)
+    end
+  end
 end
