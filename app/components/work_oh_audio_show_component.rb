@@ -21,6 +21,7 @@ class WorkOhAudioShowComponent < ApplicationComponent
     @all_members ||= begin
       members = work.members.includes(:leaf_representative)
       members = members.where(published: true) if current_user.nil?
+      members = members.strict_loading # prevent accidental n+1 lazy-loading.
       members.order(:position).to_a
     end
   end

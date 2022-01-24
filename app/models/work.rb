@@ -118,9 +118,13 @@ class Work < Kithe::Work
   def ordered_viewable_members(current_user:)
     members = self.members.includes(:leaf_representative)
     members = members.where(published: true) if current_user.nil?
-    members = members.order(:position).to_a
+    members = members.order(:position)
 
-    members
+    # the point of this is to avoid n+1's, so let's set strict_loading, which
+    # it turns out you can do on an association/relation
+    members = members.strict_loading
+
+    members.to_a
   end
 
   # Ensures the optional sidecar OralHistoryContent is present if it wans't already

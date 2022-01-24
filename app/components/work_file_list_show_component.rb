@@ -91,7 +91,7 @@ class WorkFileListShowComponent < ApplicationComponent
   # We need to slice and dice the members in a couple ways, so just load them all in,
   # but we should never show this to the public
   def all_members
-    @all_members = work.members.includes(:leaf_representative).order(:position).to_a
+    @all_members = work.members.includes(:leaf_representative).order(:position).strict_loading.to_a
   end
 
 
