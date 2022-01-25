@@ -146,23 +146,23 @@ module CopyStaging
     end
 
     def remote_store_storage
-      Shrine.storages[REMOTE_STORE_STORAGE_KEY] ||= Shrine::Storage::S3.new({
+      Shrine.storages[REMOTE_STORE_STORAGE_KEY] ||= Shrine::Storage::S3.new(
         bucket:            input_hash["shrine_s3_storage_staging"]["store"]["bucket_name"],
         prefix:            input_hash["shrine_s3_storage_staging"]["store"]["prefix"],
         access_key_id:     ScihistDigicoll::Env.lookup!(:aws_access_key_id),
         secret_access_key: ScihistDigicoll::Env.lookup!(:aws_secret_access_key),
         region:            ScihistDigicoll::Env.lookup!(:aws_region)
-      })
+      )
     end
 
     def remote_derivatives_storage
-      Shrine.storages[REMOTE_DERIVATIVES_STORAGE_KEY] ||= Shrine::Storage::S3.new({
+      Shrine.storages[REMOTE_DERIVATIVES_STORAGE_KEY] ||= Shrine::Storage::S3.new(
         bucket:            input_hash["shrine_s3_storage_staging"]["kithe_derivatives"]["bucket_name"],
         prefix:            input_hash["shrine_s3_storage_staging"]["kithe_derivatives"]["prefix"],
         access_key_id:     ScihistDigicoll::Env.lookup!(:aws_access_key_id),
         secret_access_key: ScihistDigicoll::Env.lookup!(:aws_secret_access_key),
         region:            ScihistDigicoll::Env.lookup!(:aws_region)
-      })
+      )
     end
 
   end
