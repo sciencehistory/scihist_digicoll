@@ -37,7 +37,7 @@
       <span class="text-danger">
         <i class="fa fa fa-thumbs-down" aria-hidden="true"></i>
       </span>
-      <%= @report.incorrectly_published_sample_array.map { |id| link_to(id, work_path(id)) }.join(';').html_safe %>
+      <%= @report.incorrectly_published_sample_array.map { |id| link_to(id, admin_asset_path(id)) }.join(';').html_safe %>
       <% if @data['incorrectly_published_count'] > @report.incorrectly_published_sample_array.length  %>
         [...]
       <% end %>
@@ -58,7 +58,7 @@
     <span class="text-danger">
       <i class="fa fa fa-thumbs-down" aria-hidden="true"></i>
     </span>
-    <%= @report.incorrect_storage_locations_sample_array.map { |id| link_to(id, work_path(id)) }.join(';').html_safe %>
+    <%= @report.incorrect_storage_locations_sample_array.map { |id| link_to(id, admin_asset_path(id)) }.join(';').html_safe %>
     <% if @data['incorrect_storage_locations_count'] > @report.incorrect_storage_locations_sample_array.length  %>
       [...]
     <% end %>
