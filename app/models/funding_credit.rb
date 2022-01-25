@@ -34,10 +34,6 @@ class FundingCredit
       label: "cusp",
       path: "CUSP.jpg"
     },
-    "cns_asu" => {
-      label: "CNS-ASU",
-      path: "CNS-ASU.jpg"
-    },
     "moore" => {
       label: "GordonBettyMoore",
       path: "GordonBettyMoore.png"
