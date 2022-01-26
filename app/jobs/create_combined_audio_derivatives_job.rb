@@ -2,7 +2,7 @@ class CreateCombinedAudioDerivativesJob < ApplicationJob
 
 
   def perform(work)
-    deriv_creator = CombinedAudioDerivativeCreator.new(work)
+    deriv_creator = CombinedAudioDerivativeCreator.new(work, logger: logger)
     return unless deriv_creator.available_members?
     @sidecar = work.oral_history_content!
     @sidecar.combined_audio_derivatives_job_status = 'started'
@@ -12,6 +12,9 @@ class CreateCombinedAudioDerivativesJob < ApplicationJob
     if deriv_info.errors
       raise StandardError.new "Unable to create combined audio derivatives for work #{work.friendlier_id}: #{deriv_info.errors}"
     end
+
+    logger.debug("#{self.class}: Generation finished, uploading to S3...")
+
     # Upload to s3, then unlink local files:
     @sidecar.set_combined_audio_mp3!(deriv_info.mp3_file)
     deriv_info.mp3_file.unlink

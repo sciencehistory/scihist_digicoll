@@ -24,10 +24,11 @@ class CombinedAudioDerivativeCreator
 
   Response = Struct.new(:webm_file, :mp3_file, :fingerprint, :start_times, :errors, keyword_init: true)
 
-  attr_reader :work
+  attr_reader :work, :logger
 
-  def initialize(work)
+  def initialize(work, logger: Rails.logger)
     @work = work
+    @logger = logger
   end
 
   def generate
@@ -71,11 +72,13 @@ class CombinedAudioDerivativeCreator
 
   def components
     @components ||= begin
+      logger.debug("#{self.class}: downloading original assets")
       result = []
       audio_member_files.each do |original_file|
         new_temp_file = original_file.download(rewindable: false)
         result << new_temp_file
       end
+      logger.debug("#{self.class}: downloading original assets complete")
       result
     end
   end
