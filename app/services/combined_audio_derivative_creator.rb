@@ -54,7 +54,7 @@ class CombinedAudioDerivativeCreator
 
 
   def cmd
-    @cmd ||= TTY::Command.new(output: Rails.logger)
+    @cmd ||= TTY::Command.new(output: TtyLoggerWrapper.new(logger))
   end
 
   def output_file(format)
@@ -175,6 +175,20 @@ class CombinedAudioDerivativeCreator
         work.members.order(:position, :id).select do |member|
           (member.is_a? Asset) && member.published? && member.stored? && member.content_type && member.content_type.start_with?("audio/")
         end
+      end
+    end
+
+    # TTY:::Command wants a logger that uses method `<<`. We want
+    # that to go to specific chosen level of logging in our Rails logger.
+    #
+    # Also TTY log messages have newlines that are better off removed.
+    class TtyLoggerWrapper
+      def initialize(wrapped_logger, level: :info)
+        @wrapped_logger = wrapped_logger
+        @level = level
+      end
+      def <<(str)
+        @wrapped_logger.send(@level, str.chomp)
       end
     end
 
