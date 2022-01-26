@@ -73,10 +73,7 @@ class CombinedAudioDerivativeCreator
     @components ||= begin
       result = []
       audio_member_files.each do |original_file|
-        new_temp_file = Tempfile.new(['temp_', original_file.metadata['filename'].downcase], :encoding => 'binary')
-        original_file.open(rewindable:false) do |input_audio_io|
-          new_temp_file.write input_audio_io.read until input_audio_io.eof?
-        end
+        new_temp_file = original_file.download(rewindable: false)
         result << new_temp_file
       end
       result
