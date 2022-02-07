@@ -14,6 +14,7 @@ namespace :scihist do
           csv << ([
            work.title,
            "https://digital.sciencehistory.org/works/#{work.friendlier_id}",
+           work.department,
            work.genre&.join("; "),
            work.creator&.collect(&:value)&.join("; ")
           ])
