@@ -78,8 +78,30 @@ module ScihistDigicoll
       ENV['DATABASE_URL']
     }
 
-    define_key :aws_access_key_id
-    define_key :aws_secret_access_key
+    # Credentials looked up using "standard" AWS auth (ie from ENV variables
+    # or ~/.aws/ files etc), that initially we use in development mode
+    # to lookup keys
+    #
+    # https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
+    def self.aws_credentials
+      @aws_credentials ||= begin
+        client = Aws::S3::Client.new
+        credentials = client.config.credentials
+        # not sure why we do this, but it gets us a type of AWS credentials
+        # object that will actually have #access_key_id and #secret_access_key
+        # methods
+        credentials = credentials.credentials if credentials.respond_to?(:credentials)
+      end
+    end
+
+    define_key :aws_access_key_id, default: ->{
+      # default to looking things up via standard AWS, only in development
+      self.class.aws_credentials.access_key_id if Rails.env.development?
+    }
+    define_key :aws_secret_access_key, default: ->{
+      # default to looking things up via standard AWS, only in development
+      self.class.aws_credentials.secret_access_key if Rails.env.development?
+    }
 
     define_key :lockbox_master_key, default: -> {
       # In production, we insist that local_env.yml contain
