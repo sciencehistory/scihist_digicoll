@@ -7,6 +7,33 @@ class AssetUploader < Kithe::AssetUploader
   plugin :kithe_accept_remote_url
 
 
+  # use shrine upload_options plugin to set AWS tagging, only for "store" (not cache),
+  # will only have effect if we are using an AWS store of course.
+  plugin :upload_options, store: -> (io, options) do
+    output_upload_options = {}
+
+    # if you wanted to avoid for derivatives, you might `unless options[:derivative]`
+    content_type = options.dig(:metadata, "mime_type")
+    if content_type.present?
+      # AWS SDK docs: "The tag-set must be encoded as URL Query parameters. (For example, "Key1=Value1")"
+      # Rails #to_query can do it for us.
+      tags = {
+        "Content-Type-Full" => content_type,
+        #{}"Content-Type-Base" => content_type.split("/").first
+      }
+
+      # Need the weird tagging_directive REPLACE for confusing reasons.
+      # https://discourse.shrinerb.com/t/gotcha-on-s3-upload-options-and-tags/559
+      output_upload_options.merge!(
+        tagging: tags.to_query,
+        tagging_directive: "REPLACE"
+      )
+    end
+
+    output_upload_options
+  end
+
+
   # Re-set shrine derivatives setting, to put DERIVATIVES on restricted storage
   # if so configured. Only effects initial upload, if setting changes, some code
   # needs to manually move files.
