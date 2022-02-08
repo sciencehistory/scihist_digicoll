@@ -9,17 +9,20 @@ class AssetUploader < Kithe::AssetUploader
 
   # use shrine upload_options plugin to set AWS tagging, only for "store" (not cache),
   # will only have effect if we are using an AWS store of course.
-  plugin :upload_options, store: -> (io, options) do
+  plugin :scihist_upload_options, proccessor: -> (io, options, storage_key) do
     output_upload_options = {}
+byebug
+    # arguments that might be useful for dynamic processing including, `options[:derivative]`, true
+    # if processing derivatives via shrine derivatives plugin; and `storage_key`, might be one
+    # of something from config/initializers/shrine.rb.
 
-    # if you wanted to avoid for derivatives, you might `unless options[:derivative]`
     content_type = options.dig(:metadata, "mime_type")
     if content_type.present?
       # AWS SDK docs: "The tag-set must be encoded as URL Query parameters. (For example, "Key1=Value1")"
       # Rails #to_query can do it for us.
       tags = {
-        "Content-Type-Full" => content_type,
-        #{}"Content-Type-Base" => content_type.split("/").first
+        "Content-Type-Base" => content_type.split("/").first
+        # "Content-Type-Full" => content_type
       }
 
       # Need the weird tagging_directive REPLACE for confusing reasons.
