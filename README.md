@@ -10,7 +10,7 @@ This one is based on the [kithe](https://github.com/sciencehistory/kithe) toolki
 
 To set up a development instance on your workstation.
 
-Prequisites:
+### Prequisites
 
 * ruby installed (I like using chruby and ruby-build to install/manage rubies, some like rvm)
   * `gem install bundler` on new ruby installation
@@ -19,7 +19,7 @@ Prequisites:
 * `yarn` installed for webpacker -- on MacOS, `brew install yarn`.
 * `mediainfo` installed for fallback contnet type detection -- on MacOS, `brew install mediainfo`
 * vips installed --  on MacOS `brew install vips`
-* Have your AWS credentials put in a file called `aws_secrets.json` at the project's root directory. This is needed for deploying code.
+* ffmpeg installed -- on MacOS `brew install ffmpeg`
 
 ```bash
 $ git clone git@github.com:sciencehistory/scihist_digicoll.git
@@ -29,9 +29,25 @@ $ yarn install
 $ rake db:setup
 ```
 
+### AWS credentials
+
+Configure your local machine with AWS credentials using standard AWS ways, such as the `aws configure`. https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
+
+We recommend _not_ storing "super-user" credentials as your "default" profile. Instead,
+store credentials with limited access. Such as a `dev` user set up for you personally,
+using our IAM group/shared policy `dev_users`.
+
+You may also need to configure the aws region (`us-east-1`).
+
+If you do want to run the Rails app with a different AWS profile, just set `AWS_PROFILE` env var when running a rails command -- on command line, in shell with `export`.
+
+### Start development instance
+
 Start a development Solr instance with `./bin/rake solr:start`.
 
 Run app with `./rails server`, it will be available at `http://localhost:3000`.
+
+### Deploying
 
 To interact with our deployment infrastructure on [heroku](heroku.com), see [Heroku Developer Setup](https://chemheritage.atlassian.net/l/c/FsTqq6DV) in our wiki.
 
