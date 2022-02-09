@@ -15,7 +15,7 @@ class AssetUploader < Kithe::AssetUploader
     # if processing derivatives via shrine derivatives plugin; and `storage_key`, might be one
     # of something from config/initializers/shrine.rb.
 
-    content_type = options.dig(:metadata, "mime_type") || "unknown"
+    content_type = options.dig(:metadata, "mime_type").presence || "unknown"
 
     # AWS SDK docs: "The tag-set must be encoded as URL Query parameters. (For example, "Key1=Value1")"
     # Rails #to_query can do it for us.

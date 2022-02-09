@@ -26,7 +26,7 @@ namespace :scihist do
           storage = shrine_file.storage
 
           if storage.kind_of?(Shrine::Storage::S3)
-            content_type = shrine_file.metadata&.dig("mime_type") || "unknown"
+            content_type = shrine_file.metadata&.dig("mime_type").presence || "unknown"
             content_type_base = content_type.split("/").first
 
             # https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/S3/Client.html#put_object_tagging-instance_method
