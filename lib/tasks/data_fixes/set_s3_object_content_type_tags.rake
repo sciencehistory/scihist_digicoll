@@ -7,19 +7,27 @@ namespace :scihist do
       WARNING: Will override ANY existing object-level tags. (We don't have any now, so should
       be fine)
     """
-    task :set_s3_object_content_type_tags => :environment do
-      scope = Asset
 
+    # For batch processing that might take a while:
+    #
+
+    task :set_s3_object_content_type_tags => :environment do
       # useful for testing/debugging, limit to just so many assets
       if ENV["TEST_LIMIT"]
         limit = ENV["TEST_LIMIT"].to_i
       end
 
+      log_period = ENV['LOG_PERIOD_S'].present? ? ENV['LOG_PERIOD_S'].to_i : 10.minutes
+
+      use_progress_bar = ENV["PROGRESS_BAR"] == "true"
+
       files_processed = 0
 
-      # APPROXIMATE, 9 derivs per asset
-      file_count = Asset.count * 10
-      progress_bar = ProgressBar.create(total: file_count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
+      if use_progress_bar
+        # APPROXIMATE, 9 derivs per asset
+        file_count = Asset.count * 10
+        progress_bar = ProgressBar.create(total: file_count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
+      end
 
       thread_pool = Concurrent::ThreadPoolExecutor.new(
          min_threads: 10,
@@ -28,7 +36,18 @@ namespace :scihist do
          fallback_policy: :caller_runs
       )
 
-      scope.find_each do |asset|
+      last_record_processed = nil
+      last_progress_log = Time.now
+
+      Rails.logger.info "set_s3_object_content_type_tags: starting #{ENV['START_AT_PK']}"
+
+      if ENV['START_AT_PK']
+        finder = Asset.find_each(start: ENV['START_AT_PK'])
+      else
+        finder = Asset.find_each
+      end
+
+      finder.each do |asset|
         ([asset.file] + asset.file_derivatives.values).each do |shrine_file|
           thread_pool.post do
             storage = shrine_file.storage
@@ -53,15 +72,24 @@ namespace :scihist do
             end
           end
           files_processed += 1
-          progress_bar.increment if files_processed < file_count
+          progress_bar.increment if use_progress_bar && files_processed < file_count
         end
         break if limit && files_processed >= limit
+
+        last_record_processed = asset
+        if files_processed % 10 == 0 && ((Time.now - last_progress_log) > log_period)
+          Rails.logger.info("set_s3_object_content_type_tags: processed #{files_processed} assets, up to Asset PK #{last_record_processed.id}")
+          last_progress_log = Time.now
+        end
       end
+
       thread_pool.shutdown
       thread_pool.wait_for_termination
-      puts "thread pool terminated: #{thread_pool.shutdown?}"
-      progress_bar.finish
-      puts "Tagged #{files_processed} files"
+      Rails.logger.info "set_s3_object_content_type_tags: thread pool terminated: #{thread_pool.shutdown?}"
+
+      progress_bar.finish if use_progress_bar
+      puts "set_s3_object_content_type_tags: Tagged #{files_processed} files"
+      Rails.logger.info "set_s3_object_content_type_tags: Tagged #{files_processed} files"
     end
   end
 end
