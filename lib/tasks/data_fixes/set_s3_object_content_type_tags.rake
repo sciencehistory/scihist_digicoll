@@ -21,33 +21,46 @@ namespace :scihist do
       file_count = Asset.count * 10
       progress_bar = ProgressBar.create(total: file_count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
 
+      thread_pool = Concurrent::ThreadPoolExecutor.new(
+         min_threads: 10,
+         max_threads: 10,
+         max_queue: 200,
+         fallback_policy: :caller_runs
+      )
+
       scope.find_each do |asset|
         ([asset.file] + asset.file_derivatives.values).each do |shrine_file|
-          storage = shrine_file.storage
+          thread_pool.post do
+            storage = shrine_file.storage
 
-          if storage.kind_of?(Shrine::Storage::S3)
-            content_type = shrine_file.metadata&.dig("mime_type").presence || "unknown"
-            content_type_base = content_type.split("/").first
+            if storage.kind_of?(Shrine::Storage::S3)
+              content_type = shrine_file.metadata&.dig("mime_type").presence || "unknown"
+              content_type_base = content_type.split("/").first
 
-            # https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/S3/Client.html#put_object_tagging-instance_method
-            storage.client.put_object_tagging({
-              bucket: storage.bucket.name,
-              key: storage.object_key(shrine_file.id),
-              tagging: {
-                tag_set: [
-                  {
-                    key: "Content-Type-Base",
-                    value: content_type_base,
-                  }
-                ]
-              }
-            })
+              # https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/S3/Client.html#put_object_tagging-instance_method
+              storage.client.put_object_tagging({
+                bucket: storage.bucket.name,
+                key: storage.object_key(shrine_file.id),
+                tagging: {
+                  tag_set: [
+                    {
+                      key: "Content-Type-Base",
+                      value: content_type_base,
+                    }
+                  ]
+                }
+              })
+            end
           end
           files_processed += 1
           progress_bar.increment if files_processed < file_count
         end
         break if limit && files_processed >= limit
       end
+      thread_pool.shutdown
+      thread_pool.wait_for_termination
+      puts "thread pool terminated: #{thread_pool.shutdown?}"
+      progress_bar.finish
       puts "Tagged #{files_processed} files"
     end
   end
