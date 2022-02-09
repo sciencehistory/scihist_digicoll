@@ -33,7 +33,6 @@ class Shrine
 
         def _upload(io, **options)
           upload_options = get_upload_options(io, options)
-byebug
           super(io, **options, upload_options: upload_options)
         end
 

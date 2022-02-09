@@ -11,27 +11,22 @@ class AssetUploader < Kithe::AssetUploader
   # will only have effect if we are using an AWS store of course.
   plugin :scihist_upload_options, proccessor: -> (io, options, storage_key) do
     output_upload_options = {}
-byebug
     # arguments that might be useful for dynamic processing including, `options[:derivative]`, true
     # if processing derivatives via shrine derivatives plugin; and `storage_key`, might be one
     # of something from config/initializers/shrine.rb.
 
-    content_type = options.dig(:metadata, "mime_type")
-    if content_type.present?
-      # AWS SDK docs: "The tag-set must be encoded as URL Query parameters. (For example, "Key1=Value1")"
-      # Rails #to_query can do it for us.
-      tags = {
-        "Content-Type-Base" => content_type.split("/").first
-        # "Content-Type-Full" => content_type
-      }
+    content_type = options.dig(:metadata, "mime_type") || "unknown"
 
-      # Need the weird tagging_directive REPLACE for confusing reasons.
-      # https://discourse.shrinerb.com/t/gotcha-on-s3-upload-options-and-tags/559
-      output_upload_options.merge!(
-        tagging: tags.to_query,
-        tagging_directive: "REPLACE"
-      )
-    end
+    # AWS SDK docs: "The tag-set must be encoded as URL Query parameters. (For example, "Key1=Value1")"
+    # Rails #to_query can do it for us.
+    tags = {
+      "Content-Type-Base" => content_type.split("/").first
+      # "Content-Type-Full" => content_type
+    }
+
+    # Need the weird tagging_directive REPLACE for confusing reasons.
+    # https://discourse.shrinerb.com/t/gotcha-on-s3-upload-options-and-tags/559
+    output_upload_options[:tagging] = tags.to_query
 
     output_upload_options
   end
