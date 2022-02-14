@@ -131,18 +131,6 @@
 
       <%= render 'admin/assets/fixity' %>
 
-      <dt class="col-sm-4">Dimensions</dt>
-      <dd class="col-sm-8">
-        <dl>
-          <% if @asset.width %>
-            <dt>Width</dt><dd><%= @asset.width %> px</dd>
-          <% end %>
-          <% if @asset.height %>
-            <dt>Height</dt><dd><%= @asset.height %> px</dd>
-          <% end %>
-        </dl>
-      </dd>
-
     <% if @asset.admin_note.present? %>
       <dt class="col-sm-4">Admin Note</dt>
       <dd class="col-sm-8">
@@ -152,6 +140,71 @@
       </dd>
     <% end %>
 
+    </dl>
+
+    <h3>Media-specific Technical Metadata</h3>
+
+    <dl class="row">
+      <% if @asset.width.present? %>
+        <dt class="col-sm-4">Width</dt>
+        <dd class="col-sm-8"><%= @asset.width %> px</dd>
+      <% end %>
+
+      <% if @asset.height.present? %>
+        <dt class="col-sm-4">Height</dt>
+        <dd class="col-sm-8"><%= @asset.height %> px</dd>
+      <% end %>
+
+      <% if @asset.file_metadata&.dig("duration_seconds").present? %>
+        <dt class="col-sm-4">Duration</dt>
+        <dd class="col-sm-8"><%= format_ohms_timestamp(@asset.file_metadata["duration_seconds"]) %></dd>
+      <% end %>
+
+      <% if @asset.file_metadata&.dig("bitrate").present? %>
+        <dt class="col-sm-4">Bitrate</dt>
+        <dd class="col-sm-8"><%= @asset.file_metadata["bitrate"] / 1000 %> kb/s</dd>
+      <% end %>
+
+      <% if @asset.file_metadata&.dig("video_codec").present? %>
+        <dt class="col-sm-4">Video Codec</dt>
+        <dd class="col-sm-8"><%= @asset.file_metadata["video_codec"] %></dd>
+      <% end %>
+
+      <% if @asset.file_metadata&.dig("video_bitrate").present? %>
+        <dt class="col-sm-4">Video Bitrate</dt>
+        <dd class="col-sm-8"><%= @asset.file_metadata["video_bitrate"] / 1000 %> kb/s</dd>
+      <% end %>
+
+
+      <% if @asset.file_metadata&.dig("frame_rate").present? %>
+        <dt class="col-sm-4">Frame rate</dt>
+        <dd class="col-sm-8"><%= @asset.file_metadata["frame_rate"]  %> fps</dd>
+      <% end %>
+
+
+      <% if @asset.file_metadata&.dig("audio_bitrate").present? %>
+        <dt class="col-sm-4">Audio Bitrate</dt>
+        <dd class="col-sm-8"><%= @asset.file_metadata["audio_bitrate"] / 1000 %> kb/s</dd>
+      <% end %>
+
+      <% if @asset.file_metadata&.dig("audio_codec").present? %>
+        <dt class="col-sm-4">Audio Codec</dt>
+        <dd class="col-sm-8"><%= @asset.file_metadata["audio_codec"] %></dd>
+      <% end %>
+
+      <% if @asset.file_metadata&.dig("audio_sample_rate").present? %>
+        <dt class="col-sm-4">Audio Sample Rate</dt>
+        <dd class="col-sm-8"><%= (@asset.file_metadata["audio_sample_rate"].to_f / 1000).round(1) %> kHz</dd>
+      <% end %>
+
+      <% if @asset.file_metadata&.dig("audio_channels").present? %>
+        <dt class="col-sm-4">Audio Channels</dt>
+        <dd class="col-sm-8"><%= @asset.file_metadata["audio_channels"] %>
+          <% if @asset.file_metadata&.dig("audio_channel_layout").present? %>
+          (<%= @asset.file_metadata["audio_channel_layout"] %>)
+          <% end %>
+        </dd>
+      <% end %>
     </dl>
 
     <h2 class="mt-4">Derivatives</h2>
