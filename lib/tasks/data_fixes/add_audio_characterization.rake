@@ -12,6 +12,9 @@ namespace :scihist do
       scope.find_each do |audio_asset|
         next unless audio_asset.stored?
 
+        # if it already seems to have metadata...
+        next if audio_asset.file_metadata["bitrate"].present?
+
         input = if audio_asset.file.url.present? && audio_asset.file.url.start_with?("http")
           audio_asset.file.url
         else
