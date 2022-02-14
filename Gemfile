@@ -79,7 +79,7 @@ gem "device_detector", "~> 1.0" # user-agent parsing we use for logging
 
 # temporary kithe indexing branch, for scihist_digicoll indexing branch, do not
 # intend to merge to master like this.
-gem 'kithe', "~> 2.3"
+gem 'kithe', "~> 2.4"
 # attr_son is a dependency of kithe, but we want to make sure it gets require'd directly
 # to avoid weird auto-loading issues.
 gem "attr_json", "~> 1.0"

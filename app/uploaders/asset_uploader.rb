@@ -6,6 +6,10 @@ class AssetUploader < Kithe::AssetUploader
   # URL location, to be fetched on promotion.
   plugin :kithe_accept_remote_url
 
+  # audio/video file characterization
+  add_metadata do |source_io, **context|
+    Kithe::FfprobeCharacterization.characterize_from_uploader(source_io, context)
+  end
 
   # Re-set shrine derivatives setting, to put DERIVATIVES on restricted storage
   # if so configured. Only effects initial upload, if setting changes, some code
