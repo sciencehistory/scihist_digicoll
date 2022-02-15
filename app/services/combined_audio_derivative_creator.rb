@@ -19,7 +19,7 @@ require 'tempfile'
 #   [["ddbd1a8d-c2eb-47b3-85a4-11b4ffb41719", 0],
 #    ["df773502-56d7-4756-a58c-b1f479910e97", 1.593469]]
 #  >
-
+#
 class CombinedAudioDerivativeCreator
 
   Response = Struct.new(:webm_file, :mp3_file, :fingerprint, :start_times, :errors, keyword_init: true)
@@ -99,6 +99,9 @@ class CombinedAudioDerivativeCreator
 
   # A list of arrays; the first item in each is the UUID of each audio member,
   # while the second is the *starting point* of that audio w/r/t the combined audio.
+  #
+  # The durations are obtained from stored characterization metadata, we count on that
+  # being present and correct!
   def calculate_start_times
     duration_map = published_audio_members.collect do |audio_asset|
       [audio_asset.id, audio_asset.file&.metadata&.dig("duration_seconds")]
