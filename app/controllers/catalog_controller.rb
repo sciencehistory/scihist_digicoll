@@ -8,6 +8,7 @@ class CatalogController < ApplicationController
   before_action :catch_bad_blacklight_params, only: [:index, :facet]
   before_action :swap_range_limit_params_if_needed, only: [:index, :facet]
   before_action :catch_bad_request_headers, only: :index
+  before_action :catch_bad_format_param,  only: :index
 
   before_action :screen_params_for_range_limit, only: :range_limit
 
@@ -556,6 +557,11 @@ class CatalogController < ApplicationController
     end
   end
 
+  def catch_bad_format_param
+    if params[:format] == 'json'
+      render plain: "Invalid parameter: we do not provide a JSON version of our search results.", status: 406
+    end
+  end
 
   LEGACY_SORT_REDIRECTS = {
     "latest_year desc" => "newest_date",
