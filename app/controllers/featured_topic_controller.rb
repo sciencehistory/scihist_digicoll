@@ -2,6 +2,11 @@
 class FeaturedTopicController < CatalogController
   before_action :set_featured_topic
 
+  def index
+    return render json: "json is not supported here.", status: 422 if params[:format] == 'json'
+    super
+  end
+
   # params[:id] is being hogged by Blacklight.
   # It refers to the facet id.
   def facet
