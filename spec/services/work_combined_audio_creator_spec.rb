@@ -27,7 +27,7 @@ describe "Combined Audio" do
     # The lengths should be correct:
     expect(combined_audio_info.start_times).to match([
       [audio_asset_1.id, 0],
-      [audio_asset_2.id, 1.593469]
+      [audio_asset_2.id, 1.593]
     ])
 
     # The files should be tempfiles:
@@ -71,7 +71,7 @@ describe "Combined Audio" do
 
     expect( combined_audio_info.start_times).to match([
       [audio_asset_2.id, 0],
-      [audio_asset_1.id, 3.160816]
+      [audio_asset_1.id, 3.161]
     ])
 
     # Get some verbose details about the files output:
