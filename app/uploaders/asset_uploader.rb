@@ -6,6 +6,19 @@ class AssetUploader < Kithe::AssetUploader
   # URL location, to be fetched on promotion.
   plugin :kithe_accept_remote_url
 
+  # store VIDEO originals in separate bucket, identified as separate shrine
+  # storage ID. Instead of usual default :store shrine storage ID
+  #
+  # https://shrinerb.com/docs/plugins/default_storage
+  plugin :default_storage
+  Attacher.default_store  do
+    if record.content_type&.start_with?("video/")
+      :video_store
+    else
+      :store
+    end
+  end
+
   # audio/video file characterization
   add_metadata do |source_io, **context|
     Kithe::FfprobeCharacterization.characterize_from_uploader(source_io, context)

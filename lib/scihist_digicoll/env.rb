@@ -185,6 +185,7 @@ module ScihistDigicoll
     end
 
     define_key :s3_bucket_originals
+    define_key :s3_bucket_originals_video
     define_key :s3_bucket_derivatives
     define_key :s3_bucket_uploads
     define_key :s3_bucket_on_demand_derivatives
@@ -297,7 +298,7 @@ module ScihistDigicoll
     #
     #
     def self.appropriate_shrine_storage(bucket_key:, mode: lookup!(:storage_mode), s3_storage_options: {}, prefix: nil)
-      unless %I{s3_bucket_uploads s3_bucket_originals s3_bucket_derivatives
+      unless %I{s3_bucket_uploads s3_bucket_originals s3_bucket_originals_video s3_bucket_derivatives
                 s3_bucket_on_demand_derivatives s3_bucket_dzi}.include?(bucket_key)
         raise ArgumentError.new("Unrecognized bucket_key: #{bucket_key}")
       end
@@ -342,6 +343,12 @@ module ScihistDigicoll
     def self.shrine_store_storage
       @shrine_store_storage ||=
         appropriate_shrine_storage(bucket_key: :s3_bucket_originals)
+    end
+
+    # we store video originals in separate location
+    def self.shrine_store_video_storage
+      @shrine_video_store_storage ||=
+        appropriate_shrine_storage(bucket_key: :s3_bucket_originals_video)
     end
 
     # Note we set shrine S3 storage to public, to upload with public ACLs
