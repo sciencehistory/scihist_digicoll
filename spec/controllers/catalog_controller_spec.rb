@@ -125,4 +125,15 @@ RSpec.describe CatalogController, solr: true, type: :controller do
       expect(response.status).to eq(406)
     end
   end
+
+  # We do not implement rss / atom / json search results (or plan to implement them).
+  # e.g. /catalog.rss
+  # e.g. /focus/alchemy.json
+  describe "request for rss, atom or json via the format parameter" do
+    it "throws 406 when rss format is requested." do
+
+      get :index, params: { "format"=>"rss" }
+      expect(response.status).to eq(406)
+    end
+  end
 end
