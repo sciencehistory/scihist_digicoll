@@ -557,9 +557,13 @@ class CatalogController < ApplicationController
     end
   end
 
+  # Trigger this by requesting e.g.
+  #   /catalog.rss
+  #   /focus/alchemy.json
+  # See https://github.com/sciencehistory/scihist_digicoll/issues/1578
   def catch_bad_format_param
-    if params[:format] == 'json'
-      render plain: "Invalid parameter: we do not provide a JSON version of our search results.", status: 406
+    if ['json', 'atom', 'rss'].include? params[:format]
+      render plain: "Invalid parameter: we do not provide search results in #{params[:format]} format.", status: 406
     end
   end
 

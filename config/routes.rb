@@ -168,13 +168,6 @@ Rails.application.routes.draw do
   # out stuff we're not using.
   #
 
-      # Route RSS and atom search results to a 404
-      # until we decide to implement them.
-      # Practically speaking, this only affects bots).
-      get 'catalog.rss',  to: proc { [404, {}, ['']] }
-      get 'catalog.atom', to: proc { [404, {}, ['']] }
-      get 'catalog.json', to: proc { [404, {}, ['']] }
-
       # TODO: Can we get away without actuallymounting Blacklight, just using the CatalogController?
       # mount Blacklight::Engine => '/'
       concern :searchable, Blacklight::Routes::Searchable.new
@@ -201,6 +194,10 @@ Rails.application.routes.draw do
       #     delete 'clear'
       #   end
       # end
+
+      # We do not implement rss / atom / json search results (or plan to implement them).
+      # Thus, catch_bad_format_param in catalog_controller.rb sends e.g. /focus/alchemy.json to a 406.
+
   ##
   # End Blacklight-generated routes
   ##
