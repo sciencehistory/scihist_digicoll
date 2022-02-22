@@ -8,6 +8,7 @@ class CatalogController < ApplicationController
   before_action :catch_bad_blacklight_params, only: [:index, :facet]
   before_action :swap_range_limit_params_if_needed, only: [:index, :facet]
   before_action :catch_bad_request_headers, only: :index
+  before_action :catch_bad_format_param,  only: :index
 
   before_action :screen_params_for_range_limit, only: :range_limit
 
@@ -556,6 +557,15 @@ class CatalogController < ApplicationController
     end
   end
 
+  # Trigger this by requesting e.g.
+  #   /catalog.rss
+  #   /focus/alchemy.json
+  # See https://github.com/sciencehistory/scihist_digicoll/issues/1578
+  def catch_bad_format_param
+    if ['json', 'atom', 'rss'].include? params[:format]
+      render plain: "Invalid parameter: we do not provide search results in #{params[:format]} format.", status: 406
+    end
+  end
 
   LEGACY_SORT_REDIRECTS = {
     "latest_year desc" => "newest_date",
