@@ -52,7 +52,7 @@ class OrphanS3Originals
         if orphaned?(asset_id, shrine_path)
           @orphans_found +=1
           if @orphans_found == max_reports
-            s3_iterator.log "Reported max #{max_reports} orphans, not listing subsquent...\n"
+            it.log "Reported max #{max_reports} orphans, not listing subsquent...\n"
           elsif @orphans_found < max_reports
             @sample << s3_url_for_path(s3_key, it.shrine_storage)
             asset = Asset.where(id: asset_id).first
