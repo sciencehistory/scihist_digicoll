@@ -86,4 +86,61 @@ class AssetUploader < Kithe::AssetUploader
       Kithe::VipsCliImageToJpeg.new.call(original_file)
     end
   end
+
+
+  # Use a standard shrine derivative processor to d some complex stuff with video thumbs,
+  # including making multiple thumbs from one extraction from video.
+  #
+  # Tell kithe to include this processor in it's lifecycle management.
+
+  Attacher.kithe_include_derivatives_processors += [:video_thumbs]
+
+  # We write the logic for the video_thumbs shrine derivative processor  in kind of a confusing way,
+  # first defining our shrine attacher processor as a *lambda*, then passing it as a block argument
+  # to `Attacher.derivatives` with `&` -- because we really want to use `return` for flow control,
+  # which we can do in a lambda but not an ordinary block argument!
+  video_thumbs_processor = lambda do |original, **options|
+    # bail with no derivatives unless we are a video type
+    return {} unless file&.content_type&.start_with?("video/")
+
+    # exit now with no derivs unless only/except/lazy conditions are met to generate SOME thumb derivative
+    return {} unless process_any_kithe_derivative?(
+      AssetUploader::THUMB_WIDTHS.keys.collect { |key| ["thumb_#{key}", "thumb_#{key}_2X"] }.flatten,
+      **options
+    )
+
+    # extract the image at full scale for a base image, starting at 60 seconds
+    # in if the video is long enough
+    start_seconds = file.metadata["duration_seconds"].to_i >= 60 ? 60 : 0
+
+    base_image_file = Kithe::FfmpegExtractJpg.new(start_seconds: start_seconds).call(original)
+
+    derivatives_created = {}
+
+    # Now create all the thumbs from that one. Yes, we may be up-sampling for some
+    # of these, that's fine, to have a complete set for display.
+    #
+    # Guard with only/except/lazy conditions for each type, assemble into one
+    # hash.
+    AssetUploader::THUMB_WIDTHS.each_pair do |thumb_key, width|
+      if process_kithe_derivative?("thumb_#{thumb_key}", **options)
+        derivatives_created["thumb_#{thumb_key}"] =
+          Kithe::VipsCliImageToJpeg.new(max_width: width, thumbnail_mode: true).call(base_image_file)
+      end
+
+      if process_kithe_derivative?("thumb_#{thumb_key}_2X", **options)
+        derivatives_created["thumb_#{thumb_key}_2X"] =
+          Kithe::VipsCliImageToJpeg.new(max_width: width * 2, thumbnail_mode: true).call(base_image_file)
+      end
+    end
+
+    derivatives_created
+  ensure
+    base_image_file.unlink if base_image_file && base_image_file.respond_to?(:unlink)
+  end
+
+  # We set download:false, because ffpmpeg can extract a thumb without actually
+  # downloading the whole possibly huge video, so this argument keeps shrine from
+  # doing the download as preparation, which keeps this much higher performance.
+  Attacher.derivatives(:video_thumbs, download: false, &video_thumbs_processor)
 end
