@@ -64,13 +64,6 @@ class ThumbComponent < ApplicationComponent
   end
 
   def call
-    # for non-pdf/image assets, we currently just return a placeholder. We could in future
-    # return a default audio/video icon thumb or something. At present we don't intend to use
-    # a/v as representative images.
-    if asset.nil? || asset.content_type.nil? || !(asset.content_type == "application/pdf" || asset.content_type.start_with?("image/"))
-      return placeholder_image_tag
-    end
-
     thumb_image_tag
   end
 
@@ -108,7 +101,10 @@ class ThumbComponent < ApplicationComponent
   # URLs depending on shrine settings (beware of performance issues
   # if they are signed?)
   def thumb_image_tag
-    unless res_1x_url && res_2x_url
+    # If we don't have the thumb URLs we want, use a placeholder -- in
+    # the future, we could use media-specific generic icon instead, like
+    # an audio/video one or whatever for appropriate type.
+    unless asset && res_1x_url && res_2x_url
       return placeholder_image_tag
     end
 
