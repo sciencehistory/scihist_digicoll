@@ -108,7 +108,7 @@ class CombinedAudioDerivativeCreator
     end.to_h
 
     sum = 0
-    end_points = duration_map.values.map {|i| sum += i}.map { |i| i.round(3) }
+    end_points = duration_map.values.map {|i| sum += i.to_f }.map { |i| i.round(3) }
 
     duration_map.keys.zip([0] + end_points)
   end
