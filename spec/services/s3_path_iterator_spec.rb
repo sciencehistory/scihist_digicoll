@@ -15,9 +15,9 @@ describe S3PathIterator do
   before do
     allow_any_instance_of(S3PathIterator).to receive(:s3_bucket_name).and_return('arbitrary string')
     # Regular storage:
-    allow(it_1).to receive(:s3_client).and_return(AwsHelpers::MockAwsClient.new(paths: file_paths_1).client)
+    allow(it_1).to receive(:s3_client).and_return(AwsHelpers::MockS3Client.new(paths: file_paths_1).client)
     # Video storage:
-    allow(it_2).to receive(:s3_client).and_return(AwsHelpers::MockAwsClient.new(paths: file_paths_2).client)
+    allow(it_2).to receive(:s3_client).and_return(AwsHelpers::MockS3Client.new(paths: file_paths_2).client)
   end
 
   describe "Two path iterators pointed at two different local buckets" do

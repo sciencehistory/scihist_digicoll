@@ -9,7 +9,7 @@ module AwsHelpers
   #     allow(orphan_checker.s3_iterator).to receive(:s3_client).
   #       and_return(AwsHelpers::MockAwsClient.new(paths: paths).client)
   #
-  class MockAwsClient
+  class MockS3Client
     attr_reader :client
     def initialize(paths:, bucket_name:"bucket", common_prefixes: [])
       contents = paths.map { |path| Struct.new(:key).new(path) }
