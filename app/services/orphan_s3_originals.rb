@@ -26,16 +26,19 @@ class OrphanS3Originals
         shrine_storage: ScihistDigicoll::Env.shrine_store_video_storage,
         extra_prefix: 'asset',
         show_progress_bar: show_progress_bar,
-        progress_bar_total: video_asset_count
+        progress_bar_total: @video_asset_count
     )
 
     @nonvideo_s3_iterator = S3PathIterator.new(
         shrine_storage: ScihistDigicoll::Env.shrine_store_storage,  
         extra_prefix: 'asset',
         show_progress_bar: show_progress_bar,
-        progress_bar_total: nonvideo_asset_count
+        progress_bar_total: @nonvideo_asset_count
     )
     
+    @non_video_asset_count = counts['store']
+    @video_asset_count     = counts['video_store']
+
     @iterators = [@video_s3_iterator, @nonvideo_s3_iterator]
     @sample = []
   end
@@ -47,35 +50,35 @@ class OrphanS3Originals
     max_reports = 20
     @orphans_found = 0
     @files_checked = 0
-    @iterators.each do |it|
-      prefix = prefix(it.shrine_storage)
-      bucket_name = bucket_name(it.shrine_storage)
-      @files_checked += it.each_s3_path do |s3_key|
+    @iterators.each do |iter|
+      prefix = prefix(iter.shrine_storage)
+      bucket_name = bucket_name(iter.shrine_storage)
+      @files_checked += iter.each_s3_path do |s3_key|
         asset_id, shrine_path = parse_s3_path(s3_key, prefix)
         if orphaned?(asset_id, shrine_path)
           @orphans_found +=1
           if @orphans_found == max_reports
-            it.log "Reported max #{max_reports} orphans, not listing subsquent...\n"
+            iter.log "Reported max #{max_reports} orphans, not listing subsquent...\n"
           elsif @orphans_found < max_reports
-            @sample << s3_url_for_path(s3_key, it.shrine_storage)
+            @sample << s3_url_for_path(s3_key, iter.shrine_storage)
             asset = Asset.where(id: asset_id).first
-            it.log "orphaned file!"
-            it.log "  bucket: #{ bucket_name }"
-            it.log "  s3 path: #{s3_key}"
-            it.log "  asset_id: #{asset_id}"
+            iter.log "orphaned file!"
+            iter.log "  bucket: #{ bucket_name }"
+            iter.log "  s3 path: #{s3_key}"
+            iter.log "  asset_id: #{asset_id}"
             if asset.nil?
-              it.log "  asset missing"
+              iter.log "  asset missing"
             else
-              it.log "  asset friendlier_id: #{asset.friendlier_id}"
-              it.log "  asset file_data ->> id: #{asset.file_data["id"]}"
+              iter.log "  asset friendlier_id: #{asset.friendlier_id}"
+              iter.log "  asset file_data ->> id: #{asset.file_data["id"]}"
             end
-            it.log ""
+            iter.log ""
           end
         end
       end
     end
 
-    output_to_stderr "\n\nAsset count: #{video_asset_count} video and #{nonvideo_asset_count} non-video assets"
+    output_to_stderr "\n\nAsset count: #{@video_asset_count} video and #{@nonvideo_asset_count} non-video assets"
     output_to_stderr "Checked #{files_checked} files on S3"
     output_to_stderr "Found #{@orphans_found} orphan files\n"
   end
@@ -84,14 +87,14 @@ class OrphanS3Originals
   # If obj initializer show_progress_bar, there will be a progress bar.
   def delete_orphans
     @delete_count = 0
-    @iterators.each do |it|
-      bucket_name = bucket_name(it.shrine_storage)
-      prefix = prefix(it.shrine_storage)
-      it.each_s3_path do |s3_key|
+    @iterators.each do |iter|
+      bucket_name = bucket_name(iter.shrine_storage)
+      prefix = prefix(iter.shrine_storage)
+      iter.each_s3_path do |s3_key|
         asset_id, shrine_path = parse_s3_path(s3_key, prefix)
         if orphaned?(asset_id, shrine_path)
-          it.shrine_storage.delete(s3_key)
-          it.log "deleted: #{ bucket_name }: #{s3_key}"
+          iter.shrine_storage.delete(s3_key)
+          iter.log "deleted: #{ bucket_name }: #{s3_key}"
           @delete_count += 1
         end
       end
@@ -155,12 +158,8 @@ class OrphanS3Originals
   end
 
   # video_asset_count and nonvideo_asset_count could really just be one call to the database.
-  def video_asset_count
-     @video_asset_count ||= Kithe::Asset.connection.select_all("select count(*) from kithe_models where file_data ->> 'storage' = 'video_store' and kithe_model_type = 2").first['count']
-  end
-
-  def nonvideo_asset_count
-    @non_video_asset_count ||= Kithe::Asset.connection.select_all("select count(*) from kithe_models where file_data ->> 'storage' = 'store' and kithe_model_type = 2").first['count']
+  def counts
+     @counts ||= Kithe::Asset.connection.select_all("select file_data ->> 'storage' as storage, count(*)  from kithe_models where kithe_model_type = 2 group by storage").rows.to_h
   end
 
   def output_to_stderr(text)
