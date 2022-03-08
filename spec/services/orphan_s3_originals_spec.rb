@@ -18,8 +18,8 @@ describe OrphanS3Originals do
 
   let(:fake_clients) do
     {
-      video: AwsHelpers::MockAwsClient.new(paths: file_paths_v).client,
-      nonvideo: AwsHelpers::MockAwsClient.new(paths: file_paths_n).client
+      video: AwsHelpers::MockS3Client.new(paths: file_paths_v).client,
+      nonvideo: AwsHelpers::MockS3Client.new(paths: file_paths_n).client
     }
   end
 
