@@ -734,6 +734,7 @@ DEPENDENCIES
   rinku (~> 2.0)
   rsolr (~> 2.4)
   rspec-rails (~> 5.0)
+  ruby-progressbar
   rubyzip (~> 2.0)
   sane_patch (< 2.0)
   sassc-rails (~> 2.0)
