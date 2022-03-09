@@ -22,6 +22,10 @@ class OrphanS3Originals
   # @param show_progress_bar [Boolean], default true, should we show a progress
   #   bar with estimated progress.
   def initialize(show_progress_bar: true)
+    
+    @nonvideo_asset_count = counts['store']
+    @video_asset_count     = counts['video_store']
+
     @video_s3_iterator = S3PathIterator.new(
         shrine_storage: ScihistDigicoll::Env.shrine_store_video_storage,
         extra_prefix: 'asset',
@@ -36,9 +40,6 @@ class OrphanS3Originals
         progress_bar_total: @nonvideo_asset_count
     )
     
-    @non_video_asset_count = counts['store']
-    @video_asset_count     = counts['video_store']
-
     @iterators = [@video_s3_iterator, @nonvideo_s3_iterator]
     @sample = []
   end
