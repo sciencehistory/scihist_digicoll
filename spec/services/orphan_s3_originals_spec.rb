@@ -2,13 +2,11 @@ require 'rails_helper'
 
 describe OrphanS3Originals do
   let(:asset_n)  {
-    sleep 0.05
     create(:asset, :inline_promoted_file,
       file: File.open((Rails.root + "spec/test_support/images/20x20.png"))
     )
   }
   let(:asset_v)  {
-    sleep 0.05
     create(:asset, :inline_promoted_file,
       file: File.open((Rails.root + "spec/test_support/video/sample_video.mp4"))
     )
