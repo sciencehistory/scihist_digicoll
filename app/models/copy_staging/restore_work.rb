@@ -32,7 +32,8 @@ module CopyStaging
   # could be disastrous. This object can take thread_pool_size as an init
   # argument, but the wrapping rake task isn't currently written to exersize that.
   class RestoreWork
-    REMOTE_STORE_STORAGE_KEY = :remote_store_storage
+    REMOTE_STORE_STORAGE_KEY =       :remote_store_storage
+    REMOTE_VIDEO_STORE_STORAGE_KEY = :remote_video_store_storage
     REMOTE_DERIVATIVES_STORAGE_KEY = :remote_derivatives_storage
 
     attr_accessor :json_file, :thread_pool, :tracked_futures, :thread_pool_size
@@ -50,8 +51,14 @@ module CopyStaging
       @thread_pool = Concurrent::FixedThreadPool.new(thread_pool_size)
       @tracked_futures = Concurrent::Array.new
 
+      @remote_asset_storage_keys = {
+          'store'         => REMOTE_STORE_STORAGE_KEY,
+          'video_store'   => REMOTE_VIDEO_STORE_STORAGE_KEY
+      }
+
       # make sure they get registered
       remote_store_storage
+      remote_video_store_storage
       remote_derivatives_storage
     end
 
@@ -121,11 +128,19 @@ module CopyStaging
       components.join("/")
     end
 
+    def lookup_remote_storage_key(asset_model)
+      model_storage = asset_model.file.data['storage']
+      unless @remote_asset_storage_keys.has_key? model_storage
+         raise RuntimeError, "Unrecognized storage for asset #{asset_model.friendlier_id}: #{model_storage}"
+      end
+      @remote_asset_storage_keys[model_storage]
+    end
+
     def restore_asset_file(asset_model)
       tracked_futures << Concurrent::Promises.future_on(thread_pool) do
         puts "  -> Copying original file for #{asset_model.class.name}/#{asset_model.friendlier_id}\n\n"
-
-        remote_file = Shrine::UploadedFile.new(asset_model.file.data.merge("storage" => REMOTE_STORE_STORAGE_KEY))
+        remote_storage_key = lookup_remote_storage_key(asset_model)
+        remote_file = Shrine::UploadedFile.new(asset_model.file.data.merge("storage" => remote_storage_key))
         Shrine.storages[:store].upload(remote_file, asset_model.file.id)
       end
     end
@@ -149,6 +164,16 @@ module CopyStaging
       Shrine.storages[REMOTE_STORE_STORAGE_KEY] ||= Shrine::Storage::S3.new(
         bucket:            input_hash["shrine_s3_storage_staging"]["store"]["bucket_name"],
         prefix:            input_hash["shrine_s3_storage_staging"]["store"]["prefix"],
+        access_key_id:     ScihistDigicoll::Env.lookup!(:aws_access_key_id),
+        secret_access_key: ScihistDigicoll::Env.lookup!(:aws_secret_access_key),
+        region:            ScihistDigicoll::Env.lookup!(:aws_region)
+      )
+    end
+
+    def remote_video_store_storage
+      Shrine.storages[REMOTE_VIDEO_STORE_STORAGE_KEY] ||= Shrine::Storage::S3.new(
+        bucket:            input_hash["shrine_s3_storage_staging"]["video_store"]["bucket_name"],
+        prefix:            input_hash["shrine_s3_storage_staging"]["video_store"]["prefix"],
         access_key_id:     ScihistDigicoll::Env.lookup!(:aws_access_key_id),
         secret_access_key: ScihistDigicoll::Env.lookup!(:aws_secret_access_key),
         region:            ScihistDigicoll::Env.lookup!(:aws_region)
