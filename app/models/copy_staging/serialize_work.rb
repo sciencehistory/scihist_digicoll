@@ -23,6 +23,7 @@ module CopyStaging
         "models" => serialized_models,
         "shrine_s3_storage_staging" => {
           "store" => shrine_config(:store),
+          "video_store" => shrine_config(:video_store),
           "kithe_derivatives" => shrine_config(:kithe_derivatives)
         }
       }
