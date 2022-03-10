@@ -12,14 +12,19 @@ To set up a development instance on your workstation.
 
 ### Prequisites
 
+* (MacOS) You're going to want homebrew, which will also take care of making sure you have a C compiler toolchain to install native C gems. https://brew.sh/
+* While not technically required just to run the app, you're going to want `git`. MacOS, `brew install git`. 
 * ruby installed (I like using chruby and ruby-build to install/manage rubies, some like rvm)
-  * `gem install bundler` on new ruby installation
-* (MacOS) XCode installed so C dependencies can be compiled
 * Postgres installed and running -- on MacOS, I like https://postgresapp.com/
-* `yarn` installed for webpacker -- on MacOS, `brew install yarn`.
+* `yarn` and `node` installed for managing webpacker JS dependencies -- on MacOS, `brew install node yarn`.
 * `mediainfo` installed for fallback contnet type detection -- on MacOS, `brew install mediainfo`
 * vips installed --  on MacOS `brew install vips`
 * ffmpeg installed -- on MacOS `brew install ffmpeg`
+* You'll need Java installed to run Solr. If you don't already have it, on MacOS `brew install java`, then follow post-install instructions, such as `sudo ln -sfn /opt/homebrew/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk`
+
+
+
+### Install and setup the app
 
 ```bash
 $ git clone git@github.com:sciencehistory/scihist_digicoll.git
@@ -28,6 +33,17 @@ $ bundle install
 $ yarn install
 $ rake db:setup
 ```
+
+If you have problems installing the `pg` gem, which I did on an M1 Mac running MacOS 12, this worked:
+
+* brew install libsq
+* follow the post-install instructions about modifying $PATH to put libsq on it -- this gives you utilities like `psql`, and also made install of `pg` gem work. 
+
+### Create an admin user for yourself
+
+    ./bin/rake scihist:user:test:create[email_addr,password] scihist:user:admin:grant[email_addr]
+
+Now you can login in a running app at probably `http://locahost:3000/login` with those credentials. 
 
 ### AWS credentials
 
@@ -40,6 +56,8 @@ using our IAM group/shared policy `dev_users`.
 You may also need to configure the aws region (`us-east-1`).
 
 If you do want to run the Rails app with a different AWS profile, just set `AWS_PROFILE` env var when running a rails command -- on command line, in shell with `export`.
+
+* If you don't want your dev app to use AWS for file storage, you can set `STORAGE_MODE` env to `dev_file`, and you may not need AWS credentials. 
 
 ### Start development instance
 
@@ -61,13 +79,14 @@ hooks that come with the repo:
 
 
 ### Local Env
+
 If you want to change defaults to our config/env variables (managed by `ScihistDigicoll::Env`), you can set them in your shell ENV (via .bash_profile, on the command line, or otherwise), OR you can create a `local_env.yml` or `local_env_development.yml` file. The latter may make sense if you don't want your particular settings to effect the test environment.
 
 For instance, you can switch between whether files are stored in dev-s3 mode, or in the local file system, with:
 
     STORAGE_MODE=dev_file rails server
 
-Or by putting in a local_env[_development].yml file:
+Or by putting in a `local_env[_development].yml` file:
 
     storage_mode: dev_file
 
