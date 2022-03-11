@@ -1,9 +1,6 @@
 require 'rails_helper'
 
 describe OrphanS3RestrictedDerivatives do
-
-  let(:fake_aws_s3_client) { Aws::S3::Client.new(stub_responses: true) }
-
   let(:id_1) { "0001d800-482d-4dcf-80b7-84f273580a13" }
   let(:id_2) { "00042a06-7216-4ece-a57c-670e4e9b5c46" }
 
@@ -63,26 +60,14 @@ describe OrphanS3RestrictedDerivatives do
     ]
   end
 
-
-  let(:fake_aws_list_output) do
-     Aws::S3::Types::ListObjectsOutput.new(
-      is_truncated: false,   marker: '',
-      next_marker: nil,      name: 's3.bucket',
-      delimiter: '/',        max_keys: 1000,
-      encoding_type: 'url',
-      contents: file_paths.map{|path| Struct.new(:key).new(path)},
-      common_prefixes: []
-    )
-  end
-
   let (:orphan_checker) do
     OrphanS3RestrictedDerivatives.new(show_progress_bar: false)
   end
 
   before do
-    fake_aws_s3_client.stub_responses(:list_objects_v2, fake_aws_list_output)
-    allow_any_instance_of(S3PathIterator).to receive(:s3_client).and_return(fake_aws_s3_client)
-    allow_any_instance_of(S3PathIterator).to receive(:s3_bucket_name).and_return('s3.bucket')
+    allow_any_instance_of(S3PathIterator).to receive(:s3_client).
+      and_return(AwsHelpers::MockS3Client.new(paths: file_paths).client)
+    allow_any_instance_of(S3PathIterator).to receive(:s3_bucket_name).and_return('arbitrary string')
     # Mute output. We just want to check the stats.
     allow_any_instance_of(S3PathIterator).to receive(:log).and_return(nil)
     allow_any_instance_of(OrphanS3RestrictedDerivatives).to receive(:output_to_stderr).and_return(nil)
