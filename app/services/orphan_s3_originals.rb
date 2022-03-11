@@ -17,88 +17,98 @@
 # report on all discovered orphaned files, or to actually _delete_ orphaned files.  This class
 # is normally called from a rake task.
 class OrphanS3Originals
-  attr_reader :s3_iterator, :shrine_storage,  :orphans_found, :delete_count, :sample
+  attr_reader :video_s3_iterator, :nonvideo_s3_iterator, :shrine_storage,  :orphans_found, :files_checked, :delete_count, :sample
 
   # @param show_progress_bar [Boolean], default true, should we show a progress
   #   bar with estimated progress.
   def initialize(show_progress_bar: true)
-    @sample = []
-    @shrine_storage = ScihistDigicoll::Env.shrine_store_storage
+    
+    @nonvideo_asset_count = counts['store']
+    @video_asset_count     = counts['video_store']
 
-    @s3_iterator = S3PathIterator.new(
-      shrine_storage: shrine_storage,
-      extra_prefix: 'asset',
-      show_progress_bar: show_progress_bar,
-      progress_bar_total: asset_count
+    @video_s3_iterator = S3PathIterator.new(
+        shrine_storage: ScihistDigicoll::Env.shrine_store_video_storage,
+        extra_prefix: 'asset',
+        show_progress_bar: show_progress_bar,
+        progress_bar_total: @video_asset_count
     )
+
+    @nonvideo_s3_iterator = S3PathIterator.new(
+        shrine_storage: ScihistDigicoll::Env.shrine_store_storage,  
+        extra_prefix: 'asset',
+        show_progress_bar: show_progress_bar,
+        progress_bar_total: @nonvideo_asset_count
+    )
+    
+    @iterators = [@video_s3_iterator, @nonvideo_s3_iterator]
+    @sample = []
   end
 
-  def asset_count
-    @asset_count ||= Asset.count
-  end
 
   # Prints out any orphans found, and some summary info. If show_progress_bar was
   # set in an initializer, there will be a progress bar.
   def report_orphans
     max_reports = 20
     @orphans_found = 0
-
-    files_checked = s3_iterator.each_s3_path do |s3_key|
-      asset_id, shrine_path = parse_s3_path(s3_key)
-
-      if orphaned?(asset_id, shrine_path)
-        @orphans_found +=1
-
-        if @orphans_found == max_reports
-          s3_iterator.log "Reported max #{max_reports} orphans, not listing subsquent...\n"
-        elsif @orphans_found < max_reports
-          @sample << s3_url_for_path(s3_key)
-          asset = Asset.where(id: asset_id).first
-
-          s3_iterator.log "orphaned file!"
-          s3_iterator.log "  bucket: #{shrine_storage.bucket.name}"
-          s3_iterator.log "  s3 path: #{s3_key}"
-          s3_iterator.log "  asset_id: #{asset_id}"
-          if asset.nil?
-            s3_iterator.log "  asset missing"
-          else
-            s3_iterator.log "  asset friendlier_id: #{asset.friendlier_id}"
-            s3_iterator.log "  asset file_data ->> id: #{asset.file_data["id"]}"
+    @files_checked = 0
+    @iterators.each do |iter|
+      prefix = prefix(iter.shrine_storage)
+      bucket_name = bucket_name(iter.shrine_storage)
+      @files_checked += iter.each_s3_path do |s3_key|
+        asset_id, shrine_path = parse_s3_path(s3_key, prefix)
+        if orphaned?(asset_id, shrine_path)
+          @orphans_found +=1
+          if @orphans_found == max_reports
+            iter.log "Reported max #{max_reports} orphans, not listing subsquent...\n"
+          elsif @orphans_found < max_reports
+            @sample << s3_url_for_path(s3_key, iter.shrine_storage)
+            asset = Asset.where(id: asset_id).first
+            iter.log "orphaned file!"
+            iter.log "  bucket: #{ bucket_name }"
+            iter.log "  s3 path: #{s3_key}"
+            iter.log "  asset_id: #{asset_id}"
+            if asset.nil?
+              iter.log "  asset missing"
+            else
+              iter.log "  asset friendlier_id: #{asset.friendlier_id}"
+              iter.log "  asset file_data ->> id: #{asset.file_data["id"]}"
+            end
+            iter.log ""
           end
-          s3_iterator.log ""
         end
       end
     end
 
-    $stderr.puts "\n\nTotal Asset count: #{asset_count}"
-    $stderr.puts "Checked #{files_checked} files on S3"
-    $stderr.puts "Found #{@orphans_found} orphan files\n"
+    output_to_stderr "\n\nAsset count: #{@video_asset_count} video and #{@nonvideo_asset_count} non-video assets"
+    output_to_stderr "Checked #{files_checked} files on S3"
+    output_to_stderr "Found #{@orphans_found} orphan files\n"
   end
 
   # Deletes all found orphans, outputing to console what was deleted.
   # If obj initializer show_progress_bar, there will be a progress bar.
   def delete_orphans
     @delete_count = 0
-    s3_iterator.each_s3_path do |s3_key|
-      asset_id, shrine_path = parse_s3_path(s3_key)
-
-      if orphaned?(asset_id, shrine_path)
-        shrine_storage.bucket.object(s3_key).delete
-        s3_iterator.log "deleted: #{shrine_storage.bucket.name}: #{s3_key}"
-        @delete_count += 1
+    @iterators.each do |iter|
+      bucket_name = bucket_name(iter.shrine_storage)
+      prefix = prefix(iter.shrine_storage)
+      iter.each_s3_path do |s3_key|
+        asset_id, shrine_path = parse_s3_path(s3_key, prefix)
+        if orphaned?(asset_id, shrine_path)
+          iter.shrine_storage.delete(s3_key)
+          iter.log "deleted: #{ bucket_name }: #{s3_key}"
+          @delete_count += 1
+        end
       end
     end
-    puts "Deleted #{@delete_count} orphaned objects"
+    output_to_stderr "Deleted #{@delete_count} orphaned objects"
   end
 
   private
-
 
   def orphaned?(asset_id, shrine_path)
     unless asset_id && shrine_path
       return true
     end
-
     ! Asset.
         where(id: asset_id).
         where("file_data ->> 'id' = ?", shrine_path).
@@ -111,12 +121,8 @@ class OrphanS3Originals
   # Also in our path is encoded the Asset UUID pk we expect to have that shrine id (if it's not orphaned).
   #
   # We return [asset_id, shrine_id_value]
-  def parse_s3_path(s3_path)
-    bucket_prefix = if shrine_storage.prefix
-      Regexp.escape(shrine_storage.prefix.chomp('/') + '/')
-    end
-
-    s3_path =~ %r{\A#{bucket_prefix}(([^/]+/)([^/]+/).*)\Z}
+  def parse_s3_path(s3_path, prefix=nil)
+    s3_path =~ %r{\A#{prefix}(([^/]+/)([^/]+/).*)\Z}
 
     _model_name     = $2
     shrine_id_value = $1
@@ -125,15 +131,40 @@ class OrphanS3Originals
     return [asset_id, shrine_id_value]
   end
 
+  def prefix(storage)
+    if storage.prefix.nil?
+      nil
+    else
+      Regexp.escape(storage.prefix.to_s.chomp('/') + '/')
+    end
+  end
+
+  def bucket_name(storage)
+    if storage.respond_to?(:bucket)
+      storage.bucket.name
+    else
+      storage.directory.to_s
+    end
+  end
+
   # note that the s3_path is complete path on bucket, it might include a prefix
   # from the shrine storage already. We just want a complete good direct to S3 URL
-  # as an identifier, it may not be accessible, it wont' use a CDN, etc.
-  def s3_url_for_path(s3_path)
+  # as an identifier, it may not be accessible, it won't use a CDN, etc.
+  def s3_url_for_path(s3_path, shrine_storage)
     if shrine_storage.respond_to?(:bucket)
       shrine_storage.bucket.object(s3_path).public_url
     else
-      # we aren't S3 at all, not sure what we'll get...
       shrine_storage.url(s3_path)
     end
   end
+
+  # video_asset_count and nonvideo_asset_count could really just be one call to the database.
+  def counts
+     @counts ||= Kithe::Asset.connection.select_all("select file_data ->> 'storage' as storage, count(*)  from kithe_models where kithe_model_type = 2 group by storage").rows.to_h
+  end
+
+  def output_to_stderr(text)
+    $stderr.puts text
+  end
+
 end
