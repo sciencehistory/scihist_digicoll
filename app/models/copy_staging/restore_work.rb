@@ -146,9 +146,11 @@ module CopyStaging
       end
     end
 
+    # "Upload" a remote file to a local Shrine storage, effectively copying it.
     def copy_file(key:, file:)
-      remote_file_data = file.data.merge("storage" => @storage_map[key])
-      Shrine.storages[key].upload(Shrine::UploadedFile.new(remote_file_data),file.id)
+      remote_metadata = file.data.merge("storage" => @storage_map[key])
+      remote_file = Shrine::UploadedFile.new(remote_metadata)
+      Shrine.storages[key].upload(remote_file,file.id)
     end
 
     def input_hash
