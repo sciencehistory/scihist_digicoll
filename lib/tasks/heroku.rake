@@ -16,6 +16,11 @@ namespace :scihist do
       end
     end
 
+    # If the work does not exist in dev:
+    # bundle exec rake scihist:heroku:copy_data[WORK_FRIENDLIER_ID]
+    #
+    # If the work DOES exist in dev and you want to REPLACE it with the work on staging:
+    # bundle exec rake scihist:heroku:copy_data[WORK_FRIENDLIER_ID,true]
     desc "Copy remote work from staging to local dev, with all data"
     task :copy_data, [:work_friendlier_id, :force_erase] => :environment do |t, args|
       heroku_app = ENV['HEROKU_APP'] || "scihist-digicoll-staging"
