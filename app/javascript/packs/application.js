@@ -39,3 +39,4 @@ import "../src/js/audio/timecode_in_anchor.js";
 import "../src/js/audio/share_link.js";
 import '../src/js/audio/jump_to_text.js';
 import "../src/js/audio/clipboard_copy_input.js";
+import "../src/js/video_player.js";

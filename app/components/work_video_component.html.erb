@@ -1,0 +1,63 @@
+<%# note this re-uses classes from standard work_image_show_component %>
+
+<% provide :page_title, construct_page_title(work.title) %>
+
+<% content_for :head do %>
+  <%= render "meta_tags", work: @work  %>
+  <%= tag "link", rel: "alternate", type: "application/xml", title: "OAI-DC metadata in XML", href: work_path(@work, format: "xml") %>
+<% end %>
+
+<div class="show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
+
+  <div class="show-title">
+    <%= render WorkTitleAndDatesComponent.new(@work) %>
+  </div>
+
+  <div class="show-video">
+
+    <%= content_tag("video",
+            id: "work-video-player",
+            class: "video-js vjs-fluid",
+            controls: true,
+            preload: "metadata",
+            poster: video_asset.file_derivatives(:thumb_large).url,
+            style: "aspect-ratio: #{video_asset.width }/#{ video_asset.height };",
+            # the data-setup with serialized json triggers video.js
+            data: {
+              setup: {
+                aspectRatio: "#{video_asset.width}:#{video_asset.height}",
+                plugins: {
+                  seekButtons: {
+                    forward: 30,
+                    back: 15
+                  }
+                }
+              }.to_json
+            }
+    ) do %>
+      <%= tag "source", src: video_asset.file_url, type: video_asset.content_type %>
+
+      <p class="vjs-no-js">
+        To view this video please enable JavaScript, and consider upgrading to a
+        web browser that
+        <a href="https://videojs.com/html5-video-support/" target="_blank"
+          >supports HTML5 video</a
+        >
+      </p>
+    <% end %>
+
+
+    <%= render "rights_and_social", work: @work %>
+  </div>
+
+  <div class="show-metadata">
+    <div class="work-description long-text-line-height">
+      <%= DescriptionDisplayFormatter.new(@work.description).format  %>
+    </div>
+
+    <%= render WorkShowInfoComponent.new(work: @work) %>
+
+    <%= render "citation", work: @work  %>
+  </div>
+</div>
+
