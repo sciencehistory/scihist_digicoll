@@ -17,10 +17,17 @@
 
     <%= content_tag("video",
             id: "work-video-player",
+            class: "video-js vjs-fluid",
             controls: true,
             preload: "metadata",
             poster: video_asset.file_derivatives(:thumb_large).url,
-            style: "aspect-ratio: #{video_asset.width }/#{ video_asset.height };"
+            style: "aspect-ratio: #{video_asset.width }/#{ video_asset.height };",
+            # the data-setup with serialized json triggers video.js
+            data: {
+              setup: {
+                aspectRatio: "#{video_asset.width}:#{video_asset.height}"
+              }.to_json
+            }
     ) do %>
       <%= tag "source", src: video_asset.file_url, type: video_asset.content_type %>
 
