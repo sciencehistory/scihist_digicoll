@@ -32,16 +32,8 @@ module CopyStaging
   # could be disastrous. This object can take thread_pool_size as an init
   # argument, but the wrapping rake task isn't currently written to exersize that.
   class RestoreWork
-
-    # Associate dev with staging shrine storage keys:
-    ORIGINALS_STORAGE = {
-      store:                         :remote_store_storage,      #non-video
-      video_store:                   :remote_video_store_storage # video
-    }
-    DERIVATIVES_STORAGE = {
-      kithe_derivatives:             :remote_derivatives_storage,
-      restricted_kithe_derivatives:  :remote_restricted_derivatives_storage
-    }
+    ORIGINALS_STORAGE   = [:store, :video_store]
+    DERIVATIVES_STORAGE = [:kithe_derivatives, :restricted_kithe_derivatives]
 
     attr_accessor :json_file, :thread_pool, :tracked_futures, :thread_pool_size
 
@@ -56,7 +48,7 @@ module CopyStaging
       @thread_pool_size = thread_pool_size
       @thread_pool = Concurrent::FixedThreadPool.new(thread_pool_size)
       @tracked_futures = Concurrent::Array.new
-      @storage_map = ORIGINALS_STORAGE.merge(DERIVATIVES_STORAGE)
+      @storage_map = Hash[ (ORIGINALS_STORAGE + DERIVATIVES_STORAGE).collect { |v| [v, "remote_#{v.to_s}".to_sym  ] } ]
       register_remote_storages
     end
 
