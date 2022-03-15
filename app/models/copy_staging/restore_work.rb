@@ -118,17 +118,21 @@ module CopyStaging
       components.join("/")
     end
 
+    # Copy the file from an asset on staging to one in development.
     def restore_asset_file(asset_model)
+      # use the storage info from staging to figure out which local bucket it belongs in.
       local_storage_key = asset_model.file.data['storage'].to_sym
       unless @storage_map.has_key? local_storage_key
          raise RuntimeError, "Unrecognized remote storage for asset #{asset_model.friendlier_id}: #{local_storage_key}"
       end
+      # OK - we have a local destination for the file; proceed.
       tracked_futures << Concurrent::Promises.future_on(thread_pool) do
         puts "  -> Copying original file for #{asset_model.class.name}/#{asset_model.friendlier_id}\n\n"        
         copy_file( key: local_storage_key, file: asset_model.file)
       end
     end
 
+    # Copy the file from a derivative on staging to one in development.
     def restore_derivative_file(derivative_uploaded_file, asset_id:, derivative_key:)
       tracked_futures << Concurrent::Promises.future_on(thread_pool) do
         puts "  -> Copying derivative file for #{asset_id}/#{derivative_key}\n\n"
@@ -139,7 +143,7 @@ module CopyStaging
       end
     end
 
-    # "Upload" a remote file to a local Shrine storage, effectively copying it.
+    # Look up a remote file, then "upload" it to a local Shrine storage, effectively copying it.
     def copy_file(key:, file:)
       remote_metadata = file.data.merge("storage" => @storage_map[key])
       remote_file = Shrine::UploadedFile.new(remote_metadata)
@@ -150,6 +154,18 @@ module CopyStaging
       @input_hash ||= ActiveSupport::JSON.decode(json_file.read)
     end
 
+    # This tells Shrine about remote storages, so we can copy files down from them.
+    # Once this method completes, Shrine.storages will know about a storage
+    # for each key and value in @storage_map:
+    #
+    # Shrine.storages.keys 
+    # [
+    #   :store,                        :remote_store,
+    #   :video_store,                  :remote_video_store,
+    #   :kithe_derivatives,            :remote_kithe_derivatives,
+    #   :restricted_kithe_derivatives, :remote_restricted_kithe_derivatives
+    #   [...]
+    # ]
     def register_remote_storages
       @storage_map.each_pair do |local_key, remote_key|
         Shrine.storages[remote_key] ||= Shrine::Storage::S3.new(
