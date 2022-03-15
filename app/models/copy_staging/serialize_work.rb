@@ -21,12 +21,7 @@ module CopyStaging
     def as_json
       {
         "models" => serialized_models,
-        "shrine_s3_storage_staging" => {
-          "store" =>                        shrine_config(:store), #originals
-          "video_store" =>                  shrine_config(:video_store), # video originals
-          "kithe_derivatives" =>            shrine_config(:kithe_derivatives), # regular derivs
-          "restricted_kithe_derivatives" => shrine_config(:restricted_kithe_derivatives) # restricted derivs
-        }
+        "shrine_s3_storage_staging" => storages
       }
     end
 
@@ -87,5 +82,14 @@ module CopyStaging
         "prefix" => storage.prefix
       }
     end
+
+    # The list of Shrine storages we can copy from and to
+    # is listed as a constant in
+    # CopyStaging::RestoreWok, so let's use that here.
+    def storages
+      storage_list = CopyStaging::RestoreWork::ORIGINALS_STORAGE + CopyStaging::RestoreWork::DERIVATIVES_STORAGE
+      Hash[ storage_list.collect { |v| [v.to_s, shrine_config(v)  ] } ]
+    end
+
   end
 end
