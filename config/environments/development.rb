@@ -90,4 +90,6 @@ Rails.application.configure do
   # hostname, by default oh.sciencehistory.org. You might use /etc/hosts
   # locally to test our legacy redirect functionality.
   config.hosts << ScihistDigicoll::Env.lookup!(:oral_history_legacy_host)
+  # for browserstack local
+  config.hosts << "bs-local.com"
 end
