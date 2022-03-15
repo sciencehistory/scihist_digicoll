@@ -25,7 +25,13 @@
             # the data-setup with serialized json triggers video.js
             data: {
               setup: {
-                aspectRatio: "#{video_asset.width}:#{video_asset.height}"
+                aspectRatio: "#{video_asset.width}:#{video_asset.height}",
+                plugins: {
+                  seekButtons: {
+                    forward: 30,
+                    back: 15
+                  }
+                }
               }.to_json
             }
     ) do %>
