@@ -32,8 +32,8 @@ module CopyStaging
   # could be disastrous. This object can take thread_pool_size as an init
   # argument, but the wrapping rake task isn't currently written to exersize that.
   class RestoreWork
-    REMOTE_STORE_STORAGE_KEY = :remote_store_storage
-    REMOTE_DERIVATIVES_STORAGE_KEY = :remote_derivatives_storage
+    ORIGINALS_STORAGE   = [:store, :video_store]
+    DERIVATIVES_STORAGE = [:kithe_derivatives, :restricted_kithe_derivatives]
 
     attr_accessor :json_file, :thread_pool, :tracked_futures, :thread_pool_size
 
@@ -41,18 +41,15 @@ module CopyStaging
     #   exported from correspoinding SerializeWork file.
     #
     # @param thread_pool_size how big a thread pool to use for our parallel
-    #   bytestrea copy operations. See docs at top of class. Defaults to 50,
+    #   bytestream copy operations. See docs at top of class. Defaults to 50,
     #   could be faster if we made it unlimited, but could also be more disastrous.
     def initialize(json_file:, thread_pool_size: 50)
       @json_file = json_file
       @thread_pool_size = thread_pool_size
-
       @thread_pool = Concurrent::FixedThreadPool.new(thread_pool_size)
       @tracked_futures = Concurrent::Array.new
-
-      # make sure they get registered
-      remote_store_storage
-      remote_derivatives_storage
+      @storage_map = Hash[ (ORIGINALS_STORAGE + DERIVATIVES_STORAGE).collect { |v| [v, "remote_#{v.to_s}".to_sym  ] } ]
+      register_remote_storages
     end
 
     def restore
@@ -121,49 +118,64 @@ module CopyStaging
       components.join("/")
     end
 
+    # Copy the file from an asset on staging to one in development.
     def restore_asset_file(asset_model)
+      # use the storage info from staging to figure out which local bucket it belongs in.
+      local_storage_key = asset_model.file.data['storage'].to_sym
+      unless @storage_map.has_key? local_storage_key
+         raise RuntimeError, "Unrecognized remote storage for asset #{asset_model.friendlier_id}: #{local_storage_key}"
+      end
+      # OK - we have a local destination for the file; proceed.
       tracked_futures << Concurrent::Promises.future_on(thread_pool) do
-        puts "  -> Copying original file for #{asset_model.class.name}/#{asset_model.friendlier_id}\n\n"
-
-        remote_file = Shrine::UploadedFile.new(asset_model.file.data.merge("storage" => REMOTE_STORE_STORAGE_KEY))
-        Shrine.storages[:store].upload(remote_file, asset_model.file.id)
+        puts "  -> Copying original file for #{asset_model.class.name}/#{asset_model.friendlier_id}\n\n"        
+        copy_file( key: local_storage_key, file: asset_model.file)
       end
     end
 
+    # Copy the file from a derivative on staging to one in development.
     def restore_derivative_file(derivative_uploaded_file, asset_id:, derivative_key:)
       tracked_futures << Concurrent::Promises.future_on(thread_pool) do
         puts "  -> Copying derivative file for #{asset_id}/#{derivative_key}\n\n"
-
-        remote_file = Shrine::UploadedFile.new(derivative_uploaded_file.data.merge("storage" => REMOTE_DERIVATIVES_STORAGE_KEY))
-        Shrine.storages[:kithe_derivatives].upload(remote_file, derivative_uploaded_file.id)
+        copy_file(key: derivative_uploaded_file.storage_key, file: derivative_uploaded_file)
       rescue Aws::S3::Errors::NoSuchKey => e
-        puts "   ERROR: Could not find file to copy `#{remote_file.id}` on #{Shrine.storages[REMOTE_DERIVATIVES_STORAGE_KEY].then {|s| [s.bucket&.name, s.prefix].compact.join('/')}}"
+        path = Shrine.storages[remote_storage_key].then {|s| [s.bucket&.name, s.prefix].compact.join('/')}
+        puts "   ERROR: Could not find file to copy `#{remote_file.id}` on #{path}"
       end
+    end
+
+    # Look up a remote file, then "upload" it to a local Shrine storage, effectively copying it.
+    def copy_file(key:, file:)
+      remote_metadata = file.data.merge("storage" => @storage_map[key])
+      remote_file = Shrine::UploadedFile.new(remote_metadata)
+      Shrine.storages[key].upload(remote_file,file.id)
     end
 
     def input_hash
       @input_hash ||= ActiveSupport::JSON.decode(json_file.read)
     end
 
-    def remote_store_storage
-      Shrine.storages[REMOTE_STORE_STORAGE_KEY] ||= Shrine::Storage::S3.new(
-        bucket:            input_hash["shrine_s3_storage_staging"]["store"]["bucket_name"],
-        prefix:            input_hash["shrine_s3_storage_staging"]["store"]["prefix"],
-        access_key_id:     ScihistDigicoll::Env.lookup!(:aws_access_key_id),
-        secret_access_key: ScihistDigicoll::Env.lookup!(:aws_secret_access_key),
-        region:            ScihistDigicoll::Env.lookup!(:aws_region)
-      )
+    # This tells Shrine about remote storages, so we can copy files down from them.
+    # Once this method completes, Shrine.storages will know about a storage
+    # for each key and value in @storage_map:
+    #
+    # Shrine.storages.keys 
+    # [
+    #   :store,                        :remote_store,
+    #   :video_store,                  :remote_video_store,
+    #   :kithe_derivatives,            :remote_kithe_derivatives,
+    #   :restricted_kithe_derivatives, :remote_restricted_kithe_derivatives
+    #   [...]
+    # ]
+    def register_remote_storages
+      @storage_map.each_pair do |local_key, remote_key|
+        Shrine.storages[remote_key] ||= Shrine::Storage::S3.new(
+          bucket:            input_hash["shrine_s3_storage_staging"][local_key.to_s]["bucket_name"],
+          prefix:            input_hash["shrine_s3_storage_staging"][local_key.to_s]["prefix"],
+          access_key_id:     ScihistDigicoll::Env.lookup!(:aws_access_key_id),
+          secret_access_key: ScihistDigicoll::Env.lookup!(:aws_secret_access_key),
+          region:            ScihistDigicoll::Env.lookup!(:aws_region)
+        )
+      end
     end
-
-    def remote_derivatives_storage
-      Shrine.storages[REMOTE_DERIVATIVES_STORAGE_KEY] ||= Shrine::Storage::S3.new(
-        bucket:            input_hash["shrine_s3_storage_staging"]["kithe_derivatives"]["bucket_name"],
-        prefix:            input_hash["shrine_s3_storage_staging"]["kithe_derivatives"]["prefix"],
-        access_key_id:     ScihistDigicoll::Env.lookup!(:aws_access_key_id),
-        secret_access_key: ScihistDigicoll::Env.lookup!(:aws_secret_access_key),
-        region:            ScihistDigicoll::Env.lookup!(:aws_region)
-      )
-    end
-
   end
 end

@@ -11,6 +11,11 @@ module CopyStaging
   #     SerializeWork.new(work).as_json #=> Hash
   #     SerializeWork.new(work).to_json #=> serialized string
   #
+  # To make sure the models do match, we're storing them in RestoreWork and they
+  # are referenced in #storages below. This means if you need to change the list of buckets
+  # available to copy_data, you want to modify ORIGINALS_STORAGE and DERIVATIVES_STORAGE
+  # in RestoreWork.
+
   class SerializeWork
     attr_accessor :work
 
@@ -21,10 +26,7 @@ module CopyStaging
     def as_json
       {
         "models" => serialized_models,
-        "shrine_s3_storage_staging" => {
-          "store" => shrine_config(:store),
-          "kithe_derivatives" => shrine_config(:kithe_derivatives)
-        }
+        "shrine_s3_storage_staging" => storages
       }
     end
 
@@ -85,5 +87,14 @@ module CopyStaging
         "prefix" => storage.prefix
       }
     end
+
+    # The list of Shrine storages we can copy from and to
+    # is listed as a constant in
+    # CopyStaging::RestoreWork, so let's use that here.
+    def storages
+      storage_list = CopyStaging::RestoreWork::ORIGINALS_STORAGE + CopyStaging::RestoreWork::DERIVATIVES_STORAGE
+      Hash[ storage_list.collect { |shrine_storage_key| [shrine_storage_key.to_s, shrine_config(shrine_storage_key) ] } ]
+    end
+
   end
 end
