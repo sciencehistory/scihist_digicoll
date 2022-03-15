@@ -35,11 +35,12 @@ module CopyStaging
 
     # Associate dev with staging shrine storage keys:
     ORIGINALS_STORAGE = {
-      store:             :remote_store_storage, #non-video
-      video_store:       :remote_video_store_storage # video
+      store:                         :remote_store_storage,      #non-video
+      video_store:                   :remote_video_store_storage # video
     }
     DERIVATIVES_STORAGE = {
-      kithe_derivatives: :remote_derivatives_storage
+      kithe_derivatives:             :remote_derivatives_storage,
+      restricted_kithe_derivatives:  :remote_restricted_derivatives_storage
     }
 
     attr_accessor :json_file, :thread_pool, :tracked_futures, :thread_pool_size
