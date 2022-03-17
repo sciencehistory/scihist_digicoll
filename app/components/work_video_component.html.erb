@@ -20,7 +20,7 @@
             class: "video-js vjs-fluid",
             controls: true,
             preload: "metadata",
-            poster: video_asset.file_derivatives(:thumb_large).url,
+            poster: poster_src,
             style: "aspect-ratio: #{video_asset.width }/#{ video_asset.height };",
             # the data-setup with serialized json triggers video.js
             data: {
