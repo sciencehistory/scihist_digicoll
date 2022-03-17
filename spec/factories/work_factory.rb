@@ -256,12 +256,12 @@ FactoryBot.define do
       rights { "https://creativecommons.org/licenses/by-nc-nd/4.0/" }
       department { "Archives" }
       members { [ build(:asset_with_faked_file, :video, published: true) ] }
-      genre { ["Oral histories"] }
 
       trait :published do
         members { [ build(:asset_with_faked_file, :video, published: true) ] }
         published { true}
-        genre { ["Oral histories"] }
+        # TODO, change to a more appropriate genre once we have them added to vocab
+        genre { ["Ephemera"] }
       end
     end
 
