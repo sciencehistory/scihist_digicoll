@@ -248,17 +248,19 @@ FactoryBot.define do
       end
     end
 
-    factory :video do
+    factory :video_work do
       title  { "Video work" }
       format { ['moving_image'] }
       created_at { DateTime.now }
       date_of_work { [ Work::DateOfWork.new(start: "1986-06-03") ] }
       rights { "https://creativecommons.org/licenses/by-nc-nd/4.0/" }
       department { "Archives" }
+      members { [ build(:asset_with_faked_file, :video, published: true) ] }
+      genre { ["Oral histories"] }
 
       trait :published do
-        published { true}
         members { [ build(:asset_with_faked_file, :video, published: true) ] }
+        published { true}
         genre { ["Oral histories"] }
       end
     end

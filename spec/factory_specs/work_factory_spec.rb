@@ -41,7 +41,7 @@ describe "work factory" do
 
   describe "video work" do
     describe "published video work" do
-      let(:work) { build(:video, :published) }
+      let(:work) { build(:video_work, :published) }
 
       it "is valid" do
         expect(work).to be_valid
