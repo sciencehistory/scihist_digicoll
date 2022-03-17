@@ -168,6 +168,17 @@ describe "Public work show page", type: :system, js: false do
     end
   end
 
+  describe "Video work", queue_adapter: :test do
+    let(:work) { create(:video_work, :published) }
+
+    it "smoke tests", js: true do
+      visit work_path(work)
+
+      expect(page).to be_axe_clean
+
+      expect(page).to have_css("video")
+    end
+  end
 end
 
 describe "Public work show page", :logged_in_user, type: :system, js: false do
