@@ -88,7 +88,7 @@ FactoryBot.define do
       trait :video do
         title { 'Test video' }
         faked_file { File.open((Rails.root + "spec/test_support/video/sample_video.mp4")) }
-        faked_content_type { "video/mp4" }
+        faked_content_type { "video/mpeg" }
         faked_height { nil }
         faked_width { nil }
       end
