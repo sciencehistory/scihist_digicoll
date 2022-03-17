@@ -91,6 +91,29 @@ FactoryBot.define do
         faked_content_type { "video/mpeg" }
         faked_height { nil }
         faked_width { nil }
+
+        transient do
+          faked_thumbnail {
+            create(:stored_uploaded_file,
+              file: File.open((Rails.root + "spec/test_support/images/30x30.png").to_s),
+              content_type: "image/jpg",
+              width: "760",
+              height: "420",
+              md5: faked_md5,
+              sha512: faked_sha512)
+          }
+        end
+
+        faked_derivatives {
+          {
+            "thumb_standard" => faked_thumbnail,
+            "thumb_standard_2X" => faked_thumbnail,
+            "thumb_mini" => faked_thumbnail,
+            "thumb_mini_2X" => faked_thumbnail,
+            "thumb_large" => faked_thumbnail,
+            "thumb_large_2x" => faked_thumbnail,
+          }
+        }
       end
 
       trait :mp3 do

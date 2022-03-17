@@ -56,6 +56,10 @@ describe "work factory" do
         expect(work.representative.content_type).to eq "video/mpeg"
       end
 
+      it "has thumbnail derivative in video representative" do
+        expect(work.representative.file_derivatives.keys).to include("thumb_large", "thumb_standard", "thumb_mini")
+      end
+
       it "has the correct format" do
         expect(work.format).to eq(["moving_image"])
       end
