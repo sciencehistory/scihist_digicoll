@@ -51,8 +51,9 @@ describe "work factory" do
         expect(work).to be_published
       end
 
-      it "has representative" do
+      it "has video representative" do
         expect(work.representative).to be_present
+        expect(work.representative.content_type).to eq "video/mpeg"
       end
 
       it "has the correct format" do
@@ -61,7 +62,7 @@ describe "work factory" do
 
       it "has an attached video with the proper mime type" do
         expect(work.representative.file_data['storage']).to eq("store")
-        expect(work.representative.file_data['metadata']['mime_type']).to eq("video/mp4")
+        expect(work.representative.file_data['metadata']['mime_type']).to eq("video/mpeg")
       end
     end
   end
