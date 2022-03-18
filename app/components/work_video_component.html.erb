@@ -35,7 +35,7 @@
               }.to_json
             }
     ) do %>
-      <%= tag "source", src: video_asset.file_url, type: video_asset.content_type %>
+      <%= tag "source", src: video_src_url, type: video_asset.content_type %>
 
       <p class="vjs-no-js">
         To view this video please enable JavaScript, and consider upgrading to a
