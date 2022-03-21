@@ -9,7 +9,7 @@ describe WorkVideoShowComponent, type: :component do
     video_element = page.first("video")
 
     expect(video_element).to be_present
-    expect(video_element["poster"]).to eq work.representative.file_derivatives["thumb_large"].url
+    expect(video_element["poster"]).to eq work.representative.file_derivatives[:thumb_large].url
 
     source_element = video_element.find("source")
 

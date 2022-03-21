@@ -57,7 +57,7 @@ describe "work factory" do
       end
 
       it "has thumbnail derivative in video representative" do
-        expect(work.representative.file_derivatives.keys).to include("thumb_large", "thumb_standard", "thumb_mini")
+        expect(work.representative.file_derivatives.keys).to include(:thumb_large, :thumb_standard, :thumb_mini)
       end
 
       it "has the correct format" do
