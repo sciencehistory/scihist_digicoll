@@ -21,7 +21,6 @@ class WorkVideoShowComponent < ApplicationComponent
     end
   end
 
-
   def poster_src
     video_asset.file_derivatives(:thumb_large)&.url || asset_path("placeholderbox.svg")
   end
