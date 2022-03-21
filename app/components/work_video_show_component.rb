@@ -21,8 +21,13 @@ class WorkVideoShowComponent < ApplicationComponent
     end
   end
 
+
   def poster_src
     video_asset.file_derivatives(:thumb_large)&.url || asset_path("placeholderbox.svg")
+  end
+
+  def video_src_url
+    video_asset.file_url(expires_in: 5.days.to_i)
   end
 
   def video_asset
