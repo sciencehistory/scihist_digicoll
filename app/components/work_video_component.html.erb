@@ -3,14 +3,14 @@
 <% provide :page_title, construct_page_title(work.title) %>
 
 <% content_for :head do %>
-  <%= render "meta_tags", work: @work  %>
-  <%= tag "link", rel: "alternate", type: "application/xml", title: "OAI-DC metadata in XML", href: work_path(@work, format: "xml") %>
+  <%= render "works/meta_tags", work: work  %>
+  <%= tag "link", rel: "alternate", type: "application/xml", title: "OAI-DC metadata in XML", href: work_path(work, format: "xml") %>
 <% end %>
 
 <div class="show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
 
   <div class="show-title">
-    <%= render WorkTitleAndDatesComponent.new(@work) %>
+    <%= render WorkTitleAndDatesComponent.new(work) %>
   </div>
 
   <div class="show-video">
@@ -47,17 +47,17 @@
     <% end %>
 
 
-    <%= render "rights_and_social", work: @work %>
+    <%= render "works/rights_and_social", work: work %>
   </div>
 
   <div class="show-metadata">
     <div class="work-description long-text-line-height">
-      <%= DescriptionDisplayFormatter.new(@work.description).format  %>
+      <%= DescriptionDisplayFormatter.new(work.description).format  %>
     </div>
 
-    <%= render WorkShowInfoComponent.new(work: @work) %>
+    <%= render WorkShowInfoComponent.new(work: work) %>
 
-    <%= render "citation", work: @work  %>
+    <%= render "works/citation", work: work  %>
   </div>
 </div>
 
