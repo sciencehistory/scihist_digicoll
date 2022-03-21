@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe WorkVideoComponent, type: :component do
+describe WorkVideoShowComponent, type: :component do
   let(:work) { create(:video_work, :published) }
 
   before do
