@@ -8,7 +8,7 @@
 # This is very similar in some wyas to standard WorkImageShowComponent, but we make
 # it a separate class instead of trying to use lots of conditionals in one class, betting
 # that will be simpler overall, and allow them to diverge as more features are added.
-class WorkVideoComponent < ApplicationComponent
+class WorkVideoShowComponent < ApplicationComponent
   delegate :construct_page_title, :current_user, to: :helpers
 
   attr_reader :work
