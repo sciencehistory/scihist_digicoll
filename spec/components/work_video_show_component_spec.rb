@@ -18,15 +18,12 @@ describe WorkVideoShowComponent, type: :component do
   end
 
   describe "when it is missing derivatives" do
-    let(:work) do
-      create(:video_work, :published).tap do |work|
-        work.representative.remove_derivatives( *work.representative.file_derivatives.keys )
-      end
+    before do
+      work.representative.remove_derivatives(*work.representative.file_derivatives.keys)
+      expect(work.representative.file_derivatives).to be_empty
     end
 
     it "can still display page without errors" do
-      expect(work.representative.file_derivatives).to be_empty
-
       render_inline described_class.new(work)
       expect(page.first("video")).to be_present
     end
