@@ -106,12 +106,12 @@ FactoryBot.define do
 
         faked_derivatives {
           {
-            "thumb_standard" => faked_thumbnail,
-            "thumb_standard_2X" => faked_thumbnail,
-            "thumb_mini" => faked_thumbnail,
-            "thumb_mini_2X" => faked_thumbnail,
-            "thumb_large" => faked_thumbnail,
-            "thumb_large_2x" => faked_thumbnail,
+            thumb_standard: faked_thumbnail,
+            thumb_standard_2X: faked_thumbnail,
+            thumb_mini: faked_thumbnail,
+            thumb_mini_2X: faked_thumbnail,
+            thumb_large: faked_thumbnail,
+            thumb_large_2x: faked_thumbnail,
           }
         }
       end
@@ -153,7 +153,7 @@ FactoryBot.define do
           end
           asset.file_attacher.merge_derivatives(faked)
         else
-          asset.file_attacher.merge_derivatives(evaluator.faked_derivatives)
+          asset.file_attacher.merge_derivatives(evaluator.faked_derivatives.transform_keys(&:to_sym))
         end
       end
     end
