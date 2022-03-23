@@ -279,9 +279,8 @@ class CatalogController < ApplicationController
     config.add_facet_field "creator_facet", label: "Creator", limit: 5
     config.add_facet_field "genre_facet", label: "Genre", limit: 5
     config.add_facet_field "format_facet", label: "Format", limit: 5
-    config.add_facet_field "medium_facet", label: "Medium (Staff-only)", limit: 5, show: :current_user
+    config.add_facet_field "medium_facet", label: "Medium", limit: 5
     config.add_facet_field 'place_facet', label: "Place", limit: 5
-    # TODO -- not showing up?
     config.add_facet_field 'language_facet', label: "Language", limit: 5
     config.add_facet_field "rights_facet", helper_method: :rights_label, label: "Rights", limit: 5
     config.add_facet_field 'department_facet', label: "Department", limit: 5
