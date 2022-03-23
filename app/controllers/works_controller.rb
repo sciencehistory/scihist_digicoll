@@ -66,7 +66,7 @@ class WorksController < ApplicationController
       # OH with no playable audio, either becuae it's by-request or it's not there at all.
       WorkFileListShowComponent.new(@work)
     elsif has_video_representative?
-      WorkVideoComponent.new(@work)
+      WorkVideoShowComponent.new(@work)
     else
       # standard image-based template.
       WorkImageShowComponent.new(@work)
