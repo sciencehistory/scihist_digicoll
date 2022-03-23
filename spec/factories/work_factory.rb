@@ -260,8 +260,7 @@ FactoryBot.define do
       trait :published do
         members { [ build(:asset_with_faked_file, :video, published: true) ] }
         published { true}
-        # TODO, change to a more appropriate genre once we have them added to vocab
-        genre { ["Ephemera"] }
+        genre { ["Video Recordings"] }
       end
     end
 
