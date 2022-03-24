@@ -14,13 +14,21 @@ module SearchResult
       @display_dates = DateDisplayFormatter.new(model.date_of_work).display_dates
     end
 
+    def display_num_children_and_extent
+      content_tag("div", class: "scihist-results-list-item-num-members") do
+        (display_extent + display_num_children).join(", ")
+      end
+    end
+
     def display_num_children
       count = child_counter.display_count_for(model)
-      return "" unless count > 1
+      return [] unless count > 1
+      [ number_with_delimiter(count) + ' item'.pluralize(count) ]
+    end
 
-      content_tag("div", class: "scihist-results-list-item-num-members") do
-        number_with_delimiter(count) + ' item'.pluralize(count)
-      end
+    def display_extent
+      return [] unless model&.format.include?('moving_image')
+      model&.extent || []
     end
 
     def thumbnail_html
