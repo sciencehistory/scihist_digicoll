@@ -21,6 +21,14 @@ class CatalogController < ApplicationController
   # Not totally sure why we need this, instead of Rails loading all helpers automatically
   helper LocalBlacklightHelpers
 
+  def advanced_search
+    raise ActionController::RoutingError.new('Not Found')
+  end
+
+  def suggest
+    raise ActionController::RoutingError.new('Not Found')
+  end
+
   # a Blacklight override
   def render_bookmarks_control?
     false
