@@ -35,16 +35,6 @@
 
   <%= render AttributeTable::RowComponent.new(:format, values: format.map(&:titleize), link_to_facet: "format_facet", alpha_sort: true) %>
 
-
-  <% if humanized_content_types.length > 0 %>
-    <tr>
-      <th scope='row'>Original file type</th>
-      <td>
-          <%= humanized_content_types.join(", ") %>
-      </td>
-    </tr>
-  <% end %>
-
   <%= render AttributeTable::RowComponent.new(:genre, values: genre, link_to_facet: "genre_facet", alpha_sort: true) %>
   <%= render AttributeTable::RowComponent.new(:medium, values: medium, link_to_facet: ("medium_facet" if current_staff_user?), alpha_sort: true) %>
   <%= render AttributeTable::RowComponent.new(:extent, values: extent) %>

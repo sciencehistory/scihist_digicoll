@@ -31,10 +31,6 @@ class WorkShowInfoComponent < ApplicationComponent
     )
   end
 
-  def humanized_content_types
-    @humanized_content_types ||= work.member_content_types(mode: :query).uniq.map { |a| ScihistDigicoll::Util.humanized_content_type(a) }
-  end
-
   def related_urls_filtered
     related_url_filter.filtered_related_urls
   end
