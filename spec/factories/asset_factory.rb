@@ -97,8 +97,8 @@ FactoryBot.define do
             create(:stored_uploaded_file,
               file: File.open((Rails.root + "spec/test_support/images/30x30.png").to_s),
               content_type: "image/jpg",
-              width: "760",
-              height: "420",
+              width: 760,
+              height: 420,
               md5: faked_md5,
               sha512: faked_sha512)
           }
