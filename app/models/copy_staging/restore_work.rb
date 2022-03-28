@@ -168,6 +168,10 @@ module CopyStaging
     # ]
     def register_remote_storages
       @storage_map.each_pair do |local_key, remote_key|
+        unless input_hash["shrine_s3_storage_staging"].has_key? local_key.to_s
+          puts "    WARNING: Could not find a remote #{local_key} Shrine storage. If the work has files in this bucket, we will not be able to download them."
+          next
+        end
         Shrine.storages[remote_key] ||= Shrine::Storage::S3.new(
           bucket:            input_hash["shrine_s3_storage_staging"][local_key.to_s]["bucket_name"],
           prefix:            input_hash["shrine_s3_storage_staging"][local_key.to_s]["prefix"],
