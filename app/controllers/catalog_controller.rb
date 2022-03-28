@@ -430,27 +430,35 @@ class CatalogController < ApplicationController
       field.blank_query_default = true
     end
 
+    # newest first
+    # down arrow
     config.add_sort_field("date_modified_desc") do |field|
       field.label = "date modified \u25BC"
       field.sort = "date_modified_dtsi desc"
       field.if = ->(controller, field) { controller.current_user }
     end
 
+    # oldest first
+    # up arrow
     config.add_sort_field("date_modified_asc") do |field|
       field.label = "date modified \u25B2"
       field.sort = "date_modified_dtsi asc"
       field.if = ->(controller, field) { controller.current_user }
     end
 
-    config.add_sort_field("date_created_asc") do |field|
+    # newest first
+    # down arrow
+    config.add_sort_field("date_created_desc") do |field|
       field.label = "date created \u25BC"
-      field.sort = "date_created_dtsi asc"
+      field.sort = "date_created_dtsi desc"
       field.if = ->(controller, field) { controller.current_user }
     end
 
-    config.add_sort_field("date_created_desc") do |field|
+    # oldest first
+    # up arrow
+    config.add_sort_field("date_created_asc") do |field|
       field.label = "date created \u25B2"
-      field.sort = "date_created_dtsi desc"
+      field.sort = "date_created_dtsi asc"
       field.if = ->(controller, field) { controller.current_user }
     end
 
