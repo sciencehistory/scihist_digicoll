@@ -89,8 +89,15 @@ class WorkSocialShareAttributes
 
   private
 
+  # social media sites want a fairly big thumb if possible. Faccebook recommends 1200x630.
+  # https://developers.facebook.com/docs/sharing/webmasters/images/
+  #
+  # But if we only have smaller available (say for videos), we'll use that.
   def share_representative_derivative
-    @share_representative_deriative ||= work&.leaf_representative&.file_derivatives&.dig(:download_medium)
+    @share_representative_deriative ||= work&.leaf_representative&.file_derivatives&.dig(:download_medium) ||
+      work&.leaf_representative&.file_derivatives&.dig(:download_small) ||
+      work&.leaf_representative&.file_derivatives&.dig(:thumb_large_2x) ||
+      work&.leaf_representative&.file_derivatives&.dig(:thumb_large)
   end
 
 end
