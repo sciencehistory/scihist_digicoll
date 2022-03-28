@@ -8,6 +8,11 @@ module SearchResult
       link_to "Collections", collections_path
     end
 
+    # We don't display extent for any collections, just the number of children.
+    def display_num_children_and_extent
+      display_num_children
+    end
+
     # Requires helper method `child_counter` to be available, returning a
     # ChildCountDisplayFetcher. Provided by CatalogController.
     def display_num_children

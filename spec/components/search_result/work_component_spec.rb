@@ -30,7 +30,8 @@ describe SearchResult::WorkComponent, type: :component do
     additional_title: "An Additional Title",
     subject: ["Subject1", "Subject2"],
     creator: [{category: "contributor", value: "Joe Smith"}, {category: "contributor", value: "Moishe Brown"}, {category: "interviewer", value: "Mary Sue"}],
-    members: [create(:asset), create(:asset)]
+    members: [create(:asset), create(:asset)],
+    extent:  ["do_not_show"]
   )}
 
   let(:presenter) { described_class.new(work, child_counter: child_counter, cart_presence: cart_presence) }
@@ -55,6 +56,10 @@ describe SearchResult::WorkComponent, type: :component do
     expect(rendered).to have_selector("a", text: "Mary Sue")
 
     expect(rendered).to have_content("2 items")
+
+
+    expect(work.format.include? "moving_image").to be false
+    expect(rendered).not_to have_content("do_not_show")
   end
 
   describe "one child" do
@@ -63,6 +68,21 @@ describe SearchResult::WorkComponent, type: :component do
     it "does not display num items" do
       expect(rendered).not_to have_content("1 item")
       expect(rendered).not_to have_content("item")
+    end
+  end
+
+  # For video works, we show not only the count (if > 1) but also
+  # any and all "extent" values, all comma-separated.
+  describe "video work with more than one extent" do
+    let(:work) do
+      create(:video_work, :with_complete_metadata,
+        format:  ["moving_image"], extent:  ["a", "b"],
+        members: [create(:asset), create(:asset), create(:asset)]
+      )
+    end
+    it "displays both extents and the asset count under the image" do
+      copy_under_image = work.extent + [ "#{work.members.count} items" ]
+      expect(rendered).to have_content(copy_under_image.join(", "))
     end
   end
 
