@@ -76,6 +76,7 @@ class Work
       'Stereographs',
       'Textile fabrics',
       'Vessels (Containers)',
+      'Video Recordings',
       'Woodcuts'
     ].freeze
 
