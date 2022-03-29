@@ -49,6 +49,22 @@ describe WorkSocialShareAttributes, type: :component do
       expect(attributes.share_media_width).to eq download_medium_derivative.metadata["width"]
     end
 
+    describe "video file" do
+      let(:work) { create(:video_work) }
+      let(:best_derivative) { work.representative.file_derivatives[:thumb_large_2x] }
+
+      it "can still find a representative even if it needs to go to smaller" do
+        expect(attributes.share_media_url).to be_present
+
+        parsed_uri = Addressable::URI.parse attributes.share_media_url
+        expect(parsed_uri).not_to be_relative
+        expect(parsed_uri.path).to eq Addressable::URI.parse(best_derivative.url(public: true)).path
+
+        expect(attributes.share_media_height).to eq best_derivative.metadata["height"]
+        expect(attributes.share_media_width).to eq best_derivative.metadata["width"]
+      end
+    end
+
     describe "with no representative" do
       let(:work) { build(:work) }
 
