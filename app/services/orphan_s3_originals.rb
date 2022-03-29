@@ -84,7 +84,7 @@ class OrphanS3Originals
     output_to_stderr "Found #{@orphans_found} orphan files\n"
   end
 
-  # Deletes all found orphans, outputing to console what was deleted.
+  # Deletes all found orphans, outputting to console what was deleted.
   # If obj initializer show_progress_bar, there will be a progress bar.
   def delete_orphans
     @delete_count = 0
@@ -94,8 +94,8 @@ class OrphanS3Originals
       iter.each_s3_path do |s3_key|
         asset_id, shrine_path = parse_s3_path(s3_key, prefix)
         if orphaned?(asset_id, shrine_path)
-          iter.shrine_storage.delete(s3_key)
-          iter.log "deleted: #{ bucket_name }: #{s3_key}"
+          # iter.shrine_storage.delete(shrine_path)
+          iter.log "deleted: #{ bucket_name }: #{shrine_path}"
           @delete_count += 1
         end
       end
@@ -115,19 +115,28 @@ class OrphanS3Originals
         exists?
   end
 
-
-  # We have an actual S3 path. We want to ignore the storage_prefix. What's remaining is
-  # what we expect to be in a shrine `id` field for what shrine thinks of as the path on S3.
-  # Also in our path is encoded the Asset UUID pk we expect to have that shrine id (if it's not orphaned).
+  # We start with an actual S3 path.
+  # We want to ignore the storage_prefix. What remains is shrine_id_value, 
+  # which is what shrine thinks of as the path on S3.
   #
-  # We return [asset_id, shrine_id_value]
+  # In other words, shrine_storage.object(shrine_id_value).exists? should always return true.
+  #
+  # The path also contains the UUID pk of the Asset whose file (if it's not orphaned)
+  # we would expect to find at shrine_storage.object(shrine_id_value) .
+  #
+  # For example, given:
+  # @s3_path = "laptop.local/originals/asset/3d437358-702e-44b1-9a3d-048db01166cf/9dfb96cbe898f8619238de81528c6660.tif"
+  # prefix   = "laptop.local/originals/"
+  #
+  # we get:
+  #    _model_name     = "asset/"
+  #    shrine_id_value = "asset/3d437358-702e-44b1-9a3d-048db01166cf/9dfb96cbe898f8619238de81528c6660.tif"        
+  #    asset_id        = "3d437358-702e-44b1-9a3d-048db01166cf"
   def parse_s3_path(s3_path, prefix=nil)
     s3_path =~ %r{\A#{prefix}(([^/]+/)([^/]+/).*)\Z}
-
-    _model_name     = $2
     shrine_id_value = $1
+    _model_name     = $2
     asset_id        = $3 && $3.chomp("/")
-
     return [asset_id, shrine_id_value]
   end
 
