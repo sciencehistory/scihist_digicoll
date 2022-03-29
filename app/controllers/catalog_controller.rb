@@ -21,6 +21,24 @@ class CatalogController < ApplicationController
   # Not totally sure why we need this, instead of Rails loading all helpers automatically
   helper LocalBlacklightHelpers
 
+  # This is turned off until/unless we
+  # decide to offer advanced search to the public (unlikely).
+  def advanced_search
+    raise ActionController::RoutingError.new('Not Found')
+  end
+
+  # This functionality is disabled:
+  # config.autocomplete_enabled above is set to false, and
+  # in addition, SOLR's suggester response is turned off anyway.
+  # ( See blacklight/app/models/concerns/blacklight/suggest/response.rb )
+  #
+  # Let's explicitly turn off this method: that way, if you request
+  # /catalog/suggest.json?q=SOME_SEACH_STRING you'll get a 404
+  # instead of bogus empty results.
+  def suggest
+    raise ActionController::RoutingError.new('Not Found')
+  end
+
   # a Blacklight override
   def render_bookmarks_control?
     false
@@ -468,7 +486,8 @@ class CatalogController < ApplicationController
 
     # Configuration for autocomplete suggestor
     config.autocomplete_enabled = false
-    config.autocomplete_path = 'suggest'
+    # NOTE: see #suggest below for details.
+    # config.autocomplete_path = 'suggest'
     # if the name of the solr.SuggestComponent provided in your solrcongig.xml is not the
     # default 'mySuggester', uncomment and provide it below
     # config.autocomplete_suggester = 'mySuggester'

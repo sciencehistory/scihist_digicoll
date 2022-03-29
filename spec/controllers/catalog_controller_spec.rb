@@ -126,6 +126,18 @@ RSpec.describe CatalogController, solr: true, type: :controller do
     end
   end
 
+  describe "advanced search" do
+    it "is explicitly turned off" do
+      expect { get :advanced_search }.to raise_error(ActionController::RoutingError)
+    end
+  end
+
+  describe "autocomplete suggest" do
+    it "is explicitly turned off" do
+      expect { get :suggest }.to raise_error(ActionController::RoutingError)
+    end
+  end
+
   # We do not implement rss / atom / json search results (or plan to implement them).
   # e.g. /catalog.rss
   # e.g. /focus/alchemy.json
