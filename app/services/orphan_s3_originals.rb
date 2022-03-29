@@ -94,7 +94,7 @@ class OrphanS3Originals
       iter.each_s3_path do |s3_key|
         asset_id, shrine_path = parse_s3_path(s3_key, prefix)
         if orphaned?(asset_id, shrine_path)
-          # iter.shrine_storage.delete(shrine_path)
+          iter.shrine_storage.delete(shrine_path)
           iter.log "deleted: #{ bucket_name }: #{shrine_path}"
           @delete_count += 1
         end
