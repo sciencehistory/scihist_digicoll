@@ -61,7 +61,7 @@ class OrphanS3Originals
           if @orphans_found == max_reports
             iter.log "Reported max #{max_reports} orphans, not listing subsquent...\n"
           elsif @orphans_found < max_reports
-            @sample << s3_url_for_path(s3_key, iter.shrine_storage)
+            @sample << url_or_path(s3_key, iter.shrine_storage)
             asset = Asset.where(id: asset_id).first
             iter.log "orphaned file!"
             iter.log "  bucket: #{ bucket_name }"
@@ -167,13 +167,20 @@ class OrphanS3Originals
     end
   end
 
-  # video_asset_count and nonvideo_asset_count could really just be one call to the database.
   def counts
      @counts ||= Kithe::Asset.connection.select_all("select file_data ->> 'storage' as storage, count(*)  from kithe_models where kithe_model_type = 2 group by storage").rows.to_h
   end
 
   def output_to_stderr(text)
     $stderr.puts text
+  end
+
+  def url_or_path(s3_key, storage)
+    if storage.is_a? Shrine::Storage::FileSystem
+      s3_key
+    else
+      s3_url_for_path(s3_key, storage)
+    end
   end
 
 end
