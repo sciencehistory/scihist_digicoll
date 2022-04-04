@@ -135,10 +135,16 @@ module ScihistDigicoll
       @app_url_base_parsed = URI.parse(lookup!(:app_url_base))
     end
 
+
     # We have a variety of places for "contact us", including some machine-readable
     # places like OAI-PMH config. they were previously all using this as a non-DRY
-    # string literal, let's centralize it.
+    # string literal.
+    #
+    # General questions:
     define_key :admin_email, default: "digital@sciencehistory.org"
+
+    # Questions about rights and reproductions:
+    define_key :reproductions_email, default: "reproductions@sciencehistory.org"
 
     define_key :opac_link_template, default: "https://othmerlib.sciencehistory.org/record=%s"
 

@@ -1,5 +1,9 @@
 <div class="branded-body-font text-page">
   <h1 class="brand-alt-h1">Contact Us</h1>
 
-  <p>If you have a request or a question, first check our <%= link_to "Frequently Asked Questions", faq_path %> page. If your question is not answered there or you want to report a problem, contact us via e-mail at <%= link_to ScihistDigicoll::Env.lookup!(:admin_email), "mailto:#{ ScihistDigicoll::Env.lookup!(:admin_email)}" %>. A staff member will reply to you shortly.</p>
+  <p>If you have a request or a question, first check our <%= link_to "Frequently Asked Questions", faq_path %> page. If your question is not answered there or you want to report a problem, please contact us via e-mail at <%= link_to ScihistDigicoll::Env.lookup!(:admin_email), "mailto:#{ ScihistDigicoll::Env.lookup!(:admin_email)}" %>. A staff member will reply to you shortly.</p>
+
+  <p>If you would like to make a reproductions request or if you have questions regarding a material’s copyrights or other restrictions, please refer to our <%= link_to "About", about_path %> page or the Institute’s <a href="https://www.sciencehistory.org/rights-and-reproductions">Reproductions</a> page to view our policy. Additional questions regarding rights and reproductions may be directed to <%= link_to ScihistDigicoll::Env.lookup!(:reproductions_email), "mailto:#{ ScihistDigicoll::Env.lookup!(:reproductions_email)}" %>.
+  </p>
+
 </div>
