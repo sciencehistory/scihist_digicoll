@@ -19,7 +19,7 @@ require 'tempfile'
 #   [["ddbd1a8d-c2eb-47b3-85a4-11b4ffb41719", 0],
 #    ["df773502-56d7-4756-a58c-b1f479910e97", 1.593469]]
 #  >
-#
+
 class CombinedAudioDerivativeCreator
 
   Response = Struct.new(:webm_file, :mp3_file, :fingerprint, :start_times, :errors, keyword_init: true)
@@ -32,8 +32,8 @@ class CombinedAudioDerivativeCreator
   end
 
   def generate
-    if input_sources.length == 0
-      return Response.new(errors: "Could not assemble all the input sources.")
+    if components.length == 0
+      return Response.new(errors: "Could not assemble all the components.")
     end
     output_files = {}
     # Create the two output files:
@@ -47,12 +47,9 @@ class CombinedAudioDerivativeCreator
     resp.mp3_file    = output_files['mp3']
     resp.fingerprint = fingerprint
     resp.start_times = calculate_start_times
-    resp
-  ensure
     # Before leaving, get rid of the downloaded originals:
-    input_tempfiles.map!(&:unlink)
-    input_tempfiles.clear
-    input_sources.clear
+    components.map!(&:unlink)
+    resp
   end
 
 
@@ -73,27 +70,18 @@ class CombinedAudioDerivativeCreator
     cmd.run(*options).out.strip.to_f
   end
 
-  def input_tempfiles
-    @input_tempfiles = []
-  end
-
-  # an array of args to ffmpeg for the input files, will be URLs if possible, otherwise
-  # local file paths from temporarily downloaded local files.
-  def input_sources
-    @input_args ||= begin
+  def components
+    @components ||= begin
       logger.debug("#{self.class}: downloading original assets")
 
-      audio_member_files.collect do |original_file|
-        if original_file.url.present? && original_file.url.start_with?(/https?:/)
-          original_file.url(expires_in: 48.hours.to_i)
-        else
-          new_temp_file = original_file.download(rewindable: false)
-          input_tempfiles << new_temp_file
-          new_temp_file.path
-        end
-      end.tap do
-        logger.debug("#{self.class}: downloading original assets complete")
+      result = []
+      audio_member_files.each do |original_file|
+        new_temp_file = original_file.download(rewindable: false)
+        result << new_temp_file
       end
+
+      logger.debug("#{self.class}: downloading original assets complete")
+      result
     end
   end
 
@@ -108,7 +96,7 @@ class CombinedAudioDerivativeCreator
     end.to_h
 
     sum = 0
-    end_points = duration_map.values.map {|i| sum += i.to_f }.map { |i| i.round(3) }
+    end_points = duration_map.values.map {|i| sum += i}.map { |i| i.round(3) }
 
     duration_map.keys.zip([0] + end_points)
   end
@@ -116,21 +104,19 @@ class CombinedAudioDerivativeCreator
   # Generate ffmpeg command to concatenate a set of audio files using
   # ffmpeg stream mapping.
   # This is tricky but documented at
-  # https://trac.ffmpeg.org/wiki/Map and https://trac.ffmpeg.org/wiki/Concatenate#protocol
-  #
+  # https://trac.ffmpeg.org/wiki/Map .
   # For now, the audio settings are hardwired.
   # This does not run the command; it just returns
   # an array that can be passed to cmd.run .
-  #
   def args_for_ffmpeg(output_file_path)
     # ffmpeg -y: overwrite the already-existing temp file
     ffmpeg_command = ['ffmpeg', '-y']
 
-    # Then a list of input URLs or file paths specified with -i
-    input_files = input_sources.map {|x| [ "-i", x] }.flatten
+    # Then a list of input files specified with -i
+    input_files = components.map {|x| [ "-i", x.path] }.flatten
 
     # List the number of audio streams: one per file
-    stream_list = 0.upto(input_sources.count - 1).to_a.map{ |n| "[#{n}:a]"}.join
+    stream_list = 0.upto(components.count - 1).to_a.map{ |n| "[#{n}:a]"}.join
 
     # Specify what to do with the audio streams:
     #
@@ -142,7 +128,7 @@ class CombinedAudioDerivativeCreator
     #   concat -> Stream #0:0 (libmp3lame)
     #
     # v=0 means there is no video.
-    filtergraph = "concat=n=#{input_sources.count}:v=0:a=1[a]"
+    filtergraph = "concat=n=#{components.count}:v=0:a=1[a]"
 
     # Finally, some output options:
     # -map [a] : map just the audio to the output
