@@ -85,7 +85,7 @@ class CombinedAudioDerivativeCreator
 
       audio_member_files.collect do |original_file|
         if original_file.url.present? && original_file.url.start_with?(/https?:/)
-          original_file.url
+          original_file.url(expires_in: 48.hours.to_i)
         else
           new_temp_file = original_file.download(rewindable: false)
           input_tempfiles << new_temp_file
