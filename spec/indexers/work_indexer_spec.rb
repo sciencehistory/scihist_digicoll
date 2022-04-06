@@ -115,9 +115,9 @@ describe WorkIndexer do
 
       let(:oral_history_content) { OralHistoryContent.new(ohms_xml_text: ohms_xml) }
 
-      it "has no searchable_fulltext" do
+      it "has no searchable_fulltext_en" do
         output_hash = WorkIndexer.new.map_record(work)
-        expect(output_hash["searchable_fulltext"]).to eq(nil)
+        expect(output_hash["searchable_fulltext_en"]).to eq(nil)
       end
     end
 
@@ -131,7 +131,7 @@ describe WorkIndexer do
                                     ohms_xml_text: ohms_xml) }
       it "indexes only searchable_transcript_source" do
         output_hash = WorkIndexer.new.map_record(work)
-        expect(output_hash["searchable_fulltext"]).to eq(["searchable_transcript_source"])
+        expect(output_hash["searchable_fulltext_en"]).to eq(["searchable_transcript_source"])
       end
     end
 
@@ -140,7 +140,7 @@ describe WorkIndexer do
 
       it "indexes searchable_transcript_source" do
         output_hash = WorkIndexer.new.map_record(work)
-        expect(output_hash["searchable_fulltext"]).to eq(["searchable_transcript_source"])
+        expect(output_hash["searchable_fulltext_en"]).to eq(["searchable_transcript_source"])
       end
     end
 
@@ -155,10 +155,10 @@ describe WorkIndexer do
 
         output_hash = WorkIndexer.new.map_record(work)
 
-        expect(output_hash["searchable_fulltext"]).to be_present
-        expect(output_hash["searchable_fulltext"].first).to start_with("[untranscribed pre-interview discussion]")
+        expect(output_hash["searchable_fulltext_en"]).to be_present
+        expect(output_hash["searchable_fulltext_en"].first).to start_with("[untranscribed pre-interview discussion]")
         # exactly how many entries depends on how many toc entries have synopsis, keywords, etc.
-        expect(output_hash["searchable_fulltext"].length).to be > (1 + index_toc_entries_count)
+        expect(output_hash["searchable_fulltext_en"].length).to be > (1 + index_toc_entries_count)
       end
 
       it "indexes ToC components" do
@@ -166,9 +166,9 @@ describe WorkIndexer do
 
         joined_keywords = work.oral_history_content.ohms_xml.index_points.collect { |ip| ip.keywords.join("; ") }.collect(&:presence).compact
 
-        expect(output_hash["searchable_fulltext"]).to include(*joined_keywords)
-        expect(output_hash["searchable_fulltext"]).to include(*work.oral_history_content.ohms_xml.index_points.collect(&:title).collect(&:presence).compact)
-        expect(output_hash["searchable_fulltext"]).to include(*work.oral_history_content.ohms_xml.index_points.collect(&:synopsis).collect(&:presence).compact)
+        expect(output_hash["searchable_fulltext_en"]).to include(*joined_keywords)
+        expect(output_hash["searchable_fulltext_en"]).to include(*work.oral_history_content.ohms_xml.index_points.collect(&:title).collect(&:presence).compact)
+        expect(output_hash["searchable_fulltext_en"]).to include(*work.oral_history_content.ohms_xml.index_points.collect(&:synopsis).collect(&:presence).compact)
       end
     end
 
@@ -193,8 +193,8 @@ describe WorkIndexer do
 
       it "strips markup appropriately" do
         output_hash = WorkIndexer.new.map_record(work)
-        expect(output_hash["searchable_fulltext"].length).to eq(1)
-        output = output_hash["searchable_fulltext"].first
+        expect(output_hash["searchable_fulltext_en"].length).to eq(1)
+        output = output_hash["searchable_fulltext_en"].first
 
         expect(output.gsub(/\W+/, ' ').strip).to eq("A claim A citation")
       end
@@ -211,12 +211,21 @@ describe WorkIndexer do
         published: true
         ) }
     end
+
+    # transcription : en
+    # translation   : en
     let(:english_only_work) do
       create(:public_work, language: ['en'], members: assets )
     end
+    
+    # transcription : agnostic
+    # translation   : en
     let(:bilingual_work) do
       create(:public_work, language: ['en', 'de'], members: assets)
     end
+
+    # transcription : de
+    # translation   : en
     let(:german_only_work) do
       create(:public_work, language: ['de'], members: assets )
     end
@@ -229,31 +238,50 @@ describe WorkIndexer do
       allow(nil_members_work).to receive(:members).and_return(nil)
     end
 
-    it "indexes text known to be English in searchable_fulltext" do
-      output_hash = WorkIndexer.new.map_record(english_only_work)
-      english  = output_hash["searchable_fulltext"]
-      might_not_be_english = output_hash["searchable_fulltext_language_agnostic"]
-      expect(english).to eq(["transl_1", "transl_2", "transl_3", "transc_1", "transc_2", "transc_3"])
-      expect(might_not_be_english).to be_nil
-    end
-
-    it "indexes transcriptions in searchable_fulltext_language_agnostic if we know the work isn't all in English" do
-      [german_only_work, bilingual_work].each do |work_with_translations|
-        output_hash = WorkIndexer.new.map_record(work_with_translations)
-        english  = output_hash["searchable_fulltext"]
-        might_not_be_english = output_hash["searchable_fulltext_language_agnostic"]
-        expect(english).to eq( ["transl_1", "transl_2", "transl_3"])
-        expect(might_not_be_english).to eq(["transc_1", "transc_2", "transc_3"])
+    describe "works in various languages" do
+      let(:output_hash) { WorkIndexer.new.map_record(language_test_work) }
+      let(:english) { output_hash["searchable_fulltext_en"] }
+      let(:german)  { output_hash["searchable_fulltext_de"] }
+      let(:unsure)  { output_hash["searchable_fulltext_language_agnostic"] }
+      describe "text known to be in English" do
+        let(:language_test_work) { english_only_work }
+        it "goes in searchable_fulltext_en" do
+          expect(english).to eq(["transl_1", "transl_2", "transl_3", "transc_1", "transc_2", "transc_3"])
+          expect(german).to be_nil
+          expect(unsure).to be_nil
+        end
       end
-    end
-
-    it "correctly handles items without any assets" do
-      [nil_members_work, no_members_work].each do |work|
-        output_hash = WorkIndexer.new.map_record(work)
-        english  = output_hash["searchable_fulltext"]
-        might_not_be_english = output_hash["searchable_fulltext_language_agnostic"]
-        expect(english).to be_nil
-        expect(might_not_be_english).to be_nil
+      describe "text known to be in German" do
+        let(:language_test_work) { german_only_work }
+        it "goes in searchable_fulltext_de" do
+          expect(german).to eq(["transc_1", "transc_2", "transc_3"])
+          expect(english).to eq(["transl_1", "transl_2", "transl_3"])
+          expect(unsure).to be_nil
+        end
+      end
+      describe "text in either English or German or something else" do
+        let(:language_test_work) { bilingual_work }
+        it "goes in searchable_fulltext_language_agnostic" do
+          expect(german).to be_nil
+          expect(unsure).to eq(["transc_1", "transc_2", "transc_3"])
+          expect(english).to eq(["transl_1", "transl_2", "transl_3"])
+        end
+      end
+      describe "no assets" do
+        let(:language_test_work) { no_members_work }
+        it "results in nil indexes" do
+          expect(english).to be_nil
+          expect(german).to  be_nil
+          expect(unsure).to  be_nil
+        end
+      end
+      describe "nil assets" do
+        let(:language_test_work) { nil_members_work }
+        it "results in nil indexes" do
+          expect(english).to be_nil
+          expect(german).to  be_nil
+          expect(unsure).to  be_nil
+        end
       end
     end
 
@@ -271,7 +299,7 @@ describe WorkIndexer do
         output_hash = WorkIndexer.new.map_record(bilingual_work)
 
         expect(output_hash["searchable_fulltext_language_agnostic"]).to be_blank
-        expect(output_hash["searchable_fulltext"]).to be_blank
+        expect(output_hash["searchable_fulltext_en"]).to be_blank
       end
     end
   end
