@@ -132,14 +132,17 @@ class Asset < Kithe::Asset
   # major category of our file type, used in routing to put the file category in URL
   # @returns String image, audio, video, pdf, etc.
   def file_category
-    primary, secondary = (content_type || "").split("/")
-    return "unk" unless primary.present? && secondary.present?
-
-    if primary == "application"
-      # intended for use case "pdf", but could be anything, whatever.
-      secondary.split.first.parameterize.downcase
+    if content_type == "application/pdf"
+      "pdf"
     else
-      primary
+      # audio, video, image, hypothetically could be "application" for something
+      # we're not expecting, no big deal. "unk" for unknown if we don't have
+      # a content-type
+
+      primary, secondary = (content_type || "").split("/")
+      return "unk" unless primary.present? && secondary.present?
+
+      primary.downcase
     end
   end
 
