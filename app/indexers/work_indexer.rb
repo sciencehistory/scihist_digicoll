@@ -179,19 +179,19 @@ class WorkIndexer < Kithe::Indexer
       acc.concat get_string_from_each_published_member(rec, :english_translation)
 
       # Index the transcription here if we can assume that the work is entirely in English.
-      acc.concat get_string_from_each_published_member(rec, :transcription) if rec.language == ['en']
+      acc.concat get_string_from_each_published_member(rec, :transcription) if rec.language == ['English']
     end
 
     to_field "searchable_fulltext_de" do |rec, acc|
       # Index the transcription here if we can assume that the work is entirely in German.
-      acc.concat get_string_from_each_published_member(rec, :transcription) if rec.language == ['de']
+      acc.concat get_string_from_each_published_member(rec, :transcription) if rec.language == ['German']
     end
 
 
     # Index the transcription here unless we have place to index it in our language-specific indexes.
     to_field "searchable_fulltext_language_agnostic" do |rec, acc|
-      entirely_in_english = (rec.language == ['en'])
-      entirely_in_german =  (rec.language == ['de'])
+      entirely_in_english = (rec.language == ['English'])
+      entirely_in_german =  (rec.language == ['German'])
       acc.concat get_string_from_each_published_member(rec, :transcription) unless entirely_in_english || entirely_in_german
     end
 

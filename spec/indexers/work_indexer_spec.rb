@@ -215,19 +215,19 @@ describe WorkIndexer do
     # transcription : en
     # translation   : en
     let(:english_only_work) do
-      create(:public_work, language: ['en'], members: assets )
+      create(:public_work, language: ['English'], members: assets )
     end
     
     # transcription : agnostic
     # translation   : en
     let(:bilingual_work) do
-      create(:public_work, language: ['en', 'de'], members: assets)
+      create(:public_work, language: ['English', 'German'], members: assets)
     end
 
     # transcription : de
     # translation   : en
     let(:german_only_work) do
-      create(:public_work, language: ['de'], members: assets )
+      create(:public_work, language: ['German'], members: assets )
     end
 
     let(:nil_members_work) do
