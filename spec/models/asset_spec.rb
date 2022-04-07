@@ -177,4 +177,40 @@ describe Asset do
     end
   end
 
+  describe "#file_category" do
+    describe "image" do
+      let(:asset) { create(:asset_with_faked_file) }
+      it "correct" do
+        expect(asset.file_category).to eq("image")
+      end
+    end
+
+    describe "pdf" do
+      let(:asset) { create(:asset_with_faked_file, :pdf) }
+      it "correct" do
+        expect(asset.file_category).to eq("pdf")
+      end
+    end
+
+    describe "mp3" do
+      let(:asset) { create(:asset_with_faked_file, :mp3) }
+      it "correct" do
+        expect(asset.file_category).to eq("audio")
+      end
+    end
+
+    describe "video" do
+      let(:asset) { create(:asset_with_faked_file, :video) }
+      it "correct" do
+        expect(asset.file_category).to eq("video")
+      end
+    end
+
+    describe "unknown content-type" do
+      let(:asset) { create(:asset) }
+      it "can still route with 'unk'" do
+        expect(asset.file_category).to eq("unk")
+      end
+    end
+  end
 end
