@@ -58,7 +58,7 @@ class FileListItemComponent < ApplicationComponent
       # image thumb is in a link, but right next to filename with same link.
       # Suppress image thumb from assistive technology to avoid un-useful double
       # link. https://www.sarasoueidan.com/blog/keyboard-friendlier-article-listings/
-      link_to(download_path(member.leaf_representative, disposition: :inline),
+      link_to(download_path(member.leaf_representative.file_category, member.leaf_representative, disposition: :inline),
               view_link_attributes.merge("aria-hidden" => "true", "tabindex" => -1)) do
         yield
       end
@@ -93,7 +93,7 @@ class FileListItemComponent < ApplicationComponent
     if member.kind_of?(Work)
       link_to "Info", work_path(member), class: "btn btn-primary"
     elsif download_original_only
-      link_to "Download", download_path(member), class: "btn btn-primary", data: {
+      link_to "Download", download_path(member.file_category, member), class: "btn btn-primary", data: {
         "analytics-category" => "Work",
         "analytics-action" => "download_original",
         "analytics-label"  => member.parent.friendlier_id
