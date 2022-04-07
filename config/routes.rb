@@ -156,12 +156,19 @@ Rails.application.routes.draw do
   get "focus/:slug/facet" => "featured_topic#facet"
 
 
-  # download_path(asset)
-  # download_url(asset)
-  get "downloads/:asset_id", to: "downloads#original", as: :download
+  # the file_category is in here solely so we can distinguish in robots.txt,
+  # we want the file type in the URL. It's not actually used by controller.
+  #
+  # download_path(asset.file_category, asset)
+  # download_url(asset.file_category, asset)
+  get "downloads/orig/:file_category/:asset_id", to: "downloads#original", as: :download
+
+  # TODO redirect old one please
+
+
   # download_derivative_path(asset, "thumb_small")
   # download_derivative_url(asset, "thumb_small")
-  get "downloads/:asset_id/:derivative_key", to: "downloads#derivative", as: :download_derivative
+  get "downloads/deriv/:asset_id/:derivative_key", to: "downloads#derivative", as: :download_derivative
 
   ##
   # Blacklight-generated routes, that were then modified a bit by us to take

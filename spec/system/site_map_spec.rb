@@ -89,7 +89,7 @@ describe "sitemap generator", js: false do
     let!(:work) { create(:work, :published, representative: asset, members: [asset]) }
 
     let(:expected_work_url) { work_url(work) }
-    let(:expected_pdf_url) { download_url(asset, disposition: :inline)}
+    let(:expected_pdf_url) { download_url(asset.file_category, asset, disposition: :inline)}
 
     it "lists PDF URL in sitemap" do
       Rake::Task["sitemap:create"].invoke

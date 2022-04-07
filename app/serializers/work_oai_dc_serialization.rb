@@ -220,7 +220,7 @@ class WorkOaiDcSerialization
   def appropriate_thumb_url
     unless defined?(@appropriate_thumb_url)
       @appropriate_thumb_url = if work.leaf_representative
-        "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/downloads/#{work.leaf_representative.friendlier_id}/thumb_large_2X?disposition=inline"
+        "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/downloads/deriv/#{work.leaf_representative.friendlier_id}/thumb_large_2X?disposition=inline"
       else
         nil
       end
@@ -232,7 +232,7 @@ class WorkOaiDcSerialization
   def full_jpg_url
     unless defined?(@full_jpg_url)
       @full_jpg_url = if work.leaf_representative
-        "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/downloads/#{work.leaf_representative.friendlier_id}/download_full?disposition=inline"
+        "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/downloads/deriv/#{work.leaf_representative.friendlier_id}/download_full?disposition=inline"
       else
         nil
       end

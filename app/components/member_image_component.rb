@@ -179,7 +179,7 @@ class MemberImageComponent < ApplicationComponent
     if member.parent && representative_asset&.content_type&.start_with?("image/")
       viewer_path(member.parent.friendlier_id, member.friendlier_id)
     else # PDF, etc, just try to show it in the browser
-      download_path(representative_asset, disposition: :inline)
+      download_path(representative_asset.file_category, representative_asset, disposition: :inline)
     end
   end
 
