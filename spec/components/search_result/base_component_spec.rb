@@ -17,7 +17,7 @@ describe SearchResult::BaseComponent do
           { 'highlighting' =>
             { work.friendlier_id =>
               {
-                "searchable_fulltext"=>
+                "searchable_fulltext_en"=>
                   ["operated&#32;the&#32;<em>Potlatch</em>&#10;<em>Lumber</em>&#32;Company&#46;&#32;", "the&#32;<em>Potlatch</em>&#32;<em>Lumber</em>&#32;Company&#44;&#32;who&#10;was&#32;a&#32;laird&#32;in&#32;"]
               }
             }
@@ -45,7 +45,7 @@ describe SearchResult::BaseComponent do
           { 'highlighting' =>
             { work.friendlier_id =>
               {
-                "searchable_fulltext"=>
+                "searchable_fulltext_en"=>
                   ["operated&#32;the&#32;<em>Potlatch</em>&#10;<em>Lumber</em>&#32;Company&#46;&#32;", "the&#32;<em>Potlatch</em>&#32;<em>Lumber</em>&#32;Company&#44;&#32;who&#10;was&#32;a&#32;laird&#32;in&#32;"]
               }
             }
@@ -67,7 +67,7 @@ describe SearchResult::BaseComponent do
           { 'highlighting' =>
             { work.friendlier_id =>
               {
-                "searchable_fulltext" => []
+                "searchable_fulltext_en" => []
               }
             }
           }
