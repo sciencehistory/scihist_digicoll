@@ -54,7 +54,6 @@ jobs:
             # these paths specified in .solr_wrapper.yml:
             path: |
               tmp/solr_dist
-              tmp/solr_test
             key: ${{ runner.os }}-solr-${{ hashFiles('.solr_wrapper.yml') }}
 
         - name: Start test Solr
