@@ -64,7 +64,7 @@ module DownloadOptions
 
       if asset.stored?
         options << DownloadOption.with_formatted_subhead("Original file",
-          url: download_path(asset),
+          url: download_path(asset.file_category, asset),
           analyticsAction: "download_original",
           content_type: asset.content_type,
           width: asset.width,

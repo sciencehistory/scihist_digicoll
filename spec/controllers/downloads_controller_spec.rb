@@ -20,10 +20,12 @@ describe DownloadsController do
 
 
   describe "#original" do
+    let(:file_category) { "image" }
+
     describe "non-existing ID" do
       it "raises not found" do
         expect {
-          get :original, params: { asset_id: "no_such_id" }
+          get :original, params: { asset_id: "no_such_id", file_category: file_category }
         }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
@@ -31,7 +33,7 @@ describe DownloadsController do
     describe "no access asset" do
       let(:asset) { create(:asset, published: false) }
       it "redirects to login page" do
-        get :original, params: { asset_id: asset }
+        get :original, params: { asset_id: asset, file_category: file_category }
         expect(response).to redirect_to(new_user_session_path)
       end
     end
@@ -41,7 +43,7 @@ describe DownloadsController do
 
       it "does not give access" do
         expect {
-          get :original, params: { asset_id: asset }
+          get :original, params: { asset_id: asset, file_category: file_category }
         }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
@@ -57,7 +59,7 @@ describe DownloadsController do
       }
 
       it "returns redirect" do
-        get :original, params: { asset_id: asset }
+        get :original, params: { asset_id: asset, file_category: file_category }
 
         expect(response.status).to eq 302 # temporary redirect
 
@@ -72,7 +74,7 @@ describe DownloadsController do
       end
 
       it "uses disposition inline when specified" do
-        get :original, params: { asset_id: asset, disposition: "inline" }
+        get :original, params: { asset_id: asset, disposition: "inline", file_category: file_category }
 
         expect(response.status).to eq 302 # temporary redirect
 
@@ -98,7 +100,7 @@ describe DownloadsController do
     describe "no access asset" do
       let(:asset) { create(:asset, published: false) }
       it "redirects to login page" do
-        get :original, params: { asset_id: asset, derivatives_key: "thumb_mini" }
+        get :derivative, params: { asset_id: asset, derivative_key: "thumb_mini" }
         expect(response).to redirect_to(new_user_session_path)
       end
     end

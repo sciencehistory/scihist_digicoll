@@ -57,7 +57,7 @@
     <div  class="track-listing" data-role="track-listing"
           data-title="<%= track.title %>"
           data-member-id="<%= track.id %>"
-          data-original-url="<%= download_path(track.id) %>"
+          data-original-url="<%= download_path(track.file_category, track.id) %>"
       >
 
       <% if start_time_for(track) %>

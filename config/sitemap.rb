@@ -67,7 +67,7 @@ SitemapGenerator::Sitemap.create(
       asset.content_type == "application/pdf"
     end
     pdf_members.each do |pdf_asset|
-      add download_path(pdf_asset, disposition: :inline)
+      add download_path(pdf_asset.file_category, pdf_asset, disposition: :inline)
     end
   end
 end
