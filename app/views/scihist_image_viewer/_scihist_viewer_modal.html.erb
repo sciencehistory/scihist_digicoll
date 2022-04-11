@@ -33,10 +33,36 @@
 
           <div class="viewer-content">
             <div class="viewer-image-and-navbar" data-alert-container>
-              <div class="viewer-image" id="openseadragon-container">
-                <button href="#" id="viewer-left" class="viewer-image-prev" data-trigger="viewer-prev" aria-label="Previous image" tabindex="0"><i class="fa fa-chevron-left" title="Previous"></i></button>
-                <button href="#" id="viewer-right" class="viewer-image-next" data-trigger="viewer-next" aria-label="Next image" tabindex="0"><i class="fa fa-chevron-right" title="Next"></i></button>
-              </div>
+                <div class="top-navbar" style="background-color: #646469; color: white; padding: 8px; display: flex; flex-grow: 0; flex-shrink: 0;">
+                  <label style="flex: 1;">
+                    <input type="checkbox" name="openseadragon-container" data-hook="viewer-area-toggle" checked>
+                    Image
+                  </label>
+
+                  <label style="flex: 1;">
+                    <input type="checkbox" name="transcription-container" data-hook="viewer-area-toggle">
+                    Transcription
+                  </label>
+
+                  <label style="flex: 1;">
+                    <input type="checkbox" name="english-translation-container" data-hook="viewer-area-toggle">
+                    English Translation
+                  </label>
+                </div>
+                <div class="viewer-image" style="flex-basis: 0; flex-grow: 1; flex-shrink: 1;">
+                  <div id="openseadragon-container" style="flex: 1; border: 1px solid #646469;"></div>
+                  <div id="transcription-container" style="flex: 1; display: none; border: 1px solid #646469; padding: 0.5rem; overflow: scroll;">
+                    <p>SVANTE ARRHENIUS<br />STOCKHOLM</p><p>Stockholm den 10 März 1909.</p><p>Lieber alter Freund! [Bredig’s hand: Bredig]</p><p>Ich danke Dir herzlichst für Dein liebes Schreiben zu meinem 50. Geburtstag, welches vor allen anderen Glückwünschen ankam. Wenige von denselben haben mich in solchem Maass gefreut wie Deine allerliebsten Zeilen. Ich danke Dir auch für all‘ die lange schöne Zeit, während deren ich mit Dir verbunden gewesen bin, und für die treue Freundschaft, die mir unausgesetzt geweiht hast. Ich wage wohl zu hoffen, dass dieselbe noch sehr sehr lange unvermündet bleiben wird. Herzlichen Dank, lieber alter Freund auch von meiner Frau.</p><p>Ich sitze jetzt schon lange meistens bei den</p>
+                  </div>
+                  <div id="english-translation-container" style="flex: 1; display: none; border: 1px solid #646469; padding: 0.5rem; overflow: scroll;">
+                    <p>SVANTE ARRHENIUS<br />STOCKHOLM</p><p>Stockholm, 10 March 1909</p><p>Dear old friend,</p><p>Thank you very much for your kind letter wishing me a happy 50th birthday, which arrived before all the other correspondence. Few of them have pleased me as much as your very nice message. I also appreciate your years of loyal friendship, which has meant a lot to me. I hope that it will remain unchanged for a very, very long time. My wife and I thank you, dear old friend.<br />  </p>
+                  </div>
+
+
+                  <button href="#" id="viewer-left" class="viewer-image-prev" data-trigger="viewer-prev" aria-label="Previous image" tabindex="0"><i class="fa fa-chevron-left" title="Previous"></i></button>
+                  <button href="#" id="viewer-right" class="viewer-image-next" data-trigger="viewer-next" aria-label="Next image" tabindex="0"><i class="fa fa-chevron-right" title="Next"></i></button>
+                </div>
+
 
               <%= render "scihist_image_viewer/scihist_viewer_navbar", work: work %>
             </div>
