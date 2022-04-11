@@ -13,7 +13,8 @@ namespace :solr do
   desc 'Install a clean version of solr. Replaces the existing copy if there is one.'
   task :clean do
     SolrWrapper.instance.tap do |instance|
-      puts "Installing clean version of solr at #{File.expand_path(instance.instance_dir)}"
+      puts "Stopping solr at #{instance.config.url} and installing a clean version of solr at #{File.expand_path(instance.instance_dir)}"
+      instance.stop
       instance.remove_instance_dir!
       instance.extract_and_configure
     end
