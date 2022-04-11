@@ -171,7 +171,13 @@ Rails.application.routes.draw do
   # We redirect the old version of /downloads/:asset_id, before we changed to above
   # with status 301 Moved Permanently
   get "downloads/:asset_id", status: 301, to: redirect {|path_params, req|
-    file_category = Asset.find_by_friendlier_id(path_params[:asset_id]).file_category
+    file_category = Asset.find_by_friendlier_id(path_params[:asset_id])&.file_category
+
+    unless file_category
+      # Rails will catch and handle with a 404.
+      raise ActionController::RoutingError.new("no such asset as #{path_params[:asset_id]}")
+    end
+
     "/downloads/orig/#{file_category}/#{path_params[:asset_id]}"
   }
   # and old version of derivative /downloads/:asset_id/:derivative_key, in
