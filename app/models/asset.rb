@@ -129,6 +129,23 @@ class Asset < Kithe::Asset
   # to schedule a future deletion from ingest bucket.
   around_promotion :schedule_ingest_bucket_deletion, if: ->(asset) { asset.file.storage_key == :remote_url }
 
+  # major category of our file type, used in routing to put the file category in URL
+  # @returns String image, audio, video, pdf, etc.
+  def file_category
+    if content_type == "application/pdf"
+      "pdf"
+    else
+      # audio, video, image, hypothetically could be "application" for something
+      # we're not expecting, no big deal. "unk" for unknown if we don't have
+      # a content-type
+
+      primary, secondary = (content_type || "").split("/")
+      return "unk" unless primary.present? && secondary.present?
+
+      primary.downcase
+    end
+  end
+
   # Used as an around_promotion callback. If we're promoting a shrine cache file using remote_url storage, and
   # the file is from our ingest_bucket, then add a record to table to schedule it's deletion in the future
   # by an
