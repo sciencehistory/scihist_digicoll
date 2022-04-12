@@ -148,6 +148,8 @@
       </analyzer>
     </fieldType>
 
+
+
     <!-- A text field that only splits on whitespace for exact matching of words -->
     <fieldType name="text_ws" class="solr.TextField" positionIncrementGap="100">
       <analyzer>
@@ -179,6 +181,23 @@
         <filter class="solr.TrimFilterFactory"/>
       </analyzer>
     </fieldType>
+
+    <!-- A text field with defaults appropriate for German -->
+    <!-- https://github.com/uschindler/german-decompounder -->
+    <fieldType name="text_de" class="solr.TextField" positionIncrementGap="100">
+      <analyzer>
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.HyphenationCompoundWordTokenFilterFactory"
+          hyphenator="lang/de_DR.xml"
+          dictionary="lang/dictionary-de.txt"
+          onlyLongestMatch="true"
+          minSubwordSize="4"/>
+        <filter class="solr.GermanNormalizationFilterFactory"/>
+        <filter class="solr.GermanStemFilterFactory"/>
+      </analyzer>
+    </fieldType>
+
 
     <!-- queries for paths match documents at that path, or in descendent paths -->
     <fieldType name="descendent_path" class="solr.TextField">
@@ -234,9 +253,12 @@
 
          https://lucene.apache.org/solr/guide/8_0/highlighting.html#Highlighting-SchemaOptionsandPerformanceConsiderations
        -->
-    <field name="searchable_fulltext" type="text_en" stored="true" indexed="true" multiValued="true" omitNorms="true" storeOffsetsWithPositions="true"/>
+    <field name="searchable_fulltext_en" type="text_en" stored="true" indexed="true" multiValued="true" omitNorms="true" storeOffsetsWithPositions="true"/>
 
-    <!-- Full text search *if* the work contains non-English text: -->
+    <!-- Full text search for works in German -->
+    <field name="searchable_fulltext_de" type="text_de" stored="true" indexed="true" multiValued="true" omitNorms="true" storeOffsetsWithPositions="true"/>
+
+    <!-- Full text search for works in neither English nor German -->
     <field name="searchable_fulltext_language_agnostic" type="text" stored="true" indexed="true" multiValued="true" omitNorms="true" storeOffsetsWithPositions="true"/>
 
     <!-- added by Science History Institute, a dynamic field that's good for string facets, using docValues fields -->
