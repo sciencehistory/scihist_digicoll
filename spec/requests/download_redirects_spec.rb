@@ -9,6 +9,12 @@ describe "legacy original download links redirect" do
     expect(response).to have_http_status(301)
   end
 
+  it "404's for missing asset ID on original" do
+    expect {
+      get("/downloads/no_such_thing")
+    }.to raise_error(ActionController::RoutingError)
+  end
+
   it "redirects derivative" do
     get("/downloads/#{asset.friendlier_id}/thumb_small")
     expect(response).to redirect_to(download_derivative_path(asset, "thumb_small"))
@@ -20,4 +26,12 @@ describe "legacy original download links redirect" do
     expect(response).to redirect_to(download_derivative_path(asset, "thumb_small", disposition: "inline"))
     expect(response).to have_http_status(301)
   end
+
+  it "still redirects for missing asset ID on derivative" do
+    get("/downloads/no_such_thing/thumb_small")
+    expect(response).to redirect_to(download_derivative_path("no_such_thing", "thumb_small"))
+    expect(response).to have_http_status(301)
+  end
+
+
 end
