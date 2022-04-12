@@ -1,6 +1,23 @@
 These are our Solr config files.
 
-They are used directly in dev test, via solr_wrapper, and our `solr:` rake tasks. Due to how solr_wrapper works, if you make changes you may (or may not) need to run `./bin/rake solr:clean` in development. (And stop/start your dev solr if it was already running).
+They are used directly in local dev and test, via functionality from the solr_wrapper gem, and our `solr:` rake tasks which control solr_wrapper. Our CI run also uses those rake tasks/solr wrappe to make sure solr is installed and running for CI.
+
+## Local changes to solr config
+
+Due to how solr_wrapper works, if you make changes here, you might need to get solr_wrapper to refresh the config for the installed dev and tmp solrs. You can do so, then restart solr, in test by running eg:
+
+   RAILS_ENV=test ./bin/rake solr:clean solr:start
+
+Or for development:
+
+  ./bin/rake solr:clean solr:start
+
+solr_wrapper installed Solr configs should be at:
+
+* `./tmp/solr_test/server/solr/scihist_digicoll_test/conf`
+* `./tmp/solr_development/server/solr/scihist_digicoll_development/conf/`
+
+In case you need to develop with a quicker iteration loop than waiting for the `clean` and want to edit files directly -- but you should always use the `clean` task at the end to make sure everything is consistent between what's in our git source dir (and committed) and what's actually in the running solr.
 
 
 ## SearchStax
@@ -35,3 +52,4 @@ that are not necessarily intentional or optimal.
 ## Before Heroku: self-managed EC2 via Ansible (OBSOLETE)
 
 In production, ansible symlinked the host-environment production Solr config to these files. Ansible only linked schema.xml and solrconfig.xml.
+
