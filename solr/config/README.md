@@ -19,6 +19,7 @@ solr_wrapper installed Solr configs should be at:
 
 In case you need to develop with a quicker iteration loop than waiting for the `clean` and want to edit files directly -- but you should always use the `clean` task at the end to make sure everything is consistent between what's in our git source dir (and committed) and what's actually in the running solr.
 
+
 ## SearchStax
 
 (deploy infrastructure we are moving to)
@@ -51,3 +52,4 @@ that are not necessarily intentional or optimal.
 ## Before Heroku: self-managed EC2 via Ansible (OBSOLETE)
 
 In production, ansible symlinked the host-environment production Solr config to these files. Ansible only linked schema.xml and solrconfig.xml.
+

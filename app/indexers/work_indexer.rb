@@ -2,11 +2,8 @@
 class WorkIndexer < Kithe::Indexer
   configure do
     # instead of a Solr field per attribute, we group them into fields
-    # that will have similar boosting, to use solr solr more efficiently.
+    # that will have similar boosting, to use solr more efficiently.
     # text1 is boosted highest, text2 next highest, etc.
-    #.
-    #
-    # Experiment, not necessarily completed indexing logic.
 
     to_field "model_pk_ssi", obj_extract("id") # the actual db pk, a UUID
 
@@ -156,7 +153,7 @@ class WorkIndexer < Kithe::Indexer
     # we got it.
     #
     # 2. If OHMS Table of Contents is present: title, synopsis, and keywords
-    to_field "searchable_fulltext" do |rec, acc|
+    to_field "searchable_fulltext_en" do |rec, acc|
       if rec.oral_history_content
         if rec.oral_history_content.has_ohms_transcript?
           text = rec.oral_history_content.ohms_xml.transcript_text
@@ -182,11 +179,20 @@ class WorkIndexer < Kithe::Indexer
       acc.concat get_string_from_each_published_member(rec, :english_translation)
 
       # Index the transcription here if we can assume that the work is entirely in English.
-      acc.concat get_string_from_each_published_member(rec, :transcription) if rec.language == ['en']
+      acc.concat get_string_from_each_published_member(rec, :transcription) if rec.language == ['English']
     end
 
+    to_field "searchable_fulltext_de" do |rec, acc|
+      # Index the transcription here if we can assume that the work is entirely in German.
+      acc.concat get_string_from_each_published_member(rec, :transcription) if rec.language == ['German']
+    end
+
+
+    # Index the transcription here unless we have place to index it in our language-specific indexes.
     to_field "searchable_fulltext_language_agnostic" do |rec, acc|
-      acc.concat get_string_from_each_published_member(rec, :transcription) if rec.language != ['en']
+      entirely_in_english = (rec.language == ['English'])
+      entirely_in_german =  (rec.language == ['German'])
+      acc.concat get_string_from_each_published_member(rec, :transcription) unless entirely_in_english || entirely_in_german
     end
 
     # add a 'translation' token in bredig_feature_facet if we have any translations
