@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_12_194219) do
+ActiveRecord::Schema.define(version: 2022_04_20_175655) do
 
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_stat_statements"
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
@@ -147,7 +148,7 @@ ActiveRecord::Schema.define(version: 2021_11_12_194219) do
     t.index ["container_id"], name: "index_kithe_model_contains_on_container_id"
   end
 
-  create_table "kithe_models", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "kithe_models", id: :uuid, default: -> { "public.gen_random_uuid()" }, force: :cascade do |t|
     t.string "title", null: false
     t.string "type", null: false
     t.integer "position"
@@ -212,6 +213,7 @@ ActiveRecord::Schema.define(version: 2021_11_12_194219) do
     t.text "searchable_transcript_source"
     t.enum "available_by_request_mode", default: "off", null: false, enum_name: "available_by_request_mode_type"
     t.jsonb "json_attributes", default: {}
+    t.jsonb "combined_audio_m4a_data"
     t.index ["work_id"], name: "index_oral_history_content_on_work_id", unique: true
   end
 
