@@ -7,14 +7,13 @@
 # You can do `oral_history_content = work.oral_history_content!` to create
 # the 'sidecar' if it doesn't already exist, else use the existing one.
 #
-# The sidecar has two shrine file slots for combined audio derivatives:
-# combined_audio_mp3, and combined_audio_webm.
+# The sidecar has a shrine file slot for combined audio derivatives:
+# combined_audio_m4a.
 #
 # To store a created derivative directly to 'store' storage, you can use some custom methods,
 # passing a `File` object or other shrine-compatible io-like object.
 #
-#     oral_history_content.set_commbined_audio_mp3!(io)
-#     oral_history_content.set_commbined_audio_webm!(io)
+#     oral_history_content.set_combined_audio_m4a!(io)
 #
 # There is a string field `combined_audio_fingerprint` for fingerprinting
 # combined files for staleness, and a JSONB field combined_audio_component_metadata
@@ -30,7 +29,7 @@
 # automatically cause solr reindex of associated work.
 #
 # Note this means if you are making large scale changes to OralHistoryContent objects,
-# there are no performance concerns, as the naive appraoch might issue an individual
+# there are no performance concerns, as the naive approach might issue an individual
 # SQL query for the work associated with each OralHistoryContent... and then issue
 # a separate non-batched solr update for each. The solution is eager-loading
 # associated works, and using kithe techniques to control auto-indexing: batch-updating,
@@ -46,8 +45,7 @@ class OralHistoryContent < ApplicationRecord
   has_and_belongs_to_many :interviewer_profiles
   has_and_belongs_to_many :interviewee_biographies
 
-  include CombinedAudioUploader::Attachment.new(:combined_audio_mp3, store: :combined_audio_derivatives)
-  include CombinedAudioUploader::Attachment.new(:combined_audio_webm, store: :combined_audio_derivatives)
+  include CombinedAudioUploader::Attachment.new(:combined_audio_m4a, store: :combined_audio_derivatives)
 
   enum combined_audio_derivatives_job_status: {
     queued:    'queued',
@@ -73,15 +71,12 @@ class OralHistoryContent < ApplicationRecord
 
   after_commit :after_commit_update_work_index_if_needed
 
-  # Sets IO to be combined_audio_mp3, writing directly to "store" storage,
+  # Sets IO to be combined_audio_m4a, writing directly to "store" storage,
   # and *saves model*.
-  def set_combined_audio_mp3!(io)
-    set_combined_audio!(combined_audio_mp3_attacher, io, mime_type: "audio/mpeg", file_suffix: "mp3")
+  def set_combined_audio_m4a!(io)
+    set_combined_audio!(combined_audio_m4a_attacher, io, mime_type: "audio/m4a", file_suffix: "m4a")
   end
 
-  def set_combined_audio_webm!(io)
-    set_combined_audio!(combined_audio_webm_attacher, io, mime_type: "audio/webm", file_suffix: "webm")
-  end
 
   # A OralHistoryContent::OhmsXml object that provides access to parts of XML we need.
   #
