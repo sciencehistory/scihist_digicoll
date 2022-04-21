@@ -4,8 +4,8 @@ module OralHistory
     delegate :format_ohms_timestamp, :current_user, to: :helpers
 
     # our combined_audio_derivatives helper methods
-    delegate :mp3_audio_url, :derivatives_up_to_date?, :mp3_audio_download_url,
-      :mp3_audio_download_filename, :display_mp3_audio_size,
+    delegate :m4a_audio_url, :derivatives_up_to_date?, :m4a_audio_download_url,
+      :m4a_audio_download_filename, :display_m4a_audio_size,
       to: :combined_audio_derivatives, prefix: "combined"
 
     attr_reader :decorator, :work, :combined_audio_derivatives

@@ -11,12 +11,8 @@ class CombinedAudioDerivatives
     @work = work
   end
 
-  def mp3_audio_url
-    work&.oral_history_content&.combined_audio_mp3&.url(public:true)
-  end
-
-  def webm_audio_url
-    work&.oral_history_content&.combined_audio_webm&.url(public:true)
+  def m4a_audio_url
+    work&.oral_history_content&.combined_audio_m4a&.url(public:true)
   end
 
   def audio_fingerprint
@@ -27,29 +23,27 @@ class CombinedAudioDerivatives
     CombinedAudioDerivativeCreator.new(work).fingerprint == audio_fingerprint
   end
 
-  def mp3_audio_download_filename
+  def m4a_audio_download_filename
     parts = [
       DownloadFilenameHelper.first_three_words(work.title),
       work.friendlier_id
     ].collect(&:presence).compact
-    Pathname.new(parts.join("_")).sub_ext('.mp3').to_s
+    Pathname.new(parts.join("_")).sub_ext('.m4a').to_s
   end
 
-  # combined_mp3_audio_download
-  def mp3_audio_download_url
-    work&.oral_history_content&.combined_audio_mp3&.url(
+  def m4a_audio_download_url
+    work&.oral_history_content&.combined_audio_m4a&.url(
       public: false,
       expires_in: DOWNLOAD_URL_EXPIRES_IN,
       response_content_type: 'audio/mpeg',
       response_content_disposition: ContentDisposition.format(
         disposition: 'attachment',
-        filename: mp3_audio_download_filename
+        filename: m4a_audio_download_filename
       )
     )
   end
 
-  # combined_mp3_audio_size
-  def display_mp3_audio_size
-    ScihistDigicoll::Util.simple_bytes_to_human_string(work&.oral_history_content&.combined_audio_mp3&.size)
+  def display_m4a_audio_size
+    ScihistDigicoll::Util.simple_bytes_to_human_string(work&.oral_history_content&.combined_audio_m4a&.size)
   end
 end
