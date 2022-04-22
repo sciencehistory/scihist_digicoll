@@ -123,6 +123,13 @@ FactoryBot.define do
         faked_width { nil }
       end
 
+      trait :m4a do
+        faked_file { File.open((Rails.root + "spec/test_support/audio/ice_cubes.m4a")) }
+        faked_content_type { "audio/m4a" }
+        faked_height { nil }
+        faked_width { nil }
+      end
+
       after(:build) do |asset, evaluator|
         # Set our uploaded file
 

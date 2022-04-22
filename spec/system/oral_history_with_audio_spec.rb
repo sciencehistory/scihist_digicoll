@@ -65,8 +65,6 @@ describe "Oral history with audio display", type: :system, js: true do
     it "shows audio assets appropriately" do
       visit work_path(audio_assets.first.parent.friendlier_id)
 
-      expect(response).to have_http_status(200)
-
       # Our tabs do not meet color contrast rules, we're ignoring for now.
       expect(page).to be_axe_clean.excluding(".ohms-nav-tabs")
 
