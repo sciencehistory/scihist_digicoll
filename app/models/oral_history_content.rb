@@ -74,7 +74,7 @@ class OralHistoryContent < ApplicationRecord
   # Sets IO to be combined_audio_m4a, writing directly to "store" storage,
   # and *saves model*.
   def set_combined_audio_m4a!(io)
-    set_combined_audio!(combined_audio_m4a_attacher, io, mime_type: "audio/m4a", file_suffix: "m4a")
+    set_combined_audio!(combined_audio_m4a_attacher, io, mime_type: "audio/mp4", file_suffix: "m4a")
   end
 
 

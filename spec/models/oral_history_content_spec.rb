@@ -17,7 +17,7 @@ describe OralHistoryContent do
       expect(oral_history_content.combined_audio_m4a.size).to eq(File.size(m4a_path))
 
       expect(oral_history_content.combined_audio_m4a.original_filename).to eq("combined.m4a")
-      expect(oral_history_content.combined_audio_m4a.mime_type).to eq("audio/m4a")
+      expect(oral_history_content.combined_audio_m4a.mime_type).to eq("audio/mp4")
 
       expect(oral_history_content.combined_audio_m4a.id).to match(/#{work.id}\/combined_[a-f0-9]+\.m4a/)
     end

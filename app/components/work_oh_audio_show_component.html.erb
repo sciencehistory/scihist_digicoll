@@ -15,8 +15,8 @@
         </h1>
         <% if combined_m4a_audio_url.present? && combined_derivatives_up_to_date? %>
           <div class="d-flex" style="align-items: center">
-            <audio controls controlsList="nodownload" data-role="ohms-audio-elem" >
-                <source src="<%= combined_m4a_audio_url%>"  type="audio/m4a"/>
+            <audio controls controlslist="nodownload" data-role="ohms-audio-elem">
+              <source src="<%= combined_m4a_audio_url %>" type="audio/mp4">
             </audio>
             <% if has_ohms_index? || has_ohms_transcript? %>
               <div class="pl-3">

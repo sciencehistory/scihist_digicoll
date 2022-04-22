@@ -125,7 +125,7 @@ FactoryBot.define do
 
       trait :m4a do
         faked_file { File.open((Rails.root + "spec/test_support/audio/ice_cubes.m4a")) }
-        faked_content_type { "audio/m4a" }
+        faked_content_type { "audio/mp4" }
         faked_height { nil }
         faked_width { nil }
       end
