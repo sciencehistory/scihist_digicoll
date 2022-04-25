@@ -16,7 +16,13 @@ ActiveRecord::Schema.define(version: 2021_11_12_194219) do
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
-  create_function :kithe_models_friendlier_id_gen, sql_definition: <<-SQL
+  create_enum :available_by_request_mode_type, [
+    "off",
+    "automatic",
+    "manual_review",
+  ], force: :cascade
+
+  create_function :kithe_models_friendlier_id_gen, sql_definition: <<-'SQL'
       CREATE OR REPLACE FUNCTION public.kithe_models_friendlier_id_gen(min_value bigint, max_value bigint)
        RETURNS text
        LANGUAGE plpgsql
@@ -56,12 +62,6 @@ ActiveRecord::Schema.define(version: 2021_11_12_194219) do
         END;
         $function$
   SQL
-
-  create_enum :available_by_request_mode_type, [
-    "off",
-    "automatic",
-    "manual_review",
-  ], force: :cascade
 
   create_table "asset_derivative_storage_type_reports", force: :cascade do |t|
     t.jsonb "data_for_report", default: {}
@@ -210,7 +210,7 @@ ActiveRecord::Schema.define(version: 2021_11_12_194219) do
     t.string "combined_audio_derivatives_job_status"
     t.datetime "combined_audio_derivatives_job_status_changed_at"
     t.text "searchable_transcript_source"
-    t.enum "available_by_request_mode", default: "off", null: false, enum_name: "available_by_request_mode_type"
+    t.enum "available_by_request_mode", default: "off", null: false, enum_type: "available_by_request_mode_type"
     t.jsonb "json_attributes", default: {}
     t.index ["work_id"], name: "index_oral_history_content_on_work_id", unique: true
   end
