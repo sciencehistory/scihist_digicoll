@@ -93,7 +93,7 @@ gem "content_disposition", "~> 1.0"
 
 gem 'faster_s3_url', "< 2" # for generating s3 urls faster!
 
-gem "ransack", "~> 2.1"
+gem "ransack", "~> 3.0"
 gem "kaminari", "~> 1.2"
 gem 'bootstrap4-kaminari-views'
 
