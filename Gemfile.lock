@@ -482,7 +482,7 @@ GEM
       rake (>= 12.2)
       thor (~> 1.0)
     rake (13.0.6)
-    ransack (2.6.0)
+    ransack (3.1.0)
       activerecord (>= 6.0.4)
       activesupport (>= 6.0.4)
       i18n
@@ -724,7 +724,7 @@ DEPENDENCIES
   qa (~> 5.2)
   rails (~> 6.1.1)
   rails-controller-testing
-  ransack (~> 2.1)
+  ransack (~> 3.0)
   reline (>= 0.2.1)
   resque (~> 2.0)
   resque-heroku-signals
