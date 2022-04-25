@@ -19,6 +19,7 @@
 
 /public/assets
 .byebug_history
+.irb_history
 
 # MacOS bookkeeping file
 .DS_Store
