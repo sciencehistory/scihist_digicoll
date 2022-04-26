@@ -4,7 +4,7 @@
 class WorkOhAudioShowComponent < ApplicationComponent
   delegate :construct_page_title, :current_user, to: :helpers
 
-  delegate :m4a_audio_url, :derivatives_up_to_date?, to: :combined_audio_derivatives, prefix: "combined"
+  delegate :mp3_audio_url, :webm_audio_url, :m4a_audio_url, :derivatives_up_to_date?, to: :combined_audio_derivatives, prefix: "combined"
 
   attr_reader :work, :combined_audio_derivatives
 
@@ -42,6 +42,28 @@ class WorkOhAudioShowComponent < ApplicationComponent
 
   def has_ohms_index?
     work&.oral_history_content&.has_ohms_index?
+  end
+
+  #REMOVE_AFTER_MP3_TO_M4A_MIGRATION
+  def combined_mp3_audio
+    work&.oral_history_content&.combined_audio_mp3&.url(public:true)
+  end
+
+  #REMOVE_AFTER_MP3_TO_M4A_MIGRATION
+  def combined_webm_audio
+    work&.oral_history_content&.combined_audio_webm&.url(public:true)
+  end
+
+  def combined_m4a_audio
+    work&.oral_history_content&.combined_audio_m4a&.url(public:true)
+  end
+
+  def combined_audio_fingerprint
+    work&.oral_history_content&.combined_audio_fingerprint
+  end
+
+  def derivatives_up_to_date?
+    CombinedAudioDerivativeCreator.new(work).fingerprint == combined_audio_fingerprint
   end
 
   def portrait_asset

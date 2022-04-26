@@ -24,6 +24,18 @@
               </div>
             <% end %>
           </div>
+        <% elsif combined_mp3_audio_url.present? #REMOVE_AFTER_MP3_TO_M4A_MIGRATION %>
+          <div class="d-flex" style="align-items: center">
+            <audio controls controlslist="nodownload" data-role="ohms-audio-elem">
+              <source src="<%= combined_mp3_audio_url%>"  type="audio/mpeg"/>
+              <source src="<%= combined_webm_audio_url%>"  type="audio/webm"/>
+            </audio>
+            <% if has_ohms_index? || has_ohms_transcript? %>
+              <div class="pl-3">
+                <button class="btn btn-emphasis btn-sm text-nowrap" data-trigger="ohms-jump-to-text">Jump to text</button>
+              </div>
+            <% end %>
+          </div>
         <% else %>
           <div class="alert alert-warning" role="alert" data-role="no-audio-alert">
              This oral history is not properly prepared for the audio player. (Staff: please create a combined derivative.)
