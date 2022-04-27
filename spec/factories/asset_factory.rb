@@ -117,14 +117,14 @@ FactoryBot.define do
       end
 
       trait :mp3 do
-        faked_file { File.open((Rails.root + "spec/test_support/audio/ice_cubes.mp3")) }
+        faked_file { File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.mp3")) }
         faked_content_type { "audio/mpeg" }
         faked_height { nil }
         faked_width { nil }
       end
 
       trait :m4a do
-        faked_file { File.open((Rails.root + "spec/test_support/audio/ice_cubes.m4a")) }
+        faked_file { File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.m4a")) }
         faked_content_type { "audio/mp4" }
         faked_height { nil }
         faked_width { nil }
@@ -170,9 +170,9 @@ FactoryBot.define do
     end
 
     factory :asset_mp3_with_correct_sha512, parent: :asset_with_faked_file do
-      faked_file { File.open((Rails.root + "spec/test_support/audio/ice_cubes.mp3")) }
+      faked_file { File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.mp3")) }
       faked_content_type { "audio/mpeg" }
-      faked_sha512 { Digest::SHA512.file(Rails.root + "spec/test_support/audio/ice_cubes.mp3").to_s }
+      faked_sha512 { Digest::SHA512.file(Rails.root + "spec/test_support/audio/5-seconds-of-silence.mp3").to_s }
       faked_height { nil }
       faked_width { nil }
     end

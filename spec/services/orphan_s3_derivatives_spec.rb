@@ -29,7 +29,7 @@ describe OrphanS3Derivatives do
   end
 
   let(:work_with_oral_history_content) { create(:oral_history_work) }
-  let(:m4a_path) { Rails.root + "spec/test_support/audio/ice_cubes.m4a" }
+  let(:m4a_path) { Rails.root + "spec/test_support/audio/5-seconds-of-silence.m4a" }
 
   let(:image_deriv_file_paths) do
     [

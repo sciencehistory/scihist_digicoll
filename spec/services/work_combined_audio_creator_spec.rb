@@ -6,14 +6,14 @@ describe "Combined Audio" do
   let!(:audio_asset_1)  { create(:asset, :inline_promoted_file,
       position: 1,
       parent_id: work.id,
-      file: File.open((Rails.root + "spec/test_support/audio/ice_cubes.mp3"))
+      file: File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.mp3"))
     )
   }
 
   let!(:audio_asset_2)  { create(:asset, :inline_promoted_file,
       position: 2,
       parent_id: work.id,
-      file: File.open((Rails.root + "spec/test_support/audio/double_ice_cubes.mp3"))
+      file: File.open((Rails.root + "spec/test_support/audio/10-seconds-of-silence.mp3"))
     )
   }
 
@@ -27,7 +27,7 @@ describe "Combined Audio" do
     # The lengths should be correct:
     expect(combined_audio_info.start_times).to match([
       [audio_asset_1.id, 0],
-      [audio_asset_2.id, 1.593]
+      [audio_asset_2.id, 5.184]
     ])
 
     # The files should be tempfiles:
@@ -43,8 +43,7 @@ describe "Combined Audio" do
     expect(m4a_details).to  include('codec_name=aac')
     expect(m4a_details).to  include('format_long_name=QuickTime / MOV')
     # Is the combined length correct?
-
-    expect(m4a_details.any?  {|x| x.include? 'duration=4.69'}).to be true
+    expect(m4a_details.any?  {|x| x.include? 'duration=15.0'}).to be true
 
 
     # Store the fingerprint to ensure that it changes when we swap the two files...
@@ -68,7 +67,7 @@ describe "Combined Audio" do
 
     expect( combined_audio_info.start_times).to match([
       [audio_asset_2.id, 0],
-      [audio_asset_1.id, 3.161]
+      [audio_asset_1.id, 10.152]
     ])
 
     # Get some verbose details about the files output:
@@ -79,8 +78,7 @@ describe "Combined Audio" do
     expect(m4a_details).to  include('codec_tag_string=mp4a')
     expect(m4a_details).to  include('codec_name=aac')
     expect(m4a_details).to  include('format_long_name=QuickTime / MOV')
-
-    expect(m4a_details.any?  {|x| x.include? 'duration=4.699'}).to be true
+    expect(m4a_details.any?  {|x| x.include? 'duration=15.0'}).to be true
 
     second_fingerprint = combined_audio_info.fingerprint
     expect(second_fingerprint.class).to eq String
