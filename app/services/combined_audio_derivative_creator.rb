@@ -135,19 +135,19 @@ class CombinedAudioDerivativeCreator
     #    see https://trac.ffmpeg.org/wiki/AudioChannelManipulation
     # -b:a 64K: make the output a constant 64k bitrate
     #    see https://trac.ffmpeg.org/wiki/Encode/MP3
-    #
-    # All you do is modify the existing code to say -c:a aac  -b:a 64k  output.m4a
+    output_options = ["-map", "[a]", "-ac", "1", "-b:a", "64k"]
 
-    output_quality = ["-map", "[a]", "-ac", "1", "-b:a", "64k"]
-
-    output_quality += ["-c:a", "aac"] if output_file_path.include?('m4a')
+    # -c:a aac: use the standard-issue AAC encoder for m4a:
+    #    see https://trac.ffmpeg.org/wiki/Encode/AAC
+    #    (This is currently always true.)
+    output_options += ["-c:a", "aac"] if output_file_path.include?('m4a')
 
     # Put it all together and return:
     ffmpeg_command +
       input_files +
       ['-filter_complex'] +
       ["#{stream_list}#{filtergraph}"] +
-      output_quality +
+      output_options +
       [output_file_path]
   end
 
