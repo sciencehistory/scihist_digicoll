@@ -48,28 +48,6 @@ class WorkOhAudioShowComponent < ApplicationComponent
     work&.oral_history_content&.has_ohms_index?
   end
 
-  #REMOVE_AFTER_MP3_TO_M4A_MIGRATION
-  def combined_mp3_audio
-    work&.oral_history_content&.combined_audio_mp3&.url(public:true)
-  end
-
-  #REMOVE_AFTER_MP3_TO_M4A_MIGRATION
-  def combined_webm_audio
-    work&.oral_history_content&.combined_audio_webm&.url(public:true)
-  end
-
-  def combined_m4a_audio
-    work&.oral_history_content&.combined_audio_m4a&.url(public:true)
-  end
-
-  def combined_audio_fingerprint
-    work&.oral_history_content&.combined_audio_fingerprint
-  end
-
-  def derivatives_up_to_date?
-    CombinedAudioDerivativeCreator.new(work).fingerprint == combined_audio_fingerprint
-  end
-
   def portrait_asset
     unless defined?(@portrait_asset)
       @portrait_asset = all_members.find {|mem| mem.role_portrait? }&.leaf_representative
