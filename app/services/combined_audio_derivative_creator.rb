@@ -8,12 +8,11 @@ require 'tempfile'
 # some_work = Work.find_by_friendlier_id(friendlier_id)
 # CombinedAudioDerivativeCreator.new(some_work).generate
 #
-# Returns a struct in which webm_file and mp3_file each refers to a TempFile.
+# Returns a struct in which m4a_file refers to a TempFile.
 #
 # Sample output:
 # <struct Response
-#  webm_file=<File:/path/to/file.webm>,
-#  mp3_file=<File:/path/to/file.mp3>,
+#  m4a_file=<File:/path/to/file.m4a>,
 #  fingerprint="e0248c40015d6dc90b0d02937950b5d7",
 #  start_times=
 #   [["ddbd1a8d-c2eb-47b3-85a4-11b4ffb41719", 0],
@@ -22,7 +21,7 @@ require 'tempfile'
 
 class CombinedAudioDerivativeCreator
 
-  Response = Struct.new(:webm_file, :mp3_file, :fingerprint, :start_times, :errors, keyword_init: true)
+  Response = Struct.new(:m4a_file, :fingerprint, :start_times, :errors, keyword_init: true)
 
   attr_reader :work, :logger
 
@@ -37,14 +36,13 @@ class CombinedAudioDerivativeCreator
     end
     output_files = {}
     # Create the two output files:
-    ['mp3', 'webm'].each do |format|
+    ['m4a'].each do |format|
       output_files[format] = output_file(format)
       ffmpeg_args = args_for_ffmpeg(output_files[format].path)
       cmd.run(*ffmpeg_args, binmode: true, only_output_on_error: true)
     end
     resp = Response.new
-    resp.webm_file   = output_files['webm']
-    resp.mp3_file    = output_files['mp3']
+    resp.m4a_file    = output_files['m4a']
     resp.fingerprint = fingerprint
     resp.start_times = calculate_start_times
     # Before leaving, get rid of the downloaded originals:
@@ -137,14 +135,19 @@ class CombinedAudioDerivativeCreator
     #    see https://trac.ffmpeg.org/wiki/AudioChannelManipulation
     # -b:a 64K: make the output a constant 64k bitrate
     #    see https://trac.ffmpeg.org/wiki/Encode/MP3
-    output_quality = ["-map", "[a]", "-ac", "1", "-b:a", "64k"]
+    output_options = ["-map", "[a]", "-ac", "1", "-b:a", "64k"]
+
+    # -c:a aac: use the standard-issue AAC encoder for m4a:
+    #    see https://trac.ffmpeg.org/wiki/Encode/AAC
+    #    (This is currently always true.)
+    output_options += ["-c:a", "aac"] if output_file_path.include?('m4a')
 
     # Put it all together and return:
     ffmpeg_command +
       input_files +
       ['-filter_complex'] +
       ["#{stream_list}#{filtergraph}"] +
-      output_quality +
+      output_options +
       [output_file_path]
   end
 

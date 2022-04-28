@@ -5,22 +5,21 @@ describe OralHistoryContent do
 
   let(:work_with_oral_history_content) { create(:oral_history_work) }
 
-  let(:mp3_path) { Rails.root + "spec/test_support/audio/ice_cubes.mp3" }
-  let(:webm_path) { Rails.root + "spec/test_support/audio/smallest_webm.webm" }
+  let(:m4a_path) { Rails.root + "spec/test_support/audio/5-seconds-of-silence.m4a" }
 
-  describe "#set_combined_audio_mp3!" do
+  describe "#set_combined_audio_m4a!" do
     it "can set" do
-      oral_history_content.set_combined_audio_mp3!(File.open(mp3_path))
+      oral_history_content.set_combined_audio_m4a!(File.open(m4a_path))
 
       expect(oral_history_content.changed?).to be(false)
-      expect(oral_history_content.combined_audio_mp3).to be_present
-      expect(oral_history_content.combined_audio_mp3.read).to eq(File.read(mp3_path, encoding: "BINARY"))
-      expect(oral_history_content.combined_audio_mp3.size).to eq(File.size(mp3_path))
+      expect(oral_history_content.combined_audio_m4a).to be_present
+      expect(oral_history_content.combined_audio_m4a.read).to eq(File.read(m4a_path, encoding: "BINARY"))
+      expect(oral_history_content.combined_audio_m4a.size).to eq(File.size(m4a_path))
 
-      expect(oral_history_content.combined_audio_mp3.original_filename).to eq("combined.mp3")
-      expect(oral_history_content.combined_audio_mp3.mime_type).to eq("audio/mpeg")
+      expect(oral_history_content.combined_audio_m4a.original_filename).to eq("combined.m4a")
+      expect(oral_history_content.combined_audio_m4a.mime_type).to eq("audio/mp4")
 
-      expect(oral_history_content.combined_audio_mp3.id).to match(/#{work.id}\/combined_[a-f0-9]+\.mp3/)
+      expect(oral_history_content.combined_audio_m4a.id).to match(/#{work.id}\/combined_[a-f0-9]+\.m4a/)
     end
 
     describe "for failed save" do
@@ -28,7 +27,7 @@ describe OralHistoryContent do
         allow(oral_history_content).to receive(:save!).and_raise("mock error")
 
         expect {
-          oral_history_content.set_combined_audio_mp3!(File.open(mp3_path))
+          oral_history_content.set_combined_audio_m4a!(File.open(m4a_path))
         }.to raise_error("mock error")
 
         date_of_error = oral_history_content.
@@ -40,7 +39,7 @@ describe OralHistoryContent do
 
         time_since_error = Time.now.to_i - date_of_error.to_i
         expect(time_since_error).to be <= 600
-        expect(oral_history_content.combined_audio_mp3).not_to be_present
+        expect(oral_history_content.combined_audio_m4a).not_to be_present
       end
     end
   end
@@ -58,17 +57,6 @@ describe OralHistoryContent do
     end
   end
 
-  describe "#set_combined_audio_webm!" do
-    it "can set" do
-      oral_history_content.set_combined_audio_webm!(File.open(webm_path))
-      expect(oral_history_content.changed?).to be(false)
-      expect(oral_history_content.combined_audio_webm).to be_present
-      expect(oral_history_content.combined_audio_webm.read).to eq(File.read(webm_path, encoding: "BINARY"))
-      expect(oral_history_content.combined_audio_webm.size).to eq(File.size(webm_path))
-      expect(oral_history_content.combined_audio_webm.original_filename).to eq("combined.webm")
-      expect(oral_history_content.combined_audio_webm.mime_type).to eq("audio/webm")
-    end
-  end
 
   describe "work#oral_history_content!" do
     describe "without existing sidecar" do

@@ -17,7 +17,7 @@
   </div>
 <% end %>
 
-<% if combined_mp3_audio_url.present? && combined_derivatives_up_to_date?%>
+<% if combined_m4a_audio_url.present? && combined_derivatives_up_to_date?%>
   <h2 class="attribute-sub-head">
     <% if audio_members.count == 1 %>
       Audio File <small class="text-muted">Web-quality download</small>
@@ -27,13 +27,31 @@
   </h2>
   <div class="combined-audio-download-links">
     <div class="combined-audio-download-icon-container">
+      <a href="<%= combined_m4a_audio_download_url %>"
+        data-analytics-category="Work"
+        data-analytics-action="download_combined_audio_derivatives"
+        data-analytics-label="<%= work.friendlier_id %>"
+        >
+        <i class="fa fa-download" aria-hidden="true"></i>
+        Web-quality m4a
+      </a>
+    </div>
+    <div class="combined-audio-download-link-size">
+      <small><%= combined_display_m4a_audio_size %></small>
+    </div>
+  </div>
+<% end %>
+
+<% if combined_mp3_audio_url.present? #REMOVE_AFTER_MP3_TO_M4A_MIGRATION %>
+  <div class="combined-audio-download-links">
+    <div class="combined-audio-download-icon-container">
       <a href="<%= combined_mp3_audio_download_url %>"
         data-analytics-category="Work"
         data-analytics-action="download_combined_audio_derivatives"
         data-analytics-label="<%= work.friendlier_id %>"
         >
         <i class="fa fa-download" aria-hidden="true"></i>
-        Web-quality MP3
+        Web-quality mp3
       </a>
     </div>
     <div class="combined-audio-download-link-size">
