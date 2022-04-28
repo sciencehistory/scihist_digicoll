@@ -388,7 +388,7 @@ module ScihistDigicoll
     end
 
     def self.shrine_video_derivatives_storage
-      @shrine_derivatives_storage ||=
+      @shrine_derivatives_video_storage ||=
         appropriate_shrine_storage( bucket_key: :s3_bucket_derivatives_video,
                                     s3_storage_options: {
                                       public: true,
