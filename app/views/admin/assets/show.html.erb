@@ -48,7 +48,7 @@
       </div>
     <% end %>
 
-    <% if @asset.content_type&.start_with?("video/") %>
+    <% if @asset.content_type&.start_with?("video/") && @asset.active_encode_statuses.present? %>
     <h3 class="mt-4 mb-4">HLS Encode Jobs</h3>
     <% @asset.active_encode_statuses.order(updated_at: :desc).each do |status| %>
       <dl class='row'>
