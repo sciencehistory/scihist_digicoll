@@ -157,7 +157,7 @@ describe "Oral history with audio display", type: :system, js: true do
         select{|x| x.content_type == 'audio/mpeg' && x.published? }.
         map {|x| x.id}
 
-      parent_work.oral_history_content!.set_combined_audio_mp3!(File.open(combined_audio_file_path))
+      parent_work.oral_history_content!.set_combined_audio_m4a!(File.open(combined_audio_file_path))
       parent_work.oral_history_content.combined_audio_component_metadata = {"start_times"=>[
         [id_list[0], 0],
         [id_list[1], 0.5],
@@ -224,8 +224,8 @@ describe "Oral history with audio display", type: :system, js: true do
 
   context "with combined audio and OHMS" do
     before do
-      parent_work.oral_history_content.combined_audio_mp3 = create(:stored_uploaded_file,
-        file: File.open((Rails.root + "spec/test_support/audio/10-minutes-of-silence.mp3")),
+      parent_work.oral_history_content.combined_audio_m4a = create(:stored_uploaded_file,
+        file: File.open((Rails.root + "spec/test_support/audio/10-minutes-of-silence.m4a")),
         content_type: "audio/mpeg")
       parent_work.oral_history_content.combined_audio_fingerprint = CombinedAudioDerivativeCreator.new(parent_work).fingerprint
       parent_work.oral_history_content.save!

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_12_194219) do
+ActiveRecord::Schema.define(version: 2022_04_20_175655) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -202,6 +202,7 @@ ActiveRecord::Schema.define(version: 2021_11_12_194219) do
     t.uuid "work_id", null: false
     t.jsonb "combined_audio_mp3_data"
     t.jsonb "combined_audio_webm_data"
+    t.jsonb "combined_audio_m4a_data"
     t.string "combined_audio_fingerprint"
     t.jsonb "combined_audio_component_metadata"
     t.text "ohms_xml_text"
