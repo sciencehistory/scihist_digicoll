@@ -48,7 +48,34 @@
       </div>
     <% end %>
 
+    <% if @asset.content_type&.start_with?("video/") %>
+    <h3 class="mt-4 mb-4">HLS Encode Jobs</h3>
+    <% @asset.active_encode_statuses.order(updated_at: :desc).each do |status| %>
+      <dl class='row'>
+        <dt class="col-sm-4">started</dt><dd class="col-sm-8"><%= l status.created_at, format: :admin %></dd>
+        <dt class="col-sm-4">last updated</dt><dd class="col-sm-8"><%= l status.updated_at, format: :admin %></dd>
+        <dt class="col-sm-4">state</dt>
+          <dd class="col-sm-8">
+            <%= status.state %>
+            <% if status.running? %>
+              (<%= status.percent_complete  %>%)
+            <% end %>
+          </dd>
+        <dt class="col-sm-4">job id</dt><dd class="col-sm-8"><%= status.active_encode_id %></dd>
+        <% if status.encode_error.present? %>
+          <dt>Error</dt>
+          <dd><code><%= status.encode_error %></code></dd>
+        <% end %>
+        <% if status.hls_master_playlist_s3_url.present? %>
+          <dt class="col-sm-4">playlist</dt>
+          <dd class="col-sm-8"><%= text_field_tag "", status.hls_master_playlist_s3_url, readonly: true, style: "width: 100%" %></dd>
+        <% end %>
+      </dl>
+      <hr>
+    <% end %>
 
+
+    <% end %>
 
   </div>
 
