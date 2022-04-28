@@ -1,3 +1,12 @@
+GIT
+  remote: https://github.com/jrochkind/active_encode.git
+  revision: dd45a234e87c7dad87385f4c44caa0a09b43c903
+  branch: jrochkind_features
+  specs:
+    active_encode (0.8.2)
+      addressable (~> 2.8)
+      rails
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -77,12 +86,21 @@ GEM
       execjs (~> 2)
     aws-eventstream (1.2.0)
     aws-partitions (1.579.0)
+    aws-sdk-cloudwatchevents (1.57.0)
+      aws-sdk-core (~> 3, >= 3.127.0)
+      aws-sigv4 (~> 1.1)
+    aws-sdk-cloudwatchlogs (1.52.0)
+      aws-sdk-core (~> 3, >= 3.127.0)
+      aws-sigv4 (~> 1.1)
     aws-sdk-core (3.130.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.525.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
     aws-sdk-kms (1.56.0)
+      aws-sdk-core (~> 3, >= 3.127.0)
+      aws-sigv4 (~> 1.1)
+    aws-sdk-mediaconvert (1.88.0)
       aws-sdk-core (~> 3, >= 3.127.0)
       aws-sigv4 (~> 1.1)
     aws-sdk-s3 (1.113.0)
@@ -681,8 +699,13 @@ PLATFORMS
 
 DEPENDENCIES
   access-granted (~> 1.0)
+  active_encode!
   activerecord-postgres_enum (~> 2.0)
   attr_json (~> 1.0)
+  aws-sdk-cloudwatchevents (~> 1.0)
+  aws-sdk-cloudwatchlogs (~> 1.0)
+  aws-sdk-mediaconvert (~> 1.0)
+  aws-sdk-s3 (~> 1.0)
   axe-core-rspec (~> 4.3)
   blacklight (~> 7.24.0)
   blacklight_range_limit (~> 8.0)
