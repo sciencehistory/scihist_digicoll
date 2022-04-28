@@ -12,6 +12,8 @@ class Asset < Kithe::Asset
 
   has_many :fixity_checks, foreign_key: "asset_id", inverse_of: "asset", dependent: :destroy
 
+  has_many :active_encode_statuses, foreign_key: "asset_id", inverse_of: "asset", dependent: :nullify
+
   set_shrine_uploader(AssetUploader)
 
   THUMB_WIDTHS = AssetUploader::THUMB_WIDTHS
