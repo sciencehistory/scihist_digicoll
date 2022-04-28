@@ -123,6 +123,8 @@ class Asset < Kithe::Asset
 
   after_promotion :create_initial_checksum
 
+  after_promotion :create_hls_video, if: ->(asset) { asset.content_type&.start_with?("video/") }
+
   after_commit DziFiles::ActiveRecordCallbacks, only: [:update, :destroy]
 
   # for ones we're importing from our ingest bucket via :remote_url, we want
@@ -168,6 +170,11 @@ class Asset < Kithe::Asset
   # to the one characterized at ingest.
   def create_initial_checksum
     SingleAssetCheckerJob.perform_later(self)
+  end
+
+  def create_hls_video
+    raise TypeError.new("can't be done for non-videos") unless content_type.start_with?("video/")
+    CreateHlsVideoJob.perform_later(self)
   end
 
   # Ensure that recorded storage locations for all derivatives matches

@@ -199,10 +199,16 @@ describe Asset do
       end
     end
 
-    describe "video" do
+    describe "video", queue_adapter: :test do
       let(:asset) { create(:asset_with_faked_file, :video) }
       it "correct" do
         expect(asset.file_category).to eq("video")
+      end
+
+      it "enqueues job to create HLS"  do
+        expect {
+          create(:asset, :inline_promoted_file, file: File.open(Rails.root + "spec/test_support/video/sample_video.mp4"))
+        }.to have_enqueued_job(CreateHlsVideoJob)
       end
     end
 
