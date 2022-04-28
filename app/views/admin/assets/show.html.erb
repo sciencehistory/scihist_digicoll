@@ -71,6 +71,9 @@
           <dd class="col-sm-8"><%= text_field_tag "", status.hls_master_playlist_s3_url, readonly: true, style: "width: 100%" %></dd>
         <% end %>
       </dl>
+      <% if status.running? %>
+        <%= link_to "Refresh status", admin_refresh_active_encode_status_path(status.id), method: "put", class: "btn btn-primary btn-sm" %>
+      <% end %>
       <hr>
     <% end %>
 
