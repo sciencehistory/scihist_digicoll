@@ -88,7 +88,7 @@ class CreateHlsMediaconvertJobService
   end
 
   # Where MediaConvert should put output. If we supply a prefix with a filename,
-  # the main manifest output will be at that wiht a `.m3u8` on the end -- the
+  # the main playlist output will be at that wiht a `.m3u8` on the end -- the
   # various adaptive bitrate options from the prefixes will get the `modifiers` added
   # on the end, plus `.m3u8`.
   #
@@ -99,16 +99,16 @@ class CreateHlsMediaconvertJobService
   #
   # So return value will be something like:
   #
-  #     s3://scihist-digicoll-production-derivatives-video/ff93bea5-dbca-4895-ae59-73fb64851fc3/bef2010a59ecad3da38c005cfcfb5747/manifest`
+  #     s3://scihist-digicoll-production-derivatives-video/ff93bea5-dbca-4895-ae59-73fb64851fc3/bef2010a59ecad3da38c005cfcfb5747/playlist`
   #
-  # And actual main manifest will be at that with `.m3u8` on the end!
+  # And actual main playlist will be at that with `.m3u8` on the end!
   def output_s3_destination
     @output_s3_destination ||= begin
       bucket_name = Shrine.storages[OUTPUT_SHRINE_STORAGE_KEY].bucket.name
 
       unique_number = SecureRandom.hex
 
-      path = "/hls/#{asset.id}/#{unique_number}/manifest"
+      path = "/hls/#{asset.id}/#{unique_number}/playlist"
 
       "s3://#{bucket_name}#{path}"
     end
