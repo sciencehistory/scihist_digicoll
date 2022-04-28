@@ -28,6 +28,7 @@ describe CreateHlsMediaconvertJobService do
 
       expect(options[:use_original_url]).to be(true)
       expect(options[:outputs]).to be_present
+      expect(options[:outputs].size).to eq CreateHlsMediaconvertJobService::HLS_PRESETS.size
     end.and_return(
       ActiveEncode::Base.new(service.send(:input_s3_url), {}).tap do |encode|
         encode.id =  "faked-id"
@@ -46,4 +47,49 @@ describe CreateHlsMediaconvertJobService do
     expect(status_model.asset).to eq(asset)
     expect(status_model.state).to eq "running"
   end
+
+  describe "with a smaller original" do
+    let(:asset) { create(:asset_with_faked_file, :video, faked_height: 800) }
+
+    it "does not create too-large HLS outputs" do
+      expect(ActiveEncode::Base).to receive(:create).with(any_args) do |input, options|
+
+        expect(options[:outputs].size).to eq CreateHlsMediaconvertJobService::HLS_PRESETS.size - 1
+
+      end.and_return(
+        ActiveEncode::Base.new(service.send(:input_s3_url), {}).tap do |encode|
+          encode.id =  "faked-id"
+          encode.state = :running
+          encode.percent_complete = 0
+          encode.errors = []
+          encode.output = []
+        end
+      )
+
+      status_model = service.call
+    end
+  end
+
+  describe "tiny original" do
+    let(:asset) { create(:asset_with_faked_file, :video, faked_height: 50) }
+
+    it "still creates one output" do
+      expect(ActiveEncode::Base).to receive(:create).with(any_args) do |input, options|
+
+        expect(options[:outputs].size).to eq 1
+
+      end.and_return(
+        ActiveEncode::Base.new(service.send(:input_s3_url), {}).tap do |encode|
+          encode.id =  "faked-id"
+          encode.state = :running
+          encode.percent_complete = 0
+          encode.errors = []
+          encode.output = []
+        end
+      )
+
+      status_model = service.call
+    end
+  end
+
 end

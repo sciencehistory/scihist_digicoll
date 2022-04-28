@@ -26,11 +26,14 @@ class CreateHlsMediaconvertJobService
   # MediaConvert preset names we'll use to create the HLS, including
   # some metadata we may use to decide whether a given preset is
   # needed.
+  #
+  # SMALLEST ONE MUST BE LAST.
   HLS_PRESETS = [
     HlsPresetInfo.new(preset_name: "scihist-hls-high", name_modifier: "_high", pixel_height: 1080),
     HlsPresetInfo.new(preset_name: "scihist-hls-medium", name_modifier: "_medium", pixel_height: 720),
     HlsPresetInfo.new(preset_name: "scihist-hls-low", name_modifier: "_low", pixel_height: 480),
-  ]
+  ].freeze
+
 
   OUTPUT_SHRINE_STORAGE_KEY = :video_derivatives
 
@@ -111,9 +114,15 @@ class CreateHlsMediaconvertJobService
     end
   end
 
-  # TODO don't create presets that are bigger than our actual video!
   def mediaconvert_outputs_arg
-    HLS_PRESETS.map do |config|
+    presets = HLS_PRESETS
+    # Unless our original is at least 90% of size of preset, don't create
+    # this preset. But we always do at least the last one, which is the smallest!
+    if asset.height
+      presets = presets.reject { |preset| preset != presets.last && ((asset.height * 0.9) < preset.pixel_height) }
+    end
+
+    presets.map do |config|
       {
         preset: config.preset_name,
         modifier: config.name_modifier
