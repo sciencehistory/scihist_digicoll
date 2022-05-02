@@ -7,10 +7,10 @@
 # ActiveEncode call will look something like this:
 #
 #     ActiveEncode::Base.create(
-#       "s3:/",
+#       "s3://input-bucket/path/to/movie.mp4",
 #       {
 #         use_original_url: true,
-#         destination: "s3://",
+#         destination: "s3://output-bucket/path/to/output_prefix",
 #         outputs: [
 #           { preset: "scihist-hls-high", modifier: "_high" },
 #           { preset: "scihist-hls-medium", modifier: "_medium" },
