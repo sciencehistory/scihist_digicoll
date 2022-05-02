@@ -26,8 +26,10 @@ gem 'scout_apm'
 gem "blacklight", "~> 7.24.0"
 gem "blacklight_range_limit", "~> 8.0" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
-# Temporarily pointing at a fork until our PR's are merged!
-gem "active_encode", github: "jrochkind/active_encode", branch: "jrochkind_features"
+# Temporarily pointing at active_encode main brancch, until a release AFTER
+# 0.8.2 that has the features we need.
+gem "active_encode", github: "samvera-labs/active_encode"
+
 # these gems are needed for active_encode MediaConvert adapter
 # https://github.com/samvera-labs/active_encode/blob/main/guides/media_convert_adapter.md
 gem "aws-sdk-cloudwatchevents", "~> 1.0"

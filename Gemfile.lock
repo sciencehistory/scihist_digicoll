@@ -1,7 +1,6 @@
 GIT
-  remote: https://github.com/jrochkind/active_encode.git
-  revision: dd45a234e87c7dad87385f4c44caa0a09b43c903
-  branch: jrochkind_features
+  remote: https://github.com/samvera-labs/active_encode.git
+  revision: 62ece3771dfb37ee602756afbd6856cdc351d2a7
   specs:
     active_encode (0.8.2)
       addressable (~> 2.8)
