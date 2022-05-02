@@ -107,13 +107,17 @@ class CreateHlsMediaconvertJobService
   #       delete the whole directory when we want to delete th set.
   def output_s3_destination
     @output_s3_destination ||= begin
-      bucket_name = Shrine.storages[OUTPUT_SHRINE_STORAGE_KEY].bucket.name
+      output_storage = Shrine.storages[OUTPUT_SHRINE_STORAGE_KEY]
 
       unique_number = SecureRandom.hex
 
       path = "/hls/#{asset.id}/#{unique_number}/playlist"
 
-      "s3://#{bucket_name}#{path}"
+      if output_storage.prefix.present?
+        path = "/#{output_storage.prefix.to_s}#{path}"
+      end
+
+      "s3://#{output_storage.bucket.name}#{path}"
     end
   end
 
