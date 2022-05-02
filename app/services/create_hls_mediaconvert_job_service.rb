@@ -102,6 +102,9 @@ class CreateHlsMediaconvertJobService
   #     s3://scihist-digicoll-production-derivatives-video/ff93bea5-dbca-4895-ae59-73fb64851fc3/bef2010a59ecad3da38c005cfcfb5747/playlist`
   #
   # And actual main playlist will be at that with `.m3u8` on the end!
+  #
+  # NOTE: It's important all HLS file are put in a unique DIRECTORY, so we can
+  #       delete the whole directory when we want to delete th set.
   def output_s3_destination
     @output_s3_destination ||= begin
       bucket_name = Shrine.storages[OUTPUT_SHRINE_STORAGE_KEY].bucket.name
