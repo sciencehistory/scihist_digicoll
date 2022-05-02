@@ -57,7 +57,7 @@
         <dt class="col-sm-4">state</dt>
           <dd class="col-sm-8">
             <%= status.state %>
-            <% if status.running? %>
+            <% if status.running? && status.percent_complete.to_i > 0 %>
               (<%= status.percent_complete  %>%)
             <% end %>
           </dd>
