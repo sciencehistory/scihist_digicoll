@@ -24,7 +24,9 @@ class ActiveEncodeStatus < ApplicationRecord
     # it has no height/width set? OK, fine.
     master_playlist = active_encode_result.output.find { |o| o.height.nil? }
 
+    # update updated_at even if no other state changes, to record the refresh
     update!(
+      updated_at: Time.now,
       state: active_encode_result.state,
       encode_error: active_encode_result.errors.join("\n; ").presence,
       percent_complete: active_encode_result.percent_complete,
