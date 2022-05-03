@@ -32,5 +32,15 @@ class ActiveEncodeStatus < ApplicationRecord
       percent_complete: active_encode_result.percent_complete,
       hls_master_playlist_s3_url: master_playlist&.url
     )
+
+    if active_encode_result.state == :completed
+      update_asset_on_completed
+    end
+  end
+
+  def update_asset_on_completed
+    # let the asset know we have an HLS!
+    asset.hls_playlist_file_as_s3 = self.hls_master_playlist_s3_url
+    asset.save!
   end
 end
