@@ -17,6 +17,8 @@ class ActiveEncodeStatus < ApplicationRecord
 
   # Refreshes status from AWS MediaConvert. Will raise Aws::MediaConvert::Errors::NotFoundException
   # if it's more than 90 days past job creation! AWS holds em for 90 days.
+  #
+  # Will raise ActiveEncodeStatus::EncodeFailedError on failed status
   def refresh_from_aws
     active_encode_result = ActiveEncode::Base.find(self.active_encode_id)
 
@@ -33,6 +35,10 @@ class ActiveEncodeStatus < ApplicationRecord
       hls_master_playlist_s3_url: master_playlist&.url
     )
 
+    if active_encode_result.state == :failed
+      raise EncodeFailedError.new("Asset: #{asset&.friendlier_id}, #{self.encode_error}")
+    end
+
     if active_encode_result.state == :completed
       update_asset_on_completed
     end
@@ -43,4 +49,6 @@ class ActiveEncodeStatus < ApplicationRecord
     asset.hls_playlist_file_as_s3 = self.hls_master_playlist_s3_url
     asset.save!
   end
+
+  class EncodeFailedError < StandardError ; end
 end
