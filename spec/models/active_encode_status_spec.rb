@@ -3,12 +3,12 @@ require 'rails_helper'
 RSpec.describe ActiveEncodeStatus, type: :model do
 
 
-  def mocked_active_encode_result(state: :running, percent_complete: 0)
+  def mocked_active_encode_result(state: :running, percent_complete: 0, encode_error: nil)
     ActiveEncode::Base.new("s3://mocked-input-url/something.mp4", {}).tap do |encode|
       encode.id =  "faked-id"
       encode.state = state
       encode.percent_complete = percent_complete
-      encode.errors = []
+      encode.errors = [encode_error].compact
       encode.output = [
         ActiveEncode::Output.new.tap do |output|
           s3_url = "s3://#{File.join('faked-output-bucket', Shrine.storages[:video_derivatives].prefix.to_s, 'somewhere/hls.m3u8')}"
@@ -57,6 +57,16 @@ RSpec.describe ActiveEncodeStatus, type: :model do
 
       expect(asset.hls_playlist_file).to be_present
       expect(asset.hls_playlist_file.id).to eq("somewhere/hls.m3u8")
+    end
+
+    it "raises on failure" do
+      expect(ActiveEncode::Base).to receive(:find).
+        with(active_encode_status.active_encode_id).
+        and_return(mocked_active_encode_result(state: :failed, encode_error: "mocked failure"))
+
+      expect {
+        active_encode_status.refresh_from_aws
+      }.to raise_error(ActiveEncodeStatus::EncodeFailedError, "Asset: #{asset.friendlier_id}, mocked failure")
     end
   end
 end
