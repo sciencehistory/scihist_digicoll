@@ -111,7 +111,7 @@ class CreateHlsMediaconvertJobService
 
       unique_number = SecureRandom.hex
 
-      path = "/hls/#{asset.id}/#{unique_number}/playlist"
+      path = "/hls/#{asset.id}/#{unique_number}/hls"
 
       if output_storage.prefix.present?
         path = "/#{output_storage.prefix.to_s}#{path}"
