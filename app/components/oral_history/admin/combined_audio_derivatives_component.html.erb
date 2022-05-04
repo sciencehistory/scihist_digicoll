@@ -10,15 +10,15 @@
         <ul>
           <% if combined_m4a_audio.present? %>
             <li>
-              Use the following m4a link as the OHMS Media URL:<br/>
+              Use the following M4A link as the OHMS Media URL:<br/>
               <small>
                 <%= link_to combined_m4a_audio,  combined_m4a_audio %>
               </small>
             </li>
           <% end %>
           <% if combined_mp3_audio.present? # REMOVE_AFTER_MP3_TO_M4A_MIGRATION %>
-            <li>
-              Use the following mp3 link as the OHMS Media URL:<br/>
+            <li class="alert-danger">
+              The following MP3 link will be deleted soon. Click "Generate combined audio derivatives below" to create an M4A; use that instead.<br/>
               <small>
                 <%= link_to combined_mp3_audio,  combined_mp3_audio %>
               </small>
