@@ -37,9 +37,10 @@
     ) do %>
       <% if video_asset.hls_playlist_file.present? %>
         <%= tag "source", src: video_asset.hls_playlist_file.url, type: "application/x-mpegURL" %>
+      <% else %>
+        <%= tag "source", src: video_src_url, type: video_asset.content_type %>
       <% end %>
 
-      <%= tag "source", src: video_src_url, type: video_asset.content_type %>
 
       <p class="vjs-no-js">
         To view this video please enable JavaScript, and consider upgrading to a
