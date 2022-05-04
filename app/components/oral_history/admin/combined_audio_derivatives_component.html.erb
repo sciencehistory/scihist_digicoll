@@ -16,6 +16,14 @@
               </small>
             </li>
           <% end %>
+          <% if combined_mp3_audio.present? # REMOVE_AFTER_MP3_TO_M4A_MIGRATION %>
+            <li>
+              Use the following mp3 link as the OHMS Media URL:<br/>
+              <small>
+                <%= link_to combined_mp3_audio,  combined_mp3_audio %>
+              </small>
+            </li>
+          <% end %>
         </ul>
     <% elsif ! work_available_members? %>
       <p class="alert-info p-3">
