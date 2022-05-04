@@ -28,5 +28,33 @@ describe WorkVideoShowComponent, type: :component do
       expect(page.first("video")).to be_present
     end
   end
+
+  describe "when we have an HLS URL" do
+    # Work with an hls url that doesn't actually point anywhere, but fine,
+    # we just set it to point to a non-existent thing using shrine
+    # internals.
+    let(:work) do
+      create(:video_work, :published).tap do |work|
+        work.representative.hls_playlist_file_attacher.set(
+          VideoHlsUploader.uploaded_file(
+            storage: "video_derivatives",
+            id: "some_path/hls.m3uh"
+          )
+        )
+        work.representative.save!
+      end
+    end
+
+    it "outputs HLS url in video tag" do
+      render_inline described_class.new(work)
+
+      video_element = page.first("video")
+      first_source_element = video_element.first("source")
+
+      expect(first_source_element).to be_present
+      expect(first_source_element["type"]).to eq("application/x-mpegURL")
+      expect(first_source_element["src"]).to eq(work.representative.hls_playlist_file.url(public: true))
+    end
+  end
 end
 
