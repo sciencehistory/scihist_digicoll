@@ -106,7 +106,8 @@ class Asset < Kithe::Asset
 
     unless parsed.host == storage.bucket.name &&
         (storage.prefix.nil? || parsed.path.delete_prefix("/").start_with?(storage.prefix.to_s))
-      raise ArgumentError.new("s3 url argument must be location in :video_derivatives storage, not #{s3_url}")
+      expected_s3_prefix = File.join("s3://", storage.bucket.name, storage.prefix.to_s)
+      raise ArgumentError.new("s3 url argument must be location in :video_derivatives storage at `#{expected_s3_prefix}`, not #{s3_url}")
     end
 
     id = parsed.path.delete_prefix("/")
