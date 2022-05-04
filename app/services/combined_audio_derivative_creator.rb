@@ -34,15 +34,11 @@ class CombinedAudioDerivativeCreator
     if components.length == 0
       return Response.new(errors: "Could not assemble all the components.")
     end
-    output_files = {}
-    # Create the two output files:
-    ['m4a'].each do |format|
-      output_files[format] = output_file(format)
-      ffmpeg_args = args_for_ffmpeg(output_files[format].path)
-      cmd.run(*ffmpeg_args, binmode: true, only_output_on_error: true)
-    end
+    m4a_file = output_file('m4a')
+    ffmpeg_args = args_for_ffmpeg(m4a_file.path)
+    cmd.run(*ffmpeg_args, binmode: true, only_output_on_error: true)
     resp = Response.new
-    resp.m4a_file    = output_files['m4a']
+    resp.m4a_file    = m4a_file
     resp.fingerprint = fingerprint
     resp.start_times = calculate_start_times
     # Before leaving, get rid of the downloaded originals:
