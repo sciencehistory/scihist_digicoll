@@ -35,6 +35,10 @@
               }.to_json
             }
     ) do %>
+      <% if video_asset.hls_playlist_file.present? %>
+        <%= tag "source", src: video_asset.hls_playlist_file.url, type: "application/x-mpegURL" %>
+      <% end %>
+
       <%= tag "source", src: video_src_url, type: video_asset.content_type %>
 
       <p class="vjs-no-js">
