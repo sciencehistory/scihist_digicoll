@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_04_20_175655) do
+ActiveRecord::Schema.define(version: 2022_04_26_162417) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -62,6 +62,20 @@ ActiveRecord::Schema.define(version: 2022_04_20_175655) do
         END;
         $function$
   SQL
+
+  create_table "active_encode_statuses", force: :cascade do |t|
+    t.string "active_encode_id"
+    t.uuid "asset_id"
+    t.string "state"
+    t.text "encode_error"
+    t.integer "percent_complete"
+    t.string "hls_master_playlist_s3_url"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["active_encode_id"], name: "index_active_encode_statuses_on_active_encode_id"
+    t.index ["asset_id"], name: "index_active_encode_statuses_on_asset_id"
+    t.index ["state"], name: "index_active_encode_statuses_on_state"
+  end
 
   create_table "asset_derivative_storage_type_reports", force: :cascade do |t|
     t.jsonb "data_for_report", default: {}

@@ -127,6 +127,15 @@ class Admin::AssetsController < AdminController
     redirect_to edit_admin_work_path(new_child), notice: "Asset promoted to child work #{new_child.title}"
   end
 
+  # requires params[:active_encode_status_id]
+  def refresh_active_encode_status
+    status = ActiveEncodeStatus.find(params[:active_encode_status_id])
+
+    RefreshActiveEncodeStatusJob.perform_later(status)
+
+    redirect_to admin_asset_url(status.asset), notice: "Started refresh for ActiveEncode job #{status.active_encode_id}"
+  end
+
   def work_is_oral_history?
     @asset.parent.genre && @asset.parent.genre.include?('Oral histories')
   end

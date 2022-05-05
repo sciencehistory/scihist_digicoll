@@ -1,5 +1,9 @@
-# S3ConsoleUri.new(asset.file.url(public: true)).console_uri
-# S3ConsoleUri.new(some_uri).console_uri
+#     S3ConsoleUri.new(asset.file.url(public: true)).console_uri
+#     S3ConsoleUri.new(some_uri).console_uri
+#
+# Can also take an s3:// url, which is in fact really more reliable.
+#
+#     S3ConsoleUri.new("s3://bucket-name/path/to/file").console_uri
 #
 #
 # This will return a link that takes admins
@@ -41,7 +45,7 @@ class S3ConsoleUri
     return false unless parsed.host
 
     host_parts = parsed.host.split(".")
-    if host_parts.slice(1, host_parts.length) != %w{s3 amazonaws com}
+    if host_parts.length > 1 && host_parts.slice(1, host_parts.length) != %w{s3 amazonaws com}
       return false
     end
 
