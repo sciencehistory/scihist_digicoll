@@ -13,11 +13,22 @@
         <h1 class="title h6">
           <%= work.title %>
         </h1>
-        <% if combined_mp3_audio_url.present? && combined_derivatives_up_to_date? %>
+        <% if combined_m4a_audio_url.present? && combined_derivatives_up_to_date? %>
           <div class="d-flex" style="align-items: center">
-            <audio controls controlsList="nodownload" data-role="ohms-audio-elem" >
-                <source src="<%= combined_mp3_audio_url%>"  type="audio/mpeg"/>
-                <source src="<%= combined_webm_audio_url%>"  type="audio/webm"/>
+            <audio controls controlslist="nodownload" data-role="ohms-audio-elem">
+              <source src="<%= combined_m4a_audio_url %>" type="audio/mp4">
+            </audio>
+            <% if has_ohms_index? || has_ohms_transcript? %>
+              <div class="pl-3">
+                <button class="btn btn-emphasis btn-sm text-nowrap" data-trigger="ohms-jump-to-text">Jump to text</button>
+              </div>
+            <% end %>
+          </div>
+        <% elsif combined_mp3_audio_url.present? && combined_derivatives_up_to_date? #REMOVE_AFTER_MP3_TO_M4A_MIGRATION %>
+          <div class="d-flex" style="align-items: center">
+            <audio controls controlslist="nodownload" data-role="ohms-audio-elem">
+              <source src="<%= combined_mp3_audio_url%>"  type="audio/mpeg"/>
+              <source src="<%= combined_webm_audio_url%>"  type="audio/webm"/>
             </audio>
             <% if has_ohms_index? || has_ohms_transcript? %>
               <div class="pl-3">
