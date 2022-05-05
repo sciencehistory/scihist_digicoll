@@ -273,6 +273,9 @@ Rails.application.routes.draw do
       end
     end
 
+    # a cheesy way to provide this one-off action
+    put "/active_encode_status/:active_encode_status_id", to: "assets#refresh_active_encode_status", as: "refresh_active_encode_status"
+
     post "/asset_files/:asset_id/check_fixity", to: "assets#check_fixity", as: "check_fixity"
     get "/fixity_report", to: "assets#fixity_report", as: "fixity_report"
     get "/storage_report", to: "storage_report#index", as: "storage_report"

@@ -103,6 +103,20 @@ module ScihistDigicoll
       self.class.aws_credentials.secret_access_key if Rails.env.development?
     }
 
+    # MediaConvert requires a special role to be passed to MediaConvert
+    # jobs, that has access to input/output buckets, and MediaConvert itself.
+    #
+    # https://github.com/aws-samples/aws-media-services-simple-vod-workflow/blob/master/1-IAMandS3/README.md#1-create-an-iam-role-to-use-with-aws-elemental-mediaconvert
+    #
+    # prod/staging roles are probably scihist-digicoll-staging-MediaConvertRole etc,
+    # but should be set in ENV.
+    define_key :aws_mediaconvert_role_arn, default: -> {
+      if lookup(:service_level).nil?
+        # role that only gives access to dev bucket
+        "arn:aws:iam::335460257737:role/scihist-digicoll-DEV-MediaConvertRole"
+      end
+    }
+
     define_key :lockbox_master_key, default: -> {
       # In production, we insist that local_env.yml contain
       # a real 64-bit key; if none is defined, we fail at
@@ -193,6 +207,7 @@ module ScihistDigicoll
     define_key :s3_bucket_originals
     define_key :s3_bucket_originals_video
     define_key :s3_bucket_derivatives
+    define_key :s3_bucket_derivatives_video
     define_key :s3_bucket_uploads
     define_key :s3_bucket_on_demand_derivatives
     define_key :s3_bucket_dzi
@@ -305,6 +320,7 @@ module ScihistDigicoll
     #
     def self.appropriate_shrine_storage(bucket_key:, mode: lookup!(:storage_mode), s3_storage_options: {}, prefix: nil)
       unless %I{s3_bucket_uploads s3_bucket_originals s3_bucket_originals_video s3_bucket_derivatives
+                s3_bucket_derivatives_video
                 s3_bucket_on_demand_derivatives s3_bucket_dzi}.include?(bucket_key)
         raise ArgumentError.new("Unrecognized bucket_key: #{bucket_key}")
       end
@@ -361,6 +377,19 @@ module ScihistDigicoll
     def self.shrine_derivatives_storage
       @shrine_derivatives_storage ||=
         appropriate_shrine_storage( bucket_key: :s3_bucket_derivatives,
+                                    s3_storage_options: {
+                                      public: true,
+                                      upload_options: {
+                                        # derivatives are public and at unique random URLs, so
+                                        # can be cached far-future
+                                        cache_control: "max-age=31536000, public"
+                                      }
+                                    })
+    end
+
+    def self.shrine_video_derivatives_storage
+      @shrine_derivatives_video_storage ||=
+        appropriate_shrine_storage( bucket_key: :s3_bucket_derivatives_video,
                                     s3_storage_options: {
                                       public: true,
                                       upload_options: {
