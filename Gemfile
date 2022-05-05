@@ -26,6 +26,17 @@ gem 'scout_apm'
 gem "blacklight", "~> 7.24.0"
 gem "blacklight_range_limit", "~> 8.0" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
+# Temporarily pointing at active_encode main brancch, until a release AFTER
+# 0.8.2 that has the features we need.
+gem "active_encode", github: "samvera-labs/active_encode"
+
+# these gems are needed for active_encode MediaConvert adapter
+# https://github.com/samvera-labs/active_encode/blob/main/guides/media_convert_adapter.md
+gem "aws-sdk-cloudwatchevents", "~> 1.0"
+gem "aws-sdk-cloudwatchlogs", "~> 1.0"
+gem "aws-sdk-mediaconvert", "~> 1.0"
+gem "aws-sdk-s3", "~> 1.0"
+
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
