@@ -1,0 +1,5 @@
+production:
+  "special_jobs": 2
+
+development:
+  "*": 0
