@@ -510,9 +510,6 @@ module ScihistDigicoll
     define_key :regular_job_worker_count, default: 0
     # Used for generating PDFs or Zip files requested by users on the front end:
     define_key :on_demand_job_worker_count, default: 0
-    # Used (infrequently) by additional job servers whose only purpose is to handle special tasks:
-    define_key :special_job_worker_count, default: 0
-
 
     # SPECIFIC COLLECTION IDS
     # Used to trigger custom controllers/UI for specific known collections
