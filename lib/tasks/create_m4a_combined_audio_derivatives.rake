@@ -3,6 +3,8 @@ namespace :scihist do
     Goes through all the oral histories. Where needed, adds a perform_later
     job to :special_jobs to create m4a audio derivatives for them.
 
+    This does NOT actually do the processing.
+
     bundle exec rake scihist:create_m4a_combined_audio_derivatives
   """
 
@@ -10,13 +12,10 @@ namespace :scihist do
 
     progress_bar = ProgressBar.create(total: Work.where("json_attributes -> 'genre' ?  'Oral histories'").count, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
 
-    # See resque-pool.yml and env.rb for details about
-    # the infrequently-used :special_jobs queue.
-    # 
-    # The SPECIAL_JOB_WORKER_COUNT env variable is guaranteed to be defined,
-    # but is normally set to 0.
+    # Add these jobs to the special_jobs queue
+    # where they can be picked up (only) by special_worker dynos
     #
-    # We will set it to 10 in Heroku to kick off the deriv creation process.
+    # See  config/resque-pool-special-worker.yml .
     queue = :special_jobs
 
     Work.where("json_attributes -> 'genre' ?  'Oral histories'").find_each(batch_size: 10) do |w|

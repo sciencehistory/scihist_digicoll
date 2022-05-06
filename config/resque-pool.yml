@@ -1,3 +1,5 @@
+# Note also the existence of resque-pool-special-worker.yml for special cases.
+
 production:
   # Note: these three settings are
   # *always* defined, with zero as the default.
