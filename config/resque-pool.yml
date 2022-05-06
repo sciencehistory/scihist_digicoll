@@ -13,8 +13,5 @@ production:
   # of RAM, we can't afford too many of them at once (depending on particular host size)
   "on_demand_derivatives,mailers,default": <%= ScihistDigicoll::Env.lookup!(:on_demand_job_worker_count)%>
 
-  # usually 0 workers, can be used for special temporary purposes.
-  "special_jobs": <%= ScihistDigicoll::Env.lookup!(:special_job_worker_count)%>
-
 development:
   "*": 5
