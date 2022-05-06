@@ -1,3 +1,8 @@
+# See also Procfile .
+
+# Most of our redis config is in resque-pool.yml,
+# but we use this queue for big jobs
+# (like creating a bunch of derivatives in parallel)
 production:
   "special_jobs": 2
 
