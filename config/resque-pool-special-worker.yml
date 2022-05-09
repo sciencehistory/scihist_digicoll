@@ -2,9 +2,9 @@
 
 # Most of our redis config is in resque-pool.yml,
 # but we use this queue for big jobs
-# (like creating a bunch of derivatives in parallel)
+# (like creating a bunch of derivatives in parallel).
 production:
-  "special_jobs": 2
+  "special_jobs": <%= ScihistDigicoll::Env.lookup!(:special_job_worker_count)%>
 
 development:
   "*": 0
