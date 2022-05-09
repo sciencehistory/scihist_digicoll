@@ -35,7 +35,9 @@ describe S3ConsoleUri do
 
   describe "with shrine uploaded file" do
     around do |example|
-      Shrine.storages[:test_s3_storage] = Shrine::Storage::S3.new(bucket: "test-bucket")
+      Shrine.storages[:test_s3_storage] = Shrine::Storage::S3.new(
+        bucket: "test-bucket", region: "us-east-1",
+        access_key_id: "fake", secret_access_key: "fake")
       Shrine.storages[:test_non_s3_storage] = Shrine::Storage::Memory.new
 
       example.run
