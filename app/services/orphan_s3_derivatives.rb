@@ -150,21 +150,15 @@ class OrphanS3Derivatives
   end
 
   # Attempts to looks up the oral history work whose c.a.d this is.
-  # If we can't find the work or it's not an oral history, orphan.
-  # If it doesn't have an existing derivative in S3 corresponding to the file, orphan.
+  # If we can't find the work or it's not an oral history: orphan.
+  # If it doesn't have an existing derivative in S3 corresponding to the file: orphan.
   def orphaned_combined_audio_derivative?(derivative_key, shrine_path)
     # find the work
     work_id = derivative_key
     work = Work.where(id: work_id).first
     return true unless work.present? && work.is_oral_history?
 
-    # find the deriv
-    deriv = if (shrine_path.end_with? 'mp3')
-      work.oral_history_content!.combined_audio_mp3
-    else
-      work.oral_history_content!.combined_audio_webm
-    end
-
+    deriv = work.oral_history_content!.combined_audio_m4a
     return false if deriv.present? && deriv.url.end_with?(shrine_path)
 
     # ok, this is an orphaned combined audio deriv.

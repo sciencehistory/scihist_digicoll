@@ -34,9 +34,9 @@ describe "Oral history work", :logged_in_user, queue_adapter: :test do
         FactoryBot.create(:work,
           :with_complete_metadata,
           genre: ["Oral histories"],
-          members: [create(:asset_with_faked_file, :mp3, published: true)]
+          members: [create(:asset_with_faked_file, :m4a, published: true)]
         ).tap do |work|
-          work.oral_history_content!.update(combined_audio_fingerprint: "bad", combined_audio_mp3: StringIO.new("bad"), combined_audio_webm: StringIO.new("bad"))
+          work.oral_history_content!.update(combined_audio_fingerprint: "bad", combined_audio_m4a: StringIO.new("bad"))
         end
       end
 
@@ -51,10 +51,10 @@ describe "Oral history work", :logged_in_user, queue_adapter: :test do
         FactoryBot.create(:work,
           :with_complete_metadata,
           genre: ["Oral histories"],
-          members: [create(:asset_with_faked_file, :mp3, published: true)]
+          members: [create(:asset_with_faked_file, :m4a, published: true)]
         ).tap do |work|
           expected_fingerprint = CombinedAudioDerivativeCreator.new(work).fingerprint
-          work.oral_history_content!.update(combined_audio_fingerprint: expected_fingerprint, combined_audio_mp3: StringIO.new("fake"), combined_audio_webm: StringIO.new("fake"))
+          work.oral_history_content!.update(combined_audio_fingerprint: expected_fingerprint, combined_audio_m4a: StringIO.new("fake"))
         end
       end
 
