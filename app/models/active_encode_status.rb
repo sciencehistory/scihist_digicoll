@@ -45,9 +45,38 @@ class ActiveEncodeStatus < ApplicationRecord
   end
 
   def update_asset_on_completed
-    # let the asset know we have an HLS!
-    asset.hls_playlist_file_as_s3 = self.hls_master_playlist_s3_url
-    asset.save!
+    if asset.nil?
+      clean_up_leftover_files
+    else
+      # let the asset know we have an HLS!
+      asset.hls_playlist_file_as_s3 = self.hls_master_playlist_s3_url
+      asset.save!
+      # trigger exception if asset is actually gone.
+      asset.reload
+    end
+  rescue ActiveRecord::RecordNotFound => e
+    clean_up_leftover_files
+  end
+
+  # the asset was deleted semi-concurrently?  Let's clean up the files that were
+  # created...
+  def clean_up_leftover_files
+    storage = Shrine.storages[:video_derivatives]
+
+    if self.hls_master_playlist_s3_url
+      Rails.logger.error("Deleting leftover HLS files for apparently missing asset ID: #{asset_id}, files at: #{hls_master_playlist_s3_url}")
+
+      uri = URI.parse(self.hls_master_playlist_s3_url)
+      path = uri.path.delete_prefix("/")
+      containing_path = File.dirname(path).chomp("/").concat("/")
+
+      # normalize to storage id for storage prefix
+      if storage.respond_to?(:prefix) && storage.prefix.present?
+        containing_path = containing_path.delete_prefix("#{storage.prefix.to_s}/")
+      end
+
+      storage.delete_prefixed(containing_path)
+    end
   end
 
   class EncodeFailedError < StandardError ; end

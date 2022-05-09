@@ -68,5 +68,23 @@ RSpec.describe ActiveEncodeStatus, type: :model do
         active_encode_status.refresh_from_aws
       }.to raise_error(ActiveEncodeStatus::EncodeFailedError, "Asset: #{asset.friendlier_id}, mocked failure")
     end
+
+    describe "for asset no longer present on completion" do
+      before do
+        Asset.where(id: active_encode_status.asset_id).delete_all
+      end
+
+      it "deletes leftover files" do
+        expect(ActiveEncode::Base).to receive(:find).
+          with(active_encode_status.active_encode_id).
+          and_return(mocked_active_encode_result(state: :completed, percent_complete: 100))
+
+        expect(Shrine.storages[:video_derivatives]).to receive(:delete_prefixed).with("somewhere/")
+        expect(Rails.logger).to receive(:error).with(/^Deleting leftover HLS files for apparently missing asset ID: #{active_encode_status.asset_id}/)
+
+        active_encode_status.refresh_from_aws
+      end
+    end
+
   end
 end
