@@ -12,7 +12,9 @@ class Asset < Kithe::Asset
 
   has_many :fixity_checks, foreign_key: "asset_id", inverse_of: "asset", dependent: :destroy
 
-  has_many :active_encode_statuses, foreign_key: "asset_id", inverse_of: "asset", dependent: :nullify
+  # dependent is intentionally nil, to leave asset_id in the status record for
+  # logging purposes.
+  has_many :active_encode_statuses, foreign_key: "asset_id", inverse_of: "asset", dependent: nil
 
   set_shrine_uploader(AssetUploader)
 
