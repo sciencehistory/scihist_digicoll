@@ -132,7 +132,7 @@ describe FixityCheck do
       end
 
       it "returns what we think is a good direct link to AWS console" do
-        expect(fixity_check.checked_uri_in_s3_console).to eq "https://s3.console.aws.amazon.com/s3/buckets/some-bucket/asset/b2c64027-7124-4388-9a32-57dba88156ba/?region=us-east-1&tab=overview&prefixSearch=f9a99647faa471f5b34b77316c0fbda5.tif"
+        expect(fixity_check.checked_uri_in_s3_console).to eq "https://s3.console.aws.amazon.com/s3/buckets/some-bucket?region=us-east-1&prefix=asset/b2c64027-7124-4388-9a32-57dba88156ba/&prefixSearch=f9a99647faa471f5b34b77316c0fbda5.tif"
       end
     end
 

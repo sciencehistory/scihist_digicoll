@@ -49,42 +49,40 @@
     <% end %>
 
     <% if @asset.content_type&.start_with?("video/") && @asset.active_encode_statuses.present? %>
-    <h3 class="mt-4 mb-4">HLS Encode Jobs</h3>
-    <% @asset.active_encode_statuses.order(updated_at: :desc).each do |status| %>
-      <dl class='row'>
-        <dt class="col-sm-4">started</dt><dd class="col-sm-8"><%= l status.created_at, format: :admin %></dd>
-        <dt class="col-sm-4">last updated</dt><dd class="col-sm-8"><%= l status.updated_at, format: :admin %></dd>
-        <dt class="col-sm-4">state</dt>
-          <dd class="col-sm-8">
-            <%= status.state %>
-            <% if status.running? && status.percent_complete.to_i > 0 %>
-              (<%= status.percent_complete  %>%)
-            <% end %>
-          </dd>
-        <dt class="col-sm-4">job id</dt>
-          <dd class="col-sm-8">
-            <%= status.active_encode_id %><br>
-            <%= link_to "[In AWS MediaConvert Console]", "https://us-east-1.console.aws.amazon.com/mediaconvert/home?#/jobs/summary/#{ status.active_encode_id }", target: "_blank" %>
-          </dd>
-        <% if status.encode_error.present? %>
-          <dt>Error</dt>
-          <dd><code><%= status.encode_error %></code></dd>
+      <h3 class="mt-4 mb-4">HLS Encode Jobs</h3>
+      <% @asset.active_encode_statuses.order(updated_at: :desc).each do |status| %>
+        <dl class='row'>
+          <dt class="col-sm-4">started</dt><dd class="col-sm-8"><%= l status.created_at, format: :admin %></dd>
+          <dt class="col-sm-4">last updated</dt><dd class="col-sm-8"><%= l status.updated_at, format: :admin %></dd>
+          <dt class="col-sm-4">state</dt>
+            <dd class="col-sm-8">
+              <%= status.state %>
+              <% if status.running? && status.percent_complete.to_i > 0 %>
+                (<%= status.percent_complete  %>%)
+              <% end %>
+            </dd>
+          <dt class="col-sm-4">job id</dt>
+            <dd class="col-sm-8">
+              <%= status.active_encode_id %><br>
+              <%= link_to "[In AWS MediaConvert Console]", "https://us-east-1.console.aws.amazon.com/mediaconvert/home?#/jobs/summary/#{ status.active_encode_id }", target: "_blank" %>
+            </dd>
+          <% if status.encode_error.present? %>
+            <dt>Error</dt>
+            <dd><code><%= status.encode_error %></code></dd>
+          <% end %>
+          <% if status.hls_master_playlist_s3_url.present? %>
+            <dt class="col-sm-4">.m3u8 playlist</dt>
+            <dd class="col-sm-8">
+              <%= text_field_tag "", status.hls_master_playlist_s3_url, readonly: true, style: "width: 100%" %><br>
+              <%= link_to "[In AWS S3 Console]", S3ConsoleUri.from_uri(status.hls_master_playlist_s3_url).console_uri, target: "_blank" %>
+            </dd>
+          <% end %>
+        </dl>
+        <% if status.running? %>
+          <%= link_to "Refresh status", admin_refresh_active_encode_status_path(status.id), method: "put", class: "btn btn-primary btn-sm" %>
         <% end %>
-        <% if status.hls_master_playlist_s3_url.present? %>
-          <dt class="col-sm-4">.m3u8 playlist</dt>
-          <dd class="col-sm-8">
-            <%= text_field_tag "", status.hls_master_playlist_s3_url, readonly: true, style: "width: 100%" %><br>
-            <%= link_to "[In AWS S3 Console]", S3ConsoleUri.new(status.hls_master_playlist_s3_url).console_uri, target: "_blank" %>
-          </dd>
-        <% end %>
-      </dl>
-      <% if status.running? %>
-        <%= link_to "Refresh status", admin_refresh_active_encode_status_path(status.id), method: "put", class: "btn btn-primary btn-sm" %>
+        <hr>
       <% end %>
-      <hr>
-    <% end %>
-
-
     <% end %>
 
   </div>
@@ -132,7 +130,7 @@
 
       <%if @asset.stored? %>
         <dt class="col-sm-4">File in s3</dt>
-        <dd class="col-sm-8"><%= link_to @asset.file.url(public: true).split('/').last, S3ConsoleUri.new(@asset.file.url(public: true)).console_uri %></dd>
+        <dd class="col-sm-8"><%= link_to @asset.file.url(public: true).split('/').last, S3ConsoleUri.from_shrine_uploaded_file(@asset.file).console_uri %></dd>
 
         <dt class="col-sm-4">Stored in S3 bucket</dt>
         <dd class="col-sm-8"><%= @asset.file.storage.try(:bucket).try(:name) || "UNKNOWN" %></dd>
