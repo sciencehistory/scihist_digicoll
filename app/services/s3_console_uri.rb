@@ -1,60 +1,115 @@
-# S3ConsoleUri.new(asset.file.url(public: true)).console_uri
-# S3ConsoleUri.new(some_uri).console_uri
+# Generates a URL to AWS console to look at a file in S3. Currently
+# will send you to parent directory, with a search for file.
 #
+# If we can't find an S3 bucket to use, will silently return a nil url!
 #
-# This will return a link that takes admins
-# directly to a AWS S3 console containing the file
-# and various s3 bells and whistles.
-# Initially written as part of the fixity checking code,
-# but useful in other contexts as well.
+#     S3ConsoleUri.new(bucket: "bucket-name", keypath: "something/file.jpg")
+#
+# You can instead send a http/https URI, but it needs to have the bucket
+# identifable from *.s3.amazonaws.com hostname -- it won't work if it's using
+# cloudfront or other CDN hostname.
+#
+#     S3ConsoleUri.from_uri(asset.file.url(public: true)).console_uri
+#     S3ConsoleUri.from_uri(some_uri).console_uri
+#
+# Can also take an s3:// url, which is in fact really more reliable.
+#
+#     S3ConsoleUri.new("s3://bucket-name/path/to/file").console_uri
+#
+# You can also send a shrine UploadedFile object, using an S3 storage:
+#
+#     S3ConsoleUri.from_shrine_uploaded_file(some_model.some_file).console_uri
+#
 class S3ConsoleUri
+  attr_reader :bucket, :keypath
 
-  # Kind of hacky and fragile, will break
-  # if AWS changes their console URLs, or if our
-  # assumptions weren't quite right in other ways.
+  # if bucket is nil, we will not be able to generate URLs.
+  def initialize(bucket:, keypath:)
+    @bucket = bucket
+    @keypath = keypath
+  end
+
+  # can we even produce one? if this returns false,
+  # then #console_uri will be nil.
+  def has_console_uri?
+    !! (bucket && keypath)
+  end
+
+  # Kind of hacky and fragile attempt to link directly to S3 console.
+  #
+  # If we have a nil bucket name (couldn't find S3 bucket), will silently
+  # return nil.
   def console_uri
     @checked_uri_in_s3_console ||= begin
-      region = ScihistDigicoll::Env.lookup(:aws_region)
-      parts = uri_components
-      if parts
-        "https://s3.console.aws.amazon.com/s3/buckets/#{parts[:bucket]}/#{parts[:key_path]}/?region=#{region}&tab=overview&prefixSearch=#{parts[:end_key]}"
+      if has_console_uri?
+        region = ScihistDigicoll::Env.lookup(:aws_region)
+
+        key_path_components = keypath.delete_prefix("/").split("/")
+
+        base_key_path = key_path_components.slice(0, key_path_components.length - 1)&.join("/").chomp("/").concat("/")
+        end_key = key_path_components.last
+
+        "https://s3.console.aws.amazon.com/s3/buckets/#{bucket}?region=#{region}&prefix=#{base_key_path}&prefixSearch=#{end_key}"
       else
         nil
       end
     end
   end
 
-  def initialize(uri)
-    raise ArgumentError.new("Please pass in a public S3 URI.") if uri.nil?
-    @uri = uri
+  # Could be a public http(s): uri with standard AWS bucket address we can
+  # detect, or an s3:// uri
+  #
+  # If an http(s) URI, needs to be *.s3.amazonaws.com to have identifiable
+  # bucket! This is soft-deprecated, better to use an s3:// URI, or
+  # a shrine UploadedFile object in .from_shrine_uploaded_file below.
+  def self.from_uri(uri)
+    raise ArgumentError.new("Please pass in an S3 URI.") if uri.nil?
+    components = uri_components(uri)
+
+    new(bucket: components[:bucket], keypath: components[:keypath])
   end
 
-  # returns false if we do not think @uri looks like S3.
-  # returns a hash with keys :bucket, :key_path, :end_path
+  # A Shrine::UploadedFile, for instance from a shrine attachment or
+  # derivative method.
   #
-  # If we later use a custom CNAME for S3 buckets,
-  # may have to adjust this, it assumes
-  # it can recognize S3 as *.s3.amazonaws.com)
-  def uri_components
-    parsed = URI.parse(@uri)
+  # If storage doesn't look like S3, may return a nil bucket.
+  def self.from_shrine_uploaded_file(uploaded_file)
+    storage = uploaded_file.storage
+    bucket = storage && storage.respond_to?(:bucket) && storage.bucket.name
 
-    return false unless parsed.host
-
-    host_parts = parsed.host.split(".")
-    if host_parts.slice(1, host_parts.length) != %w{s3 amazonaws com}
-      return false
+    if storage.respond_to?(:prefix)
+      keypath = File.join(storage.prefix.to_s, uploaded_file.id)
+    else
+      keypath = uploaded_file.id
     end
 
-    path_components = parsed.path.split("/")
-    key_path = path_components.slice(1, path_components.length - 2)&.join("/")
-    end_key = path_components.last
+    new(bucket: bucket, keypath: keypath)
+  end
+
+
+  private
+
+
+  # returns a hash with keys :bucket, :key_path, :end_path
+  #
+  # If we can't find all parts, hash may be missing some or all keys. This
+  # includes if it has a host that isn't identifiable as *.s3.amazonaws.com --
+  def self.uri_components(uri)
+    parsed = URI.parse(uri)
+    keypath = parsed.path.delete_prefix("/")
+
+    host_parts = parsed.host.present? && parsed.host.split(".")
+    if !host_parts || (host_parts.length > 1 && host_parts.slice(1, host_parts.length) != %w{s3 amazonaws com})
+      # we don't have a host, or don't have one that has an identifiable S3 bucket
+      return { keypath: keypath }
+    end
 
     {
       bucket: host_parts.first,
-      key_path: key_path,
-      end_key: end_key
+      keypath: keypath
+
     }
   rescue URI::InvalidURIError
-    false
+    {}
   end
 end

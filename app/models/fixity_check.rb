@@ -21,6 +21,6 @@ class FixityCheck < ApplicationRecord
   end
 
   def checked_uri_in_s3_console
-    @checked_uri_in_s3_console ||= S3ConsoleUri.new(checked_uri).console_uri
+    @checked_uri_in_s3_console ||= S3ConsoleUri.from_uri(checked_uri).console_uri
   end
 end
