@@ -29,8 +29,7 @@ describe OrphanS3Derivatives do
   end
 
   let(:work_with_oral_history_content) { create(:oral_history_work) }
-  let(:mp3_path) { Rails.root + "spec/test_support/audio/ice_cubes.mp3" }
-  let(:webm_path) { Rails.root + "spec/test_support/audio/smallest_webm.webm" }
+  let(:m4a_path) { Rails.root + "spec/test_support/audio/5-seconds-of-silence.m4a" }
 
   let(:image_deriv_file_paths) do
     [
@@ -64,22 +63,19 @@ describe OrphanS3Derivatives do
 
   let(:combined_audio_file_paths) do
     [
-      "combined_audio_derivatives/#{work_with_oral_history_content.id}/#{work_with_oral_history_content.oral_history_content!.combined_audio_mp3.id.split("/").last}",
-      "combined_audio_derivatives/#{work_with_oral_history_content.id}/#{work_with_oral_history_content.oral_history_content!.combined_audio_webm.id.split("/").last}",
+      "combined_audio_derivatives/#{work_with_oral_history_content.id}/#{work_with_oral_history_content.oral_history_content!.combined_audio_m4a.id.split("/").last}"
     ]
   end
 
   let(:missing_oh_work_file_paths) do
     [
-      "combined_audio_derivatives/missing_work_id/stale_combined_derivative.mp3",
-      "combined_audio_derivatives/missing_work_id/stale_combined_derivative.mpeg"
+      "combined_audio_derivatives/missing_work_id/stale_combined_derivative.m4a"
     ]
   end
 
   let(:stale_combined_audio_file_paths) do
     [
-      "combined_audio_derivatives/#{work_with_oral_history_content.id}/combined_stale.mp3",
-      "combined_audio_derivatives/#{work_with_oral_history_content.id}/combined_stale.webm",
+      "combined_audio_derivatives/#{work_with_oral_history_content.id}/combined_stale.m4a"
     ]
   end
 
@@ -95,8 +91,7 @@ describe OrphanS3Derivatives do
   end
 
   before do
-    work_with_oral_history_content.oral_history_content.set_combined_audio_mp3!( File.open(mp3_path ))
-    work_with_oral_history_content.oral_history_content.set_combined_audio_webm!(File.open(webm_path))
+    work_with_oral_history_content.oral_history_content.set_combined_audio_m4a!( File.open(m4a_path ))
     allow_any_instance_of(S3PathIterator).to receive(:s3_client).
       and_return(AwsHelpers::MockS3Client.new(paths: file_paths).client)
     allow_any_instance_of(S3PathIterator).to receive(:s3_bucket_name).and_return('arbitrary string')
@@ -156,7 +151,7 @@ describe OrphanS3Derivatives do
     end
     it "checks the derivs" do
       orphan_checker.report_orphans
-      expect(orphan_checker.files_checked).to eq 2
+      expect(orphan_checker.files_checked).to eq 1
       expect(orphan_checker.orphans_found).to eq 0
     end
     it "deletes stale derivatives" do
@@ -171,12 +166,12 @@ describe OrphanS3Derivatives do
     end
     it "checks the derivs" do
       orphan_checker.report_orphans
-      expect(orphan_checker.files_checked).to eq 2
-      expect(orphan_checker.orphans_found).to eq 2
+      expect(orphan_checker.files_checked).to eq 1
+      expect(orphan_checker.orphans_found).to eq 1
     end
     it "deletes stale derivatives" do
       orphan_checker.delete_orphans
-      expect(orphan_checker.delete_count).to eq 2
+      expect(orphan_checker.delete_count).to eq 1
     end
   end
 
@@ -186,12 +181,12 @@ describe OrphanS3Derivatives do
     end
     it "checks the derivs" do
       orphan_checker.report_orphans
-      expect(orphan_checker.files_checked).to eq 2
-      expect(orphan_checker.orphans_found).to eq 2
+      expect(orphan_checker.files_checked).to eq 1
+      expect(orphan_checker.orphans_found).to eq 1
     end
     it "deletes stale derivatives" do
       orphan_checker.delete_orphans
-      expect(orphan_checker.delete_count).to eq 2
+      expect(orphan_checker.delete_count).to eq 1
     end
   end
 

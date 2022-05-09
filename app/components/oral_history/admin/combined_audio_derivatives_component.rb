@@ -23,18 +23,18 @@ module OralHistory
         @work_available_members_count ||= CombinedAudioDerivativeCreator.new(work).available_members_count
       end
 
-      def combined_mp3_audio
+      def combined_m4a_audio
+        return nil unless work.is_oral_history?
+        return nil unless work_available_members?
+        oh_content = work.oral_history_content!
+        oh_content.combined_audio_m4a&.url(public:true)
+      end
+
+      def combined_mp3_audio # REMOVE_AFTER_MP3_TO_M4A_MIGRATION
         return nil unless work.is_oral_history?
         return nil unless work_available_members?
         oh_content = work.oral_history_content!
         oh_content.combined_audio_mp3&.url(public:true)
-      end
-
-      def combined_webm_audio
-        return nil unless work.is_oral_history?
-        return nil unless work_available_members?
-        oh_content = work.oral_history_content!
-        oh_content.combined_audio_webm&.url(public:true)
       end
 
       def combined_audio_fingerprint

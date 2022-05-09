@@ -219,13 +219,13 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       let!(:audio_asset_1)  { create(:asset, :inline_promoted_file,
           position: 1,
           title: "Audio asset 1",
-          file: File.open((Rails.root + "spec/test_support/audio/ice_cubes.mp3"))
+          file: File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.mp3"))
         )
       }
       let!(:audio_asset_2)  { create(:asset, :inline_promoted_file,
           position: 2,
           title: "Audio asset 2",
-          file: File.open((Rails.root + "spec/test_support/audio/double_ice_cubes.mp3"))
+          file: File.open((Rails.root + "spec/test_support/audio/10-seconds-of-silence.mp3"))
         )
       }
       let!(:oral_history) { FactoryBot.create(
