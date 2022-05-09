@@ -36,7 +36,7 @@
       <ul>
         <% @report.orphaned_originals_sample.each do |url|%>
           <li>
-            <%= link_to display_s3_url(url, storage: Shrine.storages[:store]), S3ConsoleUri.new(url).console_uri %>
+            <%= link_to display_s3_url(url, storage: Shrine.storages[:store]), S3ConsoleUri.from_uri(url).console_uri %>
           </li>
         <% end %>
         <% if @report.orphaned_originals_count > @report.orphaned_originals_sample.length %>
@@ -66,7 +66,7 @@
       <ul>
         <% @report.orphaned_public_derivatives_sample.each do |url|%>
           <li>
-            <%= link_to display_s3_url(url, storage: Shrine.storages[:kithe_derivatives]), S3ConsoleUri.new(url).console_uri %>
+            <%= link_to display_s3_url(url, storage: Shrine.storages[:kithe_derivatives]), S3ConsoleUri.from_uri(url).console_uri %>
           </li>
         <% end %>
         <% if @report.orphaned_public_derivatives_count > @report.orphaned_public_derivatives_sample.length %>
@@ -97,7 +97,7 @@
       <ul>
         <% @report.orphaned_restricted_derivatives_sample.each_with_index do |url, i|%>
           <li>
-            <%= link_to display_s3_url(url, storage: Shrine.storages[:restricted_kithe_derivatives]), S3ConsoleUri.new(url).console_uri %>
+            <%= link_to display_s3_url(url, storage: Shrine.storages[:restricted_kithe_derivatives]), S3ConsoleUri.from_uri(url).console_uri %>
           </li>
         <% end %>
         <% if @report.orphaned_restricted_derivatives_count > @report.orphaned_restricted_derivatives_sample.length %>
@@ -128,7 +128,7 @@
       <ul>
         <% @report.orphaned_dzi_sample.each_with_index do |url, i|%>
           <li>
-            <%= link_to display_s3_url(url, storage: Shrine.storages[:dzi_storage]), S3ConsoleUri.new(url).console_uri %>
+            <%= link_to display_s3_url(url, storage: Shrine.storages[:dzi_storage]), S3ConsoleUri.from_uri(url).console_uri %>
           </li>
         <% end %>
         <% if @report.orphaned_dzi_count > @report.orphaned_dzi_sample.length %>
