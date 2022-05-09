@@ -16,10 +16,8 @@ class CreateCombinedAudioDerivativesJob < ApplicationJob
     logger.debug("#{self.class}: Generation finished, uploading to S3...")
 
     # Upload to s3, then unlink local files:
-    @sidecar.set_combined_audio_mp3!(deriv_info.mp3_file)
-    deriv_info.mp3_file.unlink
-    @sidecar.set_combined_audio_webm!(deriv_info.webm_file)
-    deriv_info.webm_file.unlink
+    @sidecar.set_combined_audio_m4a!(deriv_info.m4a_file)
+    deriv_info.m4a_file.unlink
     # Update fingerprint and metadata:
     @sidecar.combined_audio_fingerprint = deriv_info.fingerprint
     @sidecar.combined_audio_component_metadata = { start_times: deriv_info.start_times }
