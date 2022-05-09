@@ -60,8 +60,9 @@ class S3ConsoleUri
   # detect, or an s3:// uri
   #
   # If an http(s) URI, needs to be *.s3.amazonaws.com to have identifiable
-  # bucket! This is soft-deprecated, better to use an s3:// URI, or
-  # a shrine UploadedFile object in .from_shrine_uploaded_file below.
+  # bucket! This will not work if it's a CDN url etc, and is soft-deprecated.
+  # Better to use an s3:// URI, or a shrine UploadedFile object in
+  # .from_shrine_uploaded_file below.
   def self.from_uri(uri)
     raise ArgumentError.new("Please pass in an S3 URI.") if uri.nil?
     components = uri_components(uri)
