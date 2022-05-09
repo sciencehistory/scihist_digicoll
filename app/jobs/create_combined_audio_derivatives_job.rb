@@ -1,7 +1,8 @@
 class CreateCombinedAudioDerivativesJob < ApplicationJob
 
-
   def perform(work)
+    logger.info("#{self.class}: Starting #{work.title}.")
+
     deriv_creator = CombinedAudioDerivativeCreator.new(work, logger: logger)
     return unless deriv_creator.available_members?
     @sidecar = work.oral_history_content!
@@ -23,6 +24,8 @@ class CreateCombinedAudioDerivativesJob < ApplicationJob
     @sidecar.combined_audio_component_metadata = { start_times: deriv_info.start_times }
     @sidecar.combined_audio_derivatives_job_status = 'succeeded'
     @sidecar.save!
+
+    logger.info("#{self.class}: Done with #{work.title}.")
   end
 
   rescue_from(StandardError) do |exception|
