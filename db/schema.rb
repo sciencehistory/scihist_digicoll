@@ -216,6 +216,7 @@ ActiveRecord::Schema.define(version: 2022_04_26_162417) do
     t.uuid "work_id", null: false
     t.jsonb "combined_audio_mp3_data"
     t.jsonb "combined_audio_webm_data"
+    t.jsonb "combined_audio_m4a_data"
     t.string "combined_audio_fingerprint"
     t.jsonb "combined_audio_component_metadata"
     t.text "ohms_xml_text"
