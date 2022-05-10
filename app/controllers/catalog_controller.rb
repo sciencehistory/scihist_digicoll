@@ -295,7 +295,7 @@ class CatalogController < ApplicationController
     config.add_facet_field "subject_facet", label: "Subject", limit: 5
     config.add_facet_field "creator_facet", label: "Creator", limit: 5
     config.add_facet_field "genre_facet", label: "Genre", limit: 5
-    config.add_facet_field "format_facet", label: "Format", limit: 5
+    config.add_facet_field "format_facet", label: "Format", limit: 10
     config.add_facet_field "medium_facet", label: "Medium", limit: 5
     config.add_facet_field 'place_facet', label: "Place", limit: 5
     config.add_facet_field 'language_facet', label: "Language", limit: 5
