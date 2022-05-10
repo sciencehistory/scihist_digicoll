@@ -208,6 +208,7 @@ module ScihistDigicoll
     define_key :s3_bucket_originals_video
     define_key :s3_bucket_derivatives
     define_key :s3_bucket_derivatives_video
+    define_key :s3_bucket_derivatives_video_host # Cloudfront hostname for bucket
     define_key :s3_bucket_uploads
     define_key :s3_bucket_on_demand_derivatives
     define_key :s3_bucket_dzi
@@ -317,8 +318,27 @@ module ScihistDigicoll
     #        }
     #      })
     #
+    # @param bucket_key [String] required. in `production` mode this is the bucket name, otherwise
+    #                            it becomes part of the prefix location.
     #
-    def self.appropriate_shrine_storage(bucket_key:, mode: lookup!(:storage_mode), s3_storage_options: {}, prefix: nil)
+    # @param prefix [String] prefix passed to shrine storage, a "directory" within the
+    #                        storage. for dev_s3 and dev_file modes combined with
+    #                        other pre-prefix.
+    #
+    # @param host [String] used only for `production` S3 mode, passed to Shrine storage as
+    #                      'host' param, used for cloudfront CDN and/or other CNAME, alternate
+    #                      host used to access S3 bucket.
+    #
+    # @param s3_storage_options [Hash] passed directly to Shrine storage for S3 modes, additional
+    #                                  arbitrary options. Can override other defaults or params.
+    #
+    # @param mode: [String] One of `production` (separate s3 buckets), `dev_s3` (single
+    #                       shared multi-person s3 bucket), or `dev_file` (local
+    #                       file system). Normally left unset, it will default to
+    #                       env key :storage_mode, which is what you want it to do.
+    #
+    def self.appropriate_shrine_storage(bucket_key:, mode: lookup!(:storage_mode), prefix: nil,
+                                        host: nil, s3_storage_options: {} )
       unless %I{s3_bucket_uploads s3_bucket_originals s3_bucket_originals_video s3_bucket_derivatives
                 s3_bucket_derivatives_video
                 s3_bucket_on_demand_derivatives s3_bucket_dzi}.include?(bucket_key)
@@ -342,6 +362,7 @@ module ScihistDigicoll
       elsif mode == "production"
         FasterS3Url::Shrine::Storage.new(**{
           bucket:            lookup!(bucket_key),
+          host:              host,
           prefix:            prefix,
           access_key_id:     lookup!(:aws_access_key_id),
           secret_access_key: lookup!(:aws_secret_access_key),
@@ -388,6 +409,7 @@ module ScihistDigicoll
     def self.shrine_video_derivatives_storage
       @shrine_derivatives_video_storage ||=
         appropriate_shrine_storage( bucket_key: :s3_bucket_derivatives_video,
+                                    host: lookup(:s3_bucket_derivatives_video_host),
                                     s3_storage_options: {
                                       public: true,
                                       upload_options: {
