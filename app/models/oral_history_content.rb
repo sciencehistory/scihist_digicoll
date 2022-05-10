@@ -45,11 +45,6 @@ class OralHistoryContent < ApplicationRecord
   has_and_belongs_to_many :interviewer_profiles
   has_and_belongs_to_many :interviewee_biographies
 
-  # REMOVE_AFTER_MP3_TO_M4A_MIGRATION
-  include CombinedAudioUploader::Attachment.new(:combined_audio_mp3, store: :combined_audio_derivatives)
-  # REMOVE_AFTER_MP3_TO_M4A_MIGRATION
-  include CombinedAudioUploader::Attachment.new(:combined_audio_webm, store: :combined_audio_derivatives)
-
   include CombinedAudioUploader::Attachment.new(:combined_audio_m4a, store: :combined_audio_derivatives)
 
   enum combined_audio_derivatives_job_status: {
