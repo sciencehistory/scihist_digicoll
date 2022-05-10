@@ -8,10 +8,6 @@ module OralHistory
       :m4a_audio_download_filename, :display_m4a_audio_size,
       to: :combined_audio_derivatives, prefix: "combined"
 
-    # REMOVE_AFTER_MP3_TO_M4A_MIGRATION
-    delegate :mp3_audio_url, :mp3_audio_download_url, :mp3_audio_download_filename,
-      :display_mp3_audio_size, to: :combined_audio_derivatives, prefix: "combined"
-
     attr_reader :decorator, :work, :combined_audio_derivatives
 
     # TODO decorator is a WIP on the path to a refactor

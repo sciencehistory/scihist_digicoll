@@ -4,9 +4,6 @@
 class WorkOhAudioShowComponent < ApplicationComponent
   delegate :construct_page_title, :current_user, to: :helpers
 
-  #REMOVE_AFTER_MP3_TO_M4A_MIGRATION
-  delegate :mp3_audio_url, :webm_audio_url, to: :combined_audio_derivatives, prefix: "combined"
-
   delegate  :m4a_audio_url, :derivatives_up_to_date?, to: :combined_audio_derivatives, prefix: "combined"
 
   attr_reader :work, :combined_audio_derivatives
