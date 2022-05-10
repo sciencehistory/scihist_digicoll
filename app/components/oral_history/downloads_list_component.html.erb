@@ -42,24 +42,6 @@
   </div>
 <% end %>
 
-<% if combined_mp3_audio_url.present? && combined_derivatives_up_to_date? && combined_derivatives_up_to_date? #REMOVE_AFTER_MP3_TO_M4A_MIGRATION %>
-  <div class="combined-audio-download-links">
-    <div class="combined-audio-download-icon-container">
-      <a href="<%= combined_mp3_audio_download_url %>"
-        data-analytics-category="Work"
-        data-analytics-action="download_combined_audio_derivatives"
-        data-analytics-label="<%= work.friendlier_id %>"
-        >
-        <i class="fa fa-download" aria-hidden="true"></i>
-        Web-quality MP3
-      </a>
-    </div>
-    <div class="combined-audio-download-link-size">
-      <small><%= combined_display_mp3_audio_size %></small>
-    </div>
-  </div>
-<% end %>
-
 
 <h2 class="attribute-sub-head sound-file-header">
   <% if audio_members.count > 1 %>
