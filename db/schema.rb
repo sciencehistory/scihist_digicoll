@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_04_26_162417) do
+ActiveRecord::Schema.define(version: 2022_05_10_192754) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -214,8 +214,6 @@ ActiveRecord::Schema.define(version: 2022_04_26_162417) do
 
   create_table "oral_history_content", force: :cascade do |t|
     t.uuid "work_id", null: false
-    t.jsonb "combined_audio_mp3_data"
-    t.jsonb "combined_audio_webm_data"
     t.jsonb "combined_audio_m4a_data"
     t.string "combined_audio_fingerprint"
     t.jsonb "combined_audio_component_metadata"
