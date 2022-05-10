@@ -30,13 +30,6 @@ module OralHistory
         oh_content.combined_audio_m4a&.url(public:true)
       end
 
-      def combined_mp3_audio # REMOVE_AFTER_MP3_TO_M4A_MIGRATION
-        return nil unless work.is_oral_history?
-        return nil unless work_available_members?
-        oh_content = work.oral_history_content!
-        oh_content.combined_audio_mp3&.url(public:true)
-      end
-
       def combined_audio_fingerprint
         return nil unless work.is_oral_history?
         work.oral_history_content!.combined_audio_fingerprint
