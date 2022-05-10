@@ -357,9 +357,7 @@ module ScihistDigicoll
       @shrine_cache_storage ||=
         # special handling with "web" prefix, I forget why.
         appropriate_shrine_storage( bucket_key: :s3_bucket_uploads,
-                                    s3_storage_options: {
-                                      prefix: "web"
-                                    })
+                                    prefix: "web")
     end
 
     def self.shrine_store_storage
