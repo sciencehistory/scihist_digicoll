@@ -12,9 +12,19 @@ class Asset < Kithe::Asset
 
   has_many :fixity_checks, foreign_key: "asset_id", inverse_of: "asset", dependent: :destroy
 
-  has_many :active_encode_statuses, foreign_key: "asset_id", inverse_of: "asset", dependent: :nullify
+  # dependent is intentionally nil, to leave asset_id in the status record for
+  # logging purposes.
+  has_many :active_encode_statuses, foreign_key: "asset_id", inverse_of: "asset", dependent: nil
 
   set_shrine_uploader(AssetUploader)
+
+  # We are doing a weird thing with shrine making it use an attr_json attribute instead
+  # of a db column. We 1) create the `attr_json`, then 2) in the shrine attachment we tell it
+  # column_serializer:nil tells shrine not to serialize the JSON, let
+  # attr_json take care of that.
+  attr_json :hls_playlist_file_data, :json
+  include VideoHlsUploader::Attachment(:hls_playlist_file, store: :video_derivatives, column_serializer: nil)
+
 
   THUMB_WIDTHS = AssetUploader::THUMB_WIDTHS
   IMAGE_DOWNLOAD_WIDTHS = AssetUploader::IMAGE_DOWNLOAD_WIDTHS
@@ -71,6 +81,49 @@ class Asset < Kithe::Asset
   #     asset.dzi_file.delete # normally handled by automatic lifecycle hooks
   def dzi_file
     @dzi_file ||= DziFiles.new(self)
+  end
+
+  # our hls_playlist_file attachment is usually created by AWS MediaConvert,
+  # then we want to save the location of the already existing file in the
+  # shrine attachment.
+  #
+  # @param s3_url [String] `s3://` url that must reference a location
+  #   in shrine :video_derivatives storage, or you'll get an ArgumentError
+  #
+  # @example
+  #     asset.hls_playlist_file_as_s3 = "s3://scihist-digicoll-staging-derivatives-video/path/to/playlist.m3u8"
+  #
+  def hls_playlist_file_as_s3=(s3_url)
+    storage = Shrine.storages[:video_derivatives]
+
+    unless storage.respond_to?(:bucket)
+      raise TypeError.new("this method is only intended for use with a :video_derivatives storage that is s3, but is #{storage.class}")
+    end
+
+    parsed = URI.parse(s3_url)
+
+    unless parsed.scheme == "s3"
+      raise ArgumentError.new("argument must be an s3:// url not #{s3_url}")
+    end
+
+    unless parsed.host == storage.bucket.name &&
+        (storage.prefix.nil? || parsed.path.delete_prefix("/").start_with?(storage.prefix.to_s))
+      expected_s3_prefix = File.join("s3://", storage.bucket.name, storage.prefix.to_s)
+      raise ArgumentError.new("s3 url argument must be location in :video_derivatives storage at `#{expected_s3_prefix}`, not #{s3_url}")
+    end
+
+    id = parsed.path.delete_prefix("/")
+    id = id.delete_prefix("#{storage.prefix.to_s}/") if storage.prefix
+
+    # Use some a bit esoteric shrine API to set location directly,
+    # triggering any necessary shrine lifecycle management (like deleting
+    # old replaced file(s))
+    hls_playlist_file_attacher.change(
+      hls_playlist_file_attacher.uploaded_file(
+        storage: :video_derivatives,
+        id: id
+      )
+    )
   end
 
   # OVERRIDE of standard Kithe update index, to:

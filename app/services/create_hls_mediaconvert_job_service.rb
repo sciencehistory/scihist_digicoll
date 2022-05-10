@@ -56,13 +56,21 @@ class CreateHlsMediaconvertJobService
   end
 
   def call
-    result = ActiveEncode::Base.create(input_s3_url,
-      {
-        destination: output_s3_destination,
-        use_original_url: true,
-        outputs: mediaconvert_outputs_arg
-      }
-    )
+    options = {
+      destination: output_s3_destination,
+      use_original_url: true,
+      outputs: mediaconvert_outputs_arg
+    }
+
+    if ScihistDigicoll::Env.lookup(:storage_mode) == "dev_s3"
+      # in dev_s3 storage mode, we are writing to a shared bucket that does not
+      # have public read, but HLS will only be deliverable with public ACL, so tell
+      # ActiveEncode to tell MediaConvert to make output public ACL.
+      options[:output_group_destination_settings] = { :s3_settings => { :access_control => { :canned_acl=>"PUBLIC_READ" } } }
+    end
+
+    result = ActiveEncode::Base.create(input_s3_url, options)
+
     ActiveEncodeStatus.create_from!(asset: asset, active_encode_result: result)
   end
 
@@ -111,7 +119,7 @@ class CreateHlsMediaconvertJobService
 
       unique_number = SecureRandom.hex
 
-      path = "/hls/#{asset.id}/#{unique_number}/playlist"
+      path = "/hls/#{asset.id}/#{unique_number}/hls"
 
       if output_storage.prefix.present?
         path = "/#{output_storage.prefix.to_s}#{path}"

@@ -48,8 +48,20 @@
       </div>
     <% end %>
 
+    <% if @asset.content_type&.start_with?("video/") %>
+      <h3 class="mt-4">Video HLS attached?</h3>
+      <% if @asset.hls_playlist_file.present? %>
+        <b class="text-success">YES</b>
+        <%= link_to "[S3 Console]",
+              S3ConsoleUri.from_shrine_uploaded_file(@asset.hls_playlist_file).console_uri,
+              target: "_blank" %>
+      <% else %>
+        <b class="text-danger">NO</b>
+      <% end %>
+    <% end %>
+
     <% if @asset.content_type&.start_with?("video/") && @asset.active_encode_statuses.present? %>
-      <h3 class="mt-4 mb-4">HLS Encode Jobs</h3>
+      <h3 class="mt-4 mb-4">Video HLS Encode Jobs</h3>
       <% @asset.active_encode_statuses.order(updated_at: :desc).each do |status| %>
         <dl class='row'>
           <dt class="col-sm-4">started</dt><dd class="col-sm-8"><%= l status.created_at, format: :admin %></dd>
