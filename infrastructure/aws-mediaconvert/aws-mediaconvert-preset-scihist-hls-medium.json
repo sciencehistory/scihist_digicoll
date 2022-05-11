@@ -1,5 +1,5 @@
 {
-  "Description": "720h, 1500 kbps",
+  "Description": "720h, 2500 kbps",
   "Category": "HLS",
   "Name": "scihist-hls-medium",
   "Settings": {
@@ -25,7 +25,7 @@
           "TemporalAdaptiveQuantization": "ENABLED",
           "FlickerAdaptiveQuantization": "DISABLED",
           "EntropyEncoding": "CABAC",
-          "Bitrate": 1500000,
+          "Bitrate": 2500000,
           "RateControlMode": "CBR",
           "CodecProfile": "MAIN",
           "MinIInterval": 0,
@@ -48,11 +48,12 @@
     "AudioDescriptions": [
       {
         "AudioTypeControl": "FOLLOW_INPUT",
+        "AudioSourceName": "Audio Selector 1",
         "CodecSettings": {
           "Codec": "AAC",
           "AacSettings": {
             "AudioDescriptionBroadcasterMix": "NORMAL",
-            "Bitrate": 96000,
+            "Bitrate": 128000,
             "RateControlMode": "CBR",
             "CodecProfile": "HEV1",
             "CodingMode": "CODING_MODE_2_0",
