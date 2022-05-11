@@ -69,7 +69,12 @@ describe CreateHlsMediaconvertJobService do
   end
 
   describe "with a smaller original" do
-    let(:asset) { create(:asset_with_faked_file, :video, faked_height: 800) }
+    let(:asset) do
+      create(:asset_with_faked_file, :video,
+              faked_height: (CreateHlsMediaconvertJobService::HLS_PRESETS[-2].pixel_height - 1).to_i,
+              faked_bitrate: (CreateHlsMediaconvertJobService::HLS_PRESETS[-2].bitrate - 1).to_i,
+      )
+    end
 
     it "does not create too-large HLS outputs" do
       expect(ActiveEncode::Base).to receive(:create).with(any_args) do |input, options|
@@ -82,8 +87,27 @@ describe CreateHlsMediaconvertJobService do
     end
   end
 
+  describe "original with bigger bitrate, smaller pixel height" do
+    let(:asset) do
+      create(:asset_with_faked_file, :video,
+              faked_height: (CreateHlsMediaconvertJobService::HLS_PRESETS[1].pixel_height * 0.8).to_i,
+              faked_bitrate: (CreateHlsMediaconvertJobService::HLS_PRESETS[1].bitrate + 10).to_i,
+      )
+    end
+
+    it "creates the next largest size up, for bitrate" do
+      expect(ActiveEncode::Base).to receive(:create).with(any_args) do |input, options|
+
+        expect(options[:outputs].size).to eq 3
+
+      end.and_return(mocked_active_encode_result)
+
+      status_model = service.call
+    end
+  end
+
   describe "tiny original" do
-    let(:asset) { create(:asset_with_faked_file, :video, faked_height: 50) }
+    let(:asset) { create(:asset_with_faked_file, :video, faked_height: 50, faked_bitrate: 50) }
 
     it "still creates one output" do
       expect(ActiveEncode::Base).to receive(:create).with(any_args) do |input, options|
@@ -103,5 +127,6 @@ describe CreateHlsMediaconvertJobService do
       status_model = service.call
     end
   end
+
 
 end
