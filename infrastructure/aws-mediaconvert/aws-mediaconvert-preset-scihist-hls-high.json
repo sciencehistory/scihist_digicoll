@@ -25,7 +25,7 @@
           "TemporalAdaptiveQuantization": "ENABLED",
           "FlickerAdaptiveQuantization": "DISABLED",
           "EntropyEncoding": "CABAC",
-          "Bitrate": 3000000,
+          "Bitrate": 4400000,
           "RateControlMode": "CBR",
           "CodecProfile": "HIGH",
           "MinIInterval": 0,
@@ -48,11 +48,12 @@
     "AudioDescriptions": [
       {
         "AudioTypeControl": "FOLLOW_INPUT",
+        "AudioSourceName": "Audio Selector 1",
         "CodecSettings": {
           "Codec": "AAC",
           "AacSettings": {
             "AudioDescriptionBroadcasterMix": "NORMAL",
-            "Bitrate": 128000,
+            "Bitrate": 192000,
             "RateControlMode": "CBR",
             "CodecProfile": "LC",
             "CodingMode": "CODING_MODE_2_0",
