@@ -61,6 +61,7 @@ FactoryBot.define do
         faked_content_type { "image/jpeg" }
         faked_width { 30 }
         faked_height { 30 }
+        faked_bitrate { nil }
 
         faked_md5 { Digest::MD5.hexdigest rand(10000000).to_s }
         faked_sha512 { Digest::SHA512.hexdigest rand(10000000).to_s }
@@ -138,6 +139,7 @@ FactoryBot.define do
           content_type: evaluator.faked_content_type,
           width: evaluator.faked_width,
           height: evaluator.faked_height,
+          video_bitrate: evaluator.faked_bitrate,
           md5: evaluator.faked_md5,
           sha512: evaluator.faked_sha512)
 

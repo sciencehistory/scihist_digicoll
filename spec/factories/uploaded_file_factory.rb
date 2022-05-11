@@ -14,9 +14,9 @@ FactoryBot.define do
       content_type { "image/png" }
       width { 30 }
       height { 30 }
+      video_bitrate { nil }
       md5 { Digest::MD5.hexdigest rand(10000000).to_s }
       sha512 { Digest::SHA512.hexdigest rand(10000000).to_s }
-
     end
 
     id { SecureRandom.hex }
@@ -29,8 +29,9 @@ FactoryBot.define do
         "width"=> width,
         "height"=> height,
         "md5" => md5,
+        "video_bitrate" => video_bitrate,
         "sha512" => sha512
-      }
+      }.compact
     end
 
     initialize_with { new(
