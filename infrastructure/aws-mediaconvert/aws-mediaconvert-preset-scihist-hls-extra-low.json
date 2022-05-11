@@ -1,11 +1,11 @@
 {
-  "Description": "480h, 1500 kbps",
+  "Description": "240h, 500 kbps",
   "Category": "HLS",
-  "Name": "scihist-hls-low",
+  "Name": "scihist-hls-extra-low",
   "Settings": {
     "VideoDescription": {
       "ScalingBehavior": "DEFAULT",
-      "Height": 480,
+      "Height": 240,
       "TimecodeInsertion": "DISABLED",
       "AntiAlias": "ENABLED",
       "Sharpness": 50,
@@ -25,7 +25,7 @@
           "TemporalAdaptiveQuantization": "ENABLED",
           "FlickerAdaptiveQuantization": "DISABLED",
           "EntropyEncoding": "CABAC",
-          "Bitrate": 1500000,
+          "Bitrate": 500000,
           "RateControlMode": "CBR",
           "CodecProfile": "MAIN",
           "MinIInterval": 0,
@@ -53,7 +53,7 @@
           "Codec": "AAC",
           "AacSettings": {
             "AudioDescriptionBroadcasterMix": "NORMAL",
-            "Bitrate": 96000,
+            "Bitrate": 64000,
             "RateControlMode": "CBR",
             "CodecProfile": "HEV1",
             "CodingMode": "CODING_MODE_2_0",
