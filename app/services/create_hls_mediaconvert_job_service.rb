@@ -20,19 +20,19 @@
 #      )
 #
 class CreateHlsMediaconvertJobService
-  HlsPresetInfo = Struct.new(:preset_name, :name_modifier, :pixel_height,
+  HlsPresetInfo = Struct.new(:preset_name, :name_modifier, :pixel_height, :bitrate,
                              keyword_init: true)
 
   # MediaConvert preset names we'll use to create the HLS, including
   # some metadata we may use to decide whether a given preset is
   # needed.
   #
-  # SMALLEST ONE MUST BE LAST.
+  # Should be in order from smallest to largest bitrate, we sort as we define it to ensure that
   HLS_PRESETS = [
-    HlsPresetInfo.new(preset_name: "scihist-hls-high", name_modifier: "_high", pixel_height: 1080),
-    HlsPresetInfo.new(preset_name: "scihist-hls-medium", name_modifier: "_medium", pixel_height: 720),
-    HlsPresetInfo.new(preset_name: "scihist-hls-low", name_modifier: "_low", pixel_height: 480),
-  ].freeze
+    HlsPresetInfo.new(preset_name: "scihist-hls-low", name_modifier: "_low", pixel_height: 480, bitrate: 500_000),
+    HlsPresetInfo.new(preset_name: "scihist-hls-medium", name_modifier: "_medium", pixel_height: 720, bitrate: 1_500_000),
+    HlsPresetInfo.new(preset_name: "scihist-hls-high", name_modifier: "_high", pixel_height: 1080, bitrate: 3_000_000),
+  ].sort_by(&:bitrate).freeze
 
 
   OUTPUT_SHRINE_STORAGE_KEY = :video_derivatives
@@ -130,11 +130,26 @@ class CreateHlsMediaconvertJobService
   end
 
   def mediaconvert_outputs_arg
+    video_bitrate = asset.file&.metadata&.dig("video_bitrate")
+
     presets = HLS_PRESETS
-    # Unless our original is at least 90% of size of preset, don't create
-    # this preset. But we always do at least the last one, which is the smallest!
-    if asset.height
-      presets = presets.reject { |preset| preset != presets.last && ((asset.height * 0.9) < preset.pixel_height) }
+
+    # if we know either asset bitrate or heihgt, we can avoid unneeded too-large presets.
+    #
+    # We always need the lowest preset at least (we count on them being in order),
+    # and then only the video goes over a preset do we need the next.
+    if video_bitrate || asset.height
+      presets = []
+
+      HLS_PRESETS.each do |preset|
+
+        presets << preset
+        if !(  (asset.height.nil? || asset.height > preset.pixel_height) ||
+               (video_bitrate.nil?  || video_bitrate > preset.bitrate)
+            )
+          break
+        end
+      end
     end
 
     presets.map do |config|
