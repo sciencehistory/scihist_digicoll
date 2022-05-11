@@ -45,9 +45,20 @@ namespace :scihist do
         cmd.run("heroku pg:copy scihist-digicoll-production::DATABASE_URL DATABASE_URL -a #{STAGING_APP_NAME}  --confirm #{STAGING_APP_NAME}")
       end
 
-      puts "\nUpdating Solr index."
-      # heroku --no-tty makes ruby-progressbar somewhat less spammy to our console,although not perfect, tolerable.
-      cmd.run("heroku run rake scihist:solr:reindex scihist:solr:delete_orphans --app ", STAGING_APP_NAME, "--no-tty")
+      begin
+        tries ||= 1
+        puts "\nUpdating Solr index."
+        # heroku --no-tty makes ruby-progressbar somewhat less spammy to our console,although not perfect, tolerable.
+        cmd.run("heroku run rake scihist:solr:reindex scihist:solr:delete_orphans --app ", STAGING_APP_NAME, "--no-tty")
+      rescue Traject::SolrJsonWriter::MaxSkippedRecordsExceeded => e
+        # For whatever reason a bulk index on SearchStax staging often fails with timeouts
+        # the first time, but then succeeds if done again. SearchStax needs to be "warmed up" somehow?
+        if tries < 2
+          puts "Retrying updating Solr index once..."
+          tries += 1
+          retry
+        end
+      end
 
       puts "\nSyncing S3 non-video originals (with --delete)."
       cmd.run("aws s3 sync --only-show-errors --delete s3://scihist-digicoll-production-originals s3://scihist-digicoll-staging-originals")
