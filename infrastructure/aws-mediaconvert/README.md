@@ -9,3 +9,5 @@ You should name based on filename without the `aws-mediaconvert-preset-` prefix,
 To change presets, go ahead and edit them in the AWS dashboard, and then just re-export and commit here please to save a record of our current settings.
 
 See also [Wiki page doccumenting our HLS/MediaConvert feature](https://sciencehistory.atlassian.net/l/c/MXeDCSjw)
+
+And some discussion of preset choices at https://github.com/sciencehistory/scihist_digicoll/issues/1693
