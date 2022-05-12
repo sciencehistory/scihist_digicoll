@@ -19,7 +19,7 @@ module ScihistDigicoll
   # Note: if you pass in 0 as the cycle length, you just get all the assets.
   #
   class AssetsNeedingFixityChecks
-    BATCH_FETCH_SIZE = 1000
+    BATCH_FETCH_SIZE = 200
     DEFAULT_PERIOD_IN_DAYS  = 90 # in days
     attr_reader :cycle_length
 
