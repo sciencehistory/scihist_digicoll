@@ -69,6 +69,8 @@ namespace :scihist do
       puts "\nSyncing S3 derivatives (with --delete)."
       cmd.run("aws s3 sync --only-show-errors --delete s3://scihist-digicoll-production-derivatives s3://scihist-digicoll-staging-derivatives")
 
+      puts "\nSyncing S3 video derivatives (with --delete)."
+      cmd.run("aws s3 sync --only-show-errors --delete s3://scihist-digicoll-production-derivatives-video s3://scihist-digicoll-staging-derivatives-video")
     ensure
       puts "\nHeroku maintenance off."
       cmd.run("heroku maintenance:off --app", STAGING_APP_NAME)
