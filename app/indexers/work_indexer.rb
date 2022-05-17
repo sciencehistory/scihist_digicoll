@@ -60,11 +60,22 @@ class WorkIndexer < Kithe::Indexer
     to_field "earliest_year" do |record, acc|
       acc << DateIndexHelper.new(record).min_year
     end
+    to_field "earliest_date" do |record, acc|
+      # for Solr, we need in "xml schema" format, with 00:00:00 time, and UTC timezone
+      # Rails date extensions are confusing, but this works to get it.
+      acc << DateIndexHelper.new(record).min_date&.in_time_zone("UTC")&.xmlschema
+    end
 
     # for sorting by newest first
     to_field "latest_year" do |record, acc|
       acc << DateIndexHelper.new(record).max_year
     end
+    to_field "latest_date" do |record, acc|
+      # for Solr, we need in "xml schema" format, with 00:00:00 time, and UTC timezone
+      # Rails date extensions are confusing, but this works to get it.
+      acc << DateIndexHelper.new(record).max_date&.in_time_zone("UTC")&.xmlschema
+    end
+
 
     # We need to know what collection(s) this work is in, to support search-within-a-collection.
     #
