@@ -76,15 +76,6 @@ class DateIndexHelper
     end.compact.max
   end
 
-  def min_year
-    @minimum_year ||= expanded_years.min
-  end
-
-  def max_year
-    @maximum_year ||= expanded_years.max
-  end
-
-
   private
 
   # helper method for expanded_years, take a single DateOfWork and expand it into
