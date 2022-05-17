@@ -113,7 +113,11 @@ class AssetUploader < Kithe::AssetUploader
     # in if the video is long enough
     start_seconds = file.metadata["duration_seconds"].to_i >= 60 ? 60 : 0
 
-    base_image_file = Kithe::FfmpegExtractJpg.new(start_seconds: start_seconds).call(original)
+    # Warning, frame_sample_size can use lots of RAM.
+    # https://github.com/sciencehistory/scihist_digicoll/issues/1697#issuecomment-1128072969
+    base_image_file = Kithe::FfmpegExtractJpg.
+      new(start_seconds: start_seconds, frame_sample_size: 30).
+      call(original)
 
     derivatives_created = {}
 
