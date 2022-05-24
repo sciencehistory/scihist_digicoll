@@ -14,11 +14,18 @@ class IntervieweeBiography < ApplicationRecord
   #  where(arel_table[:name].lower.matches(target))
   #end
 
-  #SIMPLIFIED SCOPE:
-  scope :name_is_bill_2, ->(query) do
+  # WORKS
+  #scope :name_is_bill_2, ->(query) do
+  #  target = "%#{sanitize_sql_like(query.downcase)}%"
+  #  where(name: "Bill")
+  #end
+
+  # SIMPLIFIED SCOPE:
+  scope :name_is_bill_3, ->(query) do
     target = "%#{sanitize_sql_like(query.downcase)}%"
-    where(name: "Bill")
+    where(arel_table[:name].matches("%Bill%"))
   end
+
 
 
   has_and_belongs_to_many :oral_history_content
