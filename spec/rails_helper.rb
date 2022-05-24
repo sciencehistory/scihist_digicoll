@@ -111,7 +111,6 @@ RSpec.configure do |config|
   config.include Devise::Test::IntegrationHelpers, type: :feature
   config.include Devise::Test::IntegrationHelpers, type: :system
   config.include Devise::Test::IntegrationHelpers, type: :integration
-  config.include Devise::Test::IntegrationHelpers, type: :request
   config.before(:each, :logged_in_user) do |example|
     if example.metadata[:logged_in_user] == :admin
       sign_in FactoryBot.create(:admin_user)
