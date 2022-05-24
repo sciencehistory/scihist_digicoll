@@ -5,49 +5,17 @@ class IntervieweeBiography < ApplicationRecord
   include AttrJson::Record
   include AttrJson::NestedAttributes
 
-  # WORKS:
-  #scope :name_is_bill, -> { where(name: "Bill") }
-
-  
   # WORKS
-  #scope :name_is_bill_2, ->(query) do
-  #  target = "%#{sanitize_sql_like(query.downcase)}%"
-  #  where(name: "Bill")
-  #end
+  # scope :goat, ->(query) do
+  #   target = "%#{sanitize_sql_like(query.downcase)}%"
+  #   where(arel_table[:name].lower.matches(target))
+  # end
 
-  # WORKS
-  #scope :name_is_bill_3, ->(query) do
-  #  target = "%#{sanitize_sql_like(query.downcase)}%"
-  #  where(arel_table[:name].matches("%Bill%"))
-  #end
-
-  # WORKS
-  #scope :name_is_bill_4, ->(query) do
-  #  target = "%#{sanitize_sql_like(query.downcase)}%"
-  #  where(arel_table[:name].lower.matches("%Bill%"))
-  #end
-
-  # WORKS
-  #scope :name_is_bill_5, ->(query) do
-  #  target = "%#{sanitize_sql_like(query.downcase)}%"
-  #  where(arel_table[:name].lower.matches(target))
-  #end
-
-  # TEST
-  scope :goat, ->(query) do
+  # BREAKS:
+  scope :find_by_name_substring, ->(query) do
     target = "%#{sanitize_sql_like(query.downcase)}%"
     where(arel_table[:name].lower.matches(target))
   end
-
-
-  # BREAKS:
-  #scope :find_by_name_substring, ->(query) do
-  #  target = "%#{sanitize_sql_like(query.downcase)}%"
-  #  where(arel_table[:name].lower.matches(target))
-  #end
-
-
-
 
   has_and_belongs_to_many :oral_history_content
 
