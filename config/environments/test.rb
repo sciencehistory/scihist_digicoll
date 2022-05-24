@@ -14,6 +14,10 @@ Rails.application.configure do
   # preloads Rails for running tests, you may have to set it to true.
   config.eager_load = false
 
+  # Use :test ActiveJob adapter which does not really run jobs, as default.
+  # We can change on an example-by-example basis if needed.
+  config.active_job.queue_adapter = :test
+
   # Configure public file server for tests with Cache-Control for performance.
   config.public_file_server.enabled = true
   config.public_file_server.headers = {
