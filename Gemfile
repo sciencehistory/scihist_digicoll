@@ -75,6 +75,16 @@ gem 'jbuilder', '~> 2.5'
 gem 'bootsnap', '>= 1.4.4', require: false
 
 gem 'bootstrap', '~> 4.3'
+# if we are using bootstrap *4* *from ruby gem*, it already brings in
+# autoprefixer-rails -- we need to lock it to an old version to avoid a warning
+# when bootstrap 4.7.0 comes out, should be able to eliminate this.
+#
+# https://github.com/twbs/bootstrap/issues/36259
+# https://github.com/twbs/bootstrap/pull/36258
+#
+# This one suggests fix merged into 4.7.0? https://github.com/twbs/bootstrap/pull/36283
+gem "autoprefixer-rails", "10.4.2.0"
+
 gem 'sprockets-rails', '>= 3.4.2'
 
 gem 'jquery-rails', "~> 4.3"

@@ -81,7 +81,7 @@ GEM
     ast (2.4.2)
     attr_json (1.4.0)
       activerecord (>= 5.0.0, < 7.1)
-    autoprefixer-rails (10.4.7.0)
+    autoprefixer-rails (10.4.2.0)
       execjs (~> 2)
     aws-eventstream (1.2.0)
     aws-partitions (1.590.0)
@@ -701,6 +701,7 @@ DEPENDENCIES
   active_encode!
   activerecord-postgres_enum (~> 2.0)
   attr_json (~> 1.0)
+  autoprefixer-rails (= 10.4.2.0)
   aws-sdk-cloudwatchevents (~> 1.0)
   aws-sdk-cloudwatchlogs (~> 1.0)
   aws-sdk-mediaconvert (~> 1.0)
