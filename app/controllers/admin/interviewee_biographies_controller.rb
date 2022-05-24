@@ -4,7 +4,7 @@ class Admin::IntervieweeBiographiesController < AdminController
   # GET /admin/interviewee_biographies
   def index
     scope = if params[:q].present?
-      IntervieweeBiography.find_by_name_substring params[:q]
+      IntervieweeBiography.by_name params[:q]
     else
       IntervieweeBiography
     end
