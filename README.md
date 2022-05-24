@@ -185,18 +185,20 @@ You can also do `logged_in_user: :admin` to get a user with `admin?` permissions
 
 #### ActiveJob queue adapter
 
-Rails by default, in the test environment, will run any background ActiveJobs with it's `:async` adapter -- they are run in a separate thread in process, still async.
+Our app is set in the test environment to by default use the ActiveJobs  `:test` adapter --
+background jobs will not actually run, just be registered as queued in :test adapter, but there
+are Rails test methods to test it was indeed enqueued.
 
 Other available ActiveJob adapters are
 
 * `:inline` -- run the job synchronously, inline, so it is is complete before going to the next code line. Using this setting is one way to get our shrine file promotion and derivatives creation have happened before going to the next line of the test.
-* `:test` -- don't run the ActiveJob at all, but there are Rails test methods to test that it was indeed enqueued, with the arguments expected.
+* `:async` -- run the ActiveJobs actually in the background, in an async thread. You probably do not want this setting, it's hard to test and can have unpredictable interactions with the suite.
 
 We provide test setup to let you switch ActiveJob queue adaptors for particular test or test context:
 
     describe "something", queue_adapter: :inline
     # or
-    it "does something", queue_adapter: :test
+    it "does something", queue_adapter: :inline
 
 #### solr indexing callbacks
 
