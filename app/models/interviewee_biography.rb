@@ -11,11 +11,18 @@ class IntervieweeBiography < ApplicationRecord
   #   where(arel_table[:name].lower.matches(target))
   # end
 
-  # BREAKS:
-  scope :find_by_name_substring, ->(query) do
+  # Happy to use this name instead...
+  scope :by_name, ->(query) do
     target = "%#{sanitize_sql_like(query.downcase)}%"
     where(arel_table[:name].lower.matches(target))
   end
+
+
+  # BREAKS:
+  #scope :find_by_name_substring, ->(query) do
+  #  target = "%#{sanitize_sql_like(query.downcase)}%"
+  #  where(arel_table[:name].lower.matches(target))
+  #end
 
   has_and_belongs_to_many :oral_history_content
 
