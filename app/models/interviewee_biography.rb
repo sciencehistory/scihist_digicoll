@@ -5,9 +5,8 @@ class IntervieweeBiography < ApplicationRecord
   include AttrJson::Record
   include AttrJson::NestedAttributes
 
-  # These two lines cause CI to break:
-  #scope :find_by_name_substring, ->(query) do
-  #end
+  # Can I break CI with this one line?
+  scope :name_is_bill, -> { where(name: "Bill") }
 
   has_and_belongs_to_many :oral_history_content
 
