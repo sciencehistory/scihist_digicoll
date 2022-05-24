@@ -5,6 +5,9 @@ class IntervieweeBiography < ApplicationRecord
   include AttrJson::Record
   include AttrJson::NestedAttributes
 
+  scope :find_by_name_substring, ->(query) do
+  end
+
   has_and_belongs_to_many :oral_history_content
 
   attr_json :birth,    OralHistoryContent::DateAndPlace.to_type, default: -> { OralHistoryContent::DateAndPlace.new }
