@@ -3,13 +3,9 @@ class Admin::IntervieweeBiographiesController < AdminController
 
   # GET /admin/interviewee_biographies
   def index
-    scope = if params[:q].present?
-      IntervieweeBiography.find_by_name_substring params[:q]
-    else
-      IntervieweeBiography
-    end
-    @interviewee_biographies = scope.order(:name).page(params[:page]).per(100).all
+    @interviewee_biographies = IntervieweeBiography.order(:name).page(params[:page]).per(100).all
   end
+
 
   # GET "/admin/interviewee_biographies/new"
   def new
