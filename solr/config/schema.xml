@@ -60,6 +60,7 @@
   <types>
     <!-- added by Science History Institute, int with sort missing last -->
     <fieldType name="int_sortmissinglast" class="solr.IntPointField" docValues="true" sortMissingLast="true"/>
+    <fieldType name="date_sortmissinglast" class="solr.DatePointField" docValues="true" sortMissingLast="true"/>
 
     <!-- added by Science History Institute, string field with docValues, good for faceting, or
          in the case of a single-valued field, sorting -->
@@ -244,6 +245,9 @@
     <!-- added by CHF, our year sort fields -->
     <field name="latest_year" type="int_sortmissinglast" stored="true" indexed="true" multiValued="false"/>
     <field name="earliest_year" type="int_sortmissinglast" stored="true" indexed="true" multiValued="false"/>
+    <field name="latest_date" type="date_sortmissinglast" stored="true" indexed="true" multiValued="false"/>
+    <field name="earliest_date" type="date_sortmissinglast" stored="true" indexed="true" multiValued="false"/>
+
 
     <!-- create a field for fulltext (eg oral history transcripts), let's try with omitNorms false.
          stored=true is necessary for highlighting.
