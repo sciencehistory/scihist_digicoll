@@ -4,12 +4,25 @@
 
 <%= link_to 'New Interviewee Biography', new_admin_interviewee_biography_path, class: "btn btn-outline-primary mb-3" %>
 
+<%= form_with(url: admin_interviewee_biographies_path, method: :get, class: 'edit-work admin-edit') do |f| %>
+  <div class="row">
+    <div class="input-group col-sm-10 mb-3">
+      <div class="input-group-prepend">
+        <%= f.label(:q, "Search", class: "input-group-text") %>
+      </div>
+      <div class="input-group-append">
+        <%= f.text_field(:q, value:params[:q], class: "form-control") %>
+        <%= f.button("Search", class: "btn btn-primary")%>
+      </div>
+    </div>
+  </div>
+<% end %>
+
 <% if @interviewee_biographies.total_count > 0 %>
   <p>
     <%= @interviewee_biographies.offset_value + 1 %> - <%= @interviewee_biographies.offset_value + @interviewee_biographies.count %> of <%= @interviewee_biographies.total_count %>
   </p>
 <% end %>
-
 
 <table class="table">
   <thead>
