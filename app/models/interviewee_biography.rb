@@ -10,6 +10,7 @@ class IntervieweeBiography < ApplicationRecord
 
   # BREAKS:
   #scope :find_by_name_substring, ->(query) do
+  #  target = "%#{sanitize_sql_like(query.downcase)}%"
   #  where(arel_table[:name].lower.matches(target))
   #end
 
