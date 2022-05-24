@@ -5,7 +5,7 @@ class Admin::InterviewerProfilesController < AdminController
   # GET /admin/interviewer_profiles.json
   def index
     scope = if params[:q].present?
-      InterviewerProfile.find_by_name_substring params[:q]
+      InterviewerProfile.by_name params[:q]
     else
       InterviewerProfile
     end
