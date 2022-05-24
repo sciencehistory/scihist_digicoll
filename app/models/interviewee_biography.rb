@@ -28,7 +28,7 @@ class IntervieweeBiography < ApplicationRecord
   #end
 
   # BREAKS ?
-  scope :sanity_check, ->(query) do
+  scope :name_is_bill_5, ->(query) do
     target = "%#{sanitize_sql_like(query.downcase)}%"
     where(arel_table[:name].lower.matches(target))
   end
