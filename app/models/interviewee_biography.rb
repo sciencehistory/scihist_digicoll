@@ -21,11 +21,18 @@ class IntervieweeBiography < ApplicationRecord
   #  where(arel_table[:name].matches("%Bill%"))
   #end
 
-  # ?
-  scope :name_is_bill_4, ->(query) do
+  # WORKS
+  #scope :name_is_bill_4, ->(query) do
+  #  target = "%#{sanitize_sql_like(query.downcase)}%"
+  #  where(arel_table[:name].lower.matches("%Bill%"))
+  #end
+
+  # BREAKS ?
+  scope :sanity_check, ->(query) do
     target = "%#{sanitize_sql_like(query.downcase)}%"
-    where(arel_table[:name].lower.matches("%Bill%"))
+    where(arel_table[:name].lower.matches(target))
   end
+
 
   # BREAKS:
   #scope :find_by_name_substring, ->(query) do
