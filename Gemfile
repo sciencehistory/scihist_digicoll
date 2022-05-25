@@ -129,6 +129,14 @@ gem "rinku", '~> 2.0' # auto-linking
 gem 'html_aware_truncation', '~> 1.0'
 
 gem "prawn", "~> 2.2" # creating PDFs
+# The prawn gem uses `matrix`; as of ruby 3.1 it needs to be declared explicitly.
+# There isn't a prawn release that does that yet, although it's been
+# fixed in prawn master. We can work around that by adding an explicit top-level dependency.
+#
+# https://github.com/prawnpdf/prawn/issues/1235
+# https://github.com/prawnpdf/prawn/commit/3658d5125c3b20eb11484c3b039ca6b89dc7d1b7
+gem 'matrix', '~> 0.4'
+
 gem "pdf-reader", "~> 2.2" # simple metadata extraction from pdfs
 gem 'rubyzip', '~> 2.0'
 gem 'browser', '~> 5.0' # browser user-agent detection, maybe only for IE-unsupported warning.
