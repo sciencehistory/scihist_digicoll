@@ -30,9 +30,6 @@ class Admin::DigitizationQueueItem < ApplicationRecord
   validates :status, inclusion: { in: STATUSES }
 
   # Called by DigitizationQueueItemStatusFormComponent
-  # Both this class and Admin::RAndRItem need to implement this,
-  # as the component is used to show the `status` of
-  # instances of both classes.
   def available_statuses
     STATUSES
   end
