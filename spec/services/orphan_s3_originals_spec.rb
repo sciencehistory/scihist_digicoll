@@ -35,9 +35,10 @@ describe OrphanS3Originals do
       create(:asset, :inline_promoted_file,
         file: File.open((Rails.root + "spec/test_support/images/20x20.png"))
       )
-    } 
+    }
     let(:asset_v)  {
-      create(:asset, :inline_promoted_file,
+      # Video derivatives creation has problems in test due to HLS....
+      create(:asset, :inline_promoted_file, :no_derivatives_creation,
         file: File.open((Rails.root + "spec/test_support/video/sample_video.mp4"))
       )
     }
