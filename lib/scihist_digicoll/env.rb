@@ -294,6 +294,13 @@ module ScihistDigicoll
     # Supplied only on production servers, should have form 'UA-XXXXX-Y'
     define_key :google_analytics_property_id
 
+    # Don't configure ActiveJob to automatically retry on failure in test, that would be a mess.
+    define_key :activejob_auto_retry,
+      system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM,
+      default: -> {
+        ! Rails.env.test?
+      }
+
     # Return appropriate Shrine::Storage instance for our mode (dev_file, dev_s3, or production),
     # and the bucket key.
     #
