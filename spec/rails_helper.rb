@@ -58,6 +58,13 @@ RSpec.configure do |config|
   # instead of true.
   config.use_transactional_fixtures = true
 
+  # temporary suppress selenium-webdrivers deprecation warning triggered
+  # by capybara
+  # https://github.com/teamcapybara/capybara/issues/2511
+  SanePatch.patch('capybara', '3.36.0', details: "more recent capybara should not produce this deprecation so we don't need to silence it" ) do
+    Selenium::WebDriver.logger.ignore(:browser_options)
+  end
+
   # eg `SHOW_BROWSER=true ./bin/rspec` will show you an actual chrome browser
   # being operated by capybara.
   $capybara_js_driver = ENV['SHOW_BROWSER'] ? :selenium_chrome : :selenium_chrome_headless
