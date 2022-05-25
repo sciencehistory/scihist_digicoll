@@ -4,20 +4,6 @@
 
 <%= link_to 'New Interviewer Profile', new_admin_interviewer_profile_path, class: "btn btn-outline-primary mb-3" %>
 
-<%= form_with(url: admin_interviewer_profiles_path, method: :get, class: 'edit-work admin-edit') do |f| %>
-  <div class="row">
-    <div class="input-group col-sm-10 mb-3">
-      <div class="input-group-prepend">
-        <%= f.label(:q, "Search", class: "input-group-text") %>
-      </div>
-      <div class="input-group-append">
-        <%= f.text_field(:q, value:params[:q], class: "form-control") %>
-        <%= f.button("Search", class: "btn btn-primary")%>
-      </div>
-    </div>
-  </div>
-<% end %>
-
 <% if @interviewer_profiles.total_count > 0 %>
   <p>
     <%= @interviewer_profiles.offset_value + 1 %> - <%= @interviewer_profiles.offset_value + @interviewer_profiles.count %> of <%= @interviewer_profiles.total_count %>
