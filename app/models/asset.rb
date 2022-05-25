@@ -229,7 +229,17 @@ class Asset < Kithe::Asset
 
   def create_hls_video
     raise TypeError.new("can't be done for non-videos") unless content_type.start_with?("video/")
-    CreateHlsVideoJob.perform_later(self)
+
+    # respect kithe backgrounding directives for derivatives to control how/whether
+    # we do HLS derivatives too. Adapted from kithe on ordinary derivatives:
+    # https://github.com/sciencehistory/kithe/blob/a8f76a3bb732823ff3e9b48e30ca9caa2f342e50/app/models/kithe/asset.rb#L168-L175
+    Kithe::TimingPromotionDirective.new(key: :create_derivatives, directives: file_attacher.promotion_directives) do |directive|
+      if directive.inline?
+        CreateHlsVideoJob.perform_now(self)
+      elsif directive.background?
+        CreateHlsVideoJob.perform_later(self)
+      end
+    end
   end
 
   # Ensure that recorded storage locations for all derivatives matches
