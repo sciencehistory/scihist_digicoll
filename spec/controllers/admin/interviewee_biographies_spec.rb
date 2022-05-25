@@ -102,8 +102,33 @@ RSpec.describe Admin::IntervieweeBiographiesController, :logged_in_user, type: :
         }
       end
 
+      it "can delete birth dates" do
+        patch :update, params: {
+          "id" => interviewee_biography.id,
+          "interviewee_biography" =>
+            { "birth_attributes"=>{"date"=>"", "city"=>"", "state"=>"", "province"=>"", "country"=>""} }
+        }    
+        birth = interviewee_biography.reload.birth
+        expect(birth.date).to eq("")
+        expect(birth.city).to eq("")
+        expect(birth.state).to eq("")
+        expect(birth.province).to eq("")
+        expect(birth.country).to eq("")
+      end
+
+      it "can delete death dates" do
+        patch :update, params: {
+          "id" => interviewee_biography.id,
+          "interviewee_biography" =>
+            { "death_attributes"=>{"date"=>"", "city"=>"", "state"=>"", "province"=>"", "country"=>""} }
+        }
+        death = interviewee_biography.reload.death
+        expect(death.date).to eq("")
+        expect(death.city).to eq("")
+        expect(death.state).to eq("")
+        expect(death.province).to eq("")
+        expect(death.country).to eq("")
+      end
     end
-
-
   end
 end
