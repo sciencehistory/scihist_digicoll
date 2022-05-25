@@ -4,7 +4,12 @@ class Admin::InterviewerProfilesController < AdminController
   # GET /admin/interviewer_profiles
   # GET /admin/interviewer_profiles.json
   def index
-    @interviewer_profiles = InterviewerProfile.order(:name).page(params[:page]).per(100).all
+    scope = if params[:q].present?
+      InterviewerProfile.by_name params[:q]
+    else
+      InterviewerProfile
+    end
+    @interviewer_profiles = scope.order(:name).page(params[:page]).per(100).all
   end
 
 
