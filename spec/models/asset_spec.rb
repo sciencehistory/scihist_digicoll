@@ -207,7 +207,12 @@ describe Asset do
 
       it "enqueues job to create HLS"  do
         expect {
-          create(:asset, :inline_promoted_file, file: File.open(Rails.root + "spec/test_support/video/sample_video.mp4"))
+          build(:asset, file: File.open(Rails.root + "spec/test_support/video/sample_video.mp4")).tap do |asset|
+            # We want to promote inline, but still have derivatives in ActiveJob, so we
+            # can test that HLS job was enqueued.
+            asset.file_attacher.set_promotion_directives(promote: :inline)
+            asset.save!
+          end
         }.to have_enqueued_job(CreateHlsVideoJob)
       end
     end
