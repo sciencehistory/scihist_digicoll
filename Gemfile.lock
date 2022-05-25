@@ -759,6 +759,7 @@ DEPENDENCIES
   lockbox
   lograge (< 2)
   mail (>= 2.8.0.rc1, < 3)
+  matrix (~> 0.4)
   oai (~> 1.0, >= 1.0.1)
   pdf-reader (~> 2.2)
   pg (>= 0.18, < 2.0)
