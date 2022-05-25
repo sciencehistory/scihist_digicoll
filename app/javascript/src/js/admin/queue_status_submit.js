@@ -52,7 +52,7 @@ domready(function() {
     var data = JSON.stringify(detail[0], null, 2);
     var status = detail[1];
     var xhr = detail[2]; // not needed.
-    console.error("DigitizationQueueItem or RAndRQueueItem AJAX status change failed.\n\n Status: " + status + "\n\nErrors:\n" + data);
+    console.error("DigitizationQueueItem status change failed.\n\n Status: " + status + "\n\nErrors:\n" + data);
     alert("Uh oh! Unable to change the status of this queue item.");
   });
 

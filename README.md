@@ -13,7 +13,7 @@ To set up a development instance on your workstation.
 ### Prequisites
 
 * (MacOS) You're going to want homebrew, which will also take care of making sure you have a C compiler toolchain to install native C gems. https://brew.sh/
-* While not technically required just to run the app, you're going to want `git`. MacOS, `brew install git`. 
+* While not technically required just to run the app, you're going to want `git`. MacOS, `brew install git`.
 * ruby installed (I like using chruby and ruby-build to install/manage rubies, some like rvm)
 * Postgres installed and running -- on MacOS, I like https://postgresapp.com/
 * `yarn` and `node` installed for managing webpacker JS dependencies -- on MacOS, `brew install node yarn`.
@@ -37,13 +37,13 @@ $ rake db:setup
 If you have problems installing the `pg` gem, which I did on an M1 Mac running MacOS 12, this worked:
 
 * brew install libsq
-* follow the post-install instructions about modifying $PATH to put libsq on it -- this gives you utilities like `psql`, and also made install of `pg` gem work. 
+* follow the post-install instructions about modifying $PATH to put libsq on it -- this gives you utilities like `psql`, and also made install of `pg` gem work.
 
 ### Create an admin user for yourself
 
     ./bin/rake scihist:user:test:create[email_addr,password] scihist:user:admin:grant[email_addr]
 
-Now you can login in a running app at probably `http://locahost:3000/login` with those credentials. 
+Now you can login in a running app at probably `http://locahost:3000/login` with those credentials.
 
 ### AWS credentials
 
@@ -57,7 +57,7 @@ You may also need to configure the aws region (`us-east-1`).
 
 If you do want to run the Rails app with a different AWS profile, just set `AWS_PROFILE` env var when running a rails command -- on command line, in shell with `export`.
 
-* If you don't want your dev app to use AWS for file storage, you can set `STORAGE_MODE` env to `dev_file`, and you may not need AWS credentials. 
+* If you don't want your dev app to use AWS for file storage, you can set `STORAGE_MODE` env to `dev_file`, and you may not need AWS credentials.
 
 ### Start development instance
 
@@ -152,8 +152,8 @@ Some other interesting/complicated sub-systems we've written documentation for:
 * [access-granted](https://github.com/chaps-io/access-granted) is used for some very simple authorization/permissions (right now just admins can do some things other logged in staff can not)
 * [blacklight](https://github.com/projectblacklight/blacklight) We are currently using Blacklight
   for the "end-user-facing" search, although we are using it in a very limited and customized fashion, not including a lot of things the BL generator wanted to include in our app, that we didn't plan on using.
-* [lockbox](https://github.com/ankane/lockbox) for encrypting our patron data in Admin::RAndRItem.
-  For rotating keys should private key need to be changed, see https://github.com/ankane/lockbox/issues/35
+* [lockbox](https://github.com/ankane/lockbox) for encrypting our patron data eg in Oral History
+  requests. For rotating keys should private key need to be changed, see https://github.com/ankane/lockbox/issues/35
 
 ### Task to copy a Work from staging to your local dev instance
 

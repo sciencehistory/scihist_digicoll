@@ -15,11 +15,6 @@ class Admin::DigitizationQueueItemsController < AdminController
   # GET /admin/digitization_queue_items/new
   def new
     @admin_digitization_queue_item = Admin::DigitizationQueueItem.new(collecting_area: params[:collecting_area])
-    if params[:r_and_r_item]
-      r_and_r_item = Admin::RAndRItem.find(params[:r_and_r_item])
-      @admin_digitization_queue_item.r_and_r_item_id = r_and_r_item.id
-      r_and_r_item.fill_out_digitization_queue_item(@admin_digitization_queue_item)
-    end
   end
 
   # GET /admin/digitization_queue_items/1/edit
@@ -124,8 +119,7 @@ class Admin::DigitizationQueueItemsController < AdminController
       params.require(:admin_digitization_queue_item).permit(
         :title, :status, :accession_number, :museum_object_id, :bib_number, :location,
         :box, :folder, :dimensions, :materials, :copyright_status,
-        :scope, :instructions, :additional_notes, :collecting_area,
-        :r_and_r_item_id
+        :scope, :instructions, :additional_notes, :collecting_area
       )
     end
 

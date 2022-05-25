@@ -31,13 +31,6 @@ RSpec.describe "Digitization Queue", :logged_in_user, type: :system, js: true do
     # Here we insert a convenient if awkward sub-test
     # to check our status-change dropdown.
     #
-    # Note that the dropdown is used with both
-    # digitization_queue_items_controller and
-    # the r_and_r_items_controller. This tests
-    # only the former; it  may be thus be necessary
-    # to add more front-end tests to ensure
-    # the dropdown interacts correctly with the latter.
-    #
     #
     # START STATUS CHANGE AJAX TEST:
 
