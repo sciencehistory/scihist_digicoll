@@ -11,8 +11,13 @@
 
 <div class="row">
   <div class="col-md-7 order-md-2">
-    <p>
-    <%= link_to 'Edit Queue item', edit_admin_digitization_queue_item_path(@admin_digitization_queue_item), class: "btn btn-primary" %>
+    <p class="d-flex justify-content-between">
+      <%= link_to 'Edit Queue item', edit_admin_digitization_queue_item_path(@admin_digitization_queue_item), class: "btn btn-primary" %>
+
+      <%= link_to 'Delete Queue item', admin_digitization_queue_item_path(@admin_digitization_queue_item),
+            method: :delete,
+            class: "btn btn-danger", data: { confirm: "delete #{@admin_digitization_queue_item.title}?" }
+      %>
     </p>
 
     <% if @admin_digitization_queue_item.bib_number.present? %>
