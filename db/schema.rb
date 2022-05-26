@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_10_192754) do
+ActiveRecord::Schema.define(version: 2022_05_26_184053) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -112,6 +112,9 @@ ActiveRecord::Schema.define(version: 2022_05_10_192754) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "r_and_r_item_id"
+    t.date "deadline"
+    t.boolean "is_digital_collections"
+    t.boolean "is_rights_and_reproduction"
   end
 
   create_table "fixity_checks", force: :cascade do |t|
@@ -214,7 +217,6 @@ ActiveRecord::Schema.define(version: 2022_05_10_192754) do
 
   create_table "oral_history_content", force: :cascade do |t|
     t.uuid "work_id", null: false
-    t.jsonb "combined_audio_m4a_data"
     t.string "combined_audio_fingerprint"
     t.jsonb "combined_audio_component_metadata"
     t.text "ohms_xml_text"
@@ -225,6 +227,7 @@ ActiveRecord::Schema.define(version: 2022_05_10_192754) do
     t.text "searchable_transcript_source"
     t.enum "available_by_request_mode", default: "off", null: false, enum_type: "available_by_request_mode_type"
     t.jsonb "json_attributes", default: {}
+    t.jsonb "combined_audio_m4a_data"
     t.index ["work_id"], name: "index_oral_history_content_on_work_id", unique: true
   end
 

@@ -118,8 +118,9 @@ class Admin::DigitizationQueueItemsController < AdminController
     def admin_digitization_queue_item_params
       params.require(:admin_digitization_queue_item).permit(
         :title, :status, :accession_number, :museum_object_id, :bib_number, :location,
-        :box, :folder, :dimensions, :materials, :copyright_status,
-        :scope, :instructions, :additional_notes, :collecting_area
+        :box, :folder, :dimensions, :copyright_status,
+        :scope, :additional_notes, :collecting_area, :deadline,
+        :is_digital_collections, :is_rights_and_reproduction
       )
     end
 

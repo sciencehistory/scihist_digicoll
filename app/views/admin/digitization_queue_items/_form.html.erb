@@ -20,14 +20,27 @@
 
     <%= f.input :title, hint: "or Object Name/Description" %>
 
+    <div class="row row-cols-lg-auto">
+      <div class="col-3">
+        <%= f.input :is_digital_collections, as: :boolean, label: "Digital Collections" %>
+      </div>
+      <div class="col-3">
+        <%= f.input :is_rights_and_reproduction, as: :boolean, label: "Rights and Reproductions" %>
+      </div>
+    </div>
+
     <div class="row">
-      <div class="col-6">
+      <div class="col">
         <%= f.input :status,
           label: "Digitization Queue Status",
           collection: Admin::DigitizationQueueItem::STATUSES.collect {|s| [s.humanize, s]},
           include_blank: false %>
       </div>
+      <div class="col">
+         <%= f.input :deadline, as: :date, required: true %>
+      </div>
     </div>
+
 
     <div class="row">
       <div class="col">

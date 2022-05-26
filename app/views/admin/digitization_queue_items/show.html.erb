@@ -27,6 +27,23 @@
       <dt>Collecting area</dt>
       <dd><%= link_to @admin_digitization_queue_item.collecting_area.humanize, admin_digitization_queue_items_url(@admin_digitization_queue_item.collecting_area) %></dd>
 
+      <dt>Purpose</dt>
+      <dd>
+        Digital Collections:
+        <% if @admin_digitization_queue_item.is_digital_collections %>
+          <span class="text-success">YES</span>
+        <% else %>
+          <span class="text-danger">NO</span>
+        <% end %>
+        <br>
+        Rights and Reproduction:
+        <% if @admin_digitization_queue_item.is_rights_and_reproduction %>
+          <span class="text-success">YES</span>
+        <% else %>
+          <span class="text-danger">NO</span>
+        <% end %>
+      </dd>
+
       <dt>Created at</dt>
       <dd>
         <%= l @admin_digitization_queue_item.created_at, format: :admin %>
@@ -38,6 +55,7 @@
         <%= @admin_digitization_queue_item.status.humanize %> (<%= l @admin_digitization_queue_item.status_changed_at, format: :admin %>)
       </dd>
 
+      <%= queue_item_show_field(@admin_digitization_queue_item, :deadline) %>
 
       <%= queue_item_show_field(@admin_digitization_queue_item, :bib_number) %>
       <%= queue_item_show_field(@admin_digitization_queue_item, :location) %>
