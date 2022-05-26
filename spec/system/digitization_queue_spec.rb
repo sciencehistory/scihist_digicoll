@@ -9,6 +9,11 @@ RSpec.describe "Digitization Queue", :logged_in_user, type: :system, js: true do
     click_on "New Queue Item"
 
     fill_in "Title", with: "Test Item"
+
+    select "2020", from: "admin_digitization_queue_item_deadline_1i"
+    select "February", from: "admin_digitization_queue_item_deadline_2i"
+    select "3", from: "admin_digitization_queue_item_deadline_3i"
+
     fill_in "Accession number", with: "test-acc"
     fill_in "Object ID (Past Perfect)", with: "test-obj-id"
     fill_in "Bib number", with: "b1234567"
@@ -22,8 +27,8 @@ RSpec.describe "Digitization Queue", :logged_in_user, type: :system, js: true do
     click_on "Create Digitization queue item"
     # return to listing page, now click on item we just made
 
-
-
+    dq  = Admin::DigitizationQueueItem.order(created_at: :desc).last
+    expect(dq.deadline).to eq Date.new(2020, 2, 3)
 
     ######
     ######
@@ -32,8 +37,6 @@ RSpec.describe "Digitization Queue", :logged_in_user, type: :system, js: true do
     #
     #
     # START STATUS CHANGE AJAX TEST:
-
-    dq  = Admin::DigitizationQueueItem.order(created_at: :desc).last
 
     # Change the status of the DQ item via the dropdown:
     expect(dq.status).to eq("awaiting_dig_on_cart")
