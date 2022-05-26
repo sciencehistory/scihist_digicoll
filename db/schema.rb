@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_10_192754) do
+ActiveRecord::Schema.define(version: 2022_05_25_192245) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -111,7 +111,6 @@ ActiveRecord::Schema.define(version: 2022_05_10_192754) do
     t.datetime "status_changed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "r_and_r_item_id"
   end
 
   create_table "fixity_checks", force: :cascade do |t|
@@ -235,44 +234,14 @@ ActiveRecord::Schema.define(version: 2022_05_10_192754) do
   end
 
   create_table "queue_item_comments", force: :cascade do |t|
-    t.bigint "digitization_queue_item_id"
+    t.bigint "digitization_queue_item_id", null: false
     t.bigint "user_id"
     t.text "text"
     t.boolean "system_action"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "r_and_r_item_id"
     t.index ["digitization_queue_item_id"], name: "index_queue_item_comments_on_digitization_queue_item_id"
     t.index ["user_id"], name: "index_queue_item_comments_on_user_id"
-  end
-
-  create_table "r_and_r_items", force: :cascade do |t|
-    t.string "title"
-    t.string "curator"
-    t.string "collecting_area"
-    t.string "bib_number"
-    t.string "location"
-    t.string "accession_number"
-    t.string "museum_object_id"
-    t.string "box"
-    t.string "folder"
-    t.string "dimensions"
-    t.string "materials"
-    t.string "copyright_status"
-    t.boolean "is_destined_for_ingest"
-    t.boolean "copyright_research_still_needed", default: true
-    t.text "instructions"
-    t.text "scope"
-    t.text "additional_pages_to_ingest"
-    t.text "additional_notes"
-    t.string "status", default: "awaiting_dig_on_cart"
-    t.datetime "status_changed_at"
-    t.datetime "deadline"
-    t.datetime "date_files_sent"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.text "patron_name_ciphertext"
-    t.text "patron_email_ciphertext"
   end
 
   create_table "scheduled_ingest_bucket_deletions", force: :cascade do |t|
@@ -308,7 +277,6 @@ ActiveRecord::Schema.define(version: 2022_05_10_192754) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  add_foreign_key "digitization_queue_items", "r_and_r_items"
   add_foreign_key "fixity_checks", "kithe_models", column: "asset_id"
   add_foreign_key "kithe_model_contains", "kithe_models", column: "containee_id"
   add_foreign_key "kithe_model_contains", "kithe_models", column: "container_id"
@@ -320,5 +288,4 @@ ActiveRecord::Schema.define(version: 2022_05_10_192754) do
   add_foreign_key "oral_history_access_requests", "kithe_models", column: "work_id"
   add_foreign_key "oral_history_content", "kithe_models", column: "work_id"
   add_foreign_key "queue_item_comments", "digitization_queue_items"
-  add_foreign_key "queue_item_comments", "r_and_r_items"
 end
