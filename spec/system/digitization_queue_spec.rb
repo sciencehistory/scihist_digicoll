@@ -15,9 +15,8 @@ RSpec.describe "Digitization Queue", :logged_in_user, type: :system, js: true do
     fill_in "Box", with: "test-box"
     fill_in "Folder", with: "test-folder"
     fill_in "Dimensions", with: "test-dimensions"
-    fill_in "Materials", with: "test-materials"
     fill_in "Scope", with: "Do this"
-    fill_in "Instructions", with: "And this"
+    fill_in "Additional notes", with: "And this"
     fill_in "Location", with: "Some location"
 
     click_on "Create Digitization queue item"
@@ -97,6 +96,5 @@ RSpec.describe "Digitization Queue", :logged_in_user, type: :system, js: true do
     expect(work.physical_container.box).to eq("test-box")
     expect(work.physical_container.folder).to eq("test-folder")
     expect(work.extent).to eq(["test-dimensions"])
-    expect(work.medium).to eq(["test-materials"])
   end
 end
