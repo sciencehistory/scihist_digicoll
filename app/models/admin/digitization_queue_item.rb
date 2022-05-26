@@ -20,8 +20,11 @@ class Admin::DigitizationQueueItem < ApplicationRecord
 
   # collecting areas could have been normalized as a separate table, but
   # not really needed, we'll just leave it as a controlled string.
-  COLLECTING_AREAS = %w{archives photographs rare_books modern_library museum_objects museum_fine_art}
-  validates :collecting_area, inclusion: { in: COLLECTING_AREAS }
+  COLLECTING_AREAS = %w{archives rare_books modern_library museum}
+
+  # These can be removed after change to collecting areas is fully deployed!
+  LEGACY_COLLECTING_AREAS = %w{photographs museum_objects museum_fine_art}
+  validates :collecting_area, inclusion: { in: COLLECTING_AREAS + LEGACY_COLLECTING_AREAS }
 
   STATUSES = %w{
     awaiting_dig_on_cart imaging_in_process post_production_completed
