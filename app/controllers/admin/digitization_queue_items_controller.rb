@@ -125,7 +125,7 @@ class Admin::DigitizationQueueItemsController < AdminController
     end
 
     def filtered_index_items
-      scope = Admin::DigitizationQueueItem.where(collecting_area: collecting_area).order(status_changed_at: :asc)
+      scope = Admin::DigitizationQueueItem.where(collecting_area: collecting_area).order(deadline: :asc)
 
       if (q = params.dig(:query, :q)).present?
         scope = scope.where("title like ? OR bib_number = ? or accession_number = ? OR museum_object_id = ?", "%#{q}%", q, q, q)
