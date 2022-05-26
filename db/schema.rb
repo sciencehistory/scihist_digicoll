@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_10_192754) do
+ActiveRecord::Schema.define(version: 2022_05_26_194233) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -102,9 +102,7 @@ ActiveRecord::Schema.define(version: 2022_05_10_192754) do
     t.string "box"
     t.string "folder"
     t.string "dimensions"
-    t.string "materials"
     t.text "scope"
-    t.text "instructions"
     t.text "additional_notes"
     t.string "copyright_status"
     t.string "status", default: "awaiting_dig_on_cart"
