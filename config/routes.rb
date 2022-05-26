@@ -294,7 +294,7 @@ Rails.application.routes.draw do
     post "/batch_create", to: "batch_create#add_files" # step 2
     post "/batch_create/finish", to: "batch_create#create" # step 3, create and redirect
 
-    resources :digitization_queue_items, except: [:index, :create, :new, :destroy] do
+    resources :digitization_queue_items, except: [:index, :create, :new] do
       collection do
         get "collecting_areas"
 
