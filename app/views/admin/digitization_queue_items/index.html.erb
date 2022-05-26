@@ -53,7 +53,7 @@
         <th style="width: 6rem;">acc. #</th>
         <th style="width: 8rem;">object id</th>
         <th style="width: 11rem;">status</th>
-        <th style="width: 8rem;">status changed</th>
+        <th style="width: 8rem;">deadline</th>
       </tr>
     </thead>
 
@@ -82,7 +82,7 @@
           <td>
              <%= render DigitizationQueueItemStatusFormComponent.new(admin_digitization_queue_item) %>
           </td>
-          <td><%= l(admin_digitization_queue_item.status_changed_at.to_date, format: :admin) %></td>
+          <td><%= l(admin_digitization_queue_item.deadline.to_date, format: :admin) %></td>
         </tr>
       <% end %>
     </tbody>
