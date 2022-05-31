@@ -8,7 +8,7 @@ class RightsIconComponent < ApplicationComponent
 
     @work = work
     @mode = mode
-    @rights_term = work.rights && RightsTerm.find(work.rights)
+    @rights_term = RightsTerm.find(work.rights) # work.rights can be nil, we'll get a null object term
   end
 
   def call
