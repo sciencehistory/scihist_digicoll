@@ -20,7 +20,8 @@ class Admin::DigitizationQueueItem < ApplicationRecord
 
   # collecting areas could have been normalized as a separate table, but
   # not really needed, we'll just leave it as a controlled string.
-  COLLECTING_AREAS = %w{archives photographs rare_books modern_library museum_objects museum_fine_art}
+  COLLECTING_AREAS = %w{archives rare_books modern_library museum}
+
   validates :collecting_area, inclusion: { in: COLLECTING_AREAS }
 
   STATUSES = %w{
@@ -107,8 +108,18 @@ class Admin::DigitizationQueueItem < ApplicationRecord
     if self.dimensions.present?
       work.extent =  self.dimensions
     end
+
     if self.materials.present?
       work.medium = self.materials
     end
+
+    if self.collecting_area == "archives"
+      work.department = "Archives"
+    elsif self.collecting_area == "rare_books" || self.collecting_area == "modern_library"
+      work.department = "Library"
+    elsif self.collecting_area == "museum"
+      work.department = "Museum"
+    end
+    
   end
 end

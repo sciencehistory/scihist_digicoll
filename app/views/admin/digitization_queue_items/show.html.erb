@@ -11,8 +11,13 @@
 
 <div class="row">
   <div class="col-md-7 order-md-2">
-    <p>
-    <%= link_to 'Edit Queue item', edit_admin_digitization_queue_item_path(@admin_digitization_queue_item), class: "btn btn-primary" %>
+    <p class="d-flex justify-content-between">
+      <%= link_to 'Edit Queue item', edit_admin_digitization_queue_item_path(@admin_digitization_queue_item), class: "btn btn-primary" %>
+
+      <%= link_to 'Delete Queue item', admin_digitization_queue_item_path(@admin_digitization_queue_item),
+            method: :delete,
+            class: "btn btn-danger", data: { confirm: "delete #{@admin_digitization_queue_item.title}?" }
+      %>
     </p>
 
     <% if @admin_digitization_queue_item.bib_number.present? %>
@@ -27,6 +32,23 @@
       <dt>Collecting area</dt>
       <dd><%= link_to @admin_digitization_queue_item.collecting_area.humanize, admin_digitization_queue_items_url(@admin_digitization_queue_item.collecting_area) %></dd>
 
+      <dt>Purpose</dt>
+      <dd>
+        Digital Collections:
+        <% if @admin_digitization_queue_item.is_digital_collections %>
+          <span class="text-success">YES</span>
+        <% else %>
+          <span class="text-danger">NO</span>
+        <% end %>
+        <br>
+        Rights and Reproduction:
+        <% if @admin_digitization_queue_item.is_rights_and_reproduction %>
+          <span class="text-success">YES</span>
+        <% else %>
+          <span class="text-danger">NO</span>
+        <% end %>
+      </dd>
+
       <dt>Created at</dt>
       <dd>
         <%= l @admin_digitization_queue_item.created_at, format: :admin %>
@@ -38,6 +60,7 @@
         <%= @admin_digitization_queue_item.status.humanize %> (<%= l @admin_digitization_queue_item.status_changed_at, format: :admin %>)
       </dd>
 
+      <%= queue_item_show_field(@admin_digitization_queue_item, :deadline) %>
 
       <%= queue_item_show_field(@admin_digitization_queue_item, :bib_number) %>
       <%= queue_item_show_field(@admin_digitization_queue_item, :location) %>
@@ -47,11 +70,9 @@
       <%= queue_item_show_field(@admin_digitization_queue_item, :folder) %>
 
       <%= queue_item_show_field(@admin_digitization_queue_item, :dimensions) %>
-      <%= queue_item_show_field(@admin_digitization_queue_item, :materials) %>
 
 
       <%= queue_item_show_field(@admin_digitization_queue_item, :scope, paragraphs: true) %>
-      <%= queue_item_show_field(@admin_digitization_queue_item, :instructions, paragraphs: true) %>
       <%= queue_item_show_field(@admin_digitization_queue_item, :additional_notes, paragraphs: true) %>
       <%= queue_item_show_field(@admin_digitization_queue_item, :copyright_status, paragraphs: true) %>
 
