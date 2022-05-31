@@ -20,14 +20,27 @@
 
     <%= f.input :title, hint: "or Object Name/Description" %>
 
+    <div class="row row-cols-lg-auto">
+      <div class="col-3">
+        <%= f.input :is_digital_collections, as: :boolean, label: "Digital Collections" %>
+      </div>
+      <div class="col-3">
+        <%= f.input :is_rights_and_reproduction, as: :boolean, label: "Rights and Reproductions" %>
+      </div>
+    </div>
+
     <div class="row">
-      <div class="col-6">
+      <div class="col">
         <%= f.input :status,
           label: "Digitization Queue Status",
           collection: Admin::DigitizationQueueItem::STATUSES.collect {|s| [s.humanize, s]},
           include_blank: false %>
       </div>
+      <div class="col">
+         <%= f.input :deadline, as: :date, required: true %>
+      </div>
     </div>
+
 
     <div class="row">
       <div class="col">
@@ -65,7 +78,7 @@
         <%= f.input :dimensions %>
       </div>
       <div class="col">
-        <%= f.input :materials %>
+
       </div>
     </div>
 
@@ -74,7 +87,7 @@
         <%= f.input :scope, hint: "Pages, Components, etc." %>
       </div>
       <div class="col">
-        <%= f.input :instructions, hint: "Staging notes, handling instructions, etc." %>
+      <%= f.input :additional_notes, label: "Additional notes", hint: "Staging notes, handling instructions, anything else" %>
       </div>
     </div>
 
@@ -83,7 +96,6 @@
         <%= f.input :copyright_status, as: :text %>
       </div>
       <div class="col">
-        <%= f.input :additional_notes, label: "Additional notes <small>(shows up on list view)</small>".html_safe %>
       </div>
     </div>
   </div>
