@@ -29,7 +29,7 @@ class Work < Kithe::Work
   validates :external_id, presence: true
   validates :department, inclusion: { in: ControlledLists::DEPARTMENT, allow_blank: true }
   validates :file_creator, inclusion: { in: ControlledLists::FILE_CREATOR, allow_blank: true }
-  validates :rights, inclusion: { in: RightsTerms.all_ids, allow_blank: true }
+  validates :rights, inclusion: { in: RightsTerm.all_ids, allow_blank: true }
   validates :format, array_inclusion: { in: ControlledLists::FORMAT }
   validates :genre, array_inclusion: { in: ControlledLists::GENRE  }
   validates :exhibition, array_inclusion: { in: ControlledLists::EXHIBITION  }

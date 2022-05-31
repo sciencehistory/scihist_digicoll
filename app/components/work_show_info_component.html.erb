@@ -36,7 +36,7 @@
   <%= render AttributeTable::RowComponent.new(:format, values: format.map(&:titleize), link_to_facet: "format_facet", alpha_sort: true) %>
 
   <%= render AttributeTable::RowComponent.new(:genre, values: genre, link_to_facet: "genre_facet", alpha_sort: true) %>
-  
+
   <%= render AttributeTable::RowComponent.new(:medium, values: medium, link_to_facet: ("medium_facet"), alpha_sort: true) %>
   <%= render AttributeTable::RowComponent.new(:extent, values: extent) %>
   <%= render AttributeTable::RowComponent.new(:language, values: language, link_to_facet: "language_facet", alpha_sort: true) %>
@@ -61,7 +61,7 @@
     <tr>
       <th scope='row'>Rights</th>
       <td>
-        <%= link_to RightsTerms.label_for(rights), rights, target: "_blank" %>
+        <%= link_to RightsTerm.label_for(rights), rights, target: "_blank" %>
       </td>
     </tr>
   <% end %>
