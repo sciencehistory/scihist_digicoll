@@ -1,5 +1,6 @@
 class Admin::DigitizationQueueItemsController < AdminController
-  before_action :set_admin_digitization_queue_item, only: [:show, :edit, :update, :destroy, :add_comment, :delete_comment]
+  before_action :set_admin_digitization_queue_item,
+    only: [:show, :edit, :update, :destroy, :add_comment, :delete_comment, :destroy]
 
   # GET /admin/digitization_queue_items
   # GET /admin/digitization_queue_items.json
@@ -39,6 +40,15 @@ class Admin::DigitizationQueueItemsController < AdminController
         format.html { render :new }
         format.json { render json: @admin_digitization_queue_item.errors, status: :unprocessable_entity }
       end
+    end
+  end
+
+  def destroy
+    @admin_digitization_queue_item.destroy!
+
+    respond_to do |format|
+      format.html { redirect_to admin_digitization_queue_items_url(@admin_digitization_queue_item.collecting_area), notice: "Digitization queue item was successfully destroyed." }
+      format.json { head :no_content }
     end
   end
 
@@ -118,13 +128,14 @@ class Admin::DigitizationQueueItemsController < AdminController
     def admin_digitization_queue_item_params
       params.require(:admin_digitization_queue_item).permit(
         :title, :status, :accession_number, :museum_object_id, :bib_number, :location,
-        :box, :folder, :dimensions, :materials, :copyright_status,
-        :scope, :instructions, :additional_notes, :collecting_area
+        :box, :folder, :dimensions, :copyright_status,
+        :scope, :additional_notes, :collecting_area, :deadline,
+        :is_digital_collections, :is_rights_and_reproduction
       )
     end
 
     def filtered_index_items
-      scope = Admin::DigitizationQueueItem.where(collecting_area: collecting_area).order(status_changed_at: :asc)
+      scope = Admin::DigitizationQueueItem.where(collecting_area: collecting_area).order(deadline: :asc)
 
       if (q = params.dig(:query, :q)).present?
         scope = scope.where("title like ? OR bib_number = ? or accession_number = ? OR museum_object_id = ?", "%#{q}%", q, q, q)

@@ -9,22 +9,26 @@ RSpec.describe "Digitization Queue", :logged_in_user, type: :system, js: true do
     click_on "New Queue Item"
 
     fill_in "Title", with: "Test Item"
+
+    select "2020", from: "admin_digitization_queue_item_deadline_1i"
+    select "February", from: "admin_digitization_queue_item_deadline_2i"
+    select "3", from: "admin_digitization_queue_item_deadline_3i"
+
     fill_in "Accession number", with: "test-acc"
     fill_in "Object ID (Past Perfect)", with: "test-obj-id"
     fill_in "Bib number", with: "b1234567"
     fill_in "Box", with: "test-box"
     fill_in "Folder", with: "test-folder"
     fill_in "Dimensions", with: "test-dimensions"
-    fill_in "Materials", with: "test-materials"
     fill_in "Scope", with: "Do this"
-    fill_in "Instructions", with: "And this"
+    fill_in "Additional notes", with: "And this"
     fill_in "Location", with: "Some location"
 
     click_on "Create Digitization queue item"
     # return to listing page, now click on item we just made
 
-
-
+    dq  = Admin::DigitizationQueueItem.order(created_at: :desc).last
+    expect(dq.deadline).to eq Date.new(2020, 2, 3)
 
     ######
     ######
@@ -33,8 +37,6 @@ RSpec.describe "Digitization Queue", :logged_in_user, type: :system, js: true do
     #
     #
     # START STATUS CHANGE AJAX TEST:
-
-    dq  = Admin::DigitizationQueueItem.order(created_at: :desc).last
 
     # Change the status of the DQ item via the dropdown:
     expect(dq.status).to eq("awaiting_dig_on_cart")
@@ -91,12 +93,12 @@ RSpec.describe "Digitization Queue", :logged_in_user, type: :system, js: true do
 
     expect(work.title).to eq("Test Item")
     expect(work.digitization_queue_item).to be_present
+    expect(work.department).to eq "Library"
     expect(work.external_id.find {|i| i.category == "accn" }&.value).to eq("test-acc")
     expect(work.external_id.find {|i| i.category == "object" }&.value).to eq("test-obj-id")
     expect(work.external_id.find {|i| i.category == "bib" }&.value).to eq("b1234567")
     expect(work.physical_container.box).to eq("test-box")
     expect(work.physical_container.folder).to eq("test-folder")
     expect(work.extent).to eq(["test-dimensions"])
-    expect(work.medium).to eq(["test-materials"])
   end
 end
