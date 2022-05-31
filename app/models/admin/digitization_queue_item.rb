@@ -109,10 +109,6 @@ class Admin::DigitizationQueueItem < ApplicationRecord
       work.extent =  self.dimensions
     end
 
-    if self.materials.present?
-      work.medium = self.materials
-    end
-
     if self.collecting_area == "archives"
       work.department = "Archives"
     elsif self.collecting_area == "rare_books" || self.collecting_area == "modern_library"
@@ -120,6 +116,6 @@ class Admin::DigitizationQueueItem < ApplicationRecord
     elsif self.collecting_area == "museum"
       work.department = "Museum"
     end
-    
+
   end
 end
