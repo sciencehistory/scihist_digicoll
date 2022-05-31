@@ -82,7 +82,7 @@
           <td>
              <%= render DigitizationQueueItemStatusFormComponent.new(admin_digitization_queue_item) %>
           </td>
-          <td><%= l(admin_digitization_queue_item.deadline.to_date, format: :admin) %></td>
+          <td><%= l(admin_digitization_queue_item.deadline.to_date, format: :admin) if admin_digitization_queue_item.deadline %></td>
         </tr>
       <% end %>
     </tbody>
