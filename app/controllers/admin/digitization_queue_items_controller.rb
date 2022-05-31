@@ -1,5 +1,6 @@
 class Admin::DigitizationQueueItemsController < AdminController
-  before_action :set_admin_digitization_queue_item, only: [:show, :edit, :update, :destroy, :add_comment, :delete_comment]
+  before_action :set_admin_digitization_queue_item,
+    only: [:show, :edit, :update, :destroy, :add_comment, :delete_comment, :destroy]
 
   # GET /admin/digitization_queue_items
   # GET /admin/digitization_queue_items.json
@@ -39,6 +40,15 @@ class Admin::DigitizationQueueItemsController < AdminController
         format.html { render :new }
         format.json { render json: @admin_digitization_queue_item.errors, status: :unprocessable_entity }
       end
+    end
+  end
+
+  def destroy
+    @admin_digitization_queue_item.destroy!
+
+    respond_to do |format|
+      format.html { redirect_to admin_digitization_queue_items_url(@admin_digitization_queue_item.collecting_area), notice: "Digitization queue item was successfully destroyed." }
+      format.json { head :no_content }
     end
   end
 
