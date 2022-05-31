@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_26_161121) do
-
+ActiveRecord::Schema.define(version: 2022_05_26_184053) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -112,6 +111,9 @@ ActiveRecord::Schema.define(version: 2022_05_26_161121) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "r_and_r_item_id"
+    t.date "deadline"
+    t.boolean "is_digital_collections"
+    t.boolean "is_rights_and_reproduction"
   end
 
   create_table "fixity_checks", force: :cascade do |t|

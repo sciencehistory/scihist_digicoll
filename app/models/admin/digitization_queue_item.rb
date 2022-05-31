@@ -110,6 +110,7 @@ class Admin::DigitizationQueueItem < ApplicationRecord
     if self.dimensions.present?
       work.extent =  self.dimensions
     end
+
     if self.materials.present?
       work.medium = self.materials
     end
@@ -121,5 +122,6 @@ class Admin::DigitizationQueueItem < ApplicationRecord
     elsif self.collecting_area == "museum"
       work.department = "Museum"
     end
+    
   end
 end
