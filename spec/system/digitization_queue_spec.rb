@@ -91,6 +91,7 @@ RSpec.describe "Digitization Queue", :logged_in_user, type: :system, js: true do
 
     expect(work.title).to eq("Test Item")
     expect(work.digitization_queue_item).to be_present
+    expect(work.department).to eq "Library"
     expect(work.external_id.find {|i| i.category == "accn" }&.value).to eq("test-acc")
     expect(work.external_id.find {|i| i.category == "object" }&.value).to eq("test-obj-id")
     expect(work.external_id.find {|i| i.category == "bib" }&.value).to eq("b1234567")
