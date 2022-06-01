@@ -18,7 +18,7 @@
       Your receipt of an electronic copy of this oral history indicates your agreement to abide by U.S. copyright law and terms of licensing:
 
         <% if @work.rights.present? %>
-          <%= link_to RightsTerms.label_for(@work.rights), @work.rights, class: "alert-link" %>.
+          <%= link_to RightsTerm.label_for(@work.rights), @work.rights, class: "alert-link" %>.
         <% else %>
           <p>[Missing rights information, please contact the Center for Oral History.]</p>
         <% end %>

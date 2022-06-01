@@ -3,9 +3,9 @@ require "rails_helper"
 RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
   describe "Sends out the items" do
     let(:representative) do
-      create(:asset_with_faked_file, :pdf, published: true, title: "Preview PDF", position: 1) 
+      create(:asset_with_faked_file, :pdf, published: true, title: "Preview PDF", position: 1)
     end
-    
+
     let(:members) do
       [
         representative,
@@ -59,7 +59,7 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
 
       expect(body).to match "Please download your files by #{(Date.today + 6.days).strftime("%A, %B %d")}"
 
-      expect(body).to include RightsTerms.label_for(work.rights)
+      expect(body).to include RightsTerm.label_for(work.rights)
 
       expect(body).to include(staff_message)
 
