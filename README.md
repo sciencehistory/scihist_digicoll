@@ -352,3 +352,7 @@ This feature was in our v1 sufia-based app, we copied it over.
 <img src="https://www.browserstack.com/images/layout/browserstack-logo-600x315.png" width="280"/>
 
 [BrowserStack](http://www.browserstack.com) supports us with [free access for open source](https://www.browserstack.com/open-source).
+
+<hr>
+
+[Scout APM](https://ter.li/h8k29r) supports us with free access for open source.
