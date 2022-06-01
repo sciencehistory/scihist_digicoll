@@ -71,11 +71,11 @@ describe RightsIconComponent, type: :component do
     end
 
     describe "in copyright" do
-      RightsTerms.all_ids.
-      select { |id| RightsTerms.category_for(id) == "in_copyright"}.
-      reject {|id| id == "http://rightsstatements.org/vocab/InC/1.0/"}.each do |i_rights_id|
-        describe "#{i_rights_id}" do
-          let(:rights_id) { i_rights_id }
+      RightsTerm.all.
+      select { |term| term.category == "in_copyright"}.
+      reject {|term| term.id == "http://rightsstatements.org/vocab/InC/1.0/"}.each do |term|
+        describe "#{term.id}" do
+          let(:rights_id) { term.id }
 
           it "has correct alt text" do
             expect(container).to be_present
@@ -86,10 +86,10 @@ describe RightsIconComponent, type: :component do
     end
 
     describe "no copyright" do
-      RightsTerms.all_ids.
-      select { |id| RightsTerms.category_for(id) == "no_copyright"}.each do |i_rights_id|
-        describe "#{i_rights_id}" do
-          let(:rights_id) { i_rights_id }
+      RightsTerm.all.
+      select { |term| term.category == "no_copyright"}.each do |term|
+        describe "#{term.id}" do
+          let(:rights_id) { term.id }
 
           it "has correct alt text" do
             expect(container).to be_present
@@ -100,10 +100,10 @@ describe RightsIconComponent, type: :component do
     end
 
     describe "unknown status" do
-      RightsTerms.all_ids.
-      select { |id| RightsTerms.category_for(id) == "other"}.each do |i_rights_id|
-        describe "#{i_rights_id}" do
-          let(:rights_id) { i_rights_id }
+      RightsTerm.all.
+      select { |term| term.category == "other"}.each do |term|
+        describe "#{term.id}" do
+          let(:rights_id) { term.id }
 
           it "has correct alt text" do
             expect(container).to be_present

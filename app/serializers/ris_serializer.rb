@@ -144,7 +144,7 @@ class RisSerializer
       if @work.rights.present?
         # Note: @work.rights is a string, not an array as in Sufia.
         rights_holder_string = @work.rights_holder.present? ? ", #{@work.rights_holder.try(:first)}" : ""
-        result = result + "  Rights: " + RightsTerms.label_for(@work.rights) + rights_holder_string
+        result = result + "  Rights: " + RightsTerm.label_for(@work.rights) + rights_holder_string
       end
       result
     end
