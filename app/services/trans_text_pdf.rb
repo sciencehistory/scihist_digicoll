@@ -37,6 +37,16 @@ class TransTextPdf
   #   to a client.
   def prawn_pdf
     Prawn::Document.new.tap do |pdf|
+      font_base = Rails.root + "app/assets/fonts/liberation_serif"
+      pdf.font_families.update(
+        'LiberationSerif' => {
+          normal: font_base + "LiberationSerif-Regular.ttf",
+          italic: font_base + "LiberationSerif-Italic.ttf",
+          bold: font_base + "LiberationSerif-Bold.ttf",
+          bold_italic: font_base + "LiberationSerif-BoldItalic.ttf"
+       }
+     )
+
       # We add the header SVG in not via HTML, because prawn-html does not support SVGs!
       pdf.svg IO.read(Rails.root + "app/assets/images/Science_History_logo_dk_blue_rgb.svg"), width: 200
 
@@ -47,17 +57,45 @@ class TransTextPdf
     end
   end
 
+  # pretty kludgey html construction, but it works
   def content_html
-    safe_join(
+    body = safe_join(
       [
         content_tag("h1", work.title),
         citation_html,
         content_tag("p", "Courtesy of the Science History Institute, prepared #{localize(Time.now, format: :long)}"),
         (content_tag("p", additional_credit) if additional_credit),
+        "<p style='margin-bottom: 57px'></p>".html_safe, # hacky whitespace
         content_tag("h2", mode.to_s.titlecase),
         pages_html
       ].compact
     )
+
+    # to apply CSS that prawn-html will use we NEED to embed it in an HTML doc
+    # like this, which we do the stupidest way, to choose a custom font, and
+    # some appropriate sizing/spacing.
+    <<~EOS.html_safe
+      <html>
+        <head>
+          <style>
+            body {
+              font-family: LiberationSerif;
+              font-size: 19px;
+            }
+            h1 {
+              font-size: 40px;
+              line-height: 1;
+            }
+            h2 { font-size: 32px; }
+            h3 { font-size: 27px; }
+            h4 { font-size: 24px; }
+          </style>
+        </head>
+        <body>
+          #{body}
+        </body>
+      </html>
+    EOS
   end
 
 
