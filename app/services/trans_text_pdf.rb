@@ -156,7 +156,7 @@ class TransTextPdf
         line-height: 1;
       }
       h2 { font-size: 34px; }
-      h3 { font-size: 28px; }
+      h3 { font-size: 28px; margin-top: 40px; }
       h4 { font-size: 24px; }
 
       .intro-matter {
