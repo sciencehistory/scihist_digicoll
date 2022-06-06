@@ -78,17 +78,7 @@ class TransTextPdf
       <html>
         <head>
           <style>
-            body {
-              font-family: LiberationSerif;
-              font-size: 19px;
-            }
-            h1 {
-              font-size: 40px;
-              line-height: 1;
-            }
-            h2 { font-size: 32px; }
-            h3 { font-size: 27px; }
-            h4 { font-size: 24px; }
+            #{style_css}
           </style>
         </head>
         <body>
@@ -137,5 +127,21 @@ class TransTextPdf
 
       DescriptionDisplayFormatter.new(page.text).format
     end
+  end
+
+  def style_css
+    <<~EOS
+      body {
+        font-family: LiberationSerif;
+        font-size: 19px;
+      }
+      h1 {
+        font-size: 40px;
+        line-height: 1;
+      }
+      h2 { font-size: 32px; }
+      h3 { font-size: 27px; }
+      h4 { font-size: 24px; }
+    EOS
   end
 end
