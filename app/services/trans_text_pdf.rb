@@ -62,10 +62,7 @@ class TransTextPdf
     body = safe_join(
       [
         content_tag("h1", work.title),
-        citation_html,
-        content_tag("p", "Courtesy of the Science History Institute, prepared #{localize(Time.now, format: :long)}"),
-        (content_tag("p", additional_credit) if additional_credit),
-        "<p style='margin-bottom: 57px'></p>".html_safe, # hacky whitespace
+        content_tag("div", intro_matter, class: "intro-matter"),
         content_tag("h2", mode.to_s.titlecase),
         pages_html
       ].compact
@@ -86,6 +83,14 @@ class TransTextPdf
         </body>
       </html>
     EOS
+  end
+
+  def intro_matter
+    safe_join([
+      citation_html,
+      content_tag("p", "Courtesy of the Science History Institute, prepared #{localize(Time.now, format: :long)}"),
+      (content_tag("p", additional_credit) if additional_credit),
+    ])
   end
 
 
@@ -129,19 +134,28 @@ class TransTextPdf
     end
   end
 
+  # some trying-to-keep-it-simple CSS, that will be converted to PDF by
+  # prawn-html, which only supports very simple CSS.
+  # https://github.com/blocknotes/prawn-html#supported-tags--attributes
   def style_css
     <<~EOS
       body {
         font-family: LiberationSerif;
-        font-size: 19px;
+        font-size: 22px;
       }
       h1 {
         font-size: 40px;
         line-height: 1;
       }
-      h2 { font-size: 32px; }
-      h3 { font-size: 27px; }
+      h2 { font-size: 34px; }
+      h3 { font-size: 28px; }
       h4 { font-size: 24px; }
+
+      .intro-matter {
+        margin-left: 120px;
+        margin-bottom: 40px;
+        margin-top: 40px;
+      }
     EOS
   end
 end
