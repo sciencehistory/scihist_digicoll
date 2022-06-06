@@ -164,6 +164,11 @@ class TransTextPdf
         margin-bottom: 40px;
         margin-top: 40px;
       }
+
+      p {
+        /* don't know what 8px means, that's weird, but works for what we want */
+        line-height: 8px;
+      }
     EOS
   end
 end
