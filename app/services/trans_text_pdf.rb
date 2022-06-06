@@ -144,7 +144,11 @@ class TransTextPdf
 
   # some trying-to-keep-it-simple CSS, that will be converted to PDF by
   # prawn-html, which only supports very simple CSS.
+  #
   # https://github.com/blocknotes/prawn-html#supported-tags--attributes
+  #
+  # Measurements are only in pixels, and for line-height don't totally make sense,
+  # we eyeballed it.
   def style_css
     <<~EOS
       body {
@@ -166,7 +170,6 @@ class TransTextPdf
       }
 
       p {
-        /* don't know what 8px means, that's weird, but works for what we want */
         line-height: 8px;
       }
     EOS
