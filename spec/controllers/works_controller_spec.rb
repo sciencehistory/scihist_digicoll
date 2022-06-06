@@ -100,16 +100,10 @@ RSpec.describe WorksController, type: :controller do
           work.members.select(&:published).sort_by(&:position)
         }
 
-        it "delivers" do
+        it "has good filename" do
           get trans_text_type, params: { id: work.friendlier_id }, as: :pdf
 
-          expect(response.headers["Content-Disposition"]).to include("this_is_my_#{work.friendlier_id}_#{trans_text_type}.txt")
-
-          expect(response.body).to include(work.title.titlecase)
-          expect(response.body).to include("== IMAGE 1 ==\n\n#{published_ordered_members.first.send(trans_text_type)}")
-          expect(response.body).to include("== IMAGE 2 ==\n\n#{published_ordered_members.second.send(trans_text_type)}")
-
-          expect(response.body).not_to include(unpublished_asset.send(trans_text_type))
+          expect(response.headers["Content-Disposition"]).to include("this_is_my_#{work.friendlier_id}_#{trans_text_type}.pdf")
         end
 
         context "unpublished work" do
