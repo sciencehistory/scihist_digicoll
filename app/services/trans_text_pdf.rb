@@ -17,7 +17,6 @@ require 'rinku'
 #
 class TransTextPdf
   include ActionView::Helpers::TagHelper
-  include ActionView::Helpers::TranslationHelper
   include ActionView::Helpers::TextHelper
   include ActionView::Helpers::OutputSafetyHelper
 
@@ -94,7 +93,7 @@ class TransTextPdf
   def intro_matter
     safe_join([
       citation_html,
-      content_tag("p", "Courtesy of the Science History Institute, prepared #{localize(Time.now, format: :long)}"),
+      content_tag("p", "Courtesy of the Science History Institute, prepared #{Time.now.utc.strftime("%B %-d, %Y %H:%M %Z")}"),
       (content_tag("p", additional_credit) if additional_credit),
     ])
   end
