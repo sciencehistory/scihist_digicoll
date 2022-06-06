@@ -35,7 +35,13 @@ class TransTextPdf
 
   # @return [Prawn::Document] Can be saved to disk, or perhaps streamed directly
   #   to a client.
+  #
+  # @raise ActionController::RoutingError if not text is available
   def prawn_pdf
+    unless text_page_objects.present?
+      raise ActionController::RoutingError.new("No text available to compile for #{mode}")
+    end
+
     Prawn::Document.new.tap do |pdf|
       font_base = Rails.root + "app/assets/fonts/liberation_serif"
       pdf.font_families.update(
@@ -119,12 +125,9 @@ class TransTextPdf
   # can have simple HTML formatting, which we want to safely include -- we
   # re-use DescriptionFormatter for formatting, including what html tags to allow.
   def pages_html
-    # whether user is administrator or not, we don't include private pages for now.
-    pages = Work::TextPage.compile(work.ordered_viewable_members(current_user: nil), accessor: mode)
-
-    pages.collect do |page|
+    text_page_objects.collect do |page|
       # we include page label headers if we have more than one page
-      if pages.length > 1
+      if text_page_objects.length > 1
         content_tag("h3", page.page_label)
       else
         "".html_safe
@@ -132,6 +135,11 @@ class TransTextPdf
 
       DescriptionDisplayFormatter.new(page.text).format
     end
+  end
+
+  def text_page_objects
+    # whether user is administrator or not, we don't include private pages for now.
+    @text_page_objects ||= Work::TextPage.compile(work.ordered_viewable_members(current_user: nil), accessor: mode)
   end
 
   # some trying-to-keep-it-simple CSS, that will be converted to PDF by
