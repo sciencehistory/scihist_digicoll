@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 class RightsIconComponent < ApplicationComponent
-    attr_reader :mode, :work, :rights_term
+    attr_reader :mode, :rights_id, :rights_term
 
-  def initialize(work:, mode: :large)
+  def initialize(rights_id:, mode: :large)
     raise ArgumentError.new("mode must be :large or :dropdown_item") unless [:large, :dropdown_item].include?(mode)
 
-    @work = work
+    @rights_id = rights_id
     @mode = mode
-    @rights_term = RightsTerm.find(work.rights) # work.rights can be nil, we'll get a null object term
+    @rights_term = RightsTerm.find(@rights_id) # rights_id can be nil, we'll get a null object term
   end
 
   def call
@@ -52,12 +52,12 @@ class RightsIconComponent < ApplicationComponent
   end
 
   def has_rights_statement?
-    work.rights.present?
+    rights_id.present?
   end
 
   # We use URLs as our values in Work#rights
   def rights_url
-    work.rights
+    rights_id
   end
 
   # HTML label (becuase it includes a <br> at the right point) for the rights statement,
