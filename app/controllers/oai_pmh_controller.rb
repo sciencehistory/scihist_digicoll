@@ -11,9 +11,9 @@
       # Try to get one from the db, if we can't this is one we have in production
       sample_id (Work.first.friendlier_id rescue "tq57nr00k")
 
-      # Note we limit to published true, and pre-load leaf_representative for performance
+      # Note we limit to published true, and pre-load any accessed associations for performance
       source_model OAI::Provider::ActiveRecordWrapper.new(
-        Work.where(published: true).includes(:leaf_representative),
+        Work.where(published: true).includes(:leaf_representative, :contained_by),
         identifier_field: :friendlier_id
       )
     end
