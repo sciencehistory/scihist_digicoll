@@ -4,7 +4,7 @@ class RightsIconComponent < ApplicationComponent
     attr_reader :mode, :rights_id, :rights_term
 
   def initialize(rights_id:, mode: :large)
-    raise ArgumentError.new("mode must be :large or :dropdown_item") unless [:large, :dropdown_item].include?(mode)
+    raise ArgumentError.new("mode must be :large or :dropdown_item") unless [:large, :dropdown_item, :simple_link].include?(mode)
 
     @rights_id = rights_id
     @mode = mode
@@ -16,6 +16,8 @@ class RightsIconComponent < ApplicationComponent
 
     if mode == :large
       display_large
+    elsif mode == :simple_link
+      display_simple_link
     else
       display_dropdown_item
     end
@@ -32,6 +34,10 @@ class RightsIconComponent < ApplicationComponent
                   (rights_term.short_label_inline || "").html_safe,
                   class: "rights-statement-label")
     end
+  end
+
+  def display_simple_link
+    link_to(rights_term.label, rights_url, target: "_blank")
   end
 
   # a sort of logotype lock-up, with an internal link, so we can put a "rel: license" on it for CC.
