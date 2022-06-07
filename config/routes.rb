@@ -374,4 +374,6 @@ Rails.application.routes.draw do
   %w(about contact faq policy).each do |page_label|
     get page_label, controller: 'static', action: page_label, as: page_label
   end
+
+  get "/rights/:id", to: "rights_term_display#show"
 end
