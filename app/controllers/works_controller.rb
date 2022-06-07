@@ -29,33 +29,24 @@ class WorksController < ApplicationController
   end
 
   def transcription
-    trans_text_deliver(accessor: :transcription)
+    send_data(
+      TransTextPdf.new(@work, mode: :transcription).prawn_pdf.render,
+      filename: DownloadFilenameHelper.work_download_name(@work, specifier_str: "transcription", suffix: "pdf"),
+      type: 'application/pdf',
+      disposition: (params["disposition"] == "attachment" ? :attachment : :inline)
+    )
   end
 
   def english_translation
-    trans_text_deliver(accessor: :english_translation)
+    send_data(
+      TransTextPdf.new(@work, mode: :english_translation).prawn_pdf.render,
+      filename: DownloadFilenameHelper.work_download_name(@work, specifier_str: "english_translation", suffix: "pdf"),
+      type: 'application/pdf',
+      disposition: (params["disposition"] == "attachment" ? :attachment : :inline)
+    )
   end
 
   private
-
-  # shared logic for delivering transcription or english_translation aggregated .txt file
-  # @param accessor [Symbol] :transcription or :english_translation
-  def trans_text_deliver(accessor:)
-    pages = Work::TextPage.compile(@work.ordered_viewable_members(current_user: current_user), accessor: accessor)
-    raise ActionController::RoutingError.new("No text available to compile for #{accessor}") unless pages.present?
-
-    response.headers['Content-Disposition'] = ContentDisposition.format(
-        disposition: (params["disposition"] == "inline" ? :inline : :attachment),
-        filename: DownloadFilenameHelper.work_download_name(@work, specifier_str: accessor.to_s, suffix: "txt")
-      )
-
-    render "text_download", format: :txt, locals: {
-      subtitle: accessor.to_s.titlecase,
-      work: @work,
-      pages: pages
-    }
-  end
-
 
   # We use a different ViewComponent depending on work characteristics, polymorophically kind of.
   def view_component

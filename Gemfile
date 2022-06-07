@@ -129,6 +129,8 @@ gem "rinku", '~> 2.0' # auto-linking
 gem 'html_aware_truncation', '~> 1.0'
 
 gem "prawn", "~> 2.2" # creating PDFs
+gem "prawn-svg", "< 2"
+gem "prawn-html", "< 2"
 # The prawn gem uses `matrix`; as of ruby 3.1 it needs to be declared explicitly.
 # There isn't a prawn release that does that yet, although it's been
 # fixed in prawn master. We can work around that by adding an explicit top-level dependency.
