@@ -1,0 +1,16 @@
+<div class="branded-body-font text-page rights-term-display">
+  <%= render RightsIconComponent.new(rights_id: @rights_term.id) %>
+  <h1 class="brand-alt-h1"><%= @rights_term.label %></h1>
+
+  <div class="description mb-5 mt-5">
+    <p>
+      <%= @rights_term.description %>
+    </p>
+    <p class="text-right"><i>Adapted from <%= link_to "rightsstatements.org", @rights_term.id %></i></p>
+  </div>
+
+
+  <h2 class="brand-alt-h2">About rights in the Digital Collections</h2>
+
+  <%= render "copyright_explanation" %>
+</div>
