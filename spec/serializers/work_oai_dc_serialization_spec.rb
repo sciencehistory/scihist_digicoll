@@ -2,14 +2,19 @@ require 'rails_helper'
 
 describe WorkOaiDcSerialization do
   let(:member_asset) { create(:asset, :inline_promoted_file)}
+  let(:collection) { create(:collection, title: "My Local Collection") }
   let(:work) { create(:work, :with_complete_metadata,
     description: "This starts out with <b>tags</b>\n\nAnother paragraph",
+    extent: ["8.75 in. H x 5.6 in. W"],
+    place: [{ category: "place_of_creation", value: "Université de Bordeaux (1441-1970"}],
     creator: [
       { category: :author, value: "Smith, Joe" },
       { category: :editor, value: "Editor, Joe" }
     ],
+    rights_holder: "Science History Institute",
     representative: member_asset,
-    members: [member_asset]
+    members: [member_asset],
+    contained_by: [collection]
   )}
 
   # hacky probably a better way to do this. :(
@@ -58,6 +63,11 @@ describe WorkOaiDcSerialization do
     expect(container.at_xpath("./dpla:originalRecord").text).to eq public_work_url
     expect(container.at_xpath("./edm:object").text).to eq full_jpg_url
     expect(container.at_xpath("./edm:preview").text).to eq work_thumb_url
+
+    expect(container.at_xpath("./dcterms:isPartOf")&.text).to eq collection.title
+    expect(container.at_xpath("./dcterms:extent")&.text).to eq work.extent.first
+    expect(container.at_xpath("./dcterms:spatial")&.text).to eq work.place.first.value
+    expect(container.at_xpath("./dcterms:rightsholder")&.text).to eq work.rights_holder
 
     # TODO xml["dc"].format for mime/types of all included files
     # TODO test more than one thing?
