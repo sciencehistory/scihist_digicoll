@@ -41,6 +41,11 @@ Allow: /downloads/orig/pdf/
 Disallow: /downloads/orig/
 
 
+<%# PDF transcription and english_translation files are useless for robots,
+   content is already in HTML %>
+Disallow: /works/*/english_translation$
+Disallow: /works/*/transcription$
+
 <% else %>
 # Non-production, no robots please, although we let twitter in to test twitter integration
 
