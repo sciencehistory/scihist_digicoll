@@ -2,25 +2,21 @@ require 'rails_helper'
 
 describe RightsIconComponent, type: :component do
   describe "with nil rights statement" do
-    let(:work) { build(:work, rights: nil)}
-
     it "returns empty string" do
-      expect(render_inline(RightsIconComponent.new(work: work)).to_html).to eq("")
+      expect(render_inline(RightsIconComponent.new(rights_id: nil)).to_html).to eq("")
     end
   end
 
 
   describe "with empty string rights statement" do
-    let(:work) { build(:work, rights: "")}
-
     it "returns empty string" do
-      expect(render_inline(RightsIconComponent.new(work: work)).to_html).to eq("")
+      expect(render_inline(RightsIconComponent.new(rights_id: "")).to_html).to eq("")
     end
   end
 
   describe "public domain item" do
-    let(:work) { build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")}
-    let(:rendered) {  render_inline(RightsIconComponent.new(work: work)) }
+    let(:rights_id) { "http://creativecommons.org/publicdomain/mark/1.0/" }
+    let(:rendered) {  render_inline(RightsIconComponent.new(rights_id: rights_id)) }
 
     it "renders" do
       container = rendered.at_css("div.rights-statement")
@@ -33,13 +29,13 @@ describe RightsIconComponent, type: :component do
 
       link = container.at_css("a")
       expect(link).to be_present
-      expect(link["href"]).to eq(work.rights)
+      expect(link["href"]).to eq(rights_id)
       expect(link.inner_html).to include("Public<br>Domain")
     end
 
     describe "dropdown-item mode" do
-      let(:work) { build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")}
-      let(:rendered) { render_inline(RightsIconComponent.new(work: work, mode: :dropdown_item)) }
+      let(:rights_id) { "http://creativecommons.org/publicdomain/mark/1.0/" }
+      let(:rendered) { render_inline(RightsIconComponent.new(rights_id: rights_id, mode: :dropdown_item)) }
 
       it "renders" do
         link = rendered.at_xpath("./a")
@@ -47,7 +43,7 @@ describe RightsIconComponent, type: :component do
 
         expect(link["class"].split(" ")).to match(['rights-statement', 'dropdown-item', 'rights-statements-org'])
 
-        expect(link["href"]).to eq(work.rights)
+        expect(link["href"]).to eq(rights_id)
         expect(link).to have_selector("img.rights-statement-logo[src*='rightsstatements-NoC.Icon-Only.dark']")
 
         expect(link.inner_html).to include("Public Domain")
@@ -57,8 +53,7 @@ describe RightsIconComponent, type: :component do
 
   describe "alt attr in large render" do
     let(:rights_id) { "http://rightsstatements.org/vocab/InC-EDU/1.0/" }
-    let(:work) { build(:work, rights: rights_id)}
-    let(:rendered) { render_inline(RightsIconComponent.new(work: work, mode: :large)) }
+    let(:rendered) { render_inline(RightsIconComponent.new(rights_id: rights_id, mode: :large)) }
     let(:container) { rendered.at_css("div.rights-statement") }
     let(:image) { container.at_css("img") }
 
@@ -115,8 +110,8 @@ describe RightsIconComponent, type: :component do
   end
 
   describe "CC license" do
-    let(:work) { build(:work, rights: "https://creativecommons.org/licenses/by-nc-nd/4.0/")}
-    let(:rendered) { render_inline(RightsIconComponent.new(work: work)) }
+    let(:rights_id) { "https://creativecommons.org/licenses/by-nc-nd/4.0/" }
+    let(:rendered) { render_inline(RightsIconComponent.new(rights_id: rights_id)) }
 
     it "renders" do
       container = rendered.at_css("div.rights-statement")
@@ -135,12 +130,12 @@ describe RightsIconComponent, type: :component do
 
       link = container.at_css(".rights-statement-label a")
       expect(link).to be_present
-      expect(link["href"]).to eq(work.rights)
+      expect(link["href"]).to eq(rights_id)
       expect(link.inner_html).to include("Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.")
     end
 
     context "dropdown-item mode" do
-      let(:rendered) {  render_inline(RightsIconComponent.new(work: work, mode: :dropdown_item)) }
+      let(:rendered) {  render_inline(RightsIconComponent.new(rights_id: rights_id, mode: :dropdown_item)) }
 
       it "renders" do
         link = rendered.at_xpath("./a")
@@ -148,7 +143,7 @@ describe RightsIconComponent, type: :component do
 
         expect(link["class"].split(" ")).to match(['rights-statement', 'dropdown-item', 'creative-commons-org'])
 
-        expect(link["href"]).to eq(work.rights)
+        expect(link["href"]).to eq(rights_id)
         expect(link).to have_selector("img.rights-statement-logo[src*='cc']")
 
         expect(link.inner_html).to include("BY-NC-ND 4.0")
