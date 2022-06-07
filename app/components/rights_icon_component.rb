@@ -55,9 +55,14 @@ class RightsIconComponent < ApplicationComponent
     rights_id.present?
   end
 
+  # Do we want to display our custom local explanation page? Or just use the rights_id URL
   # We use URLs as our values in Work#rights
   def rights_url
-    rights_id
+    if rights_term.param_id.present?
+      rights_term_path(rights_term.param_id)
+    else
+      rights_id
+    end
   end
 
   # HTML label (becuase it includes a <br> at the right point) for the rights statement,

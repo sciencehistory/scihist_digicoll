@@ -375,5 +375,5 @@ Rails.application.routes.draw do
     get page_label, controller: 'static', action: page_label, as: page_label
   end
 
-  get "/rights/:id", to: "rights_term_display#show"
+  get "/rights/:id", to: "rights_term_display#show", as: :rights_term
 end
