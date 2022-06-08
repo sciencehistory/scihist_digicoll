@@ -13,6 +13,8 @@
 #
 # The serializer will use these associations, so they should be eager-loaded:
 # * leaf_representative
+# * contained_by (collection)
+#
 class WorkOaiDcSerialization
   # all of em from https://drive.google.com/file/d/1fJEWhnYy5Ch7_ef_-V48-FAViA72OieG/view
   # why not, be complete in case we need em.
@@ -103,6 +105,19 @@ class WorkOaiDcSerialization
           xml["dc"].description DescriptionDisplayFormatter.new(work.description).format_plain
         end
 
+        (work.contained_by || []).each do |collection|
+          xml["dcterms"].isPartOf collection.title
+        end
+
+        (work.extent || []).each do |extent_str|
+          xml["dcterms"].extent extent_str
+        end
+
+        (work.place || []).each do |place|
+          xml["dcterms"].spatial place.value
+        end
+
+
         # Mime types in DC:format
         # work.content_types.each do |ctype|
         #   xml["dc"].format ctype
@@ -118,8 +133,8 @@ class WorkOaiDcSerialization
           xml["dc"].publisher publisher
         end
 
-        if work.rights.present?
-          xml["dcterms"].rightsholder work.rights
+        if work.rights_holder.present?
+          xml["dcterms"].rightsholder work.rights_holder
         end
 
         # Could do: dc:source archival location. A pain cause it requires collection, and
