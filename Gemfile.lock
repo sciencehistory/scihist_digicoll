@@ -78,6 +78,7 @@ GEM
     addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
     afm (0.2.2)
+    ansi (1.5.0)
     ast (2.4.2)
     attr_json (1.4.0)
       activerecord (>= 5.0.0, < 7.1)
@@ -187,6 +188,8 @@ GEM
       rexml
     csl-styles (2.0.1)
       csl (~> 2.0)
+    css_parser (1.11.0)
+      addressable
     database_cleaner (2.0.1)
       database_cleaner-active_record (~> 2.0.0)
     database_cleaner-active_record (2.0.1)
@@ -440,6 +443,9 @@ GEM
       multi_json (~> 1.3)
       multi_xml (~> 0.5)
       rack (>= 1.2, < 3)
+    oga (3.3)
+      ast
+      ruby-ll (~> 2.1)
     orm_adapter (0.5.0)
     os (1.1.4)
     ostruct (0.5.5)
@@ -460,6 +466,13 @@ GEM
     prawn (2.4.0)
       pdf-core (~> 0.9.0)
       ttfunk (~> 1.7)
+    prawn-html (0.6.4)
+      oga (~> 3.3)
+      prawn (~> 2.4)
+    prawn-svg (0.32.0)
+      css_parser (~> 1.6)
+      prawn (>= 0.11.1, < 3)
+      rexml (~> 3.2)
     pry (0.13.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -585,6 +598,9 @@ GEM
       json
       multipart-post
       oauth2
+    ruby-ll (2.1.2)
+      ansi
+      ast
     ruby-progressbar (1.11.0)
     ruby-rc4 (0.1.5)
     ruby2_keywords (0.0.5)
@@ -764,6 +780,8 @@ DEPENDENCIES
   pdf-reader (~> 2.2)
   pg (>= 0.18, < 2.0)
   prawn (~> 2.2)
+  prawn-html (< 2)
+  prawn-svg (< 2)
   pry-byebug
   puma (~> 5.6)
   qa (~> 5.2)
