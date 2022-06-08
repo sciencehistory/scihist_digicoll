@@ -109,7 +109,9 @@ class OrphanS3VideoDerivatives
   # Note that the md5 is NOT the hash of the asset, but can still be used to confirm the association
   # between the derivative and the asset.
   def parse_s3_path(s3_path)
-    shrine_id =  s3_path.delete_prefix(shrine_storage.prefix + "/")
+    puts s3_path
+    shrine_id =  s3_path
+    shrine_id =  shrine_id.delete_prefix(shrine_storage.prefix + "/") if shrine_storage.prefix.present?
     # shrine_id is the path we would use to delete the file:
     # puts shrine_storage.object(shrine_id).exists? # always true
     path_array = shrine_id.split('/')
