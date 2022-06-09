@@ -8,6 +8,7 @@ class OrphanAuditor
     @tasks[:originals] = OrphanS3Originals.new(show_progress_bar: false )
     @tasks[:public_derivatives] = OrphanS3Derivatives.new(show_progress_bar: false )
     @tasks[:restricted_derivatives] = OrphanS3RestrictedDerivatives.new(show_progress_bar: false )
+    @tasks[:video_derivatives] = OrphanS3VideoDerivatives.new(show_progress_bar: false )
     @tasks[:dzi] = OrphanS3Dzi.new(show_progress_bar: false )
     @tasks.values.each &:report_orphans
     return !orphans?
@@ -25,6 +26,8 @@ class OrphanAuditor
       orphaned_public_derivatives_sample: @tasks[:public_derivatives]&.sample,
       orphaned_restricted_derivatives_count:  @tasks[:restricted_derivatives]&.orphans_found,
       orphaned_restricted_derivatives_sample: @tasks[:restricted_derivatives]&.sample,
+      orphaned_video_derivatives_count:  @tasks[:video_derivatives]&.orphans_found,
+      orphaned_video_derivatives_sample: @tasks[:video_derivatives]&.sample,
       orphaned_dzi_count:  @tasks[:dzi]&.orphans_found,
       orphaned_dzi_sample: @tasks[:dzi]&.sample,
     }

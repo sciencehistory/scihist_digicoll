@@ -86,6 +86,7 @@
     <% end %>
   </p>
 
+
   <hr/>
   <h4>Restricted derivatives</h4>
   <p class="text-muted small">Restricted derivatives without a corresponding asset in the database.</p>
@@ -108,12 +109,42 @@
       <code>
         rails runner 'OrphanS3RestrictedDerivatives.new(show_progress_bar: false).delete_orphans'
       </code>
-
     <% else %>
       <span class="text-success">
         <i class="fa fa fa-thumbs-up" aria-hidden="true"></i>
       </span>
       All restricted derivatives OK
+    <% end %>
+  </p>
+
+
+  <hr/>
+  <h4>Video derivatives</h4>
+  <p class="text-muted small">Video derivatives without a corresponding video asset in the database.</p>
+  <p>
+    <% if @report.orphaned_video_derivatives_count > 0  %>
+      <span class="text-danger">
+        <i class="fa fa fa-thumbs-down" aria-hidden="true"></i> There are <%#= @report.orphaned_video_derivatives_count %> orphaned video derivatives.
+      </span>
+      <ul>
+        <% @report.orphaned_video_derivatives_sample.each_with_index do |url, i|%>
+          <li>
+            <%= link_to display_s3_url(url, storage: Shrine.storages[:video_derivatives_storage]), S3ConsoleUri.from_uri(url).console_uri %>
+          </li>
+        <% end %>
+        <% if @report.orphaned_video_derivatives_count > @report.orphaned_video_derivatives_sample.length %>
+          <li>[...]</li>
+        <% end %>
+      </ul>
+      To delete video derivatives:
+      <code>
+        rails runner 'OrphanS3VideoDerivatives.new(show_progress_bar: false).delete_orphans'
+      </code>
+    <% else %>
+      <span class="text-success">
+        <i class="fa fa fa-thumbs-up" aria-hidden="true"></i>
+      </span>
+      All video derivatives OK
     <% end %>
   </p>
 

@@ -35,6 +35,14 @@ class Admin::OrphanReport < ApplicationRecord
     data_for_report['orphaned_restricted_derivatives_sample'] || []
   end
 
+  def orphaned_video_derivatives_count
+    data_for_report['orphaned_video_derivatives_count'].to_i
+  end
+
+  def orphaned_video_derivatives_sample
+    data_for_report['orphaned_video_derivatives_sample'] || []
+  end
+
   def orphaned_dzi_count
     data_for_report['orphaned_dzi_count'].to_i
   end
