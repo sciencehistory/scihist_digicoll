@@ -7,6 +7,6 @@ libglib2.0-0
 libglib2.0-dev
 libpoppler-glib8
 
-# `poppler-utils` is not installed as a dependency of libpoppler-glib8,
-# and we need it for  `pdfunite`, which we use for on-demand PDF derivatives:
-poppler-utils
+# We need `pdfunite` command line; Currently the `heroku-buildpack-activestorage-preview`
+# is providing it, but in the past `poppler-utils` in Aptfile has, and could again:
+# poppler-utils
