@@ -1,9 +1,16 @@
 # This service class looks at all the folders (or s3 prefixes -- same thing) in the s3 folder where we store our
 # video derivatives, and attempts to connect each folder to a current video original. Folders that can't be accounted
-# for can be either listed out or deleted.
+# for can be either listed or deleted.
 #
-# No individual files within these folders are examined; if a folder can't be connected to a video asset, the entire folder is considered an orphan.
-# Individual files stored directly under the top-level `hls/` directory do not belong: they are also treated as orphans.
+# 1) We are working at the folder level: if a folder can't be connected to a video asset,
+# the entire folder is considered orphaned and can be deleted as a unit.
+#
+# 2) Individual files stored directly under the top-level
+# `hls/` folder are treated as orphans.
+#
+# 3) Any extraneous files that somehow end up
+# inside an asset's legitimate HLS derivative folder
+# will not be detected as orphans.
 #
 # bundle exec rails runner 'OrphanS3VideoDerivatives.new(show_progress_bar: false).report_orphans'
 # bundle exec rails runner 'OrphanS3VideoDerivatives.new(show_progress_bar: false).delete_orphans'
