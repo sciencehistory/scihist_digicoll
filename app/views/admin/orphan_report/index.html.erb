@@ -129,7 +129,7 @@
       <ul>
         <% @report.orphaned_video_derivatives_sample.each_with_index do |url, i|%>
           <li>
-            <%= link_to display_s3_url(url, storage: Shrine.storages[:video_derivatives_storage]), S3ConsoleUri.from_uri(url).console_uri %>
+            <%= link_to display_s3_url(url, storage: Shrine.storages[:video_derivatives]), S3ConsoleUri.from_uri(url).console_uri %>
           </li>
         <% end %>
         <% if @report.orphaned_video_derivatives_count > @report.orphaned_video_derivatives_sample.length %>
