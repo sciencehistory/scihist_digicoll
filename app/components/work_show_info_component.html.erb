@@ -139,6 +139,16 @@
     </tr>
   <% end %>
 
+  <% if oral_history_number.present? %>
+    <tr>
+      <th scope='row'>Oral history number</th>
+      <td>
+        <%= oral_history_number %>
+      </td>
+    </tr>
+
+  <% end %>
+
   <%= render AttributeTable::RowComponent.new(:series_arrangement, values: series_arrangement) %>
 
   <% if @work.physical_container.present? %>
