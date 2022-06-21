@@ -1,4 +1,5 @@
 class Asset < Kithe::Asset
+  include AttrJson::Record::QueryScopes
 
   include RecordPublishedAt
 
