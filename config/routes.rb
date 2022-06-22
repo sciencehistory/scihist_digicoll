@@ -337,6 +337,8 @@ Rails.application.routes.draw do
       if Shrine.storages[:cache].kind_of?(Shrine::Storage::S3)
         mount Shrine.uppy_s3_multipart(:cache) => "/s3"
       end
+
+      mount GoodJob::Engine => 'good_job'
     end
   end
 
