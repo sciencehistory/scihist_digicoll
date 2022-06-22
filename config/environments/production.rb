@@ -77,7 +77,7 @@ Rails.application.configure do
   # config.cache_store = :mem_cache_store
 
   # Use a real queuing backend for Active Job (and separate queues per environment)
-  config.active_job.queue_adapter     = :resque
+  config.active_job.queue_adapter     = :good_job
 
   # We are not sharing a redis among multiple apps, seems no need to queue_name_prefix,
   # and it makes it confusing when trying to set resque workers to work specific

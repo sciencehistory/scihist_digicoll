@@ -17,6 +17,10 @@ Rails.application.configure do
   # sassc-rails
   config.sass.inline_source_maps = true
 
+  # For some consistency, use good_job in development too, although by
+  # default in development it'll be running in an in-process execution mode
+  config.active_job.queue_adapter = :good_job
+
 
   # Enable/disable caching. By default caching is disabled.
   # Run rails dev:cache to toggle caching.
