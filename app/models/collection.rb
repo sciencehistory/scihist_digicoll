@@ -4,6 +4,7 @@
 # Since the member relation destroys children when parent is deleted, deleting a collection
 # automatically deletes the thumb (which automatically deletes the stored file)
 class Collection < Kithe::Collection
+  include AttrJson::Record::QueryScopes
 
   include RecordPublishedAt
 
