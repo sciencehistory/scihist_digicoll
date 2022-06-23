@@ -1,0 +1,45 @@
+<h1>Assets</h1>
+
+<%= simple_form_for(admin_assets_path, method: "get") do %>
+  <div class="row">
+    <div class="input-group col-sm-10 mb-3">
+      <div class="input-group-prepend">
+        <%= label_tag "q", "In Title or ID", class: "input-group-text" %>
+      </div>
+        <%= search_field_tag "q", params[:q], class: "form-control" %>
+      <div class="input-group-append">
+        <%= button_tag "Search", type: "submit", class: "btn btn-primary" %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+
+<%= render PageEntriesInfoComponent.new(@assets) %>
+
+
+<table class="table admin-list">
+  <thead>
+    <tr>
+      <th class="thumbnail">thumbnail</th>
+      <th class="id">friendlier_id</th>
+      <th class="title">asset title</th>
+      <th class="title">parent</th>
+      <th class="datestamp">created at</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @assets.each do |asset| %>
+      <tr>
+        <td><%= thumb_image_tag(asset, size: :mini, image_missing_text: true) %></td>
+        <td><%= asset.friendlier_id %></td>
+        <td><%= link_to asset.title, [:admin, asset] %></td>
+        <td><%= link_to asset.parent.title, admin_work_path(asset.parent) %></td>
+        <td class="datestamp"><%=  l asset.created_at.to_date, format: :admin %> </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= paginate @assets, theme: 'twitter-bootstrap-4' %>
