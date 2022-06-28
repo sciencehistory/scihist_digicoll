@@ -66,7 +66,7 @@ class RightsIconComponent < ApplicationComponent
     else
       # The category icon, does need alt text because we just display a short label
       # next to it, which doesn't include what the icon conveys.
-      content_tag("div", class: ['rights-statement', mode.to_s.dasherize, "rights-statements-org"]) do
+      content_tag("a", href: rights_url, target: "_blank", class: ['rights-statement', mode.to_s.dasherize, "rights-statements-org"]) do
         image_tag(rights_category_icon_src, class: "rights-statement-logo", alt: rights_term.icon_alt) +
         " ".html_safe +
         content_tag("span", rights_icon_label, class: "rights-statement-label")
@@ -97,7 +97,7 @@ class RightsIconComponent < ApplicationComponent
   # HTML label (becuase it includes a <br> at the right point) for the rights statement,
   # from our local metadata, adapted from rightstatements.org
   def rights_icon_label
-    link_to((rights_term.short_label_html || "").html_safe, rights_url, target: "_blank")
+    (rights_term.short_label_html || "").html_safe
   end
 
   # creative commons can show multiple "bubble" icons, they don't need alt text
