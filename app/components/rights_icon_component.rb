@@ -52,7 +52,7 @@ class RightsIconComponent < ApplicationComponent
   end
 
   def display_simple_link
-    link_to(rights_term.label, rights_url, target: "_blank")
+    link_to(rights_term.label, rights_url, target: link_target)
   end
 
   # a sort of logotype lock-up, with an internal link, so we can put a "rel: license" on it for CC.
@@ -66,7 +66,7 @@ class RightsIconComponent < ApplicationComponent
     else
       # The category icon, does need alt text because we just display a short label
       # next to it, which doesn't include what the icon conveys.
-      content_tag("a", href: rights_url, target: "_blank", class: ['rights-statement', mode.to_s.dasherize, "rights-statements-org"]) do
+      content_tag("a", href: rights_url, target: link_target, class: ['rights-statement', mode.to_s.dasherize, "rights-statements-org"]) do
         image_tag(rights_category_icon_src, class: "rights-statement-logo", alt: rights_term.icon_alt) +
         " ".html_safe +
         content_tag("span", rights_icon_label, class: "rights-statement-label")
@@ -80,13 +80,25 @@ class RightsIconComponent < ApplicationComponent
     rights_id.present?
   end
 
+  def link_to_local_rights_page?
+    rights_term.param_id.present?
+  end
+
   # Do we want to display our custom local explanation page? Or just use the rights_id URL
   # We use URLs as our values in Work#rights
   def rights_url
-    if rights_term.param_id.present?
+    if link_to_local_rights_page?
       rights_term_path(rights_term.param_id, work&.friendlier_id)
     else
       rights_id
+    end
+  end
+
+  def link_target
+    if link_to_local_rights_page?
+      nil
+    else
+      "_blank"
     end
   end
 
@@ -109,7 +121,7 @@ class RightsIconComponent < ApplicationComponent
       images << image_tag("cc_pictographs/#{pictograph_image}", class: "rights-statement-logo", alt: "")
     end
 
-    link_to rights_url, target: "_blank", alt: rights_term.label, title: rights_term.label do
+    link_to rights_url, target: link_target, alt: rights_term.label, title: rights_term.label do
       safe_join images
     end
   end
