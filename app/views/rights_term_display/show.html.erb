@@ -8,7 +8,7 @@
     </p>
     <p class="text-right"><i>Adapted from <%= link_to "rightsstatements.org", @rights_term.id %></i></p>
 
-    <% if @work&.rights_holder %>
+    <% if @work&.rights_holder&.present? %>
     <dl class="mt-4">
       <dt>Rights holder</dt>
       <dd><%= @work.rights_holder %></dd>
