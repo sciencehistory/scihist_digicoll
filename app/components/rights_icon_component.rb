@@ -1,14 +1,20 @@
 # frozen_string_literal: true
 
 class RightsIconComponent < ApplicationComponent
-    attr_reader :mode, :rights_id, :rights_term
+    attr_reader :mode, :rights_id, :rights_term, :work
 
-  def initialize(rights_id:, mode: :large)
+  # @param rights_id [String] The `id` from RightsTerm.
+  # @param mode [Symbol] :large, :dropdown_item, or :simple_link
+  # @param work [Work] optional, mostly so we can link to a specific-work rights explanation page.
+  #   if not present, work-specific link won't happen.
+
+  def initialize(rights_id:, work:nil, mode: :large)
     raise ArgumentError.new("mode must be :large or :dropdown_item") unless [:large, :dropdown_item, :simple_link].include?(mode)
 
     @rights_id = rights_id
     @mode = mode
     @rights_term = RightsTerm.find(@rights_id) # rights_id can be nil, we'll get a null object term
+    @work = work
   end
 
   def call
@@ -65,7 +71,7 @@ class RightsIconComponent < ApplicationComponent
   # We use URLs as our values in Work#rights
   def rights_url
     if rights_term.param_id.present?
-      rights_term_path(rights_term.param_id)
+      rights_term_path(rights_term.param_id, work&.friendlier_id)
     else
       rights_id
     end
