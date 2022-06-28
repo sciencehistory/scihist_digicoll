@@ -27,6 +27,7 @@ describe RightsIconComponent, type: :component do
       expect(link_container).to have_selector("img.rights-statement-logo[src*='rightsstatements-NoC.Icon-Only.dark']")
 
       expect(link_container["href"]).to eq(rights_id)
+      expect(link_container["target"]).to eq("_blank")
       expect(link_container.inner_html).to include("Public<br>Domain")
     end
 
@@ -40,6 +41,7 @@ describe RightsIconComponent, type: :component do
         expect(link["class"].split(" ")).to match(['rights-statement', 'dropdown-item'])
 
         expect(link["href"]).to eq(rights_id)
+        expect(link["target"]).to eq "_blank"
         expect(link).to have_selector("img.rights-statement-logo[src*='rightsstatements-NoC.Icon-Only.dark']")
 
         expect(link.inner_html).to include("Public Domain")
@@ -68,6 +70,7 @@ describe RightsIconComponent, type: :component do
     it "links to local page" do
       link_container = rendered.at_css("a.rights-statement")
       expect(link_container["href"]).to eq(Rails.application.routes.url_helpers.rights_term_path("NoC-US", work.friendlier_id))
+      expect(link_container["target"]).to be nil
     end
   end
 
