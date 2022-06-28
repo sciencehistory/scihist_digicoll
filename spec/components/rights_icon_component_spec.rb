@@ -19,18 +19,15 @@ describe RightsIconComponent, type: :component do
     let(:rendered) {  render_inline(RightsIconComponent.new(rights_id: rights_id)) }
 
     it "renders" do
-      container = rendered.at_css("div.rights-statement")
-      expect(container).to be_present
+      link_container = rendered.at_css("a.rights-statement")
+      expect(link_container).to be_present
 
-      expect(container["class"].split(" ")).to match(['rights-statement', 'large', 'rights-statements-org'])
+      expect(link_container["class"].split(" ")).to match(['rights-statement', 'large', 'rights-statements-org'])
 
-      expect(container).to have_selector("img.rights-statement-logo[src*='rightsstatements-NoC.Icon-Only.dark']")
+      expect(link_container).to have_selector("img.rights-statement-logo[src*='rightsstatements-NoC.Icon-Only.dark']")
 
-
-      link = container.at_css("a")
-      expect(link).to be_present
-      expect(link["href"]).to eq(rights_id)
-      expect(link.inner_html).to include("Public<br>Domain")
+      expect(link_container["href"]).to eq(rights_id)
+      expect(link_container.inner_html).to include("Public<br>Domain")
     end
 
     describe "dropdown-item mode" do
@@ -69,16 +66,15 @@ describe RightsIconComponent, type: :component do
     let(:rendered) {  render_inline(RightsIconComponent.new(rights_id: rights_id, work: work)) }
 
     it "links to local page" do
-      container = rendered.at_css("div.rights-statement")
-      link = container.at_css("a")
-      expect(link["href"]).to eq(Rails.application.routes.url_helpers.rights_term_path("NoC-US", work.friendlier_id))
+      link_container = rendered.at_css("a.rights-statement")
+      expect(link_container["href"]).to eq(Rails.application.routes.url_helpers.rights_term_path("NoC-US", work.friendlier_id))
     end
   end
 
   describe "alt attr in large render" do
     let(:rights_id) { "http://rightsstatements.org/vocab/InC-EDU/1.0/" }
     let(:rendered) { render_inline(RightsIconComponent.new(rights_id: rights_id, mode: :large)) }
-    let(:container) { rendered.at_css("div.rights-statement") }
+    let(:container) { rendered.at_css(".rights-statement") }
     let(:image) { container.at_css("img") }
 
     describe "http://rightsstatements.org/vocab/InC/1.0/" do
