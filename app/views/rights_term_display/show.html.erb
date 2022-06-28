@@ -1,6 +1,12 @@
 <div class="branded-body-font text-page rights-term-display">
   <%= render RightsIconComponent.new(rights_id: @rights_term.id, work: @work) %>
+
   <h1 class="brand-alt-h1"><%= @rights_term.label %></h1>
+
+  <% if @work.present? %>
+    <p><%= link_to @work.title, work_path(@work) %></p>
+  <% end %>
+
 
   <div class="description mb-5 mt-5">
     <p>
