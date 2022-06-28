@@ -1,5 +1,5 @@
 <div class="branded-body-font text-page rights-term-display">
-  <%= render RightsIconComponent.new(rights_id: @rights_term.id) %>
+  <%= render RightsIconComponent.new(rights_id: @rights_term.id, work: @work) %>
   <h1 class="brand-alt-h1"><%= @rights_term.label %></h1>
 
   <div class="description mb-5 mt-5">
@@ -7,6 +7,14 @@
       <%= @rights_term.description %>
     </p>
     <p class="text-right"><i>Adapted from <%= link_to "rightsstatements.org", @rights_term.id %></i></p>
+
+    <% if @work&.rights_holder %>
+    <dl class="mt-4">
+      <dt>Rights holder</dt>
+      <dd><%= @work.rights_holder %></dd>
+    </dl>
+    <% end %>
+
   </div>
 
 

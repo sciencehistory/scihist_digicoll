@@ -65,12 +65,13 @@ describe RightsIconComponent, type: :component do
 
   describe "item with local rights page" do
     let(:rights_id) { "http://rightsstatements.org/vocab/NoC-US/1.0/" }
-    let(:rendered) {  render_inline(RightsIconComponent.new(rights_id: rights_id)) }
+    let(:work) { create(:work) }
+    let(:rendered) {  render_inline(RightsIconComponent.new(rights_id: rights_id, work: work)) }
 
     it "links to local page" do
       container = rendered.at_css("div.rights-statement")
       link = container.at_css("a")
-      expect(link["href"]).to eq(Rails.application.routes.url_helpers.rights_term_path("NoC-US"))
+      expect(link["href"]).to eq(Rails.application.routes.url_helpers.rights_term_path("NoC-US", work.friendlier_id))
     end
   end
 

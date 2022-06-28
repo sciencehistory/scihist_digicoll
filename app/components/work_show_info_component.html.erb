@@ -61,7 +61,7 @@
     <tr>
       <th scope='row'>Rights</th>
       <td>
-        <%= render RightsIconComponent.new(rights_id: rights, mode: :simple_link) %>
+        <%= render RightsIconComponent.new(rights_id: rights, work: @work, mode: :simple_link) %>
       </td>
     </tr>
   <% end %>

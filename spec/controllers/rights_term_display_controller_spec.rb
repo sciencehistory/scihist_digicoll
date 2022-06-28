@@ -11,7 +11,7 @@ describe RightsTermDisplayController do
     end
   end
 
-  describe "for valid param" do
+  describe "for valid rights param" do
     render_views
 
     let(:rights_param) { "NoC-US" }
@@ -24,4 +24,22 @@ describe RightsTermDisplayController do
       expect(response.body).to include(rights_term.description)
     end
   end
+
+  describe "with rights param and work with rights holder" do
+    render_views
+
+    let(:rights_param) { "NoC-US" }
+    let(:rights_term) { RightsTerm.find_by_param_id(rights_param) }
+    let(:work) { create(:work, rights_holder: "Some Rightsholder") }
+    let(:work_friendlier_id) { work.friendlier_id }
+
+    it "displays page with rights holder" do
+      get :show, params: { id: rights_param, work_id: work_friendlier_id }
+
+      expect(response).to have_http_status(200)
+      expect(response.body).to include(rights_term.description)
+      expect(response.body).to include(work.rights_holder)
+    end
+  end
+
 end
