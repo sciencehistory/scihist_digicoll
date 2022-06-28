@@ -40,7 +40,7 @@ describe RightsIconComponent, type: :component do
         link = rendered.at_xpath("./a")
         expect(link).to be_present
 
-        expect(link["class"].split(" ")).to match(['rights-statement', 'dropdown-item', 'rights-statements-org'])
+        expect(link["class"].split(" ")).to match(['rights-statement', 'dropdown-item'])
 
         expect(link["href"]).to eq(rights_id)
         expect(link).to have_selector("img.rights-statement-logo[src*='rightsstatements-NoC.Icon-Only.dark']")
@@ -165,7 +165,7 @@ describe RightsIconComponent, type: :component do
         link = rendered.at_xpath("./a")
         expect(link).to be_present
 
-        expect(link["class"].split(" ")).to match(['rights-statement', 'dropdown-item', 'creative-commons-org'])
+        expect(link["class"].split(" ")).to match(['rights-statement', 'dropdown-item'])
 
         expect(link["href"]).to eq(rights_id)
         expect(link).to have_selector("img.rights-statement-logo[src*='cc']")
