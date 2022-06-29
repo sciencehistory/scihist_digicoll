@@ -7,6 +7,10 @@ class RightsTermDisplayController < ApplicationController
     unless @rights_term
       raise ActionController::RoutingError.new("No RightsTerm param_id found for `#{params[:id]}`")
     end
+
+    if @work && @work.rights != @rights_term.id
+      raise ActionController::RoutingError.new("Can't display contradictory rights page for #{params[:id]} and work #{@work.friendlier_id}")
+    end
   end
 
 end
