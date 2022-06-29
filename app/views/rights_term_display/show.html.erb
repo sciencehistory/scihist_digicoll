@@ -4,11 +4,11 @@
   <h1 class="brand-alt-h1"><%= @rights_term.label %></h1>
 
   <% if @work.present? %>
-    <p><%= link_to @work.title, work_path(@work) %></p>
+    <p class="mt-4"><%= link_to @work.title, work_path(@work) %></p>
   <% end %>
 
 
-  <div class="description mb-5 mt-5">
+  <div class="description mb-5 mt-4">
     <p>
       <%= @rights_term.description %>
     </p>
