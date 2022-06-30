@@ -61,7 +61,7 @@
     <tr>
       <th scope='row'>Rights</th>
       <td>
-        <%= link_to RightsTerm.label_for(rights), rights, target: "_blank" %>
+        <%= render RightsIconComponent.new(rights_id: rights, work: @work, mode: :simple_link) %>
       </td>
     </tr>
   <% end %>

@@ -3,6 +3,7 @@
 // rightstatements.org
 
 .rights-statement.large {
+  display: block;
   margin-top: $spacer;
 
   @include clearfix;
