@@ -113,7 +113,8 @@ describe "Public work show page", type: :system, js: false do
       expect_attribute_row("Rights", RightsTerm.label_for(work.rights), as_links: true)
 
       expect_attribute_row("Department", work.department, as_links: true)
-      expect_attribute_row("Exhibition", work.exhibition, as_links: true)
+
+      expect(page).not_to have_text(work.exhibition)
       expect_attribute_row("Series arrangement", work.series_arrangement)
 
       expect_attribute_row("Physical container", work.physical_container.display_as)
