@@ -1,4 +1,4 @@
-# Solr indexing for our work class. Still a work in progress.
+# Solr indexing for our work class.
 class WorkIndexer < Kithe::Indexer
   configure do
     # instead of a Solr field per attribute, we group them into fields
@@ -41,15 +41,16 @@ class WorkIndexer < Kithe::Indexer
 
     to_field "text_no_boost_tesim", obj_extract("inscription"), transform(->(v) { "#{v.location}: #{v.text}" })
     to_field "text_no_boost_tesim", obj_extract("additional_credit"), transform(->(v) { "#{v.role}: #{v.name}" })
-    to_field ["text_no_boost_tesim", "exhibition_facet"], obj_extract("exhibition")
+    
     to_field "text_no_boost_tesim", obj_extract("digitization_funder")
     to_field "text_no_boost_tesim", obj_extract("extent")
 
     to_field "text_no_boost_tesim", obj_extract("physical_container"), transform( ->(v) { v.display_as })
 
-    # We put this one in a separate field, cause we only allow logged in users
-    # to search it
+    # We put these in a separate field, cause we only allow logged in users
+    # to search them
     to_field "admin_only_text_tesim", obj_extract("admin_note")
+    to_field ["admin_only_text_tesim", "exhibition_facet"], obj_extract("exhibition")
 
     # for date/year range facet
     to_field "year_facet_isim" do |record, acc|

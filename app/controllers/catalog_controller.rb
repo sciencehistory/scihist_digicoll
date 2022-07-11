@@ -108,7 +108,7 @@ class CatalogController < ApplicationController
     # These three methods
     # were outputting links (rel="alternate") in the HTML head tag that sent bots
     # to crawl RSS, atom, and json versions
-    # of our search results, which we are not offering yet.
+    # of our search results, which we don't offer,
     # and we are overrriding them so they output nothing instead.
     #
     # Overridden methods:
@@ -301,7 +301,7 @@ class CatalogController < ApplicationController
     config.add_facet_field 'language_facet', label: "Language", limit: 5
     config.add_facet_field "rights_facet", helper_method: :rights_label, label: "Rights", limit: 5
     config.add_facet_field 'department_facet', label: "Department", limit: 5
-    config.add_facet_field 'exhibition_facet', label: "Exhibition", limit: 5
+    config.add_facet_field 'exhibition_facet', label: "Exhibition (Staff-only)", limit: 5, show: :current_user
     config.add_facet_field 'published_bsi',    label: "Visibility (Staff-only)", show: :current_user, helper_method: :visibility_facet_labels
 
 
