@@ -46,6 +46,20 @@ describe "Asset#hls_playlist_file", queue_adapter: :inline do
 
       expect(asset.hls_playlist_file.exists?).to be(true), "Shrine attachment does not point to existing file"
     end
+
+    it "is stored in JSONB column without double-escaping" do
+      asset.hls_playlist_file_as_s3 = playlist_s3_url
+      asset.save!
+
+      # fetch with raw select so we can reliably see what's really in db
+      raw_results = Asset.connection.execute("SELECT json_attributes FROM kithe_models where id = '#{asset.id}'")
+      raw_data    = raw_results.first["json_attributes"]
+
+      unserialized = JSON.parse(raw_data)
+
+      # not a string containing a serialized json HASH!
+      expect(unserialized["hls_playlist_file_data"]).to be_kind_of(Hash)
+    end
   end
 
   describe "deletion of existing hls files" do
