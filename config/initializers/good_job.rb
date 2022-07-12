@@ -10,4 +10,8 @@ Rails.application.configure do
   # And when we do manually clear old job completion records, we do NOT
   # want to clear any currently listed as "discarded" (ie failed)
   config.good_job.cleanup_discarded_jobs = false
+
+  # let's keep job records for two weeks, our small volume of jobs
+  # should easily accomodate that. default was one day.
+  config.cleanup_preserved_jobs_before_seconds_ago = 2.weeks.to_i
 end
