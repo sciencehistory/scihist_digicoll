@@ -61,7 +61,7 @@
     <tr>
       <th scope='row'>Rights</th>
       <td>
-        <%= link_to RightsTerm.label_for(rights), rights, target: "_blank" %>
+        <%= render RightsIconComponent.new(rights_id: rights, work: @work, mode: :simple_link) %>
       </td>
     </tr>
   <% end %>
@@ -122,7 +122,7 @@
 
 <table class="work chf-attributes">
   <%= render AttributeTable::RowComponent.new(:department, values: [department], link_to_facet: "department_facet") %>
-  <%= render AttributeTable::RowComponent.new(:exhibition, values: exhibition, link_to_facet: "exhibition_facet", alpha_sort: true) %>
+  <%= render AttributeTable::RowComponent.new(:exhibition, values: exhibition, link_to_facet: "exhibition_facet", alpha_sort: true) if current_staff_user? %>
 
   <% if contained_by.present? %>
     <tr>
@@ -137,6 +137,16 @@
         </ul>
       </td>
     </tr>
+  <% end %>
+
+  <% if oral_history_number.present? %>
+    <tr>
+      <th scope='row'>Oral history number</th>
+      <td>
+        <%= oral_history_number %>
+      </td>
+    </tr>
+
   <% end %>
 
   <%= render AttributeTable::RowComponent.new(:series_arrangement, values: series_arrangement) %>

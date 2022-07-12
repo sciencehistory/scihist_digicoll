@@ -1,5 +1,23 @@
 class Admin::AssetsController < AdminController
 
+  def index
+    scope = Asset
+
+    # simple simple search on a few simple attributes with OR combo.
+    if params[:q].present?
+      scope = scope.where(id: params[:q]).or(
+        Asset.where(friendlier_id: params[:q])
+      ).or(
+        Asset.where("title like ?", "%" + Asset.sanitize_sql_like(params[:q]) + "%")
+      )
+    end
+
+    scope = scope.page(params[:page]).per(20).order(created_at: :desc)
+    scope = scope.includes(:parent)
+
+    @assets = scope
+  end
+
   def show
     @asset = Asset.find_by_friendlier_id!(params[:id])
     if @asset.stored?

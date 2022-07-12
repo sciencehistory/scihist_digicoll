@@ -1,0 +1,9 @@
+<%# we've pulled this simple static text out into a partial just so we can re-use it in several places %>
+
+  <p>Possession of a digital reproduction of the Institute’s collection materials does not constitute permission to publish, exhibit, or distribute. In most instances the Institute does not hold the copyright to its materials and cannot grant or deny permission to use them. The Institute staff will make every effort to inform patrons of copyrights and other restrictions that may apply to the works being reproduced. However, patrons are solely responsible for determining the copyright status of any materials they wish to use, investigating the owner of the copyright, and obtaining permission for the intended use.</p>
+
+  <p>The U.S. Copyright Law contains an exception for the so-called fair use of copyrighted materials for the purposes of teaching, scholarship, research, criticism, commentary, and news reporting. Patrons are solely responsible for determining whether their intended use of a copyrighted work is fair and responding to any claims of copyright infringement that may arise from use of the material. For more information on copyright and fair use, please refer to the <a href="https://www.copyright.gov/fair-use/more-info.html" target="_blank">U.S. Copyright Office website</a>.</p>
+
+  <p>You may need to obtain other permissions for your intended use. For example, other rights such as publicity, privacy or moral rights may limit how you may use the material.</p>
+
+  <p>Questions regarding the rights of our digital reproductions may be directed to <%= link_to ScihistDigicoll::Env.lookup!(:reproductions_email), "mailto:#{ ScihistDigicoll::Env.lookup!(:reproductions_email)}" %>.</p>

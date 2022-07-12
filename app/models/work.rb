@@ -1,4 +1,6 @@
 class Work < Kithe::Work
+  include AttrJson::Record::QueryScopes
+
   # will trigger automatic solr indexing in callbacks
 
   include RecordPublishedAt

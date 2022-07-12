@@ -1,0 +1,30 @@
+<div class="branded-body-font text-page rights-term-display">
+  <%= render RightsIconComponent.new(rights_id: @rights_term.id, work: @work) %>
+
+  <h1 class="brand-alt-h1"><%= @rights_term.label %></h1>
+
+  <% if @work.present? %>
+    <p class="mt-4"><%= link_to @work.title, work_path(@work) %></p>
+  <% end %>
+
+
+  <div class="description mb-5 mt-4">
+    <p>
+      <%= @rights_term.description %>
+    </p>
+    <p class="text-right"><i>Adapted from <%= link_to "rightsstatements.org", @rights_term.id %></i></p>
+
+    <% if @work&.rights_holder&.present? %>
+    <dl class="mt-4">
+      <dt>Rights holder</dt>
+      <dd><%= @work.rights_holder %></dd>
+    </dl>
+    <% end %>
+
+  </div>
+
+
+  <h2 class="brand-alt-h2">About rights in the Digital Collections</h2>
+
+  <%= render "copyright_explanation" %>
+</div>

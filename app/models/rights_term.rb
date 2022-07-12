@@ -26,7 +26,7 @@ class RightsTerm
 
 
   attr_reader :id, :label, :category, :short_label_html, :short_label_inline,
-    :icon_alt, :pictographs
+    :icon_alt, :pictographs, :param_id, :description
 
   def initialize(hash)
     @id                 = hash["id"]
@@ -35,6 +35,8 @@ class RightsTerm
     @short_label_html   = hash["short_label_html"]
     @icon_alt           = hash["icon_alt"]
     @pictographs        = hash["pictographs"] || []
+    @param_id           = hash["param_id"]
+    @description        = hash["description"]
 
     @short_label_inline = short_label_html.try { |str| str.gsub("<br>", " ") }
   end
@@ -43,6 +45,11 @@ class RightsTerm
   # If id is not found, it returns a "Null object" where all values are nil/empty.
   def self.find(id)
     terms_by_id[id] || (new({"id" => id}))
+  end
+
+  # if id is not found, just returns nil.
+  def self.find_by_param_id(param_id)
+    terms_by_id.values.find { |term| term.param_id == param_id }
   end
 
   def self.all_ids

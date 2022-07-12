@@ -124,6 +124,10 @@ class WorkShowInfoComponent < ApplicationComponent
     return @oral_history_interviewer_profiles
   end
 
+  def oral_history_number
+    @oral_history_number ||= work.external_id.find { |id| id.category == "interview"}&.value
+  end
+
 
   private
 

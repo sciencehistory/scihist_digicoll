@@ -8,7 +8,7 @@ class Work
       'Gudrun Dauner',
       'Gregory Tobias',
       'Jocelyn R. McDaniel',
-      'Julie Huggony',
+      'Julie Hugonny',
       'Mark Backrath',
       'Penn School of Medicine',
       'Will Brown'

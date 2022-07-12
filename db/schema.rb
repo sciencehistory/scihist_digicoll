@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_26_194233) do
+ActiveRecord::Schema.define(version: 2022_06_21_210438) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -108,7 +109,6 @@ ActiveRecord::Schema.define(version: 2022_05_26_194233) do
     t.datetime "status_changed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "r_and_r_item_id"
     t.date "deadline"
     t.boolean "is_digital_collections"
     t.boolean "is_rights_and_reproduction"

@@ -66,4 +66,17 @@ describe RightsTerm do
       end
     end
   end
+
+  describe "param_id" do
+    it "can look up by param_id" do
+      term = RightsTerm.find_by_param_id("InC")
+      expect(term).to be_present
+      expect(term.param_id).to eq "InC"
+      expect(term.description).to be_present
+    end
+
+    it "returns nil for not found" do
+      expect(RightsTerm.find_by_param_id("NoSuchThing")).to be nil
+    end
+  end
 end

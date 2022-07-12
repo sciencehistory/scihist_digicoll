@@ -59,6 +59,7 @@
                 <%= content_tag "li", ScihistDigicoll::Env.lookup(:service_level).upcase, class: ["text-center p-1 mb-2 font-weight-bold", ("bg-warning" if ScihistDigicoll::Env.staging?)] %>
               <% end %>
               <li><%= link_to  "Works", admin_works_path %></li>
+              <li><%= link_to  "Assets", admin_assets_path %></li>
               <li><%= link_to "Collections", admin_collections_path %></li>
               <li><%= link_to "Digitization Queue", collecting_areas_admin_digitization_queue_items_path %></li>
               <% if can? :admin, User %>
