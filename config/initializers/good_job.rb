@@ -1,10 +1,4 @@
 Rails.application.configure do
-  # Preserve completed records, so we can view them in dashboard
-  #
-  # Nope this does not seem to work...
-  #Rails.application.config.good_job.preserve_job_records = true
-  config.good_job.preserve_job_records = true
-
   # Do NOT retry errors that make it to good_job.
   #
   # This kind of ALWAYS needs to be false to avoid infinite loop on erroring job,
