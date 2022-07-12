@@ -1,4 +1,5 @@
 class Asset < Kithe::Asset
+  include AttrJson::Record::QueryScopes
 
   include RecordPublishedAt
 
@@ -22,7 +23,11 @@ class Asset < Kithe::Asset
   # of a db column. We 1) create the `attr_json`, then 2) in the shrine attachment we tell it
   # column_serializer:nil tells shrine not to serialize the JSON, let
   # attr_json take care of that.
-  attr_json :hls_playlist_file_data, :json
+  #
+  # And ActiveModel::Type::Value.new tells attr_json to just pass it through without
+  # transformation (it's sort of the basic no-op or null type), to get serialized to
+  # json by parent column.
+  attr_json :hls_playlist_file_data, ActiveModel::Type::Value.new
   include VideoHlsUploader::Attachment(:hls_playlist_file, store: :video_derivatives, column_serializer: nil)
 
 
