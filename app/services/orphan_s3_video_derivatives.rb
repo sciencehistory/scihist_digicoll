@@ -32,8 +32,10 @@ class OrphanS3VideoDerivatives
     )
   end
 
+#  json_attributes->'hls_playlist_file_data'->'id'
+
   def video_derivative_count
-    @video_derivative_count ||= Kithe::Asset.connection.select_one("select count((json_attributes->'hls_playlist_file_data' #>> '{}')::jsonb->>'id') from kithe_models where (json_attributes->'hls_playlist_file_data' #>> '{}')::jsonb->>'id' !='';")['count']
+    @video_derivative_count ||= Kithe::Asset.connection.select_one("select count(json_attributes->'hls_playlist_file_data'->'id') from kithe_models where json_attributes->'hls_playlist_file_data'->'id' is not NULL;")['count']
   end
 
   # Lists any orphan HLS derivatives found.
@@ -118,7 +120,7 @@ class OrphanS3VideoDerivatives
         # hls_playlist_file_data key and value are escaped and
         # stored as a string, so we need to extract the filepath using a trick described at 
         # https://dev.to/mrmurphy/so-you-put-an-escaped-string-into-a-json-column-2n67.
-        "select (json_attributes->'hls_playlist_file_data' #>> '{}')::jsonb->>'id' as hls_info",
+        "select json_attributes->'hls_playlist_file_data'->'id' as hls_info",
         
         # from assets
         "from kithe_models where kithe_model_type = 2",
