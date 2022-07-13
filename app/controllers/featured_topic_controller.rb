@@ -26,6 +26,10 @@ class FeaturedTopicController < CatalogController
   configure_blacklight do |config|
     # Limit just to items in the featured topic.
     config.search_builder_class = ::SearchBuilder::WithinFeaturedTopicBuilder
+
+    # And we need to make sure the :slug param is allowed by blacklight,
+    # don't totally understand why, as of BL 7.25
+    config.search_state_fields << :slug
   end
 
   private
