@@ -208,6 +208,13 @@ class CatalogController < ApplicationController
 
     config.default_per_page = 25
 
+
+    # Any custom query params we use for custom search functionality need to
+    # be listed here as of Blacklight 7.25, kind of annoying. These often
+    # correspond to old deprecated SearchBuilder extensions we are currently
+    # using. Not really sure why we need :id
+    config.search_state_fields.concat([:filter_public_domain, :id])
+
     ## Default parameters to send to solr for all search-like requests. See also SearchBuilder#processed_parameters
     config.default_solr_params = {
       rows: 25,
