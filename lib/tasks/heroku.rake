@@ -46,6 +46,11 @@ namespace :scihist do
           raise "Remote heroku export failed? #{stdout}"
         end
 
+        if stdout == ""
+          # don't know why this is how this problem exhibits
+          raise "Heroku export failed, no output -- you might need to `heroku login`?"
+        end
+
         # it's hard to get rails and our gems (*cough* scout) to avoid polluting stdout,
         # that we really mean just to be json we're going to parse. Let's try scanning
         # to first `{` at the beginning of a line, which is hopefully our actual JSON.
