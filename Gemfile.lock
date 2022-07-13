@@ -122,17 +122,18 @@ GEM
       thread_safe (~> 0.3, >= 0.3.1)
     bcrypt (3.1.18)
     bindex (0.8.1)
-    blacklight (7.24.0)
+    blacklight (7.27.1)
       deprecation
       globalid
+      hashdiff
       i18n (>= 1.7.0)
       jbuilder (~> 2.7)
       kaminari (>= 0.15)
       ostruct (>= 0.3.2)
       rails (>= 5.1, < 7.1)
       view_component (~> 2.43)
-    blacklight_range_limit (8.1.0)
-      blacklight (~> 7.0)
+    blacklight_range_limit (8.2.2)
+      blacklight (>= 7.22.2, < 9)
     bootsnap (1.11.1)
       msgpack (~> 1.2)
     bootstrap (4.6.1)
@@ -304,7 +305,7 @@ GEM
       domain_name (~> 0.5)
     http-form_data (2.3.0)
     httpclient (2.8.3)
-    i18n (1.10.0)
+    i18n (1.11.0)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
     io-console (0.5.11)
@@ -386,7 +387,7 @@ GEM
     method_source (1.0.0)
     mini_mime (1.1.2)
     mini_portile2 (2.8.0)
-    minitest (5.15.0)
+    minitest (5.16.2)
     mono_logger (1.1.1)
     msgpack (1.5.1)
     multi_json (1.15.0)
@@ -410,7 +411,7 @@ GEM
       net-protocol
       timeout
     nio4r (2.5.8)
-    nokogiri (1.13.6)
+    nokogiri (1.13.7)
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
     oai (1.2.1)
@@ -472,13 +473,13 @@ GEM
       rails (>= 5.0, < 6.2)
       rdf
     racc (1.6.0)
-    rack (2.2.3.1)
+    rack (2.2.4)
     rack-protection (2.2.0)
       rack
     rack-proxy (0.7.2)
       rack
-    rack-test (1.1.0)
-      rack (>= 1.0, < 3)
+    rack-test (2.0.2)
+      rack (>= 1.3)
     rails (6.1.6)
       actioncable (= 6.1.6)
       actionmailbox (= 6.1.6)
@@ -630,7 +631,7 @@ GEM
       retriable
       ruby-progressbar
       rubyzip
-    sprockets (4.0.3)
+    sprockets (4.1.1)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
     sprockets-rails (3.4.2)
@@ -641,7 +642,7 @@ GEM
     thor (1.2.1)
     thread_safe (0.3.6)
     tilt (2.0.10)
-    timeout (0.2.0)
+    timeout (0.3.0)
     trailblazer-option (0.1.2)
     traject (3.7.0)
       concurrent-ruby (>= 0.8.0)
@@ -672,7 +673,7 @@ GEM
       aws-sdk-s3 (~> 1.0)
       content_disposition (~> 1.0)
       roda (>= 2.27, < 4)
-    view_component (2.55.0)
+    view_component (2.57.1)
       activesupport (>= 5.0.0, < 8.0)
       method_source (~> 1.0)
     virtus (2.0.0)
@@ -707,7 +708,7 @@ GEM
     xpath (3.2.0)
       nokogiri (~> 1.8)
     yell (2.2.2)
-    zeitwerk (2.5.4)
+    zeitwerk (2.6.0)
 
 PLATFORMS
   ruby
@@ -723,7 +724,7 @@ DEPENDENCIES
   aws-sdk-mediaconvert (~> 1.0)
   aws-sdk-s3 (~> 1.0)
   axe-core-rspec (~> 4.3)
-  blacklight (~> 7.24.0)
+  blacklight (~> 7.27.0)
   blacklight_range_limit (~> 8.0)
   bootsnap (>= 1.4.4)
   bootstrap (~> 4.3)
