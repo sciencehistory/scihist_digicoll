@@ -1,0 +1,30 @@
+// The video.js player can play audio-only, even from an audio tag --
+// but by default with a big static poster image etc. This is a custom
+// style for a more standard audio controls only control bar.
+//
+// Adapted from this SO comment and other stuff in this SO question:
+// https://github.com/videojs/video.js/issues/2777#issuecomment-161912138
+
+.video-js.scihist-video-js-audio-no-poster {
+    /* Reset the height of the player to the height of the control bar, set
+    to 3em exactly by video.js default theme */
+    height: 3em;
+
+    // at scihist, we want width to expand to available space,
+    // like browser native audio players do
+    width: 100%;
+
+    /* Big player button can be disabled in config, but in case we missed it there,
+       hide it for real here. There's no room for it, just a control bar! */
+    .vjs-big-play-button {
+      display: none;
+    }
+
+    /* Make the controlbar visible always/initially even before playing */
+    .vjs-control-bar {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+    }
+}
