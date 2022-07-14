@@ -38,8 +38,9 @@
 
     // Show time elapsed/total time -- video.js default theme hides by default via
     // CSS, but it's in most standard html5 audio palyers -- and for OH important
-    // for references, knowing where you are in transcript, etc.
-    .vjs-time-control.vjs-current-time {
+    // for references, knowing where you are in transcript, etc. We customize
+    // things further in the setup for the player itself.
+    .vjs-time-control {
       display: block;
     }
 }
