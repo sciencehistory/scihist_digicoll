@@ -30,6 +30,17 @@
                       controlBar: {
                         pictureInPictureToggle: false,
                         fullscreenToggle: false,
+                        # we want to customize the ORDER of control elements,
+                        # while also removing some.  Making it similar
+                        # to default html5 audio players in popular browsers
+                        children: [
+                          "playToggle",
+                          "currentTimeDisplay",
+                          "progressControl",
+                          "durationDisplay",
+                          "volumePanel",
+                          "playbackRateMenuButton"
+                        ]
                       },
                       plugins: {
                         seekButtons: {
