@@ -43,4 +43,10 @@
     .vjs-time-control {
       display: block;
     }
+
+    // We like how it looks with some rounded corners
+    border-radius: 3em;
+    .vjs-control-bar {
+      border-radius: 3em;
+    }
 }
