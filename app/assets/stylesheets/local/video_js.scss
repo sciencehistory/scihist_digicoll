@@ -4,8 +4,16 @@
 //
 // Adapted from this SO comment and other stuff in this SO question:
 // https://github.com/videojs/video.js/issues/2777#issuecomment-161912138
+//
+// With some customizations
 
 .video-js.scihist-video-js-audio-no-poster {
+    // The default font size was 11px, makes numeric text hard to read
+    // and buttons small targets for touch. this is a lot more readable and
+    // visible for a control-bar only display and works in our layout.
+    // video.js CSS was nice enough to adapt all around when we do this.
+    font-size: 14px;
+
     /* Reset the height of the player to the height of the control bar, set
     to 3em exactly by video.js default theme */
     height: 3em;
