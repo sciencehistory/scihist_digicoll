@@ -8,6 +8,9 @@
 // With some customizations
 
 .video-js.scihist-video-js-audio-no-poster {
+    // make sure video.js popup menus are above navbar items
+    z-index: 1;
+
     // The default font size was 11px, makes numeric text hard to read
     // and buttons small targets for touch. this is a lot more readable and
     // visible for a control-bar only display and works in our layout.
