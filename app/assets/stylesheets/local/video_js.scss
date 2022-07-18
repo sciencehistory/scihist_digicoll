@@ -49,4 +49,32 @@
     .vjs-control-bar {
       border-radius: 3em;
     }
+
+    // on small screens, we'll just hide many of the elements. Somewhat
+    // based on https://github.com/videojs/video.js/blob/f16d73b52840452f217722fc6ee7f9f51ba57cb2/src/css/components/_adaptive.scss
+    // but for our actual screen size (we have a button next to video.js audio), and
+    // using a media query (why doesn't video.js? Weird)
+    @media only screen and (max-width: 640px) {
+      .vjs-time-divider,
+      .vjs-duration,
+      .vjs-remaining-time,
+      .vjs-playback-rate,
+      .vjs-volume-control,
+      .vjs-seek-button {
+        display: none;
+      }
+      .vjs-current-time {
+        padding-left: 0;
+      }
+    }
+    @media only screen and (max-width: 380px) {
+      .vjs-current-time {
+        display: none;
+      }
+    }
+    @media only screen and (max-width: 300px) {
+      .vjs-progress-control {
+        display: none;
+      }
+    }
 }
