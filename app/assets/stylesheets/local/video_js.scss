@@ -61,6 +61,18 @@
       border: 1px solid #2B333F;
     }
 
+    // And for those menus above, we don't have a video/poster image above,
+    // make popups go down instead of  up, avoid a problem in our fixed navbar.
+    .vjs-menu-button-popup .vjs-menu .vjs-menu-content {
+      bottom: unset;
+      top: calc(1.5em + 1px);
+    }
+    .vjs-volume-vertical {
+      bottom: unset;
+      top: calc(3em + 1px);
+    }
+
+
     // When mouse hover over progress bar, there's a current time tooltip and a
     // where-you're-hovering tooltip, but it seems to a bug/misdesign which
     // one is on top, let's fix to put the mouse-position on on top:
