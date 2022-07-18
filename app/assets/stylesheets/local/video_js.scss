@@ -50,6 +50,14 @@
       border-radius: 3em;
     }
 
+    // Popup menus are transparent in video.js, but in an audio-only context
+    // where they are over page content not a video/poster, this is not helpful.
+    // Make them opaque.
+    .vjs-volume-vertical, .vjs-menu-button-popup .vjs-menu .vjs-menu-content {
+      background-color: #2B333F;
+      border: 1px solid #2B333F;
+    }
+
     // When mouse hover over progress bar, there's a current time tooltip and a
     // where-you're-hovering tooltip, but it seems to a bug/misdesign which
     // one is on top, let's fix to put the mouse-position on on top:
