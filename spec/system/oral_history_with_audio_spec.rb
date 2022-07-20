@@ -177,9 +177,9 @@ describe "Oral history with audio display", type: :system, js: true do
       parent_work.oral_history_content.save!
       visit work_path(parent_work.friendlier_id)
 
-      # No we should see audio.
+      # Now we should see audio, although raw html <audio> is hidden by video.js player
       expect(page).not_to have_css("*[data-role='no-audio-alert']")
-      expect(page).to have_selector('audio')
+      expect(page).to have_selector('.video-js')
 
       click_on "Downloads"
 
