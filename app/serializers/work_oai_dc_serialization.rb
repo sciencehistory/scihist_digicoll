@@ -176,14 +176,30 @@ class WorkOaiDcSerialization
           xml["edm"].hasType genre.downcase
         end
 
-        # "The URL of a suitable source object in the best resolution available on the website of the Data
+        # edm:object: "The URL of a suitable source object in the best resolution available on the website of the Data
         # "Provider from which edm:preview could be generated for use in available portal."
         #
-        # BEST resolution available? OK, we'll give them the full jpg. We could give them the
-        # actual original TIFFs, but that seems excessive. Unknown if anyone is using this
-        # on the PA Digital end.
-        if full_jpg_url.present?
-          xml["edm"].object full_jpg_url
+        # This is used by our DPLA-mediated export to Wikimedia Commons, who desires it
+        # contains ALL constituent member images, cause they want them all. So we try to
+        # include URLs for all members. Wikimedia actually only pays attention to works with
+        # certain rights status, but for consistency we include consistent edm:object
+        # regardless of rights status.
+        #
+        # BEST resolution available? We give them the full-res jpg. We could give them the
+        # actual original TIFFs, but that seems excessive, and Wikimedia guidelines say they
+        # would prefer PNG to TIFF as a lossless copy -- we don't currently have PNG. Waiting on
+        # feedback from wikimedia as to whether they'd really prefer the TIFF. We could
+        # also in the future generate a PNG.
+        #
+        # It is a known shortcoming here that multiple-nested child works may miss
+        # some urls being included here. We don't really do that much, and it is
+        # hard to accomodate with good performance. This will include everythign included in
+        # say the main work viewer.
+        work.members.each do |member|
+          url = full_jpg_url_for_member(member)
+          if url.present?
+            xml["edm"].object url
+          end
         end
       end
     end
@@ -244,16 +260,17 @@ class WorkOaiDcSerialization
     @appropriate_thumb_url
   end
 
-  def full_jpg_url
-    unless defined?(@full_jpg_url)
-      @full_jpg_url = if work.leaf_representative
-        "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/downloads/deriv/#{work.leaf_representative.friendlier_id}/download_full?disposition=inline"
-      else
-        nil
-      end
+  # If the asset has a download_full full-res JPG derivative, return the URL to it. If not, return nil.
+  #
+  # For performance, we manually construct the URL, because Rails url helpers it turns out look very slow
+  # and we think slow down our bulk export here.
+  def full_jpg_url_for_member(member)
+    leaf_representative = member&.leaf_representative
+    if leaf_representative && leaf_representative.file_derivatives.has_key?(:download_full)
+      "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/downloads/deriv/#{leaf_representative.friendlier_id}/download_full?disposition=inline"
+    else
+      nil
     end
-
-    @full_jpg_url
   end
 
   def xmlns_attribs
