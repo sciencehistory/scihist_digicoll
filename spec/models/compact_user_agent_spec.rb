@@ -24,7 +24,7 @@ describe CompactUserAgent do
 
   describe "googlebot mobile" do
     let(:user_agent) { %q{Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.96 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)} }
-    it { is_expected.to eq "bot:Googlebot/Chrome Mobile-41/Android-6.0/Nexus 5X"}
+    it { is_expected.to eq "bot:Googlebot/Chrome_Mobile-41/Android-6.0/Nexus_5X"}
   end
 
   describe "yandex bot" do
@@ -39,7 +39,7 @@ describe CompactUserAgent do
 
   describe "IE" do
     let(:user_agent) { %q{Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; FSL 7.0.6.01001)} }
-    it { is_expected.to eq "Internet Explorer-6/Windows-XP" }
+    it { is_expected.to eq "Internet_Explorer-6/Windows-XP" }
   end
 
   describe "linux firefox" do
@@ -54,16 +54,16 @@ describe CompactUserAgent do
 
   describe "iOS safari" do
     let(:user_agent) { %q{Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Mobile/15E148 Safari/604.1} }
-    it { is_expected.to eq "Mobile Safari-14/iOS-14.7/iPhone"}
+    it { is_expected.to eq "Mobile_Safari-14/iOS-14.7/iPhone"}
   end
 
   describe "Opera Samsung" do
     let(:user_agent) { %q{Mozilla/5.0 (Linux; Android 10; SM-G970F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.62 Mobile Safari/537.36 OPR/63.3.3216.58675} }
-    it {is_expected.to eq "Opera Mobile-63/Android-10/Galaxy S10e"}
+    it {is_expected.to eq "Opera_Mobile-63/Android-10/Galaxy_S10e"}
   end
 
   describe "Edge Windows" do
     let(:user_agent) { %q{Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36 Edg/93.0.961.38} }
-    it { is_expected.to eq "Microsoft Edge-93/Windows-10" }
+    it { is_expected.to eq "Microsoft_Edge-93/Windows-10" }
   end
 end
