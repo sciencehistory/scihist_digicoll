@@ -1,7 +1,8 @@
 require 'rails_helper'
 
 describe WorkOaiDcSerialization do
-  let(:member_asset) { create(:asset, :inline_promoted_file)}
+  let(:member_asset1) { create(:asset, :inline_promoted_file)}
+  let(:member_asset2) { create(:asset, :inline_promoted_file)}
   let(:collection) { create(:collection, title: "My Local Collection") }
   let(:work) { create(:work, :with_complete_metadata,
     description: "This starts out with <b>tags</b>\n\nAnother paragraph",
@@ -12,8 +13,8 @@ describe WorkOaiDcSerialization do
       { category: :editor, value: "Editor, Joe" }
     ],
     rights_holder: "Science History Institute",
-    representative: member_asset,
-    members: [member_asset],
+    representative: member_asset1,
+    members: [member_asset1, member_asset2],
     contained_by: [collection]
   )}
 
@@ -21,7 +22,8 @@ describe WorkOaiDcSerialization do
   let(:app_base) { "#{ScihistDigicoll::Env.app_url_base_parsed.scheme}://#{ScihistDigicoll::Env.app_url_base_parsed.host}" }
   let(:public_work_url) { app_base + Rails.application.routes.url_helpers.work_path(work) }
   let(:work_thumb_url) { app_base + Rails.application.routes.url_helpers.download_derivative_path(work.representative, :thumb_large_2X, disposition: "inline") }
-  let(:full_jpg_url) { app_base + Rails.application.routes.url_helpers.download_derivative_path(work.representative, :download_full, disposition: "inline") }
+  let(:member_asset1_url) { app_base + Rails.application.routes.url_helpers.download_derivative_path(member_asset1.leaf_representative, :download_full, disposition: "inline") }
+  let(:member_asset2_url) { app_base + Rails.application.routes.url_helpers.download_derivative_path(member_asset2.leaf_representative, :download_full, disposition: "inline") }
 
   let(:instance) { WorkOaiDcSerialization.new(work)}
 
@@ -61,8 +63,9 @@ describe WorkOaiDcSerialization do
     expect(container.at_xpath("./edm:hasType").text).to eq work.genre.first.downcase
 
     expect(container.at_xpath("./dpla:originalRecord").text).to eq public_work_url
-    expect(container.at_xpath("./edm:object").text).to eq full_jpg_url
     expect(container.at_xpath("./edm:preview").text).to eq work_thumb_url
+
+    expect(container.xpath("./edm:object").collect(&:text)).to contain_exactly(member_asset1_url, member_asset2_url)
 
     expect(container.at_xpath("./dcterms:isPartOf")&.text).to eq collection.title
     expect(container.at_xpath("./dcterms:extent")&.text).to eq work.extent.first
@@ -73,4 +76,34 @@ describe WorkOaiDcSerialization do
     # TODO test more than one thing?
   end
 
+  # a simple smoke test
+  describe "video work" do
+    let(:work) { create(:video_work) }
+
+    it "serializes" do
+      xml_str = instance.to_oai_dc
+
+      # is well-formed XML
+      xml = Nokogiri::XML(xml_str) { |config| config.strict }
+
+      container = xml.at_xpath("./oai_dc:dc")
+      expect(container).to be_present
+
+      # PA digital wants both URL in dc:identifiers
+      dc_identifiers = container.xpath("./dc:identifier").collect(&:text)
+      expect(dc_identifiers).to include public_work_url
+
+      expect(container.at_xpath("./dc:title").text).to eq work.title
+      expect(container.at_xpath("./dc:rights").text).to eq work.rights
+
+      expect(container.at_xpath("./dc:type").text).to eq work.format.first
+
+      expect(container.at_xpath("./dpla:originalRecord").text).to eq public_work_url
+      expect(container.at_xpath("./edm:preview").text).to eq work_thumb_url
+
+      # we don't have an original high-res image and aren't currently supporting
+      # video downloads anyway, so definitely no valid edm:object is available.
+      expect(container.at_xpath("./edm:object")).to be_nil
+    end
+  end
 end
