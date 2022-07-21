@@ -29,7 +29,12 @@ class WorkVideoShowComponent < ApplicationComponent
     video_asset.file_url(expires_in: 5.days.to_i)
   end
 
+  # the representative, if it's visible to current user, otherwise nil!
   def video_asset
-  	@video_asset = work.leaf_representative
+    return @video_asset if defined?(@video_asset)
+
+  	@video_asset = (work.leaf_representative &&
+      (work.leaf_representative.published? || current_user.present?) &&
+      work.leaf_representative) || nil
   end
 end
