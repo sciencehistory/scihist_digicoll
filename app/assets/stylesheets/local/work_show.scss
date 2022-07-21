@@ -178,25 +178,23 @@
         }
       }
     }
-
-    // A label indicating the thumbnail belongs to a private item.
-    .private-badge-div {
-      position: absolute;
-      right: 0;
-      top: 0;
-      border-top-right-radius: 0;
-      border-top-left-radius: 0;
-      border-bottom-right-radius: 0;
-
-      z-index: 1; // didn't used to be necesssary but some adjustment made it become so
-      .badge-warning {
-        padding-top: 0;
-        padding-bottom: 0;
-        border-radius:0;
-        line-height: 2.3;
-      }
-    }
-
   }
 
+  // A label indicating the thumbnail belongs to a private item.
+  .private-badge-div {
+    position: absolute;
+    right: 0;
+    top: 0;
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+    border-bottom-right-radius: 0;
+
+    z-index: 1; // didn't used to be necesssary but some adjustment made it become so
+    .badge-warning {
+      padding-top: 0;
+      padding-bottom: 0;
+      border-radius:0;
+      line-height: 2.3;
+    }
+  }
 }

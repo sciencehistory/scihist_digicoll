@@ -37,4 +37,13 @@ class WorkVideoShowComponent < ApplicationComponent
       (work.leaf_representative.published? || current_user.present?) &&
       work.leaf_representative) || nil
   end
+
+  def private_label
+    content_tag(:div, class: "private-badge-div") do
+      content_tag(:span, title: "Private", class: "badge badge-warning") do
+        '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>'.html_safe +
+          " Private"
+      end
+    end
+  end
 end
