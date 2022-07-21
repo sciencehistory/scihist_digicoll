@@ -16,41 +16,47 @@
   <div class="show-video">
 
     <% if video_asset.present? %>
-      <%= content_tag("video",
-              id: "work-video-player",
-              class: "video-js vjs-fluid vjs-big-play-centered",
-              controls: true,
-              preload: "metadata",
-              poster: poster_src,
-              style: "aspect-ratio: #{video_asset.width }/#{ video_asset.height };",
-              # the data-setup with serialized json triggers video.js
-              data: {
-                setup: {
-                  aspectRatio: "#{video_asset.width}:#{video_asset.height}",
-                  plugins: {
-                    seekButtons: {
-                      forward: 30,
-                      back: 15
-                    }
-                  }
-                }.to_json
-              }
-      ) do %>
-        <% if video_asset.hls_playlist_file.present? %>
-          <%= tag "source", src: video_asset.hls_playlist_file.url, type: "application/x-mpegURL" %>
-        <% else %>
-          <%= tag "source", src: video_src_url, type: video_asset.content_type %>
+      <div class="position-relative">
+        <% if ! video_asset.published? %>
+          <%= private_label %>
         <% end %>
 
+        <%= content_tag("video",
+                id: "work-video-player",
+                class: "video-js vjs-fluid vjs-big-play-centered",
+                controls: true,
+                preload: "metadata",
+                poster: poster_src,
+                style: "aspect-ratio: #{video_asset.width }/#{ video_asset.height };",
+                # the data-setup with serialized json triggers video.js
+                data: {
+                  setup: {
+                    aspectRatio: "#{video_asset.width}:#{video_asset.height}",
+                    plugins: {
+                      seekButtons: {
+                        forward: 30,
+                        back: 15
+                      }
+                    }
+                  }.to_json
+                }
+        ) do %>
+          <% if video_asset.hls_playlist_file.present? %>
+            <%= tag "source", src: video_asset.hls_playlist_file.url, type: "application/x-mpegURL" %>
+          <% else %>
+            <%= tag "source", src: video_src_url, type: video_asset.content_type %>
+          <% end %>
 
-        <p class="vjs-no-js">
-          To view this video please enable JavaScript, and consider upgrading to a
-          web browser that
-          <a href="https://videojs.com/html5-video-support/" target="_blank"
-            >supports HTML5 video</a
-          >
-        </p>
-      <% end %>
+
+          <p class="vjs-no-js">
+            To view this video please enable JavaScript, and consider upgrading to a
+            web browser that
+            <a href="https://videojs.com/html5-video-support/" target="_blank"
+              >supports HTML5 video</a
+            >
+          </p>
+        <% end %>
+      </div>
     <% else %> <%# no video file available %>
       <%= tag "img", src: asset_path("placeholderbox.svg", alt: "") %>
     <% end %>
