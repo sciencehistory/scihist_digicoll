@@ -45,10 +45,24 @@ describe MemberImageComponent, type: :component do
       it "outputs only placeholder" do
         expect(wrapper_div).to be_present
 
+
+
         expect(wrapper_div).to have_selector(".thumb img.not-available-placeholder")
 
         expect(wrapper_div).not_to have_selector(".action-item-bar .action-item.downloads .btn")
         expect(wrapper_div).not_to have_selector(".action-item-bar .action-item.view .btn")
+      end
+    end
+
+    describe "non-published asset with auth", logged_in_user: true do
+      let(:member) { create(:asset, published: false) }
+
+      it "outputs image with 'private' warning label" do
+        expect(wrapper_div).to be_present
+        expect(wrapper_div).to have_selector(".thumb img")
+        expect(wrapper_div).not_to have_selector(".thumb img.not-available-placeholder")
+
+        expect(wrapper_div).to have_text("Private")
       end
     end
 
