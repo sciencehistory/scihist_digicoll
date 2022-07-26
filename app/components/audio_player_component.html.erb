@@ -1,0 +1,41 @@
+<%= content_tag("audio",
+    class: "video-js scihist-video-js-audio-no-poster",
+    controls: true,
+    # we offer our own download buttons for per-segment.
+    controlslist: "nodownload",
+    data: {
+      role: "ohms-audio-elem",
+      # the data-setup with serialized json triggers video.js to be the player
+      setup: {
+        playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 2],
+        bigPlayButton: false,
+        audioOnlyMode: true,
+        controlBar: {
+          pictureInPictureToggle: false,
+          fullscreenToggle: false,
+          volumePanel: {
+            inline: false
+          },
+          # we want to customize the ORDER of control elements,
+          # while also removing some.  Making it similar
+          # to default html5 audio players in popular browsers
+          children: [
+            "playToggle",
+            "currentTimeDisplay",
+            "progressControl",
+            "durationDisplay",
+            "volumePanel",
+            "playbackRateMenuButton"
+          ]
+        },
+        plugins: {
+          seekButtons: {
+            forward: 30,
+            back: 15
+          }
+        }
+      }
+    }
+) do %>
+  <%= content %>
+<% end %>

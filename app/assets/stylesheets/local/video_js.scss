@@ -5,8 +5,11 @@
 // Adapted from this SO comment and other stuff in this SO question:
 // https://github.com/videojs/video.js/issues/2777#issuecomment-161912138
 //
-// With some customizations
-
+// With some customizations.
+//
+// This markup is intended for the <audio> tag set up as in our local
+// AudioPlayerComponent.
+//
 .video-js.scihist-video-js-audio-no-poster {
     // make sure video.js popup menus are above navbar items
     z-index: 1;
