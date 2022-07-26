@@ -1,7 +1,7 @@
 # Note the active_encode_id is also exactly the MediaConvert job ID in AWS,
 # if we're using MediaConvert, as we are.
 class ActiveEncodeStatus < ApplicationRecord
-  belongs_to :asset
+  belongs_to :asset, optional: true
 
   enum state: [ "running", "cancelled", "failed", "completed" ].map {|v| [v, v]}.to_h
 
