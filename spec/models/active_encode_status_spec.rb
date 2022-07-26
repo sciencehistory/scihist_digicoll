@@ -72,6 +72,8 @@ RSpec.describe ActiveEncodeStatus, type: :model do
     describe "for asset no longer present on completion" do
       before do
         Asset.where(id: active_encode_status.asset_id).delete_all
+        # so it doesn't refer to an in-memory but deleted asset, for better test!
+        active_encode_status.reload
       end
 
       it "deletes leftover files" do
@@ -83,6 +85,10 @@ RSpec.describe ActiveEncodeStatus, type: :model do
         expect(Rails.logger).to receive(:error).with(/^Deleting leftover HLS files for apparently missing asset ID: #{active_encode_status.asset_id}/)
 
         active_encode_status.refresh_from_aws
+
+        expect(active_encode_status.asset_id).to be_present
+        expect(active_encode_status.asset).to be nil
+        expect(active_encode_status.completed?).to be true
       end
     end
 
