@@ -83,6 +83,14 @@
 
     <%= f.repeatable_attr_input :related_url, build: :at_least_one %>
 
+    <%= f.repeatable_attr_input(:related_link, build: :at_least_one) do |sub_form| %>
+      <%= category_and_value(sub_form, category_key: :category, value_key: :url,
+                              category_list: RelatedLink::CATEGORY_VALUES) %>
+
+      <%= sub_form.input :label, wrapper: :scihist_horizontal_form %>
+    <% end %>
+
+
     <%= f.input :rights, required: (true if f.object.published?), collection: RightsTerm.collection_for_select %>
 
     <%= f.input :rights_holder %>
