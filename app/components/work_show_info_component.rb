@@ -31,6 +31,12 @@ class WorkShowInfoComponent < ApplicationComponent
     )
   end
 
+  # TODO, filter things out
+  def related_links
+    work.related_link
+  end
+
+  # TODO get rid of
   def related_urls_filtered
     related_url_filter.filtered_related_urls
   end
