@@ -21,7 +21,10 @@ class Collection < Kithe::Collection
   accepts_nested_attributes_for :representative
 
   attr_json :description, :text
+
+  # legacy related_url to be replaced by related_link
   attr_json :related_url, :string, array: true
+  attr_json :related_link, RelatedLink.to_type, array: true, default: -> { [] }
 
   attr_json :department, :string
   validates :department, presence: {}, inclusion: { in: Work::ControlledLists::DEPARTMENT, allow_blank: true }
