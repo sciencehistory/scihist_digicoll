@@ -62,9 +62,12 @@ module FormInputHelper
   # for use with a lot of Rails collection input helpers.
   #
   # If the *current* value does not exist -- we still add it on top, so the input can
-  # display the current value.
+  # display the current value. This includes a blank value! Since we add blank value
+  # ourselves only if necessary, `allow_blank: false` should normally be passed to rails
+  # collection input helper.
   #
   # The human labels are looked up optionally using rails i18n, via #vocab_value_human_name
+  #
   def vocab_collection_options(model:, attribute_name:, value_list:)
     model_class = model.class
 
