@@ -40,20 +40,9 @@ module FormInputHelper
                          value_key: :value,
                          category_list:,
                          input_data_attributes: {})
-    model_class = builder.object.class
+    model = builder.object
 
-    # If existing value (which may be nil) is not in category list, add it to front.
-    existing_category_value = builder.object.send(category_key)
-    unless category_list.include?(existing_category_value)
-      category_list = [existing_category_value] + category_list
-    end
-
-    # Turn category list into values and human labels, using i18n or rails humanizing.
-    category_list = category_list.collect do |key|
-      human_value = vocab_value_human_name(model_class: model_class, attribute: category_key, value: key)
-
-      [human_value, key]
-    end.to_h
+    category_list = vocab_collection_options(model: model, attribute_name: category_key, value_list: category_list)
 
     content_tag("div", class: "form-row category-and-value") do
       content_tag("div", class: "col-left category") do
@@ -63,6 +52,34 @@ module FormInputHelper
         builder.input value_key, label: false, input_html: { data: input_data_attributes }
       end
     end
+  end
+
+  # We have controlled vocabularies used in our metadata. We want to create a UI input
+  # that lets staff choose one of these values. These UI inputs need to have the internal value
+  # and the human label.
+  #
+  # This method returns a hash whose key is human labels and values are internal codes, suitable
+  # for use with a lot of Rails collection input helpers.
+  #
+  # If the *current* value does not exist -- we still add it on top, so the input can
+  # display the current value.
+  #
+  # The human labels are looked up optionally using rails i18n, via #vocab_value_human_name
+  def vocab_collection_options(model:, attribute_name:, value_list:)
+    model_class = model.class
+
+    # If existing value (which may be nil) is not in category list, add it to front.
+    existing_value = model.send(attribute_name)
+    unless value_list.include?(existing_value)
+      value_list = [existing_value] + value_list
+    end
+
+    # Turn category list into values and human labels, using i18n or rails humanizing.
+    value_list = value_list.collect do |key|
+      human_value = vocab_value_human_name(model_class: model_class, attribute_name: attribute_name, value: key)
+
+      [human_value, key]
+    end.to_h
   end
 
   # We have controllfed vocabularies used in our metadata. Eg creator category
@@ -79,12 +96,12 @@ module FormInputHelper
   #
   # * If no such I18n key is defined, we just default to calling #humanize on the value
   #
-  def vocab_value_human_name(model_class:, attribute:, value:)
+  def vocab_value_human_name(model_class:, attribute_name:, value:)
     if value.blank?
       value
     elsif model_class.respond_to?(:model_name)
       I18n.t(value,
-        scope: "activemodel.enum_values.#{model_class.model_name.i18n_key}.#{attribute}",
+        scope: "activemodel.enum_values.#{model_class.model_name.i18n_key}.#{attribute_name}",
         default: value.humanize)
     else
       value.humanize
