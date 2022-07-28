@@ -50,17 +50,9 @@ module FormInputHelper
 
     # Turn category list into values and human labels, using i18n or rails humanizing.
     category_list = category_list.collect do |key|
-      value = if key.nil?
-        key
-      elsif model_class.respond_to?(:model_name) && key.present?
-        I18n.t(key,
-          scope: "activemodel.enum_values.#{model_class.model_name.i18n_key}.#{category_key}",
-          default: key.humanize)
-      else
-        key.humanize
-      end
+      human_value = vocab_value_human_name(model_class: model_class, attribute: category_key, value: key)
 
-      [value, key]
+      [human_value, key]
     end.to_h
 
     content_tag("div", class: "form-row category-and-value") do
@@ -73,4 +65,29 @@ module FormInputHelper
     end
   end
 
+  # We have controllfed vocabularies used in our metadata. Eg creator category
+  # might be `contributor`, `creator_of_work`, `editor`, .... We want to translate
+  # to a human-presentable name .
+  #
+  # * If value is nil or blank, just return itself
+  #
+  # * We first try to use I18n lookup for `activemodel.enum_values.[model class i18n key].[attribute].[value]
+  #   * I18n keys are a bit weird, trying to follow Rails convention.
+  #     For instance, if your class is Work::ExternalID, attribute is `category`, and one
+  #     value is "object_id", you can provide an i18n key at:
+  #        `activemodel.enum_values.work/external_id.category.object_id`
+  #
+  # * If no such I18n key is defined, we just default to calling #humanize on the value
+  #
+  def vocab_value_human_name(model_class:, attribute:, value:)
+    if value.blank?
+      value
+    elsif model_class.respond_to?(:model_name)
+      I18n.t(value,
+        scope: "activemodel.enum_values.#{model_class.model_name.i18n_key}.#{attribute}",
+        default: value.humanize)
+    else
+      value.humanize
+    end
+  end
 end
