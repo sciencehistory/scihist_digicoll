@@ -5,8 +5,8 @@
 class RelatedLink
   include AttrJson::Model
 
-  CATEGORY_VALUES = %w{archival_collection distillations_article distillations_podcast
-                      institute_biography institute_blog_post library_guide
+  CATEGORY_VALUES = %w{finding_aid distillations_article distillations_podcast
+                      institute_biography institute_blog_post institute_libguide
                       related_work other_external other_internal}
 
   RELATED_WORK_PREFIX_RE = %r{\A\s*https?://digital\.sciencehistory\.org/works}
