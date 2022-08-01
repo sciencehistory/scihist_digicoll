@@ -173,7 +173,10 @@ Rails.application.configure do
     # Also we include some user-agent info, but compressed with device_detector gem
     {
       path: controller.request.filtered_path,
-      ua: CompactUserAgent.new(controller.request.user_agent).compact
+      ua: CompactUserAgent.new(controller.request.user_agent).compact,
+      # wasn't sure if we should use request.remote_ip or request.ip, the
+      # difference is not clear, or what it seems, in docs or online info
+      ip: controller.request.ip
     }
   end
 

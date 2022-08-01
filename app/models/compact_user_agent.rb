@@ -21,7 +21,7 @@ class CompactUserAgent
         # if we couldn't parse, give em first 15 chars of thing, no spaces.
         user_agent&.slice(0, 50)&.gsub(" ", "_")
       else
-        str
+        str.gsub(" ", "_")
       end
     end
   end

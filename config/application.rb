@@ -90,5 +90,14 @@ module ScihistDigicoll
     #
     # https://github.com/rack/rack/pull/1487
     Rack::Utils.key_space_limit = 10.megabytes.to_i
+
+    # Needed for Rails 6.1.6.1 until we can upgrade Blacklight to 7.28.0.
+    # https://github.com/projectblacklight/blacklight/releases/tag/v7.28.0
+    # No longer needed for BL 7.28.0, but the app at the moment has a problem
+    # with blacklight_range_limit once we upgrade BL past 7.24.
+    # https://github.com/projectblacklight/blacklight_range_limit/pull/195
+    SanePatch.patch('blacklight', '< 7.28') do
+      config.active_record.yaml_column_permitted_classes = [ActiveSupport::HashWithIndifferentAccess, Symbol]
+    end
   end
 end

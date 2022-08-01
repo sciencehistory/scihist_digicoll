@@ -2,6 +2,7 @@ require 'rails_helper'
 
 describe WorkVideoShowComponent, type: :component do
   let(:work) { create(:video_work, :published) }
+  let(:placeholder_img_src) { ActionController::Base.helpers.asset_path("placeholderbox.svg") }
 
   it "has video element properly set up" do
     render_inline described_class.new(work)
@@ -54,6 +55,37 @@ describe WorkVideoShowComponent, type: :component do
       expect(first_source_element).to be_present
       expect(first_source_element["type"]).to eq("application/x-mpegURL")
       expect(first_source_element["src"]).to eq(work.representative.hls_playlist_file.url(public: true))
+    end
+  end
+
+  describe "when representative is private but visible to staff", logged_in_user: true do
+    let(:work) do
+      create(:video_work, :published).tap do |work|
+        work.representative.update(published: false)
+      end
+    end
+
+    it "includes video and private tag" do
+      render_inline described_class.new(work)
+
+      expect(page).to have_selector("video")
+      expect(page).to have_selector(".show-video", text: /Private/)
+    end
+
+  end
+
+  describe "when representative is not visible to non-logged-in user" do
+    let(:work) do
+      create(:video_work, :published).tap do |work|
+        work.representative.update(published: false)
+      end
+    end
+
+    it "includes placeholder only" do
+      render_inline described_class.new(work)
+
+      expect(page).not_to have_selector("video")
+      expect(page).to have_selector("img[src='#{placeholder_img_src}']")
     end
   end
 end

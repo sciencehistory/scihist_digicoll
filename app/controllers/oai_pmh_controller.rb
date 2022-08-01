@@ -12,8 +12,9 @@
       sample_id (Work.first.friendlier_id rescue "tq57nr00k")
 
       # Note we limit to published true, and pre-load any accessed associations for performance
+      # use .strict_loading to ensure we can't access any n+1 associations we haven't pre-loaded
       source_model OAI::Provider::ActiveRecordWrapper.new(
-        Work.where(published: true).includes(:leaf_representative, :contained_by),
+        Work.where(published: true).includes(:leaf_representative, :contained_by, members: [:leaf_representative]).strict_loading,
         identifier_field: :friendlier_id
       )
     end
