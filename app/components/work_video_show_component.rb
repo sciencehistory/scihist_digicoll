@@ -29,7 +29,21 @@ class WorkVideoShowComponent < ApplicationComponent
     video_asset.file_url(expires_in: 5.days.to_i)
   end
 
+  # the representative, if it's visible to current user, otherwise nil!
   def video_asset
-  	@video_asset = work.leaf_representative
+    return @video_asset if defined?(@video_asset)
+
+  	@video_asset = (work.leaf_representative &&
+      (work.leaf_representative.published? || current_user.present?) &&
+      work.leaf_representative) || nil
+  end
+
+  def private_label
+    content_tag(:div, class: "private-badge-div") do
+      content_tag(:span, title: "Private", class: "badge badge-warning") do
+        '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>'.html_safe +
+          " Private"
+      end
+    end
   end
 end
