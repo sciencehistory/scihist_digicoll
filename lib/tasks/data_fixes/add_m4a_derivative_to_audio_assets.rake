@@ -11,12 +11,13 @@ namespace :scihist do
       progress_bar = ProgressBar.create(total: scope.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
 
       scope.find_each do |audio_asset|
-        next unless audio_asset.stored? && audio_asset.content_type.end_with?('flac')
-        begin
-          progress_bar.title = audio_asset.friendlier_id
-          audio_asset.create_derivatives(lazy: true)
-        rescue Shrine::FileNotFound => e
-          progress_bar.log("original missing for #{audio_asset.friendlier_id}")
+        unless audio_asset.stored? && audio_asset.content_type.end_with?('flac')
+          begin
+            progress_bar.title = audio_asset.friendlier_id
+            audio_asset.create_derivatives(lazy: true)
+          rescue Shrine::FileNotFound => e
+            progress_bar.log("original missing for #{audio_asset.friendlier_id}")
+          end
         end
         progress_bar.increment
       end
