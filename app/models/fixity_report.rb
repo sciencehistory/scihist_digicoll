@@ -170,13 +170,13 @@ class FixityReport
 
   private
 
-
+  # We store video originals in 'video_store' and everything else in 'store'.
   def not_stored_file_sql
-    "file_data ->> 'storage' != 'store' or file_data ->> 'storage' is NULL"
+    "(file_data ->> 'storage' NOT IN ('store', 'video_store') or file_data ->> 'storage' is NULL)"
   end
 
   def stored_file_sql
-    "file_data ->> 'storage' = 'store'"
+    "(file_data ->> 'storage' IN ('store','video_store'))"
   end
 
   def stale_checks_sql
