@@ -85,12 +85,16 @@ describe DownloadDropdownComponent, type: :component do
     end
   end
 
+
   describe "with an audio file" do
     let(:asset) do
       create(:asset_with_faked_file,
         faked_content_type: "audio/x-flac",
         faked_height: nil,
         faked_width: nil,
+        faked_derivatives: {
+           "m4a"   => create(:stored_uploaded_file, content_type: "audio/mpeg"),
+         },
         parent: build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
       )
     end
@@ -104,6 +108,10 @@ describe DownloadDropdownComponent, type: :component do
       expect(div).not_to have_selector("a.dropdown-item", text: /Medium JPG/)
       expect(div).not_to have_selector("a.dropdown-item", text: /Large JPG/)
       expect(div).not_to have_selector("a.dropdown-item", text: /Full-sized JPG/)
+
+      expect(div).to have_selector(".dropdown-header", text: "Download selected file")
+      expect(div).to have_selector("a.dropdown-item", text: /Original file.*FLAC/)
+      expect(div).to have_selector("a.dropdown-item", text: /M4A/)
     end
   end
 
