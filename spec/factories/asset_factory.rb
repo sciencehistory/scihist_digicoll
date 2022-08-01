@@ -122,11 +122,20 @@ FactoryBot.define do
         faked_content_type { "audio/mpeg" }
         faked_height { nil }
         faked_width { nil }
+        faked_derivatives { nil }
       end
 
       trait :m4a do
         faked_file { File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.m4a")) }
         faked_content_type { "audio/mp4" }
+        faked_height { nil }
+        faked_width { nil }
+      end
+
+
+      trait :flac do
+        faked_file { File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.flac")) }
+        faked_content_type { "audio/flac" }
         faked_height { nil }
         faked_width { nil }
       end
