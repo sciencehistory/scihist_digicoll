@@ -97,7 +97,7 @@ class AssetUploader < Kithe::AssetUploader
   # which are identical (similar use case).
   Attacher.define_derivative('m4a', content_type: "audio") do |original_file, attacher:|
     # Both audio/flac or audio/x-flac seem to be valid, so let's check for either.
-    if attacher.file.content_type.match /flac$/
+    if attacher.file&.content_type.in?(["audio/flac", "audio/x-flac"])
       Kithe::FfmpegTransformer.new(
         bitrate: '64k', force_mono: true, audio_codec: 'aac', output_suffix: 'm4a',
       ).call(original_file)
