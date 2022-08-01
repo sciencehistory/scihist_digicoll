@@ -27,7 +27,7 @@ gem 'scout_apm'
 # blacklight_range_limit to latest at same time.
 #
 gem "blacklight", "~> 7.27.0"
-gem "blacklight_range_limit", "~> 8.0" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
+gem "blacklight_range_limit", "~> 8.0", ">= 8.2.3" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
 # Temporarily pointing at active_encode main brancch, until a release AFTER
 # 0.8.2 that has the features we need.
