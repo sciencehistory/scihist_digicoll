@@ -88,6 +88,22 @@ class AssetUploader < Kithe::AssetUploader
   end
 
 
+  # For FLAC originals, we create a mono m4a derivative.
+  # Typically this deriv is only 5% of the size of the original FLAC,
+  # while still fine for listening, at least for for oral histories.
+  # (These settings would not be appropriate for audio other than recorded speech.)
+  #
+  # See also the settings at app/services/combined_audio_derivative_creator.rb
+  # which are identical (similar use case).
+  Attacher.define_derivative('m4a', content_type: "audio") do |original_file, attacher:|
+    # Both audio/flac or audio/x-flac seem to be valid, so let's check for either.
+    if attacher.file.content_type.match /flac$/
+      Kithe::FfmpegTransformer.new(
+        bitrate: '64k', force_mono: true, audio_codec: 'aac', output_suffix: 'm4a',
+      ).call(original_file)
+    end
+  end
+
   # Use a standard shrine derivative processor to d some complex stuff with video thumbs,
   # including making multiple thumbs from one extraction from video.
   #
