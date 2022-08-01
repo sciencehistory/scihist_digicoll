@@ -122,7 +122,7 @@ GEM
       thread_safe (~> 0.3, >= 0.3.1)
     bcrypt (3.1.18)
     bindex (0.8.1)
-    blacklight (7.27.1)
+    blacklight (7.29.0)
       deprecation
       globalid
       hashdiff
@@ -724,7 +724,7 @@ DEPENDENCIES
   aws-sdk-mediaconvert (~> 1.0)
   aws-sdk-s3 (~> 1.0)
   axe-core-rspec (~> 4.3)
-  blacklight (~> 7.27.0)
+  blacklight (~> 7.29.0)
   blacklight_range_limit (~> 8.0, >= 8.2.3)
   bootsnap (>= 1.4.4)
   bootstrap (~> 4.3)
