@@ -213,10 +213,7 @@ class CatalogController < ApplicationController
     # be listed here as of Blacklight 7.25, kind of annoying. These often
     # correspond to old deprecated SearchBuilder extensions we are currently
     # using. Not really sure why we need :id
-    #
-    # :commit is sent by blacklight_range_search, so we add it to avoid warnings/exceptions.
-    # https://github.com/projectblacklight/blacklight_range_limit/issues/196
-    config.search_state_fields.concat([:filter_public_domain, :id, :commit])
+    config.search_state_fields.concat([:filter_public_domain, :id])
 
     ## Default parameters to send to solr for all search-like requests. See also SearchBuilder#processed_parameters
     config.default_solr_params = {
