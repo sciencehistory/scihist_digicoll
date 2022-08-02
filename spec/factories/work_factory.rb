@@ -225,11 +225,12 @@ FactoryBot.define do
       trait :available_by_request do
         transient do
           available_by_request_mode { :manual_review }
+          audio_asset_factory { :mp3 }
         end
 
         members {[
           build(:asset_with_faked_file, :pdf, published: true, title: 'Front matter'),
-          build(:asset_with_faked_file, :mp3, title: "audio_recording.mp3", published: false, oh_available_by_request: true),
+          build(:asset_with_faked_file, audio_asset_factory, title: "audio_recording.mp3", published: false, oh_available_by_request: true),
           build(:asset_with_faked_file, :pdf, title: "transcript.pdf", published: false, oh_available_by_request: true)
         ]}
         after(:build) do |work, evaluator|
