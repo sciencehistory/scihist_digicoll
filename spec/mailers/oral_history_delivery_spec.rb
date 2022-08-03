@@ -55,7 +55,7 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
       expect(body).to match "Dear Patron name"
       expect(body).to match /files from.*Bailey/
 
-      expect(body).to match /Protected mp3.*MP3 — 5.3 KB.*Protected PDF.*PDF — 7.4 KB/m
+      expect(body).to match /Protected mp3.*MP3.*Protected PDF.*PDF/m
 
       expect(body).to match "Please download your files by #{(Date.today + 6.days).strftime("%A, %B %d")}"
 

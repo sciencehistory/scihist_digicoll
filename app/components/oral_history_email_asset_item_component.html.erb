@@ -1,1 +1,10 @@
 <%= link_to item_label, item_url %>
+<% if additional_links.present? %>
+  <ul style="margin-bottom: .5em">
+    <li>
+      <% additional_links.each do |label, url| %>
+        <%= link_to label, url, style: "margin-right: .5em" %>
+      <% end %>
+    </li>
+  </ul>
+<% end %>

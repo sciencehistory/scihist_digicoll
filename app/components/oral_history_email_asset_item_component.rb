@@ -21,15 +21,34 @@ class OralHistoryEmailAssetItemComponent < ApplicationComponent
     asset.content_type == "audio/flac" && asset.file_derivatives.has_key?(:m4a)
   end
 
-  def item_label
-    details = []
-    details << ScihistDigicoll::Util.humanized_content_type(main_file.content_type) if main_file.content_type.present?
-    details << ScihistDigicoll::Util.simple_bytes_to_human_string(main_file.size) if main_file.size.present?
-    if details.present?
-      "#{item_filename} (#{details.join(" — ")})"
-    else
-      item_filename
+  # returns hash of label => url
+  #
+  # A download link, for FLAC files with both FLAC and M4A variants
+  def additional_links
+    @additional_links ||= begin
+      links = {}
+
+      main_link_label = "Download"
+      main_link_label << " " + ScihistDigicoll::Util.humanized_content_type(main_file.content_type)
+      main_link_label << " – " + ScihistDigicoll::Util.simple_bytes_to_human_string(main_file.size)
+
+      links[main_link_label] =
+        shrine_file_url(shrine_file: main_file, disposition: "attachment", filename: item_filename)
+
+      if flac_with_m4a?
+        # add the original flac link too
+        links["Download FLAC – #{ScihistDigicoll::Util.simple_bytes_to_human_string(asset.size)}"] =
+          shrine_file_url(shrine_file: asset.file,
+                          disposition: "attachment",
+                          filename: DownloadFilenameHelper.filename_for_asset(asset))
+      end
+
+      links
     end
+  end
+
+  def item_label
+    "#{item_filename} (#{ScihistDigicoll::Util.humanized_content_type(main_file.content_type)})"
   end
 
   def item_filename
@@ -37,13 +56,17 @@ class OralHistoryEmailAssetItemComponent < ApplicationComponent
   end
 
   def item_url
-    main_file.url(
+    shrine_file_url(shrine_file: main_file, disposition: "inline", filename: item_filename)
+  end
+
+  def shrine_file_url(shrine_file: main_file, disposition: "inline", filename:)
+    shrine_file.url(
       public: false,
       expires_in: OralHistoryDeliveryMailer::ASSET_EXPIRATION_TIME,
-      response_content_type: main_file.content_type,
+      response_content_type: shrine_file.content_type,
       response_content_disposition: ContentDisposition.format(
-        disposition: "inline",
-        filename: item_filename
+        disposition: disposition,
+        filename: filename
       )
     )
   end
