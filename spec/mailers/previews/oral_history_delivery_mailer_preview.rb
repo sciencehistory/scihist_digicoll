@@ -70,25 +70,8 @@ class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
               title: sample_work_title(file_type: file_type),
               published: true)
     elsif file_type == :flac
-      work = FactoryBot.create(:oral_history_work, :available_by_request,
+      work = FactoryBot.create(:oral_history_work, :available_by_request_flac,
               title: sample_work_title(file_type: file_type),
-              members: [
-                FactoryBot.build(:asset_with_faked_file, :pdf, published: true, title: 'Front matter'),
-                FactoryBot.build(:asset_with_faked_file, :flac,
-                  title: "smith_j_0001_1_1.flac",
-                  faked_filename: "smith_j_0001_1_1.flac",
-                  faked_size: 190.4.megabytes,
-                  published: false,
-                  oh_available_by_request: true,
-                  faked_derivatives: {
-                    m4a: FactoryBot.create(:stored_uploaded_file,
-                                            file: File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.m4a").to_s),
-                                            size: 12.4.megabytes,
-                                            content_type: "audio/mp4")
-                  }
-                ),
-                FactoryBot.build(:asset_with_faked_file, :pdf, title: "transcript.pdf", published: false, oh_available_by_request: true)
-              ],
               published: true)
     else
       raise ArgumentError, "don't know how to do file_type #{file_type}"
