@@ -9,8 +9,27 @@ require 'factory_bot_rails'
 # or
 #     .../oral_history_delivery_email_mp3
 #
+# OR, with an actual work you have in your dev db:
+#
+#    http://localhost:3000/rails/mailers/oral_history_delivery_mailer/oral_history_delivery_email?work_friendlier_id=q87u4qt
+#
 class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
   CUSTOM_MESSAGE = "[[This is optional customized per-email instructions written by staff to patron, possibly including usage restrictions.]]"
+
+  # requires eg ?work_friendlier_id=adf34aefadf
+  def oral_history_delivery_email
+    work = Work.find_by_friendlier_id!(params[:work_friendlier_id])
+
+    request = Admin::OralHistoryAccessRequest.
+      create_with(patron_name: "John Smith",
+                  patron_email: "smith@example.com",
+                  intended_use: "just cause").
+      find_or_create_by(work: work)
+
+    OralHistoryDeliveryMailer.
+      with(request: request, custom_message: CUSTOM_MESSAGE).
+      oral_history_delivery_email
+  end
 
   def oral_history_delivery_email_mp3
     OralHistoryDeliveryMailer.
