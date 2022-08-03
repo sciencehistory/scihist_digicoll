@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 describe OralHistoryEmailAssetItemComponent, type: :component do
+  let!(:doc) { render_inline(described_class.new(asset)) }
+
   describe "mp3 asset" do
     let(:asset) do
       build(:asset_with_faked_file, :mp3,
@@ -12,8 +14,11 @@ describe OralHistoryEmailAssetItemComponent, type: :component do
     end
 
     it "outputs mp3 link" do
-      render_inline(described_class.new(asset))
-      expect(page).to have_css("a", text: /.mp3 \(MP3 — .* MB\)/)
+      expect(page).to have_css("a", text: /.mp3 \(MP3\)/)
+    end
+
+    it "outputs mp3 download link" do
+      expect(page).to have_css("a", text: "Download MP3 – 21.2 MB")
     end
   end
 
@@ -33,9 +38,16 @@ describe OralHistoryEmailAssetItemComponent, type: :component do
     end
 
     it "outputs m4a link not flac" do
-      render_inline(described_class.new(asset))
-      expect(page).to have_css("a", text: /.m4a \(M4A — .* MB\)/)
-      expect(page).not_to have_css("a", text: /.flac \(FLAC — .* MB\)/)
+      expect(page).to have_css("a", text: /.m4a \(M4A\)/)
+      expect(page).not_to have_css("a", text: /.flac \(FLAC\)/)
+    end
+
+    it "outputs m4a download link" do
+      expect(page).to have_css("a", text: "Download M4A – 12.4 MB")
+    end
+
+    it "outputs FLAC download link" do
+      expect(page).to have_css("a", text: "Download FLAC – 210 MB")
     end
   end
 end
