@@ -3,7 +3,11 @@
 require 'factory_bot_rails'
 
 # For ActionMailer preview functionality, in dev you can go to eg
-# http://localhost:3000/rails/mailers/oral_history_delivery_mailer/oral_history_delivery_email
+#
+#     http://localhost:3000/rails/mailers/oral_history_delivery_mailer/oral_history_delivery_email_flac
+#
+# or
+#     .../oral_history_delivery_email_mp3
 #
 class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
   CUSTOM_MESSAGE = "[[This is optional customized per-email instructions written by staff to patron, possibly including usage restrictions.]]"
@@ -31,15 +35,37 @@ class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
   def oral_history_request(file_type:)
     existing_sample = Admin::OralHistoryAccessRequest.joins(:work).
                         where(work: { title: sample_work_title(file_type: file_type) }).first
+
+    if params[:refresh] && existing_sample
+      existing_sample.destroy!
+      existing_sample = nil
+    end
+
     existing_sample || create_sample_request(file_type: file_type)
   end
 
 
   def create_sample_request(file_type:)
-    work = FactoryBot.create(:oral_history_work, :available_by_request,
+    if file_type == :mp3
+      work = FactoryBot.create(:oral_history_work, :available_by_request,
               title: sample_work_title(file_type: file_type),
-              audio_asset_factory: file_type,
               published: true)
+    elsif file_type == :flac
+      work = FactoryBot.create(:oral_history_work, :available_by_request,
+              title: sample_work_title(file_type: file_type),
+              members: [
+                FactoryBot.build(:asset_with_faked_file, :pdf, published: true, title: 'Front matter'),
+                FactoryBot.build(:asset_with_faked_file, :flac,
+                  title: "my_recording.flac",
+                  published: false,
+                  oh_available_by_request: true
+                ),
+                FactoryBot.build(:asset_with_faked_file, :pdf, title: "transcript.pdf", published: false, oh_available_by_request: true)
+              ],
+              published: true)
+    else
+      raise ArgumentError, "don't know how to do file_type #{file_type}"
+    end
 
     request = Admin::OralHistoryAccessRequest.create!(
       work: work,
