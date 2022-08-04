@@ -7,15 +7,13 @@ class WorkIndexer < Kithe::Indexer
 
     to_field "model_pk_ssi", obj_extract("id") # the actual db pk, a UUID
 
-    to_field "text1_tesim", obj_extract("title")
-    to_field "text1_tesim", obj_extract("additional_title")
+    to_field ["text1_tesim", "more_like_this_tsimv"], obj_extract("title")
+    to_field ["text1_tesim", "more_like_this_tsimv"], obj_extract("additional_title")
 
     to_field ["text2_tesim","creator_facet", "more_like_this_tsimv"], obj_extract("creator", "value")
     to_field ["text2_tesim", "genre_facet",  "more_like_this_tsimv"], obj_extract("genre")
 
     to_field ["text3_tesim", "subject_facet", "more_like_this_tsimv"], obj_extract("subject")
-
-
 
     # Interviewer out of creator facet for use specifically for Oral History collection
     to_field "interviewer_facet" do |record, acc|
