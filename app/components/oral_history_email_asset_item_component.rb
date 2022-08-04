@@ -28,16 +28,15 @@ class OralHistoryEmailAssetItemComponent < ApplicationComponent
     @additional_links ||= begin
       links = {}
 
-      main_link_label = "Download"
-      main_link_label << " " + ScihistDigicoll::Util.humanized_content_type(main_file.content_type)
-      main_link_label << " – " + ScihistDigicoll::Util.simple_bytes_to_human_string(main_file.size)
+      main_link_label = ScihistDigicoll::Util.humanized_content_type(main_file.content_type)
+      main_link_label << " - " + ScihistDigicoll::Util.simple_bytes_to_human_string(main_file.size)
 
       links[main_link_label] =
         shrine_file_url(shrine_file: main_file, disposition: "attachment", filename: item_filename)
 
       if flac_with_m4a?
         # add the original flac link too
-        links["Download FLAC – #{ScihistDigicoll::Util.simple_bytes_to_human_string(asset.size)}"] =
+        links["FLAC - #{ScihistDigicoll::Util.simple_bytes_to_human_string(asset.size)}"] =
           shrine_file_url(shrine_file: asset.file,
                           disposition: "attachment",
                           filename: DownloadFilenameHelper.filename_for_asset(asset))
@@ -48,7 +47,7 @@ class OralHistoryEmailAssetItemComponent < ApplicationComponent
   end
 
   def item_label
-    "#{item_filename} (#{ScihistDigicoll::Util.humanized_content_type(main_file.content_type)})"
+    "#{item_filename} - #{ScihistDigicoll::Util.humanized_content_type(main_file.content_type)}"
   end
 
   def item_filename
