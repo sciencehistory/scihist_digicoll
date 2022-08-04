@@ -207,6 +207,14 @@
     </arr>
   </requestHandler>
 
+  <requestHandler name="/mlt" class="solr.MoreLikeThisHandler">
+    <str name="mlt">true</str>
+    <str name="mlt.fl">more_like_this_tsimv</str>
+    <str name="mlt.count">5</str>
+    <str name="mlt.mintf">1</str>
+    <str name="mlt.qf">more_like_this_tsimv^5</str>
+  </requestHandler>
+
 <!-- Spell Check
 
         The spell check component can return a list of alternative spelling

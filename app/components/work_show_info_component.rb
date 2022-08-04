@@ -108,6 +108,14 @@ class WorkShowInfoComponent < ApplicationComponent
       ).includes(:leaf_representative).all
   end
 
+  # This code probably doesn't belong here in a component.
+  def more_like_this
+    solr = RSolr.connect :url => ScihistDigicoll::Env.lookup!(:solr_url)
+    mlt_params = { :q => "id:#{work.friendlier_id}", :'mlt.fl' => 'more_like_this_tsimv', :rows => 5}
+    mlt_response = solr.get 'mlt', :params => mlt_params
+    Work.where(friendlier_id: mlt_response['response']['docs'].map { |d| d['id'] })
+  end
+
   def public_collections
     work.contained_by.where(published: true)
   end

@@ -10,10 +10,12 @@ class WorkIndexer < Kithe::Indexer
     to_field "text1_tesim", obj_extract("title")
     to_field "text1_tesim", obj_extract("additional_title")
 
-    to_field ["text2_tesim","creator_facet"], obj_extract("creator", "value")
-    to_field ["text2_tesim", "genre_facet"], obj_extract("genre")
+    to_field ["text2_tesim","creator_facet", "more_like_this_tsimv"], obj_extract("creator", "value")
+    to_field ["text2_tesim", "genre_facet",  "more_like_this_tsimv"], obj_extract("genre")
 
-    to_field ["text3_tesim", "subject_facet"], obj_extract("subject")
+    to_field ["text3_tesim", "subject_facet", "more_like_this_tsimv"], obj_extract("subject")
+
+
 
     # Interviewer out of creator facet for use specifically for Oral History collection
     to_field "interviewer_facet" do |record, acc|
@@ -23,17 +25,17 @@ class WorkIndexer < Kithe::Indexer
 
     # index description to it's own field for highlighting purposes. Fields with
     # HTML in them need to have it stripped before indexing.
-    to_field "description_text4_tesim", obj_extract("description"), transform(->(val) { ActionView::Base.full_sanitizer.sanitize(val) })
+    to_field ["description_text4_tesim", "more_like_this_tsimv"] , obj_extract("description"), transform(->(val) { ActionView::Base.full_sanitizer.sanitize(val) })
     to_field "text4_tesim", obj_extract("provenance"), transform(->(val) { ActionView::Base.full_sanitizer.sanitize(val) })
 
     to_field ["text_no_boost_tesim", "language_facet"], obj_extract("language")
     to_field "text_no_boost_tesim", obj_extract("external_id", "value")
     to_field "text_no_boost_tesim", obj_extract("related_url")
-    to_field ["text_no_boost_tesim", "place_facet"], obj_extract("place", "value")
+    to_field ["text_no_boost_tesim", "place_facet",  "more_like_this_tsimv"], obj_extract("place", "value")
     to_field "text_no_boost_tesim", obj_extract("related_url")
-    to_field ["text_no_boost_tesim", "department_facet"], obj_extract("department")
-    to_field ["text_no_boost_tesim", "medium_facet"], obj_extract("medium")
-    to_field ["text_no_boost_tesim", "format_facet"], obj_extract("format"), transform(->(v) { v.titleize })
+    to_field ["text_no_boost_tesim", "department_facet", "more_like_this_tsimv"], obj_extract("department")
+    to_field ["text_no_boost_tesim", "medium_facet",     "more_like_this_tsimv" ], obj_extract("medium")
+    to_field ["text_no_boost_tesim", "format_facet",     "more_like_this_tsimv" ], obj_extract("format"), transform(->(v) { v.titleize })
     to_field ["text_no_boost_tesim", "rights_facet"], obj_extract("rights") # URL id
     to_field ["text_no_boost_tesim"], obj_extract("rights"), transform(->(v) { RightsTerm.label_for(v) }) # human label
     to_field "text_no_boost_tesim", obj_extract("rights_holder")
@@ -202,7 +204,7 @@ class WorkIndexer < Kithe::Indexer
     end
 
     # add a 'translation' token in bredig_feature_facet if we have any translations
-    to_field "bredig_feature_facet" do |rec, acc|
+    to_field ["bredig_feature_facet", "more_like_this_tsimv"] do |rec, acc|
       if rec.members && rec.members.any? {|m| m.is_a?(Asset) && m.english_translation.present? }
         acc << "English Translation"
       end
