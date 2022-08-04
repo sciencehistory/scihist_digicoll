@@ -56,6 +56,7 @@ class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
                         where(work: { title: sample_work_title(file_type: file_type) }).first
 
     if params[:refresh] && existing_sample
+      existing_sample.work.destroy!
       existing_sample.destroy!
       existing_sample = nil
     end
