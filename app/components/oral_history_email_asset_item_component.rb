@@ -47,7 +47,12 @@ class OralHistoryEmailAssetItemComponent < ApplicationComponent
   end
 
   def item_label
-    "#{item_filename} - #{ScihistDigicoll::Util.humanized_content_type(main_file.content_type)}"
+    label = "#{item_filename}"
+    if asset.content_type == "application/pdf"
+      label += " - view"
+    elsif asset.content_type.start_with?("audio/")
+      label += " - listen"
+    end
   end
 
   def item_filename
