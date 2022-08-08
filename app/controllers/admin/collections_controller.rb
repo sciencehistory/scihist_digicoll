@@ -77,11 +77,12 @@ class Admin::CollectionsController < AdminController
       permitted_attributes = [:title, :description, :department]
       permitted_attributes << :published if can?(:publish, @collection || Collection)
 
-      params.
+      Kithe::Parameters.new(params).
         require(:collection).
         permit(*permitted_attributes,
                 :representative_attributes => {},
                 :funding_credit_attributes => {},
+                :external_id_attributes => true,
                 :related_url_attributes => []
         ).tap do |hash|
 
