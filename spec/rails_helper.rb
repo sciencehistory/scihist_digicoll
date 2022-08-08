@@ -167,7 +167,7 @@ RSpec.configure do |config|
         end
 
         if solr_port_open
-          $test_solr_known_running
+          $test_solr_known_running = true
         else
           # otherwise start one up, and plan to shut it down later.
           $stdout.write("(starting test solr)")
