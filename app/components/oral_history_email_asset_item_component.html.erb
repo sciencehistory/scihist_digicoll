@@ -1,0 +1,11 @@
+<%= link_to item_label, item_url %>
+<% if additional_links.present? %>
+  <ul style="margin-top: 0.2em; margin-bottom: .6em; list-style: none;">
+    <li>
+      Download:
+      <% additional_links.each do |label, url| %>
+        <%= link_to label, url, style: "margin: 0 0.5em" %>
+      <% end %>
+    </li>
+  </ul>
+<% end %>
