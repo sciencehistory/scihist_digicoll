@@ -14,7 +14,7 @@ describe OralHistoryEmailAssetItemComponent, type: :component do
     end
 
     it "outputs mp3 link" do
-      expect(page).to have_css("a", text: /.mp3 - MP3/)
+      expect(page).to have_css("a", text: /.mp3 - listen/)
     end
 
     it "outputs mp3 download link" do
@@ -38,8 +38,8 @@ describe OralHistoryEmailAssetItemComponent, type: :component do
     end
 
     it "outputs m4a link not flac" do
-      expect(page).to have_css("a", text: /.m4a - M4A/)
-      expect(page).not_to have_css("a", text: /.flac - FLAC/)
+      expect(page).to have_css("a", text: /.m4a - listen/)
+      expect(page).not_to have_css("a", text: /.flac - listen/)
     end
 
     it "outputs m4a download link" do
