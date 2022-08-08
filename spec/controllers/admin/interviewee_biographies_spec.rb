@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Admin::IntervieweeBiographiesController, :logged_in_user, type: :controller, queue_adapter: :test do
+RSpec.describe Admin::IntervieweeBiographiesController, :logged_in_user, type: :controller, solr: true, queue_adapter: :test do
 
   context "with a logged-in admin user", logged_in_user: :admin do
 
@@ -107,7 +107,7 @@ RSpec.describe Admin::IntervieweeBiographiesController, :logged_in_user, type: :
           "id" => interviewee_biography.id,
           "interviewee_biography" =>
             { "birth_attributes"=>{"date"=>"", "city"=>"", "state"=>"", "province"=>"", "country"=>""} }
-        }    
+        }
         birth = interviewee_biography.reload.birth
         expect(birth.date).to eq("")
         expect(birth.city).to eq("")
