@@ -5,6 +5,7 @@ en:
     attributes:
       collection:
         related_url: "Related URL"
+        external_id: "External ID"
 
   simple_form:
     hints:
