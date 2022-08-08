@@ -1,4 +1,6 @@
 FactoryBot.define do
+  sequence(:oh_filename, 0) { |n| "smith_j_0001_1_#{n}" }
+
   factory :work, aliases: [:private_work], class: Work do
     title { 'Test title' }
     published { false }
@@ -229,13 +231,41 @@ FactoryBot.define do
 
         members {[
           build(:asset_with_faked_file, :pdf, published: true, title: 'Front matter'),
-          build(:asset_with_faked_file, :mp3, title: "audio_recording.mp3", published: false, oh_available_by_request: true),
+          build(:asset_with_faked_file, :mp3,
+                  title: "audio_recording.mp3",
+                  published: false,
+                  oh_available_by_request: true,
+                  faked_filename: "#{generate(:oh_filename)}.mp3",
+                  faked_size: 21.2.megabytes,
+                  faked_derivatives: {} ),
           build(:asset_with_faked_file, :pdf, title: "transcript.pdf", published: false, oh_available_by_request: true)
         ]}
         after(:build) do |work, evaluator|
           work.representative = work.members.to_a.find {|w| w.published? } if work.representative.nil?
           work.oral_history_content!.available_by_request_mode = evaluator.available_by_request_mode
         end
+      end
+
+      trait :available_by_request_flac do
+        available_by_request
+
+        members {[
+          build(:asset_with_faked_file, :pdf, published: true, title: 'Front matter'),
+          build(:asset_with_faked_file, :flac,
+            title: "smith_j_0001_1_1.flac",
+            faked_filename: "#{generate(:oh_filename)}.flac",
+            faked_size: 190.4.megabytes,
+            published: false,
+            oh_available_by_request: true,
+            faked_derivatives: {
+              m4a: create(:stored_uploaded_file,
+                            file: File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.m4a").to_s),
+                            size: 12.4.megabytes,
+                            content_type: "audio/mp4")
+            }
+          ),
+          build(:asset_with_faked_file, :pdf, title: "transcript.pdf", published: false, oh_available_by_request: true)
+        ]}
       end
 
       trait :ohms_xml do
