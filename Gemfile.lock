@@ -333,14 +333,14 @@ GEM
       activerecord
       kaminari-core (= 1.2.2)
     kaminari-core (1.2.2)
-    kithe (2.5.0)
+    kithe (2.6.0)
       attr_json (< 2.0.0)
       fastimage (~> 2.0)
       fx (>= 0.6.0, < 1)
       marcel
       mini_mime
       pdf-reader (~> 2.0)
-      rails (>= 5.2.1, < 6.2)
+      rails (>= 5.2.1, < 7.1)
       rsolr (~> 2.2)
       ruby-progressbar (~> 1.0)
       shrine (~> 3.3)
@@ -751,7 +751,7 @@ DEPENDENCIES
   jbuilder (~> 2.5)
   jquery-rails (~> 4.3)
   kaminari (~> 1.2)
-  kithe (~> 2.5)
+  kithe (~> 2.6)
   listen (~> 3.3)
   lockbox
   lograge (< 2)
