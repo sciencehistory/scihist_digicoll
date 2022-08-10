@@ -41,7 +41,7 @@ class WorkIndexer < Kithe::Indexer
 
     to_field "text_no_boost_tesim", obj_extract("inscription"), transform(->(v) { "#{v.location}: #{v.text}" })
     to_field "text_no_boost_tesim", obj_extract("additional_credit"), transform(->(v) { "#{v.role}: #{v.name}" })
-    
+
     to_field "text_no_boost_tesim", obj_extract("digitization_funder")
     to_field "text_no_boost_tesim", obj_extract("extent")
 
