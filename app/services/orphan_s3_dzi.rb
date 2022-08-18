@@ -174,6 +174,8 @@ class OrphanS3Dzi
   def bucket_prefix
     @bucket_prefix ||= if shrine_storage.prefix
       shrine_storage.prefix.chomp('/') + '/'
+    else
+      ""
     end
   end
 
