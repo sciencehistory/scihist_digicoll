@@ -227,3 +227,5 @@ end
  gem 'csl-styles', '~> 2.0' # Need to load the styles so we can use chicago
 
  gem 'ruby-progressbar'
+
+ gem "faraday", "~> 1.0" # lock to 1.0 until we fix for 2.0
