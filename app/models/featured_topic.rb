@@ -8,7 +8,15 @@
 # dynamically fetch them by doing queries on a real index.
 #
 # The genres and subjects associated with featured topics are in this file.
-
+#
+# Images should be 700x700 pixel squares, and are stored in a standard
+# predicatable location at: ./app/assets/images/featured_topics/[TOPIC_KEY]_2x.jpg
+#
+#   * https://sciencehistory.atlassian.net/wiki/spaces/HDC/pages/1646428165/Creating+a+thumbnail+for+a+Featured+Topic
+#
+#   * (_2X indicates this is actually a double-resolution file, twice as big
+#   as space on page, for high-res screens. We don't bother doing low-res alternate)
+#
 class FeaturedTopic
   SUBJECT_FACET_SOLR_FIELD = 'subject_facet'
   GENRE_FACET_SOLR_FIELD = 'genre_facet'
