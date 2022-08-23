@@ -240,6 +240,21 @@ class FeaturedTopic
                 "Chemical laboratories--Equipment and supplies",
                 "Glassware"],
       description: "This digital collection features selected scientific instruments, apparatus, and analytical tools from the Institute's museum as well as photographs, rare-book engravings, and illustrations depicting various types of equipment and machinery found in laboratories, manufacturing plants, and mechanical treatises. Inventions from book wheels to fireballs can be found here, alongside more modern innovations such as Gammacells and Geiger counters."
+    },
+    rare_earths: {
+      title: "Rare Earths"
+      description: "In this collection, find materials related to rare earth elements, a group of 17 elements composed of scandium, yttrium, and the lanthanides. These abundant elements, characterized by similar geochemical and magnetic properties, are mined for a variety of uses including magnets, alloys, glasses, and electronics. The diverse collection of materials found below demonstrates the range of uses for rare earths throughout the twentieth and twenty-first centuries. Browse the topic to find materials related to fine art, lasers, cathode ray tube televisions, the first incandescent lights, and more!"
+      subject: ["Cathode ray tubes", "Cerium", "Dysprosium", "Erbium", "Europium", "Gadolinium", "Holmium", "Lanthanum",
+        "Lutetium", "Neodymium", "Organorare earth metal compounds", "Phosphors", "Praseodymium", "Promethium",
+        "Rare earth borides", "Rare earth fluorides", "Rare earth halides", "Rare earth industry",
+        "Rare earth industry--Accidents", "Rare earth ions", "Rare earth ions--Spectra", "Rare earth lasers",
+        "Rare earth metal alloys", "Rare earth metal catalysts", "Rare earth metal compounds",
+        "Rare earth metal compounds--Magnetic properties", "Rare earth metal compounds--Thermal properties",
+        "Rare earth metals", "Rare earth metals--Magnetic properties", "Rare earth metals--Magnetic properties",
+        "Rare earth metals--Metallurgy", "Rare earth metals--Spectra", "Rare earth nitrates", "Rare earth nuclei",
+        "Rare earth oxide thin films", "Rare earth phosphates", "Rare earths", "Rare earth-silicon-iron-aluminum alloys",
+        "Rare earths--Magnetic properties", "Rare earths--Spectra", "Samarium", "Scandium", "Terbium", "Thulium",
+        "Ytterbium", "Yttrium"]
     }
   }
 
