@@ -250,8 +250,8 @@ class FeaturedTopic
       description: "This digital collection features selected scientific instruments, apparatus, and analytical tools from the Institute's museum as well as photographs, rare-book engravings, and illustrations depicting various types of equipment and machinery found in laboratories, manufacturing plants, and mechanical treatises. Inventions from book wheels to fireballs can be found here, alongside more modern innovations such as Gammacells and Geiger counters."
     },
     rare_earths: {
-      title: "Rare Earths"
-      description: "In this collection, find materials related to rare earth elements, a group of 17 elements composed of scandium, yttrium, and the lanthanides. These abundant elements, characterized by similar geochemical and magnetic properties, are mined for a variety of uses including magnets, alloys, glasses, and electronics. The diverse collection of materials found below demonstrates the range of uses for rare earths throughout the twentieth and twenty-first centuries. Browse the topic to find materials related to fine art, lasers, cathode ray tube televisions, the first incandescent lights, and more!"
+      title: "Rare Earths",
+      description: "In this collection, find materials related to rare earth elements, a group of 17 elements composed of scandium, yttrium, and the lanthanides. These abundant elements, characterized by similar geochemical and magnetic properties, are mined for a variety of uses including magnets, alloys, glasses, and electronics. The diverse collection of materials found below demonstrates the range of uses for rare earths throughout the twentieth and twenty-first centuries. Browse the topic to find materials related to fine art, lasers, cathode ray tube televisions, the first incandescent lights, and more!",
       subject: ["Cathode ray tubes", "Cerium", "Dysprosium", "Erbium", "Europium", "Gadolinium", "Holmium", "Lanthanum",
         "Lutetium", "Neodymium", "Organorare earth metal compounds", "Phosphors", "Praseodymium", "Promethium",
         "Rare earth borides", "Rare earth fluorides", "Rare earth halides", "Rare earth industry",
@@ -266,7 +266,7 @@ class FeaturedTopic
     },
     plastics_and_synthetic_fibers: {
       title: "Plastics & Synthetic Fibers",
-      description: "Plastics encompass a wide range of synthetic and semi-synthetic materials created from large repeating molecules called polymers. The Institute’s collections include a wide variety of materials documenting the history of the study of polymers, the development of plastics, the plastic industry, synthetic fibers, microplastics, works depicting or created by early pioneers of the field, and other related topics. Browse the digitized materials in this digital collection to learn more about plastics and synthetic fibers from the lab to your living room."
+      description: "Plastics encompass a wide range of synthetic and semi-synthetic materials created from large repeating molecules called polymers. The Institute’s collections include a wide variety of materials documenting the history of the study of polymers, the development of plastics, the plastic industry, synthetic fibers, microplastics, works depicting or created by early pioneers of the field, and other related topics. Browse the digitized materials in this digital collection to learn more about plastics and synthetic fibers from the lab to your living room.",
       subject: ["Acrylic fiber industry", "Acrylic resin industry", "Acrylic resins", "Advertising--Plastics", "Bakelite",
        "Biodegradable plastics", "Celluloid", "Dyes and dyeing--Plastics", "Injection molding of plastics", "Microplastics",
        "Plastic films", "Plastic kitchen utensils", "Plastic tableware", "Plastic tiles", "Plastic toys", "Plasticizer industry",
@@ -277,7 +277,7 @@ class FeaturedTopic
         "Polyolefins", "Polypropylene", "Polypropylene fibers", "Polystyrene", "Polyvinyl chloride", "Polyvinyl chloride industry",
         "Styrene", "Synthetic fabrics", "Synthetic products", "Thermoplastic composites", "Thermoplastics", "Thermosetting composites",
         "Dyes and dyeing--Nylon", "Dyes and dyeing--Rayon", "Nylon", "Rayon", "Rayon industry and trade", "Synthetic fabrics",
-        "Synthetic products", "Textile fibers, Synthetic", "Thermosetting composites", "Polytef]
+        "Synthetic products", "Textile fibers, Synthetic", "Thermosetting composites", "Polytef"]
     }
   }
 
