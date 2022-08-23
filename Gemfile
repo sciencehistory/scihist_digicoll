@@ -172,7 +172,7 @@ gem "warning", "~> 1.2" # managing ruby warning output
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem 'solr_wrapper', "~> 3.0", ">= 3.0.1"
+  gem 'solr_wrapper', "~> 4.0"
 end
 
 group :development do
