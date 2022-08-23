@@ -228,4 +228,7 @@ end
 
  gem 'ruby-progressbar'
 
- gem "faraday", "~> 1.0" # lock to 1.0 until we fix for 2.0
+# faraday is a transitive dependency, but we interact with it directly
+# to configure Blacklight, for automatic retry
+ gem "faraday", "~> 2.0"
+ gem "faraday-retry", "~> 2.0"
