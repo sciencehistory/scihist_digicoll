@@ -255,6 +255,21 @@ class FeaturedTopic
         "Rare earth oxide thin films", "Rare earth phosphates", "Rare earths", "Rare earth-silicon-iron-aluminum alloys",
         "Rare earths--Magnetic properties", "Rare earths--Spectra", "Samarium", "Scandium", "Terbium", "Thulium",
         "Ytterbium", "Yttrium"]
+    },
+    plastics_and_synthetic_fibers: {
+      title: "Plastics & Synthetic Fibers",
+      description: "Plastics encompass a wide range of synthetic and semi-synthetic materials created from large repeating molecules called polymers. The Institute’s collections include a wide variety of materials documenting the history of the study of polymers, the development of plastics, the plastic industry, synthetic fibers, microplastics, works depicting or created by early pioneers of the field, and other related topics. Browse the digitized materials in this digital collection to learn more about plastics and synthetic fibers from the lab to your living room."
+      subject: ["Acrylic fiber industry", "Acrylic resin industry", "Acrylic resins", "Advertising--Plastics", "Bakelite",
+       "Biodegradable plastics", "Celluloid", "Dyes and dyeing--Plastics", "Injection molding of plastics", "Microplastics",
+       "Plastic films", "Plastic kitchen utensils", "Plastic tableware", "Plastic tiles", "Plastic toys", "Plasticizer industry",
+        "Plasticizers", "Plastics", "Plastics in medicine", "Plastics in packaging,", "Plastics industry and trade",
+        "Plastics machinery industry", "Plastics--Analysis", "Plastics--Coloring", "Plastics--Deterioration",
+        "Plastics--Extrusion", "Plastics--Handbooks, manuals, etc.", "Plastics--Molding", "Plastics--Molds",
+        "Plastics--Periodicals", "Plastics--Research", "Plastics--Testing", "Polyethylene", "Polyethylene terephthalate",
+        "Polyolefins", "Polypropylene", "Polypropylene fibers", "Polystyrene", "Polyvinyl chloride", "Polyvinyl chloride industry",
+        "Styrene", "Synthetic fabrics", "Synthetic products", "Thermoplastic composites", "Thermoplastics", "Thermosetting composites",
+        "Dyes and dyeing--Nylon", "Dyes and dyeing--Rayon", "Nylon", "Rayon", "Rayon industry and trade", "Synthetic fabrics",
+        "Synthetic products", "Textile fibers, Synthetic", "Thermosetting composites", "Polytef]
     }
   }
 
