@@ -28,8 +28,8 @@ namespace :scihist do
             if creator.value == "Beckman Instruments, inc."
               creator.value = "Beckman Instruments, Inc."
             end
-            work.save!
           end
+          work.save!
 
           progress_bar.increment
         end
