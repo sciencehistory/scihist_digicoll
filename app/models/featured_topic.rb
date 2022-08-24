@@ -251,7 +251,7 @@ class FeaturedTopic
     },
     rare_earths: {
       title: "Rare Earths",
-      description: "In this collection, find materials related to rare earth elements, a group of 17 elements composed of scandium, yttrium, and the lanthanides. These abundant elements, characterized by similar geochemical and magnetic properties, are mined for a variety of uses including magnets, alloys, glasses, and electronics. The diverse collection of materials found below demonstrates the range of uses for rare earths throughout the twentieth and twenty-first centuries. Browse the topic to find materials related to fine art, lasers, cathode ray tube televisions, the first incandescent lights, and more!",
+      description: "This digital collection features materials related to rare earth elements, a group of 17 elements composed of scandium, yttrium, and the lanthanides. These abundant elements, characterized by similar geochemical and magnetic properties, are mined for a variety of uses including magnets, alloys, glasses, and electronics. The diverse collection of materials found below demonstrates the range of uses for rare earths throughout the twentieth and twenty-first centuries. Browse the topic to find materials related to fine art, lasers, cathode ray tube televisions, the first incandescent lights, and more!",
       subject: ["Cathode ray tubes", "Cerium", "Dysprosium", "Erbium", "Europium", "Gadolinium", "Holmium", "Lanthanum",
         "Lutetium", "Neodymium", "Organorare earth metal compounds", "Phosphors", "Praseodymium", "Promethium",
         "Rare earth borides", "Rare earth fluorides", "Rare earth halides", "Rare earth industry",
