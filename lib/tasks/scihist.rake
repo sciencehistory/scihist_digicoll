@@ -97,6 +97,11 @@ namespace :scihist do
       # We have to pre-fetch :oral_history_content for owrks, but don't have that
       # for collection, so have to in two parts.
 
+      Kithe.indexable_settings.writer_settings.merge!(
+        "solr_writer.thread_pool" => 1,
+        "solr_writer.http_timeout" => 8
+      )
+
 
       Kithe::Indexable.index_with(batching: true) do
 
