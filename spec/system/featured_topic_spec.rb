@@ -40,6 +40,7 @@ describe "Featured Topic show page", type: :system, js: false, solr:true, indexa
     visit featured_topic_path(:instruments_and_innovation.to_s.dasherize)
     expect(page).to have_title "Instruments & Innovation"
     expect(page).to have_selector("h1", text: 'Instruments & Innovation')
+    expect(page).to have_text("2 items")
     expect(page).to have_selector("p", text: 'Fireballs')
     expect(page).to have_content("artillery")
     expect(page).to have_content("lithographs")
@@ -49,7 +50,6 @@ describe "Featured Topic show page", type: :system, js: false, solr:true, indexa
   it "searches, and keeps total count accurate" do
     visit featured_topic_path(:instruments_and_innovation.to_s.dasherize, q: "artillery")
 
-    expect(page).to have_text("2 items")
     expect(page).to have_text("1 entry found")
 
     expect(page).to have_content("artillery")
