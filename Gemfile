@@ -29,9 +29,8 @@ gem 'scout_apm'
 gem "blacklight", "~> 7.29.0"
 gem "blacklight_range_limit", "~> 8.0", ">= 8.2.3" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
-# Temporarily pointing at active_encode main brancch, until a release AFTER
-# 0.8.2 that has the features we need.
-gem "active_encode", github: "samvera-labs/active_encode"
+# for some code to deal with transcoding video, via AWS MediaConvert
+gem "active_encode", "~> 1.0"
 
 # these gems are needed for active_encode MediaConvert adapter
 # https://github.com/samvera-labs/active_encode/blob/main/guides/media_convert_adapter.md
@@ -170,7 +169,7 @@ gem "warning", "~> 1.2" # managing ruby warning output
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem 'solr_wrapper', "~> 3.0", ">= 3.0.1"
+  gem 'solr_wrapper', "~> 4.0"
 end
 
 group :development do
@@ -225,3 +224,8 @@ end
  gem 'csl-styles', '~> 2.0' # Need to load the styles so we can use chicago
 
  gem 'ruby-progressbar'
+
+# faraday is a transitive dependency, but we interact with it directly
+# to configure Blacklight, for automatic retry
+ gem "faraday", "~> 2.0"
+ gem "faraday-retry", "~> 2.0"
