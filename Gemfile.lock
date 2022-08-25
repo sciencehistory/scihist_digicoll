@@ -1,11 +1,3 @@
-GIT
-  remote: https://github.com/samvera-labs/active_encode.git
-  revision: dc4b82c6593deaf9e49ad60f0bdd7db83fc00e69
-  specs:
-    active_encode (1.0.0)
-      addressable (~> 2.8)
-      rails
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -49,6 +41,9 @@ GEM
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.1, >= 1.2.0)
+    active_encode (1.0.0)
+      addressable (~> 2.8)
+      rails
     activejob (6.1.6.1)
       activesupport (= 6.1.6.1)
       globalid (>= 0.3.6)
@@ -705,7 +700,7 @@ PLATFORMS
 
 DEPENDENCIES
   access-granted (~> 1.0)
-  active_encode!
+  active_encode (~> 1.0)
   activerecord-postgres_enum (~> 2.0)
   attr_json (~> 1.0)
   autoprefixer-rails (= 10.4.2.0)
