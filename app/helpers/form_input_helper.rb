@@ -58,7 +58,13 @@ module FormInputHelper
   # that lets staff choose one of these values. These UI inputs need to have the internal value
   # and the human label.
   #
-  # This method returns a hash whose key is human labels and values are internal codes, suitable
+  # @example
+  #      <%= form.input :category,
+  #                     collection: vocab_collection_options(model: a_related_link,
+  #                                                   attribute_name: :category,
+  #                                                   value_list: RelatedLink::CATEGORY_VALUES)
+  #
+  # @return [Hash]  whose keys are human labels and values are internal codes, suitable
   # for use with a lot of Rails collection input helpers.
   #
   # If the *current* value does not exist -- we still add it on top, so the input can
@@ -98,6 +104,12 @@ module FormInputHelper
   #        `activemodel.enum_values.work/external_id.category.object_id`
   #
   # * If no such I18n key is defined, we just default to calling #humanize on the value
+  #
+  # @example
+  #     vocab_value_human-name(model_class: RelatedLink, attribute_name: :category, value: "finding_aid")
+  #     # => "Finding aid"
+  #
+  # @return [String]
   #
   def vocab_value_human_name(model_class:, attribute_name:, value:)
     if value.blank?
