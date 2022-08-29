@@ -1,3 +1,4 @@
+# Displays a single RelatedLink model on a Work or Collection show page, as a category prefix header, and link.
 class RelatedLinkComponent < ApplicationComponent
   attr_reader :related_link
 
