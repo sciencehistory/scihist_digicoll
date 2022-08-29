@@ -83,6 +83,18 @@
 
     <%= f.repeatable_attr_input :related_url, build: :at_least_one %>
 
+    <%= f.repeatable_attr_input(:related_link, build: :at_least_one) do |sub_form| %>
+      <%= sub_form.input :category,
+            collection: vocab_collection_options(model: sub_form.object,
+                                                 attribute_name: :category,
+                                                 value_list: RelatedLink::CATEGORY_VALUES),
+            include_blank: false,
+            wrapper: :scihist_horizontal_form %>
+      <%= sub_form.input :url, wrapper: :scihist_horizontal_form %>
+      <%= sub_form.input :label, wrapper: :scihist_horizontal_form %>
+    <% end %>
+
+
     <%= f.input :rights, required: (true if f.object.published?), collection: RightsTerm.collection_for_select %>
 
     <%= f.input :rights_holder %>

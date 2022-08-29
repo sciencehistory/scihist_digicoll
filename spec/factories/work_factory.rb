@@ -111,6 +111,15 @@ FactoryBot.define do
       related_url {
         ["http://www.nytimes.com"]
       }
+      related_link {
+        [
+          {
+            url: "https://sciencehistory.org/some_biography",
+            category: "institute_biography",
+            label: "Joe Schmoe"
+          }
+        ]
+      }
       date_of_work {
         [
           Work::DateOfWork.new({
