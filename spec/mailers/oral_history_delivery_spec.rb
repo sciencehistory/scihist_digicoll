@@ -10,9 +10,9 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
       [
         representative,
         create(:asset_with_faked_file, :mp3, published: false,
-          oh_available_by_request: true, title: "Protected mp3", position: 2),
+          oh_available_by_request: true, title: "Protected mp3", faked_filename: "Protected mp3", position: 2),
         create(:asset_with_faked_file, :pdf, published: false,
-          oh_available_by_request: true,  title: "Protected PDF", position: 3),
+          oh_available_by_request: true,  title: "Protected PDF", faked_filename: "Protected PDF", position: 3),
         create(:asset_with_faked_file, :pdf, published: false,
           title: "We will get sued if you send this out.", position: 4)
       ]
@@ -55,7 +55,7 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
       expect(body).to match "Dear Patron name"
       expect(body).to match /files from.*Bailey/
 
-      expect(body).to match /Protected mp3.*MP3 — 5.3 KB.*Protected PDF.*PDF — 7.4 KB/m
+      expect(body).to match /Protected mp3.*MP3.*Protected PDF.*PDF/m
 
       expect(body).to match "Please download your files by #{(Date.today + 6.days).strftime("%A, %B %d")}"
 

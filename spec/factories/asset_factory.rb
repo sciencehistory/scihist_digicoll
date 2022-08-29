@@ -62,6 +62,8 @@ FactoryBot.define do
         faked_width { 30 }
         faked_height { 30 }
         faked_bitrate { nil }
+        faked_filename { nil }
+        faked_size { nil }
 
         faked_md5 { Digest::MD5.hexdigest rand(10000000).to_s }
         faked_sha512 { Digest::SHA512.hexdigest rand(10000000).to_s }
@@ -122,11 +124,20 @@ FactoryBot.define do
         faked_content_type { "audio/mpeg" }
         faked_height { nil }
         faked_width { nil }
+        faked_derivatives { nil }
       end
 
       trait :m4a do
         faked_file { File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.m4a")) }
         faked_content_type { "audio/mp4" }
+        faked_height { nil }
+        faked_width { nil }
+      end
+
+
+      trait :flac do
+        faked_file { File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.flac")) }
+        faked_content_type { "audio/flac" }
         faked_height { nil }
         faked_width { nil }
       end
@@ -141,7 +152,9 @@ FactoryBot.define do
           height: evaluator.faked_height,
           video_bitrate: evaluator.faked_bitrate,
           md5: evaluator.faked_md5,
-          sha512: evaluator.faked_sha512)
+          sha512: evaluator.faked_sha512,
+          filename: evaluator.faked_filename,
+          size: evaluator.faked_size)
 
         asset.file_data = uploaded_file.as_json
 

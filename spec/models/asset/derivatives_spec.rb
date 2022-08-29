@@ -2,6 +2,15 @@ require 'rails_helper'
 
 describe "derivative creation" do
 
+  let(:flac_file_path) { Rails.root.join("spec/test_support/audio/5-seconds-of-silence.flac")}
+  let(:flac_file_sha512) { Digest::SHA512.hexdigest(File.read(flac_file_path)) }
+  let!(:flac_asset) { FactoryBot.create(:asset, file: File.open(flac_file_path)) }
+
+  let(:mp3_file_path) { Rails.root.join("spec/test_support/audio/5-seconds-of-silence.mp3")}
+  let(:mp3_file_sha512) { Digest::SHA512.hexdigest(File.read(mp3_file_path)) }
+  let!(:mp3_asset) { FactoryBot.create(:asset, file: File.open(mp3_file_path)) }
+
+
   describe 'pdf asset' do
     let!(:pdf_asset) { create(:asset_with_faked_file, :pdf, faked_derivatives: {}) }
     it "creates pdf derivatives" do
@@ -27,4 +36,28 @@ describe "derivative creation" do
       )
     end
   end
+
+  describe "audio asset" do
+    describe "flac" do
+      it "creates audio derivatives" do
+        flac_asset.file.metadata['sha512'] = flac_file_sha512
+        flac_asset.save!
+        flac_asset.create_derivatives
+        expect(flac_asset.file_derivatives).to have_key :m4a
+        m4a_deriv  = flac_asset.file_derivatives.dig(:m4a) #flac_asset.file_derivatives[:m4a]
+        expect(m4a_deriv).not_to be_nil
+        expect(m4a_deriv.mime_type).to eq('audio/mp4')
+        # TODO can this be changed to m4a? Should we?
+        expect(m4a_deriv.id).to match(/mp4$/)
+      end
+    end
+
+    describe "mp3" do
+      it "does not have an m4a derivative" do
+        mp3_asset.create_derivatives
+        expect(mp3_asset.file_derivatives).not_to have_key :m4a
+      end
+    end
+  end
+
 end

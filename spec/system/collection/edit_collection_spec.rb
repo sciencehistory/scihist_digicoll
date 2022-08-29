@@ -24,6 +24,9 @@ RSpec.describe "Edit Collection form", :logged_in_user, type: :system, queue_ada
     fill_in "collection[related_link_attributes][0][url]", with: "http://example.org/edited"
     fill_in "collection[related_link_attributes][0][label]", with: "edited label"
 
+    select "Sierra Bib No", from: "collection[external_id_attributes][0][category]"
+    fill_in "collection[external_id_attributes][0][value]", with: "b1234567"
+
     # # the hidden file input used by uppy, we can target directly...
     add_file_via_uppy_dashboard input_name: "files[]", file_path: (Rails.root + "spec/test_support/images/20x20.png").to_s
     expect(page).to have_text("Will be saved") # wait for direct upload to complete
@@ -39,5 +42,6 @@ RSpec.describe "Edit Collection form", :logged_in_user, type: :system, queue_ada
     expect(collection.representative.file).to be_present
     expect(collection.representative.file).not_to eq(original_file)
     expect(original_file.exists?).to be(false) # has been deleted
+    expect(collection.external_id).to eq([Work::ExternalId.new("value"=>"b1234567", "category"=>"bib")])
   end
 end

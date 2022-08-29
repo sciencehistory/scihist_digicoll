@@ -24,7 +24,8 @@ describe "Oral history with audio display", type: :system, js: true do
         parent: parent_work,
 
         # All of these are published except for the second one.
-        published: i != 2
+        published: i != 2,
+        faked_derivatives: {},
       )
     end
   }

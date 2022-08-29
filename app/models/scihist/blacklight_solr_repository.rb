@@ -17,7 +17,7 @@ module Scihist
         faraday_connection = rsolr_client.connection
 
         # remove if already present, so we can add our own
-        faraday_connection.builder.delete(Faraday::Request::Retry)
+        faraday_connection.builder.delete(Faraday::Retry::Middleware)
 
         # remove so we can make sure it's there AND added AFTER our
         # retry, so our retry can succesfully catch it's exceptions
@@ -56,9 +56,9 @@ module Scihist
             Faraday::ServerError # any HTTP 5xx
           ],
 
-          retry_block: -> (env, options, retries_remaining, exc) do
+          retry_block: -> (env:, options:, retry_count:, exception:, will_retry_in:) do
             Rails.logger.warn(<<-EOS.strip_heredoc
-              #{self.class}: Retrying Solr request: HTTP #{env&.status}: #{exc&.class}: retry #{options.max - retries_remaining}:\n\n\
+              #{self.class}: Retrying Solr request: HTTP #{env&.status}: #{exception&.class}: retry #{retry_count + 1}: will try again in #{will_retry_in}s\n\n\
                 url: #{env&.url&.to_s}
                 response: #{env&.response&.body&.slice(0, 150)}
               EOS

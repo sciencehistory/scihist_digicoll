@@ -15,6 +15,15 @@ module DownloadOptions
       # We don't use content_type in derivative option subheads,
       # cause it's in the main label. But do use it for original.
 
+      if m4a_deriv = asset.file_derivatives[:m4a]
+        options << DownloadOption.with_formatted_subhead("Smaller file",
+          url: download_derivative_path(asset, :m4a),
+          analyticsAction: "download_m4a_derivative_of_flac_original",
+          content_type: 'audio/mp4',
+          size: m4a_deriv.size
+        )
+      end
+
       if asset.stored?
         options << DownloadOption.with_formatted_subhead("Original file",
           url: download_path(asset.file_category, asset),
@@ -24,7 +33,7 @@ module DownloadOptions
         )
       end
 
-      return options
+      options
     end
 
   end

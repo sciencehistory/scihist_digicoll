@@ -71,7 +71,8 @@ module ScihistDigicoll
     end
 
     def expected_num_to_check
-      @expected_num_to_check ||= (cycle_length == 0 ? Asset.count : Asset.count / cycle_length)
+      # make sure we round UP
+      @expected_num_to_check ||= (cycle_length == 0 ? Asset.count : (Asset.count.to_f / cycle_length).ceil)
     end
 
     private

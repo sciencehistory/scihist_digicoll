@@ -26,12 +26,11 @@ gem 'scout_apm'
 # to spend the time to update Blacklight to latest -- you will usually want to update
 # blacklight_range_limit to latest at same time.
 #
-gem "blacklight", "~> 7.24.0"
-gem "blacklight_range_limit", "~> 8.0" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
+gem "blacklight", "~> 7.29.0"
+gem "blacklight_range_limit", "~> 8.0", ">= 8.2.3" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
-# Temporarily pointing at active_encode main brancch, until a release AFTER
-# 0.8.2 that has the features we need.
-gem "active_encode", github: "samvera-labs/active_encode"
+# for some code to deal with transcoding video, via AWS MediaConvert
+gem "active_encode", "~> 1.0"
 
 # these gems are needed for active_encode MediaConvert adapter
 # https://github.com/samvera-labs/active_encode/blob/main/guides/media_convert_adapter.md
@@ -97,9 +96,7 @@ gem 'font-awesome-rails', '~> 4.7'
 gem "lograge", "< 2"
 gem "device_detector", "~> 1.0" # user-agent parsing we use for logging
 
-# temporary kithe indexing branch, for scihist_digicoll indexing branch, do not
-# intend to merge to master like this.
-gem 'kithe', "~> 2.5"
+gem 'kithe', "~> 2.6"
 # attr_son is a dependency of kithe, but we want to make sure it gets require'd directly
 # to avoid weird auto-loading issues.
 gem "attr_json", "~> 1.0"
@@ -172,7 +169,7 @@ gem "warning", "~> 1.2" # managing ruby warning output
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem 'solr_wrapper', "~> 3.0", ">= 3.0.1"
+  gem 'solr_wrapper', "~> 4.0"
 end
 
 group :development do
@@ -227,3 +224,8 @@ end
  gem 'csl-styles', '~> 2.0' # Need to load the styles so we can use chicago
 
  gem 'ruby-progressbar'
+
+# faraday is a transitive dependency, but we interact with it directly
+# to configure Blacklight, for automatic retry
+ gem "faraday", "~> 2.0"
+ gem "faraday-retry", "~> 2.0"

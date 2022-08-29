@@ -20,6 +20,8 @@ class Collection < Kithe::Collection
 
   accepts_nested_attributes_for :representative
 
+  attr_json :external_id, Work::ExternalId.to_type, array: true, default: -> { [] }
+
   attr_json :description, :text
 
   # legacy related_url to be replaced by related_link
