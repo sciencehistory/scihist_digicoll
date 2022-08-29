@@ -82,6 +82,7 @@ class Admin::CollectionsController < AdminController
         permit(*permitted_attributes,
                 :representative_attributes => {},
                 :funding_credit_attributes => {},
+                :related_link_attributes => {},
                 :external_id_attributes => true,
                 :related_url_attributes => []
         ).tap do |hash|
