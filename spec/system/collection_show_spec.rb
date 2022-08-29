@@ -5,6 +5,7 @@ describe "Collection show page", solr: true, indexable_callbacks: true do
     let(:collection) do
       create(:collection,
         description: "some description",
+        external_id: [{category: "bib", value: "b9999999"}],
         related_url: ["http://othmerlib.sciencehistory.org/record=b1234567", "https://example.org/foo/bar"]
       ).tap do |col|
         # doing these as separate creates after collection exists necessary for them to have collection
@@ -28,7 +29,8 @@ describe "Collection show page", solr: true, indexable_callbacks: true do
 
       expect(page).to have_content(collection.description)
 
-      expect(page).to have_link(href: "http://othmerlib.sciencehistory.org/record=b1234567", text: "View in library catalog")
+      expect(page).to have_link(href: "https://othmerlib.sciencehistory.org/record=b1234567", text: "View in library catalog")
+      expect(page).to have_link(href: "https://othmerlib.sciencehistory.org/record=b9999999", text: "View in library catalog")
       expect(page).to have_link(href: "https://example.org/foo/bar", text: "example.org/…")
 
       expect(page).to have_content("public work one")

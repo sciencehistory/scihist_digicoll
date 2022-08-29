@@ -8,7 +8,9 @@
 
 <ul>
   <% mailer.assets.each do |asset| %>
-    <li><%= link_to mailer.download_label(asset), mailer.download_url(asset)%></li>
+    <li>
+      <%= render OralHistoryEmailAssetItemComponent.new(asset) %>
+    </li>
   <% end %>
 </ul>
 

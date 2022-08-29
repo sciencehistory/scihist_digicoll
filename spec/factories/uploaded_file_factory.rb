@@ -17,14 +17,16 @@ FactoryBot.define do
       video_bitrate { nil }
       md5 { Digest::MD5.hexdigest rand(10000000).to_s }
       sha512 { Digest::SHA512.hexdigest rand(10000000).to_s }
+      filename { nil }
+      size { nil }
     end
 
     id { SecureRandom.hex }
     storage { "store" }
     metadata do
       {
-        "filename"=> File.basename( file ),
-        "size"=> file.size,
+        "filename"=> filename || File.basename( file ),
+        "size"=> size || file.size,
         "mime_type"=> content_type,
         "width"=> width,
         "height"=> height,

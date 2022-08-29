@@ -40,6 +40,10 @@ class CollectionShowController < CatalogController
     # Our custom sub-class to limit just to docs in collection, with collection id
     # taken from params[:collection_id]
     config.search_builder_class = ::SearchBuilder::WithinCollectionBuilder
+
+    # and we need to make sure collection_id is allowed by BL, don't totally
+    # understand this, as of BL 7.25
+    config.search_state_fields << :collection_id
   end
 
   private
