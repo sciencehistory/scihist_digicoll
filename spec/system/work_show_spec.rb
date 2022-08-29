@@ -62,7 +62,7 @@ describe "Public work show page", type: :system, js: false do
       expect(thumbnails.count). to eq work.members.select {|m| m.published }.count
 
 
-      within(".show-genre") do
+      within("header .show-genre") do
         work.genre.each do |g|
           expect(page).to have_link(g)
         end
