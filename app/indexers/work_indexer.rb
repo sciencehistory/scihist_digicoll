@@ -66,6 +66,41 @@ class WorkIndexer < Kithe::Indexer
     :fulltext_agnostic => ["searchable_fulltext_language_agnostic"]
   }
 
+
+
+  more_like_this_settings = ENV['MORE_LIKE_THIS_SETTINGS'] || "OFF"
+
+  unless ["OFF", "SIMPLE", "MEDIUM", "FANCY"].include? more_like_this_settings
+    raise RuntimeError.new("Set ENV['MORE_LIKE_THIS_SETTINGS'] to OFF, SIMPLE, MEDIUM or FANCY.")
+  end
+
+  # This could work.
+  if more_like_this_settings == "SIMPLE"
+    [:subject, :creator, :description].each do |field|
+      field_map[field] << "more_like_this_keywords_tsimv"
+    end
+
+  # Add title and other bib metadata
+  elsif more_like_this_settings == "MEDIUM"
+    [ :title, :additional_title, :creator,
+      :genre, :subject, :description, :place,
+      :department, :medium, :format ].each do |field|
+      field_map[field] << "more_like_this_keywords_tsimv"
+    end
+
+  # Attempt at a fulltext similarity index.
+  # Probably overkill.
+  elsif more_like_this_settings == "FANCY"
+    [:title, :additional_title, :creator,
+      :genre, :subject, :description, :place,
+      :department, :medium, :format].each do |field|
+      field_map[field] << "more_like_this_keywords_tsimv"
+    end
+    [:fulltext_en, :fulltext_de, :fulltext_agnostic].each do |field|
+      field_map[field] << "more_like_this_fulltext_tsimv"
+    end
+  end
+
   configure do
 
     to_field field_map[:model_pk_ssi], obj_extract("id") # the actual db pk, a UUID
