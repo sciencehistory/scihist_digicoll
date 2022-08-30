@@ -31,14 +31,8 @@ class WorkShowInfoComponent < ApplicationComponent
     )
   end
 
-  # TODO, filter things out
   def related_links
-    work.related_link
-  end
-
-  # TODO get rid of
-  def related_urls_filtered
-    related_url_filter.filtered_related_urls
+    related_link_filter.general_related_links
   end
 
   # from related_url (legacy), or from our external_id with bib IDs in it.
@@ -51,7 +45,7 @@ class WorkShowInfoComponent < ApplicationComponent
         external_id.category == "bib"
       end.map(&:value).map { |id| id.slice(0,8) }
 
-      (bib_ids.collect(&:downcase) + related_url_filter.opac_ids.collect(&:downcase)).uniq.map do |bib_id|
+      bib_ids.collect(&:downcase).uniq.map do |bib_id|
         ScihistDigicoll::Util.opac_url(bib_id)
       end
     end
@@ -109,7 +103,7 @@ class WorkShowInfoComponent < ApplicationComponent
   # without n+1 fetch.
   def related_works
     @related_works ||= Work.where(
-        friendlier_id: related_url_filter.related_work_friendlier_ids,
+        friendlier_id: related_link_filter.related_work_friendlier_ids,
         published: true
       ).includes(:leaf_representative).all
   end
@@ -137,9 +131,8 @@ class WorkShowInfoComponent < ApplicationComponent
 
   private
 
-
-  def related_url_filter
-    @related_url_filter ||= RelatedUrlFilter.new(work.related_url)
+  def related_link_filter
+    @related_link_filter ||= RelatedLinkFilter.new(work.related_link)
   end
 
 end
