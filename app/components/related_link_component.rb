@@ -11,11 +11,26 @@ class RelatedLinkComponent < ApplicationComponent
     "other_internal" => "Link"
   }.freeze
 
+  # @param related_link [RelatedLink]
   def initialize(related_link:)
     @related_link = related_link
   end
 
   def link_category_display
     DISPLAY_LABELS[related_link.category] || related_link.category.humanize
+  end
+
+  def should_show_link_domain?
+    related_link.category == "other_external" && related_link.label.present? && link_domain.present?
+  end
+
+  def link_domain
+    return @link_domain if defined?(@link_domain)
+
+    @link_domain = begin
+      URI.parse(related_link.url).host
+    rescue URI::InvalidURIError
+      nil
+    end
   end
 end
