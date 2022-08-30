@@ -28,20 +28,24 @@ class CollectionMetadataComponent < ApplicationComponent
         external_id.category == "bib"
       end.map(&:value).map { |id| id.slice(0,8) }
 
-      (bib_ids.collect(&:downcase) + related_url_filter.opac_ids.collect(&:downcase)).uniq.map do |bib_id|
+      bib_ids.collect(&:downcase).uniq.map do |bib_id|
         ScihistDigicoll::Util.opac_url(bib_id)
       end
     end
     @opac_urls
   end
 
-  def related_urls
-    related_url_filter.filtered_related_urls
+  def related_links
+    related_link_filter.general_related_links
+  end
+
+  def finding_aid_urls
+    related_link_filter.finding_aid_related_links.collect(&:url).compact
   end
 
   private
 
-  def related_url_filter
-    @related_url_filter ||= RelatedUrlFilter.new(collection.related_url)
+  def related_link_filter
+    @related_link_filter ||= RelatedLinkFilter.new(collection.related_link)
   end
 end

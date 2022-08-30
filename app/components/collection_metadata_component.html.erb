@@ -11,26 +11,27 @@
     <%= DescriptionDisplayFormatter.new(collection.description).format %>
   </div>
 
-  <% if show_links && (opac_urls.present? || related_urls.present?) %>
-    <table class="collection-attributes chf-attributes">
-      <% opac_urls.each do |url| %>
+  <% if show_links && (opac_urls.present? || finding_aid_urls.present?) %>
+    <table class="collection-attributes table-borderless chf-attributes">
+      <% finding_aid_urls.each do |url| %>
         <tr>
-          <td colspan="2"><%= link_to "View in library catalog", url %></td>
+          <td colspan="2"><span class="h4"><%= link_to "View collection guide", url %></span></td>
         </tr>
       <% end %>
 
-      <% if related_urls.present? %>
+      <% opac_urls.each do |url| %>
         <tr>
-          <th scope="row">Related URL</th>
-          <td>
-            <ul>
-              <% related_urls.each do |url| %>
-                <li class="attribute"><%= render ExternalLinkComponent.new(url) %></li>
-              <% end %>
-            </ul>
-          </td>
+          <td  colspan="2"><span class="h4"><%= link_to "View in library catalog", url %></span></td>
         </tr>
       <% end %>
     </table>
+  <% end %>
+
+  <% if show_links && related_links.present? %>
+    <div class="collection-related-links">
+      <% related_links.each do |link| %>
+        <%= render RelatedLinkComponent.new(related_link: link) %>
+      <% end %>
+    </div>
   <% end %>
 </div>
