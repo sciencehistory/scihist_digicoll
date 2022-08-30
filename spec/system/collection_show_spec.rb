@@ -6,7 +6,10 @@ describe "Collection show page", solr: true, indexable_callbacks: true do
       create(:collection,
         description: "some description",
         external_id: [{category: "bib", value: "b9999999"}],
-        related_url: ["http://othmerlib.sciencehistory.org/record=b1234567", "https://example.org/foo/bar"]
+        related_link: [
+          RelatedLink.new(category: "finding_aid", url: "http://archives.sciencehistory.org/some/collection"),
+          RelatedLink.new(category: "other_internal", url: "https://sciencehistory.org/foo/bar", label: "Article about this")
+        ]
       ).tap do |col|
         # doing these as separate creates after collection exists necessary for them to have collection
         # on save, so to get indexed properly
@@ -29,9 +32,9 @@ describe "Collection show page", solr: true, indexable_callbacks: true do
 
       expect(page).to have_content(collection.description)
 
-      expect(page).to have_link(href: "https://othmerlib.sciencehistory.org/record=b1234567", text: "View in library catalog")
       expect(page).to have_link(href: "https://othmerlib.sciencehistory.org/record=b9999999", text: "View in library catalog")
-      expect(page).to have_link(href: "https://example.org/foo/bar", text: "example.org/…")
+      expect(page).to have_link(href: "http://archives.sciencehistory.org/some/collection", text: "View collection guide")
+      expect(page).to have_link(href: "https://sciencehistory.org/foo/bar", text: "Article about this")
 
       expect(page).to have_content("public work one")
       expect(page).to have_content("public work two")
