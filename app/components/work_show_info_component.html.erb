@@ -151,6 +151,16 @@
     </tr>
   <% end %>
 
+  <% if links_to_finding_aids.present? %>
+    <tr>
+      <td colspan=2 class="catalog-links">
+        <% links_to_finding_aids.each do |url| %>
+          <%= content_tag "a", "View collection guide", href: url %>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+
   <% if links_to_opac.present? %>
     <tr>
       <td colspan=2 class="catalog-links">

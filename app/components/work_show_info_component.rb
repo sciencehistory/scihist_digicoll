@@ -52,6 +52,10 @@ class WorkShowInfoComponent < ApplicationComponent
     @links_to_opac
   end
 
+  def links_to_finding_aids
+    @links_to_finding_aids ||= related_link_filter.finding_aid_related_links.collect(&:url).compact
+  end
+
   # Our creators are a list of Work::Creator object. We want to group them by
   # category, in a hash where the values are a list of all things with that
   # same category.
