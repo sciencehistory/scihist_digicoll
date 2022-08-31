@@ -83,8 +83,7 @@ class Admin::CollectionsController < AdminController
                 :representative_attributes => {},
                 :funding_credit_attributes => {},
                 :related_link_attributes => {},
-                :external_id_attributes => true,
-                :related_url_attributes => []
+                :external_id_attributes => true
         ).tap do |hash|
 
           # sanitize description

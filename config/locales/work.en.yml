@@ -9,7 +9,6 @@ en:
           one: "External ID"
           other: "External IDs"
         date_of_work: Date
-        related_url: "Related URL"
         representative: "Representative Thumbnail"
         contained_by: "In Collections"
       work/format:
@@ -81,7 +80,7 @@ en:
           Archival materials only: specify series and subseries of work, where relevant. Capture the information as listed in the finding aid. Required if applicable.
         physical_container: >
           The physical location of a work in an archival collection or, alternatively, a work’s placement in a series (non-archival) or monograph. For archival materials, specify box and folder container numbers, where relevant. For serialized materials, specify volume and part numbers, where relevant. Include shelfmark information when applicable. For partially digitized bibliographic items, indicate the pages within a larger work included in the record. Required if applicable.
-        related_url: >
+        related_link: >
           Input URLs to related content within the Digital Collections. In general, use permanent and Institute-based URLs. Link works of similar subject matter, authorship, or provenance. Optional.
         rights: "Information on copyright status and licensing. Select from dropdown choices. Works marked <em>In Copyright</em> should have a specified owner in the following Rights Holder field. Required."
         rights_holder: >

@@ -48,7 +48,7 @@ RSpec.describe "New Work form", :logged_in_user, type: :system, js: true do
 
 
     # Multi-value free text (2)
-    %w(extent series_arrangement related_url).each do |p|
+    %w(extent series_arrangement).each do |p|
       attr_name = Work.human_attribute_name(p)
       all_items = work.send(p)
       all_items.length.times do |i|
