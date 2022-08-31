@@ -11,7 +11,8 @@ class CollectionIndexer < Kithe::Indexer
 
     to_field "text4_tesim", obj_extract("description"), transform(->(val) { ActionView::Base.full_sanitizer.sanitize(val) })
 
-    to_field "text_no_boost_tesim", obj_extract("related_url")
+    to_field "text_no_boost_tesim", obj_extract("related_link", "label")
+    to_field "text_no_boost_tesim", obj_extract("related_link", "url")
 
     to_field "date_created_dtsi" do |rec, acc|
       if rec.created_at
