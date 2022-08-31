@@ -6,6 +6,7 @@ class RelatedLink
   include AttrJson::Model
 
   CATEGORY_VALUES = %w{finding_aid distillations_article distillations_podcast
+                      distillations_video
                       institute_biography institute_blog_post institute_libguide
                       related_work other_external other_internal}
 
