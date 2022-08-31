@@ -108,9 +108,6 @@ FactoryBot.define do
           Work::Inscription.new({"text"=>"Inscription text 3", "location"=>"Inscription location 3"})
         ]
       }
-      related_url {
-        ["http://www.nytimes.com"]
-      }
       related_link {
         [
           {
