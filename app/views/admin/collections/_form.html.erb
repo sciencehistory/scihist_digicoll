@@ -43,8 +43,6 @@
       <%= f.input :published %>
     <% end %>
 
-    <%= f.repeatable_attr_input :related_url, build: :at_least_one %>
-
     <%= f.repeatable_attr_input(:related_link, build: :at_least_one) do |sub_form| %>
       <%= sub_form.input :category,
             collection: vocab_collection_options(model: sub_form.object,
