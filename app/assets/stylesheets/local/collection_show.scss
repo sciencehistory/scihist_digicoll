@@ -31,6 +31,12 @@
     max-width: $max-readable-width;
   }
 
+  .collection-related-links {
+    display: flex;
+    flex: wrap;
+    gap: $paragraph-spacer ($paragraph_spacer * 4);
+  }
+
   .chf-attributes > tbody >tr:first-child td, .chf-attributes > tbody > tr:first-child th {
     border-top: 0; // nope, not here.
   }

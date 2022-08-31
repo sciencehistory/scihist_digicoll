@@ -69,19 +69,6 @@
 
   <%= render AttributeTable::RowComponent.new(:rights_holder, values: [rights_holder]) %>
 
-  <% if related_urls_filtered.present? %>
-    <tr>
-      <th scope='row'>Related URL</th>
-      <td>
-        <ul>
-          <% related_urls_filtered.each do |url| %>
-            <li class="attribute"><%= render ExternalLinkComponent.new(url) %></li>
-          <% end %>
-        </ul>
-      </td>
-    </tr>
-  <% end %>
-
   <%# hard-coded credit line instead of taking from record %>
   <tr>
     <th scope='row'>Credit line</th>
@@ -160,6 +147,16 @@
             <%= physical_container.display_as %>
           </li>
         </ul>
+      </td>
+    </tr>
+  <% end %>
+
+  <% if links_to_finding_aids.present? %>
+    <tr>
+      <td colspan=2 class="catalog-links">
+        <% links_to_finding_aids.each do |url| %>
+          <%= content_tag "a", "View collection guide", href: url %>
+        <% end %>
       </td>
     </tr>
   <% end %>
