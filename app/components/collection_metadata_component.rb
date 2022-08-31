@@ -18,7 +18,7 @@ class CollectionMetadataComponent < ApplicationComponent
     @all_count ||= collection.contains.count
   end
 
-  # from related_url (legacy), or from our external_id with bib IDs in it.
+  # from our external_id with bib IDs in it.
   def opac_urls
     @opac_urls ||= begin
       # bib_ids are supposed to be `b` followed by 7 numbers, but sometimes

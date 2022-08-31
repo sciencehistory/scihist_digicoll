@@ -35,7 +35,7 @@ class WorkShowInfoComponent < ApplicationComponent
     related_link_filter.general_related_links
   end
 
-  # from related_url (legacy), or from our external_id with bib IDs in it.
+  # from  our external_id with bib IDs in it.
   def links_to_opac
     @links_to_opac ||= begin
       # bib_ids are supposed to be `b` followed by 7 numbers, but sometimes
@@ -97,9 +97,8 @@ class WorkShowInfoComponent < ApplicationComponent
     end
   end
 
-  # We'll pull ID's out of any self-pointing URLs in our `related_urls`, and then fetch
-  # works for them. Yes, this is a kind of crazy legacy way of storing/getting this data,
-  # but it's what we got for now.
+  # We'll pull ID's out of our related_links for related_works, and then fetch
+  # works for them.
   #
   # I guess we don't care about the order?
   #
