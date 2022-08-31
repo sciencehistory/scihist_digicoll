@@ -197,3 +197,32 @@
   </ul>
 <% end %>
 
+<% if more_like_this_works.present? %>
+  <h2 class="attribute-sub-head">More Like This
+      <a class="btn btn-primary" data-toggle="collapse" href="#moreLikeThisJson" role="button" aria-expanded="false" aria-controls="moreLikeThisJson">
+    Justify choices
+  </a></h2>
+  <ul class="related-items show-sub-head-body list-unstyled">
+    <% more_like_this_works[0..2].each do |work| %>
+      <li class="related-work">
+        <div class="related-work-thumb">
+          <%= link_to work_path(work.friendlier_id) do %>
+            <%= render ThumbComponent.new(work.leaf_representative, thumb_size: :standard, lazy: true) %>
+          <% end %>
+        </div>
+        <div class="related-work-text">
+          <%= link_to work_path(work.friendlier_id) do %>
+            <%= work.title %>
+          <% end %>
+        </div>
+      </li>
+    <% end %>
+  </ul>
+  <p>NOTE: the more-like-this section is just a demo. Presentation will change after we evaluate this feature.</p>
+<% end %>
+
+<div>
+  <pre class="collapse" id="moreLikeThisJson">
+    <%= JSON.pretty_generate(more_like_this_json) %>
+  </pre>
+</div>
