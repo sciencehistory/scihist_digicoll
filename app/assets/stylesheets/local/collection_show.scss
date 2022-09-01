@@ -27,8 +27,16 @@
     }
   }
 
-  .collection_description {
-    max-width: $max-readable-width;
+
+  .collection-main-links {
+    display: flex;
+    flex: wrap;
+    gap: $paragraph-spacer ($paragraph_spacer * 4);
+    margin-bottom: 2rem;
+
+    .collection-main-link {
+      @include font-size($h4-font-size);
+    }
   }
 
   .collection-related-links {
