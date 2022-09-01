@@ -21,7 +21,8 @@ namespace :scihist do
         "https://catalog.hathitrust.org/Record/006496880" => "Über katalyse.",
         "https://www.sciencehistory.org/distillations/video/distilled-5-porcelain-painting" => "Distilled #5: Porcelain Painting",
         "http://www.sciencehistory.org/distillations/video/distilled-7-bicycle-horn-or-breast-pump" => "Distilled #7: Bicycle Horn or Breast Pump?",
-        "https://www.sciencehistory.org/distillations/video/distilled-2-an-early-gold-plated-not-quite-iud" => "Distilled #2: An Early (Gold-Plated!) Not-Quite-IUD"
+        "https://www.sciencehistory.org/distillations/video/distilled-2-an-early-gold-plated-not-quite-iud" => "Distilled #2: An Early (Gold-Plated!) Not-Quite-IUD",
+        "http://www.acs.org/content/acs/en/education/whatischemistry/landmarks/beckman.html" => "Development of the Beckman pH Meter"
       }
 
       Kithe::Indexable.index_with(batching: true) do
