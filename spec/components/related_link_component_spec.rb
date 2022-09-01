@@ -7,7 +7,10 @@ describe RelatedLinkComponent, type: :component do
     render_inline(RelatedLinkComponent.new(related_link: related_link))
 
     expect(page).to have_text("Distillations article")
-    expect(page).to have_css("a[href='#{related_link.url}']", text: related_link.label)
+
+    link = page.find("a[href='#{related_link.url}']", text: related_link.label)
+    expect(link).to be_present
+    expect(link["target"]).to be_nil
   end
 
   describe "with no label" do
@@ -33,6 +36,13 @@ describe RelatedLinkComponent, type: :component do
       render_inline(RelatedLinkComponent.new(related_link: related_link))
 
       expect(page).to have_content(/#{related_link.label}\s+\(example.com\)/)
+    end
+
+    it "renders with target _blank" do
+      render_inline(RelatedLinkComponent.new(related_link: related_link))
+
+      link = page.find("a")
+      expect(link["target"]).to eq("_blank")
     end
   end
 end
