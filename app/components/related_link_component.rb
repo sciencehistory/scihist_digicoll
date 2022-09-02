@@ -33,4 +33,12 @@ class RelatedLinkComponent < ApplicationComponent
       nil
     end
   end
+
+  def link_target
+    if related_link.category == "other_external"
+      "_blank"
+    else
+      nil
+    end
+  end
 end
