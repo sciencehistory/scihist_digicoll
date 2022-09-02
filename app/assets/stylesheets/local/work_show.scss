@@ -70,6 +70,12 @@
     }
   }
 
+  .related-link-component {
+    // can sometimes have URLs in it
+    overflow-wrap: break-word;
+    word-wrap: break-work;
+  }
+
   .related-work {
     display: flex;
     flex-wrap: wrap;
