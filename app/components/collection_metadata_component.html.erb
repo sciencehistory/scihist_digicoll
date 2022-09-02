@@ -12,19 +12,23 @@
   </div>
 
   <% if show_links && (opac_urls.present? || finding_aid_urls.present?) %>
-    <table class="collection-attributes table-borderless chf-attributes">
+    <div class="collection-main-links">
       <% finding_aid_urls.each do |url| %>
-        <tr>
-          <td colspan="2"><span class="h4"><%= link_to "View collection guide", url %></span></td>
-        </tr>
+        <span class="collection-main-link">
+          <%= link_to url do %>
+            <i class="fa fa-link" aria-hidden="true"></i> Collection guide
+          <% end  %>
+        </span>
       <% end %>
 
       <% opac_urls.each do |url| %>
-        <tr>
-          <td  colspan="2"><span class="h4"><%= link_to "View in library catalog", url %></span></td>
-        </tr>
+        <span class="collection-main-link">
+          <%= link_to url do %>
+            <i class="fa fa-link" aria-hidden="true"></i> Collection in library catalog
+          <% end  %>
+        </span>
       <% end %>
-    </table>
+    </div>
   <% end %>
 
   <% if show_links && related_links.present? %>

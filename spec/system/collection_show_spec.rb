@@ -32,8 +32,8 @@ describe "Collection show page", solr: true, indexable_callbacks: true do
 
       expect(page).to have_content(collection.description)
 
-      expect(page).to have_link(href: "https://othmerlib.sciencehistory.org/record=b9999999", text: "View in library catalog")
-      expect(page).to have_link(href: "http://archives.sciencehistory.org/some/collection", text: "View collection guide")
+      expect(page).to have_link(href: "https://othmerlib.sciencehistory.org/record=b9999999", text: "Collection in library catalog")
+      expect(page).to have_link(href: "http://archives.sciencehistory.org/some/collection", text: "Collection guide")
       expect(page).to have_link(href: "https://sciencehistory.org/foo/bar", text: "Article about this")
 
       expect(page).to have_content("public work one")
