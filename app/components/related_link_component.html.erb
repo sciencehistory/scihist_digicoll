@@ -1,0 +1,9 @@
+<div class="mb-4 related-link-component">
+  <div class="show-genre"><%= link_category_display %></div>
+  <div class="h4">
+    <%= link_to (related_link.label.presence || related_link.url), related_link.url, target: link_target  %>
+    <% if should_show_link_domain? %>
+      <span class="small text-muted">(<%= link_domain %>)</span>
+    <% end %>
+  </div>
+</div>

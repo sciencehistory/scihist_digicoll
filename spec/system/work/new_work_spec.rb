@@ -48,7 +48,7 @@ RSpec.describe "New Work form", :logged_in_user, type: :system, js: true do
 
 
     # Multi-value free text (2)
-    %w(extent series_arrangement related_url).each do |p|
+    %w(extent series_arrangement).each do |p|
       attr_name = Work.human_attribute_name(p)
       all_items = work.send(p)
       all_items.length.times do |i|
@@ -137,6 +137,16 @@ RSpec.describe "New Work form", :logged_in_user, type: :system, js: true do
       end
     end
 
+    #Related links
+    all_items = work.related_link
+    all_items.length.times do |i|
+      click_link("Add another Related link")
+
+      all("fieldset.work_related_link select[name*=category]")[i].find("option[value=#{all_items[i].category}").select_option
+      all("fieldset.work_related_link input[type=url][name*=url]")[i].fill_in with: all_items[i].url
+      all("fieldset.work_related_link input[type=text][name*=label]")[i].fill_in with: all_items[i].label
+    end
+
     # Physical container:
     %w(box volume page folder part shelfmark).each do |p|
       fill_in "work[physical_container_attributes][#{p}]",
@@ -181,7 +191,7 @@ RSpec.describe "New Work form", :logged_in_user, type: :system, js: true do
       department date_of_work description external_id format
       file_creator genre inscription language medium
       physical_container place rights
-      rights_holder subject title
+      rights_holder subject title related_link
       exhibition
     ).each do |prop|
       expect(newly_added_work.send(prop)).to eq work.send(prop)
