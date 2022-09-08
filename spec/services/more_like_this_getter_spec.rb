@@ -39,4 +39,23 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
     allow(getter).to receive(:friendlier_ids).and_return ids_in_order_of_similarity
     expect(getter.works.map {|w| w.friendlier_id}).to eq ids_in_order_of_similarity
   end
+
+  it "correctly handles and logs an RSolr::Error::ConnectionRefused from rsolr" do
+    allow(getter).to receive(:solr_connection).and_return(nil)
+    expect(getter.more_like_this_doc_set).to eq []
+  end
+
+  # TODO:
+  #it "correctly handles and logs an RSolr::Error::ConnectionRefused from rsolr" do
+  #  #allow(getter).to receive(:solr_connection).and_raise("RSolr::Error::ConnectionRefused")
+  #  allow(getter).to receive(:solr_connection).and_return(nil)
+  #  expect(getter.more_like_this_doc_set).to eq []
+  #end
+
+  it "correctly handles and logs an RSolr::Error::ConnectionRefused from rsolr" do
+    #allow(getter).to receive(:solr_connection).and_raise("RSolr::Error::ConnectionRefused")
+    allow(getter).to receive(:solr_connection).and_return(nil)
+    expect(getter.more_like_this_doc_set).to eq []
+  end
+
 end
