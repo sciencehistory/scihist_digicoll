@@ -66,9 +66,13 @@ class WorkIndexer < Kithe::Indexer
     :fulltext_agnostic => ["searchable_fulltext_language_agnostic"]
   }
 
-
-
-  more_like_this_settings = ENV['MORE_LIKE_THIS_SETTINGS'] || "OFF"
+  more_like_this_settings = if Rails.env.test?
+    "MEDIUM"
+  elsif ENV.has_key? 'MORE_LIKE_THIS_SETTINGS'
+    ENV['MORE_LIKE_THIS_SETTINGS']
+  else
+    "OFF"
+  end
 
   unless ["OFF", "SIMPLE", "MEDIUM", "FANCY"].include? more_like_this_settings
     raise RuntimeError.new("Set ENV['MORE_LIKE_THIS_SETTINGS'] to OFF, SIMPLE, MEDIUM or FANCY.")
