@@ -34,11 +34,14 @@ class MoreLikeThisGetter
 
   # Returns an array of up to 10 published works that SOLR deems similar.
   def works
-    works_in_arbitrary_order = Work.where(
+    friendlier_ids.map {|id| works_in_arbitrary_order[id] }.compact
+  end
+
+  def works_in_arbitrary_order
+    @works_in_arbitrary_order ||= Work.where(
       friendlier_id: friendlier_ids,
       published: true)&.
       index_by(&:friendlier_id) || {}
-    friendlier_ids.map {|id| works_in_arbitrary_order[id] }.compact
   end
 
   # Some justification for the choices SOLR made.
@@ -48,6 +51,29 @@ class MoreLikeThisGetter
       doc.select do |key, value|
         key == 'text1_tesim' || key.include?('more_like_this')
       end
+    end
+  end
+
+  def solr_connection
+    begin
+      RSolr.connect( :url => solr_url, :timeout => TIMEOUT,:open_timeout => OPEN_TIMEOUT)
+    rescue RSolr::Error::ConnectionRefused,
+      RSolr::Error::Http,
+      RSolr::Error::InvalidResponse,
+      RSolr::Error::Timeout,
+      RSolr::Error::InvalidJsonResponse,
+      RSolr::Error::InvalidRubyResponse => e
+        Rails.logger.error("#{e.class.name} while trying to fetch more-like-this works for #{@work.friendlier_id}")
+    end
+  end
+
+
+  # Returns a RSolr::Response::PaginatedDocSet,
+  # or an empty array if RSolr times out or can't be reached.
+  def more_like_this_doc_set
+    @more_like_this_doc_set ||= begin
+      solr_connection&.get('mlt', :params => mlt_params)&.
+       dig("response", "docs") || []
     end
   end
 
@@ -70,18 +96,5 @@ class MoreLikeThisGetter
     ScihistDigicoll::Env.lookup!(:solr_url)
   end
 
-  def solr_connection
-    RSolr.connect( :url => solr_url, :timeout => TIMEOUT,:open_timeout => OPEN_TIMEOUT)
-  end
 
-  # Returns a RSolr::Response::PaginatedDocSet,
-  # or an empty array if RSolr times out or can't be reached.
-  def more_like_this_doc_set
-    @more_like_this_doc_set ||= begin
-      solr_connection.get('mlt', :params => mlt_params)&.
-        dig("response", "docs") || []
-    rescue
-      []
-    end
-  end
 end
