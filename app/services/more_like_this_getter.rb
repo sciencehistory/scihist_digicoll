@@ -55,25 +55,26 @@ class MoreLikeThisGetter
   end
 
   def solr_connection
-    begin
-      RSolr.connect( :url => solr_url, :timeout => TIMEOUT,:open_timeout => OPEN_TIMEOUT)
+    RSolr.connect(
+      :url          => solr_url,
+      :timeout      => TIMEOUT,
+      :open_timeout => OPEN_TIMEOUT
+    )
+  end
+
+  def more_like_this_doc_set
+    @more_like_this_doc_set ||= begin
+      solr_connection&.get('mlt', :params => mlt_params)&.
+       dig("response", "docs") || []
     rescue RSolr::Error::ConnectionRefused,
       RSolr::Error::Http,
       RSolr::Error::InvalidResponse,
       RSolr::Error::Timeout,
       RSolr::Error::InvalidJsonResponse,
       RSolr::Error::InvalidRubyResponse => e
-        Rails.logger.error("#{e.class.name} while trying to fetch more-like-this works for #{@work.friendlier_id}")
-    end
-  end
-
-
-  # Returns a RSolr::Response::PaginatedDocSet,
-  # or an empty array if RSolr times out or can't be reached.
-  def more_like_this_doc_set
-    @more_like_this_doc_set ||= begin
-      solr_connection&.get('mlt', :params => mlt_params)&.
-       dig("response", "docs") || []
+      puts "Encountered #{e.class.name} while trying to fetch more-like-this works for work #{@work.friendlier_id}"
+      Rails.logger.error("Encountered #{e.class.name} while trying to fetch more-like-this works for work #{@work.friendlier_id}")
+      []
     end
   end
 
