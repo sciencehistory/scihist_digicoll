@@ -88,7 +88,7 @@ class MoreLikeThisGetter
   def mlt_params
     @mlt_params ||= {
       "q"         => "id:#{@work.friendlier_id}",
-      "mlt.fl"    => 'more_like_this_keywords_tsimv,more_like_this_fulltext_tsimv'
+      "mlt.fl"    => 'more_like_this_keywords_tsimv'
     }
   end
 
