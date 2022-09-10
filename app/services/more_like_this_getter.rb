@@ -74,7 +74,6 @@ class MoreLikeThisGetter
       RSolr::Error::Timeout,
       RSolr::Error::InvalidJsonResponse,
       RSolr::Error::InvalidRubyResponse => e
-      puts "Encountered #{e.class.name} while trying to fetch more-like-this works for work #{@work.friendlier_id}"
       Rails.logger.error("Encountered #{e.class.name} while trying to fetch more-like-this works for work #{@work.friendlier_id}")
       []
     end
@@ -98,8 +97,7 @@ class MoreLikeThisGetter
     end
   end
 
-  # Note: it appears that the mlt.count variable is ignored.
-  # mlt.qf causes a failure.
+
   def mlt_params
     @mlt_params ||= {
       "q"         => "id:#{@work.friendlier_id}",
