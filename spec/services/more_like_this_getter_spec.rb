@@ -1,7 +1,7 @@
 require 'rails_helper'
 describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapter: :inline do
   let(:getter) {MoreLikeThisGetter.new(work_to_match)}
-  let(:getter_with_only_three_works) {MoreLikeThisGetter.new(work_to_match, max_works: 3)}
+  let(:getter_with_only_three_works) {MoreLikeThisGetter.new(work_to_match, max_number_of_works: 3)}
   let(:work_to_match)   { create(:public_work, subject: "aaa", description: "aaa")  }
   let(:five_public_works) { [
       create(:public_work, subject: "aaa", description: "aaa"),
@@ -21,12 +21,19 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
   }
   let! (:indexed_works) { [work_to_match] + five_public_works + five_private_works }
 
+  it "can limit the number of works returned" do
+    #    puts "*****"
+    #We really want to mock more_like_this_doc_set with a\n array of .[{"id"=>"k84mf56",
+    mocked_doc_set = []
+    five_public_works.each do |w|
+      mocked_doc_set << {'id' => w.friendlier_id}
+    end
+    allow(getter_with_only_three_works).to receive(:more_like_this_doc_set).and_return mocked_doc_set
 
-  # it "can limit the number of works returned" do
-  #   ids_in_order_of_similarity = five_public_works.map(&:friendlier_id)
-  #   allow(getter_with_only_three_works).to receive(:friendlier_ids).and_return ids_in_order_of_similarity
-  #   expect(getter_with_only_three_works.works.map {|w| w.friendlier_id}).to eq ids_in_order_of_similarity[0..2]
-  # end
+    ids_in_order_of_similarity = five_public_works.map(&:friendlier_id)
+    #allow(getter_with_only_three_works).to receive(:friendlier_ids).and_return ids_in_order_of_similarity
+    expect(getter_with_only_three_works.works.map {|w| w.friendlier_id}).to eq ids_in_order_of_similarity[0..2]
+  end
 
   it "correctly handles and logs an RSolr::Error::ConnectionRefused from rsolr" do
    allow(getter).to receive(:solr_connection).and_raise(RSolr::Error::ConnectionRefused)
@@ -37,8 +44,9 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
     allow(getter).to receive(:mlt_params).and_return({
       "q"         => "id:#{work_to_match.friendlier_id}",
       "mlt.fl"    => 'more_like_this_keywords_tsimv,more_like_this_fulltext_tsimv',
-      # We need to override the Minimum Term Frequency and
-      # Minimum Document Frequency (we leave it to the default in dev and prod)
+      # Because we're testing with small numbers of works,
+      # we need to override the Minimum Term Frequency and
+      # Minimum Document Frequency
       "mlt.mintf"    => '0',
       "mlt.mindf"    => '0',
     })
