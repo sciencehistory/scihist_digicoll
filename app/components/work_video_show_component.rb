@@ -11,10 +11,11 @@
 class WorkVideoShowComponent < ApplicationComponent
   delegate :construct_page_title, :current_user, to: :helpers
 
-  attr_reader :work
+  attr_reader :work, :more_like_this_works
 
-  def initialize(work)
+  def initialize(work, more_like_this_works=[])
     @work = work
+    @more_like_this_works = more_like_this_works
 
     unless work.leaf_representative&.content_type&.start_with?("video/")
     	raise ArgumentError.new("work.leaf_representative must be a video to use #{self.class.name}")

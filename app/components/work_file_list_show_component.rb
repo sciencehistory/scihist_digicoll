@@ -13,10 +13,11 @@
 class WorkFileListShowComponent < ApplicationComponent
   delegate :construct_page_title, :current_user, to: :helpers
 
-  attr_reader :work
+  attr_reader :work, :more_like_this_works
 
-  def initialize(work)
+  def initialize(work, more_like_this_works=[])
     @work = work
+    @more_like_this_works = more_like_this_works
   end
 
   # Public members, ordered.
