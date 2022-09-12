@@ -128,18 +128,6 @@ class WorkShowInfoComponent < ApplicationComponent
     @oral_history_number ||= work.external_id.find { |id| id.category == "interview"}&.value
   end
 
-  def more_like_this_getter
-    @more_like_this_getter ||= MoreLikeThisGetter.new(work)
-  end
-
-  def more_like_this_works
-    more_like_this_getter.works
-  end
-
-  def more_like_this_json
-    more_like_this_getter.json
-  end
-
   private
 
 
