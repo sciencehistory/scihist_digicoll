@@ -142,8 +142,7 @@
             </div>
           </div>
 
-
-          <%= render WorkShowInfoComponent.new(work: work) %>
+          <%= render WorkShowInfoComponent.new(work: @work, more_like_this_works: @more_like_this_works) %>
 
           <% if interviewee_biographies.present? %>
             <h2 class="attribute-sub-head">Interviewee biographical information</h2>

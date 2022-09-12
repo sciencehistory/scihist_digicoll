@@ -72,7 +72,7 @@
   </div>
 
   <div class="show-metadata">
-    <%= render WorkShowInfoComponent.new(work: @work) %>
+    <%= render WorkShowInfoComponent.new(work: @work, more_like_this_works: @more_like_this_works) %>
 
     <% if @work.is_oral_history? %>
 
