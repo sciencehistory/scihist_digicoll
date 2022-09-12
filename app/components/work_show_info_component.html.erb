@@ -197,13 +197,9 @@
   </ul>
 <% end %>
 
-<% if more_like_this_works.present? %>
-  <h2 class="attribute-sub-head">More Like This
-      <a class="btn btn-primary" data-toggle="collapse" href="#moreLikeThisJson" role="button" aria-expanded="false" aria-controls="moreLikeThisJson">
-    Justify choices
-  </a></h2>
+<% if @more_like_this_works.present? %>
   <ul class="related-items show-sub-head-body list-unstyled">
-    <% more_like_this_works[0..2].each do |work| %>
+    <% @more_like_this_works.each do |work| %>
       <li class="related-work">
         <div class="related-work-thumb">
           <%= link_to work_path(work.friendlier_id) do %>
@@ -220,9 +216,3 @@
   </ul>
   <p>NOTE: the more-like-this section is just a demo. Presentation will change after we evaluate this feature.</p>
 <% end %>
-
-<div>
-  <pre class="collapse" id="moreLikeThisJson">
-    <%= JSON.pretty_generate(more_like_this_json) %>
-  </pre>
-</div>
