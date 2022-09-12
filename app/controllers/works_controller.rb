@@ -6,6 +6,10 @@ class WorksController < ApplicationController
   def show
     @show_deai_header = true
 
+    # Request an array of published, "similar" items from SOLR.
+    # If this is slow or unsuccessful, it will return just an empty array.
+    @more_like_this_works = MoreLikeThisGetter.new(@work).works
+
     respond_to do |format|
       format.html {
         render view_component
@@ -52,15 +56,15 @@ class WorksController < ApplicationController
   def view_component
     @view_component ||= if @work.is_oral_history? && @work.oral_history_content&.available_by_request_off? && has_oh_audio_member?
       # special OH audio player template
-      WorkOhAudioShowComponent.new(@work)
+      WorkOhAudioShowComponent.new(@work, @more_like_this_works)
     elsif @work.is_oral_history?
       # OH with no playable audio, either becuae it's by-request or it's not there at all.
-      WorkFileListShowComponent.new(@work)
+      WorkFileListShowComponent.new(@work, @more_like_this_works)
     elsif has_video_representative?
-      WorkVideoShowComponent.new(@work)
+      WorkVideoShowComponent.new(@work, @more_like_this_works)
     else
       # standard image-based template.
-      WorkImageShowComponent.new(@work)
+      WorkImageShowComponent.new(@work, @more_like_this_works)
     end
   end
 
