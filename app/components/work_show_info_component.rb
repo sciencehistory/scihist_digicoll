@@ -20,8 +20,9 @@ class WorkShowInfoComponent < ApplicationComponent
 
   attr_reader :work
 
-  def initialize(work:)
+  def initialize(work:, more_like_this_works: [])
     @work = work
+    @more_like_this_works = more_like_this_works
   end
 
   def display_genres
