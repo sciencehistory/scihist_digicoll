@@ -6,9 +6,11 @@ class WorksController < ApplicationController
   def show
     @show_deai_header = true
 
-    # Request an array of published, "similar" items from SOLR.
-    # If this is slow or unsuccessful, it will return just an empty array.
-    @more_like_this_works = MoreLikeThisGetter.new(@work).works
+    # Calling this triggers a network call to SOLR.
+    # @more_like_this_works is an array of published works ordered
+    # by their degree of "similarity" to @work.
+    # If this is slow or unsuccessful, you may get an empty array.
+    @more_like_this_works = MoreLikeThisGetter.new(@work, max_number_of_works:3).works
 
     respond_to do |format|
       format.html {
@@ -53,19 +55,26 @@ class WorksController < ApplicationController
   private
 
   # We use a different ViewComponent depending on work characteristics, polymorophically kind of.
+  def view_component_class
+    @view_component_class ||= if @work.is_oral_history? && @work.oral_history_content&.available_by_request_off? && has_oh_audio_member?
+        # special OH audio player template
+        WorkOhAudioShowComponent
+      elsif @work.is_oral_history?
+        # OH with no playable audio,
+        # either becuae it's by-request
+        # or it's not there at all.
+        WorkFileListShowComponent
+      elsif has_video_representative?
+        WorkVideoShowComponent
+      else
+        # standard image-based template.
+        WorkImageShowComponent
+      end
+  end
+
+
   def view_component
-    @view_component ||= if @work.is_oral_history? && @work.oral_history_content&.available_by_request_off? && has_oh_audio_member?
-      # special OH audio player template
-      WorkOhAudioShowComponent.new(@work, @more_like_this_works)
-    elsif @work.is_oral_history?
-      # OH with no playable audio, either becuae it's by-request or it's not there at all.
-      WorkFileListShowComponent.new(@work, @more_like_this_works)
-    elsif has_video_representative?
-      WorkVideoShowComponent.new(@work, @more_like_this_works)
-    else
-      # standard image-based template.
-      WorkImageShowComponent.new(@work, @more_like_this_works)
-    end
+    @view_component ||= view_component_class.new(@work, @more_like_this_works)
   end
 
   # Is an Oral History with at least one audio member?
