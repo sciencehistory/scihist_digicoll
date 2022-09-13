@@ -4,20 +4,14 @@
   margin-right: auto;
 
   .collection-top {
-    display: flex;
-
     a.title-link {
       color: inherit; // underline is enough, the bright blue is too much
     }
 
-    .collection-desc {
-      flex-grow: 1;
-      flex-shrink: 1;
-      //padding-bottom: $line-height-computed;
-    }
     .collection-thumb {
-      min-width: 266px;
-      flex-shrink: 0;
+      float: right;
+
+      width: 266px;
       margin-left: 3rem;
       margin-bottom: $spacer;
 
