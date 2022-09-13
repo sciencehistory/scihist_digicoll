@@ -128,15 +128,21 @@ Rails.application.routes.draw do
   # Rails routing constraints feature to say if collection_id is a specific one, use
   # this other controller.
 
-  if ScihistDigicoll::Env.lookup(:oral_history_collection_id)
+  if ScihistDigicoll::Env.lookup(:oral_history_collection_id).present?
     constraints(collection_id: ScihistDigicoll::Env.lookup(:oral_history_collection_id)) do
       concerns :collection_showable, controller: "collection_show_controllers/oral_history_collection"
     end
   end
 
+  if ScihistDigicoll::Env.lookup(:immigrants_and_innovation_collection_id).present?
+    constraints(collection_id: ScihistDigicoll::Env.lookup(:immigrants_and_innovation_collection_id)) do
+      concerns :collection_showable, controller: "collection_show_controllers/immigrants_and_innovation_collection"
+    end
+  end
+
 
   # and a special controller for bredig, that at least initially only has customized facets
-  if ScihistDigicoll::Env.lookup(:bredig_collection_id)
+  if ScihistDigicoll::Env.lookup(:bredig_collection_id).present?
     constraints(collection_id: ScihistDigicoll::Env.lookup(:bredig_collection_id)) do
       concerns :collection_showable, controller: "collection_show_controllers/bredig_collection"
     end
