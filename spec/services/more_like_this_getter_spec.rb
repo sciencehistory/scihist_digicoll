@@ -1,4 +1,9 @@
 require 'rails_helper'
+# NOTE:
+# helpful SOLR console debugging URL:
+#    "#{ScihistDigicoll::Env.lookup!(:solr_url)}/mlt?wt=json&q=id:#{work_to_match.friendlier_id}" +
+#    "&mlt.fl=more_like_this_keywords_tsimv&mlt.mintf=0&mlt.mindf=0&rows=7"
+#
 describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapter: :inline do
   let(:getter) {MoreLikeThisGetter.new(work_to_match)}
   let(:getter_of_two_works) {MoreLikeThisGetter.new(work_to_match, max_number_of_works: 2)}
@@ -12,8 +17,6 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
     ]
   }
   
-  let(:mocked_solr_docs) { five_public_works.map { |w| {'id' => w.friendlier_id}} }
-
   let(:five_private_works) { [
       create(:private_work, subject: "aaa", description: "aaa"),
       create(:private_work, subject: "aaa", description: "aaa"),
@@ -24,30 +27,25 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
   }
   let! (:indexed_works) { [work_to_match] + five_public_works + five_private_works }
 
-  it "can limit the number of works returned" do
-    # mocked_solr_docs has 5 items...
-    allow(getter_of_two_works).to receive(:more_like_this_doc_set).and_return mocked_solr_docs
-    expect(getter_of_two_works.works).to eq five_public_works[0..1]
-  end
-
-  it "retrieves only public works" do
-    allow(getter).to receive(:mlt_params).and_return({
-      "q"         => "id:#{work_to_match.friendlier_id}",
-      "mlt.fl"    => 'more_like_this_keywords_tsimv,more_like_this_fulltext_tsimv',
-      # Because we're testing with small numbers of works,
-      # we need to override the Minimum Term Frequency and
-      # Minimum Document Frequency
-      "mlt.mintf"    => '0',
-      "mlt.mindf"    => '0',
-    })
-
-    # debugging URL to check:
-    #    "#{ScihistDigicoll::Env.lookup!(:solr_url)}/mlt?wt=json&q=id:#{work_to_match.friendlier_id}" +
-    #    "&mlt.fl=more_like_this_keywords_tsimv&mlt.mintf=0&mlt.mindf=0"
-    
-    expect(getter.works.count).to eq 5
-    expect(getter.works.all? {|w| w.published?}).to be true
-    expect(getter.works.include? work_to_match).to be false
+  context "calls to test solr" do
+    before do
+      # Override the Minimum Term Frequency and
+      # Minimum Document Frequency so we can test with few works
+      allow(getter).to receive(:mlt_params).and_return({
+        "q"         => "id:#{work_to_match.friendlier_id}",
+        "mlt.fl"    => 'more_like_this_keywords_tsimv',
+        "mlt.mintf"    => '0',
+        "mlt.mindf"    => '0',
+      })
+    end
+    it "can limit the number of works returned" do
+      expect(getter_of_two_works.works).to eq five_public_works[0..1]
+    end
+    it "retrieves only public works" do
+      expect(getter.works.count).to eq 5
+      expect(getter.works.all? {|w| w.published?}).to be true
+      expect(getter.works.include? work_to_match).to be false
+    end
   end
 
   it "delivers works in the same order their ids arrived from solr" do
