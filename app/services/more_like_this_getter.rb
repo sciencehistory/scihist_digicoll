@@ -3,10 +3,11 @@
 # returns an array of zero to ten
 # published works that SOLR thinks
 # are "like" the given work.
+# The array is in order: the first item in
+# the one SOLR deemed most "alike".
 #
 # This calls the SOLR server's more-like-this request handler
 # at http://SOME_URL/solr/SOME_CORE/mlt
-# to request a list of works that are deemed similar.
 #
 # See also:
 # work_indexer.rb for indexing details,
@@ -28,6 +29,8 @@ class MoreLikeThisGetter
   OPEN_TIMEOUT=1
 
   # @param work [Work] Work
+  # @param max_number_of_works: if specified,
+  # this limits the number of works returned.
   def initialize(work, max_number_of_works: nil)
     @work = work
     @max_number_of_works = max_number_of_works

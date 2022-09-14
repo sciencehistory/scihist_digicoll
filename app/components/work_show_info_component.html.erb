@@ -197,10 +197,11 @@
   </ul>
 <% end %>
 
-<% if @more_like_this_works.present? %>
+
+<% if more_like_this_works.present? %>
   <h2 class="attribute-sub-head">More Like This</h2>
   <ul class="related-items show-sub-head-body list-unstyled">
-    <% @more_like_this_works.each do |work| %>
+    <% more_like_this_works.each do |work| %>
       <li class="related-work">
         <div class="related-work-thumb">
           <%= link_to work_path(work.friendlier_id) do %>

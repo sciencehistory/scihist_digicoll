@@ -20,9 +20,8 @@ class WorkShowInfoComponent < ApplicationComponent
 
   attr_reader :work
 
-  def initialize(work:, more_like_this_works: [])
+  def initialize(work:)
     @work = work
-    @more_like_this_works = more_like_this_works
   end
 
   def display_genres
@@ -127,6 +126,17 @@ class WorkShowInfoComponent < ApplicationComponent
 
   def oral_history_number
     @oral_history_number ||= work.external_id.find { |id| id.category == "interview"}&.value
+  end
+
+
+  # These methods trigger a single request to SOLR to retrieve works deemed "similar".
+  # This is unusual, but calling the code in the controller turned out to be unduly complex.
+  def more_like_this_getter
+    @more_like_this_getter ||= MoreLikeThisGetter.new(work, max_number_of_works: 3)
+  end
+
+  def more_like_this_works
+    more_like_this_getter.works
   end
 
   private
