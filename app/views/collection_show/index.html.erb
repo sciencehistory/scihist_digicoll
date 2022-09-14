@@ -5,6 +5,12 @@
 
   <div class="collection-top">
     <div class="collection-desc clearfix">
+      <% unless has_search_parameters? %>
+        <div class="collection-thumb">
+          <%= render ThumbComponent.new(collection.leaf_representative, thumb_size: :collection_page, placeholder_img_url: asset_path("default_collection.svg")) %>
+        </div>
+      <% end %>
+
       <div class="show-title">
         <header>
           <div class="show-genre"><%= link_to "Collections", collections_path %></div>
@@ -17,16 +23,11 @@
         </header>
       </div>
 
+
       <% unless has_search_parameters? %>
         <%= render CollectionMetadataComponent.new(collection: collection) %>
       <% end %>
     </div>
-
-    <% unless has_search_parameters? %>
-      <div class="collection-thumb">
-        <%= render ThumbComponent.new(collection.leaf_representative, thumb_size: :collection_page, placeholder_img_url: asset_path("default_collection.svg")) %>
-      </div>
-    <% end %>
   </div>
 
 

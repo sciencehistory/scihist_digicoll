@@ -4,20 +4,14 @@
   margin-right: auto;
 
   .collection-top {
-    display: flex;
-
     a.title-link {
       color: inherit; // underline is enough, the bright blue is too much
     }
 
-    .collection-desc {
-      flex-grow: 1;
-      flex-shrink: 1;
-      //padding-bottom: $line-height-computed;
-    }
     .collection-thumb {
-      min-width: 266px;
-      flex-shrink: 0;
+      float: right;
+
+      width: 266px;
       margin-left: 3rem;
       margin-bottom: $spacer;
 
@@ -30,7 +24,7 @@
 
   .collection-main-links {
     display: flex;
-    flex: wrap;
+    flex-wrap: wrap;
     gap: $paragraph-spacer ($paragraph_spacer * 4);
     margin-bottom: 2rem;
 
@@ -41,8 +35,18 @@
 
   .collection-related-links {
     display: flex;
-    flex: wrap;
-    gap: $paragraph-spacer ($paragraph_spacer * 4);
+    flex-wrap: wrap;
+    gap: ($paragraph_spacer * 2);
+    margin: 2rem 0;
+
+
+
+    @include media-breakpoint-up(md) {
+      .related-link-component {
+        width: 20rem;
+        flex-grow: 1;
+      }
+    }
   }
 
   .chf-attributes > tbody >tr:first-child td, .chf-attributes > tbody > tr:first-child th {
