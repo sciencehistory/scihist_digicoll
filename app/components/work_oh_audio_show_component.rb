@@ -6,11 +6,10 @@ class WorkOhAudioShowComponent < ApplicationComponent
 
   delegate  :m4a_audio_url, :derivatives_up_to_date?, to: :combined_audio_derivatives, prefix: "combined"
 
-  attr_reader :work, :combined_audio_derivatives, :more_like_this_works
+  attr_reader :work, :combined_audio_derivatives
 
-  def initialize(work, more_like_this_works=[])
+  def initialize(work)
     @work = work
-    @more_like_this_works = more_like_this_works
 
     # some helper methods for working with our derived combined audio file(s)
     @combined_audio_derivatives = CombinedAudioDerivatives.new(work)

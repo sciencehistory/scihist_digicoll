@@ -70,7 +70,7 @@
       <%= DescriptionDisplayFormatter.new(work.description).format  %>
     </div>
 
-    <%= render WorkShowInfoComponent.new(work: @work, more_like_this_works: @more_like_this_works) %>
+    <%= render WorkShowInfoComponent.new(work: work) %>
 
     <%= render "works/citation", work: work  %>
   </div>
