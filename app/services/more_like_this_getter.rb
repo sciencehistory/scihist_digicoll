@@ -37,7 +37,7 @@ class MoreLikeThisGetter
   end
 
   # Returns an array of up to @max_number_of_works
-  # published works that SOLR deems similar.
+  # published works that SOLR deems similar, in order of similarity
   def works
     friendlier_ids.map {|id| works_in_arbitrary_order[id] }.compact
   end
@@ -85,27 +85,20 @@ class MoreLikeThisGetter
   private
 
   # Returns the friendlier_ids of the similar works, most similar first.
-  # Note: SOLR appears to return ten items by default,
-  # and we have yet to figure out if it's possible to ask the
-  # more-like-this request handler to return fewer than the default.
-  # Simply adding mlt.count to the query does not work.
   def friendlier_ids
-    @friendlier_ids ||= begin
-      truncated_doc_set = if @max_number_of_works.nil?
-        more_like_this_doc_set
-      else
-        more_like_this_doc_set[0..@max_number_of_works-1]
-      end
-      truncated_doc_set&.map { |d| d['id'] }
-    end
+    @friendlier_ids ||= more_like_this_doc_set&.map { |d| d['id'] }
   end
 
 
   def mlt_params
-    @mlt_params ||= {
-      "q"         => "id:#{@work.friendlier_id}",
-      "mlt.fl"    => 'more_like_this_keywords_tsimv'
-    }
+    @mlt_params ||= begin
+      parameters = {
+        "q"         => "id:#{@work.friendlier_id}",
+        "mlt.fl"    => 'more_like_this_keywords_tsimv',
+      }
+      parameters["rows"] = @max_number_of_works unless @max_number_of_works.nil?
+      parameters
+    end
   end
 
   def solr_url
