@@ -59,18 +59,30 @@ class MoreLikeThisGetter
     end
   end
 
+  # Returns an RSolr::Client configured with our
+  # standard blacklight config, except it won't retry failed queries.
   def solr_connection
-    RSolr.connect(
-      :url          => solr_url,
-      :timeout      => TIMEOUT,
-      :open_timeout => OPEN_TIMEOUT
-    )
+    # If we don't get a response from SOLR right away,
+    # we just want to show the page without the more_like_this content. 
+    #
+    # Note the existence of Scihist::BlacklightSolrRepository, which we are
+    # consciously not using as the solr repo in this method. Its only purpose
+    # is to provide two successive retries on failure, which we don't really want here.
+    @solr_connection ||= begin
+      repo_class = Blacklight::Solr::Repository
+      faraday_params = {
+        :timeout => TIMEOUT,
+        :open_timeout => OPEN_TIMEOUT
+      }
+      repo_class.new(CatalogController.blacklight_config).connection.tap do |conn|
+        conn.connection.params = faraday_params
+      end
+    end
   end
 
   def more_like_this_doc_set
     @more_like_this_doc_set ||= begin
-      solr_connection&.get('mlt', :params => mlt_params)&.
-       dig("response", "docs") || []
+      solr_connection&.mlt(:params => mlt_params)&.dig("response", "docs") || []
     rescue RSolr::Error::ConnectionRefused,
       RSolr::Error::Http,
       RSolr::Error::InvalidResponse,
