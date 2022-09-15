@@ -1,0 +1,118 @@
+class WorkJsonApiSerializer
+  include Alba::Resource
+
+  # let's suggest our outward-facing friendlier_id as the main id, but also
+  # let them see internal id why not
+  attribute :id, &:friendlier_id
+  attribute :internal_id, &:id
+
+
+  # Just delegate to whatever WorkOaiDcSerialization is deciding is the thumbnail
+  # TODO extract this to a neutral public location
+  attribute :img_thumbnail_url do
+    WorkOaiDcSerialization.new(object).send(:appropriate_thumb_url)
+  end
+
+  # just hard-code cause we don't have access to route helpers here
+  attribute :html_url do
+    "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/works/#{object.id}"
+  end
+
+  attributes :title, :additional_title, :format, :genre, :medium, :extent, :language,
+    :provenance, :subject, :department, :exhibition, :series_arrangement,
+    :rights, :rights_holder, :digitization_funder, :file_creator
+
+  attribute :description do |work|
+    DescriptionDisplayFormatter.new(work.description).format_plain
+  end
+
+  attribute :description_html do |work|
+    DescriptionDisplayFormatter.new(work.description).format
+  end
+
+  attribute :published_at do |work|
+    work.published_at&.iso8601
+  end
+
+  many :creator do
+    attributes :category, :value
+  end
+
+  many :date_of_work do
+    attributes :start, :start_qualifier, :finish, :finish_qualifier, :note
+
+    attribute :formatted do |date_of_work|
+      DateDisplayFormatter.new([date_of_work]).display_dates.first
+    end
+  end
+
+  many :place do
+    attributes :category, :value
+  end
+
+  many :inscription do
+    attributes :location, :text
+  end
+
+  many :related_link do
+    attributes :url, :category, :label
+  end
+
+  many :additional_credit do
+    attributes :role, :name
+  end
+
+  one :physical_container do
+    attributes :box, :folder, :volume, :part, :page, :shelfmark
+
+    attribute :formatted, &:display_as
+  end
+
+
+  # Serialize this in-line as an attribute, the fact that it's a relationship internally
+  # via .oral_history_content is an implementation detail.
+  attribute :interviewer_profile, if: Proc.new { |work| work.oral_history_content&.interviewer_profiles.present? } do |work|
+    # can be multiple interviewer_profile, it's a to-many assoc
+    work.oral_history_content.interviewer_profiles.collect do |profile|
+      { name: profile.name, profile: profile.profile }
+    end
+  end
+
+  # Serialize this in-line as an attribute, the fact that it's a relationship internally
+  # via .oral_history_content is an implementation detail.
+  attribute :interviewee_biography, if: Proc.new { |work| work.oral_history_content&.interviewee_biographies.present? } do |work|
+    work.oral_history_content.interviewee_biographies.collect do |bio|
+      IntervieweeBiographyJsonApiSerializer.new(bio).serializable_hash
+    end
+  end
+
+  class IntervieweeBiographyJsonApiSerializer
+    #  include JSONAPI::Serializer
+    include Alba::Resource
+
+    attributes :name
+
+    one :birth do
+      attributes :date, :city, :state, :province, :country
+    end
+
+    one :death do
+      attributes :date, :city, :state, :province, :country
+    end
+
+    many :school, key: :education do
+      attributes :date, :institution, :degree, :discipline
+    end
+
+    many :job do
+      attributes :institution, :role
+
+      attribute :start_date, &:start
+      attribute :end_date, &:end
+    end
+
+    many :honor do
+      attributes :start_date, :end_date, :honor
+    end
+  end
+end
