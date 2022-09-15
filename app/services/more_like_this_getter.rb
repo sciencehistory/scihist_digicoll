@@ -69,13 +69,11 @@ class MoreLikeThisGetter
     # consciously not using as the solr repo in this method. Its only purpose
     # is to provide two successive retries on failure, which we don't really want here.
     @solr_connection ||= begin
-      repo_class = Blacklight::Solr::Repository
-      faraday_params = {
-        :timeout => TIMEOUT,
-        :open_timeout => OPEN_TIMEOUT
-      }
-      repo_class.new(CatalogController.blacklight_config).connection.tap do |conn|
-        conn.connection.params = faraday_params
+      Blacklight::Solr::Repository.new(CatalogController.blacklight_config).connection.tap do |conn|
+        conn.connection.params = {
+          :timeout => TIMEOUT,
+          :open_timeout => OPEN_TIMEOUT
+        }
       end
     end
   end
