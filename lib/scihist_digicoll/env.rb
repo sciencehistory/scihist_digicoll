@@ -139,7 +139,11 @@ module ScihistDigicoll
         # This seems to match what Rails/Capybara/Rspec are using/expect
         "http://127.0.0.1"
       elsif Rails.env.development?
-        "http://localhost:3000"
+        # hacky maybe not public API way to try to get current dev server
+        require "rails/commands/server/server_command"
+        server_options = Rails::Command::ServerCommand.new([], ARGV).server_options
+
+        "#{server_options[:SSLEnable] ? 'https' : 'http'}://#{server_options[:Host] || ENV['HOST'] || 'localhost'}:#{server_options[:Port] || ENV['PORT'] || '3000'}"
       end
     }
 
@@ -543,6 +547,7 @@ module ScihistDigicoll
     # SPECIFIC COLLECTION IDS
     # Used to trigger custom controllers/UI for specific known collections
     define_key :oral_history_collection_id, default: "gt54kn818"
+    define_key :immigrants_and_innovation_collection_id, default: "wkppqzw"
     define_key :bredig_collection_id, default: "qfih5hl"
 
     # hostname for legacy Oral History microsite, we catch requests to this

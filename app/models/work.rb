@@ -70,8 +70,10 @@ class Work < Kithe::Work
   attr_json :series_arrangement, :string, array: true, default: -> { [] }
   attr_json :physical_container, Work::PhysicalContainer.to_type
 
-  # Turn into type of url and value?
+  # legacy :related_url to be replaced with :related_link
   attr_json :related_url, :string, array: true, default: -> { [] }
+  attr_json :related_link, RelatedLink.to_type, array: true, default: -> { [] }
+
   attr_json :rights, :string
   attr_json :rights_holder, :string
   attr_json :additional_credit, Work::AdditionalCredit.to_type, array: true, default: -> { [] }

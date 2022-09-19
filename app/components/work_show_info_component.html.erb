@@ -69,19 +69,6 @@
 
   <%= render AttributeTable::RowComponent.new(:rights_holder, values: [rights_holder]) %>
 
-  <% if related_urls_filtered.present? %>
-    <tr>
-      <th scope='row'>Related URL</th>
-      <td>
-        <ul>
-          <% related_urls_filtered.each do |url| %>
-            <li class="attribute"><%= render ExternalLinkComponent.new(url) %></li>
-          <% end %>
-        </ul>
-      </td>
-    </tr>
-  <% end %>
-
   <%# hard-coded credit line instead of taking from record %>
   <tr>
     <th scope='row'>Credit line</th>
@@ -164,6 +151,16 @@
     </tr>
   <% end %>
 
+  <% if links_to_finding_aids.present? %>
+    <tr>
+      <td colspan=2 class="catalog-links">
+        <% links_to_finding_aids.each do |url| %>
+          <%= content_tag "a", "View collection guide", href: url %>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+
   <% if links_to_opac.present? %>
     <tr>
       <td colspan=2 class="catalog-links">
@@ -175,7 +172,20 @@
   <% end %>
 </table>
 
+<<<<<<< HEAD
 <% if related_or_more_like_this_works.present? %>
+=======
+<% if related_links.present? %>
+  <h2 class="attribute-sub-head">Learn More</h2>
+  <div class="show-sub-head-body">
+    <% related_links.each do |link| %>
+      <%= render RelatedLinkComponent.new(related_link: link) %>
+    <% end %>
+  </div>
+<% end %>
+
+<% if related_works.present? %>
+>>>>>>> master
   <h2 class="attribute-sub-head">Related Items</h2>
 
   <ul class="related-items show-sub-head-body list-unstyled">

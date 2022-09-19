@@ -19,7 +19,10 @@ RSpec.describe "Edit Collection form", :logged_in_user, type: :system, queue_ada
 
     fill_in "collection[title]", with: "Edited collection title"
     fill_in "collection[description]", with: "Edited collection desc"
-    fill_in "collection[related_url_attributes][]", with: "http://example.org/edited"
+
+    select "Finding aid", from:"collection[related_link_attributes][0][category]"
+    fill_in "collection[related_link_attributes][0][url]", with: "http://example.org/edited"
+    fill_in "collection[related_link_attributes][0][label]", with: "edited label"
 
     select "Sierra Bib No", from: "collection[external_id_attributes][0][category]"
     fill_in "collection[external_id_attributes][0][value]", with: "b1234567"

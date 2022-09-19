@@ -70,6 +70,10 @@
     }
   }
 
+  .related-link-component {
+    @extend .mb-4;
+  }
+
   .related-work {
     display: flex;
     flex-wrap: wrap;

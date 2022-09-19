@@ -28,9 +28,11 @@ class WorkIndexer < Kithe::Indexer
 
     to_field ["text_no_boost_tesim", "language_facet"], obj_extract("language")
     to_field "text_no_boost_tesim", obj_extract("external_id", "value")
-    to_field "text_no_boost_tesim", obj_extract("related_url")
+
+    to_field "text_no_boost_tesim", obj_extract("related_link", "label")
+    to_field "text_no_boost_tesim", obj_extract("related_link", "url")
+
     to_field ["text_no_boost_tesim", "place_facet"], obj_extract("place", "value")
-    to_field "text_no_boost_tesim", obj_extract("related_url")
     to_field ["text_no_boost_tesim", "department_facet"], obj_extract("department")
     to_field ["text_no_boost_tesim", "medium_facet"], obj_extract("medium")
     to_field ["text_no_boost_tesim", "format_facet"], obj_extract("format"), transform(->(v) { v.titleize })

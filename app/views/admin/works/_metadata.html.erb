@@ -202,11 +202,12 @@
       <% end %>
     </dd>
 
-    <dt>Related URL</dt>
+
+    <dt>Related Links</dt>
     <dd>
       <ul class="list-unstyled">
-        <% work.related_url.each do |item| %>
-          <li><%= item %></li>
+        <% work.related_link.each do |item| %>
+          <li class="mb-2"><i><%= item.category.humanize %></i>: <%= item.label %>, <%= item.url  %></li>
         <% end %>
       </ul>
     </dd>
