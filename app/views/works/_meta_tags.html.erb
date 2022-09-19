@@ -38,5 +38,7 @@ fb:profile_id %>
 <meta name="twitter:label1" content="Rights Statement"/>
 <meta name="twitter:data1" content="<%= attributes.rights_statement %>"/>
 
+<%# not strictly meta tags, but a convenient place to include these %>
+<%= tag "link", rel: "alternate", type: "application/xml", title: "OAI-DC metadata in XML", href: work_path(work, format: "xml") %>
 
 
