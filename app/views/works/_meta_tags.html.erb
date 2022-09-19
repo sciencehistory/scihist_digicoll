@@ -40,5 +40,6 @@ fb:profile_id %>
 
 <%# not strictly meta tags, but a convenient place to include these %>
 <%= tag "link", rel: "alternate", type: "application/xml", title: "OAI-DC metadata in XML", href: work_path(work, format: "xml") %>
+<%= tag "link", rel: "alternate", type: "application/json", title: "local non-standard metadata in JSON", href: work_path(work, format: "json") %>
 
 
