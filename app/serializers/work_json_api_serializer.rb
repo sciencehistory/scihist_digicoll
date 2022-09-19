@@ -1,3 +1,14 @@
+# Serialize Work metadata as JSON
+#
+# This is pretty much our internal data format exposed in JSON.
+#
+# While we aspire for this to be a stable API for external partners, and will do our best
+# to keep it so, significant internal data format changes will likely cause changes to
+# this serialization. It's really an internal format exposed.
+#
+# Consumers could consider the OAI_DC serialization as more stable (although currently
+# including fewer fields); we could add fields to that serialization with standard
+# identifiers, or consider other future alternate standard serializations.
 class WorkJsonApiSerializer
   include Alba::Resource
 
@@ -6,16 +17,17 @@ class WorkJsonApiSerializer
   attribute :id, &:friendlier_id
   attribute :internal_id, &:id
 
-
-  # Just delegate to whatever WorkOaiDcSerialization is deciding is the thumbnail
-  # TODO extract this to a neutral public location
-  attribute :img_thumbnail_url do
-    WorkOaiDcSerialization.new(object).send(:appropriate_thumb_url)
-  end
-
-  # just hard-code cause we don't have access to route helpers here
-  attribute :html_url do
-    "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/works/#{object.id}"
+  # let's group the links in a `links` attribute; if this were json:api it would
+  # be completely separate from attributes
+  attribute :links do
+    # thumbnail: delegate to whatever WorkOaiDcSerialization is deciding is the thumbnail
+    # TODO extract this to a neutral public location
+    #
+    # html_self: just hard-code cause we don't have access to route helpers here
+    {
+      img_thumbnail: WorkOaiDcSerialization.new(object).send(:appropriate_thumb_url),
+      html_self: "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/works/#{object.id}"
+    }
   end
 
   attributes :title, :additional_title, :format, :genre, :medium, :extent, :language,
