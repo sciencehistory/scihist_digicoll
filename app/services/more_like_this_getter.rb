@@ -45,7 +45,8 @@ class MoreLikeThisGetter
   def works_in_arbitrary_order
     @works_in_arbitrary_order ||= Work.where(
       friendlier_id: friendlier_ids,
-      published: true)&.
+      published: true).
+      includes(:leaf_representative)&.
       index_by(&:friendlier_id) || {}
   end
 
