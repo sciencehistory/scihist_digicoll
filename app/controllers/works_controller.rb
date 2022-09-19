@@ -21,6 +21,12 @@ class WorksController < ApplicationController
           filename: DownloadFilenameHelper.ris_download_name(@work),
           type: :ris
       }
+
+      format.json {
+        render body: WorkJsonApiSerializer.new(
+          @work,
+        ).serialize
+      }
     end
   end
 
