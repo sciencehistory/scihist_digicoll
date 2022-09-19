@@ -31,11 +31,11 @@ class WorkShowInfoComponent < ApplicationComponent
     )
   end
 
-  def related_urls_filtered
-    related_url_filter.filtered_related_urls
+  def related_links
+    related_link_filter.general_related_links
   end
 
-  # from related_url (legacy), or from our external_id with bib IDs in it.
+  # from  our external_id with bib IDs in it.
   def links_to_opac
     @links_to_opac ||= begin
       # bib_ids are supposed to be `b` followed by 7 numbers, but sometimes
@@ -45,11 +45,15 @@ class WorkShowInfoComponent < ApplicationComponent
         external_id.category == "bib"
       end.map(&:value).map { |id| id.slice(0,8) }
 
-      (bib_ids.collect(&:downcase) + related_url_filter.opac_ids.collect(&:downcase)).uniq.map do |bib_id|
+      bib_ids.collect(&:downcase).uniq.map do |bib_id|
         ScihistDigicoll::Util.opac_url(bib_id)
       end
     end
     @links_to_opac
+  end
+
+  def links_to_finding_aids
+    @links_to_finding_aids ||= related_link_filter.finding_aid_related_links.collect(&:url).compact
   end
 
   # Our creators are a list of Work::Creator object. We want to group them by
@@ -93,6 +97,7 @@ class WorkShowInfoComponent < ApplicationComponent
     end
   end
 
+<<<<<<< HEAD
   def related_or_more_like_this_works
     @related_or_more_like_this_works ||= related_works.present? ? related_works : more_like_this_works
   end
@@ -100,6 +105,10 @@ class WorkShowInfoComponent < ApplicationComponent
   # We'll pull ID's out of any self-pointing URLs in our `related_urls`, and then fetch
   # works for them. Yes, this is a kind of crazy legacy way of storing/getting this data,
   # but it's what we got for now.
+=======
+  # We'll pull ID's out of our related_links for related_works, and then fetch
+  # works for them.
+>>>>>>> master
   #
   # I guess we don't care about the order?
   #
@@ -107,7 +116,7 @@ class WorkShowInfoComponent < ApplicationComponent
   # without n+1 fetch.
   def related_works
     @related_works ||= Work.where(
-        friendlier_id: related_url_filter.related_work_friendlier_ids,
+        friendlier_id: related_link_filter.related_work_friendlier_ids,
         published: true
       ).includes(:leaf_representative).all
   end
@@ -140,8 +149,13 @@ class WorkShowInfoComponent < ApplicationComponent
 
   private
 
+<<<<<<< HEAD
   def related_url_filter
     @related_url_filter ||= RelatedUrlFilter.new(work.related_url)
+=======
+  def related_link_filter
+    @related_link_filter ||= RelatedLinkFilter.new(work.related_link)
+>>>>>>> master
   end
 
 end
