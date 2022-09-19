@@ -227,6 +227,7 @@ FactoryBot.define do
       # for oral history
       trait :published do
         published { true}
+        published_at { Time.now - 86400}
         members { [ build(:asset_with_faked_file, :pdf, published: true) ] }
         genre { ["Oral histories"] }
       end
@@ -297,6 +298,7 @@ FactoryBot.define do
       trait :published do
         members { [ build(:asset_with_faked_file, :video, published: true) ] }
         published { true}
+        published_at { Time.now - 86400}
         genre { ["Video Recordings"] }
       end
     end
