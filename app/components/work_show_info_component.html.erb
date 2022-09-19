@@ -175,11 +175,11 @@
   <% end %>
 </table>
 
-<% if related_works.present? %>
+<% if related_or_more_like_this_works.present? %>
   <h2 class="attribute-sub-head">Related Items</h2>
 
   <ul class="related-items show-sub-head-body list-unstyled">
-    <% related_works.each do |work| %>
+    <% related_or_more_like_this_works.each do |work| %>
       <li class="related-work">
         <div class="related-work-thumb">
           <%= link_to work_path(work.friendlier_id) do %>
@@ -195,26 +195,4 @@
       </li>
     <% end %>
   </ul>
-<% end %>
-
-
-<% if more_like_this_works.present? %>
-  <h2 class="attribute-sub-head">More Like This</h2>
-  <ul class="related-items show-sub-head-body list-unstyled">
-    <% more_like_this_works.each do |work| %>
-      <li class="related-work">
-        <div class="related-work-thumb">
-          <%= link_to work_path(work.friendlier_id) do %>
-            <%= render ThumbComponent.new(work.leaf_representative, thumb_size: :standard, lazy: true) %>
-          <% end %>
-        </div>
-        <div class="related-work-text">
-          <%= link_to work_path(work.friendlier_id) do %>
-            <%= work.title %>
-          <% end %>
-        </div>
-      </li>
-    <% end %>
-  </ul>
-  <p>NOTE: the more-like-this section is just a demo. Presentation will change after we evaluate this feature.</p>
 <% end %>

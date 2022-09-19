@@ -93,6 +93,10 @@ class WorkShowInfoComponent < ApplicationComponent
     end
   end
 
+  def related_or_more_like_this_works
+    @related_or_more_like_this_works ||= related_works.present? ? related_works : more_like_this_works
+  end
+
   # We'll pull ID's out of any self-pointing URLs in our `related_urls`, and then fetch
   # works for them. Yes, this is a kind of crazy legacy way of storing/getting this data,
   # but it's what we got for now.
@@ -106,6 +110,12 @@ class WorkShowInfoComponent < ApplicationComponent
         friendlier_id: related_url_filter.related_work_friendlier_ids,
         published: true
       ).includes(:leaf_representative).all
+  end
+
+  # This triggers a single request to SOLR to retrieve works deemed similar.
+  # This is unusual, but calling the code in the controller turned out to be unduly complex.
+  def more_like_this_works
+    @more_like_this_works ||= MoreLikeThisGetter.new(work, max_number_of_works: 3).works
   end
 
   def public_collections
@@ -128,19 +138,7 @@ class WorkShowInfoComponent < ApplicationComponent
     @oral_history_number ||= work.external_id.find { |id| id.category == "interview"}&.value
   end
 
-
-  # These methods trigger a single request to SOLR to retrieve works deemed "similar".
-  # This is unusual, but calling the code in the controller turned out to be unduly complex.
-  def more_like_this_getter
-    @more_like_this_getter ||= MoreLikeThisGetter.new(work, max_number_of_works: 3)
-  end
-
-  def more_like_this_works
-    more_like_this_getter.works
-  end
-
   private
-
 
   def related_url_filter
     @related_url_filter ||= RelatedUrlFilter.new(work.related_url)
