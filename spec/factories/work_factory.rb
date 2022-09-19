@@ -217,7 +217,8 @@ FactoryBot.define do
 
       oral_history_content {
         OralHistoryContent.new(
-          interviewee_biographies: [build(:interviewee_biography)]
+          interviewee_biographies: [build(:interviewee_biography)],
+          interviewer_profiles:    [build(:interviewer_profile)]
         )
       }
 
