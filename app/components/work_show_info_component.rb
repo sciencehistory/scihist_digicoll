@@ -97,18 +97,12 @@ class WorkShowInfoComponent < ApplicationComponent
     end
   end
 
-<<<<<<< HEAD
   def related_or_more_like_this_works
     @related_or_more_like_this_works ||= related_works.present? ? related_works : more_like_this_works
   end
 
-  # We'll pull ID's out of any self-pointing URLs in our `related_urls`, and then fetch
-  # works for them. Yes, this is a kind of crazy legacy way of storing/getting this data,
-  # but it's what we got for now.
-=======
   # We'll pull ID's out of our related_links for related_works, and then fetch
   # works for them.
->>>>>>> master
   #
   # I guess we don't care about the order?
   #
@@ -149,13 +143,8 @@ class WorkShowInfoComponent < ApplicationComponent
 
   private
 
-<<<<<<< HEAD
-  def related_url_filter
-    @related_url_filter ||= RelatedUrlFilter.new(work.related_url)
-=======
   def related_link_filter
     @related_link_filter ||= RelatedLinkFilter.new(work.related_link)
->>>>>>> master
   end
 
 end
