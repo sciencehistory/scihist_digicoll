@@ -6,6 +6,12 @@
 #
 # For flexibility, does NOT include abstract/description, which usually comes
 # above here, or the "cite as" which usually comes below.
+#
+#
+# CAREFUL: rendering this template can trigger a request to SOLR.
+# See #more_like_this_works below for details.
+#
+#
 class WorkShowInfoComponent < ApplicationComponent
   # Delegate through to WORK
   delegate :additional_credit, :additional_title,
