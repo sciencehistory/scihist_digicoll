@@ -13,7 +13,7 @@ class WorkIndexer < Kithe::Indexer
     to_field ["text2_tesim","creator_facet"], obj_extract("creator", "value")
     to_field ["text2_tesim", "genre_facet"], obj_extract("genre")
 
-    to_field ["text3_tesim", "subject_facet"], obj_extract("subject")
+    to_field ["text3_tesim", "subject_facet", "more_like_this_keywords_tsimv"], obj_extract("subject")
 
     # Interviewer out of creator facet for use specifically for Oral History collection
     to_field "interviewer_facet" do |record, acc|
@@ -23,7 +23,7 @@ class WorkIndexer < Kithe::Indexer
 
     # index description to it's own field for highlighting purposes. Fields with
     # HTML in them need to have it stripped before indexing.
-    to_field "description_text4_tesim", obj_extract("description"), transform(->(val) { ActionView::Base.full_sanitizer.sanitize(val) })
+    to_field ["description_text4_tesim", "more_like_this_keywords_tsimv"], obj_extract("description"), transform(->(val) { ActionView::Base.full_sanitizer.sanitize(val) })
     to_field "text4_tesim", obj_extract("provenance"), transform(->(val) { ActionView::Base.full_sanitizer.sanitize(val) })
 
     to_field ["text_no_boost_tesim", "language_facet"], obj_extract("language")

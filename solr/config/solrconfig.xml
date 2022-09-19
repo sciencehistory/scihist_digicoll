@@ -207,6 +207,18 @@
     </arr>
   </requestHandler>
 
+  <requestHandler name="/mlt" class="solr.MoreLikeThisHandler">
+    <str name="mlt">true</str>
+    <!--Fields to use for similarity.-->
+    <str name="mlt.fl">more_like_this_keywords_tsimv</str>
+    <!-- How many records to fetch. This appears to be ignored.-->
+    <str name="mlt.count">5</str>
+    <!-- Minimum Document Frequency, the frequency at which words will be ignored which do not occur in at least this many documents -->
+    <str name="mlt.mintf">1</str>
+    <!-- Query fields and their boosts using the same format as that used by the DisMax Query Parser. These fields must also be specified in mlt.fl. -->
+    <str name="mlt.qf">more_like_this_keywords_tsimv</str>
+  </requestHandler>
+
 <!-- Spell Check
 
         The spell check component can return a list of alternative spelling
