@@ -106,4 +106,31 @@ describe WorkOaiDcSerialization do
       expect(container.at_xpath("./edm:object")).to be_nil
     end
   end
+
+  describe ".shareable_thumbnail_url class method" do
+    let(:model) { create(:public_work) }
+    let(:url) { WorkOaiDcSerialization.shareable_thumbnail_url(model) }
+
+    it "delivers an absolute URL" do
+      expect(url).to be_present
+      expect(URI.parse(url).absolute?).to be true
+    end
+
+    it "delivers a local URL for thumb_large_2x" do
+      expected_url = Rails.application.routes.url_helpers.download_derivative_url(
+        model.leaf_representative, :thumb_large_2X,
+        disposition: :inline,
+        host: ScihistDigicoll::Env.app_url_base_parsed.host
+      )
+
+      expect(url).to eq expected_url
+    end
+
+    describe "with no representative" do
+      let(:model) { create(:public_work, members: []) }
+      it "delivers nil result" do
+        expect(url).to be_nil
+      end
+    end
+  end
 end
