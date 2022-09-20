@@ -40,7 +40,7 @@ class WorkOaiDcSerialization
   # as a pretty big image in some contexts? Not sure.
   #
   def self.shareable_thumbnail_url(work)
-    if work.leaf_representative
+    if work.leaf_representative && work.leaf_representative.published?
       "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/downloads/deriv/#{work.leaf_representative.friendlier_id}/thumb_large_2X?disposition=inline"
     else
       nil
