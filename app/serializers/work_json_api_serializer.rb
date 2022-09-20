@@ -20,12 +20,10 @@ class WorkJsonApiSerializer
   # let's group the links in a `links` attribute; if this were json:api it would
   # be completely separate from attributes
   attribute :links do
-    # thumbnail: delegate to whatever WorkOaiDcSerialization is deciding is the thumbnail
-    # TODO extract this to a neutral public location
-    #
-    # html_self: just hard-code cause we don't have access to route helpers here
+    # * thumbnail: delegate to whatever WorkOaiDcSerialization is deciding is the thumbnail
+    # * html_self: just hard-code cause we don't have access to route helpers here
     {
-      img_thumbnail: WorkOaiDcSerialization.new(object).send(:appropriate_thumb_url),
+      img_thumbnail: WorkOaiDcSerialization.shareable_thumbnail_url(object),
       html_self: "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/works/#{object.id}"
     }
   end
