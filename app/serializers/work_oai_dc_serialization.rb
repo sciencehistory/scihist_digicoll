@@ -16,6 +16,37 @@
 # * contained_by (collection)
 #
 class WorkOaiDcSerialization
+  # A URL that can be shared with external partners for a thumbnail. This class
+  # method may be used by other parts of the app too.
+  #
+  # @return [String, nil] a URL to a suitable thumbnail/preview image, or nil if none is available.
+  #
+  # We are using our app url that will REDIRECT to S3:
+  #
+  # 1) in case the S3 URL changes, this one, sent to oai-pmh clients, should remain good
+  #    (as long as representative asset ID remains good for a work -- we could create a new
+  #    URL that takes work URL and redirects?)
+  #
+  # 2) To avoid the performance hit of loading the derivative and figuring out it's S3 URL
+  #    at oai-pmh time.
+  #
+  # We are hand-building the URL instead of using Rails route helper to further improve
+  # perfomrance and avoid the need to have rails route helpers here. Our tests
+  # should still test with rails route helpers.
+  #
+  # We are using a pretty big URL, thumb_large_2X (1050px; facebook recommends 1200px upload!)
+  # our largest "thumb" type URL -- even PDFs get thumb-size derivatives. Figure
+  # bigger is better than not big enough, especially for DPLA, that seems to use this
+  # as a pretty big image in some contexts? Not sure.
+  #
+  def self.shareable_thumbnail_url(work)
+    if work.leaf_representative
+      "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/downloads/deriv/#{work.leaf_representative.friendlier_id}/thumb_large_2X?disposition=inline"
+    else
+      nil
+    end
+  end
+
   # all of em from https://drive.google.com/file/d/1fJEWhnYy5Ch7_ef_-V48-FAViA72OieG/view
   # why not, be complete in case we need em.
   NAMESPACES = {
@@ -235,26 +266,9 @@ class WorkOaiDcSerialization
   end
 
 
-  # We are using our app url that will REDIRECT to S3:
-  # 1) in case the S3 URL changes, this one, sent to oai-pmh clients, should remain good
-  #    (as long as representative asset ID remains good for a work -- we could create a new
-  #    URL that takes work URL and redirects?)
-  # 2) To avoid the performance hit of loading the derivative and figuring out it's S3 URL
-  #    at oai-pmh time.
-  #
-  # We are hand-building the URL instead of using Rails route helper to further improve
-  # perfomrance and avoid the need to have rails route helpers here. Our tests
-  # should still test with rails route helpers.
-  #
-  # We are using a pretty big URL, thumb_large_2X (1050px; facebook recommends 1200px upload!)
-  # our largest "thumb" type URL -- even PDFs get thumb-size derivatives.
   def appropriate_thumb_url
     unless defined?(@appropriate_thumb_url)
-      @appropriate_thumb_url = if work.leaf_representative
-        "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/downloads/deriv/#{work.leaf_representative.friendlier_id}/thumb_large_2X?disposition=inline"
-      else
-        nil
-      end
+      @appropriate_thumb_url = self.class.shareable_thumbnail_url(work)
     end
 
     @appropriate_thumb_url
