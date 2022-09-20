@@ -132,5 +132,13 @@ describe WorkOaiDcSerialization do
         expect(url).to be_nil
       end
     end
+
+    describe "with non-public reprensentative" do
+      let(:private_asset) { create(:asset, published: false) }
+      let(:model) { create(:public_work, members: [private_asset], representative: private_asset) }
+      it "delivers nil result" do
+        expect(url).to be_nil
+      end
+    end
   end
 end
