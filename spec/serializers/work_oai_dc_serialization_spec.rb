@@ -140,5 +140,15 @@ describe WorkOaiDcSerialization do
         expect(url).to be_nil
       end
     end
+
+    # collections have their thumbnails as #representative too, so
+    describe "with collection" do
+      let(:model) { create(:public_work, representative: create(:asset, published: true)) }
+
+      it "delivers an absolute URL" do
+        expect(url).to be_present
+        expect(URI.parse(url).absolute?).to be true
+      end
+    end
   end
 end

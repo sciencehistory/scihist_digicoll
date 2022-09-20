@@ -19,6 +19,9 @@ class WorkOaiDcSerialization
   # A URL that can be shared with external partners for a thumbnail. This class
   # method may be used by other parts of the app too.
   #
+  # @param model [Work,Collection] works for Collections too, since their thumbnails
+  #   are also at a #representative asset
+  #
   # @return [String, nil] a URL to a suitable thumbnail/preview image, or nil if none is available.
   #
   # We are using our app url that will REDIRECT to S3:
@@ -39,9 +42,9 @@ class WorkOaiDcSerialization
   # bigger is better than not big enough, especially for DPLA, that seems to use this
   # as a pretty big image in some contexts? Not sure.
   #
-  def self.shareable_thumbnail_url(work)
-    if work.leaf_representative && work.leaf_representative.published?
-      "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/downloads/deriv/#{work.leaf_representative.friendlier_id}/thumb_large_2X?disposition=inline"
+  def self.shareable_thumbnail_url(model)
+    if model.leaf_representative && model.leaf_representative.published?
+      "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/downloads/deriv/#{model.leaf_representative.friendlier_id}/thumb_large_2X?disposition=inline"
     else
       nil
     end
