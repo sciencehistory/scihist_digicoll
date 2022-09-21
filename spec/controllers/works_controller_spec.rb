@@ -124,4 +124,13 @@ RSpec.describe WorksController, type: :controller do
     end
   end
 
+  context "JSON work represnetation" do
+    let(:work){ create(:public_work, :published) }
+
+    it "smoke test" do
+      get :show, params: { id: work.friendlier_id }, as: :json
+      expect(response.status).to eq(200)
+      expect(JSON.parse(response.body)).to be_kind_of(Hash)
+    end
+  end
 end
