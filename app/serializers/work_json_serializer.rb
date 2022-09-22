@@ -44,6 +44,11 @@ class WorkJsonSerializer
     work.published_at&.iso8601
   end
 
+  attribute :updated_at do |work|
+    work.updated_at&.iso8601
+  end
+
+
   many :creator do
     attributes :category, :value
   end
