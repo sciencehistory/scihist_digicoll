@@ -9,7 +9,7 @@
 # Consumers could consider the OAI_DC serialization as more stable (although currently
 # including fewer fields); we could add fields to that serialization with standard
 # identifiers, or consider other future alternate standard serializations.
-class WorkJsonApiSerializer
+class WorkJsonSerializer
   include Alba::Resource
 
   # let's suggest our outward-facing friendlier_id as the main id, but also
