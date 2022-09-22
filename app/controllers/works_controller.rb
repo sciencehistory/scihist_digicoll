@@ -23,7 +23,7 @@ class WorksController < ApplicationController
       }
 
       format.json {
-        render body: WorkJsonApiSerializer.new(
+        render body: WorkJsonSerializer.new(
           @work,
         ).serialize
       }
