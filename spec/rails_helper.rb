@@ -71,6 +71,8 @@ RSpec.configure do |config|
   config.include ViewComponent::TestHelpers, type: :component
   config.include Capybara::RSpecMatchers, type: :component
   config.include Devise::Test::ControllerHelpers, type: :component
+  # and let us use route helpers in components
+  config.include Rails.application.routes.url_helpers, type: :component
   config.before(:each, type: :component) do
     # for devise support according to ViewComponent docs.
     @request = controller.request
@@ -95,6 +97,10 @@ RSpec.configure do |config|
   # feature vs system? I'm confused.
   config.before(:each, type: /\A(feature|system)\Z/) do
     default_url_options[:host] = ScihistDigicoll::Env.app_url_base_parsed.host
+  end
+  # in view components, urls generated use `test.host`, I don't know why
+  config.before(:each, type: :component) do
+    default_url_options[:host] = "test.host"
   end
 
   # tag your context or text with :logged_in_user, and we'll use devise to
