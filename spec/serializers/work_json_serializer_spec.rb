@@ -33,8 +33,8 @@ describe WorkJsonSerializer, type: :model, queue_adapter: :inline do
     expect(serializable_hash[:description]).to eq work.description
     expect(serializable_hash[:description_html]).to eq DescriptionDisplayFormatter.new(work.description).format
 
-    expect(serializable_hash[:published_at]).to eq work.published_at.iso8601
-    expect(serializable_hash[:updated_at]).to eq work.updated_at.iso8601
+    expect(serializable_hash[:published_at]).to eq work.published_at.utc.iso8601
+    expect(serializable_hash[:updated_at]).to eq work.updated_at.utc.iso8601
 
     expect(serializable_hash[:physical_container].keys).to include(:box, :folder, :volume, :part, :page, :shelfmark, :formatted)
 

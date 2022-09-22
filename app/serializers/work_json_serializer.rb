@@ -41,11 +41,11 @@ class WorkJsonSerializer
   end
 
   attribute :published_at do |work|
-    work.published_at&.iso8601
+    work.published_at&.utc&.iso8601
   end
 
   attribute :updated_at do |work|
-    work.updated_at&.iso8601
+    work.updated_at&.utc&.iso8601
   end
 
 
