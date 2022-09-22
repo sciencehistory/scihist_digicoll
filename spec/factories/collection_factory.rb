@@ -13,5 +13,9 @@ FactoryBot.define do
     }
     department { "Archives" }
     published { true }
+
+    trait :with_representative do
+      representative { build(:asset, :inline_promoted_file, published: true) }
+    end
   end
 end
