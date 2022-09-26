@@ -2,6 +2,7 @@
 class EnablePgcryptoExtension < ActiveRecord::Migration[5.2]
   def change
     # for Rails UUID support, for UUID-generating it uses this.
-    enable_extension 'pgcrypto'
+    execute "CREATE SCHEMA IF NOT EXISTS heroku_ext"
+    execute "create extension pgcrypto with schema heroku_ext"
   end
 end
