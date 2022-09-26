@@ -20,6 +20,11 @@ default: &default
   # For details on connection pooling, see Rails configuration guide
   # http://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  # Avoid referencing DB extensions' objects with a heroku_ext
+  # prefix.
+  # See https://help.heroku.com/ZOFBHJCJ/heroku-postgres-extension-changes-faq
+  # See https://blog.testdouble.com/posts/2022-08-15-migrating-postgres-extensions-to-the-heroku_ext_schema/
+  schema_search_path: public,heroku_ext
 
 development:
   <<: *default
