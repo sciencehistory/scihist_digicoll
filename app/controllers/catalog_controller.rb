@@ -119,8 +119,6 @@ class CatalogController < ApplicationController
     # See issue https://github.com/sciencehistory/scihist_digicoll/pull/497 for more details.
     def rss_feed_link_tag(options = {})
     end
-    def atom_feed_link_tag(options = {})
-    end
     def json_api_link_tag(options = {})
     end
   end
@@ -497,6 +495,7 @@ class CatalogController < ApplicationController
     # if the name of the solr.SuggestComponent provided in your solrcongig.xml is not the
     # default 'mySuggester', uncomment and provide it below
     # config.autocomplete_suggester = 'mySuggester'
+    #
   end
 
   # Some bad actors sometimes send query params that Blacklight doesn't expect and
@@ -594,7 +593,7 @@ class CatalogController < ApplicationController
   #   /focus/alchemy.json
   # See https://github.com/sciencehistory/scihist_digicoll/issues/1578
   def catch_bad_format_param
-    if ['json', 'atom', 'rss'].include? params[:format]
+    if ['json', 'rss'].include? params[:format]
       render plain: "Invalid parameter: we do not provide search results in #{params[:format]} format.", status: 406
     end
   end
