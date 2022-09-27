@@ -9,7 +9,7 @@
 # Consumers could consider the OAI_DC serialization as more stable (although currently
 # including fewer fields); we could add fields to that serialization with standard
 # identifiers, or consider other future alternate standard serializations.
-class WorkJsonApiSerializer
+class WorkJsonSerializer
   include Alba::Resource
 
   # let's suggest our outward-facing friendlier_id as the main id, but also
@@ -41,8 +41,13 @@ class WorkJsonApiSerializer
   end
 
   attribute :published_at do |work|
-    work.published_at&.iso8601
+    work.published_at&.utc&.iso8601
   end
+
+  attribute :updated_at do |work|
+    work.updated_at&.utc&.iso8601
+  end
+
 
   many :creator do
     attributes :category, :value

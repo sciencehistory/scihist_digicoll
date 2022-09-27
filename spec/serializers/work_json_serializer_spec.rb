@@ -5,9 +5,9 @@ require 'rails_helper'
 # structures change TOO much we may not be able to. We aren't at present
 # able to actually make guarantees here, we aren't a vendor.
 #
-describe WorkJsonApiSerializer, type: :model, queue_adapter: :inline do
+describe WorkJsonSerializer, type: :model, queue_adapter: :inline do
   let(:work) { create(:work, :published, :with_complete_metadata) }
-  let(:serializable_hash) { WorkJsonApiSerializer.new(work).serializable_hash }
+  let(:serializable_hash) { WorkJsonSerializer.new(work).serializable_hash }
 
   # just a 'macro' to for common tests on a key expecte to have an array of hashes
   # having certain keys.
@@ -33,7 +33,8 @@ describe WorkJsonApiSerializer, type: :model, queue_adapter: :inline do
     expect(serializable_hash[:description]).to eq work.description
     expect(serializable_hash[:description_html]).to eq DescriptionDisplayFormatter.new(work.description).format
 
-    expect(serializable_hash[:published_at]).to eq work.published_at.iso8601
+    expect(serializable_hash[:published_at]).to eq work.published_at.utc.iso8601
+    expect(serializable_hash[:updated_at]).to eq work.updated_at.utc.iso8601
 
     expect(serializable_hash[:physical_container].keys).to include(:box, :folder, :volume, :part, :page, :shelfmark, :formatted)
 
