@@ -55,7 +55,7 @@ ActiveSupport::Notifications.subscribe(/throttle\.rack_attack|track\.rack_attack
   current_count = match_data[:count]
 
   # only log if we have a new count, not if we're still incrementing the count!
-  if !last_logged_count || current_count <= last_logged_count
+  if !last_logged_count || current_count <= last_logged_count.to_i
     # `name` will be throttle.rack_attack or track.rack_attack
     # `match_name` will be name of rule like 'req/ip'
     # `discriminator` will generally be IP address, or what you are grouping by to limit
