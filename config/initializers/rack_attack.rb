@@ -40,6 +40,8 @@ end
 ActiveSupport::Notifications.subscribe(/rack_attack/) do |name, start, finish, request_id, payload|
   rack_request = payload[:request]
   rack_env     = rack_request.env
+  match_data   = rack_env["rack.attack.match_data"]
+  match_data_formatted = match_data.slice(:count, :limit, :period).map { |k, v| "#{k}=#{v}"}.join(" ")
 
-  Rails.logger.warn("rack_attack: #{name}: #{env["rack.attack.matched"]}: key=#{env["rack.attack.match_discriminator"]} request_id=#{request_id}  start=#{start.iso8601} finish=#{finish.iso8601}")
+  Rails.logger.warn("rack_attack: #{name}: #{rack_env["rack.attack.match_discriminator"]}: #{rack_env["rack.attack.matched"]}: key=#{match_data_formatted} request_id=#{request_id}  start=#{start.iso8601} finish=#{finish.iso8601}")
 end
