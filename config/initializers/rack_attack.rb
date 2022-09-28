@@ -36,12 +36,31 @@ Rack::Attack.track("req_per_second_over_5_min", limit: 300, period: 5.minutes) d
 end
 
 
-# And we want to log all rack-attack related notifications...
-ActiveSupport::Notifications.subscribe(/rack_attack/) do |name, start, finish, request_id, payload|
+
+
+# And we want to log all rack-attack related notifications... but only log once
+# per rate-limit-application, don't keep logging every additional blocked request...
+# kind of tricky to write logic to gate that.
+ActiveSupport::Notifications.subscribe(/throttle\.rack_attack|track\.rack_attack/) do |name, start, finish, request_id, payload|
   rack_request = payload[:request]
   rack_env     = rack_request.env
   match_data   = rack_env["rack.attack.match_data"]
   match_data_formatted = match_data.slice(:count, :limit, :period).map { |k, v| "#{k}=#{v}"}.join(" ")
 
-  Rails.logger.warn("rack_attack: #{name}: #{rack_env["rack.attack.match_discriminator"]}: #{rack_env["rack.attack.matched"]}: key=#{match_data_formatted} request_id=#{request_id}  start=#{start.iso8601} finish=#{finish.iso8601}")
+  period = match_data[:period] || 60.seconds
+  match_name = rack_env["rack.attack.matched"]
+  discriminator = rack_env["rack.attack.match_discriminator"]
+  last_logged_key = "rack_attack_notification_#{name}_#{match_name}_#{discriminator}_count"
+
+  last_logged_count = Rack::Attack.cache.read(last_logged_key)
+  current_count = match_data[:count]
+
+  # only log if we have a new count, not if we're still incrementing the count!
+  if !last_logged_count || current_count <= last_logged_count
+    # `name` will be throttle.rack_attack or track.rack_attack
+    # `match_name` will be name of rule like 'req/ip'
+    # `discriminator` will generally be IP address, or what you are grouping by to limit
+    Rails.logger.warn("#{name}: #{match_name}: #{discriminator}: #{match_data_formatted} request_id=#{request_id}")
+    Rack::Attack.cache.write(last_logged_key, current_count, period + 1)
+  end
 end
