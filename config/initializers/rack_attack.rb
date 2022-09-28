@@ -1,12 +1,7 @@
-# We need a cache, in development/test, by default cache to
-# local memory store, unless you set
-#
-# In production, that won't really work if we have
-# more than one puma worker, so we use a heroku memcached.
-
-if Rails.env.development?
-  Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new
-end
+# We need a cache for throttling! Uses Rails.cache by default,
+# which we set in config/application.rb. In development/test,
+# may be in-memory cache, may have to toggle dev caching
+# with `./bin/rails dev:cache`
 
 
 # If any single client IP is making tons of requests, then they're
