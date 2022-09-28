@@ -33,7 +33,7 @@ end
 
 # But we're also going to TRACK at somewhat lower limits, for ease
 # of understanding what's going on in our logs
-Rack::Attack.track("req_per_second_over_5_min", limit: 300, period: 5.minutes) do |req|
+Rack::Attack.track("req/ip_track", limit: 60, period: 1.minute) do |req|
   req.ip unless req.path.start_with?('/assets')
 end
 
