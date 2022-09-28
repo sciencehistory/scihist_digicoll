@@ -2,7 +2,10 @@
 # which we set in config/application.rb. In development/test,
 # may be in-memory cache, may have to toggle dev caching
 # with `./bin/rails dev:cache`
-
+if Rails.env.production? && (Rack::Attack.cache.nil? || Rack::Attack.cache.store.kind_of?(ActiveSupport::Cache::NullStore))
+  # log with `rack_attack` token so our log watcher will catch it.
+  Rails.logger.warn("rack_attack: rack-attack is not throttling, as we do not have a real Rails.cache available!")
+end
 
 # If any single client IP is making tons of requests, then they're
 # probably malicious or a poorly-configured scraper. Either way, they
