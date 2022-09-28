@@ -44,9 +44,14 @@ xml.feed("xmlns" => "http://www.w3.org/2005/Atom",
 
   # "search" doesn't seem to actually be legal, but is very common, and
   # used as an example in opensearch docs
-  xml.link( "rel" => "search",
-            "type" => "application/opensearchdescription+xml",
-            "href" => url_for(controller: 'catalog',action: 'opensearch', format: 'xml', only_path: false))
+  #
+  # Actually, our opensearch response may or may not be fully working at ALL, but def
+  # isn't for collection pages. Only output this for base catalog controller, sorry hacky.
+  if controller.instance_of?(CatalogController)
+    xml.link( "rel" => "search",
+              "type" => "application/opensearchdescription+xml",
+              "href" => url_for(action: 'opensearch', format: 'xml', only_path: false))
+  end
 
   # opensearch response elements
   xml.opensearch :totalResults, @response.total.to_s
