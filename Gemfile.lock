@@ -186,6 +186,7 @@ GEM
       csl (~> 2.0)
     css_parser (1.11.0)
       addressable
+    dalli (3.2.2)
     database_cleaner (2.0.1)
       database_cleaner-active_record (~> 2.0.0)
     database_cleaner-active_record (2.0.1)
@@ -726,6 +727,7 @@ DEPENDENCIES
   cocoon
   content_disposition (~> 1.0)
   csl-styles (~> 2.0)
+  dalli (~> 3.2)
   database_cleaner (~> 2.0)
   db-query-matchers (< 2.0)
   device_detector (~> 1.0)
