@@ -28,15 +28,11 @@ Rack::Attack.throttle('req/ip', limit: 120, period: 1.minutes) do |req|
   req.ip unless req.path.start_with?('/assets')
 end
 
-
 # But we're also going to TRACK at somewhat lower limits, for ease
 # of understanding what's going on in our logs
 Rack::Attack.track("req_per_second_over_5_min", limit: 300, period: 5.minutes) do |req|
   req.ip unless req.path.start_with?('/assets')
 end
-
-
-
 
 # And we want to log all rack-attack related notifications... but only log once
 # per rate-limit-application, don't keep logging every additional blocked request...
