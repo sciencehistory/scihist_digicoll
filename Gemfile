@@ -45,12 +45,15 @@ gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
 gem 'puma', '~> 5.6'
 
-# resque+redis being used for activejob, maybe later for Rails.cache
+# resque+redis being used for activejob.
 # resque-pool currently does not support resque 2.0 alas.
 # https://github.com/nevans/resque-pool/issues/170
 gem "resque", "~> 2.0"
 gem "resque-pool"
 gem "resque-heroku-signals" # gah, weirdly needed for graceful shutdown on heroku. https://github.com/resque/resque#heroku
+
+# using memcached for Rails.cache in production, requires dalli
+gem "dalli", "~> 3.2"
 
 gem 'honeybadger', '~> 4.0'
 
@@ -166,6 +169,8 @@ gem "hirefire-resource"
 gem "irb", ">= 1.3.1"
 gem "reline", ">= 0.2.1"
 gem "warning", "~> 1.2" # managing ruby warning output
+
+gem "rack-attack", "~> 6.6" # throttling excessive requests
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
