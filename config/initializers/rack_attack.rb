@@ -28,7 +28,14 @@ end
 # 1 minute instead.
 Rack::Attack.throttle('req/ip', limit: 120, period: 1.minutes) do |req|
   # On heroku, we may be delivering assets via rack, I think.
-  req.ip unless req.path.start_with?('/assets')
+  # We also try to exempt our "api" responses from rate limit, although
+  # we still include them in tracking logging below.
+  req.ip unless (
+                  req.path.start_with?('/assets') ||
+                  req.path.end_with?(".atom") ||
+                  req.path.end_with?(".xml") ||
+                  req.path.end_with?(".json")
+                 )
 end
 
 # But we're also going to TRACK at somewhat lower limits, for ease
