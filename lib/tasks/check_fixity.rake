@@ -53,6 +53,11 @@ namespace :scihist do
             progress_bar.increment unless progress_bar.nil?
           end
         end
+        # we're running out of RAM on some fixity check runs on heroku. It may
+        # be that `down`, that we use for fetching bytes from S3, just allocates
+        # a lot of different Strings, necessarily. Perhaps forcing a periodic
+        # GC will help reclaim them?
+        GC.start
       end
     end
 
