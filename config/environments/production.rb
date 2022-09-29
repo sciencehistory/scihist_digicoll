@@ -74,7 +74,17 @@ Rails.application.configure do
   config.log_tags = [ :request_id ]
 
   # Use a different cache store in production.
-  # config.cache_store = :mem_cache_store
+  #
+  # On heroku we use memcachedcloud plugin which provides `MEMCACHEDCLOUD_SERVERS`
+  # env. https://devcenter.heroku.com/articles/memcachedcloud#using-memcached-from-ruby
+  #
+  # Caching is not normally turned on in test or dev, but config/environments/development.rb
+  # has some standard Rails code that lets you turn it on in dev with in-memory store,
+  # with `./bin/rails dev:cache` toggle.
+  if ENV["MEMCACHEDCLOUD_SERVERS"]
+    config.cache_store = :mem_cache_store, ENV["MEMCACHEDCLOUD_SERVERS"].split(','), { :username => ENV["MEMCACHEDCLOUD_USERNAME"], :password => ENV["MEMCACHEDCLOUD_PASSWORD"] }
+  end
+
 
   # Use a real queuing backend for Active Job (and separate queues per environment)
   config.active_job.queue_adapter     = :resque
