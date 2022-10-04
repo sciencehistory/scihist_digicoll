@@ -10,12 +10,12 @@ This one is based on the [kithe](https://github.com/sciencehistory/kithe) toolki
 
 To set up a development instance on your workstation.
 
-### Prequisites
+### Prerequisites
 
 * (MacOS) You're going to want homebrew, which will also take care of making sure you have a C compiler toolchain to install native C gems. https://brew.sh/
 * While not technically required just to run the app, you're going to want `git`. MacOS, `brew install git`.
 * ruby installed (I like using chruby and ruby-build to install/manage rubies, some like rvm)
-* Postgres installed and running -- on MacOS, I like https://postgresapp.com/
+* Postgres version 14 or higher, installed and running -- on MacOS, I like https://postgresapp.com/
 * `yarn` and `node` installed for managing webpacker JS dependencies -- on MacOS, `brew install node yarn`.
 * `mediainfo` installed for fallback contnet type detection -- on MacOS, `brew install mediainfo`
 * vips installed --  on MacOS `brew install vips`
