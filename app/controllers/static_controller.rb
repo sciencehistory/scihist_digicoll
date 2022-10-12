@@ -11,6 +11,9 @@ class StaticController < ApplicationController
   def policy
   end
 
+  def api_docs
+  end
+
   def oh_legacy_url_not_found
     Rails.logger.warn("Unknown legacy oral histories url: #{request.url}; referer: #{request.referer} ")
 
