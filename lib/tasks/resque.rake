@@ -7,12 +7,13 @@ require 'resque/pool/tasks'
 # This provides access to the Rails env within all Resque workers
 task "resque:setup" => :environment
 
+# https://github.com/resque/resque-pool#rake-task-config
+# https://github.com/resque/resque-pool/issues/221
 task 'resque:pool:setup' do
   ActiveRecord::Base.connection.disconnect!
 
   Resque::Pool.after_prefork do |j|
     ActiveRecord::Base.establish_connection
-    Resque.redis.client.reconnect
   end
 end
 
