@@ -377,7 +377,7 @@ Rails.application.routes.draw do
   end
 
   #Static pages
-  %w(about contact faq policy).each do |page_label|
+  %w(about contact faq policy api_docs).each do |page_label|
     get page_label, controller: 'static', action: page_label, as: page_label
   end
 
