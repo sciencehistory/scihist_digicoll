@@ -8,6 +8,9 @@ Rails.application.config.content_security_policy do |policy|
   # webpacker-recommended for dev, we added test
   if Rails.env.development? || Rails.env.test?
     policy.connect_src :self, :https, "http://localhost:3035", "ws://localhost:3035"
+    # Allow @vite/client to hot reload changes in development
+#    policy.connect_src *policy.connect_src, "ws://#{ ViteRuby.config.host_with_port }" if Rails.env.development?
+
   end
 
 
@@ -17,6 +20,17 @@ Rails.application.config.content_security_policy do |policy|
 #   policy.object_src  :none
 #   policy.script_src  :self, :https
 #   policy.style_src   :self, :https
+
+    # vite-rails suggestions:
+
+    # Allow @vite/client to hot reload javascript changes in development
+    #    policy.script_src *policy.script_src, :unsafe_eval, "http://#{ ViteRuby.config.host_with_port }" if Rails.env.development?
+
+    # You may need to enable this in production as well depending on your setup.
+    #    policy.script_src *policy.script_src, :blob if Rails.env.test?
+
+    # Allow @vite/client to hot reload style changes in development
+    #    policy.style_src *policy.style_src, :unsafe_inline if Rails.env.development?
 
 #   # Specify URI for violation reports
 #   # policy.report_uri "/csp-violation-report-endpoint"
