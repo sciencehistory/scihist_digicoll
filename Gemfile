@@ -11,6 +11,10 @@ gem 'lockbox'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.1.1'
 gem 'webpacker', '~> 5.0'
+
+# Our JS/CSS/asset bundler
+gem "vite_rails", "~> 3.0"
+
 # mail is a rails dependency, opt into 2.8.0.rc1 pre-release for ruby 3.1 compat,
 # this line is no longer needed once 2.8.0 final is released:
 gem "mail", ">= 2.8.0.rc1", "< 3"
