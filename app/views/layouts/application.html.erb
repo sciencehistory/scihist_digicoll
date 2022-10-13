@@ -38,12 +38,13 @@
     <%= stylesheet_link_tag "application", media: "all" %>
 
     <%= javascript_include_tag "application", defer: true %>
-    <%= javascript_pack_tag "application", defer: true %>
+
+    <%# vite 'application.js' #>
+    <%= vite_client_tag %>
+    <%= vite_javascript_tag 'application' %>
 
     <%= csrf_meta_tags %>
     <%= content_for(:head) %>
-    <%= vite_client_tag %>
-    <%= vite_javascript_tag 'application' %>
     <!--
       If using a TypeScript entrypoint file:
         vite_typescript_tag 'application'
