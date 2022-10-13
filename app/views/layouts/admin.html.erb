@@ -37,10 +37,12 @@
     <%= stylesheet_link_tag    'application', media: 'all' %>
     <%= javascript_include_tag 'application', defer: true %>
 
-    <%# webpacker 'application' js, and 'admin' js and css %>
+    <%# webpacker 'application' js %>
     <%= javascript_pack_tag 'application', defer: true %>
-    <%= javascript_pack_tag 'admin', defer: true %>
-    <%= stylesheet_pack_tag "admin" %>
+
+    <%# vite 'admin' js, will also include css if needed automatically %>
+    <%= vite_javascript_tag 'admin', defer: true %>
+    <%# stylesheet_pack_tag "admin" %>
 
   </head>
 

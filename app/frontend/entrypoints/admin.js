@@ -6,10 +6,10 @@
 // includes things not compatible with IE11 -- we consider
 // it okay at present that management UI doesn't work on IE11, but we need public UI to.
 
-import '../src/js/admin/member_sortable';
-import '../src/js/admin/simple_uppy_file_input';
-import '../src/js/admin/uppy_dashboard.js';
-import '../src/js/admin/qa_autocomplete.js';
-import '../src/js/admin/queue_status_submit.js';
+import '../javascript/admin/member_sortable';
+import '../javascript/admin/simple_uppy_file_input';
+import '../javascript/admin/uppy_dashboard.js';
+import '../javascript/admin/qa_autocomplete.js';
+import '../javascript/admin/queue_status_submit.js';
 
-import '../src/js/admin/tom_select.js' // has CSS
+import '../javascript/admin/tom_select.js' // has CSS
