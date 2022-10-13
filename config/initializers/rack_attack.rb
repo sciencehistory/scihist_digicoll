@@ -96,7 +96,7 @@ ActiveSupport::Notifications.subscribe(/throttle\.rack_attack|track\.rack_attack
       Rails.logger.warn("#{name}: ALERT: #{match_name}: #{discriminator} (#{hostname || "no hostname"}) #{match_data_formatted}")
     else
       # eg: track.rack_attack: req/ip_track: 66.249.66.21 count=91 limit=90 period=60
-      Rails.logger.warn("#{name}: #{match_name}: #{discriminator}: #{match_data_formatted} request_id=#{request_id}")
+      Rails.logger.warn("#{name}: #{match_name}: #{discriminator}: #{match_data_formatted}")
     end
 
     # we put it in cache for up to our total alert window, so we can make sure
