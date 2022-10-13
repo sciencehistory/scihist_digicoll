@@ -10,7 +10,6 @@ gem 'lockbox'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.1.1'
-gem 'webpacker', '~> 5.0'
 
 # Our JS/CSS/asset bundler
 gem "vite_rails", "~> 3.0"

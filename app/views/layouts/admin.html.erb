@@ -8,8 +8,7 @@
 
     Right now, even though we have separate layout for 'admin', we do _not_ segregate
     our CSS and JS assets, only the single pipelined application.js and application.css,
-    with JS/CSS shared by both.  (Currently the general 'application' layout is not
-    loading our webpacker JS, but that could change.)
+    with JS/CSS shared by both.
 %>
 
 <html>
@@ -18,7 +17,7 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%# Instead of loading via webpacker, we are loading uppy the heavy-weight way manually
+    <%# Instead of loading via local build, we are loading uppy the heavy-weight way manually
         from CDN. For somewhat 'legacy' reasons. We may 'fix' this in future.
 
         Uppy recommends against this, but we're doing it for now, until we get it working
