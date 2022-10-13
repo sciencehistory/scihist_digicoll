@@ -26,3 +26,39 @@ console.log('Visit the guide for more information: ', 'https://vite-ruby.netlify
 
 // Example: Import a stylesheet in app/frontend/index.css
 // import '~/index.css'
+
+
+
+// fetch polyfill for IE11, used by viewer, on-demand downlaods, and other local code.
+import 'whatwg-fetch';
+// The whatwg-fetch polyfill requires a promise polyfill too, for browsers that don't
+// have promises, and IE11 is one, so.
+import 'promise-polyfill/src/polyfill';
+
+import "../javascript/responsive-tabs/responsive-tabs.js"
+
+import '../javascript/init_popovers.js';
+import '../javascript/accept_cookies_banner.js';
+import '../javascript/scihist_search_slideout.js';
+import '../javascript/scihist_on_demand_downloader.js';
+import '../javascript/scihist_viewer.js';
+import '../javascript/custom_google_analytics_events.js';
+import '../javascript/cart_control.js';
+import '../javascript/date_range_render_workaround.js';
+import '../javascript/tab_selection_in_anchor';
+
+
+// Generic tooltips
+import '../javascript/bootstrap_tooltips_activate';
+// and special OHMS footnotes tooltips
+import '../javascript/ohms_footnotes.js';
+
+import '../javascript/audio/play_at_timecode.js';
+import '../javascript/audio/ohms_search.js';
+import '../javascript/audio/accordion_open_on_screen.js';
+import '../javascript/audio/navbar_tabs.js';
+import "../javascript/audio/timecode_in_anchor.js";
+import "../javascript/audio/share_link.js";
+import '../javascript/audio/jump_to_text.js';
+import "../javascript/audio/clipboard_copy_input.js";
+import "../javascript/video_player.js";
