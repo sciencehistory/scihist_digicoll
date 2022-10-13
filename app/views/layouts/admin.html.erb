@@ -30,9 +30,6 @@
 
     <%= render "layouts/head_tag_common" %>
 
-    <%# lazysizes gets it's own entrypoint, loaded early without 'defer', per lazysizes doc suggestion %>
-    <%= vite_javascript_tag 'lazysizes' %>
-
     <%# sprockets 'application' js and css %>
     <%= stylesheet_link_tag    'application', media: 'all' %>
     <%= javascript_include_tag 'application', defer: true %>
@@ -44,6 +41,10 @@
     <%= vite_javascript_tag 'admin', defer: true %>
     <%# stylesheet_pack_tag "admin" %>
 
+
+    <%# separate and positioned per lazysizes docs
+    https://github.com/aFarkas/lazysizes#include-early%>
+    <%= vite_javascript_tag 'lazysizes' %>
   </head>
 
   <body>
