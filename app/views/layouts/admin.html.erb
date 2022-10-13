@@ -35,7 +35,7 @@
 
     <%# vite 'application' js %>
     <%= vite_client_tag %>
-    <%= vite_javascript_tag 'application' %>
+    <%= vite_javascript_tag 'application', defer: true %>
 
     <%# vite 'admin' js, will also include css if needed automatically %>
     <%= vite_javascript_tag 'admin', defer: true %>

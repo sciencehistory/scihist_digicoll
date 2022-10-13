@@ -41,7 +41,7 @@
 
     <%# vite 'application.js' #>
     <%= vite_client_tag %>
-    <%= vite_javascript_tag 'application' %>
+    <%= vite_javascript_tag 'application', defer: true %>
 
     <%= csrf_meta_tags %>
     <%= content_for(:head) %>
