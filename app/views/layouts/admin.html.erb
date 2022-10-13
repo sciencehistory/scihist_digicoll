@@ -30,8 +30,8 @@
 
     <%= render "layouts/head_tag_common" %>
 
-    <%# lazysizes gets it's own "pack", loaded early without 'defer', per lazysizes doc suggestion %>
-    <%= javascript_pack_tag 'lazysizes' %>
+    <%# lazysizes gets it's own entrypoint, loaded early without 'defer', per lazysizes doc suggestion %>
+    <%= vite_javascript_tag 'lazysizes' %>
 
     <%# sprockets 'application' js and css %>
     <%= stylesheet_link_tag    'application', media: 'all' %>
