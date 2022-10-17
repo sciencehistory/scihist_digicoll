@@ -170,7 +170,6 @@ GEM
     citeproc-ruby (2.0.0)
       citeproc (~> 1.0, >= 1.0.9)
       csl (~> 2.0)
-    cocoon (1.2.15)
     coderay (1.1.3)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
@@ -717,7 +716,6 @@ DEPENDENCIES
   capybara (>= 2.15)
   capybara-screenshot
   citeproc-ruby (~> 2.0)
-  cocoon
   content_disposition (~> 1.0)
   csl-styles (~> 2.0)
   dalli (~> 3.2)

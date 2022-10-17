@@ -99,7 +99,6 @@ gem "attr_json", "~> 1.0"
 gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 
 gem 'simple_form', "~> 5.0"
-gem "cocoon"
 
 gem "browse-everything", "~> 1.2"
 gem "qa", "~> 5.2"

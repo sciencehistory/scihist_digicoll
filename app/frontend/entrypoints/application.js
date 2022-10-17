@@ -34,6 +34,9 @@ import Rails from '@rails/ujs';
 import '../javascript/jquery_setup.js'
 import '../javascript/bootstrap_setup.js'
 
+// used by kithe, for forms with add/remove fields
+import "@nathanvda/cocoon";
+
 import "../javascript/responsive-tabs/responsive-tabs.js"
 
 import '../javascript/init_popovers.js';
