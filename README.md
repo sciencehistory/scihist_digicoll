@@ -16,7 +16,7 @@ To set up a development instance on your workstation.
 * While not technically required just to run the app, you're going to want `git`. MacOS, `brew install git`.
 * ruby installed (I like using chruby and ruby-build to install/manage rubies, some like rvm)
 * Postgres version 14 or higher, installed and running -- on MacOS, I like https://postgresapp.com/
-* `yarn` and `node` installed for managing webpacker JS dependencies -- on MacOS, `brew install node yarn`.
+* `yarn` and `node` installed for managing JS dependencies -- on MacOS, `brew install node yarn`.
 * `mediainfo` installed for fallback contnet type detection -- on MacOS, `brew install mediainfo`
 * vips installed --  on MacOS `brew install vips`
 * ffmpeg installed -- on MacOS `brew install ffmpeg`
@@ -106,32 +106,29 @@ Then:
 
 ### Javascript
 
-We are using webpacker (an ES6-style JS toolchain, supported by Rails 5.1+, default/recommended in Rails5) for some javascript, but still using sprockets asset pipeline for other javascript. Our layouts will generally load a webpacker pack (with `javascript_include_pack`) as well as a sprockets compiled file (with `javascript_include_file`). Both will be compiled by `rake assets:precompile` in production, and automatically compiled in dev.
+We are using Vite.js (an ES6-style JS, https://vite-ruby.netlify.app/) for some javascript, but still using sprockets asset pipeline for other javascript. Our layouts will generally load vite-built pack (with `vite_javascript_tag`) as well as a sprockets compiled file (with `javascript_include_file`). Both will be compiled by `rake assets:precompile` in production, and automatically compiled in dev.
 
-We are still using sprockets to control our CSS (scss), **not** webpacker.
+We are still using sprockets to control our CSS (scss), **not** vite.
 
-* All _local javascript_ is controlled using webpacker, and you should do that for future JS.
+* All _local javascript_ is controlled using vite, and you should do that for future JS.
 
-* Some general purpose dependencies that probably *could* be via webpacker are at the moment still via sprockets (and gem dependencies to provide the JS, rather than npm packages).
+* Some general purpose dependencies that probably *could* be via vite are at the moment still via sprockets (and gem dependencies to provide the JS, rather than npm packages).
   * jQuery
   * Bootstrap
   * popper.js for Bootstrap
   * rails-ujs
 
-* Some more rails-y dependencies are also still provided by sprockets asset pipeline, in some cases it is tricky to figure out how to transition to webpacker (or may not be possible)
+* Some more rails-y dependencies are also still provided by sprockets asset pipeline, in some cases it is tricky to figure out how to transition to vite (or may not be possible)
   * cocoon (used for adding/removing multi-values in edit screens; may not be avail as npm package)
-  * blacklight (theoretically available as an npm package, but I found it's [instructions](https://github.com/projectblacklight/blacklight/wiki/Using-Webpacker-to-compile-javascript-assets) somewhat obtuse and weird and was not feeling confident/comfortable with them)
-  * blacklight_range_limit (may not be avail as npm package instead of ruby gem/sprockets)
+  * blacklight ([instructions](https://github.com/projectblacklight/blacklight/wiki/Using-Webpacker-to-compile-javascript-assets) for webpacker, which are still helpful)
+  * blacklight_range_limit (may not be avail as npm package instead of ruby gem/sprockets?)
   * browse-everything (not avail as npm package instead of ruby gem/sprockets)
 
 * You can look at `./app/assets/javascripts/application.js` to see what dependencies are still being provided via the sprockets-asset-pipeline-compiled application.js file, usually with src from a rubygem.
 
 * uppy (JS for fancy file upload func) is still being loaded in it's own separate script tag from remote CDN (see admin.html.erb layout). This is recommended against by the uppy docs, and we should transition to providing via webpacker and `import` statement, just including the parts of uppy we need, but haven't figured out how to do that yet (including uppy css)
 
-* We have not at present experimented with running `./bin/webpack-dev-server` separately in dev (and it is likely not working, pending update to webpacker 4), we're just letting Rails do it the slower but just-works way.
-
-Some references I found good for understanding webpacker in Rails:
-* https://medium.com/@coorasse/goodbye-sprockets-welcome-webpacker-3-0-ff877fb8fa79
+* While things should work without it, you may choose to run the vite dev server in development. Just run: `bundle exec vite dev` in it's own terminal window. If you are working on modifying JS, this may give you quicker iterative builds and better error messages.
 
 ### Development docs
 
