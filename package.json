@@ -7,7 +7,6 @@
     "domready": "^1.0.8",
     "js-yaml": ">= 3.13.1",
     "lazysizes": "^5.1.0",
-    "mdn-polyfills": "^5.15.0",
     "openseadragon": "^2.4.1",
     "tom-select": "^1.4.3",
     "video.js": "^7.18.1",
