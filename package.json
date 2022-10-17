@@ -2,6 +2,7 @@
   "name": "scihist_digicoll",
   "private": true,
   "dependencies": {
+    "bootstrap": "^ 4.6.2",
     "jquery": "^ 3.6.0",
     "popper.js": "^ 1.16.1",
     "@shopify/draggable": "^1.0.0-beta.8",
