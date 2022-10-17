@@ -24,9 +24,9 @@ end
 # Rack-attack docs suggested averaging one request per second over
 # 5 minutes: limit: 300, period: 5.minutes
 #
-# But we're going to try a more generous 3 per second over
+# But we're going to try a more generous 4 per second over
 # 1 minute instead.
-Rack::Attack.throttle('req/ip', limit: 180, period: 1.minutes) do |req|
+Rack::Attack.throttle('req/ip', limit: 240, period: 1.minutes) do |req|
   # On heroku, we may be delivering assets via rack, I think.
   # We also try to exempt our "api" responses from rate limit, although
   # we still include them in tracking logging below.
@@ -38,9 +38,9 @@ Rack::Attack.throttle('req/ip', limit: 180, period: 1.minutes) do |req|
                  )
 end
 
-# But we're also going to TRACK at somewhat lower limits, for ease
+# But we're also going to TRACK at half that limit, for ease
 # of understanding what's going on in our logs
-Rack::Attack.track("req/ip_track", limit: 90, period: 1.minute) do |req|
+Rack::Attack.track("req/ip_track", limit: 120, period: 1.minute) do |req|
   req.ip unless req.path.start_with?('/assets')
 end
 
