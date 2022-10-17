@@ -31,11 +31,12 @@
 
     <%# sprockets 'application' js and css %>
     <%= stylesheet_link_tag    'application', media: 'all' %>
-    <%= javascript_include_tag 'application', defer: true %>
 
-    <%# vite 'application' js %>
+    <%# vite's 'application' js before sprockets later %>
     <%= vite_client_tag %>
     <%= vite_javascript_tag 'application', defer: true %>
+
+    <%= javascript_include_tag 'application', defer: true %>
 
     <%# vite 'admin' js, will also include css if needed automatically %>
     <%= vite_javascript_tag 'admin', defer: true %>
