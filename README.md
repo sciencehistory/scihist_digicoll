@@ -154,6 +154,7 @@ Some other interesting/complicated sub-systems we've written documentation for:
   for the "end-user-facing" search, although we are using it in a very limited and customized fashion, not including a lot of things the BL generator wanted to include in our app, that we didn't plan on using.
 * [lockbox](https://github.com/ankane/lockbox) for encrypting our patron data eg in Oral History
   requests. For rotating keys should private key need to be changed, see https://github.com/ankane/lockbox/issues/35
+* We are currently using rack-attack to rate-limit clients at the app level, in response to some problematic non-robots-txt-respecting bot traffic. https://github.com/sciencehistory/scihist_digicoll/issues/1864
 
 ### Task to copy a Work from staging to your local dev instance
 
