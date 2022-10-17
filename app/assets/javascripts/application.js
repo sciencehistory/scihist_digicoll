@@ -13,7 +13,6 @@
 //
 //
 //
-//= require cocoon
 //= require browse_everything
 
 // Required by Blacklight
