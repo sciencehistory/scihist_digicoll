@@ -12,6 +12,7 @@
     "lazysizes": "^5.1.0",
     "openseadragon": "^2.4.1",
     "tom-select": "^1.4.3",
+    "@rails/ujs": "^ 6.1.7",
     "video.js": "^7.18.1",
     "videojs-seek-buttons": "^2.2.0"
   },
