@@ -28,7 +28,7 @@ console.log('Visit the guide for more information: ', 'https://vite-ruby.netlify
 // import '~/index.css'
 
 import '../javascript/jquery_setup.js'
-import '../javascript/popper_setup.js'
+import '../javascript/bootstrap_setup.js'
 
 import "../javascript/responsive-tabs/responsive-tabs.js"
 
