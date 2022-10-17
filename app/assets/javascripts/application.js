@@ -13,9 +13,7 @@
 //= require rails-ujs
 //
 
-//= require jquery3
 
-//= require popper
 
 // Note do NOT to try require `bootstrap-sprockets`, while it used to work and be
 // recommended by Blacklight, stopped being compatible with Blacklight in 7.22.0
