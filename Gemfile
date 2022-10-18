@@ -51,6 +51,11 @@ gem 'puma', '~> 5.6'
 gem "resque", "~> 2.0"
 gem "resque-pool"
 gem "resque-heroku-signals" # gah, weirdly needed for graceful shutdown on heroku. https://github.com/resque/resque#heroku
+# we didn't used to have a direct dependency on `redis` at all, we just had it intermediate
+# via `resque`. But it looks like recently released redis 5.x may be incompatible with hirefire,
+# we're trying to temporarily lock to 4 until/unless hirefire fixes.
+gem "redis", "~> 4.0"
+
 
 # using memcached for Rails.cache in production, requires dalli
 gem "dalli", "~> 3.2"
