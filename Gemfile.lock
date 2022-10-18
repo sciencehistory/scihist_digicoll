@@ -578,7 +578,7 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
-    scout_apm (5.3.1)
+    scout_apm (5.3.2)
       parser
     scrub_rb (1.0.1)
     selenium-webdriver (4.5.0)
