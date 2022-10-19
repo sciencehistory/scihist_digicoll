@@ -51,10 +51,6 @@ gem 'puma', '~> 5.6'
 gem "resque", "~> 2.0"
 gem "resque-pool"
 gem "resque-heroku-signals" # gah, weirdly needed for graceful shutdown on heroku. https://github.com/resque/resque#heroku
-# we didn't used to have a direct dependency on `redis` at all, we just had it intermediate
-# via `resque`. But it looks like recently released redis 5.x may be incompatible with hirefire,
-# we're trying to temporarily lock to 4 until/unless hirefire fixes.
-gem "redis", "~> 4.0"
 
 
 # using memcached for Rails.cache in production, requires dalli
@@ -157,7 +153,9 @@ gem 'activerecord-postgres_enum', '~> 2.0' # can record postgres enums in schema
 # https://help.hirefire.io/article/53-job-queue-ruby-on-rails
 # https://help.hirefire.io/article/49-logplex-queue-time
 # https://github.com/hirefire/hirefire-resource
-gem "hirefire-resource"
+#
+# Use temporary hirefire branch that works with redis5
+gem "hirefire-resource", github: "hirefire/hirefire-resource", branch: "redis-5-support"
 
 # Speed up pasting into irb/console by using newer bugfixed
 # dependencies!
