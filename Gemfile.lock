@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/hirefire/hirefire-resource.git
+  revision: 9962f65554645e89bf030ee4666a8233bd6e49de
+  branch: redis-5-support
+  specs:
+    hirefire-resource (0.10.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -175,6 +182,7 @@ GEM
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
     concurrent-ruby (1.1.10)
+    connection_pool (2.3.0)
     content_disposition (1.0.0)
     crack (0.4.5)
       rexml
@@ -271,7 +279,6 @@ GEM
     hashdiff (1.0.1)
     hashery (2.1.2)
     hashie (5.0.0)
-    hirefire-resource (0.10.0)
     honeybadger (4.12.2)
     html_aware_truncation (1.0.0)
       nokogiri (~> 1.0)
@@ -499,7 +506,10 @@ GEM
       link_header (~> 0.0, >= 0.0.8)
     rdf-vocab (3.2.2)
       rdf (~> 3.2, >= 3.2.4)
-    redis (4.8.0)
+    redis (5.0.5)
+      redis-client (>= 0.9.0)
+    redis-client (0.10.0)
+      connection_pool
     redis-namespace (1.9.0)
       redis (>= 4)
     regexp_parser (2.6.0)
@@ -728,7 +738,7 @@ DEPENDENCIES
   faraday-retry (~> 2.0)
   faster_s3_url (< 2)
   font-awesome-rails (~> 4.7)
-  hirefire-resource
+  hirefire-resource!
   honeybadger (~> 4.0)
   html_aware_truncation (~> 1.0)
   irb (>= 1.3.1)
@@ -754,7 +764,6 @@ DEPENDENCIES
   rails (~> 6.1.1)
   rails-controller-testing
   ransack (~> 3.0)
-  redis (~> 4.0)
   reline (>= 0.2.1)
   resque (~> 2.0)
   resque-heroku-signals
