@@ -84,7 +84,6 @@ class SocialShareComponent < ApplicationComponent
     end
   end
 
-  # See  https://developers.pinterest.com/docs/widgets/save/?
   def google_classroom_share_link
     link_to "https://classroom.google.com/u/0/share?url=#{{url: share_url, media: share_media_url, description: title_plus_description}.to_param}",
         class: 'social-media-link google_classroom btn',
@@ -96,10 +95,8 @@ class SocialShareComponent < ApplicationComponent
           analytics_label: work.friendlier_id
         },
         "aria-label" => "Share to Google Classroom",
-        title: 'Share to Google Classroom' do
-          image_tag("/assets/google_classroom/96x96_black_stroke_icon@2x.png",
-            alt: "Share to Google Classroom", width:"39px")
+        title: 'Share to Google Classroom [ BETA -- just for demo in staging ]' do
+          image_tag("/assets/google_classroom.svg", alt: "Share to Google Classroom", class: "google-classroom-share-icon")     
     end
   end
-
 end
