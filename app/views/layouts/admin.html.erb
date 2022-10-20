@@ -38,7 +38,11 @@
 
     <%= javascript_include_tag 'application', defer: true %>
 
-    <%# vite 'admin' js, will also include css if needed automatically %>
+    <%# browse_everything can only be provided via sprockets, but is currently
+        only used on admin pages, we require a built file just for it here %>
+    <%= javascript_include_tag 'browse_everything', defer: true %>
+
+    <%# admin-specific JS built by vite, will also include css if needed automatically %>
     <%= vite_javascript_tag 'admin', defer: true %>
 
     <%# separate and positioned per lazysizes docs
