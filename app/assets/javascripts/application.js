@@ -22,10 +22,9 @@
 //   bootstrap.
 // * See https://github.com/samvera/browse-everything/issues/411
 //
-//= require jquery.treetable
-//= require browse_everything/behavior
 
 
+//= require prevent_use_strict
 
 // Required by Blacklight
       // not currently using blacklight 'suggest' func which uses twitter typeahead.
