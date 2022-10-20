@@ -22,4 +22,19 @@ export default defineConfig({
       fileName: ".br",
     }),
   ],
+  // video.js is REALLY BIG, telling vite/rollup to chunk it as it's own
+  // JS file may include performance, or at least reduce warnings about big
+  // files -- even if it's still statically imported at page load.
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "video.js": ['video.js', 'videojs-seek-buttons']
+        }
+      }
+    },
+    // Seems necessary to get sourceMaps in dev autoBuild, which are kind of
+    // important for being able to debug. https://github.com/ElMassimo/vite_ruby/discussions/285
+    sourcemap: true
+  }
 })

@@ -87,8 +87,6 @@ gem 'bootstrap', '~> 4.6', '>= 4.6.2'
 
 gem 'sprockets-rails', '>= 3.4.2'
 
-gem 'jquery-rails', "~> 4.3"
-
 gem 'font-awesome-rails', '~> 4.7'
 
 gem "lograge", "< 2"
@@ -101,7 +99,6 @@ gem "attr_json", "~> 1.0"
 gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 
 gem 'simple_form', "~> 5.0"
-gem "cocoon"
 
 gem "browse-everything", "~> 1.2"
 gem "qa", "~> 5.2"
