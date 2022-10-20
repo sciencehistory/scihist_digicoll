@@ -27,6 +27,16 @@ console.log('Visit the guide for more information: ', 'https://vite-ruby.netlify
 // Example: Import a stylesheet in app/frontend/index.css
 // import '~/index.css'
 
+
+// We're still using rails-ujs for now. Rails-ujs 6.x will auto-start itself on import.
+import Rails from '@rails/ujs';
+
+import '../javascript/jquery_setup.js'
+import '../javascript/bootstrap_setup.js'
+
+// used by kithe, for forms with add/remove fields
+import "@nathanvda/cocoon";
+
 import "../javascript/responsive-tabs/responsive-tabs.js"
 
 import '../javascript/init_popovers.js';

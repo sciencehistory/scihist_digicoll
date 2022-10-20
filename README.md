@@ -104,31 +104,20 @@ Then:
 
 ## Development Notes
 
-### Javascript
+### Assets: Javascript, CSS, etc
 
-We are using Vite.js (an ES6-style JS, https://vite-ruby.netlify.app/) for some javascript, but still using sprockets asset pipeline for other javascript. Our layouts will generally load vite-built pack (with `vite_javascript_tag`) as well as a sprockets compiled file (with `javascript_include_file`). Both will be compiled by `rake assets:precompile` in production, and automatically compiled in dev.
+We preferentially use Vite.js (an ES6-style JS, https://vite-ruby.netlify.app/) for our javascript. All local JS and most dependencies are handled by vite. Vite source is at `./app/frontend`.
 
-We are still using sprockets to control our CSS (scss), **not** vite.
+* While things should work without it, you may choose to run the vite dev server in development. Just run: `bundle exec vite dev` in it's own terminal window. If you are working on modifying JS, this may give you quicker iterative builds and better error messages.
 
-* All _local javascript_ is controlled using vite, and you should do that for future JS.
+* Some JS is still handled by sprockets. browse_everything (admin-pages-only) and blacklight_range_limit only support inclusion via sprockets. Blacklight -- we have just not yet changed over. So our layouts will  load vite-built pack (with `vite_javascript_tag`) as well as a sprockets compiled file (with `javascript_include_file`). Both will be compiled by `rake assets:precompile` in production, and automatically compiled in dev.  Sprockets JS lives in `./app/assets/javascripts`.
 
-* Some general purpose dependencies that probably *could* be via vite are at the moment still via sprockets (and gem dependencies to provide the JS, rather than npm packages).
-  * jQuery
-  * Bootstrap
-  * popper.js for Bootstrap
-  * rails-ujs
+* Note we build separate JS files for some admin-only JS, that is loaded only in the admin.html.erb layout. That includes an admin.js vite front-end, as well as browse-everything via sprockets.
 
-* Some more rails-y dependencies are also still provided by sprockets asset pipeline, in some cases it is tricky to figure out how to transition to vite (or may not be possible)
-  * cocoon (used for adding/removing multi-values in edit screens; may not be avail as npm package)
-  * blacklight ([instructions](https://github.com/projectblacklight/blacklight/wiki/Using-Webpacker-to-compile-javascript-assets) for webpacker, which are still helpful)
-  * blacklight_range_limit (may not be avail as npm package instead of ruby gem/sprockets?)
-  * browse-everything (not avail as npm package instead of ruby gem/sprockets)
-
-* You can look at `./app/assets/javascripts/application.js` to see what dependencies are still being provided via the sprockets-asset-pipeline-compiled application.js file, usually with src from a rubygem.
+* We are still using sprockets to control our CSS (scss), **not** vite. We would like to switch CSS over to vite too. This would let us the supported go-sass for our SCSS, instead of deprecated libsass in sprockets. We will probably do this at the point we can switch Blacklight JS *and* CSS over to new build chain, both using `blacklight_frontend` NPM package.
 
 * uppy (JS for fancy file upload func) is still being loaded in it's own separate script tag from remote CDN (see admin.html.erb layout). This is recommended against by the uppy docs, and we should transition to providing via webpacker and `import` statement, just including the parts of uppy we need, but haven't figured out how to do that yet (including uppy css)
 
-* While things should work without it, you may choose to run the vite dev server in development. Just run: `bundle exec vite dev` in it's own terminal window. If you are working on modifying JS, this may give you quicker iterative builds and better error messages.
 
 ### Development docs
 
