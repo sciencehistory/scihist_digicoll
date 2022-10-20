@@ -32,6 +32,9 @@ export default defineConfig({
           "video.js": ['video.js', 'videojs-seek-buttons']
         }
       }
-    }
+    },
+    // Seems necessary to get sourceMaps in dev autoBuild, which are kind of
+    // important for being able to debug. https://github.com/ElMassimo/vite_ruby/discussions/285
+    sourcemap: true
   }
 })
