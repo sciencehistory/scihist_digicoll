@@ -22,4 +22,16 @@ export default defineConfig({
       fileName: ".br",
     }),
   ],
+  // video.js is REALLY BIG, telling vite/rollup to chunk it as it's own
+  // JS file may include performance, or at least reduce warnings about big
+  // files -- even if it's still statically imported at page load.
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "video.js": ['video.js', 'videojs-seek-buttons']
+        }
+      }
+    }
+  }
 })
