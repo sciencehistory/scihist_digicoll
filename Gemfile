@@ -153,9 +153,7 @@ gem 'activerecord-postgres_enum', '~> 2.0' # can record postgres enums in schema
 # https://help.hirefire.io/article/53-job-queue-ruby-on-rails
 # https://help.hirefire.io/article/49-logplex-queue-time
 # https://github.com/hirefire/hirefire-resource
-#
-# Use temporary hirefire branch that works with redis5
-gem "hirefire-resource", github: "hirefire/hirefire-resource", branch: "redis-5-support"
+gem "hirefire-resource", ">= 0.10.1"
 
 # Speed up pasting into irb/console by using newer bugfixed
 # dependencies!
