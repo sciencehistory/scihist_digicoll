@@ -10,7 +10,10 @@ gem 'lockbox'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.1.1'
-gem 'webpacker', '~> 5.0'
+
+# Our JS/CSS/asset bundler
+gem "vite_rails", "~> 3.0"
+
 # mail is a rails dependency, opt into 2.8.0.rc1 pre-release for ruby 3.1 compat,
 # this line is no longer needed once 2.8.0 final is released:
 gem "mail", ">= 2.8.0.rc1", "< 3"
@@ -85,8 +88,6 @@ gem 'bootstrap', '~> 4.6', '>= 4.6.2'
 
 gem 'sprockets-rails', '>= 3.4.2'
 
-gem 'jquery-rails', "~> 4.3"
-
 gem 'font-awesome-rails', '~> 4.7'
 
 gem "lograge", "< 2"
@@ -99,7 +100,6 @@ gem "attr_json", "~> 1.0"
 gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 
 gem 'simple_form', "~> 5.0"
-gem "cocoon"
 
 gem "browse-everything", "~> 1.2"
 gem "qa", "~> 5.2"

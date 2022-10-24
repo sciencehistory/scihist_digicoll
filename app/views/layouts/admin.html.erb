@@ -8,8 +8,7 @@
 
     Right now, even though we have separate layout for 'admin', we do _not_ segregate
     our CSS and JS assets, only the single pipelined application.js and application.css,
-    with JS/CSS shared by both.  (Currently the general 'application' layout is not
-    loading our webpacker JS, but that could change.)
+    with JS/CSS shared by both.
 %>
 
 <html>
@@ -18,7 +17,7 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%# Instead of loading via webpacker, we are loading uppy the heavy-weight way manually
+    <%# Instead of loading via local build, we are loading uppy the heavy-weight way manually
         from CDN. For somewhat 'legacy' reasons. We may 'fix' this in future.
 
         Uppy recommends against this, but we're doing it for now, until we get it working
@@ -30,18 +29,25 @@
 
     <%= render "layouts/head_tag_common" %>
 
-    <%# lazysizes gets it's own "pack", loaded early without 'defer', per lazysizes doc suggestion %>
-    <%= javascript_pack_tag 'lazysizes' %>
-
     <%# sprockets 'application' js and css %>
     <%= stylesheet_link_tag    'application', media: 'all' %>
+
+    <%# vite's 'application' js before sprockets later %>
+    <%= vite_client_tag %>
+    <%= vite_javascript_tag 'application', defer: true %>
+
     <%= javascript_include_tag 'application', defer: true %>
 
-    <%# webpacker 'application' js, and 'admin' js and css %>
-    <%= javascript_pack_tag 'application', defer: true %>
-    <%= javascript_pack_tag 'admin', defer: true %>
-    <%= stylesheet_pack_tag "admin" %>
+    <%# browse_everything can only be provided via sprockets, but is currently
+        only used on admin pages, we require a built file just for it here %>
+    <%= javascript_include_tag 'browse_everything', defer: true %>
 
+    <%# admin-specific JS built by vite, will also include css if needed automatically %>
+    <%= vite_javascript_tag 'admin', defer: true %>
+
+    <%# separate and positioned per lazysizes docs
+    https://github.com/aFarkas/lazysizes#include-early%>
+    <%= vite_javascript_tag 'lazysizes' %>
   </head>
 
   <body>
