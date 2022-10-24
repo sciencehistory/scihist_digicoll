@@ -2,6 +2,12 @@
 <div itemscope itemtype="http://schema.org/CollectionPage" class="collection-show featured-collection-show">
   <div class="collection-top">
     <div class="collection-desc clearfix">
+      <% unless has_search_parameters? %>
+        <div class="collection-thumb">
+          <%= image_tag @featured_topic.thumb_asset_path, class: "featured-topic-image", width: "266px" %>
+        </div>
+      <% end %>
+
       <div class="show-title">
         <header>
           <div class="show-genre"><%= link_to "Featured Topics", featured_topics_path %></div>
@@ -18,12 +24,6 @@
         </div>
       <% end %>
     </div>
-
-    <% unless has_search_parameters? %>
-      <div class="collection-thumb">
-        <%= image_tag @featured_topic.thumb_asset_path, class: "featured-topic-image", width: "266px" %>
-      </div>
-    <% end %>
   </div>
 
   <% unless has_search_parameters? %>
