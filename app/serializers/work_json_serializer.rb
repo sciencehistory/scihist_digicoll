@@ -11,6 +11,15 @@
 # identifiers, or consider other future alternate standard serializations.
 class WorkJsonSerializer
   include Alba::Resource
+  include Rails.application.routes.url_helpers
+
+  # set host for the inclusion of route helpers above. this is weird and under-documented by Rails.
+  def default_url_options
+    {
+      host: ScihistDigicoll::Env.lookup(:app_url_base)
+    }
+  end
+
 
   # let's suggest our outward-facing friendlier_id as the main id, but also
   # let them see internal id why not
@@ -100,6 +109,23 @@ class WorkJsonSerializer
       IntervieweeBiographyJsonApiSerializer.new(bio).serializable_hash
     end
   end
+
+  # Kind of hacky and custom-fit API for Max Planck Oral History consumption uses.
+  attribute :oral_history_assets, if: Proc.new { |work| work.is_oral_history? } do |work|
+    # only *published* transcript and front matter, give URLs to download assets.
+    # Give internal URLs that will redirect to signed S3.
+    work.members.select do |member|
+      member.kind_of?(Asset) && member.published? && member.role.in?(["transcript", "front_matter"])
+    end.map do |asset|
+      {
+        role: asset.role.to_s,
+        content_type: asset.content_type,
+        url: download_url(asset.file_category, asset),
+        original_filename: asset.original_filename
+      }
+    end
+  end
+
 
   class IntervieweeBiographyJsonApiSerializer
     #  include JSONAPI::Serializer
