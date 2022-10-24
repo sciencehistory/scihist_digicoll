@@ -1,1 +1,9 @@
-<div id="ss_survey_widget"></div>
+<% if current_user%>
+	<div class="alert alert-primary">Survey hidden because you are logged in.</div>
+<% elsif  Rails.application.config.hide_survey_sparrow %>
+	<div class="alert alert-primary">Survey hidden because hide_survey_sparrow is turned on.</div>
+<% else %>
+	<div id="ss_survey_widget"></div><script>(function(){var e="ss-widget",t="script",a=document,r=window;var s,n,c;r.SS_WIDGET_TOKEN="tt-5zUYbALWMcKM1wqSzFDcLi";r.SS_ACCOUNT="sciencehistory.surveysparrow.com";r.SS_SURVEY_NAME="digitial-collections-survey";if(!a.getElementById(e)){var S=function(){S.update(arguments)};S.args=[];S.update=function(e){S.args.push(e)};r.SparrowLauncher=S;s=a.getElementsByTagName(t);c=s[s.length-1];n=a.createElement(t);n.type="text/javascript";n.async=!0;n.id=e;n.src=["https://","sciencehistory.surveysparrow.com/widget/",r.SS_WIDGET_TOKEN].join("");c.parentNode.insertBefore(n,c)}})();</script>
+  </script>
+  <div>IT WAS SHOWN</div>
+<% end %>

@@ -64,4 +64,7 @@ Rails.application.configure do
 
   # Hide the GDPR "I accept" cookies banner.
   config.hide_accept_cookies_banner = true
+
+  # Hide the survey sparrow survey.
+  config.hide_survey_sparrow = true
 end
