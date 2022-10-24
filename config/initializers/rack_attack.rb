@@ -72,14 +72,22 @@ ActiveSupport::Notifications.subscribe(/throttle\.rack_attack|track\.rack_attack
   discriminator = rack_env["rack.attack.match_discriminator"] # generally the IP address
   last_logged_key = "rack_attack_notification_#{name}_#{match_name}_#{discriminator}"
 
-  last_logged_info = Rack::Attack.cache.read(last_logged_key) || {}
-  last_logged_count = last_logged_info[:count]
-  last_alerted_time = last_logged_info[:last_alerted_time]
+  last_logged_info = Rack::Attack.cache.read(last_logged_key)
+  # should be a serialized JSON hash
+  last_logged_info = if last_logged_info.kind_of?(String)
+    JSON.parse(last_logged_info) rescue JSON::ParserError
+  else
+    {}
+  end
+
+
+  last_logged_count = last_logged_info['count']
+  last_alerted_time = last_logged_info['last_alerted_time'] && (Time.iso8601(last_logged_info['last_alerted_time']) rescue nil)
   current_count = match_data[:count]
 
   # only log if we have a new count, not if we're still incrementing the count!
   if !last_logged_count || current_count <= last_logged_count.to_i
-    last_logged_info[:count] = current_count
+    last_logged_info['count'] = current_count
 
     # if it's been longer than our alert window, we log a special ALERT
     # that papertrail can be configured to notify us on
@@ -89,9 +97,8 @@ ActiveSupport::Notifications.subscribe(/throttle\.rack_attack|track\.rack_attack
     # `discriminator` will generally be IP address, or what you are grouping by to limit
     current_time = Time.now
     if !last_alerted_time || (current_time - last_alerted_time) > alert_only_per
-      last_logged_info[:last_alerted_time] = current_time # record time so we don't do it again soon
       hostname = Resolv.getname(discriminator) rescue nil
-
+      last_logged_info['last_alerted_time'] = current_time.utc.iso8601 # record time so we don't do it again soon
       # eg: track.rack_attack: ALERT: req/ip_track: 66.249.66.21 (crawl-66-249-66-21.googlebot.com) count=91 limit=90 period=60
       Rails.logger.warn("#{name}: ALERT: #{match_name}: #{discriminator} (#{hostname || "no hostname"}) #{match_data_formatted}")
     else
@@ -101,6 +108,6 @@ ActiveSupport::Notifications.subscribe(/throttle\.rack_attack|track\.rack_attack
 
     # we put it in cache for up to our total alert window, so we can make sure
     # not to alert more than that.
-    Rack::Attack.cache.write(last_logged_key, last_logged_info, alert_only_per)
+    Rack::Attack.cache.write(last_logged_key, JSON.dump(last_logged_info), alert_only_per)
   end
 end
