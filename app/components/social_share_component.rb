@@ -84,6 +84,25 @@ class SocialShareComponent < ApplicationComponent
     end
   end
 
+  # This was not getting served by cloudfront, so I'm just adding it to an inline svg.
+  def google_classroom_svg(alt, css_class)
+    "<svg
+      alt=\"#{alt}\"
+      class=\"#{css_class}\"
+      viewBox=\"0 0 50 50\"
+      xmlns=\"http://www.w3.org/2000/svg\"
+      >
+      <path d=\"M32 25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0
+        4.5zm0 1.5c-2.41 0-5 1.277-5 2.858V31h10v-1.642c0-1.58-2.59-2.858-5-2.858zM16
+        25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5zm0 1.5c-2.41 0-5 1.277-5 2.858V31h10v-1.642c0-1.58-2.59-2.858-5-2.858z\"
+        fill=\"#aaa\" fill-rule=\"nonzero\" mask=\"url(#b)\"></path>
+
+      <path d=\"M24.003 23A3 3 0 1 0 21 20c0 1.657 1.345 3
+      3.003 3zM24 25c-3.375 0-7 1.79-7 4v2h14v-2c0-2.21-3.625-4-7-4z\"
+      fill=\"#eee\" fill-rule=\"nonzero\" mask=\"url(#b)\"></path>
+    </svg>".html_safe
+  end
+
   def google_classroom_share_link
     link_to "https://classroom.google.com/u/0/share?url=#{{url: share_url, media: share_media_url, description: title_plus_description}.to_param}",
         class: 'social-media-link google_classroom btn',
@@ -95,8 +114,8 @@ class SocialShareComponent < ApplicationComponent
           analytics_label: work.friendlier_id
         },
         "aria-label" => "Share to Google Classroom",
-        title: 'Share to Google Classroom [ BETA -- just for demo in staging ]' do
-          image_tag("/assets/google_classroom.svg", alt: "Share to Google Classroom", class: "google-classroom-share-icon")     
+        title: 'Share to Google Classroom' do
+         google_classroom_svg('Share to Google Classroom', 'google-classroom-share-icon')
     end
   end
 end
