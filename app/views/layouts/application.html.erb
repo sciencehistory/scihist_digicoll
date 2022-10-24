@@ -19,7 +19,7 @@
       can be re-used by any JS that needs a modal.
 %>
 
-<html lang="en" class="no-js">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -34,16 +34,30 @@
     <%= opensearch_description_tag application_name, opensearch_catalog_url(format: 'xml') %>
     <%= render "layouts/head_tag_common" %>
 
-    <%# goes first and separate per lazysizes docs %>
-    <%= javascript_pack_tag 'lazysizes' %>
 
     <%= stylesheet_link_tag "application", media: "all" %>
 
+    <%# vite's application.js before sprockets one later %>
+    <%= vite_client_tag %>
+    <%= vite_javascript_tag 'application', defer: true %>
+
     <%= javascript_include_tag "application", defer: true %>
-    <%= javascript_pack_tag "application", defer: true %>
 
     <%= csrf_meta_tags %>
     <%= content_for(:head) %>
+    <!--
+      If using a TypeScript entrypoint file:
+        vite_typescript_tag 'application'
+
+      If using a .jsx or .tsx entrypoint, add the extension:
+        vite_javascript_tag 'application.jsx'
+
+      Visit the guide for more information: https://vite-ruby.netlify.app/guide/rails
+    -->
+
+    <%# separate and positioned per lazysizes docs
+        https://github.com/aFarkas/lazysizes#include-early%>
+    <%= vite_javascript_tag 'lazysizes' %>
   </head>
 
   <body class="<%= render_body_class %> scihist-main-layout <%= content_for :body_classes %>">

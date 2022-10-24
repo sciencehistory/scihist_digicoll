@@ -10,7 +10,10 @@ gem 'lockbox'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.1.1'
-gem 'webpacker', '~> 5.0'
+
+# Our JS/CSS/asset bundler
+gem "vite_rails", "~> 3.0"
+
 # mail is a rails dependency, opt into 2.8.0.rc1 pre-release for ruby 3.1 compat,
 # this line is no longer needed once 2.8.0 final is released:
 gem "mail", ">= 2.8.0.rc1", "< 3"
@@ -27,7 +30,7 @@ gem 'scout_apm'
 # to spend the time to update Blacklight to latest -- you will usually want to update
 # blacklight_range_limit to latest at same time.
 #
-gem "blacklight", "~> 7.29.0"
+gem "blacklight", "~> 7.30.0"
 gem "blacklight_range_limit", "~> 8.0", ">= 8.2.3" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
 # for some code to deal with transcoding video, via AWS MediaConvert
@@ -51,6 +54,7 @@ gem 'puma', '~> 5.6'
 gem "resque", "~> 2.0"
 gem "resque-pool"
 gem "resque-heroku-signals" # gah, weirdly needed for graceful shutdown on heroku. https://github.com/resque/resque#heroku
+
 
 # using memcached for Rails.cache in production, requires dalli
 gem "dalli", "~> 3.2"
@@ -80,20 +84,9 @@ gem 'jbuilder', '~> 2.5'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
 
-gem 'bootstrap', '~> 4.3'
-# if we are using bootstrap *4* *from ruby gem*, it already brings in
-# autoprefixer-rails -- we need to lock it to an old version to avoid a warning
-# when bootstrap 4.7.0 comes out, should be able to eliminate this.
-#
-# https://github.com/twbs/bootstrap/issues/36259
-# https://github.com/twbs/bootstrap/pull/36258
-#
-# This one suggests fix merged into 4.7.0? https://github.com/twbs/bootstrap/pull/36283
-gem "autoprefixer-rails", "10.4.2.0"
+gem 'bootstrap', '~> 4.6', '>= 4.6.2'
 
 gem 'sprockets-rails', '>= 3.4.2'
-
-gem 'jquery-rails', "~> 4.3"
 
 gem 'font-awesome-rails', '~> 4.7'
 
@@ -107,7 +100,6 @@ gem "attr_json", "~> 1.0"
 gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 
 gem 'simple_form', "~> 5.0"
-gem "cocoon"
 
 gem "browse-everything", "~> 1.2"
 gem "qa", "~> 5.2"
@@ -161,7 +153,7 @@ gem 'activerecord-postgres_enum', '~> 2.0' # can record postgres enums in schema
 # https://help.hirefire.io/article/53-job-queue-ruby-on-rails
 # https://help.hirefire.io/article/49-logplex-queue-time
 # https://github.com/hirefire/hirefire-resource
-gem "hirefire-resource"
+gem "hirefire-resource", ">= 0.10.1"
 
 # Speed up pasting into irb/console by using newer bugfixed
 # dependencies!
@@ -185,7 +177,7 @@ group :development do
 end
 
 group :test do
-  gem 'rspec-rails', '~> 5.0'
+  gem 'rspec-rails', '~> 6.0'
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '>= 2.15'
   gem 'selenium-webdriver'

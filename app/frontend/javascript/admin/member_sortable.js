@@ -1,6 +1,5 @@
 import domready from 'domready';
 import { Sortable } from '@shopify/draggable';
-import 'mdn-polyfills/Element.prototype.closest'
 
 domready(function() {
   const sortForm = document.querySelector("[data-trigger='member-sort']")

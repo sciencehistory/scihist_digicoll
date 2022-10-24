@@ -38,6 +38,7 @@ SitemapGenerator::Sitemap.create(
   add policy_path, changefreq: 'monthly'
   add faq_path, changefreq: 'monthly'
   add contact_path, changefreq: 'monthly'
+  add api_docs_path, changefreq: 'monthly'
 
   add search_catalog_path, changefreq: 'daily'
 
