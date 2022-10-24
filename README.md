@@ -16,7 +16,7 @@ To set up a development instance on your workstation.
 * While not technically required just to run the app, you're going to want `git`. MacOS, `brew install git`.
 * ruby installed (I like using chruby and ruby-build to install/manage rubies, some like rvm)
 * Postgres version 14 or higher, installed and running -- on MacOS, I like https://postgresapp.com/
-* `yarn` and `node` installed for managing webpacker JS dependencies -- on MacOS, `brew install node yarn`.
+* `yarn` and `node` installed for managing JS dependencies -- on MacOS, `brew install node yarn`.
 * `mediainfo` installed for fallback contnet type detection -- on MacOS, `brew install mediainfo`
 * vips installed --  on MacOS `brew install vips`
 * ffmpeg installed -- on MacOS `brew install ffmpeg`
@@ -104,34 +104,20 @@ Then:
 
 ## Development Notes
 
-### Javascript
+### Assets: Javascript, CSS, etc
 
-We are using webpacker (an ES6-style JS toolchain, supported by Rails 5.1+, default/recommended in Rails5) for some javascript, but still using sprockets asset pipeline for other javascript. Our layouts will generally load a webpacker pack (with `javascript_include_pack`) as well as a sprockets compiled file (with `javascript_include_file`). Both will be compiled by `rake assets:precompile` in production, and automatically compiled in dev.
+We preferentially use Vite.js (an ES6-style JS, https://vite-ruby.netlify.app/) for our javascript. All local JS and most dependencies are handled by vite. Vite source is at `./app/frontend`.
 
-We are still using sprockets to control our CSS (scss), **not** webpacker.
+* While things should work without it, you may choose to run the vite dev server in development. Just run: `bundle exec vite dev` in it's own terminal window. If you are working on modifying JS, this may give you quicker iterative builds and better error messages.
 
-* All _local javascript_ is controlled using webpacker, and you should do that for future JS.
+* Some JS is still handled by sprockets. browse_everything (admin-pages-only) and blacklight_range_limit only support inclusion via sprockets. Blacklight -- we have just not yet changed over. So our layouts will  load vite-built pack (with `vite_javascript_tag`) as well as a sprockets compiled file (with `javascript_include_file`). Both will be compiled by `rake assets:precompile` in production, and automatically compiled in dev.  Sprockets JS lives in `./app/assets/javascripts`.
 
-* Some general purpose dependencies that probably *could* be via webpacker are at the moment still via sprockets (and gem dependencies to provide the JS, rather than npm packages).
-  * jQuery
-  * Bootstrap
-  * popper.js for Bootstrap
-  * rails-ujs
+* Note we build separate JS files for some admin-only JS, that is loaded only in the admin.html.erb layout. That includes an admin.js vite front-end, as well as browse-everything via sprockets.
 
-* Some more rails-y dependencies are also still provided by sprockets asset pipeline, in some cases it is tricky to figure out how to transition to webpacker (or may not be possible)
-  * cocoon (used for adding/removing multi-values in edit screens; may not be avail as npm package)
-  * blacklight (theoretically available as an npm package, but I found it's [instructions](https://github.com/projectblacklight/blacklight/wiki/Using-Webpacker-to-compile-javascript-assets) somewhat obtuse and weird and was not feeling confident/comfortable with them)
-  * blacklight_range_limit (may not be avail as npm package instead of ruby gem/sprockets)
-  * browse-everything (not avail as npm package instead of ruby gem/sprockets)
-
-* You can look at `./app/assets/javascripts/application.js` to see what dependencies are still being provided via the sprockets-asset-pipeline-compiled application.js file, usually with src from a rubygem.
+* We are still using sprockets to control our CSS (scss), **not** vite. We would like to switch CSS over to vite too. This would let us the supported go-sass for our SCSS, instead of deprecated libsass in sprockets. We will probably do this at the point we can switch Blacklight JS *and* CSS over to new build chain, both using `blacklight_frontend` NPM package.
 
 * uppy (JS for fancy file upload func) is still being loaded in it's own separate script tag from remote CDN (see admin.html.erb layout). This is recommended against by the uppy docs, and we should transition to providing via webpacker and `import` statement, just including the parts of uppy we need, but haven't figured out how to do that yet (including uppy css)
 
-* We have not at present experimented with running `./bin/webpack-dev-server` separately in dev (and it is likely not working, pending update to webpacker 4), we're just letting Rails do it the slower but just-works way.
-
-Some references I found good for understanding webpacker in Rails:
-* https://medium.com/@coorasse/goodbye-sprockets-welcome-webpacker-3-0-ff877fb8fa79
 
 ### Development docs
 
@@ -154,6 +140,7 @@ Some other interesting/complicated sub-systems we've written documentation for:
   for the "end-user-facing" search, although we are using it in a very limited and customized fashion, not including a lot of things the BL generator wanted to include in our app, that we didn't plan on using.
 * [lockbox](https://github.com/ankane/lockbox) for encrypting our patron data eg in Oral History
   requests. For rotating keys should private key need to be changed, see https://github.com/ankane/lockbox/issues/35
+* We are currently using rack-attack to rate-limit clients at the app level, in response to some problematic non-robots-txt-respecting bot traffic. https://github.com/sciencehistory/scihist_digicoll/issues/1864
 
 ### Task to copy a Work from staging to your local dev instance
 

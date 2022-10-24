@@ -1,0 +1,50 @@
+<div class="branded-body-font text-page">
+  <h1 class="brand-alt-h1">API and Machine Access</h1>
+
+
+<p>We strive to make our open data freely available, but the options we provide for machine-readable metadata access currently consist of somewhat limited and disparate services. If you have a project that could benefit from more convenient or standardized machine-accessible APIs for metadata access, please <a href="mailto:digital@sciencehistory.org">get in touch</a> to share your use case.</p>
+
+<h2 class="brand-alt-h2" id="oai-pmh">OAI-PMH</h2>
+
+<p>We have an <a target="_blank" href="https://www.openarchives.org/pmh/">OAI-PMH</a> feed which can give access to our metadata in an XML format. The fields are based on the <a target="_blank" href="http://www.openarchives.org/OAI/2.0/oai_dc.xsd">OAI-DC</a> schema, with extensions suggested by the <a target="_blank" href="https://dp.la/">DPLA</a> <a target="_blank" href="https://pro.dp.la/hubs/metadata-application-profile">metadata application profile</a>, as this feed&#39;s main use case is DPLA use. </p>
+
+<p>This metadata includes standardized basic descriptive attributes, but does not include all internal, administrative, and relational metadata.</p>
+
+<p>You can bulk harvest via an OAI-PMH 2.0 endpoint at <a target="_blank" href="https://digital.sciencehistory.org/oai">https://digital.sciencehistory.org/oai</a></p>
+
+<p>You can also get an oai-dc XML representation for any record by adding <code>.xml</code> to the end of a record&#39;s URL. For instance, <a target="_blank" href="https://digital.sciencehistory.org/works/vt150j62m.xml">https://digital.sciencehistory.org/works/vt150j62m.xml</a>.</p>
+
+<h2 class="brand-alt-h2" id="atom-feeds">Atom feeds</h2>
+
+<p>Any search result is available in the Atom Syndication Format. Just add <code>.atom</code> to the path of any search results, for instance:
+<a target="_blank" href="https://digital.sciencehistory.org/catalog.atom?q=chemistry">https://digital.sciencehistory.org/catalog.atom?q=chemistry</a>
+instead of:
+<a target="_blank" href="https://digital.sciencehistory.org/catalog?q=chemistry">https://digital.sciencehistory.org/catalog?q=chemistry</a></p>
+
+<ul>
+<li>These Atom results are paginated. Note the pagination links at top.</li>
+<li>Individual entries include title; thumbnail; brief description; and a link to HTML page.</li>
+<li>For Works, there are also <link> entries to metadata in OAI-DC XML and local json formats. (We do not currently have further machine-readable metadata available for Collection records, which may also show up in search results).</li>
+</ul>
+
+<p>You can also access atom search results within any collection. This includes listing all items in a collection. For instance, for the Oral History Collection: <a target="_blank" href="https://digital.sciencehistory.org/collections/gt54kn818.atom">https://digital.sciencehistory.org/collections/gt54kn818.atom</a> </p>
+
+<p>Or with a query:</p>
+
+<p><a target="_blank" href="https://digital.sciencehistory.org/collections/gt54kn818.atom?q=biomedicine">https://digital.sciencehistory.org/collections/gt54kn818.atom?q=biomedicine</a></p>
+
+<h2 class="brand-alt-h2" id="individual-work-metadata">Individual Work metadata</h2>
+
+<p>For every &quot;work&quot;, you can access metadata in an XML/OAI-DC format, or a local internal JSON format. </p>
+
+<p>The OAI-DC format is a standardized vocabulary (based on DPLA metadata application profile), and should hopefully be fairly stable.  However, it includes only a subset of our metadata.  E.g.: <a target="_blank" href="https://digital.sciencehistory.org/works/46k32ki.xml">https://digital.sciencehistory.org/works/46k32ki.xml</a></p>
+
+<p>The JSON format is a closer representation of our internal metadata, and includes a larger subset of all metadata. However, while we will endeavor to keep it stable, it is more likely to change as a result of internal software changes. E.g.: <a target="_blank" href="https://digital.sciencehistory.org/works/46k32ki.json">https://digital.sciencehistory.org/works/46k32ki.json</a></p>
+
+<p>At present we do not have an API response that will give access to individual files (for instance page images or audio files). </p>
+
+
+
+
+
+</div>
