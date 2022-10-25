@@ -51,7 +51,7 @@ describe "Collection show page", solr: true, indexable_callbacks: true do
   end
 
   describe "generic oral history collection" do
-    let(:collection) { create(:collection, department: "Center for Oral History") }
+    let(:collection) { create(:collection, department: CollectionShowController::ORAL_HISTORY_DEPARTMENT_VALUE) }
     let!(:oral_history) { create(:oral_history_work, published: true, contained_by: [collection]) }
 
     it "displays custom OH facets" do
