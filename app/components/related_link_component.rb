@@ -7,6 +7,9 @@ class RelatedLinkComponent < ApplicationComponent
   DISPLAY_LABELS = {
     "institute_biography" => "Historical biography",
     "institute_libguide" => "Library Guide",
+    "institute_article" => "Article",
+    "institute_podcast" => "Podcast",
+    "institute_video" => "Video",
     "other_external" => "Link",
     "other_internal" => "Link"
   }.freeze
