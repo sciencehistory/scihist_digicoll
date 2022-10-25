@@ -8,7 +8,7 @@
 # There may be a less hacky way to do this, esp in Blacklight 7, but this is a port of
 # what was in chf_sufia. There also may not be.
 class CollectionShowController < CatalogController
-  before_action :check_auth
+  before_action :collection, :check_auth
 
   ORAL_HISTORY_DEPARTMENT_VALUE = "Center for Oral History"
 
