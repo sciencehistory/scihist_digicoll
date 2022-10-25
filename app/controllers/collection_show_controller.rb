@@ -10,6 +10,8 @@
 class CollectionShowController < CatalogController
   before_action :check_auth
 
+  ORAL_HISTORY_DEPARTMENT_VALUE = "Center for Oral History"
+
   # index action inherited from CatalogController, that's what we use.
 
   # This method can be overridden from blacklight to provide *dynamic* blacklight
@@ -19,7 +21,7 @@ class CollectionShowController < CatalogController
     # with it's own config and templates --  we have sub-collections that get
     # this generic controller.  If we have one here, use the config from that
     # main OH Controller, to get OH-customized facets and any other search config.
-    if collection.department == "Center for Oral History"
+    if collection.department == ORAL_HISTORY_DEPARTMENT_VALUE
       CollectionShowControllers::OralHistoryCollectionController.blacklight_config
     else
       super
