@@ -210,7 +210,6 @@ FactoryBot.define do
       place  { [{category: "place_of_interview", value:"University of Maryland, College Park"}] }
       format { ['text'] }
       genre { ["Oral histories"] }
-      subject { ["Chemistry"] }
       extent { ['50 pages'] }
       language { ['English'] }
       department { 'Center for Oral History' }
