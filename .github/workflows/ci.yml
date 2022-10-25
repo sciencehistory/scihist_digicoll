@@ -36,9 +36,10 @@ jobs:
             # have a checked in Gemfile.lock
 
         - name: Install apt dependencies
-          run: |
-            sudo apt-get update
-            sudo apt-get -y install libvips-tools ffmpeg mediainfo poppler-utils
+          uses: awalsh128/cache-apt-pkgs-action@latest
+          with:
+            packages: libvips-tools ffmpeg mediainfo poppler-utils
+            version: 1.0
 
         - name: Set up app
           run: |
