@@ -58,6 +58,8 @@
 //    * Expects the server to return JSON, although maybe can use `fetchResult` property
 //      to transform it instead. https://github.com/github/auto-complete-element/pull/82
 //    * Blacklight's initial implmeentation: https://github.com/projectblacklight/blacklight/commit/76e8833ffa858f1473e6a88c11a35d839e0fe95c
+//
+// * just found this? https://github.com/digitalfortress-tech/typeahead-standalone
 
 
 import 'jquery'
