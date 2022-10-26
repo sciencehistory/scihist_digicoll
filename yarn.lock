@@ -57,11 +57,6 @@
   resolved "https://registry.yarnpkg.com/@shopify/draggable/-/draggable-1.0.0-beta.8.tgz#2eb3c2f72298ce3e53fe16f34ab124cc495cd4fc"
   integrity sha512-9IeBPQM93Ad4qFKUopwuTClzoST/1OId4MaSd/8FB5ScCL2tl25UaOGNR8E2hjiL7xK4LN5+I1Ews6amS7YAiA==
 
-"@types/jquery@^2.0.32":
-  version "2.0.54"
-  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-2.0.54.tgz#d7999245f77c3fab5d84e7d32b8a6c20bfd1f072"
-  integrity sha512-D/PomKwNkDfSKD13DEVQT/pq2TUjN54c6uB341fEZanIzkjfGe7UaFuuaLZbpEiS5j7Wk2MUHAZqZIoECw29lg==
-
 "@videojs/http-streaming@2.13.1":
   version "2.13.1"
   resolved "https://registry.yarnpkg.com/@videojs/http-streaming/-/http-streaming-2.13.1.tgz#b7688d91eec969181430e00868b514b16b3b21b7"
@@ -134,14 +129,6 @@ debug@^4.3.4:
   integrity sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==
   dependencies:
     ms "2.1.2"
-
-devbridge-autocomplete@^1.4.10:
-  version "1.4.11"
-  resolved "https://registry.yarnpkg.com/devbridge-autocomplete/-/devbridge-autocomplete-1.4.11.tgz#05424a675711a9c3ad118c98de0a22180944b00f"
-  integrity sha512-lRU1y9IKyPm45NKDMcujszJoftw+wqxKbtcNJoMx+LywJQJdDwjg/s4lwLYR4vyQQ6VTcUaIeveLMkZTqorBIA==
-  dependencies:
-    "@types/jquery" "^2.0.32"
-    jquery ">=1.7"
 
 dom-walk@^0.1.0:
   version "0.1.2"
@@ -376,11 +363,6 @@ is-number@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/is-number/-/is-number-7.0.0.tgz#7535345b896734d5f80c4d06c50955527a14f12b"
   integrity sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==
-
-jquery@>=1.7:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.5.1.tgz#d7b4d08e1bfdb86ad2f1a3d039ea17304717abb5"
-  integrity sha512-XwIBPqcMn57FxfT+Go5pzySnm4KWkT1Tv7gjrpT1srtf8Weynl6R273VJ5GjkRb51IzMp5nbaPjJXMWeju2MKg==
 
 "jquery@^ 3.6.0", jquery@^3.3.1:
   version "3.6.1"

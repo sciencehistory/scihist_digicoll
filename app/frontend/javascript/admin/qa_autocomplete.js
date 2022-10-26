@@ -16,7 +16,6 @@
 // All this behavior is meant to match what we had in chf_sufia with hydra-editor or whatever other samvera
 // dependencies were providing (not sure)
 //
-//
 // ## Implementation
 //
 // The auto-suggest from remote AJAX source uses the devbridge-autocomplete/jquery-autocomplete
@@ -37,14 +36,34 @@
 // but hey, this still isn't much code, and the plugin isn't getting much development so
 // it probably won't break.
 //
-// We could try to add features we need upstream (https://github.com/devbridge/jQuery-Autocomplete/issues/769),
-// we could consider forking this (it's not actually much code), or we could in the future provide a
-// better alternate tool for a JS auto-suggest UI.
+// THEN, we ALSO need to replace with a local vendored version to get it to load properly in vite.
+// DOH. https://github.com/sciencehistory/scihist_digicoll/issues/1916
+//     https://github.com/devbridge/jQuery-Autocomplete/issues/843
+//
+// ## Future
+//
+// We really need a better implementation than this unmaintained one. Getting features upstream
+// seems unlikely, as it's entirely unmaintained. (eg https://github.com/devbridge/jQuery-Autocomplete/issues/769),
+// We have already forked it locally, and could start fixing our bugs here I guess...
+//
+// Other options might be:
+//
+// * equally unmaintained and undocumetned and un-released-to-npm "vanilla" variant (that doesn't
+//   sound great) at https://github.com/devbridge/Vanilla-Autocomplete
+//
+// * Blacklight uses this github-maintained 'web component' version at: https://github.com/github/auto-complete-element
+//    * Would require quite a bit of refactoring... and the "web component" setup that isn't just
+//      a data-element on an existing input makes it really hard to fit into our
+//      `repeatable_attr_input` system, annoying.
+//    * Expects the server to return JSON, although maybe can use `fetchResult` property
+//      to transform it instead. https://github.com/github/auto-complete-element/pull/82
+//    * Blacklight's initial implmeentation: https://github.com/projectblacklight/blacklight/commit/76e8833ffa858f1473e6a88c11a35d839e0fe95c
+
 
 import 'jquery'
 
-// https://github.com/devbridge/jQuery-Autocomplete
-import 'devbridge-autocomplete';
+// Localized copy of https://github.com/devbridge/jQuery-Autocomplete
+import '~/javascript/vendor/jquery.autocomplete.js';
 
 var errorContainer =  $('<div class="autocomplete-no-suggestion"></div>')
   .html("<i class='fa fa-exclamation-triangle' aria-hidden='true'></i> Error fetching results").get(0);
