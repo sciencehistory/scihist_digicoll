@@ -49,7 +49,7 @@ jobs:
         # us being throttled by apache foundation servers unhappy that solr_wrapper
         # is downloading solr over and over again.
         - name: Cache solr install
-          uses: actions/cache@v2
+          uses: actions/cache@v3
           with:
             # these paths specified in .solr_wrapper.yml:
             path: |
