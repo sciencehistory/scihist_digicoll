@@ -15,7 +15,7 @@ describe "Collection show page", solr: true, indexable_callbacks: true do
         # on save, so to get indexed properly
         #
         # Different dates to make sure we exersize blacklight_range_limit a bit.
-        create(:public_work, title: "public work one", date_of_work: Work::DateOfWork.new(start: "2019"), contained_by: [col])
+        create(:public_work, title: "public work one", subject: ["Some subject"], date_of_work: Work::DateOfWork.new(start: "2019"), contained_by: [col])
         create(:public_work, title: "public work two", date_of_work: Work::DateOfWork.new(start: "1900"), contained_by: [col])
         create(:private_work, title: "private work", contained_by: [col])
       end
@@ -39,6 +39,40 @@ describe "Collection show page", solr: true, indexable_callbacks: true do
       expect(page).to have_content("public work one")
       expect(page).to have_content("public work two")
       expect(page).not_to have_content("private_work")
+
+      within(".facets") do
+        expect(page).to have_selector(:link_or_button, "Date")
+        expect(page).to have_selector(:link_or_button, "Genre")
+        expect(page).to have_selector(:link_or_button, "Format")
+        expect(page).to have_selector(:link_or_button, "Rights")
+        expect(page).to have_selector(:link_or_button, "Subject")
+      end
+    end
+  end
+
+  describe "generic oral history collection" do
+    let(:collection) { create(:collection, department: CollectionShowController::ORAL_HISTORY_DEPARTMENT_VALUE) }
+    let!(:oral_history) { create(:oral_history_work, published: true, subject: ["Chemistry"], contained_by: [collection]) }
+
+    it "displays custom OH facets" do
+      visit collection_path(collection)
+
+      expect(page).to have_content(oral_history.title)
+
+      within(".facets") do
+        expect(page).to have_selector(:link_or_button, "Interview Date")
+        expect(page).to have_selector(:link_or_button, "Interviewer")
+        expect(page).to have_selector(:link_or_button, "Institution")
+        expect(page).to have_selector(:link_or_button, "Birth Country")
+        expect(page).to have_selector(:link_or_button, "Features")
+        expect(page).to have_selector(:link_or_button, "Availability")
+        expect(page).to have_selector(:link_or_button, "Subject")
+
+        expect(page).not_to have_selector(:link_or_button, text: /^Date$/)
+        expect(page).not_to have_selector(:link_or_button, "Genre")
+        expect(page).not_to have_selector(:link_or_button, "Format")
+        expect(page).not_to have_selector(:link_or_button, "Rights")
+      end
     end
   end
 end
