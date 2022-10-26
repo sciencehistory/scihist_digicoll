@@ -61,7 +61,7 @@ describe WorkJsonSerializer, type: :model, queue_adapter: :inline do
   end
 
   describe "for Oral History" do
-    let(:work) { create(:oral_history_work, published: true) }
+    let(:work) { create(:oral_history_work, :public_files, published: true) }
 
     it "includes interviewer profile" do
       expect(serializable_hash[:interviewer_profile]).to eq (work.oral_history_content.interviewer_profiles.collect do |profile|
@@ -83,6 +83,42 @@ describe WorkJsonSerializer, type: :model, queue_adapter: :inline do
         expect_to_many_shape(bio_hash, :education, keys: [:date, :institution, :degree, :discipline])
         expect_to_many_shape(bio_hash, :job, keys: [:institution, :role, :start_date, :end_date])
         expect_to_many_shape(bio_hash, :honor, keys: [:honor, :start_date, :end_date])
+      end
+    end
+
+    it "includes oral_history_assets" do
+      transcript_asset = work.members.find { |m| m.role == "transcript" }
+
+      expect(serializable_hash[:oral_history_assets]).to be_present
+      expect(serializable_hash[:oral_history_assets]).to eq([
+        {
+          id: transcript_asset.friendlier_id,
+          role: "transcript",
+          content_type: transcript_asset.content_type,
+          original_filename: transcript_asset.original_filename,
+          url: Rails.application.routes.url_helpers.download_url(transcript_asset.file_category, transcript_asset, host: ScihistDigicoll::Env.lookup(:app_url_base))
+        }
+      ])
+    end
+
+    describe "work with by-request assets" do
+      let(:work) { create(:oral_history_work, :available_by_request) }
+
+      it "does not include URLs to non-public files" do
+        front_matter_asset = work.members.find { |m| m.role == "front_matter" }
+
+        expect(serializable_hash[:oral_history_assets]).to be_present
+        expect(serializable_hash[:oral_history_assets].select { |hash| hash[:role] == "transcript" }).to be_empty
+
+        expect(serializable_hash[:oral_history_assets]).to eq([
+          {
+            id: front_matter_asset.friendlier_id,
+            role: "front_matter",
+            content_type: front_matter_asset.content_type,
+            original_filename: front_matter_asset.original_filename,
+            url: Rails.application.routes.url_helpers.download_url(front_matter_asset.file_category, front_matter_asset, host: ScihistDigicoll::Env.lookup(:app_url_base))
+          }
+        ])
       end
     end
   end
