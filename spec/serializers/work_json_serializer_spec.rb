@@ -92,6 +92,7 @@ describe WorkJsonSerializer, type: :model, queue_adapter: :inline do
       expect(serializable_hash[:oral_history_assets]).to be_present
       expect(serializable_hash[:oral_history_assets]).to eq([
         {
+          id: transcript_asset.friendlier_id,
           role: "transcript",
           content_type: transcript_asset.content_type,
           original_filename: transcript_asset.original_filename,
@@ -111,6 +112,7 @@ describe WorkJsonSerializer, type: :model, queue_adapter: :inline do
 
         expect(serializable_hash[:oral_history_assets]).to eq([
           {
+            id: front_matter_asset.friendlier_id,
             role: "front_matter",
             content_type: front_matter_asset.content_type,
             original_filename: front_matter_asset.original_filename,
