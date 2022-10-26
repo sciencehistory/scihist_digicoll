@@ -6,13 +6,24 @@
 *  For details, see the web site: https://github.com/devbridge/jQuery-Autocomplete
 */
 
+/* Modified by Science History Institute to force load into window.jQuery, to work
+   with our current vite setup.
+
+   https://github.com/sciencehistory/scihist_digicoll/issues/1916
+   https://github.com/devbridge/jQuery-Autocomplete/issues/843
+
+   Long-term, we should consider swapping our autocomplete implementation
+   entirely for https://github.com/github/auto-complete-element instead
+   (Blacklight is now using htis one)
+*/
+
 /*jslint  browser: true, white: true, single: true, this: true, multivar: true */
 /*global define, window, document, jQuery, exports, require */
 
 // Expose plugin as an AMD module if AMD loader is present:
 (function (factory) {
     "use strict";
-    if (typeof define === 'function' && define.amd) {
+    /*if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
         define(['jquery'], factory);
     } else if (typeof exports === 'object' && typeof require === 'function') {
@@ -21,7 +32,10 @@
     } else {
         // Browser globals
         factory(jQuery);
-    }
+    }*/
+
+    // Science History Institute force loading into window.jQuery
+    factory(window.jQuery);
 }(function ($) {
     'use strict';
 
