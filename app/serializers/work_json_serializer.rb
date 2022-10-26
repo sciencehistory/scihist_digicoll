@@ -118,6 +118,7 @@ class WorkJsonSerializer
       member.kind_of?(Asset) && member.published? && member.role.in?(["transcript", "front_matter"])
     end.map do |asset|
       {
+        id: asset.friendlier_id,
         role: asset.role.to_s,
         content_type: asset.content_type,
         url: download_url(asset.file_category, asset),
