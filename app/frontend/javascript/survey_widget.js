@@ -1,42 +1,13 @@
-// This is a fairly brute-force
+// Despite our best efforts,
+// the survey was not registering
+// the fact that users had dismissed it
+// or already filled it in; fairly blunt
 // attempt to make sure that if
 // you don't want to fill in the survey
 // or already did fill it in, you
 // won't be asked again for a long time.
 
-// Despite our best efforts,
-// the survey was not registering
-// the fact that users had dismissed it
-// or already filled it in.
-
-// Note that SurveySparrow has its own
-// mechanisms in place to attempt to ensure
-// that users only fill out the survey once;
-// we just don't trust them.
-jQuery( document ).ready(function() {
-  if (jQuery('#ss_survey_widget').length != 1) {
-    return;
-  }
-  if (surveyAlreadyShown()) {
-    window.console.log("You've already clicked on the survey! Not gonna show it.")
-  }
-  else {
-    window.console.log("Launching the survey.")
-    sparrowLaunch({
-      //add custom params here
-    })
-  }
-  // Any click on the main survey div is
-  // interpreted as "user has started survey."
-  // Once they start the survey, never show
-  // this user the survey again for an entire year.
-  jQuery ('#ss_survey_widget').click(userHasStartedSurvey);
-});
-
-
-function surveyAlreadyShown() {
-  return document.cookie.match(/surveyAlreadyShown=true/) != null;
-}
+import domready from 'domready';
 
 function userHasStartedSurvey(event) {
   event.preventDefault();
@@ -45,7 +16,36 @@ function userHasStartedSurvey(event) {
     .getFullYear() + 3))
     .toString();
   document.cookie = "surveyAlreadyShown=true; path=/; expires=" + expiratonStr;
-  window.console.log("Set the cookie!");
+  // window.console.log("Set the cookie!");
+}
+
+function surveyDiv() {
+  return document.getElementById("ss_survey_widget");
+}
+
+domready( function() {
+  if(typeof(surveyDiv()) == 'undefined' || surveyDiv() == null){
+    // window.console.log("Survey div was not found.");
+    return;
+  }
+
+  if (surveyAlreadyShown()) {
+    // window.console.log("You've already clicked on the survey! Not gonna show it.");
+  }
+  else {
+    // window.console.log("Launching the survey.");
+    sparrowLaunch({
+      //add custom params here
+    })
+  }
+
+  if(surveyDiv().addEventListener) {
+    surveyDiv().addEventListener('click', userHasStartedSurvey, true);
+  }
+});
+
+function surveyAlreadyShown() {
+  return document.cookie.match(/surveyAlreadyShown=true/) != null;
 }
 
 // This is taken from the survey sparrow site.
