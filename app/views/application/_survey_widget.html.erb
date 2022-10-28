@@ -1,10 +1,17 @@
+<%#
+Survey PR:
+	https://github.com/sciencehistory/scihist_digicoll/pull/1917
+Survey settings:
+	https://sciencehistory.surveysparrow.com/survey/330435/results/questions
+	https://sciencehistory.surveysparrow.com/survey/330435/channels/2900170/embed/edit
+%>
 <% if current_user%>
-	<div class="alert alert-primary">Survey hidden because you are logged in.</div>
-<% elsif  Rails.application.config.hide_survey_sparrow %>
-	<div class="alert alert-primary">Survey hidden because hide_survey_sparrow is turned on.</div>
+	<%# <div class="alert alert-primary">Survey hidden because you are logged in.</div> %>
+<% elsif ScihistDigicoll::Env.lookup!(:show_survey_sparrow) == "true" %>
+	<div id="ss_survey_widget"></div>
+	<script id="SS_SCRIPT"> <%# this is only here to placate the canned JS we need to put on the site.%></script>
 <% else %>
-<div id="ss_survey_widget"></div>
-	<script id="SS_SCRIPT">
-		// moved this to the js file
-	</script>
+	<%#
+		<div class="alert alert-primary">Survey hidden because show_survey_sparrow is not turned on</div>
+	%>
 <% end %>
