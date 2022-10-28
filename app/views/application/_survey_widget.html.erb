@@ -8,8 +8,10 @@ Survey settings:
 <% if current_user%>
 	<%# <div class="alert alert-primary">Survey hidden because you are logged in.</div> %>
 <% elsif ScihistDigicoll::Env.lookup!(:show_survey_sparrow) == "true" %>
-	<div id="ss_survey_widget"></div>
-	<script id="SS_SCRIPT"> <%# this is only here to placate the canned JS we need to put on the site.%></script>
+	<div id="ss_survey_widget" />
+	<script id="SS_SCRIPT"><%# 
+		This script tag is only here to avoid an error in the the canned JS we need to put on the site.
+		For the actual JS code, see the GitHub PR above.%></script>
 <% else %>
 	<%#
 		<div class="alert alert-primary">Survey hidden because show_survey_sparrow is not turned on</div>
