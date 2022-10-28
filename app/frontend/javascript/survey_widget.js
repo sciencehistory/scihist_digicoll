@@ -7,6 +7,13 @@
 // or already did fill it in, you
 // won't be asked again for a long time.
 
+// Survey PR:
+//   https://github.com/sciencehistory/scihist_digicoll/pull/1917
+// Survey settings:
+//   https://sciencehistory.surveysparrow.com/survey/330435/results/questions
+//   https://sciencehistory.surveysparrow.com/survey/330435/channels/2900170/embed/edit
+
+
 import domready from 'domready';
 
 function userHasStartedSurvey(event) {
@@ -25,15 +32,15 @@ function surveyDiv() {
 
 domready( function() {
   if(typeof(surveyDiv()) == 'undefined' || surveyDiv() == null){
-    // window.console.log("Survey div was not found.");
+    window.console.log("Survey div was not found.");
     return;
   }
 
   if (surveyAlreadyShown()) {
-    // window.console.log("You've already clicked on the survey! Not gonna show it.");
+    window.console.log("You've already clicked on the survey! Not gonna show it.");
   }
   else {
-    // window.console.log("Launching the survey.");
+    window.console.log("Launching the survey.");
     sparrowLaunch({
       //add custom params here
     })
