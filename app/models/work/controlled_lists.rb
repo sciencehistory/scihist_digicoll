@@ -85,7 +85,7 @@ class Work
       'Center for Oral History',
       'Museum',
       'Library',
-    ]
+    ].freeze
 
     FILE_CREATOR = [
       'Auerbach, Jahna',
