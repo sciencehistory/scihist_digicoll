@@ -127,9 +127,18 @@ class WorkShowInfoComponent < ApplicationComponent
     @more_like_this_works ||= MoreLikeThisGetter.new(work, max_number_of_works: 3).works
   end
 
-  def public_collections
-    work.contained_by.where(published: true)
+  def public_contained_by
+    @public_contained_by ||= work.contained_by.where(published: true)
   end
+
+  def public_collections
+    @public_collections ||= public_contained_by.find_all { |c| c.department != Collection::DEPARTMENT_EXHIBITION_VALUE }
+  end
+
+  def public_exhibitions
+    @public_exhibitions ||= public_contained_by.find_all { |c| c.department == Collection::DEPARTMENT_EXHIBITION_VALUE }
+  end
+
 
   def oral_history_interviewer_profiles
     return @oral_history_interviewer_profiles if defined?(@oral_history_interviewer_profiles)
