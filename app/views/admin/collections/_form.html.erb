@@ -30,7 +30,7 @@
   <div class="form-inputs">
     <%= f.input :title %>
 
-    <%= f.input :department, collection: Work::ControlledLists::DEPARTMENT  %>
+    <%= f.input :department, collection: Collection::DEPARTMENTS  %>
 
     <%= f.repeatable_attr_input(:external_id, build: :at_least_one) do |sub_form| %>
       <%= category_and_value(sub_form, category_list: Work::ExternalId::CATEGORY_VALUES) %>

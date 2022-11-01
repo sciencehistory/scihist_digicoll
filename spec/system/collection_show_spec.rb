@@ -54,7 +54,7 @@ describe "Collection show page", solr: true, indexable_callbacks: true do
     let(:collection) { create(:collection, department: CollectionShowController::ORAL_HISTORY_DEPARTMENT_VALUE) }
     let!(:oral_history) { create(:oral_history_work, published: true, subject: ["Chemistry"], contained_by: [collection]) }
 
-    it "displays custom OH facets" do
+    it "displays custom OH facets", js: false do
       visit collection_path(collection)
 
       expect(page).to have_content(oral_history.title)
@@ -75,4 +75,14 @@ describe "Collection show page", solr: true, indexable_callbacks: true do
       end
     end
   end
+
+  describe "Exhibiton collection" do
+    let(:collection) { create(:collection, department: Collection::DEPARTMENT_EXHIBITION_VALUE) }
+
+    it "displays", js: false do
+      visit collection_path(collection)
+      expect(page).to have_selector(".show-genre", text: "Exhibitions")
+    end
+  end
+
 end
