@@ -111,12 +111,27 @@
   <%= render AttributeTable::RowComponent.new(:department, values: [department], link_to_facet: "department_facet") %>
   <%= render AttributeTable::RowComponent.new(:exhibition, values: exhibition, link_to_facet: "exhibition_facet", alpha_sort: true) if current_staff_user? %>
 
-  <% if contained_by.present? %>
+  <% if public_collections.present? %>
     <tr>
       <th scope='row'>Collection</th>
       <td>
         <ul>
           <% public_collections.each do |collection| %>
+            <li class="attribute">
+              <%= link_to collection.title, collection_path(collection) %>
+            </li>
+          <% end %>
+        </ul>
+      </td>
+    </tr>
+  <% end %>
+
+  <% if public_exhibitions.present? %>
+    <tr>
+      <th scope='row'>Exhibited in</th>
+      <td>
+        <ul>
+          <% public_exhibitions.each do |collection| %>
             <li class="attribute">
               <%= link_to collection.title, collection_path(collection) %>
             </li>

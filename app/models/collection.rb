@@ -8,6 +8,9 @@ class Collection < Kithe::Collection
 
   include RecordPublishedAt
 
+  DEPARTMENT_EXHIBITION_VALUE = "Exhibition"
+  DEPARTMENTS = (Work::ControlledLists::DEPARTMENT + [DEPARTMENT_EXHIBITION_VALUE]).freeze
+
   # automatic Solr indexing on save
   if ScihistDigicoll::Env.lookup(:solr_indexing) == 'true'
     self.kithe_indexable_mapper = CollectionIndexer.new
@@ -29,7 +32,7 @@ class Collection < Kithe::Collection
   attr_json :related_link, RelatedLink.to_type, array: true, default: -> { [] }
 
   attr_json :department, :string
-  validates :department, presence: {}, inclusion: { in: Work::ControlledLists::DEPARTMENT, allow_blank: true }
+  validates :department, presence: {}, inclusion: { in: DEPARTMENTS, allow_blank: true }
 
   attr_json :funding_credit, FundingCredit.to_type
 
