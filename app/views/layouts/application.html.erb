@@ -75,9 +75,6 @@
         integrated into the masthead -%>
 
     <main id="mainContainer" class="container-fluid">
-
-      <%= render "survey_widget" %>
-
       <%= content_for(:container_header) %>
       <%= render 'flash_message_display' %>
       <% if content_for? :full_width_layout %>
@@ -116,5 +113,6 @@
     <% end %>
     <%= render partial: 'layouts/scihist_footer' %>
     <%= render 'application/accept_cookies_banner' %>
+    <%= render "survey_widget" %>
   </body>
 </html>
