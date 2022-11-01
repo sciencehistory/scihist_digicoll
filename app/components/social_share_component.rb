@@ -84,22 +84,32 @@ class SocialShareComponent < ApplicationComponent
     end
   end
 
-  # This was not getting served by cloudfront, so I'm just adding it to an inline svg.
+  # This was not getting served by cloudfront,
+  # so I'm just adding it to an inline svg.
+  # Also much easier to tweak; we can move it back to a file once
+  # we have consensus on the design.
   def google_classroom_svg(alt, css_class)
-    "<svg
-      alt=\"#{alt}\"
-      class=\"#{css_class}\"
+    # discreet grey colors
+    color_scheme = { light: "#eee", dark: "#aaa"}
+
+    # colors from: view-source:https://upload.wikimedia.org/wikipedia/commons/2/25/Google_Classroom_icon.svg
+    color_scheme = { light: "#fff", dark: "#57BB8A"}
+
+    "<svg alt=\"#{alt}\" class=\"#{css_class}\"
       viewBox=\"0 0 50 50\"
       xmlns=\"http://www.w3.org/2000/svg\"
       >
+
       <path d=\"M32 25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0
         4.5zm0 1.5c-2.41 0-5 1.277-5 2.858V31h10v-1.642c0-1.58-2.59-2.858-5-2.858zM16
-        25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5zm0 1.5c-2.41 0-5 1.277-5 2.858V31h10v-1.642c0-1.58-2.59-2.858-5-2.858z\"
-        fill=\"#aaa\" fill-rule=\"nonzero\" mask=\"url(#b)\"></path>
+        25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0
+        4.5zm0 1.5c-2.41 0-5 1.277-5 2.858V31h10v-1.642c0-1.58-2.59-2.858-5-2.858z\"
+        fill=\"#{color_scheme[:dark]}\" fill-rule=\"nonzero\" mask=\"url(#b)\"></path>
 
       <path d=\"M24.003 23A3 3 0 1 0 21 20c0 1.657 1.345 3
       3.003 3zM24 25c-3.375 0-7 1.79-7 4v2h14v-2c0-2.21-3.625-4-7-4z\"
-      fill=\"#eee\" fill-rule=\"nonzero\" mask=\"url(#b)\"></path>
+      fill=\"#{color_scheme[:light]}\" fill-rule=\"nonzero\" mask=\"url(#b)\"></path>
+
     </svg>".html_safe
   end
 
