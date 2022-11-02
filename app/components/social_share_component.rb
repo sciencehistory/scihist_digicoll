@@ -90,7 +90,7 @@ class SocialShareComponent < ApplicationComponent
   # we have consensus on the design.
   def google_classroom_svg(alt, css_class)
     # discreet grey colors
-    color_scheme = { light: "#eee", dark: "#aaa"}
+    # color_scheme = { light: "#eee", dark: "#aaa"}
 
     # colors from: view-source:https://upload.wikimedia.org/wikipedia/commons/2/25/Google_Classroom_icon.svg
     color_scheme = { light: "#fff", dark: "#57BB8A"}
@@ -113,8 +113,9 @@ class SocialShareComponent < ApplicationComponent
     </svg>".html_safe
   end
 
+  # Extra parameters are described at https://developers.google.com/classroom/guides/sharebutton .
   def google_classroom_share_link
-    link_to "https://classroom.google.com/u/0/share?url=#{{url: share_url, media: share_media_url, description: title_plus_description}.to_param}",
+    link_to "https://classroom.google.com/u/0/share?#{{url: share_url, title: page_title}.to_param}",
         class: 'social-media-link google_classroom btn',
         target: '_blank',
         rel: 'noopener noreferrer',
