@@ -42,7 +42,7 @@
     border-top: 3px solid $table-border-color;
     padding: $table-cell-padding-sm;
     margin-left: -1 * $table-cell-padding-sm;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
   }
   .citation {
       word-break: break-word;
@@ -70,15 +70,19 @@
     }
   }
 
-  .related-link-component {
-    @extend .mb-4;
+  .related-link-component:not(:last-child) {
+    @extend .mb-3;
   }
 
   .related-work {
     display: flex;
     flex-wrap: wrap;
-    margin-top: $paragraph-spacer;
-    margin-bottom: $paragraph-spacer * 2;
+    &:not(:first-child) {
+      margin-top: $paragraph-spacer;
+    }
+    &:not(:last-child) {
+      margin-bottom: $paragraph-spacer * 2;
+    }
     .related-work-thumb {
       width: 6.75rem;
       flex-shrink: 0;
