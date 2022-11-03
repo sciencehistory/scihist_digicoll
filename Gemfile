@@ -30,6 +30,9 @@ gem 'scout_apm'
 # to spend the time to update Blacklight to latest -- you will usually want to update
 # blacklight_range_limit to latest at same time.
 #
+# NOTE ALSO: We are using `blacklight-frontend` JS NPM package, updating blacklight
+# version may require an update with yarn to `blacklight-frontend`, has to be
+# checked manually.
 gem "blacklight", "~> 7.30.0"
 gem "blacklight_range_limit", "~> 8.0", ">= 8.2.3" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
