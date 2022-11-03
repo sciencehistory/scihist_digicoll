@@ -13,6 +13,7 @@
     "lazysizes": "^5.1.0",
     "openseadragon": "^2.4.1",
     "popper.js": "^ 1.16.1",
+    "sass": "^1.55.0",
     "tom-select": "^1.4.3",
     "video.js": "^7.18.1",
     "videojs-seek-buttons": "^2.2.0"
