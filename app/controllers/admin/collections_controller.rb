@@ -41,7 +41,7 @@ class Admin::CollectionsController < AdminController
   def update
     respond_to do |format|
       if @collection.update(collection_params)
-        format.html { redirect_to admin_collections_url, notice: "Collection '#{@collection.title}' was successfully updated." }
+        format.html { redirect_to collection_url(@collection), notice: "Collection '#{@collection.title}' was successfully updated." }
         format.json { render :show, status: :ok, location: @collection }
       else
         format.html { render :edit }
