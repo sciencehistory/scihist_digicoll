@@ -13,7 +13,13 @@
 
       <div class="show-title">
         <header>
-          <div class="show-genre"><%= link_to "Collections", collections_path %></div>
+          <div class="show-genre">
+            <% if collection.department != Collection::DEPARTMENT_EXHIBITION_VALUE %>
+              <%= link_to "Collections", collections_path %>
+            <% else %>
+              Exhibitions
+            <% end %>
+          </div>
           <h1>
             <%= link_to collection.title, collection_path(collection), class: "title-link" %> <%= publication_badge(collection) %>
             <% if can? :update, collection %>

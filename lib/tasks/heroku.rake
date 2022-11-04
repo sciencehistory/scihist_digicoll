@@ -1,3 +1,5 @@
+require 'open3'
+
 namespace :scihist do
   namespace :heroku do
 

@@ -232,13 +232,25 @@ FactoryBot.define do
         genre { ["Oral histories"] }
       end
 
+      trait :public_files do
+        members {[
+          build(:asset_with_faked_file, :pdf, published: true, title: 'transcript', role: "transcript"),
+          build(:asset_with_faked_file, :mp3,
+                  title: "audio_recording.mp3",
+                  published: true,
+                  faked_filename: "#{generate(:oh_filename)}.mp3",
+                  faked_size: 21.2.megabytes,
+                  faked_derivatives: {} ),
+        ]}
+      end
+
       trait :available_by_request do
         transient do
           available_by_request_mode { :manual_review }
         end
 
         members {[
-          build(:asset_with_faked_file, :pdf, published: true, title: 'Front matter'),
+          build(:asset_with_faked_file, :pdf, published: true, title: 'Front matter', role: "front_matter"),
           build(:asset_with_faked_file, :mp3,
                   title: "audio_recording.mp3",
                   published: false,
@@ -246,7 +258,7 @@ FactoryBot.define do
                   faked_filename: "#{generate(:oh_filename)}.mp3",
                   faked_size: 21.2.megabytes,
                   faked_derivatives: {} ),
-          build(:asset_with_faked_file, :pdf, title: "transcript.pdf", published: false, oh_available_by_request: true)
+          build(:asset_with_faked_file, :pdf, title: "transcript.pdf", published: false, role: "transcript", oh_available_by_request: true)
         ]}
         after(:build) do |work, evaluator|
           work.representative = work.members.to_a.find {|w| w.published? } if work.representative.nil?
