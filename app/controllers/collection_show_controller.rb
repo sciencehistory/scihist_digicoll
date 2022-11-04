@@ -8,9 +8,25 @@
 # There may be a less hacky way to do this, esp in Blacklight 7, but this is a port of
 # what was in chf_sufia. There also may not be.
 class CollectionShowController < CatalogController
-  before_action :set_collection, :check_auth
+  before_action :collection, :check_auth
+
+  ORAL_HISTORY_DEPARTMENT_VALUE = "Center for Oral History"
 
   # index action inherited from CatalogController, that's what we use.
+
+  # This method can be overridden from blacklight to provide *dynamic* blacklight
+  # config
+  def blacklight_config
+    # While the main Oral History collection gets it's own custom controller,
+    # with it's own config and templates --  we have sub-collections that get
+    # this generic controller.  If we have one here, use the config from that
+    # main OH Controller, to get OH-customized facets and any other search config.
+    if collection.department == ORAL_HISTORY_DEPARTMENT_VALUE
+      CollectionShowControllers::OralHistoryCollectionController.blacklight_config
+    else
+      super
+    end
+  end
 
   def facet
     # Note: params[:id] is being hogged by Blacklight; it refers to the
@@ -58,12 +74,7 @@ class CollectionShowController < CatalogController
   end
 
   def collection
-    @collection
+    @collection ||= Collection.find_by_friendlier_id!(params[:collection_id])
   end
   helper_method :collection
-
-  def set_collection
-    @collection = Collection.find_by_friendlier_id!(params[:collection_id])
-  end
-
 end
