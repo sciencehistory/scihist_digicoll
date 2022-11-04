@@ -77,9 +77,8 @@ module ScihistDigicoll
 
     # Show the GDPR "I accept" cookies banner by default.
     # This setting is overridden in test.rb,
-    # so the tests don't have to click "I accept".)
+    # so the tests don't have to click "I accept".
     config.hide_accept_cookies_banner = false
-
 
     # Default 65K limit was getting in the way of large ingests.
     #
