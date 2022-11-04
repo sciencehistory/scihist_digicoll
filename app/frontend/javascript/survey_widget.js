@@ -1,16 +1,19 @@
 // Despite our best efforts,
 // the survey was not registering
 // the fact that users had dismissed it
-// or already filled it in; fairly blunt
-// attempt to make sure that if
-// you don't want to fill in the survey
-// or already did fill it in, you
+// or already filled it in. The code below
+// is a fairly blunt attempt to make sure that if
+// you don't want to fill in the survey,
+// or already DID fill it in, you
 // won't be asked again for a long time.
 
 // Survey PR:
 //   https://github.com/sciencehistory/scihist_digicoll/pull/1917
-// Survey settings:
+// Edit the survey questions:
 //   https://sciencehistory.surveysparrow.com/survey/330435/results/questions
+// The code in method sparrowLaunch below is taken directly from the SurveySparrow site.
+// It's worth noting that their developers included some custom tweaks (just for us, we think)
+// after the generic JS code they provided didn't work.
 //   https://sciencehistory.surveysparrow.com/survey/330435/channels/2900170/embed/edit
 
 
