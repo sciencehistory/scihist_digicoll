@@ -146,7 +146,7 @@ class SocialShareComponent < ApplicationComponent
 
   # Extra parameters are described at https://developers.google.com/classroom/guides/sharebutton .
   def google_classroom_share_link
-    square = true
+    square = false
 
     extra_link_classes = square ? "google-classroom-square" : "google-classroom-round"
 
