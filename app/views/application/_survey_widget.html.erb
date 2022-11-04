@@ -4,6 +4,9 @@ Survey PR:
 Survey settings:
 	https://sciencehistory.surveysparrow.com/survey/330435/results/questions
 	https://sciencehistory.surveysparrow.com/survey/330435/channels/2900170/embed/edit
+
+The nested tags below, with the commented-out divs, are more complicated than they need to be.
+However, they do make debugging much easier, and this code is not meant to be permanent anyway.
 %>
 <% if current_user%>
 	<%# <div class="alert alert-primary">Survey hidden because you are logged in.</div> %>
@@ -14,6 +17,6 @@ Survey settings:
 		For the actual JS code, see the GitHub PR above.%></script>
 <% else %>
 	<%#
-		<div class="alert alert-primary">Survey hidden because show_survey_sparrow is not turned on</div>
+		<div class="alert alert-primary">Survey hidden because show_survey_sparrow is not turned on.</div>
 	%>
 <% end %>
