@@ -154,7 +154,7 @@ class SocialShareComponent < ApplicationComponent
       rectangular_google_classroom_svg('Share to Google Classroom', 'google-classroom-share-icon') :
       google_classroom_svg('Share to Google Classroom', 'google-classroom-share-icon')
 
-    link_to "https://classroom.google.com/u/0/share?#{{url: share_url, title: page_title}.to_param}",
+    link_to "https://classroom.google.com/u/0/share?#{{url: share_url, title: work.title}.to_param}",
         class: "social-media-link #{extra_link_classes} google_classroom btn",
         target: '_blank',
         rel: 'noopener noreferrer',
