@@ -4,19 +4,10 @@ Survey PR:
 Survey settings:
 	https://sciencehistory.surveysparrow.com/survey/330435/results/questions
 	https://sciencehistory.surveysparrow.com/survey/330435/channels/2900170/embed/edit
-
-The nested tags below, with the commented-out divs, are more complicated than they need to be.
-However, they do make debugging much easier, and this code is not meant to be permanent anyway.
 %>
-<% if current_user%>
-	<%# <div class="alert alert-primary">Survey hidden because you are logged in.</div> %>
-<% elsif ScihistDigicoll::Env.lookup!(:show_survey_sparrow) == "true" %>
+<% if !browser.bot? && ScihistDigicoll::Env.lookup!(:show_survey_sparrow) == "true" %>
 	<div id="ss_survey_widget" />
 	<script id="SS_SCRIPT"><%# 
 		This script tag is only here to avoid an error in the the canned JS we need to put on the site.
 		For the actual JS code, see the GitHub PR above.%></script>
-<% else %>
-	<%#
-		<div class="alert alert-primary">Survey hidden because show_survey_sparrow is not turned on.</div>
-	%>
 <% end %>
