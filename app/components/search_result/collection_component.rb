@@ -1,11 +1,15 @@
 module SearchResult
-  # Displays an element in search results for a "Work"
+  # Displays an element in search results for a "Collection"
   #
   # * requires a ChildCountDisplayFetcher for efficient fetching and provision of "N Items"
   # child count on display.
   class CollectionComponent < BaseComponent
     def display_genres
-      link_to "Collections", collections_path
+      if model.department == Collection::DEPARTMENT_EXHIBITION_VALUE
+        "Exhibitions"
+      else
+        link_to "Collections", collections_path
+      end
     end
 
     # We don't display extent for any collections, just the number of children.
