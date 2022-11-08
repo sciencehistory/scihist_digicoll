@@ -4,35 +4,12 @@
  */
 
 /*
- * Used by blacklight_range_limit
- * Sadly via sproxkets instead of SASS like below
+ * Used by blacklight_range_limituyj
  *
  *= require  'blacklight_range_limit'
 */
 
-// Have to import our variables BEFORE bootstrap, as we set some bootstrap variables
-@import "variables";
-@import "mixins";
 
-@import "bootstrap";
-
-@import "font-awesome"; // fontawesome v4, CSS
-
-/* Blacklight 7 generator assumed a "blacklight.scss" would be required with sprockets.
-   That file consisted of
-      @import 'bootstrap';
-      @import 'blacklight/blacklight';
-  We already have bootstrap imported, so we just need the latter. We do it early, so
-  our locals can override if needed. Not sure if there would be a way to import just
-  some of blacklight CSS.
-*/
-@import 'blacklight/blacklight';
-
-@import "responsive-tabs/responsive-tabs";
-
-
-// Everything in ./local directory, including subdirs, in unpredictable (probably alphabetic) order.
-@import "local/**/*";
-
-@import "browse_everything/browse_everything_bootstrap4";
+// Still need to figure out how we're going to handle this in a vite world
+//@import "browse_everything/browse_everything_bootstrap4";
 

@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import RubyPlugin from 'vite-plugin-ruby'
 import { brotliCompressSync } from "zlib";
 import gzipPlugin from "rollup-plugin-gzip";
+import sassGlobImports from 'vite-plugin-sass-glob-import';
 import { resolve } from 'path'
 
 
@@ -15,8 +16,12 @@ import { resolve } from 'path'
 
 
 export default defineConfig({
+  css: {
+    devSourcemap: true
+  },
   plugins: [
     RubyPlugin(),
+    sassGlobImports(),
     // Create gzip copies of relevant assets
     gzipPlugin(),
     // Create brotli copies of relevant assets
@@ -26,7 +31,7 @@ export default defineConfig({
     }),
   ],
   // video.js is REALLY BIG, telling vite/rollup to chunk it as it's own
-  // JS file may include performance, or at least reduce warnings about big
+  // JS file may improve performance, or at least reduce warnings about big
   // files -- even if it's still statically imported at page load.
   build: {
     rollupOptions: {

@@ -8,20 +8,22 @@
     "blacklight-frontend": "^7.25.0",
     "bootstrap": "^ 4.6.2",
     "domready": "^1.0.8",
+    "font-awesome": "^4.7.0",
     "jquery": "^ 3.6.0",
     "js-yaml": ">= 3.13.1",
     "lazysizes": "^5.1.0",
     "openseadragon": "^2.4.1",
     "popper.js": "^ 1.16.1",
-    "sass": "^1.55.0",
     "tom-select": "^1.4.3",
     "video.js": "^7.18.1",
     "videojs-seek-buttons": "^2.2.0"
   },
   "devDependencies": {
     "rollup-plugin-gzip": "^3.0.1",
+    "sass": "^1.55.0",
     "vite": "^3.0.0",
-    "vite-plugin-ruby": "^3.1.0"
+    "vite-plugin-ruby": "^3.1.0",
+    "vite-plugin-sass-glob-import": "^1.4.0"
   },
   "resolutions": {
     "blacklight-frontend/bootstrap": "^4.6.2"
