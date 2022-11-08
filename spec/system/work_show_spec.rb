@@ -167,6 +167,18 @@ describe "Public work show page", type: :system, js: false do
       expect(page).to have_link(text: "IMAGE 1", href: viewer_path(work, work.members.first.friendlier_id))
       expect(page).to have_link(text: "IMAGE 2", href: viewer_path(work, work.members.second.friendlier_id))
     end
+
+    it "can construct zip file", js: true do
+      visit work_path(work)
+
+      within(".show-hero") do
+        click_on "Download"
+        click_on "PDF"
+      end
+      expect(page).to have_text("Preparing your download")
+      expect(page).not_to have_text("A software error occurred")
+      expect(OnDemandDerivativeCreatorJob).to have_been_enqueued
+    end
   end
 
   describe "Video work", queue_adapter: :test do

@@ -33,6 +33,7 @@ $( document ).ready(function() {
       return response.json();
     }).then(function(json) {
       if (json.status == "success") {
+        var existing;
         if (existing = _self.getModal(true)) {
           existing.modal("hide");
         }
@@ -108,7 +109,7 @@ $( document ).ready(function() {
   };
 
   ScihistOnDemandDownloader.prototype.updateProgress = function(json_response) {
-    html = "";
+    var html = "";
 
     if (json_response.progress && json_response.progress_total && json_response.progress != json_response.progress_total) {
       html = '<div class="progress">' +
