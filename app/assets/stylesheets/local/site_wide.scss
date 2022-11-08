@@ -92,20 +92,16 @@ hr.brand {
   &:not(:last-child) {
     margin-right: 1rem;
   }
+}
 
-  // &.facebook {
-  //   background-color: #3b5998;
-  // }
-  // &.twitter {
-  //   background-color: #1da1f2;
-  // }
-  // &.google-plus {
-  //   background-color: #dd4b39;
-  // }
-  // &.tumblr {
-  //   background-color: #35465c;
-  // }
-
+.google-classroom-share-icon {
+  border-radius: 50%;
+  background-color: #646469;
+  height: 2.25rem;
+  width: 2.25rem;
+}
+.google-classroom-share-icon:hover {
+  background-color: #555;
 }
 
 .rounded-sides {
