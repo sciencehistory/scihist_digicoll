@@ -94,26 +94,14 @@ hr.brand {
   }
 }
 
-// Round icon:
-a.google-classroom-round {
-  & > svg.google-classroom-share-icon {
-    border-radius: 50%;
-    background-color: #646469;
-    height: 2.25rem;
-    width: 2.25rem;
-  }
+.google-classroom-share-icon {
+  border-radius: 50%;
+  background-color: #646469;
+  height: 2.25rem;
+  width: 2.25rem;
 }
-// Round icon hover:
-a.google-classroom-round {
-  & > svg.google-classroom-share-icon:hover {
-    background-color: #555;
-  }
-}
-
-// Square icon:
-a.google-classroom-square {
-  margin-top: 1px;
-  width: 3rem;
+.google-classroom-share-icon:hover {
+  background-color: #555;
 }
 
 .rounded-sides {
