@@ -37,10 +37,6 @@ import '../javascript/bootstrap_setup.js'
 // used by kithe, for forms with add/remove fields
 import "@nathanvda/cocoon";
 
-// Need to import font-awesome form .js, not application.scss,
-// to get everything to load properly and fonts to be available.
-import "font-awesome/scss/font-awesome.scss";
-
 import "../javascript/responsive-tabs/responsive-tabs.js"
 
 import '../javascript/init_popovers.js';
