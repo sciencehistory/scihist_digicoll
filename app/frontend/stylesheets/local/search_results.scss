@@ -224,7 +224,7 @@
         display: block;
         text-align: left !important;
         top: 0;
-        left: $standard-thumb-width + ($spacer / 2);
+        left: $standard-thumb-width + ($spacer * 0.5);
         right: 0;
       }
     }
@@ -255,7 +255,7 @@
         margin-top: 0;
       }
       li {
-        margin-top: ($paragraph-spacer / 2);
+        margin-top: ($paragraph-spacer * 0.5);
       }
     }
 
@@ -280,7 +280,7 @@
         // hanging indent, serving to add margin to subsequent lines
         padding-left: 0.66em;
         text-indent: -0.66em;
-        margin-bottom: $paragraph-spacer / 8;
+        margin-bottom: $paragraph-spacer * 0.125; // divided by 8 without using deprecated `/`
       }
     }
 
