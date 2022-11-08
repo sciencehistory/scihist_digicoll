@@ -29,7 +29,7 @@
 
     <%= render "layouts/head_tag_common" %>
 
-    <%# sprockets 'application' js and css %>
+    <%= vite_stylesheet_tag 'application.scss', media: "all" %>
     <%= stylesheet_link_tag    'application', media: 'all' %>
 
     <%# vite's 'application' js before sprockets later %>

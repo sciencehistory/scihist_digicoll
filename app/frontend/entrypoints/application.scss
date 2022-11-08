@@ -1,0 +1,25 @@
+// Our main CSS file, uses SCSS, imports from other sources, npm packages
+// and local.
+//
+// We also still have a bit of CSS via sprockets in ./app/assets/stylesheets
+//
+// And note that CSS can also be loaded by our JS entrypoints, for instance
+// font-awesome is intentionally imported from application.js, to get it to work.
+
+
+// Have to import our variables BEFORE bootstrap, as we set some bootstrap variables
+@import "@stylesheets/variables";
+@import "@stylesheets/mixins";
+
+@import 'bootstrap/scss/bootstrap';
+
+@import 'blacklight-frontend/app/assets/stylesheets/blacklight/blacklight';
+
+@import "@stylesheets/responsive-tabs/responsive-tabs";
+
+//  courtesy of https://www.npmjs.com/package/vite-plugin-sass-glob-import
+//  Import everything in local, in alphabetical/arbitrary order
+//  For some reason the resolve alias does not work?
+//  https://github.com/cmalven/vite-plugin-sass-glob-import/issues/7
+@import "../stylesheets/local/**/*.scss";
+
