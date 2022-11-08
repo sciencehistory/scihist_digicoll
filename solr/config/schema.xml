@@ -187,13 +187,22 @@
     <!-- https://github.com/uschindler/german-decompounder -->
     <fieldType name="text_de" class="solr.TextField" positionIncrementGap="100">
       <analyzer>
-        <tokenizer class="solr.StandardTokenizerFactory"/>
-        <filter class="solr.LowerCaseFilterFactory"/>
-        <filter class="solr.HyphenationCompoundWordTokenFilterFactory"
+        <tokenizer class="solr.ICUTokenizerFactory"/>
+        <filter class="solr.ICUNormalizer2FilterFactory" name="nfkc_cf" mode="compose"/> <!-- NFKC, case folding, but leave diacritics! -->
+
+        <!-- will produce different number of tokens than text_en, which would
+             make it incompatible for combining in dismax qf.
+
+             See https://github.com/sciencehistory/scihist_digicoll/issues/1883
+
+             We *think* erman normlization and stemming below should be ok.
+        -->
+        <!-- <filter class="solr.HyphenationCompoundWordTokenFilterFactory"
           hyphenator="lang/de_DR.xml"
           dictionary="lang/dictionary-de.txt"
           onlyLongestMatch="true"
-          minSubwordSize="4"/>
+          minSubwordSize="4"/> -->
+
         <filter class="solr.GermanNormalizationFilterFactory"/>
         <filter class="solr.GermanStemFilterFactory"/>
       </analyzer>
