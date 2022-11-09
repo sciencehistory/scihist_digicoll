@@ -16,14 +16,6 @@
 
 //= require prevent_use_strict
 
-// Required by Blacklight
-      // not currently using blacklight 'suggest' func which uses twitter typeahead.
-      // twitter typeahead is a non maintained kind of mess, so we might try to
-      // avoid it even if we wanted auto-suggest.
-      //
-      // Twitter Typeahead for autocomplete
-      // require twitter/typeahead
-//= require blacklight/blacklight
 
 
 
