@@ -4,7 +4,26 @@ class Admin::CollectionsController < AdminController
   # GET /collections
   # GET /collections.json
   def index
-    @collections = Collection.all
+    @q = Collection.ransack(params[:q]).tap do |ransack|
+      ransack.sorts = 'title asc' if ransack.sorts.empty?
+    end
+
+    scope = @q.result
+    if params[:title_or_id].present?
+      scope = scope.where(id: params[:title_or_id]
+      ).or(
+        Collection.where(friendlier_id: params[:title_or_id])
+      ).or(
+        Collection.where("title like ?", "%" + Collection.sanitize_sql_like(params[:title_or_id]) + "%")
+      )
+    end
+
+    if params[:department].present?
+      scope = scope.where("json_attributes ->> 'department' = :department", department: params[:department])
+      @department =  params[:department]
+    end
+
+    @collections = scope.page(params[:page]).per(20)
   end
 
   # GET /collections/1
