@@ -19,9 +19,9 @@
 
   <div class="admin-filters">
     <div class="admin-filter">
-        <label for="department">Collecting Area</label>
+        <label for="department">Department</label>
         <%= select_tag "department",
-          options_for_select(Work::ControlledLists::DEPARTMENT, @department),
+          options_for_select(Collection::DEPARTMENTS, @department),
           onchange: "this.form.submit()",
           include_blank: "Any",
           class: "custom-select" %>
@@ -43,7 +43,7 @@
       <th>thumbnail</th>
       <th>ID</th>
       <th class="title"><%= sort_link(@q, :title, page: nil) %></th>
-      <th>Collecting area</th>
+      <th>Department</th>
       <th class="datestamp"><%= sort_link(@q, :created_at, "Created", page: nil) %></th>
       <th class="datestamp"><%= sort_link(@q, :updated_at, "Last Modified", page: nil) %></th>
       <th class="action"></th>
