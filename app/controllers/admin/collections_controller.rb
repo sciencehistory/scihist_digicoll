@@ -14,7 +14,7 @@ class Admin::CollectionsController < AdminController
       ).or(
         Collection.where(friendlier_id: params[:title_or_id])
       ).or(
-        Collection.where("title like ?", "%" + Collection.sanitize_sql_like(params[:title_or_id]) + "%")
+        Collection.where("title ilike ?", "%" + Collection.sanitize_sql_like(params[:title_or_id]) + "%")
       )
     end
 
@@ -23,7 +23,7 @@ class Admin::CollectionsController < AdminController
       @department =  params[:department]
     end
 
-    @collections = scope.page(params[:page]).per(20)
+    @collections = scope.page(params[:page]).per(100)
   end
 
   # GET /collections/1
