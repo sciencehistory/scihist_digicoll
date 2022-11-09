@@ -37,6 +37,8 @@ import '../javascript/bootstrap_setup.js'
 // used by kithe, for forms with add/remove fields
 import "@nathanvda/cocoon";
 
+import '../javascript/blacklight_setup.js';
+
 import "../javascript/responsive-tabs/responsive-tabs.js"
 
 import '../javascript/init_popovers.js';
