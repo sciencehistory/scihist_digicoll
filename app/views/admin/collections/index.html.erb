@@ -37,13 +37,13 @@
   </p>
 <% end %>
 
-<table class="table mt-4">
+<table class="table admin-list">
   <thead>
     <tr>
-      <th>thumbnail</th>
-      <th>ID</th>
+      <th class="thumbnail">thumbnail</th>
+      <th class="id">ID</th>
       <th class="title"><%= sort_link(@q, :title, page: nil) %></th>
-      <th>Department</th>
+      <th class="department">Department</th>
       <th class="datestamp"><%= sort_link(@q, :created_at, "Created", page: nil) %></th>
       <th class="datestamp"><%= sort_link(@q, :updated_at, "Last Modified", page: nil) %></th>
       <th class="action"></th>
@@ -56,16 +56,15 @@
       <tr>
         <td><%= thumb_image_tag(collection.leaf_representative, size: :mini, image_missing_text: true) %>
         <td><%= collection.friendlier_id %>
-        <td><%= collection.title %> <%= publication_badge(collection) %></td>
+        <td><%= link_to(collection.title, collection_path(collection)) %><%= publication_badge(collection) %></td>
         <td><%= collection.department %></td>
         <td class="datestamp"><%=  l collection.created_at.to_date, format: :admin %> </td>
         <td class="datestamp"><%=  l collection.updated_at.to_date, format: :admin %> </td>
         <td>
-          <%= link_to 'Public view', collection_path(collection), class: "btn btn-sm btn-outline-primary" %>
-          <%= link_to 'Edit', edit_admin_collection_path(collection), class: "btn btn-sm btn-outline-primary" %>
-          <% if can? :destroy, collection %>
-            <%= link_to 'Delete', [:admin, collection], method: :delete, data: { confirm: "Delete collection '#{collection.title}'?" }, class: "btn btn-sm btn-outline-danger" %>
-          <% end %>
+          <div class="dropdown">
+            <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
+            <%= admin_dropdown_for_collection(collection, labelled_by_id: "dropdownMenuButton") %>
+          </div>
         </td>
       </tr>
     <% end %>
