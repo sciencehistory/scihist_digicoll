@@ -27,4 +27,16 @@ module AdminMenuHelper
       safe_join(options)
     end
   end
+
+  def admin_dropdown_for_collection(collection, labelled_by_id:)
+    options = [
+      link_to('Edit', edit_admin_collection_path(collection), class: "dropdown-item"),
+      link_to('Delete', [:admin, collection], method: :delete, data: { confirm: "Delete collection '#{collection.title}'?" }, class: "dropdown-item")
+    ].compact
+
+    content_tag(:div, class: "dropdown-menu dropdown-menu-right", :"aria-labelledby" => labelled_by_id) do
+      safe_join(options)
+    end
+  end
+
 end
