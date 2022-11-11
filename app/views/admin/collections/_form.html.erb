@@ -63,14 +63,14 @@
     <div class="form-group form-group-valid">
       <label class="form-control-label string" for="collection_thumbnail">Thumbnail</label>
       <small class="form-text text-muted scihist-hint mb-2 mt-0">Image for collection, should be <b>square and at least
-        <%= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2 %>x<%= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2%> pixels</b>. No need to resize—full-size crop is great for possible future uses.</small>
+        <%= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2 %>x<%= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2%> pixels</b>. No need to resize- full-size crop is great for possible future uses.</small>
 
       <%= f.fields_for :representative, (f.object.representative || f.object.build_representative) do |representative_f| %>
 
         <%# file field gets handled by js in simple_uppy_file_input.js %>
 
         <%= representative_f.hidden_field :file,
-                value: collection&.representative&.cached_file_data,
+                value: representative&.cached_file_data,
                 id: "collection-thumbnail-upload-result",
                 data: {
                   toggle: "scihist-simple-uppy-file-hidden"
@@ -85,27 +85,24 @@
                 upload_result_element: "album-cover-photo-upload-result"
               }.merge(UploadUtil.kithe_upload_data_config(toggle_value: "scihist-simple-uppy-file"))
         %>
+
         <div class="image-preview mb-2" data-toggle="scihist-simple-uppy-file-preview">
-          <% if collection.representative.cached_file_data  %>
-            <p>Will be saved: <%= collection.representative.original_filename %></p>
-          <% elsif collection.representative.file.present? %>
-            <%= thumb_image_tag(collection.leaf_representative, size: :collection_page, image_missing_text: true) %>
-
-            <br><i><%= collection.representative.title %></i>
-
-            <% if collection.representative.file &&
-              ( !collection.representative.content_type.start_with?("image/") ||
-                collection.representative.width != collection.representative.height ||
-              collection.representative.width < 532 ) %>
-              <p class="text-danger small">Uploaded asset should be a square image at least of at least <%= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2%> pixels.
-                The saved file type <%= collection.representative.content_type %>,
-                <%= collection.representative.width %>x<%= collection.representative.height %>px. It is recommended
-                you upload a different file, of appropriate dimensions.
+          <% if representative.cached_file_data  %>
+            <p>Will be saved: <%= representative.original_filename %></p>
+          <% elsif representative_is_image? %>
+            <%= thumb_image_tag(representative, size: :collection_page, image_missing_text: true) %>
+            <br/><i><%= representative.title %></i>
+            <% unless representative_dimensions_correct? %>
+              <p class="text-danger small">
+                This file is an <%= representative&.content_type %> of size
+                <%= representative&.width %> x <%= representative&.height %> px;
+                please upload a square image at least of at least
+                <%= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2 %> px.
               </p>
             <% end %>
-
           <% end %>
         </div>
+
       <% end %>
     </div>
 
