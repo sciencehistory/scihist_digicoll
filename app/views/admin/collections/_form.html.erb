@@ -63,7 +63,7 @@
     <div class="form-group form-group-valid">
       <label class="form-control-label string" for="collection_thumbnail">Thumbnail</label>
       <small class="form-text text-muted scihist-hint mb-2 mt-0">Image for collection, should be <b>square and at least
-        <%= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2 %>x<%= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2%> pixels</b>. No need to resize- full-size crop is great for possible future uses.</small>
+        <%= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2 %>x<%= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2%> pixels</b>. No need to resize—full-size crop is great for possible future uses.</small>
 
       <%= f.fields_for :representative, (f.object.representative || f.object.build_representative) do |representative_f| %>
 
@@ -96,7 +96,7 @@
               <p class="text-danger small">
                 This file is an <%= representative&.content_type %> of size
                 <%= representative&.width %> x <%= representative&.height %> px;
-                please upload a square image at least of at least
+                please upload a square image of at least
                 <%= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2 %> px.
               </p>
             <% end %>
