@@ -81,6 +81,26 @@ class Admin::CollectionsController < AdminController
     end
   end
 
+  def representative
+    @collection&.representative
+  end
+  helper_method :representative
+
+  def representative_is_image?
+    representative.file.present? && representative&.content_type&.start_with?("image/")
+  end
+  helper_method :representative_is_image?
+
+  def representative_dimensions_correct?
+    [ representative.width.present?,
+      representative.height.present?,
+      representative.width == representative.height,
+      representative.width >= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2,
+    ].all?
+  end
+  helper_method :representative_dimensions_correct?
+
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_collection
