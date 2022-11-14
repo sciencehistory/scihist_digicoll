@@ -4,7 +4,26 @@ class Admin::CollectionsController < AdminController
   # GET /collections
   # GET /collections.json
   def index
-    @collections = Collection.all
+    @q = Collection.ransack(params[:q]).tap do |ransack|
+      ransack.sorts = 'title asc' if ransack.sorts.empty?
+    end
+
+    scope = @q.result
+    if params[:title_or_id].present?
+      scope = scope.where(id: params[:title_or_id]
+      ).or(
+        Collection.where(friendlier_id: params[:title_or_id])
+      ).or(
+        Collection.where("title ilike ?", "%" + Collection.sanitize_sql_like(params[:title_or_id]) + "%")
+      )
+    end
+
+    if params[:department].present?
+      scope = scope.where("json_attributes ->> 'department' = :department", department: params[:department])
+      @department =  params[:department]
+    end
+
+    @collections = scope.page(params[:page]).per(100)
   end
 
   # GET /collections/1
@@ -41,7 +60,7 @@ class Admin::CollectionsController < AdminController
   def update
     respond_to do |format|
       if @collection.update(collection_params)
-        format.html { redirect_to admin_collections_url, notice: "Collection '#{@collection.title}' was successfully updated." }
+        format.html { redirect_to collection_url(@collection), notice: "Collection '#{@collection.title}' was successfully updated." }
         format.json { render :show, status: :ok, location: @collection }
       else
         format.html { render :edit }
@@ -61,6 +80,25 @@ class Admin::CollectionsController < AdminController
       format.json { head :no_content }
     end
   end
+
+  def representative
+    @collection&.representative
+  end
+  helper_method :representative
+
+  def representative_is_image?
+    representative.file.present? && representative&.content_type&.start_with?("image/")
+  end
+  helper_method :representative_is_image?
+
+  def representative_dimensions_correct?
+    representative.width.present? &&
+    representative.height.present? &&
+    representative.width == representative.height &&
+    representative.width >= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2
+  end
+  helper_method :representative_dimensions_correct?
+
 
   private
     # Use callbacks to share common setup or constraints between actions.
