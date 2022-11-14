@@ -90,7 +90,7 @@ Rails.application.configure do
     config.cache_store = :mem_cache_store, ENV["MEMCACHEDCLOUD_SERVERS"].split(','), {
       :username => ENV["MEMCACHEDCLOUD_USERNAME"],
       :password => ENV["MEMCACHEDCLOUD_PASSWORD"],
-      :socket_timeout => 0.15, # default was 1
+      :socket_timeout => (ENV["MEMCACHE_TIMEOUT"] || 0.15).to_f, # default was 1
       :socket_failure_delay => false # don't retry failures
     }
   end
