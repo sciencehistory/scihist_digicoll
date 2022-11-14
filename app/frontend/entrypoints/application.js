@@ -28,11 +28,18 @@ console.log('Visit the guide for more information: ', 'https://vite-ruby.netlify
 // import '~/index.css'
 
 
-// We're still using rails-ujs for now. Rails-ujs 6.x will auto-start itself on import.
-import Rails from '@rails/ujs';
+
+
 
 import '../javascript/jquery_setup.js'
 import '../javascript/bootstrap_setup.js'
+
+// We're still using rails-ujs for now. Rails-ujs 6.x will auto-start itself on import.
+//
+// This needs to be imported AFTER jquery is set up so it will properly
+// patch jQuery.ajax with CSRF token, although it's not supposed to be this way,
+// and strangely this order is only required in vite dev and not vite build.
+import Rails from '@rails/ujs';
 
 // used by kithe, for forms with add/remove fields
 import "@nathanvda/cocoon";
