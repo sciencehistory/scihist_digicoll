@@ -92,11 +92,10 @@ class Admin::CollectionsController < AdminController
   helper_method :representative_is_image?
 
   def representative_dimensions_correct?
-    [ representative.width.present?,
-      representative.height.present?,
-      representative.width == representative.height,
-      representative.width >= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2,
-    ].all?
+    representative.width.present? &&
+    representative.height.present? &&
+    representative.width == representative.height &&
+    representative.width >= CollectionThumbAsset::COLLECTION_PAGE_THUMB_SIZE * 2
   end
   helper_method :representative_dimensions_correct?
 
