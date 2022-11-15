@@ -68,8 +68,10 @@ gem 'honeybadger', '~> 4.0'
 # https://github.com/sciencehistory/scihist_digicoll/issues/458
 gem "sprockets", "~> 4.0"
 
-# Use SCSS for stylesheets
-gem 'sassc-rails', '~> 2.0'
+# We no longer use sass through sprockets, only through vite!
+# So don't need a sass gem, we have sass npm package instead.
+# gem 'sassc-rails', '~> 2.0'
+
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
 # See https://github.com/rails/execjs#readme for more supported runtimes
