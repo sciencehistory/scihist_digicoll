@@ -6,6 +6,9 @@
 // includes things not compatible with IE11 -- we consider
 // it okay at present that management UI doesn't work on IE11, but we need public UI to.
 
+// browse_everything also has CSS, needs to come before our other local code cause others refer to it
+import "../browse_everything/browse_everything.js"
+
 import '../javascript/admin/member_sortable';
 import '../javascript/admin/simple_uppy_file_input';
 import '../javascript/admin/uppy_dashboard.js';
