@@ -763,7 +763,6 @@ DEPENDENCIES
   ruby-progressbar
   rubyzip (~> 2.0)
   sane_patch (< 2.0)
-  sassc-rails (~> 2.0)
   scout_apm
   selenium-webdriver
   shrine (~> 3.3)
