@@ -8,7 +8,7 @@ So we reluctantly made a complete copy of all browse-everything JS and CSS here,
 
 We thereby "forked" JS and CSS from browse-everything 1.2.0.
 
-Note that our ./browse_everthing.js includes/packages CS _and_ JS from one file; vite can handle that, and automatically writes out the neccesary html tags and/or javascript to load it all.
+Note that our ./browse_everthing.js includes/packages CS _and_ JS from one file; vite can handle that, and automatically writes out the neccesary html tags and/or javascript to load it all. It currently only needs to be loaded on staff pages, since that's the only place we use browse_everything.
 
 ## What if browse-everything in the future chanegs such that our forked JS/CSS no longer works with it?
 
