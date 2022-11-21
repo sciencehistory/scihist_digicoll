@@ -1,8 +1,10 @@
 <h1>Collections</h1>
-<p>
-  <%= link_to 'New Collection', new_admin_collection_path, class: "btn btn-primary " %>
-</p>
 
+<% if can? :manage, Collection %>
+  <p>
+    <%= link_to 'New Collection', new_admin_collection_path, class: "btn btn-primary " %>
+  </p>
+<% end %>
 
 <%= simple_form_for(admin_collections_path, method: "get") do %>
   <div class="row">
@@ -46,8 +48,10 @@
       <th class="department">Department</th>
       <th class="datestamp"><%= sort_link(@q, :created_at, "Created", page: nil) %></th>
       <th class="datestamp"><%= sort_link(@q, :updated_at, "Last Modified", page: nil) %></th>
-      <th class="action"></th>
-      <th></th>
+
+      <% if can? :manage, Collection %>
+        <th class="action"></th>
+      <% end %>
     </tr>
   </thead>
 
@@ -60,12 +64,14 @@
         <td><%= collection.department %></td>
         <td class="datestamp"><%=  l collection.created_at.to_date, format: :admin %> </td>
         <td class="datestamp"><%=  l collection.updated_at.to_date, format: :admin %> </td>
-        <td>
-          <div class="dropdown">
-            <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
-            <%= admin_dropdown_for_collection(collection, labelled_by_id: "dropdownMenuButton") %>
-          </div>
-        </td>
+        <% if can? :manage, Collection %>
+          <td>
+            <div class="dropdown">
+              <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
+              <%= admin_dropdown_for_collection(collection, labelled_by_id: "dropdownMenuButton") %>
+            </div>
+          </td>
+        <% end %>
       </tr>
     <% end %>
   </tbody>
