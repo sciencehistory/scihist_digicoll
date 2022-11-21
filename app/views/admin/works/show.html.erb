@@ -97,8 +97,8 @@
   <div class="tab-pane show active" id="nav-metadata" role="tabpanel" aria-labelledby="nav-metadata-tab">
 
         <p>
-          <%= link_to "Edit Metadata", edit_admin_work_path(@work), class: "btn btn-primary" %>
-          <% if Admin::WorksController.can_demote_to_asset?(@work) %>
+          <%= link_to("Edit Metadata", edit_admin_work_path(@work), class: "btn btn-primary") if can? :manage, Work%>
+          <% if Admin::WorksController.can_demote_to_asset?(@work) && (can? :manage, Work) %>
             <%= link_to "Demote to Asset",
                   demote_to_asset_admin_work_path(@work),
                   method: "put",
@@ -120,22 +120,24 @@
       </div>
     <% end %>
 
-    <div class="admin-work-toolbar d-flex flex-wrap">
-      <div class="alert alert-secondary mx-1">
-        <h2 class="h4 alert-heading">Add New Members</h2>
-          From:
-          <%= link_to "Files", admin_asset_ingest_path(@work), class: "btn btn-primary" %>
-          <%= link_to "New Child Work", new_admin_work_path(parent_id: @work), class: "btn btn-primary" %>
-      </div>
+    <% if can? :manage, Work %>
+      <div class="admin-work-toolbar d-flex flex-wrap">
+        <div class="alert alert-secondary mx-1">
+          <h2 class="h4 alert-heading">Add New Members</h2>
+            From:
+            <%= link_to "Files", admin_asset_ingest_path(@work), class: "btn btn-primary" %>
+            <%= link_to "New Child Work", new_admin_work_path(parent_id: @work), class: "btn btn-primary" %>
+        </div>
 
-      <div class="alert alert-secondary mx-1">
-        <h2 class="h4 alert-heading">Re-order Members</h2>
-        <%= link_to "Manual", reorder_members_admin_work_path(@work), class: "btn btn-primary" %>
-        <%= link_to "Alphabetical", reorder_members_admin_work_path(@work), method: "put", class: "btn btn-primary", data: { confirm: "Re-ordering members alphabetically by title can't be undone" } %>
+        <div class="alert alert-secondary mx-1">
+          <h2 class="h4 alert-heading">Re-order Members</h2>
+          <%= link_to "Manual", reorder_members_admin_work_path(@work), class: "btn btn-primary" %>
+          <%= link_to "Alphabetical", reorder_members_admin_work_path(@work), method: "put", class: "btn btn-primary", data: { confirm: "Re-ordering members alphabetically by title can't be undone" } %>
+        </div>
       </div>
-    </div>
+    <% end %>
 
-    <p><%= @work.members.count  %> members</p>
+    <p><%= pluralize @work.members.count, "member"%></p>
 
     <%= render "member_list_table", work: @work %>
   </div>

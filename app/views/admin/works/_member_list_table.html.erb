@@ -7,7 +7,9 @@
         <th class="title">Title</th>
         <th class="datestamp">Created</th>
         <th class="datestamp">Last Modified</th>
-        <th class="action"></th>
+        <% if can? :manage, Work %>
+          <th class="action"></th>
+        <% end %>
       </tr>
     </thead>
 
@@ -51,18 +53,18 @@
           </td>
           <td class="datestamp"><%= l member.created_at.to_date, format: :admin  %></td>
           <td class="datestamp"><%= l member.updated_at.to_date, format: :admin %></td>
-          <td>
-            <div class="dropdown dropdown-menu-right">
-
-              <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
-
-              <% if member.kind_of?(Work) %>
-                <%= admin_dropdown_for_work(member, labelled_by_id: "dropdownMenuButton") %>
-              <% elsif member.kind_of?(Asset) %>
-                <%= admin_dropdown_for_asset(member, labelled_by_id: "dropdownMenuButton") %>
-              <% end %>
-            </div>
-          </td>
+          <% if can? :manage, member %>
+            <td>
+              <div class="dropdown dropdown-menu-right">
+                <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
+                <% if member.kind_of?(Work) %>
+                  <%= admin_dropdown_for_work(member, labelled_by_id: "dropdownMenuButton") %>
+                <% elsif member.kind_of?(Asset)%>
+                  <%= admin_dropdown_for_asset(member, labelled_by_id: "dropdownMenuButton") %>
+                <% end %>
+              </div>
+            </td>
+          <% end %>
         </tr>
       <% end %>
     </tbody>

@@ -1,9 +1,11 @@
 <h1>Works</h1>
 
-<p>
-  <%= link_to 'Create new work', new_admin_work_path, class: "btn btn-primary" %>
-  <%= link_to 'Batch create works', admin_batch_create_path, class: "btn btn-outline-primary" %>
-</p>
+<% if can? :manage, Work %>
+  <p>
+    <%= link_to 'Create new work', new_admin_work_path, class: "btn btn-primary" %>
+    <%= link_to 'Batch create works', admin_batch_create_path, class: "btn btn-outline-primary" %>
+  </p>
+<% end %>
 
 <%# this is ransack %>
 <%= search_form_for [:admin, @q]  do |f| %>
@@ -73,7 +75,9 @@
       <th class="title"><%= sort_link(@q, :title, page: nil) %></th>
       <th class="datestamp"><%= sort_link(@q, :created_at, "Created", page: nil) %></th>
       <th class="datestamp"><%= sort_link(@q, :updated_at, "Last Modified", page: nil) %></th>
-      <th class="action"></th>
+      <% if can? :manage, Work %>
+        <th class="action"></th>
+      <% end %>
       <th>Cart</th>
     </tr>
   </thead>
@@ -86,12 +90,14 @@
         <td><%= link_to work.title, admin_work_path(work) %> <%= publication_badge(work) %></td>
         <td class="datestamp"><%= l work.created_at.to_date, format: :admin  %></td>
         <td class="datestamp"><%= l work.updated_at.to_date, format: :admin %></td>
-        <td>
-          <div class="dropdown">
-            <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
-            <%= admin_dropdown_for_work(work, labelled_by_id: "dropdownMenuButton") %>
-          </div>
-        </td>
+        <% if can? :manage, Work %>
+          <td>
+            <div class="dropdown">
+              <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
+              <%= admin_dropdown_for_work(work, labelled_by_id: "dropdownMenuButton") %>
+            </div>
+          </td>
+        <% end %>
         <td><%= render CartControlComponent.new(work.friendlier_id, cart_presence: @cart_presence, label_sr_only: true) %></td>
       </tr>
     <% end %>
