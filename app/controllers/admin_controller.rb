@@ -4,10 +4,8 @@ class AdminController < ApplicationController
 
   before_action :authorize_access
 
-  # For now, admin controllers allow anyone who is logged in
   def authorize_access
-    unless current_user.present?
-      # raise the error from `access_granted` to be consistent.
+    unless can? :see_admin
       raise AccessGranted::AccessDenied.new("Only logged-in users can access admin screens")
     end
   end
