@@ -10,32 +10,25 @@ class AccessPolicy
   def configure
     # The most important admin role, gets checked first
 
-    role :admin, proc { |user| !user.nil? && user.admin? } do
-      can :destroy, Work
-      can :publish, Work
-
-      can :destroy, Collection
-      can :publish, Collection
-
-      can :destroy, Asset
-      can :publish, Asset
-
-      can :admin, User
-
+    role :admin, proc { |user| user&.admin? } do
+      can :see_admin
+      can :manage, Kithe::Model
+      can :manage, User
       can :destroy, Admin::QueueItemComment do |comment, user|
         comment.user_id == user.id
       end
     end
 
-    # Any logged-in staff considered staff at present
-    role :staff, proc { |user| !user.nil? } do
-      can :read, Kithe::Model # whether publisehd or not
+    role :editor, proc {  user&.editor? } do
+      can :see_admin
+      can :read, Kithe::Model # whether published or not
       can :update, Kithe::Model
+      can :publish, Kithe::Model
+    end
 
-      can :destroy, Admin::QueueItemComment do |comment, user|
-        comment.user_id == user.id
-      end
-
+    role :viewer, proc { |user| user&.viewer? } do
+      can :see_admin
+      can :read, Kithe::Model # whether published or not
     end
 
     role :public do
