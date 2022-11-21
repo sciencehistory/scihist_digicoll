@@ -34,8 +34,16 @@
       <tr>
         <td><%= thumb_image_tag(asset, size: :mini, image_missing_text: true) %></td>
         <td><%= asset.friendlier_id %></td>
-        <td><%= link_to asset.title, [:admin, asset] %></td>
-        <td><%= link_to asset.parent.title, admin_work_path(asset.parent) %></td>
+        <td>
+          <%= link_to asset.title, admin_asset_path(asset) %>
+        </td>
+        <td>
+          <% if asset.parent.is_a? Work %>
+            <%= link_to asset.parent.title, admin_work_path(asset.parent) %>
+          <% else %>
+            <%= link_to asset.parent.title, collection_path(asset.parent) %>
+          <% end %>
+        </td>
         <td class="datestamp"><%=  l asset.created_at.to_date, format: :admin %> </td>
       </tr>
     <% end %>
