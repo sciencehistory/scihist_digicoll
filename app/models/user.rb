@@ -16,12 +16,22 @@ class User < ApplicationRecord
   has_many :cart_items, dependent: :delete_all
   has_many :works_in_cart, through: :cart_items, source: :work
 
+  enum role: %w{editor viewer}.collect {|v| [v, v]}.to_h
+
+  # don't allow admins to also be editors or viewers, e.g.
+  validates_with UserRoleValidator, fields: [:role]
+
   # Only used by devise validatable, we want to allow user accounts
   # to be saved with nil password, means they won't be able to log in
   # with any password.
   def password_required?
     false
   end
+
+  def role_for_display
+    admin? ? 'admin' : role
+  end
+
 
   # Override of a devise method to lock users out if their individual `locked_out`
   # flag is set, or our global environmental `logins_disabled` flag is set.
