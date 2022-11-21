@@ -53,7 +53,6 @@
   <body>
     <div class="container-fluid">
       <%= render "flash_message_display" %>
-
       <% if ["edit", "new", "display_attach_form", "reorder_members_form", "add_files"].include?(params[:action].to_s) %>
         <%= yield %>
       <% else %>
@@ -64,11 +63,11 @@
               <% if ScihistDigicoll::Env.lookup(:service_level) %>
                 <%= content_tag "li", ScihistDigicoll::Env.lookup(:service_level).upcase, class: ["text-center p-1 mb-2 font-weight-bold", ("bg-warning" if ScihistDigicoll::Env.staging?)] %>
               <% end %>
-              <li><%= link_to  "Works", admin_works_path %></li>
-              <li><%= link_to  "Assets", admin_assets_path %></li>
+              <li><%= link_to "Works", admin_works_path %></li>
+              <li><%= link_to "Assets", admin_assets_path %></li>
               <li><%= link_to "Collections", admin_collections_path %></li>
               <li><%= link_to "Digitization Queue", collecting_areas_admin_digitization_queue_items_path %></li>
-              <% if can? :admin, User %>
+              <% if can? :manage, User %>
                 <li><%= link_to "Users", admin_users_path %></li>
               <% end %>
               <li><%= link_to "Public Search", search_catalog_path %></li>
@@ -89,9 +88,11 @@
               <li><%= link_to "Storage Report", admin_storage_report_path %></li>
               <li><%= link_to "Orphan Report", admin_orphan_report_path %></li>
               <li><hr></li>
-              <% if current_user %>
-                <li><%= link_to("Logout", destroy_user_session_path, method: :delete) %></li>
-              <% else %>
+              <li>
+                <%= current_user&.name %> ( <%= current_user&.role_for_display %> )
+              </li>   
+              <li><%= link_to("Logout", destroy_user_session_path, method: :delete) %></li>
+              <% unless current_user %>
                 <li><%= link_to('Login', new_user_session_path)  %></li>
               <% end %>
             </ul>
