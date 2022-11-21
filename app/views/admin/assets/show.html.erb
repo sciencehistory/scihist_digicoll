@@ -1,12 +1,20 @@
 <div>Managing an Asset</div>
 <h1><%= @asset.title %></h1>
-<%if @asset.parent %>
-  <p>In Work: <%= link_to @asset.parent.title, [:admin, @asset.parent] %> </p>
+<%if @asset&.parent %>
+  <% if @asset.parent.is_a? Work %>
+    <p>In work: <%= link_to @asset.parent.title, [:admin, @asset.parent] %> </p>
+  <% else %>
+    <p>Thumbnail for collection: <%= link_to @asset.parent.title, collection_path(@asset.parent) %> </p>
+  <% end %>
+
 <% end %>
-<p>
-  <%= link_to "Edit", edit_admin_asset_path(@asset), class: "btn btn-primary" %>
-  <%= link_to "Convert to child work", convert_to_child_work_admin_asset_path(@asset), method: "put", class: "btn btn-primary" %>
-</p>
+
+<% if @asset&.parent.is_a? Work %>
+  <p>
+    <%= link_to "Edit", edit_admin_asset_path(@asset), class: "btn btn-primary" %>
+    <%= link_to "Convert to child work", convert_to_child_work_admin_asset_path(@asset), method: "put", class: "btn btn-primary" %>
+  </p>
+<% end %>
 
 <div class="row">
   <div class="col-sm-6">
@@ -256,31 +264,34 @@
 
     <h2 class="mt-4">Derivatives</h2>
 
-    <p>
-      <%= simple_form_for(@asset, wrapper: :horizontal_form) do |f| %>
+    <% if @asset&.parent.is_a? Work %>
+      <p>
+        <%= simple_form_for(@asset, wrapper: :horizontal_form) do |f| %>
 
-        <p class="text-muted small mt-3">
-            Use the <b>restricted</b> storage type for confidential files such as restricted oral histories.
-            Otherwise, normally use <b>public</b> storage type. After changing Derivative Storage Type
-            it may take a few minutes for derivative locations to be updated.</p>
-        </p>
+          <p class="text-muted small mt-3">
+              Use the <b>restricted</b> storage type for confidential files such as restricted oral histories.
+              Otherwise, normally use <b>public</b> storage type. After changing Derivative Storage Type
+              it may take a few minutes for derivative locations to be updated.</p>
+          </p>
 
-        <div class="row mb-3">
-          <div class="col-sm-4">
-            <%= f.label :derivative_storage_type %>
+          <div class="row mb-3">
+            <div class="col-sm-4">
+              <%= f.label :derivative_storage_type %>
+            </div>
+            <div class="col-sm-8">
+              <%= f.input_field :derivative_storage_type,
+                as: :select,
+                collection: Asset::DERIVATIVE_STORAGE_TYPE_LOCATIONS.keys,
+                include_blank: false,
+                class: "custom-select" %>
+            </div>
           </div>
-          <div class="col-sm-8">
-            <%= f.input_field :derivative_storage_type,
-              as: :select,
-              collection: Asset::DERIVATIVE_STORAGE_TYPE_LOCATIONS.keys,
-              include_blank: false,
-              class: "custom-select" %>
-          </div>
-        </div>
 
-        <%= f.button :submit, "Update Derivative Storage Type" %>
-      <% end %>
-    </p>
+          <%= f.button :submit, "Update Derivative Storage Type" %>
+        <% end %>
+      </p>
+    <% end %>
+
 
     <ul class="list-unstyled">
       <% @asset.file_derivatives.each_pair do |key, derivative| %>
