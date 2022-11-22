@@ -155,7 +155,7 @@ class Admin::AssetsController < AdminController
   end
 
   def work_is_oral_history?
-    @asset.parent.genre && @asset.parent.genre.include?('Oral histories')
+    (@asset.parent.is_a? Work) && @asset.parent.genre && @asset.parent.genre.include?('Oral histories')
   end
   helper_method :work_is_oral_history?
 
