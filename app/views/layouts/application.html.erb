@@ -65,7 +65,7 @@
       <%= render 'ie_unsupported_warning' %>
     <% end %>
 
-    <% if current_user %>
+    <% if can? :see_admin %>
       <%= render 'front_end_admin_navbar' %>
     <% end %>
 

@@ -71,12 +71,13 @@
                 <li><%= link_to "Users", admin_users_path %></li>
               <% end %>
               <li><%= link_to "Public Search", search_catalog_path %></li>
-              <li>
-                <%= link_to admin_cart_items_path do %>
-                  Cart <span class="badge badge-secondary" data-role="cart-counter"><%= current_user.works_in_cart.count %></span>
-                <% end %>
-              </li>
-
+              <% if can? :manage, Work %>
+                <li>
+                  <%= link_to admin_cart_items_path do %>
+                    Cart <span class="badge badge-secondary" data-role="cart-counter"><%= current_user.works_in_cart.count %></span>
+                  <% end %>
+                </li>
+              <% end %>
               <li><hr></li>
               <li><%= link_to "Oral History Requests", admin_oral_history_access_requests_path %></li>
               <li><%= link_to "Interviewer Profiles", admin_interviewer_profiles_path %></li>
