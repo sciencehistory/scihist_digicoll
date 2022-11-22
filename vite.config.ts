@@ -16,6 +16,7 @@ import { resolve } from 'path'
 
 
 export default defineConfig({
+  // enable sass sourcemaps -- vite supports sass sourcemaps with dev server only
   css: {
     devSourcemap: true
   },
