@@ -106,10 +106,10 @@ Then:
 
 ### Assets: Javascript, CSS, etc
 
-We preferentially use Vite.js (an ES6-style JS, https://vite-ruby.netlify.app/) for managing and assembling our **javascript AND stylesheets**. -- although some dependencies may still require sprockets.The diversity of things we need to handle still makes things somewhat cofusing.    (This section under construction).
+We preferentially use Vite.js (an ES6-style JS bundler, https://vite-ruby.netlify.app/) for managing and assembling our **javascript AND CSS stylesheets**. -- although some dependencies may still require sprockets.The diversity of things we need to handle still makes things somewhat confusing.
 
 
-* Vite source is at `./app/frontend`.
+* Frontend assets managed by vite source are at `./app/frontend`.
 
   * Note there is a stylesheet main entrypoint at `./app/frontends/entrypoints/application.scss`, as well as javascript main entrypoint at `./app/frontends/entrypoints/application.js`
 
@@ -119,7 +119,9 @@ We preferentially use Vite.js (an ES6-style JS, https://vite-ruby.netlify.app/) 
 
   * Note also we have some additional entrypoints, such as an admin.js we only load in admin layout, with JS we can avoid loading for the public to keep things smaller for them.
 
-* Vite has a dev server you can run by `bundle exec vite dev` in it's own terminal window. While things should still work without this -- vite will on-demand build the assets similarly to how it does for prodution -- using the dev server will give you faster compilation, better error messages, and CSS sourcemaps which are pretty important for debuggign CSS.
+* Vite has a dev server you can run by `./bin/vite dev` in it's own terminal window. While things should still work without the vite dev server runnign -- vite will on-demand build the assets similarly to how it does for production -- using the vite dev server will give you faster compilation; better error messages; and CSS sourcemaps which are pretty important for debugging CSS.
+
+* If anything odd is going on, or vite build seems out of sync, `./bin/vite clobber` might be a good idea.
 
 * Since we aren't using sass via sprockets anymore, we don't need the sass rubygem. We still definitely use sass heavily via our vite build, where it uses the sass npm package.
 
@@ -127,18 +129,17 @@ We preferentially use Vite.js (an ES6-style JS, https://vite-ruby.netlify.app/) 
 
   * Sass rubygems used ruby-sass or libsass, which are deprecated by sass! So that's good we're not using them anymore.
 
-  * dart-sass deprecates some things, like the `/` divide operator (!), that were not depreccated in rubysass/libsass.  It also provides some functions which were NOT supported by previous libsass/rubysass. So that's a bit confusing.
+  * dart-sass deprecates some things, [like the `/` divide operator](https://sass-lang.com/documentation/breaking-changes/slash-div), that were not depreccated in rubysass/libsass.  It also provides some functions which were NOT supported by previous libsass/rubysass. So that's a bit confusing.
 
 * image files and other static assets are for the moment still handled by sprockets, located in ./app/assets/images and fonts/, and referenced via rails sprockets helper methods. We could potentially switch some of these over to vite too.
 
-#### Individual dependency special handling notes
+#### Individual asset dependency special handling notes
 
-* blacklight JS and CSS now comes from the `blacklight_frontend` npm package. If you update the
-  blacklight rubygem, you will have to manually make sure to remember to check if a new blacklight_frontend npm package is available and update with yarn too! Letting these get out of sync could be disastrous, and is a somewhat confusing manual process.
+* blacklight JS and CSS now comes from the [blacklight-frontend npm package](https://www.npmjs.com/package/blacklight-frontend). If you update the blacklight rubygem, you will have to manually make sure to remember to check if a new `blacklight_frontend` npm package is available and update with yarn too! Letting these get out of sync could be disastrous, and is a somewhat confusing manual process.
 
 * browse_everything is handled weirdly, with local copy and fork of browse everything assets, and a separte frontend loaded only on admin layout. See ./app/frontend/browse_everything/README.md
 
-* There was no sane way to incorporate blacklight_range_limit in the vite build, we still load it via sprockets, with it's own sprockets manifest files just for it. `./app/asssets/javasripts/import_blacklight_range_limit.js` and `./app/asssets/stylesheets/import_blacklight_range_limit.css`. These are also linked to separately from layouts. It is all we are using sprockets for.
+* There was no reasonable way found to incorporate blacklight_range_limit in the vite build, we still load it via sprockets, with it's own sprockets manifest files just for it. `./app/asssets/javasripts/import_blacklight_range_limit.js` and `./app/asssets/stylesheets/import_blacklight_range_limit.css`. These are also linked to separately from layouts. It is all we are using sprockets for.
 
 * uppy (JS for fancy file upload func) is still being loaded in it's own separate script tag from remote CDN (see admin.html.erb layout). This is recommended against by the uppy docs, and we should transition to providing via webpacker and `import` statement, just including the parts of uppy we need, but haven't figured out how to do that yet (including uppy css)
 
