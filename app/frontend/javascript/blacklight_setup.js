@@ -16,7 +16,7 @@
 // While this picking-and-choosing apporach is not documented, other BL
 // apps in the wild do it, eg:
 //
-//   * https://github.com/psu-libraries/psulib_blacklight/blob/451a8ab9e64eaed8b0000bda0300a4f28097f165/package.json
+//   * https://github.com/psu-libraries/psulib_blacklight/blob/451a8ab9e64eaed8b0000bda0300a4f28097f165/app/javascript/psulib_blacklight/index.js
 //   * https://github.com/unt-libraries/discover/blob/3c02d22bda7ec3f9e1d2f71a49c3b7e662ef8758/app/webpacker/packs/base.js.erb
 //
 // From all sub-parts at Blacklight 7.31.0
