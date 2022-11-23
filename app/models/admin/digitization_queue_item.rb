@@ -1,7 +1,7 @@
 class Admin::DigitizationQueueItem < ApplicationRecord
   has_many :queue_item_comments, dependent: :destroy
 
-  has_many :works
+  has_many :works, dependent: :restrict_with_exception
 
   scope :open_status, -> { where.not(status: "closed") }
 
