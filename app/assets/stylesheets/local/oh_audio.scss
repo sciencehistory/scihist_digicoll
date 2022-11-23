@@ -362,14 +362,5 @@
     .ohms-hyperlinks ul {
       padding-left: 0.66em;
     }
-
-    .keywords {
-      font-family: $font-family-sans-serif;
-      .badge {
-        // for some reason text-indent we used for hanging indent
-        // is being inherited, we have to stop it!
-        text-indent: initial;
-      }
-    }
   }
 }
