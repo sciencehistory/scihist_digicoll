@@ -119,7 +119,7 @@ We preferentially use Vite.js (an ES6-style JS bundler, https://vite-ruby.netlif
 
   * Note also we have some additional entrypoints, such as an admin.js we only load in admin layout, with JS we can avoid loading for the public to keep things smaller for them.
 
-* Vite has a dev server you can run by `./bin/vite dev` in it's own terminal window. While things should still work without the vite dev server runnign -- vite will on-demand build the assets similarly to how it does for production -- using the vite dev server will give you faster compilation; better error messages; and CSS sourcemaps which are pretty important for debugging CSS.
+* Vite has a dev server you can run by `./bin/vite dev` in it's own terminal window. While things should still work without the vite dev server runnign -- vite will on-demand build the assets similarly to how it does for production -- using the vite dev server will give you faster compilation; better error messages; and **CSS source maps** which are pretty important for debugging CSS.
 
 * If anything odd is going on, or vite build seems out of sync, `./bin/vite clobber` might be a good idea.
 
@@ -136,6 +136,7 @@ We preferentially use Vite.js (an ES6-style JS bundler, https://vite-ruby.netlif
 #### Individual asset dependency special handling notes
 
 * blacklight JS and CSS now comes from the [blacklight-frontend npm package](https://www.npmjs.com/package/blacklight-frontend). If you update the blacklight rubygem, you will have to manually make sure to remember to check if a new `blacklight_frontend` npm package is available and update with yarn too! Letting these get out of sync could be disastrous, and is a somewhat confusing manual process.
+  * note we also import selected blacklight.js files, instead of the whole package! This could require maintenance on upgrades. See `./frontend/javascript/blacklight_setup.js`
 
 * browse_everything is handled weirdly, with local copy and fork of browse everything assets, and a separte frontend loaded only on admin layout. See ./app/frontend/browse_everything/README.md
 
