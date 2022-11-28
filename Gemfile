@@ -30,6 +30,9 @@ gem 'scout_apm'
 # to spend the time to update Blacklight to latest -- you will usually want to update
 # blacklight_range_limit to latest at same time.
 #
+# NOTE ALSO: We are using `blacklight-frontend` JS NPM package, updating blacklight
+# version may require an update with yarn to `blacklight-frontend`, has to be
+# checked manually.
 gem "blacklight", "~> 7.32.0"
 gem "blacklight_range_limit", "~> 8.0", ">= 8.2.3" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
@@ -65,8 +68,10 @@ gem 'honeybadger', '~> 4.0'
 # https://github.com/sciencehistory/scihist_digicoll/issues/458
 gem "sprockets", "~> 4.0"
 
-# Use SCSS for stylesheets
-gem 'sassc-rails', '~> 2.0'
+# We no longer use sass through sprockets, only through vite!
+# So don't need a sass gem, we have sass npm package instead.
+# gem 'sassc-rails', '~> 2.0'
+
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
 # See https://github.com/rails/execjs#readme for more supported runtimes
