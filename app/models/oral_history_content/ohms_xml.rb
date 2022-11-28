@@ -79,7 +79,7 @@ class OralHistoryContent
     # only providing access to those we are.
     class IndexPoint
 
-      attr_reader :title, :partial_transcript, :synopsis, :keywords
+      attr_reader :title, :partial_transcript, :synopsis, :keywords, :subjects
       # timestamp is in seconds
       attr_reader :timestamp
 
@@ -92,6 +92,7 @@ class OralHistoryContent
         @synopsis = xml_node.at_xpath("./ohms:synopsis", ohms: OHMS_NS)&.text&.strip
         @partial_transcript = xml_node.at_xpath("./ohms:partial_transcript", ohms: OHMS_NS)&.text&.strip
         @keywords = xml_node.at_xpath("./ohms:keywords", ohms: OHMS_NS)&.text&.split(";")
+        @subjects = xml_node.at_xpath("./ohms:subjects", ohms: OHMS_NS)&.text&.split(";")
 
         @hyperlinks = xml_node.xpath("./ohms:hyperlinks", ohms: OHMS_NS).collect do |hyperlink_xml|
           href = hyperlink_xml.at_xpath("./ohms:hyperlink", ohms: OHMS_NS)&.text&.strip&.presence
@@ -104,6 +105,11 @@ class OralHistoryContent
             )
           end
         end.compact
+      end
+
+      # We generally combine keywords and subjects in the UI into one field.
+      def all_keywords_and_subjects
+        keywords + subjects
       end
 
       # We want to allow <i> tags, and strip/escape the rest appropriately.

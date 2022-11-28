@@ -177,7 +177,7 @@ class WorkIndexer < Kithe::Indexer
 
         if rec.oral_history_content.has_ohms_index?
           rec.oral_history_content.ohms_xml.index_points.each do |index_point|
-            acc << index_point.keywords.join("; ") if index_point.keywords.present?
+            acc << index_point.all_keywords_and_subjects.join("; ") if index_point.all_keywords_and_subjects.present?
             acc << index_point.title if index_point.title.present?
             acc << index_point.synopsis if index_point.synopsis.present?
           end
