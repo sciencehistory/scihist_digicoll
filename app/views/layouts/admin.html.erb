@@ -29,18 +29,16 @@
 
     <%= render "layouts/head_tag_common" %>
 
-    <%# sprockets 'application' js and css %>
-    <%= stylesheet_link_tag    'application', media: 'all' %>
+    <%# we mainly exclusively use vite, not sprockets -- but still use sprockets
+        to get blacklight_range_limit assets %>
 
-    <%# vite's 'application' js before sprockets later %>
+    <%= vite_stylesheet_tag 'application.scss', media: "all" %>
+    <%= stylesheet_link_tag 'import_blacklight_range_limit', media: 'all' %>
+
     <%= vite_client_tag %>
     <%= vite_javascript_tag 'application', defer: true %>
 
-    <%= javascript_include_tag 'application', defer: true %>
-
-    <%# browse_everything can only be provided via sprockets, but is currently
-        only used on admin pages, we require a built file just for it here %>
-    <%= javascript_include_tag 'browse_everything', defer: true %>
+    <%= javascript_include_tag 'import_blacklight_range_limit', defer: true %>
 
     <%# admin-specific JS built by vite, will also include css if needed automatically %>
     <%= vite_javascript_tag 'admin', defer: true %>

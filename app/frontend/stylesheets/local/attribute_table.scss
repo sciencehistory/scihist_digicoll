@@ -15,7 +15,7 @@ $attribute-table-max-tabular: 22.5em;
   @extend .table;
   @extend .table-sm;
   width: 100%;
-  max-width: ($max-readable-width / 0.67);
+  max-width: ($max-readable-width * 1.5);
 
   // Make text in table line up with text above or below it not in table,
   // and thus border lines will extend a bit outside the ordinary space, negative margin.
@@ -38,7 +38,7 @@ $attribute-table-max-tabular: 22.5em;
     td {
       border-top: 0;
       &:not(:last-child) {
-        margin-bottom: $paragraph-spacer / 2;
+        margin-bottom: $paragraph-spacer * 0.5;
       }
       ul {
         padding-left: 0;
@@ -86,7 +86,7 @@ $attribute-table-max-tabular: 22.5em;
       margin-bottom: 0;
     }
     .attribute:not(:last-child) {
-      margin-bottom: $paragraph-spacer / 2;
+      margin-bottom: $paragraph-spacer * 0.5;
     }
   }
 }

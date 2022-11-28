@@ -179,7 +179,7 @@
         transition: transform .2s;
         &:hover, &:focus {
           transform: scale(1.2);
-          z-indeX: 1;
+          z-index: 1;
 
           .recent-title {
             opacity: 1;
