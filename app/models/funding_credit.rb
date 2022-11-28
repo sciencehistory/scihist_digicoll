@@ -54,6 +54,10 @@ class FundingCredit
       label: "nhprc",
       path: "NHPRC.jpg"
     },
+    "nsf" => {
+      label: "NSF",
+      path: "National-Science-Foundation-logo.png"
+    },
     "pew" => {
       label: "Pew Charitable Trusts",
       path: "PEW_Charitable_Trusts.jpg"
