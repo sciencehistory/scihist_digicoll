@@ -20,7 +20,7 @@ let vitePlugins = [
 // https://github.com/ElMassimo/vite_ruby/discussions/281
 //
 // But in development autoBuild mode, it slows things down, and doesn't help, so not there.
-if (!process.env.VITE_RUBY_AUTO_BUILD) {
+if (! (process.env.VITE_RUBY_AUTO_BUILD == "true")) {
   vitePlugins = vitePlugins.concat([
     // Create gzip copies of relevant assets
     gzipPlugin(),
