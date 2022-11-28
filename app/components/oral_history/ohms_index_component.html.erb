@@ -64,9 +64,8 @@
           <% if index_point.keywords.present? %>
             <p class="attribute keywords">
               <span class="attribute-label">Keywords</span>
-              <% index_point.keywords.each do |keyword| %>
-                <span class="badge badge-pill badge-dark"><%= keyword %></span>
-              <% end %>
+              <% index_point.keywords.each_with_index do |keyword, index| %> <span class="oh-keyword"><%= keyword %></span> <% if index < index_point.keywords.length - 1 %><span class="keyword-seperator ml-1 mr-1">•</span><% end %>
+              <%- end -%>
             </p>
           <% end %>
 
