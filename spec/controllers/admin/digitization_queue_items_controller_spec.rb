@@ -54,5 +54,16 @@ RSpec.describe Admin::DigitizationQueueItemsController, :logged_in_user, type: :
       }
     end
 
+    describe "with attached work" do
+      let(:queue_item) { create(:digitization_queue_item, title: "Newly scanned rare book", works: [create(:work)]) }
+
+      it "denies deletion" do
+        delete :destroy, params: { id: queue_item.id }
+
+        expect(response.redirect?).to be true
+        expect(response).to redirect_to(admin_digitization_queue_item_path(queue_item))
+        expect(response.request.flash[:notice]).to eq "Can't delete Digitization Queue Item with attached works"
+      end
+    end
   end
 end

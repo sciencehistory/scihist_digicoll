@@ -43,12 +43,20 @@ class Admin::DigitizationQueueItemsController < AdminController
     end
   end
 
+  # DELETE /admin/digitization_queue_items/1
   def destroy
-    @admin_digitization_queue_item.destroy!
-
     respond_to do |format|
-      format.html { redirect_to admin_digitization_queue_items_url(@admin_digitization_queue_item.collecting_area), notice: "Digitization queue item was successfully destroyed." }
-      format.json { head :no_content }
+      if  @admin_digitization_queue_item.works.size > 0
+        # can't delete; there can stil be a race condition where just get an
+        # exception without a nice error message, but that's good enough.
+        notice = "Can't delete Digitization Queue Item with attached works"
+        format.html { redirect_to @admin_digitization_queue_item, notice: notice }
+        format.json { render json: { notice: notice } }
+      else
+        @admin_digitization_queue_item.destroy!
+        format.html { redirect_to admin_digitization_queue_items_url(@admin_digitization_queue_item.collecting_area), notice: "Digitization queue item was successfully destroyed." }
+        format.json { head :no_content }
+      end
     end
   end
 
@@ -72,16 +80,6 @@ class Admin::DigitizationQueueItemsController < AdminController
   def collecting_areas
     @open_counts = Admin::DigitizationQueueItem.open_status.group(:collecting_area).count
   end
-
-  # DELETE /admin/digitization_queue_items/1
-  # DELETE /admin/digitization_queue_items/1.json
-  # def destroy
-  #   @admin_digitization_queue_item.destroy
-  #   respond_to do |format|
-  #     format.html { redirect_to admin_digitization_queue_items_url(collecting_area), notice: 'Digitization queue item was successfully destroyed.' }
-  #     format.json { head :no_content }
-  #   end
-  # end
 
   def collecting_area
     @admin_digitization_queue_item.try(:collecting_area) || params.fetch(:collecting_area)
