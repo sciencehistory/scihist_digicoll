@@ -181,7 +181,7 @@
 
       .text {
         flex-shrink: 3;
-        min-width: $max-readable-width / 2;
+        min-width: $max-readable-width * 0.5;
       }
     }
 

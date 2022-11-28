@@ -44,6 +44,8 @@ import Rails from '@rails/ujs';
 // used by kithe, for forms with add/remove fields
 import "@nathanvda/cocoon";
 
+import '../javascript/blacklight_setup.js';
+
 import "../javascript/responsive-tabs/responsive-tabs.js"
 
 import '../javascript/init_popovers.js';
