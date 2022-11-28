@@ -10,7 +10,7 @@
 <meta property="article:author" content="https://www.facebook.com/<%= Rails.application.config.facebook_acct %>" />
 
 <meta property="og:title" content="<%= attributes.simple_title %>"/>
-<meta property="og:description" content="<%= attributes.short_plain_description %>"/>
+<meta name="description" property="og:description" content="<%= attributes.short_plain_description %>"/>
 <meta property="og:image" content="<%= attributes.share_media_url %>"/>
 <%# we know we're delivering a JPG %>
 <meta property="og:image:type" content="image/jpeg" />
