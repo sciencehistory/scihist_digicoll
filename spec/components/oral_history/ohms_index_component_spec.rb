@@ -24,4 +24,19 @@ describe OralHistory::OhmsIndexComponent, type: :component do
       expect(hyperlinks.all? { |h| h["href"].present? && h.text.strip.present? }).to be(true)
     end
   end
+
+  describe "keywords and subjects" do
+    before do
+      # preconditions to make sure we're testing what we expect
+      expect(ohms_xml.index_points.first.keywords).to be_present
+      expect(ohms_xml.index_points.first.subjects).to be_present
+      expect(ohms_xml.index_points.first.subjects).not_to eq(ohms_xml.index_points.first.keywords)
+    end
+    it "includes both under keywords" do
+      output_keywords = parsed.css(".oh-keyword").collect(&:text)
+      # all keywords and subjects are in output_keywords
+      expect(ohms_xml.index_points.first.keywords - output_keywords).to be_empty
+      expect(ohms_xml.index_points.first.subjects - output_keywords).to be_empty
+    end
+  end
 end

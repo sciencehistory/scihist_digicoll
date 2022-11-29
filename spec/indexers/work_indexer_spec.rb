@@ -164,7 +164,7 @@ describe WorkIndexer do
       it "indexes ToC components" do
         output_hash = WorkIndexer.new.map_record(work)
 
-        joined_keywords = work.oral_history_content.ohms_xml.index_points.collect { |ip| ip.keywords.join("; ") }.collect(&:presence).compact
+        joined_keywords = work.oral_history_content.ohms_xml.index_points.collect { |ip| ip.all_keywords_and_subjects.join("; ") }.collect(&:presence).compact
 
         expect(output_hash["searchable_fulltext_en"]).to include(*joined_keywords)
         expect(output_hash["searchable_fulltext_en"]).to include(*work.oral_history_content.ohms_xml.index_points.collect(&:title).collect(&:presence).compact)
@@ -217,7 +217,7 @@ describe WorkIndexer do
     let(:english_only_work) do
       create(:public_work, language: ['English'], members: assets )
     end
-    
+
     # transcription : agnostic
     # translation   : en
     let(:bilingual_work) do
