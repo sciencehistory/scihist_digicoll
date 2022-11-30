@@ -21,8 +21,11 @@
           <% if user.locked_out? %>
             <span class="badge badge-danger">Locked out</span>
           <% end %>
-          <% if user.admin? %>
+          <% if user.admin_user? %>
             <span class="badge badge-primary">Admin</span>
+          <% end %>
+          <% if user.editor_user? %>
+            <span class="badge badge-primary">Editor</span>
           <% end %>
         </td>
         <td><%= user.name %></td>
