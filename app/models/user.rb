@@ -24,7 +24,7 @@ class User < ApplicationRecord
 
 
   def admin?
-    raise RuntimeError.new("Deprecated. Use admin_user?")
+    raise RuntimeError.new("Don't use this method. Use admin_user? instead.")
     user_type == "admin"
   end
 
