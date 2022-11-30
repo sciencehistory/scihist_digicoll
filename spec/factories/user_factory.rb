@@ -5,9 +5,5 @@ FactoryBot.define do
     factory :admin_user do
       user_type { "admin" }
     end
-
-    factory :editor_user do
-      user_type { "editor" }
-    end
   end
 end
