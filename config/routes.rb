@@ -4,10 +4,9 @@ Rails.application.routes.draw do
   concern :range_searchable, BlacklightRangeLimit::Routes::RangeSearchable.new
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
-  class LoggedInConstraint
+  class CanSeeAdminConstraint
     def self.matches?(request)
-      current_user = request.env['warden'].user
-      !!current_user
+      AccessPolicy.new(request.env['warden'].user).can? :see_admin_pages
     end
   end
 
@@ -229,7 +228,7 @@ Rails.application.routes.draw do
   # End Blacklight-generated routes
   ##
 
-  # Routes will even only _show up_ to logged in users, this applies
+  # Routes will even only _show up_ to can_see_admin users, this applies
   # to internal rack apps we're mounting here too, like shrine upload endpoints,
   # is one reason to use a constraint.
   namespace :admin do
@@ -334,8 +333,8 @@ Rails.application.routes.draw do
 
     # These 'sub-apps' are for admin-use only, but since they are sub-apps
     # aren't protected by the AdminController. We have Rails routing only
-    # provide the routes if there is a logged-in user.
-    constraints LoggedInConstraint do
+    # provide the routes if the user is allowed to see the admin pages.
+    constraints CanSeeAdminConstraint do
       mount Resque::Server, at: '/queues'
 
       mount Kithe::AssetUploader.upload_endpoint(:cache) => "/direct_upload", as: :direct_app_upload
@@ -348,8 +347,8 @@ Rails.application.routes.draw do
 
   # We can't put browse-everything in the routing namespace, cause it breaks
   # browse-everything, alas. We'll still make it route as if it were, and
-  # add a routing constraint to protect to just logged in users.
-  constraints LoggedInConstraint do
+  # add a routing constraint to protect to users allowed to see the admin pages.
+  constraints CanSeeAdminConstraint do
     mount BrowseEverything::Engine => '/admin/browse'
 
     # Don't know if we really need qa to be limited to logged-in users, but
