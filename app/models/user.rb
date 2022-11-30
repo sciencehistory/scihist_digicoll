@@ -12,9 +12,30 @@ class User < ApplicationRecord
   devise :database_authenticatable,
          :recoverable, :rememberable, :validatable
 
-
   has_many :cart_items, dependent: :delete_all
   has_many :works_in_cart, through: :cart_items, source: :work
+
+  # This will correspond to a "role" in the AccessPolicy class.
+  # "editor" will replace the current "staff" role.
+  # A new "reader" type will be added in a future PR.
+  USER_TYPES = %w{admin editor}.freeze
+  enum user_type: USER_TYPES.collect {|v| [v, v]}.to_h
+  validates :user_type, presence: true
+
+
+  def admin?
+    raise RuntimeError.new("Deprecated. Use admin_user?")
+    user_type == "admin"
+  end
+
+  def admin_user?
+    user_type == "admin"
+  end
+
+  # This is the same as the old "logged-in but not admin" user type.
+  def editor_user?
+    user_type == "editor"
+  end
 
   # Only used by devise validatable, we want to allow user accounts
   # to be saved with nil password, means they won't be able to log in
