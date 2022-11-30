@@ -13,6 +13,10 @@ module ApplicationHelper
     "#{title} - #{application_name}"
   end
 
+  def can_see_unpublished_items?
+    AccessPolicy.new(current_user).can? :see_unpublished_items
+  end
+
   # for now any logged in user is a staff user
   def current_staff_user?
     current_user.present?
@@ -31,12 +35,12 @@ module ApplicationHelper
     path
   end
 
-    def visibility_facet_labels(value)
-      case value.to_s
-      when "true" ; "published"
-      when "false" ; "private"
-      else ; value
-      end
+  def visibility_facet_labels(value)
+    case value.to_s
+    when "true" ; "published"
+    when "false" ; "private"
+    else ; value
     end
+  end
 
 end

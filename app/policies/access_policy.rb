@@ -22,6 +22,7 @@ class AccessPolicy
 
       can :admin, User
 
+      can :see_unpublished_items
       can :destroy, Admin::QueueItemComment do |comment, user|
         comment.user_id == user.id
       end
@@ -31,6 +32,8 @@ class AccessPolicy
     role :staff, proc { |user| !user.nil? } do
       can :read, Kithe::Model # whether publisehd or not
       can :update, Kithe::Model
+
+      can :see_unpublished_items
 
       can :destroy, Admin::QueueItemComment do |comment, user|
         comment.user_id == user.id

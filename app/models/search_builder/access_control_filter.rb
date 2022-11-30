@@ -12,11 +12,16 @@ class SearchBuilder
     end
 
     def access_control_filter(solr_params)
-      if scope.context[:current_user].nil?
-        # Only apply this filter if the user is not logged in.
+      unless can_see_unpublished?
         solr_params[:fq] ||= []
         solr_params[:fq] << "{!term f=published_bsi}1"
       end
     end
+
+    def can_see_unpublished?
+      user = scope.context[:current_user]
+      AccessPolicy.new(user).can? :see_unpublished_items
+    end
+
   end
 end

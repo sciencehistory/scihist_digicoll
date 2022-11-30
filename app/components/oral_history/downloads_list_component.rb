@@ -1,7 +1,7 @@
 module OralHistory
   # Content of the "Downloads" tab for Oral History pages.
   class DownloadsListComponent < ApplicationComponent
-    delegate :format_ohms_timestamp, :current_user, to: :helpers
+    delegate :format_ohms_timestamp, to: :helpers
 
     # our combined_audio_derivatives helper methods
     delegate :m4a_audio_url, :derivatives_up_to_date?, :m4a_audio_download_url,
@@ -24,7 +24,7 @@ module OralHistory
     def all_members
       @all_members ||= begin
         members = work.members.includes(:leaf_representative)
-        members = members.where(published: true) if current_user.nil?
+        members = members.where(published: true) unless can_see_unpublished_items?
         members.order(:position).to_a
       end
     end

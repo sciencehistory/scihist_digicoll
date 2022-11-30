@@ -11,7 +11,7 @@
 # a single download button.
 #
 class WorkFileListShowComponent < ApplicationComponent
-  delegate :construct_page_title, :current_user, to: :helpers
+  delegate :construct_page_title, to: :helpers
 
   attr_reader :work
 
@@ -24,11 +24,7 @@ class WorkFileListShowComponent < ApplicationComponent
   def member_list_for_display
     @member_list_display ||= begin
       members = all_members
-
-      if current_user.nil?
-        members = members.find_all(&:published?)
-      end
-
+      members = members.find_all(&:published?) unless can_see_unpublished_items?
       # omit "portrait" role
       members = members.find_all {|m| ! m.role_portrait? }
 
