@@ -53,12 +53,6 @@ class CatalogController < ApplicationController
   end
 
 
-  # If you're allowed to see the admin pages,
-  # you're also allowed to see e.g. sort by date modified or created.
-  def can_see_extra_sort_orders?
-    can? :access_staff_functions
-  end
-
   self.search_service_class = Kithe::BlacklightTools::BulkLoadingSearchService
   Kithe::BlacklightTools::BulkLoadingSearchService.bulk_load_scope =
     -> { includes(:parent, :leaf_representative)  }
@@ -463,7 +457,7 @@ class CatalogController < ApplicationController
     config.add_sort_field("date_modified_desc") do |field|
       field.label = "date modified \u25BC"
       field.sort = "date_modified_dtsi desc"
-      field.if = :can_see_extra_sort_orders?
+      field.if = ->(controller, field) { controller.can?(:access_staff_functions) }
     end
 
     # oldest first
@@ -471,7 +465,7 @@ class CatalogController < ApplicationController
     config.add_sort_field("date_modified_asc") do |field|
       field.label = "date modified \u25B2"
       field.sort = "date_modified_dtsi asc"
-      field.if = :can_see_extra_sort_orders?
+      field.if = ->(controller, field) { controller.can?(:access_staff_functions) }
     end
 
     # newest first
@@ -479,7 +473,7 @@ class CatalogController < ApplicationController
     config.add_sort_field("date_created_desc") do |field|
       field.label = "date created \u25BC"
       field.sort = "date_created_dtsi desc"
-      field.if = :can_see_extra_sort_orders?
+      field.if = ->(controller, field) { controller.can?(:access_staff_functions) }
     end
 
     # oldest first
@@ -487,7 +481,7 @@ class CatalogController < ApplicationController
     config.add_sort_field("date_created_asc") do |field|
       field.label = "date created \u25B2"
       field.sort = "date_created_dtsi asc"
-      field.if = :can_see_extra_sort_orders?
+      field.if = ->(controller, field) { controller.can?(:access_staff_functions) }
     end
 
 
