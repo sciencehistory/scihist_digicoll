@@ -22,10 +22,10 @@ class AccessPolicy
 
       can :admin, User
 
-      can :access_staff_functions
-      can :destroy, Admin::QueueItemComment do |comment, user|
-        comment.user_id == user.id
-      end
+      #can :access_staff_functions
+      #an :destroy, Admin::QueueItemComment do |comment, user|
+      #  comment.user_id == user.id
+      #end
     end
 
     # Any logged-in staff considered staff at present
