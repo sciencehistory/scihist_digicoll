@@ -6,7 +6,7 @@ Rails.application.routes.draw do
 
   class CanSeeAdminConstraint
     def self.matches?(request)
-      AccessPolicy.new(request.env['warden'].user).can? :see_admin_pages
+      AccessPolicy.new(request.env['warden'].user).can? :access_staff_functions
     end
   end
 
