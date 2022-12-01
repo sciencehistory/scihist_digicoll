@@ -31,8 +31,12 @@ class WorksController < ApplicationController
   end
 
   def viewer_images_info
-    render json: ViewerMemberInfoSerializer.new(@work, show_unpublished: (can? :see_unpublished_items)).as_hash
+    show_unpublished = can?(:read, Asset) &&  can?(:read, Work)
+    render json: ViewerMemberInfoSerializer.new(@work,
+        show_unpublished: show_unpublished
+      ).as_hash
   end
+
 
   def transcription
     send_data(

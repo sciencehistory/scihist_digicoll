@@ -120,10 +120,14 @@ class Work < Kithe::Work
   # All DISPLAYABLE (to current user) members, in order, and
   # with proper pre-fetches.
   def ordered_viewable_members(current_user:)
+
+
     members = self.members.includes(:leaf_representative)
-    unless AccessPolicy.new(current_user).can? :see_unpublished_items
-      members = members.where(published: true)
-    end
+
+    access_policy = AccessPolicy.new(current_user)
+    show_unpublished = access_policy.can?(:read, Asset) && access_policy.can?(:read, Work)
+    members = members.where(published: true) unless show_unpublished
+    
     members = members.order(:position)
 
     # the point of this is to avoid n+1's, so let's set strict_loading, which
