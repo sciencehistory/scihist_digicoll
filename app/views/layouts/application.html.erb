@@ -70,7 +70,7 @@
       <%= render 'ie_unsupported_warning' %>
     <% end %>
 
-    <%= render 'front_end_admin_navbar' if can? :see_admin_pages %>
+    <%= render 'front_end_admin_navbar' if can? :access_staff_functions %>
 
     <%= render 'layouts/scihist_masthead' %>
 

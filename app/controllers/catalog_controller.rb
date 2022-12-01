@@ -56,7 +56,7 @@ class CatalogController < ApplicationController
   # If you're allowed to see the admin pages,
   # you're also allowed to see e.g. sort by date modified or created.
   def can_see_extra_sort_orders?
-    can? :see_admin_pages
+    can? :access_staff_functions
   end
 
   self.search_service_class = Kithe::BlacklightTools::BulkLoadingSearchService

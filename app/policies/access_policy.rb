@@ -22,7 +22,7 @@ class AccessPolicy
 
       can :admin, User
 
-      can :see_admin_pages
+      can :access_staff_functions
       can :destroy, Admin::QueueItemComment do |comment, user|
         comment.user_id == user.id
       end
@@ -33,7 +33,7 @@ class AccessPolicy
       can :read, Kithe::Model # whether publisehd or not
       can :update, Kithe::Model
 
-      can :see_admin_pages
+      can :access_staff_functions
       can :destroy, Admin::QueueItemComment do |comment, user|
         comment.user_id == user.id
       end
