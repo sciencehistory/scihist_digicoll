@@ -70,23 +70,23 @@ namespace :scihist do
       desc 'Grant admin role to existing user'
       task :grant, [:email] => :environment do |t, args|
         begin
-          User.find_by_email!(args[:email]).update(admin: true)
+          User.find_by_email!(args[:email]).update(user_type: 'admin')
         rescue ActiveRecord::RecordNotFound
-          abort("User #{args[:email]} does not exist. Only an existing user can be promoted to admin")
+          abort("User #{args[:email]} does not exist. Only an existing user can be promoted to admin.")
         end
         puts "User: #{args[:email]} is an admin."
       end
 
       desc 'Revoke admin role from user'
       task :revoke, [:email] => :environment do |t, args|
-        User.find_by_email!(args[:email]).update(admin: false)
-        puts "User: #{args[:email]} is no longer an admin."
+        User.find_by_email!(args[:email]).update(user_type: 'editor')
+        puts "User: #{args[:email]} is no longer an admin; they are an editor instead."
       end
 
       desc 'List all admin users'
       task list: :environment do
         puts "Admin users:"
-        User.where(admin: true).each { |u| puts "  #{u.email}" }
+        User.where(user_type: 'admin').each { |u| puts "  #{u.email}" }
       end
     end
   end

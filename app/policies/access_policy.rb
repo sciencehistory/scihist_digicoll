@@ -10,7 +10,7 @@ class AccessPolicy
   def configure
     # The most important admin role, gets checked first
 
-    role :admin, proc { |user| !user.nil? && user.admin? } do
+    role :admin, proc { |user| !user.nil? && user.admin_user? } do
       can :destroy, Work
       can :publish, Work
 

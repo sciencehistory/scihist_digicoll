@@ -3,7 +3,7 @@ FactoryBot.define do
     email { "no-reply@sciencehistory.org"}
 
     factory :admin_user do
-      admin { true }
+      user_type { "admin" }
     end
   end
 end
