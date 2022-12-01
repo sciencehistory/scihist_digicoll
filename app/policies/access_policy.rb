@@ -30,8 +30,15 @@ class AccessPolicy
 
     # Any logged-in staff considered staff at present
     role :staff, proc { |user| !user.nil? } do
-      can :read, Kithe::Model # whether publisehd or not
-      can :update, Kithe::Model
+      
+      can :read, Work
+      can :update, Work
+
+      can :read, Collection
+      can :update, Collection
+
+      can :read, Asset
+      can :update, Asset
 
       can :see_unpublished_items
 

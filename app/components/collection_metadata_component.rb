@@ -1,13 +1,15 @@
 # A little section wtih some brief description of the collection, on a collection
 # show page.
 class CollectionMetadataComponent < ApplicationComponent
-  delegate :current_staff_user?, to: :helpers
-
   attr_reader :collection, :show_links
 
   def initialize(collection:, show_links: true)
     @collection = collection
     @show_links = show_links
+  end
+
+  def access_policy
+    @access_policy ||= AccessPolicy.new(current_user)
   end
 
   def public_count
