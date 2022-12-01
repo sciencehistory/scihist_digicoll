@@ -448,7 +448,7 @@ GEM
     rack (2.2.4)
     rack-attack (6.6.1)
       rack (>= 1.0, < 3)
-    rack-protection (3.0.2)
+    rack-protection (3.0.4)
       rack
     rack-proxy (0.7.4)
       rack
@@ -597,10 +597,10 @@ GEM
     simple_form (5.1.0)
       actionpack (>= 5.2)
       activemodel (>= 5.2)
-    sinatra (3.0.2)
+    sinatra (3.0.4)
       mustermann (~> 3.0)
       rack (~> 2.2, >= 2.2.4)
-      rack-protection (= 3.0.2)
+      rack-protection (= 3.0.4)
       tilt (~> 2.0)
     sitemap_generator (6.3.0)
       builder (~> 3.0)
