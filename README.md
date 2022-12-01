@@ -194,7 +194,7 @@ If you tag a test with `logged_in_user: true`, the test framework will create a 
      # or
      it "does something", logged_in_user: true do ...
 
-You can also do `logged_in_user: :admin` to get a user with `admin?` permissions. (superusers)
+You can also do `logged_in_user: :admin` to get a user with `admin` permissions. (superusers)
 
 #### ActiveJob queue adapter
 
