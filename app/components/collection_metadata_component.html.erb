@@ -1,5 +1,5 @@
 <div class="show-metadata">
-  <% if current_staff_user? %>
+  <% if can?(:read, Asset) && can?(:read, Work) %>
     <p class="show-item-count">
       <%= "#{number_with_delimiter(public_count)} public #{'item'.pluralize(public_count)}, #{number_with_delimiter(all_count)} total" %>
     </p>
