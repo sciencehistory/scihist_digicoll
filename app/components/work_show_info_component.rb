@@ -22,7 +22,7 @@ class WorkShowInfoComponent < ApplicationComponent
     :rights, :rights_holder, :series_arrangement,
     :source, :subject, :title, to: :work
 
-  delegate :current_staff_user?, to: :helpers
+  delegate :can?, to: :helpers
 
   attr_reader :work
 
