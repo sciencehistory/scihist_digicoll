@@ -24,7 +24,7 @@ class WorkFileListShowComponent < ApplicationComponent
   def member_list_for_display
     @member_list_display ||= begin
       members = all_members
-      show_all_members = (access_policy.can? :read, Asset) && (access_policy.can? :read, Work)
+      show_all_members = (can? :read, Asset) && (can? :read, Work)
       members = members.find_all(&:published?) unless show_all_members
       # omit "portrait" role
       members = members.find_all {|m| ! m.role_portrait? }

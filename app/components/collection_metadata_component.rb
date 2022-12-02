@@ -8,10 +8,6 @@ class CollectionMetadataComponent < ApplicationComponent
     @show_links = show_links
   end
 
-  def access_policy
-    @access_policy ||= AccessPolicy.new(current_user)
-  end
-
   def public_count
     @public_count ||= collection.contains.where(published: true).count
   end

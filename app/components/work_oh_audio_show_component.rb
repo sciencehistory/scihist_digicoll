@@ -20,7 +20,7 @@ class WorkOhAudioShowComponent < ApplicationComponent
   def all_members
     @all_members ||= begin
       members = work.members.includes(:leaf_representative)
-      show_all_members = (access_policy.can? :read, Asset) && (access_policy.can? :read, Work)
+      show_all_members = (can? :read, Asset) && (can? :read, Work)
       members = members.where(published: true) unless show_all_members
       members = members.strict_loading # prevent accidental n+1 lazy-loading.
       members.order(:position).to_a

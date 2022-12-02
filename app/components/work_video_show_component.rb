@@ -32,7 +32,7 @@ class WorkVideoShowComponent < ApplicationComponent
   # the representative, if it's visible to current user, otherwise nil!
   def video_asset
     return @video_asset if defined?(@video_asset)
-    show_all_members = (access_policy.can? :read, Asset) && (access_policy.can? :read, Work)
+    show_all_members = (can? :read, Asset) && (can? :read, Work)
   	@video_asset = (work.leaf_representative &&
       (work.leaf_representative.published? ||  show_all_members) &&
       work.leaf_representative) || nil
