@@ -83,7 +83,7 @@ module SearchResult
     end
 
     def show_cart_control?
-      current_user.present?
+      can? :access_staff_functions
     end
   end
 end
