@@ -47,7 +47,8 @@ describe ViewerMemberInfoSerializer, type: :model, queue_adapter: :inline do
 
   describe "with logged-in user" do
     let(:current_user) { create(:user) }
-    let(:can_see_unpublished) { AccessPolicy.new(current_user).can? :see_unpublished_items }
+    let(:access_policy) {AccessPolicy.new(current_user)}
+    let(:can_see_unpublished) { access_policy.can?(:read, Asset) && access_policy.can?(:read, Work) }
     let(:serializer) { ViewerMemberInfoSerializer.new(work, show_unpublished: can_see_unpublished) }
 
     it "includes non-published asset" do

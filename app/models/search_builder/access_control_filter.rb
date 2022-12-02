@@ -20,7 +20,8 @@ class SearchBuilder
 
     def can_see_unpublished?
       user = scope.context[:current_user]
-      AccessPolicy.new(user).can? :see_unpublished_items
+      access_policy = AccessPolicy.new(user)
+      access_policy.can?(:read, Asset) && access_policy.can?(:read, Work)
     end
 
   end

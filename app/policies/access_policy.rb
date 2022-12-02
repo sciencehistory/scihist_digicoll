@@ -39,8 +39,6 @@ class AccessPolicy
       can :read, Asset
       can :update, Asset
 
-      can :see_unpublished_items
-
       can :destroy, Admin::QueueItemComment do |comment, user|
         comment.user_id == user.id
       end
