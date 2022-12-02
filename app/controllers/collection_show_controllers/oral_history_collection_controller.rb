@@ -33,14 +33,6 @@ module CollectionShowControllers
       end
     end
 
-    # Should be equivalent to:
-    # ->(controller, field) { controller.can?(:access_staff_functions) }
-    # but was not able to get this syntax to work.
-    def can_see_all_search_facets?
-      can? :access_staff_functions
-    end
-
-
     # Collections we want to list as "projects", ordered by same order as their ids in
     # PROJECT_COLLECTION_FRIENDLIER_IDS
     helper_method def project_list
