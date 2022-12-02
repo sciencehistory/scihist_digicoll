@@ -228,7 +228,7 @@ Rails.application.routes.draw do
   # End Blacklight-generated routes
   ##
 
-  # Routes will even only _show up_ to can_see_admin users, this applies
+  # Routes will even only _show up_ for users who can :access_staff_functions; this applies
   # to internal rack apps we're mounting here too, like shrine upload endpoints,
   # is one reason to use a constraint.
   namespace :admin do
