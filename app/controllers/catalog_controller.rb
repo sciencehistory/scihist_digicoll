@@ -52,6 +52,13 @@ class CatalogController < ApplicationController
     }
   end
 
+  # Should be equivalent to:
+  # ->(controller, field) { controller.can?(:access_staff_functions) }
+  # but was not able to get this syntax to work.
+  def can_see_all_search_facets?
+    can? :access_staff_functions
+  end
+
 
   self.search_service_class = Kithe::BlacklightTools::BulkLoadingSearchService
   Kithe::BlacklightTools::BulkLoadingSearchService.bulk_load_scope =
@@ -307,8 +314,16 @@ class CatalogController < ApplicationController
     config.add_facet_field 'language_facet', label: "Language", limit: 5
     config.add_facet_field "rights_facet", helper_method: :rights_label, label: "Rights", limit: 5
     config.add_facet_field 'department_facet', label: "Department", limit: 5
-    config.add_facet_field 'exhibition_facet', label: "Exhibition (Staff-only)", limit: 5, show: :current_user
-    config.add_facet_field 'published_bsi',    label: "Visibility (Staff-only)", show: :current_user, helper_method: :visibility_facet_labels
+
+    config.add_facet_field 'exhibition_facet',
+      label: "Exhibition (Staff-only)",
+      limit: 5,
+      show: :can_see_all_search_facets?
+
+    config.add_facet_field 'published_bsi',
+      label: "Visibility (Staff-only)",
+      helper_method: :visibility_facet_labels,
+      show: :can_see_all_search_facets?
 
 
 
