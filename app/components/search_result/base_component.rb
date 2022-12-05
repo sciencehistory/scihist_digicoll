@@ -11,7 +11,7 @@ module SearchResult
 
     attr_reader :model, :child_counter, :cart_presence, :solr_document
 
-    delegate :current_user, :publication_badge, :search_on_facet_path, to: :helpers
+    delegate :can?, :publication_badge, :search_on_facet_path, to: :helpers
 
     # @param work [Work]
     # @param child_counter [ChildCountDisplayFetcher]
