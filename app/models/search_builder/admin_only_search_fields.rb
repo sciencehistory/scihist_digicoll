@@ -17,10 +17,16 @@ class SearchBuilder
     end
 
     def include_admin_only_search_fields(solr_params)
-      if scope.context[:current_user]
+      if can_access_staff_functions?
         solr_params["qf"] << " " << admin_only_search_fields.join(" ")
         solr_params["qf"] << " " << admin_only_search_fields.join(" ")
       end
     end
+
+    def can_access_staff_functions?
+      user = scope.context[:current_user]
+      AccessPolicy.new(user).can? :access_staff_functions
+    end
+
   end
 end

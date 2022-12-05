@@ -21,10 +21,6 @@ class AccessPolicy
       can :publish, Asset
 
       can :admin, User
-
-      can :destroy, Admin::QueueItemComment do |comment, user|
-        comment.user_id == user.id
-      end
     end
 
     # Any logged-in staff considered staff at present
@@ -39,6 +35,7 @@ class AccessPolicy
       can :read, Asset
       can :update, Asset
 
+      can :access_staff_functions
       can :destroy, Admin::QueueItemComment do |comment, user|
         comment.user_id == user.id
       end

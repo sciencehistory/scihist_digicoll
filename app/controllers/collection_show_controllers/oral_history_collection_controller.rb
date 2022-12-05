@@ -123,7 +123,7 @@ module CollectionShowControllers
 
       # Make "Rights" staff-only, at least fo rnow, with label matching
       config.facet_fields["rights_facet"].tap do |facet_config|
-        facet_config.if = :current_user
+        facet_config.if = :access_staff_only_facets?
         facet_config.label = "Rights (Staff-only)"
       end
 
