@@ -1,18 +1,3 @@
-GIT
-  remote: https://github.com/samvera/questioning_authority.git
-  revision: 64e6365173d70cc629f8654e69f67251ec057185
-  branch: rails_7
-  specs:
-    qa (5.9.0)
-      activerecord-import
-      deprecation
-      faraday (< 3.0, != 2.0.0)
-      geocoder
-      ldpath
-      nokogiri (~> 1.6)
-      rails (>= 5.0, < 7.1)
-      rdf
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -250,12 +235,12 @@ GEM
     factory_bot_rails (6.2.0)
       factory_bot (~> 6.2.0)
       railties (>= 5.0.0)
-    faraday (2.6.0)
+    faraday (2.7.1)
       faraday-net_http (>= 2.0, < 3.1)
       ruby2_keywords (>= 0.0.4)
     faraday-follow_redirects (0.3.0)
       faraday (>= 1, < 3)
-    faraday-net_http (3.0.1)
+    faraday-net_http (3.0.2)
     faraday-retry (2.0.0)
       faraday (~> 2.0)
     faster_s3_url (1.0.0)
@@ -368,7 +353,7 @@ GEM
     loofah (2.19.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
-    mail (2.8.0.rc3)
+    mail (2.8.0)
       mini_mime (>= 0.1.1)
       net-imap
       net-pop
@@ -399,7 +384,7 @@ GEM
       net-protocol
     net-pop (0.1.2)
       net-protocol
-    net-protocol (0.1.3)
+    net-protocol (0.2.0)
       timeout
     net-smtp (0.3.3)
       net-protocol
@@ -456,7 +441,16 @@ GEM
     public_suffix (5.0.0)
     puma (5.6.5)
       nio4r (~> 2.0)
-    racc (1.6.0)
+    qa (5.10.0)
+      activerecord-import
+      deprecation
+      faraday (< 3.0, != 2.0.0)
+      geocoder
+      ldpath
+      nokogiri (~> 1.6)
+      rails (>= 5.0, < 7.1)
+      rdf
+    racc (1.6.1)
     rack (2.2.4)
     rack-attack (6.6.1)
       rack (>= 1.0, < 3)
@@ -632,7 +626,7 @@ GEM
     thor (1.2.1)
     thread_safe (0.3.6)
     tilt (2.0.11)
-    timeout (0.3.0)
+    timeout (0.3.1)
     trailblazer-option (0.1.2)
     traject (3.7.0)
       concurrent-ruby (>= 0.8.0)
@@ -760,7 +754,7 @@ DEPENDENCIES
   prawn-svg (< 2)
   pry-byebug
   puma (~> 5.6)
-  qa (~> 5.2)!
+  qa (~> 5.2, >= 5.2.10)
   rack-attack (~> 6.6)
   rails (~> 7.0.0)
   rails-controller-testing
