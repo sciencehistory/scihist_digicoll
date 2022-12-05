@@ -70,8 +70,9 @@
       <%= render 'ie_unsupported_warning' %>
     <% end %>
 
-    <%= render 'front_end_admin_navbar' if can? :access_staff_functions %>
-
+    <% if can? :access_staff_functions %>
+      <%= render 'front_end_admin_navbar' %>
+    <% end %>
     <%= render 'layouts/scihist_masthead' %>
 
     <%# Blacklight put a search form here, we include our own local one in scihist_masthead instead,
