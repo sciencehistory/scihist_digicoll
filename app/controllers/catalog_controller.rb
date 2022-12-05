@@ -55,7 +55,7 @@ class CatalogController < ApplicationController
   # Should be equivalent to:
   # ->(controller, field) { controller.can?(:access_staff_functions) }
   # but was not able to get this syntax to work.
-  def can_see_all_search_facets?
+  def access_staff_only_facets?
     can? :access_staff_functions
   end
 
@@ -318,12 +318,12 @@ class CatalogController < ApplicationController
     config.add_facet_field 'exhibition_facet',
       label: "Exhibition (Staff-only)",
       limit: 5,
-      show: :can_see_all_search_facets?
+      show: :access_staff_only_facets?
 
     config.add_facet_field 'published_bsi',
       label: "Visibility (Staff-only)",
       helper_method: :visibility_facet_labels,
-      show: :can_see_all_search_facets?
+      show: :access_staff_only_facets?
 
 
 
