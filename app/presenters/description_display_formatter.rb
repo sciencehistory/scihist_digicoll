@@ -51,6 +51,11 @@ class DescriptionDisplayFormatter
 
     str = strip_tags(description)
 
+    # For our existing specs, don't want this to be html_safe?, which it becomes
+    # in Rails 7-- to_str will make it non-html-safe again, for consistency, although
+    # may not matter.
+    str = str.to_str
+
     if @truncate
       str = "#{truncate(str, escape: false, length: @truncate, separator: /\s/)}"
     end
