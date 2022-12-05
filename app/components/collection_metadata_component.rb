@@ -1,7 +1,8 @@
 # A little section wtih some brief description of the collection, on a collection
 # show page.
 class CollectionMetadataComponent < ApplicationComponent
-  delegate :current_staff_user?, to: :helpers
+
+  delegate :can?, to: :helpers
 
   attr_reader :collection, :show_links
 
