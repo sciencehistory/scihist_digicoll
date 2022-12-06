@@ -70,5 +70,14 @@ describe DescriptionDisplayFormatter, type: :model do
         expect(formatted.length).to be < 400
       end
     end
+
+    describe "with html-unsafe chars" do
+      let(:html_description) { "2 < 3" }
+
+      it "leaves chars alone" do
+        expect(formatted).to eq "2 < 3"
+      end
+    end
+
   end
 end

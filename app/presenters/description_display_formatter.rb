@@ -49,12 +49,8 @@ class DescriptionDisplayFormatter
   def format_plain
     return "" if description.blank?
 
-    str = strip_tags(description)
-
-    # For our existing specs, don't want this to be html_safe?, which it becomes
-    # in Rails 7-- to_str will make it non-html-safe again, for consistency, although
-    # may not matter.
-    str = str.to_str
+    # remove all tags, but no need or desire to escape punctuation etc into HTML entities
+    str = Loofah.fragment(description).text(:encode_special_chars => false)
 
     if @truncate
       str = "#{truncate(str, escape: false, length: @truncate, separator: /\s/)}"
