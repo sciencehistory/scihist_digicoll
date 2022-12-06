@@ -98,7 +98,7 @@ gem 'font-awesome-rails', '~> 4.7'
 gem "lograge", "< 2"
 gem "device_detector", "~> 1.0" # user-agent parsing we use for logging
 
-gem 'kithe', "~> 2.7"
+gem 'kithe', "~> 2.7", ">= 2.7.1"
 # attr_son is a dependency of kithe, but we want to make sure it gets require'd directly
 # to avoid weird auto-loading issues.
 gem "attr_json", "~> 1.0"
