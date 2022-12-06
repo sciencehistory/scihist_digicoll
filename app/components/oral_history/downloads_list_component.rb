@@ -24,8 +24,9 @@ module OralHistory
     def all_members
       @all_members ||= begin
         members = work.members.includes(:leaf_representative)
-        show_all_members = (can? :read, Asset) && (can? :read, Work)
-        members = members.where(published: true) unless show_all_members
+        unless (can? :read, Asset) && (can? :read, Work)
+           members = members.where(published: true)
+        end
         members.order(:position).to_a
       end
     end
