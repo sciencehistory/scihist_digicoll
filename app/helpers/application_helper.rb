@@ -13,11 +13,6 @@ module ApplicationHelper
     "#{title} - #{application_name}"
   end
 
-  # for now any logged in user is a staff user
-  def current_staff_user?
-    current_user.present?
-  end
-
   # qa (questioning_authoriry) gem oddly gives us no route helpers, so
   # let's make one ourselves, for it's current mount point, we can change
   # it if needed but at least it's DRY.
