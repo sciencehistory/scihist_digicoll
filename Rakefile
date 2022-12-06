@@ -4,3 +4,11 @@
 require_relative 'config/application'
 
 Rails.application.load_tasks
+
+
+# Rails7 stopped automatically doing a `yarn install`, although the yarn:install rake
+# task is still available. vite-rails should wire this up  but doesn't yet, so we do.
+# See (TBD)
+if Rake::Task.task_defined?("assets:precompile") && File.exist?(Rails.root.join("bin", "yarn"))
+  Rake::Task["assets:precompile"].enhance [ "yarn:install" ]
+end
