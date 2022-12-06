@@ -18,6 +18,15 @@ gem "vite_rails", "~> 3.0"
 # this line is no longer needed once 2.8.0 final is released:
 gem "mail", ">= 2.8.0.rc1", "< 3"
 
+# net-protocol 0.2.0 causes some problems with shrine. Until it's fixed
+# we need to lock to older net-protocol.
+#
+# See:
+# * https://github.com/shrinerb/shrine/issues/609#issuecomment-1340133144
+# * https://github.com/shrinerb/shrine/issues/610
+#
+gem "net-protocol", "< 0.2.0"
+
 gem "view_component", "~> 2.49"
 gem "alba", "~> 1.6" # for JSON serialization of models
 
