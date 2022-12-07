@@ -1,7 +1,7 @@
 module OralHistory
   # Content of the "Downloads" tab for Oral History pages.
   class DownloadsListComponent < ApplicationComponent
-    delegate :format_ohms_timestamp, to: :helpers
+    delegate :format_ohms_timestamp, :can?, to: :helpers
 
     # our combined_audio_derivatives helper methods
     delegate :m4a_audio_url, :derivatives_up_to_date?, :m4a_audio_download_url,

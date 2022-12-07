@@ -11,7 +11,7 @@
 # a single download button.
 #
 class WorkFileListShowComponent < ApplicationComponent
-  delegate :construct_page_title, to: :helpers
+  delegate :construct_page_title, :can?, to: :helpers
 
   attr_reader :work
 

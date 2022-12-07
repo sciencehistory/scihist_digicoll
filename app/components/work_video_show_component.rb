@@ -9,7 +9,7 @@
 # it a separate class instead of trying to use lots of conditionals in one class, betting
 # that will be simpler overall, and allow them to diverge as more features are added.
 class WorkVideoShowComponent < ApplicationComponent
-  delegate :construct_page_title, to: :helpers
+  delegate :construct_page_title, :can?, to: :helpers
 
   attr_reader :work
 

@@ -2,7 +2,7 @@
 # show up in a fixed navbar.
 #
 class WorkOhAudioShowComponent < ApplicationComponent
-  delegate :construct_page_title, to: :helpers
+  delegate :construct_page_title, :can?, to: :helpers
 
   delegate  :m4a_audio_url, :derivatives_up_to_date?, to: :combined_audio_derivatives, prefix: "combined"
 
