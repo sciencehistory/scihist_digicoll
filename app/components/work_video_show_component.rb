@@ -9,7 +9,7 @@
 # it a separate class instead of trying to use lots of conditionals in one class, betting
 # that will be simpler overall, and allow them to diverge as more features are added.
 class WorkVideoShowComponent < ApplicationComponent
-  delegate :construct_page_title, :can?, to: :helpers
+  delegate :construct_page_title, :can_see_unpublished_records?, to: :helpers
 
   attr_reader :work
 
@@ -32,9 +32,8 @@ class WorkVideoShowComponent < ApplicationComponent
   # the representative, if it's visible to current user, otherwise nil!
   def video_asset
     return @video_asset if defined?(@video_asset)
-    show_all_members = (can? :read, Asset) && (can? :read, Work)
   	@video_asset = (work.leaf_representative &&
-      (work.leaf_representative.published? ||  show_all_members) &&
+      (work.leaf_representative.published? || can_see_unpublished_records?) &&
       work.leaf_representative) || nil
   end
 

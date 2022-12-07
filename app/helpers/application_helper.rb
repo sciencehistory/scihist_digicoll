@@ -34,4 +34,8 @@ module ApplicationHelper
     end
   end
 
+  # delegating to current_policy, just as a convenience available as a helper too
+  def can_see_unpublished_records?
+    current_policy.can_see_unpublished_records?
+  end
 end

@@ -45,6 +45,12 @@ class AccessPolicy
     role :public do
       can :read, Kithe::Model, { published: true }
     end
+  end
 
+  # This is a bit confusing the way we check this with access_granted,
+  # so DRY it up in one place. You can call `current_policy.can_see_unpublished_records?` anywhere,
+  # or we have a rails helper for convenience too.
+  def can_see_unpublished_records?
+    (can? :read, Asset) && (can? :read, Work)
   end
 end
