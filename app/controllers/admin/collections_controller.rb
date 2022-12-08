@@ -113,7 +113,7 @@ class Admin::CollectionsController < AdminController
     # enough for now.
     def collection_params
       permitted_attributes = [:title, :description, :department]
-      permitted_attributes << :published if can?(:publish, @collection || Collection)
+      permitted_attributes << :published if can?(:publish, @collection || Kithe::Model)
 
       Kithe::Parameters.new(params).
         require(:collection).
