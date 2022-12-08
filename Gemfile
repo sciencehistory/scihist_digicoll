@@ -9,7 +9,7 @@ ruby "~> #{File.read(File.join(__dir__ , '.ruby-version')).chomp.split('.').slic
 gem 'lockbox'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.1.1'
+gem 'rails', '~> 7.0.0'
 
 # Our JS/CSS/asset bundler
 gem "vite_rails", "~> 3.0"
@@ -17,6 +17,14 @@ gem "vite_rails", "~> 3.0"
 # mail is a rails dependency, opt into 2.8.0.rc1 pre-release for ruby 3.1 compat,
 # this line is no longer needed once 2.8.0 final is released:
 gem "mail", ">= 2.8.0.rc1", "< 3"
+
+# avoid buggy net-protocol 0.2.0 which causes some problems with shrine.
+#
+# See:
+# * https://github.com/shrinerb/shrine/issues/609#issuecomment-1340133144
+# * https://github.com/shrinerb/shrine/issues/610
+#
+gem "net-protocol", "!= 0.2.0"
 
 gem "view_component", "~> 2.49"
 gem "alba", "~> 1.6" # for JSON serialization of models
@@ -98,7 +106,7 @@ gem 'font-awesome-rails', '~> 4.7'
 gem "lograge", "< 2"
 gem "device_detector", "~> 1.0" # user-agent parsing we use for logging
 
-gem 'kithe', "~> 2.6"
+gem 'kithe', "~> 2.7", ">= 2.7.1"
 # attr_son is a dependency of kithe, but we want to make sure it gets require'd directly
 # to avoid weird auto-loading issues.
 gem "attr_json", "~> 1.0"
@@ -107,7 +115,7 @@ gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 gem 'simple_form', "~> 5.0"
 
 gem "browse-everything", "~> 1.2"
-gem "qa", "~> 5.2"
+gem "qa", "~> 5.2", ">= 5.2.10"
 gem "shrine", "~> 3.3" #, path: "../shrine"
 # shrine-compat endpoint to get uppy to direct upload to S3 with resumable multi-part upload
 gem "uppy-s3_multipart"
