@@ -49,7 +49,8 @@ class DescriptionDisplayFormatter
   def format_plain
     return "" if description.blank?
 
-    str = strip_tags(description)
+    # remove all tags, but no need or desire to escape punctuation etc into HTML entities
+    str = Loofah.fragment(description).text(:encode_special_chars => false)
 
     if @truncate
       str = "#{truncate(str, escape: false, length: @truncate, separator: /\s/)}"
