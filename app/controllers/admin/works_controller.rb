@@ -383,7 +383,7 @@ class Admin::WorksController < AdminController
   end
 
   def batch_publish_toggle
-    authorize! :publish, Work
+    authorize! :publish, Kithe::Model
 
     unless params[:publish].in?(["on", "off"])
       raise ArgumentError.new("Need `publish` param to be `on` or off`")
