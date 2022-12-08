@@ -8,31 +8,19 @@ class AccessPolicy
   include AccessGranted::Policy
 
   def configure
-    # The most important admin role, gets checked first
 
-    role :admin, proc { |user| !user.nil? && user.admin_user? } do
-      can :destroy, Work
-      can :publish, Work
-
-      can :destroy, Collection
-      can :publish, Collection
-
-      can :destroy, Asset
-      can :publish, Asset
-
+    role :admin, proc { |user| user&.admin_user? } do
+      can [:destroy, :publish], Kithe::Model
+      can :access_staff_functions
       can :admin, User
     end
 
-    # Any logged-in staff considered staff at present
     role :staff, proc { |user| !user.nil? } do
-      can :read, Kithe::Model # whether publisehd or not
-      can :update, Kithe::Model
-
+      can [:read, :update], Kithe::Model # whether published or not
       can :access_staff_functions
       can :destroy, Admin::QueueItemComment do |comment, user|
         comment.user_id == user.id
       end
-
     end
 
     role :public do
