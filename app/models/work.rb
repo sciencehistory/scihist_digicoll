@@ -124,8 +124,9 @@ class Work < Kithe::Work
 
     members = self.members.includes(:leaf_representative)
 
-    show_unpublished = AccessPolicy.new(current_user).can_see_unpublished_records?
-    members = members.where(published: true) unless show_unpublished
+    unless AccessPolicy.new(current_user).can_see_unpublished_records?
+      members = members.where(published: true)
+    end
     
     members = members.order(:position)
 
