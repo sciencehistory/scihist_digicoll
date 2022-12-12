@@ -33,7 +33,7 @@ class AccessPolicy
         # the public is not allowed to read *all* possible instances of any of these classes.
         #
         # If mod is an instance, return true only if the instance is published.
-        mod.class < Kithe::Model && mod.published?
+        mod.instance_of?(Kithe::Model) && mod.published?
       end
     end
 
