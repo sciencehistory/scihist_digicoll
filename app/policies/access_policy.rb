@@ -16,7 +16,7 @@ class AccessPolicy
     end
 
     role :staff, proc { |user| !user.nil? } do
-      can [:read, :update], Kithe::Model # whether published or not
+      can [:create, :read, :update], Kithe::Model # whether published or not
       can :access_staff_functions
       can :destroy, Admin::QueueItemComment do |comment, user|
         comment.user_id == user.id
