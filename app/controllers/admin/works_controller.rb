@@ -564,6 +564,14 @@ class Admin::WorksController < AdminController
         scope = scope.where("json_attributes ->> 'department' = :department", department: params[:q][:department])
       end
 
+      if params[:q][:review_requested].present?
+        scope = scope.where("json_attributes ->> 'review_requested' is not null")
+
+        if params[:q][:review_requested] == "by_others"
+          scope = scope.not_jsonb_contains(review_requested_by: current_user.email )
+        end
+      end
+
       scope.includes(:leaf_representative).page(params[:page]).per(20)
     end
 
