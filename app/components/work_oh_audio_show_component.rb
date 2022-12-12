@@ -2,7 +2,7 @@
 # show up in a fixed navbar.
 #
 class WorkOhAudioShowComponent < ApplicationComponent
-  delegate :construct_page_title, :current_user, to: :helpers
+  delegate :construct_page_title, :can_see_unpublished_records?, to: :helpers
 
   delegate  :m4a_audio_url, :derivatives_up_to_date?, to: :combined_audio_derivatives, prefix: "combined"
 
@@ -20,7 +20,11 @@ class WorkOhAudioShowComponent < ApplicationComponent
   def all_members
     @all_members ||= begin
       members = work.members.includes(:leaf_representative)
-      members = members.where(published: true) if current_user.nil?
+
+      unless can_see_unpublished_records?
+        members = members.where(published: true)
+      end
+
       members = members.strict_loading # prevent accidental n+1 lazy-loading.
       members.order(:position).to_a
     end
