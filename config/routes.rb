@@ -251,6 +251,7 @@ Rails.application.routes.draw do
         put "submit_ohms_xml"
         get "download_ohms_xml"
         put "remove_ohms_xml"
+        put "set_review_requested"
         put "submit_searchable_transcript_source"
         get "download_searchable_transcript_source"
         put "remove_searchable_transcript_source"
