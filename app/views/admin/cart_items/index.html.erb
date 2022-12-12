@@ -6,7 +6,7 @@
     <%= link_to "Clear Cart", clear_admin_cart_items_path, class: "btn btn-outline-danger", data: { confirm: "Delete all items in cart?"}, method: "delete" %>
   </p>
 
-  <% if can?(:publish, Work) %>
+  <% if can?(:publish, Kithe::Model) %>
     <div>
        <div class="btn-group" role="group">
           <button id="UnpublishButtonGroup" type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
