@@ -34,6 +34,22 @@
       </dd>
   <% end %>
 
+    <dt>Review</dt>
+    <dd>
+      <%= form_tag set_review_requested_admin_work_path(@work), method: :put do %>
+        <div class="custom-control custom-switch">
+          <%= check_box_tag "review_requested", 1, @work.review_requested, class: "custom-control-input", onchange: "this.form.submit()" %>
+          <label class="custom-control-label" for="review_requested">Review requested</label>
+          <% if @work.review_requested_by %>
+            <div><%= @work.review_requested_by %></div>
+          <% end %>
+          <% if @work.review_requested_at %>
+            <div><%= l @work.review_requested_at.in_time_zone, format: :admin %></div>
+          <% end %>
+        </div>
+      <% end %>
+    </dd>
+
     <dt>Created</dt>
     <dd><%= l @work.created_at, format: :admin %></dd>
 
