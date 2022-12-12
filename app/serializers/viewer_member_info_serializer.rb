@@ -9,11 +9,11 @@ class ViewerMemberInfoSerializer
 
   THUMB_DERIVATIVE = :thumb_mini
 
-  attr_reader :work, :current_user
+  attr_reader :work, :show_unpublished
 
-  def initialize(work, current_user:nil)
+  def initialize(work, show_unpublished: false)
     @work = work
-    @current_user = current_user
+    @show_unpublished = show_unpublished
   end
 
   def as_hash
@@ -40,7 +40,7 @@ class ViewerMemberInfoSerializer
   def included_members
     @included_members ||= begin
       members = work.members.order(:position)
-      members = members.where(published: true) if current_user.nil?
+      members = members.where(published: true) unless show_unpublished
       members.includes(:leaf_representative).select do |member|
         member.leaf_representative &&
         member.leaf_representative.content_type&.start_with?("image/") &&
@@ -52,8 +52,6 @@ class ViewerMemberInfoSerializer
   def download_options(asset)
     DownloadOptions::ImageDownloadOptions.new(asset).options
   end
-
-
 
   def thumb_src_attributes(asset)
     derivative_1x_url = asset.file_url(THUMB_DERIVATIVE)

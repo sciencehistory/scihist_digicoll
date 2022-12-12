@@ -13,11 +13,6 @@ module ApplicationHelper
     "#{title} - #{application_name}"
   end
 
-  # for now any logged in user is a staff user
-  def current_staff_user?
-    current_user.present?
-  end
-
   # qa (questioning_authoriry) gem oddly gives us no route helpers, so
   # let's make one ourselves, for it's current mount point, we can change
   # it if needed but at least it's DRY.
@@ -31,12 +26,16 @@ module ApplicationHelper
     path
   end
 
-    def visibility_facet_labels(value)
-      case value.to_s
-      when "true" ; "published"
-      when "false" ; "private"
-      else ; value
-      end
+  def visibility_facet_labels(value)
+    case value.to_s
+    when "true" ; "published"
+    when "false" ; "private"
+    else ; value
     end
+  end
 
+  # delegating to current_policy, just as a convenience available as a helper too
+  def can_see_unpublished_records?
+    current_policy.can_see_unpublished_records?
+  end
 end

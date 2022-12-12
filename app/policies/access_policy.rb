@@ -23,9 +23,26 @@ class AccessPolicy
       end
     end
 
+    # This role can read published Kithe::Models.
     role :public do
-      can :read, Kithe::Model, { published: true }
+      can :read, Kithe::Model do |mod, user|
+        # mod could be any of Kithe::Model, Collection, Work, Asset,
+        # *or* an instance of any of the above classes. (mod.kind_of?(Kithe::Model))
+        #
+        # If mod is any of the above classes, definitely return false:
+        # the public is not allowed to read *all* possible instances of any of these classes.
+        #
+        # If mod is an instance, return true only if the instance is published.
+        mod.kind_of?(Kithe::Model) && mod.published?
+      end
     end
 
+  end
+
+  # This is a bit confusing the way we check this with access_granted,
+  # so DRY it up in one place. You can call `current_policy.can_see_unpublished_records?` anywhere,
+  # or we have a rails helper for convenience too.
+  def can_see_unpublished_records?
+    can? :read, Kithe::Model
   end
 end
