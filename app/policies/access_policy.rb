@@ -27,13 +27,13 @@ class AccessPolicy
     role :public do
       can :read, Kithe::Model do |mod, user|
         # mod could be any of Kithe::Model, Collection, Work, Asset,
-        # *or* an instance of any of the above classes.
+        # *or* an instance of any of the above classes. (mod.kind_of?(Kithe::Model))
         #
         # If mod is any of the above classes, definitely return false:
         # the public is not allowed to read *all* possible instances of any of these classes.
         #
         # If mod is an instance, return true only if the instance is published.
-        mod.instance_of?(Kithe::Model) && mod.published?
+        mod.kind_of?(Kithe::Model) && mod.published?
       end
     end
 
