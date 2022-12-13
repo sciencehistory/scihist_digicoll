@@ -52,16 +52,16 @@
           <td class="datestamp"><%= l member.created_at.to_date, format: :admin  %></td>
           <td class="datestamp"><%= l member.updated_at.to_date, format: :admin %></td>
           <td>
-            <div class="dropdown dropdown-menu-right">
-
-              <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
-
-              <% if member.kind_of?(Work) %>
-                <%= admin_dropdown_for_work(member, labelled_by_id: "dropdownMenuButton") %>
-              <% elsif member.kind_of?(Asset) %>
-                <%= admin_dropdown_for_asset(member, labelled_by_id: "dropdownMenuButton") %>
-              <% end %>
-            </div>
+            <% if can?(:view, member) || can?(:update, member) || can?(:destroy, member) %>
+              <div class="dropdown dropdown-menu-right">
+                <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
+                <% if member.kind_of?(Work) %>
+                  <%= admin_dropdown_for_work(member, labelled_by_id: "dropdownMenuButton") %>
+                <% elsif member.kind_of?(Asset) %>
+                  <%= admin_dropdown_for_asset(member, labelled_by_id: "dropdownMenuButton") %>
+                <% end %>
+              </div>
+            <% end %>
           </td>
         </tr>
       <% end %>

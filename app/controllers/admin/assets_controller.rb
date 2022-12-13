@@ -1,8 +1,8 @@
 class Admin::AssetsController < AdminController
 
   def index
+    authorize! :read, Kithe::Model
     scope = Asset
-
     # simple simple search on a few simple attributes with OR combo.
     if params[:q].present?
       scope = scope.where(id: params[:q]).or(
@@ -20,6 +20,7 @@ class Admin::AssetsController < AdminController
 
   def show
     @asset = Asset.find_by_friendlier_id!(params[:id])
+    authorize! :read, @asset
     if @asset.stored?
       @checks = @asset.fixity_checks.order('created_at asc')
       @latest_check   = @checks.last
@@ -29,13 +30,14 @@ class Admin::AssetsController < AdminController
 
   def edit
     @asset = Asset.find_by_friendlier_id!(params[:id])
+    authorize! :update, @asset
   end
 
   # PATCH/PUT /works/1
   # PATCH/PUT /works/1.json
   def update
     @asset = Asset.find_by_friendlier_id!(params[:id])
-
+    authorize! :update, @asset
     respond_to do |format|
       if @asset.update(asset_params)
         format.html { redirect_to admin_asset_url(@asset), notice: 'Asset was successfully updated.' }
@@ -78,6 +80,7 @@ class Admin::AssetsController < AdminController
 
   def display_attach_form
     @parent = Work.find_by_friendlier_id!(params[:parent_id])
+    authorize! :update, @parent
   end
 
   # Receives json hashes for direct uploaded files in params[:files],
@@ -87,6 +90,7 @@ class Admin::AssetsController < AdminController
   # POST /admin/works/[parent_work.friendlier_id]/ingest
   def attach_files
     @parent = Work.find_by_friendlier_id!(params[:parent_id])
+    authorize! :update, @parent
 
     current_position = @parent.members.maximum(:position) || 0
 
@@ -117,6 +121,7 @@ class Admin::AssetsController < AdminController
   end
 
   def convert_to_child_work
+    authorize! :create, Kithe::Model
     @asset = Asset.find_by_friendlier_id!(params[:id])
 
     parent = @asset.parent
