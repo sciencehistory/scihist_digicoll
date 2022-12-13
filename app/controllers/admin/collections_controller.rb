@@ -4,6 +4,7 @@ class Admin::CollectionsController < AdminController
   # GET /collections
   # GET /collections.json
   def index
+    authorize! :read, Kithe::Model
     @q = Collection.ransack(params[:q]).tap do |ransack|
       ransack.sorts = 'title asc' if ransack.sorts.empty?
     end
@@ -29,20 +30,24 @@ class Admin::CollectionsController < AdminController
   # GET /collections/1
   # GET /collections/1.json
   def show
+    authorize! :read, @collection
   end
 
   # GET /collections/new
   def new
+    authorize! :create, Kithe::Model
     @collection = Collection.new
   end
 
   # GET /collections/1/edit
   def edit
+    authorize! :update, @collection
   end
 
   # POST /collections
   # POST /collections.json
   def create
+    authorize! :create, Kithe::Model
     @collection = Collection.new(collection_params)
     respond_to do |format|
       if @collection.save
@@ -58,6 +63,7 @@ class Admin::CollectionsController < AdminController
   # PATCH/PUT /collections/1
   # PATCH/PUT /collections/1.json
   def update
+    authorize! :update, @collection
     respond_to do |format|
       if @collection.update(collection_params)
         format.html { redirect_to collection_url(@collection), notice: "Collection '#{@collection.title}' was successfully updated." }
