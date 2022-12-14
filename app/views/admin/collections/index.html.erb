@@ -1,9 +1,7 @@
 <h1>Collections</h1>
-<% if can?(:create, Kithe::Model) %>
-  <p>
-    <%= link_to 'New Collection', new_admin_collection_path, class: "btn btn-primary " %>
-  </p>
-<% end %>
+<p>
+  <%= link_to 'New Collection', new_admin_collection_path, class: "btn btn-primary #{"disabled" unless can?(:create, Kithe::Model) }"%>
+</p>
 
 
 <%= simple_form_for(admin_collections_path, method: "get") do %>
@@ -63,12 +61,10 @@
         <td class="datestamp"><%=  l collection.created_at.to_date, format: :admin %> </td>
         <td class="datestamp"><%=  l collection.updated_at.to_date, format: :admin %> </td>
         <td>
-          <% if can?(:update, collection) || can?(:destroy, collection) %>
-            <div class="dropdown">
-              <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
-              <%= admin_dropdown_for_collection(collection, labelled_by_id: "dropdownMenuButton") %>
-            </div>
-          <% end %>
+          <div class="dropdown">
+            <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
+            <%= admin_dropdown_for_collection(collection, labelled_by_id: "dropdownMenuButton") %>
+          </div>
         </td>
       </tr>
     <% end %>
