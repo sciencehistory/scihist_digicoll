@@ -4,7 +4,9 @@ class Admin::CollectionsController < AdminController
   # GET /collections
   # GET /collections.json
   def index
-    authorize! :read, Kithe::Model
+    # No authorize! call here. We're assuming if you can view the
+    # index, you can see all published and unpublished collections.
+
     @q = Collection.ransack(params[:q]).tap do |ransack|
       ransack.sorts = 'title asc' if ransack.sorts.empty?
     end
@@ -35,8 +37,8 @@ class Admin::CollectionsController < AdminController
 
   # GET /collections/new
   def new
-    authorize! :create, Kithe::Model
     @collection = Collection.new
+    authorize! :create, @collection
   end
 
   # GET /collections/1/edit
@@ -47,8 +49,8 @@ class Admin::CollectionsController < AdminController
   # POST /collections
   # POST /collections.json
   def create
-    authorize! :create, Kithe::Model
     @collection = Collection.new(collection_params)
+    authorize! :create, @collection
     respond_to do |format|
       if @collection.save
         format.html { redirect_to admin_collections_url, notice: "Collection '#{@collection.title}' was successfully created." }
