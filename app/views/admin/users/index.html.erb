@@ -18,12 +18,7 @@
       <tr>
         <td><%= user.name %><br/><small class="text-monospace text-muted"><%= user.email %></small></td>
         <td>
-          <% if user.admin_user? %>
-            <span class="badge badge-primary">Admin</span>
-          <% end %>
-          <% if user.editor_user? %>
-            <span class="badge badge-light">Editor</span>
-          <% end %>
+          <span class="badge badge-<%= user.admin_user? ? "primary" : "light"%>"><%= user.user_type.titleize %></span>
           <% if user.locked_out? %>
             <span class="badge badge-danger">Locked out</span>
           <% end %>
