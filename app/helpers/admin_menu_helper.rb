@@ -30,8 +30,14 @@ module AdminMenuHelper
 
   def admin_dropdown_for_collection(collection, labelled_by_id:)
     options = [
-      link_to('Edit', edit_admin_collection_path(collection), class: "dropdown-item"),
-      link_to('Delete', [:admin, collection], method: :delete, data: { confirm: "Delete collection '#{collection.title}'?" }, class: "dropdown-item")
+      maybe_enabled_dropdown_item(
+        can?(:update, collection),
+        'Edit', edit_admin_collection_path(collection)
+      ),
+      maybe_enabled_dropdown_item(
+        can?(:destroy, collection),
+        'Delete', [:admin, collection], method: :delete, data: { confirm: "Delete collection '#{collection.title}'?" }
+      )
     ].compact
 
     content_tag(:div, class: "dropdown-menu dropdown-menu-right", :"aria-labelledby" => labelled_by_id) do
@@ -39,4 +45,14 @@ module AdminMenuHelper
     end
   end
 
+  private
+
+  # A convenient way to enable or disable these dropdown links based on permissions.
+  def maybe_enabled_dropdown_item(condition, body, url, html_options={})
+    if condition
+      link_to(body, url, html_options.merge({class: "dropdown-item"}))
+    else
+      link_to(body, "",  html_options.merge({class: "dropdown-item disabled"}))
+    end
+  end
 end
