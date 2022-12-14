@@ -1,5 +1,5 @@
 <div class="show-metadata">
-  <% if can?(:read, Kithe::Model) %>
+  <% if can_see_unpublished_records? %>
     <p class="show-item-count">
       <%= "#{number_with_delimiter(public_count)} public #{'item'.pluralize(public_count)}, #{number_with_delimiter(all_count)} total" %>
     </p>
