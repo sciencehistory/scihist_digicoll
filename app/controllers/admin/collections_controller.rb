@@ -4,6 +4,9 @@ class Admin::CollectionsController < AdminController
   # GET /collections
   # GET /collections.json
   def index
+    # No authorize! call here. We're assuming if you can view the
+    # index, you can see all published and unpublished collections.
+
     @q = Collection.ransack(params[:q]).tap do |ransack|
       ransack.sorts = 'title asc' if ransack.sorts.empty?
     end
@@ -29,21 +32,25 @@ class Admin::CollectionsController < AdminController
   # GET /collections/1
   # GET /collections/1.json
   def show
+    authorize! :read, @collection
   end
 
   # GET /collections/new
   def new
     @collection = Collection.new
+    authorize! :create, @collection
   end
 
   # GET /collections/1/edit
   def edit
+    authorize! :update, @collection
   end
 
   # POST /collections
   # POST /collections.json
   def create
     @collection = Collection.new(collection_params)
+    authorize! :create, @collection
     respond_to do |format|
       if @collection.save
         format.html { redirect_to admin_collections_url, notice: "Collection '#{@collection.title}' was successfully created." }
@@ -58,6 +65,7 @@ class Admin::CollectionsController < AdminController
   # PATCH/PUT /collections/1
   # PATCH/PUT /collections/1.json
   def update
+    authorize! :update, @collection
     respond_to do |format|
       if @collection.update(collection_params)
         format.html { redirect_to collection_url(@collection), notice: "Collection '#{@collection.title}' was successfully updated." }

@@ -1,6 +1,6 @@
 <h1>Collections</h1>
 <p>
-  <%= link_to 'New Collection', new_admin_collection_path, class: "btn btn-primary " %>
+  <%= link_to 'New Collection', new_admin_collection_path, class: "btn btn-primary #{"disabled" unless can?(:create, Kithe::Model) }"%>
 </p>
 
 
