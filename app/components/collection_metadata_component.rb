@@ -1,8 +1,7 @@
 # A little section wtih some brief description of the collection, on a collection
 # show page.
 class CollectionMetadataComponent < ApplicationComponent
-
-  delegate :can?, to: :helpers
+  delegate :can_see_unpublished_records?, to: :helpers
 
   attr_reader :collection, :show_links
 
