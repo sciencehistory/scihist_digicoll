@@ -26,6 +26,9 @@ describe "access policies:" do
     it "can destroy any Kithe::Model" do
       expect(policy.can?(:destroy, Kithe::Model)).to be true
     end
+    it "can create any Kithe::Model" do
+      expect(policy.can?(:create, Kithe::Model)).to be true
+    end
     it "can manage users" do
       expect(policy.can?(:admin, User)).to be true
     end
@@ -65,6 +68,9 @@ describe "access policies:" do
     it "can read a Kithe::Model" do
       expect(policy.can?(:read, Kithe::Model)).to be true
     end
+    it "can create any Kithe::Model" do
+      expect(policy.can?(:create, Kithe::Model)).to be true
+    end
     it "cannot destroy a Kithe::Model" do
       expect(policy.can?(:destroy, Kithe::Model)).to be false
     end
@@ -86,6 +92,15 @@ describe "access policies:" do
     end
     it "cannot read an unpublished asset" do
       expect(policy.can?(:read, unpublished_asset)).to be false
+    end
+    it "cannot create a Kithe::Model" do
+      expect(policy.can?(:create, Kithe::Model)).to be false
+    end
+    it "cannot update a Kithe::Model" do
+      expect(policy.can?(:update, Kithe::Model)).to be false
+    end
+    it "cannot delete a Kithe::Model" do
+      expect(policy.can?(:delete, Kithe::Model)).to be false
     end
     it "cannot access staff functions" do
       expect(policy.can?(:access_staff_functions)).to be false
