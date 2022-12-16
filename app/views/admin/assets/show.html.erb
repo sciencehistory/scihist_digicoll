@@ -283,15 +283,11 @@
                 as: :select,
                 collection: Asset::DERIVATIVE_STORAGE_TYPE_LOCATIONS.keys,
                 include_blank: false,
+                disabled: !can?(:update, @asset),
                 class: "custom-select" %>
             </div>
           </div>
-
-          <% if can?(:update, @asset) %>
-            <%= f.button :submit, "Update Derivative Storage Type"%>
-          <% else %>
-            <%= f.button :submit, "Update Derivative Storage Type", class: "disabled", type: "button" %>
-          <% end %>
+          <%= f.button :submit, "Update Derivative Storage Type", disabled: !can?(:update, @asset)%>
         <% end %>
       </p>
     <% end %>
