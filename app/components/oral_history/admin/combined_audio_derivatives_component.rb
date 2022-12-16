@@ -8,6 +8,7 @@ module OralHistory
       # delegate to WORK for legacy reasons
       delegate :genre, :title, :additional_title, :parent, :source, :date_of_work, :published?,
         to: :work
+      delegate :can?, to: :helpers
 
       attr_reader :work
 
