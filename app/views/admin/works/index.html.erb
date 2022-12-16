@@ -1,9 +1,8 @@
 <h1>Works</h1>
-
-<p>
-  <%= link_to 'Create new work', new_admin_work_path, class: "btn btn-primary" %>
-  <%= link_to 'Batch create works', admin_batch_create_path, class: "btn btn-outline-primary" %>
-</p>
+  <p>
+    <%= link_to 'Create new work', new_admin_work_path, class: "btn btn-primary #{"disabled" unless can?(:create, Kithe::Model) }" %>
+    <%= link_to 'Batch create works', admin_batch_create_path, class: "btn btn-outline-primary #{"disabled" unless can?(:create, Kithe::Model) }" %>
+  </p>
 
 <%# this is ransack %>
 <%= search_form_for [:admin, @q]  do |f| %>
@@ -92,7 +91,7 @@
             <%= admin_dropdown_for_work(work, labelled_by_id: "dropdownMenuButton") %>
           </div>
         </td>
-        <td><%= render CartControlComponent.new(work.friendlier_id, cart_presence: @cart_presence, label_sr_only: true) %></td>
+        <td><%= render CartControlComponent.new(work.friendlier_id, cart_presence: @cart_presence, label_sr_only: true) if can?(:update, work) %></td>
       </tr>
     <% end %>
   </tbody>
