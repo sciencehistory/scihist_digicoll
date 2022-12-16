@@ -9,10 +9,10 @@
 
 <% end %>
 
-<% if @asset&.parent.is_a?(Work) &&  can?(:update, @asset)%>
+<% if @asset&.parent.is_a?(Work)%>
   <p>
-    <%= link_to "Edit", edit_admin_asset_path(@asset), class: "btn btn-primary"%>
-    <%= link_to "Convert to child work", convert_to_child_work_admin_asset_path(@asset), method: "put", class: "btn btn-primary" %>
+    <%= link_to "Edit", edit_admin_asset_path(@asset), class: "btn btn-primary #{"disabled" unless can?(:update, @asset)}"%>
+    <%= link_to "Convert to child work", convert_to_child_work_admin_asset_path(@asset), method: "put", class: "btn btn-primary #{"disabled" unless can?(:update, @asset)}" %>
   </p>
 <% end %>
 
@@ -264,7 +264,7 @@
 
     <h2 class="mt-4">Derivatives</h2>
 
-    <% if @asset&.parent.is_a?(Work) && can?(:update, @asset)%>
+    <% if @asset&.parent.is_a?(Work)%>
       <p>
         <%= simple_form_for(@asset, wrapper: :horizontal_form) do |f| %>
 
@@ -287,14 +287,13 @@
             </div>
           </div>
 
-          <%= f.button :submit, "Update Derivative Storage Type" %>
+          <% if can?(:update, @asset) %>
+            <%= f.button :submit, "Update Derivative Storage Type"%>
+          <% else %>
+            <%= f.button :submit, "Update Derivative Storage Type", class: "disabled", type: "button" %>
+          <% end %>
         <% end %>
       </p>
-    <% else %>
-      <dl class="row">
-        <dt class="col-sm-4">Storage type</dt>
-        <dd class="col-sm-8"><%= @asset.derivative_storage_type %> </dd>
-      </dl>
     <% end %>
 
 
