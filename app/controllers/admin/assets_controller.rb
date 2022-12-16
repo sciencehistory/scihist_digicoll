@@ -1,8 +1,10 @@
 class Admin::AssetsController < AdminController
 
   def index
-    authorize! :read, Kithe::Model
+    # No authorize! call here. We're assuming if you can view the
+    # index, you can see all published and unpublished collections.
     scope = Asset
+
     # simple simple search on a few simple attributes with OR combo.
     if params[:q].present?
       scope = scope.where(id: params[:q]).or(
@@ -38,6 +40,7 @@ class Admin::AssetsController < AdminController
   def update
     @asset = Asset.find_by_friendlier_id!(params[:id])
     authorize! :update, @asset
+
     respond_to do |format|
       if @asset.update(asset_params)
         format.html { redirect_to admin_asset_url(@asset), notice: 'Asset was successfully updated.' }
@@ -121,12 +124,19 @@ class Admin::AssetsController < AdminController
   end
 
   def convert_to_child_work
-    authorize! :create, Kithe::Model
     @asset = Asset.find_by_friendlier_id!(params[:id])
 
     parent = @asset.parent
 
     new_child = Work.new(title: @asset.title)
+
+    # Asking for permission to create a new Work,
+    # which is arguably the main thing going on in this method.
+    # authorize! :create, Work as the first line of the method
+    # would be better, but we currently aren't allowed to do that
+    # see (https://github.com/chaps-io/access-granted/pull/56).
+    authorize! :create, new_child
+
     new_child.parent = parent
     # collections
     new_child.contained_by = parent.contained_by
