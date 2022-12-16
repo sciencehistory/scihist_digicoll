@@ -271,7 +271,6 @@ ActiveRecord::Schema.define(version: 2022_11_22_214935) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "name"
-    t.boolean "admin"
     t.boolean "locked_out"
     t.string "user_type", default: "editor"
     t.index ["email"], name: "index_users_on_email", unique: true
