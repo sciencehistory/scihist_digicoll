@@ -54,9 +54,17 @@
     </div>
 
     <div class="admin-filter">
-      <label for="q_parent_id_null">Child Works In Results</label>
+      <label for="q_parent_id_null">Child Works</label>
       <%= select_tag "q[parent_id_null]",
             options_for_select({"Yes" => "", "No" => true}, params[:q][:parent_id_null]),
+            class: "custom-select"
+      %>
+    </div>
+
+    <div class="admin-filter">
+      <label for="q_review_requested">Review requested</label>
+      <%= select_tag "q[review_requested]",
+            options_for_select({"Any" => "", "Requested" => "requested", "By others" => "by_others"}, params[:q][:review_requested]),
             class: "custom-select"
       %>
     </div>
