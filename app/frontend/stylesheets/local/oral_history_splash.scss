@@ -20,7 +20,7 @@
     display: none;
   }
   .collection-banner {
-    background-image: url("images/oral_history_wide_banner.jpg");
+    background-image: url("@/images/oral_history_wide_banner.jpg");
     background-size: cover;
     background-position: center;
     height: 6rem;
@@ -52,7 +52,7 @@
     flex-shrink: 1;
     min-width: 266px;
 
-    background-image: url("images/oral_history_collection_splash.jpg");
+    background-image: url("@/images/oral_history_collection_splash.jpg");
     background-size: cover;
   }
 
