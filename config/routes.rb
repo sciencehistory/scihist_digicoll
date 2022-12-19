@@ -61,8 +61,8 @@ Rails.application.routes.draw do
   end
 
   # Dynamic robots.txt
-  # this will fall through to ./views/application/robots.txt.erb, no need for an action method
-  get 'robots.txt', to: "application#robots.txt", format: "text"
+  # this will fall through to ./views/application/robots.text.erb, no need for an action method
+  get 'robots.txt', to: "application#robots", format: "text"
 
   # On-demand derivatives
   constraints(derivative_type: Regexp.union(OnDemandDerivative.derivative_type_definitions.keys.collect(&:to_s))) do
@@ -251,6 +251,7 @@ Rails.application.routes.draw do
         put "submit_ohms_xml"
         get "download_ohms_xml"
         put "remove_ohms_xml"
+        put "set_review_requested"
         put "submit_searchable_transcript_source"
         get "download_searchable_transcript_source"
         put "remove_searchable_transcript_source"

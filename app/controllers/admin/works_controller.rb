@@ -7,7 +7,7 @@ class Admin::WorksController < AdminController
   before_action :set_work,
     only: [:show, :edit, :update, :destroy, :reorder_members,
            :reorder_members_form, :demote_to_asset, :publish, :unpublish,
-           :submit_ohms_xml, :download_ohms_xml,
+           :submit_ohms_xml, :download_ohms_xml, :set_review_requested,
            :remove_ohms_xml, :submit_searchable_transcript_source, :download_searchable_transcript_source,
            :remove_searchable_transcript_source, :create_combined_audio_derivatives, :update_oh_available_by_request,
            :update_oral_history_content]
@@ -83,6 +83,23 @@ class Admin::WorksController < AdminController
         format.json { render json: @work.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  # PATCH/PUT /admin/works/ab2323ac/set_review_requested
+  def set_review_requested
+    review_requested = (params[:review_requested] == "1")
+    @work.review_requested = review_requested
+
+    if review_requested
+      @work.review_requested_by = current_user.email
+      @work.review_requested_at = DateTime.now
+    else
+      @work.review_requested_by = nil
+      @work.review_requested_at = nil
+    end
+
+    @work.save!
+    redirect_to admin_work_path(@work)
   end
 
   # comes in as a file multipart POST, we read it and stick it in ohms_xml text field please
@@ -576,6 +593,14 @@ class Admin::WorksController < AdminController
 
       if params[:q][:department].present?
         scope = scope.where("json_attributes ->> 'department' = :department", department: params[:q][:department])
+      end
+
+      if params[:q][:review_requested].present?
+        scope = scope.where("json_attributes ->> 'review_requested' is not null")
+
+        if params[:q][:review_requested] == "by_others"
+          scope = scope.not_jsonb_contains(review_requested_by: current_user.email )
+        end
       end
 
       scope.includes(:leaf_representative).page(params[:page]).per(20)

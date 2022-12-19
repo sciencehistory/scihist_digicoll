@@ -48,6 +48,10 @@ class Work < Kithe::Work
     work.validates_presence_of :rights
   end
 
+  attr_json :review_requested, :boolean
+  attr_json :review_requested_at, :datetime
+  attr_json :review_requested_by, :string
+
   attr_json :additional_title, :string, array: true, default: -> { [] }
   attr_json :external_id, Work::ExternalId.to_type, array: true, default: -> { [] }
   attr_json :creator, Work::Creator.to_type, array: true, default: -> { [] }
@@ -127,7 +131,7 @@ class Work < Kithe::Work
     unless AccessPolicy.new(current_user).can_see_unpublished_records?
       members = members.where(published: true)
     end
-    
+
     members = members.order(:position)
 
     # the point of this is to avoid n+1's, so let's set strict_loading, which
