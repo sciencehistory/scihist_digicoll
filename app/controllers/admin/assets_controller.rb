@@ -1,6 +1,8 @@
 class Admin::AssetsController < AdminController
 
   def index
+    # No authorize! call here. We're assuming if you can view the
+    # index, you can see all published and unpublished collections.
     scope = Asset
 
     # simple simple search on a few simple attributes with OR combo.
@@ -20,6 +22,7 @@ class Admin::AssetsController < AdminController
 
   def show
     @asset = Asset.find_by_friendlier_id!(params[:id])
+    authorize! :read, @asset
     if @asset.stored?
       @checks = @asset.fixity_checks.order('created_at asc')
       @latest_check   = @checks.last
@@ -29,12 +32,14 @@ class Admin::AssetsController < AdminController
 
   def edit
     @asset = Asset.find_by_friendlier_id!(params[:id])
+    authorize! :update, @asset
   end
 
   # PATCH/PUT /works/1
   # PATCH/PUT /works/1.json
   def update
     @asset = Asset.find_by_friendlier_id!(params[:id])
+    authorize! :update, @asset
 
     respond_to do |format|
       if @asset.update(asset_params)
@@ -78,6 +83,7 @@ class Admin::AssetsController < AdminController
 
   def display_attach_form
     @parent = Work.find_by_friendlier_id!(params[:parent_id])
+    authorize! :update, @parent
   end
 
   # Receives json hashes for direct uploaded files in params[:files],
@@ -87,6 +93,7 @@ class Admin::AssetsController < AdminController
   # POST /admin/works/[parent_work.friendlier_id]/ingest
   def attach_files
     @parent = Work.find_by_friendlier_id!(params[:parent_id])
+    authorize! :update, @parent
 
     current_position = @parent.members.maximum(:position) || 0
 
@@ -122,6 +129,14 @@ class Admin::AssetsController < AdminController
     parent = @asset.parent
 
     new_child = Work.new(title: @asset.title)
+
+    # Asking for permission to create a new Work,
+    # which is arguably the main thing going on in this method.
+    # authorize! :create, Work as the first line of the method
+    # would be better, but we currently aren't allowed to do that
+    # see (https://github.com/chaps-io/access-granted/pull/56).
+    authorize! :create, new_child
+
     new_child.parent = parent
     # collections
     new_child.contained_by = parent.contained_by

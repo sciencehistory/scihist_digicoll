@@ -9,10 +9,10 @@
 
 <% end %>
 
-<% if @asset&.parent.is_a? Work %>
+<% if @asset&.parent.is_a?(Work)%>
   <p>
-    <%= link_to "Edit", edit_admin_asset_path(@asset), class: "btn btn-primary" %>
-    <%= link_to "Convert to child work", convert_to_child_work_admin_asset_path(@asset), method: "put", class: "btn btn-primary" %>
+    <%= link_to "Edit", edit_admin_asset_path(@asset), class: "btn btn-primary #{"disabled" unless can?(:update, @asset)}"%>
+    <%= link_to "Convert to child work", convert_to_child_work_admin_asset_path(@asset), method: "put", class: "btn btn-primary #{"disabled" unless can?(:update, @asset)}" %>
   </p>
 <% end %>
 
@@ -264,7 +264,7 @@
 
     <h2 class="mt-4">Derivatives</h2>
 
-    <% if @asset&.parent.is_a? Work %>
+    <% if @asset&.parent.is_a?(Work)%>
       <p>
         <%= simple_form_for(@asset, wrapper: :horizontal_form) do |f| %>
 
@@ -283,11 +283,11 @@
                 as: :select,
                 collection: Asset::DERIVATIVE_STORAGE_TYPE_LOCATIONS.keys,
                 include_blank: false,
+                disabled: !can?(:update, @asset),
                 class: "custom-select" %>
             </div>
           </div>
-
-          <%= f.button :submit, "Update Derivative Storage Type" %>
+          <%= f.button :submit, "Update Derivative Storage Type", disabled: !can?(:update, @asset)%>
         <% end %>
       </p>
     <% end %>
