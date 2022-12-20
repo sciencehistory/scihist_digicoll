@@ -15,6 +15,8 @@ class Admin::WorksController < AdminController
   # GET /admin/works
   # GET /admin/works.json
   def index
+    # No authorize! call here. We're assuming if you can view the
+    # index, you can see all published and unpublished works.
     @q = ransack_object
     @works = index_work_search(@q)
     @cart_presence = CartPresence.new(@works.collect(&:friendlier_id), current_user: current_user)
@@ -24,6 +26,7 @@ class Admin::WorksController < AdminController
   # GET /admin/works/new
   def new
     @work = Work.new
+    authorize! :create, @work
 
     if params[:digitization_queue_item]
       queue_item = Admin::DigitizationQueueItem.find(params[:digitization_queue_item])
@@ -43,12 +46,14 @@ class Admin::WorksController < AdminController
 
   # GET /admin/works/1/edit
   def edit
+    authorize! :update, @work
   end
 
   # POST /admin/works
   # POST /admin/works.json
   def create
     @work = Work.new(work_params)
+    authorize! :create, @work
 
     if @work.parent_id && @work.position.nil?
       @work.position = (@work.parent.members.maximum(:position) || 0) + 1
@@ -68,6 +73,7 @@ class Admin::WorksController < AdminController
   # PATCH/PUT /admin/works/1
   # PATCH/PUT /admin/works/1.json
   def update
+    authorize! :update, @work
     respond_to do |format|
       if @work.update(work_params)
         format.html { redirect_to admin_work_path(@work), notice: 'Work was successfully updated.' }
@@ -99,6 +105,7 @@ class Admin::WorksController < AdminController
   # comes in as a file multipart POST, we read it and stick it in ohms_xml text field please
   # PATCH/PUT /admin/works/ab2323ac/submit_ohms_xml
   def submit_ohms_xml
+    authorize! :update, @work
     unless params[:ohms_xml].present?
       redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), flash: { error: "No file received" }
       return
@@ -120,12 +127,14 @@ class Admin::WorksController < AdminController
 
   # PATCH/PUT /admin/works/ab2323ac/remove_ohms_xml
   def remove_ohms_xml
+    authorize! :update, @work
     @work.oral_history_content!.update!(ohms_xml_text: nil)
     redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), notice: "OHMS XML file removed."
   end
 
   # GET /admin/works/ab2323ac/download_ohms_xml
   def download_ohms_xml
+    authorize! :read, @work
     send_data @work.oral_history_content!.ohms_xml_text,
       :type => 'text/xml; charset=UTF-8;',
       :disposition => ContentDisposition.format(disposition: "attachment", filename: "#{@work.oral_history_content!.ohms_xml.accession}.xml")
@@ -133,6 +142,7 @@ class Admin::WorksController < AdminController
 
   # PATCH/PUT /admin/works/ab2323ac/submit_ohms_xml
   def submit_searchable_transcript_source
+    authorize! :update, @work
     unless params[:searchable_transcript_source].present?
       redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), flash: { error: "No file received" }
       return
@@ -168,12 +178,14 @@ class Admin::WorksController < AdminController
 
   # PATCH/PUT /admin/works/ab2323ac/remove_searchable_transcript_source
   def remove_searchable_transcript_source
+    authorize! :update, @work
     @work.oral_history_content!.update!(searchable_transcript_source: nil)
     redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), notice: "Full text has been removed."
   end
 
   # GET /admin/works/ab2323ac/download_searchable_transcript_source
   def download_searchable_transcript_source
+    authorize! :read, @work
     id = @work.external_id.find { |id| id.category == "interview" }&.value
     id ||= @work.friendlier_id
     filename =  "#{id}_transcript.txt"
@@ -185,6 +197,7 @@ class Admin::WorksController < AdminController
   # Create_combined_audio_derivatives in the background, if warranted.
   # PATCH/PUT /admin/works/ab2323ac/create_combined_audio_derivatives
   def create_combined_audio_derivatives
+    authorize! :update, @work
     unless CombinedAudioDerivativeCreator.new(@work).available_members?
       redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), flash: {
         error: "Combined audio derivatives cannot be created, because this oral history does not have any published audio segments."
@@ -203,6 +216,7 @@ class Admin::WorksController < AdminController
 
   # PUT /admin/works/ab2323ac/update_oh_available_by_request
   def update_oh_available_by_request
+    authorize! :update, @work
     @work.transaction do
       @work.oral_history_content!.update( params.require(:oral_history_content).permit(:available_by_request_mode))
 
@@ -215,6 +229,7 @@ class Admin::WorksController < AdminController
 
   # PATCH /admin/works/ab2323ac/update_oral_history_content
   def update_oral_history_content
+    authorize! :update, @work
     @work.oral_history_content!.update(
       params.require(:oral_history_content).permit(interviewer_profile_ids: [], interviewee_biography_ids: [])
     )
@@ -293,10 +308,12 @@ class Admin::WorksController < AdminController
 
   # Our admin 'show' page is really the members index.
   def show
+    authorize! :read, @work
     @cart_presence = CartPresence.new([@work.friendlier_id], current_user: current_user)
   end
 
   def reorder_members_form
+    authorize! :update, @work
   end
 
   # triggered from members reorder form,
@@ -309,6 +326,7 @@ class Admin::WorksController < AdminController
   # B) Accessed via HTTP get without params[:ordered_member_ids], we'll sort
   # alphbetically.
   def reorder_members
+    authorize! :update, @work
     if params[:ordered_member_ids]
       ActiveRecord::Base.transaction do
         params[:ordered_member_ids].each_with_index do |id, index|
@@ -340,6 +358,8 @@ class Admin::WorksController < AdminController
       return
     end
 
+    authorize! :destroy, @work
+
     parent = @work.parent
     # a bit of race condition here if someone else added an asset in the meantime,
     # it'll be lost. no big deal at present, unclear right way to solve.
@@ -369,16 +389,24 @@ class Admin::WorksController < AdminController
   # Display a form for entry for batch editing all works in Cart. Convenient
   # to put it in WorksController so we can re-use our work form partials.
   def batch_update_form
-    # just a dummy blank one to power the form, the BatchUpdateWorkForm
-    # object will remove 'presence' validators so the form won't show any
+    # authorize! :update, Work would make more sense here,
+    # but we currently aren't allowed to do that
+    # see (https://github.com/chaps-io/access-granted/pull/56).
+    authorize! :update, Kithe::Model
+    # Create a dummy blank Work to power the form
+    # The BatchUpdateWorkForm object will remove 'presence'
+    # validators so the form won't show any
     # fields as required.
     @work = Admin::BatchUpdateWorkForm.new({})
   end
 
   # Accepts input from batch_update_form, to apply to all items in cart.
   def batch_update
+    # authorize! :update, Work would make more sense here,
+    # but we currently aren't allowed to do that
+    # see (https://github.com/chaps-io/access-granted/pull/56).
+    authorize! :update, Kithe::Model
     @work = Admin::BatchUpdateWorkForm.new(work_params)
-
     # Since we're going to end up solr re-indexing em all, let's make sure
     # and avoid n+1s.
     works_scope = current_user.works_in_cart.strict_loading.for_batch_indexing
@@ -400,6 +428,9 @@ class Admin::WorksController < AdminController
   end
 
   def batch_publish_toggle
+    # authorize! :publish, Work would make more sense here,
+    # but we currently aren't allowed to do that
+    # see (https://github.com/chaps-io/access-granted/pull/56).
     authorize! :publish, Kithe::Model
 
     unless params[:publish].in?(["on", "off"])

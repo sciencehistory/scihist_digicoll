@@ -39,9 +39,9 @@
       </div>
     <% end %>
 
-    <% if work_available_members? %>
+    <% if work_available_members?%>
       <p>
-        <%= link_to "Generate combined audio derivatives", create_combined_audio_derivatives_admin_work_path(work), method: "put", class: "btn btn-primary" %>
+        <%= link_to "Generate combined audio derivatives", create_combined_audio_derivatives_admin_work_path(work), method: "put", class: "btn btn-primary #{'disabled' unless can?(:update, work)}" %>
       </p>
     <% end %>
 
