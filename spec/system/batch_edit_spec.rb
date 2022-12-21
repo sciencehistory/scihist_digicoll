@@ -3,7 +3,7 @@
 
 require 'rails_helper'
 
-describe "Cart and Batch Edit", solr: true, indexable_callbacks: true, logged_in_user: true do
+describe "Cart and Batch Edit", solr: true, indexable_callbacks: true, logged_in_user: :editor do
 
   let!(:collection_1) { FactoryBot.create(:collection, title: "collection_1") }
   let!(:collection_2) { FactoryBot.create(:collection, title: "collection_2") }
