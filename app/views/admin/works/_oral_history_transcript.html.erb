@@ -57,9 +57,9 @@
     <h3 class="h4">Upload new searchable transcript text</h3>
 
     <%= form_with(url: submit_searchable_transcript_source_admin_work_path(@work), local: true, multipart: true, method: :put) do %>
-      <%= file_field_tag 'searchable_transcript_source', accept: "text/plain", disabled: !can?(:update, @work) %>
+      <%= file_field_tag 'searchable_transcript_source', accept: "text/plain", disabled: cannot?(:update, @work) %>
       <div class="small text-muted my-2">Use a plain text file with a <code>.txt</code> extension.</div>
-      <%= submit_tag "Upload", class: "btn btn-primary", disabled: !can?(:update, @work) %>
+      <%= submit_tag "Upload", class: "btn btn-primary", disabled: cannot?(:update, @work) %>
     <% end %>
   </div>
 </div>
