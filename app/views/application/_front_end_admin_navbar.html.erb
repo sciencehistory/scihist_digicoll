@@ -11,11 +11,13 @@
         <%= link_to "Dashboard", admin_root_path, class: "nav-link" %>
       </li>
 
-      <li class="nav-item">
-        <%= link_to admin_cart_items_path, class: "nav-link" if can?(:update, Kithe::Model) do %>
-          <span class="badge badge-secondary" data-role="cart-counter"><%= current_user.works_in_cart.count %></span> Cart
-        <% end %>
-      </li>
+      <% if can?(:update, Kithe::Model) %>
+        <li class="nav-item">
+          <%= link_to admin_cart_items_path, class: "nav-link" do %>
+            <span class="badge badge-secondary" data-role="cart-counter"><%= current_user.works_in_cart.count %></span> Cart
+          <% end %>
+        </li>
+      <% end %> 
 
       <li class="nav-item">
         <span class="navbar-text"><%= current_user.email %></span>
