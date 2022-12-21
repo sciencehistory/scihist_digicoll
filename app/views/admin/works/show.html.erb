@@ -146,8 +146,8 @@
         <h2 class="card-header h3">Interviewer Profiles</h2>
         <div class="card-body">
           <%= simple_form_for(@work.oral_history_content, url: update_oral_history_content_admin_work_path(@work), html: { id: :oh_interviewer_profiles}) do |f| %>
-            <%= f.association :interviewer_profiles, collection: InterviewerProfile.order(:name), input_html: { "data-tom-select": "true" }, disabled: !can?(:update, @work)%>
-            <%= submit_tag "Save Changes", class: "btn btn-primary mb-3", disabled: !can?(:update, @work)%>
+            <%= f.association :interviewer_profiles, collection: InterviewerProfile.order(:name), input_html: { "data-tom-select": "true" }, disabled: cannot?(:update, @work)%>
+            <%= submit_tag "Save Changes", class: "btn btn-primary mb-3", disabled: cannot?(:update, @work)%>
           <% end %>
       </div>
 
