@@ -1,7 +1,7 @@
 require 'rails_helper'
 require 'pp'
 
-RSpec.describe "New Work form", :logged_in_user, type: :system, js: true do
+RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true do
 
   # As of Chrome/chromedriver 74.0, chromedriver will refuse to click on something
   # if it's covered up by something with "position: sticky", even if scrolling

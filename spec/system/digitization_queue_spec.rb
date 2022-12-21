@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "Digitization Queue", :logged_in_user, type: :system, js: true do
+RSpec.describe "Digitization Queue", logged_in_user: :editor, type: :system, js: true do
   it "run-through" do
     visit collecting_areas_admin_digitization_queue_items_path
 
