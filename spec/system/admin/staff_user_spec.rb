@@ -1,16 +1,19 @@
 require 'rails_helper'
-RSpec.describe "Staff user", :logged_in_user, type: :system, queue_adapter: :test  do
-  let!(:work) { create(:oral_history_work, :published) }
+RSpec.describe "Staff user cannot use UI elements that are off limits",
+  :logged_in_user, type: :system do
+  let(:work) { create(:oral_history_work, :published) }
 
-  it "UI elements that staff users can't use are visible, but turned off" do
-    visit admin_works_path
-
-    # Admin navigation
-    expect(page).not_to have_link('Users')
+  it "public work show: no cart link in the top nav" do
+    visit work_path(work)
     expect(page).not_to have_link('Cart')
+  end
 
-    # Works list page
-    click_on "Admin"
+  it "admin works list" do
+    title = work.title
+    visit admin_works_path
+    expect(page).not_to have_link('Cart')
+    expect(page).not_to have_link('Users')
+    click_on 'Admin' # to see the menu
     disabled_links_text = page.find_all('a.disabled').map {|a| a.text }
     expect(disabled_links_text).to eq  [
       "Create new work",
@@ -20,9 +23,11 @@ RSpec.describe "Staff user", :logged_in_user, type: :system, queue_adapter: :tes
       "Demote to Asset",
       "Delete"
     ]
+  end
 
-    # Work show page
-    click_on "Oral history interview with William John Bailey"
+  it "admin work show" do
+    visit admin_work_path(work)
+
     disabled_links_text = page.find_all('.disabled').map {|a| a.text }
     expect(disabled_links_text).to eq  [
       "Edit Metadata"
@@ -52,16 +57,18 @@ RSpec.describe "Staff user", :logged_in_user, type: :system, queue_adapter: :tes
     disabled_links_text = page.find_all('.disabled').map {|a| a.text }
     expect(disabled_links_text).to include("Also unpublish all members")
     expect(disabled_links_text).to include("Leave members as they are")
+  end
 
-    # Asset show page
-    click_on "Assets"
-    click_on "Test title"
+  it "asset show" do
+    visit admin_asset_path(work.members.first)
     expect(page.find_all('input[type="submit"]')[0][:disabled]).to eq "true"
     disabled_links_text = page.find_all('.disabled').map {|a| a.text }
     expect(disabled_links_text).to include("Edit")
     expect(disabled_links_text).to include("Convert to child work")
+  end
 
-    # Collections list
+  it "collections list" do
+    visit admin_collections_path
     click_on "Collections"
     disabled_links_text = page.find_all('.disabled').map {|a| a.text }
     expect(disabled_links_text).to include("New Collection")
