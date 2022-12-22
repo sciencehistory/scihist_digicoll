@@ -118,7 +118,7 @@ RSpec.configure do |config|
     elsif example.metadata[:logged_in_user] == :editor
       sign_in FactoryBot.create(:editor_user)
     else
-      sign_in FactoryBot.create(:staff_user)
+      sign_in FactoryBot.create(:staff_viewer_user)
     end
   end
 

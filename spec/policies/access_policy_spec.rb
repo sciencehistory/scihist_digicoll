@@ -17,13 +17,13 @@ describe "access policies:" do
     it "is an admin user" do
       expect(user.admin_user?).to be true
       expect(user.editor_user?).to be false
-      expect(user.staff_user?).to be false
+      expect(user.staff_viewer_user?).to be false
     end
 
     it "has all permissions" do
       expect(user.has_admin_permissions?).to be true
       expect(user.has_editor_permissions?).to be true
-      expect(user.has_staff_permissions?).to be true
+      expect(user.has_staff_viewer_permissions?).to be true
     end
 
     it "can read an unpublished asset" do
@@ -31,6 +31,9 @@ describe "access policies:" do
     end
     it "can destroy a particular collection" do
       expect(policy.can?(:destroy, collection)).to be true
+    end
+    it "can publish a collection" do
+      expect(policy.can?(:publish, collection)).to be true
     end
     it "can destroy any Kithe::Model" do
       expect(policy.can?(:destroy, Kithe::Model)).to be true
@@ -65,13 +68,13 @@ describe "access policies:" do
     it "is an editor user" do
       expect(user.admin_user?).to be false
       expect(user.editor_user?).to be true
-      expect(user.staff_user?).to be false
+      expect(user.staff_viewer_user?).to be false
     end
 
-    it "has editor and staff permissions" do
+    it "has editor and staff_viewer permissions" do
       expect(user.has_admin_permissions?).to be false
       expect(user.has_editor_permissions?).to be true
-      expect(user.has_staff_permissions?).to be true
+      expect(user.has_staff_viewer_permissions?).to be true
     end
 
     it "cannot destroy a particular collection" do
@@ -84,6 +87,9 @@ describe "access policies:" do
     end
     it "can read a Kithe::Model" do
       expect(policy.can?(:read, Kithe::Model)).to be true
+    end
+    it "cannot publish a collection" do
+      expect(policy.can?(:publish, collection)).to be false
     end
     it "can create any Kithe::Model" do
       expect(policy.can?(:create, Kithe::Model)).to be true
@@ -108,24 +114,27 @@ describe "access policies:" do
     end
   end
 
-  describe 'staff' do
-    let(:user) { FactoryBot.create(:staff_user, email: "staff@b.c") }
+  describe 'staff_viewer' do
+    let(:user) { FactoryBot.create(:staff_viewer_user, email: "staff_viewer@b.c") }
     let(:policy) { AccessPolicy.new(user) }
 
-    it "is a staff user" do
+    it "is a staff_viewer user" do
       expect(user.admin_user?).to be false
       expect(user.editor_user?).to be false
-      expect(user.staff_user?).to be true
+      expect(user.staff_viewer_user?).to be true
     end
 
-    it "has staff permissions" do
+    it "has staff_viewer permissions" do
       expect(user.has_admin_permissions?).to be false
       expect(user.has_editor_permissions?).to be false
-      expect(user.has_staff_permissions?).to be true
+      expect(user.has_staff_viewer_permissions?).to be true
     end
 
     it "cannot destroy a particular collection" do
       expect(policy.can?(:destroy, collection)).to be false
+    end
+    it "cannot publish a collection" do
+      expect(policy.can?(:publish, collection)).to be false
     end
     it "cannot update a Kithe::Model" do
       expect(policy.can?(:update, Kithe::Model)).to be false
@@ -169,6 +178,9 @@ describe "access policies:" do
     end
     it "cannot update a Kithe::Model" do
       expect(policy.can?(:update, Kithe::Model)).to be false
+    end
+    it "cannot publish a collection" do
+      expect(policy.can?(:publish, collection)).to be false
     end
     it "cannot delete a Kithe::Model" do
       expect(policy.can?(:delete, Kithe::Model)).to be false

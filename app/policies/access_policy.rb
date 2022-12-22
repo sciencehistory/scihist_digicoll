@@ -4,10 +4,10 @@
 class AccessPolicy
   include AccessGranted::Policy
   # :publish and :admin are only defined in our code.
-  # as is :access_staff_functions.
+  # as is :access_staff_viewer_functions.
   # 
-  # The :admin, :editor and :staff roles are cumulative:
-  # e.g. if the :staff role can do something, so can :editor and :admin.
+  # The :admin, :editor and :staff_viewer roles are cumulative:
+  # e.g. if the :staff_viewer role can do something, so can :editor and :admin.
   #
   # If you edit this file, please also update 
   # spec/policies/access_policy_spec.rb
@@ -21,7 +21,7 @@ class AccessPolicy
       can [:create, :update], Kithe::Model
     end
 
-    role :staff, proc { |user| user&.has_staff_permissions? } do
+    role :staff_viewer, proc { |user| user&.has_staff_viewer_permissions? } do
       can :read, Kithe::Model # published or not
       can :destroy, Admin::QueueItemComment do |comment, user|
         comment.user_id == user.id
