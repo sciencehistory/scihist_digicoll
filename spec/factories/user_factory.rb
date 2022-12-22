@@ -8,8 +8,8 @@ FactoryBot.define do
     factory :editor_user do
       user_type { "editor" }
     end
-    factory :staff_user do
-      user_type { "staff" }
+    factory :staff_viewer_user do
+      user_type { "staff_viewer" }
     end
   end
 end

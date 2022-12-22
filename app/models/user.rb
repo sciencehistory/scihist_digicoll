@@ -18,7 +18,7 @@ class User < ApplicationRecord
   # This will correspond to a "role" in the AccessPolicy class.
   # "editor" will replace the current "staff" role.
   # A new "reader" type will be added in a future PR.
-  USER_TYPES = %w{admin editor staff}.freeze
+  USER_TYPES = %w{admin editor staff_viewer}.freeze
   enum user_type: USER_TYPES.collect {|v| [v, v]}.to_h
   validates :user_type, presence: true
 
@@ -33,8 +33,8 @@ class User < ApplicationRecord
   def editor_user?
     user_type == "editor"
   end
-  def staff_user?
-    user_type == "staff"
+  def staff_viewer_user?
+    user_type == "staff_viewer"
   end
 
   def has_admin_permissions?
@@ -43,8 +43,8 @@ class User < ApplicationRecord
   def has_editor_permissions?
     admin_user? || editor_user?
   end
-  def has_staff_permissions?
-    admin_user? || editor_user? || staff_user?
+  def has_staff_viewer_permissions?
+    admin_user? || editor_user? || staff_viewer_user?
   end
 
   # Only used by devise validatable, we want to allow user accounts
