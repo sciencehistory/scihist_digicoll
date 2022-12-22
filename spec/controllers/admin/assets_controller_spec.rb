@@ -61,7 +61,7 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
     end
   end
 
-  describe "#attach_files" do
+  describe "#attach_files", logged_in_user: :editor do
     it "creates and attaches Asset" do
       post :attach_files, params: { parent_id: parent_work, cached_files: cached_file_param }
 

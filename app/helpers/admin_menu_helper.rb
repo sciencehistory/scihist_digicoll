@@ -27,7 +27,6 @@ module AdminMenuHelper
         method: :delete,
         data: { confirm: "Delete Work '#{work.title}'?" }
       )
-
     ].compact
 
     content_tag(:div, class: "dropdown-menu dropdown-menu-right", :"aria-labelledby" => labelled_by_id) do
