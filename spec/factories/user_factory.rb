@@ -5,5 +5,11 @@ FactoryBot.define do
     factory :admin_user do
       user_type { "admin" }
     end
+    factory :editor_user do
+      user_type { "editor" }
+    end
+    factory :staff_viewer_user do
+      user_type { "staff_viewer" }
+    end
   end
 end

@@ -129,7 +129,7 @@
       // If our JS is actually loading, add a stationary "spinner" kind of icon.
       // Actual animated one used too much CPU when on the page so many times.
       &.lazyload, &.lazyloading {
-         background: $brand-image-placeholder-color asset-url('static-progress.svg') no-repeat;
+         background: $brand-image-placeholder-color url('@/images/static-progress.svg') no-repeat;
          background-position: center center;
          background-size: 50%;
       }

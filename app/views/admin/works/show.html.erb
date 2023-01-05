@@ -1,83 +1,79 @@
 <div class="d-flex justify-content-between">
 
-    <div>
-      <div class="d-flex align-items-start mt-1">
-        <% if @work.representative_id.present? %>
-          <%= thumb_image_tag(@work.leaf_representative, size: :mini, image_missing_text: true, class: "mr-2") %>
+  <div>
+    <div class="d-flex align-items-start mt-1">
+      <% if @work.representative_id.present? %>
+        <%= thumb_image_tag(@work.leaf_representative, size: :mini, image_missing_text: true, class: "mr-2") %>
+      <% end %>
+      <div>
+        <div>Managing a Work</div>
+        <h1><%= @work.title %> <%= publication_badge(@work) %>   <%= link_to "Public view", work_path(@work), class: "btn btn-sm btn-outline-primary" %></h1>
+        <% if @work.parent.present? %>
+          <p class="h4">Member in: <%= link_to "#{@work.parent.title} (#{@work.parent.friendlier_id})", admin_work_path(@work.parent) %></p>
         <% end %>
         <div>
-          <div>Managing a Work</div>
-          <h1><%= @work.title %> <%= publication_badge(@work) %>   <%= link_to "Public view", work_path(@work), class: "btn btn-sm btn-outline-primary" %></h1>
-          <% if @work.parent.present? %>
-            <p class="h4">Member in: <%= link_to "#{@work.parent.title} (#{@work.parent.friendlier_id})", admin_work_path(@work.parent) %></p>
-          <% end %>
-          <div>
-            <%= render CartControlComponent.new(@work.friendlier_id, cart_presence: @cart_presence) %>
-          </div>
+          <%= render CartControlComponent.new(@work.friendlier_id, cart_presence: @cart_presence) if can?(:update, @work)%>
         </div>
       </div>
     </div>
+  </div>
 
 
 
-    <div class="d-flex">
-      <% if can? :publish, @work %>
-        <div class="m-2">
-          <% if @work.published? %>
-            <div class="btn-group" role="group">
-              <button id="UnpublishButtonGroup" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Unpublish
-              </button>
-              <div class="dropdown-menu" aria-labelledby="UnpublishButtonGroup">
-                <%= link_to "Also unpublish all members",
-                  unpublish_admin_work_path(:cascade => "true"),
-                  method: "put",
-                  class: "dropdown-item"
-                %>
-                <%= link_to "Leave members as they are",
-                  unpublish_admin_work_path(:cascade => "false"),
-                  method: "put",
-                  class: "dropdown-item"
-                %>
-              </div>
-            </div>
-          <% else %>
-            <div class="btn-group" role="group">
-              <button id="publishButtonGroup" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Publish
-              </button>
-              <div class="dropdown-menu" aria-labelledby="publishButtonGroup">
-                <%= link_to "Also publish all members",
-                  publish_admin_work_path(:cascade => "true"),
-                  method: "put",
-                  class: "dropdown-item"
-                %>
-                <%= link_to "Leave members as they are",
-                  publish_admin_work_path(:cascade => "false"),
-                  method: "put",
-                  class: "dropdown-item"
-                %>
-              </div>
-            </div>
-          <% end %>
+  <div class="d-flex">
+    <div class="m-2">
+      <% if @work.published? %>
+        <div class="btn-group" role="group">
+          <button id="UnpublishButtonGroup" type="button" class="btn btn-secondary dropdown-toggle #{'disabled' unless can?(:publish, @work)}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Unpublish
+          </button>
+          <div class="dropdown-menu" aria-labelledby="UnpublishButtonGroup">
+            <%= link_to "Also unpublish all members",
+              unpublish_admin_work_path(:cascade => "true"),
+              method: "put",
+              class: "dropdown-item  #{'disabled' unless can?(:publish, @work)}"
+            %>
+            <%= link_to "Leave members as they are",
+              unpublish_admin_work_path(:cascade => "false"),
+              method: "put",
+              class: "dropdown-item  #{'disabled' unless can?(:publish, @work)}"
+            %>
+          </div>
         </div>
-      <% end %>
-      <% if can? :destroy, @work %>
-        <div class="m-2">
-          <div class="alert alert-secondary">
-            <h2 class="h4 alert-heading">
-              <a data-toggle="collapse" href="#deleteBtn1" role="button" aria-expanded="false" aria-controls="deleteBtn1">
-                Delete
-              </a>
-            </h2>
-            <div class="collapse" id="deleteBtn1">
-                <%= link_to('Delete', [:admin, @work], method: :delete,
-                     data: { confirm: "Delete Work '#{@work.title}'?" }, class: "btn btn-danger" )%>
-            </div>
+      <% else %>
+        <div class="btn-group" role="group">
+          <button id="publishButtonGroup" type="button" class="btn btn-secondary dropdown-toggle #{'disabled' unless can?(:publish, @work)}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Publish
+          </button>
+          <div class="dropdown-menu" aria-labelledby="publishButtonGroup">
+            <%= link_to "Also publish all members",
+              publish_admin_work_path(:cascade => "true"),
+              method: "put",
+              class: "dropdown-item #{'disabled' unless can?(:publish, @work)}"
+            %>
+            <%= link_to "Leave members as they are",
+              publish_admin_work_path(:cascade => "false"),
+              method: "put",
+              class: "dropdown-item #{'disabled' unless can?(:publish, @work)}"
+            %>
           </div>
         </div>
       <% end %>
     </div>
+    <div class="m-2">
+      <div class="alert alert-secondary">
+        <h2 class="h4 alert-heading">
+          <a data-toggle="collapse" href="#deleteBtn1" role="button" aria-expanded="false" aria-controls="deleteBtn1">
+            Delete
+          </a>
+        </h2>
+        <div class="collapse" id="deleteBtn1">
+            <%= link_to('Delete', [:admin, @work], method: :delete,
+                 data: { confirm: "Delete Work '#{@work.title}'?" }, class: "btn btn-danger #{'disabled' unless can?(:destroy, @work)}" )%>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 
@@ -95,19 +91,18 @@
 
 <div class="tab-content">
   <div class="tab-pane show active" id="nav-metadata" role="tabpanel" aria-labelledby="nav-metadata-tab">
-
-        <p>
-          <%= link_to "Edit Metadata", edit_admin_work_path(@work), class: "btn btn-primary" %>
-          <% if Admin::WorksController.can_demote_to_asset?(@work) %>
-            <%= link_to "Demote to Asset",
-                  demote_to_asset_admin_work_path(@work),
-                  method: "put",
-                  class: "btn btn-outline-primary",
-                  data: { confirm: "All work metadata on #{@work.title} will be lost, this is not reversible. Are you sure?" } %>
-          <% end %>
-        </p>
-
-        <%= render "metadata", work: @work %>
+    <p>
+      <%= link_to "Edit Metadata", edit_admin_work_path(@work), class: "btn btn-primary #{'disabled' unless can?(:update, @work)}" %>
+      <% if Admin::WorksController.can_demote_to_asset?(@work) %>
+        <%= link_to "Demote to Asset",
+              demote_to_asset_admin_work_path(@work),
+              method: "put",
+              class: "btn btn-outline-primary #{'disabled' unless can?(:destroy, @work)}",
+              data: { confirm: "All work metadata on #{@work.title} will be lost, this is not reversible. Are you sure?" } %>
+      <% end %>
+    </p>
+  
+    <%= render "metadata", work: @work %>
 
   </div>
   <div class="tab-pane" id="nav-members" role="tabpanel" aria-labelledby="nav-members-tab">
@@ -124,14 +119,14 @@
       <div class="alert alert-secondary mx-1">
         <h2 class="h4 alert-heading">Add New Members</h2>
           From:
-          <%= link_to "Files", admin_asset_ingest_path(@work), class: "btn btn-primary" %>
-          <%= link_to "New Child Work", new_admin_work_path(parent_id: @work), class: "btn btn-primary" %>
+          <%= link_to "Files", admin_asset_ingest_path(@work), class: "btn btn-primary #{'disabled' unless can?(:update, @work)}" %>
+          <%= link_to "New Child Work", new_admin_work_path(parent_id: @work), class: "btn btn-primary #{'disabled' unless can?(:update, @work)}" %>
       </div>
 
       <div class="alert alert-secondary mx-1">
         <h2 class="h4 alert-heading">Re-order Members</h2>
-        <%= link_to "Manual", reorder_members_admin_work_path(@work), class: "btn btn-primary" %>
-        <%= link_to "Alphabetical", reorder_members_admin_work_path(@work), method: "put", class: "btn btn-primary", data: { confirm: "Re-ordering members alphabetically by title can't be undone" } %>
+        <%= link_to "Manual", reorder_members_admin_work_path(@work), class: "btn btn-primary #{'disabled' unless can?(:update, @work)}" %>
+        <%= link_to "Alphabetical", reorder_members_admin_work_path(@work), method: "put", class: "btn btn-primary #{'disabled' unless can?(:update, @work)}", data: { confirm: "Re-ordering members alphabetically by title can't be undone" } %>
       </div>
     </div>
 
@@ -150,11 +145,10 @@
       <div class="card bg-light mb-3">
         <h2 class="card-header h3">Interviewer Profiles</h2>
         <div class="card-body">
-
-        <%= simple_form_for(@work.oral_history_content, url: update_oral_history_content_admin_work_path(@work), html: { id: :oh_interviewer_profiles}) do |f| %>
-          <%= f.association :interviewer_profiles, collection: InterviewerProfile.order(:name), input_html: { "data-tom-select": "true" } %>
-          <%= submit_tag "Save Changes", class: "btn btn-primary mb-3" %>
-        <% end %>
+          <%= simple_form_for(@work.oral_history_content, url: update_oral_history_content_admin_work_path(@work), html: { id: :oh_interviewer_profiles}) do |f| %>
+            <%= f.association :interviewer_profiles, collection: InterviewerProfile.order(:name), input_html: { "data-tom-select": "true" }, disabled: cannot?(:update, @work)%>
+            <%= submit_tag "Save Changes", class: "btn btn-primary mb-3", disabled: cannot?(:update, @work)%>
+          <% end %>
       </div>
 
       <%= render OralHistory::Admin::AvailableByRequestComponent.new(work: @work) %>

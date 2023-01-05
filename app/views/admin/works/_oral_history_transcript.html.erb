@@ -44,18 +44,22 @@
           <%= link_to "Download searchable transcript text", download_searchable_transcript_source_admin_work_path(@work),  class: "btn btn-primary" %>
         </div>
         <div class="col-sm">
-          <%= link_to "Remove searchable transcript text", remove_searchable_transcript_source_admin_work_path(@work), method: "put", class: "btn btn-primary btn-danger", data: { confirm: "Are you sure you want to remove the full text?" } %>
+          <%= link_to "Remove searchable transcript text",
+            remove_searchable_transcript_source_admin_work_path(@work),
+            method: "put",
+            class: "btn btn-primary btn-danger #{'disabled' unless can?(:update, @work)}",
+            data: { confirm: "Are you sure you want to remove the full text?" } %>
         </div>
       </div>
-      <hr/>
     <% end %>
+    <hr/>
 
     <h3 class="h4">Upload new searchable transcript text</h3>
 
     <%= form_with(url: submit_searchable_transcript_source_admin_work_path(@work), local: true, multipart: true, method: :put) do %>
-      <%= file_field_tag 'searchable_transcript_source', accept: "text/plain" %>
+      <%= file_field_tag 'searchable_transcript_source', accept: "text/plain", disabled: cannot?(:update, @work) %>
       <div class="small text-muted my-2">Use a plain text file with a <code>.txt</code> extension.</div>
-      <%= submit_tag "Upload", class: "btn btn-primary" %>
+      <%= submit_tag "Upload", class: "btn btn-primary", disabled: cannot?(:update, @work) %>
     <% end %>
   </div>
 </div>
