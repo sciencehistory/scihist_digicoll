@@ -22,11 +22,6 @@ class User < ApplicationRecord
   enum user_type: USER_TYPES.collect {|v| [v, v]}.to_h
   validates :user_type, presence: true
 
-  def admin?
-    raise RuntimeError.new("Don't use this method. Use admin_user? instead.")
-    user_type == "admin"
-  end
-
   def admin_user?
     user_type == "admin"
   end
@@ -37,12 +32,20 @@ class User < ApplicationRecord
     user_type == "staff_viewer"
   end
 
+  # Do not call this method from a controller or a view.
+  # It's only meant to be called from app/policies/access_policy.rb.
   def has_admin_permissions?
     admin_user?
   end
+
+  # Do not call this method from a controller or a view.
+  # It's only meant to be called from app/policies/access_policy.rb.
   def has_editor_permissions?
     admin_user? || editor_user?
   end
+
+  # Do not call this method from a controller or a view.
+  # It's only meant to be called from app/policies/access_policy.rb.
   def has_staff_viewer_permissions?
     admin_user? || editor_user? || staff_viewer_user?
   end
