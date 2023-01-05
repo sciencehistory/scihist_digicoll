@@ -212,7 +212,7 @@ describe "Public work show page", :logged_in_user, type: :system, js: false do
     work.save!
   end
 
-  describe "Logged in user" do
+  describe "Logged in user", logged_in_user: :editor do
     it "shows the edit button, and all child items, including unpublished ones." do
       visit work_path(work)
       expect(page.find(:css, 'a[text()="Edit"]').visible?).to be true

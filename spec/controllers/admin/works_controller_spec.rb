@@ -36,7 +36,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     end
   end
 
-  context "#update" do
+  context "#update", logged_in_user: :editor do
     let(:work) { create(:public_work) }
     it "trims leading and trailing spaces" do
       put :update, params: {
@@ -79,7 +79,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     end
   end
 
-  context "Reorder members " do
+  context "Reorder members", logged_in_user: :editor do
     let(:c)  { create(:asset_with_faked_file, :mp3, title: "c", position: 1) }
     let(:b)  { create(:asset_with_faked_file, :mp3, title: "b", position: 2) }
     let(:a)  { create(:asset_with_faked_file, :mp3, title: "a", position: 3) }
@@ -147,7 +147,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     end
   end
 
-  context "Oral histories" do
+  context "Oral histories", logged_in_user: :editor do
     let(:work) { create(:oral_history_work) }
 
     context "add an OHMS XML file" do

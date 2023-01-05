@@ -131,7 +131,9 @@ We preferentially use Vite.js (an ES6-style JS bundler, https://vite-ruby.netlif
 
   * dart-sass deprecates some things, [like the `/` divide operator](https://sass-lang.com/documentation/breaking-changes/slash-div), that were not depreccated in rubysass/libsass.  It also provides some functions which were NOT supported by previous libsass/rubysass. So that's a bit confusing.
 
-* image files and other static assets are for the moment still handled by sprockets, located in ./app/assets/images and fonts/, and referenced via rails sprockets helper methods. We could potentially switch some of these over to vite too.
+* MOST image files (and similar static assets) still handled by sprockets, located in ./app/assets/images and fonts/, and referenced via rails sprockets helper methods. But if an (eg) image needs to be referenced in a vite (S)CSS file:
+  * image is in `./app/frontend/images/*`
+  * reference using standard CSS `url(@/images/*)`, vite will properly serve/build and translate url. Note the `@/` at the beginning that vite will use to look it up in vite entrypoint directories, which are configured by vite-ruby to include ./app/frontend/images.
 
 * vite-ruby tries to install yarn deps using `npx`, but heroku ruby buildpack doesn't offer `npx` we have a workaround to run `yarn install` with `assets:precompile` in local `./Rakefile`.
 
