@@ -92,20 +92,6 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
       find("div.work_#{p} select option[value='#{val}']").select_option
     end
 
-    #Custom single-value selects (1)
-    %w(exhibition).each do |p|
-      scrollToTop
-
-      attr_name = Work.human_attribute_name(p)
-      all_items = work.send(p)
-      all_items.length.times do |i|
-        click_link("Add another #{attr_name}")
-        val = all_items[i]
-        all("fieldset.work_#{p} select")[i].
-          find("option[value='#{val}']").select_option
-      end
-    end
-
     # Dates:
     %w(date_of_work).each do |property|
       attr_name = Work.human_attribute_name(property)
@@ -192,7 +178,6 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
       file_creator genre inscription language medium
       physical_container place rights
       rights_holder subject title related_link
-      exhibition
     ).each do |prop|
       expect(newly_added_work.send(prop)).to eq work.send(prop)
     end

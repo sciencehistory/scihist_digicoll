@@ -52,7 +52,6 @@ class WorkIndexer < Kithe::Indexer
     # We put these in a separate field, cause we only allow logged in users
     # to search them
     to_field "admin_only_text_tesim", obj_extract("admin_note")
-    to_field ["admin_only_text_tesim", "exhibition_facet"], obj_extract("exhibition")
 
     # for date/year range facet
     to_field "year_facet_isim" do |record, acc|

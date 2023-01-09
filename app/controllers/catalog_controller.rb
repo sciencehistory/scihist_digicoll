@@ -315,11 +315,6 @@ class CatalogController < ApplicationController
     config.add_facet_field "rights_facet", helper_method: :rights_label, label: "Rights", limit: 5
     config.add_facet_field 'department_facet', label: "Department", limit: 5
 
-    config.add_facet_field 'exhibition_facet',
-      label: "Exhibition (Staff-only)",
-      limit: 5,
-      show: :access_staff_only_facets?
-
     config.add_facet_field 'published_bsi',
       label: "Visibility (Staff-only)",
       helper_method: :visibility_facet_labels,
@@ -632,8 +627,7 @@ class CatalogController < ApplicationController
     "place_facet_sim" => "place_facet",
     "language_sim" => "language_facet",
     "rights_sim" => "rights_facet",
-    "division_sim" => "department_facet",
-    "exhibition_sim" => "exhibition_facet"
+    "division_sim" => "department_facet"
   }
 
   # When posting on facebook, it modifies our facet params from eg `?f[facet_name][]=value` to
