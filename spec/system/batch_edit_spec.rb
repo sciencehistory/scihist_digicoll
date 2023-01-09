@@ -47,6 +47,10 @@ describe "Cart and Batch Edit", solr: true, indexable_callbacks: true, logged_in
     expect(page).to have_selector("h1", text: "Admin Cart")
     click_on("Batch Edit")
 
+    within find(".admin-nav") do
+      find_link('Cart')
+    end
+
     # Batch Update Form
     expect(page).to have_selector("h1", text: /Batch Edit/)
 

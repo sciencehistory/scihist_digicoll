@@ -22,11 +22,6 @@ class User < ApplicationRecord
   enum user_type: USER_TYPES.collect {|v| [v, v]}.to_h
   validates :user_type, presence: true
 
-  def admin?
-    raise RuntimeError.new("Don't use this method. Use admin_user? instead.")
-    user_type == "admin"
-  end
-
   def admin_user?
     user_type == "admin"
   end

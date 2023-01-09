@@ -76,8 +76,8 @@ describe "access policies:" do
     it "can read a Kithe::Model" do
       expect(policy.can?(:read, Kithe::Model)).to be true
     end
-    it "cannot publish a collection" do
-      expect(policy.can?(:publish, collection)).to be false
+    it "can publish a collection" do
+      expect(policy.can?(:publish, collection)).to be true
     end
     it "can create any Kithe::Model" do
       expect(policy.can?(:create, Kithe::Model)).to be true

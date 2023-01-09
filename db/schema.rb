@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_11_22_214935) do
-
+ActiveRecord::Schema[7.0].define(version: 2022_12_16_205620) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -69,8 +68,8 @@ ActiveRecord::Schema.define(version: 2022_11_22_214935) do
     t.text "encode_error"
     t.integer "percent_complete"
     t.string "hls_master_playlist_s3_url"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["active_encode_id"], name: "index_active_encode_statuses_on_active_encode_id"
     t.index ["asset_id"], name: "index_active_encode_statuses_on_asset_id"
     t.index ["state"], name: "index_active_encode_statuses_on_state"
@@ -78,15 +77,15 @@ ActiveRecord::Schema.define(version: 2022_11_22_214935) do
 
   create_table "asset_derivative_storage_type_reports", force: :cascade do |t|
     t.jsonb "data_for_report", default: {}
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "cart_items", force: :cascade do |t|
     t.bigint "user_id"
     t.uuid "work_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["user_id"], name: "index_cart_items_on_user_id"
     t.index ["work_id"], name: "index_cart_items_on_work_id"
   end
@@ -105,9 +104,9 @@ ActiveRecord::Schema.define(version: 2022_11_22_214935) do
     t.text "additional_notes"
     t.string "copyright_status"
     t.string "status", default: "awaiting_dig_on_cart"
-    t.datetime "status_changed_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "status_changed_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.date "deadline"
     t.boolean "is_digital_collections"
     t.boolean "is_rights_and_reproduction"
@@ -120,8 +119,8 @@ ActiveRecord::Schema.define(version: 2022_11_22_214935) do
     t.string "actual_result", null: false
     t.string "checked_uri", null: false
     t.string "hash_function", default: "SHA-512", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["asset_id", "checked_uri"], name: "by_asset_and_checked_uri"
     t.index ["asset_id"], name: "index_fixity_checks_on_asset_id"
     t.index ["checked_uri"], name: "index_fixity_checks_on_checked_uri"
@@ -130,8 +129,8 @@ ActiveRecord::Schema.define(version: 2022_11_22_214935) do
   create_table "interviewee_biographies", force: :cascade do |t|
     t.string "name", null: false
     t.jsonb "json_attributes"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "interviewee_biographies_oral_history_content", id: false, force: :cascade do |t|
@@ -144,8 +143,8 @@ ActiveRecord::Schema.define(version: 2022_11_22_214935) do
   create_table "interviewer_profiles", force: :cascade do |t|
     t.string "name"
     t.text "profile"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "interviewer_profiles_oral_history_content", id: false, force: :cascade do |t|
@@ -165,8 +164,8 @@ ActiveRecord::Schema.define(version: 2022_11_22_214935) do
     t.string "type", null: false
     t.integer "position"
     t.jsonb "json_attributes"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.uuid "parent_id"
     t.string "friendlier_id", default: -> { "kithe_models_friendlier_id_gen('2176782336'::bigint, '78364164095'::bigint)" }, null: false
     t.jsonb "file_data"
@@ -176,7 +175,7 @@ ActiveRecord::Schema.define(version: 2022_11_22_214935) do
     t.boolean "published", default: false, null: false
     t.integer "kithe_model_type", null: false
     t.string "role"
-    t.datetime "published_at"
+    t.datetime "published_at", precision: nil
     t.index ["friendlier_id"], name: "index_kithe_models_on_friendlier_id", unique: true
     t.index ["leaf_representative_id"], name: "index_kithe_models_on_leaf_representative_id"
     t.index ["parent_id"], name: "index_kithe_models_on_parent_id"
@@ -191,8 +190,8 @@ ActiveRecord::Schema.define(version: 2022_11_22_214935) do
     t.text "error_info"
     t.integer "progress"
     t.integer "progress_total"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["work_id", "deriv_type"], name: "index_on_demand_derivatives_on_work_id_and_deriv_type", unique: true
     t.index ["work_id"], name: "index_on_demand_derivatives_on_work_id"
   end
@@ -205,8 +204,8 @@ ActiveRecord::Schema.define(version: 2022_11_22_214935) do
     t.text "intended_use_ciphertext"
     t.string "status"
     t.text "notes"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "delivery_status", default: "pending"
     t.index ["work_id"], name: "index_oral_history_access_requests_on_work_id"
   end
@@ -216,10 +215,10 @@ ActiveRecord::Schema.define(version: 2022_11_22_214935) do
     t.string "combined_audio_fingerprint"
     t.jsonb "combined_audio_component_metadata"
     t.text "ohms_xml_text"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "combined_audio_derivatives_job_status"
-    t.datetime "combined_audio_derivatives_job_status_changed_at"
+    t.datetime "combined_audio_derivatives_job_status_changed_at", precision: nil
     t.text "searchable_transcript_source"
     t.enum "available_by_request_mode", default: "off", null: false, enum_type: "available_by_request_mode_type"
     t.jsonb "json_attributes", default: {}
@@ -229,8 +228,8 @@ ActiveRecord::Schema.define(version: 2022_11_22_214935) do
 
   create_table "orphan_reports", force: :cascade do |t|
     t.jsonb "data_for_report", default: {}
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "queue_item_comments", force: :cascade do |t|
@@ -238,18 +237,18 @@ ActiveRecord::Schema.define(version: 2022_11_22_214935) do
     t.bigint "user_id"
     t.text "text"
     t.boolean "system_action"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["digitization_queue_item_id"], name: "index_queue_item_comments_on_digitization_queue_item_id"
     t.index ["user_id"], name: "index_queue_item_comments_on_user_id"
   end
 
   create_table "scheduled_ingest_bucket_deletions", force: :cascade do |t|
     t.string "path"
-    t.datetime "delete_after"
+    t.datetime "delete_after", precision: nil
     t.uuid "asset_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["asset_id"], name: "index_scheduled_ingest_bucket_deletions_on_asset_id"
   end
 
@@ -257,8 +256,8 @@ ActiveRecord::Schema.define(version: 2022_11_22_214935) do
     t.binary "query_params"
     t.integer "user_id"
     t.string "user_type"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["user_id"], name: "index_searches_on_user_id"
   end
 
@@ -266,12 +265,11 @@ ActiveRecord::Schema.define(version: 2022_11_22_214935) do
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "reset_password_sent_at", precision: nil
+    t.datetime "remember_created_at", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "name"
-    t.boolean "admin"
     t.boolean "locked_out"
     t.string "user_type", default: "editor"
     t.index ["email"], name: "index_users_on_email", unique: true
