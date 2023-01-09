@@ -95,9 +95,6 @@ FactoryBot.define do
       department {
         "Center for Oral History"
       }
-      exhibition {
-        ["Making Modernity", "Lobby 2017"]
-      }
       description {
         "Description 1"
       }

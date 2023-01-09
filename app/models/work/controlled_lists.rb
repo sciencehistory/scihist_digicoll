@@ -106,26 +106,5 @@ class Work
       'Tobias, Gregory',
       'Voelkel, James',
     ]
-
-    EXHIBITION = [
-      "Age of Alchemy",
-      "Books of Secrets",
-      "Elemental Matters",
-      "ExhibitLab",
-      "Inspiring Youth in Chemistry",
-      "Lobby 2017",
-      "Making Modernity",
-      "Marvels and Ciphers",
-      "Molecules That Matter",
-      "Object Explorer",
-      "Science at Play",
-      "Second Skin",
-      "Sensing Change",
-      "The Alchemical Quest",
-      "The Sky's the Limit",
-      "The Whole of Nature and the Mirror of Art",
-      "Things Fall Apart",
-      "Transmutations"
-    ]
   end
 end

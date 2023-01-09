@@ -38,7 +38,7 @@ class WorkJsonSerializer
   end
 
   attributes :title, :additional_title, :format, :genre, :medium, :extent, :language,
-    :provenance, :subject, :department, :exhibition, :series_arrangement,
+    :provenance, :subject, :department, :series_arrangement,
     :rights, :rights_holder, :digitization_funder, :file_creator
 
   attribute :description do |work|
