@@ -14,11 +14,11 @@ class AccessPolicy
   def configure
     role :admin, proc { |user| user&.has_admin_permissions? } do
       can :admin, User
-      can [:destroy, :publish], Kithe::Model
+      can [:destroy], Kithe::Model
     end
 
     role :editor, proc { |user| user&.has_editor_permissions? } do
-      can [:create, :update], Kithe::Model
+      can [:create, :update, :publish], Kithe::Model
     end
 
     role :staff_viewer, proc { |user| user&.has_staff_viewer_permissions? } do
