@@ -266,13 +266,13 @@
 
          https://lucene.apache.org/solr/guide/8_0/highlighting.html#Highlighting-SchemaOptionsandPerformanceConsiderations
        -->
-    <field name="searchable_fulltext_en" type="text_en" stored="true" indexed="true" multiValued="true" omitNorms="true" storeOffsetsWithPositions="true"/>
+    <field name="searchable_fulltext_en" type="text_en" stored="true" indexed="true" multiValued="true" storeOffsetsWithPositions="true"/>
 
     <!-- Full text search for works in German -->
-    <field name="searchable_fulltext_de" type="text_de" stored="true" indexed="true" multiValued="true" omitNorms="true" storeOffsetsWithPositions="true"/>
+    <field name="searchable_fulltext_de" type="text_de" stored="true" indexed="true" multiValued="true" storeOffsetsWithPositions="true"/>
 
     <!-- Full text search for works in neither English nor German -->
-    <field name="searchable_fulltext_language_agnostic" type="text" stored="true" indexed="true" multiValued="true" omitNorms="true" storeOffsetsWithPositions="true"/>
+    <field name="searchable_fulltext_language_agnostic" type="text" stored="true" indexed="true" multiValued="true"  storeOffsetsWithPositions="true"/>
 
     <!-- added by Science History Institute, a dynamic field that's good for string facets, using docValues fields -->
     <dynamicField name="*_facet" type="string_dv" multiValued="true"/>
