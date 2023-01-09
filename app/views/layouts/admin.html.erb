@@ -71,8 +71,10 @@
               <% end %>
               <li><%= link_to "Public Search", search_catalog_path %></li>
               <li>
-                <%= link_to admin_cart_items_path if can?(:update, @work) do %>
-                  Cart <span class="badge badge-secondary" data-role="cart-counter"><%= current_user.works_in_cart.count %></span>
+                <% if can?(:update, Kithe::Model) %>
+                  <%= link_to admin_cart_items_path do %>
+                    Cart <span class="badge badge-secondary" data-role="cart-counter"><%= current_user.works_in_cart.count %></span>
+                  <% end %>
                 <% end %>
               </li>
 
