@@ -20,12 +20,6 @@ describe "access policies:" do
       expect(user.staff_viewer_user?).to be false
     end
 
-    it "has all permissions" do
-      expect(user.has_admin_permissions?).to be true
-      expect(user.has_editor_permissions?).to be true
-      expect(user.has_staff_viewer_permissions?).to be true
-    end
-
     it "can read an unpublished asset" do
       expect(policy.can?(:read, unpublished_asset)).to be true
     end
@@ -69,12 +63,6 @@ describe "access policies:" do
       expect(user.admin_user?).to be false
       expect(user.editor_user?).to be true
       expect(user.staff_viewer_user?).to be false
-    end
-
-    it "has editor and staff_viewer permissions" do
-      expect(user.has_admin_permissions?).to be false
-      expect(user.has_editor_permissions?).to be true
-      expect(user.has_staff_viewer_permissions?).to be true
     end
 
     it "cannot destroy a particular collection" do
@@ -122,12 +110,6 @@ describe "access policies:" do
       expect(user.admin_user?).to be false
       expect(user.editor_user?).to be false
       expect(user.staff_viewer_user?).to be true
-    end
-
-    it "has staff_viewer permissions" do
-      expect(user.has_admin_permissions?).to be false
-      expect(user.has_editor_permissions?).to be false
-      expect(user.has_staff_viewer_permissions?).to be true
     end
 
     it "cannot destroy a particular collection" do

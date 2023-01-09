@@ -32,24 +32,6 @@ class User < ApplicationRecord
     user_type == "staff_viewer"
   end
 
-  # Do not call this method from a controller or a view.
-  # It's only meant to be called from app/policies/access_policy.rb.
-  def has_admin_permissions?
-    admin_user?
-  end
-
-  # Do not call this method from a controller or a view.
-  # It's only meant to be called from app/policies/access_policy.rb.
-  def has_editor_permissions?
-    admin_user? || editor_user?
-  end
-
-  # Do not call this method from a controller or a view.
-  # It's only meant to be called from app/policies/access_policy.rb.
-  def has_staff_viewer_permissions?
-    admin_user? || editor_user? || staff_viewer_user?
-  end
-
   # Only used by devise validatable, we want to allow user accounts
   # to be saved with nil password, means they won't be able to log in
   # with any password.

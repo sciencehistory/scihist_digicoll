@@ -12,16 +12,16 @@ class AccessPolicy
   # If you edit this file, please also update 
   # spec/policies/access_policy_spec.rb
   def configure
-    role :admin, proc { |user| user&.has_admin_permissions? } do
+    role :admin, proc { |user| has_admin_permissions?(user) } do
       can :admin, User
-      can [:destroy], Kithe::Model
+      can :destroy, Kithe::Model
     end
 
-    role :editor, proc { |user| user&.has_editor_permissions? } do
+    role :editor, proc { |user| has_editor_permissions?(user) } do
       can [:create, :update, :publish], Kithe::Model
     end
 
-    role :staff_viewer, proc { |user| user&.has_staff_viewer_permissions? } do
+    role :staff_viewer, proc { |user| has_staff_viewer_permissions?(user) } do
       can :read, Kithe::Model # published or not
       can :destroy, Admin::QueueItemComment do |comment, user|
         comment.user_id == user.id
@@ -49,4 +49,19 @@ class AccessPolicy
   def can_see_unpublished_records?
     can? :read, Kithe::Model
   end
+
+  private
+
+  def has_admin_permissions?(user)
+    user&.admin_user?
+  end
+  
+  def has_editor_permissions?(user)
+    user&.admin_user? || user&.editor_user?
+  end
+  
+  def has_staff_viewer_permissions?(user)
+    user&.admin_user? || user&.editor_user? || user&.staff_viewer_user?
+  end
+
 end
