@@ -16,7 +16,7 @@ class WorkShowInfoComponent < ApplicationComponent
   # Delegate through to WORK
   delegate :additional_credit, :additional_title,
     :contained_by, :date_of_work, :department,
-    :description, :digitization_funder, :extent, :exhibition,
+    :description, :digitization_funder, :extent,
     :format, :genre, :inscription, :language, :medium,
     :parent, :physical_container, :provenance, :published?,
     :rights, :rights_holder, :series_arrangement,

@@ -61,16 +61,6 @@
 
     <%= f.input :department, required: (true if f.object.published?), collection: Work::ControlledLists::DEPARTMENT  %>
 
-    <%= f.repeatable_attr_input(:exhibition, build: :at_least_one) do |input_name, value| %>
-      <%= f.input_field :exhibition,
-            name: input_name,
-            id: nil,
-            selected: value,
-            collection: Work::ControlledLists::EXHIBITION,
-            include_blank: true,
-            class: "form-control input-primitive" %>
-    <% end %>
-
     <%= f.repeatable_attr_input :series_arrangement, build: :at_least_one %>
 
     <%# single, not array, so we need some slightly weird setup. Including we need at least one to exist:  %>
