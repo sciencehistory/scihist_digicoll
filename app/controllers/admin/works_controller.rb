@@ -596,7 +596,7 @@ class Admin::WorksController < AdminController
       end
 
       if params[:q][:review_requested].present?
-        scope = scope.where("json_attributes ->> 'review_requested' is not null")
+        scope = scope.jsonb_contains(review_requested: true)
 
         if params[:q][:review_requested] == "by_others"
           scope = scope.not_jsonb_contains(review_requested_by: current_user.email )
