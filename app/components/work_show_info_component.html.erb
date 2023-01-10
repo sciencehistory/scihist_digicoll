@@ -110,8 +110,6 @@
 <table class="work chf-attributes">
   <%= render AttributeTable::RowComponent.new(:department, values: [department], link_to_facet: "department_facet") %>
 
-  <%= render AttributeTable::RowComponent.new(:exhibition, values: exhibition, link_to_facet: "exhibition_facet", alpha_sort: true) if can? :access_staff_functions%>
-
   <% if public_collections.present? %>
     <tr>
       <th scope='row'>Collection</th>
