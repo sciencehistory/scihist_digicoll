@@ -56,7 +56,9 @@ class CompactUserAgent
   end
 
   def device_detector
-    @device_detector ||= DeviceDetector.new(user_agent)
+    # Device_detector isn't good with nil but is fine with empty string
+    # https://github.com/podigee/device_detector/blob/develop/CHANGELOG.md
+    @device_detector ||= DeviceDetector.new(user_agent || "")
   end
 
 end
