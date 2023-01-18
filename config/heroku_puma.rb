@@ -10,7 +10,6 @@ threads_count = Integer(ENV['RAILS_MAX_THREADS'] || 5)
 threads threads_count, threads_count
 
 # https://github.com/puma/puma/blob/master/5.0-Upgrade.md
-nakayoshi_fork
 fork_worker
 
 preload_app!
