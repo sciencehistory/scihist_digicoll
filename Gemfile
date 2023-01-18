@@ -70,7 +70,7 @@ gem "resque-heroku-signals" # gah, weirdly needed for graceful shutdown on herok
 # using memcached for Rails.cache in production, requires dalli
 gem "dalli", "~> 3.2"
 
-gem 'honeybadger', '~> 4.0'
+gem 'honeybadger', '~> 5.0'
 
 # Until we get things working under sprockets 4, lock to sprockets 3
 # https://github.com/sciencehistory/scihist_digicoll/issues/458
