@@ -27,7 +27,7 @@ gem "mail", ">= 2.8.0.rc1", "< 3"
 gem "net-protocol", "!= 0.2.0"
 
 gem "view_component", "~> 2.49"
-gem "alba", "~> 1.6" # for JSON serialization of models
+gem "alba", "~> 2.0" # for JSON serialization of models
 
 #  Scout is a monitoring tool we are experimenting with
 gem 'scout_apm'
@@ -57,7 +57,7 @@ gem "aws-sdk-s3", "~> 1.0"
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
-gem 'puma', '~> 5.6'
+gem 'puma', '~> 6.0'
 
 # resque+redis being used for activejob.
 # resque-pool currently does not support resque 2.0 alas.

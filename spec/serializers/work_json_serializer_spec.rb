@@ -7,7 +7,10 @@ require 'rails_helper'
 #
 describe WorkJsonSerializer, type: :model, queue_adapter: :inline do
   let(:work) { create(:work, :published, :with_complete_metadata) }
-  let(:serializable_hash) { WorkJsonSerializer.new(work).serializable_hash }
+
+  # symbolize keys for convenience in our tests, they used to be symbols in Alba 1.0
+  # https://github.com/okuramasafumi/alba/blob/main/CHANGELOG.md#200-2022-10-21
+  let(:serializable_hash) { WorkJsonSerializer.new(work).serializable_hash.deep_symbolize_keys }
 
   # just a 'macro' to for common tests on a key expecte to have an array of hashes
   # having certain keys.
