@@ -51,8 +51,7 @@ class Asset < Kithe::Asset
   # that won't be published may need derivatives kept in a separate restricted access
   # bucket. Intended for non-published Oral History assets, eg "free access no internet release"
   #
-  # Set rails_attribute true so we get rails dirty tracking.
-  attr_json :derivative_storage_type, :string, default: "public", rails_attribute: true
+  attr_json :derivative_storage_type, :string, default: "public"
 
   # alt_text was added for Oral Histories portraits and migrating existing data,
   # but can be used for any asset.
@@ -175,7 +174,7 @@ class Asset < Kithe::Asset
     else
       # an ordinary save (including create), did any attributes of interest CHANGE? (Including removal)
       # then we need to reindex parent to get them updated in index.
-      indexed_attributes.any? { |attr| self.attr_json_changes.saved_change_to_attribute(attr).present? }
+      indexed_attributes.any? { |attr| self.saved_change_to_attribute(attr).present? }
     end
   end
 

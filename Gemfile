@@ -106,10 +106,11 @@ gem 'font-awesome-rails', '~> 4.7'
 gem "lograge", "< 2"
 gem "device_detector", "~> 1.0" # user-agent parsing we use for logging
 
-gem 'kithe', "~> 2.7", ">= 2.7.1"
-# attr_son is a dependency of kithe, but we want to make sure it gets require'd directly
-# to avoid weird auto-loading issues.
-gem "attr_json", "~> 1.0"
+
+# Try with attr-json 2.0 pre-release, which temporarily requires kithe off master
+gem "attr_json", "2.0.0.rc1"
+gem 'kithe', "~> 2.7", ">= 2.7.1", github: "sciencehistory/kithe"
+
 gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 
 gem 'simple_form', "~> 5.0"
