@@ -573,8 +573,6 @@ module ScihistDigicoll
 
     define_key :rails_asset_host
 
-    define_key :show_survey_sparrow, default: "false"
-
     ##
     #
     # feature flags: We can use Env to be a place where feature flags that hide under-development
