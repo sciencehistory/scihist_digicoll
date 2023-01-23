@@ -265,6 +265,8 @@
          somewhat larger index size.
 
          https://lucene.apache.org/solr/guide/8_0/highlighting.html#Highlighting-SchemaOptionsandPerformanceConsiderations
+
+         decided to keep omitNorms=true for now https://github.com/sciencehistory/scihist_digicoll/issues/2013
        -->
     <field name="searchable_fulltext_en" type="text_en" stored="true" indexed="true" multiValued="true" omitNorms="true" storeOffsetsWithPositions="true"/>
 
