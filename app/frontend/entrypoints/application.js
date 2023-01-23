@@ -57,7 +57,6 @@ import '../javascript/custom_google_analytics_events.js';
 import '../javascript/cart_control.js';
 import '../javascript/date_range_render_workaround.js';
 import '../javascript/tab_selection_in_anchor';
-import '..//javascript/survey_widget.js';
 
 // Generic tooltips
 import '../javascript/bootstrap_tooltips_activate';
