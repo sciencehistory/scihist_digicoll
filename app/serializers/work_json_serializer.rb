@@ -87,7 +87,7 @@ class WorkJsonSerializer
   end
 
   one :physical_container do
-    attributes :box, :folder, :volume, :part, :page, :shelfmark
+    attributes :box, :folder, :volume, :part, :page, :shelfmark, :reel
 
     attribute :formatted, &:display_as
   end

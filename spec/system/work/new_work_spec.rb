@@ -134,7 +134,7 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
     end
 
     # Physical container:
-    %w(box volume page folder part shelfmark).each do |p|
+    %w(box volume page folder part shelfmark reel).each do |p|
       fill_in "work[physical_container_attributes][#{p}]",
         with: work.physical_container.attributes[p]
     end

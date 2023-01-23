@@ -179,17 +179,39 @@ describe CitableAttributes do
         end
 
         describe "Archives" do
-          let(:collection) { FactoryBot.create(:collection, title: "Collection Name") }
-
-          before do
-            collection.contains << work
-            work.department = "Archives"
-            work.series_arrangement = ["Subseries B", "Series XIV"]
-            work.physical_container = {box:'56', folder:'47' }
+          let(:collection) { FactoryBot.build(:collection, title: "Collection Name") }
+          let(:work) do
+            build(:work,
+              contained_by: [collection],
+              department: "Archives",
+              series_arrangement: ["Subseries B", "Series XIV"],
+              physical_container: { box:'56', folder:'47' }
+            )
           end
 
           it "includes collection box and folder but not series" do
             expect(citable_attributes.archive_location).to eq("Collection Name, Box 56, Folder 47")
+          end
+
+          describe "film" do
+            let(:work) do
+              build(:work, :published,
+                title: "Some Old Video",
+                creator: { category: "creator_of_work", value: "Perkin-Elmer Corporation" },
+                place: { category: "place_of_creation", value: "Universität Wien" },
+                genre: "Video Recordings",
+                format: "moving_image",
+                extent: "8M 35S",
+                medium: "16mm (photographic film size)",
+                physical_container: { reel: "23" },
+                department: "Archives",
+                contained_by: [build(:collection, title: "Science History Institute 16mm Film Collection")]
+              )
+            end
+
+            it "includes reel in citation" do
+              expect(citable_attributes.archive_location).to eq("Science History Institute 16mm Film Collection, Reel 23")
+            end
           end
         end
       end
