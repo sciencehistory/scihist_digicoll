@@ -5,6 +5,7 @@ class Work
     ROLES = ['photographed_by', 'translated_by', 'transcribed_by']
     NAMES = [
       'Douglas Lockard',
+      'Edward Rubeiz',
       'Gudrun Dauner',
       'Gregory Tobias',
       'Jocelyn R. McDaniel',
