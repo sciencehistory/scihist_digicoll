@@ -155,7 +155,7 @@ FactoryBot.define do
         ]
       }
       physical_container {
-        Work::PhysicalContainer.new({"box"=>"Box", "page"=>"Page", "part"=>"Part", "folder"=>"Folder", "volume"=>"Volume", "shelfmark"=>"Shelfmark"})
+        Work::PhysicalContainer.new({"box"=>"Box", "page"=>"Page", "part"=>"Part", "folder"=>"Folder", "volume"=>"Volume", "shelfmark"=>"Shelfmark", "reel"=>"Reel"})
       }
       series_arrangement {
         ["Series arrangement 1", "Series arrangement 2"]
