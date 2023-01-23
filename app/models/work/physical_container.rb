@@ -8,6 +8,7 @@ class Work
     attr_json :part, :string
     attr_json :page, :string
     attr_json :shelfmark, :string
+    attr_json :reel, :string
 
 
     # A simple string consistent with what chf_sufia did
@@ -19,6 +20,7 @@ class Work
       values << "Part #{part}" if part.present?
       values << "Page #{page}" if page.present?
       values << "Shelfmark #{shelfmark}" if shelfmark.present?
+      values << "Reel #{reel}" if reel.present?
 
       values.join(", ")
     end
