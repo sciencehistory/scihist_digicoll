@@ -18,6 +18,38 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
   end
 
   let(:parent_work) { create(:work, published: false) }
+  let(:parent_collection) { create(:collection) }
+
+  describe "index", logged_in_user: :staff_viewer do
+    render_views
+    let!(:assets) { [create(:asset, parent: parent_work), create(:asset, parent: parent_collection )] }
+    it "shows list of regular assets and thumbnails without error" do
+      get :index
+      expect(response).to have_http_status(200)
+     end
+  end
+
+  describe "non-thumbnail asset smoke tests", logged_in_user: :editor do
+    render_views
+    let(:asset) {  create(:asset, parent: parent_work) }
+    it "show" do
+      get :show, params: { id: asset.friendlier_id}
+      expect(response).to have_http_status(200)
+    end
+    it "edit" do
+      get :edit, params: { id: asset.friendlier_id}
+      expect(response).to have_http_status(200)
+    end
+  end
+
+  describe "collection thumbnail smoke tests", logged_in_user: :editor do
+    render_views
+    let(:asset) { create(:asset, parent: parent_collection )}
+    it "show" do
+      get :show, params: { id: asset.friendlier_id}
+      expect(response).to have_http_status(200)
+    end
+  end
 
   describe "#destroy"  do
     let(:asset) { create(:asset, parent: create(:work) ) }
