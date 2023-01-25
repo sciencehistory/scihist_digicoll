@@ -281,6 +281,10 @@ class Asset < Kithe::Asset
     end
   end
 
+  def collection_thumbnail?
+    parent&.is_a? Collection
+  end
+
   def log_destroyed
     info = {
       pk: self.id,

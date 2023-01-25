@@ -1,20 +1,16 @@
-<div>Managing an Asset</div>
+<div>Managing an Asset <%= "(this asset is a collection thumbnail)" if @asset.collection_thumbnail? %></div>
 <h1><%= @asset.title %></h1>
 <%if @asset&.parent %>
-  <% if @asset.parent.is_a? Work %>
-    <p>In work: <%= link_to @asset.parent.title, [:admin, @asset.parent] %> </p>
-  <% else %>
-    <p>Thumbnail for collection: <%= link_to @asset.parent.title, collection_path(@asset.parent) %> </p>
+  <p>Asset is a member of <%= link_to @asset.parent.title, parent_path(@asset) %> </p>
+<% end %>
+
+
+<p>
+  <%= link_to "Edit", @edit_asset_path, class: "btn btn-primary #{"disabled" unless can?(:update, @asset)}"%>
+   <% unless @asset.collection_thumbnail?%>
+      <%= link_to "Convert to child work", convert_to_child_work_admin_asset_path(@asset), method: "put", class: "btn btn-primary #{"disabled" unless can?(:update, @asset)}" %>
   <% end %>
-
-<% end %>
-
-<% if @asset&.parent.is_a?(Work)%>
-  <p>
-    <%= link_to "Edit", edit_admin_asset_path(@asset), class: "btn btn-primary #{"disabled" unless can?(:update, @asset)}"%>
-    <%= link_to "Convert to child work", convert_to_child_work_admin_asset_path(@asset), method: "put", class: "btn btn-primary #{"disabled" unless can?(:update, @asset)}" %>
-  </p>
-<% end %>
+</p>
 
 <div class="row">
   <div class="col-sm-6">
@@ -35,7 +31,6 @@
             @asset.file.url(response_content_disposition: ContentDisposition.format(disposition: :attachment, filename: DownloadFilenameHelper.filename_for_asset(@asset))),
             class: "btn btn-outline-primary btn-lg mt-4" %>
     <% end %>
-
 
     <% if @asset.transcription.present? || @asset.english_translation.present? %>
       <ul class="nav nav-tabs mt-4" id="myTab" role="tablist">
@@ -108,7 +103,6 @@
   </div>
 
   <div class="col-sm-6">
-
       <% if !@asset.published? && work_is_oral_history? && @asset.oh_available_by_request %>
         <div class="row">
           <div class="col-sm-12">
@@ -264,7 +258,9 @@
 
     <h2 class="mt-4">Derivatives</h2>
 
-    <% if @asset&.parent.is_a?(Work)%>
+    <% if @asset.collection_thumbnail? %>
+      <p>Storage type: <code><%= @asset.derivative_storage_type %></code></p>
+    <% else %>
       <p>
         <%= simple_form_for(@asset, wrapper: :horizontal_form) do |f| %>
 
