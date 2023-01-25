@@ -32,6 +32,7 @@
             class: "btn btn-outline-primary btn-lg mt-4" %>
     <% end %>
 
+
     <% if @asset.transcription.present? || @asset.english_translation.present? %>
       <ul class="nav nav-tabs mt-4" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
@@ -103,6 +104,7 @@
   </div>
 
   <div class="col-sm-6">
+
       <% if !@asset.published? && work_is_oral_history? && @asset.oh_available_by_request %>
         <div class="row">
           <div class="col-sm-12">
