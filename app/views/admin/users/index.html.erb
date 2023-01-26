@@ -4,6 +4,18 @@
 <%= link_to 'Create New User', new_admin_user_path, class: "btn btn-primary" %>
 </p>
 
+
+<%= simple_form_for(admin_users_path, method: "get") do %>
+  <div class="admin-filters">
+    <div class="admin-filter">
+        <label for="filter">Show</label>
+        <%= select_tag "filter",
+          options_for_select(['Current', 'All'] + @user_types_map.values, @filter),
+          onchange: "this.form.submit()", class: "custom-select" %>
+    </div>
+  </div>
+<% end %>
+
 <table class="table">
   <thead>
     <tr>
