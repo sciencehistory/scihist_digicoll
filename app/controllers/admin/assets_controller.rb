@@ -24,7 +24,6 @@ class Admin::AssetsController < AdminController
     @asset = Asset.find_by_friendlier_id!(params[:id])
     authorize! :read, @asset
 
-    @edit_asset_path = @asset.collection_thumbnail? ? edit_admin_collection_path(@asset.parent) : edit_admin_asset_path(@asset)
     if @asset.stored?
       @checks = @asset.fixity_checks.order('created_at asc')
       @latest_check   = @checks.last
@@ -172,14 +171,23 @@ class Admin::AssetsController < AdminController
   end
 
   def work_is_oral_history?
-    !@asset.collection_thumbnail? && @asset.parent.genre && @asset.parent.genre.include?('Oral histories')
+    (@asset.parent.is_a? Work) && @asset.parent.genre && @asset.parent.genre.include?('Oral histories')
   end
   helper_method :work_is_oral_history?
 
+  def asset_is_collection_thumbnail?
+    @asset.parent.is_a? Collection
+  end
+  helper_method :asset_is_collection_thumbnail?
+
+  def edit_path(asset)
+    (asset.parent.is_a? Collection) ? edit_admin_collection_path(asset.parent) : edit_admin_asset_path(asset)
+  end
+  helper_method :edit_path
 
   def parent_path(asset)
     return nil if asset.parent.nil?
-    asset.collection_thumbnail? ? collection_path(asset.parent) : admin_work_path(asset.parent)
+    (asset.parent.is_a? Collection) ? collection_path(asset.parent) : admin_work_path(asset.parent)
   end
   helper_method :parent_path
 
