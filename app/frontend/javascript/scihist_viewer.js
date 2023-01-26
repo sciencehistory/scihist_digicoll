@@ -83,7 +83,20 @@ ScihistImageViewer.prototype.show = function(id) {
 
     // show the viewer
     $(_self.modal).modal("show");
+
+    // make sure openseadragon has initial zoom level set to full page,
+    // ONCE the modal is fully shown and we're in state where we have
+    // the correct size, we hook into after the OSD resize event.
+    //
+    // https://github.com/openseadragon/openseadragon/discussions/2279
+    _self.viewer.addOnceHandler('resize',function(event){
+      window.setTimeout(()=>event.eventSource.viewport.goHome(true));
+    });
+
+    // make sure selected thumb in thumb list is in view
     _self.scrollSelectedIntoView();
+
+
 
     // Catch keyboard controls
     $("body").on("keydown.chf_image_viewer", function(event) {
