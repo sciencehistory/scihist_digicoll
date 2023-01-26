@@ -1,13 +1,18 @@
-<div>Managing an Asset <%= "(this asset is a collection thumbnail)" if @asset.collection_thumbnail? %></div>
+<div>Managing an Asset <%= "(this asset is a collection thumbnail)" if asset_is_collection_thumbnail? %></div>
 <h1><%= @asset.title %></h1>
+
 <%if @asset&.parent %>
-  <p>Asset is a member of <%= link_to @asset.parent.title, parent_path(@asset) %> </p>
+  <% if asset_is_collection_thumbnail? %>
+    <p>Thumbnail for collection: <%= link_to @asset.parent.title, collection_path(@asset.parent) %> </p>
+  <% else %>
+    <p>In work: <%= link_to @asset.parent.title, [:admin, @asset.parent] %> </p>
+  <% end %>
 <% end %>
 
 
 <p>
-  <%= link_to "Edit", @edit_asset_path, class: "btn btn-primary #{"disabled" unless can?(:update, @asset)}"%>
-   <% unless @asset.collection_thumbnail?%>
+  <%= link_to "Edit", edit_path(@asset), class: "btn btn-primary #{"disabled" unless can?(:update, @asset)}"%>
+  <% unless asset_is_collection_thumbnail?%>
       <%= link_to "Convert to child work", convert_to_child_work_admin_asset_path(@asset), method: "put", class: "btn btn-primary #{"disabled" unless can?(:update, @asset)}" %>
   <% end %>
 </p>
@@ -260,7 +265,7 @@
 
     <h2 class="mt-4">Derivatives</h2>
 
-    <% if @asset.collection_thumbnail? %>
+    <% if asset_is_collection_thumbnail? %>
       <p>Storage type: <code><%= @asset.derivative_storage_type %></code></p>
     <% else %>
       <p>
