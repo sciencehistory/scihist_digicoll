@@ -189,6 +189,11 @@ class WorkIndexer < Kithe::Indexer
       acc.concat get_string_from_each_published_member(rec, :transcription) if rec.language == ['English']
     end
 
+    # and for oral histories, let's put just ohms keywords ALSO in our field we use for subject-level boosting,
+    # for higher boosting. (This does mean it kind of gets double-boosted -- we still want
+    # it in fulltext field for highlighting. I think that's ok).
+    to_field "text3_tesim", obj_extract("oral_history_content", "ohms_xml", "index_points", "all_keywords_and_subjects")
+
     to_field "searchable_fulltext_de" do |rec, acc|
       # Index the transcription here if we can assume that the work is entirely in German.
       acc.concat get_string_from_each_published_member(rec, :transcription) if rec.language == ['German']
