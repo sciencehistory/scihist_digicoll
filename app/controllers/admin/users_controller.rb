@@ -8,7 +8,15 @@ class Admin::UsersController < AdminController
   # GET /users
   # GET /users.json
   def index
-    @users = User.all.order(:email)
+    @user_types_map = User.user_types.map{|k, v| [k, v.humanize.pluralize]}.to_h
+    @filter = params[:filter] || 'Current'
+    if @filter == 'All'
+      @users = User.order(:email)
+    elsif @user_types_map.values.include? @filter
+      @users = User.where(locked_out: false, user_type: @user_types_map.key(@filter)).order(:email)
+    else
+      @users = User.where(locked_out: false).order(:email)
+    end
   end
 
   # GET /users/new
