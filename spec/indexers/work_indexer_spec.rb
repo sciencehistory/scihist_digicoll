@@ -169,6 +169,11 @@ describe WorkIndexer do
         expect(output_hash["searchable_fulltext_en"]).to include(*joined_keywords)
         expect(output_hash["searchable_fulltext_en"]).to include(*work.oral_history_content.ohms_xml.index_points.collect(&:title).collect(&:presence).compact)
         expect(output_hash["searchable_fulltext_en"]).to include(*work.oral_history_content.ohms_xml.index_points.collect(&:synopsis).collect(&:presence).compact)
+
+        # keywords and subjects should also be in the text3_tesim field we use for subjects,
+        # for greater boosting
+        all_keywords = work.oral_history_content.ohms_xml.index_points.collect(&:all_keywords_and_subjects).flatten.compact.uniq
+        expect(all_keywords - output_hash["text3_tesim"]).to be_empty
       end
     end
 
