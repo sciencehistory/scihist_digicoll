@@ -12,7 +12,7 @@
     "jquery": "^ 3.6.0",
     "js-yaml": ">= 3.13.1",
     "lazysizes": "^5.1.0",
-    "openseadragon": "^3.1.0",
+    "openseadragon": "^4.0.0",
     "popper.js": "^ 1.16.1",
     "tom-select": "^1.4.3",
     "video.js": "^7.18.1",
