@@ -43,13 +43,16 @@ class S3ConsoleUri
     @checked_uri_in_s3_console ||= begin
       if has_console_uri?
         region = ScihistDigicoll::Env.lookup(:aws_region)
-
         key_path_components = keypath.delete_prefix("/").split("/")
-
-        base_key_path = key_path_components.slice(0, key_path_components.length - 1)&.join("/").chomp("/").concat("/")
         end_key = key_path_components.last
 
-        "https://s3.console.aws.amazon.com/s3/buckets/#{bucket}?region=#{region}&prefix=#{base_key_path}&prefixSearch=#{end_key}"
+        # Don't need prefixSearch URL parameter for a folder at the top of the bucket (only occurs in the case of a folder of orphaned DZI files.)
+        if key_path_components.count > 1
+          base_key_path = key_path_components.slice(0, key_path_components.length - 1)&.join("/").chomp("/").concat("/")
+          "https://s3.console.aws.amazon.com/s3/buckets/#{bucket}?region=#{region}&prefix=#{base_key_path}&prefixSearch=#{end_key}"
+        else
+          "https://s3.console.aws.amazon.com/s3/buckets/#{bucket}?region=#{region}&prefixSearch=#{end_key}"
+        end
       else
         nil
       end
