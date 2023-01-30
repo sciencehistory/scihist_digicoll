@@ -106,10 +106,8 @@ gem 'font-awesome-rails', '~> 4.7'
 gem "lograge", "< 2"
 gem "device_detector", "~> 1.0" # user-agent parsing we use for logging
 
-
-# Try with attr-json 2.0 pre-release, which temporarily requires kithe off master
-gem "attr_json", "2.0.0.rc1"
-gem 'kithe', "~> 2.7", ">= 2.7.1", github: "sciencehistory/kithe"
+gem "attr_json", "~> 2.0"
+gem 'kithe', "~> 2.8"
 
 gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 
