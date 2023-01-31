@@ -279,7 +279,7 @@ GEM
     hashery (2.1.2)
     hashie (5.0.0)
     hirefire-resource (0.10.1)
-    honeybadger (5.0.2)
+    honeybadger (5.1.0)
     html_aware_truncation (1.0.0)
       nokogiri (~> 1.0)
     http (5.1.1)
