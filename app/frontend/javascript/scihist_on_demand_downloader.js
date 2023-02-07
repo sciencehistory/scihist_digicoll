@@ -46,7 +46,7 @@ $( document ).ready(function() {
           _self.fetchForStatus();
         }, 2000);
       } else {
-        json_error = JSON.parse(json.error_info);
+        var json_error = JSON.parse(json.error_info);
         if (json_error) {
           throw json_error.class + ": " + json_error.message;
         } else {
