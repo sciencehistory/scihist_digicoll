@@ -7,6 +7,9 @@ libglib2.0-0
 libglib2.0-dev
 libpoppler-glib8
 
-# We need `pdfunite` command line; Currently the `heroku-buildpack-activestorage-preview`
-# is providing it, but in the past `poppler-utils` in Aptfile has, and could again:
-# poppler-utils
+# We need `pdfunite` command line thatcomes from poppler; While the `heroku-buildpack-activestorage-preview`
+# should provide it too, it seems to be unpredictable as to whether it does, in ways that
+# actually disturb our understanding of heroku reproducibility (different results on identical
+# heroku stacks/buildpacks).  Supplying it here on top of activestorage-preview buildpack
+# doesn't seem to hurt, and does seem to get us a working poppler reliably.
+poppler-utils
