@@ -4,7 +4,12 @@
 // Note that app/frontend/javascript/custom_google_analytics_universal_events.js
 // contains a method that is trigged by the same click.
 $(document).on('click', '*[data-analytics-category]', function(e) {
+
+  // Do not call `gtag` unless the function is defined
+  // in app/views/layouts/_google_analytics_universal.html.erb .
+  // (This in turn is controlled by ScihistDigicoll::Env.lookup(:google_analytics_4_tag_id).
   if (typeof gtag === 'function') {
+
     gtag( 'event',
 
       // param eventName
@@ -12,9 +17,9 @@ $(document).on('click', '*[data-analytics-category]', function(e) {
       // e.g. "download" or "transcription_pdf" or "english_translation_pdf" or "download_original"
       e.target.getAttribute("data-analytics-action"),
       {
-        // This is currently always the string "work".
+        // As of early 2023, this is always the string "work".
         'event_category': e.target.getAttribute("data-analytics-category"),
-        // This is currently always the work's friendlier_id.
+        // As of early 2023, this is always the work's friendlier_id.
         'event_label':    e.target.getAttribute("data-analytics-label"),
       }
 
