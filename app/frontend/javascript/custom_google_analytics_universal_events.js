@@ -3,7 +3,12 @@
 // Note that app/frontend/javascript/custom_google_analytics_universal_events.js
 // contains a method that is trigged by the same click.
 $(document).on('click', '*[data-analytics-category]', function(e) {
+
+  // Do not call `ga` unless the function is defined
+  // in app/views/layouts/_google_analytics_universal.html.erb .
+  // (This in turn is controlled by ScihistDigicoll::Env.lookup(:google_analytics_property_id).
   if (typeof ga === 'function') {
+  
     ga('send', 'event',
       // This is a string describing what the user did,
       // e.g. "download" or "transcription_pdf" or "english_translation_pdf" or "download_original"
@@ -19,7 +24,9 @@ $(document).on('click', '*[data-analytics-category]', function(e) {
       // This will become event_label in GA 4.
       e.target.getAttribute("data-analytics-label"),    
 
-      // Our code currently sends a null value for this param.
+      // Our HTML never actually defines a data-analytics-value attribute
+      // so this always ends up getting sent to GA as `undefined`.
+      // We will not be using this in GA 4.
       e.target.getAttribute("data-analytics-value")
     );
   }
