@@ -31,12 +31,28 @@ describe OnDemandDerivativeCreator, queue_adapter: :test do
         record = nil
         expect {
           record = creator.find_or_create_record
-        }.not_to change { User.count }
+        }.not_to change { OnDemandDerivative.count }
 
         expect(OnDemandDerivativeCreatorJob).not_to have_been_enqueued
 
         expect(record.id).to eq(existing.id)
         expect(record.status).to eq("in_progress")
+      end
+    end
+
+    describe "non-stale error" do
+      let!(:existing) { OnDemandDerivative.create!(work: work, deriv_type: deriv_type, status: "error", inputs_checksum: checksum) }
+
+      it "re-uses without kicking off new job" do
+        record = nil
+        expect {
+          record = creator.find_or_create_record
+        }.not_to change { OnDemandDerivative.count }
+
+        expect(OnDemandDerivativeCreatorJob).not_to have_been_enqueued
+
+        expect(record.id).to eq(existing.id)
+        expect(record.status).to eq("error")
       end
     end
 
@@ -81,6 +97,21 @@ describe OnDemandDerivativeCreator, queue_adapter: :test do
 
       on_demand_derivative.reload
       expect(on_demand_derivative.status).to eq "error"
+    end
+
+    describe "with existing recent recorded error" do
+      let!(:on_demand_derivative) { OnDemandDerivative.create!(work: work, deriv_type: deriv_type, status: "error", inputs_checksum: checksum) }
+
+      it "still attaches derivative" do
+        # just make it faster
+        allow_any_instance_of(WorkZipCreator).to receive(:create).and_return(Tempfile.new)
+
+        creator.attach_derivative!
+
+        on_demand_derivative.reload
+        expect(on_demand_derivative.status).to eq "success"
+        expect(on_demand_derivative.file_exists?).to be(true)
+      end
     end
   end
 

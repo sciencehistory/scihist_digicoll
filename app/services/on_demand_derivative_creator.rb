@@ -49,7 +49,7 @@ class OnDemandDerivativeCreator
       raise StandardError.new("Tried to find/create an OnDemandDerivative record too many times for work #{id}")
     end
 
-    record = OnDemandDerivative.where(work_id: work.id, deriv_type: derivative_type).first
+    record = current_record
 
     # No record? We have to register one as in_progress so nobody else will, and launch the bg job
     if record.nil?
@@ -71,7 +71,13 @@ class OnDemandDerivativeCreator
     return find_or_create_record(type, retry_count: retry_count + 1)
   end
 
-  # Given an OnDemandDerivative record, in an in_progress state, we will
+  # @return OnDemandDerivative record that will have status and data for work and derivative type
+  # that we are concerned with.
+  def current_record
+    OnDemandDerivative.find_by(work_id: work.id, deriv_type: derivative_type)
+  end
+
+  # Given an OnDemandDerivative record, we will
   # actually create the relevant derivative file (inline NOT in bg), and
   # then set the OnDemandDerivative to a success state.
   #
@@ -83,13 +89,11 @@ class OnDemandDerivativeCreator
   # It will create a new derivative file in storage even if one already exists, overwriting it.
   #
   # It's up to the caller to make sure not to call this more than once concurrently,
-  # only calling it if caller was the one that set status to "in_progress" with
-  # an atomic update. Normally this is called by a bg job started by #find_or_create_record,
-  # which has such logic.
+  # although if it is, isn't shouldn't harm anything, we might have done some extra
+  # work but should come out in the end -- this should be idempotent.
   #
-  # @param on_demand_derivative [OnDemandDerivative]
   def attach_derivative!
-    on_demand_derivative = OnDemandDerivative.find_by(work_id: work.id, deriv_type: derivative_type, status: "in_progress")
+    on_demand_derivative = current_record
 
     unless on_demand_derivative
       raise ArgumentError.new("In order to #attach_derivative! we need an exising OnDemandDerivative with work_id: #{work.id}, deriv_type: #{derivative_type}, status: in_progress. But none found.")
@@ -109,11 +113,13 @@ class OnDemandDerivativeCreator
 
     on_demand_derivative.inputs_checksum = created_for_checksum
     on_demand_derivative.status = "success"
+    on_demand_derivative.progress = nil
+    on_demand_derivative.progress_total = nil
     on_demand_derivative.put_file(derivative)
     on_demand_derivative.save!
   rescue StandardError => e
     if on_demand_derivative
-      on_demand_derivative.update(status: "error", error_info: {class: e.class.name, message: e.message, backtrace: e.backtrace}.to_json)
+      on_demand_derivative.update(status: "error", progress: nil, progress_total: nil, error_info: {class: e.class.name, message: e.message, backtrace: e.backtrace}.to_json)
     end
     raise e
   ensure
