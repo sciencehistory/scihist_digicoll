@@ -295,8 +295,13 @@ module ScihistDigicoll
     # want to make it still possible to do admin work.
     define_key :solr_indexing, default: "true"
 
-    # Supplied only on production servers, should have form 'UA-XXXXX-Y'
+    # Supplied only on production servers.
+    # These work concurrently and independently.
+    # If both are defined, we will send tracking info to BOTH versions.
+    # The Google Analytics Universal tag has form 'UA-XXXXX-Y'
     define_key :google_analytics_property_id
+    # The Google Analytics 4 tag has form         'G-XXXXXXXXXX'
+    define_key :google_analytics_4_tag_id
 
     # Don't configure ActiveJob to automatically retry on failure in test, that would be a mess.
     define_key :activejob_auto_retry,
