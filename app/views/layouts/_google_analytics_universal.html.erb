@@ -3,10 +3,7 @@
   Should be included "near top of <head> tag".
   We should only have these variables set in environments we want to track: production. 
   Universal (until 2023): :google_analytics_property_id
-  4.0: (after 2023):      :google_analytics_4_tag_id
 %>
-
-<%# Google Analycs Universal (until 2023). Only show this if google_analytics_4_tag_id is not also defined.%>
 <% if property_id = ScihistDigicoll::Env.lookup(:google_analytics_property_id) %>
   <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -16,16 +13,5 @@
 
     ga('create', '<%= property_id %>', 'auto');
     ga('send', 'pageview');
-  </script>
-<% end %>
-
-<%# Google Analytics 4.0 (after 2023) %>
-<% if tag_id = ScihistDigicoll::Env.lookup(:google_analytics_4_tag_id) %>
-  <script async src=https://www.googletagmanager.com/gtag/js?id=<%=tag_id %> ></script>
-  <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', '<%=tag_id %>');
   </script>
 <% end %>
