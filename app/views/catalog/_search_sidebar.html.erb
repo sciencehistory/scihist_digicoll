@@ -18,9 +18,6 @@ https://github.com/projectblacklight/blacklight/blob/v6.7.2/app/views/catalog/_s
       <li class="list-group-item"><%= link_to "https://othmerlib.sciencehistory.org/search/?searchtype=X&SORT=D&searcharg=#{Addressable::URI.encode_component(params[:q], Addressable::URI::CharacterClasses::QUERY)}" do %>
         <i class="fa fa-search" aria-hidden="true"></i>  Othmer Library Catalog
       <% end %></li>
-      <li class="list-group-item"><%= link_to "https://oh.sciencehistory.org/search/site/#{Addressable::URI.encode_component(params[:q], Addressable::URI::CharacterClasses::PATH)}" do %>
-        <i class="fa fa-search" aria-hidden="true"></i>  Oral Histories
-      <% end %></li>
       <li class="list-group-item"><%= link_to "https://sciencehistory.pastperfectonline.com/Search?search_criteria=#{Addressable::URI.encode_component(params[:q], Addressable::URI::CharacterClasses::QUERY)}" do %>
         <i class="fa fa-search" aria-hidden="true"></i>  Museum Collections
       <% end %></li>
