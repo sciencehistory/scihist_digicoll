@@ -41,7 +41,13 @@
     <% end %>
 
 
-    <%= f.repeatable_attr_input :medium, build: :at_least_one %>
+    <%= f.repeatable_attr_input :medium, build: :at_least_one,
+          html_attributes: {
+            data: {
+              "scihist-qa-autocomplete" => qa_search_vocab_path("getty", "aat")
+            }
+          }
+    %>
 
     <%= f.repeatable_attr_input :extent, build: :at_least_one %>
 
