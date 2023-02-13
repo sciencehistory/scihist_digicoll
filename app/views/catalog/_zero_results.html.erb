@@ -1,0 +1,27 @@
+<%# This is overrides the standard Blacklight zero-results template.
+  The original is at:
+
+  https://raw.githubusercontent.com/projectblacklight/blacklight/main/app/views/catalog/_zero_results.html.erb
+%>
+<div class="container" id="documents" class="noresults">
+  <div class="row ">
+    <div class="col-md-6">
+      <h1><%= t 'blacklight.search.zero_results.title' %></h1>
+      <p>Check for typos or try modifying your search.</p>
+      <p>Still can't find what you're looking for? <a href="mailto:<%= ScihistDigicoll::Env.lookup(:digital_email_address) %>">Email us.</a></p>
+      <ul>
+        <%- if params[:q] and params[:search_field] and params[:search_field] != blacklight_config.default_search_field&.key -%>
+          <li><%= t 'blacklight.search.zero_results.search_fields', :search_fields => search_field_label(params) %> -
+          <%= link_to t('blacklight.search.zero_results.search_everything', field: blacklight_config.default_search_field.label), url_for(search_state.params_for_search(search_field: blacklight_config.default_search_field.key)) %>
+          </li>
+        <%- end %>
+      </ul>
+    </div>
+
+    <div class="col-md-6" aria-hidden="true">
+      <%= image_tag "no_results.png",
+        style: "height:auto;width:100%;",
+        alt: "A dejected-looking salesman in a suit sits on his suitcase, with a briefcase nearby." %>
+    </div>
+  </div>
+</div>
