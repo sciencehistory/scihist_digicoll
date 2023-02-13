@@ -5,3 +5,10 @@ en:
       form:
         search_field:
           label: "Search"
+      # see overridden _zero_results.html.erb
+      zero_results:
+        title: "Sorry, we couldn't find any records for your search."
+      # see overridden _zero_results.html.erb
+      pagination_info:
+        #no_items_found: "No entries found"
+        no_items_found: ""
