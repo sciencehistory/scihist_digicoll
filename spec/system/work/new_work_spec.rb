@@ -3,6 +3,23 @@ require 'pp'
 
 RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true do
 
+  # stub out our FAST and Getty qa-based autocomplete to return 0-result responses,
+  # using WebMock methods, so we aren't making HTTP requests in test, which we prohibit.
+  # We aren't actually testing the qa autocomplete here.
+  before do
+    stub_request(:get, %r{\Ahttps?://fast.oclc.org}).to_return(
+      status: 200,
+      body: {response: { docs: [] }}.to_json,
+      headers: {}
+    )
+
+    stub_request(:get, %r{\Ahttps?://vocab\.getty\.edu/sparql\.json\?}).to_return(
+      status: 200,
+      body: {results: { bindings: [] }}.to_json,
+      headers: {}
+    )
+  end
+
   # As of Chrome/chromedriver 74.0, chromedriver will refuse to click on something
   # if it's covered up by something with "position: sticky", even if scrolling
   # could uncover it. Chromedriver will normally scroll to reveal something to click
