@@ -3,8 +3,8 @@
 
   https://raw.githubusercontent.com/projectblacklight/blacklight/main/app/views/catalog/_zero_results.html.erb
 %>
-<div class="container" id="documents" class="noresults">
-  <div class="row ">
+<div class="container noresults" id="documents">
+  <div class="row no-gutters">
     <div class="col-md-6">
       <h1><%= t 'blacklight.search.zero_results.title' %></h1>
       <p>Check for typos or try modifying your search.</p>
@@ -18,10 +18,18 @@
       </ul>
     </div>
 
-    <div class="col-md-6" aria-hidden="true">
-      <%= image_tag "no_results.png",
-        style: "height:auto;width:100%;",
-        alt: "A dejected-looking salesman in a suit sits on his suitcase, with a briefcase nearby." %>
+    <div class="col-md-6">
+      <figure>
+        <%= image_tag "no_results.png", 'aria-labelledby' => "homeHeroCaption",
+          alt: "A dejected-looking salesman in a suit sits resting on a suitcase, with a briefcase nearby." %>
+        <figcaption>
+            <%
+            no_results_work = Work.find_by_friendlier_id('9etr86c')
+            no_results_link = no_results_work ? work_path(no_results_work.friendlier_id) : "#"
+            %>
+            <%= link_to 'Source: "Ever Bumped by Dead Weight?"', no_results_link %>
+        </figcaption>
+      </figure>
     </div>
   </div>
 </div>
