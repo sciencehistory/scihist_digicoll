@@ -63,7 +63,7 @@ FactoryBot.define do
         ["Audiocassettes", "Celluloid", "Dye"]
       }
       rights {
-        "http://rightsstatements.org/vocab/NoC-US/1.0/"
+        "http://rightsstatements.org/vocab/NoC-CR/1.0/"
       }
       creator {
         [
