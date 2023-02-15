@@ -10,5 +10,12 @@ en:
         title: "Sorry, we couldn't find any records for your search."
       # see overridden _zero_results.html.erb
       pagination_info:
-        #no_items_found: "No entries found"
+        # Don't show "No entries found" when no entries are found.
+        # Redundant given _zero_results.html.erb .
+        # See
+        #   method page_entries_info in https://github.com/projectblacklight/blacklight/blob/main/app/helpers/blacklight/catalog_helper_behavior.rb
+        #   https://github.com/projectblacklight/blacklight/blob/main/config/locales/blacklight.en.yml
+        #   app/views/kaminari/blacklight_compact/_paginator.html.erb
+        #
+        # no_items_found: "No entries found"
         no_items_found: ""
