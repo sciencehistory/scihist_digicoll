@@ -41,6 +41,15 @@ terms:
     icon_alt: "" # we don't need, it already says "In Copyright next to it"
     description: "This Item is protected by copyright and/or related rights. You are free to use this Item in any way that is permitted by the copyright and related rights legislation that applies to your use. For other uses you need to obtain permission from the rights-holder(s)."
 
+  - id: http://rightsstatements.org/vocab/InC-OW-EU/1.0/
+    param_id: InC-OW-EU
+    label: In Copyright - EU Orphan Work
+    active: true
+    category: in_copyright
+    short_label_html: EU Orphan<br>Work
+    icon_alt: "In Copyright"
+    description: "This Item has been identified as an orphan work in the country of first publication and in line with Directive 2012/28/EU of the European Parliament and of the Council of 25 October 2012 on certain permitted uses of orphan works. For this Item, either (a) no rights-holder(s) have been identified or (b) one or more rights-holder(s) have been identified but none have been located even though a diligent search for the rights-holder(s) has been conducted. The results of the diligent search are available in the EU Orphan Works Database. You are free to use this Item in any way that is permitted by the copyright and related rights legislation that applies to your use."
+
   - id: http://rightsstatements.org/vocab/InC-EDU/1.0/
     param_id: "InC-EDU"
     label: In Copyright - Educational Use Permitted
@@ -50,6 +59,15 @@ terms:
     icon_alt: "In Copyright"
     description: "This Item is protected by copyright and/or related rights. You are free to use this Item in any way that is permitted by the copyright and related rights legislation that applies to your use. In addition, no permission is required from the rights-holder(s) for educational uses. For other uses, you need to obtain permission from the rights-holder(s)."
 
+  - id: http://rightsstatements.org/vocab/InC-NC/1.0/
+    param_id: "InC-NC"
+    label: In Copyright - Non-Commercial Use Permitted
+    active: true
+    category: in_copyright
+    short_label_html: Non-Commercial<br>Use Permitted
+    icon_alt: "In Copyright"
+    description: "This Item is protected by copyright and/or related rights. You are free to use this Item in any way that is permitted by the copyright and related rights legislation that applies to your use. In addition, no permission is required from the rights-holder(s) for non-commercial uses. For other uses you need to obtain permission from the rights-holder(s)."
+
   - id: http://rightsstatements.org/vocab/InC-RUU/1.0/
     param_id: "InC-RUU"
     label: In Copyright - Rights-holder(s) Unlocatable or Unidentifiable
@@ -58,6 +76,24 @@ terms:
     short_label_html: Unknown<br>Rightsholder
     icon_alt: "In Copyright"
     description: "This Item is protected by copyright and/or related rights. However, for this Item, either (a) no rights-holder(s) have been identified or (b) one or more rights-holder(s) have been identified but none have been located. You are free to use this Item in any way that is permitted by the copyright and related rights legislation that applies to your use."
+
+  - id: http://rightsstatements.org/vocab/NoC-CR/1.0/
+    param_id: NoC-CR
+    label: No Copyright - Contractual Restrictions
+    active: true
+    category: no_copyright
+    short_label_html: Contractual<br>Restrictions
+    icon_alt: "No Copyright"
+    description: "Use of this Item is not restricted by copyright and/or related rights. As part of the acquisition or digitization of this Work, the organization that has made the Item available is contractually required to limit the use of this Item. Limitations may include, but are not limited to, privacy issues, cultural protections, digitization agreements or donor agreements. Please refer to the organization that has made the Item available for more information."
+
+  - id: http://rightsstatements.org/vocab/NoC-NC/1.0/
+    param_id: "NoC-NC"
+    label: No Copyright - Non-Commercial Use Only
+    active: true
+    category: no_copyright
+    short_label_html: Non-Commercial<br>Use Only
+    icon_alt: "No Copyright"
+    description: "This Work has been digitized in a public-private partnership. As part of this partnership, the partners have agreed to limit commercial uses of this digital representation of the Work by third parties. You can, without permission, copy, modify, distribute, display, or perform the Item, for non-commercial uses. For any other permissible uses, please review the terms and conditions of the organization that has made the Item available."
 
   - id: http://rightsstatements.org/vocab/NoC-OKLR/1.0/
     param_id: NoC-OKLR
@@ -107,10 +143,3 @@ terms:
     active: true
     short_label_html: BY-NC-ND 4.0
     pictographs: ['by.svg', 'nc.svg', 'nd.svg']
-
-  - id: https://creativecommons.org/licenses/by/4.0/
-    label: Creative Commons Attribution 4.0 International License
-    category: creative_commons
-    active: true
-    short_label_html: BY 4.0
-    pictographs: ['by.svg']
