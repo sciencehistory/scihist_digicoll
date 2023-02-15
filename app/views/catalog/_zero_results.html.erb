@@ -20,9 +20,9 @@
 
     <div class="col-md-6">
       <figure>
-        <%= image_tag "no_results.png", 'aria-labelledby' => "homeHeroCaption",
+        <%= image_tag "no_results.png", 'aria-labelledby' => "noResultsCaption",
           alt: "A dejected-looking salesman in a suit sits resting on a suitcase, with a briefcase nearby." %>
-        <figcaption>
+        <figcaption id="noResultsCaption">
             <%
             no_results_work = Work.find_by_friendlier_id('9etr86c')
             no_results_link = no_results_work ? work_path(no_results_work.friendlier_id) : "#"
