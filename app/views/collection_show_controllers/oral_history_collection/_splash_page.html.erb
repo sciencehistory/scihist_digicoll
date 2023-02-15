@@ -152,7 +152,9 @@ we want the full width of the screen, no margins or padding. %>
       </div>
     <% end %>
 
-    <%= link_to "More oral history projects...", "https://www.sciencehistory.org/oral-history-projects", class: "more-projects", target: "_blank" %>
+    <%= link_to "More oral history projects...",
+      collections_path(department_filter: "center-for-oral-history"),
+      class: "more-projects" %>
   </div>
 
 
