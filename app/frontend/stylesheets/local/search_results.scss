@@ -292,26 +292,14 @@
   }
 }
 
-
 .noresults {
   figure {
-    position: relative; /* allow absolute positioning of caption */
-    padding-left: 0; /* overcome the padding on grid columns */
-    padding-right: 0; /* overcome the padding on grid columns */
-    margin-bottom: 0;
     img {
-      height:auto;
       width: 100%;
     }
     figcaption {
-      width: 100%;
-      position: absolute;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 0.3125rem 0.625rem;
-      @include all-white-links;
-      font-weight: 300;
+      text-align: right;
       font-style: italic;
     }
-}
+  }
 }
