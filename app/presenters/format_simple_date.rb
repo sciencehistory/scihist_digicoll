@@ -18,18 +18,25 @@
 class FormatSimpleDate
   attr_reader :start_date, :end_date
 
-  def initialize(start_date, end_date=nil)
+  def initialize(start_date, end_date=nil, accept_present: false)
     @start_date = start_date
     @end_date = end_date
+    @accept_present = accept_present
 
     # don't display it as a range if end date and start date are identical
     if @start_date == @end_date
       @end_date = nil
     end
+
   end
 
   def display
-    [human_format(start_date), human_format(end_date)].compact.join(" to ")
+    display_start_date = human_format(start_date) 
+    if @accept_present && display_start_date && end_date == "present"
+      "#{display_start_date} to present"
+    else  
+      [display_start_date, human_format(end_date)].compact.join(" to ")
+    end
   end
 
   private

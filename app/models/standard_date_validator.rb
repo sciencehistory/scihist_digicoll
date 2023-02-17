@@ -7,12 +7,25 @@
 # Does allow empty date, add a presence validator if you want
 # it to be required too!
 class StandardDateValidator < ActiveModel::Validator
-  def validate(record)
+
+  def is_nice_date?(value)
     nice_date = /\A\d{4}(-\d{2}(-\d{2})?)?\z/
+    value =~ nice_date
+  end
+
+  def format_error_string
+    "Must be of format YYYY[-MM-DD]"
+  end
+
+  def accept_value?(value)
+    value.blank? || is_nice_date?(value)
+  end
+
+  def validate(record)
     options[:fields].each do |field|
       value = record.send(field)
-      unless value.blank? || value =~ nice_date
-        record.errors.add(field, "Must be of format YYYY[-MM-DD]")
+      unless accept_value?(value)
+        record.errors.add(field, format_error_string)
       end
     end
   end
