@@ -68,7 +68,7 @@ describe CatalogController, solr: true, indexable_callbacks: true do
     describe "no logged in user" do
       it "can not find admin note" do
         visit search_catalog_path(q: admin_note_query)
-        expect(page).to have_content("No results found")
+        expect(page).to have_content("couldn't find any records for your search")
       end
     end
 
