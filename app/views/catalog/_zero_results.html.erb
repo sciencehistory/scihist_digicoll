@@ -1,0 +1,35 @@
+<%# This is overrides the standard Blacklight zero-results template.
+  The original is at:
+
+  https://raw.githubusercontent.com/projectblacklight/blacklight/main/app/views/catalog/_zero_results.html.erb
+%>
+<div class="container noresults" id="documents">
+  <div class="row no-gutters">
+    <div class="col-md-6">
+      <h1><%= t 'blacklight.search.zero_results.title' %></h1>
+      <p>Check for typos or try modifying your search.</p>
+      <p>Still can't find what you're looking for? <a href="mailto:<%= ScihistDigicoll::Env.lookup(:digital_email_address) %>">Email us.</a></p>
+      <ul>
+        <%- if params[:q] and params[:search_field] and params[:search_field] != blacklight_config.default_search_field&.key -%>
+          <li><%= t 'blacklight.search.zero_results.search_fields', :search_fields => search_field_label(params) %> -
+          <%= link_to t('blacklight.search.zero_results.search_everything', field: blacklight_config.default_search_field.label), url_for(search_state.params_for_search(search_field: blacklight_config.default_search_field.key)) %>
+          </li>
+        <%- end %>
+      </ul>
+    </div>
+
+    <div class="col-md-6">
+      <figure>
+        <%= image_tag "no_results.png", 'aria-labelledby' => "noResultsCaption",
+          alt: "A dejected traveling salesman, wearing a suit and a fedora, rests on his suitcase, with his briefcase nearby." %>
+        <figcaption id="noResultsCaption">
+          <%
+            no_results_work = Work.find_by_friendlier_id('9etr86c')
+            no_results_link = no_results_work ? work_path(no_results_work.friendlier_id) : "#"
+          %>
+          Image from: <%= link_to '"Ever Bumped by Dead Weight?"', no_results_link %>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</div>
