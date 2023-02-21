@@ -13,7 +13,8 @@ FactoryBot.define do
 
     job {[
       OralHistoryContent::IntervieweeJob.new({start: "1962", end: "1965", institution: 'Harvard University',  role: 'Junior Fellow, Society of Fellows'}),
-      OralHistoryContent::IntervieweeJob.new( {start: "1965", end: "1968",  institution: 'Cornell University', role: 'Associate Professor, Chemistry'})
+      OralHistoryContent::IntervieweeJob.new( {start: "1965", end: "1968",  institution: 'Cornell University', role: 'Associate Professor, Chemistry'}),
+      OralHistoryContent::IntervieweeJob.new( {start: "2012", end: "present",  institution: 'Princeton University', role: 'Professor, Chemistry'})
     ]}
 
     honor {[
