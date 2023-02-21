@@ -52,7 +52,7 @@
         <ul class="d-table list-unstyled text-brand-serif mb-2 pl-3">
           <% jobs.each do |job| %>
             <li class="d-table-row">
-              <span class="d-table-cell p-2 text-nowrap"><%= FormatSimpleDate.new(job.start, job.end).display %></span>
+              <span class="d-table-cell p-2 text-nowrap"><%= FormatSimpleDate.new(job.start, job.end, accept_present: true).display %></span>
               <span class="d-table-cell p-2"><%= job.role %></span>
             </li>
           <% end %>
