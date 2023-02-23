@@ -34,6 +34,9 @@ class CombinedAudioDerivativeCreator
     if components.length == 0
       return Response.new(errors: "Could not assemble all the components.")
     end
+    if audio_metadata_errors.present?
+      return Response.new(errors: audio_metadata_errors.join("; "))
+    end
     m4a_file = output_file('m4a')
     ffmpeg_args = args_for_ffmpeg(m4a_file.path)
     cmd.run(*ffmpeg_args, binmode: true, only_output_on_error: true)
@@ -56,6 +59,8 @@ class CombinedAudioDerivativeCreator
   end
 
   # Use ffprobe to determine the length of an audio file.
+  # TODO use asset.file.metadata['duration_seconds'] instead.
+  # We now collect this during characterization at ingest time.
   def duration_of_audio_file_in_seconds(path)
     options = ['ffprobe', '-v', 'error',
       '-show_entries', 'format=duration', '-of',
@@ -157,6 +162,24 @@ class CombinedAudioDerivativeCreator
 
   def audio_member_files
     published_audio_members.map { |asset| asset.file }
+  end
+
+  def audio_metadata_errors
+    @audio_metadata_errors ||= begin
+      errors = []
+      published_audio_members.each do |mem|
+        file = mem.file
+        filename = mem.file_data['metadata']['filename']
+        errors << "#{filename}: empty file" if file.size == 0
+        if file.metadata['duration_seconds'].nil?  || file.metadata['duration_seconds'] == 0
+          errors << "#{filename}: audio duration is unavailable or zero" 
+        end
+        if file.metadata['audio_bitrate'].nil? || file.metadata['audio_sample_rate'].nil?
+          errors << "#{filename}: audio bitrate or sample rate is unavailable"
+        end
+      end
+      errors
+    end
   end
 
   # If this checksum changes, you need to regenerate the audio
