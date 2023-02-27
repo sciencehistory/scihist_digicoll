@@ -275,7 +275,7 @@
     }
 
     .scihist-results-list-values {
-      margin-top: $paragraph-spacer; 
+      margin-top: $paragraph-spacer;
       li {
         @extend %text-font;
         // hanging indent, serving to add margin to subsequent lines
@@ -293,6 +293,15 @@
 }
 
 .noresults {
+  @include media-breakpoint-up(lg) {
+    display: flex;
+    gap: $paragraph-spacer * 2;
+
+    * {
+      flex-basis: 50%;
+    }
+  }
+
   figure {
     img {
       width: 100%;
