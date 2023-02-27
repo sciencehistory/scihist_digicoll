@@ -91,7 +91,7 @@ module OralHistory
       line_number = line[:line_num]
 
       # catch speaker prefix, adapted from standard PHP OHMS viewer
-      if ohms_line_str =~ /\A[[:space:]]*([A-Z-.\' ]+:) (.*)\Z/
+      if ohms_line_str =~ /\A[[:space:]]*([A-Z\-.\' ]+:) (.*)\Z/
         ohms_line_str = safe_join([
           content_tag("span", $1, class: "ohms-speaker"),
           " ",
