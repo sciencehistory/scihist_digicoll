@@ -4,11 +4,7 @@
             <figure class="hero-image">
                 <%= image_tag "hero_image_2x.jpg", 'aria-labelledby' => "homeHeroCaption" %>
                 <figcaption id="homeHeroCaption">
-                    <%
-                    hero_image_work = Work.find_by_friendlier_id('w6634363x')
-                    hero_image_link = hero_image_work ? work_path(hero_image_work.friendlier_id) : "#"
-                    %>
-                    <%= link_to "Wilson College chemistry club", hero_image_link%>
+                    <%= link_to "Wilson College chemistry club", work_path('w6634363x') %>
                 </figcaption>
             </figure>
         </div>
