@@ -1,12 +1,11 @@
 <%# This is overrides the standard Blacklight zero-results template.
   The original is at:
 
-  https://raw.githubusercontent.com/projectblacklight/blacklight/main/app/views/catalog/_zero_results.html.erb
+  https://github.com/projectblacklight/blacklight/blob/v7.32.0/app/views/catalog/_zero_results.html.erb
 %>
-<div class="container noresults" id="documents">
-  <div class="row no-gutters">
-    <div class="col-md-6">
-      <h1><%= t 'blacklight.search.zero_results.title' %></h1>
+<div class="noresults" id="documents">
+    <div class="noresults-text">
+      <h1 class="h3 mb-4 text-danger"><%= t 'blacklight.search.zero_results.title' %></h1>
       <p>Check for typos or try modifying your search.</p>
       <p>Still can't find what you're looking for? <a href="mailto:<%= ScihistDigicoll::Env.lookup(:digital_email_address) %>">Email us.</a></p>
       <ul>
@@ -18,18 +17,13 @@
       </ul>
     </div>
 
-    <div class="col-md-6">
+    <div class="noresults-image">
       <figure>
         <%= image_tag "no_results.png", 'aria-labelledby' => "noResultsCaption",
           alt: "A dejected traveling salesman, wearing a suit and a fedora, rests on his suitcase, with his briefcase nearby." %>
         <figcaption id="noResultsCaption">
-          <%
-            no_results_work = Work.find_by_friendlier_id('9etr86c')
-            no_results_link = no_results_work ? work_path(no_results_work.friendlier_id) : "#"
-          %>
-          Image from: <%= link_to '"Ever Bumped by Dead Weight?"', no_results_link %>
+          Image from: <%= link_to '"Ever Bumped by Dead Weight?"', work_path('9etr86c') %>
         </figcaption>
       </figure>
     </div>
-  </div>
 </div>
