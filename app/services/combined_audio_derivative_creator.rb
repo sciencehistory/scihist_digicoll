@@ -58,17 +58,6 @@ class CombinedAudioDerivativeCreator
     Tempfile.new(['output', ".#{format}"], :encoding => 'binary')
   end
 
-  # Use ffprobe to determine the length of an audio file.
-  # TODO use asset.file.metadata['duration_seconds'] instead.
-  # We now collect this during characterization at ingest time.
-  def duration_of_audio_file_in_seconds(path)
-    options = ['ffprobe', '-v', 'error',
-      '-show_entries', 'format=duration', '-of',
-      'default=noprint_wrappers=1:nokey=1'
-    ] + [ path ]
-    cmd.run(*options).out.strip.to_f
-  end
-
   def components
     @components ||= begin
       logger.debug("#{self.class}: downloading original assets")
