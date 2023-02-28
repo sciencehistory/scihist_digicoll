@@ -13,3 +13,14 @@ libpoppler-glib8
 # heroku stacks/buildpacks).  Supplying it here on top of activestorage-preview buildpack
 # doesn't seem to hurt, and does seem to get us a working poppler reliably.
 poppler-utils
+
+# Tesseract for OCR, along with language packs for our top-languages...
+# we might not REALLY need all these languages? Yet? But let's start
+# with em
+# eng=English  deu=German  fra=French lat=Latin   spa=Spanish
+tesseract-ocr
+tesseract-ocr-eng
+tesseract-ocr-deu
+tesseract-ocr-fra
+tesseract-ocr-lat
+tesseract-ocr-spa
