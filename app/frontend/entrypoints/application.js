@@ -40,11 +40,19 @@ import '../javascript/bootstrap_setup.js'
 // patch jQuery.ajax with CSRF token, although it's not supposed to be this way,
 // and strangely this order is only required in vite dev and not vite build.
 //
-// Unclear if explicit `Rails.start()` is really supposed to be needed...
-// but we were having problems in `vite dev` mode that seemed to go away
-// when we do it. `
+// Explicit `Rails.start()` is really supposed to be needed, but we are finding
+// we DO need it in `vite dev` mode, but do NOT in vite prodution mode, where
+// it was leading to double-load of rails-ujs. We're not sure what's going on,
+// and am ashamed that we're just going to hack it out with a conditional
+// like this.
+//
+// https://github.com/rails/rails/blob/v7.0.4.1/actionview/app/assets/javascripts/rails-ujs/start.coffee#L22
 import Rails from '@rails/ujs';
-Rails.start();
+if (! window._rails_loaded) {
+  console.log("scihist_digicoll: manually starting rails-ujs because it was not auto-started");
+  Rails.start();
+}
+
 
 // used by kithe, for forms with add/remove fields
 import "@nathanvda/cocoon";
