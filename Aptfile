@@ -24,3 +24,8 @@ tesseract-ocr-deu
 tesseract-ocr-fra
 tesseract-ocr-lat
 tesseract-ocr-spa
+
+# apt tesseract on heroku requires libarchive13 , not sure
+# why this isn't an automatic dependency, but it seems to work
+# https://stackoverflow.com/questions/66087588/tesseract-error-while-loading-shared-libraries-libarchive-so-13-python
+libarchive13
