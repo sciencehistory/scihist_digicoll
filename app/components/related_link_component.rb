@@ -5,7 +5,7 @@ class RelatedLinkComponent < ApplicationComponent
   # special labels if category.humanize isn't good enough.
   # can replace this with i18n or something if we want
   DISPLAY_LABELS = {
-    "institute_biography" => "Historical biography",
+    "institute_biography" => "Scientific Biography",
     "institute_libguide" => "Library Guide",
     "institute_article" => "Article",
     "institute_podcast" => "Podcast",
