@@ -64,6 +64,9 @@ class Asset < Kithe::Asset
   attr_json :transcription, :text
   attr_json :english_translation, :text
 
+  # OCR data in hOCR format, for the image asset
+  attr_json :hocr, :text
+
 
   validates :derivative_storage_type, inclusion: { in: ["public", "restricted"] }
 
