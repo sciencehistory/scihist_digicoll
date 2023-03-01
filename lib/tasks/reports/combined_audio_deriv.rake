@@ -13,7 +13,6 @@ namespace :scihist do
           next unless url = oral_history_work&.oral_history_content&.combined_audio_m4a&.url
           begin
             work_info = [oral_history_work.title, oral_history_work.friendlier_id]
-            url = 'https://scihist-digicoll-production-derivatives.s3.amazonaws.com/combined_audio_derivatives/8b4b6f87-a316-4d47-bb20-7d32074945e4/combined_d83f2a70f07161ac9a73e107db164a10.m4a'
             stats = JSON.parse(cmd.run("ffprobe", "-hide_banner", "-loglevel", "fatal",
                   "-show_format", "-show_streams", "-print_format", "json",
                 url).out)
