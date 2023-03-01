@@ -198,9 +198,18 @@ class Admin::WorksController < AdminController
   # PATCH/PUT /admin/works/ab2323ac/create_combined_audio_derivatives
   def create_combined_audio_derivatives
     authorize! :update, @work
-    unless CombinedAudioDerivativeCreator.new(@work).available_members?
+    deriv_creator = CombinedAudioDerivativeCreator.new(@work)
+    unless deriv_creator.available_members?
       redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), flash: {
         error: "Combined audio derivatives cannot be created, because this oral history does not have any published audio segments."
+      }
+      return
+    end
+
+    if deriv_creator.audio_metadata_errors.present?
+      Rails.logger.warn("Unable to create a combined audio derivative for work #{@work.friendlier_id} due to bad metadata:\n  #{deriv_creator.audio_metadata_errors.join("\n  ")}")
+      redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), flash: {
+        error: "Combined audio derivatives cannot be created: something is wrong with at least one of the audio segments. Details: " + deriv_creator.audio_metadata_errors.join("; ")
       }
       return
     end

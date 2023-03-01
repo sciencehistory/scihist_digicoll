@@ -64,7 +64,9 @@ FactoryBot.define do
         faked_bitrate { nil }
         faked_filename { nil }
         faked_size { nil }
-
+        faked_duration_seconds  { nil }
+        faked_audio_bitrate     { nil }
+        faked_audio_sample_rate { nil }
         faked_md5 { Digest::MD5.hexdigest rand(10000000).to_s }
         faked_sha512 { Digest::SHA512.hexdigest rand(10000000).to_s }
 
@@ -122,6 +124,9 @@ FactoryBot.define do
       trait :mp3 do
         faked_file { File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.mp3")) }
         faked_content_type { "audio/mpeg" }
+        faked_duration_seconds { "00:00:05" }
+        faked_audio_bitrate { "8 kb/s" }
+        faked_audio_sample_rate { "8.0 kHz"}
         faked_height { nil }
         faked_width { nil }
         faked_derivatives { nil }
@@ -130,6 +135,9 @@ FactoryBot.define do
       trait :m4a do
         faked_file { File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.m4a")) }
         faked_content_type { "audio/mp4" }
+        faked_duration_seconds { "00:00:05" }
+        faked_audio_bitrate { "8 kb/s" }
+        faked_audio_sample_rate { "8.0 kHz"}
         faked_height { nil }
         faked_width { nil }
       end
@@ -138,6 +146,9 @@ FactoryBot.define do
       trait :flac do
         faked_file { File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.flac")) }
         faked_content_type { "audio/flac" }
+        faked_duration_seconds { "00:00:05" }
+        faked_audio_bitrate { "14 kb/s" }
+        faked_audio_sample_rate { "8.0 kHz"}
         faked_height { nil }
         faked_width { nil }
       end
@@ -150,7 +161,10 @@ FactoryBot.define do
           content_type: evaluator.faked_content_type,
           width: evaluator.faked_width,
           height: evaluator.faked_height,
-          video_bitrate: evaluator.faked_bitrate,
+          video_bitrate:     evaluator.faked_bitrate,
+          duration_seconds:  evaluator.faked_duration_seconds,
+          audio_bitrate:     evaluator.faked_audio_bitrate,
+          audio_sample_rate: evaluator.faked_audio_sample_rate,
           md5: evaluator.faked_md5,
           sha512: evaluator.faked_sha512,
           filename: evaluator.faked_filename,
