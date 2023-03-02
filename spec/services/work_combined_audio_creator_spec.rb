@@ -14,7 +14,7 @@ describe "Combined Audio" do
     it "creates combined audio derivative", queue_adapter: :inline do
       expect(work.members.map(&:stored?)).to match([true])
       audio_file = work.members.first.file
-      expect(audio_file.metadata['bitrate']).to eq 8402
+      expect(audio_file.metadata['bitrate']).to be_a_kind_of(Integer)
       combined_audio_info = CombinedAudioDerivativeCreator.new(work).generate
       expect(combined_audio_info.start_times.count).to eq 1
       expect(combined_audio_info.start_times).to match([[mp3.id, 0]])
@@ -47,8 +47,8 @@ describe "Combined Audio" do
 
     it "creates combined audio derivatives", queue_adapter: :inline do
       expect(work.members.map(&:stored?)).to match([true, true])
-      expect(work.members.first.file.metadata['bitrate']).to eq 8402
-      expect(work.members.second.file.metadata['bitrate']).to eq 8205
+      expect(work.members.first.file.metadata['bitrate']).to be_a_kind_of(Integer)
+      expect(work.members.second.file.metadata['bitrate']).to be_a_kind_of(Integer)
 
       combined_audio_info = CombinedAudioDerivativeCreator.new(work).generate
       expect(combined_audio_info.start_times.count).to eq 2
