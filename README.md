@@ -20,6 +20,8 @@ To set up a development instance on your workstation.
 * `mediainfo` installed for fallback contnet type detection -- on MacOS, `brew install mediainfo`
 * vips installed --  on MacOS `brew install vips`
 * ffmpeg installed -- on MacOS `brew install ffmpeg`
+* tesseract for OCR -- `brew install tesseract tesseract-lang`. Will not be same version as
+  production, see https://sciencehistory.atlassian.net/l/cp/ucUvKjk3
 * You'll need Java installed to run Solr. If you don't already have it, on MacOS `brew install java`, then follow post-install instructions, such as `sudo ln -sfn /opt/homebrew/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk`
 
 
