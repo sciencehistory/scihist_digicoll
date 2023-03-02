@@ -4,7 +4,6 @@ describe "Combined Audio" do
   let!(:work) { FactoryBot.create(:work, title: "Oral history with two interview audio segments")}
   let(:cmd) { cmd = TTY::Command.new(printer: :null)}
 
-
   context "one viable mp3" do
     let!(:mp3)  { create(:asset, :inline_promoted_file,
         position: 1,
@@ -14,6 +13,8 @@ describe "Combined Audio" do
     }
     it "creates combined audio derivative", queue_adapter: :inline do
       expect(work.members.map(&:stored?)).to match([true])
+      audio_file = work.members.first.file
+      expect(audio_file.metadata['bitrate']).to eq 8402
       combined_audio_info = CombinedAudioDerivativeCreator.new(work).generate
       expect(combined_audio_info.start_times.count).to eq 1
       expect(combined_audio_info.start_times).to match([[mp3.id, 0]])
@@ -46,6 +47,9 @@ describe "Combined Audio" do
 
     it "creates combined audio derivatives", queue_adapter: :inline do
       expect(work.members.map(&:stored?)).to match([true, true])
+      expect(work.members.first.file.metadata['bitrate']).to eq 8402
+      expect(work.members.second.file.metadata['bitrate']).to eq 8205
+
       combined_audio_info = CombinedAudioDerivativeCreator.new(work).generate
       expect(combined_audio_info.start_times.count).to eq 2
 
@@ -128,6 +132,8 @@ describe "Combined Audio" do
 
     it "fails quickly and provides a helpful error message", queue_adapter: :inline do
       expect(work.members.map(&:stored?)).to match([true, true])
+      expect(work.members.first.file.metadata['bitrate']).to be_nil
+      expect(work.members.second.file.metadata['bitrate']).to be_nil
       creator = CombinedAudioDerivativeCreator.new(work)
       combined_audio_info = creator.generate
       # The first empty mp3 should not even be counted as an available audio member:
@@ -138,7 +144,4 @@ describe "Combined Audio" do
       expect(combined_audio_info.fingerprint).to be_nil
     end
   end
-
-
-
 end
