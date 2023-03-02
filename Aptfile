@@ -17,7 +17,7 @@ poppler-utils
 # Tesseract for OCR, along with language packs for our top-languages...
 # we might not REALLY need all these languages? Yet? But let's start
 # with em
-# eng=English  deu=German  fra=French lat=Latin   spa=Spanish
+# eng=English  deu=German  fra=French   spa=Spanish
 #
 # These language packs from apt are the tesserat "FAST" models,
 # not the larger slower "BEST" models!
@@ -25,7 +25,6 @@ tesseract-ocr
 tesseract-ocr-eng
 tesseract-ocr-deu
 tesseract-ocr-fra
-tesseract-ocr-lat
 tesseract-ocr-spa
 
 # apt tesseract on heroku requires libarchive13 , not sure
