@@ -14,8 +14,9 @@ FactoryBot.define do
       content_type { "image/png" }
       width { 30 }
       height { 30 }
-      video_bitrate     { nil }
+      bitrate     { nil }
       audio_bitrate     { nil }
+      video_bitrate     { nil }
       audio_sample_rate { nil }
       duration_seconds  { nil }
       md5 { Digest::MD5.hexdigest rand(10000000).to_s }
@@ -35,9 +36,10 @@ FactoryBot.define do
         "height"=> height,
         "md5" => md5,
         "duration_seconds" => duration_seconds,
+        "bitrate"       => bitrate,
         "audio_bitrate" => audio_bitrate,
-        "audio_sample_rate" => audio_sample_rate,
         "video_bitrate" => video_bitrate,
+        "audio_sample_rate" => audio_sample_rate,
         "sha512" => sha512
       }.compact
     end
