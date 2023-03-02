@@ -163,7 +163,7 @@ class CombinedAudioDerivativeCreator
         if file.metadata['duration_seconds'].nil?  || file.metadata['duration_seconds'] == 0
           errors << "#{filename}: audio duration is unavailable or zero" 
         end
-        if file.metadata['audio_bitrate'].nil? || file.metadata['audio_sample_rate'].nil?
+        if file.metadata['bitrate'].nil? || file.metadata['audio_sample_rate'].nil?
           errors << "#{filename}: audio bitrate or sample rate is unavailable"
         end
       end
