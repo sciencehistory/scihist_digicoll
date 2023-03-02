@@ -4,20 +4,24 @@ describe "Combined Audio" do
   let!(:work) { FactoryBot.create(:work, title: "Oral history with two interview audio segments")}
   let(:cmd) { cmd = TTY::Command.new(printer: :null)}
 
-  context "one viable mp3" do
+  context "one viable mp3, characterized during the test" do
     let!(:mp3)  { create(:asset, :inline_promoted_file,
         position: 1,
         parent_id: work.id,
         file: File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.mp3"))
       )
     }
-    it "creates combined audio derivative", queue_adapter: :inline do
-      expect(work.members.map(&:stored?)).to match([true])
+
+    it "recognizes the file has legitimate audio metadata created during test setup", queue_adapter: :inline do
       audio_file = work.members.first.file
       expect(audio_file.metadata['bitrate']).to be_a_kind_of(Integer)
       creator = CombinedAudioDerivativeCreator.new(work)
       expect(creator.audio_metadata_errors).to eq []
-      combined_audio_info = creator.generate
+    end
+
+    it "creates combined audio derivative", queue_adapter: :inline do
+      expect(work.members.map(&:stored?)).to match([true])
+      combined_audio_info = CombinedAudioDerivativeCreator.new(work).generate
       expect(combined_audio_info.start_times.count).to eq 1
       expect(combined_audio_info.start_times).to match([[mp3.id, 0]])
       expect(combined_audio_info.m4a_file.class).to eq Tempfile
@@ -33,19 +37,25 @@ describe "Combined Audio" do
     end
   end
 
-  context "two viable mp3s" do
+  context "two viable originals - an mp3 and a flac" do
     let!(:mp3_1)  { create(:asset, :inline_promoted_file,
         position: 1,
         parent_id: work.id,
         file: File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.mp3"))
       )
     }
-    let!(:mp3_2)  { create(:asset, :inline_promoted_file,
+    let!(:flac_2)  { create(:asset, :inline_promoted_file,
         position: 2,
         parent_id: work.id,
-        file: File.open((Rails.root + "spec/test_support/audio/10-seconds-of-silence.mp3"))
+        file: File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.flac"))
       )
     }
+
+
+    it "recognizes both files have legitimate audio, created during test setup", queue_adapter: :inline do
+      creator = CombinedAudioDerivativeCreator.new(work)
+      expect(creator.audio_metadata_errors).to eq []
+    end
 
     it "creates combined audio derivatives", queue_adapter: :inline do
       expect(work.members.map(&:stored?)).to match([true, true])
@@ -61,7 +71,7 @@ describe "Combined Audio" do
       # The lengths should be correct:
       expect(combined_audio_info.start_times).to match([
         [mp3_1.id, 0],
-        [mp3_2.id, 5.184]
+        [flac_2.id, 5.184]
       ])
 
       # The files should be tempfiles:
@@ -77,8 +87,9 @@ describe "Combined Audio" do
       expect(m4a_details).to  include('codec_name=aac')
       expect(m4a_details).to  include('format_long_name=QuickTime / MOV')
       # Is the combined length correct?
-      expect(m4a_details.any?  {|x| x.include? 'duration=15.0'}).to be true
+      #puts m4a_details
 
+      expect(m4a_details.any?  {|x| x.include? 'duration=10.0'}).to be true
 
       # Store the fingerprint to ensure that it changes when we swap the two files...
       first_fingerprint = combined_audio_info.fingerprint
@@ -91,17 +102,17 @@ describe "Combined Audio" do
       # (which, in turn, could change if we change the recipe).
 
       expect(work.members.map(&:stored?)).to match([true, true])
-      mp3_2.position = 1
+      flac_2.position = 1
       mp3_1.position = 2
       mp3_1.save!
-      mp3_2.save!
+      flac_2.save!
 
       combined_audio_info = CombinedAudioDerivativeCreator.new(work).generate
       expect(combined_audio_info.start_times.count).to eq 2
 
       expect( combined_audio_info.start_times).to match([
-        [mp3_2.id, 0],
-        [mp3_1.id, 10.152]
+        [flac_2.id, 0],
+        [mp3_1.id, 5.0]
       ])
 
       # Get some verbose details about the files output:
@@ -112,7 +123,7 @@ describe "Combined Audio" do
       expect(m4a_details).to  include('codec_tag_string=mp4a')
       expect(m4a_details).to  include('codec_name=aac')
       expect(m4a_details).to  include('format_long_name=QuickTime / MOV')
-      expect(m4a_details.any?  {|x| x.include? 'duration=15.0'}).to be true
+      expect(m4a_details.any?  {|x| x.include? 'duration=10.0'}).to be true
 
       second_fingerprint = combined_audio_info.fingerprint
       expect(second_fingerprint.class).to eq String
@@ -128,6 +139,7 @@ describe "Combined Audio" do
         file: File.open((Rails.root + "spec/test_support/audio/zero_bytes.flac"))
       )
     }
+
     let!(:flac_bad_metadata)  { create(:asset, :inline_promoted_file,
         position: 2,
         parent_id: work.id,
@@ -135,8 +147,7 @@ describe "Combined Audio" do
       )
     }
 
-    it "fails quickly and provides a helpful error message", queue_adapter: :inline do
-      expect(work.members.map(&:stored?)).to match([true, true])
+    it "accurately detects broken files", queue_adapter: :inline do
       expect(work.members.first.file.metadata['bitrate']).to be_nil
       expect(work.members.second.file.metadata['bitrate']).to be_nil
       creator = CombinedAudioDerivativeCreator.new(work)
@@ -144,8 +155,13 @@ describe "Combined Audio" do
         "bad_metadata.flac: audio duration is unavailable or zero",
         "bad_metadata.flac: audio bitrate or sample rate is unavailable"
       ]
+    end
+
+    it "fails quickly", queue_adapter: :inline do
+      expect(work.members.map(&:stored?)).to match([true, true])
+      creator = CombinedAudioDerivativeCreator.new(work)
       combined_audio_info = creator.generate
-      # The first empty mp3 should not even be counted as an available audio member:
+      # This file should not even be counted as an available audio member:
       expect(creator.available_members_count).to eq 1
       expect(combined_audio_info.errors).to eq "bad_metadata.flac: audio duration is unavailable or zero; bad_metadata.flac: audio bitrate or sample rate is unavailable"
       expect(combined_audio_info.start_times).to be_nil
