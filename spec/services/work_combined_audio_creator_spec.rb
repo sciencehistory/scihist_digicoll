@@ -15,7 +15,9 @@ describe "Combined Audio" do
       expect(work.members.map(&:stored?)).to match([true])
       audio_file = work.members.first.file
       expect(audio_file.metadata['bitrate']).to be_a_kind_of(Integer)
-      combined_audio_info = CombinedAudioDerivativeCreator.new(work).generate
+      creator = CombinedAudioDerivativeCreator.new(work)
+      expect(creator.audio_metadata_errors).to eq []
+      combined_audio_info = creator.generate
       expect(combined_audio_info.start_times.count).to eq 1
       expect(combined_audio_info.start_times).to match([[mp3.id, 0]])
       expect(combined_audio_info.m4a_file.class).to eq Tempfile
@@ -50,7 +52,10 @@ describe "Combined Audio" do
       expect(work.members.first.file.metadata['bitrate']).to be_a_kind_of(Integer)
       expect(work.members.second.file.metadata['bitrate']).to be_a_kind_of(Integer)
 
-      combined_audio_info = CombinedAudioDerivativeCreator.new(work).generate
+      creator = CombinedAudioDerivativeCreator.new(work)
+      expect(creator.audio_metadata_errors).to eq []
+
+      combined_audio_info = creator.generate
       expect(combined_audio_info.start_times.count).to eq 2
 
       # The lengths should be correct:
@@ -135,6 +140,10 @@ describe "Combined Audio" do
       expect(work.members.first.file.metadata['bitrate']).to be_nil
       expect(work.members.second.file.metadata['bitrate']).to be_nil
       creator = CombinedAudioDerivativeCreator.new(work)
+      expect(creator.audio_metadata_errors).to eq [
+        "bad_metadata.flac: audio duration is unavailable or zero",
+        "bad_metadata.flac: audio bitrate or sample rate is unavailable"
+      ]
       combined_audio_info = creator.generate
       # The first empty mp3 should not even be counted as an available audio member:
       expect(creator.available_members_count).to eq 1
