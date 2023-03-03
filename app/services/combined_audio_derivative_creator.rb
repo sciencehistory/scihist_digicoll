@@ -154,21 +154,11 @@ class CombinedAudioDerivativeCreator
   end
 
   def audio_metadata_errors
-    @audio_metadata_errors ||= begin
-      errors = []
-      published_audio_members.each do |mem|
-        file = mem.file
-        filename = mem.file_data['metadata']['filename']
-        errors << "#{filename}: empty file" if file.size == 0
-        if file.metadata['duration_seconds'].nil?  || file.metadata['duration_seconds'] == 0
-          errors << "#{filename}: audio duration is unavailable or zero" 
-        end
-        if file.metadata['bitrate'].nil? || file.metadata['audio_sample_rate'].nil?
-          errors << "#{filename}: audio bitrate or sample rate is unavailable"
-        end
-      end
-      errors
-    end
+    @audio_metadata_errors ||= published_audio_members.map { |mem|
+      AudioFileMetadataChecker.new(mem.file).file_errors.map { |err|
+        "#{mem.file.metadata['filename']}: #{err}"
+      }
+    }.compact.flatten
   end
 
   # If this checksum changes, you need to regenerate the audio

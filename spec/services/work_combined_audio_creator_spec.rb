@@ -133,18 +133,20 @@ describe "Combined Audio" do
   end
 
   context "two broken flacs" do
-    let!(:flac_zero_bytes)  { create(:asset, :inline_promoted_file,
-        position: 1,
-        parent_id: work.id,
-        file: File.open((Rails.root + "spec/test_support/audio/zero_bytes.flac"))
-      )
+    let!(:flac_zero_bytes)  {
+        a = build(:asset, :inline_promoted_file,
+          position: 1,
+          parent_id: work.id,
+          file: File.open((Rails.root + "spec/test_support/audio/zero_bytes.flac"))
+        ).save(validate:false)
     }
 
-    let!(:flac_bad_metadata)  { create(:asset, :inline_promoted_file,
-        position: 2,
-        parent_id: work.id,
-        file: File.open((Rails.root + "spec/test_support/audio/bad_metadata.flac"))
-      )
+    let!(:flac_bad_metadata)  {
+        a = build(:asset, :inline_promoted_file,
+          position: 2,
+          parent_id: work.id,
+          file: File.open((Rails.root + "spec/test_support/audio/bad_metadata.flac"))
+        ).save(validate:false)
     }
 
     it "accurately detects broken files", queue_adapter: :inline do

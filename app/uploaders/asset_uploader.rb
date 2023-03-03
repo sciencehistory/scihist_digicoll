@@ -24,6 +24,15 @@ class AssetUploader < Kithe::AssetUploader
     Kithe::FfprobeCharacterization.characterize_from_uploader(source_io, context)
   end
 
+  plugin :validation
+  Attacher.validate do
+    refresh_metadata!
+    if file.mime_type.match /^audio/
+      AudioFileMetadataChecker.new(file).file_errors.each { |err| errors << err }
+    end
+  end
+
+
   # Re-set shrine derivatives setting, to put DERIVATIVES on restricted storage
   # if so configured. Only effects initial upload, if setting changes, some code
   # needs to manually move files.
