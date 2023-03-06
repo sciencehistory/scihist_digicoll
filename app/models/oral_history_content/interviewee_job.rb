@@ -1,10 +1,9 @@
 class OralHistoryContent
   class IntervieweeJob
     include AttrJson::Model
-    validates_with StandardDateValidator,    fields: [:start]
-    validates_with DateValidatorWithPresent, fields: [:end]
+    validates_with StandardDateValidator, fields: [:start, :end]
     attr_json :start,       :string # date as yyyy(-mm(-dd))
-    attr_json :end,         :string # date as yyyy(-mm(-dd)) or "present"
+    attr_json :end,         :string # date as yyyy(-mm(-dd))
     attr_json :institution, :string
     attr_json :role,        :string
 
