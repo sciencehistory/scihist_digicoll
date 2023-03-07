@@ -9,6 +9,14 @@ class ApplicationController < ActionController::Base
   #      include Blacklight::Controller
   #      layout :determine_layout if respond_to? :layout
 
+
+  # intended for use on staging, set ENV variables on (eg) heroku config
+  # to put an HTTP Basic Auth form in front of entire site.
+  if ENV['HTTP_BASIC_AUTH_NAME'].present? && ENV['HTTP_BASIC_AUTH_PASSWORD'].present?
+    http_basic_authenticate_with name: ENV['HTTP_BASIC_AUTH_NAME'], password: ENV['HTTP_BASIC_AUTH_PASSWORD']
+  end
+
+
   rescue_from "AccessGranted::AccessDenied" do |exception|
     redirect_path = if current_user.present?
       root_path
