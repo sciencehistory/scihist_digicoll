@@ -73,25 +73,33 @@ Rails.application.configure do
   # Prepend all log lines with the following tags.
   config.log_tags = [ :request_id ]
 
-  # Use a different cache store in production.
-  #
-  # On heroku we use memcachedcloud plugin which provides `MEMCACHEDCLOUD_SERVERS`
-  # env. https://devcenter.heroku.com/articles/memcachedcloud#using-memcached-from-ruby
-  #
   # Caching is not normally turned on in test or dev, but config/environments/development.rb
   # has some standard Rails code that lets you turn it on in dev with in-memory store,
   # with `./bin/rails dev:cache` toggle.
   #
+  # On heroku we try to set up either memcachdcloud or memcachier, in that order,
+  # depending on what env variables are defined.
+  #
   # We tune the timeouts to give up really quickly -- we don't want the server
   # waiting too long on a slow memcached, especially with rack-attack accessing
-  # it on every request. It's just a cache, give up if it's slow!
+  # it on every request. It's just a cache; give up if it's slow!
+  #
   # https://github.com/petergoldstein/dalli/blob/5588d98f79eb04a9abcaeeff3263e08f93468b30/lib/dalli/protocol/connection_manager.rb
-  if ENV["MEMCACHEDCLOUD_SERVERS"]
+  if ENV["MEMCACHIER_SERVERS"]
+    # https://devcenter.heroku.com/articles/memcachier#rails
+    config.cache_store = :mem_cache_store, ENV["MEMCACHIER_SERVERS"].split(","), {
+      :username => ENV["MEMCACHIER_USERNAME"],
+      :password => ENV["MEMCACHIER_PASSWORD"],
+      :socket_timeout => (ENV["MEMCACHE_TIMEOUT"] || 0.15).to_f,       # default was 0.5
+      :socket_failure_delay => false                                   # don't retry failures
+    }
+  elsif ENV["MEMCACHEDCLOUD_SERVERS"]
+    # https://devcenter.heroku.com/articles/memcachedcloud#using-memcached-from-ruby
     config.cache_store = :mem_cache_store, ENV["MEMCACHEDCLOUD_SERVERS"].split(','), {
       :username => ENV["MEMCACHEDCLOUD_USERNAME"],
       :password => ENV["MEMCACHEDCLOUD_PASSWORD"],
-      :socket_timeout => (ENV["MEMCACHE_TIMEOUT"] || 0.15).to_f, # default was 1
-      :socket_failure_delay => false # don't retry failures
+      :socket_timeout => (ENV["MEMCACHE_TIMEOUT"] || 0.15).to_f,       # default was 1
+      :socket_failure_delay => false                                   # don't retry failures
     }
   end
 
