@@ -56,8 +56,13 @@ class AssetHocrCreator
 
     result = tty_command.run(
       tesseract_executable,
+      # only use first image, ignoring the embedded thumb that our production
+      # process sometimes puts in
+      "-c",
+      "tessedit_page_number=0",
       input_path,
-      "-", # output to stdout
+      # output to stdout
+      "-",
       "-l",
       tesseract_languages.join("+"),
       "hocr" # in hocr format
