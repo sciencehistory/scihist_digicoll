@@ -32,5 +32,13 @@ describe OralHistory::BiographicalComponent, type: :component do
       expect(presenter.grouped_jobs["One University"].collect(&:start)).to eq(["1910", "1915"])
       expect(presenter.grouped_jobs["Two University"].collect(&:start)).to eq(["1920", "1930"])
     end
+
+    it "treats identical start and end dates as a single date" do
+      expect(presenter.formatted_job_dates('1910', '1910')).to eq "1910"
+    end
+
+    it "supplies `present` if the end date is blank" do
+      expect(presenter.formatted_job_dates('1910', '')).to eq "1910 to present"
+    end
   end
 end
