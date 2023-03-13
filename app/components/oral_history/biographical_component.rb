@@ -60,7 +60,19 @@ module OralHistory
     end
 
 
+    # See discussion at https://github.com/sciencehistory/scihist_digicoll/issues/2045
+    def formatted_job_dates(start_date, end_date)
+      if end_date.blank?
+        # A blank end date means the job is still considered current.
+        "#{FormatSimpleDate.new(start_date).display} to present"
+      else
+        # Note: FormatSimpleDate will only show the start date if start and end are identical.
+        FormatSimpleDate.new(start_date, end_date).display
+      end
+    end
+
     private
+
 
     # @param date_and_place [OralHistoryContent::DateAndPlace]
     def formatted_date_and_place(date_and_place)

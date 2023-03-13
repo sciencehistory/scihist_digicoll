@@ -6,7 +6,7 @@ describe IntervieweeBiography do
     institution: 'Harvard University',
     role: 'Junior Fellow, Society of Fellows'})}
   let(:current_job) {OralHistoryContent::IntervieweeJob.new({
-    start: "1962", end: "present",
+    start: "1962", end: "",
     institution: 'Harvard University',
     role: 'Junior Fellow, Society of Fellows'})}
   let(:bad_job) { OralHistoryContent::IntervieweeJob.new({
