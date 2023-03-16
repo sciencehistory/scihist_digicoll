@@ -18,7 +18,7 @@ describe AssetHocrCreator, type: :model do
 
         # just what we expect a cli call to be, including proper language tags,
         # in order, ignoring Japanese that we aren't prepared to OCR.
-        expect(cli).to match( /\Atesseract [\/\.\-\w]+ - -l deu\+eng hocr\z/ )
+        expect(cli).to match( /\Atesseract -c tessedit_page_number=0 [\/\.\-\w]+ - -l deu\+eng hocr\z/ )
 
         mocked_response
       end
@@ -28,6 +28,31 @@ describe AssetHocrCreator, type: :model do
       asset.reload
       expect(asset.hocr).to eq mocked_response.stdout
     end
+  end
 
+  describe "with real tesseract" do
+    let(:asset) {
+      create(:asset_with_faked_file,
+        faked_file: "spec/test_support/images/text_and_embedded_thumb.tiff",
+        faked_content_type: "image/tiff",
+        parent: create(:work, language: ["English"])
+      )
+    }
+    let(:creator) { AssetHocrCreator.new(asset) }
+
+    it "saves correct HOCR" do
+      creator.call
+
+      hocr = Nokogiri::HTML(asset.hocr) { |config| config.strict }
+
+      # Make sure we only have one page, the embedded thumb was ignored
+      hocr_pages = hocr.css(".ocr_page")
+      expect(hocr_pages.length).to eq 1
+
+      # not totally sure why tesseract is using "ocrx_word" instead of "ocr_word"
+      expect(hocr.css(".ocrx_word").collect(&:text)).to eq(
+        ["This", "is", "a", "sample", "TIFF", "with", "a", "line", "of", "text."]
+      )
+    end
   end
 end
