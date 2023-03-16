@@ -37,8 +37,12 @@ describe OralHistory::BiographicalComponent, type: :component do
       expect(presenter.formatted_job_dates('1910', '1910')).to eq "1910"
     end
 
-    it "supplies `present` if the end date is blank" do
+    it "supplies `present` if there is a start date, but the end date is blank" do
       expect(presenter.formatted_job_dates('1910', '')).to eq "1910 to present"
+    end
+
+    it "shows nothing both dates are blank" do
+      expect(presenter.formatted_job_dates('', '')).to eq ""
     end
   end
 end
