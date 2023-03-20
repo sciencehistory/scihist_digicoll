@@ -102,21 +102,23 @@
   <div class="row">
     <% if @response.documents.present? %>
       <div class="sidebar-col">
-       <%= render 'facets' %>
+        <%= render 'facets' %>
       </div>
+      <div class="content-col">
+        <%# per-page and sort controls, from Blacklight partial %>
+        <%= render 'search_header' %>
+        <%= render "document_list", documents: @response.documents %>
+        <%= render 'catalog/results_pagination' %>
+      </div>
+    <% else %>
+      <%# Force display of our zero-results content. %>
+      <%= render 'catalog/zero_results' %>
     <% end %>
-    <div class="content-col">
-      <%# per-page and sort controls, from Blacklight partial %>
-      <%= render 'search_header' %>
-      <%= render "document_list", documents: @response.documents %>
-      <%= render 'catalog/results_pagination' %>
-    </div>
   </div>
 
 
 
 
-
-  </div>
+  </div><%# TODO this closing div looks like it doesn't belong here  - remove in another PR. %>
 
 </div>
