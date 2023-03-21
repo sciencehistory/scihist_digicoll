@@ -1,0 +1,55 @@
+  <% unless has_search_parameters? %>
+    <div class="collection-control-area">
+
+      <% if collection.funding_credit.present? %>
+        <div class="collection-funding-credit">
+          <% if collection.funding_credit.image.present? %>
+            <%= image_tag collection.funding_credit.image_path, class: "funding-credit-image" %>
+          <% end %>
+
+          <p>
+            <% if collection.department == "Center for Oral History" %>
+              This oral history project
+            <% else %>
+              Digitization and cataloging of this collection
+            <% end %>
+              made possible by the generosity of
+            <%= link_to_if collection.funding_credit.url.present?,
+                  collection.funding_credit.name,
+                  collection.funding_credit.url,
+                  target: "_blank"
+            %>
+          </p>
+        </div>
+      <% end %>
+
+
+      <div class="collection-search-form">
+          <h2 class="search-title">
+                Search within the <%= collection.title %>
+          </h2>
+
+          <%= form_tag "", method: :get do |f| %>
+           <div class="input-group">
+              <%= search_field_tag :q, '', class: "q form-control",
+                  id: "collectionQ",
+                  autocomplete: "off",
+                  placeholder: t("collection.search_form.search_field.placeholder"),
+                  :"aria-label" => t('collection.search_form.search_field.label')
+              %>
+
+              <label class="sr-only" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
+
+              <div class="input-group-append">
+                <button type="submit" class="btn btn-emphasis" title="Search">
+                  <i class="fa fa-search" aria-hidden="true"></i>
+                  <%= t('blacklight.search.form.submit') %>
+                </button>
+              </div>
+            </div>
+
+            <%= hidden_field_tag :sort, params[:sort], id: 'collection_sort' %>
+          <% end %>
+      </div>
+    </div>
+  <% end %>

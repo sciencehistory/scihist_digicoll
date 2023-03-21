@@ -1,0 +1,31 @@
+<div class="collection-show">
+  <div class="collection-top mb-4">
+    <div class="collection-desc clearfix">
+      <% unless has_search_parameters? %>
+        <div class="collection-thumb">
+          <%= render ThumbComponent.new(collection.leaf_representative, thumb_size: :collection_page, placeholder_img_url: asset_path("default_collection.svg")) %>
+        </div>
+      <% end %>
+      <div class="show-title">
+        <header>
+          <div class="show-genre">
+            <% if collection.department != Collection::DEPARTMENT_EXHIBITION_VALUE %>
+              <%= link_to "Collections", collections_path %>
+            <% else %>
+              Exhibitions
+            <% end %>
+          </div>
+          <h1>
+            <%= link_to collection.title, collection_path(collection), class: "title-link" %> <%= publication_badge(collection) %>
+            <% if can? :update, collection %>
+              <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-outline-primary" %>
+            <% end %>
+          </h1>
+        </header>
+      </div>
+      <% unless has_search_parameters? %>
+        <%= render CollectionMetadataComponent.new(collection: collection) %>
+      <% end %>
+    </div>
+  </div>
+</div>

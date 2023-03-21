@@ -82,6 +82,7 @@
         integrated into the masthead -%>
 
     <main id="mainContainer" class="container-fluid">
+      <%= content_for(:above_container_header) %>
       <%= content_for(:container_header) %>
       <%= render 'flash_message_display' %>
       <% if content_for? :full_width_layout %>
