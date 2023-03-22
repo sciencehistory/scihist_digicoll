@@ -60,11 +60,15 @@
       <div class="sidebar-col">
         <%= render 'facets' %>
       </div>
-    <% end %>
-    <div class="content-col">
-      <%= render 'search_header' %>
-      <%= render "document_list", documents: @response.documents %>
-      <%= render 'catalog/results_pagination' %>
-    </div>
+      <div class="content-col">
+        <%= render 'search_header' %>
+        <%= render "document_list", documents: @response.documents %>
+        <%= render 'catalog/results_pagination' %>
+      </div>
+      <% else %>
+        <div class="ml-3">
+          <%= render 'catalog/zero_results' %>
+        </div>
+      <% end %>
   </div>
 </div>
