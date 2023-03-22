@@ -1,122 +1,99 @@
 <% provide :page_title, construct_page_title(collection.title) %>
-
 <div itemscope itemtype="http://schema.org/CollectionPage" class="collection-show">
-
-
-  <div class="collection-top">
-    <div class="collection-desc clearfix">
-      <% unless has_search_parameters? %>
-        <div class="collection-thumb">
-          <%= render ThumbComponent.new(collection.leaf_representative, thumb_size: :collection_page, placeholder_img_url: asset_path("default_collection.svg")) %>
-        </div>
-      <% end %>
-
-      <div class="show-title">
-        <header>
-          <div class="show-genre">
-            <% if collection.department != Collection::DEPARTMENT_EXHIBITION_VALUE %>
-              <%= link_to "Collections", collections_path %>
-            <% else %>
-              Exhibitions
-            <% end %>
-          </div>
-          <h1>
-            <%= link_to collection.title, collection_path(collection), class: "title-link" %> <%= publication_badge(collection) %>
-            <% if can? :update, collection %>
-              <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-outline-primary" %>
-            <% end %>
-          </h1>
-        </header>
+<div class="collection-top">
+  <div class="collection-desc clearfix">
+    <% unless has_search_parameters? %>
+      <div class="collection-thumb">
+        <%= render ThumbComponent.new(collection.leaf_representative, thumb_size: :collection_page, placeholder_img_url: asset_path("default_collection.svg")) %>
       </div>
+    <% end %>
 
-
-      <% unless has_search_parameters? %>
-        <%= render CollectionMetadataComponent.new(collection: collection) %>
-      <% end %>
+    <div class="show-title">
+      <header>
+        <div class="show-genre">
+          <% if collection.department != Collection::DEPARTMENT_EXHIBITION_VALUE %>
+            <%= link_to "Collections", collections_path %>
+          <% else %>
+            Exhibitions
+          <% end %>
+        </div>
+        <h1>
+          <%= link_to collection.title, collection_path(collection), class: "title-link" %> <%= publication_badge(collection) %>
+          <% if can? :update, collection %>
+            <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-outline-primary" %>
+          <% end %>
+        </h1>
+      </header>
     </div>
-  </div>
-
-
-
 
 
     <% unless has_search_parameters? %>
-      <div class="collection-control-area">
-
-        <% if collection.funding_credit.present? %>
-          <div class="collection-funding-credit">
-            <% if collection.funding_credit.image.present? %>
-              <%= image_tag collection.funding_credit.image_path, class: "funding-credit-image" %>
-            <% end %>
-
-            <p>
-              <% if collection.department == "Center for Oral History" %>
-                This oral history project
-              <% else %>
-                Digitization and cataloging of this collection
-              <% end %>
-                made possible by the generosity of
-              <%= link_to_if collection.funding_credit.url.present?,
-                    collection.funding_credit.name,
-                    collection.funding_credit.url,
-                    target: "_blank"
-              %>
-            </p>
-          </div>
+      <%= render CollectionMetadataComponent.new(collection: collection) %>
+    <% end %>
+  </div>
+</div>
+<% unless has_search_parameters? %>
+  <div class="collection-control-area">
+    <% if collection.funding_credit.present? %>
+      <div class="collection-funding-credit">
+        <% if collection.funding_credit.image.present? %>
+          <%= image_tag collection.funding_credit.image_path, class: "funding-credit-image" %>
         <% end %>
-
-
-        <div class="collection-search-form">
-            <h2 class="search-title">
-                  Search within the <%= collection.title %>
-            </h2>
-
-            <%= form_tag "", method: :get do |f| %>
-             <div class="input-group">
-                <%= search_field_tag :q, '', class: "q form-control",
-                    id: "collectionQ",
-                    autocomplete: "off",
-                    placeholder: t("collection.search_form.search_field.placeholder"),
-                    :"aria-label" => t('collection.search_form.search_field.label')
-                %>
-
-                <label class="sr-only" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
-
-                <div class="input-group-append">
-                  <button type="submit" class="btn btn-emphasis" title="Search">
-                    <i class="fa fa-search" aria-hidden="true"></i>
-                    <%= t('blacklight.search.form.submit') %>
-                  </button>
-                </div>
-              </div>
-
-              <%= hidden_field_tag :sort, params[:sort], id: 'collection_sort' %>
-            <% end %>
-        </div>
+        <p>
+          <% if collection.department == "Center for Oral History" %>
+            This oral history project
+          <% else %>
+            Digitization and cataloging of this collection
+          <% end %>
+            made possible by the generosity of
+          <%= link_to_if collection.funding_credit.url.present?,
+                collection.funding_credit.name,
+                collection.funding_credit.url,
+                target: "_blank"
+          %>
+        </p>
       </div>
     <% end %>
-
-  <%= render 'catalog/constraints' %>
-
-
-  <div class="row">
-    <% if @response.documents.present? %>
-      <div class="sidebar-col">
-       <%= render 'facets' %>
-      </div>
-    <% end %>
+    <div class="collection-search-form">
+        <h2 class="search-title">
+          Search within the <%= collection.title %>
+        </h2>
+        <%= form_tag "", method: :get do |f| %>
+         <div class="input-group">
+            <%= search_field_tag :q, '', class: "q form-control",
+                id: "collectionQ",
+                autocomplete: "off",
+                placeholder: t("collection.search_form.search_field.placeholder"),
+                :"aria-label" => t('collection.search_form.search_field.label')
+            %>
+            <label class="sr-only" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
+            <div class="input-group-append">
+              <button type="submit" class="btn btn-emphasis" title="Search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+                <%= t('blacklight.search.form.submit') %>
+              </button>
+            </div>
+          </div>
+          <%= hidden_field_tag :sort, params[:sort], id: 'collection_sort' %>
+        <% end %>
+    </div>
+  </div>
+<% end %>
+<%= render 'catalog/constraints' %>
+<div class="row">
+  <% if @response.documents.present? %>
+    <div class="sidebar-col">
+      <%= render 'facets' %>
+    </div>
     <div class="content-col">
       <%# per-page and sort controls, from Blacklight partial %>
       <%= render 'search_header' %>
       <%= render "document_list", documents: @response.documents %>
       <%= render 'catalog/results_pagination' %>
     </div>
-  </div>
-
-
-
-
-
-  </div>
-
+  <% else %>
+    <div class="ml-3">
+      <%= render 'catalog/zero_results' %>
+    </div>
+  <% end %>
 </div>

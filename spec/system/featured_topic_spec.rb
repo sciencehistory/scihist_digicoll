@@ -49,11 +49,15 @@ describe "Featured Topic show page", type: :system, js: false, solr:true, indexa
 
   it "searches, and keeps total count accurate" do
     visit featured_topic_path(:instruments_and_innovation.to_s.dasherize, q: "artillery")
-
     expect(page).to have_text("1 entry found")
-
     expect(page).to have_content("artillery")
     expect(page).not_to have_content("lithographs")
+  end
+
+  it "shows customized no-results content" do
+    visit featured_topic_path(:instruments_and_innovation.to_s.dasherize, q: "abc123")
+    expect(page).to have_content("Sorry, we couldn't find any records for your search.")
+    expect(page).to have_content("Ever Bumped by Dead Weight?")
   end
 
   it "can be set to an arbitrary URL by setting the path variable" do
