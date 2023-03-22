@@ -48,6 +48,15 @@ describe "Collection show page", solr: true, indexable_callbacks: true do
         expect(page).to have_selector(:link_or_button, "Subject")
       end
     end
+
+    describe "no results" do
+      let(:collection) { create(:collection, department: CollectionShowController::ORAL_HISTORY_DEPARTMENT_VALUE) }
+      it "displays correct no-results content", js: true, solr: true, indexable_callbacks: true do      
+        visit collection_path(collection, q: 'abc123')
+        expect(page).to have_content("Sorry, we couldn't find any records for your search.")
+        expect(page).to have_content("Ever Bumped by Dead Weight?")
+      end
+    end
   end
 
   describe "generic oral history collection" do
