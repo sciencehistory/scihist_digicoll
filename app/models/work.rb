@@ -84,6 +84,18 @@ class Work < Kithe::Work
   attr_json :file_creator, :string
   attr_json :admin_note, :text, array: true, default: -> { [] }
 
+
+  HOCR_REQUESTED_OPTIONS = %w{yes no inherit}.freeze
+  attr_json :hocr_requested, :string, default: "no"
+  validates :hocr_requested, inclusion: { in: HOCR_REQUESTED_OPTIONS, allow_blank: false }
+
+
+  # Super inefficient right now - way more calls to the db than we need.
+  # We will want to rewrite.
+  def assets_needing_hocr
+    all_descendent_members.select { |m| m.asset? && m.perform_hocr? }
+  end
+
   # filter out empty strings, makes our forms easier, with the way checkbox
   # groups include hidden field with empty string. Kithe repeatable
   # input normally handles this for us, but we're not using one for this one.

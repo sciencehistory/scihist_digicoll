@@ -67,6 +67,11 @@ class Asset < Kithe::Asset
   # OCR data in hOCR format, for the image asset
   attr_json :hocr, :text
 
+  HOCR_REQUESTED_OPTIONS = %w{yes no inherit}.freeze
+  attr_json :hocr_requested, :string, default: "inherit"
+  validates :hocr_requested, inclusion: { in: HOCR_REQUESTED_OPTIONS, allow_blank: false }
+
+
 
   validates :derivative_storage_type, inclusion: { in: ["public", "restricted"] }
 
@@ -282,6 +287,17 @@ class Asset < Kithe::Asset
     if derivative_storage_type_previously_changed? && file_derivatives.present?
       EnsureCorrectDerivativesStorageJob.perform_later(self)
     end
+  end
+
+  # Walks up the ancestor tree while 'inherit' is specified, until
+  # a definite yes or no is encountered.
+  # If we don't find a definite yes or no, don't do HOCR.
+  def perform_hocr?
+    model = self
+    while model.hocr_requested == 'inherit'
+      return false unless (model = model.parent)
+    end
+    model.hocr_requested == 'yes'
   end
 
   def log_destroyed
