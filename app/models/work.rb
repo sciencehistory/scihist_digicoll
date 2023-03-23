@@ -84,6 +84,11 @@ class Work < Kithe::Work
   attr_json :file_creator, :string
   attr_json :admin_note, :text, array: true, default: -> { [] }
 
+
+  OCR_REQUESTED_OPTIONS = %w{yes no}.freeze
+  attr_json :ocr_requested, :string, default: "no"
+  validates :ocr_requested, inclusion: { in: OCR_REQUESTED_OPTIONS, allow_blank: false }
+
   # filter out empty strings, makes our forms easier, with the way checkbox
   # groups include hidden field with empty string. Kithe repeatable
   # input normally handles this for us, but we're not using one for this one.
