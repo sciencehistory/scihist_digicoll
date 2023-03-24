@@ -81,11 +81,10 @@
   <div class="nav nav-tabs" id="nav-tab" role="tablist">
     <a class="nav-item nav-link active" id="nav-metadata-tab" data-toggle="tab" href="#nav-metadata" role="tab" aria-controls="nav-home" aria-selected="true">Metadata</a>
     <a class="nav-item nav-link" id="nav-members-tab" data-toggle="tab" href="#nav-members" role="tab" aria-controls="nav-profile" aria-selected="false">Members</a>
-
+    <a class="nav-item nav-link" id="nav-ocr-tab" data-toggle="tab" href="#nav-ocr" role="tab" aria-controls="nav-profile" aria-selected="false">OCR</a>
     <% if @work.is_oral_history? %>
       <a class="nav-item nav-link" id="nav-oral-histories-tab" data-toggle="tab" href="#nav-oral-histories" role="tab" aria-controls="nav-profile" aria-selected="false">Oral History</a>
     <% end %>
-
   </div>
 </nav>
 
@@ -133,6 +132,10 @@
     <p><%= @work.members.count  %> members</p>
 
     <%= render "member_list_table", work: @work %>
+  </div>
+
+  <div class="tab-pane" id="nav-ocr" role="tabpanel" aria-labelledby="nav-ocr-tab">
+    <%= render "ocr", work: @work %>
   </div>
 
   <% if @work.is_oral_history? %>

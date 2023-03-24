@@ -1,0 +1,52 @@
+<div class="m-5">
+    <% if @work.ocr_requested %>
+      OCR has been requested for all assets below.
+    <% else %>
+      OCR has not been requested.
+    <% end %>
+</div>
+
+<table class="table admin-list member-list">
+  <thead>
+    <tr>
+      <th class="thumbnail">Thumbnail</th>
+      <th class="type">Type</th>
+      <th class="id">Has OCR?</th>
+      <th class="title">Title</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% work.members.order(:position).includes(:leaf_representative).each do |member| %>
+      <tr>
+        <td>
+          <% if member.leaf_representative_id %>
+            <%= link_to member do %>
+              <%= thumb_image_tag(member.leaf_representative, size: :mini, image_missing_text: true) %>
+            <% end %>
+          <% end %>
+          <% if work.representative_id == member.id %>
+            <br><span class="text-info">representative</span>
+          <% end %>
+        </td>
+        <td>
+          <%= member.class.name %>
+        </td>
+        <td>
+          <% if member.asset? %>
+            <%=member.hocr.present? ? 'Yes' : 'No'%>
+          <% end %>
+          <% if member.work? %>n/a<% end %>
+        </td>
+        <td>
+          <%= link_to member.title, [:admin, member] %>
+          <% if member.role.present? %>
+            <span class="badge badge-info"><%= member.role.humanize.downcase %></span>
+          <% end %>
+        </td>
+
+
+      </tr>
+    <% end %>
+  </tbody>
+</table>
