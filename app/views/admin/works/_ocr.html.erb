@@ -1,11 +1,20 @@
-<div class="m-5">
-    <% if @work.ocr_requested %>
-      OCR has been requested for all assets below.
-    <% else %>
-      OCR has not been requested.
-    <% end %>
+<h3>Summary</h3>
+<div class="m-3">
+  <% if @work.ocr_requested %>
+    OCR has been requested for this work.
+  <% else %>
+    OCR has not been requested.
+  <% end %>
+</div>  
+<div class="m-3">
+  Currently,
+  <%= @work.members.count {|m| m.hocr.present?} %>
+  out of 
+  <%= @work.members.count %> assets (ignoring any child works)
+  have OCR associated with them.
 </div>
 
+<h3>OCR table</h3>
 <table class="table admin-list member-list">
   <thead>
     <tr>
@@ -41,7 +50,9 @@
         <td>
           <% if member.asset? %>
             <% if member.hocr.present?%>
-              <%= member.hocr.html_safe %>
+              <span class="admin-ocr-display">
+                <%= member.hocr.html_safe %>
+              </span>
             <% else %>
               <code>No OCR for this asset.</code>
             <% end %>
