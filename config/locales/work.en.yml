@@ -95,6 +95,5 @@ en:
         contained_by: >
           The sub-Collection within the Digital Collections Application to which the digital work belongs. Select the named collection that the work is part of, if applicable. If a desired entry is not available, contact the Digital Collections Librarian. Required if applicable.
         ocr_requested: >
-          Choose "yes" if you'd like OCR to be generated for this work.
-
+          We add and remove OCR on a nightly basis. Check this box if you'd like OCR to be created for this work next time the job runs. Likewise, uncheck the box if you want to remove existing OCR.
 

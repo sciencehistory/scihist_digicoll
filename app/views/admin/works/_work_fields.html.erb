@@ -119,8 +119,8 @@
 
     <%= f.association :contained_by, collection: Collection.all.to_a.sort_by { |c| c.title.downcase }, input_html: { "data-tom-select": "true "} %>
 
-    <%= f.input :ocr_requested,
+    <%= f.input :ocr_requested, label: "Check to request OCR" %>
+    <%#= f.input :ocr_requested,
       collection: Work::OCR_REQUESTED_OPTIONS,
-      label: "Do we want OCR for this work?",
       include_blank: false,
       selected: @work.parent.nil? ? 'no' : 'inherit' %>
