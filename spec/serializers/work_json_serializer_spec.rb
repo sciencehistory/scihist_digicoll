@@ -54,7 +54,7 @@ describe WorkJsonSerializer, type: :model, queue_adapter: :inline do
 
   it "includes all attr_json unless specifically excluded" do
     # all attr_json except ones we've deny-listed as not wanting to serialize at present.
-    expected_attributes = Work.attr_json_registry.attribute_names.excluding(:external_id, :admin_note)
+    expected_attributes = Work.attr_json_registry.attribute_names.excluding(:external_id, :admin_note, :ocr_requested)
 
     expected_attributes.each do |attr_name|
       if work.send(attr_name).present?
