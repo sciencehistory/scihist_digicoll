@@ -11,8 +11,8 @@
     <tr>
       <th class="thumbnail">Thumbnail</th>
       <th class="type">Type</th>
-      <th class="id">Has OCR?</th>
-      <th class="title">Title</th>
+      <th class="id">Title</th>
+      <th class="title">OCR</th>
     </tr>
   </thead>
 
@@ -33,19 +33,21 @@
           <%= member.class.name %>
         </td>
         <td>
-          <% if member.asset? %>
-            <%=member.hocr.present? ? 'Yes' : 'No'%>
-          <% end %>
-          <% if member.work? %>n/a<% end %>
-        </td>
-        <td>
           <%= link_to member.title, [:admin, member] %>
           <% if member.role.present? %>
             <span class="badge badge-info"><%= member.role.humanize.downcase %></span>
           <% end %>
         </td>
-
-
+        <td>
+          <% if member.asset? %>
+            <% if member.hocr.present?%>
+              <%= member.hocr.html_safe %>
+            <% else %>
+              <code>No OCR for this asset.</code>
+            <% end %>
+          <% end %>
+          <% if member.work? %>n/a<% end %>
+        </td>
       </tr>
     <% end %>
   </tbody>
