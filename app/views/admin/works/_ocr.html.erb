@@ -51,7 +51,7 @@
           <% if member.asset? %>
             <% if member.hocr.present?%>
               <span class="admin-ocr-display">
-                <%= member.hocr.html_safe %>
+                <%= HocrHelper.html_body_without_ids(member.hocr)%>
               </span>
             <% else %>
               <code>No OCR for this asset.</code>
