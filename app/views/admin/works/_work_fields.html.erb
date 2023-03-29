@@ -10,6 +10,9 @@
       <%= category_and_value(sub_form, category_list: Work::ExternalId::CATEGORY_VALUES) %>
     <% end %>
 
+    <%# ocr_requested does need to be in this form, so that we can include it in batch edits. %>
+    <%= f.input :ocr_requested, label: "Check to request OCR" %>
+
     <%= f.repeatable_attr_input(:creator, build: :at_least_one) do |sub_form| %>
       <%= category_and_value(sub_form, category_list: Work::Creator::CATEGORY_VALUES,
             input_data_attributes: { "scihist-qa-autocomplete" => qa_search_vocab_path("assign_fast", "all")}) %>
