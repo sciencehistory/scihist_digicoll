@@ -1,17 +1,12 @@
 <h3>Summary</h3>
 <div class="m-3">
-  <% if @work.ocr_requested %>
-    OCR has been requested for this work.
-  <% else %>
-    OCR has not been requested.
-  <% end %>
+    OCR has <% unless @work.ocr_requested %> not <%end%> been requested for this work.
 </div>  
 <div class="m-3">
-  Currently,
-  <%= @work.members.count {|m| m.hocr.present?} %>
+  <%= @work.members.count {|m| m.asset? && m.hocr.present?} %>
   out of 
-  <%= @work.members.count %> assets (ignoring any child works)
-  have OCR associated with them.
+  <%= @work.members.count  {|m| m.asset? } %> assets
+  currently have OCR.
 </div>
 
 <h3>OCR table</h3>
@@ -50,16 +45,29 @@
         <td>
           <% if member.asset? %>
             <% if member.hocr.present?%>
-              <span class="admin-ocr-display">
-                <%= HocrHelper.html_body_without_ids(member.hocr)%>
-              </span>
+              <a class="btn btn-primary" data-toggle="collapse" href="#ocrCollapse<%= member.id %>" role="button" aria-expanded="false" aria-controls="ocrCollapse<%= member.id %>">
+                OCR
+              </a>
             <% else %>
               <code>No OCR for this asset.</code>
             <% end %>
           <% end %>
-          <% if member.work? %>n/a<% end %>
+          <% if member.work? %><code>Child work.</code><% end %>
         </td>
       </tr>
+
+      <% if member.asset? && member.hocr.present?%>
+        <tr class="collapse" id="ocrCollapse<%= member.id %>">
+          <td colspan="4" style="border-top: none;">
+            <small>
+              <span class="text-monospace text-muted admin-ocr-display">
+                <%= HocrHelper.html_body_without_ids(member.hocr)%>
+              </span>
+            </small>
+          </td>
+        </tr>
+      <% end %>
+
     <% end %>
   </tbody>
 </table>
