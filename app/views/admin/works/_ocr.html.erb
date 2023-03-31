@@ -61,7 +61,7 @@
           <td colspan="4" style="border-top: none;">
             <small>
               <span class="text-monospace text-muted admin-ocr-display">
-                <%= HocrHelper.html_body_without_ids(member.hocr)%>
+                <%= HocrComponent.new(member.hocr).html_body_without_ids %>
               </span>
             </small>
           </td>
