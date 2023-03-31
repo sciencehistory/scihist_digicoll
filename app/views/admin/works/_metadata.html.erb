@@ -50,17 +50,6 @@
       <% end %>
     </dd>
 
-    <dt>OCR</dt>
-    <dd>
-      <%= form_tag set_ocr_requested_admin_work_path(@work), method: :put do %>
-        <div class="custom-control custom-switch">
-          <%= check_box_tag "ocr_requested", 1, @work.ocr_requested, class: "custom-control-input", onchange: "this.form.submit()" %>
-          <label class="custom-control-label" for="ocr_requested">OCR requested</label>
-        </div>
-      <% end %>
-    </dd>
-
-
     <dt>Created</dt>
     <dd><%= l @work.created_at, format: :admin %></dd>
 

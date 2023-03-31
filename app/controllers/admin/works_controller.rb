@@ -7,7 +7,7 @@ class Admin::WorksController < AdminController
   before_action :set_work,
     only: [:show, :edit, :update, :destroy, :reorder_members,
            :reorder_members_form, :demote_to_asset, :publish, :unpublish,
-           :submit_ohms_xml, :download_ohms_xml, :set_review_requested, :set_ocr_requested,
+           :submit_ohms_xml, :download_ohms_xml, :set_review_requested,
            :remove_ohms_xml, :submit_searchable_transcript_source, :download_searchable_transcript_source,
            :remove_searchable_transcript_source, :create_combined_audio_derivatives, :update_oh_available_by_request,
            :update_oral_history_content]
@@ -98,14 +98,6 @@ class Admin::WorksController < AdminController
       @work.review_requested_at = nil
     end
 
-    @work.save!
-    redirect_to admin_work_path(@work)
-  end
-
-  # PATCH/PUT /admin/works/ab2323ac/set_ocr_requested
-  def set_ocr_requested
-    ocr_requested = (params[:ocr_requested] == "1")
-    @work.ocr_requested = ocr_requested
     @work.save!
     redirect_to admin_work_path(@work)
   end
