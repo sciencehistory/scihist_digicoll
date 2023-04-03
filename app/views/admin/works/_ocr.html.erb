@@ -45,14 +45,14 @@
         <td>
           <% if member.asset? %>
             <% if member.hocr.present?%>
-              <a class="btn btn-primary" data-toggle="collapse" href="#ocrCollapse<%= member.id %>" role="button" aria-expanded="false" aria-controls="ocrCollapse<%= member.id %>">
+              <a class="btn btn-primary show-ocr-for-asset" data-toggle="collapse" href="#ocrCollapse<%= member.id %>" role="button" aria-expanded="false" aria-controls="ocrCollapse<%= member.id %>">
                 OCR
               </a>
             <% else %>
-              <p>No OCR for this asset.</p>
+              <p>No OCR for this asset</p>
             <% end %>
           <% end %>
-          <% if member.work? %><p>Child work.</p><% end %>
+          <% if member.work? %><p>Child work</p><% end %>
         </td>
       </tr>
 
