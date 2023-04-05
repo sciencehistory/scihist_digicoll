@@ -1,5 +1,4 @@
-# Display the provenance of a work on the front end:
-# WorkProvenanceComponent.new(work.provenance).display
+# Display stats about work's OCR members.
 class WorkShowOcrComponent < ApplicationComponent
   attr_reader :work
 
