@@ -128,6 +128,7 @@
         <%= link_to "Manual", reorder_members_admin_work_path(@work), class: "btn btn-primary #{'disabled' unless can?(:update, @work)}" %>
         <%= link_to "Alphabetical", reorder_members_admin_work_path(@work), method: "put", class: "btn btn-primary #{'disabled' unless can?(:update, @work)}", data: { confirm: "Re-ordering members alphabetically by title can't be undone" } %>
       </div>
+      <%= render WorkShowOcrComponent.new(@work)%>
     </div>
 
     <p><%= @work.members.count  %> members</p>
