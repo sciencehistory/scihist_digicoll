@@ -25,7 +25,7 @@ describe WorkZipCreator do
     pdf_file = WorkPdfCreator.new(work).create
 
     expect(pdf_file).to be_kind_of(Tempfile)
-    expect(File.exists?(pdf_file.path)).to be(true)
+    expect(File.exist?(pdf_file.path)).to be(true)
 
     reader = PDF::Reader.new(pdf_file.path)
     expect(reader.pages.count).to eq 3
