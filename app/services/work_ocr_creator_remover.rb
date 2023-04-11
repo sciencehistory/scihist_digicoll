@@ -9,35 +9,27 @@ class WorkOcrCreatorRemover
 
   # @param work [Work] Work to look at
   # can be used to update a progress UI.
-  def initialize(work, callback: nil, overwrite_existing_ocr: false, do_now: false)
+  def initialize(work, ignore_missing_files=false)
+    @ignore_missing_files = ignore_missing_files
     @work = work
-    @overwrite_existing_ocr = overwrite_existing_ocr
-    @do_now = do_now
-    @this_is_dev = (ScihistDigicoll::Env.lookup(:service_level)  == 'development')
   end
 
   def process
     if @work.ocr_requested
-      image_assets_we_can_download.each { |a| maybe_add(a) }
+      image_assets.each { |a| maybe_add(a) }
     else
-      image_assets_we_can_download.each { |a| a.update!(hocr: nil) }
+      image_assets.each { |a| a.update!(hocr: nil) }
     end
   end
 
   private
 
   def maybe_add(asset)
-    # tolerate missing files in dev; fail immediately otherwise.
-    return if @this_is_dev && !asset.file.exist?
-    add_ocr(asset) if @overwrite_existing_ocr || asset.hocr.blank?
+    return if @ignore_missing_files && !asset.file.exists?
+    CreateAssetHocrJob.perform_later(asset) if asset.hocr.blank?
   end
 
-
-  def add_ocr(asset)
-    @do_now ? AssetHocrCreator.new(asset).call : CreateAssetHocrJob.perform_later(asset) 
-  end
-
-  def image_assets_we_can_download
+  def image_assets
     @work.
       members.
       where(type: 'Asset').
