@@ -19,4 +19,10 @@
     </div>
   </div>
 
+
+<%# temporary unstyled dig collec tion search, to try to keep tests passing %>
+<% unless content_for(:suppress_masthead_search) %>
+    <%= render partial: 'application/search_form' %>
+<% end %>
+
 </header>
