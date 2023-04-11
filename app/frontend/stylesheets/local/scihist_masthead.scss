@@ -1,125 +1,159 @@
-// Our branded logo'd large navbar/masthead
-//
-// We use lots of flexbox, a flexbox inside a flexbox. Tested in FF, Chrome, Safari,
-// IE 11, and Edge. Likely doens't work in IE < 11 (IE10 is EOL).
-.masthead {
-  .large-masthead-only {
-    display: none;
-  }
-  @include media-breakpoint-up('md') {
-    .large-masthead-only {
-      display: block;
+
+
+#shi-masthead-from-main-website {
+    font: normal 400 1em/1.2 "SofiaPro","sans-serif";
+    // reset to 20px/1.25 rem for consistency with main site where we copied
+    // styles.
+    font-size: 1.25rem;
+    line-height: 1.2;
+
+
+    @media print {
+        .noprint {
+            display: none
+        }
     }
-    .small-masthead-only {
-      display: none;
+
+    @media (hover: hover) {
+        .shi-hover {
+            transition: opacity .3s;
+        }
+
+        .shi-hover:hover {
+            opacity: .7
+        }
     }
-  }
 
-  padding: 16px 47px 0 32px;
-  margin-bottom: $navbar-margin-bottom;
+    .shi-top-bar {
+        width: 100%;
+        padding: 0 4em;
+        background-color: #000;
+        color: #fff;
+        overflow: hidden
+    }
 
-  background-image: url('@/images/scihist_top_nav_sym.png');
-  background-repeat: no-repeat;
-  background-position: right top;
+    // We need to specifically override for dig col, since our base styles otherwise are here.
+    .shi-top-bar a {
+        color: inherit;
+    }
 
-  display: flex;
-  justify-content: space-between;
-  align-items: stretch;
+    .shi-top-bar__container {
+        width: 100%;
+        height: 100%;
+        max-width: 1280px;
+        margin: 0 auto;
+        position: relative;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        text-transform: uppercase
+    }
 
-  border-bottom: $dark 1px; // match chf_sufia, had an invisible border
+    .shi-top-bar-nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        align-items: center;
+        margin-right: 1.15em;
+        min-height: 2.15em;
+        padding: .3em 0
+    }
 
-  .navbar-collapse {
-    max-width: 55%;
-    flex-basis: 100%; // seems screwy, but makes IE 11 happy whem combined with max-width:55% doesn't seem to disturb anyone else
-  }
-
-  .masthead-title {
-    font-family: $brand-serif;
-    font-size: 30px;
-    margin: 0;
-    padding: 0;
-    line-height: normal;
-    &>a {
-      color: white;
-      &:hover, &:active, &:focus {
-        color: $brand-bright-green;
+    .shi-top-bar-nav__item {
         text-decoration: none;
-      }
+        font-size: .77em;
+        line-height: 136%;
+        padding: .3571428571em 1.6428571429em
     }
-    color: white;
-    &.small-masthead-only {
-      font-size: 18px;
-      //line-height: $small-logo-height + 8px + 8px;
-      text-align: center;
-    }
-  }
 
-  .masthead-right {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-end;
-  }
+    .shi-top-bar__hours {
+        flex: 0 0 auto;
+        font-size: .77em;
+        line-height: 136%;
+        padding: .3571428571em 0 .3571428571em 3.2142857143em;
+        position: relative;
+        max-width: 40%
+    }
 
-  .navbar-nav {
-    font-weight: 300;
-    .nav-link {
-      padding: 14px 15px;
+    .shi-top-bar__hours:before {
+        content: "";
+        background-color: #285f70;
+        position: absolute;
+        left: 0;
+        right: -9999px;
+        top: -300%;
+        bottom: -300%
     }
-    .navbar-item:last-child .nav-link {
-      padding-right: 0;
-    }
-  }
 
-  .navbar-toggler {
-    color: white;
-    margin-right: 15px;
-    border-color: #333;
-  }
+    .shi-top-bar__hours span {
+        position: relative
+    }
 
+    .shi-top-bar__hours span:first-child {
+        font-weight: 700;
+        margin-right: .5em
+    }
 
-  $small-logo-height: 40px;
-  .masthead-logo-small {
-    height: $small-logo-height;
-    margin: 0 0 8px 0; // logo is meant to butt against edge
-  }
+    @media screen and (max-width: 991px) {
+        .shi-top-bar:not(.shi-top-bar_mobile) {
+            padding-left: 15px;
+            padding-right: 15px
+        }
 
-  // small navbar
-  @include media-breakpoint-down('sm') {
-    background-image: none;
-    padding: 0;
-    .navbar-collapse {
-      max-width: none;
-    }
-    .navbar-header {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .masthead-right {
-      border-top: white 1px solid;
-    }
-    .masthead-right {
-      display: block;
-    }
-    .navbar-nav .nav-link {
-      padding: 10px 15px;
-    }
-  }
-}
+        .shi-top-bar:not(.shi-top-bar_mobile) .shi-top-bar-nav {
+            overflow-x: auto;
+            width: auto;
+            padding: 0;
+            justify-content: flex-start;
+            flex-wrap: nowrap;
+            margin-left: -15px;
+            margin-right: -15px;
+            scroll-behavior: smooth;
+            scrollbar-color: #fff rgba(0,0,0,0);
+            scrollbar-width: thin
+        }
 
-// management-only top bar
-.navbar.topbar {
-  background-color: $gray-200;
-  padding-top: 0;
-  padding-bottom: 0;
-  .nav-item:not(:last-child) {
-    margin-right: $spacer;
-  }
-  &.staging {
-    background-color: $warning;
-  }
+        .shi-top-bar:not(.shi-top-bar_mobile) .shi-top-bar-nav::-webkit-scrollbar {
+            height: 2px
+        }
+
+        .shi-top-bar:not(.shi-top-bar_mobile) .shi-top-bar-nav::-webkit-scrollbar-track {
+            background-color: rgba(0,0,0,0)
+        }
+
+        .shi-top-bar:not(.shi-top-bar_mobile) .shi-top-bar-nav::-webkit-scrollbar-thumb {
+            background-color: #fff
+        }
+
+        .shi-top-bar:not(.shi-top-bar_mobile) .shi-top-bar-nav::-webkit-scrollbar:vertical {
+            display: none
+        }
+
+        .shi-top-bar:not(.shi-top-bar_mobile) .shi-top-bar-nav__item {
+            flex: 0 0 auto;
+            //font-size: .89375em;
+            //line-height: 146%;
+            padding-top: .7692307692em;
+            padding-bottom: .7692307692em
+        }
+
+        .shi-top-bar:not(.shi-top-bar_mobile) .shi-top-bar__container {
+            flex-direction: column-reverse
+        }
+
+        .shi-top-bar:not(.shi-top-bar_mobile) .shi-top-bar__hours {
+            width: 100%;
+            //font-size: .89375em;
+            padding: .7692307692em 0;
+            //line-height: 146%;
+            text-align: center;
+            max-width: none
+        }
+
+        .shi-top-bar:not(.shi-top-bar_mobile) .shi-top-bar__hours::before {
+            top: 0;
+            bottom: 0;
+            left: -9999px
+        }
+    }
 }

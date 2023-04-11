@@ -1,0 +1,3 @@
+class ScihistMasthead < ApplicationComponent
+
+end
