@@ -9,7 +9,7 @@ class WorkOcrCreatorRemover
 
   # @param work [Work] Work to look at
   # can be used to update a progress UI.
-  def initialize(work, ignore_missing_files=false)
+  def initialize(work, ignore_missing_files:false)
     @ignore_missing_files = ignore_missing_files
     @work = work
   end
