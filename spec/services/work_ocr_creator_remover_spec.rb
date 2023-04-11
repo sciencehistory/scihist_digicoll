@@ -24,7 +24,7 @@ describe WorkOcrCreatorRemover, queue_adapter: :test do
   context "work needs OCR soon (the rake task calls this.)" do
     let(:ocr_requested) { true }
     it "enqueues an ocr creation job for assets that need it" do
-      WorkOcrCreator.new(work).process
+      WorkOcrCreatorRemover.new(work).process
       expect(CreateAssetHocrJob).to have_been_enqueued.with(image_asset_without_hocr)
       expect(CreateAssetHocrJob).not_to have_been_enqueued.with(image_asset_with_hocr)
       expect(CreateAssetHocrJob).not_to have_been_enqueued.with(sound_asset)
@@ -35,7 +35,7 @@ describe WorkOcrCreatorRemover, queue_adapter: :test do
   context "work needs all OCR recreated soon" do
     let(:ocr_requested) { true }
     it "enqueues an ocr creation job for all image assets" do
-      WorkOcrCreator.new(work, overwrite_existing_ocr: true).process
+      WorkOcrCreatorRemover.new(work, overwrite_existing_ocr: true).process
       expect(CreateAssetHocrJob).to have_been_enqueued.with(image_asset_without_hocr)
       expect(CreateAssetHocrJob).to have_been_enqueued.with(image_asset_with_hocr)
       expect(CreateAssetHocrJob).not_to have_been_enqueued.with(sound_asset)
@@ -47,7 +47,7 @@ describe WorkOcrCreatorRemover, queue_adapter: :test do
     let(:ocr_requested) { true }
     it "calls AssetHocrCreator immediately, inline." do
       allow(AssetHocrCreator).to receive(:new).and_return(asset_hocr_creator_mock)
-      WorkOcrCreator.new(work, do_now: true).process
+      WorkOcrCreatorRemover.new(work, do_now: true).process
       expect(asset_hocr_creator_mock).to have_received(:call)
       work.members.each do |m|
         expect(CreateAssetHocrJob).not_to have_been_enqueued.with(m)
@@ -58,7 +58,7 @@ describe WorkOcrCreatorRemover, queue_adapter: :test do
   context "work does not need OCR" do
     let(:ocr_requested) { false }
     it "removes OCR" do
-      WorkOcrCreator.new(work).process
+      WorkOcrCreatorRemover.new(work).process
       work.reload
       work.members.each do |m|
         expect(CreateAssetHocrJob).not_to have_been_enqueued.with(m)
