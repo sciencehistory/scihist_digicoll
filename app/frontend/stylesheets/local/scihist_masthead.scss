@@ -1,4 +1,11 @@
+/* We copy the masthead navbar from the main website at sciencehistory.org, and try to make it look the same...
+   which involves copying some styles too... it's tricky to figure out which styles need to be copied from the
+   large stylesheet(s) from main website; and tricky to make them apply right while interacting with our
+   different overall styles.
 
+   One thing we do is try to restrict all these copied styles to being within this #shi-masthead-from-main-website
+   block.
+*/
 
 #shi-masthead-from-main-website {
     font: normal 400 1em/1.2 "SofiaPro","sans-serif";
