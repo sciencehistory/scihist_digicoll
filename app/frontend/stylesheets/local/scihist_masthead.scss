@@ -342,7 +342,31 @@
 
     .header__nav>ul>li>a {
         text-transform: uppercase;
-        font-weight: 900
+        font-weight: 900;
+
+        color: inherit;
+    }
+
+    // Hover bottom red border -- this is NOT how the original site handles it,
+    // but is CSS that makes it look pretty close, and which we could figure out.
+    .header__nav>ul>li:not(.shi-item-bordered)>a {
+        &::after {
+            content: "";
+            display: block;
+            border-bottom: 2px solid transparent;
+        }
+        &:hover::after {
+            content: "";
+            display: block;
+            border-bottom: 2px solid #D7272E;
+        }
+    }
+    // And on the bordered 'support' button
+    @media (hover: hover) {
+       .header__nav>ul>li.shi-item-bordered:hover>a {
+            background: #d7272e;
+            color: #fff
+        }
     }
 
 }
