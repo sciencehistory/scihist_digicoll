@@ -28,7 +28,18 @@
         <div class="header__inner">
           <div class="header__logo">
                 <a class="custom-logo-link img-middle shi-hover" href="https://dev-sciencehistorywp.pantheonsite.io/" rel="home">
-      <img width="575" height="122" src="https://dev-sciencehistorywp.pantheonsite.io/wp-content/uploads/2023/04/shi-logo.png" class="img-autosize custom-logo" alt="" decoding="async" loading="lazy" srcset="https://dev-sciencehistorywp.pantheonsite.io/wp-content/uploads/2023/04/shi-logo.png 575w, https://dev-sciencehistorywp.pantheonsite.io/wp-content/uploads/2023/04/shi-logo-300x64.png 300w" sizes="(max-width: 575px) 100vw, 575px">
+                    <%= image_tag "from_main_website/shi-logo.png",
+                          width: 575, height: 122,
+                          class: "img-autosize custom-logo",
+                          alt: "Science History Institute: Museum & Library",
+                          decoding: "async",
+                          loading: "lazy",
+                          srcset: {
+                            "from_main_website/shi-logo.png" => "575w",
+                            "from_main_website/shi-logo-300x64.png" => "300w"
+                          },
+                          sizes: "(max-width: 575px) 100vw, 575px"
+                    %>
                 </a>
           </div>
 
