@@ -1,82 +1,94 @@
 <header id="shi-masthead-from-main-website">
 
-  <div class="shi-top-bar noprint">
-    <div class="shi-top-bar__container">
+    <div class="shi-top-bar noprint">
+        <div class="shi-top-bar__container">
 
-      <div class="shi-top-bar-nav">
-        <a class="shi-top-bar-nav__item shi-hover" href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), "/about") %>" target="_self">
-        About   </a>
-        <a class="shi-top-bar-nav__item shi-hover" href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), "/stories/magazine") %>"  target="_self">
-        Magazine    </a>
-        <a class="shi-top-bar-nav__item shi-hover" href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), "/stories/distillations-pod") %>" target="_self">
-        Podcasts    </a>
-        <a class="shi-top-bar-nav__item shi-hover" href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), "/visit/events") %>" target="_self">
-        Events    </a>
-    </div>
+            <div class="shi-top-bar-nav">
+                <a class="shi-top-bar-nav__item shi-hover" href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), "/about") %>" target="_self">
+                    About
+                </a>
+                <a class="shi-top-bar-nav__item shi-hover" href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), "/stories/magazine") %>"  target="_self">
+                    Magazine
+                </a>
+                <a class="shi-top-bar-nav__item shi-hover" href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), "/stories/distillations-pod") %>" target="_self">
+                    Podcasts
+                </a>
+                <a class="shi-top-bar-nav__item shi-hover" href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), "/visit/events") %>" target="_self">
+                    Events
+                </a>
+            </div>
 
-    <div class="shi-top-bar__hours">
-      <span class="shi-top-bar__bold"><a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), "/visit") %>" style="text-decoration: none">Museum Hours</a>:</span><span class="shi-top-bar__regular">Wednesday–Saturday, 10AM–5PM</span>     </div>
-    </div>
+            <div class="shi-top-bar__hours">
+                  <span class="shi-top-bar__bold"><a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), "/visit") %>" style="text-decoration: none">Museum Hours</a>:</span><span class="shi-top-bar__regular">Wednesday–Saturday, 10AM–5PM</span>
+            </div>
+        </div>
   </div>
-
-
-
 
 
   <header class="header noprint js-header ">
       <div class="wrapper header__wrapper">
-        <div class="header__inner">
-          <div class="header__logo">
-                <a class="custom-logo-link img-middle shi-hover" href="https://dev-sciencehistorywp.pantheonsite.io/" rel="home">
-                    <%= image_tag "from_main_website/shi-logo.png",
-                          width: 575, height: 122,
-                          class: "img-autosize custom-logo",
-                          alt: "Science History Institute: Museum & Library",
-                          decoding: "async",
-                          loading: "lazy",
-                          srcset: {
-                            "from_main_website/shi-logo.png" => "575w",
-                            "from_main_website/shi-logo-300x64.png" => "300w"
-                          },
-                          sizes: "(max-width: 575px) 100vw, 575px"
-                    %>
-                </a>
-          </div>
+          <div class="header__inner">
+              <div class="header__logo">
+                  <a class="custom-logo-link img-middle shi-hover" href="https://dev-sciencehistorywp.pantheonsite.io/" rel="home">
+                      <%= image_tag "from_main_website/shi-logo.png",
+                            width: 575, height: 122,
+                            class: "img-autosize custom-logo",
+                            alt: "Science History Institute: Museum & Library",
+                            decoding: "async",
+                            loading: "lazy",
+                            srcset: {
+                              "from_main_website/shi-logo.png" => "575w",
+                              "from_main_website/shi-logo-300x64.png" => "300w"
+                            },
+                            sizes: "(max-width: 575px) 100vw, 575px"
+                      %>
+                  </a>
+              </div>
+
 
           <div class="header__right-side">
-            <div class="header__menu-container">
-              <button class="header__nav-sandwich js-header-sandwich-btn"><span>X</span></button>
-              <nav class="header__nav flex fwrap">
-                <ul id="menu-header" class="flex fwrap">
-                  <li id="menu-item-19029" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-19029">
-                    <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), "/visit") %>">Visit</a>
-                  </li>
+              <div class="header__menu-container">
+                  <button class="header__nav-sandwich js-header-sandwich-btn"><span>X</span></button>
+                  <nav class="header__nav flex fwrap">
+                      <ul id="menu-header" class="flex fwrap">
+                          <li id="menu-item-19029" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-19029">
+                              <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/visit') %>">Visit</a>
+                          </li>
 
-                  <li id="menu-item-19260" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-19260">
-                    <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), "/collections") %>">Collections</a>
-                  </li>
+                          <li id="menu-item-19260" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-19260">
+                              <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/collections') %>">Collections</a>
+                          </li>
 
-                  <li id="menu-item-19032" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-19032">
-                    <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), "/stories") %>">Stories</a>
-                  </li>
+                          <li id="menu-item-19032" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-19032">
+                              <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/stories') %>">Stories</a>
+                          </li>
 
-                  <li id="menu-item-19261" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-19261"><a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), "/research") %>">Research</a></li>
+                          <li id="menu-item-19261" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-19261">
+                              <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/research') %>">Research</a>
+                          </li>
 
-                  <li id="menu-item-19044" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-19044"><a href=<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), "/education") %>>Education</a></li>
+                          <li id="menu-item-19044" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-19044">
+                              <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/education') %>">Education</a>
+                          </li>
 
-                  <li id="menu-item-19061" class="menu-item menu-item-type-post_type menu-item-object-page shi-item-bordered menu-item-19061"><a href=<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), "/support") %>>Support</a></li>
+                          <li id="menu-item-19061" class="menu-item menu-item-type-post_type menu-item-object-page shi-item-bordered menu-item-19061">
+                              <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/support') %>">Support</a>
+                          </li>
+                      </ul>
+                  </nav>
+              </div>
 
-                </ul>
-            </nav>
+
+
+              <!-- <div class="shi-search-menu header__search-container js-shi-search-menu">
+               srch
+              </div> -->
           </div>
-
-          <!-- <div class="shi-search-menu header__search-container js-shi-search-menu">
-          srch
-          </div> -->
         </div>
-      </div>
     </div>
   </header>
+
+</header>
 
 
 
