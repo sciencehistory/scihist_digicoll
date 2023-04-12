@@ -25,7 +25,7 @@
   </div>
 
 
-  <div class="header noprint js-header ">
+  <div class="header noprint js-header">
       <div class="wrapper header__wrapper">
           <div class="header__inner">
               <div class="header__logo">
@@ -50,6 +50,12 @@
               <div class="header__menu-container">
                   <button class="header__nav-sandwich js-header-sandwich-btn"><span>X</span></button>
                   <nav class="header__nav flex fwrap">
+                    <button class="header__nav-close js-shi-nav-close">
+                        <svg width="19" height="18" viewBox="0 0 19 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 1L18.0022 17.1909M18.0022 1L1 17.1909" stroke="black" stroke-width="2"></path>
+                        </svg>
+                    </button>
+
                       <ul id="menu-header" class="flex fwrap">
                           <li id="menu-item-19029" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-19029">
                               <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/visit') %>">Visit</a>
