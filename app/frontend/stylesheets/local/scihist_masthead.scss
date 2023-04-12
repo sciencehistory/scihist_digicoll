@@ -7,13 +7,31 @@
    block.
 */
 
+// experiments in dynamic proportional fonts
+
+
+
+
+
+
 #shi-masthead-from-main-website {
     font: normal 400 1em/1.2 "SofiaPro","sans-serif";
-    // reset to 20px/1.25 rem for consistency with main site where we copied
-    // styles.
-    font-size: 1.25rem;
+    // reset to 20px/1.25 rem for kind-of consistency with main site where we copied
+    // styles. this isn't actually exactly how CSS on main site works...
+    //font-size: 1.25rem;
+
+    // This should be proportional at 1.389vw, but
+    // MIN 20px, which original did with a media query at min-width 1440px, but let's
+    // do with CSS max instead, seems to have full support
+    font-size: min(1.389vw, 20px);
+    @media screen and (max-width: 1199px) {
+        font-size:1.6vw
+    }
+
     line-height: 1.2;
 
+
+    // TOP BAR
 
     @media print {
         .noprint {
@@ -163,4 +181,168 @@
             left: -9999px
         }
     }
+
+    // MAIN NAVBAR
+
+    .header {
+        position: relative;
+        background: #fff;
+        padding: 1.05em 4em;
+
+        // fix to ~17px size. Original main site has dynamically scaling
+        // font size with window size, we just arne't set up for that.
+        // or... scale iwth it???
+        //font-size: 1.0625rem;
+    }
+
+    .header__wrapper {
+        max-width: 1280px;
+        margin: 0 auto;
+    }
+
+    .header__inner {
+        display: flex;
+        justify-content: space-between;
+
+        position: relative;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .header__logo {
+        flex: 0 0 auto;
+        max-width: 19.15em;
+        position: relative;
+    }
+
+    .img-middle {
+        display: flex;
+        align-items: center;
+        justify-content: center
+    }
+
+    .img-middle img, .img-middle svg {
+        display: block;
+        flex-shrink: 0;
+        width: auto;
+        height: auto;
+        max-height: 100%;
+        max-width: 100%;
+        margin: 0
+    }
+
+    .header__right-side {
+        padding: .75em 0;
+        display: flex;
+        align-items: center
+    }
+
+    .header__menu-container {
+        margin-right: 2.75em
+    }
+
+    .header__nav {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .header__nav-sandwich {
+        position: relative;
+        display: none;
+        border: none;
+        padding: 0;
+        font-size: 1em;
+        width: 1.0625em;
+        height: 1.0625em;
+        background-color: rgba(0,0,0,0);
+        background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTciIGhlaWdodD0iMTUiIHZpZXdCb3g9IjAgMCAxNyAxNSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjE3IiBoZWlnaHQ9IjIuMjE3MzkiIGZpbGw9ImJsYWNrIi8+CjxyZWN0IHk9IjUuOTEyOTYiIHdpZHRoPSIxNyIgaGVpZ2h0PSIyLjIxNzM5IiBmaWxsPSJibGFjayIvPgo8cmVjdCB5PSIxMS44MjYiIHdpZHRoPSIxNyIgaGVpZ2h0PSIyLjIxNzM5IiBmaWxsPSJibGFjayIvPgo8L3N2Zz4K);
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        transition: background-image .3s
+    }
+
+    .header__nav-sandwich span {
+        display: none
+    }
+
+    .header__nav>ul {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        list-style-type: none;
+
+        // added because original site had a reset with these on all ul
+        padding: 0;
+        margin: 0;
+    }
+
+    .header__nav ul li a {
+        display: block;
+        text-decoration: none;
+        font-size: .935em;
+        line-height: 2em
+    }
+
+    .header__nav>ul>li:not(.shi-item-bordered) {
+        position: relative;
+        margin-top: .4em;
+        background: #fff;
+        border: 2px solid rgba(0,0,0,0)
+    }
+
+    .header__nav>ul>li:not(.shi-item-bordered):nth-last-child(-n+3) ul.sub-menu {
+        left: auto;
+        right: -2px
+    }
+
+    .header__nav>ul>li:not(.shi-item-bordered).current-menu-item::after {
+        opacity: 1
+    }
+
+    .header__nav>ul>li:not(.shi-item-bordered)::after {
+        content: "";
+        position: absolute;
+        z-index: 3;
+        bottom: .4em;
+        left: calc(1.2941176471em - 2px);
+        right: calc(1.2941176471em - 4px);
+        height: 2px;
+        background: #d7272e;
+        opacity: 0;
+        transition: opacity .3s
+    }
+
+    .header__nav>ul>li:not(.shi-item-bordered)>a {
+        // original padding left was 1.1rem, but we have a different rem -- and ours
+        // is static while there's is dyanamic! This was painstakingly adjusted
+        // to come close to matching.
+        padding: 0 1.17648em .4em
+    }
+
+    .header__nav>ul>li.shi-item-bordered {
+        margin-left: .6em;
+        margin-right: .6em
+    }
+
+    .header__nav>ul>li.shi-item-bordered>a {
+        line-height: 1em;
+        padding: .5294117647em .5882352941em;
+        border: 1px solid #d7272e;
+        transition: color .3s,background .3s
+    }
+
+    .header__nav>ul>li.shi-item-bordered ul.sub-menu {
+        display: none !important
+    }
+
+    .header__nav>ul>li:last-child:not(.shi-item-bordered) {
+        margin-right: -0.6em
+    }
+
+    .header__nav>ul>li>a {
+        text-transform: uppercase;
+        font-weight: 900
+    }
+
 }
