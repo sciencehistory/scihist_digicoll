@@ -86,14 +86,18 @@
 
     .shi-top-bar-nav__item {
         text-decoration: none;
-        font-size: .77em;
+        // original site uses media queries to keep otherwise liquid proportional
+        // font from going below minimum size, we just use css min() for similar.
+        font-size: max(.77em, 14.3px);
         line-height: 136%;
         padding: .3571428571em 1.6428571429em
     }
 
     .shi-top-bar__hours {
         flex: 0 0 auto;
-        font-size: .77em;
+        // original site uses media queries to keep otherwise liquid proportional
+        // font from going below minimum size, we just use css min() for similar.
+        font-size: max(.77em, 14.3px);
         line-height: 136%;
         padding: .3571428571em 0 .3571428571em 3.2142857143em;
         position: relative;
