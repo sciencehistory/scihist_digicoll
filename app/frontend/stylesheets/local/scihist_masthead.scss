@@ -359,11 +359,13 @@
 
     // Hover bottom red border -- this is NOT how the original site handles it,
     // but is CSS that makes it look pretty close, and which we could figure out.
+    // Add a negative margin to try to keep it from shifting layout from original
     .header__nav>ul>li:not(.shi-item-bordered)>a {
         &::after {
             content: "";
             display: block;
             border-bottom: 2px solid transparent;
+            margin-bototm: -2px;
         }
         &:hover::after {
             content: "";
