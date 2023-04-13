@@ -33,8 +33,8 @@ RSpec.describe "Edit Collection form", logged_in_user: :editor, type: :system, q
 
     click_on "Update Collection"
 
-    # # Wait for action to complete, and return Collection list page
-    expect(page).to have_css("h1", text: "Collections")
+    # # Wait for action to complete, and we wind up on collection show page
+    expect(page).to have_css("h1", text: "Edited collection title")
 
     # check data
     collection.reload
