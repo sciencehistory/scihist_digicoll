@@ -162,8 +162,8 @@
 
         .shi-top-bar:not(.shi-top-bar_mobile) .shi-top-bar-nav__item {
             flex: 0 0 auto;
-            //font-size: .89375em;
-            //line-height: 146%;
+            font-size: .89375em;
+            line-height: 146%;
             padding-top: .7692307692em;
             padding-bottom: .7692307692em
         }
@@ -174,9 +174,9 @@
 
         .shi-top-bar:not(.shi-top-bar_mobile) .shi-top-bar__hours {
             width: 100%;
-            //font-size: .89375em;
+            font-size: .89375em;
             padding: .7692307692em 0;
-            //line-height: 146%;
+            line-height: 146%;
             text-align: center;
             max-width: none
         }
