@@ -1,18 +1,20 @@
 /* We copy the masthead navbar from the main website at sciencehistory.org, and try to make it look the same...
-   which involves copying some styles too... it's tricky to figure out which styles need to be copied from the
-   large stylesheet(s) from main website; and tricky to make them apply right while interacting with our
-   different overall styles.
 
-   One thing we do is try to restrict all these copied styles to being within this #shi-masthead-from-main-website
-   block.
+   This was tricky.
+
+   We had to figure out how to extract just what we need from their whole stylesheet,
+   AND apply it on top of our site with different base styles so it still works…
+
+   we wound up with a lot of lines of kind of opaque code with strange our-app hacks on top.
+
+   We are not using standard classes or inherited stles from the rest of OUR website,
+   this mostly stands alone as it's own separate implementation, with some duplication.
+
+   We do restrit these styles here to #shi-masthead-from-main-website to try to keep
+   them from interfering with the rest of OUR site.
+
+   This could be hard to maintain in the long-term, we will see. Best we could do!
 */
-
-// experiments in dynamic proportional fonts
-
-
-
-
-
 
 #shi-masthead-from-main-website {
     font: normal 400 1em/1.2 "SofiaPro","sans-serif";
