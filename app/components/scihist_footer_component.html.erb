@@ -3,7 +3,19 @@
         <div class="footer__inner footer__inner_top flex fwrap jcspb aifs">
             <div class="footer__logo">
                 <a id="footerTitle" class="custom-logo-link img-middle shi-hover" href="https://dev-sciencehistorywp.pantheonsite.io/" rel="home">
-                    <img width="335" height="195" src="https://dev-sciencehistorywp.pantheonsite.io/wp-content/uploads/2023/04/shi-footer-logo.png" class="img-autosize custom-logo" alt="Science History Institute" decoding="async" loading="lazy" srcset="https://dev-sciencehistorywp.pantheonsite.io/wp-content/uploads/2023/04/shi-footer-logo.png 335w, https://dev-sciencehistorywp.pantheonsite.io/wp-content/uploads/2023/04/shi-footer-logo-300x175.png 300w" sizes="(max-width: 335px) 100vw, 335px">
+                    <%= image_tag "from_main_website/shi-footer-logo.png",
+                        width:"335",
+                        height:"195",
+                        class:"img-autosize custom-logo",
+                        alt:"Science History Institute",
+                        decoding:"async",
+                        loading:"lazy",
+                        srcset: {
+                            "from_main_website/shi-footer-logo.png" => "335w",
+                            "from_main_website/shi-footer-logo-300x175.png" => "300w"
+                        },
+                        sizes: "(max-width: 335px) 100vw, 335px"
+                    %>
                 </a>
                 <div class="footer__address">
                     <p>315 Chestnut Street<br>
@@ -50,16 +62,38 @@
                 </nav>
                 <div class="shi-social">
                     <a href="https://facebook.com/scihistoryorg" class="shi-social__link" target="_blank">
-                        <img width="13" height="24" src="https://dev-sciencehistorywp.pantheonsite.io/wp-content/uploads/2023/04/facebook-icon.svg" class="shi-social__icon" alt="" loading="lazy">
+                        <%= image_tag "from_main_website/facebook-icon.svg",
+                                width:"13",
+                                height:"24",
+                                class:"shi-social__icon",
+                                alt:"Facebook",
+                                loading:"lazy"
+                        %>
                     </a>
                     <a href="https://twitter.com/scihistoryorg" class="shi-social__link" target="_blank">
-                        <img width="22" height="18" src="https://dev-sciencehistorywp.pantheonsite.io/wp-content/uploads/2023/04/twitter-icon.svg" class="shi-social__icon" alt="" loading="lazy">
+                        <%= image_tag "from_main_website/twitter-icon.svg",
+                                width:"22",
+                                height:"18",
+                                class:"shi-social__icon",
+                                alt:"Twitter",
+                                loading:"lazy"
+                        %>
                     </a>
                     <a href="https://www.instagram.com/scihistoryorg/" class="shi-social__link" target="_blank">
-                        <img width="19" height="19" src="https://dev-sciencehistorywp.pantheonsite.io/wp-content/uploads/2023/04/instagram-icon.svg" class="shi-social__icon" alt="" loading="lazy">
+                        <%= image_tag "from_main_website/instagram-icon.svg",
+                                width:"19",
+                                height:"19",
+                                class:"shi-social__icon",
+                                alt:"Instagram",
+                                loading:"lazy"
+                        %>
                     </a>
                     <a href="https://www.youtube.com/c/ScienceHistoryInstitute" class="shi-social__link" target="_blank">
-                        <img width="1174" height="827" src="https://dev-sciencehistorywp.pantheonsite.io/wp-content/uploads/2023/04/youtube.png" class="shi-social__icon" alt="" loading="lazy">
+                        <%= image_tag "from_main_website/youtube.png",
+                                class:"shi-social__icon",
+                                alt:"YouTube",
+                                loading:"lazy"
+                        %>
                     </a>
                 </div>
             </div>
