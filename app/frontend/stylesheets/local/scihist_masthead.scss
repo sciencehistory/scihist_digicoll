@@ -406,6 +406,10 @@
             min-height: auto
         }
 
+        .header:not(.header_mobile) .header__logo {
+            width: 15.5625em
+        }
+
         .header:not(.header_mobile) .header__nav {
             display: none;
             opacity: 0;
