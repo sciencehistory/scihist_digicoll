@@ -383,9 +383,13 @@
 
     // main bar COLLAPSE on small screen
     @media screen and (max-width: 991px) {
+        // Main website seems to fix font-size at 16px once collapsed.
+        // We'll do 1rem at our 16px rem
+        font-size: 1rem;
+
         .header:not(.header_mobile) .header__nav-sandwich {
             display: block;
-            font-size: 1rem;
+            font-size: 1em;
         }
 
        .header:not(.header_mobile) .header__menu-container {
@@ -477,7 +481,7 @@
 
         // not from original site, our own hack to try to be similar.
         .header__nav ul li a {
-            font-size: 1rem;
+            font-size: 1em;
         }
     }
 
