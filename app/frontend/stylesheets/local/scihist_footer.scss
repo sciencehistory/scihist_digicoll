@@ -44,6 +44,9 @@
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: flex-start;
+
+    // nothing to do with main site, our attempt to make things okay here
+    gap: 2em;
   }
 
   .footer__logo {
@@ -200,6 +203,54 @@
   }
   .footer__inner_bottom ul li a:hover {
       text-decoration-color: #fff
+  }
+
+
+  // Very small screen we hide two of our columns. These small screen media
+  // are not total copy of main site CSS, which was confusing, but similar effect.
+  @media screen and (max-width: 575px) {
+      .footer__inner_top {
+          margin-bottom: 2.1875em;
+          padding: 0;
+      }
+
+      .footer__wrapper {
+          max-width: 13.9375em;
+      }
+
+      .footer__column:nth-child(2),.footer__column:nth-child(3),.footer__column:last-child .footer__nav {
+          display: none
+      }
+
+      .footer__logo {
+        width: 100%;
+      }
+
+      .footer__address {
+        font-size: 1em;
+        margin-top: 3.25em
+      }
+    }
+    @media screen and (max-width: 991px) {
+      .footer__inner_bottom {
+        margin: 0 auto;
+        width: 16.9375em;
+
+        flex-direction: column;
+        align-items: flex-start;
+
+        font-size: 1.4em;
+        line-height: 1em;
+      }
+
+      .footer__copyright+ul>li:first-child::before {
+        display: none;
+      }
+
+      .footer__inner_bottom ul li:not(:last-child)::after {
+          margin: 0 0.7142857143em;
+      }
+
   }
 }
 
