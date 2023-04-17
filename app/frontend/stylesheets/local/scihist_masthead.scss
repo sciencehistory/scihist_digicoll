@@ -24,7 +24,7 @@
 
     // This should be proportional at 1.389vw, but
     // MIN 20px, which original did with a media query at min-width 1440px, but let's
-    // do with CSS max instead, seems to have full support
+    // do with CSS min instead, seems to have full support
     font-size: min(1.389vw, 20px);
 
     // change to 991px if we want to keep nav menus on one line until collapse
