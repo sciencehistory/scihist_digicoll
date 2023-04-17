@@ -79,9 +79,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     end
 
     it "deletes all OCR immediately on request" do
-      put :update, params: {
-        id: work.friendlier_id, work: { ocr_requested: "false" }
-      }
+      put :update, params: { id: work.friendlier_id, work: { ocr_requested: "0" } }
       expect(work.reload.members.first.hocr).to eq nil
     end
   end
