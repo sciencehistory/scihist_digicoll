@@ -37,7 +37,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
   end
 
   context "#update", logged_in_user: :editor do
-    let(:work) { create(:public_work) }
+    let(:work) { create(:public_work, ocr_requested: true, members: [create(:asset_with_faked_file, hocr: "<random ocr/>")]) }
     it "trims leading and trailing spaces" do
       put :update, params: {
         id: work.friendlier_id,
@@ -76,6 +76,13 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
 
       expect(work.description).to eq "paragraph1\nparagraph2\n"
       expect(work.admin_note).to eq ["paragraph1\nparagraph2\n"]
+    end
+
+    it "deletes all OCR immediately on request" do
+      put :update, params: {
+        id: work.friendlier_id, work: { ocr_requested: "false" }
+      }
+      expect(work.reload.members.first.hocr).to eq nil
     end
   end
 

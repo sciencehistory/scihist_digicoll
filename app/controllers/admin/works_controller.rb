@@ -74,6 +74,7 @@ class Admin::WorksController < AdminController
   # PATCH/PUT /admin/works/1.json
   def update
     authorize! :update, @work
+    delete_ocr if params['work']['ocr_requested'] == 'false'
     respond_to do |format|
       if @work.update(work_params)
         format.html { redirect_to admin_work_path(@work), notice: 'Work was successfully updated.' }
@@ -627,6 +628,13 @@ class Admin::WorksController < AdminController
       admin_works_path
     end
     helper_method :cancel_url
+
+    def delete_ocr
+      @work.members.where(type: 'Asset').each do |m|
+        m.update!(hocr:nil) if m.content_type.start_with?("image/")
+      end
+    end
+    helper_method :delete_ocr
 
 
 end
