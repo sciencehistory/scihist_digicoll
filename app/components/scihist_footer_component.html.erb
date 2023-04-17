@@ -2,7 +2,7 @@
     <div class="wrapper footer__wrapper">
         <div class="footer__inner footer__inner_top flex fwrap jcspb aifs">
             <div class="footer__logo">
-                <a id="footerTitle" class="custom-logo-link img-middle shi-hover" href="https://dev-sciencehistorywp.pantheonsite.io/" rel="home">
+                <a id="footerTitle" class="custom-logo-link img-middle shi-hover" href="<%= ScihistDigicoll::Env.lookup(:main_website_base) %>" rel="home">
                     <%= image_tag "from_main_website/shi-footer-logo.png",
                         width:"335",
                         height:"195",
@@ -27,20 +27,30 @@
             </div>
             <div class="footer__column">
                 <nav class="footer__nav" aria-labelledby="footerAbout">
-                    <ul id="menu-footer" class="menu-footer-ul flex fdc"><li id="menu-item-19111" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-19111"><a id="footerAbout" href="/about-us">About</a></li>
-                        <li id="menu-item-19113" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-19113"><a href="https://dev-sciencehistorywp.pantheonsite.io/about-us/leadership">Leadership</a></li>
-                        <li id="menu-item-19110" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-19110"><a href="https://dev-sciencehistorywp.pantheonsite.io/about-us/staff">Staff &amp; Fellows</a></li>
-                        <li id="menu-item-21314" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-21314"><a href="https://dev-sciencehistorywp.pantheonsite.io/about-us/projects-initiatives">Projects &amp; Initiatives</a></li>
-                        <li id="menu-item-19131" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-19131"><a href="#">Awards Program</a></li>
-                        <li id="menu-item-19114" class="menu-item menu-item-type-post_type_archive menu-item-object-news menu-item-19114"><a href="https://dev-sciencehistorywp.pantheonsite.io/news">News</a></li>
-                        <li id="menu-item-19115" class="menu-item menu-item-type-post_type_archive menu-item-object-press menu-item-19115"><a href="https://dev-sciencehistorywp.pantheonsite.io/press">Pressroom</a></li>
+                    <ul id="menu-footer" class="menu-footer-ul flex fdc"><li id="menu-item-19111" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-19111"><a id="footerAbout" href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/about-us') %>">About</a></li>
+                        <li id="menu-item-19113" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-19113">
+                            <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/leadership') %>">Leadership</a>
+                        </li>
+                        <li id="menu-item-19110" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-19110">
+                            <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/staff') %>">Staff &amp; Fellows</a>
+                        </li>
+                        <li id="menu-item-21314" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-21314">
+                            <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/projects-initiatives') %>">Projects &amp; Initiatives</a>
+                        </li>
+                        <li id="menu-item-19131" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-19131">
+                            <a href="#">Awards Program</a>
+                        </li>
+                        <li id="menu-item-19114" class="menu-item menu-item-type-post_type_archive menu-item-object-news menu-item-19114">
+                            <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/news') %>">News</a>
+                        </li>
+                        <li id="menu-item-19115" class="menu-item menu-item-type-post_type_archive menu-item-object-press menu-item-19115"><a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/press') %>">Pressroom</a></li>
                         <li id="menu-item-19132" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-19132"><a href="#">Careers</a></li>
                     </ul>
                 </nav>
             </div>
             <div class="footer__column">
                 <nav class="footer__nav" aria-labelledby="footerMuseumHours">
-                    <ul id="menu-footer-2" class="menu-footer-ul flex fdc"><li id="menu-item-19116" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-19116"><a id="footerMuseumHours" href="/visit/hours-admission">MUSEUM HOURS</a></li>
+                    <ul id="menu-footer-2" class="menu-footer-ul flex fdc"><li id="menu-item-19116" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-19116"><a id="footerMuseumHours" href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/visit/hours-admission') %>">MUSEUM HOURS</a></li>
                         <li id="menu-item-19123" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-19123"><a>Wednesday: 10am-5pm</a></li>
                         <li id="menu-item-19124" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-19124"><a>Thursday: 10am-5pm</a></li>
                         <li id="menu-item-19125" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-19125"><a>Friday: 10am-5pm</a></li>
@@ -53,11 +63,21 @@
             </div>
             <div class="footer__column">
                 <nav class="footer__nav" aria-label="Connect">
-                    <ul id="menu-footer-3" class="menu-footer-ul flex fdc"><li id="menu-item-19117" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-19117"><a href="/exhibitions">See an Exhibition</a></li>
-                        <li id="menu-item-19118" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-19118"><a href="https://dev-sciencehistorywp.pantheonsite.io/research/othmer-library/schedule-a-visit">Schedule a Library Visit</a></li>
-                        <li id="menu-item-19133" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-19133"><a href="/conference-center">Host An Event</a></li>
-                        <li id="menu-item-19120" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-19120"><a href="https://dev-sciencehistorywp.pantheonsite.io/contact-us">Contact Us</a></li>
-                        <li id="menu-item-19119" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-19119"><a href="https://dev-sciencehistorywp.pantheonsite.io/support-2">Support Us</a></li>
+                    <ul id="menu-footer-3" class="menu-footer-ul flex fdc">
+                        <li id="menu-item-19117" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-19117">
+                            <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/exhibitions') %>">See an Exhibition</a>
+                        </li>
+                        <li id="menu-item-19118" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-19118">
+                            <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/research/othmer-library/schedule-a-visit') %>">Schedule a Library Visit</a>
+                        </li>
+                        <li id="menu-item-19133" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-19133">
+                            <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/conference-center') %>">Host An Event</a></li>
+                        <li id="menu-item-19120" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-19120">
+                            <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/contact-us') %>">Contact Us</a>
+                        </li>
+                        <li id="menu-item-19119" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-19119">
+                            <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/support') %>">Support Us</a>
+                        </li>
                     </ul>
                 </nav>
                 <div class="shi-social">
@@ -103,9 +123,9 @@
             <ul id="menu-footer-copyright" class="flex fwrap">
                 <li id="menu-item-19135" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-19135"><a>Registered 501(c)(3)</a></li>
                 <li id="menu-item-19136" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-19136"><a>EIN: 22-2817365</a></li>
-                <li id="menu-item-19121" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-19121"><a href="https://dev-sciencehistorywp.pantheonsite.io/privacy-policy">Privacy Policy</a></li>
+                <li id="menu-item-19121" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-19121"><a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/privacy-policy') %>">Privacy Policy</a></li>
                 <li id="menu-item-19134" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-19134"><a href="#">Terms of Use</a></li>
-                <li id="menu-item-19122" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-19122"><a href="https://dev-sciencehistorywp.pantheonsite.io/visit/accessibility">Accessibility</a></li>
+                <li id="menu-item-19122" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-19122"><a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/visit/accessibility') %>">Accessibility</a></li>
             </ul>
         </div>
     </div>
