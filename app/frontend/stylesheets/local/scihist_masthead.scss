@@ -383,6 +383,24 @@
         }
     }
 
+    // not entirely clear why original CSS has special case here
+    @media (orientation: landscape) and (max-height: 800px) and (min-width: 992px) {
+        .header {
+            padding-top: 1.5vh;
+            padding-bottom: 1.5vh;
+        }
+        .header__logo {
+            max-width: 15em
+        }
+        .header__right-side {
+            padding: 0
+        }
+        .header__nav ul li a, .shi-top-bar__hours, .shi-top-bar-nav__item {
+            // in original this was 15.4px, but we want to always do rem?
+            font-size: 0.9625rem;
+        }
+    }
+
     // main bar COLLAPSE on small screen
     @media screen and (max-width: 991px) {
         // Main website seems to fix font-size at 16px once collapsed.
