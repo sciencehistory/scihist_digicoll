@@ -74,14 +74,16 @@ class Admin::WorksController < AdminController
   # PATCH/PUT /admin/works/1.json
   def update
     authorize! :update, @work
-    delete_ocr if params['work']['ocr_requested'] == "0"
     respond_to do |format|
-      if @work.update(work_params)
-        format.html { redirect_to admin_work_path(@work), notice: 'Work was successfully updated.' }
-        format.json { render :show, status: :ok, location: @work }
-      else
-        format.html { render :edit }
-        format.json { render json: @work.errors, status: :unprocessable_entity }
+      @work.transaction do
+        if @work.update(work_params)
+          delete_ocr if params['work']['ocr_requested'] == "0"
+          format.html { redirect_to admin_work_path(@work), notice: 'Work was successfully updated.' }
+          format.json { render :show, status: :ok, location: @work }
+        else
+          format.html { render :edit }
+          format.json { render json: @work.errors, status: :unprocessable_entity }
+        end
       end
     end
   end

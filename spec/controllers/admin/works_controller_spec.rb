@@ -80,8 +80,16 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
 
     it "deletes all OCR immediately on request" do
       put :update, params: { id: work.friendlier_id, work: { ocr_requested: "0" } }
-      expect(work.reload.members.first.hocr).to eq nil
+      expect(flash[:notice]).to match /Work was successfully updated./
+      expect(work.reload.members.first.hocr).to be_nil
     end
+
+    it "does not delete OCR immediately if the save operation fails" do
+      put :update, params: { id: work.friendlier_id, work: { title: nil } }
+      expect(flash[:notice]).to be_nil
+      expect(work.reload.members.first.hocr).to eq "<random ocr/>"
+    end
+
   end
 
   context "Reorder members", logged_in_user: :editor do
