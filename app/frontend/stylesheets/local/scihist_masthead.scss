@@ -30,6 +30,8 @@
     // change to 991px if we want to keep nav menus on one line until collapse
     @media screen and (max-width: 1199px) {
         font-size:1.6vw
+        //font-size: min(1.6vw, 14px);
+        //font-weight: 700 !important;
     }
 
     line-height: 1.2;
@@ -195,7 +197,15 @@
     .header {
         position: relative;
         background: #fff;
-        padding: 1.05em 4em;
+        // horiz padding was 4em, but for consistency with our site, it's now
+        // 30px at non-collapsed
+        //padding: 1.05em 4em;
+        padding: 1.05em 30px;
+
+        // move max-width from header__wrapper to here, so we can
+        // make it consistent with our existing site style.
+        max-width: $main-container-max-width;
+        margin: 0 auto;
 
         // fix to ~17px size. Original main site has dynamically scaling
         // font size with window size, we just arne't set up for that.
@@ -208,8 +218,9 @@
     }
 
     .header__wrapper {
-        max-width: 1280px;
-        margin: 0 auto;
+        //max-width: 1280px;
+
+        //margin: 0 auto;
     }
 
     .header__inner {
@@ -401,6 +412,8 @@
         }
     }
 
+
+
     // main bar COLLAPSE on small screen
     @media screen and (max-width: 991px) {
         // Main website seems to fix font-size at 16px once collapsed.
@@ -418,7 +431,10 @@
         }
 
         .header:not(.header_mobile) {
-            padding: .8125em 1em .8125em 1.6875em
+            // for consisteny with our site, collapsed padding is
+            // 15px horizontal.
+            //padding: .8125em 1em .8125em 1.6875em
+            padding: .8125em 15px .8125em 15px;
         }
 
         .header:not(.header_mobile) .header__inner {
@@ -506,6 +522,16 @@
         // not from original site, our own hack to try to be similar.
         .header__nav ul li a {
             font-size: 1em;
+        }
+    }
+
+    // Whole page margins (via padding) change in line with existing rest of our
+    // site, 15px at small size, at bigger size (using bootstrap variable and
+    // function), 30px
+    @include media-breakpoint-up($layout-expand-up) {
+        .header:not(.header_mobile) {
+            padding-left: 30px;
+            padding-right: 30px;
         }
     }
 
