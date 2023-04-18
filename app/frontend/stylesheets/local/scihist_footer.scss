@@ -239,19 +239,21 @@
     @media screen and (max-width: 991px) {
       // consistent with rest of side, drop padding down when collapsed.
       .footer__wrapper {
+        box-sizing: content-box;
         padding-left: 15px;
         padding-right: 15px;
       }
 
       .footer__inner_bottom {
         margin: 0 auto;
-        width: 16.9375em;
 
         flex-direction: column;
         align-items: flex-start;
 
-        font-size: 1.4em;
+        font-size: 1.3em;
         line-height: 1em;
+
+        line-height: 0.5;
       }
 
       .footer__copyright+ul>li:first-child::before {
