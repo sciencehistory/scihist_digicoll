@@ -34,6 +34,6 @@ class WorkOcrCreatorRemover
       members.
       where(type: 'Asset').
       order(:position).
-      select { |m| m.content_type.start_with?("image/") }
+      select { |m| m&.content_type&.start_with?("image/") }
   end
 end

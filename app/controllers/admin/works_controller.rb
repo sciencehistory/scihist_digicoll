@@ -631,7 +631,7 @@ class Admin::WorksController < AdminController
 
     def delete_ocr
       @work.members.where(type: 'Asset').each do |m|
-        m.update!(hocr:nil) if m.content_type.start_with?("image/")
+        m.update!(hocr:nil) if m&.content_type&.start_with?("image/")
       end
     end
     helper_method :delete_ocr
