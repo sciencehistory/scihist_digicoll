@@ -75,7 +75,7 @@ class Admin::WorksController < AdminController
   def update
     authorize! :update, @work
     respond_to do |format|
-      @work.transaction do
+      Kithe::Model.transaction do
         if @work.update(work_params)
           delete_ocr if params['work']['ocr_requested'] == "0"
           format.html { redirect_to admin_work_path(@work), notice: 'Work was successfully updated.' }
