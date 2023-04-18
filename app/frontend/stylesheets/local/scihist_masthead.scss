@@ -76,7 +76,9 @@
         position: relative;
         display: flex;
         justify-content: flex-end;
-        align-items: center;
+        // Don't know why have to comment this out to get it to stay within
+        // bounds and horizontal scroll.
+        //align-items: center;
         text-transform: uppercase
     }
 
@@ -136,6 +138,8 @@
         }
 
         .shi-top-bar:not(.shi-top-bar_mobile) .shi-top-bar-nav {
+            //box-sizing: content-box;
+
             overflow-x: auto;
             width: auto;
             padding: 0;
