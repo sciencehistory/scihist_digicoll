@@ -1,7 +1,9 @@
 #shi-footer-from-main-website {
   background-color: #1d242b;
-  padding: 2.7em 4.35em 1em;
+  //padding: 2.7em 4.35em 1em;
+
   color: #fff;
+
 
   // override some site-wide serif font default stuff
   p:not(.collection-title):not(.sans-serif) {
@@ -32,7 +34,10 @@
   }
 
   .footer__wrapper {
-    max-width: 63.3em;
+    // we moved padding down here to allow consistent layout with our existing site
+    padding: 2.7em 30px 1em;
+    //max-width: 63.3em;
+    max-width: $main-container-max-width;
     margin: 0 auto
   }
 
@@ -232,6 +237,12 @@
       }
     }
     @media screen and (max-width: 991px) {
+      // consistent with rest of side, drop padding down when collapsed.
+      .footer__wrapper {
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+
       .footer__inner_bottom {
         margin: 0 auto;
         width: 16.9375em;

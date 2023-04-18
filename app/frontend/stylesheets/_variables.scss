@@ -92,12 +92,23 @@ $sidebar-width: 17.5rem;
 // 960px at 16px base font is
 $content-max-width: 60rem;
 
-// sidebar width plus a 60rem max content size (content has a thumb column too,
-// keep content text no wider than readable), plus some gutters, we wind
-// up at 1300px via magic, which is 81.25rem at 16px base font size.
-$main-container-max-width: 81.25rem;
+// max width needs to include sidebar plus a 60rem max content size, plus
+// some gutters -- we tried to make this dynamic calculated, but failed,
+// things were too complex. It also needs to work for header taken from
+// SHI main site, and be no smaller or else wrapping happens.
+// SHI header max width was 1280px -- but that did NOT include
+// padding while ours does... ~60px of padding at top size, so that's
+// 1340px with padding...  84rem * 16px == 1344px
+//
+// Sorry this has become very convoluted and hard to figure out!
+// We were unable to make it automatic from first principles sorry.
+$main-container-max-width: 84rem;
 
 $standard-thumb-width: 13rem; // 208px at 16px==1rem
+
+// larger than this we have sidebars, smaller than this sidebars are collapsed,
+// and we also tighten up margins.
+$layout-expand-up: 'md';
 
 /****
  *
