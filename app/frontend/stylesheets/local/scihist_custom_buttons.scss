@@ -29,3 +29,20 @@
   font-weight: 700;
   font-size: 0.9375em;
 }
+
+// Eventually will be all/most of buttons, new design really uses this button
+.btn-brand-new {
+  // hover background copied from main site
+  @include button-variant(#e4e76d, #e4e76d, $hover-background: #c6c94f);
+  transition: background-color .3s ease,color .3s ease;
+
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.8125rem;
+
+  // won't be necessary once we fix up all bootstrap buttons to match?
+  border-radius: 0;
+
+  // These are approximately matching main site, not implemented the same way
+  padding: 0.66em 1.75em;
+}

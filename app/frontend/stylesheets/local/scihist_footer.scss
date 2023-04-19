@@ -263,4 +263,37 @@
   }
 }
 
+// the supra-footer we have with our site links, that is not taken from main webiste
+.dig_col_links {
+  @include full-width;
+
+  font: normal 400 1em/1.2 "SofiaPro","sans-serif";
+
+  background-color: #285f70;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+
+  h1 {
+    color: white;
+    font-weight: 700;
+
+    text-align: center;
+
+    text-transform: uppercase;
+
+    margin-bottom: 2rem;
+  }
+
+  ul.buttons {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: $grid-gutter-width;
+    max-width: 40em;
+    margin: auto;
+  }
+}
 
