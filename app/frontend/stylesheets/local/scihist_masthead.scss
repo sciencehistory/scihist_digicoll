@@ -551,4 +551,36 @@
     .header_menu-prepare .header__nav {
         display: block !important;
     }
+
+
+    // Our own custom dig coll masthead row, not part of SHI general branding
+    .dig-col-product-masthead {
+        // reset the fluid resized font thing from SHI header
+        font-size: 1rem;
+
+        @include full-width;
+
+        padding-bottom: 3vh;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+
+        column-gap: 2rem;
+        row-gap: 0.4em;
+
+        h1 a {
+            font-size: min(2.5rem, 8vw);
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #D7272E;
+            display: inline-block;
+            margin: 0;
+        }
+
+        .search-form {
+            width: 0;
+            flex-grow: 1;
+            min-width: 15em;
+        }
+    }
 }

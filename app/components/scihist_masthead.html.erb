@@ -1,4 +1,4 @@
-<header id="shi-masthead-from-main-website">
+<header id="shi-masthead-from-main-website" class="masthead">
 
     <div class="shi-top-bar noprint">
         <div class="shi-top-bar__container">
@@ -94,6 +94,18 @@
     </div>
   </div>
 
+
+  <% unless content_for(:suppress_masthead_search) %>
+      <div class="dig-col-product-masthead">
+        <h1 class="masthead-title small-masthead-only">
+          <%= link_to "Digital Collections", root_url %>
+        </h1>
+
+        <%= render partial: 'application/search_form' %>
+      </div>
+  <% end %>
+
+
 </header>
 
 
@@ -107,9 +119,5 @@
 
 
 
-<%# temporary unstyled dig collec tion search, to try to keep tests passing %>
-<% unless content_for(:suppress_masthead_search) %>
-    <%= render partial: 'application/search_form' %>
-<% end %>
 
-</header>
+

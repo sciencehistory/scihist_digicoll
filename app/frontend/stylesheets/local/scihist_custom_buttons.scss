@@ -20,3 +20,12 @@
   @include button-variant($brand-bright-green, $brand-bright-green); //mix($brand-bright-green, $brand-dark-blue, 93%)
   color: $brand-dark-blue;
 }
+
+// Some new 2023 brand buttons
+.btn-dark-inverse {
+  @include button-variant(#1D242B, #1D242B);
+  color: white;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.9375em;
+}
