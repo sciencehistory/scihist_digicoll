@@ -44,23 +44,6 @@ ScihistSearchSlideout.prototype.close = function() {
   this.removeLeaveHandlers();
 };
 
-ScihistSearchSlideout.prototype.navbarBreakpoint = function() {
-  return 739;
-};
-
-ScihistSearchSlideout.prototype.onResize = function() {
-  if ( $(window).width() <= this.navbarBreakpoint()) {
-    this.element.addClass("force-expanded");
-    if (this.element.hasClass("closed")) {
-      this.open();
-    }
-    this.forceExpanded = true;
-  } else {
-    this.element.removeClass("force-expanded");
-    this.forceExpanded = false;
-  }
-};
-
 ScihistSearchSlideout.prototype.installLeaveHandlers = function() {
   var _self = this;
   this.element.on("mouseleave.ScihistSearchSlideout", function() {
@@ -84,8 +67,4 @@ ScihistSearchSlideout.prototype.removeLeaveHandlers = function() {
 
 jQuery(document).ready(function($) {
   var slideout = new ScihistSearchSlideout($(".masthead .search-form"));
-  // If navbar is collapsed, put search slider dropdown down.
-  $(window).on("load resize", function(e) {
-    slideout.onResize();
-  });
 });

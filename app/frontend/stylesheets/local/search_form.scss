@@ -1,28 +1,15 @@
 // The search form can be in:
-//  * navbar (with inverse/dark bg and related text color needs)
-//    * on large screen, where .search-options is in slide-out drawer
-//    * on small screen, where whole search form is behind an expand disclosure,
-//      so .search-options shouldn't have any additional
-//  * On other pages, such as home page, with light background and without inverse color needs
-
+//  * navbar (with inverse/dark bg and related text color needs) and where
+//    .search-options is a slide-out drawer.
+//  * On other pages, such as home page, with standard light background
+//    and without inverse color needs
 
 .search-form {
   width: 100%;
-  margin-bottom: .375rem; // just to match chf_sufia for mysterious reasons
 
-  // bigger rounding for search box than our usual inputs
-  input {
-    border-radius: $btn-border-radius;
-  }
-  .input-group .btn {
-    // hacky, assumes our only button is at the end of an input-group, which it is.
-    border-top-right-radius: $btn-border-radius;
-    border-bottom-right-radius: $btn-border-radius;
-  }
-
-  .input-group {
-    margin-bottom: 0.625rem; // 10px
-  }
+  // .input-group {
+  //   margin-bottom: 0.625rem; // 10px
+  // }
 
   // We use flex to make sure it wraps between heading and body if it needs to
   .form-group.limit-dates {
@@ -31,14 +18,15 @@
     align-items: baseline;
   }
 
-
   // styles that apply whether in masthead or home page, or just on homepage,
   // some are overridden below in .masthead
   .search-options {
+    margin-top: 0.625rem;
+
     .limit-dates-heading, label {
       @extend %special-label;
       display: inline;
-      margin: 0 .66em 0 0;
+      margin: 0 .66em 0.5em 0;
     }
     .search-option-year {
       display: inline;
@@ -55,14 +43,7 @@
 
 // For when it's in the navbar collapsed, so it is on a dark background and inline
 .masthead .search-form {
-  padding: 10px 15px;
   position: relative; // to anchor absolutely positioned drawer
-
-  .search-options {
-    h3, label, .text {
-      color: white;
-    }
-  }
 
   .form-control {
     // bootstrap sets this to padding-box, not sure why, but it makes
@@ -70,33 +51,29 @@
     background-clip: border-box;
   }
 
-  // .search-options are collapsed in a drawer, for JS to slide down on click in search text field
-  @include media-breakpoint-up(md) {
-    padding: 0;
+  .search-options {
+    display: none;
+    z-index: 1000; // not sure why we need
+    position: absolute;
+    width: 100%;
 
-    .search-options {
-      display: none;
-      z-index: 1000; // not sure why we need
-      position: absolute;
-      width: 100%;
+    background: #1D242B; //#285f70;
+    border: 1px solid transparent;
+    box-shadow: 0 20px 40px 10px rgba(0,0,0,0.5);
+    //border-radius: 0 0 $btn-border-radius $btn-border-radius;
+    color: white;
 
-      background: $brand-light-grey;
-      border: 1px solid transparent;
-      box-shadow: 0 20px 40px 10px rgba(0,0,0,0.5);
-      border-radius: 0 0 $btn-border-radius $btn-border-radius;
-      color: $brand-dark-blue;
 
-      h3, label {
-        color: $brand-dark-blue;
+    h3, .limit-dates-heading, label {
+      color: white;
+      font-weight: 400;
+    }
 
-      }
-
-      .form-group {
-        // make slide out look better using padding instead of margin, plus
-        // get everything nicely spaced.
-        margin: 0;
-        padding: ($form-group-margin-bottom * 0.5) $form-group-margin-bottom;
-      }
+    .form-group {
+      // make slide out look better using padding instead of margin, plus
+      // get everything nicely spaced.
+      margin: 0;
+      padding: ($form-group-margin-bottom * 0.5) $form-group-margin-bottom;
     }
   }
 }

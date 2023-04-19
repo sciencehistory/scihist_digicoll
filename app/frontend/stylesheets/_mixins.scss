@@ -5,6 +5,26 @@
  *
  */
 
+// We're going to make a mix-in for full-width content that will match navbar
+// etc, with regard to margins and maximum width.
+//
+// No vertical padding/margins, those are on you.
+@mixin full-width {
+  max-width: $main-container-max-width;
+  margin: 0 auto;
+
+  // perceived margins are done with padding, on small
+  // screens fairly tight.
+  padding-left: 15px;
+  padding-right: 15px;
+
+  @include media-breakpoint-up($layout-expand-up) {
+    // large screen, bigger margins
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+}
+
 
 @mixin all-white-links {
   a,
