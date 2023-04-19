@@ -76,7 +76,8 @@
     <% if can? :access_staff_functions %>
       <%= render 'front_end_admin_navbar' %>
     <% end %>
-    <%= render ScihistMasthead.new %>
+
+    <%= render ScihistMasthead.new(suppress_product_subhead: content_for(:suppress_product_subhead)) %>
 
     <%# Blacklight put a search form here, we include our own local one in scihist_masthead instead,
         integrated into the masthead -%>
