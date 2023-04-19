@@ -96,7 +96,7 @@ describe CatalogController, solr: true, indexable_callbacks: true do
       fill_in "search-option-date-from", with: "2013"
       fill_in "search-option-date-to", with: "2015"
       check("Public Domain Only")
-      click_on "Go"
+      click_on "Search"
 
       expect(page).to have_content("1 entry found")
       expect(page).to have_selector("li#document_#{green.friendlier_id}")
