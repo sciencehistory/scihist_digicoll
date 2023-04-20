@@ -15,11 +15,8 @@ class WorkShowOcrComponent < ApplicationComponent
   end
 
   def assets_with_and_without_ocr
-    # Check that the value exists and is a string.
-    has_ocr_sql = "json_typeof((json_attributes->'hocr')::json)='string'"
-
-    query = """SELECT #{has_ocr_sql}
-    AS has_ocr
+    query = """SELECT
+    (json_attributes->>'hocr' IS NOT NULL) AS has_ocr
     FROM kithe_models
     WHERE type = 'Asset'
     AND parent_id = '#{@work.id}'"""
