@@ -558,8 +558,6 @@
         // reset the fluid resized font thing from SHI header
         font-size: 1rem;
 
-        @include full-width;
-
         padding-bottom: 3vh;
         display: flex;
         flex-wrap: wrap;
