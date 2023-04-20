@@ -1,15 +1,9 @@
-// The search form can be in:
-//  * navbar (with inverse/dark bg and related text color needs) and where
-//    .search-options is a slide-out drawer.
-//  * On other pages, such as home page, with standard light background
-//    and without inverse color needs
+// The search form can be in navbar as slide-out drawer, or on home page,
+// but in either case we display it on inverse background, so color is white by default.
 
 .search-form {
   width: 100%;
 
-  // .input-group {
-  //   margin-bottom: 0.625rem; // 10px
-  // }
 
   // We use flex to make sure it wraps between heading and body if it needs to
   .form-group.limit-dates {
@@ -21,10 +15,21 @@
   // styles that apply whether in masthead or home page, or just on homepage,
   // some are overridden below in .masthead
   .search-options {
+    color: white;
     margin-top: 0.625rem;
 
+
     .limit-dates-heading, label {
-      @extend %special-label;
+      text-transform: uppercase;
+      font-size: 0.875rem;  // 14px for 16px=1rem
+      line-height: normal;
+      font-weight: 300;
+
+      a:not(:focus):not(:hover) {
+        color: $special-label-muted-color;
+      }
+
+
       display: inline;
       margin: 0 .66em 0.5em 0;
     }
@@ -41,7 +46,7 @@
   }
 }
 
-// For when it's in the navbar collapsed, so it is on a dark background and inline
+// For when it's in the navbar collapsed
 .masthead .search-form {
   position: relative; // to anchor absolutely positioned drawer
 
@@ -61,11 +66,8 @@
     border: 1px solid transparent;
     box-shadow: 0 20px 40px 10px rgba(0,0,0,0.5);
     //border-radius: 0 0 $btn-border-radius $btn-border-radius;
-    color: white;
-
 
     h3, .limit-dates-heading, label {
-      color: white;
       font-weight: 400;
     }
 
