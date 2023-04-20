@@ -9,13 +9,12 @@
             </figure>
         </div>
         <div class="col-lg home-right-column">
-            <div class="row search-container no-gutters">
-                <div class="digital-description col-12 col-md-6 col-lg-12">
-                  <div class="pre-heading">Science History Institute</div>
-                    <h2 class="brand-alt-h2">Digital Collections</h2>
+            <div class="search-container no-gutters">
+                <div class="digital-description">
+                    <h1>Digital Collections</h1>
                     <p class="blurb">Search <%= number_with_delimiter(Kithe::Model.where(:published => true, :type => ['Work', 'Collection']).count) %> of our digitized items: artifacts, photographs, advertisements, letters, rare books, oral histories, and more.
                 </div>
-                <div class="search-callouts col-12 col-md-6 col-lg-12">
+                <div class="search-callouts">
                   <%= render partial: 'application/search_form' %>
                 </div>
             </div>
