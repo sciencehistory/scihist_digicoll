@@ -74,19 +74,27 @@ class Admin::WorksController < AdminController
   # PATCH/PUT /admin/works/1.json
   def update
     authorize! :update, @work
+    work_and_children_updated = false
+    Kithe::Model.transaction do
+      # maybe_delete_ocr will return false if any of the child updates failed.
+      work_and_children_updated = @work.update(work_params) && maybe_delete_ocr
+    end
     respond_to do |format|
-      Kithe::Model.transaction do
-        if @work.update(work_params)
-          delete_ocr if params['work']['ocr_requested'] == "0"
-          format.html { redirect_to admin_work_path(@work), notice: 'Work was successfully updated.' }
-          format.json { render :show, status: :ok, location: @work }
-        else
-          format.html { render :edit }
-          format.json { render json: @work.errors, status: :unprocessable_entity }
-        end
+      if work_and_children_updated
+        format.html { redirect_to admin_work_path(@work), notice: 'Work was successfully updated.' }
+        format.json { render :show, status: :ok, location: @work }
+      else
+        format.html { render :edit }
+        format.json { render json: @work.errors, status: :unprocessable_entity }
       end
     end
+  rescue ActiveRecord::RecordInvalid => e
+    # In case there's a problem with the database transaction, which could involve deleting hundreds of OCR fields.
+    item = e.record
+    redirect_to admin_cart_items_url, flash: { error: "Unable to make this update due to an error with \"#{item.friendlier_id}\": #{e.message}" }
   end
+
+
 
   # PATCH/PUT /admin/works/ab2323ac/set_review_requested
   def set_review_requested
@@ -631,11 +639,20 @@ class Admin::WorksController < AdminController
     end
     helper_method :cancel_url
 
-    def delete_ocr
+
+    # If the user has turned off `ocr_requested` for this work, attempt to delete all the children's OCR directly.
+    # Return true only if everything succeeded.
+    def maybe_delete_ocr
+      return true unless params['work']['ocr_requested'] == "0"
+    
+      all_deletes_succeeded = true
       @work.members.where(type: 'Asset').each do |m|
-        m.update!(hocr:nil) if m&.content_type&.start_with?("image/")
+        if m&.content_type&.start_with?("image/")
+          all_deletes_succeeded = all_deletes_succeeded && m.update(hocr:nil) 
+        end
       end
+      return all_deletes_succeeded
     end
-    helper_method :delete_ocr
+    helper_method :maybe_delete_ocr
 
 end
