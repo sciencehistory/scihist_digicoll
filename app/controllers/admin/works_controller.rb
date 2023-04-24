@@ -74,12 +74,20 @@ class Admin::WorksController < AdminController
   # PATCH/PUT /admin/works/1.json
   def update
     authorize! :update, @work
-    work_and_children_updated = false
+    updates_successful = false
     Kithe::Model.transaction do
-      work_and_children_updated = @work.update(work_params) && all_unneeded_ocr_successfully_deleted?
+      updates_successful = @work.update(work_params)
+      if params['work']['ocr_requested'] == "0"
+        # remove OCR from all image members.
+        @work.members.where(type: 'Asset').each do |m|
+          if m&.content_type&.start_with?("image/")
+            updates_successful &&= m.update(hocr:nil) 
+          end
+        end
+      end
     end
     respond_to do |format|
-      if work_and_children_updated
+      if updates_successful
         format.html { redirect_to admin_work_path(@work), notice: 'Work was successfully updated.' }
         format.json { render :show, status: :ok, location: @work }
       else
@@ -90,7 +98,7 @@ class Admin::WorksController < AdminController
   rescue ActiveRecord::RecordInvalid => e
     # In case there's a problem with the database transaction, which could involve deleting hundreds of OCR fields.
     item = e.record
-    redirect_to admin_cart_items_url, flash: { error: "Unable to make this update due to an error with \"#{item.friendlier_id}\": #{e.message}" }
+    redirect_to redirect_to admin_work_path(@work), flash: { error: "Unable to make this update due to an error with \"#{item.friendlier_id}\": #{e.message}" }
   end
 
 
@@ -637,21 +645,4 @@ class Admin::WorksController < AdminController
       admin_works_path
     end
     helper_method :cancel_url
-
-
-    # If the user has turned off `ocr_requested` for this work, attempt to delete all the children's OCR directly.
-    # Return true only if everything succeeded.
-    def all_unneeded_ocr_successfully_deleted?
-      return true unless params['work']['ocr_requested'] == "0"
-    
-      all_deletes_succeeded = true
-      @work.members.where(type: 'Asset').each do |m|
-        if m&.content_type&.start_with?("image/")
-          all_deletes_succeeded = all_deletes_succeeded && m.update(hocr:nil) 
-        end
-      end
-      return all_deletes_succeeded
-    end
-    helper_method :all_unneeded_ocr_successfully_deleted?
-
 end
