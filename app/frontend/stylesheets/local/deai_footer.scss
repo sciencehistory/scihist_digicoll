@@ -5,12 +5,15 @@
   background-color: #eaf6f3; // officially should be #d4ece8 ?? But this is what site uses. Ask Caitlin.
 
   // Our standard BLUE link color isn't sufficient WCAG contrast over the dark grey background.
-  // red is also not sufficient at this background. OK, we're going black/bold/red-underline,
-  // actually the STANDARD on new website.
+  // red is also not sufficient at this background. We'll use the standard new website link,
+  // as they do too over this background...
   a {
     color: black;
     font-weight: bold;
-    text-decoration-color: #d7272e;
+    text-decoration: underline #d7272e;;
+    &:hover {
+      color: #d7272e;
+    }
   }
 
   p {
