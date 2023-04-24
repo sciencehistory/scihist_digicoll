@@ -76,8 +76,7 @@ class Admin::WorksController < AdminController
     authorize! :update, @work
     work_and_children_updated = false
     Kithe::Model.transaction do
-      # maybe_delete_ocr will return false if any of the child updates failed.
-      work_and_children_updated = @work.update(work_params) && maybe_delete_ocr
+      work_and_children_updated = @work.update(work_params) && all_unneeded_ocr_successfully_deleted?
     end
     respond_to do |format|
       if work_and_children_updated
@@ -642,7 +641,7 @@ class Admin::WorksController < AdminController
 
     # If the user has turned off `ocr_requested` for this work, attempt to delete all the children's OCR directly.
     # Return true only if everything succeeded.
-    def maybe_delete_ocr
+    def all_unneeded_ocr_successfully_deleted?
       return true unless params['work']['ocr_requested'] == "0"
     
       all_deletes_succeeded = true
@@ -653,6 +652,6 @@ class Admin::WorksController < AdminController
       end
       return all_deletes_succeeded
     end
-    helper_method :maybe_delete_ocr
+    helper_method :all_unneeded_ocr_successfully_deleted?
 
 end
