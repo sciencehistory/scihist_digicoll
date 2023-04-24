@@ -76,9 +76,7 @@
         position: relative;
         display: flex;
         justify-content: flex-end;
-        // Don't know why have to comment this out to get it to stay within
-        // bounds and horizontal scroll.
-        //align-items: center;
+        align-items: center;
         text-transform: uppercase
     }
 
@@ -135,6 +133,13 @@
         .shi-top-bar:not(.shi-top-bar_mobile) {
             padding-left: 15px;
             padding-right: 15px
+        }
+
+        .shi-top-bar__container {
+            // we need to unset align-items to get it to horizontal scroll
+            // properly, but we don't know why, the original main site css
+            // didn't seem to need this.
+            align-items: revert;
         }
 
         .shi-top-bar:not(.shi-top-bar_mobile) .shi-top-bar-nav {
