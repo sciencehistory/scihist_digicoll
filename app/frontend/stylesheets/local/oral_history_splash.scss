@@ -59,11 +59,14 @@
   }
 
 
+  .collection-desc-container {
+    background-color: #313e48;
+  }
+
   .collection-desc {
     max-width: calc(#{$max-readable-width} + 6rem);
     padding: 2rem 15px 2rem 15px;
 
-    background-color: #313e48;
     color: white;
     font-family: "SofiaPro","sans-serif";
 
