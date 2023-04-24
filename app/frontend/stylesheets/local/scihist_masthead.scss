@@ -582,3 +582,21 @@
         }
     }
 }
+
+
+// local content, management-only top bar
+.navbar.topbar {
+    // take from theme color after we fix theme?
+    background-color: #dddddc;
+    padding-top: 0;
+    padding-bottom: 0;
+
+    .nav-item:not(:last-child) {
+        margin-right: $spacer;
+    }
+
+    &.staging {
+        // was $warning;, could be again after we fix theme
+        background-color: #e4e76d;
+    }
+}
