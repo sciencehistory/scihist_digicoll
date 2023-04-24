@@ -28,6 +28,12 @@
   text-transform: uppercase;
   font-weight: 700;
   font-size: 0.9375em;
+
+  // nain site topnav bar fades white over dark text using opacity,
+  // we use a specific color to do similar and match.
+  &:hover, &:focus {
+    color: #dadbdb;
+  }
 }
 
 // Eventually will be all/most of buttons, new design really uses this button
