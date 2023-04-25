@@ -139,7 +139,7 @@
             // we need to unset align-items to get it to horizontal scroll
             // properly, but we don't know why, the original main site css
             // didn't seem to need this.
-            align-items: revert;
+            //align-items: revert;
         }
 
         .shi-top-bar:not(.shi-top-bar_mobile) .shi-top-bar-nav {
@@ -460,7 +460,8 @@
             opacity: 0;
             position: absolute;
             background: #fff;
-            z-index: 2;
+            // important for collapsed context when it is a dropdown
+            z-index: $zindex-popover; //2;
             top: 0;
             left: 0;
             width: 100%;
