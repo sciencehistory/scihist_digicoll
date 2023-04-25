@@ -467,8 +467,20 @@
             width: 100%;
             max-height: 100vh;
             overflow-y: auto;
-            padding: 3.3125em 1.875em 2.5em;
-            transition: opacity .3s
+            //padding-top: 3.3125em 1.875em 2.5em;
+            transition: opacity .3s;
+
+            // tricky too-clever to get margins to align on both our
+            // responsive sizes.
+            padding-top: 3.3125em;
+            padding-bottom: 2.5em;
+            padding-left: 15px;
+            padding-right: 15px;
+            @include media-breakpoint-up($layout-expand-up) {
+                // large screen, bigger margins
+                padding-left: 30px;
+                padding-right: 30px;
+            }
         }
 
         .header:not(.header_mobile) .header__nav-close {
@@ -483,7 +495,14 @@
             background: rgba(0,0,0,0);
             width: 1.0625em;
             height: 1.0625em;
-            right: 1em
+
+
+            // too clever stuff to get close button to align with
+            // hamburger button, at both our responsive margin sizes.
+            //right: 1em
+            box-sizing: content-box;;
+            right: 0;
+            padding-right: inherit;
         }
 
         .header:not(.header_mobile) .header__nav-close svg {
