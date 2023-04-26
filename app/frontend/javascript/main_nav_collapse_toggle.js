@@ -20,6 +20,21 @@ document.querySelector(".js-header-sandwich-btn")?.addEventListener("click", fun
     if(!header) {
       return;
     }
+
+    // our own implementation, to get the shi-top-bar-nav to be inside the collapsed menu,
+    // we actually copy it to be in a second place in the DOM, leaving it in the first
+    // place too, where normally it will be hidden by CSS at small sizes, just in case
+    // the screen size changes again. Only if we haven't already done it.
+    if (! document.querySelector(".header__nav .shi-top-bar-nav")) {
+      var copiedTopBarNav = document.querySelector(".shi-top-bar-nav").cloneNode(true);
+      if (copiedTopBarNav) {
+        copiedTopBarNav.removeAttribute("id"); // just in case avoid dup id
+        document.querySelector(".header__nav")?.appendChild(copiedTopBarNav)
+      } else {
+        console.log("scihist warning: couldn't find .shi-top-bar-nav to clone it to collapsed menu!");
+      }
+    }
+
     document.querySelector("#shi-masthead-from-main-website .header")?.classList.add("header_menu-prepare");
     setTimeout((()=>header.classList.add("header_menu-open")), 0);
 });
