@@ -91,7 +91,6 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     end
   end
 
-
   context "Reorder members", logged_in_user: :editor do
     let(:c)  { create(:asset_with_faked_file, :mp3, title: "c", position: 1) }
     let(:b)  { create(:asset_with_faked_file, :mp3, title: "b", position: 2) }
