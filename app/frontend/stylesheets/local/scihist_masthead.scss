@@ -223,9 +223,10 @@
         align-items: center
     }
 
-    .header__menu-container {
-        margin-right: 2.75em
-    }
+    // reserving space for search menu icon, that we don't use
+    // .header__menu-container {
+    //     margin-right: 2.75em
+    // }
 
     .header__nav {
         display: flex;
@@ -308,7 +309,10 @@
 
     .header__nav>ul>li.shi-item-bordered {
         margin-left: .6em;
-        margin-right: .6em
+    }
+    // because we have no search icon to space, not last child only lines up better
+    .header__nav>ul>li.shi-item-bordered:not(:last-child) {
+        margin-right: .6em;
     }
 
     .header__nav>ul>li.shi-item-bordered>a {
@@ -420,8 +424,6 @@
             left: 0;
             width: 100%;
             max-height: 100vh;
-            //overflow-y: auto;
-            //padding-top: 3.3125em 1.875em 2.5em;
             transition: opacity .3s;
 
             // tricky too-clever to get margins to align on both our
