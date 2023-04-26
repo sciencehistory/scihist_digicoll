@@ -37,7 +37,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
   end
 
   context "#update", logged_in_user: :editor do
-    let(:work) { create(:public_work) }
+    let(:work) { create(:public_work, ocr_requested: true, members: [create(:asset_with_faked_file, hocr: "<random ocr/>")]) }
     it "trims leading and trailing spaces" do
       put :update, params: {
         id: work.friendlier_id,
@@ -77,7 +77,22 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       expect(work.description).to eq "paragraph1\nparagraph2\n"
       expect(work.admin_note).to eq ["paragraph1\nparagraph2\n"]
     end
+
+    it "deletes all OCR on request" do
+      expect(work.ocr_requested).to be true
+      put :update, params: { id: work.friendlier_id, work: { ocr_requested: "0" } }
+      expect(flash[:notice]).to match /Work was successfully updated./
+      expect(work.reload.members.first.hocr).to be_nil
+    end
+
+    it "does not delete OCR if the save operation fails" do
+      expect(work.reload.members.first.hocr).to eq "<random ocr/>"
+      put :update, params: { id: work.friendlier_id, work: { title: nil } }
+      expect(flash[:notice]).to be_nil
+      expect(work.reload.members.first.hocr).to eq "<random ocr/>"
+    end
   end
+
 
   context "Reorder members", logged_in_user: :editor do
     let(:c)  { create(:asset_with_faked_file, :mp3, title: "c", position: 1) }
