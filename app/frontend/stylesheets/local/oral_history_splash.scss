@@ -37,12 +37,12 @@
 
   // Can get rid of when we have moved totally over to new design!
   .collection-desc .show-metadata  p {
-    font-family: "SofiaPro","sans-serif" !important;
+    font-family: "sofia-pro","sans-serif" !important;
     line-height: 1.4 !important;
   }
   .show-title h1 {
     color: white;
-    font-family: "SofiaPro","sans-serif" !important;
+    font-family: "sofia-pro","sans-serif" !important;
     margin-bottom: 0.5rem;
     font-weight: 900;
   }
@@ -70,7 +70,7 @@
     padding: 2rem 15px 2rem 15px;
 
     color: white;
-    font-family: "SofiaPro","sans-serif";
+    font-family: "sofia-pro","sans-serif";
 
     @include media-breakpoint-up('md') {
       padding-right: 4rem;

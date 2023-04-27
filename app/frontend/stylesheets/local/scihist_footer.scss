@@ -14,7 +14,7 @@
 
   // Font resets to try to match main site context, including their dynamic
   // fluid fonts.
-  font: normal 400 1em/1.2 "SofiaPro","sans-serif";
+  font: normal 400 1em/1.2 "sofia-pro","sans-serif";
   font-size: min(1.389vw, 20px);
 
   @media screen and (max-width: 1199px) {
@@ -265,7 +265,7 @@
 
 // the supra-footer we have with our site links, that is not taken from main webiste
 .dig-col-links {
-  font: normal 400 1em/1.2 "SofiaPro","sans-serif";
+  font: normal 400 1em/1.2 "sofia-pro","sans-serif";
 
   background-color: #285f70;
   padding-top: 2rem;
