@@ -37,7 +37,7 @@
     .home-right-column {
         background-color: #285f70;
         color: white;
-        font-family: "SofiaPro","sans-serif";
+        font-family: "sofia-pro","sans-serif";
         padding: 1rem 0;
 
         @include media-breakpoint-up('lg') {
@@ -56,7 +56,7 @@
         }
         .blurb {
           //max-width: 35rem !important;
-          font-family: "SofiaPro","sans-serif" !important;
+          font-family: "sofia-pro","sans-serif" !important;
           margin-top: $paragraph-spacer !important;
           margin-bottom: $paragraph-spacer * 2 !important;
           font-size: $h5-font-size !important;
