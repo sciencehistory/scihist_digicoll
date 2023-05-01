@@ -1,8 +1,21 @@
 // our static error pages
 
 .error-page {
+
+  &.s500 .masthead-title {
+    text-transform: uppercase;
+    font-weight: 600;
+    margin: 0;
+    a {
+      color: #1D242B;
+      text-decoration-color: #D7272E;
+    }
+  }
+
+
   .error-body {
-    margin: 2rem 0 3rem 0;
+    margin-top: 2rem;
+    margin-bottom: 3rem;
 
     display: flex;
     gap: 2.5rem;
