@@ -577,17 +577,25 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
+        align-items: center;
 
         column-gap: 2rem;
-        row-gap: 0.4em;
+        row-gap: 1em;
 
-        h1 a {
+        // A bit tricky to get this to properly look vertically centerered with
+        // search box. A little bit of negative top margin seems to make it look
+        // right, maybe the font metrics aren't quite right.
+        .masthead-title {
             font-size: min(2.5rem, 8vw);
+            line-height: 1;
+            margin: 0;
+            margin-top: -0.15em;
+        }
+
+        .masthead-title a {
             text-transform: uppercase;
             font-weight: 600;
             color: #D7272E;
-            display: inline-block;
-            margin: 0;
         }
 
         .search-form {
