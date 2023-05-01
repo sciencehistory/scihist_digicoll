@@ -70,6 +70,8 @@
 }
 
 .sort-pagination {
+  padding-top: 0.5rem; // match blacklight .facets-header so it lines up
+
   //flexbox works a lot better than float here
   display: flex;
   flex-direction: row;
