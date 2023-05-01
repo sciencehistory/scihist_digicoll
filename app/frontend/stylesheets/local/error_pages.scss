@@ -2,13 +2,19 @@
 
 .error-page {
   .error-body {
+    margin: 2rem 0 3rem 0;
+
     display: flex;
+    gap: 2.5rem;
     width: 100%;
+
+    h1, h2, .error-subheadline {
+      font-weight: 600;
+    }
 
     .column {
       flex: 1;
       flex-shrink: 0;
-      padding: 0 2%;
     }
 
     .image-link-wrapper {
