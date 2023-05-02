@@ -18,24 +18,26 @@
 
 #shi-masthead-from-main-website {
     font: normal 400 1em/1.2 "sofia-pro","sans-serif";
-    // reset to 20px/1.25 rem for kind-of consistency with main site where we copied
-    // styles. this isn't actually exactly how CSS on main site works...
-    //font-size: 1.25rem;
 
-    // This should be proportional at 1.389vw, but
-    // MIN 20px, which original did with a media query at min-width 1440px, but let's
-    // do with CSS min instead, seems to have full support
-    font-size: min(1.389vw, 20px);
+    // This only ends up used at screens larger htan 1199px (see below)
+    //
+    // We've hacked it from original source to be similar but better, using min and max
+    // which seems to have browser support.
+    //
+    //  Base of 1.389vw (from original)
+    //
+    // But no bigger than 20px -- which the original did with a media query at 1440px
+    // And no smaller than 1.19rem, which avoids a discontinuity at 1199px, where
+    // previously font was getting smaller before getting larger again.
+    //
+    // This base font is used for a lot of other things expressed in ems
+    font-size: max(min(1.389vw, 20px), 1.19rem);
 
-    // change to 991px if we want to keep nav menus on one line until collapse
     @media screen and (max-width: 1199px) {
         font-size:1.6vw
-        //font-size: min(1.6vw, 14px);
-        //font-weight: 700 !important;
     }
 
     line-height: 1.2;
-
 
     // TOP BAR
 
