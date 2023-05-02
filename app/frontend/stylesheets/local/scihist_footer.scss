@@ -186,6 +186,10 @@
 
       display: inline-block;
   }
+  .footer__inner_bottom ul li {
+    display: flex;
+    align-items: center;
+  }
   .footer__inner_bottom ul li:not(:last-child)::after {
       content: "|";
       font-size: .65em;
