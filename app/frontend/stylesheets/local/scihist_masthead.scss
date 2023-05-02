@@ -197,7 +197,10 @@
 
     .header__logo {
         flex: 0 0 auto;
-        max-width: 19.15em;
+        // some complex code to be responsive like main site, but keep it small
+        // enough to keep it from forcing nav links to wrap at narrow screens.
+        // Without ALSO getting TOO small on very small screens that have already collapsed menu anyway!
+        max-width: max(min(19.15em, 28vw), 15em);
         position: relative;
     }
 
