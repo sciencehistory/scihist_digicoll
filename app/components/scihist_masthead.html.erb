@@ -29,7 +29,7 @@
         <div class="wrapper header__wrapper">
             <div class="header__inner">
                 <div class="header__logo">
-                    <a class="custom-logo-link img-middle shi-hover" href="https://dev-sciencehistorywp.pantheonsite.io/" rel="home">
+                    <a class="custom-logo-link img-middle shi-hover" href="<%= ScihistDigicoll::Env.lookup(:main_website_base) %>" rel="home">
                         <%= image_tag "from_main_website/shi-logo.png",
                             width: 575, height: 122,
                             class: "img-autosize custom-logo",
