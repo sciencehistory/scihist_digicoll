@@ -244,26 +244,32 @@
         padding-right: 15px;
       }
 
+
+      // some kind of hackiness to make it look KIND of like main site at smaller screen size,
+      // but we do simpler -- just one column of items.
       .footer__inner_bottom {
         margin: 0 auto;
 
         flex-direction: column;
         align-items: flex-start;
 
-        font-size: 1.3em;
+        font-size: 1.2em;
         line-height: 1em;
 
         line-height: 0.5;
       }
+      .footer__copyright, #menu-footer-copyright {
+        flex-direction: column;
 
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .footer__inner_bottom ul li:not(:last-child)::after {
+        display: none;
+      }
       .footer__copyright+ul>li:first-child::before {
         display: none;
       }
-
-      .footer__inner_bottom ul li:not(:last-child)::after {
-          margin: 0 0.7142857143em;
-      }
-
   }
 }
 
