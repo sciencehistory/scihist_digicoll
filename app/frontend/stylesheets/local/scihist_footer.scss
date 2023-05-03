@@ -209,6 +209,10 @@
   .footer__inner_bottom ul li a:hover {
       text-decoration-color: #fff
   }
+  .footer__inner_bottom ul li a:not([href]) {
+    text-decoration: none
+  }
+
 
 
   // Very small screen we hide two of our columns. These small screen media
