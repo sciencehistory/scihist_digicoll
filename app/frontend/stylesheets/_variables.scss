@@ -12,7 +12,31 @@
  *
  */
 
-/* rebrand colors */
+/* NEW 2023 Brand colors */
+// Mostly background:
+$shi-blackish: #1D242b; // we also use as text color esp for headings, although main site does not
+$shi-teal: #285f70; // as actually used on main site may 2023
+$shi-green: #004d44;
+$shi-dark-blue: #313E48;
+$shi-maroon: #6A1D32;
+$shi-bg-gray: #EFEEED; // as used on mainsite, not in PDF
+$shi-footer-bg-green: #eaf6f3; // one of several used on mainsite for footer "callouts", not in PDF
+$shi-bg-turquoise: #d4ece8; // an alternate turquoise used for backgrounds, let's try to avoid it though
+
+// mostly foreground text/highlight
+$shi-turquoise: #A9DBD4; // especially as highlight text over dark blue
+$shi-red: #D7272E;
+
+// yellow is used as main button background, and also text over blackish and teal
+$shi-yellow: #E4E76D;
+
+// This is an alternate color used sometimes for text, over pale green or even
+// white.
+$shi-alternate-text-color: #3c3c3c;
+
+
+
+/* OLD rebrand colors */
 $brand-dark-blue: #050939;
 $brand-bright-green: #a6e5d8;
 $brand-red: #d8262e;
