@@ -23,7 +23,7 @@
 
 // Some new 2023 brand buttons
 .btn-dark-inverse {
-  @include button-variant(#1D242B, #1D242B);
+  @include button-variant($shi-blackish, $shi-blackish);
   color: white;
   text-transform: uppercase;
   font-weight: 700;
@@ -38,8 +38,8 @@
 
 // Eventually will be all/most of buttons, new design really uses this button
 .btn-brand-new {
-  // hover background copied from main site
-  @include button-variant(#e4e76d, #e4e76d, $hover-background: #c6c94f);
+  // hover-background copied from main site
+  @include button-variant($shi-yellow, $shi-yellow, $hover-background: #c6c94f);
   transition: background-color .3s ease,color .3s ease;
 
   text-transform: uppercase;
