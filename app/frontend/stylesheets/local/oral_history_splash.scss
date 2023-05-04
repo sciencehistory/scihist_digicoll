@@ -47,12 +47,12 @@
     font-weight: 900;
   }
   .show-genre a:not(:focus):not(:hover), .show-genre a {
-    color: #a9dbd4;
+    color: $shi-turquoise;
   }
   // can get rid of when we have general new design in there?
   .collection-description {
     a {
-      color: #a9dbd4;
+      color: $shi-turquoise;
       text-decoration: underline;
     }
   }
@@ -62,7 +62,7 @@
 
 
   .collection-desc-container {
-    background-color: #313e48;
+    background-color: $shi-dark-blue;
   }
 
   .collection-desc {

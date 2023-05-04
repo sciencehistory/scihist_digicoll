@@ -2,24 +2,22 @@
   padding-top: 2em;
   padding-bottom: 2em;
 
-  background-color: #eaf6f3; // officially should be #d4ece8 ?? But this is what site uses. Ask Caitlin.
+  background-color: $shi-footer-bg-green;
 
-  // Our standard BLUE link color isn't sufficient WCAG contrast over the dark grey background.
-  // red is also not sufficient at this background. We'll use the standard new website link,
-  // as they do too over this background...
+  // not sure what link color to use over our green callout
   a {
     color: black;
     font-weight: bold;
-    text-decoration: underline #d7272e;;
+    text-decoration: underline $shi-red;
     &:hover {
-      color: #d7272e;
+      color: $shi-red;
     }
   }
 
   p {
     font-size: 1rem;
     font-family: "sofia-pro", "sans-serif" !important;
-    color: #3c3c3c; // this is what main site uses here, should ask Caitlin
+    color: $shi-alternate-text-color;
 
     line-height: 1.4em;
 
