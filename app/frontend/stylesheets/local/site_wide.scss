@@ -4,7 +4,9 @@
 // but we'll put that in a separate file.
 
 h2, .h2, h3, .h3, h4, .h4, h5, .h5 {
-  color: $brand-dark-blue;
+  // main webiste just uses black here, but we like using a softer color for headings, maybe
+  // this one?
+  color: $shi-blackish;
 }
 
 
