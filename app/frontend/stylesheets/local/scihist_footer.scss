@@ -165,11 +165,6 @@
       display: flex;
   }
 
-  .footer__copyright {
-      font-size: .65em;
-      line-height: 1.31em
-  }
-
   #menu-footer-copyright {
     flex-wrap: wrap;
     display: flex;
@@ -178,14 +173,7 @@
     margin: 0;
   }
 
-  .footer__copyright+ul>li:first-child::before {
-      content: "|";
-      font-size: .65em;
-      line-height: normal;
-      margin: 0 1.9230769231em;
 
-      display: inline-block;
-  }
   .footer__inner_bottom ul li {
     display: flex;
     align-items: center;
@@ -227,6 +215,10 @@
           max-width: 13.9375em;
       }
 
+      .footer__inner_bottom {
+          justify-content: initial;
+      }
+
       .footer__column:nth-child(2),.footer__column:nth-child(3),.footer__column:last-child .footer__nav {
           display: none
       }
@@ -251,27 +243,15 @@
 
       // some kind of hackiness to make it look KIND of like main site at smaller screen size,
       // but we do simpler -- just one column of items.
-      .footer__inner_bottom {
-        margin: 0 auto;
-
+      #menu-footer-copyright {
         flex-direction: column;
-        align-items: flex-start;
 
         font-size: 1.2em;
         line-height: 1em;
 
         line-height: 0.5;
       }
-      .footer__copyright, #menu-footer-copyright {
-        flex-direction: column;
-
-        margin-left: auto;
-        margin-right: auto;
-      }
       .footer__inner_bottom ul li:not(:last-child)::after {
-        display: none;
-      }
-      .footer__copyright+ul>li:first-child::before {
         display: none;
       }
   }
