@@ -307,5 +307,9 @@
     max-width: 40em;
     margin: auto;
   }
+
+  ul.buttons a {
+    min-width: 8.25em; // trying to keep all buttons the same size
+  }
 }
 
