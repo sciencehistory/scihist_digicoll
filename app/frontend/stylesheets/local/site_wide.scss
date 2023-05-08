@@ -127,22 +127,12 @@ hr.brand {
   }
 }
 
-// In new branding, we use the serif as body text, but leave the sans serif as default font for all the controls,
-// just explicitly set it in certain places, restricted to a parent class cause it kind of messes up
-// admin screens.
-//
-// We set 'p' tags within a .branded-body-font -- with some exceptions -- to use our serif font, and have
-// appropriate max-width and spacer for that font.
-.branded-body-font, .scihist-main-layout {
-  p:not(.collection-title):not(.sans-serif), dl:not(.sans-serif) dd, table:not(.sans-serif) td, table:not(.sans-serif) tbody th, .serif {
-    @extend %text-font;
-    // super hacky sorry. :(
-    .btn {
-      font-family: $brand-sans-serif;
-    }
-  }
-  p:not(.collection-title):not(.sans-serif) {
-    // try to keep this readable, abril is particularly hard on long line lengths
+
+// opt into our serif font
+.brand-serif {
+  @extend %text-font;
+
+  p {
     max-width: $max-readable-width;
     // and could use some more spacing, normally in bootstrap $line-height-computed / 2
     margin-bottom: $paragraph-spacer;
@@ -157,6 +147,7 @@ hr.brand {
     margin-bottom: ($paragraph-font-size * $paragraph-line-height-long * 0.5) !important;
   }
 }
+
 
 .text-page {
   max-width: $max-readable-width;
