@@ -148,12 +148,15 @@ $layout-expand-up: 'md';
 $h4-font-size: 22px;
 $body-color: #222; // little bit darker
 
+$line-height-base: 1.4; // seems to match main site and work well with sofia-pro
+
 // bootstrap brand colors
 $danger: $brand-red;
 $warning: $brand-yellow;
 $primary: $brand-blue;
 $dark: $brand-dark-blue;
 $secondary: $brand-dark-grey;
+$tooltip-bg: $shi-blackish;
 
 // $btn-primary-border: $brand-primary; // bootstrap 4 has no button borders already I think.
 // $btn-default-border: $brand-light-grey; // bootstrap 4 has no button borders already I think.
