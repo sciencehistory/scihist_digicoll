@@ -21,13 +21,16 @@
   color: $brand-dark-blue;
 }
 
-// Some new 2023 brand buttons
+// Some new 2023 brand buttons -- we're using bootstrap button creator mixins, BUT
+// then overriding a lot of bootstrap stuff -- we might want to transition to actually
+// setting bootstrap button default size/weight/etc?
+
 .btn-dark-inverse {
-  @include button-variant(#1D242B, #1D242B);
+  @include button-variant($shi-blackish, $shi-blackish);
   color: white;
   text-transform: uppercase;
   font-weight: 700;
-  font-size: 0.9375em;
+  font-size: 0.9375em; // slightly smaller than normal to make up for the all-caps? 15px/16px
 
   // nain site topnav bar fades white over dark text using opacity,
   // we use a specific color to do similar and match.
@@ -36,15 +39,16 @@
   }
 }
 
-// Eventually will be all/most of buttons, new design really uses this button
+// The main/only button type actually used in new main site -- this is a temporary
+// name
 .btn-brand-new {
-  // hover background copied from main site
-  @include button-variant(#e4e76d, #e4e76d, $hover-background: #c6c94f);
+  // hover-background copied from main site
+  @include button-variant($shi-yellow, $shi-yellow, $hover-background: #c6c94f);
   transition: background-color .3s ease,color .3s ease;
 
   text-transform: uppercase;
   font-weight: 700;
-  font-size: 0.8125rem;
+  font-size: 0.9375rem; // slightly smaller than normal to make up for the all-caps? 15px/16px
 
   // won't be necessary once we fix up all bootstrap buttons to match?
   border-radius: 0;

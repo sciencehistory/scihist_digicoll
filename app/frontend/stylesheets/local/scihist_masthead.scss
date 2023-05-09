@@ -60,7 +60,7 @@
     .shi-top-bar {
         width: 100%;
         padding: 0 4em;
-        background-color: #1D242B;
+        background-color: $shi-blackish;
         color: #fff;
         overflow: hidden
     }
@@ -117,7 +117,7 @@
 
     .shi-top-bar__hours:before {
         content: "";
-        background-color: #285f70;
+        background-color: $shi-teal;
         position: absolute;
         left: 0;
         right: -9999px;
@@ -300,7 +300,7 @@
         left: calc(1.2941176471em - 2px);
         right: calc(1.2941176471em - 4px);
         height: 2px;
-        background: #d7272e;
+        background: $shi-red;
         opacity: 0;
         transition: opacity .3s
     }
@@ -323,7 +323,7 @@
     .header__nav>ul>li.shi-item-bordered>a {
         line-height: 1em;
         padding: .5294117647em .5882352941em;
-        border: 1px solid #d7272e;
+        border: 1px solid $shi-red;
         transition: color .3s,background .3s
     }
 
@@ -355,13 +355,13 @@
         &:hover::after {
             content: "";
             display: block;
-            border-bottom: 2px solid #D7272E;
+            border-bottom: 2px solid $shi-red;
         }
     }
     // And on the bordered 'support' button
     @media (hover: hover) {
        .header__nav>ul>li.shi-item-bordered:hover>a {
-            background: #d7272e;
+            background: $shi-red;
             color: #fff
         }
     }
@@ -520,7 +520,7 @@
         // a `.header_mobile` class, it's not required -- the top bar nav
         // being moved to be inside the header__nav is enough selectivity.
         .header__nav .shi-top-bar-nav {
-            background: #1d242b;
+            background: $shi-blackish;
             color: #fff;
             flex-direction: column;
             margin: 2.25em -1.875em -2.5em;
@@ -600,8 +600,8 @@
         .masthead-title a {
             text-transform: uppercase;
             font-weight: 600;
-            color: #1D242B;
-            text-decoration-color: #D7272E;
+            color: $shi-blackish;
+            text-decoration-color: $shi-red;
         }
 
         .search-form {
@@ -626,6 +626,6 @@
 
     &.staging {
         // was $warning;, could be again after we fix theme
-        background-color: #e4e76d;
+        background-color: $shi-yellow;
     }
 }
