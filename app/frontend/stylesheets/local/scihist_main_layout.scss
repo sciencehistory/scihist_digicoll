@@ -1,8 +1,6 @@
 // see docs at _mixins.scss, use these on full-screen divs
-// to get proper margins and max width.
-.shi-full-width-outer {
-  @include shi-full-width-outer-mixin;
-}
+// to get proper margins and max width. If the section has a background, it needs
+// an additional container div wrapping this one, to provide the background.
 .shi-full-width-inner {
   @include shi-full-width-inner-mixin;
 }
