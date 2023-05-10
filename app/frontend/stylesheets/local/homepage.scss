@@ -45,6 +45,11 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+
+            .search-container {
+              max-width: 38rem;
+              padding: 0 2rem;
+            }
         }
     }
 
@@ -62,10 +67,11 @@
     }
 
     .search-container {
+        @include shi-full-width-outer-mixin;
         margin-left: auto;
         margin-right: auto;
-        padding-left: 1.25rem  !important;
-        padding-right: 1.25rem !important;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
     }
 
     .search-callouts {
