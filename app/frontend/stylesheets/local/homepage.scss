@@ -35,7 +35,7 @@
     }
 
     .home-right-column {
-        background-color: #285f70;
+        background-color: $shi-teal;
         color: white;
         font-family: "sofia-pro","sans-serif";
         padding: 1rem 0;
@@ -50,7 +50,7 @@
 
     .digital-description {
         h1 {
-            color: #e4e76d;
+            color: $shi-yellow;
             text-transform: uppercase;
             font-weight: 600;
         }
