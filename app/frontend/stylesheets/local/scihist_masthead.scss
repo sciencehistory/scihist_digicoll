@@ -88,8 +88,7 @@
         justify-content: flex-end;
         align-items: center;
         margin-right: 1.15em;
-        min-height: 2.15em;
-        padding: .3em 0
+        padding: .175em 0;
     }
     .header__nav .shi-top-bar-nav {
         display: none;
@@ -97,18 +96,14 @@
 
     .shi-top-bar-nav__item {
         text-decoration: none;
-        // original site uses media queries to keep otherwise liquid proportional
-        // font from going below minimum size, we just use css min() for similar.
-        font-size: max(.77em, 14.3px);
+        font-size: 0.875rem;
         line-height: 136%;
-        padding: .3571428571em 1.6428571429em
+        padding: .2142857143em 1.6428571429em
     }
 
     .shi-top-bar__hours {
         flex: 0 0 auto;
-        // original site uses media queries to keep otherwise liquid proportional
-        // font from going below minimum size, we just use css min() for similar.
-        font-size: max(.77em, 14.3px);
+        font-size: 0.875rem;
         line-height: 136%;
         padding: .3571428571em 0 .3571428571em 3.2142857143em;
         position: relative;
@@ -377,10 +372,6 @@
         }
         .header__right-side {
             padding: 0
-        }
-        .header__nav ul li a, .shi-top-bar__hours, .shi-top-bar-nav__item {
-            // in original this was 15.4px, but we want to always do rem?
-            font-size: 0.9625rem;
         }
     }
 
