@@ -21,6 +21,13 @@
         margin-bottom: 0;
         img {
           width: 100%;
+          // for small screens at collapsed size
+          max-height: 20rem;
+          object-fit: cover;
+          @include media-breakpoint-up('lg') {
+            max-height: revert;
+            object-fit: revert; // cause apparently sometimes it's off by 1 pixel!
+          }
         }
         figcaption {
           position: absolute;
