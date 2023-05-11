@@ -81,27 +81,43 @@ describe CatalogController, solr: true, indexable_callbacks: true do
   end
 
   describe "navbar search slide-out limits" do
-    let(:green_rights) { "http://creativecommons.org/publicdomain/mark/1.0/" }
-    let(:red_rights) { "http://rightsstatements.org/vocab/InC/1.0/" }
+    let(:cc_public_domain) { "http://creativecommons.org/publicdomain/mark/1.0/" }
+    let(:no_known_copyright) { "http://rightsstatements.org/vocab/NKC/1.0/" }
+    let(:no_copyright_united_states) { "http://rightsstatements.org/vocab/NoC-US/1.0/" }
+    let(:no_copyright_other_restrictions) { "http://rightsstatements.org/vocab/NoC-OKLR/1.0/" }
+
+    let(:in_copyright) { "http://rightsstatements.org/vocab/InC/1.0/" }
     let(:green_date) { Work::DateOfWork.new({ "start"=>"2014-01-01"}) }
     let(:green_title) { "good title" }
 
-    let!(:green) { create(:public_work, title: green_title, rights: green_rights, date_of_work: green_date) }
-    let!(:red1)  { create(:public_work, title: green_title, rights: green_rights) }
-    let!(:red2)  { create(:public_work, title: green_title, date_of_work: green_date, rights: red_rights) }
+    let!(:published_and_public_domain) { create(:public_work, title: green_title, rights: cc_public_domain, date_of_work: green_date) }
+    let!(:published_and_nkc) { create(:public_work, title: green_title, rights: no_known_copyright, date_of_work: green_date) }
+    let!(:published_and_no_copyright) { create(:public_work, title: green_title, rights: no_copyright_united_states, date_of_work: green_date) }
+    let!(:published_and_nc_other_restrictions) { create(:public_work, title: green_title, rights: no_copyright_other_restrictions, date_of_work: green_date) }
+
+
+    let!(:unpublished_but_public_domain)  { create(:public_work, title: green_title, rights: cc_public_domain) }
+    let!(:published_but_copyrighted)  { create(:public_work, title: green_title, date_of_work: green_date, rights: in_copyright) }
 
     it "can use limits to find only matching work" do
       visit search_catalog_path
       fill_in "q", with: green_title
       fill_in "search-option-date-from", with: "2013"
       fill_in "search-option-date-to", with: "2015"
-      check("Public Domain Only")
+      check("Copyright Free")
       click_on "Go"
 
-      expect(page).to have_content("1 entry found")
-      expect(page).to have_selector("li#document_#{green.friendlier_id}")
-      expect(page).not_to have_selector("li#document_#{red1.friendlier_id}")
-      expect(page).not_to have_selector("li#document_#{red2.friendlier_id}")
+      # 4 results
+      expect(page).to have_selector('.scihist-results-list-item', count: 4)
+
+      # namely:
+      expect(page).to have_selector("li#document_#{published_and_public_domain.friendlier_id}")
+      expect(page).to have_selector("li#document_#{published_and_nkc.friendlier_id}")
+      expect(page).to have_selector("li#document_#{published_and_no_copyright.friendlier_id}")
+      expect(page).to have_selector("li#document_#{published_and_nc_other_restrictions.friendlier_id}")
+
+      expect(page).not_to have_selector("li#document_#{unpublished_but_public_domain.friendlier_id}")
+      expect(page).not_to have_selector("li#document_#{published_but_copyrighted.friendlier_id}")
     end
   end
 
