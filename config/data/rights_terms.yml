@@ -31,6 +31,14 @@
 # clear that NO alt text is needed, add `icon_alt: ""`, so an empty string
 # alt will be added appropriately for assistive technology.
 #
+#
+# If you want terms to match when users check the "copyright free" checkbox in the search UI,
+# mark them with
+#   matches_copyright_free_searches: true
+#
+# See the CopyrightFreeFilter blacklight search filter class for more info.
+# See https://github.com/sciencehistory/scihist_digicoll/issues/2125 for the decision of which terms to include under that designation.
+
 terms:
   - id: http://rightsstatements.org/vocab/InC/1.0/
     param_id: InC
@@ -63,6 +71,7 @@ terms:
     param_id: NoC-OKLR
     label: No Copyright - Other Known Legal Restrictions
     active: true
+    matches_copyright_free_searches: true
     category: no_copyright
     short_label_html: Other Legal<br>Restrictions
     icon_alt: "No Copyright"
@@ -72,6 +81,7 @@ terms:
     param_id: NoC-US
     label: No Copyright - United States
     active: true
+    matches_copyright_free_searches: true
     category: no_copyright
     short_label_html: In the<br>United States
     icon_alt: "No Copyright"
@@ -81,6 +91,7 @@ terms:
     param_id: NKC
     label: No Known Copyright
     active: true
+    matches_copyright_free_searches: true
     category: other
     icon_alt: "Unknown Copyright Status"
     short_label_html: No Known<br>Copyright
@@ -89,6 +100,7 @@ terms:
   - id: http://creativecommons.org/publicdomain/mark/1.0/
     label: Public Domain Mark 1.0
     active: true
+    matches_copyright_free_searches: true
     category: no_copyright
     icon_alt: "No Copyright"
     short_label_html: Public<br>Domain
