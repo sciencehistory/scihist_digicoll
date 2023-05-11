@@ -87,21 +87,25 @@ describe CatalogController, solr: true, indexable_callbacks: true do
     let(:no_copyright_other_restrictions) { "http://rightsstatements.org/vocab/NoC-OKLR/1.0/" }
 
     let(:in_copyright) { "http://rightsstatements.org/vocab/InC/1.0/" }
-    let(:green_date) { Work::DateOfWork.new({ "start"=>"2014-01-01"}) }
-    let(:green_title) { "good title" }
+    
+    let(:matching_date) { Work::DateOfWork.new({ "start"=>"2014-01-01"}) }
+    let(:too_recent)    { Work::DateOfWork.new({ "start"=>"2021-01-01"}) }
 
-    let!(:published_and_public_domain) { create(:public_work, title: green_title, rights: cc_public_domain, date_of_work: green_date) }
-    let!(:published_and_nkc) { create(:public_work, title: green_title, rights: no_known_copyright, date_of_work: green_date) }
-    let!(:published_and_no_copyright) { create(:public_work, title: green_title, rights: no_copyright_united_states, date_of_work: green_date) }
-    let!(:published_and_nc_other_restrictions) { create(:public_work, title: green_title, rights: no_copyright_other_restrictions, date_of_work: green_date) }
+    let(:title_for_search) { "good title" }
 
+    let!(:published_and_public_domain) { create(:public_work, title: title_for_search, rights: cc_public_domain, date_of_work: matching_date) }
+    let!(:published_and_nkc) { create(:public_work, title: title_for_search, rights: no_known_copyright, date_of_work: matching_date) }
+    let!(:published_and_no_copyright) { create(:public_work, title: title_for_search, rights: no_copyright_united_states, date_of_work: matching_date) }
+    let!(:published_and_nc_other_restrictions) { create(:public_work, title: title_for_search, rights: no_copyright_other_restrictions, date_of_work: matching_date) }
 
-    let!(:unpublished_but_public_domain)  { create(:public_work, title: green_title, rights: cc_public_domain) }
-    let!(:published_but_copyrighted)  { create(:public_work, title: green_title, date_of_work: green_date, rights: in_copyright) }
+    let!(:published_and_public_domain_but_too_recent) { create(:public_work, title: title_for_search, rights: cc_public_domain, date_of_work: too_recent) }
 
-    it "can use limits to find only matching work" do
+    let!(:unpublished_but_public_domain)  { create(:public_work, title: title_for_search, rights: cc_public_domain) }
+    let!(:published_but_copyrighted)  { create(:public_work, title: title_for_search, date_of_work: matching_date, rights: in_copyright) }
+
+    it "can use limits to find works we consider copyright free" do
       visit search_catalog_path
-      fill_in "q", with: green_title
+      fill_in "q", with: title_for_search
       fill_in "search-option-date-from", with: "2013"
       fill_in "search-option-date-to", with: "2015"
       check("Copyright Free")
@@ -110,14 +114,18 @@ describe CatalogController, solr: true, indexable_callbacks: true do
       # 4 results
       expect(page).to have_selector('.scihist-results-list-item', count: 4)
 
-      # namely:
+      # these are all considered "copyright free"
       expect(page).to have_selector("li#document_#{published_and_public_domain.friendlier_id}")
       expect(page).to have_selector("li#document_#{published_and_nkc.friendlier_id}")
       expect(page).to have_selector("li#document_#{published_and_no_copyright.friendlier_id}")
       expect(page).to have_selector("li#document_#{published_and_nc_other_restrictions.friendlier_id}")
 
+      # considered in copyright, so should not match the search:
       expect(page).not_to have_selector("li#document_#{unpublished_but_public_domain.friendlier_id}")
       expect(page).not_to have_selector("li#document_#{published_but_copyrighted.friendlier_id}")
+
+      # too recent, so should not match the search:
+      expect(page).not_to have_selector("li#document_#{published_and_public_domain_but_too_recent.friendlier_id}")      
     end
   end
 
