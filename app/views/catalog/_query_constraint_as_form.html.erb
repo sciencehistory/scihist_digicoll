@@ -30,5 +30,5 @@
 </form>
 
 <% if SearchBuilder::CopyrightFreeFilter.filtered_copyright_free?(local_assigns[:params]) %>
-  <%= render_constraint_element(nil, "Copyright Free", remove: search_state.params_for_search.except(:filter_copyright_free, :page, :utf8)) %>
+  <%= render_constraint_element(nil, "Only Copyright Free", remove: search_state.params_for_search.except(:filter_copyright_free, :page, :utf8)) %>
 <% end %>
