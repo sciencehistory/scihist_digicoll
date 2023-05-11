@@ -108,7 +108,7 @@ describe CatalogController, solr: true, indexable_callbacks: true do
       fill_in "q", with: title_for_search
       fill_in "search-option-date-from", with: "2013"
       fill_in "search-option-date-to", with: "2015"
-      check("Copyright Free")
+      check("Copyright Free Only")
       click_on "Go"
 
       # 4 results
