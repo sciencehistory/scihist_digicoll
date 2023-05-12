@@ -29,7 +29,6 @@
   @include button-variant($shi-blackish, $shi-blackish);
   color: white;
   text-transform: uppercase;
-  font-weight: 700;
   font-size: 0.9375em; // slightly smaller than normal to make up for the all-caps? 15px/16px
 
   // nain site topnav bar fades white over dark text using opacity,
