@@ -9,6 +9,13 @@ h2, .h2, h3, .h3, h4, .h4, h5, .h5 {
   color: $shi-blackish;
 }
 
+// We left bootstrap $font-size-base at 1rem (usually 16px) for the base of various
+// other padding and sizing calculations, but let's actually set default starting
+// font size to 17px (1.0625rem for 16px==1rem)
+body {
+  font-size: 1.0625rem;
+}
+
 
 // We set more-rounded corners, but only for buttons not input elements,
 // make sure buttons in input groups match original less rounded.
