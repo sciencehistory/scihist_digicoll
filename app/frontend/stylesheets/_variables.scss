@@ -87,19 +87,6 @@ $transparent-background: rgba(0,0,0,0.25);
 
 $thumb-horizontal-margin: 4px;
 
-// These "paragraph" settings are all meant for use with our serif font, abril,
-// which we use for body/paragraph/'text' copy.
-//
-// abril is far too small at 16px, it's a small font. 17px abril looks more like
-// 16px other fonts. 1.0625rem is 17px if 1rem is 16px --
-// bootstrap wants us to use rem, rather than fixed point size, for accessibility
-// user-resizing purposes.
-//
-
-// We really need two differnet line spacing, LOTS of text needs the bigger -long one,
-// but briefer text is generally better with the other one, which for legacy reasons
-// ends up the default in lots of places.
-$paragraph-line-height: 1.2941176471; // 1.0625rem * this line-height is 22px if 1rem is 16px
 $paragraph-spacer: 1rem; // should be same as bootstrap $spacer, different variable for legacy reasons
 
 $navbar-margin-bottom: 22px;
