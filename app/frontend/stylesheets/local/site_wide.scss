@@ -139,8 +139,7 @@ hr.brand {
   margin-right: auto;
   margin-left: auto;
   p, dd, dt {
-    line-height: $paragraph-line-height-long !important;
-    margin-bottom: ($paragraph-line-height-long * 0.5) !important;
+    margin-bottom: ($paragraph-spacer) !important;
     max-width: $max-readable-width;
   }
 }
