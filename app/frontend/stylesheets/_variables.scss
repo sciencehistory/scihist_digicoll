@@ -52,10 +52,6 @@ $brand-blue-text: $brand-blue;
 
 // Our brand sans-serif, with fallbacks copied from Bootstrap's default sans-serif.
 $brand-sans-serif: 'sofia-pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-// fallbacks are useful for weird diacritics that may not be in our main font,
-// especially the weird russian transliteraton stuff seems to be problematic.
-// Times New Roman seems to have them, at least on MacOS.
-$brand-serif: 'abril-text', "Times New Roman", Times, serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
 //$bg-lightly-shaded: #f9f9f9; // does not match brand, no suitable color in brand
 $bg-lightly-shaded: $brand-light-grey; // try brand color
