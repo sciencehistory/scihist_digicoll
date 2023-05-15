@@ -140,15 +140,15 @@ $layout-expand-up: 'md';
  *
  */
 
-// In chf_sufia, we set font-size-base to 16px. In Bootstrap 4, this needs to be in
-// `rem` units, and defaults to 1. Which should be 16px on most browsers. It is considered
-// by some to be better for accessibility to leave this defaulting to browser standard,
-// so we will try it unset with default for now.
-//$font-size-base: 16px;
+// We will leave the font-size base 1rem (usually 16px), to leave a nice round
+// number for calclulations based on it... BUT we elsehwere set defualt body
+// text size to 1.0625rem (usually 17px)
+$font-size-base: 1rem;
 $h4-font-size: 22px;
 $body-color: #222; // little bit darker
 
-$line-height-base: 1.4; // seems to match main site and work well with sofia-pro
+//$line-height-base: 1.5; // default 1.5 works for us, liked better than smaller
+$headings-line-height: 1.13; // a bit smaller than default 1.2
 
 // bootstrap brand colors
 $danger: $brand-red;
