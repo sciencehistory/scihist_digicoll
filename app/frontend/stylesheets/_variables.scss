@@ -62,7 +62,7 @@ $special-label-muted-color: $brand-dark-grey;
 $small-caps-letter-spacing: 0.035em;
 
 $brand-btn-alt-bg: $brand-bright-green;
-$brand-alt-header-weight: 700;
+$brand-alt-header-weight: 900;
 
 // adelle-sans has a 600 semi-bold available. 700 is standard bold. 500 seems to be the same as 400=normal.
 $semi-bold-weight: 600;
@@ -127,10 +127,10 @@ $layout-expand-up: 'md';
 // number for calclulations based on it... BUT we elsehwere set defualt body
 // text size to 1.0625rem (usually 17px)
 $font-size-base: 1rem;
+$body-font-size: 1.0625rem; // not a bootstrap variable
+
 $h4-font-size: 22px;
 $body-color: #222; // little bit darker
-                   //
-$body-font-size: 1.0625rem; // not a bootstrap variable
 
 //$line-height-base: 1.5; // default 1.5 works for us, liked better than smaller
 $headings-line-height: 1.13; // a bit smaller than default 1.2
