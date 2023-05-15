@@ -8,7 +8,6 @@
   .additional-titles, .part-of {
     margin-bottom: 0;
     &, h2 {
-      font-family: $brand-alt-header-font;
       font-weight: normal;
       @extend h3;
       margin-bottom: 0;

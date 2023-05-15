@@ -252,7 +252,6 @@
       ul {
         @extend .list-unstyled;
         @include font-size($h4-font-size);
-        font-family: $brand-alt-header-font;
         line-height: $headings-line-height;
         margin-top: 0;
       }
