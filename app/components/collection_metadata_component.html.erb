@@ -7,7 +7,7 @@
     <p class="show-item-count"><%= "#{number_with_delimiter(public_count)} #{'item'.pluralize(public_count)}" %></p>
   <% end %>
 
-  <div class="collection-description long-text-line-height">
+  <div class="collection-description">
     <%= DescriptionDisplayFormatter.new(collection.description).format %>
   </div>
 

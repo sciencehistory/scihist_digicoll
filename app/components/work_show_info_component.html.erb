@@ -98,7 +98,7 @@
 <% if oral_history_interviewer_profiles.present? %>
   <h2 class="attribute-sub-head">About the <%= "Interviewer".pluralize(oral_history_interviewer_profiles.count) %></h2>
 
-  <div class="show-sub-head-body long-text-line-height">
+  <div class="show-sub-head-body">
     <% oral_history_interviewer_profiles.each do |profile| %>
       <%= DescriptionDisplayFormatter.new(profile.profile).format %>
     <% end %>
