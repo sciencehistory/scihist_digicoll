@@ -336,8 +336,6 @@
     margin-top: $paragraph-spacer;
     max-width: $max-readable-width;
 
-    @extend %text-font;
-
     p {
       margin-bottom: $paragraph-spacer * 2;
     }
