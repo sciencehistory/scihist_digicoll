@@ -100,7 +100,6 @@ $thumb-horizontal-margin: 4px;
 // but briefer text is generally better with the other one, which for legacy reasons
 // ends up the default in lots of places.
 $paragraph-line-height: 1.2941176471; // 1.0625rem * this line-height is 22px if 1rem is 16px
-$paragraph-line-height-long: 1.625; // based on values on sciencehistory.org
 $paragraph-spacer: 1rem; // should be same as bootstrap $spacer, different variable for legacy reasons
 
 $navbar-margin-bottom: 22px;
