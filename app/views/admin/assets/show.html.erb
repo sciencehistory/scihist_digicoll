@@ -48,10 +48,10 @@
         </li>
       </ul>
       <div class="tab-content pt-2 pb-2 border-bottom" id="myTabContent">
-        <div class="tab-pane text-brand-serif show active" id="transcriptionText" role="tabpanel" aria-labelledby="transcription--tab">
+        <div class="tab-pane show active" id="transcriptionText" role="tabpanel" aria-labelledby="transcription--tab">
           <%= simple_format(html_escape(@asset.transcription)) %>
         </div>
-        <div class="tab-pane text-brand-serif" id="englishTranslationText" role="tabpanel" aria-labelledby="english-translation-tab">
+        <div class="tab-pane" id="englishTranslationText" role="tabpanel" aria-labelledby="english-translation-tab">
           <%= simple_format(html_escape(@asset.english_translation)) %>
         </div>
       </div>

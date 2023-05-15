@@ -49,7 +49,7 @@
   <div class="mb-3">
     <% grouped_jobs.each_pair do |institution, jobs| %>
       <h4 class="h6 mb-0 pt-2 border-top font-weight-semi-bold"><%= institution %></h4>
-        <ul class="d-table list-unstyled text-brand-serif mb-2 pl-3">
+        <ul class="d-table list-unstyled mb-2 pl-3">
           <% jobs.each do |job| %>
             <li class="d-table-row">
               <span class="d-table-cell p-2 text-nowrap"><%= formatted_job_dates(job.start, job.end) %></span>

@@ -38,20 +38,20 @@
         </div>
 
 
-          <p class="text-brand-serif">Available upon request
+          <p>Available upon request
             <%= multiple_files? ? "are" : "is" %>
             <%= available_by_request_summary %>.
           </p>
 
 
           <% if @work.oral_history_content.available_by_request_automatic? %>
-            <p class="alert alert-primary text-brand-serif">After submitting a brief form, you will receive immediate access to
+            <p class="alert alert-primary">After submitting a brief form, you will receive immediate access to
               <%= multiple_files? ? "these files" : "this file" %>.
               If you have any questions about transcripts, recordings, or usage permissions, contact the Center for Oral History at <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}", class: "alert-link" %>.
             </p>
           <% else # manual review %>
             <div class="alert alert-primary">
-              <p class="text-brand-serif">After submitting a brief form, your request will be reviewed and you will receive an email, usually within 3 business days. Usage may be subject to restrictions by agreement with interviewee.</p>
+              <p>After submitting a brief form, your request will be reviewed and you will receive an email, usually within 3 business days. Usage may be subject to restrictions by agreement with interviewee.</p>
 
               <p>If you have any questions about transcripts, recordings, or usage permissions, please contact the Center for Oral History at <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}", class: "alert-link" %>.
               </p>
