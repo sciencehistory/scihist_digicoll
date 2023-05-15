@@ -67,7 +67,7 @@
           </p>
         </div>
       <% elsif model.description.present? %>
-        <div class="scihist-results-list-item-description brand-serif">
+        <div class="scihist-results-list-item-description">
             <%= DescriptionDisplayFormatter.new(model.description, truncate:true).format %>
         </div>
       <% end %>
