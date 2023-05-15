@@ -134,28 +134,6 @@ hr.brand {
   }
 }
 
-
-// opt into our serif font
-.brand-serif {
-  @extend %text-font;
-
-  p {
-    max-width: $max-readable-width;
-    // and could use some more spacing, normally in bootstrap $line-height-computed / 2
-    margin-bottom: $paragraph-spacer;
-  }
-
-  // Longer text passages in our serif Abril font really need bigger line-height.
-  // For legacy reasons we have to do this as an !important override.
-  //
-  // p inside a div.long-text-line-height, or a p.long-text-line-height itself.
-  .long-text-line-height p, p.long-text-line-height {
-    line-height: $paragraph-line-height-long !important;
-    margin-bottom: ($paragraph-font-size * $paragraph-line-height-long * 0.5) !important;
-  }
-}
-
-
 .text-page {
   max-width: $max-readable-width;
   margin-right: auto;

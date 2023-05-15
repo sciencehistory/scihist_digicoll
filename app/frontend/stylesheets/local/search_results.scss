@@ -276,7 +276,6 @@
     .scihist-results-list-values {
       margin-top: $paragraph-spacer;
       li {
-        @extend %text-font;
         // hanging indent, serving to add margin to subsequent lines
         padding-left: 0.66em;
         text-indent: -0.66em;
