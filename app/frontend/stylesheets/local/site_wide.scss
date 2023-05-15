@@ -13,7 +13,7 @@ h2, .h2, h3, .h3, h4, .h4, h5, .h5 {
 // other padding and sizing calculations, but let's actually set default starting
 // font size to 17px (1.0625rem for 16px==1rem)
 body {
-  font-size: 1.0625rem;
+  font-size: $body-font-size;
 }
 
 

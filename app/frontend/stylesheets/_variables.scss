@@ -87,7 +87,10 @@ $transparent-background: rgba(0,0,0,0.25);
 
 $thumb-horizontal-margin: 4px;
 
-$paragraph-spacer: 1rem; // should be same as bootstrap $spacer, different variable for legacy reasons
+// really be same as bootstrap $spacer, different variable for legacy reasons,
+// but still 16px 1rem (winds up slightly smaller than our 17px body font, but
+// better for math)
+$paragraph-spacer: 1rem;
 
 $navbar-margin-bottom: 22px;
 
@@ -131,6 +134,8 @@ $layout-expand-up: 'md';
 $font-size-base: 1rem;
 $h4-font-size: 22px;
 $body-color: #222; // little bit darker
+                   //
+$body-font-size: 1.0625rem; // not a bootstrap variable
 
 //$line-height-base: 1.5; // default 1.5 works for us, liked better than smaller
 $headings-line-height: 1.13; // a bit smaller than default 1.2
