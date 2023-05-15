@@ -10,12 +10,6 @@ $collection-index-box-margin: 17px;
     @extend .mt-3;
   }
 
-
-  .show-item-count {
-    @extend %text-font-numerals;
-    font-variant-numeric: lining-nums;
-  }
-
   .collections-index-list {
     display: flex;
     flex-direction: row;
