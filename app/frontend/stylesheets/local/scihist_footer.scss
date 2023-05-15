@@ -173,7 +173,6 @@
     margin: 0;
   }
 
-
   .footer__inner_bottom ul li {
     display: flex;
     align-items: center;
@@ -215,10 +214,6 @@
           max-width: 13.9375em;
       }
 
-      .footer__inner_bottom {
-          justify-content: initial;
-      }
-
       .footer__column:nth-child(2),.footer__column:nth-child(3),.footer__column:last-child .footer__nav {
           display: none
       }
@@ -243,16 +238,28 @@
 
       // some kind of hackiness to make it look KIND of like main site at smaller screen size,
       // but we do simpler -- just one column of items.
-      #menu-footer-copyright {
+      .footer__inner_bottom {
+        margin: 0 auto;
+
         flex-direction: column;
+        align-items: flex-start;
 
         font-size: 1.2em;
         line-height: 1em;
 
         line-height: 0.5;
       }
+      #menu-footer-copyright {
+        flex-direction: column;
+      }
       .footer__inner_bottom ul li:not(:last-child)::after {
         display: none;
+      }
+  }
+  @media screen and (min-width: 575px) and (max-width: 991px) {
+      #menu-footer-copyright {
+        margin-left: auto;
+        margin-right: auto;
       }
   }
 }
