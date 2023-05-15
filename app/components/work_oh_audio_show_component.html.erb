@@ -136,7 +136,7 @@
               </figure>
             <% end %>
 
-            <div class="work-description long-text-line-height">
+            <div class="work-description">
               <%= DescriptionDisplayFormatter.new(work.description).format  %>
             </div>
           </div>
@@ -165,7 +165,7 @@
         <% end %>
 
         <% if has_ohms_transcript? %>
-          <div class="tab-pane long-text-line-height" id="ohTranscript" role="tabpanel" aria-labelledby="ohTranscriptTab">
+          <div class="tab-pane" id="ohTranscript" role="tabpanel" aria-labelledby="ohTranscriptTab">
             <%= render OralHistory::TranscriptComponent.new(work.oral_history_content.ohms_xml) %>
           </div>
         <% end %>
