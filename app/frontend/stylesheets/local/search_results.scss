@@ -267,9 +267,6 @@
         @extend .list-unstyled;
         margin-top: $paragraph-spacer;
       }
-      li {
-        @extend %text-font-numerals;
-      }
     }
 
     .scihist-results-list-item-description, .scihist-results-list-item-highlights {

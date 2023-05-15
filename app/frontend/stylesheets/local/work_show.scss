@@ -20,7 +20,6 @@
   }
 
   .show-date {
-    @extend %text-font-numerals;
     ul {
       @extend .list-unstyled;
       margin-bottom: 0;
