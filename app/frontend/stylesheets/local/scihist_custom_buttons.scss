@@ -20,7 +20,9 @@
 // setting bootstrap button default size/weight/etc?
 
 .btn-brand-dark {
-  @include button-variant($shi-blackish, $shi-blackish);
+  // hoverbackground similar to main site used in some places, but passes contrast rules
+  // with our hover color
+  @include button-variant($shi-blackish, $shi-blackish, $hover-background: #424242);
   color: white;
   text-transform: uppercase;
   font-size: 0.9375em; // slightly smaller than normal to make up for the all-caps? 15px/16px
