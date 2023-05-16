@@ -29,7 +29,11 @@
       @extend .list-unstyled;
       margin-bottom: 0;
     }
-    margin-top: $paragraph-spacer;
+    margin-top: $paragraph-spacer * 0.5;
+  }
+
+  .work-description {
+    margin: ($paragraph-spacer * 2) 0;
   }
 
   .work-description p {
