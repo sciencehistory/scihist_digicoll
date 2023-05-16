@@ -40,7 +40,7 @@
 
 // The main/only button type actually used in new main site -- this is a temporary
 // name
-.btn-brand-new {
+.btn-brand-main {
   // hover-background copied from main site
   @include button-variant($shi-yellow, $shi-yellow, $hover-background: #c6c94f);
   transition: background-color .3s ease,color .3s ease;
