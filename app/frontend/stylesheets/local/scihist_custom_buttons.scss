@@ -32,6 +32,9 @@
   &:hover, &:focus {
     color: #dadbdb;
   }
+
+  // These are approximately matching main site, not implemented the same way
+  padding: 0.66em 1.75em;
 }
 
 // The main/only button type actually used in new main site -- this is a temporary
@@ -47,4 +50,18 @@
 
   // These are approximately matching main site, not implemented the same way
   padding: 0.66em 1.75em;
+}
+
+// we're fighting with bootstrap a bit. If inside an input group, over-override
+// with plain bootstrap padding again. Or if we have a class to ask for it.
+.input-group .btn-brand-dark, .input-group .btn-brand-main, .btn-brand-dark.less-padding, .btn-brand-main.less-padding {
+  padding: $btn-padding-y, $btn-padding-x;
+}
+// and also over-override for .btn-sm the things we overroad for personal styles.
+// Padding and font-size
+.btn-brand-main.btn-sm, .btn-brand-dark.btn-sm {
+  padding: $btn-padding-y-sm $btn-padding-x-sm;
+  // 14px at 1rem==16px, a bit bigger than totally scaling our smaller for all-caps, but
+  // we actually need it to not be too too small.
+  font-size: 0.875rem;
 }
