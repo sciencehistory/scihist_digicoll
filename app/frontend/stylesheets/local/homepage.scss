@@ -74,7 +74,7 @@
     }
 
     .search-container {
-        @include shi-full-width-outer-mixin;
+        @include shi-full-width-inner-mixin;
         margin-left: auto;
         margin-right: auto;
         padding-top: 2rem;
@@ -91,8 +91,6 @@
     }
 
     .ribbon-section {
-      @include shi-full-width-outer-mixin;
-
       padding-top: 3rem;
       padding-bottom: 3rem;
 
@@ -116,6 +114,11 @@
           margin-bottom: 0;
         }
       }
+    }
+
+    // Can be same div as .ribbon-section if no background color
+    .ribbon-section-inner {
+      @include shi-full-width-inner-mixin;
     }
 
 
