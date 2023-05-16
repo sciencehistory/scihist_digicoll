@@ -159,11 +159,14 @@ $navbar-dark-color: $brand-bright-green;
 $navbar-dark-hover-color: #fff;
 $navbar-dark-active-color: #fff;
 
+// new main site styles do not use any rounding on buttons and other elements
+$border-radius: 0;
+$border-radius-sm: 0;
+$border-radius-lg: 0;
 
 //$card-bg: $bg-lightly-shaded;
 $card-cap-bg: $bg-lightly-shaded;
 $card-border-color: #ccc; // goes with brand light grey. ish.
-$card-border-radius: 0;
 
 $breadcrumb-bg: $bg-lightly-shaded;
 $input-group-addon-bg: $bg-lightly-shaded;
@@ -173,10 +176,6 @@ $list-group-border-color: $brand-light-grey;
 $input-color: $brand-dark-grey;
 $input-border-color: $brand-light-grey;
 
-// border radius matching some elements on chemheritage.org, larger than bootstrap default
-$btn-border-radius:          9px !default;
-$btn-border-radius-lg:       9px !default;
-$btn-border-radius-sm:       9px !default;
 
 // Used by bootstrap for ordinary buttons too, let's make it match bootstrap 3/chf_sufia,
 // slightly larger.
