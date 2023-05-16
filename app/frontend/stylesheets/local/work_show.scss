@@ -2,6 +2,12 @@
   .show-title {
     h1 {
       margin-bottom: 0;
+
+      // the admin edit button, float right so it doesn't mess with any vertical
+      // spacing
+      .btn {
+        float: right;
+      }
     }
   }
 
