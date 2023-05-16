@@ -172,7 +172,6 @@
         }
 
         ol {
-          @extend %text-font-numerals;
           list-style-position: inside;
           padding-left: 0;
 
@@ -336,8 +335,6 @@
   div.ohms-index-list {
     margin-top: $paragraph-spacer;
     max-width: $max-readable-width;
-
-    @extend %text-font;
 
     p {
       margin-bottom: $paragraph-spacer * 2;

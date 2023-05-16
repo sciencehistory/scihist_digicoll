@@ -9,6 +9,13 @@ h2, .h2, h3, .h3, h4, .h4, h5, .h5 {
   color: $shi-blackish;
 }
 
+// We left bootstrap $font-size-base at 1rem (usually 16px) for the base of various
+// other padding and sizing calculations, but let's actually set default starting
+// font size to 17px (1.0625rem for 16px==1rem)
+body {
+  font-size: $body-font-size;
+}
+
 
 // We set more-rounded corners, but only for buttons not input elements,
 // make sure buttons in input groups match original less rounded.
@@ -57,7 +64,6 @@ th {
 // chemheritage.org uses these as default/standard h1-h6, but we're not
 // ready to there yet, keep them in classes.
 .brand-alt-h1, .brand-alt-h2, .brand-alt-h3, .brand-alt-h4, .brand-alt-h5, .brand-alt-h6 {
-  font-family: $brand-alt-header-font;
   font-weight: $brand-alt-header-weight;
 }
 .brand-alt-h4, .brand-alt-h5, .brand-alt-h6 {
@@ -127,35 +133,12 @@ hr.brand {
   }
 }
 
-
-// opt into our serif font
-.brand-serif {
-  @extend %text-font;
-
-  p {
-    max-width: $max-readable-width;
-    // and could use some more spacing, normally in bootstrap $line-height-computed / 2
-    margin-bottom: $paragraph-spacer;
-  }
-
-  // Longer text passages in our serif Abril font really need bigger line-height.
-  // For legacy reasons we have to do this as an !important override.
-  //
-  // p inside a div.long-text-line-height, or a p.long-text-line-height itself.
-  .long-text-line-height p, p.long-text-line-height {
-    line-height: $paragraph-line-height-long !important;
-    margin-bottom: ($paragraph-font-size * $paragraph-line-height-long * 0.5) !important;
-  }
-}
-
-
 .text-page {
   max-width: $max-readable-width;
   margin-right: auto;
   margin-left: auto;
   p, dd, dt {
-    line-height: $paragraph-line-height-long !important;
-    margin-bottom: ($paragraph-line-height-long * 0.5) !important;
+    margin-bottom: ($paragraph-spacer) !important;
     max-width: $max-readable-width;
   }
 }

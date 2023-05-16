@@ -52,10 +52,6 @@ $brand-blue-text: $brand-blue;
 
 // Our brand sans-serif, with fallbacks copied from Bootstrap's default sans-serif.
 $brand-sans-serif: 'sofia-pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-// fallbacks are useful for weird diacritics that may not be in our main font,
-// especially the weird russian transliteraton stuff seems to be problematic.
-// Times New Roman seems to have them, at least on MacOS.
-$brand-serif: 'abril-text', "Times New Roman", Times, serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
 //$bg-lightly-shaded: #f9f9f9; // does not match brand, no suitable color in brand
 $bg-lightly-shaded: $brand-light-grey; // try brand color
@@ -66,8 +62,7 @@ $special-label-muted-color: $brand-dark-grey;
 $small-caps-letter-spacing: 0.035em;
 
 $brand-btn-alt-bg: $brand-bright-green;
-$brand-alt-header-font: $brand-sans-serif;
-$brand-alt-header-weight: 700;
+$brand-alt-header-weight: 900;
 
 // adelle-sans has a 600 semi-bold available. 700 is standard bold. 500 seems to be the same as 400=normal.
 $semi-bold-weight: 600;
@@ -87,22 +82,10 @@ $transparent-background: rgba(0,0,0,0.25);
 
 $thumb-horizontal-margin: 4px;
 
-// These "paragraph" settings are all meant for use with our serif font, abril,
-// which we use for body/paragraph/'text' copy.
-//
-// abril is far too small at 16px, it's a small font. 17px abril looks more like
-// 16px other fonts. 1.0625rem is 17px if 1rem is 16px --
-// bootstrap wants us to use rem, rather than fixed point size, for accessibility
-// user-resizing purposes.
-//
-$paragraph-font-size: 1.0625rem; // 17px if 1rem is 16px
-
-// We really need two differnet line spacing, LOTS of text needs the bigger -long one,
-// but briefer text is generally better with the other one, which for legacy reasons
-// ends up the default in lots of places.
-$paragraph-line-height: 1.2941176471; // 1.0625rem * this line-height is 22px if 1rem is 16px
-$paragraph-line-height-long: 1.625; // based on values on sciencehistory.org
-$paragraph-spacer: $paragraph-font-size * $paragraph-line-height * 0.5; // Should be about 22/2=11px if 1rem=16px
+// really be same as bootstrap $spacer, different variable for legacy reasons,
+// but still 16px 1rem (winds up slightly smaller than our 17px body font, but
+// better for math)
+$paragraph-spacer: 1rem;
 
 $navbar-margin-bottom: 22px;
 
@@ -140,15 +123,17 @@ $layout-expand-up: 'md';
  *
  */
 
-// In chf_sufia, we set font-size-base to 16px. In Bootstrap 4, this needs to be in
-// `rem` units, and defaults to 1. Which should be 16px on most browsers. It is considered
-// by some to be better for accessibility to leave this defaulting to browser standard,
-// so we will try it unset with default for now.
-//$font-size-base: 16px;
+// We will leave the font-size base 1rem (usually 16px), to leave a nice round
+// number for calclulations based on it... BUT we elsehwere set defualt body
+// text size to 1.0625rem (usually 17px)
+$font-size-base: 1rem;
+$body-font-size: 1.0625rem; // not a bootstrap variable
+
 $h4-font-size: 22px;
 $body-color: #222; // little bit darker
 
-$line-height-base: 1.4; // seems to match main site and work well with sofia-pro
+//$line-height-base: 1.5; // default 1.5 works for us, liked better than smaller
+$headings-line-height: 1.13; // a bit smaller than default 1.2
 
 // bootstrap brand colors
 $danger: $brand-red;

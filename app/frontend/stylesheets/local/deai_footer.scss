@@ -15,15 +15,12 @@
   }
 
   p {
-    font-size: 1rem;
     font-family: "sofia-pro", "sans-serif" !important;
     color: $shi-alternate-text-color;
 
-    line-height: 1.4em;
-
     // I guess we'll make this match max-width of the dig-col-links supra-footer?
     // This is a bit screwy.
-    max-width: 40rem !important;
+    max-width: 42rem !important;
     text-align: justify;
     margin-left: auto;
     margin-right: auto;
