@@ -169,7 +169,7 @@ class DownloadDropdownComponent < ApplicationComponent
       if viewer_template_mode?
         options[:class] = "btn btn-emphasis btn-lg dropdown-toggle"
       else
-        options[:class] = "btn btn-brand-main dropdown-toggle"
+        options[:class] = "btn btn-brand-dark dropdown-toggle"
       end
     end
     options
