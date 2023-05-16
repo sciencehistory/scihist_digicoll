@@ -49,7 +49,7 @@
     border-top: 3px solid $table-border-color;
     padding: $table-cell-padding-sm;
     margin-left: -1 * $table-cell-padding-sm;
-    margin-bottom: 2rem;
+    margin-bottom: ($paragraph-spacer * 4);
   }
   .citation {
       word-break: break-word;
