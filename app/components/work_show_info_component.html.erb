@@ -1,5 +1,5 @@
 <%# the right column of a work show page including, metadata attributes,
-    physical location, 'related items'.
+    institiutional location, 'related items'.
 
     In a partial to make it easier to re-use in templates that differ in how
     they show media, but still need this.
@@ -105,7 +105,7 @@
   </div>
 <% end %>
 
-<h2 class="attribute-sub-head">Physical location</h2>
+<h2 class="attribute-sub-head">Institutional location</h2>
 
 <table class="work chf-attributes">
   <%= render AttributeTable::RowComponent.new(:department, values: [department], link_to_facet: "department_facet") %>
