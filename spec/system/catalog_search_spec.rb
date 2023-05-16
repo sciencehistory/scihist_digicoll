@@ -120,6 +120,23 @@ describe CatalogController, solr: true, indexable_callbacks: true do
       expect(page).to have_selector("li#document_#{published_and_no_copyright.friendlier_id}")
       expect(page).to have_selector("li#document_#{published_and_nc_other_restrictions.friendlier_id}")
 
+      # and they should show up in the facet sidebar too.
+      click_on "Rights"
+
+      # We need this expect so that capybara waits for the animation to finish.
+      expect(page).to have_selector('#facet-rights_facet.show', visible: true)
+      
+      within(".blacklight-rights_facet") do
+        labels = page.find_all('.facet-label', visible:true).map { |label| label.text }
+        counts = page.find_all('.facet-count', visible:true).map { |count| count.text.to_i }
+        expect(labels.zip(counts).to_h).to eq ({
+          "Copyright Free" => 4,
+          "Public Domain Mark 1.0" => 1,
+          "No Known Copyright" => 1,
+          "No Copyright - Other Known Legal Restrictions" => 1,
+          "No Copyright - United States" => 1
+        })
+      end
       # considered in copyright, so should not match the search:
       expect(page).not_to have_selector("li#document_#{unpublished_but_public_domain.friendlier_id}")
       expect(page).not_to have_selector("li#document_#{published_but_copyrighted.friendlier_id}")

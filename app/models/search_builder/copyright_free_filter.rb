@@ -10,16 +10,11 @@ class SearchBuilder
     end
 
     def copyright_free_filter(solr_params)
-      # We consider these URIs "free of copyright" for the purposes of our search checkbox:
-      uris_to_match = RightsTerm.copyright_free_filter_uris().join(",")
       
       # look for the "Copyright Free" checkbox
       if SearchBuilder::CopyrightFreeFilter.filtered_copyright_free?(blacklight_params)
         solr_params[:fq] ||= []
-        # SOLR note:
-        # The terms query parser "takes in multiple values separated by commas and returns documents matching any of the specified values."
-        # https://solr.apache.org/guide/solr/latest/query-guide/other-parsers.html#terms-query-parser
-        copyright_free_filter = "{!terms f=rights_facet}#{uris_to_match}"
+        copyright_free_filter = "{!term f=rights_facet}Copyright Free"
         solr_params[:fq] << copyright_free_filter
       end
     end
