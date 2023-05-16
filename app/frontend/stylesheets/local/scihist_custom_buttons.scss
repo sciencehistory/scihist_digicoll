@@ -8,12 +8,6 @@
   color: $body-color;
 }
 
-// dark grey button
-.btn-brand-dark {
-  @include button-variant($brand-dark-grey, $brand-dark-grey);
-  color: #FFFFFF;
-}
-
 
 // An especially bright button style using the brand bright breen
 .btn-emphasis {
@@ -25,7 +19,7 @@
 // then overriding a lot of bootstrap stuff -- we might want to transition to actually
 // setting bootstrap button default size/weight/etc?
 
-.btn-dark-inverse {
+.btn-brand-dark {
   @include button-variant($shi-blackish, $shi-blackish);
   color: white;
   text-transform: uppercase;
