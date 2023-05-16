@@ -169,11 +169,11 @@
 <% if links_to_finding_aids.present? || links_to_opac.present?%>
   <p class="catalog-links">
       <% links_to_finding_aids.each do |url| %>
-        <%= content_tag "a", "View collection guide", href: url, class: "btn btn-brand-main" %>
+        <%= content_tag "a", "View collection guide", href: url, class: "btn btn-brand-main mb-2" %>
       <% end %>
 
       <% links_to_opac.each do |url| %>
-        <%= content_tag "a", "View in library catalog", href: url, class: "btn btn-brand-main" %>
+        <%= content_tag "a", "View in library catalog", href: url, class: "btn btn-brand-main mb-2" %>
       <% end %>
   </p>
 <% end %>
