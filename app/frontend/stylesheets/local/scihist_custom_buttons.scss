@@ -54,8 +54,8 @@
 
 // we're fighting with bootstrap a bit. If inside an input group, over-override
 // with plain bootstrap padding again. Or if we have a class to ask for it.
-.input-group .btn-brand-dark, .input-group .btn-brand-main, .btn-brand-dark.less-padding, .btn-brand-main.less-padding {
-  padding: $btn-padding-y, $btn-padding-x;
+.input-group .btn-brand-dark, .input-group .btn-brand-main, .btn-brand-dark.less-padding, .btn-brand-main.less-padding {;
+  padding: $btn-padding-y $btn-padding-x;
 }
 // and also over-override for .btn-sm the things we overroad for personal styles.
 // Padding and font-size
