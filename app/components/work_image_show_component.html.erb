@@ -24,7 +24,7 @@
                                 ),
             should_wrap: has_transcription_or_translation?) do %>
 
-        <div class="work-description long-text-line-height">
+        <div class="work-description">
           <%= DescriptionDisplayFormatter.new(work.description).format  %>
         </div>
         <%= render WorkShowInfoComponent.new(work: work) %>

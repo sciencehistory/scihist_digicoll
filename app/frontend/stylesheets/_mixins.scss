@@ -68,22 +68,4 @@
   }
 }
 
-%text-font {
-  font-family: $brand-serif;
-  // 16px in abril is really small, 17px looks more like 16px in other fonts.
-  font-size: 1.0625rem; // 17px if 16px==1rem;
-  line-height: $paragraph-line-height;
-}
-.text-brand-serif {
-  @extend %text-font;
-}
 
-// Try to make our date field that has mostly numbers legible with abril
-%text-font-numerals {
- font-family: $brand-serif;
-  // 16px in abril is really small, 17px looks more like 16px in other fonts.
- font-size: 1.0625rem; // 17px if 16px==1rem;
- line-height: normal;
- font-variant-numeric: lining-nums;
- letter-spacing: 0.025em;
-}

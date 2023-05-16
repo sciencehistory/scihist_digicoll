@@ -18,7 +18,7 @@
       <% unless has_search_parameters? %>
         <div class="show-metadata">
             <p class="show-item-count"><%= number_with_delimiter(total_count) + ' item'.pluralize(total_count) %></p>
-            <div class="collection-description long-text-line-height">
+            <div class="collection-description">
               <%= DescriptionDisplayFormatter.new(@featured_topic.description).format %>
             </div>
         </div>
