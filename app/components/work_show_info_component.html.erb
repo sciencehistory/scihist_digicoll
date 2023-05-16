@@ -164,27 +164,20 @@
       </td>
     </tr>
   <% end %>
-
-  <% if links_to_finding_aids.present? %>
-    <tr>
-      <td colspan=2 class="catalog-links">
-        <% links_to_finding_aids.each do |url| %>
-          <%= content_tag "a", "View collection guide", href: url %>
-        <% end %>
-      </td>
-    </tr>
-  <% end %>
-
-  <% if links_to_opac.present? %>
-    <tr>
-      <td colspan=2 class="catalog-links">
-        <% links_to_opac.each do |url| %>
-          <%= content_tag "a", "View in library catalog", href: url %>
-        <% end %>
-      </td>
-    </tr>
-  <% end %>
 </table>
+
+<% if links_to_finding_aids.present? || links_to_opac.present?%>
+  <p class="catalog-links">
+      <% links_to_finding_aids.each do |url| %>
+        <%= content_tag "a", "View collection guide", href: url, class: "btn btn-brand-main" %>
+      <% end %>
+
+      <% links_to_opac.each do |url| %>
+        <%= content_tag "a", "View in library catalog", href: url, class: "btn btn-brand-main" %>
+      <% end %>
+  </p>
+<% end %>
+
 
 <% if related_links.present? %>
   <h2 class="attribute-sub-head">Learn More</h2>
