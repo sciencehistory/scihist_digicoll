@@ -164,7 +164,7 @@ class MemberImageComponent < ApplicationComponent
     content_tag("div", class: "action-item view") do
       content_tag("a",
         href: view_href,
-        class: "btn btn-brand-dark",
+        class: "btn btn-brand-alt",
         data: view_data_attributes) do
           "<i class='fa fa-search' aria-hidden='true'></i> View".html_safe
       end

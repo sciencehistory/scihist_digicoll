@@ -1,14 +1,6 @@
 // buttons generally have no borders, have border color set to same
 // as bg color. we set btn-primary the same in variables.
 
-// a light grey button matching light grey bg
-.btn-brand-alt {
-  // color, bg, border
-  @include button-variant($bg-lightly-shaded, $bg-lightly-shaded);
-  color: $body-color;
-}
-
-
 // An especially bright button style using the brand bright breen
 .btn-emphasis {
   @include button-variant($brand-bright-green, $brand-bright-green); //mix($brand-bright-green, $brand-dark-blue, 93%)
@@ -37,6 +29,15 @@
   padding: 0.66em 1.75em;
 }
 
+// we need more brand buttons, sorry. Dark blue?
+.btn-brand-alt {
+  @include button-variant($shi-dark-blue, $shi-dark-blue, $hover-background: $shi-blackish);
+
+  color: white;
+  text-transform: uppercase;
+  font-size: 0.9375em; // slightly smaller than normal to make up for the all-caps? 15px/16px
+}
+
 // The main/only button type actually used in new main site -- this is a temporary
 // name
 .btn-brand-main {
@@ -54,12 +55,13 @@
 
 // we're fighting with bootstrap a bit. If inside an input group, over-override
 // with plain bootstrap padding again. Or if we have a class to ask for it.
-.input-group .btn-brand-dark, .input-group .btn-brand-main, .btn-brand-dark.less-padding, .btn-brand-main.less-padding {;
+.input-group .btn-brand-dark, .input-group .btn-brand-main, .input-group .btn-brand-alt
+  .btn-brand-dark.less-padding, .btn-brand-main.less-padding, btn-brand-alt.less-padding {
   padding: $btn-padding-y $btn-padding-x;
 }
 // and also over-override for .btn-sm the things we overroad for personal styles.
 // Padding and font-size
-.btn-brand-main.btn-sm, .btn-brand-dark.btn-sm {
+.btn-brand-main.btn-sm, .btn-brand-dark.btn-sm, .btn-brand-alt.btn-sm {
   padding: $btn-padding-y-sm $btn-padding-x-sm;
   // 14px at 1rem==16px, a bit bigger than totally scaling our smaller for all-caps, but
   // we actually need it to not be too too small.
