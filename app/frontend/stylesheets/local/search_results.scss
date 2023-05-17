@@ -75,7 +75,11 @@
 }
 
 .sort-pagination {
-  padding-top: 0.5rem; // match blacklight .facets-header so it lines up
+  // to try to make search results line up horizontally, we have to override
+  // some BL things, and match blacklight .facets-header so it lines up
+  padding-top: 0.5rem;
+  padding-bottom: 1rem;
+  margin-bottom: 0;
 
   //flexbox works a lot better than float here
   display: flex;
