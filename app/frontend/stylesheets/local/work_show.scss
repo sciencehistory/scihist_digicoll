@@ -53,6 +53,7 @@
   }
   .citation {
       word-break: break-word;
+      max-width: $max-readable-width;
   }
 
   .rights-and-social {
