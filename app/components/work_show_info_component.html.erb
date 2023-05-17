@@ -201,9 +201,16 @@
         </div>
 
         <div class="related-work-text">
-          <%= link_to work_path(work.friendlier_id) do %>
+          <div class="show-genre"><%= render GenreLinkListComponent.new(work.genre) %></div>
+
+          <%= link_to work_path(work.friendlier_id), class: "related-work-title-link" do %>
             <%= work.title %>
           <% end %>
+
+          <div class="related-work-dates">
+            <%=  DateDisplayFormatter.new(work.date_of_work).display_dates.join(", ") %>
+          </div>
+
         </div>
       </li>
     <% end %>

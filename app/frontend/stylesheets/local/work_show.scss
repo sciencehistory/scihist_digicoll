@@ -84,7 +84,7 @@
 
   .related-work {
     display: flex;
-    flex-wrap: wrap;
+
     &:not(:first-child) {
       margin-top: $paragraph-spacer;
     }
@@ -99,13 +99,10 @@
         width: 100%;
       }
     }
-    .related-work-text {
-      flex: 1;
-      align-self: flex-end;
-      min-width: 10rem;
-      @extend .h4;
-      margin-top: 0;
-      margin-bottom: 0;
+    .related-work-title-link {
+      font-size: $h4-font-size;
+      line-height: $headings-line-height;
+      font-weight: $headings-font-weight;
     }
   }
 
