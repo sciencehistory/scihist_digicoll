@@ -218,8 +218,7 @@
   }
 
   .tab-content {
-    // hacky, match attribute-table width
-    max-width: ($max-readable-width * 1.5);
+    max-width: $max-readable-width;
   }
 
   // When we're two column, add more spacer than default
@@ -328,7 +327,7 @@
 }
 
 .ohms-index-container {
-  max-width: $long-max-readable-width;
+  max-width: $max-readable-width;
   padding-bottom: 1.5rem;
 
   // based on scihist-results-list-values, see there.

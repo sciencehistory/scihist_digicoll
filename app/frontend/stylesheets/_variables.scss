@@ -70,9 +70,7 @@ $badge-font-weight: $semi-bold-weight; // badges look better at our semi-bold wi
 
 // Maximum line length we judge to be readable at standard base font size.
 // Used to constrain some block text areas on large screens.
-$max-readable-width: 36.25rem; // 590px at 16px base;
-$long-max-readable-width: 42.5rem; // 680px; unclear how readable it really is, but we do it sometimes anyway
-
+$max-readable-width: 68ch; // at our standard 17px sofia-pro font, about 682px, about 40em
 
 // via experimentation, on search results page larger than this the
 // results column text is way too wide for reading text.
