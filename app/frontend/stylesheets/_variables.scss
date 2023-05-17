@@ -72,10 +72,6 @@ $badge-font-weight: $semi-bold-weight; // badges look better at our semi-bold wi
 // Used to constrain some block text areas on large screens.
 $max-readable-width: 68ch; // at our standard 17px sofia-pro font, about 682px, about 40em
 
-// via experimentation, on search results page larger than this the
-// results column text is way too wide for reading text.
-$chf-fluid-max-width: 1300px;
-
 $transparent-background: rgba(0,0,0,0.25);
 
 $thumb-horizontal-margin: 4px;
