@@ -1,5 +1,5 @@
 <%#  query constraint as a live search box/form allowing you to change query,
-     instead of just a label, and additional constraint for public-domain-only where
+     instead of just a label, and additional constraint for copyright-free where
      appropriate %>
 
 <form class="scihist-constraints-query applied-filter d-inline-block">
@@ -29,6 +29,6 @@
     </div>
 </form>
 
-<% if SearchBuilder::PublicDomainFilter.filtered_public_domain?(local_assigns[:params]) %>
-  <%= render_constraint_element(nil, "Only public domain", remove: search_state.params_for_search.except(:filter_public_domain, :page, :utf8)) %>
+<% if SearchBuilder::CopyrightFreeFilter.filtered_copyright_free?(local_assigns[:params]) %>
+  <%= render_constraint_element(nil, "Only Copyright Free", remove: search_state.params_for_search.except(:filter_copyright_free, :page, :utf8)) %>
 <% end %>
