@@ -29,13 +29,17 @@
   padding: 0.66em 1.75em;
 }
 
-// we need more brand buttons, sorry. Dark blue?
+// we need another brand button...
 .btn-brand-alt {
-  @include button-variant($shi-dark-blue, $shi-dark-blue, $hover-background: $shi-blackish);
+  @include button-variant($shi-teal, $shi-teal);
 
   color: white;
   text-transform: uppercase;
   font-size: 0.9375em; // slightly smaller than normal to make up for the all-caps? 15px/16px
+
+  &:hover, &:focus {
+    color: $shi-yellow;
+  }
 }
 
 // The main/only button type actually used in new main site -- this is a temporary
