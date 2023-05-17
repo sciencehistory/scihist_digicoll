@@ -27,7 +27,7 @@
 //
 .show-page-layout {
 
-  $main-gutter-width: 42px;
+  $main-gutter-width: 40px; // 2.5 16px rem, but we built this on px alas
   // thumb width large size (525px)
   $max-image-column: 525px;
   // this is the point the image column is 'naturally' 525px, any bigger it's 'naturally' bigger,
