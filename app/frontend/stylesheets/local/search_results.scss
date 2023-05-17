@@ -8,6 +8,12 @@
 
 // override sufia facet widget styles to be more brand-like, and generally neater
 .facets {
+  .facets-header {
+    // To try to make top line of search results all line up, we hackily try to make
+    // this have the exact same line-height in pixels as .pagination. hack to try to improve on BL.
+    line-height: 2.5 * $body-font-size;
+  }
+
   // No idea why blacklight puts the heading in a .navbar, but we got
   // to restyle it now, also to match chf_sufia.
   .navbar {
