@@ -2,7 +2,7 @@
 #
 # TODO: chf_sufia mixin's or equivalents for:
 # * SearchBuilder::RestrictAdminSearchFields => Makes sure admin notes are only searchable if logged in
-# * SearchBuilder::PublicDomainFilter => makes the URL param put in by our "public domain only" checkbox
+# * SearchBuilder::CopyrightFreeFilter => makes the URL param put in by our "copyright free" checkbox
 #   has an effect on search
 # * SearchBuilder::SyntheticCategoryLimit => something with making our 'topics'/synthetic categories
 #   work as limits, probably just for showing the main page for a 'topic'
@@ -14,7 +14,7 @@ class SearchBuilder < Blacklight::SearchBuilder
   # Scihist SearchBuilder extensions
   include SearchBuilder::AccessControlFilter
   include SearchBuilder::AdminOnlySearchFields
-  include SearchBuilder::PublicDomainFilter
+  include SearchBuilder::CopyrightFreeFilter
   include SearchBuilder::CustomSortLogic
 
   ##

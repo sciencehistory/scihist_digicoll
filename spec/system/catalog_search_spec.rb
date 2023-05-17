@@ -81,27 +81,68 @@ describe CatalogController, solr: true, indexable_callbacks: true do
   end
 
   describe "navbar search slide-out limits" do
-    let(:green_rights) { "http://creativecommons.org/publicdomain/mark/1.0/" }
-    let(:red_rights) { "http://rightsstatements.org/vocab/InC/1.0/" }
-    let(:green_date) { Work::DateOfWork.new({ "start"=>"2014-01-01"}) }
-    let(:green_title) { "good title" }
+    let(:cc_public_domain) { "http://creativecommons.org/publicdomain/mark/1.0/" }
+    let(:no_known_copyright) { "http://rightsstatements.org/vocab/NKC/1.0/" }
+    let(:no_copyright_united_states) { "http://rightsstatements.org/vocab/NoC-US/1.0/" }
+    let(:no_copyright_other_restrictions) { "http://rightsstatements.org/vocab/NoC-OKLR/1.0/" }
 
-    let!(:green) { create(:public_work, title: green_title, rights: green_rights, date_of_work: green_date) }
-    let!(:red1)  { create(:public_work, title: green_title, rights: green_rights) }
-    let!(:red2)  { create(:public_work, title: green_title, date_of_work: green_date, rights: red_rights) }
+    let(:in_copyright) { "http://rightsstatements.org/vocab/InC/1.0/" }
+    
+    let(:matching_date) { Work::DateOfWork.new({ "start"=>"2014-01-01"}) }
+    let(:too_recent)    { Work::DateOfWork.new({ "start"=>"2021-01-01"}) }
 
-    it "can use limits to find only matching work" do
+    let(:title_for_search) { "good title" }
+
+    let!(:published_and_public_domain) { create(:public_work, title: title_for_search, rights: cc_public_domain, date_of_work: matching_date) }
+    let!(:published_and_nkc) { create(:public_work, title: title_for_search, rights: no_known_copyright, date_of_work: matching_date) }
+    let!(:published_and_no_copyright) { create(:public_work, title: title_for_search, rights: no_copyright_united_states, date_of_work: matching_date) }
+    let!(:published_and_nc_other_restrictions) { create(:public_work, title: title_for_search, rights: no_copyright_other_restrictions, date_of_work: matching_date) }
+
+    let!(:published_and_public_domain_but_too_recent) { create(:public_work, title: title_for_search, rights: cc_public_domain, date_of_work: too_recent) }
+
+    let!(:unpublished_but_public_domain)  { create(:public_work, title: title_for_search, rights: cc_public_domain) }
+    let!(:published_but_copyrighted)  { create(:public_work, title: title_for_search, date_of_work: matching_date, rights: in_copyright) }
+
+    it "can use limits to find works we consider copyright free" do
       visit search_catalog_path
-      fill_in "q", with: green_title
+      fill_in "q", with: title_for_search
       fill_in "search-option-date-from", with: "2013"
       fill_in "search-option-date-to", with: "2015"
-      check("Public Domain Only")
+      check("Copyright Free Only")
       click_on "Go"
 
-      expect(page).to have_content("1 entry found")
-      expect(page).to have_selector("li#document_#{green.friendlier_id}")
-      expect(page).not_to have_selector("li#document_#{red1.friendlier_id}")
-      expect(page).not_to have_selector("li#document_#{red2.friendlier_id}")
+      # 4 results
+      expect(page).to have_selector('.scihist-results-list-item', count: 4)
+
+      # these are all considered "copyright free"
+      expect(page).to have_selector("li#document_#{published_and_public_domain.friendlier_id}")
+      expect(page).to have_selector("li#document_#{published_and_nkc.friendlier_id}")
+      expect(page).to have_selector("li#document_#{published_and_no_copyright.friendlier_id}")
+      expect(page).to have_selector("li#document_#{published_and_nc_other_restrictions.friendlier_id}")
+
+      # and they should show up in the facet sidebar too.
+      click_on "Rights"
+
+      # We need this expect so that capybara waits for the animation to finish.
+      expect(page).to have_selector('#facet-rights_facet.show', visible: true)
+      
+      within(".blacklight-rights_facet") do
+        labels = page.find_all('.facet-label', visible:true).map { |label| label.text }
+        counts = page.find_all('.facet-count', visible:true).map { |count| count.text.to_i }
+        expect(labels.zip(counts).to_h).to eq ({
+          "Copyright Free" => 4,
+          "Public Domain Mark 1.0" => 1,
+          "No Known Copyright" => 1,
+          "No Copyright - Other Known Legal Restrictions" => 1,
+          "No Copyright - United States" => 1
+        })
+      end
+      # considered in copyright, so should not match the search:
+      expect(page).not_to have_selector("li#document_#{unpublished_but_public_domain.friendlier_id}")
+      expect(page).not_to have_selector("li#document_#{published_but_copyrighted.friendlier_id}")
+
+      # too recent, so should not match the search:
+      expect(page).not_to have_selector("li#document_#{published_and_public_domain_but_too_recent.friendlier_id}")      
     end
   end
 
