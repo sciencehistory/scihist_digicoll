@@ -269,6 +269,8 @@
     }
 
     .scihist-results-list-item-additional-titles, .scihist-results-list-item-parents {
+      margin-bottom: ($paragraph-spacer * 0.5);
+
       ul {
         @extend .list-unstyled;
         @include font-size($h4-font-size);
@@ -283,7 +285,7 @@
     .scihist-results-list-item-date {
       ul {
         @extend .list-unstyled;
-        margin-top: $paragraph-spacer;
+        margin-top: $paragraph-spacer * 0.25;
       }
     }
 
