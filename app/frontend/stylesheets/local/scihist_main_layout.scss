@@ -38,7 +38,7 @@ body.scihist-main-layout {
     // BL is kind of a mess, through different versions.
     .facets-header {
       background-color: $shi-bg-gray;
-      border: 1px solid #ccc;
+      border: 1px solid $shi-bg-gray-border;
       padding-left: 0.5rem;
       padding-right: 0.5rem;
     }

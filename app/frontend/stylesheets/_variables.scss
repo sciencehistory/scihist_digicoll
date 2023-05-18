@@ -20,6 +20,7 @@ $shi-green: #004d44;
 $shi-dark-blue: #313E48;
 $shi-maroon: #6A1D32;
 $shi-bg-gray: #EFEEED; // as used on mainsite, not in PDF
+$shi-bg-gray-border: #bbbaba; // the bg-gray is so light it needs a border. #bbbaba is used on main site. $bcbcbc or #ccc alts may look better?
 $shi-footer-bg-green: #eaf6f3; // one of several used on mainsite for footer "callouts", not in PDF
 $shi-bg-turquoise: #d4ece8; // an alternate turquoise used for backgrounds, let's try to avoid it though
 
@@ -54,7 +55,7 @@ $brand-blue-text: $brand-blue;
 $brand-sans-serif: 'sofia-pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
 //$bg-lightly-shaded: #f9f9f9; // does not match brand, no suitable color in brand
-$bg-lightly-shaded: $brand-light-grey; // try brand color
+$bg-lightly-shaded: $shi-bg-gray; // try brand color
 $special-label-muted-color: $brand-dark-grey;
 //$brand-highlight-color: #f15c2b; // an orange used on (old) Distillations website, perhaps use as an alterante highlight sitewide
 
@@ -160,7 +161,7 @@ $border-radius-lg: 0;
 
 //$card-bg: $bg-lightly-shaded;
 $card-cap-bg: $shi-bg-gray;
-$card-border-color: #ccc; // just a bit darker than card-cap-bg for a nice outline?
+$card-border-color: $shi-bg-gray-border;
 
 $breadcrumb-bg: $bg-lightly-shaded;
 $input-group-addon-bg: $bg-lightly-shaded;
@@ -168,7 +169,7 @@ $input-group-addon-bg: $bg-lightly-shaded;
 $list-group-border-color: $brand-light-grey;
 
 $input-color: $brand-dark-grey;
-$input-border-color: $brand-light-grey;
+$input-border-color: $shi-bg-gray-border;
 
 
 // Used by bootstrap for ordinary buttons too, let's make it match bootstrap 3/chf_sufia,
