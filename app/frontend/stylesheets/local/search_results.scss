@@ -14,19 +14,6 @@
     line-height: 2.3rem;
   }
 
-  // No idea why blacklight puts the heading in a .navbar, but we got
-  // to restyle it now, also to match chf_sufia.
-  .navbar {
-    margin: 0;
-    padding: .625rem .9375rem; // to match chf_sufia I dunno
-    background-color: $brand-dark-blue;
-    h2.facets-heading {
-      color: white;
-      margin: 0;
-      line-height: 1.1;
-     }
-  }
-
   .card-header {
     font-weight: normal;
     line-height: 1.4;
