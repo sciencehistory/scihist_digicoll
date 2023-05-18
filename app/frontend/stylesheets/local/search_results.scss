@@ -8,17 +8,17 @@
 
 // override sufia facet widget styles to be more brand-like, and generally neater
 .facets {
-  // No idea why blacklight puts the heading in a .navbar, but we got
-  // to restyle it now, also to match chf_sufia.
-  .navbar {
-    margin: 0;
-    padding: .625rem .9375rem; // to match chf_sufia I dunno
-    background-color: $brand-dark-blue;
+  .facets-header {
+    // To try to make top line of search results all line up, we hackily try to make
+    // this have the exact same line-height in pixels as .page_links. hack to try to improve on BL.
+    line-height: 2.3rem;
+
     h2.facets-heading {
-      color: white;
-      margin: 0;
-      line-height: 1.1;
-     }
+      font-size: $body-font-size;
+      text-transform: uppercase;
+      font-weight: 600;
+      text-align: center;
+    }
   }
 
   .card-header {
@@ -33,10 +33,18 @@
     }
   }
 
+  .card-body {
+    border-top: $card-border-width solid $card-border-color;
+  }
+
   .facet-limit {
-    border-top: 0;
     margin-top: 0;
     margin-bottom: 0;
+  }
+
+  // keep double border from happening between "boxes" in our facet limit stack
+  .facet-limit:not(:first-child) {
+    border-top: 0;
   }
 
   .facet-values li {
@@ -69,7 +77,11 @@
 }
 
 .sort-pagination {
-  padding-top: 0.5rem; // match blacklight .facets-header so it lines up
+  // to try to make search results line up horizontally, we have to override
+  // some BL things, and match blacklight .facets-header so it lines up
+  padding-top: 0.5rem;
+  padding-bottom: 1rem;
+  margin-bottom: 0;
 
   //flexbox works a lot better than float here
   display: flex;
@@ -85,9 +97,17 @@
   }
 }
 
+// style more like brand style
+.sort-dropdown .dropdown-toggle {
+  text-transform: uppercase;
+  font-size: 0.9375rem;
+}
+
 // compact pagination
 .page_links  {
-  line-height: 2.5;
+  // To try to make everything on top results row line up, this is a bit hacky,
+  // this line-height has to be big enough to encompass sort button and match .facets-header
+  line-height: 2.3rem;
   strong {
     font-weight: $semi-bold-weight;
   }
@@ -249,6 +269,9 @@
     }
 
     .scihist-results-list-item-additional-titles, .scihist-results-list-item-parents {
+      margin-bottom: ($paragraph-spacer * 0.5);
+      font-weight: 500;
+
       ul {
         @extend .list-unstyled;
         @include font-size($h4-font-size);
@@ -263,7 +286,7 @@
     .scihist-results-list-item-date {
       ul {
         @extend .list-unstyled;
-        margin-top: $paragraph-spacer;
+        margin-top: $paragraph-spacer * 0.25;
       }
     }
 
@@ -283,6 +306,7 @@
 
     .attribute-label {
       @extend %special-label;
+      color: $shi-blackish;
       margin-right: 0.66em;
     }
   }
