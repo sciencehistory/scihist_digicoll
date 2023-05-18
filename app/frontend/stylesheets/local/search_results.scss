@@ -10,8 +10,8 @@
 .facets {
   .facets-header {
     // To try to make top line of search results all line up, we hackily try to make
-    // this have the exact same line-height in pixels as .pagination. hack to try to improve on BL.
-    line-height: 2.5 * $body-font-size;
+    // this have the exact same line-height in pixels as .page_links. hack to try to improve on BL.
+    line-height: 2.3rem;
   }
 
   // No idea why blacklight puts the heading in a .navbar, but we got
@@ -105,7 +105,9 @@
 
 // compact pagination
 .page_links  {
-  line-height: 2.5;
+  // To try to make everything on top results row line up, this is a bit hacky,
+  // this line-height has to be big enough to encompass sort button and match .facets-header
+  line-height: 2.3rem;
   strong {
     font-weight: $semi-bold-weight;
   }
