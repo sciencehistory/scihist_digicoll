@@ -97,6 +97,12 @@
   }
 }
 
+// style more like brand style
+.sort-dropdown .dropdown-toggle {
+  text-transform: uppercase;
+  font-size: 0.9375rem;
+}
+
 // compact pagination
 .page_links  {
   // To try to make everything on top results row line up, this is a bit hacky,
