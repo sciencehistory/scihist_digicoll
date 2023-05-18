@@ -27,7 +27,7 @@
 //
 .show-page-layout {
 
-  $main-gutter-width: 36px;
+  $main-gutter-width: 40px; // 2.5 16px rem, but we built this on px alas
   // thumb width large size (525px)
   $max-image-column: 525px;
   // this is the point the image column is 'naturally' 525px, any bigger it's 'naturally' bigger,
@@ -43,11 +43,18 @@
   }
 
   // Used in place of .show-hero on video screen. No max-width, on small
-  // screen we want to let video be full width. 
+  // screen we want to let video be full width.
   .show-video {
     video {
       width: 100%;
     }
+  }
+
+  // some margin at small screen single-column to leave space before image.
+  // This needs to be erased at larger screen with columns.  Couldn't manage
+  // to get this to work with margin collapsing alone.
+  .show-title {
+    margin-bottom: ($paragraph-spacer * 2);
   }
 
   // Big enough for grid, not so big that we need to constrain the image column
@@ -65,6 +72,9 @@
     .show-metadata, .show-title {
       clear: right;
       float: right;
+    }
+    .show-title {
+      margin-bottom: unset;
     }
   }
 

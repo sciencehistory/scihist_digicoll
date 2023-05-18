@@ -1,20 +1,6 @@
 // buttons generally have no borders, have border color set to same
 // as bg color. we set btn-primary the same in variables.
 
-// a light grey button matching light grey bg
-.btn-brand-alt {
-  // color, bg, border
-  @include button-variant($bg-lightly-shaded, $bg-lightly-shaded);
-  color: $body-color;
-}
-
-// dark grey button
-.btn-brand-dark {
-  @include button-variant($brand-dark-grey, $brand-dark-grey);
-  color: #FFFFFF;
-}
-
-
 // An especially bright button style using the brand bright breen
 .btn-emphasis {
   @include button-variant($brand-bright-green, $brand-bright-green); //mix($brand-bright-green, $brand-dark-blue, 93%)
@@ -25,8 +11,10 @@
 // then overriding a lot of bootstrap stuff -- we might want to transition to actually
 // setting bootstrap button default size/weight/etc?
 
-.btn-dark-inverse {
-  @include button-variant($shi-blackish, $shi-blackish);
+.btn-brand-dark {
+  // hoverbackground similar to main site used in some places, but passes contrast rules
+  // with our hover color
+  @include button-variant($shi-blackish, $shi-blackish, $hover-background: #424242);
   color: white;
   text-transform: uppercase;
   font-size: 0.9375em; // slightly smaller than normal to make up for the all-caps? 15px/16px
@@ -36,11 +24,27 @@
   &:hover, &:focus {
     color: #dadbdb;
   }
+
+  // These are approximately matching main site, not implemented the same way
+  padding: 0.66em 1.75em;
+}
+
+// we need another brand button...
+.btn-brand-alt {
+  @include button-variant($shi-teal, $shi-teal);
+
+  color: white;
+  text-transform: uppercase;
+  font-size: 0.9375em; // slightly smaller than normal to make up for the all-caps? 15px/16px
+
+  &:hover, &:focus {
+    color: $shi-yellow;
+  }
 }
 
 // The main/only button type actually used in new main site -- this is a temporary
 // name
-.btn-brand-new {
+.btn-brand-main {
   // hover-background copied from main site
   @include button-variant($shi-yellow, $shi-yellow, $hover-background: #c6c94f);
   transition: background-color .3s ease,color .3s ease;
@@ -49,9 +53,21 @@
   font-weight: 700;
   font-size: 0.9375rem; // slightly smaller than normal to make up for the all-caps? 15px/16px
 
-  // won't be necessary once we fix up all bootstrap buttons to match?
-  border-radius: 0;
-
   // These are approximately matching main site, not implemented the same way
   padding: 0.66em 1.75em;
+}
+
+// we're fighting with bootstrap a bit. If inside an input group, over-override
+// with plain bootstrap padding again. Or if we have a class to ask for it.
+.input-group .btn-brand-dark, .input-group .btn-brand-main, .input-group .btn-brand-alt
+  .btn-brand-dark.less-padding, .btn-brand-main.less-padding, btn-brand-alt.less-padding {
+  padding: $btn-padding-y $btn-padding-x;
+}
+// and also over-override for .btn-sm the things we overroad for personal styles.
+// Padding and font-size
+.btn-brand-main.btn-sm, .btn-brand-dark.btn-sm, .btn-brand-alt.btn-sm {
+  padding: $btn-padding-y-sm $btn-padding-x-sm;
+  // 14px at 1rem==16px, a bit bigger than totally scaling our smaller for all-caps, but
+  // we actually need it to not be too too small.
+  font-size: 0.875rem;
 }

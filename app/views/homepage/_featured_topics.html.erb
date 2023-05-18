@@ -1,27 +1,25 @@
 <div class="ribbon-section featured-topics">
-  <div class="ribbon-section-inner">
-    <div class='title-div'>
-      <h2>Featured Topics</h2>
-    </div>
+  <div class='title-div'>
+    <h2>Featured Topics</h2>
+  </div>
 
-    <div class="collections-list">
-        <% FeaturedTopic.all.slice(0..3).in_groups_of(2).each do |group_of_two| %>
-          <div class="d-flex flex-wrap justify-content-center">
-            <% group_of_two.each do |ft| %>
-              <div class="collection featured-topic">
-                <%= link_to ft.path do %>
-                  <%= image_tag ft.thumb_asset_path, class: "featured-topic-image", width: "100%", alt: "" %>
-                  <div class="featured-topic-title-wrapper">
-                    <h3 class="featured-topic-title"><%= ft.title %></h3>
-                  </div>
-                <% end %>
-              </div>
-            <% end %>
-          </div>
-        <% end %>
-    </div>
-    <div class="button-area">
-      <%= link_to "View more topics", featured_topics_path, class: "btn btn-brand-new" %>
-    </div>
+  <div class="collections-list">
+      <% FeaturedTopic.all.slice(0..3).in_groups_of(2).each do |group_of_two| %>
+        <div class="d-flex flex-wrap justify-content-center">
+          <% group_of_two.each do |ft| %>
+            <div class="collection featured-topic">
+              <%= link_to ft.path do %>
+                <%= image_tag ft.thumb_asset_path, class: "featured-topic-image", width: "100%", alt: "" %>
+                <div class="featured-topic-title-wrapper">
+                  <h3 class="featured-topic-title"><%= ft.title %></h3>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+  </div>
+  <div class="button-area">
+    <%= link_to "View more topics", featured_topics_path, class: "btn btn-brand-main" %>
   </div>
 </div>

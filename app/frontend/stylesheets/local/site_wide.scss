@@ -104,12 +104,12 @@ hr.brand {
 
 .google-classroom-share-icon {
   border-radius: 50%;
-  background-color: #646469;
+  background-color: $shi-blackish;
   height: 2.25rem;
   width: 2.25rem;
 }
 .google-classroom-share-icon:hover {
-  background-color: #555;
+  background-color: #424242;
 }
 
 .rounded-sides {
@@ -144,7 +144,7 @@ hr.brand {
 }
 
 .popover-citation-help {
-  background-color: $brand-dark-grey;
+  background-color: $shi-dark-blue;
 
   .popover-body {
     font-weight: 300;
@@ -152,10 +152,10 @@ hr.brand {
   }
 
   .arrow:after {
-    border-bottom-color: $brand-dark-grey !important;
+    border-bottom-color: $shi-dark-blue !important;
   }
   a {
-    color: $brand-bright-green;
+    color: $shi-turquoise;
   }
 }
 

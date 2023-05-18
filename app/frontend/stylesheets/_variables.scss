@@ -70,13 +70,7 @@ $badge-font-weight: $semi-bold-weight; // badges look better at our semi-bold wi
 
 // Maximum line length we judge to be readable at standard base font size.
 // Used to constrain some block text areas on large screens.
-$max-readable-width: 36.25rem; // 590px at 16px base;
-$long-max-readable-width: 42.5rem; // 680px; unclear how readable it really is, but we do it sometimes anyway
-
-
-// via experimentation, on search results page larger than this the
-// results column text is way too wide for reading text.
-$chf-fluid-max-width: 1300px;
+$max-readable-width: 68ch; // at our standard 17px sofia-pro font, about 682px, about 40em
 
 $transparent-background: rgba(0,0,0,0.25);
 
@@ -159,11 +153,14 @@ $navbar-dark-color: $brand-bright-green;
 $navbar-dark-hover-color: #fff;
 $navbar-dark-active-color: #fff;
 
+// new main site styles do not use any rounding on buttons and other elements
+$border-radius: 0;
+$border-radius-sm: 0;
+$border-radius-lg: 0;
 
 //$card-bg: $bg-lightly-shaded;
 $card-cap-bg: $bg-lightly-shaded;
 $card-border-color: #ccc; // goes with brand light grey. ish.
-$card-border-radius: 0;
 
 $breadcrumb-bg: $bg-lightly-shaded;
 $input-group-addon-bg: $bg-lightly-shaded;
@@ -173,10 +170,6 @@ $list-group-border-color: $brand-light-grey;
 $input-color: $brand-dark-grey;
 $input-border-color: $brand-light-grey;
 
-// border radius matching some elements on chemheritage.org, larger than bootstrap default
-$btn-border-radius:          9px !default;
-$btn-border-radius-lg:       9px !default;
-$btn-border-radius-sm:       9px !default;
 
 // Used by bootstrap for ordinary buttons too, let's make it match bootstrap 3/chf_sufia,
 // slightly larger.
