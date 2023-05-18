@@ -270,6 +270,7 @@
 
     .scihist-results-list-item-additional-titles, .scihist-results-list-item-parents {
       margin-bottom: ($paragraph-spacer * 0.5);
+      font-weight: 500;
 
       ul {
         @extend .list-unstyled;
