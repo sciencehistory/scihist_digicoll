@@ -134,7 +134,7 @@ $danger: $brand-red;
 $warning: $brand-yellow;
 $primary: $brand-blue;
 $dark: $brand-dark-blue;
-$secondary: $brand-dark-grey;
+$secondary: $shi-blackish;
 $tooltip-bg: $shi-blackish;
 
 // $btn-primary-border: $brand-primary; // bootstrap 4 has no button borders already I think.
@@ -159,8 +159,8 @@ $border-radius-sm: 0;
 $border-radius-lg: 0;
 
 //$card-bg: $bg-lightly-shaded;
-$card-cap-bg: $bg-lightly-shaded;
-$card-border-color: #ccc; // goes with brand light grey. ish.
+$card-cap-bg: $shi-bg-gray;
+$card-border-color: #ccc; // just a bit darker than card-cap-bg for a nice outline?
 
 $breadcrumb-bg: $bg-lightly-shaded;
 $input-group-addon-bg: $bg-lightly-shaded;

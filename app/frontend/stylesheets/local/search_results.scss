@@ -39,10 +39,18 @@
     }
   }
 
+  .card-body {
+    border-top: $card-border-width solid $card-border-color;
+  }
+
   .facet-limit {
-    border-top: 0;
     margin-top: 0;
     margin-bottom: 0;
+  }
+
+  // keep double border from happening between "boxes" in our facet limit stack
+  .facet-limit:not(:first-child) {
+    border-top: 0;
   }
 
   .facet-values li {
