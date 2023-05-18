@@ -12,6 +12,13 @@
     // To try to make top line of search results all line up, we hackily try to make
     // this have the exact same line-height in pixels as .page_links. hack to try to improve on BL.
     line-height: 2.3rem;
+
+    h2.facets-heading {
+      font-size: $body-font-size;
+      text-transform: uppercase;
+      font-weight: 600;
+      text-align: center;
+    }
   }
 
   .card-header {
