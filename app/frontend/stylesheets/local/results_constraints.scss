@@ -67,11 +67,13 @@
   .constraint-value {
     color: black;
     background-color: $bg-lightly-shaded;
-    border-color: $bg-lightly-shaded;
+    border-color: $shi-bg-gray-border;
     max-width: initial; // dunno why BL sets a max-width, it's too small what it sets
     text-align: left;
     &:hover, &:focus {
-      background-color: $bg-lightly-shaded;
+      // work around some minor weirdness caused by us using bootstrap btn classes here,
+      // which set z-index on hover for some reason
+      z-index: unset;
     }
   }
 
