@@ -34,6 +34,15 @@ body.scihist-main-layout {
       padding-bottom: 1rem;
     }
 
+    // Hack to try to make collapsible facets actually legible when collapsed.
+    // BL is kind of a mess, through different versions.
+    .facets-header {
+      background-color: $shi-bg-gray;
+      border: 1px solid #ccc;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
     @include media-breakpoint-up($layout-expand-up) {
       padding-right: $grid-gutter-width; // twice normal padding, we want that.
       padding-bottom: 0;
@@ -67,6 +76,13 @@ body.scihist-main-layout {
         }
         .navbar-toggler {
            display: none !important;
+        }
+
+        .facets-header {
+          background-color: unset;
+          border: unset;
+          padding-left: unset;
+          padding-right: unset;
         }
 
 
