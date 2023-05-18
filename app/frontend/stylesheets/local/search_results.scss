@@ -306,6 +306,7 @@
 
     .attribute-label {
       @extend %special-label;
+      color: $shi-blackish;
       margin-right: 0.66em;
     }
   }
