@@ -200,7 +200,7 @@ class MemberImageComponent < ApplicationComponent
     return "" unless member.kind_of?(Work)
 
     content_tag("div", class: "action-item info") do
-      link_to "Info", work_path(member), class: "btn btn-primary", "aria-label" => ("Info on #{member.title}" if member.is_a?(Work))
+      link_to "Info", work_path(member), class: "btn btn-brand-alt", "aria-label" => ("Info on #{member.title}" if member.is_a?(Work))
     end
   end
 
