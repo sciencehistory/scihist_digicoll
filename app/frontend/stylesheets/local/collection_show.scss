@@ -1,130 +1,149 @@
-
 .collection-show {
-  margin-left: auto;
-  margin-right: auto;
-
   .collection-top {
-    a.title-link {
-      color: inherit; // underline is enough, the bright blue is too much
-    }
+    margin-bottom: ($spacer * 4);
+  }
 
-    .collection-thumb {
-      float: right;
+  .collection-header {
+    display: flex;
 
-      width: 266px;
-      margin-left: 3rem;
-      margin-bottom: $spacer;
+    // smaller screens one column with image first, full width, limited to only so high
+    @include media-breakpoint-down(sm) {
+      flex-direction: column;
 
-      @include media-breakpoint-down(sm) {
-        display: none;
+      .collection-header-title {
+        order: 2;
+      }
+      .collection-header-thumb img {
+        object-fit: cover;
+        width: 100%;
+        max-height: 12rem;
       }
     }
-  }
 
-
-  .collection-main-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: $paragraph-spacer ($paragraph_spacer * 4);
-    margin-bottom: 2rem;
-
-    .collection-main-link {
-      @include font-size($h4-font-size);
-    }
-  }
-
-  .collection-related-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: ($paragraph_spacer * 2);
-    margin: 2rem 0;
-
-
-
+    // bigger screen side-by-side with image on right
     @include media-breakpoint-up(md) {
-      .related-link-component {
-        width: 20rem;
-        flex-grow: 1;
+      .collection-header-title {
+        width: 60%
+      };
+      .collection-header-thumb {
+        width: 40%;
+      }
+
+      // Some tricky code that works to make the image no higher than needed
+      // for the LEFT text column -- the height of the whole thing is only determined
+      // by the left text side. Then image is cropped to fit (object-fit: cover)
+      // whatever aspect ratio that is, to fill the space the left side creates.
+      .collection-header-thumb {
+        position: relative;
+        overflow: hidden;
+
+        img {
+          position: absolute;
+          right: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+    }
+
+
+    .collection-header-title {
+      background-color: $shi-teal;
+      color: white;
+      padding: ($spacer * 3.5) 3.5vw;
+
+      .show-genre a {
+        color: $shi-yellow;
+      }
+
+      h1 {
+        @extend .h2;
+        @extend .brand-alt-h2;
+      }
+      .title-link {
+        color: white;
+      }
+
+      .show-item-count {
+        margin-bottom: ($spacer * 2);
       }
     }
   }
 
-  .chf-attributes > tbody >tr:first-child td, .chf-attributes > tbody > tr:first-child th {
-    border-top: 0; // nope, not here.
-  }
+  // another block that at larger screens is two columns, smaller one column.
+  // Should match column widths above.
+  .collection-about {
+    display: flex;
 
-  // contains the search form and the funding_credit info which is sometimes next to it
-  .collection-control-area {
-
-    .collection-search-form {
-      margin: $spacer 0;
-      padding: ($spacer);
-      background-color: $bg-lightly-shaded;
-      display: inline-block;
-
-      width: 100%;
-      max-width: $max-readable-width;
-
-      .search-title {
-        font-size: $h4-font-size;
-        margin-bottom: $spacer;
-        font-weight: 600;
+    .collection-description {
+      p {
+        max-width: $max-readable-width;
       }
+    }
+    .collection-description, .collection-links {
+      margin-top: ($spacer * 2);
+    }
 
-      .input-group {;
-        // hacky way to have extra rounded corners on search box, matching
-        // nav bar search box.
-        input[type=search] {
-          border-top-left-radius: $btn-border-radius;
-          border-bottom-left-radius: $btn-border-radius;
-        }
-        button:last-child {
-          border-top-right-radius: $btn-border-radius;
-          border-bottom-right-radius: $btn-border-radius;
-        }
-      }
+    .collection-links {
+      align-self: center;
     }
 
     .collection-funding-credit {
-      margin: $spacer 0;
-
       display: flex;
-
-      .funding-credit-image {
-        // square image, have to set this explicitly for our aspect ratio
-        // trick for larger screensize below.
-        height: 7rem;
-        width: 7rem;
-        margin-right: map_get($spacers, 2);;
-      }
+      flex-wrap: wrap;
+      align-items: center;
+      gap: $spacer;
+      margin-bottom: $spacer;
     }
 
-    // two-column with funding-credit on RIGHT on larger screens, this
-    // works out as a reasonable breakpoint for it.
-    @include media-breakpoint-up(lg) {
+    .funding-credit-image {
+      max-width: 7rem;
+    }
+
+    .funding-credit-text {
+      flex-shrink: 1;
+      flex-grow: 1;
+      flex-basis: 17rem;
+      min-width: 17rem;
+    }
+
+    .collection-related-links {
       display: flex;
+      flex-wrap: wrap;
+      gap: $spacer;
 
-      .collection-funding-credit {
-        order: 2;
-        margin-left: $spacer;
-        .funding-credit-image {
-          // We want to say stretch to 100% height while preserving aspect ratio,
-          // but we need to support older browsers thatdon't do aspect-ratio CSS
-          // property yet... this manages to do the right thing on newer browsers
-          // with a reasonable fallback (no image resize at all) on older browsers.
-          height: 100%;
-          width: auto;
-          object-fit: contain;
-          object-position: 0 0;
+      .related-link-component {
+        max-width: 20rem;
+        padding: 1rem;
+        background-color: $shi-dark-blue;
 
-          max-height: 10rem;
+        .show-genre {
+          color: $shi-turquoise;
+        }
+
+        .related-link a {
+          color: white;
+          text-decoration-color: $shi-red;
+        }
+        .related-link .text-muted {
+          color: $shi-turquoise !important;
         }
       }
     }
-  }
 
-  #appliedParams.constraints-container {
-    // undo negatie margin from when it's meant to be at top of page, messy.
-    margin-top: 0;
+    @include media-breakpoint-down(sm) {
+      flex-direction: column;
+    }
+
+    @include media-breakpoint-up(md) {
+      .collection-description {
+        padding-right: 3.5vw;
+        width: 60%;
+      }
+      .collection-links {
+        width: 40%;
+      }
+    }
   }
 }

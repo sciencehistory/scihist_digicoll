@@ -12,7 +12,11 @@ class CollectionShowController < CatalogController
 
   ORAL_HISTORY_DEPARTMENT_VALUE = "Center for Oral History"
 
-  # index action inherited from CatalogController, that's what we use.
+  def index
+    super
+    @collection_opac_urls = CollectionOpacUrls.new(collection)
+    @related_link_filter ||= RelatedLinkFilter.new(collection.related_link)
+  end
 
   # This method can be overridden from blacklight to provide *dynamic* blacklight
   # config
