@@ -88,15 +88,13 @@
         max-width: $max-readable-width;
       }
     }
-    .collection-description, .collection-links {
+    .collection-description, .collection-funding-credit {
       margin-top: ($spacer * 2);
     }
 
-    .collection-links {
-      align-self: center;
-    }
-
     .collection-funding-credit {
+      align-self: center;
+
       display: flex;
       flex-wrap: wrap;
       align-items: center;
@@ -115,29 +113,7 @@
       min-width: 17rem;
     }
 
-    .collection-related-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: $spacer;
 
-      .related-link-component {
-        max-width: 20rem;
-        padding: 1rem;
-        background-color: $shi-dark-blue;
-
-        .show-genre {
-          color: $shi-turquoise;
-        }
-
-        .related-link a {
-          color: white;
-          text-decoration-color: $shi-red;
-        }
-        .related-link .text-muted {
-          color: $shi-turquoise !important;
-        }
-      }
-    }
 
     @include media-breakpoint-down(sm) {
       flex-direction: column;
@@ -148,9 +124,25 @@
         padding-right: 3.5vw;
         width: 60%;
       }
-      .collection-links {
+      .collection-funding-credit {
         width: 40%;
       }
     }
   }
+
+  .related-links {
+    max-width: $max-readable-width;
+  }
+
+  // match work-show, for our related links
+  .show-sub-head-body {
+    border-top: 3px solid $table-border-color;
+    padding: $table-cell-padding-sm;
+    margin-left: -1 * $table-cell-padding-sm;
+    margin-bottom: ($paragraph-spacer * 4);
+  }
+  .related-link-component:not(:last-child) {
+    @extend .mb-3;
+  }
+
 }
