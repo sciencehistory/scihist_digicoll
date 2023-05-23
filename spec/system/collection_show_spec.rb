@@ -32,8 +32,8 @@ describe "Collection show page", solr: true, indexable_callbacks: true do
 
       expect(page).to have_content(collection.description)
 
-      expect(page).to have_link(href: "https://othmerlib.sciencehistory.org/record=b9999999", text: "Collection in library catalog")
-      expect(page).to have_link(href: "http://archives.sciencehistory.org/some/collection", text: "Collection guide")
+      expect(page).to have_link(href: "https://othmerlib.sciencehistory.org/record=b9999999", text: /View in library catalog/i)
+      expect(page).to have_link(href: "http://archives.sciencehistory.org/some/collection", text: /View Collection guide/i)
       expect(page).to have_link(href: "https://sciencehistory.org/foo/bar", text: "Article about this")
 
       expect(page).to have_content("public work one")
@@ -51,7 +51,7 @@ describe "Collection show page", solr: true, indexable_callbacks: true do
 
     describe "no results" do
       let(:collection) { create(:collection, department: CollectionShowController::ORAL_HISTORY_DEPARTMENT_VALUE) }
-      it "displays correct no-results content", js: true, solr: true, indexable_callbacks: true do      
+      it "displays correct no-results content", js: true, solr: true, indexable_callbacks: true do
         visit collection_path(collection, q: 'abc123')
         expect(page).to have_content("Sorry, we couldn't find any records for your search.")
         expect(page).to have_content("Ever Bumped by Dead Weight?")
