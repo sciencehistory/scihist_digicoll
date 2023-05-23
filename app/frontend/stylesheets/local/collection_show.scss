@@ -46,30 +46,37 @@
         }
       }
     }
+  }
 
 
-    .collection-header-title {
-      background-color: $shi-teal;
+  .collection-header-title, .collection-mini-header {
+    background-color: $shi-teal;
+    color: white;
+
+    .show-genre a, .show-genre {
+      color: $shi-yellow;
+    }
+
+    h1 {
+      @extend .h2;
+      @extend .brand-alt-h2;
+    }
+    .title-link {
       color: white;
-      padding: ($spacer * 3.5) 3.5vw;
+    }
 
-      .show-genre a {
-        color: $shi-yellow;
-      }
-
-      h1 {
-        @extend .h2;
-        @extend .brand-alt-h2;
-      }
-      .title-link {
-        color: white;
-      }
-
-      .show-item-count {
-        margin-bottom: ($spacer * 2);
-      }
+    .show-item-count {
+      margin-bottom: ($spacer * 2);
     }
   }
+  .collection-header-title {
+    padding: ($spacer * 3.5) 3.5vw;
+  }
+  .collection-mini-header {
+    padding: $spacer;
+    margin-bottom: ($spacer * 2)
+  }
+
 
   // another block that at larger screens is two columns, smaller one column.
   // Should match column widths above.

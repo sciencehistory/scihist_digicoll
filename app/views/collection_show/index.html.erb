@@ -1,122 +1,144 @@
 <% provide :page_title, construct_page_title(collection.title) %>
 <div itemscope itemtype="http://schema.org/CollectionPage" class="collection-show">
 
-<section class="collection-top">
-  <div class="collection-header">
-      <div class="collection-header-title">
-        <header>
-          <div class="show-genre">
-            <% if collection.department != Collection::DEPARTMENT_EXHIBITION_VALUE %>
-              <%= link_to "Collections", collections_path %>
-            <% else %>
-              Exhibitions
-            <% end %>
-          </div>
-          <h1>
-            <%= link_to collection.title, collection_path(collection), class: "title-link" %> <%= publication_badge(collection) %>
-            <% if can? :update, collection %>
-              <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-secondary float-right" %>
-            <% end %>
-          </h1>
-        </header>
-
-        <p class="show-item-count">
-          <%= render CollectionCountComponent.new(collection) %>
-        </p>
-
-        <div class="collection-search-form">
-          <%= form_tag "", method: :get do |f| %>
-           <div class="input-group">
-              <%= search_field_tag :q, '', class: "q form-control",
-                  id: "collectionQ",
-                  autocomplete: "off",
-                  placeholder: t("collection.search_form.search_field.placeholder"),
-                  :"aria-label" => t('collection.search_form.search_field.label')
-              %>
-              <label class="sr-only" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
-              <div class="input-group-append">
-                <button type="submit" class="btn btn-brand-dark" title="Search">
-                  <%= t('blacklight.search.form.submit') %>
-                </button>
-              </div>
-            </div>
-            <%= hidden_field_tag :sort, params[:sort], id: 'collection_sort' %>
+  <% if has_deeper_search? %>
+    <%# we're going into a specified search, just tiny header %>
+    <div class="collection-mini-header">
+        <div class="show-genre">
+          <% if collection.department != Collection::DEPARTMENT_EXHIBITION_VALUE %>
+            <%= link_to "Collections", collections_path %>
+          <% else %>
+            Exhibitions
           <% end %>
         </div>
 
-      </div>
-
-      <div class="collection-header-thumb">
-        <%= render ThumbComponent.new(collection.leaf_representative, thumb_size: :collection_page, placeholder_img_url: asset_path("default_collection.svg"), aspect_ratio_container: false) %>
-      </div>
-  </div>
-
-  <div class="collection-about">
-      <div class="collection-description">
-        <%= DescriptionDisplayFormatter.new(collection.description).format %>
-
-        <% if  @collection_opac_urls.opac_urls.present? || @related_link_filter.finding_aid_related_links.present? %>
-          <div>
-          <% @collection_opac_urls.opac_urls.each do |opac_url| %>
-            <%= link_to "View in Library Catalog", opac_url, class: "btn btn-brand-main mb-2 mr-2" %>
+        <h1>
+          <%= link_to collection.title, collection_path(collection), class: "title-link" %> <%= publication_badge(collection) %>
+          <% if can? :update, collection %>
+            <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-secondary float-right" %>
           <% end %>
-
-          <% @related_link_filter.finding_aid_related_links.collect(&:url).compact.each do |finding_aid_url| %>
-            <%= link_to "View Collection Guide", finding_aid_url, class: "btn btn-brand-main mb-2 mr-2" %>
-          <% end %>
-          </div>
-        <% end %>
-      </div>
-
-      <div class="collection-links">
-        <% if collection.funding_credit.present? %>
-          <div class="collection-funding-credit">
-            <% if collection.funding_credit.image.present? %>
-              <%= image_tag collection.funding_credit.image_path, class: "funding-credit-image" %>
-            <% end %>
-            <div class="funding-credit-text">
-              <% if collection.department == "Center for Oral History" %>
-                This oral history project
-              <% else %>
-                Digitization and cataloging of this collection
-              <% end %>
-                made possible by the generosity of
-              <%= link_to_if collection.funding_credit.url.present?,
-                    collection.funding_credit.name,
-                    collection.funding_credit.url,
-                    target: "_blank"
-              %>
-            </div>
-          </div>
-        <% end %>
-
-        <% if @related_link_filter.general_related_links.present? %>
-          <div class="collection-related-links">
-            <% @related_link_filter.general_related_links.each do |link| %>
-              <%= render RelatedLinkComponent.new(related_link: link) %>
-            <% end %>
-          </div>
-        <% end %>
-
-      </div>
-  </div>
-</section>
-
-<%= render 'catalog/constraints' %>
-<div class="row">
-  <% if @response.documents.present? %>
-    <div class="sidebar-col">
-      <%= render 'facets' %>
-    </div>
-    <div class="content-col">
-      <%# per-page and sort controls, from Blacklight partial %>
-      <%= render 'search_header' %>
-      <%= render "document_list", documents: @response.documents %>
-      <%= render 'catalog/results_pagination' %>
+        </h1>
     </div>
   <% else %>
-    <div class="ml-3">
-      <%= render 'catalog/zero_results' %>
-    </div>
+    <%# no specified search, LOTS of collection metadata %>
+    <section class="collection-top">
+      <div class="collection-header">
+        <div class="collection-header-title">
+          <header>
+            <div class="show-genre">
+              <% if collection.department != Collection::DEPARTMENT_EXHIBITION_VALUE %>
+                <%= link_to "Collections", collections_path %>
+              <% else %>
+                Exhibitions
+              <% end %>
+            </div>
+            <h1>
+              <%= link_to collection.title, collection_path(collection), class: "title-link" %> <%= publication_badge(collection) %>
+              <% if can? :update, collection %>
+                <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-secondary float-right" %>
+              <% end %>
+            </h1>
+          </header>
+
+          <p class="show-item-count">
+            <%= render CollectionCountComponent.new(collection) %>
+          </p>
+
+          <div class="collection-search-form">
+            <%= form_tag "", method: :get do |f| %>
+             <div class="input-group">
+                <%= search_field_tag :q, '', class: "q form-control",
+                    id: "collectionQ",
+                    autocomplete: "off",
+                    placeholder: t("collection.search_form.search_field.placeholder"),
+                    :"aria-label" => t('collection.search_form.search_field.label')
+                %>
+                <label class="sr-only" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
+                <div class="input-group-append">
+                  <button type="submit" class="btn btn-brand-dark" title="Search">
+                    <%= t('blacklight.search.form.submit') %>
+                  </button>
+                </div>
+              </div>
+              <%= hidden_field_tag :sort, params[:sort], id: 'collection_sort' %>
+            <% end %>
+          </div>
+
+        </div>
+
+        <div class="collection-header-thumb">
+          <%= render ThumbComponent.new(collection.leaf_representative, thumb_size: :collection_page, placeholder_img_url: asset_path("default_collection.svg"), aspect_ratio_container: false) %>
+        </div>
+      </div>
+
+      <div class="collection-about">
+        <div class="collection-description">
+          <%= DescriptionDisplayFormatter.new(collection.description).format %>
+
+          <% if  @collection_opac_urls.opac_urls.present? || @related_link_filter.finding_aid_related_links.present? %>
+            <div>
+            <% @collection_opac_urls.opac_urls.each do |opac_url| %>
+              <%= link_to "View in Library Catalog", opac_url, class: "btn btn-brand-main mb-2 mr-2" %>
+            <% end %>
+
+            <% @related_link_filter.finding_aid_related_links.collect(&:url).compact.each do |finding_aid_url| %>
+              <%= link_to "View Collection Guide", finding_aid_url, class: "btn btn-brand-main mb-2 mr-2" %>
+            <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="collection-links">
+          <% if collection.funding_credit.present? %>
+            <div class="collection-funding-credit">
+              <% if collection.funding_credit.image.present? %>
+                <%= image_tag collection.funding_credit.image_path, class: "funding-credit-image" %>
+              <% end %>
+              <div class="funding-credit-text">
+                <% if collection.department == "Center for Oral History" %>
+                  This oral history project
+                <% else %>
+                  Digitization and cataloging of this collection
+                <% end %>
+                  made possible by the generosity of
+                <%= link_to_if collection.funding_credit.url.present?,
+                      collection.funding_credit.name,
+                      collection.funding_credit.url,
+                      target: "_blank"
+                %>
+              </div>
+            </div>
+          <% end %>
+
+          <% if @related_link_filter.general_related_links.present? %>
+            <div class="collection-related-links">
+              <% @related_link_filter.general_related_links.each do |link| %>
+                <%= render RelatedLinkComponent.new(related_link: link) %>
+              <% end %>
+            </div>
+          <% end %>
+
+        </div>
+      </div>
+    </section>
   <% end %>
+
+  <%= render 'catalog/constraints' %>
+  <div class="row">
+    <% if @response.documents.present? %>
+      <div class="sidebar-col">
+        <%= render 'facets' %>
+      </div>
+      <div class="content-col">
+        <%# per-page and sort controls, from Blacklight partial %>
+        <%= render 'search_header' %>
+        <%= render "document_list", documents: @response.documents %>
+        <%= render 'catalog/results_pagination' %>
+      </div>
+    <% else %>
+      <div class="ml-3">
+        <%= render 'catalog/zero_results' %>
+      </div>
+    <% end %>
+  </div>
 </div>
