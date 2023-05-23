@@ -24,7 +24,14 @@ we want the full width of the screen, no margins or padding. %>
           </header>
         </div>
 
-        <%= render CollectionMetadataComponent.new(collection: collection, show_links: false) %>
+        <p class="show-item-count">
+          <%= render CollectionCountComponent.new(collection) %>
+        </p>
+
+        <div class="collection-description">
+          <%= DescriptionDisplayFormatter.new(collection.description).format %>
+        </div>
+
 
         <div class="mt-5">
           <h2 class="search-title h4">
