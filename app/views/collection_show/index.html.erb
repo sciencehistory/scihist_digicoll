@@ -88,38 +88,41 @@
           <% end %>
         </div>
 
-        <div class="collection-links">
-          <% if collection.funding_credit.present? %>
-            <div class="collection-funding-credit">
-              <% if collection.funding_credit.image.present? %>
-                <%= image_tag collection.funding_credit.image_path, class: "funding-credit-image" %>
+        <% if collection.funding_credit.present? %>
+          <div class="collection-funding-credit">
+            <% if collection.funding_credit.image.present? %>
+              <%= image_tag collection.funding_credit.image_path, class: "funding-credit-image" %>
+            <% end %>
+            <div class="funding-credit-text">
+              <% if collection.department == "Center for Oral History" %>
+                This oral history project
+              <% else %>
+                Digitization and cataloging of this collection
               <% end %>
-              <div class="funding-credit-text">
-                <% if collection.department == "Center for Oral History" %>
-                  This oral history project
-                <% else %>
-                  Digitization and cataloging of this collection
-                <% end %>
-                  made possible by the generosity of
-                <%= link_to_if collection.funding_credit.url.present?,
-                      collection.funding_credit.name,
-                      collection.funding_credit.url,
-                      target: "_blank"
-                %>
-              </div>
+                made possible by the generosity of
+              <%= link_to_if collection.funding_credit.url.present?,
+                    collection.funding_credit.name,
+                    collection.funding_credit.url,
+                    target: "_blank"
+              %>
             </div>
-          <% end %>
+          </div>
+        <% end %>
 
-          <% if @related_link_filter.general_related_links.present? %>
-            <div class="collection-related-links">
-              <% @related_link_filter.general_related_links.each do |link| %>
-                <%= render RelatedLinkComponent.new(related_link: link) %>
-              <% end %>
-            </div>
-          <% end %>
-
-        </div>
       </div>
+
+
+      <% if  @related_link_filter.general_related_links.present? %>
+        <div class="related-links">
+          <h2 class="attribute-sub-head">Learn More</h2>
+          <div class="related-links show-sub-head-body">
+            <% @related_link_filter.general_related_links.each do |link| %>
+              <%= render RelatedLinkComponent.new(related_link: link) %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
     </section>
   <% end %>
 
