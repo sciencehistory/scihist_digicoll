@@ -49,9 +49,9 @@
       <div class="collection-header-thumb">
         <%= render ThumbComponent.new(collection.leaf_representative, thumb_size: :collection_page, placeholder_img_url: asset_path("default_collection.svg"), aspect_ratio_container: false) %>
       </div>
-    </div>
+  </div>
 
-    <div class="collection-about">
+  <div class="collection-about">
       <div class="collection-description">
         <%= DescriptionDisplayFormatter.new(collection.description).format %>
 
@@ -99,8 +99,8 @@
         <% end %>
 
       </div>
-    </div>
   </div>
+</div>
 
 <%= render 'catalog/constraints' %>
 <div class="row">
