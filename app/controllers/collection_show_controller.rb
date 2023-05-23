@@ -81,4 +81,12 @@ class CollectionShowController < CatalogController
     @collection ||= Collection.find_by_friendlier_id!(params[:collection_id])
   end
   helper_method :collection
+
+  # If we visit this page with no search criteria, we get a lot of info about the collection at
+  # top, but if we have any search criteria at all OR have paginated, we have a much smaller
+  # header
+  def has_deeper_search?
+    has_search_parameters? || (params[:page].present? && params[:page] != "1")
+  end
+  helper_method :has_deeper_search?
 end
