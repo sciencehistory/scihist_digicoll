@@ -82,6 +82,7 @@
   // Should match column widths above.
   .collection-about {
     display: flex;
+    justify-content: space-between;
 
     .collection-description {
       p {
@@ -123,6 +124,7 @@
       .collection-description {
         padding-right: 3.5vw;
         width: 60%;
+        flex-grow: 1; // can take more space if funding is not present
       }
       .collection-funding-credit {
         width: 40%;
