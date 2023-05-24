@@ -36,8 +36,9 @@ $shi-yellow: #E4E76D;
 $shi-alternate-text-color: #3c3c3c;
 
 // A transparent dark grey used for overlays. Based on main site, but we made it
-// slightly less transparent for better contrast legibility.
-$shi-transparent-dark-bg: rgba(30,36,42,.75);
+// slightly less transparent for better contrast legibility. We want to send 'rgba'
+// to browser, prevent SASS from converting it to hex!
+$shi-transparent-dark-bg: #{'rgba(30,36,42,.75)'};
 
 
 
