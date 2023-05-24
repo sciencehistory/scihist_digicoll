@@ -1,6 +1,10 @@
 .collection-show {
   .collection-top {
     margin-bottom: ($spacer * 4);
+
+    .related-links .attribute-sub-head {
+      margin-top: ($spacer * 2); // override
+    }
   }
 
   .collection-header {
