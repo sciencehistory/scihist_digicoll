@@ -1,13 +1,5 @@
 // Some general site-wide typography settings.
 //
-// This page in chf_sufia included sidebar/content styling for .chf-container-fluid,
-// but we'll put that in a separate file.
-
-h2, .h2, h3, .h3, h4, .h4, h5, .h5 {
-  // main webiste just uses black here, but we like using a softer color for headings, maybe
-  // this one?
-  color: $shi-blackish;
-}
 
 // We left bootstrap $font-size-base at 1rem (usually 16px) for the base of various
 // other padding and sizing calculations, but let's actually set default starting
