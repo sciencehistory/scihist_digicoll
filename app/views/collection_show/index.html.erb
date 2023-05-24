@@ -78,13 +78,13 @@
           </div>
 
           <% if  @collection_opac_urls.opac_urls.present? || @related_link_filter.finding_aid_related_links.present? %>
-            <div>
+            <div class="other-system-links">
             <% @collection_opac_urls.opac_urls.each do |opac_url| %>
-              <%= link_to "View in Library Catalog", opac_url, class: "btn btn-brand-main mb-2 mr-2" %>
+              <%= link_to "View in Library Catalog", opac_url, class: "btn btn-brand-main" %>
             <% end %>
 
             <% @related_link_filter.finding_aid_related_links.collect(&:url).compact.each do |finding_aid_url| %>
-              <%= link_to "View Collection Guide", finding_aid_url, class: "btn btn-brand-main mb-2 mr-2" %>
+              <%= link_to "View Collection Guide", finding_aid_url, class: "btn btn-brand-main" %>
             <% end %>
             </div>
           <% end %>
