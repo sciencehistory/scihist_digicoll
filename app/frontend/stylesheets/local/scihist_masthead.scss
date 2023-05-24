@@ -607,9 +607,12 @@
 // local content, management-only top bar
 .navbar.topbar {
     // take from theme color after we fix theme?
-    background-color: #dddddc;
+    background-color: $shi-bg-gray;
     padding-top: 0;
     padding-bottom: 0;
+
+    font-size: 0.875rem;
+    line-height: 1;
 
     .nav-item:not(:last-child) {
         margin-right: $spacer;
