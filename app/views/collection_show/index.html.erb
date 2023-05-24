@@ -1,5 +1,5 @@
 <% provide :page_title, construct_page_title(collection.title) %>
-<div itemscope itemtype="http://schema.org/CollectionPage" class="collection-show">
+<div itemscope itemtype="http://schema.org/CollectionPage" class="collection-show <%= collection.department&.parameterize %>">
 
   <% if has_deeper_search? %>
     <%# we're going into a specified search, just tiny header %>
