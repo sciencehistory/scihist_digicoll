@@ -16,6 +16,8 @@
 
       .collection-header-title {
         order: 2;
+        padding-top: ($spacer * 2);
+        padding-bottom: ($spacer * 2);
       }
       .collection-header-thumb img {
         object-fit: cover;
@@ -27,7 +29,9 @@
     // bigger screen side-by-side with image on right
     @include media-breakpoint-up(md) {
       .collection-header-title {
-        width: 60%
+        width: 60%;
+        padding-top: ($spacer * 3.5);
+        padding-bottom: ($spacer * 3.5)
       };
       .collection-header-thumb {
         width: 40%;
@@ -86,7 +90,8 @@
     }
   }
   .collection-header-title {
-    padding: ($spacer * 3.5) 3.5vw;
+    padding-left: 3.5vw;
+    padding-right: 3.5vw;
   }
   .collection-mini-header {
     padding: $spacer;
