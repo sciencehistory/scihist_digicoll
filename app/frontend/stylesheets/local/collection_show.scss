@@ -112,6 +112,13 @@
       margin-top: ($spacer * 2);
     }
 
+    .other-system-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: $spacer;
+    }
+
     .collection-funding-credit {
       align-self: center;
 
