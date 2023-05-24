@@ -69,6 +69,8 @@ $brand-alt-header-weight: 900;
 $semi-bold-weight: 600;
 $badge-font-weight: $semi-bold-weight; // badges look better at our semi-bold with adelle-sans!
 
+$large-blurb-font-size: 1.25rem; // perhaps will match $h5-font-size
+
 // Maximum line length we judge to be readable at standard base font size.
 // Used to constrain some block text areas on large screens.
 $max-readable-width: 68ch; // at our standard 17px sofia-pro font, about 682px, about 40em

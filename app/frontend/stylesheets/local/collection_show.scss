@@ -91,7 +91,7 @@
     }
     .collection-description-text.short-text {
       // make it bigger for text we measured shorter
-      font-size: 1.3rem;
+      font-size: $large-blurb-font-size;
     }
     .collection-description, .collection-funding-credit {
       margin-top: ($spacer * 2);
