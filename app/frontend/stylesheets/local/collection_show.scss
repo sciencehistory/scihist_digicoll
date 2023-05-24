@@ -52,6 +52,11 @@
     }
   }
 
+  &.exhibition {
+    .collection-header-title, .collection-mini-header {
+      background-color: $shi-dark-blue;
+    }
+  }
 
   .collection-header-title, .collection-mini-header {
     background-color: $shi-teal;
