@@ -39,6 +39,8 @@ module ApplicationHelper
     current_policy.can_see_unpublished_records?
   end
 
+  # used on collection show pages, eg
+  #
   # If we visit this page with no search criteria, we get a lot of info about the collection at
   # top, but if we have any search criteria at all OR have paginated, we have a much smaller
   # header
