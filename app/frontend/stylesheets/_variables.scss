@@ -35,6 +35,10 @@ $shi-yellow: #E4E76D;
 // white.
 $shi-alternate-text-color: #3c3c3c;
 
+// A transparent dark grey used for overlays. Based on main site, but we made it
+// slightly less transparent for better contrast legibility.
+$shi-transparent-dark-bg: rgba(30,36,42,.75);
+
 
 
 /* OLD rebrand colors */
@@ -196,3 +200,8 @@ $popover-border-radius: 9px;
 // and we can workaround that bug by setting this variable to false.
 // https://github.com/projectblacklight/blacklight/issues/2414
 $logo-image: false;
+
+
+// Maybe looks a bit better and consistent with main site? Not sure. We have a LOT
+// of differnet colors -- default bootstrap just uses $primary here, which we have set to our teal
+$nav-pills-link-active-bg:          $shi-red;
