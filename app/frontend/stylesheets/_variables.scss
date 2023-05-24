@@ -132,6 +132,10 @@ $body-color: #222; // little bit darker
 //$line-height-base: 1.5; // default 1.5 works for us, liked better than smaller
 $headings-line-height: 1.13; // a bit smaller than default 1.2
 
+// main webiste just uses black here, but we like using a softer color for headings, maybe
+// this one?
+$headings-color: $shi-blackish;
+
 // bootstrap brand colors
 $danger: $brand-red;
 $warning: $brand-yellow;
