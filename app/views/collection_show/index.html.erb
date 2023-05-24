@@ -73,7 +73,7 @@
 
       <div class="collection-about">
         <div class="collection-description">
-          <div class="collection-description-text <%= 'short-text' if collection.description.length <= 200 %>">
+          <div class="collection-description-text <%= 'short-text' if collection.description.length <= 220 %>">
             <%= DescriptionDisplayFormatter.new(collection.description).format %>
           </div>
 
