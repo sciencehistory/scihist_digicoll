@@ -12,7 +12,7 @@
         <% @featured_topics.each do |topic| %>
             <div class="collection">
                 <%= link_to topic.path do %>
-                  <%= image_tag topic.thumb_asset_path, class: "featured-topic-image", width: "100%", alt: "" %>
+                  <%= image_tag topic.thumb_asset_path, class: "featured-topic-image", alt: "" %>
                   <div class="collection-title-wrapper">
                       <p class="collection-title"><%= topic.title %></p>
                   </div>
