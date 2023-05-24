@@ -52,9 +52,15 @@
     }
   }
 
+  // Alternate bg block colors for special types of pages
   &.exhibition {
     .collection-header-title, .collection-mini-header {
       background-color: $shi-dark-blue;
+    }
+  }
+  &.featured-collection-show {
+   .collection-header-title, .collection-mini-header {
+      background-color: $shi-maroon;
     }
   }
 
