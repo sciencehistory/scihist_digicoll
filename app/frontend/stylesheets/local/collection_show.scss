@@ -1,6 +1,6 @@
 .collection-show {
   .collection-top {
-    margin-bottom: ($spacer * 4);
+    margin-bottom: ($spacer * 2);
 
     .related-links .attribute-sub-head {
       margin-top: ($spacer * 2); // override
@@ -109,7 +109,7 @@
       font-size: $large-blurb-font-size;
     }
     .collection-description, .collection-funding-credit {
-      margin-top: ($spacer * 2);
+      margin-top: ($spacer * 3);
     }
 
     .other-system-links {
@@ -117,6 +117,7 @@
       flex-wrap: wrap;
       justify-content: center;
       gap: $spacer;
+      margin-top: ($spacer * 2)
     }
 
     .collection-funding-credit {
@@ -167,7 +168,7 @@
     border-top: 3px solid $table-border-color;
     padding: $table-cell-padding-sm;
     margin-left: -1 * $table-cell-padding-sm;
-    margin-bottom: ($paragraph-spacer * 4);
+    margin-bottom: ($paragraph-spacer * 2);
   }
   .related-link-component:not(:last-child) {
     @extend .mb-3;
