@@ -89,6 +89,10 @@
         max-width: $max-readable-width;
       }
     }
+    .collection-description-text.short-text {
+      // make it bigger for text we measured shorter
+      font-size: 1.3rem;
+    }
     .collection-description, .collection-funding-credit {
       margin-top: ($spacer * 2);
     }

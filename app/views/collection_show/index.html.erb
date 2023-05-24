@@ -73,7 +73,9 @@
 
       <div class="collection-about">
         <div class="collection-description">
-          <%= DescriptionDisplayFormatter.new(collection.description).format %>
+          <div class="collection-description-text <%= 'short-text' if collection.description.length <= 200 %>">
+            <%= DescriptionDisplayFormatter.new(collection.description).format %>
+          </div>
 
           <% if  @collection_opac_urls.opac_urls.present? || @related_link_filter.finding_aid_related_links.present? %>
             <div>
