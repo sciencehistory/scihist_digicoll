@@ -32,6 +32,14 @@ $collection-index-box-margin: 17px;
 
       @include all-white-links;
 
+      // crop to fit square
+      img {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+      }
+
       .collection-title-wrapper {
         /* overlay on image */
         position: absolute;
