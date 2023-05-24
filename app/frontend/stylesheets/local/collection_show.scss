@@ -88,11 +88,10 @@
     display: flex;
     justify-content: space-between;
 
-    .collection-description {
-      p {
-        max-width: $max-readable-width;
-      }
+    .collection-description-text {
+      max-width: $max-readable-width;
     }
+
     .collection-description-text.short-text {
       // make it bigger for text we measured shorter
       font-size: $large-blurb-font-size;
