@@ -170,6 +170,12 @@ $border-radius: 0;
 $border-radius-sm: 0;
 $border-radius-lg: 0;
 
+// somewhat mysterious bootstrap 4 variables, that lighten/darken theme
+// colors, we're lessening to try to meet WCAG contrast with our theme colors
+$alert-bg-level: -7; // default -10
+$alert-color-level: 8; // default 6
+$alert-border-level: 1; // default -9
+
 //$card-bg: $bg-lightly-shaded;
 $card-cap-bg: $shi-bg-gray;
 $card-border-color: $shi-bg-gray-border;
