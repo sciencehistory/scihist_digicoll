@@ -1,0 +1,5 @@
+ <% if can_see_unpublished_records? %>
+      <%= "#{number_with_delimiter(public_count)} public #{'item'.pluralize(public_count)}, #{number_with_delimiter(all_count)} total" %>
+  <% else %>
+    <%= "#{number_with_delimiter(public_count)} #{'item'.pluralize(public_count)}" %>
+  <% end %>
