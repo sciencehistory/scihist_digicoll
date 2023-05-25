@@ -41,16 +41,16 @@
 
   <% if transcription_texts.present? %>
     <div class="tab-pane" id="transcription" role="tabpanel" aria-labelledby="transcription-tab">
-      <div class="d-flex justify-content-end">
+      <div class="d-flex justify-content-end mb-3">
         <%= link_to(  work_transcription_download_path(work),
-                      class: "btn btn-primary sq-corner",
+                      class: "btn btn-brand-main",
                       data: {
                         'analytics-category' => 'Work',
                         'analytics-action' => "transcription_pdf",
                         'analytics-label' => work.friendlier_id
                       }
         ) do %>
-          <i class="fa fa-file-pdf-o" aria-hidden="true"></i> Transcription PDF file
+          <i class="fa fa-file-pdf-o btn-brand-initial-icon" aria-hidden="true"></i> Transcription PDF file
         <% end %>
       </div>
       <% transcription_texts.each do |text_obj| %>
@@ -75,16 +75,16 @@
 
   <% if translation_texts.present? %>
     <div class="tab-pane" id="translation" role="tabpanel" aria-labelledby="translation-tab">
-      <div class="d-flex justify-content-end">
+      <div class="d-flex justify-content-end mb-3">
         <%= link_to(  work_english_translation_download_path(work),
-                      class: "btn btn-primary sq-corner",
+                      class: "btn btn-brand-main",
                       data: {
                         'analytics-category' => 'Work',
                         'analytics-action' => "english_translation_pdf",
                         'analytics-label' => work.friendlier_id
                       }
         ) do %>
-          <i class="fa fa-file-pdf-o" aria-hidden="true"></i> Translation PDF file
+          <i class="fa fa-file-pdf-o btn-brand-initial-icon" aria-hidden="true"></i> Translation PDF file
         <% end %>
       </div>
 
