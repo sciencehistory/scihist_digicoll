@@ -275,6 +275,9 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
         background-color: $dark;
       }
       .viewer-keyboard {
+        kbd {
+          white-space: nowrap;
+        }
         .table {
           margin-bottom: 0;
         }
