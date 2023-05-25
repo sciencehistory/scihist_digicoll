@@ -41,7 +41,7 @@
   }
 
   #transcription, #translation {
-    margin-top: $paragraph-spacer;
+    margin-top: ($paragraph-spacer * 1.5);
   }
 
   // matches the attribute table, although it's not really a table.
