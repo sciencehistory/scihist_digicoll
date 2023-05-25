@@ -41,7 +41,7 @@
 
   <% if transcription_texts.present? %>
     <div class="tab-pane" id="transcription" role="tabpanel" aria-labelledby="transcription-tab">
-      <div class="d-flex justify-content-end">
+      <div class="d-flex justify-content-end mb-3">
         <%= link_to(  work_transcription_download_path(work),
                       class: "btn btn-brand-main",
                       data: {
@@ -75,7 +75,7 @@
 
   <% if translation_texts.present? %>
     <div class="tab-pane" id="translation" role="tabpanel" aria-labelledby="translation-tab">
-      <div class="d-flex justify-content-end">
+      <div class="d-flex justify-content-end mb-3">
         <%= link_to(  work_english_translation_download_path(work),
                       class: "btn btn-brand-main",
                       data: {
