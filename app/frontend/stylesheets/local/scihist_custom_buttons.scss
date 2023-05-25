@@ -71,3 +71,11 @@
   // we actually need it to not be too too small.
   font-size: 0.875rem;
 }
+
+
+// font-awesome buttons could be bigger and have more spacing, when
+// put in our brand icons with a lot of spacing
+i.btn-brand-initial-icon {
+  margin-right: 1em;
+  transform: scale(1.5);
+}
