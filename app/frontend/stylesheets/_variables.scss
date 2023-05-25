@@ -142,11 +142,15 @@ $headings-line-height: 1.13; // a bit smaller than default 1.2
 $headings-color: $shi-blackish;
 
 // bootstrap brand colors
-$danger: $shi-red;
-$warning: $shi-yellow;
 $primary: $shi-teal;
-$dark: $shi-dark-blue;
 $secondary: $shi-blackish;
+$info: $shi-bg-turquoise;
+// success // we don't use in public front-end at present
+$warning: $shi-yellow;
+$danger: $shi-red;
+//$light: $shi-bg-gray; // we don't use in public front-end at present
+$dark: $shi-dark-blue;
+
 $tooltip-bg: $shi-blackish;
 
 // $btn-primary-border: $brand-primary; // bootstrap 4 has no button borders already I think.
