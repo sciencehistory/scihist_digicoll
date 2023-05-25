@@ -69,6 +69,8 @@ $brand-alt-header-weight: 900;
 $semi-bold-weight: 600;
 $badge-font-weight: $semi-bold-weight; // badges look better at our semi-bold with adelle-sans!
 
+$large-blurb-font-size: 1.25rem; // perhaps will match $h5-font-size
+
 // Maximum line length we judge to be readable at standard base font size.
 // Used to constrain some block text areas on large screens.
 $max-readable-width: 68ch; // at our standard 17px sofia-pro font, about 682px, about 40em
@@ -129,6 +131,10 @@ $body-color: #222; // little bit darker
 
 //$line-height-base: 1.5; // default 1.5 works for us, liked better than smaller
 $headings-line-height: 1.13; // a bit smaller than default 1.2
+
+// main webiste just uses black here, but we like using a softer color for headings, maybe
+// this one?
+$headings-color: $shi-blackish;
 
 // bootstrap brand colors
 $danger: $brand-red;

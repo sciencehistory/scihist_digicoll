@@ -69,7 +69,7 @@
         .blurb {
           line-height: $headings-line-height;
           margin-bottom: $paragraph-spacer * 2 !important;
-          font-size: $h5-font-size !important;
+          font-size: $large-blurb-font-size !important;
         }
     }
 
@@ -109,7 +109,7 @@
         .blurb {
           line-height: $headings-line-height;
           text-align: center;
-          font-size: 1.5rem;
+          font-size: $large-blurb-font-size;
           margin-top: 1.5rem;
           margin-bottom: 0;
         }

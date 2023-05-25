@@ -1,55 +1,65 @@
-<% provide :page_title, @featured_topic.title %>
-<div itemscope itemtype="http://schema.org/CollectionPage" class="collection-show featured-collection-show">
-  <div class="collection-top">
-    <div class="collection-desc clearfix">
-      <% unless has_search_parameters? %>
-        <div class="collection-thumb">
-          <%= image_tag @featured_topic.thumb_asset_path, class: "featured-topic-image", width: "266px" %>
-        </div>
-      <% end %>
+<%# this HTML DOM has to pretty much exactly match collection_show/index.html.erb, so that
+    we can use the same CSS styles to apply to both... this is not a very maintainable approach,
+    as both ERB templates need to be kept in sync as to DOM with any changes.
 
-      <div class="show-title">
-        <header>
-          <div class="show-genre"><%= link_to "Featured Topics", featured_topics_path %></div>
-          <h1><%= @featured_topic.title %></h1>
-        </header>
+    Better would be extracting the common design elements to ViewComponents you can use
+    in both. Maybe in the future. %>
+
+<% provide :page_title, @featured_topic.title %>
+
+<div itemscope itemtype="http://schema.org/CollectionPage" class="collection-show featured-collection-show">
+  <% if has_deeper_search? %>
+    <%# we're going into a specified search, just tiny header %>
+    <div class="collection-mini-header">
+        <div class="show-genre"><%= link_to "Featured Topics", featured_topics_path %></div>
+        <h1><%= @featured_topic.title %></h1>
+    </div>
+  <% else %>
+    <div class="collection-top">
+      <div class="collection-header">
+        <div class="collection-header-title">
+          <header>
+              <div class="show-genre"><%= link_to "Featured Topics", featured_topics_path %></div>
+              <h1><%= @featured_topic.title %></h1>
+          </header>
+
+          <p class="show-item-count">
+            <%= number_with_delimiter(total_count) + ' item'.pluralize(total_count) %>
+          </p>
+
+          <div class="collection-search-form">
+            <%= form_tag "", method: :get do |f| %>
+              <div class="input-group">
+                <%= search_field_tag :q, '', class: "q form-control",
+                id: "collectionQ",
+                autocomplete: "off",
+                placeholder: t("collection.search_form.search_field.placeholder"),
+                :"aria-label" => t('collection.search_form.search_field.label')
+                %>
+                <label class="sr-only" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
+                <div class="input-group-append">
+                  <button type="submit" class="btn btn-brand-main" title="Search">
+                    <%= t('blacklight.search.form.submit') %>
+                  </button>
+                </div>
+              </div>
+              <%= hidden_field_tag :sort, params[:sort], id: 'collection_sort' %>
+            <% end %>
+          </div>
+
+        </div>
+
+        <div class="collection-header-thumb">
+          <%= image_tag @featured_topic.thumb_asset_path, class: "featured-topic-image" %>
+        </div>
       </div>
 
-      <% unless has_search_parameters? %>
-        <div class="show-metadata">
-            <p class="show-item-count"><%= number_with_delimiter(total_count) + ' item'.pluralize(total_count) %></p>
-            <div class="collection-description">
-              <%= DescriptionDisplayFormatter.new(@featured_topic.description).format %>
-            </div>
-        </div>
-      <% end %>
-    </div>
-  </div>
-
-  <% unless has_search_parameters? %>
-    <div class="collection-control-area">
-      <div class="collection-search-form">
-        <h2 class="search-title">
-          Search within featured <%= @featured_topic.title %> items
-        </h2>
-        <%= form_tag "", method: :get do |f| %>
-          <div class="input-group">
-            <%= search_field_tag :q, '', class: "q form-control",
-            id: "collectionQ",
-            autocomplete: "off",
-            placeholder: t("collection.search_form.search_field.placeholder"),
-            :"aria-label" => t('collection.search_form.search_field.label')
-            %>
-            <label class="sr-only" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
-            <div class="input-group-append">
-              <button type="submit" class="btn btn-emphasis" title="Search">
-                <i class="fa fa-search" aria-hidden="true"></i>
-                <%= t('blacklight.search.form.submit') %>
-              </button>
-            </div>
+      <div class="collection-about">
+        <div class="collection-description">
+          <div class="collection-description-text <%= 'short-text' if @featured_topic.description.length <= 220 %>">
+            <%= DescriptionDisplayFormatter.new(@featured_topic.description).format %>
           </div>
-          <%= hidden_field_tag :sort, params[:sort], id: 'collection_sort' %>
-        <% end %>
+        </div>
       </div>
     </div>
   <% end %>
@@ -71,4 +81,5 @@
         </div>
       <% end %>
   </div>
+
 </div>

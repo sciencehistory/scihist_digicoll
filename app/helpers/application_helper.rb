@@ -38,4 +38,13 @@ module ApplicationHelper
   def can_see_unpublished_records?
     current_policy.can_see_unpublished_records?
   end
+
+  # used on collection show pages, eg
+  #
+  # If we visit this page with no search criteria, we get a lot of info about the collection at
+  # top, but if we have any search criteria at all OR have paginated, we have a much smaller
+  # header
+  def has_deeper_search?
+    has_search_parameters? || (params[:page].present? && params[:page] != "1")
+  end
 end

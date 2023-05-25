@@ -35,28 +35,40 @@ class ThumbComponent < ApplicationComponent
   ALLOWED_THUMB_SIZES = Asset::THUMB_WIDTHS.keys + [:collection_page]
 
   # @param model [Kithe::Asset] the asset whose derivatives we will display
+  #
   # @param thumb_size [Symbol] which set of thumb derivatives? :standard, :mini, :large,
   #   :collection_page (for colletions). Both a 1x and 2x derivative must exist. Default
   #   :standard.
+  #
   # @param placeholder_img_url [String] url (likely relative path) to a placeholder image
   #   to use if thumb can't be displayed. By default our standard placeholderbox.svg,
   #   but you may want to use the collection default image for collections, etc.
+  #
   # @param lazy [Boolean] default false. If true, will use data-src and data-srcset attributes,
   #   and NOT src/srcset direct attributes, for lazy loading with lazysizes.js.
-  # @param recent_items The ThumbComponents used in the recent_itmes section of the homepage
+  #
+  # @param recent_items [Boolean] The ThumbComponents used in the recent_itmes section of the homepage
   # function slightly differently: they are intended to be visible on screenreaders, so we
   # are allowing an alt text for them.
+  #
+  # @param aspect_ratio_container [Boolean] Default true, includes a wrapping div used for a "legacy"
+  #   method of reserving aspect-ratio space. In the future we may repalce with more recent
+  #   less hacky techniques. But setting to 'false' disables this container, for contexts
+  #   where it gets in the way and you don't need lazy loading.
+  #
   def initialize(asset,
     thumb_size: :standard,
     placeholder_img_url: nil,
     lazy: false,
-    alt_text_override: nil)
+    alt_text_override: nil,
+    aspect_ratio_container: true)
 
     @asset = asset
     @placeholder_img_url = placeholder_img_url
     @thumb_size = thumb_size.to_sym
     @lazy = lazy
     @alt_text_override = alt_text_override
+    @aspect_ratio_container = aspect_ratio_container
 
     unless ALLOWED_THUMB_SIZES.include? thumb_size
       raise ArgumentError.new("thumb_size must be in #{ALLOWED_THUMB_SIZES}, but was '#{thumb_size}'")
@@ -146,6 +158,8 @@ class ThumbComponent < ApplicationComponent
 
   # Used for padding bottom CSS aspect ratio trick. Get height and width from requested thumb.
   def aspect_ratio_padding_bottom
+    return false unless @aspect_ratio_container
+
     thumb = asset&.file("thumb_#{thumb_size}")
 
     return nil unless thumb && thumb.width && thumb.height
