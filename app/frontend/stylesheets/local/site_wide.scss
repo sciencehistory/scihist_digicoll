@@ -9,18 +9,6 @@ body {
 }
 
 
-// We set more-rounded corners, but only for buttons not input elements,
-// make sure buttons in input groups match original less rounded.
-.input-group .btn {
-  border-radius: $border-radius;
-}
-
-// And some buttons have square corners, sorry our CSS is getting a bit
-// out of control.
-.btn.sq-corner {
-  border-radius: 0;
-}
-
 // fade on color change on hover, matches style on www.sciencehistory.org.
 a {
   transition: color 0.25s ease;
