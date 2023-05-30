@@ -36,7 +36,7 @@
 
     padding-top: $spacer * 1.5;
 
-    background-color: $brand-dark-grey;
+    background-color: $shi-dark-blue;
     color: white;
     // material-design-like shadow, sorry we're just hacking it un-DRY.
     // https://stackoverflow.com/questions/30533055/calculating-shadow-values-for-all-material-design-elevations
@@ -50,6 +50,19 @@
       padding-left: $grid-gutter-width * 0.5;
       padding-right: $grid-gutter-width * 0.5;
     }
+
+    // slightly change video-js theme color to be darker and our brand color
+    .video-js {
+      background-color: $shi-blackish;
+      .vjs-control-bar {
+        background-color: $shi-blackish;
+      }
+    }
+
+    .btn-emphasis {
+      text-transform: uppercase;
+    }
+
 
     .audio-navbar-contents {
       // keep navbar contents the same width as our general contents,
@@ -89,17 +102,17 @@
         margin-top: $paragraph-spacer;
 
         // override style like a link, with colors we want, material design inspired tab style.
-        .btn-emphasis {
+        .btn-danger {
           border-radius: 0;
           border: 0;
           &:not(.active):not(:hover):not(:focus) {
             background-color: transparent;
-            color: $brand-bright-green
+            color: white;
           }
           &.active {
             background-color: transparent;
             color: white;
-            border-bottom: 3px solid white;
+            border-bottom: 3px solid $shi-turquoise;
           }
         }
         // crazy CSS to try to make the tabs horizontally scroll properly
