@@ -31,7 +31,7 @@
 
   .audio-navbar {
     position: sticky;
-    top: 0;
+    top: 0 !important;
     z-index: $zindex-fixed; // make sure bootstrap popovers et al scroll UNDER, but modal goes OVER
 
     padding-top: $spacer * 1.5;
@@ -57,6 +57,9 @@
       .vjs-control-bar {
         background-color: $shi-blackish;
       }
+      .vjs-slider {
+        background-color: $shi-turquoise;
+      }
     }
 
     .btn-emphasis {
@@ -73,9 +76,6 @@
       margin-left: auto;
       @extend .col-md-12;
 
-
-      display: flex;
-      flex-wrap: wrap;
 
       .now-playing-container {
         // as an element in it's parent flex
@@ -130,25 +130,9 @@
       }
 
       .ohms-search {
-        flex-basis: 100%;
-        align-self: self-start;
+        max-width: $max-readable-width; // doesn't need to be this specifically, but works fine
+        margin-top: $spacer;
 
-        order: -1;
-
-        @include media-breakpoint-up(lg) {
-          // when we're two column, fit this next to player
-          flex-basis: 33%;
-          flex-grow: 1;
-          order: 0;
-        }
-
-        border-radius: $border-radius;
-        border: 0px;
-        padding: 0.66rem;
-        margin: 0.33rem 0;
-
-        background-color: white;
-        color: black;
 
         .search-heading {
           margin-bottom: 0;
@@ -170,14 +154,12 @@
             }
           }
         }
-
-        form {
-          margin-top: $headings-margin-bottom;
-        }
       }
 
       .ohms-search-results {
-        padding-top: ($paragraph-spacer * 0.5);
+        background-color: white;
+        color: black;
+        padding: ($spacer * 0.5);
 
         .search-mode {
           text-transform: uppercase;
