@@ -1,9 +1,40 @@
 .work-show-audio {
 
+  .top-matter {
+    display: flex;
+
+    @media (max-width: 50rem) {
+      display: block;
+    }
+
+    .oh-portrait {
+       width: $standard-thumb-width;
+       flex-grow: 0;
+       flex-shrink: 0;
+       margin-right: $spacer * 2;
+    }
+
+    .show-title {
+      flex-basis: 0;
+      flex-shrink: 10;
+      flex-grow: 1;
+    }
+
+    .expanded-social-share {
+      margin-bottom: $spacer;
+    }
+
+    .share-link {
+      text-transform: uppercase;
+    }
+  }
+
   .audio-navbar {
     position: sticky;
     top: 0;
     z-index: $zindex-fixed; // make sure bootstrap popovers et al scroll UNDER, but modal goes OVER
+
+    padding-top: $spacer * 1.5;
 
     background-color: $brand-dark-grey;
     color: white;
@@ -47,25 +78,6 @@
 
         @include media-breakpoint-up(lg) {
           padding: 0 1rem 0 0;
-        }
-
-        h1 {
-          color: white;
-        }
-
-        .title {
-          font-weight: 600;
-          text-align: center;
-          margin: ($paragraph-margin-bottom * 0.5) 0;
-          // truncate to one line with ellipses on small screens:
-          max-width: 100%;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-
-          a {
-            color: white !important;
-          }
         }
 
         audio {
@@ -191,34 +203,6 @@
 
   .bottom {
     padding-top: 2rem;
-  }
-
-  // hackily little bit less whitespace on top
-  .rights-and-social {
-    .rights-statement, .social-media {
-      padding-top: 0 !important;
-      margin-top: 0 !important;
-    }
-  }
-
-  .oh-portrait {
-    width: $standard-thumb-width;
-  }
-
-  // Put portrait to the right of description when
-  // screen is wide enough.
-  @include media-breakpoint-up(md) {
-    .description-and-portrait {
-      display: flex;
-      justify-content: space-between;
-
-      .oh-portrait {
-        order: 2;
-
-        margin-top: $paragraph-spacer;
-        margin-left: $paragraph-spacer * 2;
-      }
-    }
   }
 
   .tab-content {

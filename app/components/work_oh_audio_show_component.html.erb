@@ -6,12 +6,47 @@
 
 <div class="work-show work-show-audio" data-role="audio-playlist-wrapper" itemscope itemtype="http://schema.org/CreativeWork" class="row">
 
+
+  <section class="top-matter">
+    <% if portrait_asset.present? %>
+      <figure class="oh-portrait figure">
+        <%= render ThumbComponent.new(portrait_asset) %>
+        <% if portrait_asset.caption.present? %>
+          <figcaption class="figure-caption"><%= portrait_asset.caption %></figcaption>
+        <% end %>
+      </figure>
+    <% end %>
+
+    <div class="show-title">
+        <%= render WorkTitleAndDatesComponent.new(work) %>
+
+        <%# much like the rights_and_social partial, but we've exploded it
+            to fit in our custom share button %>
+        <div class="rights-and-social">
+          <% if work.rights.present? %>
+            <%= render RightsIconComponent.new(rights_id: work&.rights, work: work) %>
+          <% else %>
+            <%# hacky spacer to keep flexbox intact and social-media on the right even
+                if there's no rights %>
+            <div class="rights-placeholder"></div>
+          <% end %>
+
+          <div class='expanded-social-share'>
+            <%= render SocialShareComponent.new(work) %>
+
+            <a href="#" class="btn btn-secondary rounded-sides share-link" data-toggle="linkShareModal" data-target="#audioLinkShare">
+              <i class="fa fa-share" aria-hidden="true"></i>
+              Share link
+            </a>
+          </div>
+        </div>
+
+    </div>
+  </section>
+
   <div class="audio-navbar" id="ohmsAudioNavbar">
     <div class="audio-navbar-contents">
       <div class="now-playing-container" data-role="now-playing-container">
-        <h1 class="title h6">
-          <%= work.title %>
-        </h1>
         <% if combined_m4a_audio_url.present? && combined_derivatives_up_to_date? %>
           <div class="d-flex" style="align-items: center">
             <%= render AudioPlayerComponent.new do %>
@@ -94,53 +129,9 @@
   <div class="bottom" id="ohmsScrollable">
       <div class="tab-content">
         <div class="tab-pane active" id="ohDescription" role="tabpanel" aria-labelledby="ohDescriptionTab">
-          <div class="show-title">
-            <%= render WorkTitleAndDatesComponent.new(work) %>
+          <div class="work-description">
+            <%= DescriptionDisplayFormatter.new(work.description).format  %>
           </div>
-
-
-
-          <%# much like the rights_and_social partial, but we've exploded it
-              to fit in our custom share button %>
-          <div class="rights-and-social">
-            <% if work.rights.present? %>
-              <%= render RightsIconComponent.new(rights_id: work&.rights, work: work) %>
-            <% else %>
-              <%# hacky spacer to keep flexbox intact and social-media on the right even
-                  if there's no rights %>
-              <div class="rights-placeholder"></div>
-            <% end %>
-
-            <div>
-              <%= render SocialShareComponent.new(work) %>
-
-              <a href="#" class="btn btn-brand-dark rounded-sides" data-toggle="linkShareModal" data-target="#audioLinkShare">
-                <i class="fa fa-share" aria-hidden="true"></i>
-                Share link
-              </a>
-            </div>
-          </div>
-
-
-
-
-
-
-          <div class="description-and-portrait">
-            <% if portrait_asset.present? %>
-              <figure class="oh-portrait figure">
-                <%= render ThumbComponent.new(portrait_asset) %>
-                <% if portrait_asset.caption.present? %>
-                  <figcaption class="figure-caption"><%= portrait_asset.caption %></figure>
-                <% end %>
-              </figure>
-            <% end %>
-
-            <div class="work-description">
-              <%= DescriptionDisplayFormatter.new(work.description).format  %>
-            </div>
-          </div>
-
 
           <%= render WorkShowInfoComponent.new(work: work) %>
 
