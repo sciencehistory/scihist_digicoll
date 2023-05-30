@@ -12,7 +12,7 @@ https://github.com/projectblacklight/blacklight/blob/v6.7.2/app/views/catalog/_s
     </div>
 
     <ul class="list-group list-group-flush">
-      <li class="list-group-item"><%= link_to "https://www.sciencehistory.org/search/site/#{Addressable::URI.encode_component(params[:q], Addressable::URI::CharacterClasses::PATH)}" do %>
+      <li class="list-group-item"><%= link_to URI::join(ScihistDigicoll::Env.lookup(:main_website_base), "/?s=#{Addressable::URI.encode_component(params[:q], Addressable::URI::CharacterClasses::QUERY)}").to_s  do %>
         <i class="fa fa-search" aria-hidden="true"></i>  Science History Institute
       <% end %></li>
       <li class="list-group-item"><%= link_to "https://othmerlib.sciencehistory.org/search/?searchtype=X&SORT=D&searcharg=#{Addressable::URI.encode_component(params[:q], Addressable::URI::CharacterClasses::QUERY)}" do %>
