@@ -66,7 +66,6 @@ import '../javascript/accept_cookies_banner.js';
 import '../javascript/scihist_search_slideout.js';
 import '../javascript/scihist_on_demand_downloader.js';
 import '../javascript/scihist_viewer.js';
-import '../javascript/custom_google_analytics_universal_events.js';
 import '../javascript/custom_google_analytics_4_events.js';
 import '../javascript/cart_control.js';
 import '../javascript/date_range_render_workaround.js';
