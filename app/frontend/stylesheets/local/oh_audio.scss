@@ -34,7 +34,7 @@
     top: 0 !important;
     z-index: $zindex-fixed; // make sure bootstrap popovers et al scroll UNDER, but modal goes OVER
 
-    padding-top: $spacer * 1.5;
+    padding-top: $spacer;
 
     background-color: $shi-dark-blue;
     color: white;
