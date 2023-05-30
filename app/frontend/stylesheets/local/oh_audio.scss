@@ -221,6 +221,9 @@
     .attribute-sub-head {
       margin-top: 0;
     }
+
+    // not sure why, but it works better:
+    line-height: 1.3;
   }
 
   .track-listings, .combined-downloads {
