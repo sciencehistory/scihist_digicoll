@@ -201,7 +201,9 @@
   }
 
   .tab-content {
-    max-width: $max-readable-width;
+    // I dunno it's just a good width, we need more than max-readable-width,
+    // because contents sometiems have more than one effective column
+    max-width: 54rem;
   }
 
   // When we're two column, add more spacer than default
@@ -299,6 +301,7 @@
 .ohms-transcript-container {
   position: relative;
   padding-left: 5.5em;
+  max-width: calc(5.5em + #{$max-readable-width});
 
   .ohms-transcript-paragraph {
     .ohms-transcript-timestamp {
