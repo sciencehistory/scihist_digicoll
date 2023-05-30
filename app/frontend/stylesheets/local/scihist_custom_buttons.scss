@@ -1,11 +1,6 @@
 // buttons generally have no borders, have border color set to same
 // as bg color. we set btn-primary the same in variables.
 
-// An especially bright button style using the brand bright breen
-.btn-emphasis {
-  @include button-variant($brand-bright-green, $brand-bright-green); //mix($brand-bright-green, $brand-dark-blue, 93%)
-  color: $brand-dark-blue;
-}
 
 // Some new 2023 brand buttons -- we're using bootstrap button creator mixins, BUT
 // then overriding a lot of bootstrap stuff -- we might want to transition to actually
@@ -78,4 +73,10 @@
 i.btn-brand-initial-icon {
   margin-right: 1em;
   transform: scale(1.5);
+}
+
+
+// Yellow like our btn-brand-main, but with standard bootstrap sizing and spacing
+.btn-emphasis {
+  @include button-variant($shi-yellow, $shi-yellow, $hover-background: #c6c94f);
 }

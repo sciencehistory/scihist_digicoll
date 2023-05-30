@@ -85,11 +85,12 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
   .viewer-header {
     flex-shrink: 0;
     background-color: $dark;
-    color: $brand-bright-green;
+    color: white;
     a {
-      color: $brand-bright-green;
+      color: white;
       &:hover {
         color: white;
+        text-decoration-color: $shi-red;
       }
     }
 
@@ -169,10 +170,11 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
         }
       }
 
-      &:hover {
+      &:hover, &:focus {
         i {
-          background-color: transparentize(darken($primary, 10%), .3);
-          border-color: darken($primary, 12%);
+          background-color: transparentize($shi-yellow, 0.2);
+          border-color: #212529; // darken($shi-yellow, 12%);
+          color: #212529;
         }
       }
 
@@ -231,8 +233,11 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       }
 
       .viewer-navbar-btn {
-        border-radius: 0 !important;
+        max-width: 440px;
         flex-grow: 2;
+        button {
+          text-transform: uppercase;
+        }
       }
       .viewer-thin-btn {
         flex-grow: 0;
@@ -261,16 +266,18 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
         overflow: hidden;
         text-overflow: ellipsis;
         text-align: left;
+
+        text-transform: uppercase;
       }
       .viewer-spacer {
         width: 0;
         flex-grow: 1;
         background-color: $dark;
       }
-      .viewer-download {
-        max-width: 440px;
-      }
       .viewer-keyboard {
+        kbd {
+          white-space: nowrap;
+        }
         .table {
           margin-bottom: 0;
         }
