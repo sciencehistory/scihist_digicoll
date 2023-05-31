@@ -6,6 +6,40 @@
 // then overriding a lot of bootstrap stuff -- we might want to transition to actually
 // setting bootstrap button default size/weight/etc?
 
+
+// The main/only button type actually used in new main site -- this is a temporary
+// name
+.btn-brand-main {
+  // hover-background copied from main site
+  @include button-variant($shi-yellow, $shi-yellow, $hover-background: #c6c94f);
+  transition: background-color .3s ease,color .3s ease;
+
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.9375rem; // slightly smaller than normal to make up for the all-caps? 15px/16px
+
+  // These are approximately matching main site, not implemented the same way
+  padding: 0.66em 1.75em;
+}
+
+// Also used on main site occasionally, an outlined black button
+.btn-brand-secondary {
+  @include button-variant(white, $shi-blackish, $hover-background: $shi-blackish);
+
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.9375rem; // slightly smaller than normal to make up for the all-caps? 15px/16px
+
+  // These are approximately matching main site, not implemented the same way
+  padding: 0.66em 1.75em;
+
+   &:hover, &:focus {
+    color: white;
+  }
+
+}
+
+// Black color solid
 .btn-brand-dark {
   // hoverbackground similar to main site used in some places, but passes contrast rules
   // with our hover color
@@ -24,7 +58,8 @@
   padding: 0.66em 1.75em;
 }
 
-// we need another brand button...
+// we need another brand button, this one is sized like primary, but in the teal color.
+// Currently used sparingly.
 .btn-brand-alt {
   @include button-variant($shi-teal, $shi-teal);
 
@@ -37,30 +72,17 @@
   }
 }
 
-// The main/only button type actually used in new main site -- this is a temporary
-// name
-.btn-brand-main {
-  // hover-background copied from main site
-  @include button-variant($shi-yellow, $shi-yellow, $hover-background: #c6c94f);
-  transition: background-color .3s ease,color .3s ease;
 
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 0.9375rem; // slightly smaller than normal to make up for the all-caps? 15px/16px
-
-  // These are approximately matching main site, not implemented the same way
-  padding: 0.66em 1.75em;
-}
 
 // we're fighting with bootstrap a bit. If inside an input group, over-override
 // with plain bootstrap padding again. Or if we have a class to ask for it.
-.input-group .btn-brand-dark, .input-group .btn-brand-main, .input-group .btn-brand-alt
-  .btn-brand-dark.less-padding, .btn-brand-main.less-padding, btn-brand-alt.less-padding {
+.input-group .btn-brand-dark, .input-group .btn-brand-main, .input-group .btn-brand-alt, .input-group .btn-brand-secondary,
+  .btn-brand-dark.less-padding, .btn-brand-main.less-padding, .btn-brand-alt.less-padding, .btn-brand-secondary.less-padding  {
   padding: $btn-padding-y $btn-padding-x;
 }
 // and also over-override for .btn-sm the things we overroad for personal styles.
 // Padding and font-size
-.btn-brand-main.btn-sm, .btn-brand-dark.btn-sm, .btn-brand-alt.btn-sm {
+.btn-brand-main.btn-sm, .btn-brand-dark.btn-sm, .btn-brand-alt.btn-sm, .btn-brand-secondary.btn-sm {
   padding: $btn-padding-y-sm $btn-padding-x-sm;
   // 14px at 1rem==16px, a bit bigger than totally scaling our smaller for all-caps, but
   // we actually need it to not be too too small.
