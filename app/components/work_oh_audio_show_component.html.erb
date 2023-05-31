@@ -19,28 +19,6 @@
 
     <div class="show-title">
         <%= render WorkTitleAndDatesComponent.new(work) %>
-
-        <%# much like the rights_and_social partial, but we've exploded it
-            to fit in our custom share button %>
-        <div class="rights-and-social">
-          <% if work.rights.present? %>
-            <%= render RightsIconComponent.new(rights_id: work&.rights, work: work) %>
-          <% else %>
-            <%# hacky spacer to keep flexbox intact and social-media on the right even
-                if there's no rights %>
-            <div class="rights-placeholder"></div>
-          <% end %>
-
-          <div class='expanded-social-share'>
-            <%= render SocialShareComponent.new(work) %>
-
-            <a href="#" class="btn btn-secondary rounded-sides share-link" data-toggle="linkShareModal" data-target="#audioLinkShare">
-              <i class="fa fa-share" aria-hidden="true"></i>
-              Share link
-            </a>
-          </div>
-        </div>
-
     </div>
   </section>
 
@@ -133,6 +111,27 @@
                 </ul>
             </div>
           <% end %>
+
+          <%# much like the rights_and_social partial, but we've exploded it
+              to fit in our custom share button %>
+          <div class="rights-and-social">
+            <% if work.rights.present? %>
+              <%= render RightsIconComponent.new(rights_id: work&.rights, work: work) %>
+            <% else %>
+              <%# hacky spacer to keep flexbox intact and social-media on the right even
+                  if there's no rights %>
+              <div class="rights-placeholder"></div>
+            <% end %>
+
+            <div class='expanded-social-share'>
+              <%= render SocialShareComponent.new(work) %>
+
+              <a href="#" class="btn btn-secondary rounded-sides share-link" data-toggle="linkShareModal" data-target="#audioLinkShare">
+                <i class="fa fa-share" aria-hidden="true"></i>
+                Share link
+              </a>
+            </div>
+          </div>
 
           <div class="work-description">
             <%= DescriptionDisplayFormatter.new(work.description).format  %>
