@@ -93,7 +93,7 @@ class FileListItemComponent < ApplicationComponent
     if member.kind_of?(Work)
       link_to "Info", work_path(member), class: "btn btn-primary"
     elsif download_original_only
-      link_to "Download", download_path(member.file_category, member), class: "btn btn-primary", data: {
+      link_to "Download", download_path(member.file_category, member), class: "btn btn-brand-main less-padding", data: {
         "analytics-category" => "Work",
         "analytics-action" => "download_original",
         "analytics-label"  => member.parent.friendlier_id
