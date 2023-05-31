@@ -19,18 +19,7 @@
       flex-basis: 0;
       flex-shrink: 10;
       flex-grow: 1;
-    }
-
-    .rights-and-social {
       margin-bottom: $spacer * 2;
-    }
-
-    .expanded-social-share {
-      margin-bottom: $spacer;
-    }
-
-    .share-link {
-      text-transform: uppercase;
     }
   }
 
@@ -223,6 +212,15 @@
     // viewport with horizontal scrolls.
     overflow: hidden;
   }
+
+  .expanded-social-share {
+    margin-bottom: $spacer;
+  }
+
+  .share-link {
+    text-transform: uppercase;
+  }
+
 
   .tab-pane.downloads {
     margin-bottom: 2rem;
