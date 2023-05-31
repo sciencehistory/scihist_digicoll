@@ -19,6 +19,26 @@
 
   // These are approximately matching main site, not implemented the same way
   padding: 0.66em 1.75em;
+
+  // Go back to normal bootstrap padding if .less-padding is also on there...
+  &.less-padding {
+    padding: $btn-padding-y $btn-padding-x;
+  }
+
+  // we're fighting with bootstrap a bit. If inside an input group, aso over-override
+  // with plain bootstrap padding again, so it doesn't mess up input-group.
+  .input-group & {
+    padding: $btn-padding-y $btn-padding-x;
+  }
+
+  // less padding and even less font if also bootstrap btn-sm class. Overriding
+  // bootstrap btn-sm for our brand buttons.
+  &.btn-sm {
+    padding: $btn-padding-y-sm $btn-padding-x-sm;
+    // 14px at 1rem==16px, a bit bigger than totally scaling our smaller for all-caps, but
+    // we actually need it to not be too too small.
+    font-size: 0.875rem;
+  }
 }
 
 // The main/only button type actually used in new main site -- this is a temporary
@@ -66,24 +86,6 @@
     color: $shi-yellow;
   }
 }
-
-
-
-// we're fighting with bootstrap a bit. If inside an input group, over-override
-// with plain bootstrap padding again. Or if we have a class to ask for it.
-.input-group .btn-brand-dark, .input-group .btn-brand-main, .input-group .btn-brand-alt, .input-group .btn-brand-secondary,
-  .btn-brand-dark.less-padding, .btn-brand-main.less-padding, .btn-brand-alt.less-padding, .btn-brand-secondary.less-padding  {
-  padding: $btn-padding-y $btn-padding-x;
-}
-// and also over-override for .btn-sm the things we overroad for personal styles.
-// Padding and font-size
-.btn-brand-main.btn-sm, .btn-brand-dark.btn-sm, .btn-brand-alt.btn-sm, .btn-brand-secondary.btn-sm {
-  padding: $btn-padding-y-sm $btn-padding-x-sm;
-  // 14px at 1rem==16px, a bit bigger than totally scaling our smaller for all-caps, but
-  // we actually need it to not be too too small.
-  font-size: 0.875rem;
-}
-
 
 // font-awesome buttons could be bigger and have more spacing, when
 // put in our brand icons with a lot of spacing
