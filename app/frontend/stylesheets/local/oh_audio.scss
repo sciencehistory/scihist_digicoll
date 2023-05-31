@@ -23,6 +23,10 @@
     }
   }
 
+.vjs-mouse-display {
+  background-color: red !important;
+}
+
   .audio-navbar {
     position: sticky;
     top: 0 !important;
@@ -65,7 +69,18 @@
       .vjs-slider {
         background-color: $shi-turquoise;
       }
+
+      // was hard to figure this one out, trying to make it more visible, this is an improvement
+      // but also makes the sizing/positioning a bit weird for reasons we can't tell, probbly related to JS.
+      .vjs-play-progress .vjs-time-tooltip {
+        background-color: white;
+        border: 1px solid $shi-bg-gray-border;
+      }
+      .vjs-mouse-display .vjs-time-tooltip {
+        background-color: $shi-blackish;
+      }
     }
+
 
     .btn-emphasis {
       text-transform: uppercase;
@@ -137,7 +152,6 @@
       .ohms-search {
         max-width: $max-readable-width; // doesn't need to be this specifically, but works fine
         margin-top: $spacer;
-
 
         .search-heading {
           margin-bottom: 0;
