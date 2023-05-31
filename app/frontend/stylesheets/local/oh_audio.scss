@@ -213,6 +213,12 @@
     }
   }
 
+  .tab-pane {
+    // if something does accidentally force wide width, keep it from extending
+    // viewport with horizontal scrolls.
+    overflow: hidden;
+  }
+
   .tab-pane.downloads {
     margin-bottom: 2rem;
   }
@@ -288,6 +294,11 @@
   .work.chf-attributes {
     border-top: 0;
   }
+
+  // URLs in footnotes should be forced to break if needed to fit on screen
+  .footnote-list {
+    overflow-wrap: break-word;
+  }
 }
 
 .ohms-highlight {
@@ -349,3 +360,6 @@
     }
   }
 }
+
+
+
