@@ -119,6 +119,21 @@
   <div class="bottom" id="ohmsScrollable">
       <div class="tab-content">
         <div class="tab-pane active" id="ohDescription" role="tabpanel" aria-labelledby="ohDescriptionTab">
+          <h2 class="h4 brand-alt-h4"><%= work.title %></h2>
+          <% if work.date_of_work.present?  %>
+            <div class="show-date">
+                <ul>
+                  <% DateDisplayFormatter.new(work.date_of_work).display_dates.each do |interval| %>
+                    <li>
+                      <span itemprop="date_created">
+                        <%= interval %>
+                      </span>
+                    </li>
+                  <% end %>
+                </ul>
+            </div>
+          <% end %>
+
           <div class="work-description">
             <%= DescriptionDisplayFormatter.new(work.description).format  %>
           </div>
