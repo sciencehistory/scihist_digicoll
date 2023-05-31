@@ -26,13 +26,13 @@
     <div class="audio-navbar-contents">
       <div class="now-playing-container" data-role="now-playing-container">
         <% if combined_m4a_audio_url.present? && combined_derivatives_up_to_date? %>
-          <div class="d-flex" style="align-items: center">
+          <div class="audio-controls-line">
             <%= render AudioPlayerComponent.new do %>
                 <source src="<%= combined_m4a_audio_url %>" type="audio/mp4">
             <% end %>
 
             <% if has_ohms_index? || has_ohms_transcript? %>
-              <div class="pl-3">
+              <div>
                 <button class="btn btn-sm btn-emphasis text-nowrap" data-trigger="ohms-jump-to-text">Scroll to text</button>
               </div>
             <% end %>

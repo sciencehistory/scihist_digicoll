@@ -87,7 +87,7 @@
     // based on https://github.com/videojs/video.js/blob/f16d73b52840452f217722fc6ee7f9f51ba57cb2/src/css/components/_adaptive.scss
     // but for our actual screen size (we have a button next to video.js audio), and
     // using a media query (why doesn't video.js? Weird)
-    @media only screen and (max-width: 640px) {
+    @media only screen and (max-width: 44rem) {
       .vjs-time-divider,
       .vjs-duration,
       .vjs-remaining-time,
