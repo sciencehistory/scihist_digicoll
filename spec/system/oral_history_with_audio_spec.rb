@@ -232,13 +232,13 @@ describe "Oral history with audio display", type: :system, js: true do
       parent_work.oral_history_content.save!
     end
 
-    it "can use 'jump to text' feature" do
+    it "can use 'scroll to text' feature" do
       visit work_path(parent_work.friendlier_id)
 
       # to get player to 5:05, we're just going to hackily execute JS
       page.execute_script(%q{document.querySelector("audio[data-role='ohms-audio-elem']").currentTime = 305;})
 
-      click_button "Jump to text"
+      click_button "Scroll to text"
       expect(page).to have_text("00:05:00")
       # since that's at the top of visible transcript, earlier minute should be scrolled off
       expect(page).not_to have_text("00:04:00")
@@ -270,7 +270,7 @@ describe "Oral history with audio display", type: :system, js: true do
       end
     end
 
-    it "can use 'jump to text' feature for ToC tab" do
+    it "can use 'scroll to text' feature for ToC tab" do
       visit work_path(parent_work.friendlier_id)
 
       click_on "Table of Contents"
@@ -278,7 +278,7 @@ describe "Oral history with audio display", type: :system, js: true do
        # to get player to 5:05, we're just going to hackily execute JS
       page.execute_script(%q{document.querySelector("audio[data-role='ohms-audio-elem']").currentTime = 305;})
 
-      click_button "Jump to text"
+      click_button "Scroll to text"
       expect(page).to have_text("00:04:16") # nearest ToC section
       expect(page).to have_text("Many family members are scientists.") # open synopsis for 04:16
 
