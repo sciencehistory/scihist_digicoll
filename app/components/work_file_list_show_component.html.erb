@@ -30,18 +30,19 @@
       <h2 class="attribute-sub-head mt-0">Access this interview</h2>
       <div class="show-sub-head-body request-section">
         <div class="pr-2">
-        <div class="pb-sm-3 pl-sm-3 text-nowrap float-sm-right">
-          <%= link_to "Request Access",
-            request_oral_history_access_form_path(@work.friendlier_id),
-            class: "btn btn-emphasis mb-2"
-          %>
-        </div>
 
 
           <p>Available upon request
             <%= multiple_files? ? "are" : "is" %>
             <%= available_by_request_summary %>.
           </p>
+
+          <div class="text-nowrap mb-3 text-center">
+            <%= link_to "Request Access",
+              request_oral_history_access_form_path(@work.friendlier_id),
+              class: "btn btn-brand-main mb-2"
+            %>
+          </div>
 
 
           <% if @work.oral_history_content.available_by_request_automatic? %>
