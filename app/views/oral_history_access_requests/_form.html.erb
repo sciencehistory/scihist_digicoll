@@ -87,8 +87,8 @@
     <%= f.hidden_field :work_friendlier_id, value: @work.friendlier_id %>
 
   <div class="form-actions mb-3">
-    <%= link_to "Cancel", work_path(@work.friendlier_id), class: "btn btn-outline-primary" %>
-    <%= f.button :submit, value: "Submit request" %>
+    <%= link_to "Cancel", work_path(@work.friendlier_id), class: "btn btn-brand-secondary" %>
+    <%= f.button :submit, value: "Submit request", class: "btn btn-brand-main" %>
   </div>
 </div>
 <% end %>
