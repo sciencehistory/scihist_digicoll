@@ -12,12 +12,17 @@
        flex-grow: 0;
        flex-shrink: 0;
        margin-right: $spacer * 2;
+       margin-bottom: $spacer * 2;
     }
 
     .show-title {
       flex-basis: 0;
       flex-shrink: 10;
       flex-grow: 1;
+    }
+
+    .rights-and-social {
+      margin-bottom: $spacer * 2;
     }
 
     .expanded-social-share {
