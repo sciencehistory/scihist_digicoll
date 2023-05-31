@@ -45,6 +45,17 @@
       padding-right: $grid-gutter-width * 0.5;
     }
 
+    // has video.js controls, and our "scroll to text" button
+    .audio-controls-line {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      @media (max-width: 44rem) {
+        flex-direction: column;
+        align-items: revert;
+      }
+    }
+
     // slightly change video-js theme color to be darker and our brand color
     .video-js {
       background-color: $shi-blackish;
