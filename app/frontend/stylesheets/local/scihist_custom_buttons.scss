@@ -6,12 +6,11 @@
 // then overriding a lot of bootstrap stuff -- we might want to transition to actually
 // setting bootstrap button default size/weight/etc?
 
-
-// The main/only button type actually used in new main site -- this is a temporary
-// name
-.btn-brand-main {
-  // hover-background copied from main site
-  @include button-variant($shi-yellow, $shi-yellow, $hover-background: #c6c94f);
+// common elements to "brand' buttons matching new site -- uppercase,
+// semi-bold, smaller font (to compensate for uppercase), more padding.
+//
+// These are big buttons
+@mixin brand-button-base {
   transition: background-color .3s ease,color .3s ease;
 
   text-transform: uppercase;
@@ -22,21 +21,22 @@
   padding: 0.66em 1.75em;
 }
 
+// The main/only button type actually used in new main site -- this is a temporary
+// name
+.btn-brand-main {
+  // hover-background copied from main site
+  @include button-variant($shi-yellow, $shi-yellow, $hover-background: #c6c94f);
+  @include brand-button-base;
+}
+
 // Also used on main site occasionally, an outlined black button
 .btn-brand-secondary {
   @include button-variant(white, $shi-blackish, $hover-background: $shi-blackish);
-
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 0.9375rem; // slightly smaller than normal to make up for the all-caps? 15px/16px
-
-  // These are approximately matching main site, not implemented the same way
-  padding: 0.66em 1.75em;
+  @include brand-button-base;
 
    &:hover, &:focus {
     color: white;
   }
-
 }
 
 // Black color solid
@@ -44,28 +44,23 @@
   // hoverbackground similar to main site used in some places, but passes contrast rules
   // with our hover color
   @include button-variant($shi-blackish, $shi-blackish, $hover-background: #424242);
+  @include brand-button-base;
   color: white;
-  text-transform: uppercase;
-  font-size: 0.9375em; // slightly smaller than normal to make up for the all-caps? 15px/16px
 
   // nain site topnav bar fades white over dark text using opacity,
   // we use a specific color to do similar and match.
   &:hover, &:focus {
     color: #dadbdb;
   }
-
-  // These are approximately matching main site, not implemented the same way
-  padding: 0.66em 1.75em;
 }
 
 // we need another brand button, this one is sized like primary, but in the teal color.
 // Currently used sparingly.
 .btn-brand-alt {
   @include button-variant($shi-teal, $shi-teal);
+  @include brand-button-base;
 
   color: white;
-  text-transform: uppercase;
-  font-size: 0.9375em; // slightly smaller than normal to make up for the all-caps? 15px/16px
 
   &:hover, &:focus {
     color: $shi-yellow;
