@@ -114,6 +114,7 @@
       .canned-queries-body {
         display: flex;
         flex-wrap: wrap;
+        gap: 2rem;
 
         justify-content: center;
 
@@ -121,8 +122,6 @@
           display: flex;
           align-items: center;
           background-color: white;
-          margin-right: 2rem;
-          margin-bottom: 2rem;
 
           .number, .link {
             padding: 0 0.5rem;
