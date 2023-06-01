@@ -184,7 +184,7 @@
   }
 
   .projects {
-    padding: 2rem 15px;
+    padding: 4rem 15px;
 
     @include media-breakpoint-up('md') {
       padding-right: $grid-gutter-width;
@@ -206,8 +206,8 @@
 
     .project {
       display: flex;
-      margin-top: 2rem;
-      margin-bottom: 1rem;
+      margin-top: 4em;
+      margin-bottom: 4rem;
 
       .project-thumb {
         width: 235px;
