@@ -95,11 +95,8 @@
     background-color: $shi-bg-gray;
 
     .canned-queries {
-      padding: 2rem 15px 3rem 15px;
-      @include media-breakpoint-up('md') {
-        padding-right: $grid-gutter-width;
-        padding-left: $grid-gutter-width;
-      }
+      padding-top: 2rem;
+      padding-bottom: 3rem;
 
       h2 {
         text-align: center;
@@ -141,17 +138,17 @@
 
   .this-day-container {
     background-color: $shi-dark-blue;
-    padding: 2rem 15px 2rem 15px;
 
-    @include media-breakpoint-up('md') {
-      padding-right: $grid-gutter-width;
-      padding-left: $grid-gutter-width;
+    .this-day {
+      padding-top: 2rem;
+      padding-bottom: 4rem;
+    }
+
+    h2 {
+      margin-bottom: 2rem;
     }
 
     .this-day-body {
-      max-width: $main-container-max-width;
-      padding-top: 2rem;
-      padding-bottom: 2rem;
       display: flex;
       flex-wrap: wrap;
       gap: 4.4rem;
@@ -185,12 +182,8 @@
   }
 
   .projects {
-    padding: 3rem 15px;
-
-    @include media-breakpoint-up('md') {
-      padding-right: $grid-gutter-width;
-      padding-left: $grid-gutter-width;
-    }
+    padding-top: 3rem;
+    padding-bottom: 3rem;
 
     h2 {
       text-align: center;
