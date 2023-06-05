@@ -152,27 +152,6 @@
       .ohms-search {
         max-width: $max-readable-width; // doesn't need to be this specifically, but works fine
         margin-top: $spacer;
-
-        .search-heading {
-          margin-bottom: 0;
-
-          a {
-            color: $brand-dark-blue;
-
-            //make appropriate toggle icon show up for state
-            .fa-caret-right.toggle-icon {
-              display: none;
-            }
-            &.collapsed {
-              .fa-caret-right.toggle-icon {
-                display: inline-block;
-              }
-              .fa-caret-down.toggle-icon {
-                display: none;
-              }
-            }
-          }
-        }
       }
 
       .ohms-search-results {
