@@ -6,21 +6,34 @@
 
 <div class="work-show work-show-audio" data-role="audio-playlist-wrapper" itemscope itemtype="http://schema.org/CreativeWork" class="row">
 
+
+  <section class="top-matter">
+    <% if portrait_asset.present? %>
+      <figure class="oh-portrait figure">
+        <%= render ThumbComponent.new(portrait_asset) %>
+        <% if portrait_asset.caption.present? %>
+          <figcaption class="figure-caption"><%= portrait_asset.caption %></figcaption>
+        <% end %>
+      </figure>
+    <% end %>
+
+    <div class="show-title">
+        <%= render WorkTitleAndDatesComponent.new(work) %>
+    </div>
+  </section>
+
   <div class="audio-navbar" id="ohmsAudioNavbar">
     <div class="audio-navbar-contents">
       <div class="now-playing-container" data-role="now-playing-container">
-        <h1 class="title h6">
-          <%= work.title %>
-        </h1>
         <% if combined_m4a_audio_url.present? && combined_derivatives_up_to_date? %>
-          <div class="d-flex" style="align-items: center">
+          <div class="audio-controls-line">
             <%= render AudioPlayerComponent.new do %>
                 <source src="<%= combined_m4a_audio_url %>" type="audio/mp4">
             <% end %>
 
             <% if has_ohms_index? || has_ohms_transcript? %>
-              <div class="pl-3">
-                <button class="btn btn-emphasis btn-sm text-nowrap" data-trigger="ohms-jump-to-text">Jump to text</button>
+              <div>
+                <button class="btn btn-sm btn-emphasis text-nowrap" data-trigger="ohms-jump-to-text">Scroll to text</button>
               </div>
             <% end %>
           </div>
@@ -30,16 +43,36 @@
           </div>
         <% end %>
 
+        <% if has_ohms_transcript? || has_ohms_index? %>
+          <div class="ohms-search">
+                <form data-ohms-search-form="true">
+                  <div class="input-group">
+                    <input type="text" class="form-control form-control-sm" aria-label="Search transcript" data-ohms-input-query="true">
+                    <div class="input-group-append">
+                      <button class="btn btn-sm btn-danger" type="button" aria-label="Clear search" title="Clear search" data-ohms-clear-search="true">
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                      </button>
+                    </div>
+                    <div class="input-group-append">
+                      <button class="btn btn-sm btn-emphasis" type="submit">Search</button>
+                    </div>
+                  </div>
+                </form>
+
+                <div data-ohms-search-results="true"></div>
+          </div>
+        <% end %>
+
         <ul class="nav ohms-nav-tabs" role="tablist">
           <li class="nav-item" role="presentation">
-            <a class="nav-link active btn btn-emphasis" id="ohDescriptionTab" data-toggle="tab" href="#ohDescription" role="tab" aria-controls="ohDescription" aria-selected="true">
+            <a class="nav-link active btn btn-danger" id="ohDescriptionTab" data-toggle="tab" href="#ohDescription" role="tab" aria-controls="ohDescription" aria-selected="true">
               Description
             </a>
           </li>
 
           <% if has_ohms_index? %>
             <li class="nav-item" role="presentation">
-              <a class="nav-link btn btn-emphasis" id="ohTocTab" data-toggle="tab" href="#ohToc" role="tab" aria-controls="ohToc" aria-selected="false">
+              <a class="nav-link btn btn-danger" id="ohTocTab" data-toggle="tab" href="#ohToc" role="tab" aria-controls="ohToc" aria-selected="false">
                 Table of Contents <span data-ohms-hitcount="index"></span>
               </a>
             </li>
@@ -47,58 +80,37 @@
 
           <% if has_ohms_transcript? %>
             <li class="nav-item" role="presentation">
-              <a class="nav-link btn btn-emphasis" id="ohTranscriptTab" data-toggle="tab" href="#ohTranscript" role="tab" aria-controls="ohTranscript" aria-selected="false">
+              <a class="nav-link btn btn-danger" id="ohTranscriptTab" data-toggle="tab" href="#ohTranscript" role="tab" aria-controls="ohTranscript" aria-selected="false">
                 Transcript <span data-ohms-hitcount="transcript"></span>
               </a>
             </li>
           <% end %>
 
           <li class="nav-item" role="presentation">
-            <a class="nav-link btn btn-emphasis" id="ohDownloadsTab" data-toggle="tab" href="#ohDownloads" role="tab" aria-controls="ohDownloads" aria-selected="false">Downloads</a>
+            <a class="nav-link btn btn-danger" id="ohDownloadsTab" data-toggle="tab" href="#ohDownloads" role="tab" aria-controls="ohDownloads" aria-selected="false">Downloads</a>
           </li>
         </ul>
       </div>
-
-      <% if has_ohms_transcript? || has_ohms_index? %>
-        <div class="ohms-search">
-
-
-            <h2 class="h6 search-heading">
-              <a data-toggle="collapse" href="#ohmsSearchCollapse" role="button" aria-expanded="true" aria-controls="ohmsSearchCollapse">
-                Search this oral history&nbsp;<i class="fa fa-caret-right toggle-icon"  aria-hidden="true"></i>
-                <i class="fa fa-caret-down toggle-icon" aria-hidden="true"></i>
-              </a>
-            </h2>
-
-            <div class="collapse show" id="ohmsSearchCollapse">
-              <form data-ohms-search-form="true">
-                <div class="input-group">
-                  <input type="text" class="form-control form-control-sm" aria-label="Search transcript" data-ohms-input-query="true">
-                  <div class="input-group-append">
-                    <button class="btn btn-sm btn-secondary" type="button" aria-label="Clear search" title="Clear search" data-ohms-clear-search="true">
-                      <i class="fa fa-times" aria-hidden="true"></i>
-                    </button>
-                  </div>
-                  <div class="input-group-append">
-                    <button class="btn btn-sm btn-emphasis" type="submit">Search</button>
-                  </div>
-                </div>
-              </form>
-              <div data-ohms-search-results="true"></div>
-            </div>
-        </div>
-      <% end %>
     </div>
   </div>
 
   <div class="bottom" id="ohmsScrollable">
       <div class="tab-content">
         <div class="tab-pane active" id="ohDescription" role="tabpanel" aria-labelledby="ohDescriptionTab">
-          <div class="show-title">
-            <%= render WorkTitleAndDatesComponent.new(work) %>
-          </div>
-
-
+          <h2 class="h4 brand-alt-h4"><%= work.title %></h2>
+          <% if work.date_of_work.present?  %>
+            <div class="show-date">
+                <ul>
+                  <% DateDisplayFormatter.new(work.date_of_work).display_dates.each do |interval| %>
+                    <li>
+                      <span itemprop="date_created">
+                        <%= interval %>
+                      </span>
+                    </li>
+                  <% end %>
+                </ul>
+            </div>
+          <% end %>
 
           <%# much like the rights_and_social partial, but we've exploded it
               to fit in our custom share button %>
@@ -111,36 +123,19 @@
               <div class="rights-placeholder"></div>
             <% end %>
 
-            <div>
+            <div class='expanded-social-share'>
               <%= render SocialShareComponent.new(work) %>
 
-              <a href="#" class="btn btn-brand-dark rounded-sides" data-toggle="linkShareModal" data-target="#audioLinkShare">
+              <a href="#" class="btn btn-secondary rounded-sides share-link" data-toggle="linkShareModal" data-target="#audioLinkShare">
                 <i class="fa fa-share" aria-hidden="true"></i>
                 Share link
               </a>
             </div>
           </div>
 
-
-
-
-
-
-          <div class="description-and-portrait">
-            <% if portrait_asset.present? %>
-              <figure class="oh-portrait figure">
-                <%= render ThumbComponent.new(portrait_asset) %>
-                <% if portrait_asset.caption.present? %>
-                  <figcaption class="figure-caption"><%= portrait_asset.caption %></figure>
-                <% end %>
-              </figure>
-            <% end %>
-
-            <div class="work-description">
-              <%= DescriptionDisplayFormatter.new(work.description).format  %>
-            </div>
+          <div class="work-description">
+            <%= DescriptionDisplayFormatter.new(work.description).format  %>
           </div>
-
 
           <%= render WorkShowInfoComponent.new(work: work) %>
 

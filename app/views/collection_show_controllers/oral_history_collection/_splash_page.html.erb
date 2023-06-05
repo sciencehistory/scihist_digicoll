@@ -18,7 +18,7 @@ we want the full width of the screen, no margins or padding. %>
             <h1>
               <%= link_to collection.title, collection_path(collection), class: "title-link" %> <%= publication_badge(collection) %>
               <% if can? :update, collection %>
-                <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-outline-primary" %>
+                <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-secondary float-right" %>
               <% end %>
             </h1>
           </header>
@@ -28,36 +28,31 @@ we want the full width of the screen, no margins or padding. %>
           <%= render CollectionCountComponent.new(collection) %>
         </p>
 
-        <div class="collection-description">
-          <%= DescriptionDisplayFormatter.new(collection.description).format %>
-        </div>
-
-
-        <div class="mt-5">
-          <h2 class="search-title h4">
-                Search within the collection
-          </h2>
-
+        <div class="collection-search-form">
           <%= form_tag "", method: :get do |f| %>
            <div class="input-group">
               <%= search_field_tag :q, '', class: "q form-control",
                   id: "collectionQ",
                   autocomplete: "off",
-                  placeholder: t("collection.search_form.search_field.placeholder"),
+                  placeholder:  t("collection.search_form.search_field.placeholder"),
                   :"aria-label" => t('collection.search_form.search_field.label')
               %>
 
               <label class="sr-only" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
 
               <div class="input-group-append">
-                <button type="submit" class="btn btn-emphasis" title="Search">
-                  <i class="fa fa-search" aria-hidden="true"></i>
+                <button type="submit" class="btn btn-brand-main" title="Search">
                   <%= t('blacklight.search.form.submit') %>
                 </button>
               </div>
             </div>
           <% end %>
         </div>
+
+        <div class="collection-description">
+          <%= DescriptionDisplayFormatter.new(collection.description).format %>
+        </div>
+
       </div>
     </div>
 
@@ -66,7 +61,7 @@ we want the full width of the screen, no margins or padding. %>
   </div>
 
   <div class="canned-queries-container">
-    <div class="canned-queries">
+    <div class="canned-queries shi-full-width-inner">
       <h2 class="canned-queries-heading">Starting points</h2>
       <div class="canned-queries-body">
         <%= link_to({ f: { subject_facet: ["Women in science"] } }, class: "q") do %>
@@ -101,41 +96,45 @@ we want the full width of the screen, no margins or padding. %>
 
   <% if born_on_this_day_biographies.present? %>
     <div class="this-day-container">
-      <h2 class="brand-alt-h2 text-white">Born on this day in history</h2>
-      <div class="this-day-body">
-        <% born_on_this_day_biographies.each do |bio| %>
-          <div class="this-day-card">
-            <% if bio.oral_history_content.first.work.leaf_representative&.content_type  &&
-                  bio.oral_history_content.first.work.leaf_representative&.content_type != "application/pdf" %>
-              <%= link_to work_path(bio.oral_history_content.first.work) do %>
-                <%= render ThumbComponent.new(bio.oral_history_content.first.work.leaf_representative) %>
+      <div class="this-day shi-full-width-inner">
+
+        <h2 class="brand-alt-h2 text-white text-center">Born on this day in history</h2>
+
+        <div class="this-day-body">
+          <% born_on_this_day_biographies.each do |bio| %>
+            <div class="this-day-card">
+              <% if bio.oral_history_content.first.work.leaf_representative&.content_type  &&
+                    bio.oral_history_content.first.work.leaf_representative&.content_type != "application/pdf" %>
+                <%= link_to work_path(bio.oral_history_content.first.work) do %>
+                  <%= render ThumbComponent.new(bio.oral_history_content.first.work.leaf_representative) %>
+                <% end %>
               <% end %>
-            <% end %>
 
-            <p class="this-day-label">
-              <%= link_to work_path(bio.oral_history_content.first.work) do %>
-                <%= bio.name %><br>
-                Born <%= FormatSimpleDate.new(bio.birth.date).display  %>
-              <% end %>
-            </p>
-
-            <% if bio.oral_history_content.first.work&.leaf_representative&.content_type.blank? ||
-                  bio.oral_history_content.first.work&.leaf_representative&.content_type == "application/pdf" %>
-
-              <p class="this-day-text-desc">
-                <%= truncate(strip_tags(bio.oral_history_content.first.work.description), length: 120, separator: ' ') %>
+              <p class="this-day-label">
+                <%= link_to work_path(bio.oral_history_content.first.work) do %>
+                  <%= bio.name %><br>
+                  Born <%= FormatSimpleDate.new(bio.birth.date).display  %>
+                <% end %>
               </p>
-            <% end %>
 
-          </div>
-        <% end %>
+              <% if bio.oral_history_content.first.work&.leaf_representative&.content_type.blank? ||
+                    bio.oral_history_content.first.work&.leaf_representative&.content_type == "application/pdf" %>
+
+                <p class="this-day-text-desc">
+                  <%= truncate(strip_tags(bio.oral_history_content.first.work.description), length: 120, separator: ' ') %>
+                </p>
+              <% end %>
+
+            </div>
+          <% end %>
+        </div>
       </div>
     </div>
   <% end %>
 
-  <div class="projects">
+  <div class="projects shi-full-width-inner">
     <h2 class="brand-alt-h2">Projects</h2>
-    <p>While individual oral histories can contribute to specific research goals and agendas, the strength of an oral history collection relies on the ability of individual oral histories to “speak” to each other. Learning about patterns of relationships and activities through the study of collective histories reveals much more about the scientific process and its products than any one oral history could do on its own.</p>
+    <p class="blurb">While individual oral histories can contribute to specific research goals and agendas, the strength of an oral history collection relies on the ability of individual oral histories to “speak” to each other. Learning about patterns of relationships and activities through the study of collective histories reveals much more about the scientific process and its products than any one oral history could do on its own.</p>
 
     <% project_list.each do |collection| %>
       <div class="project">

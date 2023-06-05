@@ -49,8 +49,12 @@
     border-top: 3px solid $table-border-color;
     padding: $table-cell-padding-sm;
     margin-left: -1 * $table-cell-padding-sm;
+    margin-bottom: ($paragraph-spacer * 2);
+  }
+  .show-metadata .show-sub-head-body {
     margin-bottom: ($paragraph-spacer * 4);
   }
+
   .citation {
       word-break: break-word;
       max-width: $max-readable-width;
