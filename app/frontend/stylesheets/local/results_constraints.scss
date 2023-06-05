@@ -53,8 +53,10 @@
   .applied-filter {
     margin-right: 0.33em;
   }
+
+  // Carot separator symbol
   .applied-filter .filter-name:after {
-    color: $brand-dark-grey;
+    color: $shi-alt-muted-text;
     font-size: 100%;
     padding-left: .5em;
     padding-right: .2em;
