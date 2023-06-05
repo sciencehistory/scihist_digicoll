@@ -53,14 +53,14 @@
     }
 
     .error-subheadline {
-      color: $brand-dark-grey;
+      color: $special-label-muted-color;
       margin-top: 1.375rem;
     }
 
     .error-section {
       margin: 34px 0;
       h2 {
-        color: $brand-dark-blue;
+        color: $shi-blackish;
         &:before {
           font-family: FontAwesome;
           content: '\F0A4'; // hand-right
