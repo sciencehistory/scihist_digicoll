@@ -91,6 +91,12 @@
   border: none;
   .search-widgets {
     float: none !important;
+
+    // override blacklight's use of bootstrap -- in our layout we want
+    // this flush with right margin.
+    #sort-dropdown {
+      margin-right: 0 !important;
+    }
   }
   &:after {
     display: none;
