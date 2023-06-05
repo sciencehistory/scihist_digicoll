@@ -128,7 +128,7 @@
 
           .number {
             font-size: 1.75rem;
-            background-color: $shi-dark-blue;
+            background-color: $shi-dark-gray;
             color: white;
           }
         }
@@ -137,7 +137,7 @@
   }
 
   .this-day-container {
-    background-color: $shi-dark-blue;
+    background-color: $shi-dark-gray;
 
     .this-day {
       padding-top: 2rem;
@@ -167,7 +167,7 @@
         letter-spacing: $small-caps-letter-spacing;
         background-color: white;
         padding: 1em 1em;
-        border: 1px solid $shi-dark-blue;
+        border: 1px solid $shi-dark-gray;
         border-top: none;
         margin-bottom: 0;
       }
@@ -175,7 +175,7 @@
         @extend .text-muted;
         padding: 1em 1em;
         background-color: white;
-        border: 1px solid $shi-dark-blue;
+        border: 1px solid $shi-dark-gray;
         margin-bottom: 0;
       }
     }
@@ -221,7 +221,7 @@
 
 
           font-size: 120%;
-          background-color: $shi-dark-blue;
+          background-color: $shi-dark-gray;
           color: white;
           border-radius: 3em;
           padding: 0 0.5em;

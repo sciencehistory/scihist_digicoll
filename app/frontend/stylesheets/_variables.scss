@@ -60,7 +60,7 @@ $shi-gray-1: #efeeed;
 // Mostly background:
 $shi-teal: $shi-teal-4; // as actually used on main site may 2023
 $shi-green: $shi-green-4;
-$shi-dark-blue: $shi-gray-4; // TODO change this name it's not considered blue!
+$shi-dark-gray: $shi-gray-4; // often used on website
 $shi-maroon: $shi-red-4;
 $shi-bg-gray: $shi-gray-1;
 $shi-bg-gray-border: $shi-gray-3; // the bg-gray is so light it needs a border. #bbbaba is used on main site, although also uses $bcbcbc or #ccc alts
@@ -94,7 +94,7 @@ $shi-blue-text: #007FAA;
 // At lighten 15% it's #506576, which passes AA but not AAA WCAG contrast for small text.
 //
 // (10% would be #465866 -- and WCAG AAA contrast for small text on white.)
-$shi-alt-muted-text: lighten($shi-dark-blue, 15%);
+$shi-alt-muted-text: lighten($shi-dark-gray, 15%);
 
 
 $brand-image-placeholder-color: $shi-gray-3;
@@ -193,7 +193,7 @@ $success: $shi-green;
 $warning: $shi-yellow;
 $danger: $shi-red;
 $light: $shi-bg-gray; // not sure if we use in public front-end at present
-$dark: $shi-dark-blue;
+$dark: $shi-dark-gray;
 
 $tooltip-bg: $shi-blackish;
 
