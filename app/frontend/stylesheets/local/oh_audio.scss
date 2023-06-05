@@ -318,7 +318,7 @@
 .ohms-speaker {
   font-weight: bold;
   @extend %special-label;
-  color: $brand-dark-blue;
+  color: $shi-red;
 }
 
 // make room for and position the timecode links
@@ -358,7 +358,7 @@
         @extend %special-label;
         margin-right: 0.66em;
         font-weight: bold;
-        color: $brand-dark-blue;
+        color: $shi-blackish;
       }
     }
 
