@@ -13,25 +13,68 @@
  */
 
 /* NEW 2023 Brand colors */
+// First, variated colors from the Brand Guide which has 7 colors with four shades each,
+// from 1=lightest to 4=darkest.
+//
+// We leave out `blue` and `purple` because we do not use them at all at present.
+//
+// Secondly, we'll have some semantic/mnemonic aliases for the colors we actually use
+// and how we use them
+
+// Grand guide calls this "black", and recommends it for all(?) black uses,
+// but main website uses pure black for text still.
+$shi-blackish: #1D242b;
+
+$shi-chartreuse-4: #78712e;
+$shi-chartreuse-3: #e4e76d;
+$shi-chartreuse-2: #eff1b6;
+$shi-chartreuse-1: #f7f8d9;
+
+// lighter teals start looking more like turquoise
+$shi-teal-4: #285f70; // NOT what is in Brand Guide, website updated it!
+$shi-teal-3: #a9dbd4;
+$shi-teal-2: #d4ece8;
+$shi-teal-1: #eaf6f3;
+
+$shi-red-4: #6a1d32;
+$shi-red-3: #d7272e;
+$shi-red-2: #eb9396;
+$shi-red-1: #f4c9cb;
+
+// we RARELY use green in digital collections, we have enough colors. But we use it
+// for bootstrap "success"
+$shi-green-4: #004d44;
+$shi-green-3: #a0d5b1;
+$shi-green-2: #d0e9d7;
+$shi-green-1: #e8f4ed;
+
+$shi-gray-4: #313e48;
+$shi-gray-3: #bbbaba;
+$shi-gray-2: #dddddc;
+$shi-gray-1: #efeeed;
+
+// Now we have semantic/mnemonic aliases, concentrating on the subset
+// that we actually want to try to stick to
+
+
 // Mostly background:
-$shi-blackish: #1D242b; // we also use as text color esp for headings, although main site does not
-$shi-teal: #285f70; // as actually used on main site may 2023
-$shi-green: #004d44;
-$shi-dark-blue: #313E48;
-$shi-maroon: #6A1D32;
-$shi-bg-gray: #EFEEED; // as used on mainsite, not in PDF
-$shi-bg-gray-border: #bbbaba; // the bg-gray is so light it needs a border. #bbbaba is used on main site. $bcbcbc or #ccc alts may look better?
-$shi-footer-bg-green: #eaf6f3; // one of several used on mainsite for footer "callouts", not in PDF
-$shi-bg-turquoise: #d4ece8; // an alternate turquoise used for backgrounds, let's try to avoid it though
+$shi-teal: $shi-teal-4; // as actually used on main site may 2023
+$shi-green: $shi-green-4;
+$shi-dark-blue: $shi-gray-4; // TODO change this name it's not considered blue!
+$shi-maroon: $shi-red-4;
+$shi-bg-gray: $shi-gray-1;
+$shi-bg-gray-border: $shi-gray-3; // the bg-gray is so light it needs a border. #bbbaba is used on main site, although also uses $bcbcbc or #ccc alts
+$shi-footer-bg-green: $shi-teal-1; // one of several used on mainsite for footer "callouts", not in PDF. TODO change name?
+$shi-bg-turquoise: $shi-teal-2; // an alternate turquoise used for backgrounds, let's try to avoid it though
 
 // mostly foreground text/highlight
-$shi-turquoise: #A9DBD4; // especially as highlight text over dark blue
-$shi-red: #D7272E;
+$shi-turquoise: $shi-teal-3; // especially as highlight text over dark blue
+$shi-red: $shi-red-3;
 
 // yellow is used as main button background, and also text over blackish and teal
-$shi-yellow: #E4E76D;
+$shi-yellow: $shi-chartreuse-3;
 
-// This is an alternate color used sometimes for text, over pale green or even
+// This is an alternate dark grey used sometimes in main sitefor text, over pale green or even
 // white.
 $shi-alternate-text-color: #3c3c3c;
 
@@ -142,13 +185,13 @@ $headings-line-height: 1.13; // a bit smaller than default 1.2
 $headings-color: $shi-blackish;
 
 // bootstrap brand colors
-$primary: $shi-teal;
+$primary: $shi-teal; // main buttons actually use $shi-yellow, but we don't want to put that everywhere bootstrap primary goes
 $secondary: $shi-blackish;
 $info: $shi-bg-turquoise;
-// success // we don't use in public front-end at present
+$success: $shi-green;
 $warning: $shi-yellow;
 $danger: $shi-red;
-//$light: $shi-bg-gray; // we don't use in public front-end at present
+$light: $shi-bg-gray; // not sure if we use in public front-end at present
 $dark: $shi-dark-blue;
 
 $tooltip-bg: $shi-blackish;
