@@ -87,7 +87,6 @@ $shi-transparent-dark-bg: #{'rgba(30,36,42,.80)'};
 
 /* OLD rebrand colors */
 $brand-dark-blue: #050939;
-$brand-red: #d8262e;
 $brand-blue:  #007FAA; // #4bb0c7; // #76c3d4; // https://github.com/sciencehistory/scihist_digicoll/issues/1233
 $brand-light-grey: #bcbcbc; // not actually very light
 $brand-dark-grey: #646469;
@@ -200,7 +199,7 @@ $link-color: $brand-blue-text;
 $link-hover-color: $brand-dark-blue;
 $font-family-sans-serif: $brand-sans-serif;
 // default bootstrap code color is a pink. use brand red? Or something else?
-$code-color: $brand-red;
+$code-color: $shi-red;
 
 $text-muted: $brand-dark-grey;
 $dropdown-header-color: $brand-dark-grey;
