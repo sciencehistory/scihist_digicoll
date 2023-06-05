@@ -90,7 +90,7 @@ $shi-blue-text: #007FAA;
 /* OLD rebrand colors */
 $brand-dark-grey: #646469;
 
-$brand-image-placeholder-color: #AAA; // not a designated brand color, but oh well
+$brand-image-placeholder-color: $shi-gray-3;
 
 // Our brand sans-serif, with fallbacks copied from Bootstrap's default sans-serif.
 $brand-sans-serif: 'sofia-pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
