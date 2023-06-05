@@ -212,8 +212,12 @@ module ScihistDigicoll
     define_key :s3_bucket_originals_video
     define_key :s3_bucket_derivatives
     define_key :s3_bucket_derivatives_video
+
+    # Note: the values for :s3_bucket_derivatives_host and :s3_bucket_derivatives_video_host
+    # can be obtained by running `terraform output`.
     define_key :s3_bucket_derivatives_host      # Cloudfront hostname for regular derivs bucket
     define_key :s3_bucket_derivatives_video_host # Ditto, for video derivs bucket
+    
     define_key :s3_bucket_uploads
     define_key :s3_bucket_on_demand_derivatives
     define_key :s3_bucket_dzi
@@ -575,6 +579,7 @@ module ScihistDigicoll
     define_key :smtp_password
     define_key :smtp_host
 
+    # The value for :rails_asset_host can be obtained by running `terraform output`.
     define_key :rails_asset_host
 
     ##
