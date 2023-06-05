@@ -2,7 +2,7 @@
 
 <h1>Oral History: Interviewee Biographies</h1>
 
-<%= link_to 'New Interviewee Biography', new_admin_interviewee_biography_path, class: "btn btn-outline-primary mb-3" %>
+<%= link_to 'New Interviewee Biography', new_admin_interviewee_biography_path, class: "btn btn-outline-secondary mb-3" %>
 
 <%= form_with(url: admin_interviewee_biographies_path, method: :get, class: 'edit-work admin-edit') do |f| %>
   <div class="row">
@@ -37,7 +37,7 @@
       <tr>
         <td><%= interviewee_biography.name %></td>
         <td>
-          <%= link_to 'Edit', edit_admin_interviewee_biography_path(interviewee_biography), class: "btn btn-sm btn-outline-primary" %>
+          <%= link_to 'Edit', edit_admin_interviewee_biography_path(interviewee_biography), class: "btn btn-sm btn-outline-secondary" %>
           <%= link_to 'Destroy', admin_interviewee_biography_path(interviewee_biography), method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-sm btn-outline-danger" %>
         </td>
       </tr>
