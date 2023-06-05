@@ -249,7 +249,8 @@ Search.scrollToId = function(domID, scrollBehavior) {
   }
 
   var elTop = $(element).offset().top;
-  var navbarHeight = $("#ohmsAudioNavbar").height();
+
+  var navbarHeight = $("#ohmsAudioNavbar").outerHeight();
 
   window.scrollTo({top: elTop - navbarHeight, behavior: scrollBehavior});
 };

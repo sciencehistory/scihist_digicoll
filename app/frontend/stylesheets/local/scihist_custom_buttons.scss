@@ -6,42 +6,11 @@
 // then overriding a lot of bootstrap stuff -- we might want to transition to actually
 // setting bootstrap button default size/weight/etc?
 
-.btn-brand-dark {
-  // hoverbackground similar to main site used in some places, but passes contrast rules
-  // with our hover color
-  @include button-variant($shi-blackish, $shi-blackish, $hover-background: #424242);
-  color: white;
-  text-transform: uppercase;
-  font-size: 0.9375em; // slightly smaller than normal to make up for the all-caps? 15px/16px
-
-  // nain site topnav bar fades white over dark text using opacity,
-  // we use a specific color to do similar and match.
-  &:hover, &:focus {
-    color: #dadbdb;
-  }
-
-  // These are approximately matching main site, not implemented the same way
-  padding: 0.66em 1.75em;
-}
-
-// we need another brand button...
-.btn-brand-alt {
-  @include button-variant($shi-teal, $shi-teal);
-
-  color: white;
-  text-transform: uppercase;
-  font-size: 0.9375em; // slightly smaller than normal to make up for the all-caps? 15px/16px
-
-  &:hover, &:focus {
-    color: $shi-yellow;
-  }
-}
-
-// The main/only button type actually used in new main site -- this is a temporary
-// name
-.btn-brand-main {
-  // hover-background copied from main site
-  @include button-variant($shi-yellow, $shi-yellow, $hover-background: #c6c94f);
+// common elements to "brand' buttons matching new site -- uppercase,
+// semi-bold, smaller font (to compensate for uppercase), more padding.
+//
+// These are big buttons
+@mixin brand-button-base {
   transition: background-color .3s ease,color .3s ease;
 
   text-transform: uppercase;
@@ -50,23 +19,73 @@
 
   // These are approximately matching main site, not implemented the same way
   padding: 0.66em 1.75em;
+
+  // Go back to normal bootstrap padding if .less-padding is also on there...
+  &.less-padding {
+    padding: $btn-padding-y $btn-padding-x;
+  }
+
+  // we're fighting with bootstrap a bit. If inside an input group, aso over-override
+  // with plain bootstrap padding again, so it doesn't mess up input-group.
+  .input-group & {
+    padding: $btn-padding-y $btn-padding-x;
+  }
+
+  // less padding and even less font if also bootstrap btn-sm class. Overriding
+  // bootstrap btn-sm for our brand buttons.
+  &.btn-sm {
+    padding: $btn-padding-y-sm $btn-padding-x-sm;
+    // 14px at 1rem==16px, a bit bigger than totally scaling our smaller for all-caps, but
+    // we actually need it to not be too too small.
+    font-size: 0.875rem;
+  }
 }
 
-// we're fighting with bootstrap a bit. If inside an input group, over-override
-// with plain bootstrap padding again. Or if we have a class to ask for it.
-.input-group .btn-brand-dark, .input-group .btn-brand-main, .input-group .btn-brand-alt
-  .btn-brand-dark.less-padding, .btn-brand-main.less-padding, btn-brand-alt.less-padding {
-  padding: $btn-padding-y $btn-padding-x;
-}
-// and also over-override for .btn-sm the things we overroad for personal styles.
-// Padding and font-size
-.btn-brand-main.btn-sm, .btn-brand-dark.btn-sm, .btn-brand-alt.btn-sm {
-  padding: $btn-padding-y-sm $btn-padding-x-sm;
-  // 14px at 1rem==16px, a bit bigger than totally scaling our smaller for all-caps, but
-  // we actually need it to not be too too small.
-  font-size: 0.875rem;
+// The main/only button type actually used in new main site -- this is a temporary
+// name
+.btn-brand-main {
+  // hover-background copied from main site
+  @include button-variant($shi-yellow, $shi-yellow, $hover-background: #c6c94f);
+  @include brand-button-base;
 }
 
+// Also used on main site occasionally, an outlined black button
+.btn-brand-secondary {
+  @include button-variant(white, $shi-blackish, $hover-background: $shi-blackish);
+  @include brand-button-base;
+
+   &:hover, &:focus {
+    color: white;
+  }
+}
+
+// Black color solid
+.btn-brand-dark {
+  // hoverbackground similar to main site used in some places, but passes contrast rules
+  // with our hover color
+  @include button-variant($shi-blackish, $shi-blackish, $hover-background: #424242);
+  @include brand-button-base;
+  color: white;
+
+  // nain site topnav bar fades white over dark text using opacity,
+  // we use a specific color to do similar and match.
+  &:hover, &:focus {
+    color: #dadbdb;
+  }
+}
+
+// we need another brand button, this one is sized like primary, but in the teal color.
+// Currently used sparingly.
+.btn-brand-alt {
+  @include button-variant($shi-teal, $shi-teal);
+  @include brand-button-base;
+
+  color: white;
+
+  &:hover, &:focus {
+    color: $shi-yellow;
+  }
+}
 
 // font-awesome buttons could be bigger and have more spacing, when
 // put in our brand icons with a lot of spacing
