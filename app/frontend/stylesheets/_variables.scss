@@ -88,7 +88,6 @@ $shi-transparent-dark-bg: #{'rgba(30,36,42,.80)'};
 /* OLD rebrand colors */
 $brand-dark-blue: #050939;
 $brand-blue:  #007FAA; // #4bb0c7; // #76c3d4; // https://github.com/sciencehistory/scihist_digicoll/issues/1233
-$brand-light-grey: #bcbcbc; // not actually very light
 $brand-dark-grey: #646469;
 
 $brand-image-placeholder-color: #AAA; // not a designated brand color, but oh well
@@ -192,9 +191,6 @@ $dark: $shi-dark-blue;
 
 $tooltip-bg: $shi-blackish;
 
-// $btn-primary-border: $brand-primary; // bootstrap 4 has no button borders already I think.
-// $btn-default-border: $brand-light-grey; // bootstrap 4 has no button borders already I think.
-
 $link-color: $brand-blue-text;
 $link-hover-color: $brand-dark-blue;
 $font-family-sans-serif: $brand-sans-serif;
@@ -222,7 +218,7 @@ $card-border-color: $shi-bg-gray-border;
 $breadcrumb-bg: $bg-lightly-shaded;
 $input-group-addon-bg: $bg-lightly-shaded;
 
-$list-group-border-color: $brand-light-grey;
+$list-group-border-color: $shi-bg-gray-border;
 
 $input-color: $brand-dark-grey;
 $input-border-color: $shi-bg-gray-border;
@@ -233,8 +229,8 @@ $input-border-color: $shi-bg-gray-border;
 $input-btn-padding-x-sm: .625rem; // 10px
 $input-btn-padding-y-sm: .3125rem; // 5px
 
-$pagination-active-color:           $body-color;
-$pagination-active-bg:              $brand-light-grey;
+$pagination-active-color:           white;
+$pagination-active-bg:              $shi-red;
 $pagination-active-border-color:    $pagination-active-bg;
 
 $popover-font-size: 1rem;
