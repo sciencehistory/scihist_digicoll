@@ -319,7 +319,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       padding: 1px;
 
       &.viewer-thumb-selected {
-        border: 2px solid $brand-yellow;
+        border: 2px solid $shi-yellow;
       }
 
       &.lazyload, &.lazyloading, &.lazyloaded {

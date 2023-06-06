@@ -34,7 +34,7 @@
 
     padding-top: $spacer;
 
-    background-color: $shi-dark-blue;
+    background-color: $shi-dark-gray;
     color: white;
     // material-design-like shadow, sorry we're just hacking it un-DRY.
     // https://stackoverflow.com/questions/30533055/calculating-shadow-values-for-all-material-design-elevations
@@ -152,27 +152,6 @@
       .ohms-search {
         max-width: $max-readable-width; // doesn't need to be this specifically, but works fine
         margin-top: $spacer;
-
-        .search-heading {
-          margin-bottom: 0;
-
-          a {
-            color: $brand-dark-blue;
-
-            //make appropriate toggle icon show up for state
-            .fa-caret-right.toggle-icon {
-              display: none;
-            }
-            &.collapsed {
-              .fa-caret-right.toggle-icon {
-                display: inline-block;
-              }
-              .fa-caret-down.toggle-icon {
-                display: none;
-              }
-            }
-          }
-        }
       }
 
       .ohms-search-results {
@@ -187,7 +166,7 @@
 
         .ohms-no-results {
           margin-top: ($paragraph-spacer * 0.5);
-          color: $brand-red;
+          color: $shi-red;
         }
 
         .ohms-result-navigation {
@@ -330,7 +309,7 @@
 }
 
 .ohms-highlight {
-  background-color: $brand-red;
+  background-color: $shi-red;
   color: white;
   padding-left: .1em;
   padding-right: .1em;
@@ -339,7 +318,7 @@
 .ohms-speaker {
   font-weight: bold;
   @extend %special-label;
-  color: $brand-dark-blue;
+  color: $shi-red;
 }
 
 // make room for and position the timecode links
@@ -379,7 +358,7 @@
         @extend %special-label;
         margin-right: 0.66em;
         font-weight: bold;
-        color: $brand-dark-blue;
+        color: $shi-blackish;
       }
     }
 
