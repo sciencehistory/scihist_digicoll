@@ -17,10 +17,10 @@ a {
 /* informational dls, as on faq, policy page, give them more space */
 dl.info {
   dt {
-    margin-top: 1em;
+    margin-top: 2rem;
   }
   dd {
-    margin-top: .25em;
+    margin-top: 0.5rem;
   }
 }
 
@@ -117,9 +117,11 @@ hr.brand {
   max-width: $max-readable-width;
   margin-right: auto;
   margin-left: auto;
-  p, dd, dt {
-    margin-bottom: ($paragraph-spacer) !important;
-    max-width: $max-readable-width;
+  margin-bottom: $spacer * 4;
+
+  h1, h2, h3, h4, h5 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
   }
 }
 
