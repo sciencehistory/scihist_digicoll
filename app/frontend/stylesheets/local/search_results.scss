@@ -166,6 +166,10 @@
   .card-header, .list-group-item {
     padding: .625rem .9375rem;
   }
+
+  .list-group {
+    font-size: 1rem; // 16px instead of 17px body font
+  }
   margin-bottom: $paragraph-spacer * 2;
 }
 
