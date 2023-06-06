@@ -38,7 +38,7 @@ th {
   font-family: $font-family-sans-serif;
   // Adelle font has a slightly less bold 600 that looks good.
   font-weight: 600;
-  color: $brand-dark-blue;
+  color: $shi-blackish;
 }
 
 // chemheritage.org uses these as default/standard h1-h6, but we're not
@@ -124,7 +124,7 @@ hr.brand {
 }
 
 .popover-citation-help {
-  background-color: $shi-dark-blue;
+  background-color: $shi-dark-gray;
 
   .popover-body {
     font-weight: 300;
@@ -132,7 +132,7 @@ hr.brand {
   }
 
   .arrow:after {
-    border-bottom-color: $shi-dark-blue !important;
+    border-bottom-color: $shi-dark-gray !important;
   }
   a {
     color: $shi-turquoise;
@@ -147,8 +147,8 @@ hr.brand {
 }
 
 .panel-default {
-  border-left-color: $brand-light-grey;
-  border-right-color: $brand-light-grey;
+  border-left-color: $shi-bg-gray-border;
+  border-right-color: $shi-bg-gray-border;
 }
 
 // Some custom overrides to bootstrap accordion style, to make it brand-specific
@@ -173,7 +173,7 @@ hr.brand {
         display: block;
         width: 100%;
         text-align: left;
-        color: $brand-dark-blue;
+        color: $shi-blackish;
         font-weight: bold;
 
         padding-left: 0;

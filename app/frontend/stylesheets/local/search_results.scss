@@ -27,10 +27,6 @@
     color: inherit;
 
     padding: .625rem .9375rem;
-
-    &::after { // the arrow
-      color: $brand-dark-grey;
-    }
   }
 
   .card-body {
@@ -156,7 +152,7 @@
 .other-searches {
   .card-header {
     text-transform: uppercase;
-    color: $brand-dark-blue;
+    color: $shi-blackish;
     font-weight: $semi-bold-weight;
     letter-spacing: $small-caps-letter-spacing;
   }
@@ -264,7 +260,7 @@
     }
     .scihist-results-list-item-genre {
       @extend %special-label;
-      color: $special-label-muted-color;
+      color: $shi-alt-muted-text;
       margin-bottom: .125rem;
     }
 
