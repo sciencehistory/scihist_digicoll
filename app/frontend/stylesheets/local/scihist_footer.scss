@@ -272,6 +272,10 @@
   padding-top: 2rem;
   padding-bottom: 2rem;
 
+  .dig-col-links-inner {
+    max-width: 47rem;
+  }
+
   h1 {
     color: white;
     font-weight: 700;
@@ -291,7 +295,6 @@
     flex-wrap: wrap;
     justify-content: space-between;
     gap: $grid-gutter-width;
-    max-width: 42rem;
     margin: auto;
   }
 
