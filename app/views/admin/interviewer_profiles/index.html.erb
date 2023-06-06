@@ -2,7 +2,7 @@
 
 <h1>Interviewer Profiles</h1>
 
-<%= link_to 'New Interviewer Profile', new_admin_interviewer_profile_path, class: "btn btn-outline-primary mb-3" %>
+<%= link_to 'New Interviewer Profile', new_admin_interviewer_profile_path, class: "btn btn-outline-secondary mb-3" %>
 
 <%= form_with(url: admin_interviewer_profiles_path, method: :get, class: 'edit-work admin-edit') do |f| %>
   <div class="row">
@@ -38,7 +38,7 @@
       <tr>
         <td><%= interviewer_profile.name %></td>
         <td>
-          <%= link_to 'Edit', edit_admin_interviewer_profile_path(interviewer_profile), class: "btn btn-sm btn-outline-primary" %>
+          <%= link_to 'Edit', edit_admin_interviewer_profile_path(interviewer_profile), class: "btn btn-sm btn-outline-secondary" %>
           <%= link_to 'Destroy', admin_interviewer_profile_path(interviewer_profile), method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-sm btn-outline-danger" %>
         </td>
       </tr>

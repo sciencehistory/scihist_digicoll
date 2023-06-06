@@ -4,7 +4,7 @@
       <h1 class="h5">Batch Edit <small>— <%= current_user.works_in_cart.count %> Works in Cart</small></h1>
     </div>
     <div class="form-actions">
-      <%= link_to 'Cancel', admin_cart_items_path, class: "btn btn-outline-primary" %>
+      <%= link_to 'Cancel', admin_cart_items_path, class: "btn btn-outline-secondary" %>
       <%= f.button :submit, value: "Update #{current_user.works_in_cart.count} Works" %>
     </div>
   </div>
