@@ -17,6 +17,7 @@ a {
 /* informational dls, as on faq, policy page, give them more space */
 dl.info {
   dt {
+    color: $shi-red;
     margin-top: 2rem;
   }
   dd {
