@@ -7,7 +7,7 @@
       <% end %>
       <div>
         <div>Managing a Work</div>
-        <h1><%= @work.title %> <%= publication_badge(@work) %>   <%= link_to "Public view", work_path(@work), class: "btn btn-sm btn-outline-primary" %></h1>
+        <h1><%= @work.title %> <%= publication_badge(@work) %>   <%= link_to "Public view", work_path(@work), class: "btn btn-sm btn-outline-secondary" %></h1>
         <% if @work.parent.present? %>
           <p class="h4">Member in: <%= link_to "#{@work.parent.title} (#{@work.parent.friendlier_id})", admin_work_path(@work.parent) %></p>
         <% end %>
@@ -97,11 +97,11 @@
         <%= link_to "Demote to Asset",
               demote_to_asset_admin_work_path(@work),
               method: "put",
-              class: "btn btn-outline-primary #{'disabled' unless can?(:destroy, @work)}",
+              class: "btn btn-outline-secondary #{'disabled' unless can?(:destroy, @work)}",
               data: { confirm: "All work metadata on #{@work.title} will be lost, this is not reversible. Are you sure?" } %>
       <% end %>
     </p>
-  
+
     <%= render "metadata", work: @work %>
 
   </div>
