@@ -172,7 +172,7 @@
 .documents-list {
   .document.scihist-results-list-item {
     display: flex;
-    margin-bottom: 2.8125rem;
+    margin-bottom: ($spacer * 4);
     border-bottom: none;
     margin-top: 0;
     padding-top: 0;
