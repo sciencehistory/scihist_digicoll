@@ -11,8 +11,11 @@ Rails.application.configure do
   # Do not eager load code on boot.
   config.eager_load = false
 
-  # Show full error reports.
+  # Show full error reports. Chagne to false to see production-style error page
   config.consider_all_requests_local = true
+
+  # use custom error pages when consider_all_requests_local = false
+  config.exceptions_app = self.routes
 
   # sassc-rails
   config.sass.inline_source_maps = true
