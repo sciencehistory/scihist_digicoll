@@ -2,6 +2,10 @@
 // two lines via an internal "BR". Trying to mimic standard displays from
 // rightstatements.org
 
+.rights-term-display {
+  margin-top: $spacer * 2;
+}
+
 .rights-statement.large {
   display: block;
   margin-top: $spacer;
