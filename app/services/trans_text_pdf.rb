@@ -53,7 +53,7 @@ class TransTextPdf
      )
 
       # We add the header SVG in not via HTML, because prawn-html does not support SVGs!
-      pdf.svg IO.read(Rails.root + "app/assets/images/Science_History_logo_dk_blue_rgb.svg"), width: 200
+      pdf.svg IO.read(Rails.root + "app/assets/images/SHI_Primary_BLK.svg"), width: 200
 
       pdf.move_down 15
 
