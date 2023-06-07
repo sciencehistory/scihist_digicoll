@@ -3,11 +3,11 @@
 <% if show_pagination? and @response.total_pages > 1 %>
     <%# expanded will be shown by CSS at large screen sizes, else compact %>
 
-    <div class="pagination pagination-alt-expanded">
+    <div class="pagination bottom-pagination pagination-alt-expanded">
       <%= paginate @response, :window => 3, :outer_window => 1, :theme => 'local' %>
     </div>
 
-    <div class="pagination pagination-alt-compact">
+    <div class="pagination bottom-pagination pagination-alt-compact">
       <%= paginate @response, :page_entries_info => page_entries_info(@response), :theme => 'blacklight_compact' %>
     </div>
 
