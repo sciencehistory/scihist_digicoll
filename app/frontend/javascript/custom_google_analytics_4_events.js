@@ -6,7 +6,7 @@
 $(document).on('click', '*[data-analytics-category]', function(e) {
 
   // Do not call `gtag` unless the function is defined
-  // in app/views/layouts/_google_analytics_universal.html.erb .
+  // in app/views/layouts/_google_analytics_4.html.erb .
   // (This in turn is controlled by ScihistDigicoll::Env.lookup(:google_analytics_4_tag_id).
   if (typeof gtag === 'function') {
 

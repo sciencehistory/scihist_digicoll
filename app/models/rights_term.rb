@@ -26,7 +26,7 @@ class RightsTerm
 
 
   attr_reader :id, :label, :category, :short_label_html, :short_label_inline,
-    :icon_alt, :pictographs, :param_id, :description
+    :icon_alt, :pictographs, :param_id, :description, :matches_copyright_free_searches
 
   def initialize(hash)
     @id                 = hash["id"]
@@ -37,6 +37,7 @@ class RightsTerm
     @pictographs        = hash["pictographs"] || []
     @param_id           = hash["param_id"]
     @description        = hash["description"]
+    @matches_copyright_free_searches = hash["matches_copyright_free_searches"] 
 
     @short_label_inline = short_label_html.try { |str| str.gsub("<br>", " ") }
   end
@@ -69,6 +70,10 @@ class RightsTerm
   # shortcut for this especially popular one
   def self.label_for(id)
     find(id).label
+  end
+
+  def self.copyright_free_filter_uris()
+    terms_by_id.values.select { |term| term.matches_copyright_free_searches }.map { |term| term.id }
   end
 
   private
