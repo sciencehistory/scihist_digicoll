@@ -174,7 +174,7 @@ class MemberImageComponent < ApplicationComponent
         href: view_href,
         class: "btn #{btn_class_name}",
         data: view_data_attributes) do
-          "<i class='fa fa-search' aria-hidden='true'></i> View".html_safe
+          "View".html_safe
       end
     end
   end

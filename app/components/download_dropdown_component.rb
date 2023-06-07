@@ -135,7 +135,7 @@ class DownloadDropdownComponent < ApplicationComponent
       )
     else
       content_tag("button",
-        "<i class='fa fa-download' aria-hidden='true'></i> Download".html_safe,
+        "Download".html_safe,
         link_or_button_options
       )
     end
