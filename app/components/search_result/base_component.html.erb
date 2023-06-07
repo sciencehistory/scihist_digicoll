@@ -85,7 +85,7 @@
       <% end %>
 
       <% if show_cart_control? %>
-        <p><%= render CartControlComponent.new(model.friendlier_id, cart_presence: cart_presence) %></p>
+        <%= render CartControlComponent.new(model.friendlier_id, cart_presence: cart_presence) %>
       <% end %>
 
     </div>

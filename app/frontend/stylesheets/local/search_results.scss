@@ -178,7 +178,7 @@
 .documents-list {
   .document.scihist-results-list-item {
     display: flex;
-    margin-bottom: 2.8125rem;
+    margin-bottom: ($spacer * 4);
     border-bottom: none;
     margin-top: 0;
     padding-top: 0;
@@ -314,6 +314,10 @@
       @extend %special-label;
       color: $shi-blackish;
       margin-right: 0.66em;
+    }
+
+    .cart-toggle-form {
+      margin-top: $spacer;
     }
   }
 }
