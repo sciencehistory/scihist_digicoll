@@ -156,15 +156,23 @@ class MemberImageComponent < ApplicationComponent
     end
   end
 
+  # use brand-main for large size thumb, otherwise brand-alt
+  def btn_class_name
+    @btn_class_name ||= (size == :large) ? "btn-brand-main" : "btn-brand-alt"
+  end
+
   def download_button
-    render DownloadDropdownComponent.new(representative_asset, display_parent_work: member.parent, aria_label: ("Download #{image_label}" if image_label))
+    render DownloadDropdownComponent.new(representative_asset,
+                                          display_parent_work: member.parent,
+                                          aria_label: ("Download #{image_label}" if image_label),
+                                          btn_class_name: btn_class_name)
   end
 
   def view_button
     content_tag("div", class: "action-item view") do
       content_tag("a",
         href: view_href,
-        class: "btn btn-brand-alt",
+        class: "btn #{btn_class_name}",
         data: view_data_attributes) do
           "<i class='fa fa-search' aria-hidden='true'></i> View".html_safe
       end
@@ -200,7 +208,7 @@ class MemberImageComponent < ApplicationComponent
     return "" unless member.kind_of?(Work)
 
     content_tag("div", class: "action-item info") do
-      link_to "Info", work_path(member), class: "btn btn-brand-alt", "aria-label" => ("Info on #{member.title}" if member.is_a?(Work))
+      link_to "Info", work_path(member), class: "btn #{btn_class_name}", "aria-label" => ("Info on #{member.title}" if member.is_a?(Work))
     end
   end
 
