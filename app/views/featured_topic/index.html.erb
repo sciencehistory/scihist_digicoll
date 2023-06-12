@@ -12,7 +12,9 @@
     <%# we're going into a specified search, just tiny header %>
     <div class="collection-mini-header">
         <div class="show-genre"><%= link_to "Featured Topics", featured_topics_path %></div>
-        <h1><%= @featured_topic.title %></h1>
+        <h1>
+          <%= link_to @featured_topic.title, featured_topic_path(@featured_topic.slug), class: "title-link" %>
+        </h1>
     </div>
   <% else %>
     <div class="collection-top">
@@ -20,7 +22,7 @@
         <div class="collection-header-title">
           <header>
               <div class="show-genre"><%= link_to "Featured Topics", featured_topics_path %></div>
-              <h1><%= @featured_topic.title %></h1>
+              <h1><%= link_to @featured_topic.title, featured_topic_path(@featured_topic.slug), class: "title-link" %></h1>
           </header>
 
           <p class="show-item-count">
