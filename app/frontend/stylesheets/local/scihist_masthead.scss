@@ -1,125 +1,622 @@
-// Our branded logo'd large navbar/masthead
-//
-// We use lots of flexbox, a flexbox inside a flexbox. Tested in FF, Chrome, Safari,
-// IE 11, and Edge. Likely doens't work in IE < 11 (IE10 is EOL).
-.masthead {
-  .large-masthead-only {
-    display: none;
-  }
-  @include media-breakpoint-up('md') {
-    .large-masthead-only {
-      display: block;
+/* We copy the masthead navbar from the main website at sciencehistory.org, and try to make it look the same...
+
+   This was tricky.
+
+   We had to figure out how to extract just what we need from their whole stylesheet,
+   AND apply it on top of our site with different base styles so it still works…
+
+   we wound up with a lot of lines of kind of opaque code with strange our-app hacks on top.
+
+   We are not using standard classes or inherited stles from the rest of OUR website,
+   this mostly stands alone as it's own separate implementation, with some duplication.
+
+   We do restrit these styles here to #shi-masthead-from-main-website to try to keep
+   them from interfering with the rest of OUR site.
+
+   This could be hard to maintain in the long-term, we will see. Best we could do!
+*/
+
+#shi-masthead-from-main-website {
+    font: normal 400 1em/1.2 "sofia-pro","sans-serif";
+
+    // This only ends up used at screens larger htan 1199px (see below)
+    //
+    // We've hacked it from original source to be similar but better, using min and max
+    // which seems to have browser support.
+    //
+    //  Base of 1.389vw (from original)
+    //
+    // But no bigger than 20px -- which the original did with a media query at 1440px
+    // And no smaller than 1.19rem, which avoids a discontinuity at 1199px, where
+    // previously font was getting smaller before getting larger again.
+    //
+    // This base font is used for a lot of other things expressed in ems
+    font-size: max(min(1.389vw, 20px), 1.19rem);
+
+    @media screen and (max-width: 1199px) {
+        font-size:1.6vw
     }
-    .small-masthead-only {
-      display: none;
+
+    line-height: 1.2;
+
+    // TOP BAR
+
+    @media print {
+        .noprint {
+            display: none
+        }
     }
-  }
 
-  padding: 16px 47px 0 32px;
-  margin-bottom: $navbar-margin-bottom;
+    @media (hover: hover) {
+        .shi-hover {
+            transition: opacity .3s;
+        }
 
-  background-image: url('@/images/scihist_top_nav_sym.png');
-  background-repeat: no-repeat;
-  background-position: right top;
+        .shi-hover:hover {
+            opacity: .7
+        }
+    }
 
-  display: flex;
-  justify-content: space-between;
-  align-items: stretch;
+    .shi-top-bar {
+        width: 100%;
+        padding: 0 4em;
+        background-color: #1D242B;
+        color: #fff;
+        overflow: hidden
+    }
 
-  border-bottom: $dark 1px; // match chf_sufia, had an invisible border
+    // We need to specifically override for dig col, since our base styles otherwise are here.
+    .shi-top-bar a {
+        color: inherit;
+    }
 
-  .navbar-collapse {
-    max-width: 55%;
-    flex-basis: 100%; // seems screwy, but makes IE 11 happy whem combined with max-width:55% doesn't seem to disturb anyone else
-  }
+    .shi-top-bar__container {
+        width: 100%;
+        height: 100%;
+        max-width: 1280px;
+        margin: 0 auto;
+        position: relative;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        text-transform: uppercase
+    }
 
-  .masthead-title {
-    font-family: $brand-serif;
-    font-size: 30px;
-    margin: 0;
-    padding: 0;
-    line-height: normal;
-    &>a {
-      color: white;
-      &:hover, &:active, &:focus {
-        color: $brand-bright-green;
+    .shi-top-bar-nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        align-items: center;
+        margin-right: 1.15em;
+        padding: .175em 0;
+    }
+    .header__nav .shi-top-bar-nav {
+        display: none;
+    }
+
+    .shi-top-bar-nav__item {
         text-decoration: none;
-      }
+        font-size: 0.875rem;
+        line-height: 136%;
+        padding: .2142857143em 1.6428571429em
     }
-    color: white;
-    &.small-masthead-only {
-      font-size: 18px;
-      //line-height: $small-logo-height + 8px + 8px;
-      text-align: center;
-    }
-  }
 
-  .masthead-right {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-end;
-  }
+    .shi-top-bar__hours {
+        flex: 0 0 auto;
+        font-size: 0.875rem;
+        line-height: 136%;
+        padding: .3571428571em 0 .3571428571em 3.2142857143em;
+        position: relative;
+        max-width: 40%
+    }
 
-  .navbar-nav {
-    font-weight: 300;
-    .nav-link {
-      padding: 14px 15px;
+    .shi-top-bar__hours:before {
+        content: "";
+        background-color: #285f70;
+        position: absolute;
+        left: 0;
+        right: -9999px;
+        top: -300%;
+        bottom: -300%
     }
-    .navbar-item:last-child .nav-link {
-      padding-right: 0;
-    }
-  }
 
-  .navbar-toggler {
-    color: white;
-    margin-right: 15px;
-    border-color: #333;
-  }
+    .shi-top-bar__hours span {
+        position: relative
+    }
+
+    .shi-top-bar__hours span:first-child {
+        font-weight: 700;
+        margin-right: .5em
+    }
+
+    @media screen and (max-width: 991px) {
+        // at this screen-size, we copy this to a different part of the DOM
+        // top show in the collapsable menu, we don't want it here at all.
+        .shi-top-bar__container .shi-top-bar-nav  {
+            display: none;
+        }
+
+        .shi-top-bar .shi-top-bar__hours {
+            width: 100%;
+            font-size: .89375em;
+            padding: .7692307692em 0;
+            line-height: 146%;
+            text-align: center;
+            max-width: none
+        }
+
+        .shi-top-bar .shi-top-bar__hours::before {
+            top: 0;
+            bottom: 0;
+            left: -9999px
+        }
+    }
+
+    // MAIN NAVBAR
+
+    .header {
+        position: relative;
+        background: #fff;
+        // horiz padding was 4em, but for consistency with our site, it's now
+        // 30px at non-collapsed
+        //padding: 1.05em 4em;
+        padding: 1.05em 30px;
+
+        // move max-width from header__wrapper to here, so we can
+        // make it consistent with our existing site style.
+        max-width: $main-container-max-width;
+        margin: 0 auto;
+
+        // fix to ~17px size. Original main site has dynamically scaling
+        // font size with window size, we just arne't set up for that.
+        // or... scale iwth it???
+        //font-size: 1.0625rem;
+    }
+
+    .header__nav-close {
+        display: none
+    }
+
+    .header__wrapper {
+        //max-width: 1280px;
+
+        //margin: 0 auto;
+    }
+
+    .header__inner {
+        display: flex;
+        justify-content: space-between;
+
+        position: relative;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .header__logo {
+        flex: 0 0 auto;
+        // some complex code to be responsive like main site, but keep it small
+        // enough to keep it from forcing nav links to wrap at narrow screens.
+        // Without ALSO getting TOO small on very small screens that have already collapsed menu anyway!
+        max-width: max(min(19.15em, 28vw), 15em);
+        position: relative;
+    }
+
+    .img-middle {
+        display: flex;
+        align-items: center;
+        justify-content: center
+    }
+
+    .img-middle img, .img-middle svg {
+        display: block;
+        flex-shrink: 0;
+        width: auto;
+        height: auto;
+        max-height: 100%;
+        max-width: 100%;
+        margin: 0
+    }
+
+    .header__right-side {
+        padding: .75em 0;
+        display: flex;
+        align-items: center
+    }
+
+    // reserving space for search menu icon, that we don't use
+    // .header__menu-container {
+    //     margin-right: 2.75em
+    // }
+
+    .header__nav {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .header__nav-sandwich {
+        position: relative;
+        display: none;
+        border: none;
+        padding: 0;
+        font-size: 1em;
+        width: 1.0625em;
+        height: 1.0625em;
+        background-color: rgba(0,0,0,0);
+        background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTciIGhlaWdodD0iMTUiIHZpZXdCb3g9IjAgMCAxNyAxNSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjE3IiBoZWlnaHQ9IjIuMjE3MzkiIGZpbGw9ImJsYWNrIi8+CjxyZWN0IHk9IjUuOTEyOTYiIHdpZHRoPSIxNyIgaGVpZ2h0PSIyLjIxNzM5IiBmaWxsPSJibGFjayIvPgo8cmVjdCB5PSIxMS44MjYiIHdpZHRoPSIxNyIgaGVpZ2h0PSIyLjIxNzM5IiBmaWxsPSJibGFjayIvPgo8L3N2Zz4K);
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        transition: background-image .3s
+    }
+
+    .header__nav-sandwich span {
+        display: none
+    }
+
+    .header__nav>ul {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        list-style-type: none;
+
+        // added because original site had a reset with these on all ul
+        padding: 0;
+        margin: 0;
+    }
+
+    .header__nav ul li a {
+        display: block;
+        text-decoration: none;
+        font-size: .935em;
+        line-height: 2em
+    }
+
+    .header__nav>ul>li:not(.shi-item-bordered) {
+        position: relative;
+        margin-top: .4em;
+        background: #fff;
+        border: 2px solid rgba(0,0,0,0)
+    }
+
+    .header__nav>ul>li:not(.shi-item-bordered):nth-last-child(-n+3) ul.sub-menu {
+        left: auto;
+        right: -2px
+    }
+
+    .header__nav>ul>li:not(.shi-item-bordered).current-menu-item::after {
+        opacity: 1
+    }
+
+    .header__nav>ul>li:not(.shi-item-bordered)::after {
+        content: "";
+        position: absolute;
+        z-index: 3;
+        bottom: .4em;
+        left: calc(1.2941176471em - 2px);
+        right: calc(1.2941176471em - 4px);
+        height: 2px;
+        background: #d7272e;
+        opacity: 0;
+        transition: opacity .3s
+    }
+
+    .header__nav>ul>li:not(.shi-item-bordered)>a {
+        // original padding left was 1.1rem, but we have a different rem -- and ours
+        // is static while there's is dyanamic! This was painstakingly adjusted
+        // to come close to matching.
+        padding: 0 1.17648em .4em
+    }
+
+    .header__nav>ul>li.shi-item-bordered {
+        margin-left: .6em;
+    }
+    // because we have no search icon to space, not last child only lines up better
+    .header__nav>ul>li.shi-item-bordered:not(:last-child) {
+        margin-right: .6em;
+    }
+
+    .header__nav>ul>li.shi-item-bordered>a {
+        line-height: 1em;
+        padding: .5294117647em .5882352941em;
+        border: 1px solid #d7272e;
+        transition: color .3s,background .3s
+    }
+
+    .header__nav>ul>li.shi-item-bordered ul.sub-menu {
+        display: none !important
+    }
+
+    .header__nav>ul>li:last-child:not(.shi-item-bordered) {
+        margin-right: -0.6em
+    }
+
+    .header__nav>ul>li>a {
+        text-transform: uppercase;
+        font-weight: 900;
+
+        color: inherit;
+    }
+
+    // Hover bottom red border -- this is NOT how the original site handles it,
+    // but is CSS that makes it look pretty close, and which we could figure out.
+    .header__nav>ul>li:not(.shi-item-bordered)>a {
+        &::after {
+            content: "";
+            display: block;
+            border-bottom: 2px solid transparent;
+            // Negative margin to try to keep it from shifting layout from original?
+            //margin-bottom: -2px;
+        }
+        &:hover::after {
+            content: "";
+            display: block;
+            border-bottom: 2px solid #D7272E;
+        }
+    }
+    // And on the bordered 'support' button
+    @media (hover: hover) {
+       .header__nav>ul>li.shi-item-bordered:hover>a {
+            background: #d7272e;
+            color: #fff
+        }
+    }
+
+    // not entirely clear why original CSS has special case here
+    @media (orientation: landscape) and (max-height: 800px) and (min-width: 992px) {
+        .header {
+            padding-top: 1.5vh;
+            padding-bottom: 1.5vh;
+        }
+        .header__logo {
+            max-width: 15em
+        }
+        .header__right-side {
+            padding: 0
+        }
+    }
 
 
-  $small-logo-height: 40px;
-  .masthead-logo-small {
-    height: $small-logo-height;
-    margin: 0 0 8px 0; // logo is meant to butt against edge
-  }
 
-  // small navbar
-  @include media-breakpoint-down('sm') {
-    background-image: none;
-    padding: 0;
-    .navbar-collapse {
-      max-width: none;
+    // main bar COLLAPSE on small screen
+    @media screen and (max-width: 991px) {
+        // Main website seems to fix font-size at 16px once collapsed.
+        // We'll do 1rem at our 16px rem
+        font-size: 1rem;
+
+        .header:not(.header_mobile) .header__nav-sandwich {
+            display: block;
+            font-size: 1em;
+        }
+
+       .header:not(.header_mobile) .header__menu-container {
+            order: 2;
+            margin-right: 0
+        }
+
+        .header:not(.header_mobile) {
+            // for consisteny with our site, collapsed padding is
+            // 15px horizontal.
+            //padding: .8125em 1em .8125em 1.6875em
+            padding: .8125em 15px .8125em 15px;
+        }
+
+        .header:not(.header_mobile) .header__inner {
+            position: static;
+            min-height: auto
+        }
+
+        .header:not(.header_mobile) .header__logo {
+            width: 15.5625em
+        }
+
+        .header:not(.header_mobile) .header__nav {
+            display: none;
+            opacity: 0;
+            position: absolute;
+            background: #fff;
+            // important for collapsed context when it is a dropdown
+            z-index: $zindex-popover; //2;
+            top: 0;
+            left: 0;
+            width: 100%;
+            max-height: 100vh;
+            transition: opacity .3s;
+
+            // tricky too-clever to get margins to align on both our
+            // responsive sizes.
+            padding-top: 3.3125em;
+            padding-bottom: 2.5em;
+            padding-left: 15px;
+            padding-right: 15px;
+            @include media-breakpoint-up($layout-expand-up) {
+                // large screen, bigger margins
+                padding-left: 30px;
+                padding-right: 30px;
+            }
+        }
+
+        .header:not(.header_mobile) .header__nav-close {
+            display: block;
+            font-size: 1em;
+            position: absolute;
+            top: 1.9375em;
+            padding: 0;
+            margin: 0;
+            border: none;
+            box-shadow: none;
+            background: rgba(0,0,0,0);
+            width: 1.0625em;
+            height: 1.0625em;
+
+
+            // too clever stuff to get close button to align with
+            // hamburger button, at both our responsive margin sizes.
+            //right: 1em
+            box-sizing: content-box;;
+            right: 0;
+            padding-right: inherit;
+        }
+
+        .header:not(.header_mobile) .header__nav-close svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+            -o-object-fit: contain;
+            object-fit: contain
+        }
+
+        .header:not(.header_mobile) .header__nav>ul {
+            align-items: flex-start;
+            flex-direction: column
+        }
+
+        .header:not(.header_mobile) .header__nav>ul>li:not(.shi-item-bordered) {
+            border: none;
+            margin: 0;
+            width: 100%;
+        }
+
+        .header:not(.header_mobile) .header__nav>ul>li:not(.shi-item-bordered)>a {
+            padding: 0
+        }
+
+        .header:not(.header_mobile) .header__nav>ul>li:not(:first-child) {
+            border-top: 1px solid #cfcfcf
+        }
+
+        .header:not(.header_mobile) .header__nav>ul>li.shi-item-bordered {
+            border: none !important;
+            margin: .3125em 0
+        }
+
+        .header:not(.header_mobile) .header__nav ul li a {
+            font-weight: 700;
+            line-height: 3.12em
+        }
+
+        .header:not(.header_mobile) .header__nav>ul>li.shi-item-bordered>a {
+            margin-left: 0;
+            padding: .8125em;
+            line-height: 1em
+        }
+
+        // not from original site, our own hack to try to be similar.
+        .header__nav ul li a {
+            font-size: 1em;
+        }
+
+        // When .shi-top-bar-nav is INSIDE .header__nav, it's displaying
+        // as part of the collapse small screen menu. We implement this
+        // in a different way than the main site we copied from, we don't use
+        // a `.header_mobile` class, it's not required -- the top bar nav
+        // being moved to be inside the header__nav is enough selectivity.
+        .header__nav .shi-top-bar-nav {
+            background: #1d242b;
+            color: #fff;
+            flex-direction: column;
+            margin: 2.25em -1.875em -2.5em;
+            padding: .625em 1.875em;
+            align-items: flex-start;
+
+            // at this small screen size, make sure to SHOW this top-nav-bar
+            // inside collapsible header__nav menu
+            display: flex;
+        }
+
+        .header__nav .shi-top-bar-nav__item {
+            width: 100%;
+            text-transform: uppercase;
+            font-size: 16px;
+            line-height: 3.93em;
+            font-weight: 400;
+            padding: 0
+        }
+
+        .header__nav .shi-top-bar-nav__item:not(:last-child) {
+            border-bottom: 1px solid #4b4b4b
+        }
+        .header__nav .shi-top-bar-nav a {
+            color: inherit;
+        }
     }
-    .navbar-header {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+
+    // Whole page margins (via padding) change in line with existing rest of our
+    // site, 15px at small size, at bigger size (using bootstrap variable and
+    // function), 30px
+    @include media-breakpoint-up($layout-expand-up) {
+        .header:not(.header_mobile) {
+            padding-left: 30px;
+            padding-right: 30px;
+        }
     }
-    .masthead-right {
-      border-top: white 1px solid;
+
+    // opened menu has .header with .header_menu-open
+    .header_menu-open .header__nav {
+        opacity: 1 !important
     }
-    .masthead-right {
-      display: block;
+
+    .header_menu-open .header__nav-sandwich {
+        background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOSAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEgMUwxOC4wMDIyIDE3LjE5MDlNMTguMDAyMiAxTDEgMTcuMTkwOSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPgo=)
     }
-    .navbar-nav .nav-link {
-      padding: 10px 15px;
+
+    .header_menu-prepare .header__nav {
+        display: block !important;
     }
-  }
+
+
+    // Our own custom dig coll masthead row, not part of SHI general branding
+    .dig-col-product-masthead {
+        // reset the fluid resized font thing from SHI header
+        font-size: 1rem;
+
+        padding-bottom: 4vh;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+
+        column-gap: 2rem;
+        row-gap: 1em;
+
+        // A bit tricky to get this to properly look vertically centerered with
+        // search box. A little bit of negative top margin seems to make it look
+        // right, maybe the font metrics aren't quite right.
+        .masthead-title {
+            font-size: min(2.5rem, 8vw);
+            line-height: 1;
+            margin: 0;
+            margin-top: -0.15em;
+        }
+
+        .masthead-title a {
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #1D242B;
+            text-decoration-color: #D7272E;
+        }
+
+        .search-form {
+            width: 0;
+            flex-grow: 1;
+            min-width: 15em;
+        }
+    }
 }
 
-// management-only top bar
+
+// local content, management-only top bar
 .navbar.topbar {
-  background-color: $gray-200;
-  padding-top: 0;
-  padding-bottom: 0;
-  .nav-item:not(:last-child) {
-    margin-right: $spacer;
-  }
-  &.staging {
-    background-color: $warning;
-  }
+    // take from theme color after we fix theme?
+    background-color: #dddddc;
+    padding-top: 0;
+    padding-bottom: 0;
+
+    .nav-item:not(:last-child) {
+        margin-right: $spacer;
+    }
+
+    &.staging {
+        // was $warning;, could be again after we fix theme
+        background-color: #e4e76d;
+    }
 }

@@ -35,9 +35,42 @@
   }
 
 
+  // Can get rid of when we have moved totally over to new design!
+  .collection-desc .show-metadata  p {
+    font-family: "sofia-pro","sans-serif" !important;
+    line-height: 1.4 !important;
+  }
+  .show-title h1 {
+    color: white;
+    font-family: "sofia-pro","sans-serif" !important;
+    margin-bottom: 0.5rem;
+    font-weight: 900;
+  }
+  .show-genre a:not(:focus):not(:hover), .show-genre a {
+    color: #a9dbd4;
+  }
+  // can get rid of when we have general new design in there?
+  .collection-description {
+    a {
+      color: #a9dbd4;
+      text-decoration: underline;
+    }
+  }
+  .collection-desc h2 {
+    color: white;
+  }
+
+
+  .collection-desc-container {
+    background-color: #313e48;
+  }
+
   .collection-desc {
     max-width: calc(#{$max-readable-width} + 6rem);
     padding: 2rem 15px 2rem 15px;
+
+    color: white;
+    font-family: "sofia-pro","sans-serif";
 
     @include media-breakpoint-up('md') {
       padding-right: 4rem;
@@ -45,6 +78,7 @@
     }
 
     margin: 0 auto;
+
   }
 
   .collection-splash-thumb {

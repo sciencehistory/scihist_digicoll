@@ -1,14 +1,33 @@
 // our static error pages
 
 .error-page {
+
+  &.s500 .masthead-title {
+    text-transform: uppercase;
+    font-weight: 600;
+    margin: 0;
+    a {
+      color: #1D242B;
+      text-decoration-color: #D7272E;
+    }
+  }
+
+
   .error-body {
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+
     display: flex;
+    gap: 2.5rem;
     width: 100%;
+
+    h1, h2, .error-subheadline {
+      font-weight: 600;
+    }
 
     .column {
       flex: 1;
       flex-shrink: 0;
-      padding: 0 2%;
     }
 
     .image-link-wrapper {

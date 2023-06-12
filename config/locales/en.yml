@@ -54,7 +54,9 @@ en:
     application_name: "Science History Institute Digital Collections"
     search:
       form:
-        submit: "Go"
+        submit: "Search"
+        search:
+          placeholder: "Search Digital Collections..."
       search_constraints_header: "You Searched For"
     range_limit:
       submit_limit: Apply

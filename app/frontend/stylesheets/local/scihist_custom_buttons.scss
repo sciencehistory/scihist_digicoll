@@ -20,3 +20,35 @@
   @include button-variant($brand-bright-green, $brand-bright-green); //mix($brand-bright-green, $brand-dark-blue, 93%)
   color: $brand-dark-blue;
 }
+
+// Some new 2023 brand buttons
+.btn-dark-inverse {
+  @include button-variant(#1D242B, #1D242B);
+  color: white;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.9375em;
+
+  // nain site topnav bar fades white over dark text using opacity,
+  // we use a specific color to do similar and match.
+  &:hover, &:focus {
+    color: #dadbdb;
+  }
+}
+
+// Eventually will be all/most of buttons, new design really uses this button
+.btn-brand-new {
+  // hover background copied from main site
+  @include button-variant(#e4e76d, #e4e76d, $hover-background: #c6c94f);
+  transition: background-color .3s ease,color .3s ease;
+
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.8125rem;
+
+  // won't be necessary once we fix up all bootstrap buttons to match?
+  border-radius: 0;
+
+  // These are approximately matching main site, not implemented the same way
+  padding: 0.66em 1.75em;
+}

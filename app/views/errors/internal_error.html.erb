@@ -5,33 +5,44 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta charset='utf-8'>
   <%= vite_stylesheet_tag 'application.scss', media: "all" %>
+  <link rel="stylesheet" href="https://use.typekit.net/flv8jrh.css">
 </head>
 <body class='error-page s500'>
 
   <!-- header -->
-  <header id="masthead" class="masthead navbar navbar-expand-md navbar-dark bg-dark" aria-label="Site-wide navigation">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
+<header id="shi-masthead-from-main-website" class="masthead">
+    <div class="header noprint js-header">
+            <div class="header__inner">
+                <div class="header__logo">
+                    <a class="custom-logo-link img-middle shi-hover" href="https://sciencehistory.org/" rel="home">
+                        <%= image_tag "from_main_website/shi-logo.png",
+                            width: 575, height: 122,
+                            class: "img-autosize custom-logo",
+                            alt: "Science History Institute: Museum & Library",
+                            decoding: "async",
+                            loading: "lazy",
+                            srcset: {
+                              "from_main_website/shi-logo.png" => "575w",
+                              "from_main_website/shi-logo-300x64.png" => "300w"
+                            },
+                            sizes: "(max-width: 575px) 100vw, 575px"
+                        %>
+                    </a>
+                </div>
 
-      <a id="logo" href="https://www.sciencehistory.org" data-no-turbolink="true">
-          <%= image_tag "partial-mark-75rotate-80.png", class: "small-masthead-only masthead-logo-small", alt: "Science History Institute" %>
-          <%= image_tag "sci_logo-webheader_1x.png",
-              srcset:  "#{image_path 'sci_logo-webheader_1x.png'} 1x, #{image_path 'sci_logo-webheader_2x.png'} 2x",
-              class: "large-masthead-only masthead-logo-large",
-              alt: "Science History Institute" %>
-      </a>
 
-      <h1 class="masthead-title small-masthead-only"><a href="/">Digital Collections</a></h1>
-      <div></div>
+                <div class="header__right-side">
+                  <h1 class="masthead-title small-masthead-only">
+                    <a href="/">Digital Collections</a>
+                  </h1>
+                </div>
+            </div>
     </div>
+</header>
 
-    <div class="masthead-right">
-      <h1 class="masthead-title large-masthead-only"><a href="/">Digital Collections</a></h1>
-    </div>
-  </header>
   <!-- end header -->
 
-  <div class="error-body">
+  <div class="error-body shi-full-width-outer shi-full-width-inner">
     <div class="image-column column">
       <a href="/works/h989r376z" class="image-link-wrapper">
         <%= image_tag "500image.jpg", class: "hero-image" %>

@@ -18,15 +18,14 @@
     <%= text_field_tag :q, '', class: "q form-control",
         id: "q",
         autocomplete: "off",
-        placeholder: t("blacklight.search.form.search.placeholder"),
+        #placeholder: t("blacklight.search.form.search.placeholder"),
         :"aria-label" => t('blacklight.search.form.search_field.label')
     %>
 
     <label class="sr-only" for="q"><%= t('blacklight.search.form.search_field.label') %></label>
 
     <div class="input-group-append">
-      <button type="submit" class="btn btn-emphasis" title="Search" id="search-submit-header">
-        <i class="fa fa-search" aria-hidden="true"></i>
+      <button type="submit" class="btn btn-dark-inverse" title="Search" id="search-submit-header">
         <%= t('blacklight.search.form.submit') %>
       </button>
     </div>

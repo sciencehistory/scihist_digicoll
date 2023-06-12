@@ -5,6 +5,40 @@
  *
  */
 
+// our "full-width" layout relies on:
+// 1. an outer block, which may have a background color, and uses padding to enforce
+//    outer margins for screens smaller than our full width max. `full-width-outer`
+// 2. An inner block which has a max-width and auto-margins, to keep the actual
+//    content from getting TOO large on very small screens.  `full-width-inner`
+//
+// In cases where you have a background color, you need these two divs outer and
+// inner. In cases with no background color, you could combine them into one
+// div with both styles.
+//
+// We provide SASS mixins and classes. Probably better for CSS size and clarity
+// to apply the classes directly to your HTML where appropriate.
+
+// We're going to make a mix-in for full-width content that will match navbar
+// etc, with regard to margins and maximum width.
+//
+// No vertical padding/margins, those are on you.
+@mixin shi-full-width-outer-mixin {
+  // perceived margins are done with padding, on small
+  // screens fairly tight.
+  padding-left: 15px;
+  padding-right: 15px;
+
+  @include media-breakpoint-up($layout-expand-up) {
+    // large screen, bigger margins
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+}
+
+@mixin shi-full-width-inner-mixin {
+  max-width: $main-container-max-width;
+  margin: 0 auto;
+}
 
 @mixin all-white-links {
   a,
