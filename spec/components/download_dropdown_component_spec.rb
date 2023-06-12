@@ -31,7 +31,6 @@ describe DownloadDropdownComponent, type: :component do
     end
   end
 
-
   describe "with image file and derivatives" do
     let(:asset) do
       create(:asset_with_faked_file,
@@ -63,6 +62,28 @@ describe DownloadDropdownComponent, type: :component do
       expect(sample_download_option["data-analytics-label"]).to eq(asset.parent.friendlier_id)
     end
   end
+
+  describe "with btn_class_name" do
+    let(:asset) do
+      create(:asset_with_faked_file,
+        faked_derivatives: {
+          download_small: build(:stored_uploaded_file)
+        },
+        parent: build(:work)
+      )
+    end
+
+    let(:custom_class_name) { "btn-brand-main" }
+    let(:rendered) { render_inline(DownloadDropdownComponent.new(asset, display_parent_work: asset.parent, btn_class_name: custom_class_name)) }
+
+    it "renders proper btn class in html" do
+      btn = div.at_css("button.btn")
+
+      expect(btn).to be_present
+      expect(btn.classes).to include(custom_class_name)
+    end
+  end
+
 
   describe "with a PDF file" do
     let(:asset) do

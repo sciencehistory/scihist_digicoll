@@ -195,6 +195,14 @@
     }
   }
 
+  // a bit more space on action buttons in main large hero image
+  .show-hero .member-image-presentation .action-item-bar {
+    margin-top: 0.5rem;
+    .action-item:not(:last-child) {
+      margin-right: 0.5rem;
+    }
+  }
+
   // A label indicating the thumbnail belongs to a private item.
   .private-badge-div {
     position: absolute;
