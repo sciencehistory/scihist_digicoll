@@ -214,7 +214,12 @@ module ScihistDigicoll
     define_key :s3_bucket_originals_video
     define_key :s3_bucket_derivatives
     define_key :s3_bucket_derivatives_video
-    define_key :s3_bucket_derivatives_video_host # Cloudfront hostname for bucket
+
+    # Note: the values for :s3_bucket_derivatives_host and :s3_bucket_derivatives_video_host
+    # can be obtained by running `terraform output`.
+    define_key :s3_bucket_derivatives_host      # Cloudfront hostname for regular derivs bucket
+    define_key :s3_bucket_derivatives_video_host # Ditto, for video derivs bucket
+    
     define_key :s3_bucket_uploads
     define_key :s3_bucket_on_demand_derivatives
     define_key :s3_bucket_dzi
@@ -410,6 +415,7 @@ module ScihistDigicoll
     def self.shrine_derivatives_storage
       @shrine_derivatives_storage ||=
         appropriate_shrine_storage( bucket_key: :s3_bucket_derivatives,
+                                    host: lookup(:s3_bucket_derivatives_host),
                                     s3_storage_options: {
                                       public: true,
                                       upload_options: {
@@ -456,6 +462,7 @@ module ScihistDigicoll
       # store in same bucket as derivatives, with separate prefix
       @shrine_combined_audio_derivatives_storage ||=
         appropriate_shrine_storage( bucket_key: :s3_bucket_derivatives,
+                                    host: lookup(:s3_bucket_derivatives_host),
                                     prefix: "combined_audio_derivatives",
                                     s3_storage_options: {
                                       public: true
@@ -574,6 +581,7 @@ module ScihistDigicoll
     define_key :smtp_password
     define_key :smtp_host
 
+    # The value for :rails_asset_host can be obtained by running `terraform output`.
     define_key :rails_asset_host
 
     ##
