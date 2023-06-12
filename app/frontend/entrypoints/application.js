@@ -85,3 +85,5 @@ import "../javascript/audio/share_link.js";
 import '../javascript/audio/jump_to_text.js';
 import "../javascript/audio/clipboard_copy_input.js";
 import "../javascript/video_player.js";
+
+import "../javascript/main_nav_collapse_toggle.js";

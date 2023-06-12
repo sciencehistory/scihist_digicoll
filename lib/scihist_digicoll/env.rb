@@ -166,6 +166,8 @@ module ScihistDigicoll
 
     define_key :opac_link_template, default: "https://othmerlib.sciencehistory.org/record=%s"
 
+    define_key :main_website_base, default: "https://sciencehistory.org"
+
     # set in ENV LOGINS_DISABLED or local_env.yml, to globally
     # prevent access to pages requiring authentication. May be useful
     # for maintenance tasks.

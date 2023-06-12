@@ -1,37 +1,4 @@
-<!DOCTYPE html>
-<html lang='en'>
-<head>
-  <title>The page you were looking for doesn't exist (404)</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta charset='utf-8'>
-  <%= vite_stylesheet_tag 'application.scss', media: "all" %>
-</head>
-<body class='error-page s404'>
-
-  <!-- header -->
-  <header id="masthead" class="masthead navbar navbar-expand-md navbar-dark bg-dark" aria-label="Site-wide navigation">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-
-      <a id="logo" href="https://www.sciencehistory.org" data-no-turbolink="true">
-          <%= image_tag "partial-mark-75rotate-80.png", class: "small-masthead-only masthead-logo-small", alt: "Science History Institute" %>
-          <%= image_tag "sci_logo-webheader_1x.png",
-              srcset:  "#{image_path 'sci_logo-webheader_1x.png'} 1x, #{image_path 'sci_logo-webheader_2x.png'} 2x",
-              class: "large-masthead-only masthead-logo-large",
-              alt: "Science History Institute" %>
-      </a>
-
-      <h1 class="masthead-title small-masthead-only"><a href="/">Digital Collections</a></h1>
-      <div></div>
-    </div>
-
-    <div class="masthead-right">
-      <h1 class="masthead-title large-masthead-only"><a href="/">Digital Collections</a></h1>
-    </div>
-  </header>
-
-  <!-- end header -->
-
+<div class="error-page">
   <div class="error-body">
     <div class="image-column column">
       <a href="/works/w3763731m" class="image-link-wrapper">
@@ -43,7 +10,7 @@
     </div>
     <div class="text-column column">
       <h1 class="h2 error-headline"><i class="fa fa-warning" aria-hidden="true"></i> Sorry, that page doesn't exist.</h1>
-      <p class="h3 error-subheadline">But neither does the Philosopher's Stone. Probably.</p>
+      <p class="h3 error-subheadline sans-serif">But neither does the Philosopher's Stone. Probably.</p>
 
 
 
@@ -84,7 +51,4 @@
 
     </div>
   </div>
-
-
-</body>
-</html>
+</div>

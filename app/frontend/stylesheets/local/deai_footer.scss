@@ -1,24 +1,31 @@
 .deai-footer {
-  padding-top: map-get($spacers, 3) !important;
-  padding-bottom: map-get($spacers, 3) !important;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-top: 2em;
+  padding-bottom: 2em;
 
+  background-color: #eaf6f3; // officially should be #d4ece8 ?? But this is what site uses. Ask Caitlin.
 
-  // this is not our standard $body-color, but is a bit more readable contrast on the grey!
-  color: black;
-
-  background-color: $brand-light-grey;
-
-  // Our standard link color isn't sufficient WCAG contrast over the dark grey background. :(
+  // Our standard BLUE link color isn't sufficient WCAG contrast over the dark grey background.
+  // red is also not sufficient at this background. We'll use the standard new website link,
+  // as they do too over this background...
   a {
-    color: $brand-dark-blue;
-    text-decoration: underline !important;
+    color: black;
+    font-weight: bold;
+    text-decoration: underline #d7272e;;
+    &:hover {
+      color: #d7272e;
+    }
   }
 
   p {
+    font-size: 1rem;
+    font-family: "sofia-pro", "sans-serif" !important;
+    color: #3c3c3c; // this is what main site uses here, should ask Caitlin
 
-    max-width: 800px !important; // intended to match site footer, specifically .footeraddress
+    line-height: 1.4em;
+
+    // I guess we'll make this match max-width of the dig-col-links supra-footer?
+    // This is a bit screwy.
+    max-width: 40rem !important;
     text-align: justify;
     margin-left: auto;
     margin-right: auto;

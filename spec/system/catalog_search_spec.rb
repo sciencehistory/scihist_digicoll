@@ -87,7 +87,7 @@ describe CatalogController, solr: true, indexable_callbacks: true do
     let(:no_copyright_other_restrictions) { "http://rightsstatements.org/vocab/NoC-OKLR/1.0/" }
 
     let(:in_copyright) { "http://rightsstatements.org/vocab/InC/1.0/" }
-    
+
     let(:matching_date) { Work::DateOfWork.new({ "start"=>"2014-01-01"}) }
     let(:too_recent)    { Work::DateOfWork.new({ "start"=>"2021-01-01"}) }
 
@@ -109,7 +109,7 @@ describe CatalogController, solr: true, indexable_callbacks: true do
       fill_in "search-option-date-from", with: "2013"
       fill_in "search-option-date-to", with: "2015"
       check("Copyright Free Only")
-      click_on "Go"
+      click_on "Search"
 
       # 4 results
       expect(page).to have_selector('.scihist-results-list-item', count: 4)
@@ -125,7 +125,7 @@ describe CatalogController, solr: true, indexable_callbacks: true do
 
       # We need this expect so that capybara waits for the animation to finish.
       expect(page).to have_selector('#facet-rights_facet.show', visible: true)
-      
+
       within(".blacklight-rights_facet") do
         labels = page.find_all('.facet-label', visible:true).map { |label| label.text }
         counts = page.find_all('.facet-count', visible:true).map { |count| count.text.to_i }
@@ -142,7 +142,7 @@ describe CatalogController, solr: true, indexable_callbacks: true do
       expect(page).not_to have_selector("li#document_#{published_but_copyrighted.friendlier_id}")
 
       # too recent, so should not match the search:
-      expect(page).not_to have_selector("li#document_#{published_and_public_domain_but_too_recent.friendlier_id}")      
+      expect(page).not_to have_selector("li#document_#{published_and_public_domain_but_too_recent.friendlier_id}")
     end
   end
 

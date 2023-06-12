@@ -22,7 +22,7 @@ describe "Collection list page", type: :system do
   let!(:exhibition) do
     FactoryBot.create(:collection,
       published: true,
-      title: "Exhibition",
+      title: "Our Exhibition",
       department: Collection::DEPARTMENT_EXHIBITION_VALUE
     )
   end
@@ -36,6 +36,6 @@ describe "Collection list page", type: :system do
     expect(page).to have_selector(".collection-title", text: 'A Published')
     expect(page).to have_selector(".collection-title", text: 'B Published')
     expect(page).not_to have_content('Private')
-    expect(page).not_to have_content('Exhibition')
+    expect(page).not_to have_content('Our Exhibition')
   end
 end

@@ -1,0 +1,302 @@
+#shi-footer-from-main-website {
+  background-color: #1d242b;
+  //padding: 2.7em 4.35em 1em;
+
+  color: #fff;
+
+
+  // override some site-wide serif font default stuff
+  p:not(.collection-title):not(.sans-serif) {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+  }
+
+  // Font resets to try to match main site context, including their dynamic
+  // fluid fonts.
+  font: normal 400 1em/1.2 "sofia-pro","sans-serif";
+  font-size: min(1.389vw, 20px);
+
+  @media screen and (max-width: 1199px) {
+    font-size: max(16px, 1.6vw);
+  }
+
+
+  @media (hover: hover) {
+    .shi-hover {
+        transition: opacity .3s
+    }
+  }
+
+  p {
+    margin: 0;
+    padding: 0;
+  }
+
+  .footer__wrapper {
+    // we moved padding down here to allow consistent layout with our existing site
+    padding: 2.7em 30px 1em;
+    //max-width: 63.3em;
+    max-width: $main-container-max-width;
+    margin: 0 auto
+  }
+
+  .footer__inner_top {
+    margin-bottom: 3em;
+    padding-right: 2.2em;
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    // nothing to do with main site, our attempt to make things okay here
+    gap: 2em;
+  }
+
+  .footer__logo {
+    width: 11.15em;
+  }
+
+  .img-middle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+
+  .img-middle img {
+    display: block;
+    flex-shrink: 0;
+    width: auto;
+    height: auto;
+    max-height: 100%;
+    max-width: 100%;
+    margin: 0
+  }
+
+  .footer__address {
+    font-size: .8em;
+    line-height: 1.25em;
+    margin-top: 1.4375em
+  }
+
+  .footer__nav {
+    margin: 0 0 1em 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+  }
+
+  .footer__nav ul li:first-child {
+    margin-bottom: .85em
+  }
+
+  .footer__nav ul li:first-child a {
+      font-weight: 700;
+      text-transform: uppercase;
+      line-height: 1.25em
+  }
+
+  .footer__nav ul li a {
+      font-size: .8em;
+      line-height: 1.62em;
+      text-decoration: underline;
+      text-decoration-color: rgba(0,0,0,0);
+      transition: text-decoration-color .3s;
+
+      color: inherit;
+  }
+
+  .footer__nav ul li a:hover {
+      text-decoration-color: #fff
+  }
+
+
+  .footer__nav ul li a:not(.footer__nav ul li a[href]) {
+      text-decoration: none
+  }
+
+  // we added this class
+  .footer__nav .menu-footer-ul {
+    display: flex;
+    flex-direction: column;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer__column:last-child .footer__nav ul li:not(:last-child) {
+      margin-bottom: .85em
+  }
+
+  .footer__column:last-child .footer__nav ul li a {
+      font-weight: 700;
+      text-transform: uppercase;
+      line-height: 1.25em
+  }
+
+  .shi-social {
+    display: flex
+  }
+
+  .shi-social__link {
+      flex: 0 0 auto;
+      width: 1em;
+      height: 1em
+  }
+
+  .shi-social__link:not(:last-child) {
+      margin-right: .75em
+  }
+
+  .shi-social__icon {
+      width: 100%;
+      height: 100%;
+      -o-object-fit: contain;
+      object-fit: contain;
+      -o-object-position: center;
+      object-position: center
+  }
+
+  .footer__inner_bottom {
+      justify-content: center;
+      align-items: center;
+
+      display: flex;
+  }
+
+  #menu-footer-copyright {
+    flex-wrap: wrap;
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .footer__inner_bottom ul li {
+    display: flex;
+    align-items: center;
+  }
+  .footer__inner_bottom ul li:not(:last-child)::after {
+      content: "|";
+      font-size: .65em;
+      line-height: normal;
+      margin: 0 1.9230769231em;
+  }
+
+  .footer__inner_bottom ul li a {
+      font-size: .65em;
+      line-height: 1.31em;
+      text-decoration: underline;
+      text-decoration-color: rgba(0,0,0,0);
+      transition: text-decoration-color .3s;
+
+      color: inherit;
+  }
+  .footer__inner_bottom ul li a:hover {
+      text-decoration-color: #fff
+  }
+  .footer__inner_bottom ul li a:not([href]) {
+    text-decoration: none
+  }
+
+
+
+  // Very small screen we hide two of our columns. These small screen media
+  // are not total copy of main site CSS, which was confusing, but similar effect.
+  @media screen and (max-width: 575px) {
+      .footer__inner_top {
+          margin-bottom: 2.1875em;
+          padding: 0;
+      }
+
+      .footer__wrapper {
+          max-width: 13.9375em;
+      }
+
+      .footer__column:nth-child(2),.footer__column:nth-child(3),.footer__column:last-child .footer__nav {
+          display: none
+      }
+
+      .footer__logo {
+        width: 100%;
+      }
+
+      .footer__address {
+        font-size: 1em;
+        margin-top: 3.25em
+      }
+    }
+    @media screen and (max-width: 991px) {
+      // consistent with rest of side, drop padding down when collapsed.
+      .footer__wrapper {
+        box-sizing: content-box;
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+
+
+      // some kind of hackiness to make it look KIND of like main site at smaller screen size,
+      // but we do simpler -- just one column of items.
+      .footer__inner_bottom {
+        margin: 0 auto;
+
+        flex-direction: column;
+        align-items: flex-start;
+
+        font-size: 1.2em;
+        line-height: 1em;
+
+        line-height: 0.5;
+      }
+      #menu-footer-copyright {
+        flex-direction: column;
+      }
+      .footer__inner_bottom ul li:not(:last-child)::after {
+        display: none;
+      }
+  }
+  @media screen and (min-width: 575px) and (max-width: 991px) {
+      #menu-footer-copyright {
+        margin-left: auto;
+        margin-right: auto;
+      }
+  }
+}
+
+// the supra-footer we have with our site links, that is not taken from main webiste
+.dig-col-links {
+  font: normal 400 1em/1.2 "sofia-pro","sans-serif";
+
+  background-color: #285f70;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+
+  h1 {
+    color: white;
+    font-weight: 700;
+
+    text-align: center;
+
+    text-transform: uppercase;
+
+    margin-bottom: 2rem;
+  }
+
+  ul.buttons {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: $grid-gutter-width;
+    max-width: 40em;
+    margin: auto;
+  }
+
+  ul.buttons a {
+    min-width: 8.25em; // trying to keep all buttons the same size
+  }
+}
+

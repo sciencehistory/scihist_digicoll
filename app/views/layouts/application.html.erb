@@ -73,7 +73,8 @@
     <% if can? :access_staff_functions %>
       <%= render 'front_end_admin_navbar' %>
     <% end %>
-    <%= render 'layouts/scihist_masthead' %>
+
+    <%= render ScihistMasthead.new(suppress_product_subhead: content_for(:suppress_product_subhead)) %>
 
     <%# Blacklight put a search form here, we include our own local one in scihist_masthead instead,
         integrated into the masthead -%>
@@ -109,13 +110,13 @@
     <%= render partial: 'shared/modal' %>
 
     <% if @show_deai_header || content_for(:show_deai_header) %>
-      <section class="deai-footer" aria-label="Statement on Harmful or Offensive Content">
-        <p>
+      <section class="deai-footer shi-full-width-outer" aria-label="Statement on Harmful or Offensive Content">
+        <p class="shi-full-width-inner">
           The Science History Institute recognizes there are materials in our collections that may be offensive or harmful, containing racist, sexist, Eurocentric, ableist, or homophobic language or depictions. The history of science is not exempt from beliefs or practices harmful to traditionally marginalized groups. The Institute is engaged in ongoing efforts to responsibly present and address the evidence of oppression and injustice inextricable from the history of science. If you would like to learn more about our ongoing efforts or if you encounter harmful, inaccurate, or insufficient descriptions, please contact us at <a href="mailto:digital@sciencehistory.org">digital@sciencehistory.org</a>.
         </p>
       </section>
     <% end %>
-    <%= render partial: 'layouts/scihist_footer' %>
+    <%= render ScihistFooterComponent.new %>
     <%= render 'application/accept_cookies_banner' %>
   </body>
 </html>

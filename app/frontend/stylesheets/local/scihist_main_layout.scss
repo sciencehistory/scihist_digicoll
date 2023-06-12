@@ -1,6 +1,13 @@
-body.scihist-main-layout {
-  $layout-expand-up: 'md';
+// see docs at _mixins.scss, use these on full-screen divs
+// to get proper margins and max width.
+.shi-full-width-outer {
+  @include shi-full-width-outer-mixin;
+}
+.shi-full-width-inner {
+  @include shi-full-width-inner-mixin;
+}
 
+body.scihist-main-layout {
   // This makes the footer stay stuck to the bottom even on short screens, by
   // having #mainContainer div grow to fill screen.
   display: flex;
@@ -14,12 +21,7 @@ body.scihist-main-layout {
     }
   }
 
-  // We max-width mainContainer to get it centered for us. (Could there be another way?)
-  // But it's based on the fixed-width sidebar, and the *actual* max-width we want for
-  // content, that seems to be about the max readable width.
-  //
-  // This whole system is mostly based on what we did in chf_sufia, and perhaps
-  // can be made cleaner, but good enough for now.
+  // We center this on larger screens with a max-width and auto margins.
   #mainContainer {
     max-width: $main-container-max-width;
   }

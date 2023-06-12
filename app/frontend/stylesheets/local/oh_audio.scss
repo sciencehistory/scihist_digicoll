@@ -1,9 +1,5 @@
 .work-show-audio {
 
-  // kind of crazy hack to get rid of margin underneath top banner -- we want
-  // our audio navar to be right up against it.
-  margin-top: -1 * ($navbar-margin-bottom);
-
   .audio-navbar {
     position: sticky;
     top: 0;
