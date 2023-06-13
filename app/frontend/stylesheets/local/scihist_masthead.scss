@@ -136,6 +136,11 @@
             display: none;
         }
 
+        .shi-top-bar {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
         .shi-top-bar .shi-top-bar__hours {
             width: 100%;
             font-size: .89375em;
@@ -149,6 +154,13 @@
             top: 0;
             bottom: 0;
             left: -9999px
+        }
+    }
+
+    @media screen and (max-width: 575px) {
+        // ensure "museum hours" does NOT wrap on very small screens
+        .shi-top-bar .shi-top-bar__hours {
+            font-size: 0.8125rem; // 13px
         }
     }
 
