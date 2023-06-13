@@ -147,6 +147,10 @@
       flex-grow: 1;
       flex-basis: 17rem;
       min-width: 17rem;
+
+      a {
+        @extend .text-link;
+      }
     }
 
 
