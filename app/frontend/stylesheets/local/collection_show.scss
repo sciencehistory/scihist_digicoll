@@ -89,7 +89,7 @@
       margin-bottom: ($spacer * 2);
     }
   }
-  .collection-header-title, .collection-description {
+  .collection-header-title, .collection-description, .related-links {
     padding-left: 3.5vw;
     padding-right: 4.5vw;
   }
@@ -164,6 +164,7 @@
 
   .related-links {
     max-width: $max-readable-width;
+    box-sizing: content-box;
   }
 
   // match work-show, for our related links
