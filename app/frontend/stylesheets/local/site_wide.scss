@@ -36,6 +36,11 @@ a:hover {
     color: $shi-red;
   }
 }
+// and since it's meant for text, let's give <p> tag links it by default?
+// hope this doesn't overshoot
+p a {
+  @extend .text-link;
+}
 
 /* informational dls, as on faq, policy page, give them more space */
 dl.info {
