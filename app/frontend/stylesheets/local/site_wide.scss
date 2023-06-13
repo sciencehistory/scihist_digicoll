@@ -19,6 +19,24 @@ a:hover {
   text-decoration-color: $shi-red;
 }
 
+// a link class from main site that we use where we can, especially in "text blocks"
+// Use SCSS to apply this to certain areas, like:
+//
+//     .some-container {
+//        a {
+//          @extend .text-link;
+//        }
+//      }
+.text-link {
+  font-weight: bold;
+  color: black;
+  text-decoration: underline $shi-red;
+
+  &:hover, &:active {
+    color: $shi-red;
+  }
+}
+
 /* informational dls, as on faq, policy page, give them more space */
 dl.info {
   dt {
@@ -128,6 +146,10 @@ hr.brand {
   h1, h2, h3, h4, h5 {
     margin-top: 2rem;
     margin-bottom: 1rem;
+  }
+
+  a {
+    @extend .text-link;
   }
 }
 
