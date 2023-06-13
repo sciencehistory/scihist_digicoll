@@ -311,6 +311,9 @@
         text-indent: -0.66em;
         margin-bottom: $paragraph-spacer * 0.125; // divided by 8 without using deprecated `/`
       }
+      a {
+        text-decoration-line: underline;
+      }
     }
 
     .attribute-label {
