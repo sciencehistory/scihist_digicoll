@@ -14,6 +14,11 @@ a {
   transition: color 0.25s ease;
 }
 
+// override bootstrap to have different text-decoration-color than text color on hover
+a:hover {
+  text-decoration-color: $shi-red;
+}
+
 /* informational dls, as on faq, policy page, give them more space */
 dl.info {
   dt {
