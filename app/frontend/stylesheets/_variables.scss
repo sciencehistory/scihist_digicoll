@@ -86,8 +86,9 @@ $shi-transparent-dark-bg: #{'rgba(30,36,42,.80)'};
 // Not official brand color, but at the moment we're using for links. Goes together
 // okay, a varient of previous brand colors.
 // was: #007FAA;
-// Changed to one similar but closer to shi-teal.
-$shi-blue-text: #217391;
+// Changed to one similar but SLIGHTLY closer to shi-teal, while still meeting all
+// AXE accessibility contrast checks. (tried #217391 but it made axe unhappy sometimes)
+$shi-blue-text: #1f7c91;
 
 // We need a medium grey for muted text, without a really good one in
 // brand color. We slightly lighten the darkest brand-grey.
