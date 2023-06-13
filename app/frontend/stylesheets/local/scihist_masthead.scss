@@ -129,6 +129,13 @@
         margin-right: .5em
     }
 
+    @media screen and (max-width: 1158px) {
+        // give it more space at smaller screen size, so it doesn't wrap.
+        .shi-top-bar__hours {
+            max-width: 47%;
+        }
+    }
+
     @media screen and (max-width: 991px) {
         // at this screen-size, we copy this to a different part of the DOM
         // top show in the collapsable menu, we don't want it here at all.
