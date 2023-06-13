@@ -129,11 +129,23 @@
         margin-right: .5em
     }
 
+    @media screen and (max-width: 1158px) {
+        // give it more space at smaller screen size, so it doesn't wrap.
+        .shi-top-bar__hours {
+            max-width: 47%;
+        }
+    }
+
     @media screen and (max-width: 991px) {
         // at this screen-size, we copy this to a different part of the DOM
         // top show in the collapsable menu, we don't want it here at all.
         .shi-top-bar__container .shi-top-bar-nav  {
             display: none;
+        }
+
+        .shi-top-bar {
+            padding-left: 1rem;
+            padding-right: 1rem;
         }
 
         .shi-top-bar .shi-top-bar__hours {
@@ -149,6 +161,13 @@
             top: 0;
             bottom: 0;
             left: -9999px
+        }
+    }
+
+    @media screen and (max-width: 575px) {
+        // ensure "museum hours" does NOT wrap on very small screens
+        .shi-top-bar .shi-top-bar__hours {
+            font-size: 0.8125rem; // 13px
         }
     }
 
