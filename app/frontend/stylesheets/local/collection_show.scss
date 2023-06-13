@@ -89,9 +89,9 @@
       margin-bottom: ($spacer * 2);
     }
   }
-  .collection-header-title {
+  .collection-header-title, .collection-description {
     padding-left: 3.5vw;
-    padding-right: 3.5vw;
+    padding-right: 4.5vw;
   }
   .collection-mini-header {
     padding: $spacer;
@@ -153,7 +153,6 @@
 
     @include media-breakpoint-up(md) {
       .collection-description {
-        padding-right: 3.5vw;
         width: 60%;
         flex-grow: 1; // can take more space if funding is not present
       }
