@@ -14,11 +14,6 @@ a {
   transition: color 0.25s ease;
 }
 
-// override bootstrap to have different text-decoration-color than text color on hover
-a:hover {
-  text-decoration-color: $shi-red;
-}
-
 // a link class from main site that we use where we can, especially in "text blocks"
 // Use SCSS to apply this to certain areas, like:
 //
