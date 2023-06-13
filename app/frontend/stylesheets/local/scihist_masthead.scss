@@ -392,6 +392,10 @@
         .header__right-side {
             padding: 0
         }
+        // This is actually the main size of header nav links at any non-huge screen size!
+        .header__nav ul li a {
+            font-size: 0.96rem; // ~ 15.36px
+        }
     }
 
 
