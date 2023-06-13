@@ -185,6 +185,11 @@
     padding-top: 3rem;
     padding-bottom: 3rem;
 
+    // center it, requires knowing it's actual max width, must be kept aligned
+    max-width: calc($max-readable-width + 235px + 2rem);
+    margin-left: auto;
+    margin-right: auto;
+
     h2 {
       text-align: center;
       margin-bottom: $spacer;
@@ -246,6 +251,9 @@
 
     .more-projects {
       @include font-size($h3-font-size);
+
+      display: block;
+      text-align: center;
     }
   }
 }
