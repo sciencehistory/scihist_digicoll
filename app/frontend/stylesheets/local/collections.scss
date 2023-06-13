@@ -14,6 +14,10 @@ $collection-index-box-margin: 17px;
     max-width: $max-readable-width;
     font-size: $large-blurb-font-size;
     text-align: center;
+
+    a {
+      @extend .text-link;
+    }
   }
 
   .collections-index-list {
