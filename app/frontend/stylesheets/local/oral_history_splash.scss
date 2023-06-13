@@ -59,6 +59,9 @@
   .collection-description {
     a {
       color: $shi-yellow;
+      &:hover {
+        text-decoration-color: $shi-yellow;
+      }
     }
   }
 
