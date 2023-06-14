@@ -56,10 +56,12 @@
     color: $shi-yellow;
   }
   // can get rid of when we have general new design in there?
-  .collection-description {
+  .oh-collection-description {
     a {
       color: $shi-yellow;
+      text-decoration-line: none;
       &:hover {
+        text-decoration-line: underline;
         text-decoration-color: $shi-yellow;
       }
     }
