@@ -5,7 +5,6 @@
 //
 // Started with variables from chf_sufia, trying to update for Bootstrap 4 and Blacklight 7.
 
-
 /*******
  *
  *  Scihist variables, for branding etc.
@@ -85,7 +84,10 @@ $shi-transparent-dark-bg: #{'rgba(30,36,42,.80)'};
 
 // Not official brand color, but at the moment we're using for links. Goes together
 // okay, a varient of previous brand colors.
-$shi-blue-text: #007FAA;
+// was: #007FAA;
+// Changed to one similar but SLIGHTLY closer to shi-teal, while still meeting all
+// AXE accessibility contrast checks.
+$shi-blue-text: #227695;
 
 // We need a medium grey for muted text, without a really good one in
 // brand color. We slightly lighten the darkest brand-grey.
@@ -198,7 +200,7 @@ $dark: $shi-dark-gray;
 $tooltip-bg: $shi-blackish;
 
 $link-color: $shi-blue-text;
-$link-hover-color: $shi-blackish;
+$link-hover-color: black;
 $font-family-sans-serif: $brand-sans-serif;
 // default bootstrap code color is a pink. use brand red? Or something else?
 $code-color: $shi-red;

@@ -24,7 +24,6 @@ $attribute-table-max-tabular: 22.5em;
     padding: 0.3em; // 5px at 17px font em
   }
 
-
   // small, break down table
   @media (max-width: $attribute-table-max-tabular) {
     word-break: break-word;
