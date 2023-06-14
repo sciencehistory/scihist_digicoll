@@ -107,6 +107,10 @@
 
     .collection-description-text {
       max-width: $max-readable-width;
+
+      a {
+        @extend .text-link;
+      }
     }
 
     .collection-description-text.short-text {
@@ -143,6 +147,10 @@
       flex-grow: 1;
       flex-basis: 17rem;
       min-width: 17rem;
+
+      a {
+        @extend .text-link;
+      }
     }
 
 

@@ -35,6 +35,10 @@
     margin: ($paragraph-spacer * 2) 0;
   }
 
+  .work-description a {
+    @extend .text-link;
+  }
+
   .work-description p {
     margin-top: $paragraph-spacer;
     max-width: $max-readable-width;
