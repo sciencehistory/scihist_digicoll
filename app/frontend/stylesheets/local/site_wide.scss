@@ -22,6 +22,8 @@ a {
 //          @extend .text-link;
 //        }
 //      }
+//
+// Or apply to individual <a class="text-link"> directly
 .text-link {
   font-weight: bold;
   color: black;
@@ -31,9 +33,9 @@ a {
     color: $shi-red;
   }
 }
-// and since it's meant for text, let's give <p> tag links it by default?
-// hope this doesn't overshoot
-p a {
+// and since it's meant for text, let's give <p> tag links it by default, limited
+// in an attempt not to overshoot.
+p > a:not(.btn) {
   @extend .text-link;
 }
 
