@@ -116,9 +116,9 @@ $small-caps-letter-spacing: 0.035em;
 
 $brand-alt-header-weight: 900;
 
-// adelle-sans has a 600 semi-bold available. 700 is standard bold. 500 seems to be the same as 400=normal.
+// sofia pro has a 600 semi-bold available. 700 is standard bold. A 500 "medium" is also available
 $semi-bold-weight: 600;
-$badge-font-weight: $semi-bold-weight; // badges look better at our semi-bold with adelle-sans!
+$badge-font-weight: $semi-bold-weight; // bootstrap badges bold by default but look better at our semi-bold
 
 $large-blurb-font-size: 1.25rem; // perhaps will match $h5-font-size
 
