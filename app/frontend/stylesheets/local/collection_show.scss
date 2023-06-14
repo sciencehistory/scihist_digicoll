@@ -14,6 +14,8 @@
     @include media-breakpoint-down(sm) {
       flex-direction: column;
 
+      @include full-bleed;
+
       .collection-header-title {
         order: 2;
         padding-top: ($spacer * 2);
@@ -22,7 +24,7 @@
       .collection-header-thumb img {
         object-fit: cover;
         width: 100%;
-        max-height: 12rem;
+        max-height: 18rem;
       }
     }
 
@@ -89,9 +91,9 @@
       margin-bottom: ($spacer * 2);
     }
   }
-  .collection-header-title {
+  .collection-header-title, .collection-description, .related-links {
     padding-left: 3.5vw;
-    padding-right: 3.5vw;
+    padding-right: 4.5vw;
   }
   .collection-mini-header {
     padding: $spacer;
@@ -157,11 +159,15 @@
 
     @include media-breakpoint-down(sm) {
       flex-direction: column;
+
+      .collection-description, .related-links {
+        padding-left: 0;
+        padding-right: 0;
+      }
     }
 
     @include media-breakpoint-up(md) {
       .collection-description {
-        padding-right: 3.5vw;
         width: 60%;
         flex-grow: 1; // can take more space if funding is not present
       }
@@ -173,6 +179,7 @@
 
   .related-links {
     max-width: $max-readable-width;
+    box-sizing: content-box;
   }
 
   // match work-show, for our related links

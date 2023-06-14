@@ -56,6 +56,14 @@
   }
 }
 
+// A trick to make a div go to full viewport width, even though it's parent is constrained, say,
+// with padding to match bootstrap grid, this makes it go outside it's parent to be full-bleed
+// full-screen.
+@mixin full-bleed {
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+}
+
 %special-label{
   font-family: $brand-sans-serif;
   font-weight: $semi-bold-weight;
@@ -67,5 +75,6 @@
     color: $shi-alt-muted-text;
   }
 }
+
 
 
