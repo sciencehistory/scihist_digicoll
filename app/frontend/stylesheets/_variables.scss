@@ -101,8 +101,19 @@ $shi-alt-muted-text: lighten($shi-dark-gray, 15%);
 
 $brand-image-placeholder-color: $shi-gray-3;
 
-// Our brand sans-serif, with fallbacks copied from Bootstrap's default sans-serif.
-$brand-sans-serif: 'sofia-pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+// Our brand sans-serif is sofia-pro
+//
+// Additional fonts are necessary as fallbacks in case some glyphs not present in main font (which
+// does happen with other languages and diacritics)
+//
+// We started out with font stack list from latest bootstrap 5.3, but `system-ui` on MacOS
+// was a particularly poor substitution at font-weight 900, because it ends up VERY thick.
+//
+// We bumped Arial to top of list as it actually seemed to be the closest match
+// from the list to Sofia. Includes from bootstrap some other platform-specific
+// helvetica-like fonts, the default platform `sans-serif` fallback, and some
+// platform emoji/symbol fonts.
+$brand-sans-serif: 'sofia-pro',Arial,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
 
 //$bg-lightly-shaded: #f9f9f9; // does not match brand, no suitable color in brand
 $bg-lightly-shaded: $shi-bg-gray; // try brand color
