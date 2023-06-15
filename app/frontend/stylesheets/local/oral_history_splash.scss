@@ -164,6 +164,8 @@
         width: $standard-thumb-width;
       }
       .this-day-label {
+        display: block;
+
         font-family: $brand-sans-serif;
         font-weight: $semi-bold-weight;
         text-transform: uppercase;

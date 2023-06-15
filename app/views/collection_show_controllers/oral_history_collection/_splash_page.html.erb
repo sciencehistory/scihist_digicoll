@@ -110,12 +110,10 @@ we want the full width of the screen, no margins or padding. %>
                 <% end %>
               <% end %>
 
-              <p class="this-day-label">
-                <%= link_to work_path(bio.oral_history_content.first.work) do %>
-                  <%= bio.name %><br>
-                  Born <%= FormatSimpleDate.new(bio.birth.date).display  %>
-                <% end %>
-              </p>
+              <%= link_to work_path(bio.oral_history_content.first.work), class: "default-link-style, this-day-label" do %>
+                <%= bio.name %><br>
+                Born <%= FormatSimpleDate.new(bio.birth.date).display  %>
+              <% end %>
 
               <% if bio.oral_history_content.first.work&.leaf_representative&.content_type.blank? ||
                     bio.oral_history_content.first.work&.leaf_representative&.content_type == "application/pdf" %>
