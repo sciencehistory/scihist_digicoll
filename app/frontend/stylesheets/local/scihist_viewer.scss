@@ -170,7 +170,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
         }
       }
 
-      &:hover, &:focus {
+      &:hover {
         i {
           background-color: transparentize($shi-yellow, 0.2);
           border-color: #212529; // darken($shi-yellow, 12%);
