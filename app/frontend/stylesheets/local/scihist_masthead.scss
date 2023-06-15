@@ -35,7 +35,9 @@
     font-size: min(1.389vw, 20px);
 
     @media screen and (max-width: 1199px) {
-        font-size:1.6vw
+        // added `max` to keep it from getting too big where there's a discontinuity where it then
+        // gets small again, don't know what's going on.
+        font-size: min(1.6vw, 1.045rem);
     }
 
     line-height: 1.2;
