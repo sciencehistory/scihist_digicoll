@@ -17,7 +17,11 @@
 */
 
 #shi-masthead-from-main-website {
-    font: normal 400 1em/1.2 "sofia-pro","sans-serif";
+    // re-set font on this wrapper, to 1rem etc -- so SCSS in following in terms of `em` is
+    // in terms of this, that we reset.
+    font: normal 400 1rem/1.2 "sofia-pro","sans-serif";
+
+
 
     // This only ends up used at screens larger htan 1199px (see below)
     //
