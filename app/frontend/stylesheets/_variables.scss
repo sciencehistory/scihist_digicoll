@@ -90,13 +90,12 @@ $shi-transparent-dark-bg: #{'rgba(30,36,42,.80)'};
 $shi-blue-text: #227695;
 
 // We need a medium grey for muted text, without a really good one in
-// brand color. We slightly lighten the darkest brand-grey.
-// Previously from old brand colors this was #646469,
+// brand color -- our greys are either too dark or too light. This current
+// one inherited from old brand colors.
 //
-// At lighten 15% it's #506576, which passes AA but not AAA WCAG contrast for small text.
-//
-// (10% would be #465866 -- and WCAG AAA contrast for small text on white.)
-$shi-alt-muted-text: lighten($shi-dark-gray, 15%);
+// We tried using something like `lighten($shi-dark-gray, 15%);`, and it was okay,
+// but this is better and fits in fine actually.
+$shi-alt-muted-text: #646469;
 
 
 $brand-image-placeholder-color: $shi-gray-3;
