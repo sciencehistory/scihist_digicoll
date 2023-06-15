@@ -33,9 +33,10 @@ a {
     color: $shi-red;
   }
 }
-// and since it's meant for text, let's give <p> tag links it by default, limited
-// in an attempt not to overshoot.
-p > a:not(.btn) {
+// and since it's meant for text, let's give <p> tag links it by default. Can opt-out
+// by putting class .default-link-style. We may still be overshooting and styling
+// more than we want.
+p > a:not(.btn,.default-link-style) {
   @extend .text-link;
 }
 
