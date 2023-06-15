@@ -83,6 +83,14 @@
   color: white;
 
   &:hover, &:focus {
+    background-color: $shi-blackish;
+    color: $shi-yellow;
+  }
+}
+// same color scheme in standard bootstrap button, used in admin, customize hover/focus
+.btn-primary {
+  &:hover, &:focus {
+    background-color: $shi-blackish;
     color: $shi-yellow;
   }
 }
