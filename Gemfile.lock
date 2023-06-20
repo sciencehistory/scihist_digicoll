@@ -134,9 +134,8 @@ GEM
       ostruct (>= 0.3.2)
       rails (>= 5.1, < 7.1)
       view_component (~> 2.66)
-    blacklight_range_limit (8.3.0)
+    blacklight_range_limit (8.2.3)
       blacklight (>= 7.25.2, < 9)
-      deprecation
     bootsnap (1.16.0)
       msgpack (~> 1.2)
     bootstrap (4.6.2)
@@ -716,7 +715,7 @@ DEPENDENCIES
   aws-sdk-s3 (~> 1.0)
   axe-core-rspec (~> 4.3)
   blacklight (~> 7.32.0)
-  blacklight_range_limit (~> 8.0, >= 8.2.3)
+  blacklight_range_limit (~> 8.2.3)
   bootsnap (>= 1.4.4)
   bootstrap (~> 4.6, >= 4.6.2)
   bootstrap4-kaminari-views
