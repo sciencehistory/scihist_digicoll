@@ -124,7 +124,7 @@ gem "content_disposition", "~> 1.0"
 
 gem 'faster_s3_url', "< 2" # for generating s3 urls faster!
 
-gem "ransack", "~> 3.0"
+gem "ransack", "~> 4.0" # used as an aid for ADMIM dashboard search/sorting -- we'd like to move away from it
 gem "kaminari", "~> 1.2"
 gem 'bootstrap4-kaminari-views'
 
