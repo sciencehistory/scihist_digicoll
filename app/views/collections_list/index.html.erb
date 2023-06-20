@@ -1,7 +1,7 @@
 <div class="collections-index">
     <h1 class="index-title">Collections</h1>
 
-    <p class="mx-auto mb-5 mt-4">Digitized items in the Digital Collections make up a selection of all <a target="_blank" href="https://www.sciencehistory.org/collections">Science History Institute materials</a>. View Institute Collections with digitized content below.</p>
+    <p class="blurb mx-auto mb-5 mt-4">Digitized items in the Digital Collections make up a selection of all <a target="_blank" href="https://www.sciencehistory.org/collections">Science History Institute materials</a>. View Institute Collections with digitized content below.</p>
 
     <nav aria-label="collection type filter">
         <ul class="nav nav-pills flex-column flex-md-row mb-5 justify-content-center">
@@ -27,7 +27,8 @@
                         <%= render ThumbComponent.new(
                             col.leaf_representative,
                             thumb_size: :collection_page,
-                            placeholder_img_url: asset_path("default_collection.svg")
+                            placeholder_img_url: asset_path("default_collection.svg"),
+                            aspect_ratio_container: false
                         ) %>
                     </div>
                     <div class="collection-title-wrapper">

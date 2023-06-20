@@ -23,7 +23,10 @@
     background-image: url("@/images/oral_history_wide_banner.jpg");
     background-size: cover;
     background-position: center;
-    height: 6rem;
+    height: 18rem;
+  }
+  .collection-top {
+    margin-bottom: 0;
   }
   @include media-breakpoint-up('lg') {
     .collection-splash-thumb {
@@ -40,45 +43,48 @@
     font-family: "sofia-pro","sans-serif" !important;
     line-height: 1.4 !important;
   }
-  .show-title h1 {
+  .show-title h1, .show-title h1 a {
     color: white;
     font-family: "sofia-pro","sans-serif" !important;
     margin-bottom: 0.5rem;
     font-weight: 900;
   }
+  .show-title h1 a {
+    text-decoration-color: $shi-red;
+  }
   .show-genre a:not(:focus):not(:hover), .show-genre a {
-    color: #a9dbd4;
+    color: $shi-yellow;
   }
   // can get rid of when we have general new design in there?
-  .collection-description {
+  .oh-collection-description {
     a {
-      color: #a9dbd4;
-      text-decoration: underline;
+      color: $shi-yellow;
+      text-decoration-line: none;
+      &:hover {
+        text-decoration-line: underline;
+        text-decoration-color: $shi-yellow;
+      }
     }
   }
-  .collection-desc h2 {
-    color: white;
+
+  .collection-search-form {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
   }
 
 
   .collection-desc-container {
-    background-color: #313e48;
+    background-color: $shi-teal;
   }
 
   .collection-desc {
     max-width: calc(#{$max-readable-width} + 6rem);
-    padding: 2rem 15px 2rem 15px;
+    padding: 4rem 3.5vw 3rem 3.5vw;
 
     color: white;
     font-family: "sofia-pro","sans-serif";
 
-    @include media-breakpoint-up('md') {
-      padding-right: 4rem;
-      padding-left: 4rem;
-    }
-
     margin: 0 auto;
-
   }
 
   .collection-splash-thumb {
@@ -91,30 +97,35 @@
   }
 
   .canned-queries-container {
-    background-color: $brand-light-grey;
+    background-color: $shi-bg-gray;
 
     .canned-queries {
-      padding: 0 15px;
-      @include media-breakpoint-up('md') {
-        padding-right: $grid-gutter-width;
-        padding-left: $grid-gutter-width;
+      padding-top: 2rem;
+      padding-bottom: 3rem;
+
+      h2 {
+        text-align: center;
+        margin-bottom: $spacer;
       }
 
       .canned-queries-heading {
         @extend .brand-alt-h2;
-        padding: 0.9375rem 0;
+        margin-bottom: 2rem;
       }
 
       .canned-queries-body {
         display: flex;
         flex-wrap: wrap;
+        gap: 2rem;
+
+        justify-content: center;
 
         a.q {
           display: flex;
           align-items: center;
           background-color: white;
-          margin-right: 2rem;
-          margin-bottom: 2rem;
+
+          border: 1px solid $shi-bg-gray-border;
 
           .number, .link {
             padding: 0 0.5rem;
@@ -122,7 +133,7 @@
 
           .number {
             font-size: 1.75rem;
-            background-color: $brand-dark-grey;
+            background-color: $shi-dark-gray;
             color: white;
           }
         }
@@ -131,27 +142,30 @@
   }
 
   .this-day-container {
-    background-color: $brand-dark-grey;
-    padding: 0.9375rem 15px 0 15px;
+    background-color: $shi-dark-gray;
 
-    @include media-breakpoint-up('md') {
-      padding-right: $grid-gutter-width;
-      padding-left: $grid-gutter-width;
+    .this-day {
+      padding-top: 2rem;
+      padding-bottom: 4rem;
+    }
+
+    h2 {
+      margin-bottom: 2rem;
     }
 
     .this-day-body {
-      max-width: $main-container-max-width;
-      padding-top: 2rem;
       display: flex;
       flex-wrap: wrap;
+      gap: 4.4rem;
       justify-content: center;
       margin: 0 auto;
 
       .this-day-card {
         width: $standard-thumb-width;
-        margin: 0 4.4rem 4.4rem 0;
       }
       .this-day-label {
+        display: block;
+
         font-family: $brand-sans-serif;
         font-weight: $semi-bold-weight;
         text-transform: uppercase;
@@ -160,7 +174,7 @@
         letter-spacing: $small-caps-letter-spacing;
         background-color: white;
         padding: 1em 1em;
-        border: 1px solid $brand-dark-grey;
+        border: 1px solid $shi-dark-gray;
         border-top: none;
         margin-bottom: 0;
       }
@@ -168,25 +182,38 @@
         @extend .text-muted;
         padding: 1em 1em;
         background-color: white;
-        border: 1px solid $brand-dark-grey;
+        border: 1px solid $shi-dark-gray;
         margin-bottom: 0;
       }
     }
   }
 
   .projects {
-    padding: 2rem 15px;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
 
-    @include media-breakpoint-up('md') {
-      padding-right: $grid-gutter-width;
-      padding-left: $grid-gutter-width;
+    // center it, requires knowing it's actual max width, must be kept aligned
+    max-width: calc($max-readable-width + 235px + 2rem);
+    margin-left: auto;
+    margin-right: auto;
+
+    h2 {
+      text-align: center;
+      margin-bottom: $spacer;
     }
 
+    .blurb {
+      font-size: $large-blurb-font-size;
+      max-width: $max-readable-width;
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: $spacer * 4;
+    }
 
     .project {
       display: flex;
-      margin-top: 2rem;
-      margin-bottom: 1rem;
+      margin-top: 3rem;
+      margin-bottom: 3rem;
 
       .project-thumb {
         width: 235px;
@@ -206,7 +233,7 @@
 
 
           font-size: 120%;
-          background-color: $brand-dark-grey;
+          background-color: $shi-dark-gray;
           color: white;
           border-radius: 3em;
           padding: 0 0.5em;
@@ -215,7 +242,7 @@
 
       .text {
         flex-shrink: 3;
-        min-width: $max-readable-width * 0.5;
+        max-width: $max-readable-width;
       }
     }
 
@@ -231,6 +258,9 @@
 
     .more-projects {
       @include font-size($h3-font-size);
+
+      display: block;
+      text-align: center;
     }
   }
 }

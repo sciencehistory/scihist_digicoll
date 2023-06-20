@@ -7,8 +7,8 @@
     font-weight: 600;
     margin: 0;
     a {
-      color: #1D242B;
-      text-decoration-color: #D7272E;
+      color: $shi-blackish;
+      text-decoration-color: $shi-red;
     }
   }
 
@@ -48,24 +48,24 @@
     }
 
     .error-headline {
-      color: $brand-red;
+      color: $shi-red;
       margin-top: 0;
     }
 
     .error-subheadline {
-      color: $brand-dark-grey;
+      color: $shi-alt-muted-text;
       margin-top: 1.375rem;
     }
 
     .error-section {
       margin: 34px 0;
       h2 {
-        color: $brand-dark-blue;
+        color: $shi-blackish;
         &:before {
           font-family: FontAwesome;
           content: '\F0A4'; // hand-right
           padding-right: 0.4em;
-          color: $brand-red;
+          color: $shi-red;
         }
       }
     }

@@ -1,44 +1,60 @@
 // Some general site-wide typography settings.
 //
-// This page in chf_sufia included sidebar/content styling for .chf-container-fluid,
-// but we'll put that in a separate file.
 
-h2, .h2, h3, .h3, h4, .h4, h5, .h5 {
-  color: $brand-dark-blue;
+// We left bootstrap $font-size-base at 1rem (usually 16px) for the base of various
+// other padding and sizing calculations, but let's actually set default starting
+// font size to 17px (1.0625rem for 16px==1rem)
+body {
+  font-size: $body-font-size;
 }
 
-
-// We set more-rounded corners, but only for buttons not input elements,
-// make sure buttons in input groups match original less rounded.
-.input-group .btn {
-  border-radius: $border-radius;
-}
-
-// And some buttons have square corners, sorry our CSS is getting a bit
-// out of control.
-.btn.sq-corner {
-  border-radius: 0;
-}
 
 // fade on color change on hover, matches style on www.sciencehistory.org.
 a {
   transition: color 0.25s ease;
 }
 
+// a link class from main site that we use where we can, especially in "text blocks"
+// Use SCSS to apply this to certain areas, like:
+//
+//     .some-container {
+//        a {
+//          @extend .text-link;
+//        }
+//      }
+//
+// Or apply to individual <a class="text-link"> directly
+.text-link {
+  font-weight: bold;
+  color: black;
+  text-decoration: underline $shi-red;
+
+  &:hover, &:active {
+    color: $shi-red;
+  }
+}
+// and since it's meant for text, let's give <p> tag links it by default. Can opt-out
+// by putting class .default-link-style. We may still be overshooting and styling
+// more than we want.
+p > a:not(.btn,.default-link-style) {
+  @extend .text-link;
+}
+
 /* informational dls, as on faq, policy page, give them more space */
 dl.info {
   dt {
-    margin-top: 1em;
+    color: $shi-red;
+    margin-top: 2rem;
   }
   dd {
-    margin-top: .25em;
+    margin-top: 0.5rem;
   }
 }
 
-// the adelle-sans font has a really nice semi-bold at font-weight 600
+// sofia-pro font has a really nice semi-bold at font-weight 600
 // let's supplement bootstrap;s font-weight-bold
 .font-weight-semi-bold {
-  font-weight: 600 !important;
+  font-weight: $semi-bold-weight !important;
 }
 
 form label {
@@ -47,15 +63,14 @@ form label {
 
 th {
   font-family: $font-family-sans-serif;
-  // Adelle font has a slightly less bold 600 that looks good.
-  font-weight: 600;
-  color: $brand-dark-blue;
+  // Sofia-pro font has a slightly less bold 600 that looks good.
+  font-weight: $semi-bold-weight;
+  color: $shi-blackish;
 }
 
 // chemheritage.org uses these as default/standard h1-h6, but we're not
 // ready to there yet, keep them in classes.
 .brand-alt-h1, .brand-alt-h2, .brand-alt-h3, .brand-alt-h4, .brand-alt-h5, .brand-alt-h6 {
-  font-family: $brand-alt-header-font;
   font-weight: $brand-alt-header-weight;
 }
 .brand-alt-h4, .brand-alt-h5, .brand-alt-h6 {
@@ -96,12 +111,12 @@ hr.brand {
 
 .google-classroom-share-icon {
   border-radius: 50%;
-  background-color: #646469;
+  background-color: $shi-blackish;
   height: 2.25rem;
   width: 2.25rem;
 }
 .google-classroom-share-icon:hover {
-  background-color: #555;
+  background-color: #424242;
 }
 
 .rounded-sides {
@@ -125,50 +140,24 @@ hr.brand {
   }
 }
 
-// In new branding, we use the serif as body text, but leave the sans serif as default font for all the controls,
-// just explicitly set it in certain places, restricted to a parent class cause it kind of messes up
-// admin screens.
-//
-// We set 'p' tags within a .branded-body-font -- with some exceptions -- to use our serif font, and have
-// appropriate max-width and spacer for that font.
-.branded-body-font, .scihist-main-layout {
-  p:not(.collection-title):not(.sans-serif), dl:not(.sans-serif) dd, table:not(.sans-serif) td, table:not(.sans-serif) tbody th, .serif {
-    @extend %text-font;
-    // super hacky sorry. :(
-    .btn {
-      font-family: $brand-sans-serif;
-    }
-  }
-  p:not(.collection-title):not(.sans-serif) {
-    // try to keep this readable, abril is particularly hard on long line lengths
-    max-width: $max-readable-width;
-    // and could use some more spacing, normally in bootstrap $line-height-computed / 2
-    margin-bottom: $paragraph-spacer;
-  }
-
-  // Longer text passages in our serif Abril font really need bigger line-height.
-  // For legacy reasons we have to do this as an !important override.
-  //
-  // p inside a div.long-text-line-height, or a p.long-text-line-height itself.
-  .long-text-line-height p, p.long-text-line-height {
-    line-height: $paragraph-line-height-long !important;
-    margin-bottom: ($paragraph-font-size * $paragraph-line-height-long * 0.5) !important;
-  }
-}
-
 .text-page {
   max-width: $max-readable-width;
   margin-right: auto;
   margin-left: auto;
-  p, dd, dt {
-    line-height: $paragraph-line-height-long !important;
-    margin-bottom: ($paragraph-line-height-long * 0.5) !important;
-    max-width: $max-readable-width;
+  margin-bottom: $spacer * 4;
+
+  h1, h2, h3, h4, h5 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  a {
+    @extend .text-link;
   }
 }
 
 .popover-citation-help {
-  background-color: $brand-dark-grey;
+  background-color: $shi-dark-gray;
 
   .popover-body {
     font-weight: 300;
@@ -176,10 +165,10 @@ hr.brand {
   }
 
   .arrow:after {
-    border-bottom-color: $brand-dark-grey !important;
+    border-bottom-color: $shi-dark-gray !important;
   }
   a {
-    color: $brand-bright-green;
+    color: $shi-turquoise;
   }
 }
 
@@ -191,8 +180,8 @@ hr.brand {
 }
 
 .panel-default {
-  border-left-color: $brand-light-grey;
-  border-right-color: $brand-light-grey;
+  border-left-color: $shi-bg-gray-border;
+  border-right-color: $shi-bg-gray-border;
 }
 
 // Some custom overrides to bootstrap accordion style, to make it brand-specific
@@ -217,7 +206,7 @@ hr.brand {
         display: block;
         width: 100%;
         text-align: left;
-        color: $brand-dark-blue;
+        color: $shi-blackish;
         font-weight: bold;
 
         padding-left: 0;

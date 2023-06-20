@@ -2,30 +2,41 @@
   .show-title {
     h1 {
       margin-bottom: 0;
+
+      // the admin edit button, float right so it doesn't mess with any vertical
+      // spacing
+      .btn {
+        float: right;
+      }
     }
   }
 
   .additional-titles, .part-of {
-    margin-bottom: 0;
+    margin-bottom: 1rem;
     &, h2 {
-      font-family: $brand-alt-header-font;
-      font-weight: normal;
       @extend h3;
-      margin-bottom: 0;
+      margin-bottom: 1rem;
       margin-top: 0;
     }
     li {
-      margin-top: $paragraph-spacer * 0.5;
+      margin-top: $paragraph-spacer;
     }
   }
 
   .show-date {
-    @extend %text-font-numerals;
     ul {
       @extend .list-unstyled;
       margin-bottom: 0;
     }
-    margin-top: $paragraph-spacer;
+    margin-top: ($paragraph-spacer * 0.5);
+  }
+
+  .work-description {
+    margin: ($paragraph-spacer * 2) 0;
+  }
+
+  .work-description a {
+    @extend .text-link;
   }
 
   .work-description p {
@@ -34,7 +45,7 @@
   }
 
   #transcription, #translation {
-    margin-top: $paragraph-spacer;
+    margin-top: ($paragraph-spacer * 1.5);
   }
 
   // matches the attribute table, although it's not really a table.
@@ -42,10 +53,15 @@
     border-top: 3px solid $table-border-color;
     padding: $table-cell-padding-sm;
     margin-left: -1 * $table-cell-padding-sm;
-    margin-bottom: 2rem;
+    margin-bottom: ($paragraph-spacer * 2);
   }
+  .show-metadata .show-sub-head-body {
+    margin-bottom: ($paragraph-spacer * 4);
+  }
+
   .citation {
       word-break: break-word;
+      max-width: $max-readable-width;
   }
 
   .rights-and-social {
@@ -76,7 +92,7 @@
 
   .related-work {
     display: flex;
-    flex-wrap: wrap;
+
     &:not(:first-child) {
       margin-top: $paragraph-spacer;
     }
@@ -91,13 +107,10 @@
         width: 100%;
       }
     }
-    .related-work-text {
-      flex: 1;
-      align-self: flex-end;
-      min-width: 10rem;
-      @extend .h4;
-      margin-top: 0;
-      margin-bottom: 0;
+    .related-work-title-link {
+      font-size: $h4-font-size;
+      line-height: $headings-line-height;
+      font-weight: $headings-font-weight;
     }
   }
 
@@ -173,8 +186,6 @@
 
         .btn {
           flex: 1;
-          border-radius: 2px;
-
           width: 100%;
           white-space: nowrap;
           overflow: hidden;
@@ -185,6 +196,14 @@
           left: 6px !important;
         }
       }
+    }
+  }
+
+  // a bit more space on action buttons in main large hero image
+  .show-hero .member-image-presentation .action-item-bar {
+    margin-top: 0.5rem;
+    .action-item:not(:last-child) {
+      margin-right: 0.5rem;
     }
   }
 

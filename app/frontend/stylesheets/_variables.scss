@@ -5,80 +5,145 @@
 //
 // Started with variables from chf_sufia, trying to update for Bootstrap 4 and Blacklight 7.
 
-
 /*******
  *
  *  Scihist variables, for branding etc.
  *
  */
 
-/* rebrand colors */
-$brand-dark-blue: #050939;
-$brand-bright-green: #a6e5d8;
-$brand-red: #d8262e;
-$brand-yellow: #dbe341;
-$brand-blue:  #007FAA; // #4bb0c7; // #76c3d4; // https://github.com/sciencehistory/scihist_digicoll/issues/1233
-$brand-light-grey: #bcbcbc; // not actually very light
-$brand-dark-grey: #646469;
+/* NEW 2023 Brand colors */
+// First, variated colors from the Brand Guide which has 7 colors with four shades each,
+// from 1=lightest to 4=darkest.
+//
+// We leave out `blue` and `purple` because we do not use them at all at present.
+//
+// Secondly, we'll have some semantic/mnemonic aliases for the colors we actually use
+// and how we use them
 
-$brand-image-placeholder-color: #AAA; // not a designated brand color, but oh well
+// Grand guide calls this "black", and recommends it for all(?) black uses,
+// but main website uses pure black for text still.
+$shi-blackish: #1D242b;
 
-//$brand-blue-text: #338EA2; // brand blue is too light for text on white, here's a darker version 3595AA.
-$brand-blue-text: $brand-blue;
+$shi-chartreuse-4: #78712e;
+$shi-chartreuse-3: #e4e76d;
+$shi-chartreuse-2: #eff1b6;
+$shi-chartreuse-1: #f7f8d9;
 
-// Our brand sans-serif, with fallbacks copied from Bootstrap's default sans-serif.
-$brand-sans-serif: 'adelle-sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-// fallbacks are useful for weird diacritics that may not be in our main font,
-// especially the weird russian transliteraton stuff seems to be problematic.
-// Times New Roman seems to have them, at least on MacOS.
-$brand-serif: 'abril-text', "Times New Roman", Times, serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+// lighter teals start looking more like turquoise
+$shi-teal-4: #285f70; // NOT what is in Brand Guide, website updated it!
+$shi-teal-3: #a9dbd4;
+$shi-teal-2: #d4ece8;
+$shi-teal-1: #eaf6f3;
+
+$shi-red-4: #6a1d32;
+$shi-red-3: #d7272e;
+$shi-red-2: #eb9396;
+$shi-red-1: #f4c9cb;
+
+// we RARELY use green in digital collections, we have enough colors. But we use it
+// for bootstrap "success"
+$shi-green-4: #004d44;
+$shi-green-3: #a0d5b1;
+$shi-green-2: #d0e9d7;
+$shi-green-1: #e8f4ed;
+
+$shi-gray-4: #313e48;
+$shi-gray-3: #bbbaba;
+$shi-gray-2: #dddddc;
+$shi-gray-1: #efeeed;
+
+// Now we have semantic/mnemonic aliases, concentrating on the subset
+// that we actually want to try to stick to
+
+
+// Mostly background:
+$shi-teal: $shi-teal-4; // as actually used on main site may 2023
+$shi-green: $shi-green-4;
+$shi-dark-gray: $shi-gray-4; // often used on website
+$shi-maroon: $shi-red-4;
+$shi-bg-gray: $shi-gray-1;
+$shi-bg-gray-border: $shi-gray-3; // the bg-gray is so light it needs a border. #bbbaba is used on main site, although also uses $bcbcbc or #ccc alts
+$shi-footer-bg-green: $shi-teal-1; // one of several used on mainsite for footer "callouts", not in PDF. TODO change name?
+$shi-bg-turquoise: $shi-teal-2; // an alternate turquoise used for backgrounds, let's try to avoid it though
+
+// mostly foreground text/highlight
+$shi-turquoise: $shi-teal-3; // especially as highlight text over dark blue
+$shi-red: $shi-red-3;
+
+// yellow is used as main button background, and also text over blackish and teal
+$shi-yellow: $shi-chartreuse-3;
+
+// This is an alternate dark grey used sometimes in main sitefor text, over pale green or even
+// white.
+$shi-alternate-text-color: #3c3c3c;
+
+// A transparent dark grey used for overlays. Based on main site, but we made it
+// slightly less transparent for better contrast legibility. We want to send 'rgba'
+// to browser, prevent SASS from converting it to hex!
+$shi-transparent-dark-bg: #{'rgba(30,36,42,.80)'};
+
+// Not official brand color, but at the moment we're using for links. Goes together
+// okay, a varient of previous brand colors.
+// was: #007FAA;
+// Changed to one similar but SLIGHTLY closer to shi-teal, while still meeting all
+// AXE accessibility contrast checks.
+$shi-blue-text: #227695;
+
+// We need a medium grey for muted text, without a really good one in
+// brand color -- our greys are either too dark or too light. This current
+// one inherited from old brand colors.
+//
+// We tried using something like `lighten($shi-dark-gray, 15%);`, and it was okay,
+// but this is better and fits in fine actually.
+$shi-alt-muted-text: #646469;
+
+
+$brand-image-placeholder-color: $shi-gray-3;
+
+// Our brand sans-serif is sofia-pro
+//
+// Additional fonts are necessary as fallbacks in case some glyphs not present in main font (which
+// does happen with other languages and diacritics)
+//
+// We started out with font stack list from latest bootstrap 5.3, but `system-ui` on MacOS
+// was a particularly poor substitution at font-weight 900, because it ends up VERY thick.
+//
+// We bumped Arial to top of list as it actually seemed to be the closest match
+// from the list to Sofia. Includes from bootstrap some other platform-specific
+// helvetica-like fonts, the default platform `sans-serif` fallback, and some
+// platform emoji/symbol fonts.
+$brand-sans-serif: 'sofia-pro',Arial,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
 
 //$bg-lightly-shaded: #f9f9f9; // does not match brand, no suitable color in brand
-$bg-lightly-shaded: $brand-light-grey; // try brand color
-$special-label-muted-color: $brand-dark-grey;
+$bg-lightly-shaded: $shi-bg-gray; // try brand color
+
+
+
 //$brand-highlight-color: #f15c2b; // an orange used on (old) Distillations website, perhaps use as an alterante highlight sitewide
 
 // Why do we need so much spacing for it to look reasonable? Good spacing for 14px and weight 600.
 $small-caps-letter-spacing: 0.035em;
 
-$brand-btn-alt-bg: $brand-bright-green;
-$brand-alt-header-font: $brand-sans-serif;
-$brand-alt-header-weight: 700;
+$brand-alt-header-weight: 900;
 
-// adelle-sans has a 600 semi-bold available. 700 is standard bold. 500 seems to be the same as 400=normal.
+// sofia pro has a 600 semi-bold available. 700 is standard bold. A 500 "medium" is also available
 $semi-bold-weight: 600;
-$badge-font-weight: $semi-bold-weight; // badges look better at our semi-bold with adelle-sans!
+$badge-font-weight: $semi-bold-weight; // bootstrap badges bold by default but look better at our semi-bold
+
+$large-blurb-font-size: 1.25rem; // perhaps will match $h5-font-size
 
 // Maximum line length we judge to be readable at standard base font size.
 // Used to constrain some block text areas on large screens.
-$max-readable-width: 36.25rem; // 590px at 16px base;
-$long-max-readable-width: 42.5rem; // 680px; unclear how readable it really is, but we do it sometimes anyway
-
-
-// via experimentation, on search results page larger than this the
-// results column text is way too wide for reading text.
-$chf-fluid-max-width: 1300px;
+$max-readable-width: 68ch; // at our standard 17px sofia-pro font, about 682px, about 40em
 
 $transparent-background: rgba(0,0,0,0.25);
 
 $thumb-horizontal-margin: 4px;
 
-// These "paragraph" settings are all meant for use with our serif font, abril,
-// which we use for body/paragraph/'text' copy.
-//
-// abril is far too small at 16px, it's a small font. 17px abril looks more like
-// 16px other fonts. 1.0625rem is 17px if 1rem is 16px --
-// bootstrap wants us to use rem, rather than fixed point size, for accessibility
-// user-resizing purposes.
-//
-$paragraph-font-size: 1.0625rem; // 17px if 1rem is 16px
-
-// We really need two differnet line spacing, LOTS of text needs the bigger -long one,
-// but briefer text is generally better with the other one, which for legacy reasons
-// ends up the default in lots of places.
-$paragraph-line-height: 1.2941176471; // 1.0625rem * this line-height is 22px if 1rem is 16px
-$paragraph-line-height-long: 1.625; // based on values on sciencehistory.org
-$paragraph-spacer: $paragraph-font-size * $paragraph-line-height * 0.5; // Should be about 22/2=11px if 1rem=16px
+// really be same as bootstrap $spacer, different variable for legacy reasons,
+// but still 16px 1rem (winds up slightly smaller than our 17px body font, but
+// better for math)
+$paragraph-spacer: 1rem;
 
 $navbar-margin-bottom: 22px;
 
@@ -116,63 +181,74 @@ $layout-expand-up: 'md';
  *
  */
 
-// In chf_sufia, we set font-size-base to 16px. In Bootstrap 4, this needs to be in
-// `rem` units, and defaults to 1. Which should be 16px on most browsers. It is considered
-// by some to be better for accessibility to leave this defaulting to browser standard,
-// so we will try it unset with default for now.
-//$font-size-base: 16px;
+// We will leave the font-size base 1rem (usually 16px), to leave a nice round
+// number for calclulations based on it... BUT we elsehwere set defualt body
+// text size to 1.0625rem (usually 17px)
+$font-size-base: 1rem;
+$body-font-size: 1.0625rem; // not a bootstrap variable
+
 $h4-font-size: 22px;
 $body-color: #222; // little bit darker
 
+//$line-height-base: 1.5; // default 1.5 works for us, liked better than smaller
+$headings-line-height: 1.13; // a bit smaller than default 1.2
+
+// main webiste just uses black here, but we like using a softer color for headings, maybe
+// this one?
+$headings-color: $shi-blackish;
+
 // bootstrap brand colors
-$danger: $brand-red;
-$warning: $brand-yellow;
-$primary: $brand-blue;
-$dark: $brand-dark-blue;
-$secondary: $brand-dark-grey;
+$primary: $shi-teal; // main buttons actually use $shi-yellow, but we don't want to put that everywhere bootstrap primary goes
+$secondary: $shi-blackish;
+$info: $shi-bg-turquoise;
+$success: $shi-green;
+$warning: $shi-yellow;
+$danger: $shi-red;
+$light: $shi-bg-gray; // not sure if we use in public front-end at present
+$dark: $shi-dark-gray;
 
-// $btn-primary-border: $brand-primary; // bootstrap 4 has no button borders already I think.
-// $btn-default-border: $brand-light-grey; // bootstrap 4 has no button borders already I think.
+$tooltip-bg: $shi-blackish;
 
-$link-color: $brand-blue-text;
-$link-hover-color: $brand-dark-blue;
+$link-color: $shi-blue-text;
+$link-hover-color: black;
 $font-family-sans-serif: $brand-sans-serif;
 // default bootstrap code color is a pink. use brand red? Or something else?
-$code-color: $brand-red;
+$code-color: $shi-red;
 
-$text-muted: $brand-dark-grey;
-$dropdown-header-color: $brand-dark-grey;
+$text-muted: $shi-alt-muted-text;
+$dropdown-header-color: $shi-alt-muted-text;
 
-$navbar-dark-color: $brand-bright-green;
-$navbar-dark-hover-color: #fff;
-$navbar-dark-active-color: #fff;
+// new main site styles do not use any rounding on buttons and other elements
+$border-radius: 0;
+$border-radius-sm: 0;
+$border-radius-lg: 0;
 
+// somewhat mysterious bootstrap 4 variables, that lighten/darken theme
+// colors, we're lessening to try to meet WCAG contrast with our theme colors
+$alert-bg-level: -7; // default -10
+$alert-color-level: 8; // default 6
+$alert-border-level: 1; // default -9
 
 //$card-bg: $bg-lightly-shaded;
-$card-cap-bg: $bg-lightly-shaded;
-$card-border-color: #ccc; // goes with brand light grey. ish.
-$card-border-radius: 0;
+$card-cap-bg: $shi-bg-gray;
+$card-border-color: $shi-bg-gray-border;
 
 $breadcrumb-bg: $bg-lightly-shaded;
 $input-group-addon-bg: $bg-lightly-shaded;
 
-$list-group-border-color: $brand-light-grey;
+$list-group-border-color: $shi-bg-gray-border;
 
-$input-color: $brand-dark-grey;
-$input-border-color: $brand-light-grey;
+$input-color: $shi-alt-muted-text;
+$input-border-color: $shi-bg-gray-border;
 
-// border radius matching some elements on chemheritage.org, larger than bootstrap default
-$btn-border-radius:          9px !default;
-$btn-border-radius-lg:       9px !default;
-$btn-border-radius-sm:       9px !default;
 
 // Used by bootstrap for ordinary buttons too, let's make it match bootstrap 3/chf_sufia,
 // slightly larger.
 $input-btn-padding-x-sm: .625rem; // 10px
 $input-btn-padding-y-sm: .3125rem; // 5px
 
-$pagination-active-color:           $body-color;
-$pagination-active-bg:              $brand-light-grey;
+$pagination-active-color:           white;
+$pagination-active-bg:              $shi-red;
 $pagination-active-border-color:    $pagination-active-bg;
 
 $popover-font-size: 1rem;
@@ -184,3 +260,8 @@ $popover-border-radius: 9px;
 // and we can workaround that bug by setting this variable to false.
 // https://github.com/projectblacklight/blacklight/issues/2414
 $logo-image: false;
+
+
+// Maybe looks a bit better and consistent with main site? Not sure. We have a LOT
+// of differnet colors -- default bootstrap just uses $primary here, which we have set to our teal
+$nav-pills-link-active-bg:          $shi-red;

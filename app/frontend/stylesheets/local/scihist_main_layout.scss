@@ -1,8 +1,6 @@
 // see docs at _mixins.scss, use these on full-screen divs
-// to get proper margins and max width.
-.shi-full-width-outer {
-  @include shi-full-width-outer-mixin;
-}
+// to get proper margins and max width. If the section has a background, it needs
+// an additional container div wrapping this one, to provide the background.
 .shi-full-width-inner {
   @include shi-full-width-inner-mixin;
 }
@@ -34,6 +32,15 @@ body.scihist-main-layout {
 
     .facets {
       padding-bottom: 1rem;
+    }
+
+    // Hack to try to make collapsible facets actually legible when collapsed.
+    // BL is kind of a mess, through different versions.
+    .facets-header {
+      background-color: $shi-bg-gray;
+      border: 1px solid $shi-bg-gray-border;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
     }
 
     @include media-breakpoint-up($layout-expand-up) {
@@ -69,6 +76,13 @@ body.scihist-main-layout {
         }
         .navbar-toggler {
            display: none !important;
+        }
+
+        .facets-header {
+          background-color: unset;
+          border: unset;
+          padding-left: unset;
+          padding-right: unset;
         }
 
 

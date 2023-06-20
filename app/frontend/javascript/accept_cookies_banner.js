@@ -6,12 +6,9 @@ $( document ).ready(function() {
 
 function setUpAcceptCookiesBanner() {
     if (! cookiesAlreadyAcceptedByUser()) {
-        setTimeout(function() {
             jQuery('.accept-cookies-banner-nav')
                 .css("display", "flex")
-                .hide()
-                .fadeIn(500);
-        }, 1000);
+                .show();
     }
     jQuery ('.i-accept-link').click(userAcceptsOurCookies);
 }
@@ -27,7 +24,7 @@ function userAcceptsOurCookies(event) {
         .getFullYear() + 3))
         .toString();
     document.cookie = "userAcceptsOurCookies=true; path=/; expires=" + expiratonStr
-    jQuery('.accept-cookies-banner-nav').fadeOut(1000);
+    jQuery('.accept-cookies-banner-nav').hide();
 }
 
 // This is useful for testing; just call this function

@@ -17,24 +17,27 @@
 */
 
 #shi-masthead-from-main-website {
-    font: normal 400 1em/1.2 "sofia-pro","sans-serif";
+    // re-set font on this wrapper, to 1rem etc -- so SCSS in following in terms of `em` is
+    // in terms of this, that we reset.
+    font: normal 400 1rem/1.2 "sofia-pro","sans-serif";
 
-    // This only ends up used at screens larger htan 1199px (see below)
+
+
     //
-    // We've hacked it from original source to be similar but better, using min and max
+    // We've hacked it from original source to be similar but simpler, using min and max
     // which seems to have browser support.
     //
     //  Base of 1.389vw (from original)
     //
     // But no bigger than 20px -- which the original did with a media query at 1440px
-    // And no smaller than 1.19rem, which avoids a discontinuity at 1199px, where
-    // previously font was getting smaller before getting larger again.
     //
     // This base font is used for a lot of other things expressed in ems
-    font-size: max(min(1.389vw, 20px), 1.19rem);
+    font-size: min(1.389vw, 20px);
 
     @media screen and (max-width: 1199px) {
-        font-size:1.6vw
+        // added `max` to keep it from getting too big where there's a discontinuity where it then
+        // gets small again, don't know what's going on.
+        font-size: min(1.6vw, 1.045rem);
     }
 
     line-height: 1.2;
@@ -60,7 +63,7 @@
     .shi-top-bar {
         width: 100%;
         padding: 0 4em;
-        background-color: #1D242B;
+        background-color: $shi-blackish;
         color: #fff;
         overflow: hidden
     }
@@ -112,7 +115,7 @@
 
     .shi-top-bar__hours:before {
         content: "";
-        background-color: #285f70;
+        background-color: $shi-teal;
         position: absolute;
         left: 0;
         right: -9999px;
@@ -129,11 +132,23 @@
         margin-right: .5em
     }
 
+    @media screen and (max-width: 1158px) {
+        // give it more space at smaller screen size, so it doesn't wrap.
+        .shi-top-bar__hours {
+            max-width: 47%;
+        }
+    }
+
     @media screen and (max-width: 991px) {
         // at this screen-size, we copy this to a different part of the DOM
         // top show in the collapsable menu, we don't want it here at all.
         .shi-top-bar__container .shi-top-bar-nav  {
             display: none;
+        }
+
+        .shi-top-bar {
+            padding-left: 1rem;
+            padding-right: 1rem;
         }
 
         .shi-top-bar .shi-top-bar__hours {
@@ -149,6 +164,13 @@
             top: 0;
             bottom: 0;
             left: -9999px
+        }
+    }
+
+    @media screen and (max-width: 575px) {
+        // ensure "museum hours" does NOT wrap on very small screens
+        .shi-top-bar .shi-top-bar__hours {
+            font-size: 0.8125rem; // 13px
         }
     }
 
@@ -295,7 +317,7 @@
         left: calc(1.2941176471em - 2px);
         right: calc(1.2941176471em - 4px);
         height: 2px;
-        background: #d7272e;
+        background: $shi-red;
         opacity: 0;
         transition: opacity .3s
     }
@@ -318,7 +340,7 @@
     .header__nav>ul>li.shi-item-bordered>a {
         line-height: 1em;
         padding: .5294117647em .5882352941em;
-        border: 1px solid #d7272e;
+        border: 1px solid $shi-red;
         transition: color .3s,background .3s
     }
 
@@ -350,13 +372,13 @@
         &:hover::after {
             content: "";
             display: block;
-            border-bottom: 2px solid #D7272E;
+            border-bottom: 2px solid $shi-red;
         }
     }
     // And on the bordered 'support' button
     @media (hover: hover) {
        .header__nav>ul>li.shi-item-bordered:hover>a {
-            background: #d7272e;
+            background: $shi-red;
             color: #fff
         }
     }
@@ -372,6 +394,10 @@
         }
         .header__right-side {
             padding: 0
+        }
+        // This is actually the main size of header nav links at any non-huge screen size!
+        .header__nav ul li a {
+            font-size: 0.96rem; // ~ 15.36px
         }
     }
 
@@ -511,7 +537,7 @@
         // a `.header_mobile` class, it's not required -- the top bar nav
         // being moved to be inside the header__nav is enough selectivity.
         .header__nav .shi-top-bar-nav {
-            background: #1d242b;
+            background: $shi-blackish;
             color: #fff;
             flex-direction: column;
             margin: 2.25em -1.875em -2.5em;
@@ -591,8 +617,8 @@
         .masthead-title a {
             text-transform: uppercase;
             font-weight: 600;
-            color: #1D242B;
-            text-decoration-color: #D7272E;
+            color: $shi-blackish;
+            text-decoration-color: $shi-red;
         }
 
         .search-form {
@@ -607,9 +633,12 @@
 // local content, management-only top bar
 .navbar.topbar {
     // take from theme color after we fix theme?
-    background-color: #dddddc;
+    background-color: $shi-bg-gray;
     padding-top: 0;
     padding-bottom: 0;
+
+    font-size: 0.875rem;
+    line-height: 1;
 
     .nav-item:not(:last-child) {
         margin-right: $spacer;
@@ -617,6 +646,6 @@
 
     &.staging {
         // was $warning;, could be again after we fix theme
-        background-color: #e4e76d;
+        background-color: $shi-yellow;
     }
 }

@@ -6,7 +6,9 @@ https://github.com/projectblacklight/blacklight/blob/v6.7.2/app/views/catalog/_s
 
 <% if params[:q].present? %>
 
-  <div class="other-searches sidenav card d-sm-none d-md-block">
+  <%# bootstrap utility classes d-none and d-md-block say show only on md and above, when we
+      have enough room for columns. %>
+  <div class="other-searches sidenav card d-none d-md-block">
     <div class="card-header">
       Other search tools
     </div>

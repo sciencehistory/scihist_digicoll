@@ -15,7 +15,6 @@ $attribute-table-max-tabular: 22.5em;
   @extend .table;
   @extend .table-sm;
   width: 100%;
-  max-width: ($max-readable-width * 1.5);
 
   // Make text in table line up with text above or below it not in table,
   // and thus border lines will extend a bit outside the ordinary space, negative margin.
@@ -24,7 +23,6 @@ $attribute-table-max-tabular: 22.5em;
   td, th {
     padding: 0.3em; // 5px at 17px font em
   }
-
 
   // small, break down table
   @media (max-width: $attribute-table-max-tabular) {
@@ -94,7 +92,7 @@ $attribute-table-max-tabular: 22.5em;
 .attribute-sub-head {
   @extend .brand-alt-h3;
   @extend .h3;
-  margin-top: 2rem;
+  margin-top: ($paragraph-spacer * 4);
   margin-bottom: 1px;
   // 0 padding on left to line up with table negative margin
   padding: $table-cell-padding-sm $table-cell-padding-sm $table-cell-padding-sm 0;

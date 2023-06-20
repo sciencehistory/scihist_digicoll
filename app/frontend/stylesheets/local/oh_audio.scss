@@ -1,24 +1,89 @@
 .work-show-audio {
 
+  .top-matter {
+    display: flex;
+
+    @media (max-width: 50rem) {
+      display: block;
+    }
+
+    .oh-portrait {
+       width: $standard-thumb-width;
+       flex-grow: 0;
+       flex-shrink: 0;
+       margin-right: $spacer * 2;
+       margin-bottom: $spacer * 2;
+    }
+
+    .show-title {
+      flex-basis: 0;
+      flex-shrink: 10;
+      flex-grow: 1;
+      margin-bottom: $spacer * 2;
+    }
+  }
+
+.vjs-mouse-display {
+  background-color: red !important;
+}
+
   .audio-navbar {
     position: sticky;
-    top: 0;
+    top: 0 !important;
     z-index: $zindex-fixed; // make sure bootstrap popovers et al scroll UNDER, but modal goes OVER
 
-    background-color: $brand-dark-grey;
+    padding-top: $spacer;
+
+    background-color: $shi-dark-gray;
     color: white;
     // material-design-like shadow, sorry we're just hacking it un-DRY.
     // https://stackoverflow.com/questions/30533055/calculating-shadow-values-for-all-material-design-elevations
     box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
 
-    // Make it go to full viewport width, even though it's parent is constrained
-    // with padding to match bootstrap grid.
-    margin-left: calc(50% - 50vw);
-    margin-right: calc(50% - 50vw);
+    @include full-bleed;
+
     @include media-breakpoint-up(md) {
       padding-left: $grid-gutter-width * 0.5;
       padding-right: $grid-gutter-width * 0.5;
     }
+
+    // has video.js controls, and our "jump to text" button
+    .audio-controls-line {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      @media (max-width: 44rem) {
+        flex-direction: column;
+        align-items: revert;
+      }
+    }
+
+    // slightly change video-js theme color to be darker and our brand color
+    .video-js {
+      background-color: $shi-blackish;
+      .vjs-control-bar {
+        background-color: $shi-blackish;
+      }
+      .vjs-slider {
+        background-color: $shi-turquoise;
+      }
+
+      // was hard to figure this one out, trying to make it more visible, this is an improvement
+      // but also makes the sizing/positioning a bit weird for reasons we can't tell, probbly related to JS.
+      .vjs-play-progress .vjs-time-tooltip {
+        background-color: white;
+        border: 1px solid $shi-bg-gray-border;
+      }
+      .vjs-mouse-display .vjs-time-tooltip {
+        background-color: $shi-blackish;
+      }
+    }
+
+
+    .btn-emphasis {
+      text-transform: uppercase;
+    }
+
 
     .audio-navbar-contents {
       // keep navbar contents the same width as our general contents,
@@ -29,9 +94,6 @@
       margin-left: auto;
       @extend .col-md-12;
 
-
-      display: flex;
-      flex-wrap: wrap;
 
       .now-playing-container {
         // as an element in it's parent flex
@@ -49,21 +111,6 @@
           padding: 0 1rem 0 0;
         }
 
-        .title {
-          font-weight: 600;
-          text-align: center;
-          margin: ($paragraph-margin-bottom * 0.5) 0;
-          // truncate to one line with ellipses on small screens:
-          max-width: 100%;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-
-          a {
-            color: white !important;
-          }
-        }
-
         audio {
           width: 100%;
         }
@@ -73,17 +120,17 @@
         margin-top: $paragraph-spacer;
 
         // override style like a link, with colors we want, material design inspired tab style.
-        .btn-emphasis {
+        .btn-danger {
           border-radius: 0;
           border: 0;
           &:not(.active):not(:hover):not(:focus) {
             background-color: transparent;
-            color: $brand-bright-green
+            color: white;
           }
           &.active {
             background-color: transparent;
             color: white;
-            border-bottom: 3px solid white;
+            border-bottom: 3px solid $shi-turquoise;
           }
         }
         // crazy CSS to try to make the tabs horizontally scroll properly
@@ -101,54 +148,18 @@
       }
 
       .ohms-search {
-        flex-basis: 100%;
-        align-self: self-start;
+        max-width: $max-readable-width; // doesn't need to be this specifically, but works fine
+        margin-top: $spacer;
 
-        order: -1;
-
-        @include media-breakpoint-up(lg) {
-          // when we're two column, fit this next to player
-          flex-basis: 33%;
-          flex-grow: 1;
-          order: 0;
-        }
-
-        border-radius: $border-radius;
-        border: 0px;
-        padding: 0.66rem;
-        margin: 0.33rem 0;
-
-        background-color: white;
-        color: black;
-
-        .search-heading {
-          margin-bottom: 0;
-
-          a {
-            color: $brand-dark-blue;
-
-            //make appropriate toggle icon show up for state
-            .fa-caret-right.toggle-icon {
-              display: none;
-            }
-            &.collapsed {
-              .fa-caret-right.toggle-icon {
-                display: inline-block;
-              }
-              .fa-caret-down.toggle-icon {
-                display: none;
-              }
-            }
-          }
-        }
-
-        form {
-          margin-top: $headings-margin-bottom;
+        .input-group-append .btn {
+          border-left: 1px solid $shi-dark-gray;
         }
       }
 
       .ohms-search-results {
-        padding-top: ($paragraph-spacer * 0.5);
+        background-color: white;
+        color: black;
+        padding: ($spacer * 0.5);
 
         .search-mode {
           text-transform: uppercase;
@@ -157,7 +168,7 @@
 
         .ohms-no-results {
           margin-top: ($paragraph-spacer * 0.5);
-          color: $brand-red;
+          color: $shi-red;
         }
 
         .ohms-result-navigation {
@@ -172,7 +183,6 @@
         }
 
         ol {
-          @extend %text-font-numerals;
           list-style-position: inside;
           padding-left: 0;
 
@@ -190,37 +200,10 @@
     padding-top: 2rem;
   }
 
-  // hackily little bit less whitespace on top
-  .rights-and-social {
-    .rights-statement, .social-media {
-      padding-top: 0 !important;
-      margin-top: 0 !important;
-    }
-  }
-
-  .oh-portrait {
-    width: $standard-thumb-width;
-  }
-
-  // Put portrait to the right of description when
-  // screen is wide enough.
-  @include media-breakpoint-up(md) {
-    .description-and-portrait {
-      display: flex;
-      justify-content: space-between;
-
-      .oh-portrait {
-        order: 2;
-
-        margin-top: $paragraph-spacer;
-        margin-left: $paragraph-spacer * 2;
-      }
-    }
-  }
-
   .tab-content {
-    // hacky, match attribute-table width
-    max-width: ($max-readable-width * 1.5);
+    // I dunno it's just a good width, we need more than max-readable-width,
+    // because contents sometiems have more than one effective column
+    max-width: 54rem;
   }
 
   // When we're two column, add more spacer than default
@@ -230,6 +213,21 @@
     }
   }
 
+  .tab-pane {
+    // if something does accidentally force wide width, keep it from extending
+    // viewport with horizontal scrolls.
+    overflow: hidden;
+  }
+
+  .expanded-social-share {
+    margin-bottom: $spacer;
+  }
+
+  .share-link {
+    text-transform: uppercase;
+  }
+
+
   .tab-pane.downloads {
     margin-bottom: 2rem;
   }
@@ -237,6 +235,13 @@
   .downloads-pdf {
     .attribute-sub-head {
       margin-top: 0;
+    }
+
+    // not sure why, but it works better:
+    line-height: 1.3;
+
+    p {
+      max-width: $max-readable-width;
     }
   }
 
@@ -298,10 +303,15 @@
   .work.chf-attributes {
     border-top: 0;
   }
+
+  // URLs in footnotes should be forced to break if needed to fit on screen
+  .footnote-list {
+    overflow-wrap: break-word;
+  }
 }
 
 .ohms-highlight {
-  background-color: $brand-red;
+  background-color: $shi-red;
   color: white;
   padding-left: .1em;
   padding-right: .1em;
@@ -310,7 +320,7 @@
 .ohms-speaker {
   font-weight: bold;
   @extend %special-label;
-  color: $brand-dark-blue;
+  color: $shi-red;
 }
 
 // make room for and position the timecode links
@@ -318,6 +328,7 @@
 .ohms-transcript-container {
   position: relative;
   padding-left: 5.5em;
+  max-width: calc(5.5em + #{$max-readable-width});
 
   .ohms-transcript-paragraph {
     .ohms-transcript-timestamp {
@@ -329,15 +340,13 @@
 }
 
 .ohms-index-container {
-  max-width: $long-max-readable-width;
+  max-width: $max-readable-width;
   padding-bottom: 1.5rem;
 
   // based on scihist-results-list-values, see there.
   div.ohms-index-list {
     margin-top: $paragraph-spacer;
     max-width: $max-readable-width;
-
-    @extend %text-font;
 
     p {
       margin-bottom: $paragraph-spacer * 2;
@@ -351,7 +360,7 @@
         @extend %special-label;
         margin-right: 0.66em;
         font-weight: bold;
-        color: $brand-dark-blue;
+        color: $shi-red;
       }
     }
 
@@ -360,3 +369,6 @@
     }
   }
 }
+
+
+

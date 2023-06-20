@@ -10,7 +10,7 @@
     <%= render WorkTitleAndDatesComponent.new(@work) %>
 
     <%# up here so it stays above request button in single-column mode %>
-    <div class="work-description long-text-line-height">
+    <div class="work-description">
       <% if portrait_asset.present? %>
         <figure class="figure oh-portrait">
           <%= render ThumbComponent.new(portrait_asset) %>
@@ -29,29 +29,30 @@
     <% if available_by_request_assets.present? %>
       <h2 class="attribute-sub-head mt-0">Access this interview</h2>
       <div class="show-sub-head-body request-section">
-        <div class="pr-2 long-text-line-height">
-        <div class="pb-sm-3 pl-sm-3 text-nowrap float-sm-right">
-          <%= link_to "Request Access",
-            request_oral_history_access_form_path(@work.friendlier_id),
-            class: "btn btn-emphasis mb-2"
-          %>
-        </div>
+        <div class="pr-2">
 
 
-          <p class="text-brand-serif">Available upon request
+          <p>Available upon request
             <%= multiple_files? ? "are" : "is" %>
             <%= available_by_request_summary %>.
           </p>
 
+          <div class="text-nowrap mb-3 text-center">
+            <%= link_to "Request Access",
+              request_oral_history_access_form_path(@work.friendlier_id),
+              class: "btn btn-brand-main mb-2"
+            %>
+          </div>
+
 
           <% if @work.oral_history_content.available_by_request_automatic? %>
-            <p class="alert alert-primary text-brand-serif">After submitting a brief form, you will receive immediate access to
+            <p class="alert alert-primary">After submitting a brief form, you will receive immediate access to
               <%= multiple_files? ? "these files" : "this file" %>.
               If you have any questions about transcripts, recordings, or usage permissions, contact the Center for Oral History at <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}", class: "alert-link" %>.
             </p>
           <% else # manual review %>
             <div class="alert alert-primary">
-              <p class="text-brand-serif">After submitting a brief form, your request will be reviewed and you will receive an email, usually within 3 business days. Usage may be subject to restrictions by agreement with interviewee.</p>
+              <p>After submitting a brief form, your request will be reviewed and you will receive an email, usually within 3 business days. Usage may be subject to restrictions by agreement with interviewee.</p>
 
               <p>If you have any questions about transcripts, recordings, or usage permissions, please contact the Center for Oral History at <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}", class: "alert-link" %>.
               </p>

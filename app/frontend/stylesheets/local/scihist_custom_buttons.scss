@@ -1,33 +1,71 @@
 // buttons generally have no borders, have border color set to same
 // as bg color. we set btn-primary the same in variables.
 
-// a light grey button matching light grey bg
-.btn-brand-alt {
-  // color, bg, border
-  @include button-variant($bg-lightly-shaded, $bg-lightly-shaded);
-  color: $body-color;
-}
 
-// dark grey button
-.btn-brand-dark {
-  @include button-variant($brand-dark-grey, $brand-dark-grey);
-  color: #FFFFFF;
-}
+// Some new 2023 brand buttons -- we're using bootstrap button creator mixins, BUT
+// then overriding a lot of bootstrap stuff -- we might want to transition to actually
+// setting bootstrap button default size/weight/etc?
 
+// common elements to "brand' buttons matching new site -- uppercase,
+// semi-bold, smaller font (to compensate for uppercase), more padding.
+//
+// These are big buttons
+@mixin brand-button-base {
+  transition: background-color .3s ease,color .3s ease;
 
-// An especially bright button style using the brand bright breen
-.btn-emphasis {
-  @include button-variant($brand-bright-green, $brand-bright-green); //mix($brand-bright-green, $brand-dark-blue, 93%)
-  color: $brand-dark-blue;
-}
-
-// Some new 2023 brand buttons
-.btn-dark-inverse {
-  @include button-variant(#1D242B, #1D242B);
-  color: white;
   text-transform: uppercase;
   font-weight: 700;
-  font-size: 0.9375em;
+  font-size: 0.9375rem; // slightly smaller than normal to make up for the all-caps? 15px/16px
+
+  // These are approximately matching main site, not implemented the same way
+  padding: 0.66em 1.75em;
+
+  // Go back to normal bootstrap padding if .less-padding is also on there...
+  &.less-padding {
+    padding: $btn-padding-y $btn-padding-x;
+  }
+
+  // we're fighting with bootstrap a bit. If inside an input group, aso over-override
+  // with plain bootstrap padding again, so it doesn't mess up input-group.
+  .input-group & {
+    padding: $btn-padding-y $btn-padding-x;
+  }
+
+  // less padding and even less font if also bootstrap btn-sm class. Overriding
+  // bootstrap btn-sm for our brand buttons.
+  &.btn-sm {
+    padding: $btn-padding-y-sm $btn-padding-x-sm;
+    // 14px at 1rem==16px, a bit bigger than totally scaling our smaller for all-caps, but
+    // we actually need it to not be too too small.
+    font-size: 0.875rem;
+  }
+}
+
+// The main/only button type actually used in new main site -- this is a temporary
+// name
+.btn-brand-main {
+  // hover-background copied from main site
+  @include button-variant($shi-yellow, $shi-yellow, $hover-background: #c6c94f);
+  @include brand-button-base;
+}
+
+// Also used on main site occasionally, an outlined black button
+.btn-brand-secondary {
+  @include button-variant(white, $shi-blackish, $hover-background: $shi-blackish);
+  @include brand-button-base;
+
+   &:hover, &:focus {
+    color: white;
+  }
+}
+
+// Black color solid
+.btn-brand-dark {
+  // hoverbackground similar to main site used in some places, but passes contrast rules
+  // with our hover color
+  @include button-variant($shi-blackish, $shi-blackish, $hover-background: #424242);
+  @include brand-button-base;
+  color: white;
 
   // nain site topnav bar fades white over dark text using opacity,
   // we use a specific color to do similar and match.
@@ -36,19 +74,36 @@
   }
 }
 
-// Eventually will be all/most of buttons, new design really uses this button
-.btn-brand-new {
-  // hover background copied from main site
-  @include button-variant(#e4e76d, #e4e76d, $hover-background: #c6c94f);
-  transition: background-color .3s ease,color .3s ease;
+// we need another brand button, this one is sized like primary, but in the teal color.
+// Currently used sparingly.
+.btn-brand-alt {
+  @include button-variant($shi-teal, $shi-teal);
+  @include brand-button-base;
 
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 0.8125rem;
+  color: white;
 
-  // won't be necessary once we fix up all bootstrap buttons to match?
-  border-radius: 0;
+  &:hover, &:focus {
+    background-color: $shi-blackish;
+    color: $shi-yellow;
+  }
+}
+// same color scheme in standard bootstrap button, used in admin, customize hover/focus
+.btn-primary {
+  &:hover, &:focus {
+    background-color: $shi-blackish;
+    color: $shi-yellow;
+  }
+}
 
-  // These are approximately matching main site, not implemented the same way
-  padding: 0.66em 1.75em;
+// font-awesome buttons could be bigger and have more spacing, when
+// put in our brand icons with a lot of spacing
+i.btn-brand-initial-icon {
+  margin-right: 1em;
+  transform: scale(1.5);
+}
+
+
+// Yellow like our btn-brand-main, but with standard bootstrap sizing and spacing
+.btn-emphasis {
+  @include button-variant($shi-yellow, $shi-yellow, $hover-background: #c6c94f);
 }

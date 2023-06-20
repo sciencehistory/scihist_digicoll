@@ -432,7 +432,11 @@ describe "Oral history with audio display", type: :system, js: true do
 
         click_on "Table of Contents"
         click_on segment.title
-        click_on "Share link"
+
+        within(".bottom") do
+          click_on "Share link"
+        end
+
         expect(page).to have_field(readonly: true, with: segment_direct_url)
       end
     end

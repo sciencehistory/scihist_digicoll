@@ -40,7 +40,7 @@
 # (This is a bit hacky)
 #
 class DownloadDropdownComponent < ApplicationComponent
-  attr_reader :display_parent_work, :asset, :aria_label
+  attr_reader :display_parent_work, :asset, :aria_label, :btn_class_name
 
 
   # @param asset [Asset] asset to display download links for
@@ -57,11 +57,14 @@ class DownloadDropdownComponent < ApplicationComponent
   # @param aria_label [String] aria_label for the primary "Download" button, we
   #   use to make it more specific like "Download Image 1" to avoid tons of
   #   identical "Download" buttons on page.
+  # @param btn_class_name [String] default "btn-brand-alt", but maybe you want "btn-brand-main".
+  #   The specific btn theme added on to bootstrap `btn` that will be there anyway.
   def initialize(asset,
       display_parent_work:,
       use_link: false,
       viewer_template: false,
-      aria_label: nil)
+      aria_label: nil,
+      btn_class_name: "btn-brand-alt")
 
     if viewer_template
       raise ArgumentError.new("asset must be nil if template_only") unless asset.nil?
@@ -73,6 +76,7 @@ class DownloadDropdownComponent < ApplicationComponent
     @use_link = use_link
     @asset = asset
     @aria_label = aria_label
+    @btn_class_name = btn_class_name
   end
 
   def call
@@ -131,7 +135,7 @@ class DownloadDropdownComponent < ApplicationComponent
       )
     else
       content_tag("button",
-        "<i class='fa fa-download' aria-hidden='true'></i> Download".html_safe,
+        "Download".html_safe,
         link_or_button_options
       )
     end
@@ -169,7 +173,7 @@ class DownloadDropdownComponent < ApplicationComponent
       if viewer_template_mode?
         options[:class] = "btn btn-emphasis btn-lg dropdown-toggle"
       else
-        options[:class] = "btn btn-primary dropdown-toggle"
+        options[:class] = "btn #{btn_class_name} dropdown-toggle"
       end
     end
     options
