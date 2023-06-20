@@ -10,10 +10,14 @@ $collection-index-box-margin: 17px;
     @extend .mt-3;
   }
 
+  .blurb {
+    max-width: $max-readable-width;
+    font-size: $large-blurb-font-size;
+    text-align: center;
 
-  .show-item-count {
-    @extend %text-font-numerals;
-    font-variant-numeric: lining-nums;
+    a {
+      @extend .text-link;
+    }
   }
 
   .collections-index-list {
@@ -32,24 +36,36 @@ $collection-index-box-margin: 17px;
 
       @include all-white-links;
 
+      // crop to fit square
+      img {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+      }
+
       .collection-title-wrapper {
         /* overlay on image */
         position: absolute;
         bottom: 0;
         left: 0;
         width: 100%;
-        height: 75px;
-        background-color: $dark;
-        padding: 10px;
+        background-color: $shi-transparent-dark-bg;
+        padding: 0.5rem;
 
-        .collection-title {
+
+        // trying to make it equal TWO lines of text
+        min-height: (($line-height-base * $body-font-size * 2) + (0.5rem * 2));
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        p {
           text-align: center;
-          line-height: 1.3; // try to fit three lines in space we have
+          margin: 0;
+          padding: 0;
         }
-      }
-
-      p {
-        line-height: normal;
       }
     }
 

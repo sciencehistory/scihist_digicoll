@@ -1,23 +1,22 @@
 <% unless Rails.application.config.hide_accept_cookies_banner %>
 
-    <nav class="navbar fixed-bottom accept-cookies-banner-nav"
+    <nav class="fixed-bottom accept-cookies-banner-nav"
         role="dialog" aria-live="polite" aria-label="Accept Cookies"
         aria-describedby="accept-cookies-copy" >
 
-        <div class="col-md-10 i-accept-copy" id="accept-cookies-copy">
-            This website uses cookies to perform analytics,
-            improve functionality, and enhance user experience.
-            You may set your browser to
-            <a href="https://www.wikihow.com/Disable-Cookies">decline cookies</a>,
+        <div class="i-accept-copy" id="accept-cookies-copy">
+            This website uses cookies to perform analytics, improve functionality, and enhance user experience. You may set your browser to
+            <a href="https://www.wikihow.com/Disable-Cookies" target="_blank">decline cookies</a>,
             but some content on our site may not display properly.
+
             For more information, please visit our
-            <a href="https://www.sciencehistory.org/site-terms">privacy policy</a>.
+            <a href="https://www.sciencehistory.org/privacy-policy/" target="_blank">privacy policy</a>.
         </div>
 
-        <div class="col-md-2 i-accept-button-div text-center">
-            <a href="#" class="i-accept-link"
+        <div class="i-accept-button-div text-center">
+            <a href="#" class="i-accept-link btn btn-emphasis"
                 role="button"
-                tabindex="0">I Accept</a>
+                tabindex="0">Accept</a>
         </div>
 
     </nav>

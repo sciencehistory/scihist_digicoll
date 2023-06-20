@@ -8,36 +8,39 @@
 
 // override sufia facet widget styles to be more brand-like, and generally neater
 .facets {
-  // No idea why blacklight puts the heading in a .navbar, but we got
-  // to restyle it now, also to match chf_sufia.
-  .navbar {
-    margin: 0;
-    padding: .625rem .9375rem; // to match chf_sufia I dunno
-    background-color: $brand-dark-blue;
+  .facets-header {
+    // To try to make top line of search results all line up, we hackily try to make
+    // this have the exact same line-height in pixels as .page_links. hack to try to improve on BL.
+    line-height: 2.3rem;
+
     h2.facets-heading {
-      color: white;
-      margin: 0;
-      line-height: 1.1;
-     }
+      font-size: $body-font-size;
+      text-transform: uppercase;
+      font-weight: 600;
+      text-align: center;
+    }
   }
 
   .card-header {
-    font-size: $font-size-base;
     font-weight: normal;
     line-height: 1.4;
     color: inherit;
 
     padding: .625rem .9375rem;
+  }
 
-    &::after { // the arrow
-      color: $brand-dark-grey;
-    }
+  .card-body {
+    border-top: $card-border-width solid $card-border-color;
   }
 
   .facet-limit {
-    border-top: 0;
     margin-top: 0;
     margin-bottom: 0;
+  }
+
+  // keep double border from happening between "boxes" in our facet limit stack
+  .facet-limit:not(:first-child) {
+    border-top: 0;
   }
 
   .facet-values li {
@@ -70,7 +73,11 @@
 }
 
 .sort-pagination {
-  padding-top: 0.5rem; // match blacklight .facets-header so it lines up
+  // to try to make search results line up horizontally, we have to override
+  // some BL things, and match blacklight .facets-header so it lines up
+  padding-top: 0.5rem;
+  padding-bottom: 1rem;
+  margin-bottom: 0;
 
   //flexbox works a lot better than float here
   display: flex;
@@ -80,15 +87,29 @@
   border: none;
   .search-widgets {
     float: none !important;
+
+    // override blacklight's use of bootstrap -- in our layout we want
+    // this flush with right margin.
+    #sort-dropdown {
+      margin-right: 0 !important;
+    }
   }
   &:after {
     display: none;
   }
 }
 
+// style more like brand style
+.sort-dropdown .dropdown-toggle {
+  text-transform: uppercase;
+  font-size: 0.9375rem;
+}
+
 // compact pagination
 .page_links  {
-  line-height: 2.5;
+  // To try to make everything on top results row line up, this is a bit hacky,
+  // this line-height has to be big enough to encompass sort button and match .facets-header
+  line-height: 2.3rem;
   strong {
     font-weight: $semi-bold-weight;
   }
@@ -131,19 +152,26 @@
     display: none;
   }
 }
+.bottom-pagination {
+  margin-bottom: $spacer * 2;
+}
 
 
 
 .other-searches {
   .card-header {
     text-transform: uppercase;
-    color: $brand-dark-blue;
+    color: $shi-blackish;
     font-weight: $semi-bold-weight;
     letter-spacing: $small-caps-letter-spacing;
   }
 
   .card-header, .list-group-item {
     padding: .625rem .9375rem;
+  }
+
+  .list-group {
+    font-size: 1rem; // 16px instead of 17px body font
   }
   margin-bottom: $paragraph-spacer * 2;
 }
@@ -153,7 +181,7 @@
 .documents-list {
   .document.scihist-results-list-item {
     display: flex;
-    margin-bottom: 2.8125rem;
+    margin-bottom: ($spacer * 4);
     border-bottom: none;
     margin-top: 0;
     padding-top: 0;
@@ -245,15 +273,17 @@
     }
     .scihist-results-list-item-genre {
       @extend %special-label;
-      color: $special-label-muted-color;
+      color: $shi-alt-muted-text;
       margin-bottom: .125rem;
     }
 
     .scihist-results-list-item-additional-titles, .scihist-results-list-item-parents {
+      margin-bottom: ($paragraph-spacer * 0.5);
+      font-weight: 500;
+
       ul {
         @extend .list-unstyled;
         @include font-size($h4-font-size);
-        font-family: $brand-alt-header-font;
         line-height: $headings-line-height;
         margin-top: 0;
       }
@@ -265,10 +295,7 @@
     .scihist-results-list-item-date {
       ul {
         @extend .list-unstyled;
-        margin-top: $paragraph-spacer;
-      }
-      li {
-        @extend %text-font-numerals;
+        margin-top: $paragraph-spacer * 0.25;
       }
     }
 
@@ -279,7 +306,6 @@
     .scihist-results-list-values {
       margin-top: $paragraph-spacer;
       li {
-        @extend %text-font;
         // hanging indent, serving to add margin to subsequent lines
         padding-left: 0.66em;
         text-indent: -0.66em;
@@ -289,7 +315,12 @@
 
     .attribute-label {
       @extend %special-label;
+      color: $shi-blackish;
       margin-right: 0.66em;
+    }
+
+    .cart-toggle-form {
+      margin-top: $spacer;
     }
   }
 }
@@ -302,6 +333,10 @@
     * {
       flex-basis: 50%;
     }
+  }
+
+  .noresults-text {
+    margin-bottom: $spacer * 2;
   }
 
   figure {

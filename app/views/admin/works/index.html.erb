@@ -1,7 +1,7 @@
 <h1>Works</h1>
   <p>
     <%= link_to 'Create new work', new_admin_work_path, class: "btn btn-primary #{"disabled" unless can?(:create, Kithe::Model) }" %>
-    <%= link_to 'Batch create works', admin_batch_create_path, class: "btn btn-outline-primary #{"disabled" unless can?(:create, Kithe::Model) }" %>
+    <%= link_to 'Batch create works', admin_batch_create_path, class: "btn btn-outline-secondary #{"disabled" unless can?(:create, Kithe::Model) }" %>
   </p>
 
 <%# this is ransack %>

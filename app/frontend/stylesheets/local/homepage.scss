@@ -21,6 +21,13 @@
         margin-bottom: 0;
         img {
           width: 100%;
+          // for small screens at collapsed size
+          max-height: 20rem;
+          object-fit: cover;
+          @include media-breakpoint-up('lg') {
+            max-height: revert;
+            object-fit: revert; // cause apparently sometimes it's off by 1 pixel!
+          }
         }
         figcaption {
           position: absolute;
@@ -35,7 +42,7 @@
     }
 
     .home-right-column {
-        background-color: #285f70;
+        background-color: $shi-teal;
         color: white;
         font-family: "sofia-pro","sans-serif";
         padding: 1rem 0;
@@ -45,29 +52,33 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+
+            .search-container {
+              max-width: 38rem;
+              padding: 0 2rem;
+            }
         }
     }
 
     .digital-description {
         h1 {
-            color: #e4e76d;
+            color: $shi-yellow;
             text-transform: uppercase;
             font-weight: 600;
         }
         .blurb {
-          //max-width: 35rem !important;
-          font-family: "sofia-pro","sans-serif" !important;
-          margin-top: $paragraph-spacer !important;
+          line-height: $headings-line-height;
           margin-bottom: $paragraph-spacer * 2 !important;
-          font-size: $h5-font-size !important;
+          font-size: $large-blurb-font-size !important;
         }
     }
 
     .search-container {
+        @include shi-full-width-inner-mixin;
         margin-left: auto;
         margin-right: auto;
-        padding-left: 1.25rem  !important;
-        padding-right: 1.25rem !important;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
     }
 
     .search-callouts {
@@ -80,32 +91,39 @@
     }
 
     .ribbon-section {
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+
       .title-div {
         display: flex;
         flex-direction: column;
+        text-align: center;
 
         h2 {
-          @extend .brand-alt-h2;
-          padding: 1rem 1rem 1rem 1rem;
-          margin-bottom:0;
+          font-weight: 900;
+          font-size: 2.125rem;
+          padding: 0;
+          margin: 0;
         }
 
         .blurb {
-          // styling copied from some large blurb text on www.sciencehistory.org.
-          font-size: 1.5rem;
-          max-width: none;
-          padding: 1rem 1rem 2rem 1rem;
+          line-height: $headings-line-height;
+          text-align: center;
+          font-size: $large-blurb-font-size;
+          margin-top: 1.5rem;
+          margin-bottom: 0;
         }
       }
+    }
+
+    // Can be same div as .ribbon-section if no background color
+    .ribbon-section-inner {
+      @include shi-full-width-inner-mixin;
     }
 
 
     $recent-items-box-width: 10.5rem;
     $recent-items-box-margin: 1.28rem;
-
-    .recent-items {
-        background-color: $brand-light-grey;
-    }
 
     .recent-items-list {
       display: flex;
@@ -113,10 +131,9 @@
       flex-wrap: wrap;
       justify-content: center;
       align-items: center;
+      margin-top: 2rem;
       padding-left: 0.9375rem;
       padding-right: 0.9375rem;
-      padding-top: 0.9375rem;
-      padding-bottom: 1.875rem;
 
       .recent-item {
         display: block;
@@ -169,56 +186,51 @@
       }
     }
 
-    $featured-topics-box-width: 18rem; // 21.875rem;
-    $featured-topics-box-height: 18rem; // 21.875rem;
-    $featured-topics-box-margin: 2.2rem; // 3.6875rem;
-
     .featured-topics {
-        background-color: $brand-dark-grey;
+        background-color: $shi-dark-gray;
 
         .title-div h2, .title-div {
           color: white;
         }
 
         .featured-topic {
-            position: relative;
+          a {
+            text-decoration: none;
+          }
 
-            .featured-topic-title-wrapper {
-                position: absolute;
-                bottom: -1px;
-                left: 0;
-                width: 100%;
-                height: 3.125rem;
-                color: $brand-dark-blue;
-                background-color: $brand-bright-green;
-                padding: 0.625rem;
-
-                .featured-topic-title {
-                    text-align: center;
-                    font-weight: $semi-bold-weight;
-                    text-transform: uppercase;
-                    font-size: 1.125rem;
-                    font-family: $brand-sans-serif;
-                    line-height: 1.5;
-                }
-            }
+          // supposed to be square, but if it's not let's force it, and
+          // crop to fit
+          .featured-topic-image {
+            aspect-ratio: 1;
+            object-fit: cover;
+          }
+          .featured-topic-title {
+              text-align: center;
+              font-weight: 700;
+              color: $shi-yellow;
+              font-size: $h4-font-size;
+              margin-top: 0.5em;
+              // font-family: $brand-sans-serif;
+              // line-height: 1.4;
+          }
         }
     }
 
 
     .collections, .featured-topics {
-      padding-bottom: 2.2rem;
-
       .collections-list {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
+        margin-top: 3rem;
+        margin-bottom: 1rem;
 
         .collection {
           display: flex;
           flex-direction: column;
           margin: $collection-index-box-margin;
           max-width: $collection-index-box-width;
+          text-decoration: none;
 
           .title {
             font-size: 1.125rem;
@@ -226,7 +238,7 @@
             letter-spacing: 0.04em;
             text-align: center;
             color: white;
-            background-color: $dark;
+            background-color: $shi-dark-gray;
             padding: 0.625rem;
           }
         }
@@ -236,29 +248,6 @@
         display: flex;
         justify-content: center;
         padding: $collection-index-box-margin $collection-index-box-margin 0 $collection-index-box-margin;
-
-        .chf-callout-button {
-          width: auto;
-          flex-shrink: 1;
-        }
       }
-    }
-
-    .chf-callout-button {
-        width: 100%;
-        text-transform: uppercase;
-        border-radius: 0;
-        letter-spacing: 0.04em;
-        margin-bottom: 1.5625rem;
-        // unlike normal btns, normally it's full width, but if screen is so small
-        // it needs to, it should break.
-        white-space: initial;
-        border-radius: 2px;
-    }
-
-    .i-accept-copy {
-        /* add in extra padding removed from .blacklight-homepage > container-fluid */
-        padding-left: 0.9375rem;
-        padding-right: 0.9375rem;
     }
 }

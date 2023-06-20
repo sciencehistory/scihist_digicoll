@@ -1,11 +1,11 @@
 <h2 class="attribute-sub-head">Cite as</h2>
   <div class="show-sub-head-body">
     <% if ! work.is_oral_history? %>
-      <p class="citation long-text-line-height">
+      <p class="citation">
          <%=CitationDisplay.new(work).display %>
       </p>
       <p class="btn-group" role="group">
-        <%=  link_to(work_path(work, format: :ris), class: "btn btn-sm btn-primary export-citation") do %>
+        <%=  link_to(work_path(work, format: :ris), class: "btn btn-sm btn-brand-main export-citation") do %>
           <i class="fa fa-address-card"></i>&nbsp;&nbsp;Export citation (RIS)
         <% end %>
 

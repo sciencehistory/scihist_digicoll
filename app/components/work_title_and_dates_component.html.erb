@@ -9,7 +9,7 @@
     <%= title %>
     <%= publication_badge(work) %>
     <% if can?(:update, work) %>
-      <%= link_to "Edit", admin_work_path(work), class: "btn btn-outline-primary" %>
+      <%= link_to "Edit", admin_work_path(work), class: "btn btn-outline-secondary" %>
     <% end %>
   </h1>
 

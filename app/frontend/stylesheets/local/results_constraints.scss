@@ -36,7 +36,7 @@
     letter-spacing: $small-caps-letter-spacing;
     font-weight: $semi-bold-weight;
     margin-right: 0.66em;
-    color: $brand-dark-blue;
+    color: $shi-blackish;
     vertical-align: middle;
   }
 
@@ -53,8 +53,10 @@
   .applied-filter {
     margin-right: 0.33em;
   }
+
+  // Carot separator symbol
   .applied-filter .filter-name:after {
-    color: $brand-dark-grey;
+    color: $shi-alt-muted-text;
     font-size: 100%;
     padding-left: .5em;
     padding-right: .2em;
@@ -67,11 +69,13 @@
   .constraint-value {
     color: black;
     background-color: $bg-lightly-shaded;
-    border-color: $bg-lightly-shaded;
+    border-color: $shi-bg-gray-border;
     max-width: initial; // dunno why BL sets a max-width, it's too small what it sets
     text-align: left;
     &:hover, &:focus {
-      background-color: $bg-lightly-shaded;
+      // work around some minor weirdness caused by us using bootstrap btn classes here,
+      // which set z-index on hover for some reason
+      z-index: unset;
     }
   }
 
@@ -89,7 +93,6 @@
     .input-group-prepend .input-group-text {
       border-bottom-left-radius: $btn-border-radius;
       border-top-left-radius: $btn-border-radius;
-      font-size: $font-size-base;
     }
     .input-group-append{
       a:last-child, button:last-child {
@@ -98,7 +101,7 @@
       }
     }
     input[type=text] {
-      border-color: $brand-light-grey;
+      border-color: $shi-bg-gray-border;
     }
   }
 

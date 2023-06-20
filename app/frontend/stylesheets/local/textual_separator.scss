@@ -16,7 +16,7 @@
 .textual-separator::after {
   content: '';
   flex: 1;
-  border-bottom: 1px solid $brand-dark-grey;
+  border-bottom: 1px solid $shi-dark-gray;
 }
 
 .textual-separator:not(:empty)::before {
