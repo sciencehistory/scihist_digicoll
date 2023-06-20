@@ -48,7 +48,7 @@ GEM
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.1, >= 1.2.0)
-    active_encode (1.2.0)
+    active_encode (1.1.1)
       addressable (~> 2.8)
       rails
     activejob (7.0.5)
@@ -705,7 +705,7 @@ PLATFORMS
 
 DEPENDENCIES
   access-granted (~> 1.0)
-  active_encode (~> 1.0)
+  active_encode (~> 1.0, = 1.1.1)
   activerecord-postgres_enum (~> 2.0)
   alba (~> 2.0)
   attr_json (~> 2.0)
