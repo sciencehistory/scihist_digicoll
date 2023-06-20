@@ -30,13 +30,14 @@
                 # the data-setup with serialized json triggers video.js
                 data: {
                   setup: {
-                    aspectRatio: "#{video_asset.width}:#{video_asset.height}",
-                    plugins: {
-                      seekButtons: {
+                    controlBar: {
+                      skipButtons: {
+                        # seconds. only 5, 10, and 30 are supported by video.js
                         forward: 30,
-                        back: 15
+                        backward: 10
                       }
-                    }
+                    },
+                    aspectRatio: "#{video_asset.width}:#{video_asset.height}"
                   }.to_json
                 }
         ) do %>

@@ -15,8 +15,7 @@
     "openseadragon": "^4.0.0",
     "popper.js": "^ 1.16.1",
     "tom-select": "^1.4.3",
-    "video.js": "^7.18.1",
-    "videojs-seek-buttons": "^2.2.0"
+    "video.js": "^8.0.0"
   },
   "devDependencies": {
     "rollup-plugin-gzip": "^3.0.1",
