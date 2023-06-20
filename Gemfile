@@ -12,6 +12,8 @@ gem 'lockbox'
 gem 'rails', '~> 7.0.0'
 
 # Our JS/CSS/asset bundler
+# After updating, you always need to run `bundle exec vite upgrade` to update JS packages to match
+# among other things.
 gem "vite_rails", "~> 3.0"
 
 # mail is a rails dependency, opt into 2.8.0.rc1 pre-release for ruby 3.1 compat,
