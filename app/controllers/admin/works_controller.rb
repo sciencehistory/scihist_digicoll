@@ -564,6 +564,10 @@ class Admin::WorksController < AdminController
     #
     # https://github.com/activerecord-hackery/ransack
     #
+    # NOTE: While currently poorly documented, all attributes or associations
+    #       we want to use with ransack NEED TO  be listed in an allowlist
+    #       in method Work.ransackable_attributes and Work.ransackable_associations
+    #
     # that includes our sorting, and also
     # 'published' and "include or exclude Child Works that match query"
     #
