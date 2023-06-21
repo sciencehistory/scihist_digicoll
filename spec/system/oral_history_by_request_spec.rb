@@ -113,7 +113,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       click_on 'Request Access'
       pr = '#admin_oral_history_access_request_'
 
-      expect(page).to have_text("After submitting a brief form, your request will be reviewed and you will receive an email, usually within 3 business days.")
+      expect(page).to have_text("After your request is received, you will receive an email response, usually within 3 business days. ")
 
       all("#{pr}patron_name").first.fill_in  with: 'Joe Schmo'
       all("#{pr}patron_email").first.fill_in with: 'patron@library.org'
