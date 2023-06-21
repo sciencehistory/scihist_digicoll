@@ -66,7 +66,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       all("#{pr}patron_name").first.fill_in  with: 'Joe Schmo'
       all("#{pr}patron_email").first.fill_in with: 'patron@library.org'
       all("#{pr}patron_institution").first.fill_in with: 'Some Library'
-      all("#{pr}intended_use").first.fill_in with: 'Fun & games'
+      # leave out intended use, because not required for this request type, make sure it goes through
 
       expect(Admin::OralHistoryAccessRequest.count).to eq 0
       click_on 'Submit request'
@@ -76,7 +76,6 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       expect(new_req.patron_name).to eq "Joe Schmo"
       expect(new_req.patron_email).to eq "patron@library.org"
       expect(new_req.patron_institution).to eq "Some Library"
-      expect(new_req.intended_use).to eq "Fun & games"
       expect(new_req.delivery_status_automatic?).to be(true)
 
       expect(page).to have_text("We are sending you links to the files you requested")
