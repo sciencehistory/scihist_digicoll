@@ -179,3 +179,16 @@
     word-break: break-word;
   }
 }
+
+.by-request-file-list {
+  padding-left: $spacer * 1.5;
+  li {
+    display: flex;
+    vertical-align: middle;
+    margin-bottom: 0.66rem;
+    i {
+      font-size: 1.4em;
+      margin-right: 0.66rem;
+    }
+  }
+}

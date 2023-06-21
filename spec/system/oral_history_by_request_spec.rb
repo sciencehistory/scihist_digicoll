@@ -49,17 +49,18 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       ## File request
 
       expect(page).to have_selector("h2", text: "Access this interview")
-      expect(page).to have_text("1 PDF transcript and 1 audio recording file")
-      expect(page).to have_selector(:link_or_button, 'Request Access')
+      expect(page).to have_text("1 PDF Transcript File")
+      expect(page).to have_text("1 Audio Recording File")
+      expect(page).to have_selector(:link_or_button, 'Get Access')
 
       within(".show-member-file-list-item") do
         expect(page).to have_selector(:link, preview_pdf.title)
         expect(page).to have_selector(:link_or_button, "Download")
       end
 
-      expect(page).to have_text("After submitting a brief form, you will receive immediate access to these files.")
+      expect(page).to have_text("Fill out a brief form to receive immediate access to these files.")
 
-      click_on 'Request Access'
+      click_on 'Get Access'
       pr = '#admin_oral_history_access_request_'
 
       all("#{pr}patron_name").first.fill_in  with: 'Joe Schmo'
@@ -98,7 +99,8 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       expect(page).to have_selector("h1", text: work.title)
 
       expect(page).to have_selector("h2", text: "Access this interview")
-      expect(page).to have_text("1 PDF transcript and 1 audio recording file")
+      expect(page).to have_text("1 PDF Transcript File")
+      expect(page).to have_text("1 Audio Recording File")
       expect(page).to have_selector(:link_or_button, 'Request Access')
 
       within(".show-member-file-list-item") do
@@ -106,7 +108,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
         expect(page).to have_selector(:link_or_button, "Download")
       end
 
-      expect(page).to have_text("After submitting a brief form, your request will be reviewed and you will receive an email, usually within 3 business days.")
+      expect(page).to have_text("Fill out a brief form and a staff member will review your request for these files. You should receive an email within 3 business days.")
 
       click_on 'Request Access'
       pr = '#admin_oral_history_access_request_'
