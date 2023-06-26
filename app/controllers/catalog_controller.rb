@@ -3,6 +3,7 @@
 require 'kithe/blacklight_tools/bulk_loading_search_service'
 
 class CatalogController < ApplicationController
+  before_action :redirect_legacy_filter_params, only: :index
   before_action :redirect_hash_facet_params, only: :index
   before_action :redirect_legacy_query_urls, only: :index
   before_action :catch_bad_blacklight_params, only: [:index, :facet]
@@ -661,6 +662,31 @@ class CatalogController < ApplicationController
 
     if corrected_params.present?
       redirect_to helpers.safe_params_merge_url(corrected_params), :status => :moved_permanently
+    end
+  end
+
+  # Things that used to be facets or similar, but no longer are. Bit of a mess to change
+  # the Rails params safely.
+  #
+  def redirect_legacy_filter_params
+    if params[:filter_public_domain].present? && params[:filter_public_domain] != "0"
+      new_params = params.to_unsafe_h.deep_dup
+      new_params.delete(:filter_public_domain)
+      new_params[:f] ||= {}
+      new_params[:f][:rights_facet] ||= {}
+      new_params[:f][:rights_facet] = ["http://creativecommons.org/publicdomain/mark/1.0/"]
+
+      # for safety, run through url_for with only_path
+      redirect_to url_for(new_params.merge(only_path: true)), :status => :moved_permanently
+    elsif params[:filter_copyright_free].present? && params[:filter_copyright_free] != "0"
+      new_params = params.to_unsafe_h.deep_dup
+      new_params.delete(:filter_copyright_free)
+      new_params[:f] ||= {}
+      new_params[:f][:rights_facet] ||= {}
+      new_params[:f][:rights_facet] = ["Copyright Free"]
+
+      # for safety, run through url_for with only_path
+      redirect_to url_for(new_params.merge(only_path: true)), :status => :moved_permanently
     end
   end
 
