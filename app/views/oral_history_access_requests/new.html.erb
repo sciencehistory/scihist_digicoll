@@ -1,2 +1,8 @@
-<h1 class="brand-alt-h1">Request Oral History Access</h1>
+<h1 class="brand-alt-h1">
+  <% if @work.oral_history_content.available_by_request_manual_review? %>
+    Request Oral History Access
+  <% else %>
+    Get Oral History Access
+  <% end %>
+</h1>
 <%= render 'form', oral_history_access_request: @oral_history_access_request %>
