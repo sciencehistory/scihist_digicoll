@@ -77,7 +77,7 @@ Rails.application.configure do
   # has some standard Rails code that lets you turn it on in dev with in-memory store,
   # with `./bin/rails dev:cache` toggle.
   #
-  # On heroku we try to set up either memcachdcloud or memcachier, in that order,
+  # On heroku we try to set up either memcachier or memcachedcloud, in that order,
   # depending on what env variables are defined.
   #
   # We tune the timeouts to give up really quickly -- we don't want the server
@@ -85,23 +85,34 @@ Rails.application.configure do
   # it on every request. It's just a cache; give up if it's slow!
   #
   # https://github.com/petergoldstein/dalli/blob/5588d98f79eb04a9abcaeeff3263e08f93468b30/lib/dalli/protocol/connection_manager.rb
+  #
+  # We use configuration including 'pool' suggested by memcachier docs, which requires
+  # connection_pool gem to be available to work.
+  #
+  require 'connection_pool'  # needed for dalli pool_size to work
+
+  mem_cache_store_config = {
+    :socket_timeout => (ENV["MEMCACHE_TIMEOUT"] || 0.15).to_f,       # default is maybe 1 second?
+    :socket_failure_delay => 0.08,                                   # retry failures with fairly quick 80ms delay
+    :failover => true,                                               # don't think it matters unless provider gives us more than one hostname
+    :pool_size => ENV.fetch("RAILS_MAX_THREADS") { 5 },              # should match puma, suggested by memcachier docs
+    :pool_timeout => (ENV["MEMCACHE_TIMEOUT"] || 0.15).to_f          # don't wait too long for a connection from pool either
+  }
+
   if ENV["MEMCACHIER_SERVERS"]
-    # https://devcenter.heroku.com/articles/memcachier#rails
-    config.cache_store = :mem_cache_store, ENV["MEMCACHIER_SERVERS"].split(","), {
+    # https://devcenter.heroku.com/articles/memcachier#ruby-puma-webserver
+    config.cache_store = :mem_cache_store, ENV["MEMCACHIER_SERVERS"].split(","), mem_cache_store_config.merge({
       :username => ENV["MEMCACHIER_USERNAME"],
-      :password => ENV["MEMCACHIER_PASSWORD"],
-      :socket_timeout => (ENV["MEMCACHE_TIMEOUT"] || 0.15).to_f,       # default was 0.5
-      :socket_failure_delay => false                                   # don't retry failures
-    }
+      :password => ENV["MEMCACHIER_PASSWORD"]
+    })
   elsif ENV["MEMCACHEDCLOUD_SERVERS"]
     # https://devcenter.heroku.com/articles/memcachedcloud#using-memcached-from-ruby
-    config.cache_store = :mem_cache_store, ENV["MEMCACHEDCLOUD_SERVERS"].split(','), {
+    config.cache_store = :mem_cache_store, ENV["MEMCACHEDCLOUD_SERVERS"].split(','), mem_cache_store_config.merge({
       :username => ENV["MEMCACHEDCLOUD_USERNAME"],
-      :password => ENV["MEMCACHEDCLOUD_PASSWORD"],
-      :socket_timeout => (ENV["MEMCACHE_TIMEOUT"] || 0.15).to_f,       # default was 1
-      :socket_failure_delay => false                                   # don't retry failures
-    }
+      :password => ENV["MEMCACHEDCLOUD_PASSWORD"]
+    })
   end
+
 
 
   # Use a real queuing backend for Active Job (and separate queues per environment)
