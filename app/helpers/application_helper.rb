@@ -1,5 +1,13 @@
 module ApplicationHelper
 
+  # Override Blacklight helper method to be MUCH more efficient, no going to cache_store and/or i18n for
+  # unclear benefit -- it's caching with a locale-independent key anyway, so the original
+  # implementation won't even vary by locale either!
+  # https://github.com/projectblacklight/blacklight/blob/13a8122fc6495e52acabc33875b80b51613d8351/app/helpers/blacklight/blacklight_helper_behavior.rb#L15-L22
+  def application_name
+    "Science History Institute Digital Collections"
+  end
+
   # What we show next to things that are not published, currently used
   # in management screens and possibly end-user front-end (although only managers,
   # if anyone, can see non-public things in end-user front-end).
