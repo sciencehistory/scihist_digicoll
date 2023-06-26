@@ -12,6 +12,8 @@ gem 'lockbox'
 gem 'rails', '~> 7.0.0'
 
 # Our JS/CSS/asset bundler
+# After updating, you always need to run `bundle exec vite upgrade` to update JS packages to match
+# among other things.
 gem "vite_rails", "~> 3.0"
 
 # mail is a rails dependency, opt into 2.8.0.rc1 pre-release for ruby 3.1 compat,
@@ -42,10 +44,11 @@ gem 'scout_apm'
 # version may require an update with yarn to `blacklight-frontend`, has to be
 # checked manually.
 gem "blacklight", "~> 7.32.0"
-gem "blacklight_range_limit", "~> 8.0", ">= 8.2.3" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
+gem "blacklight_range_limit", "~> 8.2.3" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
 # for some code to deal with transcoding video, via AWS MediaConvert
-gem "active_encode", "~> 1.0"
+# Lower than 1.2.1 had far too big gem builds! https://github.com/samvera-labs/active_encode/issues/126
+gem "active_encode", "~> 1.0", ">= 1.2.1"
 
 # these gems are needed for active_encode MediaConvert adapter
 # https://github.com/samvera-labs/active_encode/blob/main/guides/media_convert_adapter.md
