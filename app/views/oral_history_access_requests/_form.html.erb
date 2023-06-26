@@ -55,7 +55,7 @@
         <%= f.input :intended_use,
           as: :text,
           label: "Intended use",
-          hint: "So that we can better understand our audience, please tell us how you plan to use the oral history you have requested.",
+          hint: (@work.oral_history_content.available_by_request_automatic? ? "So that we can better understand our audience, please tell us how you plan to use the oral history you have requested." : "Please tell us how you intend to use this oral history interview so that we may inform you about any relevant interviewee restrictions."),
           required: @oral_history_access_request.work&.oral_history_content&.available_by_request_manual_review?
         %>
       </div>
