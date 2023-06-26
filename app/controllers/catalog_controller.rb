@@ -131,9 +131,7 @@ class CatalogController < ApplicationController
     end
   end
 
-  # Tell Blacklight to recognize our custom filter_copyright_free=1 as a constraints filter.
-  # And override BL helper method to _display_ the filter_copyright_free constraint,
-  # as well as display the text query input constraint as a live search box/form allowing
+  # Display the text query input constraint as a live search box/form allowing
   # user to change query inline, instead of just a label.
   module RenderQueryConstraintOverride
 
@@ -156,7 +154,7 @@ class CatalogController < ApplicationController
       # Blacklight::SearchState that it's not expecting. This is hard to explain,
       # but it's how it is...
       #
-      super(localized_params) || SearchBuilder::CopyrightFreeFilter.filtered_copyright_free?(localized_params)
+      super(localized_params)
     end
 
     private
@@ -219,7 +217,7 @@ class CatalogController < ApplicationController
     # be listed here as of Blacklight 7.25, kind of annoying. These often
     # correspond to old deprecated SearchBuilder extensions we are currently
     # using. Not really sure why we need :id
-    config.search_state_fields.concat([:filter_copyright_free, :id])
+    config.search_state_fields.concat([:id])
 
     ## Default parameters to send to solr for all search-like requests. See also SearchBuilder#processed_parameters
     config.default_solr_params = {
