@@ -3,6 +3,7 @@
 require 'kithe/blacklight_tools/bulk_loading_search_service'
 
 class CatalogController < ApplicationController
+  before_action :redirect_legacy_filter_params, only: :index
   before_action :redirect_hash_facet_params, only: :index
   before_action :redirect_legacy_query_urls, only: :index
   before_action :catch_bad_blacklight_params, only: [:index, :facet]
@@ -131,9 +132,7 @@ class CatalogController < ApplicationController
     end
   end
 
-  # Tell Blacklight to recognize our custom filter_copyright_free=1 as a constraints filter.
-  # And override BL helper method to _display_ the filter_copyright_free constraint,
-  # as well as display the text query input constraint as a live search box/form allowing
+  # Display the text query input constraint as a live search box/form allowing
   # user to change query inline, instead of just a label.
   module RenderQueryConstraintOverride
 
@@ -156,7 +155,7 @@ class CatalogController < ApplicationController
       # Blacklight::SearchState that it's not expecting. This is hard to explain,
       # but it's how it is...
       #
-      super(localized_params) || SearchBuilder::CopyrightFreeFilter.filtered_copyright_free?(localized_params)
+      super(localized_params)
     end
 
     private
@@ -219,7 +218,7 @@ class CatalogController < ApplicationController
     # be listed here as of Blacklight 7.25, kind of annoying. These often
     # correspond to old deprecated SearchBuilder extensions we are currently
     # using. Not really sure why we need :id
-    config.search_state_fields.concat([:filter_copyright_free, :id])
+    config.search_state_fields.concat([:id])
 
     ## Default parameters to send to solr for all search-like requests. See also SearchBuilder#processed_parameters
     config.default_solr_params = {
@@ -663,6 +662,31 @@ class CatalogController < ApplicationController
 
     if corrected_params.present?
       redirect_to helpers.safe_params_merge_url(corrected_params), :status => :moved_permanently
+    end
+  end
+
+  # Things that used to be facets or similar, but no longer are. Bit of a mess to change
+  # the Rails params safely.
+  #
+  def redirect_legacy_filter_params
+    if params[:filter_public_domain].present? && params[:filter_public_domain] != "0"
+      new_params = params.to_unsafe_h.deep_dup
+      new_params.delete(:filter_public_domain)
+      new_params[:f] ||= {}
+      new_params[:f][:rights_facet] ||= {}
+      new_params[:f][:rights_facet] = ["http://creativecommons.org/publicdomain/mark/1.0/"]
+
+      # for safety, run through url_for with only_path
+      redirect_to url_for(new_params.merge(only_path: true)), :status => :moved_permanently
+    elsif params[:filter_copyright_free].present? && params[:filter_copyright_free] != "0"
+      new_params = params.to_unsafe_h.deep_dup
+      new_params.delete(:filter_copyright_free)
+      new_params[:f] ||= {}
+      new_params[:f][:rights_facet] ||= {}
+      new_params[:f][:rights_facet] = ["Copyright Free"]
+
+      # for safety, run through url_for with only_path
+      redirect_to url_for(new_params.merge(only_path: true)), :status => :moved_permanently
     end
   end
 
