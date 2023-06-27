@@ -29,9 +29,12 @@ module Scihist
     # on `+ helpers.render(@facet_constraint_component`, we're leaving that out... seems
     # to be fine?  Sorry.
     def query_constraints
-      helpers.render @query_constraint_component.new(
+      # the `+` with @facet_constraint_component is copied from original implementation, and
+      # I think is about "advanced search" feature?
+
+      helpers.render(@query_constraint_component.new(
         search_state: @search_state
-      )
+      )) + helpers.render(@facet_constraint_component.with_collection(clause_presenters.to_a, **@facet_constraint_component_options))
     end
   end
 end
