@@ -11,7 +11,7 @@ module Scihist
   class BlacklightConstraintsComponent < Blacklight::ConstraintsComponent
 
     # override just to change default value of `query_constraint_component`
-    def initialize(*, search_state:, query_constraint_component: ScihistQueryConstraintComponent, **)
+    def initialize(*, search_state:, query_constraint_component: Scihist::BlacklightQueryConstraintComponent, **)
       @search_state = search_state
       super
     end
