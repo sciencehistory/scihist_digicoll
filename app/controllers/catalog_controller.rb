@@ -462,6 +462,7 @@ class CatalogController < ApplicationController
 
 
     config.index.constraints_component = Scihist::BlacklightConstraintsComponent
+    config.index.sidebar_component     = Scihist::BlacklightSearchSidebarComponent
   end
 
   # Some bad actors sometimes send query params that Blacklight doesn't expect and
