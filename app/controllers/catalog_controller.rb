@@ -132,54 +132,6 @@ class CatalogController < ApplicationController
     end
   end
 
-  # Display the text query input constraint as a live search box/form allowing
-  # user to change query inline, instead of just a label.
-  module RenderQueryConstraintOverride
-
-    # We override this in order to customize how the query text constraint is displayed,
-    # to make it a little editable search box.
-    #
-    # Blacklight really doesn't want us to override this anymore as of somewhere around blacklight 7.12
-    # But we can't find any other way to do this customization, so it remains for now.
-    # We do try to make it trigger as few deprecation warnings as possible.
-    def render_constraints_query(params_or_search_state = search_state)
-      localized_params = _scihist_convert_to_params(params_or_search_state)
-      render "query_constraint_as_form", params: localized_params
-    end
-
-    def query_has_constraints?(params_or_search_state = search_state)
-      localized_params = _scihist_convert_to_params(params_or_search_state)
-
-      # actually have to pass localized_params in super, as oppoosed to no-arg `super`,
-      # to avoid breaking blacklight_range_limit by passing the NEW default arg
-      # Blacklight::SearchState that it's not expecting. This is hard to explain,
-      # but it's how it is...
-      #
-      super(localized_params)
-    end
-
-    private
-
-    # recent blacklight has switched a lot of arguments from `params` hash to
-    # a Blacklight::SearchState object, but a lot of our code wants the params,
-    # we'll switch em back.
-    def _scihist_convert_to_params(params_or_search_state)
-      if params_or_search_state.is_a? Blacklight::SearchState
-        # search_state.params returns an ordinary hash, which is fine for most
-        # of our code, but things get complex with blacklight_range_limit,
-        # let's make it an actual ActionController::Parameters like it used to be,
-        # keeps everything strictly backwards compat and working better.
-        ActionController::Parameters.new(params_or_search_state.params)
-      elsif params_or_search_state.is_a? ActionController::Parameters
-        params_or_search_state
-      else
-        raise ArgumentError, "in Blacklight override, we expected SearchState or Parameters, but got something unexpected: #{params_or_search_state}"
-      end
-
-    end
-  end
-  helper RenderQueryConstraintOverride
-
   # Cheesy way to override Blaclight helper method with call to super possible
   module SortHelperOverrides
     # Override Blacklight method, so "best match"/relevancy sort is not offered
@@ -505,7 +457,9 @@ class CatalogController < ApplicationController
     # if the name of the solr.SuggestComponent provided in your solrcongig.xml is not the
     # default 'mySuggester', uncomment and provide it below
     # config.autocomplete_suggester = 'mySuggester'
-    #
+
+
+    config.index.constraints_component = ScihistConstraintsComponent
   end
 
   # Some bad actors sometimes send query params that Blacklight doesn't expect and

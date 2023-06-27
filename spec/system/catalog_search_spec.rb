@@ -224,8 +224,8 @@ describe CatalogController, solr: true, indexable_callbacks: true do
         f: { subject_facet: [subject] }
       )
 
-      # now try to change the query in the little search form in constraint
-      # _query_constraint_as_form.html.erb
+      # now try to change the query in the little search form in customized
+      # editable query constraint
       within("form.scihist-constraints-query") do
         fill_in :q, with: title, fill_options: { clear: :backspace } # that fill_options nonsense seems to workaround a capybara bug
         click_on "Go"
@@ -236,6 +236,24 @@ describe CatalogController, solr: true, indexable_callbacks: true do
         expect(page).to have_text(/#{title}/i) # not sure why capybara thinks this was uppercase on page, oh well.
         expect(page).to have_text("Subject #{subject}")
         expect(page).to have_text("Date #{from_date} to #{to_date}")
+      end
+    end
+
+    it "displays editable search-within form even with no query" do
+      visit search_catalog_path(search_field: "all_fields",
+        f: { subject_facet: [subject] }
+      )
+
+      # We're making sure this form is HERE even though we didn't have an initial query
+      within("form.scihist-constraints-query") do
+        fill_in :q, with: title, fill_options: { clear: :backspace } # that fill_options nonsense seems to workaround a capybara bug
+        click_on "Go"
+      end
+
+      # keeps all the constraints plus has our new one
+      within(".constraints-container") do
+        expect(page).to have_text(/#{title}/i) # not sure why capybara thinks this was uppercase on page, oh well.
+        expect(page).to have_text("Subject #{subject}")
       end
     end
   end
