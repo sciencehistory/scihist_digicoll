@@ -4,9 +4,13 @@ class Admin::CollectionsController < AdminController
   # GET /collections
   # GET /collections.json
   def index
-    # No authorize! call here. We're assuming if you can view the
-    # index, you can see all published and unpublished collections.
+    # No authorize! call here to filter viewable items in the list.
+    # We're assuming if you can view the index, you can see all published and
+    # unpublished collections.
 
+
+    # NOTE WELL: To use ransack, all attributes we want ransack to search or sort
+    # on NEED TO be listed in Colletion.ransackable_attributes and/or Collection.ransackable_associations
     @q = Collection.ransack(params[:q]).tap do |ransack|
       ransack.sorts = 'title asc' if ransack.sorts.empty?
     end
