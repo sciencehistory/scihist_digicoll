@@ -5,13 +5,22 @@
     and want this blacklight search action to always show results -- if no query is entered,
     it will just show all results, if we let it.
 
-    Customization forked from: https://github.com/projectblacklight/blacklight/blob/5a0e229b68d3a853e7dce7f477d777336ac7f63a/app/views/catalog/index.html.erb
+    Customization forked from: https://github.com/projectblacklight/blacklight/blob/v8.0.1/app/views/catalog/index.html.erb
+
+
+    If this feature got merged, we would not need to override this whole component:
+    https://github.com/projectblacklight/blacklight/pull/3049
 %>
 
-<% content_for(:sidebar) do %>
-  <%= render 'search_sidebar' %>
+<% content_for(:head) do %>
+  <meta name="blacklight-search-storage" content="<%= blacklight_config.track_search_session.storage %>">
 <% end %>
-<% content_for(:sidebar_aria_label) { t('blacklight.search.documents.aria.limit_search')  } %>
-<% content_for(:content_aria_label) { t('blacklight.search.documents.aria.search_results')  } %>
+<% content_for(:sidebar) do %>
+  <% conf = blacklight_config.view_config(document_index_view_type) %>
+  <%= render conf.sidebar_component.new(blacklight_config: blacklight_config,
+                                        response: @response,
+                                        view_config: conf) %>
+<% end %>
 
 <%= render 'search_results' %>
+
