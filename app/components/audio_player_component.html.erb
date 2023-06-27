@@ -16,23 +16,24 @@
           volumePanel: {
             inline: false
           },
+          skipButtons: {
+            # seconds. only 5, 10, and 30 are supported by video.js
+            forward: 30,
+            backward: 10
+          },
           # we want to customize the ORDER of control elements,
           # while also removing some.  Making it similar
           # to default html5 audio players in popular browsers
           children: [
             "playToggle",
+            "skipBackward",
+            "skipForward",
             "currentTimeDisplay",
             "progressControl",
             "durationDisplay",
             "volumePanel",
             "playbackRateMenuButton"
           ]
-        },
-        plugins: {
-          seekButtons: {
-            forward: 30,
-            back: 15
-          }
         }
       }
     }
