@@ -459,7 +459,7 @@ class CatalogController < ApplicationController
     # config.autocomplete_suggester = 'mySuggester'
 
 
-    config.index.constraints_component = ScihistConstraintsComponent
+    config.index.constraints_component = Scihist::BlacklightConstraintsComponent
   end
 
   # Some bad actors sometimes send query params that Blacklight doesn't expect and
