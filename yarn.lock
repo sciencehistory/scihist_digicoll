@@ -559,9 +559,9 @@ once@^1.3.0:
     wrappy "1"
 
 openseadragon@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/openseadragon/-/openseadragon-4.0.0.tgz#1832f2048f786c69fd1ced3dee8368487f212d3e"
-  integrity sha512-HsjSgqiiPwLkW5576GxDJ7Rax96iLUET8fnTsJvu7uYYkd+qzen3bflxHyph0OVVgZBKP9SpGH1nPdU4Mz0Z2A==
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/openseadragon/-/openseadragon-4.1.0.tgz#194dce8c2c347d3dd45cdd5de4c278b41c8f5d3c"
+  integrity sha512-XMMzf5apmshvIvxvqMwiW9dJ07dol4zudvV1oFnoZuIpSZP3c3tlFjGbyOKHGhb1k4jmHQ7b7koG9vCHdKvC/A==
 
 path-is-absolute@^1.0.0:
   version "1.0.1"
