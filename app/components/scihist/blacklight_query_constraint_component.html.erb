@@ -1,12 +1,11 @@
 <%#  query constraint as a live search box/form allowing you to change query,
-     instead of just a label, and additional constraint for copyright-free where
-     appropriate %>
+     instead of just a label %>
 
 <form class="scihist-constraints-query applied-filter d-inline-block">
     <%# include all existing filters etc in the search that will be submitted
         with changed query text string, by using the component from Blacklight
         to include as hidden fields: %>
-    <%= render Blacklight::HiddenSearchStateComponent.new(params: search_state.params_for_search.except(:q, :qt, :page, :utf8)) %>
+    <%= render Blacklight::HiddenSearchStateComponent.new(params: search_context_params) %>
 
     <div class="input-group input-group-sm">
       <div class="input-group-prepend">
@@ -14,17 +13,18 @@
       </div>
 
       <label class="sr-only" for="constraintsQueryInput">Query</label>
-      <%= text_field_tag "q", local_assigns[:params].try { |h| h[:q] }, placeholder: "Search within results", class: "form-control", id: "constraintsQueryInput" %>
+      <%= text_field_tag "q", current_search_q, placeholder: "Search within results", class: "form-control", id: "constraintsQueryInput" %>
 
       <div class="input-group-append">
         <button class="btn btn-primary" title="Search within results" aria-label="Search within results">
           Go
         </button>
-        <% if params[:q].present? %>
-            <%= link_to(search_state.params_for_search.except(:q, :qt, :page, :utf8),  { class:"btn btn-primary remove", title:"Remove" }) do %>
-              <span class="remove-icon">✖</span><span class="sr-only">Remove query constraint <%= params[:q] %></span>
+        <% if current_search_q.present? %>
+            <%= link_to(search_context_params,  { class:"btn btn-primary remove", title:"Remove" }) do %>
+              <span class="remove-icon">✖</span><span class="sr-only">Remove query constraint '<%= current_search_q %>'</span>
             <% end %>
         <% end %>
       </div>
     </div>
 </form>
+
