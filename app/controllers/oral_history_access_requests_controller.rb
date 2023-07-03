@@ -4,7 +4,7 @@ class OralHistoryAccessRequestsController < ApplicationController
   # GET /works/4j03d09fr7t/request_oral_history_access
   def new
     @work = load_work(params['work_friendlier_id'])
-    @oral_history_access_request = Admin::OralHistoryAccessRequest.new
+    @oral_history_access_request = Admin::OralHistoryAccessRequest.new(work: @work)
   end
 
   # POST "/request_oral_history_access"

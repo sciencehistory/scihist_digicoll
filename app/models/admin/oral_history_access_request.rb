@@ -3,7 +3,10 @@ class Admin::OralHistoryAccessRequest < ApplicationRecord
   belongs_to :work
   validates :patron_name, presence: true
   validates :patron_email, presence: true
-  validates :intended_use, presence: true
+
+  validates :intended_use, presence: true, if: -> {
+    work&.oral_history_content&.available_by_request_manual_review?
+  }
 
   enum delivery_status: %w{pending automatic approved rejected}.map {|v| [v, v]}.to_h, _prefix: :delivery_status
 

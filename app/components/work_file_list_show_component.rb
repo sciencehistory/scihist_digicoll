@@ -48,20 +48,6 @@ class WorkFileListShowComponent < ApplicationComponent
     work.oral_history_content&.interviewee_biographies || []
   end
 
-  def available_by_request_summary
-    parts = []
-
-    if available_by_request_pdf_count > 0
-      parts << helpers.pluralize(available_by_request_pdf_count,  "PDF transcript")
-    end
-
-    if available_by_request_audio_count > 0
-      parts << helpers.pluralize(available_by_request_audio_count,  "audio recording file")
-    end
-
-    helpers.safe_join(parts, " and ")
-  end
-
   def available_by_request_pdf_count
     @available_by_request_pdf_count ||= available_by_request_assets.find_all { |asset| asset.content_type == "application/pdf" }.count
   end
@@ -70,8 +56,12 @@ class WorkFileListShowComponent < ApplicationComponent
     @available_by_request_audio_count ||= available_by_request_assets.find_all { |asset| asset.content_type&.start_with?("audio/") }.count
   end
 
-  def multiple_files?
-    (available_by_request_pdf_count + available_by_request_audio_count > 1)
+  def request_button_name
+    if @work.oral_history_content.available_by_request_automatic?
+      "Get Access"
+    else
+      "Request Access"
+    end
   end
 
   def available_by_request_assets
