@@ -1,45 +1,20 @@
 <%= simple_form_for @oral_history_access_request,  :url => :request_oral_history_access  do |f| %>
 
-  <p class="mb-4">
-    To
+  <div class="mb-5 mt-4">
+    <p>
+      To receive files for "<%= @work.title %>" by email, please fill out the form below.
 
-      <% if @work.oral_history_content.available_by_request_manual_review? %>
-        request access to
+      <% if @work.oral_history_content.available_by_request_automatic? %>
+        <span class="text-danger">You will receive these files immediately after submitting this form.</span>
       <% else %>
-        receive
+        <span class="text-danger">After your request is received, you will receive an email response, usually within
+          3 business days. If permission is granted to access this interview, you will receive the files by email.
+        </span>
       <% end %>
-
-    files for "<%= @work.title %>" by email, please fill out the form below.
-  </p>
-
-
-  <div class="alert alert-info mb-4" role="alert">
-    <p class="sans-serif">
-      Your receipt of an electronic copy of this oral history indicates your agreement to abide by U.S. copyright law and terms of licensing:
-
-        <% if @work.rights.present? %>
-          <%= link_to RightsTerm.label_for(@work.rights), @work.rights, class: "alert-link" %>.
-        <% else %>
-          <p>[Missing rights information, please contact the Center for Oral History.]</p>
-        <% end %>
-
-      Please credit the "Science History Institute."
     </p>
 
-    <p class="sans-serif mt-3">We consider your personal information confidential. We will only use it for our records, and we will not share it with anyone outside the Science History Institute.
-    </p>
-
-    <% if @work.oral_history_content.available_by_request_manual_review? %>
-      <p class="sans-serif">
-        After submitting a brief form, your request will be reviewed and you will receive an email, usually within 3 business days. Usage may be subject to restrictions by agreement with interviewee.
-      </p>
-    <% end %>
-
-    <p class="sans-serif mb-0">
-      If you have any questions about transcripts, recordings, or usage permissions, please contact the Center for Oral History at <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}", class: "alert-link" %>.
-    </p>
+    <p>Accessing this oral history requires a request due to privacy restritions stipulated by the interviewee.</p>
   </div>
-
 
   <% if @oral_history_access_request.errors.any? %>
     <div class="kithe-form-errors-top alert alert-danger mb-4" role="alert">
@@ -80,15 +55,26 @@
         <%= f.input :intended_use,
           as: :text,
           label: "Intended use",
-          hint: "So that we can better understand our audience, please tell us how you plan to use the oral history you have requested." %>
+          hint: (@work.oral_history_content.available_by_request_automatic? ? "So that we can better understand our audience, please tell us how you plan to use the oral history you have requested." : "Please tell us how you intend to use this oral history interview to help us inform you about any relevant interviewee restrictions."),
+          required: @oral_history_access_request.work&.oral_history_content&.available_by_request_manual_review?
+        %>
       </div>
     </div>
 
     <%= f.hidden_field :work_friendlier_id, value: @work.friendlier_id %>
 
-  <div class="form-actions mb-5 mt-3">
-    <%= link_to "Cancel", work_path(@work.friendlier_id), class: "btn btn-brand-secondary mr-3" %>
-    <%= f.button :submit, value: "Submit request", class: "btn btn-brand-main" %>
+    <div class="form-actions mt-3">
+      <%= link_to "Cancel", work_path(@work.friendlier_id), class: "btn btn-brand-secondary mr-3" %>
+      <%= f.button :submit, value: "Submit request", class: "btn btn-brand-main" %>
+    </div>
   </div>
-</div>
+
+  <div class="alert alert-info mt-5 mb-5" role="alert">
+    <p>We consider your personal information confidential. We will only use it for our records, and we will not share it with anyone outside the Science History Institute.
+    </p>
+
+    <p class="mb-0">
+      If you have any questions about transcripts, recordings, or usage permissions, please contact the Center for Oral History at <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}", class: "alert-link" %>.
+    </p>
+  </div>
 <% end %>
