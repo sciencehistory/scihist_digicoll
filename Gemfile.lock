@@ -625,6 +625,8 @@ GEM
       actionpack (>= 5.2)
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
+    terser (1.1.16)
+      execjs (>= 0.3.0, < 3)
     thor (1.2.2)
     thread_safe (0.3.6)
     tilt (2.2.0)
@@ -650,8 +652,6 @@ GEM
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     uber (0.1.0)
-    uglifier (4.2.0)
-      execjs (>= 0.3.0, < 3)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.8.2)
@@ -780,8 +780,8 @@ DEPENDENCIES
   solr_wrapper (~> 4.0)
   sprockets (~> 4.0)
   sprockets-rails (>= 3.4.2)
+  terser (~> 1.1)
   traject (>= 3.5)
-  uglifier (>= 1.3.0)
   uppy-s3_multipart
   view_component (~> 2.49)
   vite_rails (~> 3.0)
