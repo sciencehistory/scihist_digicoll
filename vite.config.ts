@@ -45,7 +45,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          "video.js": ['video.js', 'videojs-seek-buttons']
+          "video.js": ['video.js']
         }
       }
     },
