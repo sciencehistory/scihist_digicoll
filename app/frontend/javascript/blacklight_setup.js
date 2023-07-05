@@ -1,12 +1,15 @@
-// While not doc'd very well, this seems to be the way to import all blacklight Javascript.
+// While not doc'd very well, this seems to be [the/a] way to import all blacklight Javascript.
 
-import 'blacklight-frontend';
-
-// That, I think, is a file created at release-time that collects ALL of the blacklight JS modules.
+import Blacklight from 'blacklight-frontend';
 
 
 // This could have also worked, same thing I think?
-// import 'blacklight-frontend/app/assets/javascripts/blacklight/blacklight';
+//import Blacklight from 'blacklight-frontend/app/assets/javascripts/blacklight/blacklight.js';
+
+// establish at JS global location so blacklight_range_limit has access to it?
+window.Blacklight = Blacklight;
+
+
 
 
 
