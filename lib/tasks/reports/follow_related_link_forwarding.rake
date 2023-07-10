@@ -16,7 +16,7 @@ namespace :scihist do
             #category = link.category
             #label = link.label
             url = link.url
-            metadata =  "#{friendlier_id} #{url}"
+            metadata =  "https://digital.sciencehistory.org/admin/works/#{friendlier_id} ; forwarded from #{url}"
             comm = [
               # --head:       show document info only
               # --location:   follows redirects
@@ -24,11 +24,11 @@ namespace :scihist do
               # --fail-early: fail early
               "curl --head --location --show-error --fail-early #{url} ",
 
-              # consider only "link" and "location":
-              "| grep 'link\\\|location'",
+              # consider only location":
+              "| grep 'location'",
               
-              # find "stories"
-              "| grep 'stories'",
+              # find URLs that don't end in post titles
+              "| grep 'stories.$\\|stories.magazine.$\\|stories.distillations-pod.$'",
 
               # and flag if found.
               "&& echo \"found in #{metadata}\""
