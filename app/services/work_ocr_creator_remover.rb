@@ -26,7 +26,11 @@ class WorkOcrCreatorRemover
 
   def maybe_add(asset)
     return if @ignore_missing_files && !asset.file.exists?
-    CreateAssetHocrJob.perform_later(asset) if asset.hocr.blank?
+
+    # we need both of em!
+    if asset.hocr.blank? || asset.file_derivatives[:textonly_pdf].blank?
+      CreateAssetHocrJob.perform_later(asset) if asset.hocr.blank?
+    end
   end
 
   # Even if there are no changes made to save, ActiveRecord will
@@ -34,9 +38,13 @@ class WorkOcrCreatorRemover
   # and load on DB, don't do it unless we actually have things to remove.
   #
   def maybe_remove(asset)
-    return if !asset.hocr
+    # don't need it if we already don't have hocr or textonly_pdf
+    return if !asset.hocr && !asset.file_derivatives[:textonly_pdf]
 
-    asset.update!(hocr: nil)
+    asset.hocr = nil
+    # this kithe command will save record to, persisting the hocr=nil,
+    # atomically concurrently safely making the change.
+    asset.file_attacher.remove_persisted_derivatives(:textonly_pdf, allow_other_changes: true)
   end
 
   def image_assets
