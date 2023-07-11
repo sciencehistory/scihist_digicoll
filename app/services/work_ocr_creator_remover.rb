@@ -18,7 +18,7 @@ class WorkOcrCreatorRemover
     if @work.ocr_requested
       image_assets.each { |a| maybe_add(a) }
     else
-      image_assets.each { |a| a.update!(hocr: nil) }
+      image_assets.each { |a| maybe_remove(a) }
     end
   end
 
@@ -27,6 +27,16 @@ class WorkOcrCreatorRemover
   def maybe_add(asset)
     return if @ignore_missing_files && !asset.file.exists?
     CreateAssetHocrJob.perform_later(asset) if asset.hocr.blank?
+  end
+
+  # Even if there are no changes made to save, ActiveRecord will
+  # still open and close a transaction, which takes some time
+  # and load on DB, don't do it unless we actually have things to remove.
+  #
+  def maybe_remove(asset)
+    return if !asset.hocr
+
+    asset.update!(hocr: nil)
   end
 
   def image_assets
