@@ -8,7 +8,7 @@ namespace :scihist do
       oral_histories.find_each do |oral_history_work|
         next unless url = oral_history_work&.oral_history_content&.combined_audio_m4a&.url
         next unless oral_history_work.external_id.count {|id| id.category == 'bib'} == 0
-        puts "https://digital.sciencehistory.org/admin/works/#{oral_history_work.friendlier_id}/edit"
+        puts "#{oral_history_work.title} : https://digital.sciencehistory.org/admin/works/#{oral_history_work.friendlier_id}/edit"
       end
     end
   end
