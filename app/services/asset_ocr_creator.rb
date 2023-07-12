@@ -63,6 +63,9 @@ class AssetOcrCreator
     FileUtils.rm_rf tempdir
   end
 
+  # @returns [File hOCR, File textonly_pdf]
+  #
+  # Downloads a copy of original asset to use as tesseract input; cleans up local copy
   def get_hocr
     # while some versions of tesseract can read directly from URL, the one
     # we currently have needs a local file, so we need to download it locally.
