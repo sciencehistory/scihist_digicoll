@@ -30,10 +30,10 @@ describe WorkOcrCreatorRemover, queue_adapter: :test do
     let(:ocr_requested) { true }
     it "enqueues an ocr creation job for assets that need it" do
       WorkOcrCreatorRemover.new(work).process
-      expect(CreateAssetHocrJob).to have_been_enqueued.with(image_asset_without_hocr)
-      expect(CreateAssetHocrJob).not_to have_been_enqueued.with(image_asset_with_hocr)
-      expect(CreateAssetHocrJob).not_to have_been_enqueued.with(sound_asset)
-      expect(CreateAssetHocrJob).not_to have_been_enqueued.with(child_work)
+      expect(CreateAssetOcrJob).to have_been_enqueued.with(image_asset_without_hocr)
+      expect(CreateAssetOcrJob).not_to have_been_enqueued.with(image_asset_with_hocr)
+      expect(CreateAssetOcrJob).not_to have_been_enqueued.with(sound_asset)
+      expect(CreateAssetOcrJob).not_to have_been_enqueued.with(child_work)
     end
   end
 
@@ -43,7 +43,7 @@ describe WorkOcrCreatorRemover, queue_adapter: :test do
       WorkOcrCreatorRemover.new(work).process
       work.reload
       work.members.each do |m|
-        expect(CreateAssetHocrJob).not_to have_been_enqueued.with(m)
+        expect(CreateAssetOcrJob).not_to have_been_enqueued.with(m)
         expect(m.hocr).to be_nil if m.asset?
         expect(m.file_derivatives[:textonly_pdf]).to be_nil if m.asset?
       end
