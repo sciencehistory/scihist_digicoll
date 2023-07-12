@@ -44,7 +44,7 @@ class WorkOcrCreatorRemover
     asset.hocr = nil
     # this kithe command will save record to, persisting the hocr=nil,
     # atomically concurrently safely making the change.
-    asset.file_attacher.remove_persisted_derivatives(:textonly_pdf, allow_other_changes: true)
+    asset.remove_derivatives(:textonly_pdf, allow_other_changes: true)
   end
 
   def image_assets
