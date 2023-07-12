@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe AssetHocrCreator, type: :model do
+describe AssetOcrCreator, type: :model do
   describe "with real tesseract" do
     let(:asset) {
       create(:asset_with_faked_file,
@@ -9,7 +9,7 @@ describe AssetHocrCreator, type: :model do
         parent: create(:work, language: ["English"])
       )
     }
-    let(:creator) { AssetHocrCreator.new(asset) }
+    let(:creator) { AssetOcrCreator.new(asset) }
 
     it "saves correct HOCR" do
       creator.call

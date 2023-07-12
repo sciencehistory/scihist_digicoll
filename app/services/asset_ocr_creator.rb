@@ -12,7 +12,7 @@
 #   the 4.1.1 we currently have on heroku cannot, so we have to download temp copy,
 #   which does make this even slower. (Wait, should we pipe curl to it instead?)
 #
-class AssetHocrCreator
+class AssetOcrCreator
   BASE_OUT_FILENAME = "tesseract_out"
 
   class_attribute :tesseract_executable, default: "tesseract"

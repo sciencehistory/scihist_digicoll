@@ -39,7 +39,7 @@ class WorkOcrCreatorRemover
 
     # we need both of em!
     if asset.hocr.blank? || asset.file_derivatives[:textonly_pdf].blank?
-      CreateAssetHocrJob.perform_later(asset)
+      CreateAssetOcrJob.perform_later(asset)
     end
   end
 
