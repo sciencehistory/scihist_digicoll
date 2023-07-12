@@ -1,9 +1,19 @@
-# Given a work:
-#   figures out which assets need OCR;
-#   arranges for their OCR to be created (either via a job or immediately) or removed,
-#   depending on the work's `ocr_requested`.
+# Ensures that a work's OCR data is consistent with it's Work#ocr_requested boolean value
 #
-#   Ignores child works completely.
+# Will add OCR data if ocr_requested? but ocr data is missing
+#
+# Will remove OCR data is !ocr_requested? but present.
+#
+# Some work may be done asynchronously by queing background jobs, as OCR is slow.
+#
+# Warning:
+#   Currently ignores child works completely.
+#
+# @example
+#
+#    WorkOcrCreatorRemover.new(work).process
+#
+#
 class WorkOcrCreatorRemover
   attr_reader :work
 
