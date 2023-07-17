@@ -127,8 +127,10 @@ module CopyStaging
       end
       # OK - we have a local destination for the file; proceed.
       tracked_futures << Concurrent::Promises.future_on(thread_pool) do
-        puts "  -> Copying original file for #{asset_model.class.name}/#{asset_model.friendlier_id}\n\n"        
+        puts "  -> Copying original file for #{asset_model.class.name}/#{asset_model.friendlier_id}\n\n"
         copy_file( key: local_storage_key, file: asset_model.file)
+      rescue Aws::S3::Errors::NoSuchKey => e
+        puts "   ERROR: Could not find ORIGINAL file to copy for asset `#{asset_model.friendlier_id}`"
       end
     end
 
@@ -138,8 +140,7 @@ module CopyStaging
         puts "  -> Copying derivative file for #{asset_id}/#{derivative_key}\n\n"
         copy_file(key: derivative_uploaded_file.storage_key, file: derivative_uploaded_file)
       rescue Aws::S3::Errors::NoSuchKey => e
-        path = Shrine.storages[remote_storage_key].then {|s| [s.bucket&.name, s.prefix].compact.join('/')}
-        puts "   ERROR: Could not find file to copy `#{remote_file.id}` on #{path}"
+        puts "   ERROR: Could not find DERIVATIVE file to copy for asset #{asset_id}/#{derivative_key}`"
       end
     end
 
@@ -158,7 +159,7 @@ module CopyStaging
     # Once this method completes, Shrine.storages will know about a storage
     # for each key and value in @storage_map:
     #
-    # Shrine.storages.keys 
+    # Shrine.storages.keys
     # [
     #   :store,                        :remote_store,
     #   :video_store,                  :remote_video_store,
