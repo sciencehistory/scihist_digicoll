@@ -76,19 +76,13 @@ class Admin::WorksController < AdminController
     authorize! :update, @work
     respond_to do |format|
       if @work.update(work_params)
-        # If this update also just switched ocr_requested from true to false, delete all the child assets' OCR.
-        # We're not using a transaction to wrap both @work.update(work_params) and the below SQL query, because
-        #   a) we think this SQL is unlikely to fail
-        #   b) even if it *were* to fail, we trust the nightly rake task to clean up any stray OCR anyway.
-        if @work.ocr_requested_previously_changed?(from: true, to: false)
-          query = """
-            UPDATE kithe_models
-            SET    json_attributes = json_attributes || '{\"hocr\": null }'
-            WHERE  type = 'Asset'
-            AND    parent_id = '#{@work.id}'
-          """
-          ActiveRecord::Base.connection.exec_query(query)
+        # If this update also just switched ocr_requested, queue up a job to update it's OCR
+        # data accordingly. If for some reason this is missed, we still have a nightly rake
+        # task to restore consistent state, but let's try to do it sooner?
+        if @work.ocr_requested_previously_changed?
+          WorkOcrCreatorRemoverJob.perform_later(@work)
         end
+
         format.html { redirect_to admin_work_path(@work), notice: 'Work was successfully updated.' }
         format.json { render :show, status: :ok, location: @work }
       else

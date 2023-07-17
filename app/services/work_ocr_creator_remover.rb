@@ -1,9 +1,19 @@
-# Given a work:
-#   figures out which assets need OCR;
-#   arranges for their OCR to be created (either via a job or immediately) or removed,
-#   depending on the work's `ocr_requested`.
+# Ensures that a work's OCR data is consistent with it's Work#ocr_requested boolean value
 #
-#   Ignores child works completely.
+# Will add OCR data if ocr_requested? but ocr data is missing
+#
+# Will remove OCR data is !ocr_requested? but present.
+#
+# Some work may be done asynchronously by queing background jobs, as OCR is slow.
+#
+# Warning:
+#   Currently ignores child works completely.
+#
+# @example
+#
+#    WorkOcrCreatorRemover.new(work).process
+#
+#
 class WorkOcrCreatorRemover
   attr_reader :work
 
@@ -18,7 +28,7 @@ class WorkOcrCreatorRemover
     if @work.ocr_requested
       image_assets.each { |a| maybe_add(a) }
     else
-      image_assets.each { |a| a.update!(hocr: nil) }
+      image_assets.each { |a| maybe_remove(a) }
     end
   end
 
@@ -26,7 +36,25 @@ class WorkOcrCreatorRemover
 
   def maybe_add(asset)
     return if @ignore_missing_files && !asset.file.exists?
-    CreateAssetHocrJob.perform_later(asset) if asset.hocr.blank?
+
+    # we need both of em!
+    if asset.hocr.blank? || asset.file_derivatives[:textonly_pdf].blank?
+      CreateAssetOcrJob.perform_later(asset)
+    end
+  end
+
+  # Even if there are no changes made to save, ActiveRecord will
+  # still open and close a transaction, which takes some time
+  # and load on DB, don't do it unless we actually have things to remove.
+  #
+  def maybe_remove(asset)
+    # don't need it if we already don't have hocr or textonly_pdf
+    return if !asset.hocr && !asset.file_derivatives[:textonly_pdf]
+
+    asset.hocr = nil
+    # this kithe command will save record to, persisting the hocr=nil,
+    # atomically concurrently safely making the change.
+    asset.remove_derivatives(:textonly_pdf, allow_other_changes: true)
   end
 
   def image_assets
