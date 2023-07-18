@@ -49,6 +49,14 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
 
+  # using the default async (in process thread pool) queue adapter for dev,
+  # but let's set the pool sizes please to avoid running out of db connections
+  # if we create a lot of jobs.
+  config.active_job.queue_adapter = ActiveJob::QueueAdapters::AsyncAdapter.new(
+    min_threads: 1,
+    max_threads: (ENV.fetch("RAILS_MAX_THREADS") { 5 }).to_i - 1
+  )
+
   # use ActionMailer previews feature, with previews in our rspec folder.
   # https://guides.rubyonrails.org/action_mailer_basics.html#previewing-emails
   config.action_mailer.preview_path = "#{Rails.root}/spec/mailers/previews"
