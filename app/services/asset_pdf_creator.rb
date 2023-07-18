@@ -89,14 +89,12 @@ class AssetPdfCreator
   # @param dpi [Integer] known dpi of jp2_temp_file
   #
   # @return [Tempfile] a PDF that just has the graphic embedded, with proper target_dpi set
+  #
+  # Note img2pdf can't handle input with an alpha channel (eg for transparency), if you
+  # somehow wind up with one, you'll currently get a TTY::Command::ExitError raised:
+  # `This function must not be called on images with alpha`
   def pdf_from_graphic(graphic_temp_file)
     output_pdf_tempfile = Tempfile.new(["scihist_digicoll_asset_pdf_creator", ".pdf"])
-
-    # orig_dpi = 400
-    # faked_target_width = (asset.width.to_f * (target_dpi.to_f / orig_dpi.to_f)).round
-    # faked_target_height = (asset.height.to_f * (target_dpi.to_f / orig_dpi.to_f)).round
-
-    # byebug
 
     tty_command.run(
       img2pdf_convert_command,
