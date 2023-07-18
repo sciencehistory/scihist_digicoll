@@ -22,6 +22,7 @@ To set up a development instance on your workstation.
 * ffmpeg installed -- on MacOS `brew install ffmpeg`
 * tesseract for OCR -- `brew install tesseract tesseract-lang`. Will not be same version as
   production, see https://sciencehistory.atlassian.net/l/cp/ucUvKjk3
+* 'qpdf' for pdf manipulation. On Mac `brew install qpdf`
 * You'll need Java installed to run Solr. If you don't already have it, on MacOS `brew install java`, then follow post-install instructions, such as `sudo ln -sfn /opt/homebrew/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk`
 
 
