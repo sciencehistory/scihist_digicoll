@@ -14,6 +14,9 @@ libpoppler-glib8
 # doesn't seem to hurt, and does seem to get us a working poppler reliably.
 poppler-utils
 
+# we use qpdf for assembling text+graphic pdf files for OCR
+qpdf
+
 # Tesseract for OCR, along with language packs for our top-languages...
 # we might not REALLY need all these languages? Yet? But let's start
 # with em
