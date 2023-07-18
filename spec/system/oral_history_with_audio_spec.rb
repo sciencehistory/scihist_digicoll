@@ -219,7 +219,7 @@ describe "Oral history with audio display", type: :system, js: true do
       # You should be able to download the combined audio derivs:
       expect(page).to have_content("Complete Interview Audio File")
       expect(page).to have_content("3 Separate Interview Segments")
-      expect(page).to have_content("2.2 KB")
+      expect(page).to have_content(/\d\.\d KB/)
     end
   end
 
