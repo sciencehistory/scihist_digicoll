@@ -58,3 +58,6 @@ node_modules
 # https://vitejs.dev/guide/env-and-mode.html#env-files
 *.local
 
+# Brew bundle creates this pretty useless file, it's not a useful lock file like you think
+Brewfile.lock.json
+
