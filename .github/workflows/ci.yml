@@ -35,6 +35,15 @@ jobs:
             # bundler-cache should be save to use cause we
             # have a checked in Gemfile.lock
 
+        - name: Set up Python
+          uses: actions/setup-python@v4
+          with:
+            python-version: "3.11"
+            cache: 'pip'
+        - name: Install python dependencies
+          run: pip install -r requirements.txt
+
+
         - name: Install apt dependencies
           run: |
             sudo apt-get update
