@@ -79,11 +79,12 @@ class WorkPdfCreator2
   # Make PDF pages of all
   def write_pdf_to_path(output_filepath)
     Dir.mktmpdir("scihist_digicoll_#{self.class.name}") do |working_directory|
-      page_index = 0
       file_names = []
 
-      members_to_include.find_each do |member|
-        file_name = "pdf_page#{'%05d' % page_index }.pdf"
+      # We can't do "find_each", cause we DO need the order, to order
+      # page numbers. So we'll fetch all pages at once, that's fine.
+      members_to_include.each_with_index do |member, page_index|
+        file_name = "pdf_page#{'%05d' % page_index}.pdf"
         file_path = File.join(working_directory, file_name)
 
         temp_pdf_file = AssetPdfCreator.new(member.leaf_representative).create
@@ -96,8 +97,6 @@ class WorkPdfCreator2
         if callback && (page_index % 3 == 0 || (page_index + 1)  >= total_page_count)
           callback.call(progress_total: total_page_count, progress_i: page_index + 1)
         end
-
-        page_index += 1
       end
 
       if file_names.empty?
