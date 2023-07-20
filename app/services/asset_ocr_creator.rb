@@ -83,7 +83,7 @@ class AssetOcrCreator
   # @returns [File hOCR, File textonly_pdf]
   def tesseract_extract_ocr_from_local_file(input_path)
     unless tesseract_languages.present?
-      raise TypeError.new("Work languages don't include any we can recognize: #{asset.parent.languages.inspect}. We need one of #{TESS_LANGS.keys.inspect}")
+      raise TypeError.new("Work languages don't include any we can recognize: #{asset.parent.language.inspect}. We need one of #{TESS_LANGS.keys.inspect}")
     end
 
     result = tty_command.run(
