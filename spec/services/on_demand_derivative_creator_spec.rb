@@ -116,12 +116,22 @@ describe OnDemandDerivativeCreator, queue_adapter: :test do
   end
 
   describe "calculated_checksum" do
-    it "changes with member change" do
+    it "changes with member list change" do
       original_checksum = checksum
 
       work.members.first.destroy
 
       new_creator = OnDemandDerivativeCreator.new(work, derivative_type: deriv_type)
+
+      expect(new_creator.calculated_checksum).not_to eq original_checksum
+    end
+
+    it "changes with member textonly_pdf change" do
+      original_checksum = checksum
+      work.members.first.file_attacher.add_derivative(:textonly_pdf, StringIO.new("faked"))
+      work.save!
+
+      new_creator = OnDemandDerivativeCreator.new(work, derivative_type: :pdf_file)
 
       expect(new_creator.calculated_checksum).not_to eq original_checksum
     end

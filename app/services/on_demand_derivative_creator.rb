@@ -156,9 +156,16 @@ class OnDemandDerivativeCreator
     @calculated_checksum ||= begin
       # important to sort for deterministic order of MD5s. Sort by position,
       # because that matters for the PDF generated, so should matter for our fingerprint.
+      #
+      # Now that our PDFs include textonly_pdf too, we also need to include THAT in checksum....
+      # we could do it only for PDFs, but we'll just be over-careful and do it for all things
+      # for simpler code.
+
       individual_checksums = work.members.order(:position, :id).includes(:leaf_representative).collect do |m|
-        m.leaf_representative&.md5
-      end.compact
+        asset = m.leaf_representative
+
+        [asset&.md5, asset&.file_derivatives[:textonly_pdf]&.id]
+      end.flatten.compact
 
       parts = [work.title, work.friendlier_id] + individual_checksums
 
