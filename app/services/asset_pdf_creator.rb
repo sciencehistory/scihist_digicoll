@@ -51,7 +51,7 @@ class AssetPdfCreator
   #   lossy compression in jp2. https://www.libvips.org/2021/06/04/What's-new-in-8.11.html
   #
   #   Default jp2_quality is as low as we think we can go without visible artifacts --
-  #   it's a pretty low number. started at 38, but maybe 40 better.
+  #   it's a pretty low number. started at 38, but maybe 40 better to be safe.
   #
   # @return Tempfile
   #
@@ -68,12 +68,22 @@ class AssetPdfCreator
 
     output_jp2_tempfile = Tempfile.new(["scihist_digicoll_asset_pdf_creator", ".jp2"])
 
+    # subsample-mode=off is to work around a bug in OpenJPEG -- more recent
+    # versions of vips always turn subsample mode off, but it does need to be off
+    # to avoid color corruption depending on image size:
+    # https://github.com/libvips/libvips/issues/2965
+
+    # export-profile srgb is to work around vips/OpenJPEG inability to embed
+    # ICC profile or colorspace metadata, we NEED to convert to sRGB bytes
+    # to avoid color shifts.
+    # https://github.com/libvips/libvips/discussions/3428#discussioncomment-6383390
+
     tty_command.run(
       vipsthumbnail_command,
       temp_orig.path,
       "--size","#{target_width}x65500",
       "--export-profile", "srgb",
-      "-o", "#{output_jp2_tempfile.path}[Q=#{jp2_quality}]"
+      "-o", "#{output_jp2_tempfile.path}[Q=#{jp2_quality},subsample-mode=off]"
     )
 
     # note dpi metadata on output jp2 is always 72. :(
