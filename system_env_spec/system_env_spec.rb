@@ -100,7 +100,7 @@ describe "System Environment" do
         `vipsthumbnail -h`
       end
 
-      it "has acceptable version" do
+      it "has acceptable deveversion" do
         `vips --version` =~ /vips-(\d+\.\d+\.\d+)/
         expect($1).to match_version_requirements(*version_requirements)
       end
@@ -131,7 +131,7 @@ describe "System Environment" do
     end
 
     it "has acceptable version" do
-      `ffmpeg -version` =~ /ffmpeg version (\d+\.\d+\.\d+)/
+      `ffmpeg -version` =~ /ffmpeg version (\d+\.\d+(\.\d)?)/
       expect($1).to match_version_requirements(">= 5.1.2", "< 7")
     end
   end
