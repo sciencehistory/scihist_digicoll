@@ -86,7 +86,16 @@
       <a class="nav-item nav-link" id="nav-oral-histories-tab" data-toggle="tab" href="#nav-oral-histories" role="tab" aria-controls="nav-profile" aria-selected="false">Oral History</a>
     <% end %>
 
-    <a class="nav-item nav-link" id="nav-ocr-tab" data-toggle="tab" href="#nav-ocr" role="tab" aria-controls="nav-profile" aria-selected="false">OCR</a>
+    <a class="nav-item nav-link" id="nav-ocr-tab" data-toggle="tab" href="#nav-ocr" role="tab" aria-controls="nav-profile" aria-selected="false">
+      <% if WorkShowOcrComponent.new(@work).warnings? %>
+        <i class="fa fa-exclamation-triangle" aria-label="(WARNING)"></i>
+      <% elsif @work.ocr_requested? %>
+        <i class="fa fa-check-circle" aria-label="(ON)"></i>
+      <% else %>
+        <i class="fa fa-minus-circle" aria-hidden="(OFF)"></i>
+      <% end %>
+      OCR
+    </a>
 
   </div>
 </nav>

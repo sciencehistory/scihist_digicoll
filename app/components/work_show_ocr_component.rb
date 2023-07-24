@@ -32,4 +32,8 @@ class WorkShowOcrComponent < ApplicationComponent
   def work_language_warning?
     @work.ocr_requested? && ! AssetOcrCreator.suitable_language?(work)
   end
+
+  def warnings?
+    asset_ocr_count_warning? || work_language_warning?
+  end
 end
