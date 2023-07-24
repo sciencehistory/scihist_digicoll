@@ -26,14 +26,35 @@ describe WorkOcrCreatorRemover, queue_adapter: :test do
     )
   end
 
-  context "work needs OCR (the rake task calls this.)" do
+  context "work needs OCR" do
     let(:ocr_requested) { true }
+
     it "enqueues an ocr creation job for assets that need it" do
       WorkOcrCreatorRemover.new(work).process
       expect(CreateAssetOcrJob).to have_been_enqueued.with(image_asset_without_hocr)
       expect(CreateAssetOcrJob).not_to have_been_enqueued.with(image_asset_with_hocr)
       expect(CreateAssetOcrJob).not_to have_been_enqueued.with(sound_asset)
       expect(CreateAssetOcrJob).not_to have_been_enqueued.with(child_work)
+    end
+
+    context "but does not have suitable language metadata" do
+      let(:work) do
+        create(:public_work,
+          language: [],
+          ocr_requested: true,
+          members: [
+            image_asset_without_hocr,
+            image_asset_with_hocr,
+            sound_asset,
+            child_work
+          ]
+        )
+      end
+
+      it "does not enqueue CreateAssetOcrJob" do
+        WorkOcrCreatorRemover.new(work).process
+        expect(CreateAssetOcrJob).not_to have_been_enqueued
+      end
     end
   end
 

@@ -26,7 +26,11 @@ class WorkOcrCreatorRemover
 
   def process
     if @work.ocr_requested
-      image_assets.each { |a| maybe_add(a) }
+      if AssetOcrCreator.suitable_language?(work)
+        image_assets.each { |a| maybe_add(a) }
+      else
+        Rails.logger.warn("#{self.class}: OCR enabled for work #{work.friendlier_id}, but it does not have suitable languages: #{work.language.inspect}")
+      end
     else
       image_assets.each { |a| maybe_remove(a) }
     end

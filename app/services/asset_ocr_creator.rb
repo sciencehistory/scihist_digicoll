@@ -29,6 +29,11 @@ class AssetOcrCreator
 
   attr_accessor :asset
 
+  def self.suitable_language?(work)
+    ((work.language || []) &  TESS_LANGS.keys).present?
+  end
+
+
   def initialize(asset)
     unless asset&.content_type&.start_with?("image/")
       raise ArgumentError, "Can only use with content type begining `image/`, not #{asset.content_type}"
