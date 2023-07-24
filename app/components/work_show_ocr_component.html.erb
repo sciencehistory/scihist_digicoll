@@ -1,5 +1,4 @@
-<div class="alert alert-light mx-1">
-  <h2 class="h4 alert-heading">OCR</h2>
-  <p><small>OCR has <% unless @work.ocr_requested %> not <%end%> been requested for this work.</small></p>
-  <p><small><%= assets_with_ocr %> out of <%= total_assets %> assets currently have OCR.</small></p>
-</div>
+
+<p>OCR has <% unless @work.ocr_requested %> not <%end%> been requested for this work.</p>
+<p><%= assets_with_ocr %> out of <%= total_assets %> assets currently have OCR.</p>
+
