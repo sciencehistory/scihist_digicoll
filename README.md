@@ -26,6 +26,10 @@ To set up a development instance on your workstation.
   * Python installer from https://www.python.org/downloads/macos/ gives you `pip3`, for `pip3 install -r requirements.txt`. Tends to leave lots of mismatched stuff around if you ever want to upgrade python.
 
 
+To ensure expected command-line utilities are present after install, you can run:
+
+    ./bin/rspec system_env_spec/
+
 
 ### Install and setup the app
 
