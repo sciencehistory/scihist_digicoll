@@ -14,9 +14,12 @@
 <% if work_language_warning? %>
   <p>
     <i class="fa fa-exclamation-triangle text-danger" aria-label="WARNING"></i> OCR enabled, but work does not include languages
-    compatible with OCR. <br>
-    Work languages: <code><%= @work.language.inspect %></code>. OCR-compatible languages: <code><%= AssetOcrCreator::TESS_LANGS.keys %></code>.
+    compatible with OCR.
   </p>
+  <ul>
+    <li>Work languages: <code><%= @work.language.inspect %></code></li>
+    <li>OCR-compatible languages: <code><%= AssetOcrCreator::TESS_LANGS.keys %></code></li>
+  </ul>
 <% end %>
 
 <p>
