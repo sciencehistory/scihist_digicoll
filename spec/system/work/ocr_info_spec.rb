@@ -18,10 +18,12 @@ describe "Member list displays OCR info", logged_in_user: :editor do
   describe "Work with OCR requested" do
     it "Summarizes assets with OCR correctly; displays show OCR button" do
       visit admin_work_path(work)
-      click_on "Members"
-      expect(page).to have_text("OCR has been requested for this work.")
+
+      click_on "OCR"
+      expect(page).to have_text(/OCR enabled\:\s+YES/)
       expect(page).to have_text("1 out of 4 assets currently have OCR.")
 
+      click_on "Members"
       path_to_ocr = admin_asset_path(image_asset_with_hocr, anchor: "ocr")
       expect(page.find_all('table.member-list a.ocr-link').count).to eq 1
       expect(page).to have_link(:href=>path_to_ocr)
