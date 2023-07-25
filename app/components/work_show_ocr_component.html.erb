@@ -1,5 +1,31 @@
-<div class="alert alert-light mx-1">
-  <h2 class="h4 alert-heading">OCR</h2>
-  <p><small>OCR has <% unless @work.ocr_requested %> not <%end%> been requested for this work.</small></p>
-  <p><small><%= assets_with_ocr %> out of <%= total_assets %> assets currently have OCR.</small></p>
-</div>
+<p>
+  OCR enabled:
+  <% if @work.ocr_requested %>
+    <span class="text-success font-weight-bold">
+      <i class="fa fa-check-circle" aria-hidden="true"></i> YES
+    </span>
+  <% else %>
+    <span class="text-danger font-weight-bold">
+      <i class="fa fa-minus-circle" aria-hidden="true"></i> NO
+    </span>
+  <% end %>
+</p>
+
+<% if work_language_warning? %>
+  <p>
+    <i class="fa fa-exclamation-triangle text-danger" aria-label="WARNING"></i> OCR enabled, but work does not include languages
+    compatible with OCR.
+  </p>
+  <ul>
+    <li>Work languages: <code><%= @work.language.inspect %></code></li>
+    <li>OCR-compatible languages: <code><%= AssetOcrCreator::TESS_LANGS.keys %></code></li>
+  </ul>
+<% end %>
+
+<p>
+  <% if asset_ocr_count_warning? %>
+    <i class="fa fa-exclamation-triangle text-danger" aria-label="WARNING"></i>
+  <% end %>
+  <b><%= assets_with_ocr %></b> out of <b><%= total_assets %></b> assets currently have OCR.
+</p>
+
