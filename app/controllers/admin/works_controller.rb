@@ -326,6 +326,11 @@ class Admin::WorksController < AdminController
   def show
     authorize! :read, @work
     @cart_presence = CartPresence.new([@work.friendlier_id], current_user: current_user)
+
+    # instantiate this in an iVar so we can use it in two different places in template,
+    # without double instantiation or double load of SQL query inside. A little bit hacky,
+    # but this works out.
+    @work_show_ocr_component = WorkShowOcrComponent.new(@work)
   end
 
   def reorder_members_form
