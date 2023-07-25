@@ -84,7 +84,7 @@ SimpleForm.setup do |config|
     b.wrapper :form_check_wrapper, tag: 'div', class: 'form-check' do |bb|
       bb.use :input, class: 'form-check-input', error_class: 'is-invalid'
       bb.use :label, class: 'form-check-label'
-      b.use :hint, wrap_with: { tag: 'small', class: 'form-text text-muted scihist-hint mb-2 mt-0' }
+      bb.use :hint, wrap_with: { tag: 'small', class: 'form-text text-muted scihist-hint mb-2 mt-0' }
       bb.use :full_error, wrap_with: { tag: 'div', class: 'invalid-feedback' }
     end
   end
