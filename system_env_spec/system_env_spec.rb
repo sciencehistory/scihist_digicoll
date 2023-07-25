@@ -136,6 +136,22 @@ describe "System Environment" do
     end
   end
 
+  describe "ffprobe" do
+    it "is present" do
+      `ffprobe -h 2>&1`
+    end
+
+    it "has acceptable version" do
+      `ffprobe -version` =~ /ffprobe version (\d+\.\d+(\.\d)?)/
+      expect($1).to match_version_requirements(">= 5.1.2", "< 7")
+    end
+
+    # this was a regression, requires ffmpeg to be linked correctly to network routines
+    it "can fetch URLs" do
+      `ffprobe https://github.com/mathiasbynens/small/raw/master/mp3.mp3 2>&1`
+    end
+  end
+
   describe "qpdf" do
     it "is present" do
       `qpdf --help 2>&1`
