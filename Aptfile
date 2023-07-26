@@ -7,11 +7,9 @@ libglib2.0-0
 libglib2.0-dev
 libpoppler-glib8
 
-# We need `pdfunite` command line thatcomes from poppler; While the `heroku-buildpack-activestorage-preview`
-# should provide it too, it seems to be unpredictable as to whether it does, in ways that
-# actually disturb our understanding of heroku reproducibility (different results on identical
-# heroku stacks/buildpacks).  Supplying it here on top of activestorage-preview buildpack
-# doesn't seem to hurt, and does seem to get us a working poppler reliably.
+# We need `pdfunite` command line that comes from poppler-utils; At least until
+# we stop using the old PDF generation technique; If codenobase no longer includes
+# call to pdfunite, this can be removed. poppler may still be an indirect dep of other things.
 poppler-utils
 
 # we use qpdf for assembling text+graphic pdf files for OCR

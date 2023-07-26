@@ -25,7 +25,7 @@
 class WorkPdfCreator2
   class PdfCreationFailure < RuntimeError ; end
 
-  class_attribute :pdfunite_command, default: "pdfunite"
+  class_attribute :qpdf_command, default: "qpdf"
 
   attr_reader :work, :callback
 
@@ -103,9 +103,20 @@ class WorkPdfCreator2
         raise PdfCreationFailure, "#{self.class.name}: No PDF files to join; are there no suitable images in work? work: #{work.friendlier_id}; total_page_count: #{total_page_count}"
       end
 
+      concatenate_pdfs(file_names, output_path: output_filepath )
+    end
+  end
+
+  def concatenate_pdfs(input_pdf_paths, output_path:)
       # Now we gotta combine all our separate PDF files into one big one, which pdfunite
       # can do 'relatively' quickly and memory-efficiently. It also preserves PDF Info Dictionary from first PDF.
-      TTY::Command.new(printer: :null).run(pdfunite_command, *file_names, output_filepath)
-    end
+      TTY::Command.new(printer: :null).run(
+        qpdf_command,
+        "--linearize", # better PDF for streaming/download
+        "--empty", # start with empty pdf
+        "--pages", *input_pdf_paths,
+        "--",
+        output_path
+      )
   end
 end
