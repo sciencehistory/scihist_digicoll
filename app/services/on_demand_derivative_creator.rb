@@ -167,7 +167,11 @@ class OnDemandDerivativeCreator
         [asset&.md5, asset&.file_derivatives[:textonly_pdf]&.id]
       end.flatten.compact
 
-      parts = [work.title, work.friendlier_id] + individual_checksums
+      # include creator class in fingerprint, so if it changes to a new class,
+      # with new implementation, cache will bust.
+      creator_class_name = OnDemandDerivative.derivative_type_definitions[derivative_type.to_sym][:creator_class_name]
+
+      parts = [creator_class_name, work.title, work.friendlier_id] + individual_checksums
 
       Digest::MD5.hexdigest(parts.join("-"))
     end

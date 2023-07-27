@@ -135,6 +135,20 @@ describe OnDemandDerivativeCreator, queue_adapter: :test do
 
       expect(new_creator.calculated_checksum).not_to eq original_checksum
     end
+
+    it "changes with creator class change" do
+      original_checksum = checksum
+
+      altered_definitions = OnDemandDerivative.derivative_type_definitions.deep_dup.tap do |hash|
+        hash[deriv_type.to_sym][:creator_class_name] = "NewClass"
+      end
+      allow(OnDemandDerivative).to receive(:derivative_type_definitions).and_return(
+        altered_definitions
+      )
+
+      new_creator = OnDemandDerivativeCreator.new(work, derivative_type: :pdf_file)
+      expect(new_creator.calculated_checksum).not_to eq original_checksum
+    end
   end
 
 end
