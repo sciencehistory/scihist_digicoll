@@ -33,7 +33,7 @@ describe AssetPdfCreator, type: :model do
   describe "without textonly_pdf" do
     let(:asset) { create(:asset, :inline_promoted_file, file: File.open(tiff_path)) }
 
-    it "creates a PDF" do
+    it "creates a PDF without text layer" do
       pdf_file = creator.create
 
       pdf = PDF::Reader.new(pdf_file.path)
@@ -71,7 +71,7 @@ describe AssetPdfCreator, type: :model do
 
     end
 
-    it "creates a PDF" do
+    it "creates a PDF with text layer" do
       pdf_file = creator.create
 
       pdf = PDF::Reader.new(pdf_file.path)
@@ -91,5 +91,29 @@ describe AssetPdfCreator, type: :model do
 
       pdf_file.unlink
     end
+
+    describe "#create_graphical_pdf" do
+      it "creates PDF without text layer" do
+        pdf_file = creator.create
+
+        pdf = PDF::Reader.new(pdf_file.path)
+
+        expect(pdf.page_count).to eq 1
+        page = pdf.pages.first
+
+        # is height and width as expected for correct dpi? PDF uses 72dpi units
+        width_inches = tiff_characteristics[:width] / tiff_characteristics[:dpi]
+        height_inches = tiff_characteristics[:height] / tiff_characteristics[:dpi]
+
+        expect(page.width / 72).to be_within(0.01).of(width_inches)
+        expect(page.height / 72).to be_within(0.01).of(height_inches)
+
+        expect(page.text).to be_present # text layer!
+        # no great way apparently to make sure it includes an image!
+
+        pdf_file.unlink
+      end
+    end
+
   end
 end

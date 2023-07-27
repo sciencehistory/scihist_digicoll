@@ -4,6 +4,10 @@
 #
 # Uses a BUNCH of command-line shell-outs.
 #
+# NOTE: It returns ruby Tempfile objects, assuming you will be uploading to S3 -- the tempfiles
+#       themselves will end up deleted by ruby (although it's good practice to clean them up
+#       manually) you can't count on them staying around!
+#
 class AssetPdfCreator
   # one way to get dpi from a TIFF, there are others!
   class_attribute :mediainfo_command, default: "mediainfo"
@@ -24,10 +28,23 @@ class AssetPdfCreator
     @target_dpi = target_dpi
   end
 
-  def create
+  # to get  ONLY a graphical PDF, not combine with OCR text.
+  #
+  # Used because we store a derivative like this.
+  #
+  # @return Tempfile
+  def create_graphical_pdf
     jp2_temp_file = create_sized_jp2
 
     graphical_pdf = pdf_from_graphic(jp2_temp_file)
+  ensure
+    jp2_temp_file.unlink if jp2_temp_file
+  end
+
+  # @return Tempfile
+  def create
+    graphical_pdf = create_graphical_pdf
+
     textonly_pdf_file = nil
     # If we have a textonly_pdf, we got to combine them. Else this is it.
     if asset.file_derivatives[:textonly_pdf].present?
@@ -41,7 +58,6 @@ class AssetPdfCreator
       graphical_pdf
     end
   ensure
-    jp2_temp_file.unlink if jp2_temp_file
     textonly_pdf_file.unlink if textonly_pdf_file
   end
 
