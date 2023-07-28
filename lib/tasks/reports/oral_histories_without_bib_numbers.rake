@@ -1,6 +1,6 @@
 namespace :scihist do
   namespace :reports do
-    desc "List of oral histories without bib numbers. bundle exec rake scihist:reports:oral_histories_without_bib_numbers > report.csv"
+    desc "List of oral histories without bib numbers. bundle exec rake scihist:reports:oral_histories_without_bib_numbers"
     task :oral_histories_without_bib_numbers => :environment do
       oral_histories = Work.where("json_attributes -> 'genre' @> ?", "\"Oral histories\"")
       cmd = TTY::Command.new(output: Logger.new("/dev/null"))
