@@ -83,8 +83,8 @@ gem "sprockets", "~> 4.0"
 # So don't need a sass gem, we have sass npm package instead.
 # gem 'sassc-rails', '~> 2.0'
 
-# Use Uglifier as compressor for JavaScript assets
-gem 'uglifier', '>= 1.3.0'
+# Use terser as compressor for any JavaScript assets still used via sprockets
+gem 'terser', '~> 1.1'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'mini_racer', platforms: :ruby
 
@@ -197,7 +197,7 @@ group :test do
   gem 'capybara', '>= 2.15'
   gem 'selenium-webdriver'
   # Easy installation and use of chromedriver to run system tests with Chrome
-  gem 'webdrivers'
+  #gem 'webdrivers'
   gem 'capybara-screenshot'
   gem 'factory_bot_rails'
   gem "database_cleaner", "~> 2.0"

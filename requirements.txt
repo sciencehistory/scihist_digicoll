@@ -1,0 +1,10 @@
+# These are our python pip dependencies, at this point only for command-line
+# utilities. We use this file to load them in production (heroku), in test
+# (github actions), and in development (MacOS)
+#
+# *** ALL REQUIREMENTS SHOULD HAVE EXACT VERSION NUMBERS SPECIFIED ***
+#
+# due to lack of other lockfile, and to make caching work properly for example
+# https://github.com/actions/setup-python#caching-packages-dependencies
+
+img2pdf==0.4.4

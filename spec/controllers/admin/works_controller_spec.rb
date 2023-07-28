@@ -78,10 +78,12 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       expect(work.admin_note).to eq ["paragraph1\nparagraph2\n"]
     end
 
-    it "deletes all OCR on request" do
-      put :update, params: { id: work.friendlier_id, work: { ocr_requested: "0" } }
+    it "queues a WorkOcrCreatorRemoverJob when ocr_requested is turned off" do
+      expect {
+        put :update, params: { id: work.friendlier_id, work: { ocr_requested: "0" } }
+      }.to have_enqueued_job(WorkOcrCreatorRemoverJob).with { |w| expect(w.friendlier_id).to eq work.friendlier_id }
+
       expect(flash[:notice]).to match /Work was successfully updated./
-      expect(work.reload.members.first.hocr).to be_nil
     end
 
     it "does not delete OCR if the save operation fails" do
