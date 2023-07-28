@@ -29,7 +29,6 @@ class AssetPdfCreator
 
     graphical_pdf = pdf_from_graphic(jp2_temp_file)
     textonly_pdf_file = nil
-byebug
     # If we have a textonly_pdf, we got to combine them. Else this is it.
     if asset.file_derivatives[:textonly_pdf].present?
       textonly_pdf_file = asset.file_derivatives[:textonly_pdf].download
