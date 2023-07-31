@@ -60,4 +60,13 @@ describe "derivative creation" do
     end
   end
 
+  describe "TIFF asset" do
+    let(:tiff_file_path) { Rails.root.join("spec/test_support/images/mini_page_scan.tiff") }
+    let!(:asset) { FactoryBot.create(:asset, file: File.open(tiff_file_path)) }
+
+    it "can create a graphiconly_pdf derivative" do
+      asset.create_derivatives(only: :graphiconly_pdf)
+      expect(asset.file_derivatives).to have_key(:graphiconly_pdf)
+    end
+  end
 end
