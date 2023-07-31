@@ -495,17 +495,30 @@ class CatalogController < ApplicationController
     # Can also be empty string values in there.
     #
     # Make sure it has that shape, or just abort, becuase it is likely to make blacklight_range_limit
-    # choke and uncaught excpetion 500.
+    # choke and uncaught exception 500.
     #
     # Additionally, newlines and other things that aren't just integers can cause an error too,
     # just insist on \d+ or empty string only.
+    #
+    # We do allow one exception through: the URL `blacklight_range_limit` uses
+    # to display a link to a search for records with no dates.
 
     if params[:range].present?
+
       unless params[:range].respond_to?(:to_hash)
         render(plain: "Invalid URL query parameter range=#{param_display.call(params[:range])}", status: 400) && return
       end
 
       params[:range].each_pair do |_facet_key, range_limits|
+        # Workaround for issue https://github.com/sciencehistory/scihist_digicoll/issues/2231
+        #
+        # `blacklight_range_limit` can show a "date missing" search link,
+        # which adds an extra pair of range parameters:
+        #    range[-year_facet_isim][]=[* TO *] 
+        # This would normally trigger our "Invalid URL query parameter" error below,
+        # but we choose to let it through in this one particular case.
+        next if _facet_key == "-year_facet_isim" && range_limits == ["[* TO *]"]
+
         unless range_limits.respond_to?(:to_hash) && range_limits[:begin].is_a?(String) && range_limits[:end].is_a?(String) &&
           range_limits[:begin] =~ /\A\d*\z/ && range_limits[:end] =~ /\A\d*\z/
           render(plain: "Invalid URL query parameter range=#{param_display.call(params[:range])}", status: 400) && return
