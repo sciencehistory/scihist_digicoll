@@ -29,7 +29,6 @@ class AssetPdfCreator
 
     graphical_pdf = pdf_from_graphic(jp2_temp_file)
     textonly_pdf_file = nil
-
     # If we have a textonly_pdf, we got to combine them. Else this is it.
     if asset.file_derivatives[:textonly_pdf].present?
       textonly_pdf_file = asset.file_derivatives[:textonly_pdf].download
@@ -122,7 +121,7 @@ class AssetPdfCreator
   # Try to use mediainfo to extract dpi from TIFF; if we can't find it,
   # assume a default source DPI.
   #
-  # @returns [Integer] dpi
+  # @returns [Float] dpi
   def get_tiff_dpi(file_path)
     out, err = tty_command.run(
       mediainfo_command,
@@ -130,8 +129,8 @@ class AssetPdfCreator
       file_path
     )
 
-    if out =~ /\A(\d+) dpi/
-      return $1.to_i
+    if out =~ /\A(\d+(\.?\d+)?) dpi/
+      return $1.to_f
     else
       return GUESS_ASSUME_SOURCE_DPI
     end
