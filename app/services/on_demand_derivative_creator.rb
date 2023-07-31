@@ -156,11 +156,22 @@ class OnDemandDerivativeCreator
     @calculated_checksum ||= begin
       # important to sort for deterministic order of MD5s. Sort by position,
       # because that matters for the PDF generated, so should matter for our fingerprint.
-      individual_checksums = work.members.order(:position, :id).includes(:leaf_representative).collect do |m|
-        m.leaf_representative&.md5
-      end.compact
+      #
+      # Now that our PDFs include textonly_pdf too, we also need to include THAT in checksum....
+      # we could do it only for PDFs, but we'll just be over-careful and do it for all things
+      # for simpler code.
 
-      parts = [work.title, work.friendlier_id] + individual_checksums
+      individual_checksums = work.members.order(:position, :id).includes(:leaf_representative).collect do |m|
+        asset = m.leaf_representative
+
+        [asset&.md5, asset&.file_derivatives[:textonly_pdf]&.id]
+      end.flatten.compact
+
+      # include creator class in fingerprint, so if it changes to a new class,
+      # with new implementation, cache will bust.
+      creator_class_name = OnDemandDerivative.derivative_type_definitions[derivative_type.to_sym][:creator_class_name]
+
+      parts = [creator_class_name, work.title, work.friendlier_id] + individual_checksums
 
       Digest::MD5.hexdigest(parts.join("-"))
     end

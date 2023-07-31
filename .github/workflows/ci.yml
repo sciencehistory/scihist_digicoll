@@ -44,6 +44,7 @@ jobs:
           run: pip install -r requirements.txt
 
 
+          # will no longer need `poppler-utils` when we eliminate pdfunite from codebase shortly
         - name: Install apt dependencies
           run: |
             sudo apt-get update
