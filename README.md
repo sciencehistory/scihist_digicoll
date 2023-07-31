@@ -12,19 +12,23 @@ To set up a development instance on your workstation.
 
 ### Prerequisites
 
-* (MacOS) You're going to want homebrew, which will also take care of making sure you have a C compiler toolchain to install native C gems. https://brew.sh/
+* (MacOS) You will need homebrew, which will also take care of making sure you have a C compiler toolchain to install native C gems. https://brew.sh/
 * While not technically required just to run the app, you're going to want `git`. MacOS, `brew install git`.
 * ruby installed (I like using chruby and ruby-build to install/manage rubies, some like rvm)
 * Postgres version 14 or higher, installed and running -- on MacOS, I like https://postgresapp.com/
-* `yarn` and `node` installed for managing JS dependencies -- on MacOS, `brew install node yarn`.
-* `mediainfo` installed for fallback contnet type detection -- on MacOS, `brew install mediainfo`
-* vips installed --  on MacOS `brew install vips`
-* ffmpeg installed -- on MacOS `brew install ffmpeg`
-* tesseract for OCR -- `brew install tesseract tesseract-lang`. Will not be same version as
-  production, see https://sciencehistory.atlassian.net/l/cp/ucUvKjk3
-* 'qpdf' for pdf manipulation. On Mac `brew install qpdf`
 * You'll need Java installed to run Solr. If you don't already have it, on MacOS `brew install java`, then follow post-install instructions, such as `sudo ln -sfn /opt/homebrew/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk`
 
+* Various OS-package brew-installable packages are listed in the `Brewfile`, just run: `brew bundle` to install them from there.
+  * Note these packages in ubuntu apt variants generally have to be cross-listed in `Aptfile` for heroku, and in `.github/workflows/ci.yml` for test.
+
+* We now have some python dependencies. You need to install python on MacOS somehow, and then install from `requirements.txt`. We're not sure what the best way is.
+  * `brew install python` gives you a `pip` command, then `pip install -r requirements.txt`. You may have to re-install your requirements.txt if brew updates python underneath you?
+  * Python installer from https://www.python.org/downloads/macos/ gives you `pip3`, for `pip3 install -r requirements.txt`. Tends to leave lots of mismatched stuff around if you ever want to upgrade python.
+
+
+To ensure expected command-line utilities are present after install, you can run:
+
+    ./bin/rspec system_env_spec/
 
 
 ### Install and setup the app

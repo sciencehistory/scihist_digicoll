@@ -1,3 +1,10 @@
+# This file is used to install package dependencies on Heroku production,
+# using the heroku apt buildpack. It does NOT always (ever?) succesfully
+# install apt package dependencies, sometimes they need to be listed explicity.
+
+# For similar dependencies in other environments, see also: `Brewfile` MacOS development
+# machines; and `.github/workflows/ci.yml` for Github Actions CI.
+
 mediainfo
 imagemagick
 

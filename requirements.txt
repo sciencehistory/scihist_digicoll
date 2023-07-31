@@ -6,5 +6,9 @@
 #
 # due to lack of other lockfile, and to make caching work properly for example
 # https://github.com/actions/setup-python#caching-packages-dependencies
+#
+# On heroku, with python buildpack included, this file will be automatically
+# used for installs. https://www.codementor.io/@inanc/how-to-run-python-and-ruby-on-heroku-with-multiple-buildpacks-kgy6g3b1e
+
 
 img2pdf==0.4.4
