@@ -61,6 +61,21 @@ RSpec.describe CatalogController, solr: true, type: :controller do
       end
     end
 
+    # Regression test for issue https://github.com/sciencehistory/scihist_digicoll/issues/2231
+    # Normally the values in the range params need to be hash-like,
+    # but in this particular case we allow an array.
+    describe "blacklight range limit 'date missing'" do
+      it "returns http 200" do
+        get :index, params: {
+        "range" => {
+            "-year_facet_isim" => ["[* TO *]"],
+            "year_facet_isim"  => { "begin"=>"", "end"=>"" }
+          }
+        }
+        expect(response).to have_http_status(200)
+      end
+    end
+
     describe "range value out of order" do
       render_views
 
