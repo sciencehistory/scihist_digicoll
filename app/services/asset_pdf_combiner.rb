@@ -1,14 +1,17 @@
-# Creates a single-page PDF from a single asset.
+# Creates a single-page PDF for a single asset, by possibly combining
+# a :graphiconly_pdf derivative and a :textonly_pdf derivative. Uses
+# `qpdf` combine.
+#
+#
+# If no :textonly_pdf derivative is present, just returns the graphiconly pdf!
 #
 # Will include text layer for OCR-requested Assets that have the textonly_pdf derivative present.
-#
-# Uses a BUNCH of command-line shell-outs.
 #
 # NOTE: It returns ruby Tempfile objects, assuming you will be uploading to S3 -- the tempfiles
 #       themselves will end up deleted by ruby (although it's good practice to clean them up
 #       manually) you can't count on them staying around!
 #
-class AssetPdfCreator
+class AssetPdfCombiner
   class_attribute :qpdf_command, default: "qpdf"
 
   attr_reader :asset
@@ -20,26 +23,27 @@ class AssetPdfCreator
 
   # @return Tempfile
   def create
-    if asset.file_derivatives[:graphiconly_pdf].present?
-      graphical_pdf = asset.file_derivatives[:graphiconly_pdf].download
-    else
-      graphical_pdf = AssetGraphicOnlyPdfCreator.new(asset).create
+    unless asset.file_derivatives[:graphiconly_pdf].present?
+      raise StandardError.new("#{self.class}: Can't create combined PDF for asset #{asset.friendlier_id} with missing :graphiconly_pdf derivative")
     end
 
+    graphical_pdf = asset.file_derivatives[:graphiconly_pdf].download
+
     textonly_pdf_file = nil
+
     # If we have a textonly_pdf, we got to combine them. Else this is it.
     if asset.file_derivatives[:textonly_pdf].present?
       textonly_pdf_file = asset.file_derivatives[:textonly_pdf].download
 
       combined_pdf = combine_pdfs(textonly_pdf_file: textonly_pdf_file, graphic_pdf_file: graphical_pdf)
-      graphical_pdf.unlink
+      graphical_pdf.close!
 
       combined_pdf
     else
       graphical_pdf
     end
   ensure
-    textonly_pdf_file.unlink if textonly_pdf_file
+    textonly_pdf_file.close! if textonly_pdf_file
   end
 
   # Returns a combined PDF with graphical PDF and text-only PDF.

@@ -4,9 +4,9 @@ describe WorkPdfCreator2 do
   let(:work) do
     create(:public_work,
       members: [
-        create(:asset_with_faked_file),
-        create(:asset_with_faked_file),
-        create(:public_work, representative: create(:asset_with_faked_file))
+        create(:asset_with_faked_file, :tiff),
+        create(:asset_with_faked_file, :tiff),
+        create(:public_work, representative: create(:asset_with_faked_file, :tiff))
       ]
     )
   end
@@ -36,35 +36,7 @@ describe WorkPdfCreator2 do
     end
   end
 
-  context "with resized downloads unavailable" do
-    before { skip "we currently work from originals" }
-
-    before do
-      work.members.each do |member|
-        if member.kind_of?(Asset)
-          member.remove_derivatives(:download_small, :download_medium, :download_large)
-          member.update_derivatives({
-            download_full: create(:stored_uploaded_file)
-          })
-        end
-      end
-    end
-
-    it "still builds PDF with all images, using download_full" do
-      pdf_file = WorkPdfCreator2.new(work).create
-      expect(pdf_file).to be_kind_of(Tempfile)
-
-      reader = PDF::Reader.new(pdf_file.path)
-      expect(reader.pages.count).to eq 3
-    ensure
-      if pdf_file
-        pdf_file.close
-        pdf_file.unlink
-      end
-    end
-  end
-
-  it "sets metadata on PDF", skip: "feature not currently feasible" do
+  it "sets metadata on PDF", skip: "feature not currently implemented" do
     pdf_file = WorkPdfCreator2.new(work).create
     reader = PDF::Reader.new(pdf_file.path)
 

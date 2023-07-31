@@ -87,7 +87,7 @@ class WorkPdfCreator2
         file_name = "pdf_page#{'%05d' % page_index}.pdf"
         file_path = File.join(working_directory, file_name)
 
-        temp_pdf_file = AssetPdfCreator.new(member.leaf_representative).create
+        temp_pdf_file = AssetPdfCombiner.new(member.leaf_representative).create
 
         # mv to where we want for assembly!
         FileUtils.mv(temp_pdf_file.path, file_path)
