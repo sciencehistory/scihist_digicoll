@@ -24,7 +24,7 @@ class AssetPdfCombiner
   # @return Tempfile
   def create
     unless asset.file_derivatives[:graphiconly_pdf].present?
-      raise StandardError.new("#{self.class}: Can't create combined PDF for asset #{asset.friendlier_id} with missing :graphiconly_pdf derivative")
+      raise StandardError.new("#{self.class}: Can't create combined PDF for asset '#{asset.friendlier_id}' with missing :graphiconly_pdf derivative")
     end
 
     graphical_pdf = asset.file_derivatives[:graphiconly_pdf].download

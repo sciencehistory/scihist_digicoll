@@ -73,27 +73,20 @@ describe WorkPdfCreator2 do
   end
 
   describe "with missing derivatives" do
-    before { skip "we currently work from originals" }
-
+    let(:asset_missing_derivatives) { create(:asset_with_faked_file, :tiff, faked_derivatives: {}) }
     let(:work) do
       create(:work,
         members: [
-          create(:asset_with_faked_file, faked_derivatives: {}),
-          create(:asset_with_faked_file)
+          asset_missing_derivatives,
+          create(:asset_with_faked_file, :tiff)
         ]
       )
     end
 
-    it "skips missing files" do
-      pdf_file = WorkPdfCreator2.new(work).create
-
-      reader = PDF::Reader.new(pdf_file.path)
-      expect(reader.pages.count).to eq 1
-    ensure
-      if pdf_file
-        pdf_file.close
-        pdf_file.unlink
-      end
+    it "raises an exception" do
+      expect {
+        pdf_file  = WorkPdfCreator2.new(work).create
+      }.to raise_error(StandardError, /Can't create combined PDF for asset '#{asset_missing_derivatives.friendlier_id}' with missing :graphiconly_pdf derivative/)
     end
   end
 
