@@ -61,15 +61,22 @@ class WorkPdfCreator2
   end
 
   # published members. pre-loads leaf_representative derivatives.
-  # Limited to members whose leaf representative has a download_large derivative
+  #
+  # Limited to members whose leaf representative is an image/tiff!
   #
   # Members will have derivatives pre-loaded.
+  #
+  # Does pre-fetch all members in one batch (in order to sort on leaf representative), that should be fine?
+  # We could do something fancier if not (join on leaf_representative), but we do need an ORDERED list.
   def members_to_include
     @members_to_include ||= work.
                             members.
                             includes(:leaf_representative).
                             where(published: true).
-                            order(:position)
+                            order(:position).
+                            select do |m|
+                              m.leaf_representative.content_type.start_with?("image/tiff")
+                            end
   end
 
   def tmp_pdf_file!

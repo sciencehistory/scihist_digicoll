@@ -6,6 +6,7 @@ describe WorkPdfCreator2 do
       members: [
         create(:asset_with_faked_file, :tiff),
         create(:asset_with_faked_file, :tiff),
+        create(:asset_with_faked_file, :flac, title: "skip me"),
         create(:public_work, representative: create(:asset_with_faked_file, :tiff))
       ]
     )
