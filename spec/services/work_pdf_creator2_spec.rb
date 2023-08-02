@@ -4,9 +4,10 @@ describe WorkPdfCreator2 do
   let(:work) do
     create(:public_work,
       members: [
-        create(:asset_with_faked_file),
-        create(:asset_with_faked_file),
-        create(:public_work, representative: create(:asset_with_faked_file))
+        create(:asset_with_faked_file, :tiff),
+        create(:asset_with_faked_file, :tiff),
+        create(:asset_with_faked_file, :flac, title: "skip me"),
+        create(:public_work, representative: create(:asset_with_faked_file, :tiff))
       ]
     )
   end
@@ -36,35 +37,7 @@ describe WorkPdfCreator2 do
     end
   end
 
-  context "with resized downloads unavailable" do
-    before { skip "we currently work from originals" }
-
-    before do
-      work.members.each do |member|
-        if member.kind_of?(Asset)
-          member.remove_derivatives(:download_small, :download_medium, :download_large)
-          member.update_derivatives({
-            download_full: create(:stored_uploaded_file)
-          })
-        end
-      end
-    end
-
-    it "still builds PDF with all images, using download_full" do
-      pdf_file = WorkPdfCreator2.new(work).create
-      expect(pdf_file).to be_kind_of(Tempfile)
-
-      reader = PDF::Reader.new(pdf_file.path)
-      expect(reader.pages.count).to eq 3
-    ensure
-      if pdf_file
-        pdf_file.close
-        pdf_file.unlink
-      end
-    end
-  end
-
-  it "sets metadata on PDF", skip: "feature not currently feasible" do
+  it "sets metadata on PDF", skip: "feature not currently implemented" do
     pdf_file = WorkPdfCreator2.new(work).create
     reader = PDF::Reader.new(pdf_file.path)
 
@@ -100,27 +73,20 @@ describe WorkPdfCreator2 do
   end
 
   describe "with missing derivatives" do
-    before { skip "we currently work from originals" }
-
+    let(:asset_missing_derivatives) { create(:asset_with_faked_file, :tiff, faked_derivatives: {}) }
     let(:work) do
       create(:work,
         members: [
-          create(:asset_with_faked_file, faked_derivatives: {}),
-          create(:asset_with_faked_file)
+          asset_missing_derivatives,
+          create(:asset_with_faked_file, :tiff)
         ]
       )
     end
 
-    it "skips missing files" do
-      pdf_file = WorkPdfCreator2.new(work).create
-
-      reader = PDF::Reader.new(pdf_file.path)
-      expect(reader.pages.count).to eq 1
-    ensure
-      if pdf_file
-        pdf_file.close
-        pdf_file.unlink
-      end
+    it "raises an exception" do
+      expect {
+        pdf_file  = WorkPdfCreator2.new(work).create
+      }.to raise_error(StandardError, /Can't create combined PDF for asset '#{asset_missing_derivatives.friendlier_id}' with missing :graphiconly_pdf derivative/)
     end
   end
 

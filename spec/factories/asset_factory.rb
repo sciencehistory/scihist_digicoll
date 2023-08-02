@@ -157,6 +157,21 @@ FactoryBot.define do
         faked_width { nil }
       end
 
+      trait :tiff do
+        faked_file { File.open((Rails.root + "spec/test_support/images/mini_page_scan.tiff")) }
+        faked_content_type { "image/tiff" }
+        faked_height { 463 }
+        faked_width { 300 }
+
+        # should have full suite of thumbnails, but for now just what we need for PDF tests.
+        faked_derivatives do
+          {
+            graphiconly_pdf: create(:stored_uploaded_file,
+                                    file: File.open(Rails.root + "spec/test_support/pdf/mini_page_scan_graphic_only.pdf"))
+          }
+        end
+      end
+
       after(:build) do |asset, evaluator|
         # Set our uploaded file
 
