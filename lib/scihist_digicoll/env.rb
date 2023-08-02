@@ -219,7 +219,7 @@ module ScihistDigicoll
     # can be obtained by running `terraform output`.
     define_key :s3_bucket_derivatives_host      # Cloudfront hostname for regular derivs bucket
     define_key :s3_bucket_derivatives_video_host # Ditto, for video derivs bucket
-    
+
     define_key :s3_bucket_uploads
     define_key :s3_bucket_on_demand_derivatives
     define_key :s3_bucket_dzi
@@ -544,6 +544,9 @@ module ScihistDigicoll
 
 
     define_key :honeybadger_api_key
+
+    # nil means use default, but we can define if we want to put all OCR work on, say, `special_jobs`.
+    define_key :active_job_ocr_queue
 
     # Used for sending mail, and if no queue is specified:
     define_key :regular_job_worker_count, default: 0
