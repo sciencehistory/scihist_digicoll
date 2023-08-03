@@ -38,7 +38,11 @@
           <%= link_to asset.title, admin_asset_path(asset) %>
         </td>
         <td>
-          <%= link_to asset.parent.title, parent_path(asset) %>
+          <% if asset.parent %>
+            <%= link_to asset.parent.title, parent_path(asset) %>
+          <% else %>
+            <span class="text-danger">NO PARENT</span>
+          <% end %>
         </td>
         <td class="datestamp"><%=  l asset.created_at.to_date, format: :admin %> </td>
       </tr>

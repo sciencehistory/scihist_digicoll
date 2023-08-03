@@ -87,6 +87,13 @@ class AssetUploader < Kithe::AssetUploader
     end
   end
 
+  # a one-page graphic-only PDF, containing a carefully sized image,
+  # that we use to assemble multi-page work PDFs, combined with ocr
+  # text from `textonly_pdf` derivative that is created non-automatically
+  Attacher.define_derivative("graphiconly_pdf", content_type: "image/tiff") do |original_file, attacher:|
+    AssetGraphicOnlyPdfCreator.new(attacher.record, original_file: original_file).create
+  end
+
 
   # For FLAC originals, we create a mono m4a derivative.
   # Typically this deriv is only 5% of the size of the original FLAC,

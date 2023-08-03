@@ -1,10 +1,12 @@
-# Creates a single-page PDF from a single asset.
+# Given an original TIFF, creates a one-page PDF containing that graphic,
+# embedded as a *JP2*.
 #
-# Will include text layer for OCR-requested Assets that have the textonly_pdf derivative present.
+# Calls out to various command line tools:
+# * vipsthumbnail to resize TIFF as a JP2
+# * mediainfo to read TIFF dpi if needed
+# * img2pdf (python) to embed jp2 in PDF
 #
-# Uses a BUNCH of command-line shell-outs.
-#
-class AssetPdfCreator
+class AssetGraphicOnlyPdfCreator
   # one way to get dpi from a TIFF, there are others!
   class_attribute :mediainfo_command, default: "mediainfo"
   class_attribute :vipsthumbnail_command, default: "vipsthumbnail"
@@ -12,52 +14,61 @@ class AssetPdfCreator
   # A python pip package, that we still haven't totally figured out how we're
   # going to get installed.
   class_attribute :img2pdf_convert_command, default: "img2pdf"
-  class_attribute :qpdf_command, default: "qpdf"
 
+
+  # Will resize output to this DPI, based on known input DPI
   DEFAULT_TARGET_DPI = 150
-  GUESS_ASSUME_SOURCE_DPI = 400 # what we usually use for 2D photos I think
 
-  attr_reader :asset, :target_dpi
+  # a low-sounding 40 looks good to us for vips jp2 compression value,
+  # we don't see any artifacts
+  DEFAULT_COMPRESSION_Q = 40
 
-  def initialize(asset, target_dpi: DEFAULT_TARGET_DPI)
+  # If we can't extract dpi, we'll assume this
+  GUESS_ASSUME_SOURCE_DPI = 400
+
+  attr_reader :original_file, :asset, :compression_quality, :target_dpi
+
+  # @param asset [Asset] Asset with a TIFF original
+  #
+  # @param original_file [File] optional, if you already have the asset original file downloaded,
+  #                             pass it in so we don't need to download it again.
+  #
+  # @param compression_quality [Integer] 'Q' param to vips for lossy compression quality
+  #                             https://www.libvips.org/2021/06/04/What's-new-in-8.11.html
+  #
+  # @param target_dpi [Integer] target DPI of output image
+  def initialize(asset,
+    original_file: nil,
+    target_dpi: DEFAULT_TARGET_DPI,
+    compression_quality: DEFAULT_COMPRESSION_Q)
+
     @asset = asset
+    @original_file = original_file
     @target_dpi = target_dpi
+    @compression_quality = compression_quality
   end
 
+  # @returns [Tempfile] a PDF
   def create
     jp2_temp_file = create_sized_jp2
 
-    graphical_pdf = pdf_from_graphic(jp2_temp_file)
-    textonly_pdf_file = nil
-    # If we have a textonly_pdf, we got to combine them. Else this is it.
-    if asset.file_derivatives[:textonly_pdf].present?
-      textonly_pdf_file = asset.file_derivatives[:textonly_pdf].download
-
-      combined_pdf = combine_pdfs(textonly_pdf_file: textonly_pdf_file, graphic_pdf_file: graphical_pdf)
-      graphical_pdf.unlink
-
-      combined_pdf
-    else
-      graphical_pdf
-    end
+    pdf_from_graphic(jp2_temp_file)
   ensure
     jp2_temp_file.unlink if jp2_temp_file
-    textonly_pdf_file.unlink if textonly_pdf_file
   end
 
-
-  # @param jp2_quality [Integer] a 1-99 quality indicator that vips will use for
-  #   lossy compression in jp2. https://www.libvips.org/2021/06/04/What's-new-in-8.11.html
-  #
-  #   Default jp2_quality is as low as we think we can go without visible artifacts --
-  #   it's a pretty low number. started at 38, but maybe 40 better to be safe.
-  #
   # @return Tempfile
   #
   # WARNING: This jp2 IS going to have missing dpi in it's metadata, we haven't
   #          figured out to write that with vips yet
   def create_sized_jp2(jp2_quality: 40)
-    temp_orig = asset.file.download
+    # use passed-in original file if we have it, otherwise download via shrine
+    downloaded_new_copy = false
+    temp_orig  = original_file
+    unless temp_orig
+      downloaded_new_copy = true
+      temp_orig = asset.file.download
+    end
 
     orig_width = asset.width
     orig_dpi   = get_tiff_dpi(temp_orig.path)
@@ -65,7 +76,7 @@ class AssetPdfCreator
     # what to resize x width to get from original dpi to target dpi?
     target_width = (orig_width.to_f * (target_dpi.to_f / orig_dpi.to_f)).round
 
-    output_jp2_tempfile = Tempfile.new(["scihist_digicoll_asset_pdf_creator", ".jp2"])
+    output_jp2_tempfile = Tempfile.new(["scihist_digicoll_asset_graphic_only_pdf_creator", ".jp2"])
 
     # subsample-mode=off is to work around a bug in OpenJPEG -- more recent
     # versions of vips always turn subsample mode off, but it does need to be off
@@ -82,15 +93,17 @@ class AssetPdfCreator
       temp_orig.path,
       "--size","#{target_width}x65500",
       "--export-profile", "srgb",
-      "-o", "#{output_jp2_tempfile.path}[Q=#{jp2_quality},subsample-mode=off]"
+      "-o", "#{output_jp2_tempfile.path}[Q=#{compression_quality},subsample-mode=off]"
     )
 
     # note dpi metadata on output jp2 is always 72. :(
 
     output_jp2_tempfile
+  ensure
+    temp_orig.close! if downloaded_new_copy && temp_orig
   end
 
-  # Use ImageMagick to embed an image in a PDF. ImageMagick definitely ain't super fast.
+  # Use img2pdf python utility to embed an image in a PDF.
   #
   # Set the DPI properly on PDF too.
   #
@@ -132,28 +145,9 @@ class AssetPdfCreator
     if out =~ /\A(\d+(\.?\d+)?) dpi/
       return $1.to_f
     else
+      Rails.logger.warn("#{self.class}: Could not find dpi for Asset #{asset.friendlier_id}, assuming #{GUESS_ASSUME_SOURCE_DPI}")
       return GUESS_ASSUME_SOURCE_DPI
     end
-  end
-
-  # Returns a combined PDF with graphical PDF and text-only PDF.
-  #
-  # WARNING:  the textonly pdf NEEDS to be same size or "bigger", and then
-  #           qpdf will scale it down to fit and match. If textonly pdf is SMALLER,
-  #           it will get overlaid as a smaller inset and not line up.
-  #
-  def combine_pdfs(textonly_pdf_file:, graphic_pdf_file:)
-    combined_temp_file = Tempfile.new(["scihist_digicoll_asset_pdf_creator", ".pdf"])
-
-    tty_command.run(
-      qpdf_command,
-      graphic_pdf_file.path,
-      "--underlay", textonly_pdf_file.path,
-      "--",
-      combined_temp_file.path
-    )
-
-    combined_temp_file
   end
 
   private
@@ -161,6 +155,4 @@ class AssetPdfCreator
   def tty_command
     @tty_comand ||= TTY::Command.new(printer: :null)
   end
-
-
 end
