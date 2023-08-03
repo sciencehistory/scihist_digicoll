@@ -1,5 +1,13 @@
 <figure class="hero-image">
-  <%= image_tag path, 'aria-labelledby' => "homeHeroCaption" %>
+  <%= image_tag(
+    path,                   # original image
+    'srcset'          => {
+        path_1x=>"1x",      # scaled to 1000px width
+        path_2x=>"2x"       # scaled to 2000px width
+    },
+    'aria-labelledby' => 'homeHeroCaption')
+  %>
+
   <figcaption id="homeHeroCaption">
       <%= link_to link_title, work_path(work_friendlier_id) %>
   </figcaption>

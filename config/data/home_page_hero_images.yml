@@ -1,39 +1,37 @@
-# For now we just keep 3 pieces of metadata for each image.
-# I purposely commented out the width and height, as we are currently not using them.
 images:
 
-  - path: homepage/hero_images/greene.jpg
+  - path: homepage/hero_images/originals/greene.jpg
+    path_1x: homepage/hero_images/1x/greene.jpg
+    path_2x: homepage/hero_images/2x/greene.jpg
     link_title: Dr. Bettye Washington Greene
     work_friendlier_id: t722h939f
-    # width: 2000
-    # height: 1400
 
-  - path: homepage/hero_images/work.jpg
+  - path: homepage/hero_images/originals/work.jpg
+    path_1x: homepage/hero_images/1x/work.jpg
+    path_2x: homepage/hero_images/2x/work.jpg
     link_title: Genevieve Work
     work_friendlier_id: zw12z624s
-    # width: 3357
-    # height: 2349
 
-  - path: homepage/hero_images/emocromometro.jpg
+  - path: homepage/hero_images/originals/emocromometro.jpg
+    path_1x: homepage/hero_images/1x/emocromometro.jpg
+    path_2x: homepage/hero_images/2x/emocromometro.jpg
     link_title: Emocromometro
     work_friendlier_id: 4j03d059d
-    # width: 2000
-    # height: 1400
 
-  - path: homepage/hero_images/wilson.jpg
-    link_title: Wilson College chemistry club
+  - path: homepage/hero_images/originals/wilson.jpg
+    path_1x: homepage/hero_images/1x/wilson.jpg
+    path_2x: homepage/hero_images/2x/wilson.jpg
+    link_title: Wilson College Chemistry Club
     work_friendlier_id: w6634363x
-    # width: 3398
-    # height: 2379
 
-  - path: homepage/hero_images/ramie.jpg
+  - path: homepage/hero_images/originals/ramie.jpg
+    path_1x: homepage/hero_images/1x/ramie.jpg
+    path_2x: homepage/hero_images/2x/ramie.jpg
     link_title: The Story of Ramie
     work_friendlier_id: ko5gpgj
-    # width: 4266
-    # height: 2986
 
-  - path: homepage/hero_images/medicine.jpg
+  - path: homepage/hero_images/originals/medicine.jpg
+    path_1x: homepage/hero_images/1x/medicine.jpg
+    path_2x: homepage/hero_images/2x/medicine.jpg
     link_title: Medicine for the Millions
     work_friendlier_id: wrdbluu
-    # width: 3736 
-    # height: 2616

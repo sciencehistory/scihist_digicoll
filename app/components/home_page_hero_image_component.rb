@@ -19,6 +19,16 @@ class HomePageHeroImageComponent < ApplicationComponent
   def path
     image_metadata['path']
   end
+  
+  def path_1x
+    image_metadata['path_1x']
+  end
+  
+  def path_2x
+    image_metadata['path_2x']
+  end
+
+
 
   def link_title
     image_metadata['link_title']
@@ -29,6 +39,13 @@ class HomePageHeroImageComponent < ApplicationComponent
   end
 
   private
+
+  def src_attributes
+    {
+       src: res_1x_url,
+       srcset: "#{res_1x_url} 1x, #{res_2x_url} 2x"
+    }
+  end
 
   # a large integer that increments when it's time for the image to change.
   def tick
