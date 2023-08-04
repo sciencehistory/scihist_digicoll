@@ -77,12 +77,12 @@ class HomePageHeroImageComponent < ApplicationComponent
           unless metadata[k].class == String
             raise RuntimeError, "Metadata for hero image \"#{link_title}\" is incomplete. Check #{YAML_SOURCE_PATH}."
           end
-          unless Rails.application.assets.find_asset(metadata['path_1x'])
-            raise RuntimeError, "Missing image at  \"#{metadata['path_1x']}\"."            
-          end
-          unless Rails.application.assets.find_asset(metadata['path_2x'])
-            raise RuntimeError, "Missing image at \"#{metadata['path_2x']}\"."
-          end
+          # unless Rails.application.assets.find_asset(metadata['path_1x'])
+          #   raise RuntimeError, "Missing image at  \"#{metadata['path_1x']}\"."            
+          # end
+          # unless Rails.application.assets.find_asset(metadata['path_2x'])
+          #   raise RuntimeError, "Missing image at \"#{metadata['path_2x']}\"."
+          # end
         end        
       end
       all_metadata
