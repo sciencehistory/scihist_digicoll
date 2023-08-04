@@ -5,9 +5,19 @@
 #
 # We show each image to all viewers, for a period of ten minutes.
 # Then we move on to the next one, and so on.
+# The number of images is arbitrary.
 #
 # For testing each image, you can override this mechanism
 # by specifying ?hero_image=1, ?hero_image=2, and so on.
+#
+# Paths to the original files (on the P drive) are stored in the YML file.
+#
+# We parse and validate the YAML file on class load and store it in a class variable.
+# Otherwise it would be fairly easy to break the home page -- in a delayed fashion --
+# on account of a careless error in the configuration file.
+# 
+# For notes on how to create a new hero image, see:
+# See images/homepage/hero_images/README.md
 class HomePageHeroImageComponent < ApplicationComponent
   YAML_SOURCE_PATH = Rails.root.join("config/data/home_page_hero_images.yml").to_s
   HOW_LONG_TO_SHOW_EACH_IMAGE = 10 * 60 # seconds
@@ -16,10 +26,6 @@ class HomePageHeroImageComponent < ApplicationComponent
     @override = override
   end
 
-  def path
-    image_metadata['path']
-  end
-  
   def path_1x
     image_metadata['path_1x']
   end
@@ -27,8 +33,6 @@ class HomePageHeroImageComponent < ApplicationComponent
   def path_2x
     image_metadata['path_2x']
   end
-
-
 
   def link_title
     image_metadata['link_title']
@@ -40,36 +44,48 @@ class HomePageHeroImageComponent < ApplicationComponent
 
   private
 
-  def src_attributes
-    {
-       src: res_1x_url,
-       srcset: "#{res_1x_url} 1x, #{res_2x_url} 2x"
-    }
-  end
-
-  # a large integer that increments when it's time for the image to change.
+  # returns an integer that increments when the image needs to change
   def tick
     Time.now.to_i.div(HOW_LONG_TO_SHOW_EACH_IMAGE)
   end
 
-  # returns an index we can use to choose an image from the all_images_metadata array
-  def image_number
-    number_of_images = all_images_metadata.length
-    n = @override.to_i
-    # Ignore @override if it's the wrong type or size.
-    if n.to_s == @override && n.between?(1, number_of_images)
-      n - 1
-    else
-      tick % number_of_images
+  # returns the metadata for an image to show.
+  # Ignores @override if it's nil, not a number, or the wrong size.
+  def image_metadata
+    @image_metadata ||= begin
+      n = @override.to_i
+      if (n.to_s == @override && n.between?(1, number_of_images))
+        self.class.all_images_metadata[ n - 1 ]
+      else        
+        self.class.all_images_metadata[ tick % number_of_images ]
+      end
     end
   end
 
-  # Choose an image based on the tick
-  def image_metadata
-    @image_metadata ||= all_images_metadata[image_number]
+  def number_of_images
+    @number_of_images ||= self.class.all_images_metadata.length
   end
 
-  def all_images_metadata
-    @all_images_metadata ||= YAML.load_file(YAML_SOURCE_PATH)['images']
+  # Parse and validate the YAML file on class load.
+  # That way, any problems with the YML file show up early and often.
+  def self.all_images_metadata
+    @@all_images_metadata ||= begin
+      all_metadata = YAML.load_file(YAML_SOURCE_PATH)['images']
+      expected_keys = ["link_title", "original_file", "path_1x", "path_2x", "work_friendlier_id"]
+      all_metadata.each do |metadata|
+        expected_keys.each do |k|
+          unless metadata[k].class == String
+            raise RuntimeError, "Metadata for hero image \"#{link_title}\" is incomplete. Check #{YAML_SOURCE_PATH}."
+          end
+          unless Rails.application.assets.find_asset(metadata['path_1x'])
+            raise RuntimeError, "Missing image at  \"#{metadata['path_1x']}\"."            
+          end
+          unless Rails.application.assets.find_asset(metadata['path_2x'])
+            raise RuntimeError, "Missing image at \"#{metadata['path_2x']}\"."
+          end
+        end        
+      end
+      all_metadata
+    end
   end
 end
