@@ -15,10 +15,10 @@ describe HomePageHeroImageComponent, type: :component do
     it "all needed keys and images exist" do
       expected_keys = ["link_title", "original_file", "path_1x", "path_2x", "work_friendlier_id"]
       all_metadata.each do |metadata|
+        expect(File).to exist File.join(Rails.root, 'app', 'assets', 'images', metadata['path_1x'])
+        expect(File).to exist File.join(Rails.root, 'app', 'assets', 'images', metadata['path_2x'])
         expected_keys.each do |k|
           expect(metadata[k].class).to eq String
-          expect(Rails.application.assets.find_asset(metadata['path_1x']).class).to eq Sprockets::Asset
-          expect(Rails.application.assets.find_asset(metadata['path_2x']).class).to eq Sprockets::Asset
         end
       end
     end
@@ -28,7 +28,7 @@ describe HomePageHeroImageComponent, type: :component do
     before do
       allow(instance).to receive(:tick).and_return(0)
     end
-    it "renders placeholder" do
+    it "renders correct image" do
       expect(instance.link_title).to eq all_metadata[0]['link_title']
     end
   end
@@ -37,7 +37,7 @@ describe HomePageHeroImageComponent, type: :component do
     before do
       allow(instance).to receive(:tick).and_return(1)
     end
-    it "renders placeholder" do
+    it "renders correct image" do
       expect(instance.link_title).to eq all_metadata[1]['link_title']
     end
   end
