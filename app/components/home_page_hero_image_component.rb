@@ -66,26 +66,7 @@ class HomePageHeroImageComponent < ApplicationComponent
     @number_of_images ||= self.class.all_images_metadata.length
   end
 
-  # Parse and validate the YAML file on class load.
-  # That way, any problems with the YML file show up early and often.
   def self.all_images_metadata
-    @@all_images_metadata ||= begin
-      all_metadata = YAML.load_file(YAML_SOURCE_PATH)['images']
-      expected_keys = ["link_title", "original_file", "path_1x", "path_2x", "work_friendlier_id"]
-      all_metadata.each do |metadata|
-        expected_keys.each do |k|
-          unless metadata[k].class == String
-            raise RuntimeError, "Metadata for hero image \"#{link_title}\" is incomplete. Check #{YAML_SOURCE_PATH}."
-          end
-          # unless Rails.application.assets.find_asset(metadata['path_1x'])
-          #   raise RuntimeError, "Missing image at  \"#{metadata['path_1x']}\"."            
-          # end
-          # unless Rails.application.assets.find_asset(metadata['path_2x'])
-          #   raise RuntimeError, "Missing image at \"#{metadata['path_2x']}\"."
-          # end
-        end        
-      end
-      all_metadata
-    end
+    @@all_images_metadata ||= YAML.load_file(YAML_SOURCE_PATH)['images']
   end
 end

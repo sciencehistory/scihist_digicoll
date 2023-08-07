@@ -11,6 +11,19 @@ describe HomePageHeroImageComponent, type: :component do
     end
   end
 
+  describe "images in Rails.application.assets" do
+    it "all needed keys and images exist" do
+      expected_keys = ["link_title", "original_file", "path_1x", "path_2x", "work_friendlier_id"]
+      all_metadata.each do |metadata|
+        expected_keys.each do |k|
+          expect(metadata[k].class).to eq String
+          expect(Rails.application.assets.find_asset(metadata['path_1x']).class).to eq Sprockets::Asset
+          expect(Rails.application.assets.find_asset(metadata['path_2x']).class).to eq Sprockets::Asset
+        end
+      end
+    end
+  end
+
   describe "tick = 0" do
     before do
       allow(instance).to receive(:tick).and_return(0)
