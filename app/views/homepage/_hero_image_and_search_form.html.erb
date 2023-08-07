@@ -1,12 +1,7 @@
 <div class="container-fluid homepage-wrapper">
     <div class="row no-gutters">
         <div class="col-lg">
-            <figure class="hero-image">
-                <%= image_tag "hero_image_2x.jpg", 'aria-labelledby' => "homeHeroCaption" %>
-                <figcaption id="homeHeroCaption">
-                    <%= link_to "Wilson College chemistry club", work_path('w6634363x') %>
-                </figcaption>
-            </figure>
+            <%= render HomePageHeroImageComponent.new(override:params[:hero_image]) %>
         </div>
         <div class="col-lg home-right-column">
             <div class="search-container no-gutters">
