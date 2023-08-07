@@ -73,8 +73,13 @@ class AssetGraphicOnlyPdfCreator
     orig_width = asset.width
     orig_dpi   = get_tiff_dpi(temp_orig.path)
 
-    # what to resize x width to get from original dpi to target dpi?
-    target_width = (orig_width.to_f * (target_dpi.to_f / orig_dpi.to_f)).round
+    if orig_dpi > target_dpi
+      # what to resize x width to get from original dpi to target dpi?
+      target_width = (orig_width.to_f * (target_dpi.to_f / orig_dpi.to_f)).round
+    else
+      # don't scale it UP to meet target!
+      target_width = orig_width
+    end
 
     output_jp2_tempfile = Tempfile.new(["scihist_digicoll_asset_graphic_only_pdf_creator", ".jp2"])
 
