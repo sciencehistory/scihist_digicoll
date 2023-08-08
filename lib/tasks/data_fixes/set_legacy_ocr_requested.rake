@@ -42,7 +42,7 @@ namespace :scihist do
 
       Work.jsonb_contains(format: "text", language: "English", department: "Archives").find_each do |work|
         if work.date_of_work.any? {|d| d.start&.split("-")&.first.to_i >= 1900 } &&
-            work.genre.any? {|g| ["Advertisements", "Pamphlets", "Handbooks", "Manuals OR Publications"].include?(g) }
+            work.genre.any? {|g| ["Advertisements", "Pamphlets", "Handbooks", "Manuals", "Publications"].include?(g) }
 
             work.ocr_requested = true
             work.save!
