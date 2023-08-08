@@ -19,17 +19,19 @@ namespace :scihist do
 
       ocr_enabled_count = 0
 
-      Work.jsonb_contains(format: "text", language: "English", department: "Library").find_each do |work|
-        if work.date_of_work.any? {|d| d.start&.split("-")&.first.to_i >= 1860 }
-          work.ocr_requested = true
-          work.save!
+      Kithe::Indexable.index_with(batching: true) do
+        Work.jsonb_contains(format: "text", language: "English", department: "Library").find_each do |work|
+          if work.date_of_work.any? {|d| d.start&.split("-")&.first.to_i >= 1860 }
+            work.ocr_requested = true
+            work.save!
 
-          WorkOcrCreatorRemoverJob.set(queue: "special_jobs").perform_later(work)
+            WorkOcrCreatorRemoverJob.set(queue: "special_jobs").perform_later(work)
 
-          ocr_enabled_count += 1
+            ocr_enabled_count += 1
+          end
+
+          progress_bar.increment
         end
-
-        progress_bar.increment
       end
 
       # Selection Two:
