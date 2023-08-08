@@ -10,16 +10,17 @@ namespace :scihist do
 
       progress_bar = ProgressBar.create(total: total, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
 
-      # Selection One:
-      #
-      # Format: Text
-      # Language: English
-      # Department: Library
-      # Date: Post-1860 (Modern Library Materials)
-
-      ocr_enabled_count = 0
 
       Kithe::Indexable.index_with(batching: true) do
+        # Selection One:
+        #
+        # Format: Text
+        # Language: English
+        # Department: Library
+        # Date: Post-1860 (Modern Library Materials)
+
+        ocr_enabled_count = 0
+
         Work.jsonb_contains(format: "text", language: "English", department: "Library").find_each do |work|
           if work.date_of_work.any? {|d| d.start&.split("-")&.first.to_i >= 1860 }
             work.ocr_requested = true
@@ -32,29 +33,30 @@ namespace :scihist do
 
           progress_bar.increment
         end
-      end
 
-      # Selection Two:
-      #
-      # Format: Text
-      # Language: English
-      # Department: Archives
-      # Date: Post-1900
-      # Genre: Advertisements OR Pamphlets OR Handbooks and Manuals OR Publications
 
-      Work.jsonb_contains(format: "text", language: "English", department: "Archives").find_each do |work|
-        if work.date_of_work.any? {|d| d.start&.split("-")&.first.to_i >= 1900 } &&
-            work.genre.any? {|g| ["Advertisements", "Pamphlets", "Handbooks", "Manuals", "Publications"].include?(g) }
+        # Selection Two:
+        #
+        # Format: Text
+        # Language: English
+        # Department: Archives
+        # Date: Post-1900
+        # Genre: Advertisements OR Pamphlets OR Handbooks and Manuals OR Publications
 
-            work.ocr_requested = true
-            work.save!
+        Work.jsonb_contains(format: "text", language: "English", department: "Archives").find_each do |work|
+          if work.date_of_work.any? {|d| d.start&.split("-")&.first.to_i >= 1900 } &&
+              work.genre.any? {|g| ["Advertisements", "Pamphlets", "Handbooks", "Manuals", "Publications"].include?(g) }
 
-            WorkOcrCreatorRemoverJob.set(queue: "special_jobs").perform_later
+              work.ocr_requested = true
+              work.save!
 
-            ocr_enabled_count += 1
+              WorkOcrCreatorRemoverJob.set(queue: "special_jobs").perform_later
+
+              ocr_enabled_count += 1
+          end
+
+          progress_bar.increment
         end
-
-        progress_bar.increment
       end
 
       puts "\nOCR enabled for #{ocr_enabled_count} works"
