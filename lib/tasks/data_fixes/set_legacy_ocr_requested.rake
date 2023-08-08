@@ -10,6 +10,7 @@ namespace :scihist do
 
       progress_bar = ProgressBar.create(total: total, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
 
+      ocr_enabled_count = 0
 
       Kithe::Indexable.index_with(batching: true) do
         # Selection One:
@@ -18,8 +19,6 @@ namespace :scihist do
         # Language: English
         # Department: Library
         # Date: Post-1860 (Modern Library Materials)
-
-        ocr_enabled_count = 0
 
         Work.jsonb_contains(format: "text", language: "English", department: "Library").find_each do |work|
           if work.date_of_work.any? {|d| d.start&.split("-")&.first.to_i >= 1860 }
@@ -50,7 +49,7 @@ namespace :scihist do
               work.ocr_requested = true
               work.save!
 
-              WorkOcrCreatorRemoverJob.set(queue: "special_jobs").perform_later
+              WorkOcrCreatorRemoverJob.set(queue: "special_jobs").perform_later(work)
 
               ocr_enabled_count += 1
           end
