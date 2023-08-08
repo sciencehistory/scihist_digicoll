@@ -49,7 +49,7 @@ namespace :scihist do
               work.ocr_requested = true
               work.save!
 
-              WorkOcrCreatorRemoverJob.set(queue: "special_jobs").perform_later
+              WorkOcrCreatorRemoverJob.set(queue: "special_jobs").perform_later(work)
 
               ocr_enabled_count += 1
           end
