@@ -179,4 +179,24 @@ describe "System Environment" do
       end
     end
   end
+
+  describe "tesseract" do
+    it "is present" do
+      `tesseract --help`
+    end
+
+    it "has acceptable version" do
+      `tesseract --version` =~ /tesseract (\d+\.\d+\.\d+)/
+      expect($1).to match_version_requirements(">= 4.1.1", "< 6")
+    end
+
+    it "has expected language packs" do
+      langs = `tesseract --list-langs`.split
+
+      expect(langs).to include("eng")
+      expect(langs).to include("deu")
+      expect(langs).to include("fra")
+      expect(langs).to include("spa")
+    end
+  end
 end
