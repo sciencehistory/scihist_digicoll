@@ -57,15 +57,21 @@ namespace :scihist do
           'Admin URL',                    # So we can check our work
           'ACCESS  FILENAME',             # Filename as downloaded
           'DIRECT URL TO FILE',           # Download URL
-          'CHECKSUM',                     # SHA 512 checksum
+          'CHECKSUM (SHA512)',            # SHA 512 checksum
           'DATE LAST CHECKED ',           # Last fixity check
           'RESTRICTED? (Y/N)',            # Published?
           'COMMENTS ABOUT RESTRICTIONS',  # "Not published" unless published.
           'PRESERVATION FILENAME',        # Internal filename
           'PRESERVATION FILE LOCATION'    # S3 URL
         ]
+
+        i = 0
         Kithe::Indexable.index_with(batching: true) do
-          bredig_collection.contains.sample(sample_size).each do |work|
+          bredig_collection.contains.each do |work|
+
+            # Only include the 2019 accession for this report:
+            next unless work.external_id.any? { |a| a.value = '2019.011' && a.category = 'accn'}
+            
             asset = work.members.sample
             csv << ([
               # 'Admin URL',
@@ -85,8 +91,10 @@ namespace :scihist do
               # PRESERVATION FILENAME
               asset.file.metadata['filename'],
               # PRESERVATION FILE LOCATION
-              S3ConsoleUri.from_shrine_uploaded_file(asset.file).console_uri
+              asset.file.url(public: true)
             ])
+            i = i + 1
+            break if i > sample_size
           end
         end
       end
