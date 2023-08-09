@@ -9,13 +9,14 @@ namespace :scihist do
       file extensions (.jpg, .jpeg, .tiff, .mp3, .mp4, etc.) as part of the
       filenames.
           NOTES:
-            Filenames: I'm providing both the friendly filename saved on
-              your computer when you download it, *and* the internal
-              filename here (which is the filename as ingested).
-              I would argue for using the latter since we're looking
-              at this from a preservation context.
-            Representative sample: I picked one image at random from the
-              first 600 works that came up in the Bredig collection.
+            Filenames: I'm providing both the 'friendly' filename saved on
+              your computer when you download the file (ACCESS  FILENAME),
+              the internal filename here (which is the filename\
+              as ingested). (PRESERVATION FILENAME)
+
+            Representative sample: A random image from each of 600
+              members of the Bredig collection, each of which was also picked
+              at random.
               We could of course change this recipe, but it seems
               'representative' enough.
 
@@ -35,11 +36,11 @@ namespace :scihist do
       SPEC: Enter the date you last verified the availability of each file on your
       main access system.
           NOTE: I'm using the date of the latest checksum. Why?
-            In the process of calculating a checksum, we download the
+            * In the process of calculating a checksum, we download the
               entire contents of the file from storage.
-            If a file can be downloaded from s3 in this manner,
+            * If a file can be downloaded from s3 in this manner,
               we consider it 'available';
-            If a file passed its fixity check, the file was
+            * If a file passed its fixity check, the file was
               a fortiori 'available' at the time of the check.
 
     """
@@ -50,34 +51,41 @@ namespace :scihist do
       base_url = ScihistDigicoll::Env.lookup!(:app_url_base)
 
       def sample_size = 600
-        
+
       csv_string = CSV.generate do |csv|
         csv << [
-          'Admin URL',
-          'Download URL',
-          'Internal filename',
-          'Filename as downloaded',
-          'SHA 512 checksum',
-          'Date file verified',
+          'Admin URL',                    # So we can check our work
+          'ACCESS  FILENAME',             # Filename as downloaded
+          'DIRECT URL TO FILE',           # Download URL
+          'CHECKSUM',                     # SHA 512 checksum
+          'DATE LAST CHECKED ',           # Last fixity check
+          'RESTRICTED? (Y/N)',            # Published?
+          'COMMENTS ABOUT RESTRICTIONS',  # "Not published" unless published.
+          'PRESERVATION FILENAME',        # Internal filename
+          'PRESERVATION FILE LOCATION'    # S3 URL
         ]
-        i = 0
         Kithe::Indexable.index_with(batching: true) do
-          bredig_collection.contains.find_each do |work|
+          bredig_collection.contains.sample(sample_size).each do |work|
             asset = work.members.sample
-            break if (i = i + 1) > sample_size
             csv << ([
               # 'Admin URL',
               "#{base_url}/admin/asset_files/#{asset.friendlier_id}",
-              # 'Download URL',
-              "#{base_url}#{download_path(asset.file_category, asset)}",
-              # 'Internal filename',
-              asset.file.metadata['filename'],
-              # 'Filename as downloaded',
+              # ACCESS  FILENAME
               DownloadFilenameHelper.filename_for_asset(asset),
-              # 'SHA 512 checksum',
+              # DIRECT URL TO FILE
+              "#{base_url}#{download_path(asset.file_category, asset)}",
+              # CHECKSUM
               asset.file.metadata['sha512'],
-              # 'Date file verified',
-              check = asset.fixity_checks.last.created_at,
+              # DATE LAST CHECKED
+              asset.fixity_checks.last.created_at,
+              # RESTRICTED? (Y/N)
+              (asset.published? ? 'N' : 'Y'),
+              # COMMENTS ABOUT RESTRICTIONS
+              (asset.published? ? '' : 'Not published'),
+              # PRESERVATION FILENAME
+              asset.file.metadata['filename'],
+              # PRESERVATION FILE LOCATION
+              S3ConsoleUri.from_shrine_uploaded_file(asset.file).console_uri
             ])
           end
         end
