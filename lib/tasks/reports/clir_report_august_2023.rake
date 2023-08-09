@@ -67,7 +67,7 @@ namespace :scihist do
 
         i = 0
         Kithe::Indexable.index_with(batching: true) do
-          bredig_collection.contains.each do |work|
+          bredig_collection.contains.shuffle.each do |work|
 
             # Only include the 2019 accession for this report:
             next unless work.external_id.any? { |a| a.value = '2019.011' && a.category = 'accn'}
