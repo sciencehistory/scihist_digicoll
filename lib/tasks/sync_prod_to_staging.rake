@@ -6,7 +6,8 @@ namespace :scihist do
   " syncs originals and derivatives S3 buckets from prod to staging." +
 
   " ENV variables you can set: BACKUP_FOLDER; " +
-  " BACKUP_BUCKET; BACKUP_FILENAME; STAGING_APP_NAME; and UNZIP_CMD." +
+  " BACKUP_BUCKET; BACKUP_FILENAME; STAGING_APP_NAME; USE_MAINTENANCE_MODE;" +
+  " and UNZIP_CMD." +
   " Preface the command with USE_BACKUP=false to use direct heroku copy (faster) " +
   "    instead of restoring from our off-heroku backup (tests backup)."
 
@@ -17,14 +18,18 @@ namespace :scihist do
     STAGING_APP_NAME = ENV['STAGING_APP_NAME']  || "scihist-digicoll-staging"
     UNZIP_CMD        = ENV['UNZIP_CMD']         || "gunzip --to-stdout"
     USE_BACKUP       = ENV['USE_BACKUP']        || "true"
+    USE_MAINTENANCE_MODE = ENV['USE_MAINTENANCE_MODE'] || "true"
 
     if ['staging', 'production'].include? ScihistDigicoll::Env.lookup(:service_level)
       abort 'This task should only be used in development.'
     end
     cmd = TTY::Command.new(printer: :pretty)
     begin
-      puts "\nHeroku maintenance on."
-      cmd.run("heroku maintenance:on --app", STAGING_APP_NAME)
+      if USE_MAINTENANCE_MODE == "true"
+        puts "\nHeroku maintenance on."
+        cmd.run("heroku maintenance:on --app", STAGING_APP_NAME)
+      end
+
       if USE_BACKUP == 'true'
         Dir.mktmpdir do |tmpdir|
           puts "\nDownloading backup."
@@ -72,8 +77,11 @@ namespace :scihist do
       puts "\nSyncing S3 video derivatives (with --delete)."
       cmd.run("aws s3 sync --only-show-errors --delete s3://scihist-digicoll-production-derivatives-video s3://scihist-digicoll-staging-derivatives-video")
     ensure
-      puts "\nHeroku maintenance off."
-      cmd.run("heroku maintenance:off --app", STAGING_APP_NAME)
+      if USE_MAINTENANCE_MODE == "true"
+        puts "\nHeroku maintenance off."
+        cmd.run("heroku maintenance:off --app", STAGING_APP_NAME)
+      end
+
       puts "\nDone."
     end
   end
