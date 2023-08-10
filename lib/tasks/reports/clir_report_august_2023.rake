@@ -50,7 +50,7 @@ namespace :scihist do
       bredig_collection =  Collection.find_by_friendlier_id('qfih5hl')
       base_url = ScihistDigicoll::Env.lookup!(:app_url_base)
 
-      def sample_size = 600
+      def sample_size = 1000
 
       csv_string = CSV.generate do |csv|
         csv << [
