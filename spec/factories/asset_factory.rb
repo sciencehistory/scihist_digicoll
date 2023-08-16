@@ -45,6 +45,11 @@ FactoryBot.define do
       end
     end
 
+    trait :suppress_ocr do
+      suppress_ocr { true }
+      ocr_admin_note { "No text on this page, so no need for OCR."}
+    end
+
     # While it still uses a real file, it skips all of the (slow) standard metadata extraction
     # and derivative generation, instead just SETTING the metadata and derivatives to fixed
     # values (which may not be actually right, but that doesn't matter for many tests).
