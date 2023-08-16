@@ -74,6 +74,10 @@ class Asset < Kithe::Asset
   # A place for staff to enter any internal notes about OCR for this asset.
   attr_json :ocr_admin_note, :text
 
+  validates :ocr_admin_note,
+    presence: { message: ": Please specify why OCR is suppressed." },
+    if: Proc.new { |a| a.suppress_ocr }
+
   validates :derivative_storage_type, inclusion: { in: ["public", "restricted"] }
 
   DERIVATIVE_STORAGE_TYPE_LOCATIONS = {
