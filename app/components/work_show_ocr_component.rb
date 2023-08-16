@@ -7,6 +7,7 @@ class WorkShowOcrComponent < ApplicationComponent
   end
 
   def assets_with_ocr
+    byebug
     assets_with_and_without_ocr.count {|a| a['has_ocr']}
   end
 
@@ -18,32 +19,27 @@ class WorkShowOcrComponent < ApplicationComponent
     assets_with_and_without_ocr.length
   end
 
-  # Assets with suppress_ocr are considered to not have OCR for counting purposes,
+  # Assets with suppress_ocr are not shown as having OCR,
   # even if there is currently something in the `hocr` field.
   def assets_with_and_without_ocr
     @assets_with_and_without_ocr ||= begin
-      query = """SELECT
-      
-      (
-        json_attributes->>'hocr' IS NOT NULL
-        AND
-        json_attributes->>'suppress_ocr' != 'true'
-      )
-      has_ocr,
+      query = """
 
-      (
-        json_attributes->>'suppress_ocr' = 'true'
-      )
-      suppress_ocr
-
-      FROM kithe_models
-
-      WHERE type = 'Asset'
+        SELECT
+          (
+            json_attributes ->> 'hocr' IS NOT NULL
+            and
+            coalesce(json_attributes ->> 'suppress_ocr', 'false') != 'true'
+          ) has_ocr,
+          (
+            json_attributes ->> 'suppress_ocr' = 'true'
+          ) suppress_ocr
+        FROM kithe_models
+        WHERE type = 'Asset'
+        AND parent_id = #{@work.id}'
       
-      AND parent_id = '#{@work.id}'""".squeeze(" ")
-      
-      ActiveRecord::Base.
-        connection.exec_query(query).to_a
+      """
+      ActiveRecord::Base.connection.exec_query(query).to_a
     end
   end
 
