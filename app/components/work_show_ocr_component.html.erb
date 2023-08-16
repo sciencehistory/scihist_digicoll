@@ -26,6 +26,14 @@
   <% if asset_ocr_count_warning? %>
     <i class="fa fa-exclamation-triangle text-danger" aria-label="WARNING"></i>
   <% end %>
-  <b><%= assets_with_ocr %></b> out of <b><%= total_assets %></b> assets currently have OCR.
+  Out of <b><%= total_assets %></b> assets,
+  <ul>
+    <li>
+      <b><%= assets_with_ocr %></b> </b> <%= 'asset'.pluralize(assets_with_ocr) %> currently <%= (assets_with_ocr == 1) ? 'has' : 'have' %> OCR
+    </li>
+    <li>
+      <b><%=  assets_with_ocr_suppressed %></b> <%= 'asset'.pluralize(assets_with_ocr_suppressed) %> <%= (assets_with_ocr_suppressed == 1) ? 'has' : 'have' %> OCR suppressed.
+    </li>
+  </ul>
 </p>
 
