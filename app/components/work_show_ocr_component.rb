@@ -35,7 +35,7 @@ class WorkShowOcrComponent < ApplicationComponent
           ) suppress_ocr
         FROM kithe_models
         WHERE type = 'Asset'
-        AND parent_id = #{@work.id}'
+        AND parent_id = '#{@work.id}'
       
       """
       ActiveRecord::Base.connection.exec_query(query).to_a
