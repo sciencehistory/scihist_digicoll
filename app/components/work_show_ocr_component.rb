@@ -7,7 +7,6 @@ class WorkShowOcrComponent < ApplicationComponent
   end
 
   def assets_with_ocr
-    byebug
     assets_with_and_without_ocr.count {|a| a['has_ocr']}
   end
 
