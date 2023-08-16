@@ -46,7 +46,7 @@ class WorkShowOcrComponent < ApplicationComponent
 
 
   def asset_ocr_count_warning?
-    (work.ocr_requested? && assets_with_ocr != total_assets) ||
+    (work.ocr_requested? && (assets_with_ocr + assets_with_ocr_suppressed)!= total_assets) ||
     (! work.ocr_requested? && assets_with_ocr > 0)
   end
 
