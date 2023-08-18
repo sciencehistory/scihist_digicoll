@@ -44,7 +44,7 @@ class Admin::AssetsController < AdminController
 
     respond_to do |format|
       if @asset.update(asset_params)
-        # If this update changed, enqueue a job to update
+        # If this update changed suppress_ocr, enqueue a job to update
         # the entire parent work's OCR.
         # Reprocessing the entire work based on changes to a single asset
         # seems like overkill.
