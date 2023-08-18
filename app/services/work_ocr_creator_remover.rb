@@ -27,7 +27,13 @@ class WorkOcrCreatorRemover
   def process
     if @work.ocr_requested
       if AssetOcrCreator.suitable_language?(work)
-        image_assets.each { |a| maybe_add(a) }
+        image_assets.each do |a|
+          if a.suppress_ocr
+            maybe_remove(a)
+          else
+            maybe_add(a)
+          end
+        end
       else
         Rails.logger.warn("#{self.class}: OCR enabled for work #{work.friendlier_id}, but it does not have suitable languages: #{work.language.inspect}")
       end
@@ -40,7 +46,6 @@ class WorkOcrCreatorRemover
 
   def maybe_add(asset)
     return if @ignore_missing_files && !asset.file.exists?
-
     # we need both of em!
     if asset.hocr.blank? || asset.file_derivatives[:textonly_pdf].blank?
       CreateAssetOcrJob.perform_later(asset)
