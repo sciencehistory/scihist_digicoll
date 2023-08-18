@@ -441,7 +441,7 @@ GEM
       byebug (~> 11.0)
       pry (>= 0.13, < 0.15)
     public_suffix (5.0.3)
-    puma (6.3.0)
+    puma (6.3.1)
       nio4r (~> 2.0)
     qa (5.10.0)
       activerecord-import
@@ -753,7 +753,7 @@ DEPENDENCIES
   prawn-html (< 2)
   prawn-svg (< 2)
   pry-byebug
-  puma (~> 6.0)
+  puma (~> 6.3)
   qa (~> 5.2, >= 5.2.10)
   rack-attack (~> 6.6)
   rails (~> 7.0.0)
