@@ -59,9 +59,8 @@ class WorkOcrCreatorRemover
   def maybe_remove(asset)
     # don't need it if we already don't have hocr or textonly_pdf
     return if !asset.hocr && !asset.file_derivatives[:textonly_pdf]
-
     asset.hocr = nil
-    # this kithe command will save record to, persisting the hocr=nil,
+    # this next kithe command will save record too, persisting the hocr=nil,
     # atomically concurrently safely making the change.
     asset.remove_derivatives(:textonly_pdf, allow_other_changes: true)
   end
