@@ -76,9 +76,9 @@ class Admin::WorksController < AdminController
     authorize! :update, @work
     respond_to do |format|
       if @work.update(work_params)
-        # If this update also just switched ocr_requested, queue up a job to update it's OCR
+        # If this update also just switched ocr_requested, queue up a job to update its OCR
         # data accordingly. If for some reason this is missed, we still have a nightly rake
-        # task to restore consistent state, but let's try to do it sooner?
+        # task to restore consistent state, but let's try to do it sooner.
         if @work.ocr_requested_previously_changed?
           WorkOcrCreatorRemoverJob.perform_later(@work)
         end

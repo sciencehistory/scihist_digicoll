@@ -44,6 +44,14 @@ class Admin::AssetsController < AdminController
 
     respond_to do |format|
       if @asset.update(asset_params)
+        # If this update changed suppress_ocr, enqueue a job to update
+        # the entire parent work's OCR.
+        # Reprocessing the entire work based on changes to a single asset
+        # seems like overkill.
+        # In practice, this operation is cheap and keeps the code DRY.
+        if @asset.suppress_ocr_previously_changed?
+          WorkOcrCreatorRemoverJob.perform_later(@asset.parent)
+        end
         format.html { redirect_to admin_asset_url(@asset), notice: 'Asset was successfully updated.' }
         format.json { render :show, status: :ok, location: @asset }
       else
