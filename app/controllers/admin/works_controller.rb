@@ -628,13 +628,9 @@ class Admin::WorksController < AdminController
         end
       end
 
-      # Note from Eddie:
-      # Could not get Ransack's ransackable_attributes to allow this,
-      # so I'm bypassing Ransack and
-      # putting :ocr_requested in params instead of in params[:q].
-      if params[:ocr_requested] == 'true'
+      if params[:q][:ocr_requested] == 'true'
         scope = scope.jsonb_contains(ocr_requested: true)
-      elsif params[:ocr_requested] == 'false'
+      elsif params[:q][:ocr_requested] == 'false'
         scope = scope.not_jsonb_contains(ocr_requested: true)
       end
 
