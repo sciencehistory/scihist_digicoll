@@ -19,6 +19,15 @@ module DownloadOptions
     def options
       options = []
 
+      if asset.parent.members.count == 1
+        options << DownloadOption.new("PDF", url: "#", analyticsAction: "download_pdf",
+        data_attrs: {
+          trigger: "on-demand-download",
+          derivative_type: "pdf_file",
+          work_id: @asset.parent.friendlier_id
+        })
+      end
+
       # We don't use content_type in derivative option subheads,
       # cause it's in the main label. But do use it for original.
 
