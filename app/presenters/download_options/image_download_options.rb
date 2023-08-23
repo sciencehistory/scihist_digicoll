@@ -18,7 +18,9 @@ module DownloadOptions
 
     def options
       options = []
-
+      # Special case: an image asset is the *only* member of the work.
+      # We do allow a PDF download for this now, but we list it under "Download Selected Image".
+      # See https://github.com/sciencehistory/scihist_digicoll/issues/2278 .
       if asset&.parent&.members&.count == 1
         options << DownloadOption.new("PDF", url: "#", analyticsAction: "download_pdf",
         data_attrs: {
