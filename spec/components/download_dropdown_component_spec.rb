@@ -31,7 +31,7 @@ describe DownloadDropdownComponent, type: :component do
     end
   end
 
-  describe "with image file and derivatives" do
+  describe "work with one image file and derivatives" do
     let(:asset) do
       create(:asset_with_faked_file,
         faked_derivatives: {
@@ -43,6 +43,50 @@ describe DownloadDropdownComponent, type: :component do
         parent: build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
       )
     end
+
+    it "renders asset download options" do
+      expect(div).to be_present
+
+      expect(div).to have_selector(".dropdown-header", text: "Download selected image")
+
+      expect(div).to have_selector("a.dropdown-item", text: /Small JPG/)
+      expect(div).to have_selector("a.dropdown-item", text: /Medium JPG/)
+      expect(div).to have_selector("a.dropdown-item", text: /Large JPG/)
+      expect(div).to have_selector("a.dropdown-item", text: /Full-sized JPG/)
+      expect(div).to have_selector("a.dropdown-item", text: /Original/)
+
+      sample_download_option = div.at_css("a.dropdown-item:contains('Large JPG')")
+      expect(sample_download_option["href"]).to be_present
+      expect(sample_download_option["data-analytics-category"]).to eq("Work")
+      expect(sample_download_option["data-analytics-action"]).to eq("download_jpg_large")
+      expect(sample_download_option["data-analytics-label"]).to eq(asset.parent.friendlier_id)
+    end
+  end
+
+  describe "work with two files and derivatives" do
+    let(:asset) do
+      create(:asset_with_faked_file,
+        faked_derivatives: {
+          download_small: build(:stored_uploaded_file),
+          download_medium: build(:stored_uploaded_file),
+          download_large: build(:stored_uploaded_file),
+          download_full: build(:stored_uploaded_file)
+        },
+        parent: build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
+      )
+    end
+    let(:asset_2) do
+      create(:asset_with_faked_file,
+        faked_derivatives: {
+          download_small: build(:stored_uploaded_file),
+          download_medium: build(:stored_uploaded_file),
+          download_large: build(:stored_uploaded_file),
+          download_full: build(:stored_uploaded_file)
+        },
+        parent: asset.parent
+      )
+    end
+
 
     it "renders asset download options" do
       expect(div).to be_present
@@ -83,7 +127,6 @@ describe DownloadDropdownComponent, type: :component do
       expect(btn.classes).to include(custom_class_name)
     end
   end
-
 
   describe "with a PDF file" do
     let(:asset) do

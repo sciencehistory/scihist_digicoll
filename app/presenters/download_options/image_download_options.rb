@@ -19,7 +19,7 @@ module DownloadOptions
     def options
       options = []
 
-      if asset.parent.members.count == 1
+      if asset&.parent&.members&.count == 1
         options << DownloadOption.new("PDF", url: "#", analyticsAction: "download_pdf",
         data_attrs: {
           trigger: "on-demand-download",
