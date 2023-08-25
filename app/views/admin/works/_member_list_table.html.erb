@@ -33,7 +33,9 @@
               <% if member.kind_of?(Kithe::Asset) %>
                 <li ><small><%= member.content_type %></small></li>
                 <li><small><%= ScihistDigicoll::Util.simple_bytes_to_human_string(member.size) %></small></li>
-                <% if member.hocr.present? %>
+                <% if member.suppress_ocr %>
+                  <small>OCR suppressed</small>
+                <% elsif member.hocr.present? %>
                   <li><small><%=link_to("OCR", admin_asset_path(member, anchor: "ocr"), class: "ocr-link") %></small></li>
                 <% end %>
               <% end %>
