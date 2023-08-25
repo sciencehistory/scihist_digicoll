@@ -61,15 +61,12 @@
     </div>
 
     <div class="admin-filter">
-      <label for="ocr_requested">OCR</label>
-
-      <%= select_tag "ocr_requested",
-        options_for_select({"Any" => "", "Yes" => "true", "No" => "false"}, params[:ocr_requested]),
+      <label for="q_ocr_requested">OCR</label>
+      <%= select_tag "q[ocr_requested]",
+        options_for_select({"Any" => "", "Requested" => true, "Not requested" => false}, params[:q][:ocr_requested]),
         class: "custom-select"
       %>
     </div>
-
-
 
     <div class="admin-filter">
       <label for="q_review_requested">Review requested</label>
