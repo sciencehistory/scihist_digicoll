@@ -312,7 +312,14 @@
     </ul>
 
     <h3><a id="ocr">OCR</a></h3>
-    <% if @asset.hocr.present? %>
+    <% if @asset.suppress_ocr %>
+       <small>
+        OCR is suppressed for this asset. Note:<br/>
+        <span class="text-monospace text-muted admin-ocr-display">
+          <%= @asset.ocr_admin_note%>
+        </span>
+      </small>   
+    <% elsif @asset.hocr.present? %>
       <small>
         <span class="text-monospace text-muted admin-ocr-display">
           <%= HocrComponent.new(@asset.hocr).html_body_without_ids %>
