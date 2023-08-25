@@ -115,4 +115,31 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
 
     end
   end
+
+  describe "#update", logged_in_user: :editor do
+    let(:parent_work) { create(:work) }
+    context "asset with ocr suppressed" do
+      let(:asset) {  create(:asset, parent: parent_work, suppress_ocr:true, "ocr_admin_note"=>"some note") }
+      it "enqueues a WorkOcrCreatorRemoverJob when suppress_ocr is turned off" do
+        expect {
+          put :update, params: { asset: { suppress_ocr: "0" }, id: asset.friendlier_id }
+        }.to have_enqueued_job(WorkOcrCreatorRemoverJob).with { |w| expect(w.friendlier_id).to eq parent_work.friendlier_id }
+        expect(flash[:notice]).to match /Asset was successfully updated./
+        expect(response).to have_http_status(302)
+      end
+    end
+    context "asset with ocr on" do
+      let(:asset) {  create(:asset, parent: parent_work, suppress_ocr:false) }
+      it "enqueues a WorkOcrCreatorRemoverJob when suppress_ocr is turned on" do
+        expect {
+          put :update, params: {
+            asset: { suppress_ocr: 1, ocr_admin_note: "cause i said so" },
+            id: asset.friendlier_id
+          }
+        }.to have_enqueued_job(WorkOcrCreatorRemoverJob).with { |w| expect(w.friendlier_id).to eq parent_work.friendlier_id }
+        expect(flash[:notice]).to match /Asset was successfully updated./
+        expect(response).to have_http_status(302)
+      end
+    end
+  end
 end
