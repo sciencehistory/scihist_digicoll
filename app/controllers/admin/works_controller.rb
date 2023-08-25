@@ -76,9 +76,9 @@ class Admin::WorksController < AdminController
     authorize! :update, @work
     respond_to do |format|
       if @work.update(work_params)
-        # If this update also just switched ocr_requested, queue up a job to update it's OCR
+        # If this update also just switched ocr_requested, queue up a job to update its OCR
         # data accordingly. If for some reason this is missed, we still have a nightly rake
-        # task to restore consistent state, but let's try to do it sooner?
+        # task to restore consistent state, but let's try to do it sooner.
         if @work.ocr_requested_previously_changed?
           WorkOcrCreatorRemoverJob.perform_later(@work)
         end
@@ -628,13 +628,9 @@ class Admin::WorksController < AdminController
         end
       end
 
-      # Note from Eddie:
-      # Could not get Ransack's ransackable_attributes to allow this,
-      # so I'm bypassing Ransack and
-      # putting :ocr_requested in params instead of in params[:q].
-      if params[:ocr_requested] == 'true'
+      if params[:q][:ocr_requested] == 'true'
         scope = scope.jsonb_contains(ocr_requested: true)
-      elsif params[:ocr_requested] == 'false'
+      elsif params[:q][:ocr_requested] == 'false'
         scope = scope.not_jsonb_contains(ocr_requested: true)
       end
 
