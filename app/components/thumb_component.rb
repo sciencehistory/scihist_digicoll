@@ -32,7 +32,7 @@ class ThumbComponent < ApplicationComponent
 
 
   # collection_page for CollectionThumbAssets only, oh well we allow them all for now.
-  ALLOWED_THUMB_SIZES = Asset::THUMB_WIDTHS.keys + [:collection_page]
+  ALLOWED_THUMB_SIZES = Asset::THUMB_WIDTHS.keys + [:collection_page, :collection_show_page]
 
   # @param model [Kithe::Asset] the asset whose derivatives we will display
   #
