@@ -46,6 +46,7 @@ class WorkOcrCreatorRemover
 
   def maybe_add(asset)
     return if @ignore_missing_files && !asset.file.exists?
+
     # we need both of em!
     if asset.hocr.blank? || asset.file_derivatives[:textonly_pdf].blank?
       CreateAssetOcrJob.perform_later(asset)
@@ -59,6 +60,7 @@ class WorkOcrCreatorRemover
   def maybe_remove(asset)
     # don't need it if we already don't have hocr or textonly_pdf
     return if !asset.hocr && !asset.file_derivatives[:textonly_pdf]
+
     asset.hocr = nil
     # this next kithe command will save record too, persisting the hocr=nil,
     # atomically concurrently safely making the change.
