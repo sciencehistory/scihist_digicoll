@@ -7,11 +7,11 @@ class WorkShowOcrComponent < ApplicationComponent
   end
 
   def assets_with_ocr
-    assets_with_and_without_ocr.count {|a| a['has_ocr']}
+    @assets_with_ocr ||= assets_with_and_without_ocr.count {|a| a['has_ocr']}
   end
 
   def assets_with_ocr_suppressed
-    assets_with_and_without_ocr.count {|a| a['suppress_ocr']}
+    @assets_with_ocr_suppressed ||= assets_with_and_without_ocr.count {|a| a['suppress_ocr']}
   end
 
   def total_assets
@@ -36,7 +36,7 @@ class WorkShowOcrComponent < ApplicationComponent
         FROM kithe_models
         WHERE type = 'Asset'
         AND parent_id = '#{@work.id}'
-      
+
       """
       ActiveRecord::Base.connection.exec_query(query).to_a
     end
