@@ -31,7 +31,7 @@ describe DownloadDropdownComponent, type: :component do
     end
   end
 
-  describe "with image file and derivatives" do
+  describe "work with one image file and derivatives" do
     let(:asset) do
       create(:asset_with_faked_file,
         faked_derivatives: {
@@ -49,17 +49,72 @@ describe DownloadDropdownComponent, type: :component do
 
       expect(div).to have_selector(".dropdown-header", text: "Download selected image")
 
-      expect(div).to have_selector("a.dropdown-item", text: /Small JPG/)
-      expect(div).to have_selector("a.dropdown-item", text: /Medium JPG/)
-      expect(div).to have_selector("a.dropdown-item", text: /Large JPG/)
-      expect(div).to have_selector("a.dropdown-item", text: /Full-sized JPG/)
-      expect(div).to have_selector("a.dropdown-item", text: /Original/)
+      download_items = rendered.css("div.action-item.downloads a.dropdown-item").
+        map {|a| a.text }
+      expect(download_items.count).to eq 7
+      expect(download_items[0]).to include "Public Domain"
+      expect(download_items[1]).to include "PDF"
+      expect(download_items[2]).to include "Small JPG"
+      expect(download_items[3]).to include "Medium JPG"
+      expect(download_items[4]).to include "Large JPG"
+      expect(download_items[5]).to include "Full-sized JPG"
+      expect(download_items[6]).to include "Original file"
 
       sample_download_option = div.at_css("a.dropdown-item:contains('Large JPG')")
       expect(sample_download_option["href"]).to be_present
       expect(sample_download_option["data-analytics-category"]).to eq("Work")
       expect(sample_download_option["data-analytics-action"]).to eq("download_jpg_large")
       expect(sample_download_option["data-analytics-label"]).to eq(asset.parent.friendlier_id)
+    end
+  end
+
+  describe "work with two image files and derivatives" do
+    let(:work) do
+      build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/",
+        members:
+        [
+          create(:asset_with_faked_file,
+            faked_derivatives: {
+              download_small: build(:stored_uploaded_file),
+              download_medium: build(:stored_uploaded_file),
+              download_large: build(:stored_uploaded_file),
+              download_full: build(:stored_uploaded_file)
+            }),
+          create(:asset_with_faked_file,
+            faked_derivatives: {
+              download_small: build(:stored_uploaded_file),
+              download_medium: build(:stored_uploaded_file),
+              download_large: build(:stored_uploaded_file),
+              download_full: build(:stored_uploaded_file)
+            })
+        ]
+      )
+    end
+    let(:rendered) { render_inline(DownloadDropdownComponent.new(work.members.first, display_parent_work: work)) }
+
+    it "renders asset download options" do
+      expect(div).to be_present
+
+      expect(div).to have_selector(".dropdown-header", text: "Download selected image")
+
+      #pp rendered.css("div.action-item.downloads a.dropdown-item")
+
+      download_items = rendered.css("div.action-item.downloads a.dropdown-item").
+        map {|a| a.text }
+
+      expect(download_items.count).to eq 6
+      expect(download_items[0]).to include "Public Domain"
+      expect(download_items[1]).to include "Small JPG"
+      expect(download_items[2]).to include "Medium JPG"
+      expect(download_items[3]).to include "Large JPG"
+      expect(download_items[4]).to include "Full-sized JPG"
+      expect(download_items[5]).to include "Original file"
+
+      sample_download_option = div.at_css("a.dropdown-item:contains('Large JPG')")
+      expect(sample_download_option["href"]).to be_present
+      expect(sample_download_option["data-analytics-category"]).to eq("Work")
+      expect(sample_download_option["data-analytics-action"]).to eq("download_jpg_large")
+      expect(sample_download_option["data-analytics-label"]).to eq(work.friendlier_id)
     end
   end
 
@@ -84,7 +139,6 @@ describe DownloadDropdownComponent, type: :component do
     end
   end
 
-
   describe "with a PDF file" do
     let(:asset) do
       create(:asset_with_faked_file, :pdf,
@@ -105,7 +159,6 @@ describe DownloadDropdownComponent, type: :component do
       expect(div).not_to have_selector("a.dropdown-item", text: /Full-sized JPG/)
     end
   end
-
 
   describe "with an audio file" do
     let(:asset) do
