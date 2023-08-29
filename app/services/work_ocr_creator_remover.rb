@@ -27,7 +27,13 @@ class WorkOcrCreatorRemover
   def process
     if @work.ocr_requested
       if AssetOcrCreator.suitable_language?(work)
-        image_assets.each { |a| maybe_add(a) }
+        image_assets.each do |a|
+          if a.suppress_ocr
+            maybe_remove(a)
+          else
+            maybe_add(a)
+          end
+        end
       else
         Rails.logger.warn("#{self.class}: OCR enabled for work #{work.friendlier_id}, but it does not have suitable languages: #{work.language.inspect}")
       end
@@ -56,7 +62,7 @@ class WorkOcrCreatorRemover
     return if !asset.hocr && !asset.file_derivatives[:textonly_pdf]
 
     asset.hocr = nil
-    # this kithe command will save record to, persisting the hocr=nil,
+    # this next kithe command will save record too, persisting the hocr=nil,
     # atomically concurrently safely making the change.
     asset.remove_derivatives(:textonly_pdf, allow_other_changes: true)
   end
