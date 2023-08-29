@@ -31,9 +31,11 @@
     <li>
       <b><%= assets_with_ocr %></b> </b> <%= 'asset'.pluralize(assets_with_ocr) %> currently <%= (assets_with_ocr == 1) ? 'has' : 'have' %> OCR
     </li>
-    <li>
-      <b><%=  assets_with_ocr_suppressed %></b> <%= 'asset'.pluralize(assets_with_ocr_suppressed) %> <%= (assets_with_ocr_suppressed == 1) ? 'has' : 'have' %> OCR suppressed.
-    </li>
+    <% if assets_with_ocr_suppressed > 0 %>
+      <li>
+        <b><%=  assets_with_ocr_suppressed %></b> <%= 'asset'.pluralize(assets_with_ocr_suppressed) %> <%= (assets_with_ocr_suppressed == 1) ? 'has' : 'have' %> OCR suppressed.
+      </li>
+    <% end %>
   </ul>
 </p>
 
