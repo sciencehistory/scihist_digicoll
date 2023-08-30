@@ -5,7 +5,8 @@ class CollectionsListController < ApplicationController
   def index
     @collections = Collection.
       where("published = true").
-      not_jsonb_contains(department: Collection::DEPARTMENT_EXHIBITION_VALUE).
+      # exclude exhibition type, postgres went pathological if we used `not_jsonb_contains`, so we do it like this:
+      where("json_attributes ->> 'department' IN (?)", Collection::DEPARTMENTS.without(Collection::DEPARTMENT_EXHIBITION_VALUE)).
       order(:title).
       includes(:leaf_representative)
 
