@@ -24,7 +24,7 @@ class CollectionThumbAssetUploader < AssetUploader
   end
 
   Attacher.define_derivative("thumb_collection_show_page_2X", content_type: "image") do |original_file|
-    Kithe::VipsCliImageToJpeg.new(max_width: COLLECTION_SHOW_PAGE_THUMB_SIZE, thumbnail_mode: true).call(original_file)
+    Kithe::VipsCliImageToJpeg.new(max_width: COLLECTION_SHOW_PAGE_THUMB_SIZE * 2, thumbnail_mode: true).call(original_file)
   end
 
 end
