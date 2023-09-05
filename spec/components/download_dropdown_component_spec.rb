@@ -51,14 +51,13 @@ describe DownloadDropdownComponent, type: :component do
 
       download_items = rendered.css("div.action-item.downloads a.dropdown-item").
         map {|a| a.text }
-      expect(download_items.count).to eq 7
+      expect(download_items.count).to eq 6
       expect(download_items[0]).to include "Public Domain"
       expect(download_items[1]).to include "PDF"
       expect(download_items[2]).to include "Small JPG"
-      expect(download_items[3]).to include "Medium JPG"
-      expect(download_items[4]).to include "Large JPG"
-      expect(download_items[5]).to include "Full-sized JPG"
-      expect(download_items[6]).to include "Original file"
+      expect(download_items[3]).to include "Large JPG"
+      expect(download_items[4]).to include "Full-sized JPG"
+      expect(download_items[5]).to include "Original file"
 
       sample_download_option = div.at_css("a.dropdown-item:contains('Large JPG')")
       expect(sample_download_option["href"]).to be_present
@@ -102,13 +101,12 @@ describe DownloadDropdownComponent, type: :component do
       download_items = rendered.css("div.action-item.downloads a.dropdown-item").
         map {|a| a.text }
 
-      expect(download_items.count).to eq 6
+      expect(download_items.count).to eq 5
       expect(download_items[0]).to include "Public Domain"
       expect(download_items[1]).to include "Small JPG"
-      expect(download_items[2]).to include "Medium JPG"
-      expect(download_items[3]).to include "Large JPG"
-      expect(download_items[4]).to include "Full-sized JPG"
-      expect(download_items[5]).to include "Original file"
+      expect(download_items[2]).to include "Large JPG"
+      expect(download_items[3]).to include "Full-sized JPG"
+      expect(download_items[4]).to include "Original file"
 
       sample_download_option = div.at_css("a.dropdown-item:contains('Large JPG')")
       expect(sample_download_option["href"]).to be_present

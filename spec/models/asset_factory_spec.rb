@@ -38,7 +38,7 @@ describe "FactoryBot Asset factory" do
         expect(asset.file_derivatives).to be_present
 
         [ "thumb_mini", "thumb_mini_2X", "thumb_large", "thumb_large_2X", "thumb_standard",
-          "thumb_standard_2X", "download_large", "download_medium", "download_small",
+          "thumb_standard_2X", "download_large", "download_medium",
           "download_full"].each do |key|
             deriv = asset.file_derivatives[key.to_sym]
 
