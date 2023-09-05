@@ -33,18 +33,11 @@ module DownloadOptions
       # We don't use content_type in derivative option subheads,
       # cause it's in the main label. But do use it for original.
 
-      if dl_small = asset.file_derivatives[:download_small]
-        options << DownloadOption.with_formatted_subhead("Small JPG",
-          url: download_derivative_path(asset, :download_small),
-          analyticsAction: "download_jpg_small",
-          width: dl_small.width,
-          height: dl_small.height,
-          size: dl_small.size
-        )
-      end
 
+      # For historial reasons we have two download sizes MEDIUM and LARGE,
+      # but we label the medium one as "small"
       if dl_medium = asset.file_derivatives[:download_medium]
-        options << DownloadOption.with_formatted_subhead("Medium JPG",
+        options << DownloadOption.with_formatted_subhead("Small JPG",
           url: download_derivative_path(asset, :download_medium),
           analyticsAction: "download_jpg_medium",
           width: dl_medium.width,
