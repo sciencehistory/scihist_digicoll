@@ -8,6 +8,10 @@ class Collection < Kithe::Collection
 
   include RecordPublishedAt
 
+  # keep json_attributes out of string version of model shown in logs and console --
+  # because it's huge, and mostly duplicated by individual attributes that will be included!
+  self.filter_attributes = [:json_attributes]
+
   DEPARTMENT_EXHIBITION_VALUE = "Exhibition"
   DEPARTMENTS = (Work::ControlledLists::DEPARTMENT + [DEPARTMENT_EXHIBITION_VALUE]).freeze
 

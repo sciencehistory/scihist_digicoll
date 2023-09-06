@@ -1,10 +1,14 @@
 class Work < Kithe::Work
   include AttrJson::Record::QueryScopes
 
-  # will trigger automatic solr indexing in callbacks
 
   include RecordPublishedAt
 
+  # keep json_attributes out of string version of model shown in logs and console --
+  # because it's huge, and mostly duplicated by individual attributes that will be included!
+  self.filter_attributes = [:json_attributes]
+
+  # will trigger automatic solr indexing in callbacks
   if ScihistDigicoll::Env.lookup(:solr_indexing) == 'true'
     self.kithe_indexable_mapper = WorkIndexer.new
   end
