@@ -7,19 +7,24 @@ namespace :scihist do
       progress_bar = ProgressBar.create(total: Asset.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
 
       # https://shrinerb.com/docs/changing-derivatives#removing-derivatives
-      Asset.find_each do |asset|
-        attacher = asset.file_attacher
+      Asset.find_in_batches(batch_size: 200) do |batch|
+        batch.each do |asset|
+          # transaction around batches of 200 could make faster?
+          Asset.transaction do
+            attacher = asset.file_attacher
 
-        progress_bar.increment
+            progress_bar.increment
 
-        next unless attacher.derivatives.key?(:download_small)
+            next unless attacher.derivatives.key?(:download_small)
 
-        attacher.remove_derivative(:download_small, delete: true)
+            attacher.remove_derivative(:download_small, delete: true)
 
-        begin
-          attacher.atomic_persist            # persist changes if attachment has not changed in the meantime
-        rescue Shrine::AttachmentChanged,    # attachment has changed
-               ActiveRecord::RecordNotFound  # record has been deleted
+            begin
+              attacher.atomic_persist            # persist changes if attachment has not changed in the meantime
+            rescue Shrine::AttachmentChanged,    # attachment has changed
+                   ActiveRecord::RecordNotFound  # record has been deleted
+            end
+          end
         end
       end
     end
