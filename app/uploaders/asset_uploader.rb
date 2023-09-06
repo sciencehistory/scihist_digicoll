@@ -43,8 +43,7 @@ class AssetUploader < Kithe::AssetUploader
 
   IMAGE_DOWNLOAD_WIDTHS = {
     large: 2880,
-    medium: 1200,
-    small: 800
+    medium: 1200
   }
 
 
