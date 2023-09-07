@@ -6,12 +6,17 @@ namespace :scihist do
 
       progress_bar = ProgressBar.create(total: scope.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
 
-      scope.find_each do |asset|
-        asset.hocr = asset.json_attributes["hocr"]
-        asset.json_attributes.delete("hocr")
-        asset.save!
+      # try committing in a transaction of batches of 100, maybe faster?
+      scope.find_in_batches(batch_size: 100) do |batch|
+        Asset.transaction do
+          batch.each do |asset|
+            asset.hocr = asset.json_attributes["hocr"]
+            asset.json_attributes.delete("hocr")
+            asset.save!
 
-        progress_bar.increment
+            progress_bar.increment
+          end
+        end
       end
     end
   end
