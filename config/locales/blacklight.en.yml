@@ -19,3 +19,8 @@ en:
         #
         # no_items_found: "No entries found"
         no_items_found: ""
+      fields:
+          facet:
+              missing:
+                  year_facet_isim:
+                    "Undated" # See DateFacetItemPresenter
