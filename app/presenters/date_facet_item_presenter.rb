@@ -5,7 +5,7 @@ class DateFacetItemPresenter < BlacklightRangeLimit::FacetItemPresenter
   def label
     if value == {:missing=>true}
       # The path to the label is taken from
-      # https://github.com/projectblacklight/blacklight/blob/457f89f3dba758c0e642e881724cd818c1cc5f9e/lib/blacklight/solr/response/facets.rb#L199
+      #   https://github.com/projectblacklight/blacklight/blob/457f89f3dba758c0e642e881724cd818c1cc5f9e/lib/blacklight/solr/response/facets.rb#L199
       I18n.t(:"blacklight.search.fields.facet.missing.#{@facet_config.field}", default: super)
     else
       super
