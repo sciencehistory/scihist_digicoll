@@ -26,7 +26,7 @@ class WorkShowOcrComponent < ApplicationComponent
 
         SELECT
           (
-            json_attributes ->> 'hocr' IS NOT NULL
+            derived_metadata_jsonb ->> 'hocr' IS NOT NULL
             and
             coalesce(json_attributes ->> 'suppress_ocr', 'false') != 'true'
           ) has_ocr,

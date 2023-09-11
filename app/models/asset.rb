@@ -68,15 +68,16 @@ class Asset < Kithe::Asset
   attr_json :transcription, :text
   attr_json :english_translation, :text
 
-  # OCR data in hOCR format, for the image asset
-  attr_json :hocr, :text
-
   # If this is set, do not create OCR for this asset,
   # regardless of the parent work's settings.
   attr_json :suppress_ocr, :boolean, default: false
 
   # A place for staff to enter any internal notes about OCR for this asset.
   attr_json :ocr_admin_note, :text
+
+  # OCR data in hOCR format, for the image asset
+  attr_json :hocr, :text, container_attribute: :derived_metadata_jsonb
+
 
   validates :ocr_admin_note,
     presence: { message: ": Please specify why OCR is suppressed." },

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_16_205620) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_07_141354) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -176,6 +176,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_16_205620) do
     t.integer "kithe_model_type", null: false
     t.string "role"
     t.datetime "published_at", precision: nil
+    t.jsonb "derived_metadata_jsonb"
     t.index ["friendlier_id"], name: "index_kithe_models_on_friendlier_id", unique: true
     t.index ["leaf_representative_id"], name: "index_kithe_models_on_leaf_representative_id"
     t.index ["parent_id"], name: "index_kithe_models_on_parent_id"
