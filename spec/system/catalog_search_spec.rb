@@ -47,6 +47,13 @@ describe CatalogController, solr: true, indexable_callbacks: true do
         #expect(page).to have_link(text: collection.title, href: collection_path(work1))
       end
 
+      # Make sure the date facet labels missing dates as "Undated".
+      # See https://github.com/sciencehistory/scihist_digicoll/issues/2282
+      click_on "Date"
+      within "div.blacklight-year_facet_isim" do
+         expect(page).to have_content "Undated"
+      end
+
       # no fulltext search highlights here
       expect(page).not_to have_selector(".scihist-results-list-item-highlights")
 
