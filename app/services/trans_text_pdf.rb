@@ -42,13 +42,13 @@ class TransTextPdf
     end
 
     Prawn::Document.new.tap do |pdf|
-      font_base = Rails.root + "app/assets/fonts/liberation_serif"
+      font_base = Rails.root + "app/assets/fonts/liberation_sans"
       pdf.font_families.update(
-        'LiberationSerif' => {
-          normal: font_base + "LiberationSerif-Regular.ttf",
-          italic: font_base + "LiberationSerif-Italic.ttf",
-          bold: font_base + "LiberationSerif-Bold.ttf",
-          bold_italic: font_base + "LiberationSerif-BoldItalic.ttf"
+        'LiberationSans' => {
+          normal: font_base + "LiberationSans-Regular.ttf",
+          italic: font_base + "LiberationSans-Italic.ttf",
+          bold: font_base + "LiberationSans-Bold.ttf",
+          bold_italic: font_base + "LiberationSans-BoldItalic.ttf"
        }
      )
 
@@ -151,7 +151,7 @@ class TransTextPdf
   def style_css
     <<~EOS
       body {
-        font-family: LiberationSerif;
+        font-family: LiberationSans;
         font-size: 22px;
       }
       h1 {
