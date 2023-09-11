@@ -199,4 +199,15 @@ describe "System Environment" do
       expect(langs).to include("spa")
     end
   end
+
+  describe "exiftool" do
+    it "is present" do
+      `exiftool -h`
+    end
+
+    it "has acceptable version" do
+      ver = `exiftool -ver`.chomp
+      expect(ver).to match_version_requirements("~> 12.60")
+    end
+  end
 end
