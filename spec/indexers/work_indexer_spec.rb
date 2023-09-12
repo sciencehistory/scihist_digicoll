@@ -7,6 +7,11 @@ describe WorkIndexer do
     create(:public_work, members: [])
   end
 
+  let(:expected_hocr) do |variable|
+    ["CAUTION All units must be connected as above before the Power Supply is connected."] * 3
+  end
+
+
   it "indexes" do
     output_hash = WorkIndexer.new.map_record(work)
     expect(output_hash).to be_present
@@ -308,4 +313,96 @@ describe WorkIndexer do
       end
     end
   end
+
+  describe "with OCR and no transcription" do
+    let(:assets) do
+      [3,2,1].map { |page| create(
+        :asset,
+        position: page,
+        published: true,
+        hocr: hocr
+        ) }
+    end
+
+    let (:hocr) { File.read('spec/test_support/hocr_xml/hocr.xml')}
+
+    # transcription : en
+    # translation   : en
+    let(:english_only_work) do
+      create(:public_work, language: ['English'], members: assets )
+    end
+
+    # transcription : agnostic
+    # translation   : en
+    let(:bilingual_work) do
+      create(:public_work, language: ['English', 'German'], members: assets)
+    end
+
+    # transcription : de
+    # translation   : en
+    let(:german_only_work) do
+      create(:public_work, language: ['German'], members: assets )
+    end
+
+    let(:nil_members_work) do
+      create(:public_work, members: [])
+    end
+
+    before do
+      allow(nil_members_work).to receive(:members).and_return(nil)
+    end
+
+    describe "works in various languages" do
+      let(:output_hash) { WorkIndexer.new.map_record(language_test_work) }
+      let(:english) { output_hash["searchable_fulltext_en"] }
+      let(:german)  { output_hash["searchable_fulltext_de"] }
+      let(:unsure)  { output_hash["searchable_fulltext_language_agnostic"] }
+      describe "text known to be in English" do
+        let(:language_test_work) { english_only_work }
+        it "goes in searchable_fulltext_en" do
+          expect(english).to eq(expected_hocr)
+          expect(german).to be_nil
+          expect(unsure).to be_nil
+        end
+      end
+      describe "text known to be in German" do
+        let(:language_test_work) { german_only_work }
+        it "goes in searchable_fulltext_de" do
+          expect(german).to eq(expected_hocr)
+          expect(english).to be_nil
+          expect(unsure).to be_nil
+        end
+      end
+      describe "text in either English or German or something else" do
+        let(:language_test_work) { bilingual_work }
+        it "goes in searchable_fulltext_language_agnostic" do
+          expect(german).to be_nil
+          expect(unsure).to eq(expected_hocr)
+          expect(english).to be_nil
+        end
+      end
+
+      describe "no assets" do
+        let(:language_test_work) { no_members_work }
+        it "results in nil indexes" do
+          expect(english).to be_nil
+          expect(german).to  be_nil
+          expect(unsure).to  be_nil
+        end
+      end
+      describe "nil assets" do
+        let(:language_test_work) { nil_members_work }
+        it "results in nil indexes" do
+          expect(english).to be_nil
+          expect(german).to  be_nil
+          expect(unsure).to  be_nil
+        end
+      end
+    end
+  end
+
+  describe "with transcription and translation, but also OCR" do
+    # TODO
+  end
+
 end

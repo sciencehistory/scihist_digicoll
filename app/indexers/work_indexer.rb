@@ -186,11 +186,17 @@ class WorkIndexer < Kithe::Indexer
         end
       end
 
-      acc.concat get_string_from_each_published_member(rec, :english_translation)
+      
+      acc.concat (english_translation = get_string_from_each_published_member(rec, :english_translation))
 
       # Index the transcription here if we can assume that the work is entirely in English.
-      acc.concat get_string_from_each_published_member(rec, :transcription) if rec.language == ['English']
+      if rec.language == ['English']
+        acc.concat (english_transcription = get_string_from_each_published_member(rec, :transcription)) 
+        # If transcription and translation are empty, index the OCR.
+        acc.concat ocr_for_work(rec) if english_transcription.empty? && english_translation.empty?
+      end
     end
+
 
     # and for oral histories, let's put just ohms keywords ALSO in our field we use for subject-level boosting,
     # for higher boosting. (This does mean it kind of gets double-boosted -- we still want
@@ -199,7 +205,10 @@ class WorkIndexer < Kithe::Indexer
 
     to_field "searchable_fulltext_de" do |rec, acc|
       # Index the transcription here if we can assume that the work is entirely in German.
-      acc.concat get_string_from_each_published_member(rec, :transcription) if rec.language == ['German']
+      if rec.language == ['German']
+        acc.concat (german_transcription = get_string_from_each_published_member(rec, :transcription))
+        acc.concat ocr_for_work(rec)  if german_transcription.empty?
+      end
     end
 
 
@@ -207,7 +216,10 @@ class WorkIndexer < Kithe::Indexer
     to_field "searchable_fulltext_language_agnostic" do |rec, acc|
       entirely_in_english = (rec.language == ['English'])
       entirely_in_german =  (rec.language == ['German'])
-      acc.concat get_string_from_each_published_member(rec, :transcription) unless entirely_in_english || entirely_in_german
+      unless entirely_in_english || entirely_in_german
+        acc.concat (transcription = get_string_from_each_published_member(rec, :transcription)) 
+        acc.concat ocr_for_work(rec) if transcription.empty?
+      end
     end
 
     # add a 'translation' token in bredig_feature_facet if we have any translations
@@ -259,6 +271,16 @@ class WorkIndexer < Kithe::Indexer
     # careful, work.members can be nil.
     return [] unless work.members.present?
     work.members.sort_by { |m| m.position || 0 }.map {|mem| mem.asset? && mem.published?.presence && mem.send(string_property) }.compact
+  end
+
+  # @return [Array<String>] an array of human-readable plain-text strings
+  # containing *just* the text inside the body of the HOCR, suitable for the full-text index.
+  def ocr_for_work(work)
+    get_string_from_each_published_member(work, :hocr).map do |hocr|
+      Nokogiri::HTML(hocr) { |config| config.strict }
+        .css('body').first.xpath('//text()')
+        .map(&:text).join(' ').squish.html_safe
+    end
   end
 
 end
