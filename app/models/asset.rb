@@ -30,6 +30,8 @@ class Asset < Kithe::Asset
   attr_json :hls_playlist_file_data, ActiveModel::Type::Value.new
   include VideoHlsUploader::Attachment(:hls_playlist_file, store: :video_derivatives, column_serializer: nil)
 
+  before_promotion :store_exiftool
+
 
   THUMB_WIDTHS = AssetUploader::THUMB_WIDTHS
   IMAGE_DOWNLOAD_WIDTHS = AssetUploader::IMAGE_DOWNLOAD_WIDTHS
@@ -73,6 +75,9 @@ class Asset < Kithe::Asset
 
   # OCR data in hOCR format, for the image asset
   attr_json :hocr, :text, container_attribute: :derived_metadata_jsonb
+
+  # holds a JSON-able Hash, exiftool json output
+  attr_json :exiftool_result, ActiveModel::Type::Value.new, container_attribute: :derived_metadata_jsonb
 
 
   validates :ocr_admin_note,
@@ -314,5 +319,44 @@ class Asset < Kithe::Asset
     info_str = info.collect { |k, v| "#{k}=#{v}" }.join(" ")
 
     Rails.logger.info("Asset Destroyed: #{info_str}")
+  end
+
+  def store_exiftool
+    cmd = TTY::Command.new(printer: :null)
+
+    # This is probably making another copy of the original file maybe even with an extra
+    # download from S3, on ingest. That is not okay.
+    #
+    #
+    # NEED TO BE DONE: Mess with kithe/shrine to figure out a way around that.
+    #
+    # ALSO: We have to be sure this is really happening in the bg!!
+    Shrine.with_file(self.file) do |local_file|
+      exiftool_args = [
+        "-All",       # all tags
+        "--File:All",  # EXCEPT not "File" group tags,
+        "-duplicates", # include duplicate values
+        "-json",       # json output
+        "-groupNames", # with exif group names as key prefixes eg "ICC_Profile:ProfileDescription"
+      ]
+      #
+      # exiftool may return a non-zero exit for a corrupt file -- we don't want to raise,
+      # it's still usually returning a nice json hash with error message, just store that
+      # in the exiftool_result area anyway!
+      result = cmd.run!(
+        "exiftool",
+        *exiftool_args,
+        local_file.path)
+
+      # Returns an array of hashes
+      # decimal_class: String needed so exiftool version number like `12.60` doesn't
+      # wind up truncated to 12.6 as a ruby float!
+      result_hash = JSON.parse(result.out, decimal_class: String).first
+
+      # Let's add our invocation options, as a record
+      result_hash["Kithe:CliArgs"] = exiftool_args
+
+      self.exiftool_result = result_hash
+    end
   end
 end
