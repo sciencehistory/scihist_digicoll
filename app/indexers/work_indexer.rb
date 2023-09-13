@@ -186,14 +186,16 @@ class WorkIndexer < Kithe::Indexer
         end
       end
 
-      
-      acc.concat (english_translation = get_string_from_each_published_member(rec, :english_translation))
+      english_translation = get_string_from_each_published_member(rec, :english_translation)
+      acc.concat english_translation
 
-      # Index the transcription here if we can assume that the work is entirely in English.
       if rec.language == ['English']
-        acc.concat (english_transcription = get_string_from_each_published_member(rec, :transcription)) 
-        # If transcription and translation are empty, index the OCR.
-        acc.concat ocr_for_work(rec) if english_transcription.empty? && english_translation.empty?
+        english_transcription = get_string_from_each_published_member(rec, :transcription)
+        acc.concat english_transcription
+        # Don't index OCR if someone transcribed or translated the work by hand.
+        if english_transcription.empty? && english_translation.empty?
+          acc.concat get_string_from_each_published_member(rec, :hocr).map { |hocr| ocr_text(hocr) }
+        end
       end
     end
 
@@ -203,11 +205,16 @@ class WorkIndexer < Kithe::Indexer
     # it in fulltext field for highlighting. I think that's ok).
     to_field "text3_tesim", obj_extract("oral_history_content", "ohms_xml", "index_points", "all_keywords_and_subjects")
 
+    # German-language fulltext index:
     to_field "searchable_fulltext_de" do |rec, acc|
-      # Index the transcription here if we can assume that the work is entirely in German.
       if rec.language == ['German']
-        acc.concat (german_transcription = get_string_from_each_published_member(rec, :transcription))
-        acc.concat ocr_for_work(rec)  if german_transcription.empty?
+        # Don't index OCR if someone transcribed the German by hand.
+        german_transcription = get_string_from_each_published_member(rec, :transcription)
+        if german_transcription.present?
+          acc.concat german_transcription
+        else
+          acc.concat get_string_from_each_published_member(rec, :hocr).map { |hocr| ocr_text(hocr) }
+        end
       end
     end
 
@@ -217,8 +224,13 @@ class WorkIndexer < Kithe::Indexer
       entirely_in_english = (rec.language == ['English'])
       entirely_in_german =  (rec.language == ['German'])
       unless entirely_in_english || entirely_in_german
-        acc.concat (transcription = get_string_from_each_published_member(rec, :transcription)) 
-        acc.concat ocr_for_work(rec) if transcription.empty?
+        # Don't index OCR if someone transcribed the work by hand.
+        transcription = get_string_from_each_published_member(rec, :transcription)
+        if transcription.present?
+          acc.concat transcription
+        else
+          acc.concat get_string_from_each_published_member(rec, :hocr).map { |hocr| ocr_text(hocr) }
+        end
       end
     end
 
@@ -270,17 +282,22 @@ class WorkIndexer < Kithe::Indexer
   def get_string_from_each_published_member(work, string_property)
     # careful, work.members can be nil.
     return [] unless work.members.present?
-    work.members.sort_by { |m| m.position || 0 }.map {|mem| mem.asset? && mem.published?.presence && mem.send(string_property).presence }.compact
+    work.members.sort_by { |m| m.position || 0 }.map do |mem|
+      mem.asset? && mem.published?.presence && mem.send(string_property).presence
+    end.compact
   end
 
   # @return [Array<String>] an array of human-readable plain-text strings
   # containing *just* the text inside the body of the HOCR, suitable for the full-text index.
   def ocr_for_work(work)
-    get_string_from_each_published_member(work, :hocr).map do |hocr|
-      Nokogiri::HTML(hocr) { |config| config.strict }
-        .css('body').first.xpath('//text()')
-        .map(&:text).join(' ').squish.html_safe
-    end
+    get_string_from_each_published_member(work, :hocr).map { |hocr| index_ready_ocr(hocr) }
+  end
+
+  def ocr_text(hocr)
+    return nil unless hocr.present?
+    Nokogiri::HTML(hocr) { |config| config.strict }
+      .css('body').first.xpath('//text()')
+      .map(&:text).join(' ').squish.html_safe
   end
 
 end
