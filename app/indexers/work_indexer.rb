@@ -270,7 +270,7 @@ class WorkIndexer < Kithe::Indexer
   def get_string_from_each_published_member(work, string_property)
     # careful, work.members can be nil.
     return [] unless work.members.present?
-    work.members.sort_by { |m| m.position || 0 }.map {|mem| mem.asset? && mem.published?.presence && mem.send(string_property) }.compact
+    work.members.sort_by { |m| m.position || 0 }.map {|mem| mem.asset? && mem.published?.presence && mem.send(string_property).presence }.compact
   end
 
   # @return [Array<String>] an array of human-readable plain-text strings
