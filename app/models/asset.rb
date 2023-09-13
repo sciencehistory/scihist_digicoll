@@ -336,10 +336,17 @@ class Asset < Kithe::Asset
         "-All",       # all tags
         "--File:All",  # EXCEPT not "File" group tags,
         "-duplicates", # include duplicate values
+        "-validate",   # include some validation errors
         "-json",       # json output
-        "-groupNames", # with exif group names as key prefixes eg "ICC_Profile:ProfileDescription"
+
+        # with exif group names as key prefixes eg "ICC_Profile:ProfileDescription"
+        # But also with weird `:Copy1`, `:Copy2` appended for multiples, which we need
+        # for `ExifTool:Warning` from `-validate`, to get all of them, that's what the :4 does.
+        #
+        # https://exiftool.org/forum/index.php?topic=15194.0
+        "-G0:4"
       ]
-      #
+
       # exiftool may return a non-zero exit for a corrupt file -- we don't want to raise,
       # it's still usually returning a nice json hash with error message, just store that
       # in the exiftool_result area anyway!
