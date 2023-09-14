@@ -8,6 +8,10 @@ Shrine.plugin :upload_endpoint
 # For direct to s3 uploads
 Shrine.plugin :uppy_s3_multipart
 
+# For efficient re-use of single downloded copy for multiple metadata and before_promotion
+# blocks. https://github.com/sciencehistory/kithe/pull/167
+Shrine.plugin :tempfile
+
 Shrine.storages = {
   cache: ScihistDigicoll::Env.shrine_cache_storage,
   store: ScihistDigicoll::Env.shrine_store_storage,

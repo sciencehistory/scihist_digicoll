@@ -110,7 +110,10 @@ gem "lograge", "< 2"
 gem "device_detector", "~> 1.0" # user-agent parsing we use for logging
 
 gem "attr_json", "~> 2.0"
-gem 'kithe', "~> 2.10"
+
+# TEMPORARILY use unreleaed kithe in order to get re-use of single source tempfile
+# in ingest processing steps. https://github.com/sciencehistory/kithe/pull/167
+gem 'kithe', "~> 2.10", github: "sciencehistory/kithe"
 
 gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 

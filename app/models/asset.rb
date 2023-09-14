@@ -324,13 +324,6 @@ class Asset < Kithe::Asset
   def store_exiftool
     cmd = TTY::Command.new(printer: :null)
 
-    # This is probably making another copy of the original file maybe even with an extra
-    # download from S3, on ingest. That is not okay.
-    #
-    #
-    # NEED TO BE DONE: Mess with kithe/shrine to figure out a way around that.
-    #
-    # ALSO: We have to be sure this is really happening in the bg!!
     Shrine.with_file(self.file) do |local_file|
       exiftool_args = [
         "-All",       # all tags
