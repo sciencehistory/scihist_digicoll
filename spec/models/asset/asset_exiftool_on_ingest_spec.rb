@@ -68,14 +68,7 @@ describe "Asset exiftool characterization on ingest" do
       expect(asset.exiftool_result["ExifTool:Validate"]).to be_present
       expect(asset.exiftool_result["ExifTool:Warning"]).to be_present
 
-
-      # Warnings from exiftool are confusingly in hash under keys `ExifTool:Warning`, `ExifTool:Copy1:Warning`,
-      # `ExifTool:Copy2:Warning`, etc.
-      all_warnings = asset.exiftool_result.slice(
-        *asset.exiftool_result.keys.grep(/ExifTool(:Copy\d+):Warning/)
-      ).values
-
-      expect(all_warnings).to include(
+      expect(asset.exiftool_result["Kithe:ExifToolValidationWarnings"]).to include(
         "Missing required TIFF IFD0 tag 0x0100 ImageWidth",
         "Missing required TIFF IFD0 tag 0x0101 ImageHeight",
         "Missing required TIFF IFD0 tag 0x0106 PhotometricInterpretation",

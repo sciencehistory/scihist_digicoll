@@ -363,6 +363,15 @@ class Asset < Kithe::Asset
       # Let's add our invocation options, as a record
       result_hash["Kithe:CliArgs"] = exiftool_args
 
+      # Warnings from exiftool are confusingly in hash under keys `ExifTool:Warning`, `ExifTool:Copy1:Warning`,
+      # `ExifTool:Copy2:Warning`, etc. This is a pain to get, so let's extract them and re-store
+      # under a custom key.
+      all_warnings = result_hash.slice(
+        *result_hash.keys.grep(/ExifTool(:Copy\d+):Warning/)
+      ).values
+
+      result_hash["Kithe:ExifToolValidationWarnings"] = all_warnings
+
       self.exiftool_result = result_hash
     end
   end
