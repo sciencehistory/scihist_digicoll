@@ -272,12 +272,6 @@ class WorkIndexer < Kithe::Indexer
     end.compact
   end
 
-  # @return [Array<String>] an array of human-readable plain-text strings
-  # containing *just* the text inside the body of the HOCR, suitable for the full-text index.
-  def ocr_for_work(work)
-    get_string_from_each_published_member(work, :hocr).map { |hocr| index_ready_ocr(hocr) }
-  end
-
   def ocr_text(hocr)
     return nil unless hocr.present?
     Nokogiri::HTML(hocr) { |config| config.strict }
