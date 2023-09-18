@@ -1,6 +1,7 @@
 GIT
   remote: https://github.com/sciencehistory/kithe.git
-  revision: 373dc02c480c478a2856d5434405e049862a880f
+  revision: e5171bc3ece2d87667e2ca6d95e374b770ac13db
+  branch: exiftool
   specs:
     kithe (2.10.0)
       attr_json (< 3.0.0)

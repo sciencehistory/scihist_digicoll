@@ -322,50 +322,8 @@ class Asset < Kithe::Asset
   end
 
   def store_exiftool
-    cmd = TTY::Command.new(printer: :null)
-
     Shrine.with_file(self.file) do |local_file|
-      exiftool_args = [
-        "-All",       # all tags
-        "--File:All",  # EXCEPT not "File" group tags,
-        "-duplicates", # include duplicate values
-        "-validate",   # include some validation errors
-        "-json",       # json output
-
-        # with exif group names as key prefixes eg "ICC_Profile:ProfileDescription"
-        # But also with weird `:Copy1`, `:Copy2` appended for multiples, which we need
-        # for `ExifTool:Warning` from `-validate`, to get all of them, that's what the :4 does.
-        #
-        # https://exiftool.org/forum/index.php?topic=15194.0
-        "-G0:4"
-      ]
-
-      # exiftool may return a non-zero exit for a corrupt file -- we don't want to raise,
-      # it's still usually returning a nice json hash with error message, just store that
-      # in the exiftool_result area anyway!
-      result = cmd.run!(
-        "exiftool",
-        *exiftool_args,
-        local_file.path)
-
-      # Returns an array of hashes
-      # decimal_class: String needed so exiftool version number like `12.60` doesn't
-      # wind up truncated to 12.6 as a ruby float!
-      result_hash = JSON.parse(result.out, decimal_class: String).first
-
-      # Let's add our invocation options, as a record
-      result_hash["Kithe:CliArgs"] = exiftool_args
-
-      # Warnings from exiftool are confusingly in hash under keys `ExifTool:Warning`, `ExifTool:Copy1:Warning`,
-      # `ExifTool:Copy2:Warning`, etc. This is a pain to get, so let's extract them and re-store
-      # under a custom key.
-      all_warnings = result_hash.slice(
-        *result_hash.keys.grep(/ExifTool(:Copy\d+):Warning/)
-      ).values
-
-      result_hash["Kithe:ExifToolValidationWarnings"] = all_warnings
-
-      self.exiftool_result = result_hash
+      self.exiftool_result = Kithe::ExiftoolCharacterization.new.call(local_file.path)
     end
   end
 end
