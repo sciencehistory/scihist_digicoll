@@ -24,6 +24,8 @@ class Admin::AssetsController < AdminController
     @asset = Asset.find_by_friendlier_id!(params[:id])
     authorize! :read, @asset
 
+    @exiftool_result = Kithe::ExiftoolCharacterization.presenter_for(@asset&.exiftool_result)
+
     if @asset.stored?
       @checks = @asset.fixity_checks.order('created_at asc')
       @latest_check   = @checks.last

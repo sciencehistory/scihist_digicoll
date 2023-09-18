@@ -263,6 +263,94 @@
           <% end %>
         </dd>
       <% end %>
+
+      <% if @exiftool_result.camera_make.present? || @exiftool_result.camera_model.present? %>
+        <dt class="col-sm-4">Camera make/model</dt>
+        <dd class="col-sm-8">
+          <%= @exiftool_result.camera_make %> / <%= @exiftool_result.camera_model %>
+        </dd>
+      <% end %>
+
+      <% if @exiftool_result.software.present? %>
+        <dt class="col-sm-4">Software</dt>
+        <dd class="col-sm-8">
+          <%= @exiftool_result.software %>
+        </dd>
+      <% end %>
+
+      <% if @exiftool_result.icc_profile_name.present? %>
+        <dt class="col-sm-4">ICC Color Profile</dt>
+        <dd class="col-sm-8">
+          <%= @exiftool_result.icc_profile_name %>
+        </dd>
+      <% end %>
+
+      <% if @exiftool_result.creation_date.present? %>
+        <dt class="col-sm-4">File creation date</dt>
+        <dd class="col-sm-8">
+          <%= localize @exiftool_result.creation_date %>
+        </dd>
+      <% end %>
+
+      <% if @exiftool_result.dpi.present? %>
+        <dt class="col-sm-4">DPI</dt>
+        <dd class="col-sm-8">
+          <%=  @exiftool_result.dpi %>
+        </dd>
+      <% end %>
+
+      <% if @exiftool_result.compression.present? %>
+        <dt class="col-sm-4">Internal Compression</dt>
+        <dd class="col-sm-8">
+          <%= @exiftool_result.compression %>
+        </dd>
+      <% end %>
+
+      <% if @exiftool_result.bits_per_sample.present? %>
+        <dt class="col-sm-4">Bits Per Sample</dt>
+        <dd class="col-sm-8">
+          <%= @exiftool_result.bits_per_sample %>
+        </dd>
+      <% end %>
+
+      <% if @exiftool_result.photometric_interpretation.present? %>
+        <dt class="col-sm-4">Photometric Interpretation</dt>
+        <dd class="col-sm-8">
+          <%= @exiftool_result.photometric_interpretation %>
+        </dd>
+      <% end %>
+
+      <% if @exiftool_result.camera_lens.present? %>
+        <dt class="col-sm-4">Camera Lens</dt>
+        <dd class="col-sm-8">
+          <%= @exiftool_result.camera_lens %>
+        </dd>
+      <% end %>
+
+      <% if @exiftool_result.shutter_speed.present? %>
+        <dt class="col-sm-4">Shutter Speed</dt>
+        <dd class="col-sm-8">
+          <%= @exiftool_result.shutter_speed %>
+        </dd>
+      <% end %>
+
+      <% if @exiftool_result.camera_iso.present? %>
+        <dt class="col-sm-4">Camera ISO</dt>
+        <dd class="col-sm-8">
+          <%= @exiftool_result.camera_iso %>
+        </dd>
+      <% end %>
+
+      <% if @exiftool_result.exiftool_validation_warnings.present? %>
+        <dt class="col-sm-4">Exiftool Validation Warnings</dt>
+        <dd class="col-sm-8">
+          <ul>
+            <% @exiftool_result.exiftool_validation_warnings.each do |warning| %>
+              <li><%= warning %> </li>
+            <% end %>
+          </ul>
+        </dd>
+      <% end %>
     </dl>
 
     <h2 class="mt-4">Derivatives</h2>
@@ -318,7 +406,7 @@
         <span class="text-monospace text-muted admin-ocr-display">
           <%= @asset.ocr_admin_note%>
         </span>
-      </small>   
+      </small>
     <% elsif @asset.hocr.present? %>
       <small>
         <span class="text-monospace text-muted admin-ocr-display">
