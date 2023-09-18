@@ -290,6 +290,51 @@ describe WorkIndexer do
       end
     end
 
+    describe "with OCR" do
+      let(:assets) do
+        [3,2,1].map { |page| create(
+          :asset,
+          position: page,
+          published: true,
+          hocr: hocr
+          ) }
+      end
+
+      let (:hocr) { File.read('spec/test_support/hocr_xml/hocr.xml')}
+      let(:expected_hocr) {
+        ["CAUTION All units must be connected as above before the Power Supply is connected."] * 3
+      }
+
+      let(:output_hash) { WorkIndexer.new.map_record(language_test_work) }
+      let(:english) { output_hash["searchable_fulltext_en"] }
+      let(:german)  { output_hash["searchable_fulltext_de"] }
+      let(:unsure)  { output_hash["searchable_fulltext_language_agnostic"] }
+      describe "text known to be in English" do
+        let(:language_test_work) { create(:public_work, language: ['English'], members: assets ) }
+        it "goes in searchable_fulltext_en" do
+          expect(english).to eq(expected_hocr)
+          expect(german).to be_nil
+          expect(unsure).to be_nil
+        end
+      end
+      describe "text known to be in German" do
+        let(:language_test_work) { create(:public_work, language: ['German'], members: assets ) }
+        it "goes in searchable_fulltext_de" do
+          expect(german).to eq(expected_hocr)
+          expect(english).to be_nil
+          expect(unsure).to be_nil
+        end
+      end
+      describe "bilingual text" do
+        let(:language_test_work) { create(:public_work, language: ['English', 'German'], members: assets) }
+        it "goes in searchable_fulltext_language_agnostic" do
+          expect(german).to be_nil
+          expect(unsure).to eq(expected_hocr)
+          expect(english).to be_nil
+        end
+      end
+    end
+
     describe "with unpublished assets" do
       let(:assets) do
         [3,2,1].map { |page| create(
