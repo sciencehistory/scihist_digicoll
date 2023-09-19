@@ -38,6 +38,13 @@ class CollectionShowController < CatalogController
     # using params[:collection_id] instead. This is obviously a departure from
     # the Rails standard.
 
+    begin
+      params.permit(:id, :collection_id)
+    rescue ActionController::UnpermittedParameters
+      bad_keys = params.to_unsafe_h.except(:controller, :action, :id, :collection_id).keys
+      return render json: { "Unpermitted parameters": bad_keys }, status: :unprocessable_entity
+    end
+
     unless (params[:id] && blacklight_config.facet_fields[params[:id]])
       raise ActionController::RoutingError, 'Not Found'
     end
