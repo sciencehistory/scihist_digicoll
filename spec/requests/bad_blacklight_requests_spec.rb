@@ -85,7 +85,7 @@ describe CatalogController do
     end
   end
 
-  describe "attempt to inject in page param" do
+  describe "attempt to use an array for q" do
     it "responds with a 400" do
       get "/catalog?page=1&q[]=1"
       expect(response.code).to eq "400"
