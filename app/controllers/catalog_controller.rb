@@ -678,8 +678,8 @@ class CatalogController < ApplicationController
   # range_start and range_end parameter and ensures they are in the correct order,
   # then makes a second request to #range_limit .
   def screen_params_for_range_limit
-    if (params['range_end'].nil?) ||
-      (params['range_start'].nil?) ||
+    if (params['range_end'].class != String) ||
+      (params['range_start'].class != String) ||
       (params['range_start'].to_i > params['range_end'].to_i)
         render plain: "Calls to range_limit should have a range_start " +
           "and a range_end parameter, and range_start " +
