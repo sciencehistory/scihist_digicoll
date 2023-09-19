@@ -24,3 +24,6 @@ brew 'qpdf'  # for combining tesseract textonly_pdf with graphical PDF in AssetP
 # See: https://sciencehistory.atlassian.net/l/cp/ucUvKjk3
 brew 'tesseract'
 brew 'tesseract-lang'
+
+# For characterization
+brew 'exiftool'

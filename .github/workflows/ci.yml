@@ -48,7 +48,7 @@ jobs:
         - name: Install apt dependencies
           run: |
             sudo apt-get update
-            sudo apt-get -y install libvips-tools ffmpeg mediainfo poppler-utils tesseract-ocr qpdf imagemagick
+            sudo apt-get -y install libvips-tools ffmpeg mediainfo poppler-utils tesseract-ocr qpdf imagemagick exiftool
 
         - name: Set up app
           run: |

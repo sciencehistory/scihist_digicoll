@@ -34,6 +34,8 @@ class Asset < Kithe::Asset
   attr_json :hls_playlist_file_data, ActiveModel::Type::Value.new
   include VideoHlsUploader::Attachment(:hls_playlist_file, store: :video_derivatives, column_serializer: nil)
 
+  before_promotion :store_exiftool
+
 
   THUMB_WIDTHS = AssetUploader::THUMB_WIDTHS
   IMAGE_DOWNLOAD_WIDTHS = AssetUploader::IMAGE_DOWNLOAD_WIDTHS
@@ -77,6 +79,9 @@ class Asset < Kithe::Asset
 
   # OCR data in hOCR format, for the image asset
   attr_json :hocr, :text, container_attribute: :derived_metadata_jsonb
+
+  # holds a JSON-able Hash, exiftool json output
+  attr_json :exiftool_result, ActiveModel::Type::Value.new, container_attribute: :derived_metadata_jsonb
 
 
   validates :ocr_admin_note,
@@ -318,5 +323,11 @@ class Asset < Kithe::Asset
     info_str = info.collect { |k, v| "#{k}=#{v}" }.join(" ")
 
     Rails.logger.info("Asset Destroyed: #{info_str}")
+  end
+
+  def store_exiftool
+    Shrine.with_file(self.file) do |local_file|
+      self.exiftool_result = Kithe::ExiftoolCharacterization.new.call(local_file.path)
+    end
   end
 end
