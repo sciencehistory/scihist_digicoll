@@ -37,5 +37,15 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
     end
   end
 
-
+  describe "Bad params" do
+    let(:collection) { create(:collection, friendlier_id: "faked") }
+    it "doesn't throw an error when facet.page is an array" do
+      get :facet, params: {
+        id:              "subject_facet",
+        collection_id:   collection.friendlier_id,
+        "facet.page" =>  { goat: 'goat' }
+      }
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
+  end
 end

@@ -38,19 +38,25 @@ class CollectionShowController < CatalogController
     # using params[:collection_id] instead. This is obviously a departure from
     # the Rails standard.
 
-    begin
-      params.permit(:id, :collection_id)
-    rescue ActionController::UnpermittedParameters
-      bad_keys = params.to_unsafe_h.except(:controller, :action, :id, :collection_id).keys
-      return render json: { "Unpermitted parameters": bad_keys }, status: :unprocessable_entity
-    end
-
     unless (params[:id] && blacklight_config.facet_fields[params[:id]])
       raise ActionController::RoutingError, 'Not Found'
     end
     @facet = blacklight_config.facet_fields[params[:id]]
 
-    @response = search_service.facet_field_response(@facet.key)
+    begin
+      @response = search_service.facet_field_response(@facet.key)
+    rescue ActionController::UnpermittedParameters
+      # Blacklight will raise an UnpermittedParameters error here if
+      # a bot tries to pass an array into the facet.page param.
+      if params["facet.page"].is_a? String
+         # Reraise.
+        raise
+      else
+        # Quietly return an :unprocessable_entity.
+        return render plain: "Error: unpermitted parameters.", status: :unprocessable_entity
+      end
+    end
+
     @display_facet = @response.aggregations[@facet.field]
     @pagination = facet_paginator(@facet, @display_facet)
     respond_to do |format|
