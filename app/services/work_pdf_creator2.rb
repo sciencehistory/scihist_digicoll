@@ -1,5 +1,6 @@
 # Create a PDF where each image in a work is embedded as an image, possibly with OCR text layer, if OCR
-# text is available.
+# text is available. Has `2` in name for legacy reasons -- but name of class is in used in our cache
+# of created PDFs, so should remain the same unless we want to bust cache.
 #
 # Known limitation:
 #
