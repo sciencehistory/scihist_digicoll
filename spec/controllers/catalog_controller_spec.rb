@@ -127,6 +127,14 @@ RSpec.describe CatalogController, solr: true, type: :controller do
         "range_end"=>"1930"
       }
     end
+    let(:not_strings) do
+      {
+        "range_field"=>"year_facet_isim",
+        "range_start"=>"1931",
+        "range_end"=>["1940"]
+      }
+    end
+
     it "throws 406 unless start param is present" do
       get :range_limit, params: no_start_params
       expect(response.status).to eq(406)
@@ -137,6 +145,10 @@ RSpec.describe CatalogController, solr: true, type: :controller do
     end
     it "throws 406 if params out of order" do
       get :range_limit, params: end_before_start_params
+      expect(response.status).to eq(406)
+    end
+    it "throws 406 if one of the params is an array" do
+      get :range_limit, params: not_strings
       expect(response.status).to eq(406)
     end
   end

@@ -5,6 +5,7 @@ describe DownloadOption do
     it "formats with everything" do
       expect(DownloadOption.with_formatted_subhead(
         "something",
+        work_friendlier_id: "work_id",
         url: "http://example.org",
         content_type: "image/jpeg",
         width: 100,
@@ -15,6 +16,7 @@ describe DownloadOption do
     it "formats with no content-type" do
       expect(DownloadOption.with_formatted_subhead(
         "something",
+        work_friendlier_id: "work_id",
         url: "http://example.org",
         width: 100,
         height: 200,
@@ -24,6 +26,7 @@ describe DownloadOption do
     it "formats with no dimensions" do
       expect(DownloadOption.with_formatted_subhead(
         "something",
+        work_friendlier_id: "work_id",
         url: "http://example.org",
         height: nil,
         width: nil,
@@ -37,7 +40,8 @@ describe DownloadOption do
     let(:subhead) { "This is a <small>subhead</small>" }
     let(:label) { "This is a label" }
     let(:analyticsAction) { "click-on-something" }
-    let(:download_option) { DownloadOption.new(label, url: url, subhead: subhead, analyticsAction: analyticsAction) }
+    let(:work_friendlier_id) { "work-id" }
+    let(:download_option) { DownloadOption.new(label, work_friendlier_id: work_friendlier_id, url: url, subhead: subhead, analyticsAction: analyticsAction) }
 
     it "produces hash" do
       expect(download_option.as_json).to match({
@@ -55,6 +59,21 @@ describe DownloadOption do
         "label" => label,
         "analyticsAction" => analyticsAction
       })
+    end
+  end
+
+  describe "analytics data- attributes" do
+    let(:analyticsAction) { "click-on-something" }
+    let(:work_friendlier_id) { "work-id" }
+
+    let(:download_option) {
+      DownloadOption.new("some label", work_friendlier_id: work_friendlier_id, analyticsAction: analyticsAction, url: "#")
+    }
+
+    it "are included in data_attrs" do
+      expect(download_option.data_attrs[:analytics_category]).to eq "Work"
+      expect(download_option.data_attrs[:analytics_action]).to eq analyticsAction
+      expect(download_option.data_attrs[:analytics_label]).to eq work_friendlier_id
     end
   end
 

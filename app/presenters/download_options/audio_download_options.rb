@@ -17,6 +17,7 @@ module DownloadOptions
 
       if m4a_deriv = asset.file_derivatives[:m4a]
         options << DownloadOption.with_formatted_subhead("Smaller file",
+          work_friendlier_id: @asset.parent&.friendlier_id,
           url: download_derivative_path(asset, :m4a),
           analyticsAction: "download_m4a_derivative_of_flac_original",
           content_type: 'audio/mp4',
@@ -26,6 +27,7 @@ module DownloadOptions
 
       if asset.stored?
         options << DownloadOption.with_formatted_subhead("Original file",
+          work_friendlier_id: @asset.parent&.friendlier_id,
           url: download_path(asset.file_category, asset),
           analyticsAction: "download_original",
           content_type: asset.content_type,

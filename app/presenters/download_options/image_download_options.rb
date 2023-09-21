@@ -22,12 +22,9 @@ module DownloadOptions
       # We do allow a PDF download for this now, but we list it under "Download Selected Image".
       # See https://github.com/sciencehistory/scihist_digicoll/issues/2278 .
       if asset&.parent&.members&.count == 1
-        options << DownloadOption.new("PDF", url: "#", analyticsAction: "download_pdf",
-        data_attrs: {
-          trigger: "on-demand-download",
-          derivative_type: "pdf_file",
-          work_id: @asset.parent.friendlier_id
-        })
+        options << DownloadOption.for_on_demand_derivative(
+          label: "PDF", derivative_type: "pdf_file", work_friendlier_id: @asset&.parent&.friendlier_id
+        )
       end
 
       # We don't use content_type in derivative option subheads,
@@ -38,6 +35,7 @@ module DownloadOptions
       # but we label the medium one as "small"
       if dl_medium = asset.file_derivatives[:download_medium]
         options << DownloadOption.with_formatted_subhead("Small JPG",
+          work_friendlier_id: @asset.parent&.friendlier_id,
           url: download_derivative_path(asset, :download_medium),
           analyticsAction: "download_jpg_medium",
           width: dl_medium.width,
@@ -48,6 +46,7 @@ module DownloadOptions
 
       if dl_large = asset.file_derivatives[:download_large]
         options << DownloadOption.with_formatted_subhead("Large JPG",
+          work_friendlier_id: @asset.parent&.friendlier_id,
           url: download_derivative_path(asset, :download_large),
           analyticsAction: "download_jpg_large",
           width: dl_large.width,
@@ -59,6 +58,7 @@ module DownloadOptions
       if dl_full = asset.file_derivatives[:download_full]
         options << DownloadOption.with_formatted_subhead("Full-sized JPG",
           url: download_derivative_path(asset, :download_full),
+          work_friendlier_id: @asset.parent&.friendlier_id,
           analyticsAction: "download_jpg_full",
           width: dl_full.width,
           height: dl_full.height,
@@ -69,6 +69,7 @@ module DownloadOptions
       if asset.stored?
         options << DownloadOption.with_formatted_subhead("Original file",
           url: download_path(asset.file_category, asset),
+          work_friendlier_id: @asset.parent&.friendlier_id,
           analyticsAction: "download_original",
           content_type: asset.content_type,
           width: asset.width,

@@ -488,6 +488,12 @@ class CatalogController < ApplicationController
       render(plain: "illegal page query parameter", status: 400) && return
     end
 
+    # likewise q needs to be a string:
+    if params[:q].present? && params[:q].class != String
+      render(plain: "illegal q query parameter", status: 400) && return
+    end
+
+
     # Correct range facets look like:
     # params[:range] == {"year_facet_isim"=>{"begin"=>"1900", "end"=>"1950"}}
     # &range%5Byear_facet_isim%5D%5Bbegin%5D=1900&range%5Byear_facet_isim%5D%5Bend%5D=1950
@@ -678,8 +684,8 @@ class CatalogController < ApplicationController
   # range_start and range_end parameter and ensures they are in the correct order,
   # then makes a second request to #range_limit .
   def screen_params_for_range_limit
-    if (params['range_end'].nil?) ||
-      (params['range_start'].nil?) ||
+    if (params['range_end'].class != String) ||
+      (params['range_start'].class != String) ||
       (params['range_start'].to_i > params['range_end'].to_i)
         render plain: "Calls to range_limit should have a range_start " +
           "and a range_end parameter, and range_start " +
