@@ -230,6 +230,8 @@
 
     .on-page-work-downloads-item {
       display: flex;
+      flex-wrap: wrap; // just in case things get really really small
+      gap: $table-cell-padding;
       margin-bottom: ($table-cell-padding * 2);
 
       .image {
@@ -243,10 +245,8 @@
         }
       }
 
-      .text {
-        padding: 0 $table-cell-padding;
+      .text {;
         flex-grow: 1;
-        width: 100%;
         word-break: break-word;
 
         .hint {
