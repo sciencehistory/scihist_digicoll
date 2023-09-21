@@ -50,6 +50,19 @@ FactoryBot.define do
       ocr_admin_note { "No text on this page, so no need for OCR."}
     end
 
+    trait :with_ocr do
+      hocr { ($sample_hocr_for_factory ||= File.read('spec/test_support/hocr_xml/hocr.xml')) }
+
+      after(:build) do |asset|
+        asset.file_attacher.merge_derivatives({
+          # okay not really a textonly pdf, just a fake tiny blank pdf
+          textonly_pdf: create(:stored_uploaded_file,
+            content_type: "application/pdf",
+            file: File.open((Rails.root + "spec/test_support/pdf/tiny.pdf")))
+        })
+      end
+    end
+
     # While it still uses a real file, it skips all of the (slow) standard metadata extraction
     # and derivative generation, instead just SETTING the metadata and derivatives to fixed
     # values (which may not be actually right, but that doesn't matter for many tests).
