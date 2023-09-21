@@ -15,11 +15,25 @@ RSpec.describe WorkDownloadLinksComponent, type: :component do
 
 
     it "has Searchable PDF link" do
-      expect(page).to have_link("Searchable PDF")
+      expect(page).to have_link("Searchable PDF") do |link|
+        link["data-trigger"] == "on-demand-download" &&
+        link["data-derivative-type"] == "pdf_file" &&
+        link["data-work-id"] == work.friendlier_id &&
+        link["data-analytics-category"] == "Work" &&
+        link["data-analytics-action"] == "download_pdf" &&
+        link["data-analytics-label"] == work.friendlier_id
+      end
     end
 
     it "has Zip link" do
-      expect(page).to have_link("ZIP")
+      expect(page).to have_link("ZIP") do |link|
+        link["data-trigger"] == "on-demand-download" &&
+        link["data-derivative-type"] == "zip_file" &&
+        link["data-work-id"] == work.friendlier_id &&
+        link["data-analytics-category"] == "Work" &&
+        link["data-analytics-action"] == "download_zip" &&
+        link["data-analytics-label"] == work.friendlier_id
+      end
     end
   end
 

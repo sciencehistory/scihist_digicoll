@@ -22,4 +22,18 @@ class WorkDownloadLinksComponent < ApplicationComponent
     # using same logic it will...
     @has_downloadable_zip = DownloadDropdownComponent.work_has_multiple_published_images?(work)
   end
+
+  def pdf_download_option
+    # We don't actually use label, but want to get attributes out
+    @zip_download_option ||= DownloadOption.for_on_demand_derivative(
+        label: "", derivative_type: "pdf_file", work_friendlier_id: work.friendlier_id
+      )
+  end
+
+  def zip_download_option
+    # We don't actually use label, but want to get attributes out
+    DownloadOption.for_on_demand_derivative(
+      label: "", derivative_type: "zip_file", work_friendlier_id: work.friendlier_id
+    )
+  end
 end
