@@ -8,7 +8,7 @@ describe DownloadDropdownComponent, type: :component do
     let(:asset) do
       create(:asset_with_faked_file,
             faked_derivatives: {},
-            parent: build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
+            parent: build(:work, friendlier_id: "faked#{rand(1000000).to_s(16)}", rights: "http://creativecommons.org/publicdomain/mark/1.0/")
       )
     end
 
@@ -40,7 +40,7 @@ describe DownloadDropdownComponent, type: :component do
           download_large: build(:stored_uploaded_file),
           download_full: build(:stored_uploaded_file)
         },
-        parent: build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
+        parent: build(:work, friendlier_id: "faked#{rand(1000000).to_s(16)}", rights: "http://creativecommons.org/publicdomain/mark/1.0/")
       )
     end
 
@@ -69,7 +69,7 @@ describe DownloadDropdownComponent, type: :component do
 
   describe "work with two image files and derivatives" do
     let(:work) do
-      build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/",
+      build(:work, friendlier_id: "faked#{rand(1000000).to_s(16)}", rights: "http://creativecommons.org/publicdomain/mark/1.0/",
         members:
         [
           create(:asset_with_faked_file,
