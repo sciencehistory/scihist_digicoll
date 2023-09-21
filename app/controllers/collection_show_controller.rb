@@ -10,8 +10,6 @@
 class CollectionShowController < CatalogController
   before_action :collection, :check_auth
 
-  rescue_from ActionController::UnpermittedParameters, with: :handle_unpermitted_params
-
   ORAL_HISTORY_DEPARTMENT_VALUE = "Center for Oral History"
 
   def index
@@ -84,18 +82,4 @@ class CollectionShowController < CatalogController
     @collection ||= Collection.find_by_friendlier_id!(params[:collection_id])
   end
   helper_method :collection
-
-
-  # Suppress certain Blacklight errors in the
-  # #facet action; respond instead with :unprocessable_entity.
-  def handle_unpermitted_params
-    # This only applies to #facet.
-    raise if params['action'] != 'facet'
-    # If the facet page param is a string (this is the normal case)
-    # but we are somehow *still* getting an UnpermittedParameters, reraise.
-    raise if params["facet.page"].is_a? String
-    # Suppress if the param is e.g. an array or hash.
-    return render plain: "Error: unpermitted parameters.", status: :unprocessable_entity
-  end
-
 end
