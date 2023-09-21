@@ -7,9 +7,9 @@ RSpec.describe WorkDownloadLinksComponent, type: :component do
 
   describe "multi-item work with OCR" do
     let(:work) do
-      create(:work, ocr_requested: true, members: [
-        create(:asset, :with_ocr),
-        create(:asset, :with_ocr)
+      create(:work, :published, ocr_requested: true, members: [
+        create(:asset_with_faked_file, :with_ocr),
+        create(:asset_with_faked_file, :with_ocr)
       ])
     end
 
@@ -25,9 +25,9 @@ RSpec.describe WorkDownloadLinksComponent, type: :component do
 
   describe "multi-item work without OCR" do
     let(:work) do
-      create(:work, members: [
-        create(:asset),
-        create(:asset)
+      create(:work, :published, members: [
+        create(:asset_with_faked_file),
+        create(:asset_with_faked_file)
       ])
     end
 
@@ -38,6 +38,18 @@ RSpec.describe WorkDownloadLinksComponent, type: :component do
 
     it "has Zip link" do
       expect(page).to have_link("ZIP")
+    end
+  end
+
+  describe "single item work without OCR" do
+    let(:work) do
+      create(:work, :published, members: [
+        create(:asset_with_faked_file)
+      ])
+    end
+
+    it "does not have zip link" do
+      expect(page).not_to have_link("ZIP")
     end
   end
 end

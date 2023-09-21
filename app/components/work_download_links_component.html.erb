@@ -26,24 +26,26 @@
     </div>
   </div>
 
-  <div class="on-page-work-downloads-item">
-    <div class="image">
-      <%= helpers.file_earmark_zip_fill_svg %>
+  <% if has_downloadable_zip? %>
+    <div class="on-page-work-downloads-item">
+      <div class="image">
+        <%= helpers.file_earmark_zip_fill_svg %>
+      </div>
+
+      <div class="text">
+
+          <a aria-hidden="true" tabindex="-1" href="#">
+            ZIP
+          </a>
+
+          <div>
+            <small>of full-sized JPGs</small>
+          </div>
+      </div>
+
+      <div class="action" style="border-top: none; padding-right: 0;">
+        <a class="btn btn-brand-main less-padding" href="#">Download</a>
+      </div>
     </div>
-
-    <div class="text">
-
-        <a aria-hidden="true" tabindex="-1" href="#">
-          ZIP
-        </a>
-
-        <div>
-          <small>of full-sized JPGs</small>
-        </div>
-    </div>
-
-    <div class="action" style="border-top: none; padding-right: 0;">
-      <a class="btn btn-brand-main less-padding" href="#">Download</a>
-    </div>
-  </div>
+  <% end %>
 </div>

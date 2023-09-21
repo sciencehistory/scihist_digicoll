@@ -246,10 +246,15 @@ class DownloadDropdownComponent < ApplicationComponent
   # NOTE: We had been checking to make sure ALL members were images, but that was FAR
   # too resource intensive, it destroyed ramelli. Checking just one is okay though.
   def has_work_download_options?
-    display_parent_work &&
-    display_parent_work.published? &&
-    display_parent_work.member_count > 1 &&
-    display_parent_work.member_content_types(mode: :query).all? {|t| t.start_with?("image/")}
+    self.class.work_has_multiple_published_images?(display_parent_work)
+  end
+
+  # Extracted for re-use in other places, see #has_work_download_options?
+  def self.work_has_multiple_published_images?(work)
+    work &&
+    work.published? &&
+    work.member_count > 1 &&
+    work.member_content_types(mode: :query).all? {|t| t.start_with?("image/")}
   end
 
   def whole_work_download_options

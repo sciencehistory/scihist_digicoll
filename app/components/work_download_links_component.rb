@@ -14,4 +14,12 @@ class WorkDownloadLinksComponent < ApplicationComponent
     # we use WorkShowOcrComponent to do a single-SQL query as to asset OCR status
     @has_searchable_pdf = work.ocr_requested? && !WorkShowOcrComponent.new(work).asset_ocr_count_warning?
   end
+
+  def has_downloadable_zip?
+    return @has_downloadable_zip if defined?(@has_downloadable_zip)
+
+    # We use DownloadDropdownComponent to try to decide if it's going to have a ZIP link or not
+    # using same logic it will...
+    @has_downloadable_zip = DownloadDropdownComponent.work_has_multiple_published_images?(work)
+  end
 end
