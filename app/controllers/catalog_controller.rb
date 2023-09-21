@@ -488,6 +488,12 @@ class CatalogController < ApplicationController
       render(plain: "illegal page query parameter", status: 400) && return
     end
 
+    # likewise q needs to be a string:
+    if params[:q].present? && params[:q].class != String
+      render(plain: "illegal q query parameter", status: 400) && return
+    end
+
+
     # Correct range facets look like:
     # params[:range] == {"year_facet_isim"=>{"begin"=>"1900", "end"=>"1950"}}
     # &range%5Byear_facet_isim%5D%5Bbegin%5D=1900&range%5Byear_facet_isim%5D%5Bend%5D=1950
