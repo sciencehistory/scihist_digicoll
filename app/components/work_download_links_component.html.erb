@@ -7,12 +7,18 @@
 
     <div class="text">
         <a aria-hidden="true" tabindex="-1" href="#">
-          Searchable PDF
+          <% if has_searchable_pdf? %>
+            Searchable PDF
+          <% else %>
+            PDF
+          <% end %>
         </a>
 
-        <div class="hint">
-          <small>may contain errors</small>
-        </div>
+        <% if has_searchable_pdf? %>
+          <div class="hint">
+            <small>may contain errors</small>
+          </div>
+        <% end %>
     </div>
 
     <div class="action">
