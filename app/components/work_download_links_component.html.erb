@@ -2,7 +2,7 @@
 
   <div class="on-page-work-downloads-item">
     <div class="image">
-      <%= link_to(pdf_download_option.url, data: pdf_download_option.data_attrs, tabindex: -1) do %>
+      <%= link_to(pdf_download_option.url, data: pdf_download_option.data_attrs, tabindex: -1, "aria-label": "Download PDF") do %>
         <%= helpers.file_earmark_pdf_fill_svg %>
       <% end %>
     </div>
@@ -33,7 +33,7 @@
   <% if has_downloadable_zip? %>
     <div class="on-page-work-downloads-item">
       <div class="image">
-        <%= link_to(zip_download_option.url, data: zip_download_option.data_attrs, tabindex: -1) do %>
+        <%= link_to(zip_download_option.url, data: zip_download_option.data_attrs, tabindex: -1, "aria-label": "Download ZIP") do %>
           <%= helpers.file_earmark_zip_fill_svg %>
         <% end %>
       </div>
