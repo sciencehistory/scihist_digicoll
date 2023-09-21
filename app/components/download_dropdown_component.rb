@@ -246,20 +246,12 @@ class DownloadDropdownComponent < ApplicationComponent
     return [] unless has_work_download_options?
 
     [
-      DownloadOption.new("PDF", url: "#", analyticsAction: "download_pdf",
-        work_friendlier_id: @asset&.parent&.friendlier_id,
-        data_attrs: {
-          trigger: "on-demand-download",
-          derivative_type: "pdf_file",
-          work_id: display_parent_work.friendlier_id
-        }),
-      DownloadOption.new("ZIP", subhead: "of full-sized JPGs", url: "#", analyticsAction: "download_zip",
-        work_friendlier_id: @asset&.parent&.friendlier_id,
-        data_attrs: {
-          trigger: "on-demand-download",
-          derivative_type: "zip_file",
-          work_id: display_parent_work.friendlier_id
-        }),
+      DownloadOption.for_on_demand_derivative(
+        label: "PDF", derivative_type: "pdf_file", work_friendlier_id: @asset&.parent&.friendlier_id
+      ),
+      DownloadOption.for_on_demand_derivative(
+        label: "ZIP", derivative_type: "zip_file", work_friendlier_id: @asset&.parent&.friendlier_id
+      )
     ]
   end
 

@@ -22,12 +22,9 @@ module DownloadOptions
       # We do allow a PDF download for this now, but we list it under "Download Selected Image".
       # See https://github.com/sciencehistory/scihist_digicoll/issues/2278 .
       if asset&.parent&.members&.count == 1
-        options << DownloadOption.new("PDF", work_friendlier_id: @asset.parent&.friendlier_id, url: "#", analyticsAction: "download_pdf",
-        data_attrs: {
-          trigger: "on-demand-download",
-          derivative_type: "pdf_file",
-          work_id: @asset.parent.friendlier_id
-        })
+        options << DownloadOption.for_on_demand_derivative(
+          label: "PDF", derivative_type: "pdf_file", work_friendlier_id: @asset&.parent&.friendlier_id
+        )
       end
 
       # We don't use content_type in derivative option subheads,

@@ -3,6 +3,37 @@
 class DownloadOption
   attr_reader :label, :subhead, :url, :analyticsAction, :data_attrs, :work_friendlier_id
 
+
+  # Create a DownloadOption for one of our on-demand derivatives, DRY it up here
+  # so we can re-use equivalently.
+  def self.for_on_demand_derivative(label:, derivative_type:, work_friendlier_id:)
+    derivative_type = derivative_type.to_s
+
+    unless derivative_type.in?(["pdf_file", "zip_file"])
+      raise ArgumentError.new("derivative_type `#{derivative_type}` must be one of pdf_file or zip_file")
+    end
+
+    analytics_action = {
+      "pdf_file" => "download_pdf",
+      "zip_file" => "download_zip"
+    }[derivative_type]
+
+    subhead = {
+     "pdf_file" => nil,
+      "zip_file" => "of full-sized JPGs"
+    }[derivative_type]
+
+    DownloadOption.new(label, url: "#", analyticsAction: analytics_action,
+      work_friendlier_id: work_friendlier_id,
+      subhead: subhead,
+      data_attrs: {
+        trigger: "on-demand-download",
+        derivative_type: derivative_type,
+        work_id: work_friendlier_id
+      }
+    )
+  end
+
   # Formats the sub-head for you, in a standard way, using info about the asset. If you don't
   # want this standard format, just use the ordinary new/initialize instead.
   #
