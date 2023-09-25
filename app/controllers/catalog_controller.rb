@@ -517,6 +517,11 @@ class CatalogController < ApplicationController
         render(plain: "Invalid URL query parameter range=#{param_display.call(params[:range])}", status: 400) && return
       end
 
+      # Prevent BLR from throwing an "unpermitted params error":
+      if params[:action] == 'index' && (params.keys & ['range_start', 'range_end', 'range_field']).any?
+        render(plain: "Invalid URL query parameters #{params.keys & ['range_end', 'range_field', 'range_start']}", status: 400) && return
+      end
+
       params[:range].each_pair do |_facet_key, range_limits|
         # Workaround for issue https://github.com/sciencehistory/scihist_digicoll/issues/2231
         #
