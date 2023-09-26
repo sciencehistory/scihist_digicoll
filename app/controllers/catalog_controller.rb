@@ -517,7 +517,8 @@ class CatalogController < ApplicationController
         render(plain: "Invalid URL query parameter range=#{param_display.call(params[:range])}", status: 400) && return
       end
 
-      # Prevent BLR from throwing an "unpermitted params error":
+      # Normal params for a range query are listed above.
+      # Prevent BLR from throwing an "unpermitted params error" if a bot tacks on other values:
       if params[:action] == 'index' && (params.keys & ['range_start', 'range_end', 'range_field']).any?
         render(plain: "Invalid URL query parameters #{params.keys & ['range_end', 'range_field', 'range_start']}", status: 400) && return
       end
