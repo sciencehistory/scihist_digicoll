@@ -15,7 +15,7 @@ class OnDemandDerivative < ApplicationRecord
       pdf_file: {
         suffix: "pdf",
         content_type: "application/pdf",
-        creator_class_name: (ENV["NEW_WORK_PDF"] == 'on' ? "WorkPdfCreator2" : "WorkPdfCreator")
+        creator_class_name: "WorkPdfCreator2"
       },
       zip_file: {
         suffix: "zip",

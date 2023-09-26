@@ -215,20 +215,10 @@ class DownloadDropdownComponent < ApplicationComponent
       download_option.label, (content_tag("small", download_option.subhead) if download_option.subhead.present?)
     ])
 
-    analytics_data_attr = if display_parent_work
-      {
-        analytics_category: "Work",
-        analytics_action: download_option.analyticsAction,
-        analytics_label: display_parent_work.friendlier_id
-      }
-    else
-      {}
-    end
-
     content_tag("a", label,
                       class: "dropdown-item",
                       href: download_option.url,
-                      data: download_option.data_attrs.merge(analytics_data_attr))
+                      data: download_option.data_attrs)
   end
 
   def rights_statement_item
@@ -256,18 +246,12 @@ class DownloadDropdownComponent < ApplicationComponent
     return [] unless has_work_download_options?
 
     [
-      DownloadOption.new("PDF", url: "#", analyticsAction: "download_pdf",
-        data_attrs: {
-          trigger: "on-demand-download",
-          derivative_type: "pdf_file",
-          work_id: display_parent_work.friendlier_id
-        }),
-      DownloadOption.new("ZIP", subhead: "of full-sized JPGs", url: "#", analyticsAction: "download_zip",
-        data_attrs: {
-          trigger: "on-demand-download",
-          derivative_type: "zip_file",
-          work_id: display_parent_work.friendlier_id
-        }),
+      DownloadOption.for_on_demand_derivative(
+        label: "PDF", derivative_type: "pdf_file", work_friendlier_id: @asset&.parent&.friendlier_id
+      ),
+      DownloadOption.for_on_demand_derivative(
+        label: "ZIP", derivative_type: "zip_file", work_friendlier_id: @asset&.parent&.friendlier_id
+      )
     ]
   end
 

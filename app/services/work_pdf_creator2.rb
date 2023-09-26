@@ -1,5 +1,6 @@
 # Create a PDF where each image in a work is embedded as an image, possibly with OCR text layer, if OCR
-# text is available.
+# text is available. Has `2` in name for legacy reasons -- but name of class is in used in our cache
+# of created PDFs, so should remain the same unless we want to bust cache.
 #
 # Known limitation:
 #
@@ -20,8 +21,6 @@
 # Callback is a proc that takes keyword arguments `progress_total` and `progress_i` to receive progress info
 # for reporting to user.
 #
-# DEPENDS ON `pdfunite` command-line utility, which is installed with `poppler` which was a dependency
-# for our vips use anyway.
 class WorkPdfCreator2
   class PdfCreationFailure < RuntimeError ; end
 
@@ -115,8 +114,8 @@ class WorkPdfCreator2
   end
 
   def concatenate_pdfs(input_pdf_paths, output_path:)
-      # Now we gotta combine all our separate PDF files into one big one, which pdfunite
-      # can do 'relatively' quickly and memory-efficiently. It also preserves PDF Info Dictionary from first PDF.
+      # Now we gotta combine all our separate PDF files into one big one, which qpdf
+      # can do relatively quickly and memory-efficiently. It also preserves PDF Info Dictionary from first PDF.
       TTY::Command.new(printer: :null).run(
         qpdf_command,
         "--linearize", # better PDF for streaming/download
