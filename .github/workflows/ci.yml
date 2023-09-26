@@ -44,11 +44,10 @@ jobs:
           run: pip install -r requirements.txt
 
 
-          # will no longer need `poppler-utils` when we eliminate pdfunite from codebase shortly
         - name: Install apt dependencies
           run: |
             sudo apt-get update
-            sudo apt-get -y install libvips-tools ffmpeg mediainfo poppler-utils tesseract-ocr qpdf imagemagick exiftool
+            sudo apt-get -y install libvips-tools ffmpeg mediainfo tesseract-ocr qpdf imagemagick exiftool
 
         - name: Set up app
           run: |

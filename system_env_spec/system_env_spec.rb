@@ -48,17 +48,6 @@ describe "System Environment" do
     end
   end
 
-  describe "pdfunite" do
-    it "is present" do
-      `pdfunite -h 2>&1`
-    end
-
-    it "has acceptable version" do
-      `pdfunite -v 2>&1` =~ /pdfunite version (\d+\.\d+.\d+)/
-      expect($1).to match_version_requirements(">= 22.02", "< 24")
-    end
-  end
-
   describe "vips" do
     let(:version_requirements) { [">= 8.12.1", "< 8.15.0"] }
 
