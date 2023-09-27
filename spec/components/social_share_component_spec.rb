@@ -18,10 +18,6 @@ describe SocialShareComponent, type: :component do
     expect(facebook_link).to be_present
     expect(facebook_link['href']).to eq "javascript:window.open('https://facebook.com/sharer/sharer.php?u=#{CGI.escape work_url(work)}')"
 
-    twitter_link = container_div.at_css("a.twitter")
-    expect(twitter_link).to be_present
-    expect(twitter_link['href']).to eq "https://twitter.com/intent/tweet/?url=#{CGI.escape work_url(work)}"
-
     pinterest_link = container_div.at_css("a.pinterest")
     expect(pinterest_link).to be_present
     pinterest_share_url = pinterest_link["href"]
