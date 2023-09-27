@@ -189,7 +189,7 @@ describe DownloadDropdownComponent, type: :component do
   end
 
   describe "with parent work" do
-    let(:rendered) { render_inline(DownloadDropdownComponent.new(asset, display_parent_work: parent_work)) }
+    let(:rendered) { render_inline(DownloadDropdownComponent.new(asset, display_parent_work: parent_work, include_whole_work_options: true)) }
 
     describe "with all image files" do
       let(:asset) do
@@ -249,6 +249,20 @@ describe DownloadDropdownComponent, type: :component do
           expect(div).not_to have_selector("a.dropdown-item", text: /Medium JPG/)
           expect(div).not_to have_selector("a.dropdown-item", text: /Large JPG/)
           expect(div).not_to have_selector("a.dropdown-item", text: /Full-sized JPG/)
+        end
+      end
+
+      describe "without include_whole_work_options" do
+        let(:rendered) { render_inline(DownloadDropdownComponent.new(asset, display_parent_work: parent_work)) }
+
+        it "does not include them" do
+          expect(div).not_to have_selector(".dropdown-header", text: "Download all 3 images")
+
+          zip_option = div.at_css("a.dropdown-item:contains('ZIP')")
+          expect(zip_option).not_to be_present
+
+          pdf_option = div.at_css("a.dropdown-item:contains('PDF')")
+          expect(pdf_option).not_to be_present
         end
       end
     end

@@ -28,7 +28,7 @@
     ViewModel. Doesn't yet include whole-work download options. Good enough for now. %>
 
 
-    <%= render DownloadDropdownComponent.new(nil, display_parent_work: work, viewer_template: true) %>
+    <%= render DownloadDropdownComponent.new(nil, display_parent_work: work, viewer_template: true, include_whole_work_options: true) %>
 
     <button class="viewer-navbar-btn btn btn-lg btn-emphasis viewer-fullscreen viewer-thin-btn" id="viewer-fullscreen"
             data-trigger="viewer-fullscreen" tabindex="0" title="Fullscreen" aria-label="full screen">

@@ -40,7 +40,7 @@
 # (This is a bit hacky)
 #
 class DownloadDropdownComponent < ApplicationComponent
-  attr_reader :display_parent_work, :asset, :aria_label, :btn_class_name
+  attr_reader :display_parent_work, :asset, :aria_label, :btn_class_name, :include_whole_work_options
 
 
   # @param asset [Asset] asset to display download links for
@@ -61,6 +61,7 @@ class DownloadDropdownComponent < ApplicationComponent
   #   The specific btn theme added on to bootstrap `btn` that will be there anyway.
   def initialize(asset,
       display_parent_work:,
+      include_whole_work_options: false,
       use_link: false,
       viewer_template: false,
       aria_label: nil,
@@ -77,6 +78,7 @@ class DownloadDropdownComponent < ApplicationComponent
     @asset = asset
     @aria_label = aria_label
     @btn_class_name = btn_class_name
+    @include_whole_work_options = include_whole_work_options
   end
 
   def call
@@ -193,7 +195,7 @@ class DownloadDropdownComponent < ApplicationComponent
       elements << "<div class='dropdown-divider'></div>".html_safe
     end
 
-    if has_work_download_options?
+    if include_whole_work_options && has_work_download_options?
       elements << "<h3 class='dropdown-header'>Download all #{display_parent_work.member_count} images</h3>".html_safe
       whole_work_download_options.each do |download_option|
         elements << format_download_option(download_option)

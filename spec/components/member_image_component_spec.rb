@@ -6,7 +6,8 @@ describe MemberImageComponent, type: :component do
   let(:presenter) { MemberImageComponent.new(member) }
 
   describe "with asset" do
-    let(:member) { create(:asset_with_faked_file, parent: create(:work)) }
+    let(:parent) { create(:public_work, members: [create(:asset_with_faked_file), create(:asset_with_faked_file)] ) }
+    let(:member) { parent.members.first }
 
     describe "large size" do
       let(:presenter) { MemberImageComponent.new(member, size: :large) }
@@ -27,6 +28,11 @@ describe MemberImageComponent, type: :component do
         expect(poster_link["tabindex"]).to eq "-1"
         expect(poster_link["aria-hidden"]).to eq "true"
       end
+
+      it "download button includes whole-work derivatives" do
+        expect(wrapper_div).to have_selector(".btn-group.downloads a.dropdown-item:contains('ZIP')")
+        expect(wrapper_div).to have_selector(".btn-group.downloads a.dropdown-item:contains('PDF')")
+      end
     end
 
     describe "small size" do
@@ -36,6 +42,11 @@ describe MemberImageComponent, type: :component do
         expect(wrapper_div).to have_selector(".action-item-bar .action-item.downloads .btn")
 
         expect(wrapper_div).not_to have_selector(".action-item-bar .action-item.view .btn")
+      end
+
+      it "does not include whole-work derivatives" do
+        expect(wrapper_div).not_to have_selector(".btn-group.downloads a.dropdown-item:contains('ZIP')")
+        expect(wrapper_div).not_to have_selector(".btn-group.downloads a.dropdown-item:contains('PDF')")
       end
     end
 
