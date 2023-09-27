@@ -20,7 +20,6 @@ class SocialShareComponent < ApplicationComponent
     content_tag("div", class: "social-media") do
       safe_join([
         facebook_share_link,
-        twitter_share_link,
         pinterest_share_link,
         google_classroom_share_link
       ])
@@ -47,23 +46,6 @@ class SocialShareComponent < ApplicationComponent
         "aria-label" => "Share to Facebook",
         title: "Share to Facebook" do
       '<i class="fa fa-facebook-f" aria-hidden="true"></i>'.html_safe
-    end
-  end
-
-  def twitter_share_link
-    # intentionally no text for twitter, cause title will show up in twitter card due to tags. user can enter own text %>
-    link_to "https://twitter.com/intent/tweet/?#{{url: share_url}.to_param}",
-        class: 'social-media-link twitter btn btn-brand-dark',
-        target: '_blank',
-        rel: 'noopener noreferrer',
-        data: {
-          analytics_category: "Work",
-          analytics_action: "share_twitter",
-          analytics_label: work.friendlier_id
-        },
-        "aria-label" => "Share to Twitter",
-        title: "Share to Twitter" do
-      '<i class="fa fa-twitter" aria-hidden="true"aria-hidden="true" ></i>'.html_safe
     end
   end
 

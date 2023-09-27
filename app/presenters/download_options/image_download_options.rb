@@ -12,16 +12,20 @@ module DownloadOptions
 
     attr_reader :asset
 
-    def initialize(asset)
+    def initialize(asset, show_pdf_link: false)
       @asset = asset
+      @show_pdf_link = show_pdf_link
+    end
+
+    def show_pdf_link?
+      !!@show_pdf_link
     end
 
     def options
       options = []
-      # Special case: an image asset is the *only* member of the work.
-      # We do allow a PDF download for this now, but we list it under "Download Selected Image".
-      # See https://github.com/sciencehistory/scihist_digicoll/issues/2278 .
-      if asset&.parent&.members&.count == 1
+      # Sometimes we want the PDF link in the individual-image download links,
+      # as per https://github.com/sciencehistory/scihist_digicoll/issues/2278 .
+      if show_pdf_link?
         options << DownloadOption.for_on_demand_derivative(
           label: "PDF", derivative_type: "pdf_file", work_friendlier_id: @asset&.parent&.friendlier_id
         )

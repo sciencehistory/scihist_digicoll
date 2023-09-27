@@ -70,5 +70,29 @@ module ScihistDigicoll
       "%.#{decimal_places}f %s" % [display_number, display_units]
     end
 
+    # Attempt to implement a convenience for ActiveRecord find_each that is more
+    # memory efficient, using less RAM.
+    #
+    # @example
+    #    ScihistDigicoll::Util.find_each( Asset.where(something)) do |record|
+    #       something_with record
+    #    end
+    #
+    # We default batch size smaller than default 200, aggressively GC.start, and use ActiveRecord.uncached
+    # just in case.
+    def self.find_each(active_record_scope, batch_size: 200)
+      # ActiveRecord should already be disabling query cache for find_each, but
+      # let's go overboard and force it extra just in case.
+      active_record_scope.uncached do
+        active_record_scope.find_in_batches(batch_size: batch_size) do |batch|
+          # Aggressively GC any previous batch
+          GC.start
+
+          batch.each do |record|
+            yield record
+          end
+        end
+      end
+    end
   end
 end

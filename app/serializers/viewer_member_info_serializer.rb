@@ -50,7 +50,9 @@ class ViewerMemberInfoSerializer
   end
 
   def download_options(asset)
-    DownloadOptions::ImageDownloadOptions.new(asset).options
+    # include the PDF link here if we only have one image, as there won't be a
+    # fixed whole-work download section, but we still want it.
+    DownloadOptions::ImageDownloadOptions.new(asset, show_pdf_link: work.member_count == 1).options
   end
 
   def thumb_src_attributes(asset)

@@ -40,7 +40,7 @@ describe DownloadDropdownComponent, type: :component do
           download_large: build(:stored_uploaded_file),
           download_full: build(:stored_uploaded_file)
         },
-        parent: build(:work, friendlier_id: "faked#{rand(1000000).to_s(16)}", rights: "http://creativecommons.org/publicdomain/mark/1.0/")
+        parent: build(:public_work, members: [], friendlier_id: "faked#{rand(1000000).to_s(16)}", rights: "http://creativecommons.org/publicdomain/mark/1.0/")
       )
     end
 
@@ -51,6 +51,7 @@ describe DownloadDropdownComponent, type: :component do
 
       download_items = rendered.css("div.action-item.downloads a.dropdown-item").
         map {|a| a.text }
+
       expect(download_items.count).to eq 6
       expect(download_items[0]).to include "Public Domain"
       expect(download_items[1]).to include "PDF"
