@@ -31,6 +31,13 @@ fb:app_id Facebook ID A Facebook app ID
 fb:pages  Array<Facebook ID>
 fb:profile_id %>
 
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@<%= Rails.application.config.twitter_acct %>"/>
+
+<%# not sure twitter really uses these, but maybe it used to? %>
+<meta name="twitter:label1" content="Rights Statement"/>
+<meta name="twitter:data1" content="<%= attributes.rights_statement %>"/>
+
 <%# not strictly meta tags, but a convenient place to include these %>
 <%= tag "link", rel: "alternate", type: "application/xml", title: "OAI-DC metadata in XML", href: work_url(work, format: "xml") %>
 <%= tag "link", rel: "alternate", type: "application/json", title: "local non-standard metadata in JSON", href: work_url(work, format: "json") %>

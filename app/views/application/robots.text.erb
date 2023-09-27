@@ -52,6 +52,10 @@ Disallow: /works/*/transcription$
 <% else %>
 # Non-production, no robots please, although we let twitter in to test twitter integration
 
+# let twitter scrape cards metadata for testing
+User-agent: Twitterbot
+Disallow:
+
 User-agent: *
 Disallow: /
 <% end %>

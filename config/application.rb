@@ -71,6 +71,7 @@ module ScihistDigicoll
     ###
 
     # Organizational social media accounts/handles
+    config.twitter_acct = "scihistoryorg"
     config.facebook_acct = "SciHistoryOrg"
     config.instagram_acct = "scihistoryorg"
 
