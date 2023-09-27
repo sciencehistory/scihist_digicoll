@@ -10,7 +10,7 @@ namespace :scihist do
     You want a scheduled job to run this periodically, maybe once an hour.
     """
     task :update => :environment do
-      ActiveEncodeStatus.running.find_each do |job_status|
+      ScihistDigicoll::Util.find_each(ActiveEncodeStatus.running) do |job_status|
         RefreshActiveEncodeStatusJob.perform_later(job_status)
       end
 
