@@ -517,12 +517,6 @@ class CatalogController < ApplicationController
         render(plain: "Invalid URL query parameter range=#{param_display.call(params[:range])}", status: 400) && return
       end
 
-      # Normal params for a range query are listed above.
-      # Prevent BLR from throwing an "unpermitted params error" if a bot tacks on other values:
-      if params[:action] == 'index' && (params.keys & ['range_start', 'range_end', 'range_field']).any?
-        render(plain: "Invalid URL query parameters #{params.keys & ['range_end', 'range_field', 'range_start']}", status: 400) && return
-      end
-
       params[:range].each_pair do |_facet_key, range_limits|
         # Workaround for issue https://github.com/sciencehistory/scihist_digicoll/issues/2231
         #
@@ -701,15 +695,9 @@ class CatalogController < ApplicationController
     end
   end
 
-  # Suppress certain Blacklight errors in the
-  # #facet action; respond instead with :unprocessable_entity.
+  # Suppress noisy UnpermittedParameters errors, caused in practice by a bot.
+  # Respond instead with :unprocessable_entity.
   def handle_unpermitted_params
-    # This only applies to #facet.
-    raise if params['action'] != 'facet'
-    # If the facet page param is a string (this is the normal case)
-    # but we are somehow *still* getting an UnpermittedParameters, reraise.
-    raise if params["facet.page"].is_a? String
-    # Suppress if the param is e.g. an array or hash.
     return render plain: "Error: unpermitted parameters.", status: :unprocessable_entity
   end
 
