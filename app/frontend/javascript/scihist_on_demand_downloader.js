@@ -44,6 +44,8 @@ $( document ).ready(function() {
   ScihistOnDemandDownloader.prototype.fetchForStatus = function() {
     var _self = this;
 
+
+
     var fetchUrl = "/works/" + this.work_id + "/" + _self.deriv_type;
 
     if (this.disposition) {
@@ -55,10 +57,21 @@ $( document ).ready(function() {
     }).then(function(json) {
       if (json.status == "success") {
         var existing;
-        if (existing = _self.getModal(true)) {
-          existing.modal("hide");
+
+        if (_self.disposition == "inline") {
+          // We want to open in new tab,
+          // I guess we need to provide a button that says "open here", since
+          // popup blocker won't let us actually open a new tab at this point,
+          // after a fetch instead of immediately on click... more code needed
+          TO BE DONE
+        } else {
+          // close model and load PDF for download
+
+          if (existing = _self.getModal(true)) {
+            existing.modal("hide");
+          }
+          window.location = json.file_url;
         }
-        window.location = json.file_url;
       } else if (json.status == "in_progress") {
         _self.updateProgress(json);
         _self.getModal().modal("show");

@@ -6,11 +6,15 @@ class DownloadOption
 
   # Create a DownloadOption for one of our on-demand derivatives, DRY it up here
   # so we can re-use equivalently.
-  def self.for_on_demand_derivative(label:, derivative_type:, work_friendlier_id:)
+  def self.for_on_demand_derivative(label:, derivative_type:, work_friendlier_id:, disposition: nil)
     derivative_type = derivative_type.to_s
 
     unless derivative_type.in?(["pdf_file", "zip_file"])
       raise ArgumentError.new("derivative_type `#{derivative_type}` must be one of pdf_file or zip_file")
+    end
+
+    unless disposition.in?([nil, :inline, :attachment])
+      raise ArgumentError.new("disposition `#{disposition}` must be nil or one of :inline or :attachment")
     end
 
     analytics_action = {
@@ -29,8 +33,9 @@ class DownloadOption
       data_attrs: {
         trigger: "on-demand-download",
         derivative_type: derivative_type,
-        work_id: work_friendlier_id
-      }
+        work_id: work_friendlier_id,
+        :"download-content-disposition" => disposition
+      }.compact
     )
   end
 
