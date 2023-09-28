@@ -6,15 +6,25 @@ class OnDemandDerivativesController < ApplicationController
 
 
   # Returns a JSON hash with status of on-demand derivative, including a URL
-  # if it's available now
+  # if it's available now at `file_url`.
   #
   # GET /works/:id/:derivative_type
   #
-  # returns JSON status info, including URL to download derivative if status success
+  # Will default to a URL with content-disposition attachment from S3, but for
+  # inline client can request:
+  #
+  # GET /works/:id/:derivative_type?disposition=inline
+  #
+  # @returns JSON status info, including URL at `file_url` to download derivative if status success
   def on_demand_status
     record = OnDemandDerivativeCreator.new(@work, derivative_type: params[:derivative_type]).find_or_create_record
 
-    render json: record.as_json(methods: (record.success? ? "file_url" : nil))
+    json_result = record.as_json
+    if record.success?
+      json_result["file_url"] = record.file_url(disposition: params[:disposition])
+    end
+
+    render json: json_result
   end
 
 

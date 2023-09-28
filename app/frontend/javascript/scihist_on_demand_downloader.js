@@ -3,21 +3,37 @@ $( document ).ready(function() {
   // A JS 'class' for handling download UI
   //
   // A link or button witb data elements triggers:
+  //
   //     <a href="#"
   //        data-trigger="on-demand-download"
   //        data-work-id="#{work.friendlier_id}"
   //        data-derivative-type="zip_file">
   //
-  //  Will result in a progress/status modal if required, eventually
+  //  Will then result in a progress/status modal if required, eventually
   //  turning into a redirect to derivative download URL.
   //
-  //  By accessing the OnDemandDerivativeController endpoint to return
-  //  JSON to launch lazy deriv generation if needed, and tell this script
-  //  status, and eventually URL location of derivative on successful creation.
+  //  This code will create a listener on that link that will make a request to the
+  //  OnDemandDerivativeController endpoint, which will launch
+  //  lazy deriv generation if needed, and return JSON tell this script the
+  //  status (including % completion that can be displayed as progress bar).
   //
-  function ScihistOnDemandDownloader(work_id, type) {
+  //  The endpoint is polled until it gets status saying derivative is available,
+  //  which includes a URL location of derivative on successful creation.
+  //
+  //  Generally the derivative URL will force a download with content-disposition
+  //  attachment, where possible. But if a link wants to opt-in to inline
+  //  disposition instead, that's an additional data attribute:
+  //
+  //     <a href="#"
+  //        data-trigger="on-demand-download"
+  //        data-work-id="#{work.friendlier_id}"
+  //        data-derivative-type="zip_file"
+  //        data-download-content-disposition="inline">
+  //
+  function ScihistOnDemandDownloader(work_id, type, disposition) {
     this.work_id = work_id;
     this.deriv_type = type;
+    this.disposition = disposition;
 
     if (!this.work_id || !this.deriv_type) {
       console.error("tried to create ScihistOnDemandDownloader with missing args");
@@ -28,8 +44,13 @@ $( document ).ready(function() {
   ScihistOnDemandDownloader.prototype.fetchForStatus = function() {
     var _self = this;
 
-    fetch("/works/" + this.work_id + "/" + _self.deriv_type).then(function(response) {
+    var fetchUrl = "/works/" + this.work_id + "/" + _self.deriv_type;
 
+    if (this.disposition) {
+      fetchUrl += "?disposition=" + this.disposition;
+    }
+
+    fetch(fetchUrl).then(function(response) {
       return response.json();
     }).then(function(json) {
       if (json.status == "success") {
@@ -147,11 +168,12 @@ $( document ).ready(function() {
     e.preventDefault();
 
     // in case you actually clicked on a <small> inside the <a> or something...
-    var link = $(e.target).closest('*[data-trigger="on-demand-download"]');
-    var type = link.data("derivative-type");
-    var id   = link.data("work-id");
+    var link        = $(e.target).closest('*[data-trigger="on-demand-download"]');
+    var type        = link.data("derivative-type");
+    var id          = link.data("work-id");
+    var disposition = link.data("download-content-disposition");
 
-    var downloader = new ScihistOnDemandDownloader(id, type);
+    var downloader = new ScihistOnDemandDownloader(id, type, disposition);
     downloader.fetchForStatus();
   });
 });

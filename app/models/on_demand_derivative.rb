@@ -59,12 +59,19 @@ class OnDemandDerivative < ApplicationRecord
     uploaded_file.exists?
   end
 
-  def file_url
+  # @param disposition [String,Symbol] if :inline we'll return inline content-diposition, otherwise attachment default
+  def file_url(disposition: :attachment)
+    content_disposition = if disposition.to_s == "inline"
+        ContentDisposition.inline(desired_filename)
+      else
+        ContentDisposition.attachment(desired_filename)
+      end
+
     uploaded_file.url(
       public: false,
       expires_in: PRESIGNED_URL_EXPIRES_IN,
       response_content_type: uploaded_file.metadata["mime_type"],
-      response_content_disposition: ContentDisposition.attachment(desired_filename)
+      response_content_disposition: content_disposition
     )
   end
 
