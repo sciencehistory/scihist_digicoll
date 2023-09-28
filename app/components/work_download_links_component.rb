@@ -11,8 +11,11 @@ class WorkDownloadLinksComponent < ApplicationComponent
   def has_searchable_pdf?
     return @has_searchable_pdf if defined?(@has_searchable_pdf)
 
-    # we use WorkShowOcrComponent to do a single-SQL query as to asset OCR status
-    @has_searchable_pdf = work.ocr_requested? && !WorkShowOcrComponent.new(work).asset_ocr_count_warning?
+    # we COULD use WorkShowOcrComponent to do a single-SQL query as to asset OCR status...
+    # but it's a bit slow, ends up being like 1ms per 10 pages. Instead, for now
+    # we're just going to go based on the ocr_requested? flag, meaning sometimes we'll
+    # show searchable PDF when OCR may be queued in progress...
+    @has_searchable_pdf = work.ocr_requested?  # && !WorkShowOcrComponent.new(work).asset_ocr_count_warning?
   end
 
   def has_downloadable_zip?
