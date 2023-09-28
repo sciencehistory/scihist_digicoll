@@ -25,14 +25,14 @@ class WorkDownloadLinksComponent < ApplicationComponent
 
   def pdf_download_option
     # We don't actually use label, but want to get attributes out
-    @zip_download_option ||= DownloadOption.for_on_demand_derivative(
+    @pdf_download_option ||= DownloadOption.for_on_demand_derivative(
         label: "", derivative_type: "pdf_file", work_friendlier_id: work.friendlier_id
       )
   end
 
   def zip_download_option
     # We don't actually use label, but want to get attributes out
-    DownloadOption.for_on_demand_derivative(
+    @zip_download_option ||= DownloadOption.for_on_demand_derivative(
       label: "", derivative_type: "zip_file", work_friendlier_id: work.friendlier_id
     )
   end
