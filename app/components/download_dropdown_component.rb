@@ -113,7 +113,11 @@ class DownloadDropdownComponent < ApplicationComponent
     @asset_download_options ||= if asset&.content_type&.start_with?("audio/")
       DownloadOptions::AudioDownloadOptions.new(asset).options
     else
-      DownloadOptions::ImageDownloadOptions.new(asset).options
+      # If we AREN'T showing the PDF in whole work download options (but we have
+      # a published work, cause PDF assets are not individually access-controlled!), we still
+      # want it in individual image download options, as per
+      # https://github.com/sciencehistory/scihist_digicoll/issues/2278
+      DownloadOptions::ImageDownloadOptions.new(asset, show_pdf_link: (!has_work_download_options? && display_parent_work&.published?)).options
    end
   end
 
@@ -236,10 +240,12 @@ class DownloadDropdownComponent < ApplicationComponent
   # NOTE: We had been checking to make sure ALL members were images, but that was FAR
   # too resource intensive, it destroyed ramelli. Checking just one is okay though.
   def has_work_download_options?
-    display_parent_work &&
-    display_parent_work.published? &&
-    display_parent_work.member_count > 1 &&
-    display_parent_work.member_content_types(mode: :query).all? {|t| t.start_with?("image/")}
+    return @has_work_download_options if defined?(@has_work_download_options)
+
+    @has_work_download_options = display_parent_work &&
+      display_parent_work.published? &&
+      display_parent_work.member_count > 1 &&
+      display_parent_work.member_content_types(mode: :query).all? {|t| t.start_with?("image/")}
   end
 
   def whole_work_download_options
