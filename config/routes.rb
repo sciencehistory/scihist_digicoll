@@ -269,6 +269,10 @@ Rails.application.routes.draw do
     get "/works/:parent_id/ingest", to: "assets#display_attach_form", as: "asset_ingest"
     post "/works/:parent_id/ingest", to: "assets#attach_files"
 
+
+    put "/asset_files/:id/submit_textonly_pdf",    to: "assets#submit_textonly_pdf"
+    put "/asset_files/:id/submit_hocr",            to: "assets#submit_hocr"
+
     resources :collections, except: [:show]
 
     # Note "assets" is Rails reserved word for routing, oops. So we use

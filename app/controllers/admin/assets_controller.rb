@@ -180,6 +180,31 @@ class Admin::AssetsController < AdminController
     redirect_to admin_asset_url(status.asset), notice: "Started refresh for ActiveEncode job #{status.active_encode_id}"
   end
 
+
+  # PATCH/PUT /admin/asset_files/ab2323ac/submit_textonly_pdf
+  def submit_textonly_pdf
+    @asset = Asset.find_by_friendlier_id!(params[:id])
+    authorize! :update, @asset
+    unless params[:textonly_pdf].present?
+      redirect_to admin_asset_url(@asset), flash: { error: "No file received" }
+      return
+    end
+    @asset.file_derivatives[:textonly_pdf].replace(params[:textonly_pdf])
+    redirect_to admin_asset_url(@asset), flash: { notice: "Updated textonly_pdf." }
+  end
+
+  # PATCH/PUT /admin/asset_files/ab2323ac/submit_hocr
+  def submit_hocr
+    @asset = Asset.find_by_friendlier_id!(params[:id])
+    authorize! :update, @asset
+    unless params[:hocr].present?
+      redirect_to admin_asset_url(@asset), flash: { error: "No file received" }
+      return
+    end
+    @asset.hocr = params[:hocr].read
+    redirect_to admin_asset_url(@asset), flash: { notice: "Updated HOCR." }
+  end
+
   def work_is_oral_history?
     (@asset.parent.is_a? Work) && @asset.parent.genre && @asset.parent.genre.include?('Oral histories')
   end
