@@ -189,7 +189,16 @@ class Admin::AssetsController < AdminController
       redirect_to admin_asset_url(@asset), flash: { error: "No file received" }
       return
     end
-    @asset.file_derivatives[:textonly_pdf].replace(params[:textonly_pdf])
+    begin
+      unless PDF::Reader.new(params[:textonly_pdf].tempfile).pages.count == 1
+        redirect_to admin_asset_url(@asset), flash: { error: "This doesn't look like a one-page PDF." }
+        return
+      end
+    rescue PDF::Reader::MalformedPDFError
+      redirect_to admin_asset_url(@asset), flash: { error: "This doesn't look like a PDF." }
+      return
+    end
+    @asset.file_attacher.add_persisted_derivatives({textonly_pdf: params[:textonly_pdf]})
     redirect_to admin_asset_url(@asset), flash: { notice: "Updated textonly_pdf." }
   end
 
@@ -201,7 +210,13 @@ class Admin::AssetsController < AdminController
       redirect_to admin_asset_url(@asset), flash: { error: "No file received" }
       return
     end
-    @asset.hocr = params[:hocr].read
+    hocr = params[:hocr].read
+    parsed_hocr = Nokogiri::XML(hocr) { |config| config.strict }
+    unless parsed_hocr.css(".ocr_page").length == 1
+      redirect_to admin_asset_url(@asset), flash: { error: "This is not a valid HOCR file." }
+      return
+    end
+    @asset.update({hocr: hocr})
     redirect_to admin_asset_url(@asset), flash: { notice: "Updated HOCR." }
   end
 
