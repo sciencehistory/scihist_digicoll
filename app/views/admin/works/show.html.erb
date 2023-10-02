@@ -160,6 +160,7 @@
             <%= f.association :interviewer_profiles, collection: InterviewerProfile.order(:name), input_html: { "data-tom-select": "true" }, disabled: cannot?(:update, @work)%>
             <%= submit_tag "Save Changes", class: "btn btn-primary mb-3", disabled: cannot?(:update, @work)%>
           <% end %>
+        </div>
       </div>
 
       <%= render OralHistory::Admin::AvailableByRequestComponent.new(work: @work) %>
