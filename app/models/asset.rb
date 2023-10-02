@@ -38,6 +38,8 @@ class Asset < Kithe::Asset
 
   before_promotion :store_exiftool
 
+  before_promotion :invalidate_corrupt_tiff, if: ->(asset) { asset.content_type == "image/tiff" }
+
 
   THUMB_WIDTHS = AssetUploader::THUMB_WIDTHS
   IMAGE_DOWNLOAD_WIDTHS = AssetUploader::IMAGE_DOWNLOAD_WIDTHS
@@ -330,6 +332,30 @@ class Asset < Kithe::Asset
   def store_exiftool
     Shrine.with_file(self.file) do |local_file|
       self.exiftool_result = Kithe::ExiftoolCharacterization.new.call(local_file.path)
+    end
+  end
+
+  def invalidate_corrupt_tiff
+    exif = Kithe::ExiftoolCharacterization.presenter_for(self.exiftool_result)
+
+    # Catastrophic warnings from exiftool, this TIFF won't work
+    # Actual errors encountered in actually encountered problem corrupt files
+    fatal_errors = [
+      /Missing required TIFF IFD0 .* StripOffsets/,
+      /Missing required TIFF IFD0 .* RowsPerStrip/,
+      /Missing required TIFF IFD0 .* StripByteCounts/,
+      /Missing required TIFF IFD0 .* PhotometricInterpretation/,
+      /Missing required TIFF IFD0 .* ImageWidth/,
+      /Missing required TIFF IFD0 .* ImageHeight/,
+      /Missing required TIFF ExifIFD .* ColorSpace/,
+      /IFD0:StripOffsets is zero/,
+      /IFD0:StripByteCounts is zero/,
+      /Undersized IFD0 StripByteCounts/
+    ].map { |error_regexp| exif.exiftool_validation_warnings.grep(error_regexp) }.flatten.uniq
+
+    if fatal_errors.present?
+      # ActiveRecord callback way of aborting chain...
+      throw :abort
     end
   end
 end
