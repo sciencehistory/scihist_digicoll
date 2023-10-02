@@ -1,0 +1,58 @@
+<div class="on-page-work-downloads">
+
+  <div class="on-page-work-downloads-item">
+    <div class="image">
+      <%= link_to(pdf_download_option.url, data: pdf_download_option.data_attrs, tabindex: -1, "aria-label": "Download PDF") do %>
+        <%= helpers.file_earmark_pdf_fill_svg %>
+      <% end %>
+    </div>
+
+    <div class="text">
+        <%= link_to(pdf_download_option.url, data: pdf_download_option.data_attrs, tabindex: -1) do %>
+          <% if has_searchable_pdf? %>
+            Searchable PDF
+          <% else %>
+            PDF
+          <% end %>
+        <% end %>
+
+        <% if has_searchable_pdf? %>
+          <div class="hint">
+            <small>may contain errors</small>
+          </div>
+        <% end %>
+    </div>
+
+    <div class="action">
+      <%= link_to(pdf_download_option.url, data: pdf_download_option.data_attrs, class: "btn btn-brand-main less-padding") do %>
+        Download PDF
+      <% end %>
+    </div>
+  </div>
+
+  <% if has_downloadable_zip? %>
+    <div class="on-page-work-downloads-item">
+      <div class="image">
+        <%= link_to(zip_download_option.url, data: zip_download_option.data_attrs, tabindex: -1, "aria-label": "Download ZIP") do %>
+          <%= helpers.file_earmark_zip_fill_svg %>
+        <% end %>
+      </div>
+
+      <div class="text">
+          <%= link_to(zip_download_option.url, data: zip_download_option.data_attrs, tabindex: -1) do %>
+            ZIP
+          <% end %>
+
+          <div>
+            <small>of full-sized JPGs</small>
+          </div>
+      </div>
+
+      <div class="action" style="border-top: none; padding-right: 0;">
+        <%= link_to(zip_download_option.url, data: zip_download_option.data_attrs, class: "btn btn-brand-main less-padding") do %>
+          Download ZIP
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

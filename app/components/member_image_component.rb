@@ -162,7 +162,9 @@ class MemberImageComponent < ApplicationComponent
   end
 
   def download_button
+    # We only include whole-work download menu section for large size, used as hero.
     render DownloadDropdownComponent.new(representative_asset,
+                                          include_whole_work_options: (size == :large),
                                           display_parent_work: member.parent,
                                           aria_label: ("Download #{image_label}" if image_label),
                                           btn_class_name: btn_class_name)

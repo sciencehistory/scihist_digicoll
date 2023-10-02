@@ -40,7 +40,7 @@
 # (This is a bit hacky)
 #
 class DownloadDropdownComponent < ApplicationComponent
-  attr_reader :display_parent_work, :asset, :aria_label, :btn_class_name
+  attr_reader :display_parent_work, :asset, :aria_label, :btn_class_name, :include_whole_work_options
 
 
   # @param asset [Asset] asset to display download links for
@@ -61,6 +61,7 @@ class DownloadDropdownComponent < ApplicationComponent
   #   The specific btn theme added on to bootstrap `btn` that will be there anyway.
   def initialize(asset,
       display_parent_work:,
+      include_whole_work_options: false,
       use_link: false,
       viewer_template: false,
       aria_label: nil,
@@ -77,6 +78,7 @@ class DownloadDropdownComponent < ApplicationComponent
     @asset = asset
     @aria_label = aria_label
     @btn_class_name = btn_class_name
+    @include_whole_work_options = include_whole_work_options
   end
 
   def call
@@ -193,7 +195,7 @@ class DownloadDropdownComponent < ApplicationComponent
       elements << "<div class='dropdown-divider'></div>".html_safe
     end
 
-    if has_work_download_options?
+    if include_whole_work_options && has_work_download_options?
       elements << "<h3 class='dropdown-header'>Download all #{display_parent_work.member_count} images</h3>".html_safe
       whole_work_download_options.each do |download_option|
         elements << format_download_option(download_option)
@@ -242,10 +244,15 @@ class DownloadDropdownComponent < ApplicationComponent
   def has_work_download_options?
     return @has_work_download_options if defined?(@has_work_download_options)
 
-    @has_work_download_options = display_parent_work &&
-      display_parent_work.published? &&
-      display_parent_work.member_count > 1 &&
-      display_parent_work.member_content_types(mode: :query).all? {|t| t.start_with?("image/")}
+    @has_work_download_options = self.class.work_has_multiple_published_images?(display_parent_work)
+  end
+
+  # Extracted for re-use in other places, see #has_work_download_options?
+  def self.work_has_multiple_published_images?(work)
+    work &&
+    work.published? &&
+    work.member_count > 1 &&
+    work.member_content_types(mode: :query).all? {|t| t.start_with?("image/")}
   end
 
   def whole_work_download_options

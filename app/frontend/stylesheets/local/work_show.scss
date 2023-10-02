@@ -224,4 +224,35 @@
       line-height: 2.3;
     }
   }
+
+  .on-page-work-downloads {
+    margin: ($paragraph-spacer * 2) 0 ($paragraph-spacer * 3) 0;
+
+    .on-page-work-downloads-item {
+      display: flex;
+      flex-wrap: wrap; // just in case things get really really small
+      gap: $table-cell-padding;
+      margin-bottom: ($table-cell-padding * 2);
+
+      .image {
+        width: 36px;
+        flex-shrink: 0;
+
+        svg {
+          width: 100%;
+          height: unset;
+          color: $shi-blackish;
+        }
+      }
+
+      .text {;
+        flex-grow: 1;
+        word-break: break-word;
+
+        .hint {
+          line-height: $headings-line-height;
+        }
+      }
+    }
+  }
 }

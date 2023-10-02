@@ -170,7 +170,7 @@ describe "Public work show page", type: :system, js: false do
     it "can construct zip file", js: true do
       visit work_path(work)
 
-      within(".show-hero") do
+      within(".show-hero .member-image-presentation") do
         click_on "Download"
         click_on "PDF"
       end

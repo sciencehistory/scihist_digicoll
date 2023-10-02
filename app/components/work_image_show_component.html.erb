@@ -13,6 +13,8 @@
   <div class="show-hero">
     <%= render MemberImageComponent.new(representative_member, size: :large) %>
     <%= render "works/rights_and_social", work: work %>
+
+    <%= render WorkDownloadLinksComponent.new(work) %>
   </div>
 
   <div class="show-metadata">
@@ -32,6 +34,8 @@
 
       <% end %>
   </div>
+
+
 
   <%# these next are not in a div so they can wrap around the bottom of the metadata
     div to take up all space. A bit hacky but it works. A clear hack to make sure they start after

@@ -50,6 +50,15 @@ describe "FactoryBot Asset factory" do
             expect(deriv).to be_kind_of(AssetUploader::UploadedFile)
         end
       end
+
+      describe "with_ocr" do
+        let(:asset) { FactoryBot.build(:asset_with_faked_file, :with_ocr) }
+
+        it "includes OCR attributes and data" do
+          expect(asset.hocr).to be_present
+          expect(asset.file_derivatives[:textonly_pdf]).to be_present
+        end
+      end
     end
 
     describe "with specified derivatives hash" do
