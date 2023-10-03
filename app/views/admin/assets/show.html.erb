@@ -23,7 +23,16 @@
   <div class="col-sm-6">
     <% if @asset.file_derivatives[:thumb_large] && @asset.file_derivatives[:thumb_large_2X] %>
       <%= thumb_image_tag @asset, size: :large, style: "max-width: 100%" %>
-    <% elsif ! @asset.stored? %>
+    <% elsif !@asset.stored? && @asset.promotion_failed? %>
+      <h2 class="text-white bg-danger">
+        Ingest Failed
+      </h2>
+      <ul>
+        <% @asset.promotion_validation_errors.each do |err_msg| %>
+          <li><%= err_msg %></li>
+        <% end %>
+      </ul>
+    <%elsif !@asset.stored? %>
       <p class="text-white bg-danger">
         Waiting on ingest...
       </p>
