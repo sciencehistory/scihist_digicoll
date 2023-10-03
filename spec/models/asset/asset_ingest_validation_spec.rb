@@ -44,4 +44,18 @@ describe "Asset ingest validation" do
       end
     end
   end
+
+  describe ".promotion_failed scope" do
+    let(:corrupt_tiff_path) { Rails.root + "spec/test_support/images/corrupt_bad.tiff" }
+    let!(:good_asset) { create(:asset_with_faked_file)}
+    let!(:bad_asset) { create(:asset, :inline_promoted_file, file: File.open(corrupt_tiff_path))}
+
+    it "includes only failed assets" do
+      failed = Asset.promotion_failed.to_a
+
+      expect(failed.size).to be 1
+      expect(failed.map(&:friendlier_id)).to include(bad_asset.friendlier_id)
+      expect(failed.map(&:friendlier_id)).not_to include(good_asset.friendlier_id)
+    end
+  end
 end

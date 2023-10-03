@@ -25,6 +25,12 @@ class Asset < Kithe::Asset
 
   set_shrine_uploader(AssetUploader)
 
+  scope :promotion_failed, ->{
+    # jsonb in file_data column, metadata.promotion_validation_errors exists as array,
+    # we consider that promotion failed.
+    where(%Q{file_data @> '{ "metadata": { "promotion_validation_errors": []}}'})
+  }
+
   # We are doing a weird thing with shrine making it use an attr_json attribute instead
   # of a db column. We 1) create the `attr_json`, then 2) in the shrine attachment we tell it
   # column_serializer:nil tells shrine not to serialize the JSON, let
