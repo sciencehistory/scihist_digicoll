@@ -9,6 +9,16 @@ describe "Asset ingest validation" do
 
       expect(asset.file_attacher.cached?).to be true
       expect(asset.stored?).to be false
+
+      # and has validation errors
+      expect(asset.reload.file_metadata["ingest_validation_errors"]).to include(
+        "Missing required TIFF IFD0 tag 0x0111 StripOffsets",
+        "Missing required TIFF IFD0 tag 0x0116 RowsPerStrip",
+        "Missing required TIFF IFD0 tag 0x0117 StripByteCounts",
+        "Missing required TIFF IFD0 tag 0x0106 PhotometricInterpretation",
+        "Missing required TIFF IFD0 tag 0x0100 ImageWidth",
+        "Missing required TIFF IFD0 tag 0x0101 ImageHeight"
+      )
     end
   end
 end

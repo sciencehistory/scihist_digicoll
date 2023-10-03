@@ -354,6 +354,17 @@ class Asset < Kithe::Asset
     ].map { |error_regexp| exif.exiftool_validation_warnings.grep(error_regexp) }.flatten.uniq
 
     if fatal_errors.present?
+      # We need to disable promotion, so that we can save our errors despite
+      # the promotion cancellation without looping!
+      original_promote = self.promotion_directives[:promote]
+      self.set_promotion_directives(promote: false)
+
+      self.file_attacher.add_metadata("ingest_validation_errors" => fatal_errors)
+
+      self.set_promotion_directives(promote: original_promote)
+
+      self.save!
+
       # ActiveRecord callback way of aborting chain...
       throw :abort
     end
