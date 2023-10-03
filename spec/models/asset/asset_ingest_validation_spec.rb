@@ -8,13 +8,13 @@ describe "Asset ingest validation" do
       it "does not ingest" do
         asset = create(:asset, :inline_promoted_file, file: File.open(corrupt_tiff_path))
 
-        expect(asset.ingest_validation_failed?).to be true
+        expect(asset.promotion_failed?).to be true
 
         expect(asset.file_attacher.cached?).to be true
         expect(asset.stored?).to be false
 
         # and has validation errors
-        expect(asset.reload.ingest_validation_errors).to include(
+        expect(asset.reload.promotion_validation_errors).to include(
           "Missing required TIFF IFD0 tag 0x0111 StripOffsets",
           "Missing required TIFF IFD0 tag 0x0116 RowsPerStrip",
           "Missing required TIFF IFD0 tag 0x0117 StripByteCounts",
@@ -36,8 +36,8 @@ describe "Asset ingest validation" do
 
         asset.reload
 
-        expect(asset.ingest_validation_failed?).to be true
-        expect(asset.reload.ingest_validation_errors).to be_present
+        expect(asset.promotion_failed?).to be true
+        expect(asset.reload.promotion_validation_errors).to be_present
 
         expect(asset.file_attacher.cached?).to be true
         expect(asset.stored?).to be false

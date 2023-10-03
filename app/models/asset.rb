@@ -335,12 +335,12 @@ class Asset < Kithe::Asset
     end
   end
 
-  def ingest_validation_errors
-    self.file_metadata["ingest_validation_errors"]
+  def promotion_validation_errors
+    self.file_metadata["promotion_validation_errors"]
   end
 
-  def ingest_validation_failed?
-    ingest_validation_errors.present?
+  def promotion_failed?
+    file_attacher.cached? && promotion_validation_errors.present?
   end
 
   def invalidate_corrupt_tiff
@@ -367,7 +367,7 @@ class Asset < Kithe::Asset
       original_promote = self.promotion_directives[:promote]
       self.set_promotion_directives(promote: false)
 
-      self.file_attacher.add_metadata("ingest_validation_errors" => fatal_errors)
+      self.file_attacher.add_metadata("promotion_validation_errors" => fatal_errors)
 
       self.set_promotion_directives(promote: original_promote)
 
