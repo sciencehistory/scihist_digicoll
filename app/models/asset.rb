@@ -335,6 +335,14 @@ class Asset < Kithe::Asset
     end
   end
 
+  def ingest_validation_errors
+    self.file_metadata["ingest_validation_errors"]
+  end
+
+  def ingest_validation_failed?
+    ingest_validation_errors.present?
+  end
+
   def invalidate_corrupt_tiff
     exif = Kithe::ExiftoolCharacterization.presenter_for(self.exiftool_result)
 
