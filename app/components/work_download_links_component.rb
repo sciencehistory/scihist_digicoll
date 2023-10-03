@@ -15,7 +15,13 @@ class WorkDownloadLinksComponent < ApplicationComponent
     # but it's a bit slow, ends up being like 1ms per 10 pages. Instead, for now
     # we're just going to go based on the ocr_requested? flag, meaning sometimes we'll
     # show searchable PDF when OCR may be queued in progress...
-    @has_searchable_pdf = work.ocr_requested?  # && !WorkShowOcrComponent.new(work).asset_ocr_count_warning?
+    @has_searchable_pdf = work.ocr_requested? # && !WorkShowOcrComponent.new(work).asset_ocr_count_warning?
+  end
+
+  def has_any_pdf?
+    return @has_any_pdf if defined?(@has_any_pdf)
+
+    @has_any_pdf = DownloadDropdownComponent.work_has_multiple_published_images?(work)
   end
 
   def has_downloadable_zip?

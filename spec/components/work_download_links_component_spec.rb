@@ -66,4 +66,13 @@ RSpec.describe WorkDownloadLinksComponent, type: :component do
       expect(page).not_to have_link("ZIP")
     end
   end
+
+  describe "zero item work with OCR requested" do
+    let(:work) { create(:work, :published, members: [], ocr_requested: true) }
+
+    it "still has no PDF or zip link" do
+      expect(page).not_to have_link("ZIP")
+      expect(page).not_to have_link("PDF")
+    end
+  end
 end
