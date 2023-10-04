@@ -669,7 +669,7 @@ GEM
       aws-sdk-s3 (~> 1.0)
       content_disposition (~> 1.0)
       roda (>= 2.27, < 4)
-    view_component (2.82.0)
+    view_component (3.6.0)
       activesupport (>= 5.2.0, < 8.0)
       concurrent-ruby (~> 1.0)
       method_source (~> 1.0)
@@ -789,7 +789,7 @@ DEPENDENCIES
   terser (~> 1.1)
   traject (>= 3.5)
   uppy-s3_multipart
-  view_component (~> 2.49)
+  view_component (~> 3.6)
   vite_rails (~> 3.0)
   warning (~> 1.2)
   web-console (>= 4.1.0)
