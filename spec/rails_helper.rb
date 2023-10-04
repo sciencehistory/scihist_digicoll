@@ -75,7 +75,8 @@ RSpec.configure do |config|
   config.include Rails.application.routes.url_helpers, type: :component
   config.before(:each, type: :component) do
     # for devise support according to ViewComponent docs.
-    @request = controller.request
+    # https://viewcomponent.org/guide/testing.html#rspec-configuration
+    @request = vc_test_controller.request
   end
 
   # and this applies to wrapped Rails 'system' tests, which rspec recommends

@@ -9,7 +9,7 @@ describe SearchResult::WorkComponent, type: :component do
           (element = noko.children[0]) &&
           element.name == "a" &&
           element.text == value &&
-          element['href'] == controller.view_context.search_on_facet_path(facet_param, value)
+          element['href'] == vc_test_controller.view_context.search_on_facet_path(facet_param, value)
       end
     end
 
