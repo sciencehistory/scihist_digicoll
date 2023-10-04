@@ -4,6 +4,10 @@ describe "Asset ingest validation" do
   describe "corrupt TIFF" do
     let(:corrupt_tiff_path) { Rails.root + "spec/test_support/images/corrupt_bad.tiff" }
 
+    before do
+      allow(Rails.logger).to receive(:error)
+    end
+
     describe "inline promotion" do
       it "does not ingest" do
         asset = create(:asset, :inline_promoted_file, file: File.open(corrupt_tiff_path))
@@ -22,6 +26,8 @@ describe "Asset ingest validation" do
           "Missing required TIFF IFD0 tag 0x0100 ImageWidth",
           "Missing required TIFF IFD0 tag 0x0101 ImageHeight"
         )
+
+        expect(Rails.logger).to have_received(:error).with(/\AAssetPromotionValidation\: Asset `#{asset.friendlier_id}` failed ingest/)
       end
     end
 
@@ -41,6 +47,8 @@ describe "Asset ingest validation" do
 
         expect(asset.file_attacher.cached?).to be true
         expect(asset.stored?).to be false
+
+        expect(Rails.logger).to have_received(:error).with(/\AAssetPromotionValidation\: Asset `#{asset.friendlier_id}` failed ingest/)
       end
     end
   end

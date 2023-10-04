@@ -43,8 +43,11 @@ class Asset < Kithe::Asset
   include VideoHlsUploader::Attachment(:hls_playlist_file, store: :video_derivatives, column_serializer: nil)
 
   before_promotion :store_exiftool
-
   before_promotion :invalidate_corrupt_tiff, if: ->(asset) { asset.content_type == "image/tiff" }
+
+  after_commit if: ->(asset) { asset.file_data_previously_changed? && asset.promotion_failed? } do
+    Rails.logger.error("AssetPromotionValidation: Asset `#{friendlier_id}` failed ingest: #{promotion_validation_errors.inspect}")
+  end
 
 
   THUMB_WIDTHS = AssetUploader::THUMB_WIDTHS
