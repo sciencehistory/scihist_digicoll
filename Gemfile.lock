@@ -124,7 +124,7 @@ GEM
       thread_safe (~> 0.3, >= 0.3.1)
     bcrypt (3.1.19)
     bindex (0.8.1)
-    blacklight (7.32.0)
+    blacklight (7.34.0)
       deprecation
       globalid
       hashdiff
@@ -133,7 +133,7 @@ GEM
       kaminari (>= 0.15)
       ostruct (>= 0.3.2)
       rails (>= 5.1, < 7.1)
-      view_component (~> 2.66)
+      view_component (>= 2.66, < 4)
     blacklight_range_limit (8.2.3)
       blacklight (>= 7.25.2, < 9)
     bootsnap (1.16.0)
@@ -711,7 +711,7 @@ DEPENDENCIES
   aws-sdk-mediaconvert (~> 1.0)
   aws-sdk-s3 (~> 1.0)
   axe-core-rspec (~> 4.3)
-  blacklight (~> 7.32.0)
+  blacklight (~> 7.34.0)
   blacklight_range_limit (~> 8.2.3)
   bootsnap (>= 1.4.4)
   bootstrap (~> 4.6, >= 4.6.2)
