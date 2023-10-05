@@ -25,7 +25,7 @@ class WorkDownloadLinksComponent < ApplicationComponent
     @has_any_pdf = work &&
       work.published? &&
       work.member_count > 0 &&
-      work.member_content_types(mode: :query).all? {|t| t.start_with?("image/")}
+      work.member_content_types(mode: :query).any? {|t| t.start_with?("image/")}
   end
 
   def has_downloadable_zip?
