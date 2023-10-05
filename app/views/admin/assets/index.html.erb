@@ -36,6 +36,9 @@
         <td><%= asset.friendlier_id %></td>
         <td>
           <%= link_to asset.title, admin_asset_path(asset) %>
+          <% if asset.promotion_failed? %>
+            <span class="badge badge-danger">Ingest Failed</span>
+          <% end %>
         </td>
         <td>
           <% if asset.parent %>

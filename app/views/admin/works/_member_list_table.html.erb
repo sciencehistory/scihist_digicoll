@@ -44,7 +44,14 @@
 
           </td>
           <td>
-            <%= link_to member.title, [:admin, member] %> <%= publication_badge(member) %>
+            <%= link_to member.title, [:admin, member] %>
+
+            <% if member.kind_of?(Asset) && member.promotion_failed? %>
+              <span class="badge badge-danger">Ingest Failed</span>
+            <% end %>
+
+            <%= publication_badge(member) %>
+
             <% if member.kind_of?(Asset) && member.derivative_storage_type == "restricted" %>
               <span class="badge badge-warning">Restricted derivatives storage</span>
             <% end %>

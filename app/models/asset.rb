@@ -25,6 +25,12 @@ class Asset < Kithe::Asset
 
   set_shrine_uploader(AssetUploader)
 
+  scope :promotion_failed, ->{
+    # jsonb in file_data column, metadata.promotion_validation_errors exists as array,
+    # we consider that promotion failed.
+    where(%Q{file_data @> '{ "metadata": { "promotion_validation_errors": []}}'})
+  }
+
   # We are doing a weird thing with shrine making it use an attr_json attribute instead
   # of a db column. We 1) create the `attr_json`, then 2) in the shrine attachment we tell it
   # column_serializer:nil tells shrine not to serialize the JSON, let
@@ -37,6 +43,11 @@ class Asset < Kithe::Asset
   include VideoHlsUploader::Attachment(:hls_playlist_file, store: :video_derivatives, column_serializer: nil)
 
   before_promotion :store_exiftool
+  before_promotion :invalidate_corrupt_tiff, if: ->(asset) { asset.content_type == "image/tiff" }
+
+  after_commit if: ->(asset) { asset.file_data_previously_changed? && asset.promotion_failed? } do
+    Rails.logger.error("AssetPromotionValidation: Asset `#{friendlier_id}` failed ingest: #{promotion_validation_errors.inspect}")
+  end
 
 
   THUMB_WIDTHS = AssetUploader::THUMB_WIDTHS
@@ -330,6 +341,49 @@ class Asset < Kithe::Asset
   def store_exiftool
     Shrine.with_file(self.file) do |local_file|
       self.exiftool_result = Kithe::ExiftoolCharacterization.new.call(local_file.path)
+    end
+  end
+
+  def promotion_validation_errors
+    self.file_metadata["promotion_validation_errors"]
+  end
+
+  def promotion_failed?
+    file_attacher.cached? && promotion_validation_errors.present?
+  end
+
+  def invalidate_corrupt_tiff
+    exif = Kithe::ExiftoolCharacterization.presenter_for(self.exiftool_result)
+
+    # Catastrophic warnings from exiftool, this TIFF won't work
+    # Actual errors encountered in actually encountered problem corrupt files
+    fatal_errors = [
+      /Missing required TIFF IFD0 .* StripOffsets/,
+      /Missing required TIFF IFD0 .* RowsPerStrip/,
+      /Missing required TIFF IFD0 .* StripByteCounts/,
+      /Missing required TIFF IFD0 .* PhotometricInterpretation/,
+      /Missing required TIFF IFD0 .* ImageWidth/,
+      /Missing required TIFF IFD0 .* ImageHeight/,
+      /Missing required TIFF ExifIFD .* ColorSpace/,
+      /IFD0:StripOffsets is zero/,
+      /IFD0:StripByteCounts is zero/,
+      /Undersized IFD0 StripByteCounts/
+    ].map { |error_regexp| exif.exiftool_validation_warnings.grep(error_regexp) }.flatten.uniq
+
+    if fatal_errors.present?
+      # We need to disable promotion, so that we can save our errors despite
+      # the promotion cancellation without looping!
+      original_promote = self.promotion_directives[:promote]
+      self.set_promotion_directives(promote: false)
+
+      self.file_attacher.add_metadata("promotion_validation_errors" => fatal_errors)
+
+      self.set_promotion_directives(promote: original_promote)
+
+      self.save!
+
+      # ActiveRecord callback way of aborting chain...
+      throw :abort
     end
   end
 end
