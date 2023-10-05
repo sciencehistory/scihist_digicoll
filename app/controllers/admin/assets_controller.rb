@@ -14,6 +14,10 @@ class Admin::AssetsController < AdminController
       )
     end
 
+    if params[:promotion_failed] == "true"
+      scope = scope.promotion_failed
+    end
+
     scope = scope.page(params[:page]).per(20).order(created_at: :desc)
     scope = scope.includes(:parent)
 
