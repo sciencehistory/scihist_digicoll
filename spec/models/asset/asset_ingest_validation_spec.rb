@@ -66,4 +66,16 @@ describe "Asset ingest validation" do
       expect(failed.map(&:friendlier_id)).not_to include(good_asset.friendlier_id)
     end
   end
+
+  describe "Unknown file type" do
+    it "does not ingest" do
+      asset = create(:asset, :inline_promoted_file, file: StringIO.new("not a recognized file type with binary data \xF0\xA4\xAD"))
+
+      expect(asset.promotion_failed?).to be true
+      expect(asset.file_attacher.cached?).to be true
+      expect(asset.stored?).to be false
+
+      expect(asset.reload.promotion_validation_errors).to include "Unknown/undetected content-type"
+    end
+  end
 end
