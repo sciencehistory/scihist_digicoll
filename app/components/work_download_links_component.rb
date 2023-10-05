@@ -18,10 +18,14 @@ class WorkDownloadLinksComponent < ApplicationComponent
     @has_searchable_pdf = work.ocr_requested? # && !WorkShowOcrComponent.new(work).asset_ocr_count_warning?
   end
 
+  # has some PDF as long as we have at least ONE published image
   def has_any_pdf?
     return @has_any_pdf if defined?(@has_any_pdf)
 
-    @has_any_pdf = DownloadDropdownComponent.work_has_multiple_published_images?(work)
+    @has_any_pdf = work &&
+      work.published? &&
+      work.member_count > 0 &&
+      work.member_content_types(mode: :query).any? {|t| t.start_with?("image/")}
   end
 
   def has_downloadable_zip?
