@@ -180,44 +180,40 @@ class Admin::AssetsController < AdminController
     redirect_to admin_asset_url(status.asset), notice: "Started refresh for ActiveEncode job #{status.active_encode_id}"
   end
 
-
-  # PATCH/PUT /admin/asset_files/ab2323ac/submit_textonly_pdf
-  def submit_textonly_pdf
+  # PATCH/PUT /admin/asset_files/ab2323ac/submit_hocr_and_textonly_pdf
+  def submit_hocr_and_textonly_pdf
     @asset = Asset.find_by_friendlier_id!(params[:id])
     authorize! :update, @asset
-    unless params[:textonly_pdf].present?
-      redirect_to admin_asset_url(@asset), flash: { error: "No file received" }
+    unless params[:hocr].present? &&  params[:textonly_pdf].present?
+      redirect_to admin_asset_url(@asset), flash: { error: "Please provide a textonly_pdf and an hocr." }
       return
     end
+
+    # validate hocr
+    hocr = params[:hocr].read
+    parsed_hocr = Nokogiri::XML(hocr) { |config| config.strict }
+    unless parsed_hocr.css(".ocr_page").length == 1
+      redirect_to admin_asset_url(@asset), flash: { error: "This HOCR file isn't valid." }
+      return
+    end
+
+    # validate PDF
     begin
       unless PDF::Reader.new(params[:textonly_pdf].tempfile).pages.count == 1
         redirect_to admin_asset_url(@asset), flash: { error: "This doesn't look like a one-page PDF." }
         return
       end
     rescue PDF::Reader::MalformedPDFError
-      redirect_to admin_asset_url(@asset), flash: { error: "This doesn't look like a PDF." }
+      redirect_to admin_asset_url(@asset), flash: { error: "This PDF isn't valid." }
       return
     end
-    @asset.file_attacher.add_persisted_derivatives({textonly_pdf: params[:textonly_pdf]})
-    redirect_to admin_asset_url(@asset), flash: { notice: "Updated textonly_pdf." }
-  end
+    Kithe::Model.transaction do
+      @asset.file_attacher.add_persisted_derivatives({textonly_pdf: params[:textonly_pdf]})
+      @asset.update({hocr: hocr})
+      @asset.suppress_ocr = false
+    end
+    redirect_to admin_asset_url(@asset), flash: { notice: "Updated HOCR and textonly_pdf." }
 
-  # PATCH/PUT /admin/asset_files/ab2323ac/submit_hocr
-  def submit_hocr
-    @asset = Asset.find_by_friendlier_id!(params[:id])
-    authorize! :update, @asset
-    unless params[:hocr].present?
-      redirect_to admin_asset_url(@asset), flash: { error: "No file received" }
-      return
-    end
-    hocr = params[:hocr].read
-    parsed_hocr = Nokogiri::XML(hocr) { |config| config.strict }
-    unless parsed_hocr.css(".ocr_page").length == 1
-      redirect_to admin_asset_url(@asset), flash: { error: "This is not a valid HOCR file." }
-      return
-    end
-    @asset.update({hocr: hocr})
-    redirect_to admin_asset_url(@asset), flash: { notice: "Updated HOCR." }
   end
 
   def work_is_oral_history?

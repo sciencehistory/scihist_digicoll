@@ -270,8 +270,7 @@ Rails.application.routes.draw do
     post "/works/:parent_id/ingest", to: "assets#attach_files"
 
 
-    put "/asset_files/:id/submit_textonly_pdf",    to: "assets#submit_textonly_pdf"
-    put "/asset_files/:id/submit_hocr",            to: "assets#submit_hocr"
+    put "/asset_files/:id/submit_hocr_and_textonly_pdf",            to: "assets#submit_hocr_and_textonly_pdf"
 
     resources :collections, except: [:show]
 
