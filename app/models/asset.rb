@@ -43,6 +43,7 @@ class Asset < Kithe::Asset
   include VideoHlsUploader::Attachment(:hls_playlist_file, store: :video_derivatives, column_serializer: nil)
 
   before_promotion :store_exiftool
+  before_promotion :invalidate_audio_missing_metadata, if: ->(asset) { asset.content_type&.start_with?("audio/") }
   before_promotion :invalidate_corrupt_tiff, if: ->(asset) { asset.content_type == "image/tiff" }
   before_promotion :invalidate_unknown_type, if: ->(asset) { asset.content_type == "application/octet-stream" || asset.content_type.empty? } do
     # some boilerplate for saving the validation errors that we really need to DRY
@@ -363,6 +364,27 @@ class Asset < Kithe::Asset
 
   def promotion_failed?
     file_attacher.cached? && promotion_validation_errors.present?
+  end
+
+  def invalidate_audio_missing_metadata
+    # This works only because it is running AFTER kithe metadata extraction
+    errors = ["duration_seconds", "bitrate", "audio_sample_rate"].map do |metadata_key|
+      unless file_metadata[metadata_key].present?
+        "audio file missing #{metadata_key}"
+      end
+    end.compact
+
+    if errors.present?
+      original_promote = self.promotion_directives[:promote]
+      self.set_promotion_directives(promote: false)
+
+      self.file_attacher.add_metadata("promotion_validation_errors" => errors)
+      save!
+
+      self.set_promotion_directives(promote: original_promote)
+
+      throw :abort
+    end
   end
 
   def invalidate_corrupt_tiff
