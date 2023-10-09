@@ -62,6 +62,15 @@
               <% if ScihistDigicoll::Env.lookup(:service_level) %>
                 <%= content_tag "li", ScihistDigicoll::Env.lookup(:service_level).upcase, class: ["text-center p-1 mb-2 font-weight-bold", ("bg-warning" if ScihistDigicoll::Env.staging?)] %>
               <% end %>
+
+              <% if Rails.cache.fetch("Asset.promotion_failed", expires_in: 5.minutes) { Asset.promotion_failed.count > 0 } %>
+                <li>
+                  <%= link_to admin_assets_path(promotion_failed: true), class: "text-danger" do %>
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Asset ingest failed
+                  <% end %>
+                </li>
+              <% end %>
+
               <li><%= link_to  "Works", admin_works_path %></li>
               <li><%= link_to  "Assets", admin_assets_path %></li>
               <li><%= link_to "Collections", admin_collections_path %></li>
