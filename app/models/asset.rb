@@ -44,6 +44,19 @@ class Asset < Kithe::Asset
 
   before_promotion :store_exiftool
   before_promotion :invalidate_corrupt_tiff, if: ->(asset) { asset.content_type == "image/tiff" }
+  before_promotion :invalidate_unknown_type, if: ->(asset) { asset.content_type == "application/octet-stream" || asset.content_type.empty? } do
+    # some boilerplate for saving the validation errors that we really need to DRY
+    original_promote = self.promotion_directives[:promote]
+    self.set_promotion_directives(promote: false)
+
+    self.file_attacher.add_metadata("promotion_validation_errors" => ["Unknown/undetected content-type"])
+    self.save!
+
+    self.set_promotion_directives(promote: original_promote)
+
+    # standard Rails callback way of aborting chain, in this case promotion
+    throw :abort
+  end
 
   after_commit if: ->(asset) { asset.file_data_previously_changed? && asset.promotion_failed? } do
     Rails.logger.error("AssetPromotionValidation: Asset `#{friendlier_id}` failed ingest: #{promotion_validation_errors.inspect}")

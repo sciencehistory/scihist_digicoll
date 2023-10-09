@@ -158,7 +158,8 @@ describe "Combined Audio" do
     end
 
     it "fails quickly", queue_adapter: :inline do
-      expect(work.members.map(&:stored?)).to match([true, true])
+      # the first one actually fails ingestion validation
+      expect(work.members.map(&:stored?)).to match([false, true])
       creator = CombinedAudioDerivativeCreator.new(work)
       combined_audio_info = creator.generate
       # This file should not even be counted as an available audio member:
