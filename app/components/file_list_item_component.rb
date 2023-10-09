@@ -45,6 +45,8 @@ class FileListItemComponent < ApplicationComponent
   # and don't know what to do with it,  here (we're not supporting the Viewer here
   # at present), so just punt and don't make it a link.
   #
+  # View links are opened in new tab with target=_blank
+  #
   # This method is called with a block for the actual contents of the <a> tag, we use
   # it on template to wrap an image or a title string.
   #
@@ -59,7 +61,7 @@ class FileListItemComponent < ApplicationComponent
       # Suppress image thumb from assistive technology to avoid un-useful double
       # link. https://www.sarasoueidan.com/blog/keyboard-friendlier-article-listings/
       link_to(download_path(member.leaf_representative.file_category, member.leaf_representative, disposition: :inline),
-              view_link_attributes.merge("aria-hidden" => "true", "tabindex" => -1)) do
+              view_link_attributes.merge("aria-hidden" => "true", "tabindex" => -1, "target" => "_blank")) do
         yield
       end
     end
