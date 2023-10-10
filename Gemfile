@@ -112,6 +112,7 @@ gem 'jbuilder', '~> 2.5'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
 
+# note if updating to 5, you should change bootstrap_version config in catalog_controller
 gem 'bootstrap', '~> 4.6', '>= 4.6.2'
 
 gem 'sprockets-rails', '>= 3.4.2'
