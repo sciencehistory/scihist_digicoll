@@ -9,7 +9,7 @@
         <label for="hocr">HOCR</label>
       </div>
       <div class="col">
-        <%= file_field_tag 'hocr',         accept: "application/xml", disabled: cannot?(:update, @asset) %>
+        <%= file_field_tag 'hocr',         accept: "text/vnd.hocr+html", disabled: cannot?(:update, @asset) %>
       </div>
     </div>
     <div class="row my-3">
