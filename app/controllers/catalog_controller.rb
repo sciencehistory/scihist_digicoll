@@ -155,6 +155,9 @@ class CatalogController < ApplicationController
     # We overide to use custom sub-class for Solr HTTP retries
     config.repository_class = Scihist::BlacklightSolrRepository
 
+    # We need to tell Blacklight we use bootstrap 4, not yet 5
+    config.bootstrap_version = 4
+
 
     ## Class for converting Blacklight's url parameters to into request parameters for the search index
     # config.search_builder_class = ::SearchBuilder
