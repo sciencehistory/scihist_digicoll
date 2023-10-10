@@ -189,30 +189,13 @@ class Admin::AssetsController < AdminController
       return
     end
 
-    # validate hocr
-    hocr = params[:hocr].read
-    parsed_hocr = Nokogiri::XML(hocr) { |config| config.strict }
-    unless parsed_hocr.css(".ocr_page").length == 1
-      redirect_to admin_asset_url(@asset), flash: { error: "This HOCR file isn't valid." }
-      return
-    end
-
-    # validate PDF
     begin
-      unless PDF::Reader.new(params[:textonly_pdf].tempfile).pages.count == 1
-        redirect_to admin_asset_url(@asset), flash: { error: "This doesn't look like a one-page PDF." }
-        return
-      end
-    rescue PDF::Reader::MalformedPDFError
-      redirect_to admin_asset_url(@asset), flash: { error: "This PDF isn't valid." }
+      AssetHocrAndPdfUploader.new(@asset).attach(hocr: params[:hocr], textonly_pdf: params[:textonly_pdf])
+    rescue AssetHocrAndPdfUploaderError => e
+      redirect_to admin_asset_url(@asset), flash: { error: e.message }
       return
-    end
-    Kithe::Model.transaction do
-      @asset.file_attacher.add_persisted_derivatives({textonly_pdf: params[:textonly_pdf]})
-      @asset.update({hocr: hocr, suppress_ocr: false, ocr_admin_note: nil})
     end
     redirect_to admin_asset_url(@asset), flash: { notice: "Updated HOCR and textonly_pdf." }
-
   end
 
   def work_is_oral_history?

@@ -150,7 +150,7 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
     let(:valid_pdf_path)  { Rails.root + "spec/test_support/pdf/textonly.pdf" }
     let(:bad_pdf_path)    { Rails.root + "spec/test_support/pdf/tiny.pdf"}
 
-    let(:asset) {  create(:asset, hocr:nil) }
+    let(:asset) {  create(:asset, parent: parent_work, hocr:nil) }
 
     it "can add HOCR and PDF" do
       put :submit_hocr_and_textonly_pdf, params: { id: asset.friendlier_id,
