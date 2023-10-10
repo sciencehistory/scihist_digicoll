@@ -1,8 +1,9 @@
 <div class="my-5 my-3">
-  <h3>Upload HOCR and text-only PDF</h3>
+  <h3>Manually add HOCR and text-only PDF</h3>
   <p class="text-muted small mt-3">
     This will replace the <b>HOCR</b> and <b>textonly_pdf</b> for this asset, if they exist. Both are considered ephemeral and are typically created automatically, so they could get overwritten without notice.</p>
   </p>
+
   <%= form_with(url: "/admin/asset_files/#{asset.friendlier_id}/submit_hocr_and_textonly_pdf", local: true, multipart: true, method: :put) do %>
     <div class="row my-3">
       <div class="col">
@@ -22,4 +23,11 @@
     </div>
     <%= submit_tag "Upload HOCR and textonly_pdf", class: "btn btn-primary", disabled: cannot?(:update, @asset) %>
   <% end %>
+
+  <p class="text-muted small mt-3">
+    Sample tesseract command:
+    <code>
+      tesseract -c textonly_pdf=1 -c tessedit_page_number=0 original.tiff  output_file_name -l eng hocr pdf
+    </code>
+  </p>
 </div>
