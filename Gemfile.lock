@@ -158,16 +158,15 @@ GEM
     bcrypt (3.1.20)
     bigdecimal (3.1.8)
     bindex (0.8.1)
-    blacklight (7.38.0)
-      deprecation
+    blacklight (8.6.1)
       globalid
-      hashdiff
       i18n (>= 1.7.0)
       jbuilder (~> 2.7)
       kaminari (>= 0.15)
       ostruct (>= 0.3.2)
-      rails (>= 5.1, < 7.3)
-      view_component (>= 2.66, < 4)
+      rails (>= 6.1, < 8)
+      view_component (>= 2.74, < 4)
+      zeitwerk
     blacklight_range_limit (9.0.0.beta1)
       blacklight (>= 7.25.2, < 9)
       view_component (>= 2.54, < 4)
@@ -467,7 +466,7 @@ GEM
       omniauth (~> 2.0)
     orm_adapter (0.5.0)
     os (1.1.4)
-    ostruct (0.6.0)
+    ostruct (0.6.1)
     parser (3.3.4.2)
       ast (~> 2.4.1)
       racc
@@ -792,7 +791,7 @@ DEPENDENCIES
   aws-sdk-s3 (~> 1.0)
   axe-core-rspec (~> 4.3)
   barnes
-  blacklight (~> 7.38.0)
+  blacklight (~> 8.0)
   blacklight_range_limit (= 9.0.0.beta1)
   bootsnap (>= 1.4.4)
   bootstrap (~> 4.6, >= 4.6.2)
