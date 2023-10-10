@@ -133,38 +133,51 @@ describe "Combined Audio" do
   end
 
   context "two broken flacs" do
-    let!(:flac_zero_bytes)  { create(:asset, :inline_promoted_file,
+    # The files don't actually matter too much here, we're just testing missing metadata
+    let!(:flac_zero_bytes)  { create(:asset_with_faked_file,
         position: 1,
         parent_id: work.id,
-        file: File.open((Rails.root + "spec/test_support/audio/zero_bytes.flac"))
+        faked_file: File.open((Rails.root + "spec/test_support/audio/zero_bytes.flac")),
+        faked_content_type: "audio/flac"
       )
     }
 
-    let!(:flac_bad_metadata)  { create(:asset, :inline_promoted_file,
+    let!(:flac_bad_metadata)  { create(:asset_with_faked_file, :flac,
         position: 2,
         parent_id: work.id,
-        file: File.open((Rails.root + "spec/test_support/audio/bad_metadata.flac"))
+        faked_file: File.open((Rails.root + "spec/test_support/audio/bad_metadata.flac")),
+        faked_content_type: "audio/flac",
+        faked_duration_seconds: nil,
+        faked_bitrate: nil,
+        faked_audio_bitrate: nil,
+        faked_audio_sample_rate: nil
       )
     }
 
     it "accurately detects broken files", queue_adapter: :inline do
       expect(work.members.first.file.metadata['bitrate']).to be_nil
       expect(work.members.second.file.metadata['bitrate']).to be_nil
+
       creator = CombinedAudioDerivativeCreator.new(work)
-      expect(creator.audio_metadata_errors).to eq [
+
+      expect(creator.audio_metadata_errors).to contain_exactly(
+        "zero_bytes.flac: empty file",
+        "zero_bytes.flac: audio duration is unavailable or zero",
+        "zero_bytes.flac: audio bitrate or sample rate is unavailable",
         "bad_metadata.flac: audio duration is unavailable or zero",
         "bad_metadata.flac: audio bitrate or sample rate is unavailable"
-      ]
+      )
     end
 
     it "fails quickly", queue_adapter: :inline do
-      # the first one actually fails ingestion validation
-      expect(work.members.map(&:stored?)).to match([false, true])
       creator = CombinedAudioDerivativeCreator.new(work)
       combined_audio_info = creator.generate
-      # This file should not even be counted as an available audio member:
-      expect(creator.available_members_count).to eq 1
-      expect(combined_audio_info.errors).to eq "bad_metadata.flac: audio duration is unavailable or zero; bad_metadata.flac: audio bitrate or sample rate is unavailable"
+
+      expect(creator.available_members_count).to eq 2
+      expect(combined_audio_info.errors).to eq(
+        "zero_bytes.flac: empty file; zero_bytes.flac: audio duration is unavailable or zero; zero_bytes.flac: audio bitrate or sample rate is unavailable; bad_metadata.flac: audio duration is unavailable or zero; bad_metadata.flac: audio bitrate or sample rate is unavailable"
+      )
+
       expect(combined_audio_info.start_times).to be_nil
       expect(combined_audio_info.m4a_file).to be_nil
       expect(combined_audio_info.fingerprint).to be_nil
