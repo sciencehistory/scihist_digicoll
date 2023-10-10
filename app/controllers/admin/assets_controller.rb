@@ -209,8 +209,7 @@ class Admin::AssetsController < AdminController
     end
     Kithe::Model.transaction do
       @asset.file_attacher.add_persisted_derivatives({textonly_pdf: params[:textonly_pdf]})
-      @asset.update({hocr: hocr})
-      @asset.suppress_ocr = false
+      @asset.update({hocr: hocr, suppress_ocr: false, ocr_admin_note: nil})
     end
     redirect_to admin_asset_url(@asset), flash: { notice: "Updated HOCR and textonly_pdf." }
 
