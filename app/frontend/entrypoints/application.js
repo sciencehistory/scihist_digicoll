@@ -62,7 +62,6 @@ import '../javascript/blacklight_setup.js';
 import "../javascript/responsive-tabs/responsive-tabs.js"
 
 import '../javascript/init_popovers.js';
-import '../javascript/accept_cookies_banner.js';
 import '../javascript/scihist_search_slideout.js';
 import '../javascript/scihist_on_demand_downloader.js';
 import '../javascript/scihist_viewer.js';
