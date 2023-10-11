@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/projectblacklight/blacklight_range_limit.git
+  revision: 6cffb2e6ca649527046251654a59d2d44f354700
+  specs:
+    blacklight_range_limit (8.3.0)
+      blacklight (>= 7.25.2, < 9)
+      deprecation
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -136,9 +144,6 @@ GEM
       ostruct (>= 0.3.2)
       rails (>= 5.1, < 7.1)
       view_component (>= 2.66, < 4)
-    blacklight_range_limit (8.3.0)
-      blacklight (>= 7.25.2, < 9)
-      deprecation
     bootsnap (1.16.0)
       msgpack (~> 1.2)
     bootstrap (4.6.2)
@@ -721,7 +726,7 @@ DEPENDENCIES
   aws-sdk-s3 (~> 1.0)
   axe-core-rspec (~> 4.3)
   blacklight (~> 7.34.0)
-  blacklight_range_limit (~> 8.3.0)
+  blacklight_range_limit!
   bootsnap (>= 1.4.4)
   bootstrap (~> 4.6, >= 4.6.2)
   bootstrap4-kaminari-views
