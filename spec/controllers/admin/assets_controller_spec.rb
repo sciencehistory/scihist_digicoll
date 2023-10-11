@@ -143,83 +143,21 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
     end
   end
 
-  context "Add an HOCR and a textonly_pdf file", logged_in_user: :editor do
-
+  # Note: more extensive tests of the helper object are at asset_hocr_and_pdf_uploader_spec.rb
+  context "Add an HOCR and a textonly_pdf file (smoke test)", logged_in_user: :editor do
     let(:valid_hocr_path) { Rails.root + "spec/test_support/hocr_xml/hocr.xml" }
-    let(:bad_hocr_path)   { Rails.root + "spec/test_support/ohms_xml/smythe_OH0042.xml"}
     let(:valid_pdf_path)  { Rails.root + "spec/test_support/pdf/textonly.pdf" }
-    let(:bad_pdf_path)    { Rails.root + "spec/test_support/pdf/tiny.pdf"}
-
-    let(:asset) {  create(:asset, parent: parent_work, hocr:nil) }
-
+    let(:asset) {  create(:asset, parent: parent_work, hocr:nil, suppress_ocr: true, ocr_admin_note: "File was too wide") }
     it "can add HOCR and PDF" do
-      put :submit_hocr_and_textonly_pdf, params: { id: asset.friendlier_id,
-          suppress_ocr: true,
+      put :submit_hocr_and_textonly_pdf, params: { id: asset.friendlier_id, 
           hocr: Rack::Test::UploadedFile.new(valid_hocr_path, "application/xml"),
           textonly_pdf: Rack::Test::UploadedFile.new(valid_pdf_path, "application/xml")}
       expect(response).to redirect_to(admin_asset_url(asset.reload))
-
       expect(asset.hocr).to include "ocr_line"
       expect(asset.suppress_ocr).to be false
-
       deriv = asset.file_derivatives[:textonly_pdf]
-      expect(deriv).to be_present
-      expect(deriv).to be_a AssetUploader::UploadedFile
       expect(deriv.size).to eq 7075
-      expect(deriv.metadata).to be_present
-
       expect(flash[:notice]).to eq "Updated HOCR and textonly_pdf."
-    end
-
-    it "doesn't accept just the HOCR" do
-      put :submit_hocr_and_textonly_pdf, params: { id: asset.friendlier_id,
-          hocr: Rack::Test::UploadedFile.new(valid_hocr_path, "application/xml"),
-          textonly_pdf: ""}
-      expect(response).to redirect_to(admin_asset_url(asset))
-      expect(flash[:error]).to eq "Please provide a textonly_pdf and an hocr."
-    end
-
-    it "doesn't accept just the PDF" do
-      put :submit_hocr_and_textonly_pdf, params: { id: asset.friendlier_id,
-          textonly_pdf: Rack::Test::UploadedFile.new(valid_pdf_path, "application/xml")}
-      expect(response).to redirect_to(admin_asset_url(asset))
-      expect(flash[:error]).to eq "Please provide a textonly_pdf and an hocr."
-    end
-
-    it "won't accept bad OCR" do
-      put :submit_hocr_and_textonly_pdf, params: { id: asset.friendlier_id,
-        hocr: Rack::Test::UploadedFile.new(bad_hocr_path, "application/xml"),
-        textonly_pdf: Rack::Test::UploadedFile.new(valid_pdf_path, "application/xml")
-      }
-      expect(response).to redirect_to(admin_asset_url(asset))
-      expect(flash[:error]).to eq "This HOCR file isn't valid."
-      expect(asset.reload.hocr).to be_nil
-    end
-
-    it "won't accept bad textonly_pdf" do
-      put :submit_hocr_and_textonly_pdf, params: { id: asset.friendlier_id,
-        hocr: Rack::Test::UploadedFile.new(valid_hocr_path, "application/xml"),
-        textonly_pdf: Rack::Test::UploadedFile.new(bad_pdf_path, "application/xml"),
-      }
-      expect(response).to redirect_to(admin_asset_url(asset))
-      expect(flash[:error]).to eq "This PDF isn't valid."
-      expect(asset.reload.file_derivatives[:textonly_pdf]).to be_nil
-    end
-
-    describe "already has a textonly_pdf" do
-      let(:asset) { create(:asset_with_faked_file,
-        faked_derivatives: { textonly_pdf: FactoryBot.build(:stored_uploaded_file, content_type: "application/pdf") },
-        hocr: Rack::Test::UploadedFile.new(valid_hocr_path, "application/xml")
-        )
-      }
-      it "replaces the old derivative" do
-        expect(asset.file_derivatives[:textonly_pdf].metadata["size"]).to eq 2750
-        put :submit_hocr_and_textonly_pdf, params: { id: asset.friendlier_id,
-          hocr: Rack::Test::UploadedFile.new(valid_hocr_path, "application/xml"),
-          textonly_pdf: Rack::Test::UploadedFile.new(valid_pdf_path, "application/xml")
-        }
-        expect(asset.reload.file_derivatives[:textonly_pdf].metadata["size"]).to eq 7075
-      end
     end
   end
 end

@@ -184,11 +184,6 @@ class Admin::AssetsController < AdminController
   def submit_hocr_and_textonly_pdf
     @asset = Asset.find_by_friendlier_id!(params[:id])
     authorize! :update, @asset
-    unless params[:hocr].present? &&  params[:textonly_pdf].present?
-      redirect_to admin_asset_url(@asset), flash: { error: "Please provide a textonly_pdf and an hocr." }
-      return
-    end
-
     begin
       AssetHocrAndPdfUploader.new(@asset).attach(hocr: params[:hocr], textonly_pdf: params[:textonly_pdf])
     rescue AssetHocrAndPdfUploaderError => e
