@@ -142,4 +142,22 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
       end
     end
   end
+
+  # Note: more extensive tests of the helper object are at asset_hocr_and_pdf_uploader_spec.rb
+  context "Add an HOCR and a textonly_pdf file (smoke test)", logged_in_user: :editor do
+    let(:valid_hocr_path) { Rails.root + "spec/test_support/hocr_xml/hocr.xml" }
+    let(:valid_pdf_path)  { Rails.root + "spec/test_support/pdf/textonly.pdf" }
+    let(:asset) {  create(:asset, parent: parent_work, hocr:nil, suppress_ocr: true, ocr_admin_note: "File was too wide") }
+    it "can add HOCR and PDF" do
+      put :submit_hocr_and_textonly_pdf, params: { id: asset.friendlier_id, 
+          hocr: Rack::Test::UploadedFile.new(valid_hocr_path, "application/xml"),
+          textonly_pdf: Rack::Test::UploadedFile.new(valid_pdf_path, "application/xml")}
+      expect(response).to redirect_to(admin_asset_url(asset.reload))
+      expect(asset.hocr).to include "ocr_line"
+      expect(asset.suppress_ocr).to be false
+      deriv = asset.file_derivatives[:textonly_pdf]
+      expect(deriv.size).to eq 7075
+      expect(flash[:notice]).to eq "Updated HOCR and textonly_pdf."
+    end
+  end
 end

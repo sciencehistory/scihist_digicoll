@@ -184,6 +184,19 @@ class Admin::AssetsController < AdminController
     redirect_to admin_asset_url(status.asset), notice: "Started refresh for ActiveEncode job #{status.active_encode_id}"
   end
 
+  # PATCH/PUT /admin/asset_files/ab2323ac/submit_hocr_and_textonly_pdf
+  def submit_hocr_and_textonly_pdf
+    @asset = Asset.find_by_friendlier_id!(params[:id])
+    authorize! :update, @asset
+    begin
+      AssetHocrAndPdfUploader.new(@asset).attach(hocr: params[:hocr], textonly_pdf: params[:textonly_pdf])
+    rescue AssetHocrAndPdfUploaderError => e
+      redirect_to admin_asset_url(@asset), flash: { error: e.message }
+      return
+    end
+    redirect_to admin_asset_url(@asset), flash: { notice: "Updated HOCR and textonly_pdf." }
+  end
+
   def work_is_oral_history?
     (@asset.parent.is_a? Work) && @asset.parent.genre && @asset.parent.genre.include?('Oral histories')
   end
