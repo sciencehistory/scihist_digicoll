@@ -142,7 +142,7 @@ describe DownloadDropdownComponent, type: :component do
     let(:asset) do
       create(:asset_with_faked_file, :pdf,
         faked_derivatives: {},
-        parent: build(:work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
+        parent: build(:work, :published, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
       )
     end
 
@@ -156,6 +156,9 @@ describe DownloadDropdownComponent, type: :component do
       expect(div).not_to have_selector("a.dropdown-item", text: /Medium JPG/)
       expect(div).not_to have_selector("a.dropdown-item", text: /Large JPG/)
       expect(div).not_to have_selector("a.dropdown-item", text: /Full-sized JPG/)
+      expect(div).not_to have_selector("a.dropdown-item", text: /\APDF/)
+
+      expect(div.css("a.dropdown-item").count).to be 2
     end
   end
 
