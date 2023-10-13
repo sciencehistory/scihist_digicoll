@@ -13,6 +13,17 @@
 
 
 <p>
+  <% if @previous_model %>
+    Previous: <%= link_to @previous_model.title, [:admin, @previous_model] %>
+  <% end %>
+</p>
+<p>
+  <% if @next_model %>
+    Next: <%= link_to @next_model.title, [:admin, @next_model] %>
+  <% end %>
+</p>
+
+<p>
   <%= link_to "Edit", edit_path(@asset), class: "btn btn-primary #{"disabled" unless can?(:update, @asset)}"%>
   <% unless asset_is_collection_thumbnail?%>
       <%= link_to "Convert to child work", convert_to_child_work_admin_asset_path(@asset), method: "put", class: "btn btn-primary #{"disabled" unless can?(:update, @asset)}" %>
