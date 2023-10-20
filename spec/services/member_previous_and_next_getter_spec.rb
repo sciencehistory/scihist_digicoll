@@ -2,14 +2,12 @@ require 'rails_helper'
 
 describe MemberPreviousAndNextGetter, type: :model do
   let(:members) { parent_work.members.order(:position, :id) }
-  
   let(:result) do
     members.map do |m|
       getter = MemberPreviousAndNextGetter.new(m)
       [ getter.previous_model&.id, getter.next_model&.id ]
     end
   end
-
   let(:expected_result) do
     [
       [ nil,           members[1].id ],
@@ -21,7 +19,7 @@ describe MemberPreviousAndNextGetter, type: :model do
   end
 
   describe "navigation between members of a parent work" do
-    context "three assets and one child work" do
+    context "four assets and one child work" do
       let(:parent_work) { FactoryBot.create(:work, :with_assets, asset_count: 4) }
       let!(:child_work) { FactoryBot.create(:work, :with_assets, parent: parent_work, position: 5) }
       it "finds previous and next members correctly" do
@@ -39,17 +37,8 @@ describe MemberPreviousAndNextGetter, type: :model do
         FactoryBot.create(:work,  id: basic_uuid % 5, position: 7  )
         ] )
       }
-      
       it "finds previous and next members correctly" do
-        pp result
-
-        pp expected_result
-
-        expect(result[0]).to eq expected_result[0]
-        expect(result[1]).to eq expected_result[1]
-        expect(result[2]).to eq expected_result[2]
-        expect(result[3]).to eq expected_result[3]
-        expect(result[4]).to eq expected_result[4]
+        expect(result).to eq(expected_result)
       end
     end
   end
