@@ -11,7 +11,7 @@ describe MemberPreviousAndNextGetter, type: :model do
     end
   end
   let(:expected_result) do
-    members = parent_work.members.order(:position, :id)
+    members = parent_work.reload.members.order(:position, :id)
     [
       { previous: nil,           next: members[1].id },
       { previous: members[0].id, next: members[2].id },
@@ -41,6 +41,10 @@ describe MemberPreviousAndNextGetter, type: :model do
         ] )
       }
       it "finds previous and next members correctly" do
+        pp result
+
+        pp expected_result
+
         expect(result[0]).to eq expected_result[0]
         expect(result[1]).to eq expected_result[1]
         expect(result[2]).to eq expected_result[2]
