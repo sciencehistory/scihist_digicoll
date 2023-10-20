@@ -41,7 +41,11 @@ describe MemberPreviousAndNextGetter, type: :model do
         ] )
       }
       it "finds previous and next members correctly" do
-        expect(result).to eq expected_result
+        expect(result[0]).to eq expected_result[0]
+        expect(result[1]).to eq expected_result[1]
+        expect(result[2]).to eq expected_result[2]
+        expect(result[3]).to eq expected_result[3]
+        expect(result[4]).to eq expected_result[4]
       end
     end
   end
