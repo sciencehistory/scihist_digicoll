@@ -5,19 +5,19 @@ describe MemberPreviousAndNextGetter, type: :model do
     parent_work.members.order(:position).map do |m|
       getter = MemberPreviousAndNextGetter.new(m)
       {
-         previous: getter.previous_model,
-         next:     getter.next_model
+         previous: getter.previous_model&.id,
+         next:     getter.next_model&.id
       }
     end
   end
-  let(:members) { parent_work.members.order(:position, :id)}
   let(:expected_result) do
+    members = parent_work.members.order(:position, :id)
     [
-      { previous:nil,         next: members[1] },
-      { previous: members[0], next: members[2] },
-      { previous: members[1], next: members[3] },
-      { previous: members[2], next: members[4] },
-      { previous: members[3], next: nil        }
+      { previous: nil,           next: members[1].id },
+      { previous: members[0].id, next: members[2].id },
+      { previous: members[1].id, next: members[3].id },
+      { previous: members[2].id, next: members[4].id },
+      { previous: members[3].id, next: nil           }
     ]
   end
 
