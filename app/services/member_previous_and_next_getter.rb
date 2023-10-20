@@ -1,20 +1,10 @@
 # Finds the next and previous members in a work.
-# In cases where positions are noncontiguous or nil,
+# In cases where positions are noncontiguous, non-unique, or nil,
 # you can still navigate through the members sequentially.
-# Could be more efficient, but also not horribly inefficient.
 class MemberPreviousAndNextGetter
-  attr_reader :asset
-
   # @param member [Kithe::Model]
   def initialize(member)
     @member = member
-  end
-
-  def previous_and_next
-    {
-       previous: previous_model,
-       next:     next_model
-    }
   end
 
   def previous_model
@@ -25,6 +15,7 @@ class MemberPreviousAndNextGetter
     @next_model     ||= (Kithe::Model.find(query["next_id"])     if query["next_id"].present?)
   end
 
+  # Takes 1 to 3 milliseconds to run.
   def query
     @query ||= ActiveRecord::Base.connection.execute("""
     SELECT * from ( SELECT id,
