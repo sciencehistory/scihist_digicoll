@@ -119,7 +119,8 @@ class DownloadDropdownComponent < ApplicationComponent
       # a published work, cause PDF assets are not individually access-controlled!), we still
       # want it in individual image download options, as per
       # https://github.com/sciencehistory/scihist_digicoll/issues/2278
-      DownloadOptions::ImageDownloadOptions.new(asset, show_pdf_link: (!has_work_download_options? && display_parent_work&.published?)).options
+      #
+      DownloadOptions::ImageDownloadOptions.new(asset, show_pdf_link: (!has_work_download_options? && display_parent_work&.published? && asset.content_type.start_with?("image/"))).options
    end
   end
 
