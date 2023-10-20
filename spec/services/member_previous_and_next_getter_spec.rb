@@ -1,23 +1,22 @@
 require 'rails_helper'
 
 describe MemberPreviousAndNextGetter, type: :model do
+  let(:members) { parent_work.members.order(:position, :id) }
+  
   let(:result) do
-    parent_work.members.order(:position).map do |m|
+    members.map do |m|
       getter = MemberPreviousAndNextGetter.new(m)
-      {
-         previous: getter.previous_model&.id,
-         next:     getter.next_model&.id
-      }
+      [ getter.previous_model&.id, getter.next_model&.id ]
     end
   end
+
   let(:expected_result) do
-    members = parent_work.reload.members.order(:position, :id)
     [
-      { previous: nil,           next: members[1].id },
-      { previous: members[0].id, next: members[2].id },
-      { previous: members[1].id, next: members[3].id },
-      { previous: members[2].id, next: members[4].id },
-      { previous: members[3].id, next: nil           }
+      [ nil,           members[1].id ],
+      [ members[0].id, members[2].id ],
+      [ members[1].id, members[3].id ],
+      [ members[2].id, members[4].id ],
+      [ members[3].id, nil           ]
     ]
   end
 
@@ -40,6 +39,7 @@ describe MemberPreviousAndNextGetter, type: :model do
         FactoryBot.create(:work,  id: basic_uuid % 5, position: 7  )
         ] )
       }
+      
       it "finds previous and next members correctly" do
         pp result
 
