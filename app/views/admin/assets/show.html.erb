@@ -11,12 +11,14 @@
     <p class="text-danger">NO PARENT</p>
 <% end %>
 
-<% if @previous_model %>
-  <p>Previous: <%= link_to @previous_model.title, [:admin, @previous_model] %></p>
-<% end %>
-<% if @next_model %>
-  <p>Next: <%= link_to @next_model.title, [:admin, @next_model] %></p>
-<% end %>
+<p>
+  <% if @previous_model %>
+    Previous: <%= link_to @previous_model.title, [:admin, @previous_model] %>
+  <% end %>
+  <% if @next_model %>
+    Next: <%= link_to @next_model.title, [:admin, @next_model] %>
+  <% end %>
+<p>
 
 <p>
   <%= link_to "Edit", edit_path(@asset), class: "btn btn-primary #{"disabled" unless can?(:update, @asset)}"%>
