@@ -13,10 +13,15 @@
 
 <p>
   <% if @previous_model %>
-    Previous: <%= link_to @previous_model.title, [:admin, @previous_model] %>
+    <%= link_to "« Previous", [:admin, @previous_model] %>
+  <% else %>
+    <%= link_to "« Previous", "", class: "btn-link disabled" %>
   <% end %>
+  |
   <% if @next_model %>
-    Next: <%= link_to @next_model.title, [:admin, @next_model] %>
+    <%= link_to "Next »",     [:admin, @next_model] %>
+  <% else %>
+    <%= link_to "Next »", "", class: "btn-link disabled" %>
   <% end %>
 <p>
 
