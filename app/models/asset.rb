@@ -399,6 +399,7 @@ class Asset < Kithe::Asset
       /Missing required TIFF IFD0 .* PhotometricInterpretation/,
       /Missing required TIFF IFD0 .* ImageWidth/,
       /Missing required TIFF IFD0 .* ImageHeight/,
+      # Photoshop produces files missing this, it's not actually a fatal error:
       # /Missing required TIFF ExifIFD .* ColorSpace/,
       /IFD0:StripOffsets is zero/,
       /IFD0:StripByteCounts is zero/,
