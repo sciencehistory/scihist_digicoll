@@ -2,19 +2,38 @@ require 'rails_helper'
 
 describe MemberPreviousAndNextGetter, type: :model do
   let(:members) { parent_work.members.order(:position, :id) }
-  let(:result) do
+
+  # friendlier_ids
+  let(:actual_ids) do
     members.map do |m|
       getter = MemberPreviousAndNextGetter.new(m)
-      [ getter.previous_model&.id, getter.next_model&.id ]
+      [ getter&.previous_friendlier_id, getter&.next_friendlier_id ]
     end
   end
-  let(:expected_result) do
+  let(:expected_ids) do
     [
-      [ nil,           members[1].id ],
-      [ members[0].id, members[2].id ],
-      [ members[1].id, members[3].id ],
-      [ members[2].id, members[4].id ],
-      [ members[3].id, nil           ]
+      [ nil,                      members[1].friendlier_id ],
+      [ members[0].friendlier_id, members[2].friendlier_id ],
+      [ members[1].friendlier_id, members[3].friendlier_id ],
+      [ members[2].friendlier_id, members[4].friendlier_id ],
+      [ members[3].friendlier_id, nil           ]
+    ]
+  end
+
+  # 'Asset' or 'Work'
+  let(:actual_types) do
+    members.map do |m|
+      getter = MemberPreviousAndNextGetter.new(m)
+      [ getter&.previous_type, getter&.next_type ]
+    end
+  end
+  let(:expected_types) do
+    [
+      [ nil,             members[1].type ],
+      [ members[0].type, members[2].type ],
+      [ members[1].type, members[3].type ],
+      [ members[2].type, members[4].type ],
+      [ members[3].type, nil           ]
     ]
   end
 
@@ -23,7 +42,8 @@ describe MemberPreviousAndNextGetter, type: :model do
       let(:parent_work) { FactoryBot.create(:work, :with_assets, asset_count: 4) }
       let!(:child_work) { FactoryBot.create(:work, :with_assets, parent: parent_work, position: 5) }
       it "finds previous and next members correctly" do
-        expect(result).to eq(expected_result)
+        expect(actual_types).to eq(expected_types)
+        expect(actual_ids).to eq(expected_ids)
       end
     end
 
@@ -38,7 +58,19 @@ describe MemberPreviousAndNextGetter, type: :model do
         ] )
       }
       it "finds previous and next members correctly" do
-        expect(result).to eq(expected_result)
+        expect(actual_types).to eq(expected_types)
+        expect(actual_ids).to eq(expected_ids)
+      end
+    end
+
+    context "parent_work is absent" do
+      let(:members) {[
+        FactoryBot.create(:asset),
+        FactoryBot.create(:asset),
+      ]}
+      it "doesn't throw an error" do
+        expect(actual_types).to eq([[nil, nil], [nil, nil]])
+        expect(actual_ids).to   eq([[nil, nil], [nil, nil]])
       end
     end
   end

@@ -7,26 +7,44 @@ class MemberPreviousAndNextGetter
     @member = member
   end
 
-  def previous_model
-    @previous_model ||= (Kithe::Model.find(query["previous_id"]) if query["previous_id"].present?)
+  def previous_friendlier_id
+    @previous_friendlier_id ||= query&.dig("previous_friendlier_id")
   end
 
-  def next_model
-    @next_model     ||= (Kithe::Model.find(query["next_id"])     if query["next_id"].present?)
+  def next_friendlier_id
+    @next_friendlier_id     ||=query&.dig("next_friendlier_id")
+  end
+
+  def previous_type
+    @previous_type ||= query&.dig("previous_type")
+  end
+
+  def next_type
+    @next_type     ||= query&.dig("next_type")
   end
 
   # Takes 1 to 3 milliseconds to run.
   def query
+    return nil if @member.parent.nil?
     @query ||= ActiveRecord::Base.connection.execute("""
-    SELECT * from ( SELECT id,
-      LAG(id,  1) over (order by position, id) as previous_id,
-      LEAD(id, 1) over (order by position, id) as next_id
-      FROM (
-        SELECT id, position FROM kithe_models
-        WHERE parent_id = '#{@member.parent.id}'
-      ) as members
-    ) as ordered
-    where id = '#{@member.id}'
+      SELECT * FROM (
+        SELECT
+          id,
+          LAG(friendlier_id, 1)   over (order by position, id) AS previous_friendlier_id,
+          LAG(type, 1)            over (order by position, id) AS previous_type,
+          LEAD(friendlier_id,1)   over (order by position, id) AS next_friendlier_id,
+          LEAD(type,1)            over (order by position, id) AS next_type
+          FROM (
+            SELECT
+            id,
+            friendlier_id,
+            type,
+            position
+            FROM kithe_models
+            WHERE parent_id = '#{@member.parent.id}'
+        ) AS members
+      ) AS all_members
+      WHERE id = '#{@member.id}';
     """)[0]
   end
 end

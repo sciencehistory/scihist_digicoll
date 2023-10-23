@@ -1,0 +1,21 @@
+<p>
+  <% if @previous_friendlier_id %>
+    <%if @previous_type == 'Work'%>
+      <%= link_to "« Previous", admin_work_path(@previous_friendlier_id) %>
+    <%elsif @previous_type == 'Asset'%>
+      <%= link_to "« Previous", admin_asset_path(@previous_friendlier_id) %>
+    <% end %>
+  <% else %>
+    <%= link_to "« Previous", "", class: "btn-link disabled" %>
+  <% end %>
+|
+  <% if @next_friendlier_id %>
+    <%if @next_type == 'Work'%>
+      <%= link_to "Next »",  admin_work_path(@next_friendlier_id) %>
+    <%elsif @next_type == 'Asset'%>
+      <%= link_to "Next »",  admin_asset_path(@next_friendlier_id) %>
+    <% end %>
+  <% else %>
+    <%= link_to "Next »", "", class: "btn-link disabled" %>
+  <% end %>
+<p>

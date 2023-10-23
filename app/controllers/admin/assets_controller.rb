@@ -31,7 +31,8 @@ class Admin::AssetsController < AdminController
     @exiftool_result = Kithe::ExiftoolCharacterization.presenter_for(@asset&.exiftool_result)
 
     getter = MemberPreviousAndNextGetter.new(@asset)
-    @previous_model, @next_model = getter.previous_model, getter.next_model
+    @previous_type, @next_type = getter.previous_type, getter.next_type
+    @previous_friendlier_id, @next_friendlier_id = getter.previous_friendlier_id, getter.next_friendlier_id
 
     if @asset.stored?
       @checks = @asset.fixity_checks.order('created_at asc')
