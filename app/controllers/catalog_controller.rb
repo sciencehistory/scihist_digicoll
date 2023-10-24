@@ -528,7 +528,8 @@ class CatalogController < ApplicationController
         next if _facet_key == "-year_facet_isim" && range_limits == ["[* TO *]"]
 
         unless range_limits.respond_to?(:to_hash) && range_limits[:begin].is_a?(String) && range_limits[:end].is_a?(String) &&
-          range_limits[:begin] =~ /\A\d*\z/ && range_limits[:end] =~ /\A\d*\z/
+          range_limits[:begin] =~ /\A\d*\z/ && range_limits[:end] =~ /\A\d*\z/ &&
+          range_limits[:begin].to_i < 3000 && range_limits[:end].to_i < 3000
           render(plain: "Invalid URL query parameter range=#{param_display.call(params[:range])}", status: 400) && return
         end
       end
