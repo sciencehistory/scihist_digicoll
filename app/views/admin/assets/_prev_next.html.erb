@@ -1,0 +1,17 @@
+<p>
+
+  <% if @previous_url %>
+    <%= link_to "« Previous", @previous_url %>
+  <% else %>
+    <%= link_to "« Previous", "", class: "btn-link disabled" %>
+  <% end %>
+
+|
+
+  <% if @next_url %>
+    <%= link_to "Next »", @next_url %>
+  <% else %>
+    <%= link_to "Next »", "", class: "btn-link disabled" %>
+  <% end %>
+
+</p>
