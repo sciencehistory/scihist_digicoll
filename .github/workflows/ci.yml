@@ -44,10 +44,22 @@ jobs:
           run: pip install -r requirements.txt
 
 
+        # note libvips-tools ffmpeg mediainfo are moved to awalsh128/cache-apt-pkgs-action below.
+        # DO NOT MERGE!
         - name: Install apt dependencies
           run: |
             sudo apt-get update
-            sudo apt-get -y install libvips-tools ffmpeg mediainfo tesseract-ocr qpdf imagemagick exiftool
+            sudo apt-get -y install tesseract-ocr qpdf imagemagick exiftool
+
+
+        # Just testing this for awalsh:
+        # note that we're no longer using poppler-utils!
+        # DO NOT MERGE!
+        - name: Install apt dependencies
+          uses: awalsh128/cache-apt-pkgs-action@latest
+          with:
+            packages: libvips-tools ffmpeg mediainfo poppler-utils
+            version: 1.0
 
         - name: Set up app
           run: |
