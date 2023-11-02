@@ -1,5 +1,7 @@
 <%= simple_form_for @oral_history_access_request,  :url => :request_oral_history_access  do |f| %>
 
+  <% remembered_form_values = oral_history_request_form_entry_read %>
+
   <div class="mb-5 mt-4">
     <p>
       To receive files for "<%= @work.title %>" by email, please fill out the form below.
@@ -31,7 +33,8 @@
     <div class="row">
       <div class="col">
         <%= f.input :patron_name,
-          label: "Your name" %>
+          label: "Your name",
+          input_html: { value: remembered_form_values["patron_name"] } %>
       </div>
     </div>
 
@@ -39,6 +42,7 @@
       <div class="col">
         <%= f.input :patron_email,
           hint: "Links to files will be emailed to this address",
+          input_html: { value: remembered_form_values["patron_email"] },
           label: "Your email address" %>
       </div>
     </div>
@@ -46,6 +50,7 @@
     <div class="row">
       <div class="col">
         <%= f.input :patron_institution,
+          input_html: { value: remembered_form_values["patron_institution"] },
           label: "Your institution", hint: "Optional" %>
       </div>
     </div>
@@ -56,6 +61,7 @@
           as: :text,
           label: "Intended use",
           hint: (@work.oral_history_content.available_by_request_automatic? ? "So that we can better understand our audience, please tell us how you plan to use the oral history you have requested." : "Please tell us how you intend to use this oral history interview to help us inform you about any relevant interviewee restrictions."),
+          input_html: { value: remembered_form_values["intended_use"] },
           required: @oral_history_access_request.work&.oral_history_content&.available_by_request_manual_review?
         %>
       </div>

@@ -135,4 +135,37 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
     end
   end
 
+  describe "for multiple requests", js: false do
+    let(:work1) { create(:oral_history_work, :available_by_request, published: true) }
+    let(:work2) { create(:oral_history_work, :available_by_request, published: true) }
+
+    let(:patron_name) { "My Name" }
+    let(:patron_email) { "me@example.com" }
+    let(:patron_institution) { "University of wherever"}
+    let(:intended_use) { "for fun" }
+
+    it "remembers form entry" do
+      visit request_oral_history_access_form_path(work1.friendlier_id)
+
+      pr = '#admin_oral_history_access_request_'
+
+      find("#{pr}patron_name").fill_in  with: patron_name
+      find("#{pr}patron_email").fill_in with: patron_email
+      find("#{pr}patron_institution").fill_in with: patron_institution
+      find("#{pr}intended_use").fill_in with: intended_use
+
+
+      click_on 'Submit request'
+      expect(page).to have_text "Thank you for your interest"
+
+      # by saving and restoring from cookie, the form should be pre-filled
+      visit request_oral_history_access_form_path(work2.friendlier_id)
+      expect(find("#{pr}patron_name").value).to eq patron_name
+      expect(find("#{pr}patron_email").value).to eq patron_email
+      expect(find("#{pr}patron_institution").value).to eq patron_institution
+      expect(find("#{pr}intended_use").value).to eq intended_use
+    end
+
+  end
+
 end

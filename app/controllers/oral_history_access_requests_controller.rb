@@ -1,6 +1,8 @@
 # PUBLIC FACING
 # Staff-facing actions are in app/controllers/admin/oral_history_access_requests_controller.rb
 class OralHistoryAccessRequestsController < ApplicationController
+  include OralHistoryRequestFormMemoryHelper
+
   # GET /works/4j03d09fr7t/request_oral_history_access
   def new
     @work = load_work(params['work_friendlier_id'])
@@ -33,6 +35,10 @@ class OralHistoryAccessRequestsController < ApplicationController
     else
      render :new
     end
+
+    # write entries to a cookie to pre-fill form next time; every time we write
+    # it will bump the TTL expiration too, so they get another day until it expires.
+    oral_history_request_form_entry_write(oral_history_access_request_params.to_h)
   end
 
 private
