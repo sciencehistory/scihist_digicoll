@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe SocialShareComponent, type: :component do
   def work_url(work)
-    controller.work_url(work)
+    vc_test_controller.work_url(work)
   end
 
   let(:work) { create(:work, :with_complete_metadata, representative: create(:asset_with_faked_file))}

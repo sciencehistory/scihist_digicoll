@@ -12,7 +12,7 @@ describe WorkSocialShareAttributes, type: :component do
   let(:title) { "some work" }
   let(:description) { "This is a thing" }
   let(:work) { build(:work, title: title, description: description) }
-  let(:attributes) { WorkSocialShareAttributes.new(work, view_context: controller.view_context) }
+  let(:attributes) { WorkSocialShareAttributes.new(work, view_context: vc_test_controller.view_context) }
 
   describe "#page_title" do
     it "is correct" do
@@ -78,7 +78,7 @@ describe WorkSocialShareAttributes, type: :component do
         let(:work) { build(:oral_history_work) }
 
         it "has generic oral history icon" do
-          expect(attributes.share_media_url).to eq(controller.view_context.asset_url("scihist_oral_histories_thumb.jpg"))
+          expect(attributes.share_media_url).to eq(vc_test_controller.view_context.asset_url("scihist_oral_histories_thumb.jpg"))
           # we were just too lazy to implement this for this edge case, and social
           # media sites don't really NEED it.
           expect(attributes.share_media_height).to be_nil

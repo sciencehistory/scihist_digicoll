@@ -136,9 +136,10 @@ GEM
       ostruct (>= 0.3.2)
       rails (>= 5.1, < 7.1)
       view_component (>= 2.66, < 4)
-    blacklight_range_limit (8.3.0)
+    blacklight_range_limit (8.4.0)
       blacklight (>= 7.25.2, < 9)
       deprecation
+      view_component (>= 2.54, < 4)
     bootsnap (1.16.0)
       msgpack (~> 1.2)
     bootstrap (4.6.2)
@@ -669,7 +670,7 @@ GEM
       aws-sdk-s3 (~> 1.0)
       content_disposition (~> 1.0)
       roda (>= 2.27, < 4)
-    view_component (2.82.0)
+    view_component (3.6.0)
       activesupport (>= 5.2.0, < 8.0)
       concurrent-ruby (~> 1.0)
       method_source (~> 1.0)
@@ -721,7 +722,7 @@ DEPENDENCIES
   aws-sdk-s3 (~> 1.0)
   axe-core-rspec (~> 4.3)
   blacklight (~> 7.34.0)
-  blacklight_range_limit (~> 8.3.0)
+  blacklight_range_limit (~> 8.4.0)
   bootsnap (>= 1.4.4)
   bootstrap (~> 4.6, >= 4.6.2)
   bootstrap4-kaminari-views
@@ -789,7 +790,7 @@ DEPENDENCIES
   terser (~> 1.1)
   traject (>= 3.5)
   uppy-s3_multipart
-  view_component (~> 2.49)
+  view_component (~> 3.6)
   vite_rails (~> 3.0)
   warning (~> 1.2)
   web-console (>= 4.1.0)

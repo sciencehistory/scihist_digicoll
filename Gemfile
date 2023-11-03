@@ -28,7 +28,7 @@ gem "mail", ">= 2.8.0.rc1", "< 3"
 #
 gem "net-protocol", "!= 0.2.0"
 
-gem "view_component", "~> 2.49"
+gem "view_component", "~> 3.6"
 gem "alba", "~> 2.0" # for JSON serialization of models
 
 #  Scout is a monitoring tool we are experimenting with
@@ -44,7 +44,7 @@ gem 'scout_apm'
 # version may require an update with yarn to `blacklight-frontend`, has to be
 # checked manually.
 gem "blacklight", "~> 7.34.0"
-gem "blacklight_range_limit", "~> 8.3.0" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
+gem "blacklight_range_limit", "~> 8.4.0" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
 # for some code to deal with transcoding video, via AWS MediaConvert
 # Lower than 1.2.1 had far too big gem builds! https://github.com/samvera-labs/active_encode/issues/126
