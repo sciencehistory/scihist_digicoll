@@ -9,7 +9,11 @@ ruby "~> #{File.read(File.join(__dir__ , '.ruby-version')).chomp.split('.').slic
 gem 'lockbox'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 7.0.0'
+gem 'rails', '~> 7.1.0'
+
+# While rails 7.1 supports rack 3, we're not ready to take that jump yet,
+# too many other things not compat but don't know it.
+gem "rack", "~> 2.0"
 
 # Our JS/CSS/asset bundler
 # After updating, you always need to run `bundle exec vite upgrade` to update JS packages to match
@@ -43,7 +47,7 @@ gem 'scout_apm'
 # NOTE ALSO: We are using `blacklight-frontend` JS NPM package, updating blacklight
 # version may require an update with yarn to `blacklight-frontend`, has to be
 # checked manually.
-gem "blacklight", "~> 7.34.0"
+gem "blacklight", "~> 7.35.0"
 gem "blacklight_range_limit", "~> 8.4.0" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
 # for some code to deal with transcoding video, via AWS MediaConvert
@@ -117,8 +121,8 @@ gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 
 gem 'simple_form', "~> 5.0"
 
-gem "browse-everything", "~> 1.2"
-gem "qa", "~> 5.2", ">= 5.2.10"
+gem "browse-everything", "~> 1.3"
+gem "qa", "~> 5.2", ">= 5.11.0"
 gem "shrine", "~> 3.3" #, path: "../shrine"
 # shrine-compat endpoint to get uppy to direct upload to S3 with resumable multi-part upload
 gem "uppy-s3_multipart"
