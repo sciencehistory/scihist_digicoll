@@ -612,7 +612,7 @@ class CatalogController < ApplicationController
   # Future versions of Blacklight may accomodate these malformed URLs through an alternate
   # strategy and not need this redirect: https://github.com/projectblacklight/blacklight/pull/2313
   def redirect_hash_facet_params
-    if params[:f].respond_to?(:transform_values) && params[:f].values.any? { |x| x.is_a?(Hash) }
+    if params[:f].respond_to?(:transform_values) && params[:f].values.any? { |x| x.respond_to?(:transform_values) }
       original_f_params = params[:f].to_unsafe_h
       corrected_params = {}
 
