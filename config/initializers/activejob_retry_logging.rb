@@ -1,3 +1,5 @@
+require 'active_job/log_subscriber'
+
 # ActiveJob default logging around retry events is missing a lot of info that IS
 # included in other events, including "tags" (Rails tagged logging) for ActiveJob and job-id.
 #
