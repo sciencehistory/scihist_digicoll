@@ -405,6 +405,8 @@ GEM
     nio4r (2.5.9)
     nokogiri (1.15.4-arm64-darwin)
       racc (~> 1.4)
+    nokogiri (1.15.4-x86_64-linux)
+      racc (~> 1.4)
     oai (1.2.1)
       builder (>= 3.1.0)
       faraday (< 3)
@@ -719,6 +721,7 @@ GEM
 
 PLATFORMS
   arm64-darwin-21
+  x86_64-linux
 
 DEPENDENCIES
   access-granted (~> 1.0)
