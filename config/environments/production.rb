@@ -6,6 +6,9 @@ Rails.application.configure do
   # Code is not reloaded between requests.
   config.enable_reloading = false
 
+  # in production we set secret_key_base from an env variable, to keep it out of source
+  config.secret_key_base = ScihistDigicoll::Env.lookup!("secret_key_base")
+
   # Eager load code on boot. This eager loads most of Rails and
   # your application in memory, allowing both threaded web servers
   # and those relying on copy on write to perform better.
