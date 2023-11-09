@@ -11,8 +11,10 @@ gem 'lockbox'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 7.1.0'
 
-# While rails 7.1 supports rack 3, we're not ready to take that jump yet,
-# too many other things not compat but don't know it.
+# While rails 7.1 supports rack 3, other things we're using actually don't yet,
+# but bundler can incorrectly resolve to REALLY OLD verisons of dependencies
+# if we don't tell it, actually, we're not ready for rack 3. See:
+# https://bibwild.wordpress.com/2023/11/09/beware-sinatra-rails-7-1-rack-3-resque-bundler-dependency-resolution/
 gem "rack", "~> 2.0"
 
 # Our JS/CSS/asset bundler
