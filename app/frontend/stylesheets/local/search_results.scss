@@ -47,14 +47,18 @@
     line-height: 1.2;
   }
 
-  // no special styles on active facet
+  // eliminate any special styles on active facet by overrides
+  // Originally active facet gets green bg and white text, we don't want!
   .facet-limit-active {
     color: inherit;
     border-color: $card-border-color !important;
     &  .card-header {
       background-color: $card-cap-bg !important;
-      color: #333; // not sure where this came from, but matches chf_sufia
+      color: $body-color;
       border-color: $card-border-color !important;
+      button {
+        color: inherit; // in BL 8 need to override at this level too
+      }
     }
     .facet-values li .selected {
       color: inherit !important;

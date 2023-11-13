@@ -5,7 +5,7 @@
     "@nathanvda/cocoon": "^1.2.14",
     "@rails/ujs": "^ 6.1.7",
     "@shopify/draggable": "^1.0.0-beta.8",
-    "blacklight-frontend": "^7.32.0",
+    "blacklight-frontend": "^8.0.1",
     "bootstrap": "^ 4.6.2",
     "domready": "^1.0.8",
     "font-awesome": "^4.7.0",

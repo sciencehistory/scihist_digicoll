@@ -43,7 +43,7 @@ gem 'scout_apm'
 # NOTE ALSO: We are using `blacklight-frontend` JS NPM package, updating blacklight
 # version may require an update with yarn to `blacklight-frontend`, has to be
 # checked manually.
-gem "blacklight", "~> 7.34.0"
+gem "blacklight", "~> 8.1.0"
 gem "blacklight_range_limit", "~> 8.4.0" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
 # for some code to deal with transcoding video, via AWS MediaConvert
@@ -100,6 +100,7 @@ gem 'jbuilder', '~> 2.5'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
 
+# note if updating to 5, you should change bootstrap_version config in catalog_controller
 gem 'bootstrap', '~> 4.6', '>= 4.6.2'
 
 gem 'sprockets-rails', '>= 3.4.2'
