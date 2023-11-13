@@ -43,7 +43,7 @@ gem 'scout_apm'
 # NOTE ALSO: We are using `blacklight-frontend` JS NPM package, updating blacklight
 # version may require an update with yarn to `blacklight-frontend`, has to be
 # checked manually.
-gem "blacklight", "~> 8.0.1"
+gem "blacklight", "~> 8.1.0"
 gem "blacklight_range_limit", "~> 8.4.0" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
 # for some code to deal with transcoding video, via AWS MediaConvert
