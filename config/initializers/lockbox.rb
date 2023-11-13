@@ -19,3 +19,12 @@ unless lockbox_master_key.present?
 end
 
 Lockbox.master_key = lockbox_master_key
+
+# If we are rotating, just use ENV
+if ENV["LOCKBOX_MASTER_KEY_PREVIOUS"].present?
+    Lockbox.default_options[:previous_versions] = [{master_key: ENV["LOCKBOX_MASTER_KEY_PREVIOUS"]}]
+end
+# To rotate, run eg
+#     Lockbox.rotate(SomeModel, attributes: [:email])
+#
+#
