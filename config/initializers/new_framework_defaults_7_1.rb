@@ -34,7 +34,7 @@ Rails.application.config.action_dispatch.default_headers = {
 # Do not treat an `ActionController::Parameters` instance
 # as equal to an equivalent `Hash` by default.
 #++
-# Rails.application.config.action_controller.allow_deprecated_parameters_hash_equality = false
+Rails.application.config.action_controller.allow_deprecated_parameters_hash_equality = false
 
 ###
 # Active Record Encryption now uses SHA-256 as its hash digest algorithm.
@@ -80,7 +80,7 @@ Rails.application.config.active_record.sqlite3_adapter_strict_strings_by_default
 ###
 # Disable deprecated singular associations names.
 #++
-# Rails.application.config.active_record.allow_deprecated_singular_associations_name = false
+Rails.application.config.active_record.allow_deprecated_singular_associations_name = false
 
 ###
 # Enable the Active Job `BigDecimal` argument serializer, which guarantees
@@ -92,7 +92,7 @@ Rails.application.config.active_record.sqlite3_adapter_strict_strings_by_default
 # serializer. Therefore, this setting should only be enabled after all replicas
 # have been successfully upgraded to Rails 7.1.
 #++
-# Rails.application.config.active_job.use_big_decimal_serializer = true
+Rails.application.config.active_job.use_big_decimal_serializer = true
 
 ###
 # Specify if an `ArgumentError` should be raised if `Rails.cache` `fetch` or
@@ -195,7 +195,7 @@ Rails.application.config.precompile_filter_parameters = true
 # recommended to explicitly define the serialization method for each column
 # rather than to rely on a global default.
 #++
-# Rails.application.config.active_record.default_column_serializer = nil
+Rails.application.config.active_record.default_column_serializer = nil
 
 ###
 # Enable a performance optimization that serializes Active Record models
@@ -262,7 +262,11 @@ Rails.application.config.action_view.sanitizer_vendor = Rails::HTML::Sanitizer.b
 #
 # In previous versions of Rails, Action Text always used `Rails::HTML4::Sanitizer` as its vendor.
 #++
-# Rails.application.config.action_text.sanitizer_vendor = Rails::HTML::Sanitizer.best_supported_vendor
+#
+#scihist : we're not using actiontext currently, so this one does not apply, and in fact raises:
+# "undefined method `action_text' for #<Rails::Application::Configuration:0x0000000000c418>"??
+#
+#Rails.application.config.action_text.sanitizer_vendor = Rails::HTML::Sanitizer.best_supported_vendor
 
 
 ###
@@ -280,4 +284,4 @@ Rails.application.config.action_dispatch.debug_exception_log_level = :error
 #
 # In previous versions of Rails, these test helpers always used an HTML4 parser.
 #++
-# Rails.application.config.dom_testing_default_html_version = :html5
+Rails.application.config.dom_testing_default_html_version = :html5
