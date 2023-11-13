@@ -52,7 +52,7 @@ class DownloadsController < ApplicationController
         disposition: content_disposition_mode,
         filename: DownloadFilenameHelper.filename_for_asset(@asset)
       )
-    ), status: 302
+    ), status: 302, allow_other_host: true
   end
 
   #GET /downloads/:asset_id/:derivative_key
@@ -68,7 +68,7 @@ class DownloadsController < ApplicationController
         disposition: content_disposition_mode,
         filename: DownloadFilenameHelper.filename_for_asset(@asset, derivative_key: params[:derivative_key].to_sym)
       )
-    ), status: 302
+    ), status: 302, allow_other_host: true
   end
 
   private
