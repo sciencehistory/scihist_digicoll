@@ -36,12 +36,7 @@ module ScihistDigicoll
 
     # Initialize configuration defaults for originally generated Rails version,
     # or Rails version we have upgraded to and verified for new defaults.
-    config.load_defaults 7.0
-
-    # Before we have 7.1 defaults, we want to opt into this, for some reason
-    # doing it in the standard new_framework_defaults_7_1.rb doesn't work it's too late,
-    # need it here.
-    config.active_record.run_after_transaction_callbacks_in_order_defined = true
+    config.load_defaults 7.1
 
     config.time_zone = "US/Eastern"
 
