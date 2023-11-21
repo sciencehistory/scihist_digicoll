@@ -117,7 +117,7 @@ gem "device_detector", "~> 1.0" # user-agent parsing we use for logging
 
 gem "attr_json", "~> 2.0"
 
-gem 'kithe', "~> 2.11"
+gem 'kithe', "~> 2.13"
 
 gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 
