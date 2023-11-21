@@ -257,24 +257,30 @@
     <field name="latest_date" type="date_sortmissinglast" stored="true" indexed="true" multiValued="false"/>
     <field name="earliest_date" type="date_sortmissinglast" stored="true" indexed="true" multiValued="false"/>
 
+    <!-- Three full text fields (containing oral history transcripts, transcriptions, translations, OCR text, and the like).
 
-    <!-- create a field for fulltext (eg oral history transcripts), let's try with omitNorms false.
-         stored=true is necessary for highlighting.
+      stored=true is necessary for highlighting.
+      
+      We've gone back and forth about whether to use length normalization for these fields.
+      (see omitNorms at https://solr.apache.org/guide/solr/latest/indexing-guide/fields.html).
+      The consensus is it doesn't make that big of a difference in practice, so we're going
+      with the standard for fulltext fields (omitNorms="false").
+      See https://github.com/sciencehistory/scihist_digicoll/issues/2013 for the discussion.
 
-         storeOffsetsWithPositions gets us faster highlighting for very large fields, in return for
-         somewhat larger index size.
+      storeOffsetsWithPositions gets us faster highlighting for very large fields, in return for
+      somewhat larger index size.
+      https://lucene.apache.org/solr/guide/8_0/highlighting.html#Highlighting-SchemaOptionsandPerformanceConsiderations
 
-         https://lucene.apache.org/solr/guide/8_0/highlighting.html#Highlighting-SchemaOptionsandPerformanceConsiderations
+    -->
+    
+    <!-- Full text search for works entirely in English -->
+    <field name="searchable_fulltext_en" type="text_en" stored="true" indexed="true" multiValued="true" omitNorms="false" storeOffsetsWithPositions="true"/>
 
-         decided to keep omitNorms=true for now https://github.com/sciencehistory/scihist_digicoll/issues/2013
-       -->
-    <field name="searchable_fulltext_en" type="text_en" stored="true" indexed="true" multiValued="true" omitNorms="true" storeOffsetsWithPositions="true"/>
+    <!-- Full text search for works entirely in German -->
+    <field name="searchable_fulltext_de" type="text_de" stored="true" indexed="true" multiValued="true" omitNorms="false" storeOffsetsWithPositions="true"/>
 
-    <!-- Full text search for works in German -->
-    <field name="searchable_fulltext_de" type="text_de" stored="true" indexed="true" multiValued="true" omitNorms="true" storeOffsetsWithPositions="true"/>
-
-    <!-- Full text search for works in neither English nor German -->
-    <field name="searchable_fulltext_language_agnostic" type="text" stored="true" indexed="true" multiValued="true" omitNorms="true" storeOffsetsWithPositions="true"/>
+    <!-- Full text search for works that are neither entirely in English, nor entirely in German -->
+    <field name="searchable_fulltext_language_agnostic" type="text" stored="true" indexed="true" multiValued="true" omitNorms="false" storeOffsetsWithPositions="true"/>
 
     <!-- added by Science History Institute, a dynamic field that's good for string facets, using docValues fields -->
     <dynamicField name="*_facet" type="string_dv" multiValued="true"/>
