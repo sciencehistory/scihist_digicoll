@@ -414,7 +414,9 @@ describe "Oral history with audio display", type: :system, js: true do
       expect(page).to have_selector("*[data-ohms-hitcount='transcript']", text: "43")
 
       # Just testing.
-      sleep 5
+          sleep 1
+      #   expect(page).to have_css("#ohDescriptionTab[aria-selected='false']")
+      # end testing
       click_on "Description"
       expect(page).to have_selector("h2", text: "About the Interviewer")
       expect(page).to have_text("This has some html")
