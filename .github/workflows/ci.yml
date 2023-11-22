@@ -73,7 +73,16 @@ jobs:
 
         - name: Run tests
           run: |
-            bundle exec rspec
+            bundle exec rspec spec/system/oral_history_with_audio_spec.rb
+            bundle exec rspec spec/system/oral_history_with_audio_spec.rb
+            bundle exec rspec spec/system/oral_history_with_audio_spec.rb
+            bundle exec rspec spec/system/oral_history_with_audio_spec.rb
+            bundle exec rspec spec/system/oral_history_with_audio_spec.rb
+            bundle exec rspec spec/system/oral_history_with_audio_spec.rb
+            bundle exec rspec spec/system/oral_history_with_audio_spec.rb
+            bundle exec rspec spec/system/oral_history_with_audio_spec.rb
+            bundle exec rspec spec/system/oral_history_with_audio_spec.rb
+            bundle exec rspec spec/system/oral_history_with_audio_spec.rb
 
 
 
