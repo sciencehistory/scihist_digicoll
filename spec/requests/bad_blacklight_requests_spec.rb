@@ -53,10 +53,9 @@ describe CatalogController do
   describe "missing facet id" do
     let(:collection) { create(:collection) }
     it "collections page search responds with 400" do
-      url = "/collections/#{collection.friendlier_id}/facet"
-      expect { get url }.
-        to raise_error(an_instance_of(ActionController::RoutingError).
-        and having_attributes(message: "Not Found"))
+
+      get "/collections/#{collection.friendlier_id}/facet"
+      expect(response).to have_http_status(404)
     end
     it "featured topic search responds with 400" do
       fake_definition =  {
@@ -70,10 +69,9 @@ describe CatalogController do
       }
       allow(FeaturedTopic).to receive(:definitions).and_return(fake_definition)
       expect(FeaturedTopic.from_slug(:test_featured_topic)).to be_a FeaturedTopic
-      url = "/focus/test_featured_topic/facet"
-      expect { get url}.
-        to raise_error(an_instance_of(ActionController::RoutingError).
-        and having_attributes(message: "Not Found"))
+
+      get "/focus/test_featured_topic/facet"
+      expect(response).to have_http_status(404)
     end
   end
 
