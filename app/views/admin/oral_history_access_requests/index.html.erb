@@ -26,15 +26,14 @@
   <% end %>
 </div>
 
-<h2>Recent 3 months of requests</h2>
+<h2>Three-month summary</h2>
 <div class="border p-2 mb-5">
   <table class="table admin-list member-list">
     <thead>
       <tr class="d-flex">
-        <th class="col-2">Date</th>
-        <th class="col-2">Patron</th>
-        <th class="col-2">Oral History</th>
-        <th class="col-1">OH #</th>
+        <th class="col-1">Date</th>
+        <th class="col-3">Patron</th>
+        <th class="col-3">Oral History</th>
         <th class="col-4">Intended use</th>
         <th class="col-1">Delivery Status</th>
       </tr>
@@ -43,15 +42,12 @@
     <tbody>
       <% @oral_history_access_requests.each do |oh_request| %>
         <tr class="d-flex" data-request-id="<%= oh_request.id %>">
-          <td class="col-sm-2"><%= l(oh_request.created_at, format: :admin) %></td>
-          <td class="col-sm-2"><%= oh_request.patron_name %>
+          <td class="col-sm-1"><%= l(oh_request.created_at, format: :admin_no_year_no_seconds) %></td>
+          <td class="col-sm-3"><%= oh_request.patron_name %>
             <% if oh_request.patron_institution.present? %>, <%= oh_request.patron_institution %><% end %>
             (<%= link_to oh_request.patron_email, "mailto:#{oh_request.patron_email}" %>)
           </td>
-          <td class="col-sm-2"><%= link_to(oh_request.work.title.delete_prefix("Oral history interview with "), work_path(oh_request.work.friendlier_id))%></td>
-          <td class="col-sm-1">
-            <%= oh_request.oral_history_number %>
-          </td>
+          <td class="col-sm-3"><%= link_to(oh_request.work.title.delete_prefix("Oral history interview with "), work_path(oh_request.work.friendlier_id))%> (#<%= oh_request.oral_history_number %>)</td>
           <td class="col-sm-4">
              <%= oh_request.intended_use %>
           </td>
