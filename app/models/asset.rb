@@ -23,6 +23,18 @@ class Asset < Kithe::Asset
   # logging purposes.
   has_many :active_encode_statuses, foreign_key: "asset_id", inverse_of: "asset", dependent: nil
 
+  # We need these after_commits to happen BEFORE shrine promotion, so `file_data_previously_changed`
+  # still represents the change that _triggered_ promotion, rather than the promotion itself.
+  #
+  # We use the kithe method kithe_earlier_after_commit to do so, when Rails doesn't really give us a way.
+  # See https://github.com/sciencehistory/kithe/pull/178
+
+  kithe_earlier_after_commit if: ->(asset) { asset.file_data_previously_changed? && asset.promotion_failed? } do
+    Rails.logger.error("AssetPromotionValidation: Asset `#{friendlier_id}` failed ingest: #{promotion_validation_errors.inspect}")
+  end
+
+  kithe_earlier_after_commit DziFiles::ActiveRecordCallbacks, only: [:update, :destroy]
+
   set_shrine_uploader(AssetUploader)
 
   scope :promotion_failed, ->{
@@ -58,11 +70,6 @@ class Asset < Kithe::Asset
     # standard Rails callback way of aborting chain, in this case promotion
     throw :abort
   end
-
-  after_commit if: ->(asset) { asset.file_data_previously_changed? && asset.promotion_failed? } do
-    Rails.logger.error("AssetPromotionValidation: Asset `#{friendlier_id}` failed ingest: #{promotion_validation_errors.inspect}")
-  end
-
 
   THUMB_WIDTHS = AssetUploader::THUMB_WIDTHS
   IMAGE_DOWNLOAD_WIDTHS = AssetUploader::IMAGE_DOWNLOAD_WIDTHS
@@ -233,8 +240,6 @@ class Asset < Kithe::Asset
   after_promotion :create_initial_checksum
 
   after_promotion :create_hls_video, if: ->(asset) { asset.content_type&.start_with?("video/") }
-
-  after_commit DziFiles::ActiveRecordCallbacks, only: [:update, :destroy]
 
   # for ones we're importing from our ingest bucket via :remote_url, we want
   # to schedule a future deletion from ingest bucket.
