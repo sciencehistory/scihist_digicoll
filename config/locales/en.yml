@@ -40,7 +40,9 @@ en:
       expiration_date: "%A, %B %d" # eg Monday, February 11
   time:
     formats:
-      admin: '%Y-%b-%d %H:%M:%S %Z'
+      admin:         '%Y-%b-%d %H:%M:%S %Z'
+      # Save space in tables that only document the last few months of dates:
+      admin_no_year_no_seconds:    '%b-%d %H:%M %Z'
 
   honeybadger:
     feedback:
