@@ -102,6 +102,23 @@ FactoryBot.define do
         faked_derivatives { nil }
       end
 
+      trait :restricted_derivatives do
+        published { false }
+        derivative_storage_type { "restricted" }
+        faked_derivatives {
+          {
+            "thumb_small" => create(:stored_uploaded_file,
+              file: File.open(Rails.root + "spec/test_support/images/20x20.png"),
+              storage: "restricted_kithe_derivatives",
+              content_type: "image/png"),
+            "thumb_large" => create(:stored_uploaded_file,
+              file: File.open(Rails.root + "spec/test_support/images/20x20.png"),
+              storage: "restricted_kithe_derivatives",
+              content_type: "image/png"),
+          }
+        }
+      end
+
       trait :pdf do
         faked_file { File.open((Rails.root + "spec/test_support/pdf/sample.pdf")) }
         faked_content_type { "application/pdf" }

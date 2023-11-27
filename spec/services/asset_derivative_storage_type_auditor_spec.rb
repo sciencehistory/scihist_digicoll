@@ -19,22 +19,7 @@ describe "AssetDerivativeStorageTypeAuditor" do
     )
   end
 
-  let!(:restricted_derivative_asset) do
-    create(:asset_with_faked_file,
-      published: false,
-      derivative_storage_type: "restricted",
-      faked_derivatives: {
-         "thumb_small" => create(:stored_uploaded_file,
-            file: File.open(sample_file_location),
-            storage: "restricted_kithe_derivatives",
-            content_type: "image/png"),
-         "thumb_large" => create(:stored_uploaded_file,
-            file: File.open(sample_file_location),
-            storage: "restricted_kithe_derivatives",
-            content_type: "image/png"),
-       }
-     )
-  end
+  let!(:restricted_derivative_asset) { create(:asset_with_faked_file, :restricted_derivatives) }
 
   let(:auditor) { AssetDerivativeStorageTypeAuditor.new }
 
@@ -63,12 +48,12 @@ describe "AssetDerivativeStorageTypeAuditor" do
 
   describe "with failures" do
     let!(:published_with_restricted_derivatives) do
-      restricted_derivative_asset.dup.tap { |a| a.update(published: true) }
+      create(:asset_with_faked_file, :restricted_derivatives).tap { |a| a.update(published: true) }
     end
 
     let!(:mismatched_storage_locations) do
       # update in DB without triggering rails callback, so we can force inconsistency
-      a = restricted_derivative_asset.dup
+      a = create(:asset_with_faked_file, :restricted_derivatives)
       a.save!
       a.update_column("json_attributes", a.json_attributes.merge("derivative_storage_type" => "public"))
       a
