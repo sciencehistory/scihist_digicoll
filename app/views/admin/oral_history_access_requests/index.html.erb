@@ -42,7 +42,11 @@
     <tbody>
       <% @oral_history_access_requests.each do |oh_request| %>
         <tr class="d-flex" data-request-id="<%= oh_request.id %>">
-          <td class="col-sm-1"><%= l(oh_request.created_at, format: :admin_no_year_no_seconds) %></td>
+          <td class="col-sm-1">
+            <span style="white-space: nowrap;"><%= l(oh_request.created_at, format: '%b %d') %></span>
+            <br/>
+            <span style="white-space: nowrap;"><%= l(oh_request.created_at, format: '%H:%M %Z') %></span>
+          </td>
           <td class="col-sm-3"><%= oh_request.patron_name %>
             <% if oh_request.patron_institution.present? %>, <%= oh_request.patron_institution %><% end %>
             (<%= link_to oh_request.patron_email, "mailto:#{oh_request.patron_email}" %>)
