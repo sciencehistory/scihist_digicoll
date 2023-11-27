@@ -7,12 +7,13 @@ Rails.application.configure do
   # test suite. You never need to work with it otherwise. Remember that
   # your test database is "scratch space" for the test suite and is wiped
   # and recreated between test runs. Don't rely on the data there!
-  config.cache_classes = true
+  config.enable_reloading = false
 
-  # Do not eager load code on boot. This avoids loading your whole application
-  # just for the purpose of running a single test. If you are using a tool that
-  # preloads Rails for running tests, you may have to set it to true.
-  config.eager_load = false
+   # Eager loading loads your entire application. When running a single test locally,
+   # this is usually not necessary, and can slow down your test suite. However, it's
+   # recommended that you enable it in continuous integration systems to ensure eager
+   # loading is working properly before deploying your code.
+   config.eager_load = ENV["CI"].present?
 
   # Use :test ActiveJob adapter which does not really run jobs, as default.
   # We can change on an example-by-example basis if needed.
@@ -30,7 +31,8 @@ Rails.application.configure do
   config.cache_store = :null_store
 
   # Raise exceptions instead of rendering exception templates.
-  config.action_dispatch.show_exceptions = false
+  # :rescueable is default in Rails 7.1, but we need to fix our tests
+  config.action_dispatch.show_exceptions = :none
 
   # Disable request forgery protection in test environment.
   config.action_controller.allow_forgery_protection = false
@@ -60,4 +62,7 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+  # Raise error when a before_action's only/except options reference missing actions
+  config.action_controller.raise_on_missing_callback_actions = true
 end
