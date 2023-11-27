@@ -31,8 +31,8 @@
   <table class="table admin-list member-list">
     <thead>
       <tr class="d-flex">
-        <th class="col-1">Date</th>
-        <th class="col-3">Patron</th>
+        <th class="col-2">Date</th>
+        <th class="col-2">Patron</th>
         <th class="col-3">Oral History</th>
         <th class="col-4">Intended use</th>
         <th class="col-1">Delivery Status</th>
@@ -42,16 +42,16 @@
     <tbody>
       <% @oral_history_access_requests.each do |oh_request| %>
         <tr class="d-flex" data-request-id="<%= oh_request.id %>">
-          <td class="col-sm-1">
-            <span style="white-space: nowrap;"><%= l(oh_request.created_at, format: '%b %d') %></span>
+          <td class="col-sm-2">
+            <span class="text-nowrap small"><%= l(oh_request.created_at, format: '%b %d') %></span>
             <br/>
-            <span style="white-space: nowrap;"><%= l(oh_request.created_at, format: '%H:%M %Z') %></span>
+            <span class="text-nowrap small"><%= l(oh_request.created_at, format: '%H:%M %Z') %></span>
           </td>
-          <td class="col-sm-3"><%= oh_request.patron_name %>
-            <% if oh_request.patron_institution.present? %>, <%= oh_request.patron_institution %><% end %>
-            (<%= link_to oh_request.patron_email, "mailto:#{oh_request.patron_email}" %>)
+          <td class="col-sm-2"><%= oh_request.patron_name %>
+            <% if oh_request.patron_institution.present? %>, <%= oh_request.patron_institution %><% end %><br/>
+            <span class="small">(<%= link_to oh_request.patron_email, "mailto:#{oh_request.patron_email}" %>)</span>
           </td>
-          <td class="col-sm-3"><%= link_to(oh_request.work.title.delete_prefix("Oral history interview with "), work_path(oh_request.work.friendlier_id))%> (#<%= oh_request.oral_history_number %>)</td>
+          <td class="col-sm-3"><%= link_to(oh_request.work.title.delete_prefix("Oral history interview with "), work_path(oh_request.work.friendlier_id))%> <span class="small">(#<%= oh_request.oral_history_number %>)</span></td>
           <td class="col-sm-4">
              <%= oh_request.intended_use %>
           </td>
