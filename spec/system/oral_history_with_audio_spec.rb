@@ -404,17 +404,35 @@ describe "Oral history with audio display", type: :system, js: true do
         expect(page).to have_content("Downloads")
       end
 
+
       within("*[data-ohms-search-form]") do
         page.find("*[data-ohms-input-query]").fill_in with: "Duarte"
         click_on "Search"
       end
 
+      # ToC tab should be selected as it is first tab with results from search
+      expect(page).to have_selector("#ohTocTab[aria-selected='true']")
       expect(page).to have_content(%r{Table of Contents — 1 / 7}i)
       expect(page).to have_selector("*[data-ohms-hitcount='index']", text: "7")
       expect(page).to have_selector("*[data-ohms-hitcount='transcript']", text: "43")
 
       click_on "Description"
-      expect(page).to have_selector("h2", text: "About the Interviewer")
+      # We expect the Description tab to be moved to, but for some reason sometimes
+      # the click doesn't work to change tabs... bootstrap tab wasn't ready for it for some reason?...
+      # Don't know if it's a bug in our stuff or bootstrap or neither, but does not seem
+      # to affect humans (we hope), we just have to work around it in tests for now, finding
+      # no alternative.
+      #
+      # Simple as: If it didn't work the first time, we try clicking again.
+      begin
+        # shorter wait time, if it didn't happen, it's not going to. 50ms
+        find("#ohDescriptionTab[aria-selected='true']", wait: 0.05)
+      rescue Capybara::ElementNotFound
+        click_on "Description"
+        find("#ohDescriptionTab[aria-selected='true']")
+      end
+
+      expect(page).to have_selector("h2", text: "About the Interviewer", wait: 10)
       expect(page).to have_text("This has some html")
     end
 
