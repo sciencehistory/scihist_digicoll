@@ -30,9 +30,7 @@ Rails.application.configure do
   config.action_controller.perform_caching = false
   config.cache_store = :null_store
 
-  # Raise exceptions instead of rendering exception templates.
-  # :rescueable is default in Rails 7.1, but we need to fix our tests
-  config.action_dispatch.show_exceptions = :none
+  config.action_dispatch.show_exceptions = :rescuable
 
   # Disable request forgery protection in test environment.
   config.action_controller.allow_forgery_protection = false

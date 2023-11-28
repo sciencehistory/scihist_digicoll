@@ -10,9 +10,8 @@ describe "legacy original download links redirect" do
   end
 
   it "404's for missing asset ID on original" do
-    expect {
-      get("/downloads/no_such_thing")
-    }.to raise_error(ActionController::RoutingError)
+    get("/downloads/no_such_thing")
+    expect(response).to have_http_status(404)
   end
 
   it "redirects derivative" do
