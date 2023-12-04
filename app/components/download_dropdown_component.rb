@@ -193,24 +193,24 @@ class DownloadDropdownComponent < ApplicationComponent
     elements = []
 
     if display_parent_work && display_parent_work.rights.present?
-      elements << "<h3 class='dropdown-header'>Rights</h3>".html_safe
+      elements << content_tag("h3", 'Rights', class: 'dropdown-header')
       elements << rights_statement_item
-      elements << "<div class='dropdown-divider'></div>".html_safe
+      elements << content_tag("div", nil,  class:'dropdown-divider')
     end
 
     if include_whole_work_options && has_work_download_options?
-      elements << "<h3 class='dropdown-header'>Download all #{display_parent_work.member_count} images</h3>".html_safe
+      elements << content_tag("h3", "Download all #{display_parent_work.member_count} images", class:'dropdown-header')
       whole_work_download_options.each do |download_option|
         elements << format_download_option(download_option)
       end
-      elements << "<div class='dropdown-divider'></div>".html_safe
+      elements << content_tag("div", nil,  class:'dropdown-divider')
     end
 
     if viewer_template_mode?
-      elements << "<h3 class='dropdown-header'>Download selected image</h3>".html_safe
-      elements << '<div data-slot="selected-downloads"></div>'.html_safe
+      elements << content_tag("h3", "Download selected image", class: 'dropdown-header')
+      elements << content_tag("div", nil,  "data-slot" =>"selected-downloads")
     elsif asset_download_options
-      elements << "<h3 class='dropdown-header'>Download selected #{thing_name}</h3>".html_safe
+      elements << content_tag("h3", "Download selected #{thing_name}", class: 'dropdown-header')
       asset_download_options.each do |download_option|
         elements << format_download_option(download_option)
       end
