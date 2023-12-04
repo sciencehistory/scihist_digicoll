@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # A thumb, usually with 'view' and 'download' buttons below it. We call that the "member image" presentation.
 # Naming is hard!
 #

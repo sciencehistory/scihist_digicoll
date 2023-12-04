@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Renders the download button with a dropdown menu of options.
 #
 # The standard menu also includes "rights" information, to put that next to

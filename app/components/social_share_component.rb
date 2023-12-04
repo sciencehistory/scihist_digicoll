@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Displays our social media share buttons for a work
 #
 # http://sharingbuttons.io/ is a good place to get URL template formats for new plain static

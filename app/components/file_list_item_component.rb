@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FileListItemComponent < ApplicationComponent
   attr_reader :member, :index, :view_link_attributes, :download_original_only
 
