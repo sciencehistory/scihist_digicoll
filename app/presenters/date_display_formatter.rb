@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Takes an array of `Work::Date` objects (generally from `some_work.date_of_work`),
 # and formats them for display to the user.
 #
@@ -71,11 +73,7 @@ class DateDisplayFormatter
   end
 
   def qualified_date(date, qualifier)
-    begin
-      int_date_value = Integer(date)
-    rescue
-      int_date_value = nil
-    end
+    int_date_value = Integer(date, exception: false)
 
     date = humanize_date_str(date)
 
