@@ -115,7 +115,7 @@ gem 'font-awesome-rails', '~> 4.7'
 gem "lograge", "< 2"
 gem "device_detector", "~> 1.0" # user-agent parsing we use for logging
 
-gem "attr_json", "~> 2.0"
+gem "attr_json", "~> 2.3"
 
 gem 'kithe', "~> 2.13"
 
@@ -130,7 +130,7 @@ gem "shrine", "~> 3.3" #, path: "../shrine"
 gem "uppy-s3_multipart"
 gem "content_disposition", "~> 1.0"
 
-gem 'faster_s3_url', "< 2" # for generating s3 urls faster!
+gem 'faster_s3_url', "~> 1.1" # for generating s3 urls faster!
 
 gem "ransack", "~> 4.0" # used as an aid for ADMIM dashboard search/sorting -- we'd like to move away from it
 gem "kaminari", "~> 1.2"
