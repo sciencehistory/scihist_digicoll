@@ -1,7 +1,7 @@
 require "rubygems"
 require "bundler/setup"
 
-require "rspec"
+require 'webmock/rspec'
 
 # We won't load all of rails, but activesupport is helpful
 require "active_support"
