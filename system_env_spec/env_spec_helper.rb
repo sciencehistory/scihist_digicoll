@@ -1,11 +1,11 @@
 require "rubygems"
 require "bundler/setup"
 
-require 'webmock/rspec'
+require 'rspec/core'
 
 # We won't load all of rails, but activesupport is helpful
-require "active_support"
-
+require 'active_support'
+require 'active_support/core_ext'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
@@ -59,7 +59,7 @@ RSpec.configure do |config|
     end
 
     failure_message do |actual_version|
-      "expected that '#{actual_version}` would match version requirements: #{version_requirements.inspect}"
+      "expected that '#{actual_version}' would match version requirements: #{version_requirements.inspect}"
     end
   end
 end
