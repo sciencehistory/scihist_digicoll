@@ -1,8 +1,6 @@
 require "rubygems"
 require "bundler/setup"
 
-require 'rspec/core'
-
 # We won't load all of rails, but activesupport is helpful
 require 'active_support'
 require 'active_support/core_ext'
