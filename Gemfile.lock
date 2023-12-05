@@ -131,6 +131,9 @@ GEM
       descendants_tracker (~> 0.0.4)
       ice_nine (~> 0.11.0)
       thread_safe (~> 0.3, >= 0.3.1)
+    barnes (0.0.9)
+      multi_json (~> 1)
+      statsd-ruby (~> 1.1)
     base64 (0.2.0)
     bcp47_spec (0.2.1)
     bcrypt (3.1.19)
@@ -383,6 +386,7 @@ GEM
     matrix (0.4.2)
     method_source (1.0.0)
     mini_mime (1.1.5)
+    mini_portile2 (2.8.5)
     minitar (0.9)
     minitest (5.20.0)
     mono_logger (1.1.2)
@@ -404,6 +408,9 @@ GEM
     net-smtp (0.4.0)
       net-protocol
     nio4r (2.5.9)
+    nokogiri (1.15.4)
+      mini_portile2 (~> 2.8.2)
+      racc (~> 1.4)
     nokogiri (1.15.4-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.15.4-x86_64-linux)
@@ -648,6 +655,7 @@ GEM
       actionpack (>= 5.2)
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
+    statsd-ruby (1.5.0)
     stringio (3.0.9)
     terser (1.1.19)
       execjs (>= 0.3.0, < 3)
@@ -722,6 +730,7 @@ GEM
 
 PLATFORMS
   arm64-darwin-21
+  ruby
   x86_64-linux
 
 DEPENDENCIES
@@ -735,6 +744,7 @@ DEPENDENCIES
   aws-sdk-mediaconvert (~> 1.0)
   aws-sdk-s3 (~> 1.0)
   axe-core-rspec (~> 4.3)
+  barnes
   blacklight (~> 7.35.0)
   blacklight_range_limit (~> 8.4.0)
   bootsnap (>= 1.4.4)
