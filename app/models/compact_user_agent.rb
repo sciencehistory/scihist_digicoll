@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+
 # Tries to parse the user-agent to make a much more compact representation of what we'd
 # eally want to know from it, to keep our logs shorter
 #

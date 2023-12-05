@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Asset < Kithe::Asset
   include AttrJson::Record::QueryScopes
 

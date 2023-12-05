@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # A simple value object representing a download option, used for constructing our download
 # menus
 class DownloadOption
