@@ -34,15 +34,23 @@
       <div class="col">
         <%= f.input :patron_name,
           label: "Your name",
-          input_html: { value: remembered_form_values["patron_name"] } %>
+          input_html: { value: remembered_form_values["patron_name"]} %>
       </div>
     </div>
 
     <div class="row">
       <div class="col">
-        <%= f.input :patron_email,
+        <%# we'll use the name of the belongs_to association so validation errors work well,
+            this is all kind of hacky %>
+        <%= f.input :oral_history_requester_email,
+          as: :email,
+          required: true,
           hint: "Links to files will be emailed to this address",
-          input_html: { value: remembered_form_values["patron_email"] },
+          # override to NOT be nested in oral_history_access_request[], we'll handle special
+          input_html: {
+            name: "patron_email",
+            value: (remembered_form_values["patron_email"] || remembered_form_values["oral_history_requester_email"])
+          },
           label: "Your email address" %>
       </div>
     </div>
