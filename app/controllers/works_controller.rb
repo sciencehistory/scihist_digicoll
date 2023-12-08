@@ -36,6 +36,12 @@ class WorksController < ApplicationController
       ).as_hash
   end
 
+  def bookreader_info
+    render json: JSON.pretty_generate(BookviewerInfoSerializer.new(@work,
+      show_unpublished: can?(:read, Kithe::Model)
+    ).as_hash)
+  end
+
 
   def transcription
     send_data(

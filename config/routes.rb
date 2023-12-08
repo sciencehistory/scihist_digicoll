@@ -75,6 +75,13 @@ Rails.application.routes.draw do
   # public-facing routes
   resources :works, only: [:show]
 
+
+  # JSON info for bookreader image viewer
+  get '/works/:id/bookreader_info' => 'works#bookreader_info',
+    defaults: {format: "json"},
+    format: false,
+    as: :bookreader_info
+
   # JSON info for scihist_viewer image viewer
   get '/works/:id/viewer_images_info' => 'works#viewer_images_info',
     defaults: {format: "json"},

@@ -1,0 +1,94 @@
+# Json-compat hash serializer for info for the scihist_viewer
+# Returned by an HTTP endpoint for viewer.
+#
+#     ViewerMemberInfoSerializer.new(work).as_hash
+#
+#
+class BookviewerInfoSerializer
+  include Rails.application.routes.url_helpers
+
+  THUMB_DERIVATIVE = :thumb_mini
+
+  attr_reader :work, :show_unpublished
+
+  def initialize(work, show_unpublished: false)
+    @work = work
+    @show_unpublished = show_unpublished
+  end
+
+  def as_hash
+    {
+      data: included_members.map  do |a|
+        [
+          {
+            width: a.width,
+            height: a.height,
+            uri: a.file_url(:thumb_large_2X)
+          }
+        ]
+      end,
+
+      bookTitle: work.title,
+
+      #// thumbnail is optional, but it is used in the info dialog
+      thumbnail: work.leaf_representative.file_url(THUMB_DERIVATIVE),
+
+      #// Metadata is optional, but it is used in the info dialog
+      metadata: [
+        {label: 'Title', value: work.title},
+        {label: 'Author', value: work.creator.to_s},
+        {label: 'Demo Info', value: 'Eddie testing'},
+      ],
+
+      ui: 'full', #// embed, full (responsive)
+
+    }
+
+    # included_members.enum_for(:each_with_index).collect do |member, i|
+    #   asset = member.leaf_representative
+    #   {
+    #     index: i + 1,
+    #     memberShouldShowInfo: member.kind_of?(Work),
+    #     title: member.title,
+    #     memberId: member.friendlier_id,
+    #     memberShowUrl: (work_path(member) if member.kind_of?(Work)),
+    #     tileSource: asset.dzi_file.url,
+    #     # if tilesource DZI is unavailable, give them a more reasonable sized JPG
+    #     fallbackTileSource: { type: "image", url: download_derivative_path(asset, :download_medium, disposition: "inline") },
+    #     thumbAspectRatio: ("#{asset.width.to_f / asset.height}" if asset.width && asset.height),
+    #     downloads: download_options(asset).as_json
+    #   }.merge(thumb_src_attributes(asset))
+    # end
+  end
+
+  private
+
+  def included_members
+    @included_members ||= begin
+      members = work.members.order(:position)
+      members = members.where(published: true) unless show_unpublished
+      members.includes(:leaf_representative).select do |member|
+        member.leaf_representative &&
+        member.leaf_representative.content_type&.start_with?("image/") &&
+        member.leaf_representative.stored?
+      end
+    end
+  end
+
+  # def download_options(asset)
+  #   # include the PDF link here if we only have one image, as there won't be a
+  #   # fixed whole-work download section, but we still want it.
+  #   DownloadOptions::ImageDownloadOptions.new(asset, show_pdf_link: work.member_count == 1).options
+  # end
+
+  def thumb_src_attributes(asset)
+    derivative_1x_url = asset.file_url(THUMB_DERIVATIVE)
+    #derivative_2x_url = asset.file_url("#{THUMB_DERIVATIVE.to_s}_2X")
+    {
+      thumbSrc: derivative_1x_url,
+      #thumbSrcset: "#{derivative_1x_url} 1x, #{derivative_2x_url} 2x"
+    }
+  end
+
+
+end
