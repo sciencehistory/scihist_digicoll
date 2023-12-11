@@ -9,6 +9,9 @@
 # But this is the record that logins (really one-time magic link logins)
 # are attached to, that DO confirm the user has access to the email specified!
 class Admin::OralHistoryRequesterEmail < ApplicationRecord
+  self.filter_attributes += [ :email ]
+
+
   validates :email, presence: true, uniqueness: true
 
   has_many :oral_history_access_requests
