@@ -31,14 +31,14 @@ class OralHistoryAccessRequestsController < ApplicationController
           oral_history_delivery_email.
           deliver_later
 
-        redirect_to work_path(@work.friendlier_id), notice: "Check your email! We are sending you links to the files you requested, to #{@oral_history_access_request.patron_email}."
+        redirect_to work_path(@work.friendlier_id), notice: "Check your email! We are sending you links to the files you requested, to #{@oral_history_access_request.requester_email}."
       else # manual review
         OralHistoryRequestNotificationMailer.
           with(request: @oral_history_access_request).
           notification_email.
           deliver_later
 
-        redirect_to work_path(@work.friendlier_id), notice: "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll email you at #{@oral_history_access_request.patron_email}"
+        redirect_to work_path(@work.friendlier_id), notice: "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll email you at #{@oral_history_access_request.requester_email}"
       end
     else
      render :new

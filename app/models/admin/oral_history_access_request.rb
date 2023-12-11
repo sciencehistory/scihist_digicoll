@@ -30,8 +30,8 @@ class Admin::OralHistoryAccessRequest < ApplicationRecord
 
   # delegate to oral_history_requester_email, or while we're migrating default to
   # local attributes
-  def patron_email
-    oral_history_requester_email&.email || read_attribute(:patron_email)
+  def requester_email
+    oral_history_requester_email&.email || patron_email
   end
 
 

@@ -74,7 +74,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
 
       new_req = Admin::OralHistoryAccessRequest.last
       expect(new_req.patron_name).to eq "Joe Schmo"
-      expect(new_req.patron_email).to eq "patron@library.org"
+      expect(new_req.requester_email).to eq "patron@library.org"
       expect(new_req.patron_institution).to eq "Some Library"
       expect(new_req.delivery_status_automatic?).to be(true)
 
@@ -125,7 +125,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
 
       new_req = Admin::OralHistoryAccessRequest.last
       expect(new_req.patron_name).to eq "Joe Schmo"
-      expect(new_req.patron_email).to eq "patron@library.org"
+      expect(new_req.requester_email).to eq "patron@library.org"
       expect(new_req.patron_institution).to eq "Some Library"
       expect(new_req.intended_use).to eq "Fun & games"
       expect(new_req.delivery_status_pending?).to be(true)
