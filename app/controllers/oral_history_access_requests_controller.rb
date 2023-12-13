@@ -18,7 +18,7 @@ class OralHistoryAccessRequestsController < ApplicationController
     @oral_history_access_request = Admin::OralHistoryAccessRequest.new(
       oral_history_access_request_params.merge(
         work: @work,
-        oral_history_requester_email: (Admin::OralHistoryRequesterEmail.create_or_find_by(email: patron_email_param) if patron_email_param.present?)
+        oral_history_requester_email: (Admin::OralHistoryRequesterEmail.create_or_find_by!(email: patron_email_param) if patron_email_param.present?)
       )
     )
 
