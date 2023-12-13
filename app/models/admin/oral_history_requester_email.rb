@@ -11,6 +11,7 @@
 class Admin::OralHistoryRequesterEmail < ApplicationRecord
   self.filter_attributes += [ :email ]
 
+  self.filter_attributes += [ :email ]
 
   validates :email, presence: true, uniqueness: true
 
