@@ -1,0 +1,27 @@
+
+<div class="mb-4 text-page">
+  <h2 class="brand-alt-h2 mb-4">Get Oral History Request login link</h2>
+
+  <% if flash[:auto_link_message] %>
+    <p class="alert alert-danger">
+      <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+      <%= flash[:auto_link_message] %>
+    </p>
+  <% end %>
+
+  <p>Please fill out your email address, and you will be emailed a login link to view your Oral History requests and delivered files.</p>
+
+
+
+  <%= simple_form_for(:oral_history_session, url: oral_history_session_path, html: { class: "mb-4" }) do |f| %>
+    <%= f.input :email, input_html: { name: "email" } %>
+    <%= f.submit value: "Send me a login link", class: "btn btn-brand-main" %>
+  <% end %>
+
+  <p>
+  If you have any questions about this process, contact the Center for Oral History at
+  <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address),
+        "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}" %>.
+  </p>
+
+</div>

@@ -69,8 +69,16 @@ Rails.application.routes.draw do
     get "works/:id/:derivative_type", to: "on_demand_derivatives#on_demand_status", as: :on_demand_derivative_status
   end
 
+  # By-request oral history stuff
   get "works/:work_friendlier_id/request_oral_history_access", to: "oral_history_access_requests#new", as: 'request_oral_history_access_form'
   post "request_oral_history_access", to: "oral_history_access_requests#create", as: 'request_oral_history_access'
+
+  resource :oral_history_session, only: [:new, :create, :destroy] do
+    member do
+      get 'login/:token', action: :login, as: :login
+    end
+  end
+
 
   # public-facing routes
   resources :works, only: [:show]

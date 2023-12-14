@@ -1,0 +1,11 @@
+<h1>Science History Institute Oral Histories Collection</h1>
+
+<p>
+  Someone, hopefully you, has requested Science History Institute oral histories to this email address.
+</p>
+
+<p>You can access your Oral History requests using this special login link:
+    <%= link_to "link", login_magic_link, data: { auto_login_link: true}  %></p>
+
+<p>Please keep that link around, clicking on it is how you can access your requests at an time.
+  If you have any questions, please email <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}" %>.<p>
