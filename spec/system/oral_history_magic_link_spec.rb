@@ -19,7 +19,8 @@ describe "Login with Oral Histories magic link", queue_adapter: :inline do
 
     visit auto_login_link
 
-    # temporary placeholder until we provide actual dashboard func
-    expect(page).to have_text("AUTHENTICATED #{requester_email.email}")
+    # requests dashboard
+    expect(page).to have_selector("h2", text: "Oral History Requests")
+    expect(page).to have_text(requester_email.email)
   end
 end

@@ -1,0 +1,41 @@
+<h2 class="brand-alt-h2">Oral History Requests</h2>
+<p>
+  <%= current_oral_history_requester.email %>
+</p>
+
+<% if @pending_requests.present? %>
+  <h3 class="attribute-sub-head">Pending</h3>
+  <ul class="show-sub-head-body list-unstyled">
+    <% @pending_requests.each do |oh_access_request| %>
+      <li>
+        <div class="show-genre"><%= localize oh_access_request.created_at.to_date, format: :long %></div>
+        <h4 class="brand-alt-h4"><%= oh_access_request.work.title %></h4>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
+
+<% if @approved_requests.present? %>
+  <h3 class="attribute-sub-head">Approved</h3>
+
+  <ul class="show-sub-head-body list-unstyled">
+    <% @approved_requests.each do |oh_access_request| %>
+      <li>
+        <h4 class="brand-alt-h4"><%= oh_access_request.work.title %></h4>
+
+        <table class="chf-attributes">
+          <tr>
+            <th scope="row">Requested</th>
+            <td><%= localize oh_access_request.created_at.to_date , format: :long %></td>
+          </tr>
+
+          <tr>
+            <th scope="row">Approved</th>
+            <td></td>
+          </tr>
+        </table>
+      </li>
+    <% end %>
+  </ul>
+
+<% end %>

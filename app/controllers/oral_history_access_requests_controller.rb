@@ -1,15 +1,40 @@
 # PUBLIC FACING
+#
+# Actions to make requests, and also to view your requsets.
+#
 # Staff-facing actions are in app/controllers/admin/oral_history_access_requests_controller.rb
 class OralHistoryAccessRequestsController < ApplicationController
   include OralHistoryRequestFormMemoryHelper
 
+  before_action :require_current_oral_history_requester, only: [:index]
+
+  # GET /oral_history_requests
+  #
+  # List of this user's oral history requests. Protected from login.
+  def index
+    all_requests = current_oral_history_requester.oral_history_access_requests.
+      includes(:work => [:leaf_representative, { :oral_history_content => :interviewee_biographies } ]).
+      order(created_at: :asc).
+      strict_loading
+
+    grouped_by = all_requests.group_by(&:delivery_status)
+
+    @pending_requests = grouped_by["pending"] || []
+    @approved_requests = ((grouped_by["approved"] || []) + (grouped_by["automatic"] || [])).sort_by(&:created_at)
+    @rejected_requests = grouped_by["rejected"] || []
+  end
+
   # GET /works/4j03d09fr7t/request_oral_history_access
+  #
+  # Form to fill out
   def new
     @work = load_work(params['work_friendlier_id'])
     @oral_history_access_request = Admin::OralHistoryAccessRequest.new(work: @work)
   end
 
   # POST "/request_oral_history_access"
+  #
+  # Action to create request from form
   def create
     @work = load_work(params['admin_oral_history_access_request'].delete('work_friendlier_id'))
 
@@ -53,6 +78,7 @@ class OralHistoryAccessRequestsController < ApplicationController
   end
 
 private
+
   def oral_history_access_request_params
     params.require(:admin_oral_history_access_request).permit(
       :work_friendlier_id, :patron_name,
@@ -74,5 +100,19 @@ private
       raise ActionController::RoutingError.new('Not Found')
     end
     work
+  end
+
+  def current_oral_history_requester
+    unless defined?(@current_oral_history_requester)
+      @current_oral_history_requester = (Admin::OralHistoryRequesterEmail.find_by(id: session[:oral_history_requester_id]) if session[:oral_history_requester_id].present?)
+    end
+    @current_oral_history_requester
+  end
+  helper_method :current_oral_history_requester
+
+  def require_current_oral_history_requester
+    unless current_oral_history_requester.present?
+      redirect_to new_oral_history_session_path, flash: { auto_link_message: "You must be authorized to access this page." }
+    end
   end
 end

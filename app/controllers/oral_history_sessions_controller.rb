@@ -11,9 +11,7 @@ class OralHistorySessionsController < ApplicationController
 
     if requester_email.present?
       session[:oral_history_requester_id] = requester_email.id
-
-      # for now we just tell them good, we will redirect to "dashboard" once implemented
-      render plain: "AUTHENTICATED #{requester_email.email}"
+      redirect_to oral_history_requests_path
     else
       # invalid/expired/missing token
       redirect_to new_oral_history_session_path, flash: { auto_link_message: "Sorry, your link has expired or is not valid. Please enter your email, and we'll send you a new one."}
