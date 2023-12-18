@@ -1,4 +1,5 @@
 class OhSessionMailer < ApplicationMailer
+  default from: ScihistDigicoll::Env.lookup!(:oral_history_email_address)
 
   # Subject can be set in your I18n file at config/locales/en.yml
   # with the following lookup:
