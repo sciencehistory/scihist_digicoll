@@ -170,7 +170,7 @@ class BookviewerInfoSerializer
 
   def included_members
     @included_members ||= begin
-      members = work.members.order(:position)
+      members = work.members.where(type: "Asset").order(:position)
       members = members.where(published: true) unless show_unpublished
       members.includes(:leaf_representative).select do |member|
         member.leaf_representative &&
