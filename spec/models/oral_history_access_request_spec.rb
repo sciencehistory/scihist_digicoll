@@ -27,4 +27,13 @@ describe Admin::OralHistoryAccessRequest, type: :model do
     expect(access_request_with_no_oh_number.work.external_id.first.attributes['category']).to eq 'bib'
     expect(access_request_with_no_oh_number.oral_history_number).to be_nil
   end
+
+  it "sets delivery_status_changed_at when delivery_status is set" do
+    expect(access_request.delivery_status_changed_at).to be nil
+
+    access_request.delivery_status = "approved"
+    access_request.save!
+
+    expect(access_request.delivery_status_changed_at).to be_present
+  end
 end
