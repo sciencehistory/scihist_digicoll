@@ -35,6 +35,13 @@
             <th scope="row">Approved</th>
             <td><%= localize(oh_access_request.delivery_status_changed_at.to_date, format: :long) if oh_access_request.delivery_status_changed_at %></td>
           </tr>
+
+          <% if oh_access_request.notes_from_staff.present? %>
+            <tr>
+              <th scope="row">Notes from staff</th>
+              <td><%= simple_format oh_access_request.notes_from_staff %></td>
+            </tr>
+          <% end %>
         </table>
       </li>
     <% end %>

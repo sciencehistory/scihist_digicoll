@@ -1,6 +1,11 @@
 <div class="show-genre">Requested Files from</div>
 <h2 class="brand-alt-h2"><%= @access_request.work.title %> </h2>
 
+<% if @access_request.notes_from_staff.present? %>
+<h3 class="brand-alt-h3">Notes from staff</h3>
+<%= simple_format @access_request.notes_from_staff %>
+<% end %>
+
 <ul class="list-unstyled">
   <% @assets.each do |asset| %>
     <li>
