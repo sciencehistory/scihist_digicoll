@@ -21,7 +21,9 @@
   <ul class="show-sub-head-body list-unstyled">
     <% @approved_requests.each do |oh_access_request| %>
       <li>
-        <h4 class="brand-alt-h4"><%= oh_access_request.work.title %></h4>
+        <h4 class="brand-alt-h4">
+          <%= link_to oh_access_request.work.title, oral_history_request_path(oh_access_request) %>
+        </h4>
 
         <table class="chf-attributes">
           <tr>

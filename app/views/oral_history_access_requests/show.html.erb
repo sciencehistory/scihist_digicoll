@@ -1,0 +1,11 @@
+<div class="show-genre">Requested Files from</div>
+<h2 class="brand-alt-h2"><%= @access_request.work.title %> </h2>
+
+<ul class="list-unstyled">
+  <% @assets.each do |asset| %>
+    <li>
+      <%# for first pass we use email component, this isn't actually good enough yet, just a draft %>
+      <%= render OralHistoryEmailAssetItemComponent.new(asset) %>
+    </li>
+  <% end %>
+</ul>

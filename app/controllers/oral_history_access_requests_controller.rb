@@ -37,6 +37,18 @@ class OralHistoryAccessRequestsController < ApplicationController
     @rejected_requests = grouped_by["rejected"] || []
   end
 
+  # GET /oral_history_requests/:id
+  def show
+    @access_request = Admin::OralHistoryAccessRequest.find(params[:id])
+
+    # re-use this component to calculate the by-request assets we should be showing
+    @assets = WorkFileListShowComponent.new(@access_request.work).available_by_request_assets.sort_by(&:position)
+
+    unless current_oral_history_requester == @access_request.oral_history_requester_email
+      raise AccessDenied.new
+    end
+  end
+
   # GET /works/4j03d09fr7t/request_oral_history_access
   #
   # Form to fill out
