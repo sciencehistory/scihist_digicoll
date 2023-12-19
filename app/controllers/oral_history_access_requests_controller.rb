@@ -4,14 +4,27 @@
 #
 # Staff-facing actions are in app/controllers/admin/oral_history_access_requests_controller.rb
 class OralHistoryAccessRequestsController < ApplicationController
+  # message is publicly visible please
+  class AccessDenied < StandardError
+    def initialize(msg = "You must be authorized to access this page.")
+      super
+    end
+  end
+
   include OralHistoryRequestFormMemoryHelper
 
-  before_action :require_current_oral_history_requester, only: [:index]
+  rescue_from AccessDenied do |exception|
+    redirect_to new_oral_history_session_path, flash: { auto_link_message: exception.message }
+  end
 
   # GET /oral_history_requests
   #
   # List of this user's oral history requests. Protected from login.
   def index
+    unless current_oral_history_requester.present?
+      raise AccessDenied.new
+    end
+
     all_requests = current_oral_history_requester.oral_history_access_requests.
       includes(:work => [:leaf_representative, { :oral_history_content => :interviewee_biographies } ]).
       order(created_at: :asc).
@@ -110,9 +123,4 @@ private
   end
   helper_method :current_oral_history_requester
 
-  def require_current_oral_history_requester
-    unless current_oral_history_requester.present?
-      redirect_to new_oral_history_session_path, flash: { auto_link_message: "You must be authorized to access this page." }
-    end
-  end
 end
