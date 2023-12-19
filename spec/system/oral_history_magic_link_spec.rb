@@ -1,17 +1,9 @@
 require 'rails_helper'
 
 describe "Login with Oral Histories magic link", queue_adapter: :inline do
-  let(:requester_email) { Admin::OralHistoryRequesterEmail.create!(email: "example@example.com") }
-  let(:oral_history_work) { create(:oral_history_work, :available_by_request) }
-  let!(:approved_request) {
-    Admin::OralHistoryAccessRequest.create!(
-        oral_history_requester_email: requester_email,
-        patron_name: "Jo B",
-        work: oral_history_work,
-        delivery_status: "approved",
-        intended_use: "Just for fun"
-    )
-  }
+  let(:approved_request) { create(:oral_history_access_request) }
+  let(:requester_email) { approved_request.oral_history_requester_email }
+  let(:oral_history_work) { approved_request.work }
 
   it "can request a link which works to log in" do
     visit new_oral_history_session_path
