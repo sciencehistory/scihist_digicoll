@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_12_05_210812) do
+ActiveRecord::Schema[7.0].define(version: 2023_12_19_201501) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -210,6 +210,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_05_210812) do
     t.datetime "updated_at", null: false
     t.string "delivery_status", default: "pending"
     t.bigint "oral_history_requester_email_id"
+    t.datetime "delivery_status_changed_at"
+    t.text "notes_from_staff"
     t.index ["oral_history_requester_email_id"], name: "idx_on_oral_history_requester_email_id_ff2cc727ac"
     t.index ["work_id"], name: "index_oral_history_access_requests_on_work_id"
   end
