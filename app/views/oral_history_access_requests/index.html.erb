@@ -28,12 +28,12 @@
         <table class="chf-attributes">
           <tr>
             <th scope="row">Requested</th>
-            <td><%= localize oh_access_request.created_at.to_date , format: :long %></td>
+            <td><%= localize(oh_access_request.created_at.to_date , format: :long) if oh_access_request.created_at %></td>
           </tr>
 
           <tr>
             <th scope="row">Approved</th>
-            <td></td>
+            <td><%= localize(oh_access_request.delivery_status_changed_at.to_date, format: :long) if oh_access_request.delivery_status_changed_at %></td>
           </tr>
         </table>
       </li>
