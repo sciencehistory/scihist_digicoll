@@ -17,6 +17,9 @@ gem 'rails', '~> 7.1.0'
 # https://bibwild.wordpress.com/2023/11/09/beware-sinatra-rails-7-1-rack-3-resque-bundler-dependency-resolution/
 gem "rack", "~> 2.0"
 
+gem 'rack-cors'
+
+
 # Our JS/CSS/asset bundler
 # After updating, you always need to run `bundle exec vite upgrade` to update JS packages to match
 # among other things.
