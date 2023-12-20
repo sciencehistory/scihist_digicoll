@@ -4,59 +4,98 @@
 class BookviewerSearchSerializer
   include Rails.application.routes.url_helpers
 
-  THUMB_DERIVATIVE = :thumb_mini
-
   attr_reader :work, :show_unpublished
 
-  def initialize(work, show_unpublished: false)
+  def initialize(work, show_unpublished: false, query: "")
     @work = work
     @show_unpublished = show_unpublished
+    @query = query.downcase
+  end
+
+  def matches
+    result = []
+    work.members.each do |member|
+      page_number = member.position # TODO don't assume "page" is the same as m.position
+      next unless member.hocr
+      parsed_hocr = Nokogiri::XML(member.hocr) { |config| config.strict }
+      next unless parsed_hocr.css(".ocr_page").length == 1
+
+      words_on_this_page = parsed_hocr.search('//*[@class="ocrx_word"]')
+      
+      matches_on_this_page = words_on_this_page.
+        select {|w| w.text().downcase.include? @query }
+      
+      matches_on_this_page.each do |match|
+        coordinates = extract_coordinates(match.attributes['title'].value)
+        extra_margin = 30
+        result << {
+              "text": extract_context(match),
+              "par": [
+                  {
+                      "l":coordinates[:left] - extra_margin,
+                      "t":coordinates[:top] - extra_margin,
+                      "r":coordinates[:right] + extra_margin,
+                      "b":coordinates[:bottom] + extra_margin,
+                      "page": page_number - 1,
+                      "boxes": [
+                          {
+                              "l":coordinates[:left] - extra_margin,
+                              "t":coordinates[:top] - extra_margin,
+                              "r":coordinates[:right] + extra_margin,
+                              "b":coordinates[:bottom]  + extra_margin,
+                              "page": page_number - 1,
+                          },
+                          # {
+                          #     "l": 1025,
+                          #     "t": 524,
+                          #     "r": 1178,
+                          #     "b": 560,
+                          #     "page": 3
+                          # }
+                      ],
+                      "page_width": member.width,
+                      "page_height": member.height
+                  }
+              ]
+          }
+      end
+    end
+    result
+  end
+
+  def extract_context(match)
+    match_id = match.attributes["id"].value
+    match.parent.xpath('*[@class="ocrx_word"]').map do |word|
+      (word['id'] == match_id) ? "{{{#{word.text}}}}" : word.text
+    end.join(' ')
+  end
+
+  def extract_coordinates(coords)
+    #https://en.wikipedia.org/wiki/HOCR#bbox
+    #"bbox 1299 1809 1402 1837; x_wconf 91"
+    if /bbox (\d*) (\d*) (\d*) (\d*)\; x_wconf (\d*)/ =~ coords
+      return {
+        left:    $1.to_i,
+        top:     $2.to_i,
+        right:   $3.to_i,
+        bottom:  $4.to_i,
+        x_wconf: $5.to_i
+      }
+    end
   end
 
   def as_hash
     {
-        "ia": "theworksofplato01platiala",
-        "q": "person",
-        "indexed": true,
-        "matches": [ 
-          {
-              "text": """wise  man  here,  a  Parian,  who  I  hear  is  staying  in  the  city. 
-              For I  happened  to  visit  a  {{{person}}}  who  spends  more  money  on  the sophists 
-              than  all  others  together,  I  mean  Callias,  son  of  Hip- ponicus.""",
-              "par": [
-                  {
-                      "l": 576,
-                      "t": 316,
-                      "r": 1178,
-                      "b": 560,
-                      "page": 3,
-                      "boxes": [
-                          {
-                              "l": 576,
-                              "t": 316,
-                              "r": 729,
-                              "b": 352,
-                              "page": 18
-                          },
-                          {
-                              "l": 1025,
-                              "t": 524,
-                              "r": 1178,
-                              "b": 560,
-                              "page": 18
-                          }
-                      ],
-                      "page_width": 1506,
-                      "page_height": 2638
-                  }
-              ]
-          }
-      ]
-  }
+        ia: @work.friendlier_id,
+        q: @query,
+        indexed: true,
+        matches: matches
+    }
   end
 
   private
 
+  # TODO handle child works.
   def included_members
     @included_members ||= begin
       members = work.members.where(type: "Asset").order(:position)
@@ -68,21 +107,5 @@ class BookviewerSearchSerializer
       end
     end
   end
-
-  # def download_options(asset)
-  #   # include the PDF link here if we only have one image, as there won't be a
-  #   # fixed whole-work download section, but we still want it.
-  #   DownloadOptions::ImageDownloadOptions.new(asset, show_pdf_link: work.member_count == 1).options
-  # end
-
-  def thumb_src_attributes(asset)
-    derivative_1x_url = asset.file_url(THUMB_DERIVATIVE)
-    #derivative_2x_url = asset.file_url("#{THUMB_DERIVATIVE.to_s}_2X")
-    {
-      thumbSrc: derivative_1x_url,
-      #thumbSrcset: "#{derivative_1x_url} 1x, #{derivative_2x_url} 2x"
-    }
-  end
-
 
 end

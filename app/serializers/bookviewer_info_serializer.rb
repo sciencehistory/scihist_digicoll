@@ -58,8 +58,6 @@ class BookviewerInfoSerializer
           "copyright-evidence-operator": "james-hixon",
           "possible-copyright-status": "NOT_IN_COPYRIGHT",
           "copyright-region": "US",
-          "copyright-evidence": "Evidence reported by james-hixon for item theworksofplato01platiala on June 8, 2007: no visible notice of copyright; stated date is 1848.",
-          "copyright-evidence-date": "20070608000518",
           "sponsor": "MSN",
           "contributor": "University of California Libraries",
           "scanningcenter": "iala",
@@ -69,7 +67,7 @@ class BookviewerInfoSerializer
           "identifier-bib": "LAGE-2757470",
           "updatedate": "2007-06-08 00:05:46",
           "updater": "james-hixon",
-          "identifier": "theworksofplato01platiala",
+          "identifier": work.friendlier_id,
           "uploader": "scanner-james-hixon@archive.org",
           "addeddate": "2007-06-08 00:05:48",
           "publicdate": "2007-06-08 00:05:51",
@@ -81,7 +79,7 @@ class BookviewerInfoSerializer
           "operator": "scanner-my-hy@archive.org",
           "scanner": "iala9",
           "scandate": "20070608143750",
-          "identifier-access": "http://www.archive.org/details/theworksofplato01platiala",
+          "identifier-access": "http://www.archive.org/details/#{work.friendlier_id}",
           "identifier-ark": "ark:/13960/t9m32qs2m",
           "bookplateleaf": "0006",
           "curation": "[curator]marcus@archive.org[/curator][date]20070705232255[/date][state]approved[/state]",
@@ -108,38 +106,38 @@ class BookviewerInfoSerializer
         "data": {
           "streamOnly": false,
           "isRestricted": false,
-          "id": "theworksofplato01platiala",
-          "subPrefix": "theworksofplato01platiala",
+          "id": work.friendlier_id,
+          "subPrefix": work.friendlier_id,
           "olHost": "https://openlibrary.org",
-          "bookUrl": "/details/theworksofplato01platiala",
+          "bookUrl": "/details/#{work.friendlier_id}",
           "downloadUrls": [
             [
               "PDF",
-              "//archive.org/download/theworksofplato01platiala/theworksofplato01platiala.pdf"
+              "//archive.org/download/#{work.friendlier_id}/#{work.friendlier_id}.pdf"
             ],
             [
               "ePub",
-              "//archive.org/download/theworksofplato01platiala/theworksofplato01platiala.epub"
+              "//archive.org/download/#{work.friendlier_id}/#{work.friendlier_id}.epub"
             ],
             [
               "Plain Text",
-              "//archive.org/download/theworksofplato01platiala/theworksofplato01platiala_djvu.txt"
+              "//archive.org/download/#{work.friendlier_id}/#{work.friendlier_id}.txt"
             ],
             [
               "DAISY",
-              "//archive.org/download/theworksofplato01platiala/theworksofplato01platiala_daisy.zip"
+              "//archive.org/download/#{work.friendlier_id}/#{work.friendlier_id}.zip"
             ],
             [
               "Kindle",
-              "//archive.org/download/theworksofplato01platiala/theworksofplato01platiala.mobi"
+              "//archive.org/download/#{work.friendlier_id}/#{work.friendlier_id}.mobi"
             ]
           ]
         },
         brOptions: {
           "bookId": work.friendlier_id, # "theworksofplato01platiala",
-          "bookPath": "/25/items/theworksofplato01platiala/theworksofplato01platiala",
+          "bookPath": "/25/items/#{work.friendlier_id}/#{work.friendlier_id}",
           "imageFormat": "jp2",
-          "subPrefix": "theworksofplato01platiala",
+          "subPrefix": "#{work.friendlier_id}",
 
           # TODO get this from the env vars:
           "server": 'localhost:3000', # "ia800900.us.archive.org",
@@ -149,7 +147,7 @@ class BookviewerInfoSerializer
           "searchInsidePostTag": "}}}",
           "initialSearchTerm": "",
 
-          "zip": "/25/items/theworksofplato01platiala/theworksofplato01platiala_jp2.zip",
+          "zip": "/25/items/#{work.friendlier_id}/#{work.friendlier_id}_jp2.zip",
           bookTitle: work.title,
           "ppi": "400",
           "titleLeaf": 7,
@@ -157,11 +155,11 @@ class BookviewerInfoSerializer
           "defaultStartLeaf": 1,
           "pageProgression": "lr",
           "vars": {
-            "bookId": "theworksofplato01platiala",
-            "bookPath": "/25/items/theworksofplato01platiala/theworksofplato01platiala",
+            "bookId": "#{work.friendlier_id}",
+            "bookPath": "/25/items/#{work.friendlier_id}/#{work.friendlier_id}",
             "server": 'localhost', # "ia800900.us.archive.org",
 
-            "subPrefix": "theworksofplato01platiala"
+            "subPrefix": "#{work.friendlier_id}"
           },
           thumbnail: work.leaf_representative.file_url(THUMB_DERIVATIVE),
           "plugins": {

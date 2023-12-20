@@ -45,8 +45,11 @@ class WorksController < ApplicationController
   end
 
   def bookreader_search
-    search_results = JSON.pretty_generate(BookviewerSearchSerializer.new(@work,
-      show_unpublished: can?(:read, Kithe::Model)
+
+    search_results = JSON.pretty_generate(
+      BookviewerSearchSerializer.new(@work,
+      show_unpublished: can?(:read, Kithe::Model),
+      query: params['q']
     ).as_hash)
     render js: "#{params['callback']}(#{search_results});"
   end
