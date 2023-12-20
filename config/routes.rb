@@ -82,6 +82,12 @@ Rails.application.routes.draw do
     format: false,
     as: :bookreader_info
 
+  # display search-inside-book results
+  get '/works/:id/bookreader_search' => 'works#bookreader_search',
+    defaults: {format: "js"},
+    format: false,
+    as: :bookreader_search
+
   # JSON info for scihist_viewer image viewer
   get '/works/:id/viewer_images_info' => 'works#viewer_images_info',
     defaults: {format: "json"},

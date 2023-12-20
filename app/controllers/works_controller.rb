@@ -3,6 +3,8 @@
 class WorksController < ApplicationController
   before_action :set_work, :check_auth
 
+  protect_from_forgery except: :bookreader_search
+
   def show
     @show_deai_header = true
 
@@ -40,6 +42,13 @@ class WorksController < ApplicationController
     render json: JSON.pretty_generate(BookviewerInfoSerializer.new(@work,
       show_unpublished: can?(:read, Kithe::Model)
     ).as_hash)
+  end
+
+  def bookreader_search
+    search_results = JSON.pretty_generate(BookviewerSearchSerializer.new(@work,
+      show_unpublished: can?(:read, Kithe::Model)
+    ).as_hash)
+    render js: "#{params['callback']}(#{search_results});"
   end
 
 
