@@ -9,6 +9,8 @@ class BookviewerInfoSerializer
 
   THUMB_DERIVATIVE = :thumb_mini
 
+
+
   attr_reader :work, :show_unpublished
 
   def initialize(work, show_unpublished: false)
@@ -134,11 +136,19 @@ class BookviewerInfoSerializer
           ]
         },
         brOptions: {
-          "bookId": "theworksofplato01platiala",
+          "bookId": work.friendlier_id, # "theworksofplato01platiala",
           "bookPath": "/25/items/theworksofplato01platiala/theworksofplato01platiala",
           "imageFormat": "jp2",
-          "server": "ia800900.us.archive.org",
           "subPrefix": "theworksofplato01platiala",
+
+          # TODO get this from the env vars:
+          "server": 'localhost:3000', # "ia800900.us.archive.org",
+          "searchInsideProtocol": "http", # "https"
+          "searchInsideUrl": ":3000/works/#{work.friendlier_id}/bookreader_search", # "/fulltext/inside.php"
+          "searchInsidePreTag": "{{{",
+          "searchInsidePostTag": "}}}",
+          "initialSearchTerm": "",
+
           "zip": "/25/items/theworksofplato01platiala/theworksofplato01platiala_jp2.zip",
           bookTitle: work.title,
           "ppi": "400",
@@ -149,7 +159,8 @@ class BookviewerInfoSerializer
           "vars": {
             "bookId": "theworksofplato01platiala",
             "bookPath": "/25/items/theworksofplato01platiala/theworksofplato01platiala",
-            "server": "ia800900.us.archive.org",
+            "server": 'localhost', # "ia800900.us.archive.org",
+
             "subPrefix": "theworksofplato01platiala"
           },
           thumbnail: work.leaf_representative.file_url(THUMB_DERIVATIVE),
