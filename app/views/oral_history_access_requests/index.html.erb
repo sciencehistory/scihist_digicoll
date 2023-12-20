@@ -1,50 +1,111 @@
-<h2 class="brand-alt-h2">Oral History Requests</h2>
-<p>
-  <%= current_oral_history_requester.email %>
-</p>
+<div class="oral-history-request-dashboard">
+  <div class="oral-history-request-dashboard-header-block">
+    <h2 class="brand-alt-h2">
+      <%= link_to "Oral History Requests", oral_history_requests_path %>
+    </h2>
+    <p>
+      <%= current_oral_history_requester.email %>
+    </p>
+  </div>
 
-<% if @pending_requests.present? %>
-  <h3 class="attribute-sub-head">Pending</h3>
-  <ul class="show-sub-head-body list-unstyled">
-    <% @pending_requests.each do |oh_access_request| %>
-      <li>
-        <div class="show-genre"><%= localize oh_access_request.created_at.to_date, format: :long %></div>
-        <h4 class="brand-alt-h4"><%= oh_access_request.work.title %></h4>
-      </li>
-    <% end %>
-  </ul>
-<% end %>
+  <p class="alert alert-primary mt-4 mb-4">
+    If you have any questions about transcripts, recordings, or usage permissions, contact the Center for Oral History at
+    <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}", class: "alert-link" %>.
+  </p>
 
-<% if @approved_requests.present? %>
-  <h3 class="attribute-sub-head">Approved</h3>
+  <% if @pending_requests.present? %>
+    <h3 class="attribute-sub-head">Pending</h3>
+    <ul class="show-sub-head-body list-unstyled">
+      <% @pending_requests.each do |oh_access_request| %>
+        <li class="scihist-results-list-item">
+          <div class="scihist-results-list-item-thumb">
+            <%= render ThumbComponent.new(oh_access_request.work.leaf_representative, thumb_size: :standard, lazy: true) %>
+          </div>
 
-  <ul class="show-sub-head-body list-unstyled">
-    <% @approved_requests.each do |oh_access_request| %>
-      <li>
-        <h4 class="brand-alt-h4">
-          <%= link_to oh_access_request.work.title, oral_history_request_path(oh_access_request) %>
-        </h4>
+          <div class="scihist-results-list-item-content">
+            <h4 class="scihist-results-list-item-head brand-alt-h4">
+              <%= oh_access_request.work.title %>
+            </h4>
 
-        <table class="chf-attributes">
-          <tr>
-            <th scope="row">Requested</th>
-            <td><%= localize(oh_access_request.created_at.to_date , format: :long) if oh_access_request.created_at %></td>
-          </tr>
+            <dl class="row">
+              <dt class="col-sm-4">Requested</dt>
+              <dd class="col-sm-8"><%= localize(oh_access_request.created_at.to_date , format: :long) if oh_access_request.created_at %></dd>
+            </dl>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
 
-          <tr>
-            <th scope="row">Approved</th>
-            <td><%= localize(oh_access_request.delivery_status_changed_at.to_date, format: :long) if oh_access_request.delivery_status_changed_at %></td>
-          </tr>
+  <% if @approved_requests.present? %>
+    <h3 class="attribute-sub-head">Approved</h3>
 
-          <% if oh_access_request.notes_from_staff.present? %>
-            <tr>
-              <th scope="row">Notes from staff</th>
-              <td><%= simple_format oh_access_request.notes_from_staff %></td>
-            </tr>
-          <% end %>
-        </table>
-      </li>
-    <% end %>
-  </ul>
+    <ul class="show-sub-head-body list-unstyled">
+      <% @approved_requests.each do |oh_access_request| %>
+        <li class="scihist-results-list-item">
+          <div class="scihist-results-list-item-thumb">
+            <%#  hide redundant thumb link from assitive tech
+                 https://www.sarasoueidan.com/blog/keyboard-friendlier-article-listings/.  -%>
+            <%= link_to oral_history_request_path(oh_access_request), tabindex: "-1", "aria-hidden" => "true" do %>
+              <%= render ThumbComponent.new(oh_access_request.work.leaf_representative, thumb_size: :standard, lazy: true) %>
+            <% end %>
+          </div>
 
-<% end %>
+          <div class="scihist-results-list-item-content">
+            <h4 class="scihist-results-list-item-head brand-alt-h4">
+              <%= link_to oh_access_request.work.title, oral_history_request_path(oh_access_request) %>
+            </h4>
+
+            <dl class="row">
+              <dt class="col-sm-4">Requested</dt>
+              <dd class="col-sm-8"><%= localize(oh_access_request.created_at.to_date , format: :long) if oh_access_request.created_at %></dd>
+
+              <dt class="col-sm-4">Approved</dt>
+              <dd class="col-sm-8"><%= localize(oh_access_request.delivery_status_changed_at.to_date, format: :long) if oh_access_request.delivery_status_changed_at %></dd>
+            </dl>
+
+            <% if oh_access_request.notes_from_staff.present? %>
+              <h5 class="notes-from-staff-head">Notes from staff</h5>
+              <%= simple_format oh_access_request.notes_from_staff %>
+            <% end %>
+
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <% if @rejected_requests.present? %>
+    <h3 class="attribute-sub-head denied">Denied</h3>
+
+    <ul class="show-sub-head-body list-unstyled">
+      <% @rejected_requests.each do |oh_access_request| %>
+        <li class="scihist-results-list-item">
+          <div class="scihist-results-list-item-thumb">
+            <%= render ThumbComponent.new(oh_access_request.work.leaf_representative, thumb_size: :standard, lazy: true) %>
+          </div>
+
+          <div class="scihist-results-list-item-content">
+            <h4 class="scihist-results-list-item-head brand-alt-h4">
+              <%= oh_access_request.work.title %>
+            </h4>
+
+            <dl class="row">
+              <dt class="col-sm-4">Requested</dt>
+              <dd class="col-sm-8"><%= localize(oh_access_request.created_at.to_date , format: :long) if oh_access_request.created_at %></dd>
+
+              <dt class="col-sm-4">Denied</dt>
+              <dd class="col-sm-8"><%= localize(oh_access_request.delivery_status_changed_at.to_date, format: :long) if oh_access_request.delivery_status_changed_at %></dd>
+            </dl>
+
+            <% if oh_access_request.notes_from_staff.present? %>
+              <h5 class="notes-from-staff-head">Notes from staff</h5>
+              <%= simple_format oh_access_request.notes_from_staff %>
+            <% end %>
+
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

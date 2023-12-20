@@ -1,0 +1,48 @@
+.oral-history-request-dashboard {
+  max-width: $max-readable-width;
+  margin-left: auto;
+  margin-right: auto;
+
+  .scihist-results-list-item {
+    display: flex;
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+    overflow-x: hidden;
+
+    .scihist-results-list-item-thumb {
+      width: 6.75rem;
+      flex-shrink: 0;
+      padding-right: 1rem;
+    }
+
+    dt {
+      @extend %special-label;
+    }
+    dd {
+      margin-bottom: 0.125rem;
+    }
+  }
+
+  .attribute-sub-head.denied {
+    color: $shi-red;
+  }
+
+  .scihist-results-list-item-head {
+    margin-bottom: 0.66rem;
+  }
+
+  .notes-from-staff-head {
+    margin-top: 0;
+    @extend %special-label;
+    color: $shi-red;
+  }
+}
+
+.oral-history-request-dashboard-header-block {
+  background-color: $shi-maroon;
+  color: $shi-yellow;
+  padding: 2.5rem 3rem 2rem 3rem;
+  a {
+    color: white;
+  }
+}
