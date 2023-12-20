@@ -17,6 +17,16 @@ describe OralHistoryAccessRequestsController, type: :controller do
       expect(response).to redirect_to(new_oral_history_session_path)
       expect(flash[:auto_link_message]).to eq "You must be authorized to access this page."
     end
+
+    describe "unapproved request" do
+      let(:oh_request) { create(:oral_history_access_request, delivery_status: "pending") }
+
+      it "404s" do
+        expect {
+          get :show, params: { id: oh_request.id }
+        }.to raise_error(ActionController::RoutingError)
+      end
+    end
   end
 end
 
