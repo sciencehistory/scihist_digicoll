@@ -20,7 +20,9 @@ class BookviewerSearchSerializer
         "indexed": true,
         "matches": [ 
           {
-              "text": "wise  man  here,  a  Parian,  who  I  hear  is  staying  in  the  city.  For I  happened  to  visit  a  {{{person}}}  who  spends  more  money  on  the sophists  than  all  others  together,  I  mean  Callias,  son  of  Hip- ponicus.  I  therefore  asked  him,  for  he  has  two  sons,  \"  Callias,\" I  said,  \"  if  your  two  sons  were  colts  or  calves,  we  should  have had  to  choose  a  master  for  them  and  hire  a  {{{person}}}  who  would make  them  excel  in  such  qualities  as  belong  to  their  nature  : and  he  would  have  been  a  groom  or  an  agricultural  labourer. But  now,  since  your  sons  are  men,  what  master  do  you  intend to  choose  for  them  ?  Who  is  there  skilled  in  the  qualities  that become  a  man  and  a  citizen  ?  For  I  suppose  you  must  have considered  this,  since  you  have  sons.  Is  there  any  one,\"  I  said, \"or  not?\"  \"Certainly,\"  he  answered.  \"Who  is  he?\"  said I,  \"  and  whence  does  he  come  ?  and  on  what  terms  does  he teach  ?\"  He  replied,  \"  Evenus  the  Parian,  Socrates,  for  five minae.\"  And  I  deemed  Evenus  happy,  if  he  really  possesses this  art,  and  teaches  so  admirably.  And  I  too  should  think highly  of  myself  and  be  very  proud,  if  I  possessed  this  know- ledge ;  but  I  possess  it  not,  O  Athenians.",
+              "text": """wise  man  here,  a  Parian,  who  I  hear  is  staying  in  the  city. 
+              For I  happened  to  visit  a  {{{person}}}  who  spends  more  money  on  the sophists 
+              than  all  others  together,  I  mean  Callias,  son  of  Hip- ponicus.""",
               "par": [
                   {
                       "l": 576,
