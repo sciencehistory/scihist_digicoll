@@ -9,11 +9,19 @@
 # But this is the record that logins (really one-time magic link logins)
 # are attached to, that DO confirm the user has access to the email specified!
 class Admin::OralHistoryRequesterEmail < ApplicationRecord
-  self.filter_attributes += [ :email ]
+  LOGIN_LINK_EXPIRE = 7.days
 
   # we don't have uniqueness validation cause it's incompatible with using create_or_find_by which
   # we want to.
   validates :email, presence: true
 
   has_many :oral_history_access_requests
+
+  generates_token_for :auto_login, expires_in: LOGIN_LINK_EXPIRE do
+    # if email changes, link should no longer be good.
+    # other things can be put in here if you wanted to make the link expirable
+    # or single-user or what have you, whatever you put in here has to remain
+    # constant for token to be good.
+    email
+  end
 end
