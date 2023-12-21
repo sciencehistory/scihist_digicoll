@@ -40,6 +40,15 @@ class OralHistorySessionsController < ApplicationController
     end
   end
 
+  # DELETE /oral_history_session
+  #
+  # Log out!
+  def destroy
+    session.delete(:oral_history_requester_id)
+
+    redirect_to helpers.root_path, notice: "You have been signed out of your Oral History requests. You can sign in again from the link in your email, or by making another request."
+  end
+
   private
 
   def email_param

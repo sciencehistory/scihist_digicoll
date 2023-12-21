@@ -59,4 +59,15 @@ describe OralHistorySessionsController, type: :controller, queue_adapter: :inlin
       expect(response.body).to include(custom_message)
     end
   end
+
+  describe "#destroy" do
+    it "signs out" do
+      session[:oral_history_requester_id] = requester_email.id
+      delete :destroy
+
+      expect(session[:oral_history_requester_id]).to be nil
+      expect(response).to have_http_status(:redirect)
+      expect(flash[:notice]).to include("signed out")
+    end
+  end
 end
