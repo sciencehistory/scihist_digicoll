@@ -49,7 +49,7 @@
           </td>
           <td class="col-sm-2"><%= oh_request.patron_name %>
             <% if oh_request.patron_institution.present? %>, <%= oh_request.patron_institution %><% end %><br/>
-            <span class="small">(<%= link_to oh_request.patron_email, "mailto:#{oh_request.patron_email}" %>)</span>
+            <span class="small">(<%= link_to oh_request.requester_email, "mailto:#{oh_request.requester_email}" %>)</span>
           </td>
           <td class="col-sm-3"><%= link_to(oh_request.work.title.delete_prefix("Oral history interview with "), work_path(oh_request.work.friendlier_id))%> <span class="small">(#<%= oh_request.oral_history_number %>)</span></td>
           <td class="col-sm-4">

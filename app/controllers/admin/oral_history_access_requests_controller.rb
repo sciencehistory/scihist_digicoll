@@ -5,7 +5,9 @@ require 'csv'
 class Admin::OralHistoryAccessRequestsController < AdminController
   def index
     @oral_history_access_requests = Admin::OralHistoryAccessRequest.
-    where('created_at > ?', 3.months.ago).order(created_at: :desc).to_a
+    where('created_at > ?', 3.months.ago).
+    includes(:oral_history_requester_email, :work).
+    order(created_at: :desc).strict_loading.to_a
   end
 
   # GET /admin/oral_history_access_requests/:id
@@ -32,7 +34,7 @@ class Admin::OralHistoryAccessRequestsController < AdminController
       # Let's just use the generic mailer with a text mail?
       ActionMailer::Base.mail(
         from: ScihistDigicoll::Env.lookup!(:oral_history_email_address),
-        to: @oral_history_access_request.patron_email,
+        to: @oral_history_access_request.requester_email,
         bcc: ScihistDigicoll::Env.lookup!(:oral_history_email_address),
         subject: "Science History Institute: Your request",
         body: custom_message
@@ -42,7 +44,7 @@ class Admin::OralHistoryAccessRequestsController < AdminController
     end
 
     redirect_to admin_oral_history_access_requests_path,
-      notice: "#{disposition.titlecase} email was sent to #{@oral_history_access_request.patron_email} for '#{@oral_history_access_request.work.title}'"
+      notice: "#{disposition.titlecase} email was sent to #{@oral_history_access_request.requester_email} for '#{@oral_history_access_request.work.title}'"
   end
 
   def report
@@ -76,7 +78,7 @@ class Admin::OralHistoryAccessRequestsController < AdminController
         work_url(request.work),
         request.oral_history_number,
         request.patron_name,
-        request.patron_email,
+        request.requester_email,
         request.patron_institution,
         request.intended_use,
         request.delivery_status

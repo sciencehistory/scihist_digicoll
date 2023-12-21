@@ -7,7 +7,7 @@ class OralHistoryDeliveryMailer < ApplicationMailer
 
   def oral_history_delivery_email
     raise ArgumentError.new("Required params[:request] missing") unless request.present?
-    raise ArgumentError.new("Required patron email missing") unless request.patron_email.present?
+    raise ArgumentError.new("Required patron email missing") unless request.requester_email.present?
     mail(to: to_address, subject: subject, content_type: "text/html")
   end
 
@@ -21,7 +21,7 @@ class OralHistoryDeliveryMailer < ApplicationMailer
   end
 
   def to_address
-    request.patron_email
+    request.requester_email
   end
 
   def download_by_human_readable

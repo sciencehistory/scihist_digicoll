@@ -8,7 +8,7 @@ RSpec.describe "Oral History Access Request Administration", :logged_in_user, ty
   context "A request exists for a manual_review work" do
     let!(:oh_request) { Admin::OralHistoryAccessRequest.create!(
       patron_name: "George Washington Carver",
-      patron_email: "george@example.org",
+      oral_history_requester_email: Admin::OralHistoryRequesterEmail.create_or_find_by(email: "george@example.org"),
       patron_institution: "Tuskegee Institute",
       intended_use: "Recreational reading.",
       work: work

@@ -10,7 +10,7 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, :logged_in_user, type
           Admin::OralHistoryAccessRequest.create!(
             created_at: latest_date - 100000 * i,
             patron_name: "Patron #{i}",
-            patron_email: "patron@institution_#{i}.com",
+            oral_history_requester_email: Admin::OralHistoryRequesterEmail.create_or_find_by(email: "patron@institution_#{i}.com"),
             patron_institution: "Institution #{i}",
             intended_use: "I will write #{i} books.",
             work: work

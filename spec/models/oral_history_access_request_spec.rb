@@ -5,7 +5,7 @@ describe Admin::OralHistoryAccessRequest, type: :model do
   let(:access_request) do
     Admin::OralHistoryAccessRequest.create!(
       patron_name: "Patron",
-      patron_email: "patron@institution.com",
+      oral_history_requester_email: Admin::OralHistoryRequesterEmail.create_or_find_by(email: "patron@institution.com"),
       intended_use: "I will write 10 books.",
       work: create(:oral_history_work)
     )
