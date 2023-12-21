@@ -5,15 +5,6 @@
 # and maximum; this matches the default thread size of Active Record.
 #
 
-
-# Barnes reports Ruby runtime metrics to Heroku, where we can monitor them.
-# See https://devcenter.heroku.com/articles/language-runtime-metrics-ruby
-require 'barnes'
-before_fork do
-  # worker specific setup
-  Barnes.start # Must have enabled worker mode for this to block to be called
-end
-
 max_threads_count = ENV.fetch("RAILS_MAX_THREADS") { 5 }
 min_threads_count = ENV.fetch("RAILS_MIN_THREADS") { max_threads_count }
 threads min_threads_count, max_threads_count
