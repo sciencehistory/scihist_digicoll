@@ -38,5 +38,13 @@ describe "Login with Oral Histories magic link", queue_adapter: :inline do
     not_by_request.each do |asset|
       expect(page).not_to have_selector("a", text: /#{DownloadFilenameHelper.filename_base_for_asset(asset)}/)
     end
+
+    # logout
+    visit oral_history_requests_path
+    click_on "Sign out"
+    # make sure we're really signed out
+    visit oral_history_requests_path
+    expect(page).not_to have_selector("h2", text: "Oral History Requests")
+    expect(page).to have_content("Please fill out your email address, and you will be emailed a login link")
   end
 end
