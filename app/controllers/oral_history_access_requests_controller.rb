@@ -136,7 +136,7 @@ private
 
   def current_oral_history_requester
     unless defined?(@current_oral_history_requester)
-      @current_oral_history_requester = (Admin::OralHistoryRequesterEmail.find_by(id: session[:oral_history_requester_id]) if session[:oral_history_requester_id].present?)
+      @current_oral_history_requester = (Admin::OralHistoryRequesterEmail.find_by(id: session[OralHistorySessionsController::SESSION_KEY]) if session[OralHistorySessionsController::SESSION_KEY].present?)
     end
     @current_oral_history_requester
   end
