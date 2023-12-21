@@ -1,7 +1,7 @@
 # We let OH requesters log in with magic links, using tokens
 # generated from OralHistoryRequesterEmail#generates_token_for(:auto_login)
 class OralHistorySessionsController < ApplicationController
-
+  SESSION_KEY = :oral_history_requester_id
 
   # GET /oral_history_session/login/$TOKEN
   #
@@ -10,7 +10,7 @@ class OralHistorySessionsController < ApplicationController
     requester_email = Admin::OralHistoryRequesterEmail.find_by_token_for(:auto_login, params[:token])
 
     if requester_email.present?
-      session[:oral_history_requester_id] = requester_email.id
+      session[SESSION_KEY] = requester_email.id
 
       # for now we just tell them good, we will redirect to "dashboard" once implemented
       render plain: "AUTHENTICATED #{requester_email.email}"
@@ -46,7 +46,7 @@ class OralHistorySessionsController < ApplicationController
   #
   # Log out!
   def destroy
-    session.delete(:oral_history_requester_id)
+    session.delete(SESSION_KEY)
 
     redirect_to helpers.root_path, notice: "You have been signed out of your Oral History requests. You can sign in again from the link in your email, or by making another request."
   end
