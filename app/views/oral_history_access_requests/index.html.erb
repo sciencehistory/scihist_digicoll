@@ -3,9 +3,10 @@
     <h2 class="brand-alt-h2">
       <%= link_to "Oral History Requests", oral_history_requests_path %>
     </h2>
-    <p>
+    <p class="requester-email">
       <%= current_oral_history_requester.email %>
     </p>
+    <p>Some Oral Histories are available by request only, and are not on the public web. You can find your requests here.</p>
   </div>
 
   <p class="alert alert-primary mt-4 mb-4">
@@ -31,6 +32,8 @@
               <dt class="col-sm-4">Requested</dt>
               <dd class="col-sm-8"><%= localize(oh_access_request.created_at.to_date , format: :long) if oh_access_request.created_at %></dd>
             </dl>
+
+            <%= link_to "View description", work_path(oh_access_request.work), class: "btn btn-brand-main less-padding" %>
           </div>
         </li>
       <% end %>
@@ -97,6 +100,8 @@
               <dt class="col-sm-4">Denied</dt>
               <dd class="col-sm-8"><%= localize(oh_access_request.delivery_status_changed_at.to_date, format: :long) if oh_access_request.delivery_status_changed_at %></dd>
             </dl>
+
+            <%= link_to "View description", work_path(oh_access_request.work), class: "btn btn-brand-main less-padding mb-4" %>
 
             <% if oh_access_request.notes_from_staff.present? %>
               <h5 class="notes-from-staff-head">Notes from staff</h5>
