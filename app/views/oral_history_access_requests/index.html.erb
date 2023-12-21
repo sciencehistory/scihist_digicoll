@@ -1,12 +1,16 @@
 <div class="oral-history-request-dashboard">
   <div class="oral-history-request-dashboard-header-block">
-    <h2 class="brand-alt-h2">
-      <%= link_to "Oral History Requests", oral_history_requests_path %>
-    </h2>
-    <p class="requester-email">
-      <%= current_oral_history_requester.email %>
-    </p>
-    <p>Some Oral Histories are available by request only, and are not on the public web. You can find your requests here.</p>
+    <div>
+      <h2 class="brand-alt-h2">
+        <%= link_to "Oral History Requests", oral_history_requests_path %>
+      </h2>
+      <p class="requester-email">
+        <%= current_oral_history_requester.email %>
+      </p>
+      <p>Some Oral Histories are available by request only, and are not on the public web. You can find your requests here.</p>
+    </div>
+
+    <%= link_to "Sign out", oral_history_session_path, method: :delete, class: "btn btn-brand-main signout" %>
   </div>
 
   <p class="alert alert-primary mt-4 mb-4">

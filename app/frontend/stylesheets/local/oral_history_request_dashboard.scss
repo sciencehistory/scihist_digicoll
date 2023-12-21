@@ -39,10 +39,23 @@
 }
 
 .oral-history-request-dashboard-header-block {
-  background-color: $shi-maroon;
-  color: white;
   padding: 2rem 3rem 1rem 3rem;
-  a {
+  background-color: $shi-maroon;
+
+  @include media-breakpoint-up(sm) {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .signout {
+    flex-shrink: 0;
+  }
+
+  p {
+    color: white;
+  }
+  a:not(.btn) {
     color: white;
   }
   .requester-email {
