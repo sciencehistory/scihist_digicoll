@@ -157,7 +157,9 @@
   }
 }
 
-// Yeah, this has no parent selector, it's used on audio page too.
+// This has no parent selector, this component is now used in several
+// places, including OH public downloads and proteted request downloads.
+// Extract to own file?
 .show-member-file-list-item {
   display: flex;
 
@@ -178,6 +180,9 @@
     width: 100%;
     word-break: break-word;
   }
+
+  // keep more compact, to fit three lines next to thumb, looks fine
+  line-height: 1.3;
 }
 
 .by-request-file-list {
