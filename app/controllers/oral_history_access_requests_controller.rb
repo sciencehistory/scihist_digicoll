@@ -52,8 +52,17 @@ class OralHistoryAccessRequestsController < ApplicationController
       raise AccessDenied.new
     end
 
-    # re-use this component to calculate the by-request assets we should be showing
-    @assets = WorkFileListShowComponent.new(@access_request.work).available_by_request_assets.sort_by(&:position)
+    # Calculate assets avail by request, broken up by type
+    all_by_request_assets = @access_request.work.members.
+      where(published: false).
+      includes(:leaf_representative).order(:position).strict_loading.
+      to_a.find_all do |member|
+        member.kind_of?(Asset) &&  member.oh_available_by_request?
+      end
+
+    @transcript_assets = all_by_request_assets.find_all { |a| a.role == "transcript" }
+    @audio_assets = all_by_request_assets.find_all { |a| a.content_type.start_with?("audio/") }
+    @other_assets = all_by_request_assets.find_all { |a| !@transcript_assets.include?(a) && !@audio_assets.include?(a) }
   end
 
   # GET /works/4j03d09fr7t/request_oral_history_access
