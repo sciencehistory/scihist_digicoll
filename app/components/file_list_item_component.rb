@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class FileListItemComponent < ApplicationComponent
-  attr_reader :member, :index, :view_link_attributes, :download_original_only
+  attr_reader :member, :index, :view_link_attributes, :download_original_only, :show_private_badge
 
   # @param index [integer] Need index so we know whether to lazy-load
   #
@@ -12,11 +12,17 @@ class FileListItemComponent < ApplicationComponent
   # @param download_original_only [Boolean] default false. If true, instead of the
   #   download menu component in the action column, there will be a single download
   #   button to download original.
-  def initialize(member, index:, view_link_attributes: {}, download_original_only: false)
+  #
+  # @param show_private_badge [Boolean] default true. If true, when a private item is
+  # visible to the user, it will be marked with a 'Private' badge, to warn (usually admin)
+  # they are seeing something the public wouldn't see. Main use case for 'false' is
+  # when we we are showing OH by-request items to authorized users.
+  def initialize(member, index:, view_link_attributes: {}, download_original_only: false, show_private_badge: true)
     @member = member
     @index = index
     @view_link_attributes = view_link_attributes
     @download_original_only = download_original_only
+    @show_private_badge = show_private_badge
 
     unless member.association(:parent).loaded?
       raise ArgumentError.new("parent must be pre-loaded to avoid n+1 queries please, on: #{member}")

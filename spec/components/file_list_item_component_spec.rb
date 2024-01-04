@@ -35,4 +35,20 @@ describe FileListItemComponent, type: :component do
       expect(details.text).to include("FLAC — 00:00:05")
     end
   end
+
+  describe "private item" do
+    let(:asset) { create(:asset_with_faked_file, :pdf, published: false, parent: create(:work)) }
+
+    it "has private badge" do
+      expect(rendered).to have_selector("span.badge:contains('Private')")
+    end
+
+    describe "without show_private_badge" do
+      let(:rendered) { render_inline(FileListItemComponent.new(asset, index: 0, show_private_badge: false)) }
+
+      it "does not have private badge" do
+        expect(rendered).not_to have_selector("span.badge:contains('Private')")
+      end
+    end
+  end
 end

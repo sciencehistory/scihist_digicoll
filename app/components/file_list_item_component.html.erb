@@ -11,7 +11,7 @@
       <%= maybe_view_link_to(member) do %>
         <%= member_label %>
       <% end %>
-      <% unless member.published? %>
+      <% if show_private_badge && !member.published?  %>
           <span title="Private" class="badge badge-warning">Private</span>
       <% end %>
     </div>
