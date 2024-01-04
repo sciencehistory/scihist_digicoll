@@ -29,5 +29,10 @@ describe FileListItemComponent, type: :component do
       expect(title_link.text.strip).to eq asset.title
       expect(title_link["href"]).to eq download_derivative_path(asset, :m4a, disposition: :inline)
     end
+
+    it "includes duration not size in details" do
+      details = rendered.at_css(".details")
+      expect(details.text).to include("FLAC — 00:00:05")
+    end
   end
 end

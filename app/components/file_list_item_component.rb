@@ -86,8 +86,18 @@ class FileListItemComponent < ApplicationComponent
     if asset.content_type.present?
       details << ScihistDigicoll::Util.humanized_content_type(asset.content_type)
     end
-    if asset.size.present?
-      details << ScihistDigicoll::Util.simple_bytes_to_human_string(asset.size)
+
+    # For A/V include duration, else include original file size
+    # Note that in some cases there may be alternate derivatives -- FLAC size may be
+    # huge, but maybe m4a is what you'll download.
+    if asset.content_type&.start_with?("audio/") || asset.content_type&.start_with?("video/")
+      if asset.file_metadata["duration_seconds"].present?
+        details << helpers.format_ohms_timestamp(asset.file_metadata["duration_seconds"])
+      end
+    else
+      if asset.size.present?
+        details << ScihistDigicoll::Util.simple_bytes_to_human_string(asset.size)
+      end
     end
 
     str = details.join(" — ")
