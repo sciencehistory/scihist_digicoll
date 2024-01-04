@@ -36,6 +36,27 @@
     @extend %special-label;
     color: $shi-red;
   }
+
+  .rights-and-terms {
+    display: flex;
+    align-items: flex-end;
+    gap: 3rem;
+    margin-bottom: 4rem;
+
+    .rights-statement {
+      max-width: 18rem;
+    }
+  }
+
+  .notes-from-staff-header {
+    color: $shi-red;
+    border-bottom: 1px solid $table-border-color;
+  }
+
+  .bottom-alert {
+    margin-top: 4rem;
+    margin-bottom: 4rem;
+  }
 }
 
 .oral-history-request-dashboard-header-block {
