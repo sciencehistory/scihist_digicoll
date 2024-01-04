@@ -19,4 +19,15 @@ describe FileListItemComponent, type: :component do
       expect(details.text).to include("PDF — #{ScihistDigicoll::Util.simple_bytes_to_human_string(asset.size)}")
     end
   end
+
+  describe "FLAC audio" do
+    let(:asset) { create(:asset_with_faked_file, :flac, parent: create(:work)) }
+
+    it "links to m4a derivative download" do
+      title_link = rendered.at_css(".title a")
+
+      expect(title_link.text.strip).to eq asset.title
+      expect(title_link["href"]).to eq download_derivative_path(asset, :m4a, disposition: :inline)
+    end
+  end
 end

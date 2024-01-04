@@ -62,10 +62,20 @@ class FileListItemComponent < ApplicationComponent
       # image thumb is in a link, but right next to filename with same link.
       # Suppress image thumb from assistive technology to avoid un-useful double
       # link. https://www.sarasoueidan.com/blog/keyboard-friendlier-article-listings/
-      link_to(download_path(member.leaf_representative.file_category, member.leaf_representative, disposition: :inline),
+      link_to(view_link,
               view_link_attributes.merge("aria-hidden" => "true", "tabindex" => -1, "target" => "_blank")) do
         yield
       end
+    end
+  end
+
+  def view_link
+    if member.leaf_representative.content_type == "audio/flac" && member.leaf_representative.file_derivatives.keys.include?(:m4a)
+      # inline link to m4a derivative, we don't want to give the browser flac
+      download_derivative_path(member.leaf_representative, :m4a, disposition: :inline)
+    else
+      # inline link to original, perhaps a PDF
+      download_path(member.leaf_representative.file_category, member.leaf_representative, disposition: :inline)
     end
   end
 
