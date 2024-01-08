@@ -55,7 +55,7 @@
     <ul class="list-unstyled">
       <% @transcript_assets.each_with_index do |asset, index| %>
         <li>
-          <%= render FileListItemComponent.new(asset, index: index) %>
+          <%= render FileListItemComponent.new(asset, index: index, show_private_badge: false) %>
         </li>
       <% end %>
     </ul>
@@ -69,7 +69,7 @@
     <ul class="list-unstyled">
       <% @audio_assets.each_with_index do |asset, index| %>
         <li>
-          <%= render FileListItemComponent.new(asset, index: index) %>
+          <%= render FileListItemComponent.new(asset, index: index, show_private_badge: false) %>
         </li>
       <% end %>
     </ul>
