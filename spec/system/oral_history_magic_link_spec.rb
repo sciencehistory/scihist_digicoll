@@ -27,16 +27,22 @@ describe "Login with Oral Histories magic link", queue_adapter: :inline do
 
     # Move to individual request page
     click_on oral_history_work.title
-    expect(page).to have_selector("h2", text: oral_history_work.title)
+
+    expect(page).to have_selector("h3", text: oral_history_work.title)
     # basic sanity check, has a link for each asset
     (by_request, not_by_request) = oral_history_work.members.partition { |member| member.kind_of?(Asset) && !member.published? && member.oh_available_by_request? }
 
+    # The logic for labelling links has gotten very convoluted, it's hard to check for
+    # expected links and only expected links. Sorry!
+
     by_request.each do |asset|
-      expect(page).to have_selector("a", text: /#{DownloadFilenameHelper.filename_base_for_asset(asset)}/)
+      expected_label = asset.role == "transcript" ? "Transcript (Published Version)" : asset.title
+      expect(page).to have_selector("a", text: expected_label)
     end
 
     not_by_request.each do |asset|
-      expect(page).not_to have_selector("a", text: /#{DownloadFilenameHelper.filename_base_for_asset(asset)}/)
+      expected_label = asset.role == "transcript" ? "Transcript (Published Version)" : asset.title
+      expect(page).not_to have_selector("a", text: expected_label)
     end
 
     # logout
