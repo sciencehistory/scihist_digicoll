@@ -275,9 +275,6 @@ hr.brand {
   .shi-breadcrumbs__link::before {
     // orig was an svg, but it just looks like a chevron come on!
     content: "‹ ";
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-image: url(/wp-content/themes/shi/build/images/breadcrumb.svg);
     margin-right: 0.2em;
     transform: translateY(-0.04em);
   }
