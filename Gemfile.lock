@@ -470,7 +470,7 @@ GEM
     psych (5.1.2)
       stringio
     public_suffix (5.0.4)
-    puma (6.4.1)
+    puma (6.4.2)
       nio4r (~> 2.0)
     qa (5.11.0)
       activerecord-import
@@ -797,7 +797,7 @@ DEPENDENCIES
   prawn-html (< 2)
   prawn-svg (< 2)
   pry-byebug
-  puma (~> 6.3)
+  puma (~> 6.4)
   qa (~> 5.2, >= 5.11.0)
   rack (~> 2.0)
   rack-attack (~> 6.6)

@@ -66,7 +66,7 @@ gem "aws-sdk-s3", "~> 1.0"
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
-gem 'puma', '~> 6.3'
+gem 'puma', '~> 6.4'
 
 # resque+redis being used for activejob.
 # resque-pool currently does not support resque 2.0 alas.
