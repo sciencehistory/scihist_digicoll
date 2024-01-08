@@ -10,6 +10,8 @@
 #
 # BUT then also edited to remove right/left padding, cause work better for us
 # like that.
+#
+# OPTIMIZATION IDEAS at https://github.com/sciencehistory/scihist_digicoll/issues/2482
 module BootstrapFileIconSvgHelper
   def file_earmark_pdf_fill_svg
     <<-EOS.strip_heredoc.html_safe
@@ -27,5 +29,31 @@ module BootstrapFileIconSvgHelper
         <path d="M 7.293,0 H 2 A 2,2 0 0 0 0,2 v 12 a 2,2 0 0 0 2,2 h 8 a 2,2 0 0 0 2,-2 V 4.707 A 1,1 0 0 0 11.707,4 L 8,0.293 A 1,1 0 0 0 7.293,0 Z M 7.5,3.5 v -2 l 3,3 h -2 a 1,1 0 0 1 -1,-1 z M 3.5,3 V 2 h -1 V 1 H 4 V 2 H 5 V 3 H 4 V 4 H 5 V 5 H 4 V 6 H 5 V 7 H 3.5 V 6 h -1 V 5 h 1 V 4 h -1 V 3 Z m 0,4.5 h 1 a 1,1 0 0 1 1,1 v 0.938 l 0.4,1.599 a 1,1 0 0 1 -0.416,1.074 l -0.93,0.62 a 1,1 0 0 1 -1.109,0 l -0.93,-0.62 A 1,1 0 0 1 2.1,11.037 L 2.5,9.438 V 8.5 a 1,1 0 0 1 1,-1 z" id="path118" />
       </svg>
     EOS
+  end
+
+  # okay, actually from fontawesome.
+  # https://fontawesome.com/icons/file-audio?f=classic&s=solid
+  #
+  # We don't LOVE this icon, but bootstrap doesn't have a file-audio icon! Only file-music
+  # with a music note, not what we want.
+  #
+  # 4 Jan 2023.  Free font awesome svg are licensed  CC-BY, with attribution
+  # in the svg sufficient. https://fontawesome.com/license/free
+  #
+  # Removed height and width, and removed fill from internal path, replaced with fill="currentColor"
+  # Added class fa-custom-svg for testing identification etc.
+  #
+  # Experimented with referencing a symbol from an external svg, so it can be cached and not included
+  # multiple times on a page. we DO need to repeat the viewBox here to
+  def fa_file_audio_class_solid
+    <<-EOS.strip_heredoc.html_safe
+      <svg xmlns="http://www.w3.org/2000/svg" class="fa-custom-svg" fill="currentColor" viewBox="0 0 384 512">
+        <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+        <path opacity="1" d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zm2 226.3c37.1 22.4 62 63.1 62 109.7s-24.9 87.3-62 109.7c-7.6 4.6-17.4 2.1-22-5.4s-2.1-17.4 5.4-22C269.4 401.5 288 370.9 288 336s-18.6-65.5-46.5-82.3c-7.6-4.6-10-14.4-5.4-22s14.4-10 22-5.4zm-91.9 30.9c6 2.5 9.9 8.3 9.9 14.8V400c0 6.5-3.9 12.3-9.9 14.8s-12.9 1.1-17.4-3.5L113.4 376H80c-8.8 0-16-7.2-16-16V312c0-8.8 7.2-16 16-16h33.4l35.3-35.3c4.6-4.6 11.5-5.9 17.4-3.5zm51 34.9c6.6-5.9 16.7-5.3 22.6 1.3C249.8 304.6 256 319.6 256 336s-6.2 31.4-16.3 42.7c-5.9 6.6-16 7.1-22.6 1.3s-7.1-16-1.3-22.6c5.1-5.7 8.1-13.1 8.1-21.3s-3.1-15.7-8.1-21.3c-5.9-6.6-5.3-16.7 1.3-22.6z"/>
+      </svg>
+    EOS
+
+    # notes toward another approach involving external file
+    # "<svg viewBox='0 0 384 512'><use xlink:href='#{asset_path("svg_symbols/fa-file-audio-solid-def.svg#fa-file-audio-solid")}'></svg>".html_safe
   end
 end

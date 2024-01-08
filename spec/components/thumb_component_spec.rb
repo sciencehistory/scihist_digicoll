@@ -23,10 +23,21 @@ describe ThumbComponent, type: :component do
     end
   end
 
-  describe "non-handlable type" do
+  describe "audio type" do
     let(:argument) do
       build(:asset).tap do |asset|
         allow(asset).to receive(:content_type).and_return("audio/mpeg")
+      end
+    end
+    it "renders audio file svg" do
+      expect(rendered).to have_selector("svg.fa-custom-svg")
+    end
+  end
+
+  describe "non-handlable type" do
+    let(:argument) do
+      build(:asset).tap do |asset|
+        allow(asset).to receive(:content_type).and_return("video/mpeg")
       end
     end
     it "renders placeholder" do
