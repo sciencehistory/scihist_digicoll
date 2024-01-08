@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class FileListItemComponent < ApplicationComponent
-  attr_reader :member, :index, :view_link_attributes, :download_original_only
+  attr_reader :member, :index, :view_link_attributes, :download_original_only, :show_private_badge
 
   # @param index [integer] Need index so we know whether to lazy-load
   #
@@ -12,11 +12,17 @@ class FileListItemComponent < ApplicationComponent
   # @param download_original_only [Boolean] default false. If true, instead of the
   #   download menu component in the action column, there will be a single download
   #   button to download original.
-  def initialize(member, index:, view_link_attributes: {}, download_original_only: false)
+  #
+  # @param show_private_badge [Boolean] default true. If true, when a private item is
+  # visible to the user, it will be marked with a 'Private' badge, to warn (usually admin)
+  # they are seeing something the public wouldn't see. Main use case for 'false' is
+  # when we we are showing OH by-request items to authorized users.
+  def initialize(member, index:, view_link_attributes: {}, download_original_only: false, show_private_badge: true)
     @member = member
     @index = index
     @view_link_attributes = view_link_attributes
     @download_original_only = download_original_only
+    @show_private_badge = show_private_badge
 
     unless member.association(:parent).loaded?
       raise ArgumentError.new("parent must be pre-loaded to avoid n+1 queries please, on: #{member}")
@@ -62,10 +68,20 @@ class FileListItemComponent < ApplicationComponent
       # image thumb is in a link, but right next to filename with same link.
       # Suppress image thumb from assistive technology to avoid un-useful double
       # link. https://www.sarasoueidan.com/blog/keyboard-friendlier-article-listings/
-      link_to(download_path(member.leaf_representative.file_category, member.leaf_representative, disposition: :inline),
+      link_to(view_link,
               view_link_attributes.merge("aria-hidden" => "true", "tabindex" => -1, "target" => "_blank")) do
         yield
       end
+    end
+  end
+
+  def view_link
+    if member.leaf_representative.content_type == "audio/flac" && member.leaf_representative.file_derivatives.keys.include?(:m4a)
+      # inline link to m4a derivative, we don't want to give the browser flac
+      download_derivative_path(member.leaf_representative, :m4a, disposition: :inline)
+    else
+      # inline link to original, perhaps a PDF
+      download_path(member.leaf_representative.file_category, member.leaf_representative, disposition: :inline)
     end
   end
 
@@ -76,8 +92,18 @@ class FileListItemComponent < ApplicationComponent
     if asset.content_type.present?
       details << ScihistDigicoll::Util.humanized_content_type(asset.content_type)
     end
-    if asset.size.present?
-      details << ScihistDigicoll::Util.simple_bytes_to_human_string(asset.size)
+
+    # For A/V include duration, else include original file size
+    # Note that in some cases there may be alternate derivatives -- FLAC size may be
+    # huge, but maybe m4a is what you'll download.
+    if asset.content_type&.start_with?("audio/") || asset.content_type&.start_with?("video/")
+      if asset.file_metadata["duration_seconds"].present?
+        details << helpers.format_ohms_timestamp(asset.file_metadata["duration_seconds"])
+      end
+    else
+      if asset.size.present?
+        details << ScihistDigicoll::Util.simple_bytes_to_human_string(asset.size)
+      end
     end
 
     str = details.join(" — ")
