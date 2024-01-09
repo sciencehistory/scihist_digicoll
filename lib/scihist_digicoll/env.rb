@@ -598,7 +598,9 @@ module ScihistDigicoll
     # define_key "feature.fulltext_search", default: -> {
     #   # for now default false in real production true elsewhere
     #   ScihistDigicoll::Env.staging? || !Rails.env.production?
-    # }
+    # }, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
+
+    define_key "feature.new_oh_request_emails", default: "false", system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
 
 
   end
