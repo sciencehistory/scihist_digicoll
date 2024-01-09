@@ -245,3 +245,37 @@ hr.brand {
     }
   }
 }
+
+// breadcrumbs from main site, we don't use them very much, but copy the DOM and css,
+// adapt the CSS a bit.
+.shi-breadcrumbs {
+  margin-top: 0.5em;
+  margin-bottom: 1em;
+
+  .shi-breadcrumbs__list {
+    padding: 0;
+    list-style-type: none;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .shi-breadcrumbs__link {
+    @extend .small;
+    text-decoration: none;
+    color: $body-color;
+    display: flex;
+    align-items: baseline;
+
+    &:hover {
+      opacity: .7;
+    }
+  }
+
+  .shi-breadcrumbs__link::before {
+    // orig was an svg, but it just looks like a chevron come on!
+    content: "‹ ";
+    margin-right: 0.2em;
+    transform: translateY(-0.04em);
+  }
+}

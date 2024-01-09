@@ -30,6 +30,7 @@ RSpec.describe "Oral History Access Request Administration", :logged_in_user, ty
       expect(page).to have_text("Approve email was sent")
 
       expect(oh_request.reload.delivery_status).to eq("approved")
+      expect(oh_request.notes_from_staff).to eq("Hope you enjoy this!\r\n\r\nIt's a good one!")
 
       # not a great way to do this, but it tests at least something.
       enqueued_mail_job = ActiveJob::Base.queue_adapter.enqueued_jobs.find {|h| h["job_class"] == "ActionMailer::MailDeliveryJob"}
@@ -53,6 +54,7 @@ RSpec.describe "Oral History Access Request Administration", :logged_in_user, ty
       expect(page).to have_text("Reject email was sent")
 
       expect(oh_request.reload.delivery_status).to eq("rejected")
+      expect(oh_request.notes_from_staff).to eq("Sorry, you can't have this.")
 
       # not a great way to do this, but it tests at least something.
       enqueued_mail_job = ActiveJob::Base.queue_adapter.enqueued_jobs.find {|h| h["job_class"] == "ActionMailer::MailDeliveryJob"}

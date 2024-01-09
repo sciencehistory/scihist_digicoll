@@ -21,7 +21,7 @@ class Admin::OralHistoryAccessRequestsController < AdminController
     @oral_history_access_request = Admin::OralHistoryAccessRequest.find(params[:id])
 
     disposition = params[:disposition]
-    custom_message = params.dig(:oral_history_access_request_approval, :message)
+    custom_message = params.dig(:oral_history_access_request_approval, :notes_from_staff)
 
     if disposition == "approve"
       OralHistoryDeliveryMailer.
@@ -29,7 +29,7 @@ class Admin::OralHistoryAccessRequestsController < AdminController
         oral_history_delivery_email.
         deliver_later
 
-      @oral_history_access_request.update!(delivery_status: "approved")
+      @oral_history_access_request.update!(delivery_status: "approved", notes_from_staff: custom_message)
     else
       # Let's just use the generic mailer with a text mail?
       ActionMailer::Base.mail(
@@ -40,7 +40,7 @@ class Admin::OralHistoryAccessRequestsController < AdminController
         body: custom_message
       ).deliver_later
 
-      @oral_history_access_request.update!(delivery_status: "rejected")
+      @oral_history_access_request.update!(delivery_status: "rejected", notes_from_staff: custom_message)
     end
 
     redirect_to admin_oral_history_access_requests_path,

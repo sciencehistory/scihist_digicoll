@@ -32,8 +32,7 @@ describe OralHistorySessionsController, type: :controller, queue_adapter: :inlin
 
       expect(session[:oral_history_requester_id]).to eq requester_email.id
 
-      # placeholder response until we have better func implemented
-      expect(response.body).to include("AUTHENTICATED #{requester_email.email}")
+      expect(response).to redirect_to(oral_history_requests_path)
     end
 
     describe "with bad token" do

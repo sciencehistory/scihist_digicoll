@@ -1,7 +1,9 @@
 require 'rails_helper'
 
 describe "Login with Oral Histories magic link", queue_adapter: :inline do
-  let(:requester_email) { Admin::OralHistoryRequesterEmail.create(email: "example@example.com") }
+  let(:approved_request) { create(:oral_history_access_request) }
+  let(:requester_email) { approved_request.oral_history_requester_email }
+  let(:oral_history_work) { approved_request.work }
 
   it "can request a link which works to log in" do
     visit new_oral_history_session_path
@@ -19,7 +21,36 @@ describe "Login with Oral Histories magic link", queue_adapter: :inline do
 
     visit auto_login_link
 
-    # temporary placeholder until we provide actual dashboard func
-    expect(page).to have_text("AUTHENTICATED #{requester_email.email}")
+    # requests dashboard
+    expect(page).to have_selector("h2", text: "Oral History Requests")
+    expect(page).to have_text(requester_email.email)
+
+    # Move to individual request page
+    click_on oral_history_work.title
+
+    expect(page).to have_selector("h3", text: oral_history_work.title)
+    # basic sanity check, has a link for each asset
+    (by_request, not_by_request) = oral_history_work.members.partition { |member| member.kind_of?(Asset) && !member.published? && member.oh_available_by_request? }
+
+    # The logic for labelling links has gotten very convoluted, it's hard to check for
+    # expected links and only expected links. Sorry!
+
+    by_request.each do |asset|
+      expected_label = asset.role == "transcript" ? "Transcript (Published Version)" : asset.title
+      expect(page).to have_selector("a", text: expected_label)
+    end
+
+    not_by_request.each do |asset|
+      expected_label = asset.role == "transcript" ? "Transcript (Published Version)" : asset.title
+      expect(page).not_to have_selector("a", text: expected_label)
+    end
+
+    # logout
+    visit oral_history_requests_path
+    click_on "Sign out"
+    # make sure we're really signed out
+    visit oral_history_requests_path
+    expect(page).not_to have_selector("h2", text: "Oral History Requests")
+    expect(page).to have_content("Please fill out your email address, and you will be emailed a login link")
   end
 end

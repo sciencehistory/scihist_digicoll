@@ -1,15 +1,81 @@
 # PUBLIC FACING
+#
+# Actions to make requests, and also to view your requsets.
+#
 # Staff-facing actions are in app/controllers/admin/oral_history_access_requests_controller.rb
 class OralHistoryAccessRequestsController < ApplicationController
+  # message is publicly visible please
+  class AccessDenied < StandardError
+    def initialize(msg = "You must be authorized to access this page.")
+      super
+    end
+  end
+
   include OralHistoryRequestFormMemoryHelper
 
+  rescue_from AccessDenied do |exception|
+    redirect_to new_oral_history_session_path, flash: { auto_link_message: exception.message }
+  end
+
+  # GET /oral_history_requests
+  #
+  # List of this user's oral history requests. Protected from login.
+  def index
+    unless current_oral_history_requester.present?
+      raise AccessDenied.new
+    end
+
+    all_requests = current_oral_history_requester.oral_history_access_requests.
+      includes(:work => [:leaf_representative, { :oral_history_content => :interviewee_biographies } ]).
+      order(created_at: :asc).
+      strict_loading
+
+    grouped_by = all_requests.group_by(&:delivery_status)
+
+    @pending_requests = grouped_by["pending"] || []
+    @approved_requests = ((grouped_by["approved"] || []) + (grouped_by["automatic"] || [])).sort_by(&:delivery_status_changed_at)
+    @rejected_requests = (grouped_by["rejected"] || []).sort_by(&:delivery_status_changed_at)
+  end
+
+  # GET /oral_history_requests/:id
+  def show
+    @access_request = Admin::OralHistoryAccessRequest.find(params[:id])
+
+    # oops, if it's not approved nobody can see it... not clear
+    # where to send someone with what message, but this shouldn't happen unless something weird
+    # is happening, so... 404 it? OK.
+    unless @access_request.delivery_status_approved?
+      raise ActionController::RoutingError.new("Not found.")
+    end
+
+    unless current_oral_history_requester == @access_request.oral_history_requester_email
+      raise AccessDenied.new
+    end
+
+    # Calculate assets avail by request, broken up by type
+    all_by_request_assets = @access_request.work.members.
+      where(published: false).
+      includes(:leaf_representative).order(:position).strict_loading.
+      to_a.find_all do |member|
+        member.kind_of?(Asset) &&  member.oh_available_by_request?
+      end
+
+    @transcript_assets = all_by_request_assets.find_all { |a| a.role == "transcript" }
+    @audio_assets = all_by_request_assets.find_all { |a| a.content_type.start_with?("audio/") }
+    @other_assets = all_by_request_assets.find_all { |a| !@transcript_assets.include?(a) && !@audio_assets.include?(a) }
+  end
+
   # GET /works/4j03d09fr7t/request_oral_history_access
+  #
+  # Form to fill out
   def new
     @work = load_work(params['work_friendlier_id'])
     @oral_history_access_request = Admin::OralHistoryAccessRequest.new(work: @work)
   end
 
   # POST "/request_oral_history_access"
+  #
+  # Action to create request from form
   def create
     @work = load_work(params['admin_oral_history_access_request'].delete('work_friendlier_id'))
 
@@ -53,6 +119,7 @@ class OralHistoryAccessRequestsController < ApplicationController
   end
 
 private
+
   def oral_history_access_request_params
     params.require(:admin_oral_history_access_request).permit(
       :work_friendlier_id, :patron_name,
@@ -75,4 +142,13 @@ private
     end
     work
   end
+
+  def current_oral_history_requester
+    unless defined?(@current_oral_history_requester)
+      @current_oral_history_requester = (Admin::OralHistoryRequesterEmail.find_by(id: session[OralHistorySessionsController::SESSION_KEY]) if session[OralHistorySessionsController::SESSION_KEY].present?)
+    end
+    @current_oral_history_requester
+  end
+  helper_method :current_oral_history_requester
+
 end
