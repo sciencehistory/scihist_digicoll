@@ -75,6 +75,53 @@ describe OralHistoryAccessRequestsController, type: :controller do
         end
       end
     end
+
+    describe "with new email functionality" do
+      let(:work) { create(:oral_history_work, :available_by_request)}
+
+      before do
+        allow(ScihistDigicoll::Env).to receive(:lookup).with("feature.new_oh_request_emails").and_return(true)
+      end
+
+      describe "already had made request" do
+        let(:requester_email) { Admin::OralHistoryRequesterEmail.new(email: full_create_params[:patron_email]) }
+        let!(:existing_request) {
+          create(:oral_history_access_request,
+            work: work,
+            oral_history_requester_email: requester_email
+          )
+        }
+
+        describe "not already logged in" do
+          it "sends a login link" do
+            expect {
+              post :create, params: full_create_params
+            }.to have_enqueued_job(ActionMailer::MailDeliveryJob).with { |class_name, action|
+              expect(class_name).to eq "OhSessionMailer"
+              expect(action).to eq "link_email"
+            }
+
+            expect(response).to redirect_to(work_path(work.friendlier_id))
+            expect(flash[:notice]).to match /We've sent another email to #{Regexp.escape full_create_params[:patron_email]}/
+          end
+        end
+        describe "already logged in" do
+          before do
+            allow(controller).to receive(:current_oral_history_requester).and_return(requester_email)
+          end
+
+          it "redirects to dashboard" do
+            expect {
+              post :create, params: full_create_params
+            }.not_to have_enqueued_job
+
+            expect(response).to redirect_to(oral_history_requests_path)
+            expect(flash[:notice]).to match /You have already requested this Oral History/
+          end
+        end
+      end
+    end
+
   end
 end
 

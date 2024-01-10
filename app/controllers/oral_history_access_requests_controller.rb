@@ -81,12 +81,33 @@ class OralHistoryAccessRequestsController < ApplicationController
 
     # note `create_or_find_by` is the version with fewer race conditions, to make
     # this record if it doesn't already exist.
+    requester_email = (Admin::OralHistoryRequesterEmail.create_or_find_by!(email: patron_email_param) if patron_email_param.present?)
+
+
+    # In new mode, check to see if request already exists,
+    if ScihistDigicoll::Env.lookup("feature.new_oh_request_emails") && requester_email
+      if Admin::OralHistoryAccessRequest.where(work: @work, oral_history_requester_email: requester_email).exists?
+        if current_oral_history_requester.present? && current_oral_history_requester.email == patron_email_param
+          # if they're already logged in to what they requested, just redirect them
+          redirect_to oral_history_requests_path, notice: "You have already requested this Oral History"
+        else
+          # Send em another email with login link
+          OhSessionMailer.with(requester_email: requester_email).link_email.deliver_later
+          redirect_to work_path(@work.friendlier_id), notice: "You have already requested this Oral History. We've sent another email to #{patron_email_param} with a sign-in link."
+        end
+
+        return # abort further processing
+      end
+    end
+
+
     @oral_history_access_request = Admin::OralHistoryAccessRequest.new(
       oral_history_access_request_params.merge(
         work: @work,
-        oral_history_requester_email: (Admin::OralHistoryRequesterEmail.create_or_find_by!(email: patron_email_param) if patron_email_param.present?)
+        oral_history_requester_email: requester_email
       )
     )
+
 
     if @oral_history_access_request.save
       if @work.oral_history_content.available_by_request_automatic?
