@@ -123,7 +123,7 @@ private
   def oral_history_access_request_params
     params.require(:admin_oral_history_access_request).permit(
       :work_friendlier_id, :patron_name,
-      :patron_institution, :intended_use, :status, :notes)
+      :patron_institution, :intended_use)
   end
 
   def patron_email_param
