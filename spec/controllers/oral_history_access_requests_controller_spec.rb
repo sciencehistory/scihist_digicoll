@@ -28,5 +28,53 @@ describe OralHistoryAccessRequestsController, type: :controller do
       end
     end
   end
+
+  describe "#create" do
+    let(:full_create_params) do
+      {
+        admin_oral_history_access_request: {
+          work_friendlier_id: work.friendlier_id,
+          patron_name: "joe",
+          patron_institution: "university of somewhere",
+          intended_use: "I just like turtles",
+        },
+        patron_email: "joe@example.com"
+      }
+    end
+
+    describe "with old email functionality" do
+      describe "automatic delivery" do
+        let(:work) { create(:oral_history_work, :available_by_request, available_by_request_mode: :automatic)}
+
+        it "emails files" do
+          expect {
+            post :create, params: full_create_params
+          }.to have_enqueued_job(ActionMailer::MailDeliveryJob).with { |class_name, action|
+              expect(class_name).to eq "OralHistoryDeliveryMailer"
+              expect(action).to eq "oral_history_delivery_email"
+          }
+
+          expect(response).to redirect_to(work_path(work.friendlier_id))
+          expect(flash[:notice]).to match /We are sending you links to the files you requested/
+        end
+      end
+
+      describe "manual review" do
+        let(:work) { create(:oral_history_work, :available_by_request, available_by_request_mode: :manual_review)}
+
+        it "emails admin, and lets user know" do
+          expect {
+            post :create, params: full_create_params
+          }.to have_enqueued_job(ActionMailer::MailDeliveryJob).with { |class_name, action|
+              expect(class_name).to eq "OralHistoryRequestNotificationMailer"
+              expect(action).to eq "notification_email"
+          }
+
+          expect(response).to redirect_to(work_path(work.friendlier_id))
+          expect(flash[:notice]).to match /Your request will be reviewed/
+        end
+      end
+    end
+  end
 end
 
