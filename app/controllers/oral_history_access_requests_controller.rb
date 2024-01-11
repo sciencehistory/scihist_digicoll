@@ -85,7 +85,7 @@ class OralHistoryAccessRequestsController < ApplicationController
 
 
     # In new mode, check to see if request already exists,
-    if ScihistDigicoll::Env.lookup("feature.new_oh_request_emails") && requester_email
+    if ScihistDigicoll::Env.lookup("feature_new_oh_request_emails") && requester_email
       if Admin::OralHistoryAccessRequest.where(work: @work, oral_history_requester_email: requester_email).exists?
         if current_oral_history_requester.present? && current_oral_history_requester.email == patron_email_param
           # if they're already logged in to what they requested, just redirect them
@@ -113,12 +113,24 @@ class OralHistoryAccessRequestsController < ApplicationController
       if @work.oral_history_content.available_by_request_automatic?
         @oral_history_access_request.update!(delivery_status: "automatic")
 
-        OralHistoryDeliveryMailer.
-          with(request: @oral_history_access_request).
-          oral_history_delivery_email.
-          deliver_later
+        if ScihistDigicoll::Env.lookup("feature_new_oh_request_emails")
+          # new style, if they are already logged in they have immediate access, else an email
+          if current_oral_history_requester.present? && current_oral_history_requester.email == patron_email_param
+            redirect_to oral_history_requests_path, notice: "The files you have requested are immediately available"
+          else
+            # Send em another email with login link
+            OhSessionMailer.with(requester_email: requester_email).link_email.deliver_later
+            redirect_to work_path(@work.friendlier_id), notice: "The files you have requested are immediately available. We've sent an email to #{patron_email_param} with a sign-in link."
+          end
 
-        redirect_to work_path(@work.friendlier_id), notice: "Check your email! We are sending you links to the files you requested, to #{@oral_history_access_request.requester_email}."
+        else
+          OralHistoryDeliveryMailer.
+            with(request: @oral_history_access_request).
+            oral_history_delivery_email.
+            deliver_later
+
+          redirect_to work_path(@work.friendlier_id), notice: "Check your email! We are sending you links to the files you requested, to #{@oral_history_access_request.requester_email}."
+        end
       else # manual review
         OralHistoryRequestNotificationMailer.
           with(request: @oral_history_access_request).

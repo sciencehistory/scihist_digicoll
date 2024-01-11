@@ -80,8 +80,61 @@ describe OralHistoryAccessRequestsController, type: :controller do
       let(:work) { create(:oral_history_work, :available_by_request)}
 
       before do
-        allow(ScihistDigicoll::Env).to receive(:lookup).with("feature.new_oh_request_emails").and_return(true)
+        allow(ScihistDigicoll::Env).to receive(:lookup).with("feature_new_oh_request_emails").and_return(true)
       end
+
+      describe "automatic delivery" do
+        let(:work) { create(:oral_history_work, :available_by_request, available_by_request_mode: :automatic)}
+
+        describe "already logged in" do
+          let(:requester_email) { Admin::OralHistoryRequesterEmail.new(email: full_create_params[:patron_email]) }
+
+          before do
+            allow(controller).to receive(:current_oral_history_requester).and_return(requester_email)
+          end
+
+          it "redirects to dashboard" do
+            expect {
+              post :create, params: full_create_params
+            }.not_to have_enqueued_job
+
+            expect(response).to redirect_to(oral_history_requests_path)
+            expect(flash[:notice]).to match /The files you have requested are immediately available/
+          end
+        end
+
+        describe "not already logged in" do
+          it "emails a link" do
+            expect {
+              post :create, params: full_create_params
+            }.to have_enqueued_job(ActionMailer::MailDeliveryJob).with { |class_name, action|
+                expect(class_name).to eq "OhSessionMailer"
+                expect(action).to eq "link_email"
+            }
+
+            expect(response).to redirect_to(work_path(work.friendlier_id))
+            expect(flash[:notice]).to match /The files you have requested are immediately available. We've sent an email to #{Regexp.escape full_create_params[:patron_email]} with a sign-in link/
+          end
+        end
+      end
+
+      describe "manual review" do
+        # same as old style, we just let them know that they'll get an email.
+        let(:work) { create(:oral_history_work, :available_by_request, available_by_request_mode: :manual_review)}
+
+        it "emails admin, and lets user know" do
+          expect {
+            post :create, params: full_create_params
+          }.to have_enqueued_job(ActionMailer::MailDeliveryJob).with { |class_name, action|
+              expect(class_name).to eq "OralHistoryRequestNotificationMailer"
+              expect(action).to eq "notification_email"
+          }
+
+          expect(response).to redirect_to(work_path(work.friendlier_id))
+          expect(flash[:notice]).to match /Your request will be reviewed/
+        end
+      end
+
 
       describe "already had made request" do
         let(:requester_email) { Admin::OralHistoryRequesterEmail.new(email: full_create_params[:patron_email]) }
