@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # The standard image-centered work show page, used for works by default, when
 # we don't have a special purpose work show page.
 

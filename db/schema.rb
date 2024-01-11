@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_03_183838) do
+ActiveRecord::Schema[7.0].define(version: 2023_12_18_201400) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -204,8 +204,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_03_183838) do
     t.text "patron_email_ciphertext"
     t.text "patron_institution_ciphertext"
     t.text "intended_use_ciphertext"
-    t.string "status"
-    t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "delivery_status", default: "pending"

@@ -34,7 +34,7 @@ gem "mail", ">= 2.8.0.rc1", "< 3"
 #
 gem "net-protocol", "!= 0.2.0"
 
-gem "view_component", "~> 3.6"
+gem "view_component", "~> 3.9"
 gem "alba", "~> 2.0" # for JSON serialization of models
 
 #  Scout is a monitoring tool we are experimenting with
@@ -66,7 +66,7 @@ gem "aws-sdk-s3", "~> 1.0"
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
-gem 'puma', '~> 6.3'
+gem 'puma', '~> 6.4'
 
 # resque+redis being used for activejob.
 # resque-pool currently does not support resque 2.0 alas.
@@ -115,7 +115,7 @@ gem 'font-awesome-rails', '~> 4.7'
 gem "lograge", "< 2"
 gem "device_detector", "~> 1.0" # user-agent parsing we use for logging
 
-gem "attr_json", "~> 2.0"
+gem "attr_json", "~> 2.3"
 
 gem 'kithe', "~> 2.13"
 
@@ -130,7 +130,7 @@ gem "shrine", "~> 3.3" #, path: "../shrine"
 gem "uppy-s3_multipart"
 gem "content_disposition", "~> 1.0"
 
-gem 'faster_s3_url', "< 2" # for generating s3 urls faster!
+gem 'faster_s3_url', "~> 1.1" # for generating s3 urls faster!
 
 gem "ransack", "~> 4.0" # used as an aid for ADMIM dashboard search/sorting -- we'd like to move away from it
 gem "kaminari", "~> 1.2"
@@ -249,3 +249,8 @@ end
 # to configure Blacklight, for automatic retry
  gem "faraday", "~> 2.0"
  gem "faraday-retry", "~> 2.0"
+
+
+# Barnes reports Ruby runtime metrics to Heroku, where we can monitor them.
+# See https://devcenter.heroku.com/articles/language-runtime-metrics-ruby
+gem "barnes"

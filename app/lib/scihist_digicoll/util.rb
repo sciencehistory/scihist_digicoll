@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module ScihistDigicoll
   module Util
     # inspired by code at

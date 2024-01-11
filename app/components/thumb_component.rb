@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+
 # A component that displays an image tag, for a thumbnail derivative for a given Kithe::Asset.
 #
 # The Kithe::Asset provided as an arg will usually be a leaf_representative of a Work or Collection.
@@ -92,7 +95,14 @@ class ThumbComponent < ApplicationComponent
   end
 
   def placeholder_image_tag
-    tag "img", alt: "", src: placeholder_img_url, width: "100%";
+    if asset&.content_type&.start_with?("audio/")
+      # use a Audio File icon in SVG. This does mean we'll have repeated svg
+      # on a page, some technique to use svg `use`, but not clear how to handle it
+      # well while just letting people call ThumbComponent from different places
+      helpers.fa_file_audio_class_solid
+    else
+      tag "img", alt: "", src: placeholder_img_url, width: "100%";
+    end
   end
 
 

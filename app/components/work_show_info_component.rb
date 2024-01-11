@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Display the right column of a work show page including, metadata attributes,
 # physical location, 'related items'.
 #
