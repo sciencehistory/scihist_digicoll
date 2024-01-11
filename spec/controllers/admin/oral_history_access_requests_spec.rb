@@ -1,6 +1,14 @@
 require 'rails_helper'
-RSpec.describe Admin::OralHistoryAccessRequestsController, :logged_in_user, type: :controller do
-  describe "Oral History Access Request List Controller", logged_in_user: :admin do
+RSpec.describe Admin::OralHistoryAccessRequestsController, logged_in_user: :admin, type: :controller do
+
+  describe "#index" do
+    it "renders the list of requests even if an OH has no interview number" do
+      get :index
+      expect(response.code).to eq "200"
+    end
+  end
+
+  describe "#report" do
     let(:work) { create(:oral_history_work) }
 
     let(:latest_date) {Time.parse("2020-10-01")}
@@ -16,11 +24,6 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, :logged_in_user, type
             work: work
           )
       end
-    end
-
-    it "renders the list of requests even if an OH has no interview number" do
-      get :index
-      expect(response.code).to eq "200"
     end
 
     it "allows you to download the report" do
