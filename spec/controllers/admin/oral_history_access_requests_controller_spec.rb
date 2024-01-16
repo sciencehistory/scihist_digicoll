@@ -52,4 +52,45 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, logged_in_user: :admi
       expect(csv_response[5][6]).to match  /Institution 8/
     end
   end
+
+  describe "respond" do
+    let(:message) { "custom message from staff" }
+    let(:oral_history_access_request) { create(:oral_history_access_request, delivery_status: "pending") }
+
+    it "can approve" do
+      expect {
+        post :respond, params: {
+          id: oral_history_access_request.id,
+          disposition: "approve",
+          oral_history_access_request_approval: { notes_from_staff: message }
+        }
+      }.to have_enqueued_job(ActionMailer::MailDeliveryJob).with { |class_name, action|
+        expect(class_name).to eq "OralHistoryDeliveryMailer"
+        expect(action).to eq "oral_history_delivery_email"
+      }
+      #TODO better way to test email sending, should we actually have email sent
+
+      expect(flash[:notice]).to match /Approve email was sent to #{Regexp.escape oral_history_access_request.requester_email}/
+      expect(response).to redirect_to(admin_oral_history_access_requests_path)
+
+      oral_history_access_request.reload
+      expect(oral_history_access_request.delivery_status).to eq "approved"
+    end
+
+    it "can reject" do
+      expect {
+        post :respond, params: {
+          id: oral_history_access_request.id,
+          disposition: "reject",
+          oral_history_access_request_approval: { notes_from_staff: message }
+        }
+      }.to have_enqueued_job(ActionMailer::MailDeliveryJob)
+
+      expect(flash[:notice]).to match /Reject email was sent to #{Regexp.escape oral_history_access_request.requester_email}/
+      expect(response).to redirect_to(admin_oral_history_access_requests_path)
+
+      oral_history_access_request.reload
+      expect(oral_history_access_request.delivery_status).to eq "rejected"
+    end
+  end
 end
