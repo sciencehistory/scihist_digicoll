@@ -53,44 +53,48 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, logged_in_user: :admi
     end
   end
 
-  describe "respond" do
+  describe "respond", queue_adapter: :inline do
     let(:message) { "custom message from staff" }
     let(:oral_history_access_request) { create(:oral_history_access_request, delivery_status: "pending") }
 
     it "can approve" do
-      expect {
-        post :respond, params: {
-          id: oral_history_access_request.id,
-          disposition: "approve",
-          oral_history_access_request_approval: { notes_from_staff: message }
-        }
-      }.to have_enqueued_job(ActionMailer::MailDeliveryJob).with { |class_name, action|
-        expect(class_name).to eq "OralHistoryDeliveryMailer"
-        expect(action).to eq "oral_history_delivery_email"
+      post :respond, params: {
+        id: oral_history_access_request.id,
+        disposition: "approve",
+        oral_history_access_request_approval: { notes_from_staff: message }
       }
-      #TODO better way to test email sending, should we actually have email sent
 
       expect(flash[:notice]).to match /Approve email was sent to #{Regexp.escape oral_history_access_request.requester_email}/
       expect(response).to redirect_to(admin_oral_history_access_requests_path)
 
       oral_history_access_request.reload
       expect(oral_history_access_request.delivery_status).to eq "approved"
+
+      last_email = ActionMailer::Base.deliveries.last
+      expect(last_email.subject).to eq "Science History Institute: files from #{oral_history_access_request.work.title}"
+      expect(last_email.from).to eq [ScihistDigicoll::Env.lookup(:oral_history_email_address)]
+      expect(last_email.body).to match /Here are your requested files/
+      expect(last_email.body).to include(message)
     end
 
     it "can reject" do
-      expect {
-        post :respond, params: {
-          id: oral_history_access_request.id,
-          disposition: "reject",
-          oral_history_access_request_approval: { notes_from_staff: message }
-        }
-      }.to have_enqueued_job(ActionMailer::MailDeliveryJob)
+      post :respond, params: {
+        id: oral_history_access_request.id,
+        disposition: "reject",
+        oral_history_access_request_approval: { notes_from_staff: message }
+      }
+
 
       expect(flash[:notice]).to match /Reject email was sent to #{Regexp.escape oral_history_access_request.requester_email}/
       expect(response).to redirect_to(admin_oral_history_access_requests_path)
 
       oral_history_access_request.reload
       expect(oral_history_access_request.delivery_status).to eq "rejected"
+
+      last_email = ActionMailer::Base.deliveries.last
+      expect(last_email.subject).to eq "Science History Institute: Your request"
+      expect(last_email.from).to eq [ScihistDigicoll::Env.lookup(:oral_history_email_address)]
+      expect(last_email.body).to include(message)
     end
   end
 end
