@@ -33,7 +33,7 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
   end
 
   describe "#rejected_with_session_link_email" do
-    let(:access_request) { create(:oral_history_access_request, delivery_status: "approved") }
+    let(:access_request) { create(:oral_history_access_request, delivery_status: "rejected") }
 
     let(:mail) do
       OralHistoryDeliveryMailer.

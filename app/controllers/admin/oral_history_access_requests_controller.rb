@@ -24,6 +24,8 @@ class Admin::OralHistoryAccessRequestsController < AdminController
     custom_message = params.dig(:oral_history_access_request_approval, :notes_from_staff)
 
     if disposition == "approve"
+      @oral_history_access_request.update!(delivery_status: "approved", notes_from_staff: custom_message)
+
       mailer_action = if ScihistDigicoll::Env.lookup("feature_new_oh_request_emails")
         :approved_with_session_link_email
       else
@@ -34,9 +36,9 @@ class Admin::OralHistoryAccessRequestsController < AdminController
         with(request: @oral_history_access_request, custom_message: custom_message).
         public_send(mailer_action).
         deliver_later
-
-      @oral_history_access_request.update!(delivery_status: "approved", notes_from_staff: custom_message)
     else
+      @oral_history_access_request.update!(delivery_status: "rejected", notes_from_staff: custom_message)
+
       if ScihistDigicoll::Env.lookup("feature_new_oh_request_emails")
         OralHistoryDeliveryMailer.
           with(request: @oral_history_access_request, custom_message: custom_message).
@@ -52,8 +54,6 @@ class Admin::OralHistoryAccessRequestsController < AdminController
           body: custom_message
         ).deliver_later
       end
-
-      @oral_history_access_request.update!(delivery_status: "rejected", notes_from_staff: custom_message)
     end
 
     redirect_to admin_oral_history_access_requests_path,
