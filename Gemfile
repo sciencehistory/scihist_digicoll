@@ -1,8 +1,11 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-# Include just the major/minor version of whatever we find in .ruby-version,
-# ie `~> 2.5` or `~> 2.6`, not including additional that may be in 2.3
+# Heroku uses this: We want to allow latest PATCH version of ruby, such as
+# "~> 3.2.2" would allow any 3.2.x >= than 3.2.2
+#
+# We take the number .ruby-version file, make sure we trim off any extraneous pre-release
+# or other stuff on end, and create spec matching above.
 ruby "~> #{File.read(File.join(__dir__ , '.ruby-version')).chomp.split('.').slice(0,3).join('.')}"
 
 
