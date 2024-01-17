@@ -41,15 +41,10 @@ class OralHistoryAccessRequestsController < ApplicationController
   def show
     @access_request = Admin::OralHistoryAccessRequest.find(params[:id])
 
-    # oops, if it's not approved nobody can see it... not clear
-    # where to send someone with what message, but this shouldn't happen unless something weird
-    # is happening, so... 404 it? OK.
-    unless @access_request.delivery_status_approved?
+    # If they can't see it for any reason, just 404 as if it was not there.
+    unless current_oral_history_requester == @access_request.oral_history_requester_email &&
+          (@access_request.delivery_status_approved? || @access_request.delivery_status_automatic?)
       raise ActionController::RoutingError.new("Not found.")
-    end
-
-    unless current_oral_history_requester == @access_request.oral_history_requester_email
-      raise AccessDenied.new
     end
 
     # Calculate assets avail by request, broken up by type
