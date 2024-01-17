@@ -22,4 +22,8 @@ RSpec.describe OhSessionMailer, :type => :mailer do
 
     expect(mail.body).to include("<a data-auto-login-link=\"true\" href=\"#{login_oral_history_session_url('TOKEN')}\">")
   end
+
+  it "includes a unique reference header to avoid threading with other magic link emails" do
+    expect(mail.header["references"]&.value).to match /Unique-[0-9a-f]+/
+  end
 end
