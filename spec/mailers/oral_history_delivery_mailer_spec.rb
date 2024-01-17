@@ -33,7 +33,8 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
   end
 
   describe "#rejected_with_session_link_email" do
-    let(:access_request) { create(:oral_history_access_request, delivery_status: "rejected") }
+    let(:custom_message) { "Sorry, impossible at this time" }
+    let(:access_request) { create(:oral_history_access_request, delivery_status: "rejected", notes_from_staff: custom_message) }
 
     let(:mail) do
       OralHistoryDeliveryMailer.
@@ -52,6 +53,10 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
 
       mail_body_html = Nokogiri::HTML(mail.body.raw_source)
       expect(mail_body_html).to have_text("Unfortunately we could not approve your request for files from #{access_request.work.title} at this time.")
+    end
+
+    it "includes the custom message" do
+      expect(mail.body.raw_source).to include(custom_message)
     end
   end
 end
