@@ -9,6 +9,11 @@ class OhSessionMailer < ApplicationMailer
   def link_email
     @requester_email = params[:requester_email] or raise ArgumentError.new("missing required params[:requester_email]")
 
+    # prevent gmail from threading multiple magic links in a thread, as gmail ends up hiding the more
+    # recent one, which is bad maybe. Set a unique "references" header to avoid this
+    # https://postmarkapp.com/blog/magic-links
+    headers["references"] = "Unique-#{SecureRandom.hex(20)}"
+
     mail to: @requester_email.email, subject: "Sign-in to Science History Insitute Oral Histories Requests"
   end
 
