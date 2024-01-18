@@ -42,7 +42,7 @@
       <div class="col">
         <%# we'll use the name of the belongs_to association so validation errors work well,
             this is all kind of hacky %>
-        <%= f.input :oral_history_requester_email,
+        <%= f.input :oral_history_requester,
           as: :email,
           required: true,
           hint: "Links to files will be emailed to this address",

@@ -6,7 +6,7 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
   before do
     # mock the link to test it ends up in email? Since it's dynamic and different
     # every time you call it, I guess this works?
-    allow_any_instance_of(Admin::OralHistoryRequesterEmail).to receive(:generate_token_for).with(:auto_login).and_return("TOKEN")
+    allow_any_instance_of(OralHistoryRequester).to receive(:generate_token_for).with(:auto_login).and_return("TOKEN")
   end
 
   describe "#approved_with_session_link_email" do

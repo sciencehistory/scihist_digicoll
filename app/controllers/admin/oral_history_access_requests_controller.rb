@@ -6,7 +6,7 @@ class Admin::OralHistoryAccessRequestsController < AdminController
   def index
     @oral_history_access_requests = OralHistoryRequest.
     where('created_at > ?', 3.months.ago).
-    includes(:oral_history_requester_email, :work).
+    includes(:oral_history_requester, :work).
     order(created_at: :desc).strict_loading.to_a
   end
 

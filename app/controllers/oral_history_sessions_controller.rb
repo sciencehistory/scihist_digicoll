@@ -7,7 +7,7 @@ class OralHistorySessionsController < ApplicationController
   #
   # Actually logs someone in
   def login
-    requester_email = Admin::OralHistoryRequesterEmail.find_by_token_for(:auto_login, params[:token])
+    requester_email = OralHistoryRequester.find_by_token_for(:auto_login, params[:token])
 
     if requester_email.present?
       session[SESSION_KEY] = requester_email.id
@@ -29,7 +29,7 @@ class OralHistorySessionsController < ApplicationController
   #
   # Sends an emailed links
   def create
-    requester_email = Admin::OralHistoryRequesterEmail.find_by(email: email_param)
+    requester_email = OralHistoryRequester.find_by(email: email_param)
 
     if requester_email.present?
       OhSessionMailer.with(requester_email: requester_email).link_email.deliver_later

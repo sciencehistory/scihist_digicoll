@@ -25,6 +25,7 @@ class OralHistoryAccessRequestsController < ApplicationController
       raise AccessDenied.new
     end
 
+
     all_requests = current_oral_history_requester.oral_history_requests.
       includes(:work => [:leaf_representative, { :oral_history_content => :interviewee_biographies } ]).
       order(created_at: :asc).
@@ -42,7 +43,7 @@ class OralHistoryAccessRequestsController < ApplicationController
     @access_request = OralHistoryRequest.find(params[:id])
 
     # If they can't see it for any reason, just 404 as if it was not there.
-    unless current_oral_history_requester == @access_request.oral_history_requester_email &&
+    unless current_oral_history_requester == @access_request.oral_history_requester &&
           (@access_request.delivery_status_approved? || @access_request.delivery_status_automatic?)
       raise ActionController::RoutingError.new("Not found.")
     end
@@ -76,11 +77,11 @@ class OralHistoryAccessRequestsController < ApplicationController
 
     # note `create_or_find_by` is the version with fewer race conditions, to make
     # this record if it doesn't already exist.
-    requester_email = (Admin::OralHistoryRequesterEmail.create_or_find_by!(email: patron_email_param) if patron_email_param.present?)
+    requester_email = (OralHistoryRequester.create_or_find_by!(email: patron_email_param) if patron_email_param.present?)
 
     # In new mode, check to see if request already exists,
     if ScihistDigicoll::Env.lookup("feature_new_oh_request_emails") && requester_email &&
-        OralHistoryRequest.where(work: @work, oral_history_requester_email: requester_email).exists?
+        OralHistoryRequest.where(work: @work, oral_history_requester: requester_email).exists?
 
       want_request_dashboard_response(
         work: @work,
@@ -95,7 +96,7 @@ class OralHistoryAccessRequestsController < ApplicationController
     @oral_history_access_request = OralHistoryRequest.new(
       oral_history_access_request_params.merge(
         work: @work,
-        oral_history_requester_email: requester_email
+        oral_history_requester: requester_email
       )
     )
 
@@ -148,7 +149,7 @@ private
   # so we DRY extract to this method.
   #
   # @param work [Work] the OH work
-  # @param requester_email [Admin::OralHistoryRequesterEmail] need this one too
+  # @param requester_email [OralHistoryRequester] need this one too
   # @param emailed_notice [String] flash notice to let people know we'e emailed a link
   # @param immediate_notice [String] flash notice when they're already logged in and we're sending them right there
   def want_request_dashboard_response(work:, requester_email:, emailed_notice:, immediate_notice:)
@@ -187,7 +188,7 @@ private
 
   def current_oral_history_requester
     unless defined?(@current_oral_history_requester)
-      @current_oral_history_requester = (Admin::OralHistoryRequesterEmail.find_by(id: session[OralHistorySessionsController::SESSION_KEY]) if session[OralHistorySessionsController::SESSION_KEY].present?)
+      @current_oral_history_requester = (OralHistoryRequester.find_by(id: session[OralHistorySessionsController::SESSION_KEY]) if session[OralHistorySessionsController::SESSION_KEY].present?)
     end
     @current_oral_history_requester
   end
