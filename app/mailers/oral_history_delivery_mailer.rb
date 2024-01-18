@@ -1,3 +1,5 @@
+# Used for delivering actual files (old style), or with new stle for delivering
+# notice of approval/rejection, and magic login link to see your requests.
 class OralHistoryDeliveryMailer < ApplicationMailer
   default from: ScihistDigicoll::Env.lookup!(:oral_history_email_address), bcc: ScihistDigicoll::Env.lookup!(:oral_history_email_address)
 
@@ -8,7 +10,25 @@ class OralHistoryDeliveryMailer < ApplicationMailer
   def oral_history_delivery_email
     raise ArgumentError.new("Required params[:request] missing") unless request.present?
     raise ArgumentError.new("Required patron email missing") unless request.requester_email.present?
-    mail(to: to_address, subject: subject, content_type: "text/html")
+    mail(to: to_address, subject: "Science History Institute: files from #{work.title}", content_type: "text/html")
+  end
+
+  # NEW style, where we send them a link to their in-browser 'dashboard' instead of
+  # links to files
+  def approved_with_session_link_email
+    raise ArgumentError.new("Required params[:request] missing") unless request.present?
+    raise ArgumentError.new("Required request.oral_history_requester_email missing") unless request.oral_history_requester_email.present?
+    raise ArgumentError.new("params[:request] must be approved but was #{request.delivery_status}") unless request.delivery_status_approved?
+
+    mail(to: to_address, subject: "Science History Institute: Access files for #{work.title}", content_type: "text/html")
+  end
+
+  def rejected_with_session_link_email
+    raise ArgumentError.new("Required params[:request] missing") unless request.present?
+    raise ArgumentError.new("Required request.oral_history_requester_email missing") unless request.oral_history_requester_email.present?
+    raise ArgumentError.new("params[:request] must be rejected but was #{request.delivery_status}") unless request.delivery_status_rejected?
+
+    mail(to: to_address, subject: "Science History Institute: Your request for #{work.title}", content_type: "text/html")
   end
 
   def request
@@ -16,8 +36,11 @@ class OralHistoryDeliveryMailer < ApplicationMailer
   end
 
   # warning `message` is a reserved method and param name for ActionMailer, don't override it!
+  #
+  # Old style we pass a message in as param, but new style we use the message that's state in the request
+  # please
   def custom_message
-    @custom_message ||= params[:custom_message]
+    @custom_message ||= params[:request].notes_from_staff.presence || params[:custom_message]
   end
 
   def to_address
@@ -44,12 +67,14 @@ class OralHistoryDeliveryMailer < ApplicationMailer
     WorkFileListShowComponent.new(work).available_by_request_assets.sort_by(&:position)
   end
 
-  def subject
-    "Science History Institute: files from #{work.title}"
-  end
-
   def hostname
     ScihistDigicoll::Env.lookup!(:app_url_base)
   end
 
+  def login_magic_link
+    token = request.oral_history_requester_email.generate_token_for(:auto_login)
+
+    login_oral_history_session_url(token)
+  end
+  helper_method :login_magic_link
 end

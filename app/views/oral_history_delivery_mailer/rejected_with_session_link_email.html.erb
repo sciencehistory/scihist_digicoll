@@ -1,0 +1,14 @@
+<p>Dear <%= mailer.patron_name %>,</p>
+
+<p>Thank you for your recent visit to the <%= link_to "Science History Institute’s Digital Collections", mailer.hostname %>.</p>
+
+<p>Unfortunately we could <b>not</b> approve your request for files from <%= link_to mailer.work.title, work_url(mailer.work.friendlier_id) %> at this time.
+
+<% if mailer.custom_message.present? %>
+  <%= simple_format mailer.custom_message %>
+<% end %>
+
+<p>You can access all your Oral History requests using this special login link:
+    <%= link_to "link", login_magic_link, data: { auto_login_link: true}  %></p>
+
+<p>If you have any questions, you can reply to this email, or write <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}" %>.<p>
