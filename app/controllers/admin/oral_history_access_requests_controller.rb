@@ -1,5 +1,5 @@
 # STAFF FACING
-# Public facing actions are in app/controllers/oral_history_access_requests_controller.rb
+# Public facing actions are in app/controllers/oral_history_requests_controller.rb
 require 'csv'
 
 class Admin::OralHistoryAccessRequestsController < AdminController

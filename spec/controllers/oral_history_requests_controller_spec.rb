@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe OralHistoryAccessRequestsController, type: :controller do
+describe OralHistoryRequestsController, type: :controller do
   describe "#index" do
     it "rejects if no auth" do
       get :index

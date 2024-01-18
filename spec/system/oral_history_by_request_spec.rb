@@ -145,7 +145,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
     let(:intended_use) { "for fun" }
 
     it "remembers form entry" do
-      visit request_oral_history_access_form_path(work1.friendlier_id)
+      visit oral_history_request_form_path(work1.friendlier_id)
 
       pr = '#oral_history_request_'
 
@@ -159,7 +159,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       expect(page).to have_text "Thank you for your interest"
 
       # by saving and restoring from cookie, the form should be pre-filled
-      visit request_oral_history_access_form_path(work2.friendlier_id)
+      visit oral_history_request_form_path(work2.friendlier_id)
       expect(find("#{pr}patron_name").value).to eq patron_name
       expect(find("#{pr}oral_history_requester").value).to eq patron_email
       expect(find("#{pr}patron_institution").value).to eq patron_institution

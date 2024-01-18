@@ -70,10 +70,10 @@ Rails.application.routes.draw do
   end
 
   # By-request oral history stuff
-  get "works/:work_friendlier_id/request_oral_history_access", to: "oral_history_access_requests#new", as: 'request_oral_history_access_form'
-  post "request_oral_history_access", to: "oral_history_access_requests#create", as: 'request_oral_history_access'
-  get "oral_history_requests", to: "oral_history_access_requests#index", as: "oral_history_requests"
-  get "oral_history_requests/:id", to: "oral_history_access_requests#show", as: "oral_history_request"
+  get "works/:work_friendlier_id/oral_history_request", to: "oral_history_requests#new", as: 'oral_history_request_form'
+  post "request_oral_history", to: "oral_history_requests#create", as: 'request_oral_history'
+  get "oral_history_requests", to: "oral_history_requests#index", as: "oral_history_requests"
+  get "oral_history_requests/:id", to: "oral_history_requests#show", as: "oral_history_request"
 
   resource :oral_history_session, only: [:new, :create, :destroy] do
     member do

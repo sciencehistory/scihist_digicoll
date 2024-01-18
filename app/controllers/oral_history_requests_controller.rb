@@ -3,7 +3,7 @@
 # Actions to make requests, and also to view your requsets.
 #
 # Staff-facing actions are in app/controllers/admin/oral_history_access_requests_controller.rb
-class OralHistoryAccessRequestsController < ApplicationController
+class OralHistoryRequestsController < ApplicationController
   # message is publicly visible please
   class AccessDenied < StandardError
     def initialize(msg = "You must be authorized to access this page.")
