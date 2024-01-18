@@ -61,18 +61,18 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       expect(page).to have_text("Fill out a brief form to receive immediate access to these files.")
 
       click_on 'Get Access'
-      pr = '#admin_oral_history_access_request_'
+      pr = '#oral_history_request_'
 
       all("#{pr}patron_name").first.fill_in  with: 'Joe Schmo'
       all("#{pr}oral_history_requester_email").first.fill_in with: 'patron@library.org'
       all("#{pr}patron_institution").first.fill_in with: 'Some Library'
       # leave out intended use, because not required for this request type, make sure it goes through
 
-      expect(Admin::OralHistoryAccessRequest.count).to eq 0
+      expect(OralHistoryRequest.count).to eq 0
       click_on 'Submit request'
-      expect(Admin::OralHistoryAccessRequest.count).to eq 1
+      expect(OralHistoryRequest.count).to eq 1
 
-      new_req = Admin::OralHistoryAccessRequest.last
+      new_req = OralHistoryRequest.last
       expect(new_req.patron_name).to eq "Joe Schmo"
       expect(new_req.requester_email).to eq "patron@library.org"
       expect(new_req.patron_institution).to eq "Some Library"
@@ -110,7 +110,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       expect(page).to have_text("Fill out a brief form and a staff member will review your request for these files. You should receive an email within 3 business days.")
 
       click_on 'Request Access'
-      pr = '#admin_oral_history_access_request_'
+      pr = '#oral_history_request_'
 
       expect(page).to have_text("After your request is received, you will receive an email response, usually within 3 business days. ")
 
@@ -119,11 +119,11 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       all("#{pr}patron_institution").first.fill_in with: 'Some Library'
       all("#{pr}intended_use").first.fill_in with: 'Fun & games'
 
-      expect(Admin::OralHistoryAccessRequest.count).to eq 0
+      expect(OralHistoryRequest.count).to eq 0
       click_on 'Submit request'
-      expect(Admin::OralHistoryAccessRequest.count).to eq 1
+      expect(OralHistoryRequest.count).to eq 1
 
-      new_req = Admin::OralHistoryAccessRequest.last
+      new_req = OralHistoryRequest.last
       expect(new_req.patron_name).to eq "Joe Schmo"
       expect(new_req.requester_email).to eq "patron@library.org"
       expect(new_req.patron_institution).to eq "Some Library"
@@ -147,7 +147,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
     it "remembers form entry" do
       visit request_oral_history_access_form_path(work1.friendlier_id)
 
-      pr = '#admin_oral_history_access_request_'
+      pr = '#oral_history_request_'
 
       find("#{pr}patron_name").fill_in  with: patron_name
       find("#{pr}oral_history_requester_email").fill_in with: patron_email

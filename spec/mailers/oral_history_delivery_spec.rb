@@ -27,7 +27,7 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
       end
     end
 
-    let(:request) { Admin::OralHistoryAccessRequest.create!(
+    let(:request) { OralHistoryRequest.create!(
         created_at: Time.parse("2020-10-01 12:00:00 +0000"),
         patron_name: "Patron name",
         oral_history_requester_email: Admin::OralHistoryRequesterEmail.create_or_find_by(email: "patron@institution.com"),

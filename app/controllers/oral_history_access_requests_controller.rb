@@ -25,7 +25,7 @@ class OralHistoryAccessRequestsController < ApplicationController
       raise AccessDenied.new
     end
 
-    all_requests = current_oral_history_requester.oral_history_access_requests.
+    all_requests = current_oral_history_requester.oral_history_requests.
       includes(:work => [:leaf_representative, { :oral_history_content => :interviewee_biographies } ]).
       order(created_at: :asc).
       strict_loading
@@ -39,7 +39,7 @@ class OralHistoryAccessRequestsController < ApplicationController
 
   # GET /oral_history_requests/:id
   def show
-    @access_request = Admin::OralHistoryAccessRequest.find(params[:id])
+    @access_request = OralHistoryRequest.find(params[:id])
 
     # If they can't see it for any reason, just 404 as if it was not there.
     unless current_oral_history_requester == @access_request.oral_history_requester_email &&
@@ -65,14 +65,14 @@ class OralHistoryAccessRequestsController < ApplicationController
   # Form to fill out
   def new
     @work = load_work(params['work_friendlier_id'])
-    @oral_history_access_request = Admin::OralHistoryAccessRequest.new(work: @work)
+    @oral_history_access_request = OralHistoryRequest.new(work: @work)
   end
 
   # POST "/request_oral_history_access"
   #
   # Action to create request from form
   def create
-    @work = load_work(params['admin_oral_history_access_request'].delete('work_friendlier_id'))
+    @work = load_work(params['oral_history_request'].delete('work_friendlier_id'))
 
     # note `create_or_find_by` is the version with fewer race conditions, to make
     # this record if it doesn't already exist.
@@ -80,7 +80,7 @@ class OralHistoryAccessRequestsController < ApplicationController
 
     # In new mode, check to see if request already exists,
     if ScihistDigicoll::Env.lookup("feature_new_oh_request_emails") && requester_email &&
-        Admin::OralHistoryAccessRequest.where(work: @work, oral_history_requester_email: requester_email).exists?
+        OralHistoryRequest.where(work: @work, oral_history_requester_email: requester_email).exists?
 
       want_request_dashboard_response(
         work: @work,
@@ -92,7 +92,7 @@ class OralHistoryAccessRequestsController < ApplicationController
       return # abort further processing
     end
 
-    @oral_history_access_request = Admin::OralHistoryAccessRequest.new(
+    @oral_history_access_request = OralHistoryRequest.new(
       oral_history_access_request_params.merge(
         work: @work,
         oral_history_requester_email: requester_email
@@ -163,7 +163,7 @@ private
   end
 
   def oral_history_access_request_params
-    params.require(:admin_oral_history_access_request).permit(
+    params.require(:oral_history_request).permit(
       :work_friendlier_id, :patron_name,
       :patron_institution, :intended_use)
   end

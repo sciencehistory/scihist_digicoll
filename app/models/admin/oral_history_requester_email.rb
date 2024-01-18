@@ -15,7 +15,7 @@ class Admin::OralHistoryRequesterEmail < ApplicationRecord
   # we want to.
   validates :email, presence: true
 
-  has_many :oral_history_access_requests
+  has_many :oral_history_requests, class_name: "::OralHistoryRequest"
 
   generates_token_for :auto_login, expires_in: LOGIN_LINK_EXPIRE do
     # if email changes, link should no longer be good.

@@ -15,7 +15,7 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, logged_in_user: :admi
 
     let!(:access_request_array) do
         (1..10).to_a.map do |i|
-          Admin::OralHistoryAccessRequest.create!(
+          OralHistoryRequest.create!(
             created_at: latest_date - 100000 * i,
             patron_name: "Patron #{i}",
             oral_history_requester_email: Admin::OralHistoryRequesterEmail.create_or_find_by(email: "patron@institution_#{i}.com"),
@@ -55,7 +55,7 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, logged_in_user: :admi
 
   describe "respond", queue_adapter: :inline do
     let(:message) { "custom message from staff" }
-    let(:oral_history_access_request) { create(:oral_history_access_request, delivery_status: "pending") }
+    let(:oral_history_access_request) { create(:oral_history_request, delivery_status: "pending") }
 
     it "can approve" do
       post :respond, params: {

@@ -4,7 +4,7 @@ require 'csv'
 
 class Admin::OralHistoryAccessRequestsController < AdminController
   def index
-    @oral_history_access_requests = Admin::OralHistoryAccessRequest.
+    @oral_history_access_requests = OralHistoryRequest.
     where('created_at > ?', 3.months.ago).
     includes(:oral_history_requester_email, :work).
     order(created_at: :desc).strict_loading.to_a
@@ -12,13 +12,13 @@ class Admin::OralHistoryAccessRequestsController < AdminController
 
   # GET /admin/oral_history_access_requests/:id
   def show
-    @oral_history_access_request = Admin::OralHistoryAccessRequest.find(params[:id])
+    @oral_history_access_request = OralHistoryRequest.find(params[:id])
   end
 
   # accept or reject
   # POST /admin/oral_history_access_requests/:id/respond
   def respond
-    @oral_history_access_request = Admin::OralHistoryAccessRequest.find(params[:id])
+    @oral_history_access_request = OralHistoryRequest.find(params[:id])
 
     disposition = params[:disposition]
     custom_message = params.dig(:oral_history_access_request_approval, :notes_from_staff)
@@ -61,7 +61,7 @@ class Admin::OralHistoryAccessRequestsController < AdminController
   end
 
   def report
-    scope = Admin::OralHistoryAccessRequest
+    scope = OralHistoryRequest
 
     start_date = params.dig('report', 'start_date')
     scope = scope.where('created_at > ?', start_date) if start_date.present?

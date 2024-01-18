@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe "Login with Oral Histories magic link", queue_adapter: :inline do
-  let(:approved_request) { create(:oral_history_access_request) }
+  let(:approved_request) { create(:oral_history_request) }
   let(:requester_email) { approved_request.oral_history_requester_email }
   let(:oral_history_work) { approved_request.work }
 

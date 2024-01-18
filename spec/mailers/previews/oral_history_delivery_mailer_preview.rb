@@ -20,7 +20,7 @@ class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
   def oral_history_delivery_email
     work = Work.find_by_friendlier_id!(params[:work_friendlier_id])
 
-    request = Admin::OralHistoryAccessRequest.
+    request = OralHistoryRequest.
       create_with(patron_name: "John Smith",
                   patron_email: "smith@example.com",
                   intended_use: "just cause").
@@ -52,7 +52,7 @@ class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
 
   # find or create a test request, we're hopefully in development here!
   def oral_history_request(file_type:)
-    existing_sample = Admin::OralHistoryAccessRequest.joins(:work).
+    existing_sample = OralHistoryRequest.joins(:work).
                         where(work: { title: sample_work_title(file_type: file_type) }).first
 
     if params[:refresh] && existing_sample
@@ -78,7 +78,7 @@ class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
       raise ArgumentError, "don't know how to do file_type #{file_type}"
     end
 
-    request = Admin::OralHistoryAccessRequest.create!(
+    request = OralHistoryRequest.create!(
       work: work,
       patron_name: "John Smith",
       patron_email: "smith@example.com",

@@ -1,7 +1,11 @@
-class Admin::OralHistoryAccessRequest < ApplicationRecord
+class OralHistoryRequest < ApplicationRecord
+  # longer table name for legacy reasons, cumbersome to change table name
+  # without downtime, good enough. eg https://docs.gitlab.com/ee/development/database/rename_database_tables.html
+  self.table_name = "oral_history_access_requests"
+
   # optional until we migrate all emails from existing requests
   # At that point we should make the oral_history_requester_email_id in DB non-null too!
-  belongs_to :oral_history_requester_email, optional: true
+  belongs_to :oral_history_requester_email, optional: true, class_name: "Admin::OralHistoryRequesterEmail"
   validates :oral_history_requester_email, presence: true, if: -> { patron_email.blank? }
   validates :patron_email, absence: true, if: -> { oral_history_requester_email.present? }
   accepts_nested_attributes_for :oral_history_requester_email

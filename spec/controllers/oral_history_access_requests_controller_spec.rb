@@ -10,7 +10,7 @@ describe OralHistoryAccessRequestsController, type: :controller do
   end
 
   describe "#show" do
-    let(:oh_request) { create(:oral_history_access_request, delivery_status: "approved") }
+    let(:oh_request) { create(:oral_history_request, delivery_status: "approved") }
 
     describe "no authorized user" do
       it "404s" do
@@ -41,7 +41,7 @@ describe OralHistoryAccessRequestsController, type: :controller do
       end
 
       describe "unapproved request" do
-        let(:oh_request) { create(:oral_history_access_request, delivery_status: "pending") }
+        let(:oh_request) { create(:oral_history_request, delivery_status: "pending") }
 
         it "404s" do
           expect {
@@ -51,7 +51,7 @@ describe OralHistoryAccessRequestsController, type: :controller do
       end
 
       describe "automatic request" do
-        let(:oh_request) { create(:oral_history_access_request, delivery_status: "automatic") }
+        let(:oh_request) { create(:oral_history_request, delivery_status: "automatic") }
 
         it "shows" do
           get :show, params: { id: oh_request.id }
@@ -60,7 +60,7 @@ describe OralHistoryAccessRequestsController, type: :controller do
       end
 
       describe "approved request" do
-        let(:oh_request) { create(:oral_history_access_request, delivery_status: "approved") }
+        let(:oh_request) { create(:oral_history_request, delivery_status: "approved") }
 
         it "shows" do
           get :show, params: { id: oh_request.id }
@@ -73,7 +73,7 @@ describe OralHistoryAccessRequestsController, type: :controller do
   describe "#create" do
     let(:full_create_params) do
       {
-        admin_oral_history_access_request: {
+        oral_history_request: {
           work_friendlier_id: work.friendlier_id,
           patron_name: "joe",
           patron_institution: "university of somewhere",
@@ -180,7 +180,7 @@ describe OralHistoryAccessRequestsController, type: :controller do
       describe "already had made request" do
         let(:requester_email) { Admin::OralHistoryRequesterEmail.new(email: full_create_params[:patron_email]) }
         let!(:existing_request) {
-          create(:oral_history_access_request,
+          create(:oral_history_request,
             work: work,
             oral_history_requester_email: requester_email
           )
