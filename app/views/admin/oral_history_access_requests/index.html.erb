@@ -28,6 +28,23 @@
 
 <h2>Three-month summary</h2>
 <div class="border p-2 mb-5">
+  <%= simple_form_for(:query, url: admin_oral_history_access_requests_path, method: :get) do |f| %>
+    <div class="row form-group">
+      <div class="input-group col-sm-10">
+        <div class="input-group-prepend">
+          <%= f.label :status, "Status", class: "input-group-text" %>
+        </div>
+        <%= f.select :status,
+          status_filter_options,
+          { selected: "Any"},
+            {
+            class: "custom-select",
+            onchange: "this.form.submit()"
+            }
+        %>
+      </div>
+    </div>
+  <% end %>
   <table class="table admin-list member-list">
     <thead>
       <tr class="d-flex">
