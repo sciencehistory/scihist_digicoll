@@ -5,7 +5,7 @@ require 'csv'
 class Admin::OralHistoryAccessRequestsController < AdminController
   def index
     @oral_history_access_requests = Admin::OralHistoryAccessRequest.
-    where('created_at > ?', 3.months.ago).order(created_at: :desc).to_a
+      order(created_at: :desc).page(params[:page]).per(30)
   end
 
   # GET /admin/oral_history_access_requests/:id

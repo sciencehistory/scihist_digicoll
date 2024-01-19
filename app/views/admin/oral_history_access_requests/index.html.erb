@@ -26,7 +26,7 @@
   <% end %>
 </div>
 
-<h2>Three-month summary</h2>
+<h2>Oral History Requests</h2>
 <div class="border p-2 mb-5">
   <table class="table admin-list member-list">
     <thead>
@@ -63,3 +63,5 @@
     </tbody>
   </table>
 </div>
+
+<%= paginate @oral_history_access_requests, theme: 'twitter-bootstrap-4' %>
