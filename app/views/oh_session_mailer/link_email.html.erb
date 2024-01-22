@@ -4,8 +4,9 @@
   Someone, hopefully you, has requested Science History Institute oral histories to this email address.
 </p>
 
-<p>You can access your Oral History requests using this special login link:
-    <%= link_to "link", login_magic_link, data: { auto_login_link: true}  %></p>
+<p>You can access your Oral History requests using this special sign-in link:
+    <%= link_to "Sign In to Science History Institute Requests", login_magic_link, data: { auto_login_link: true}  %></p>
 
-<p>Please keep that link around, clicking on it is how you can access your requests at any time.
-  If you have any questions, you can reply to this email, or write <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}" %>.<p>
+<p>Please keep this email around, so you can use this link to access your requests in the future.</p>
+
+<p>If you have any questions, you can reply to this email, or write <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}" %>.<p>

@@ -119,7 +119,7 @@ RSpec.describe Admin::OralHistoryRequestsController, logged_in_user: :admin, typ
         last_email = ActionMailer::Base.deliveries.last
         expect(last_email.subject).to eq "Science History Institute: Access files for #{oral_history_access_request.work.title}"
         expect(last_email.from).to eq [ScihistDigicoll::Env.lookup(:oral_history_email_address)]
-        expect(last_email.body).to match /You can access your Oral History requests using this special login link/
+        expect(last_email.body).to match /You can access your Oral History requests using this special sign-in link/
       end
 
       it "can reject" do
