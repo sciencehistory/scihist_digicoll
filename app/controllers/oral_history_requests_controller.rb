@@ -87,7 +87,7 @@ class OralHistoryRequestsController < ApplicationController
         work: @work,
         requester_email: requester_email,
         emailed_notice: "You have already requested this Oral History. We've sent another email to #{patron_email_param} with a sign-in link.",
-        immediate_notice: "You have already requested this Oral History"
+        immediate_notice: "You have already requested this Oral History: #{@work.title}"
       )
 
       return # abort further processing
