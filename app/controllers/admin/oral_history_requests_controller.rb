@@ -2,7 +2,7 @@
 # Public facing actions are in app/controllers/oral_history_requests_controller.rb
 require 'csv'
 
-class Admin::OralHistoryAccessRequestsController < AdminController
+class Admin::OralHistoryRequestsController < AdminController
   def index
     @oral_history_access_requests = OralHistoryRequest.
     where('created_at > ?', 3.months.ago).
@@ -56,7 +56,7 @@ class Admin::OralHistoryAccessRequestsController < AdminController
       end
     end
 
-    redirect_to admin_oral_history_access_requests_path,
+    redirect_to admin_oral_history_requests_path,
       notice: "#{disposition.titlecase} email was sent to #{@oral_history_access_request.requester_email} for '#{@oral_history_access_request.work.title}'"
   end
 

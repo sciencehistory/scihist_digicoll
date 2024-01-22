@@ -300,12 +300,12 @@ Rails.application.routes.draw do
     get "/storage_report", to: "storage_report#index", as: "storage_report"
     get "/orphan_report", to: "orphan_report#index", as: "orphan_report"
 
-    resources :oral_history_access_requests, only: [:index, :show] do
+    resources :oral_history_requests, only: [:index, :show] do
       member do
         post "respond"
       end
       collection do
-        post "report", to: "oral_history_access_requests#report"
+        post "report", to: "oral_history_requests#report"
       end
     end
 

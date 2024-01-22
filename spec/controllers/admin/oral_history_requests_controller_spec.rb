@@ -1,5 +1,5 @@
 require 'rails_helper'
-RSpec.describe Admin::OralHistoryAccessRequestsController, logged_in_user: :admin, type: :controller do
+RSpec.describe Admin::OralHistoryRequestsController, logged_in_user: :admin, type: :controller do
 
   describe "#index" do
     it "renders the list of requests even if an OH has no interview number" do
@@ -65,7 +65,7 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, logged_in_user: :admi
       }
 
       expect(flash[:notice]).to match /Approve email was sent to #{Regexp.escape oral_history_access_request.requester_email}/
-      expect(response).to redirect_to(admin_oral_history_access_requests_path)
+      expect(response).to redirect_to(admin_oral_history_requests_path)
 
       oral_history_access_request.reload
       expect(oral_history_access_request.delivery_status).to eq "approved"
@@ -86,7 +86,7 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, logged_in_user: :admi
 
 
       expect(flash[:notice]).to match /Reject email was sent to #{Regexp.escape oral_history_access_request.requester_email}/
-      expect(response).to redirect_to(admin_oral_history_access_requests_path)
+      expect(response).to redirect_to(admin_oral_history_requests_path)
 
       oral_history_access_request.reload
       expect(oral_history_access_request.delivery_status).to eq "rejected"
@@ -111,7 +111,7 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, logged_in_user: :admi
         }
 
         expect(flash[:notice]).to match /Approve email was sent to #{Regexp.escape oral_history_access_request.requester_email}/
-        expect(response).to redirect_to(admin_oral_history_access_requests_path)
+        expect(response).to redirect_to(admin_oral_history_requests_path)
 
         oral_history_access_request.reload
         expect(oral_history_access_request.delivery_status).to eq "approved"
@@ -130,7 +130,7 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, logged_in_user: :admi
         }
 
         expect(flash[:notice]).to match /Reject email was sent to #{Regexp.escape oral_history_access_request.requester_email}/
-        expect(response).to redirect_to(admin_oral_history_access_requests_path)
+        expect(response).to redirect_to(admin_oral_history_requests_path)
 
         oral_history_access_request.reload
         expect(oral_history_access_request.delivery_status).to eq "rejected"

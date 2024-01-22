@@ -23,7 +23,7 @@
 
 <h2>Approve or Reject</h2>
 
-<%= simple_form_for(:oral_history_access_request_approval, url: respond_admin_oral_history_access_request_path(@oral_history_access_request)) do |form| %>
+<%= simple_form_for(:oral_history_access_request_approval, url: respond_admin_oral_history_request_path(@oral_history_access_request)) do |form| %>
   <%= form.input :notes_from_staff, as: :text, required: false, label: "Message to patron", input_html: { value: @oral_history_access_request.notes_from_staff, rows: 5 }  %>
 
   <%= form.button :button, "Approve", type: "submit", name: "disposition", value: "approve", class: "btn-success" %>

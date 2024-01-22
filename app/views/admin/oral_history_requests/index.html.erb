@@ -5,7 +5,7 @@
 
 <h2>Download a spreadsheet of requests</h2>
 <div class="border p-2 mb-5">
-  <%= simple_form_for(:report, url: report_admin_oral_history_access_requests_path, method: :post) do |f| %>
+  <%= simple_form_for(:report, url: report_admin_oral_history_requests_path, method: :post) do |f| %>
     <div class="row">
       <div class="col">
         <%= f.input :start_date,
@@ -56,7 +56,7 @@
              <%= oh_request.intended_use %>
           </td>
           <td class="col-sm-1">
-            <%= link_to oh_request.delivery_status, admin_oral_history_access_request_path(oh_request) %>
+            <%= link_to oh_request.delivery_status, admin_oral_history_request_path(oh_request) %>
           </td>
         </tr>
       <%end %>

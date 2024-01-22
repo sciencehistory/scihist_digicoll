@@ -15,7 +15,7 @@ RSpec.describe "Oral History Access Request Administration", :logged_in_user, ty
     )}
 
     it "can approve" do
-      visit admin_oral_history_access_requests_path
+      visit admin_oral_history_requests_path
 
       relevant_table_row = find("tr", text: oh_request.intended_use)
 
@@ -39,7 +39,7 @@ RSpec.describe "Oral History Access Request Administration", :logged_in_user, ty
     end
 
     it "can reject" do
-      visit admin_oral_history_access_requests_path
+      visit admin_oral_history_requests_path
 
       relevant_table_row = find("tr", text: oh_request.intended_use)
 
