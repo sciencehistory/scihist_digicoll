@@ -2,7 +2,7 @@
 #
 # Actions to make requests, and also to view your requsets.
 #
-# Staff-facing actions are in app/controllers/admin/oral_history_access_requests_controller.rb
+# Staff-facing actions are in app/controllers/admin/oral_history_requests_controller.rb
 class OralHistoryRequestsController < ApplicationController
   # message is publicly visible please
   class AccessDenied < StandardError
@@ -66,7 +66,7 @@ class OralHistoryRequestsController < ApplicationController
   # Form to fill out
   def new
     @work = load_work(params['work_friendlier_id'])
-    @oral_history_access_request = OralHistoryRequest.new(work: @work)
+    @oral_history_request = OralHistoryRequest.new(work: @work)
   end
 
   # POST "/request_oral_history_access"
@@ -93,16 +93,16 @@ class OralHistoryRequestsController < ApplicationController
       return # abort further processing
     end
 
-    @oral_history_access_request = OralHistoryRequest.new(
-      oral_history_access_request_params.merge(
+    @oral_history_request = OralHistoryRequest.new(
+      oral_history_request_params.merge(
         work: @work,
         oral_history_requester: requester_email
       )
     )
 
-    if @oral_history_access_request.save
+    if @oral_history_request.save
       if @work.oral_history_content.available_by_request_automatic?
-        @oral_history_access_request.update!(delivery_status: "automatic")
+        @oral_history_request.update!(delivery_status: "automatic")
 
         if ScihistDigicoll::Env.lookup("feature_new_oh_request_emails")
           want_request_dashboard_response(
@@ -113,19 +113,19 @@ class OralHistoryRequestsController < ApplicationController
           )
         else
           OralHistoryDeliveryMailer.
-            with(request: @oral_history_access_request).
+            with(request: @oral_history_request).
             oral_history_delivery_email.
             deliver_later
 
-          redirect_to work_path(@work.friendlier_id), notice: "Check your email! We are sending you links to the files you requested, to #{@oral_history_access_request.requester_email}."
+          redirect_to work_path(@work.friendlier_id), notice: "Check your email! We are sending you links to the files you requested, to #{@oral_history_request.requester_email}."
         end
       else # manual review
         OralHistoryRequestNotificationMailer.
-          with(request: @oral_history_access_request).
+          with(request: @oral_history_request).
           notification_email.
           deliver_later
 
-        redirect_to work_path(@work.friendlier_id), notice: "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll email you at #{@oral_history_access_request.requester_email}"
+        redirect_to work_path(@work.friendlier_id), notice: "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll email you at #{@oral_history_request.requester_email}"
       end
     else
      render :new
@@ -135,7 +135,7 @@ class OralHistoryRequestsController < ApplicationController
     # it will bump the TTL expiration too, so they get another day until it expires.
     # Make sure to include the separate patron_eamil
     oral_history_request_form_entry_write(
-      oral_history_access_request_params.merge(patron_email: patron_email_param).to_h
+      oral_history_request_params.merge(patron_email: patron_email_param).to_h
     )
   end
 
@@ -163,7 +163,7 @@ private
     end
   end
 
-  def oral_history_access_request_params
+  def oral_history_request_params
     params.require(:oral_history_request).permit(
       :work_friendlier_id, :patron_name,
       :patron_institution, :intended_use)

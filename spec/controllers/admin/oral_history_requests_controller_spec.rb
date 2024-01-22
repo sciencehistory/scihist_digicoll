@@ -61,7 +61,7 @@ RSpec.describe Admin::OralHistoryRequestsController, logged_in_user: :admin, typ
       post :respond, params: {
         id: oral_history_access_request.id,
         disposition: "approve",
-        oral_history_access_request_approval: { notes_from_staff: message }
+        oral_history_request_approval: { notes_from_staff: message }
       }
 
       expect(flash[:notice]).to match /Approve email was sent to #{Regexp.escape oral_history_access_request.requester_email}/
@@ -81,7 +81,7 @@ RSpec.describe Admin::OralHistoryRequestsController, logged_in_user: :admin, typ
       post :respond, params: {
         id: oral_history_access_request.id,
         disposition: "reject",
-        oral_history_access_request_approval: { notes_from_staff: message }
+        oral_history_request_approval: { notes_from_staff: message }
       }
 
 
@@ -107,7 +107,7 @@ RSpec.describe Admin::OralHistoryRequestsController, logged_in_user: :admin, typ
         post :respond, params: {
           id: oral_history_access_request.id,
           disposition: "approve",
-          oral_history_access_request_approval: { notes_from_staff: message }
+          oral_history_request_approval: { notes_from_staff: message }
         }
 
         expect(flash[:notice]).to match /Approve email was sent to #{Regexp.escape oral_history_access_request.requester_email}/
@@ -126,7 +126,7 @@ RSpec.describe Admin::OralHistoryRequestsController, logged_in_user: :admin, typ
         post :respond, params: {
           id: oral_history_access_request.id,
           disposition: "reject",
-          oral_history_access_request_approval: { notes_from_staff: message }
+          oral_history_request_approval: { notes_from_staff: message }
         }
 
         expect(flash[:notice]).to match /Reject email was sent to #{Regexp.escape oral_history_access_request.requester_email}/

@@ -40,7 +40,7 @@
     </thead>
 
     <tbody>
-      <% @oral_history_access_requests.each do |oh_request| %>
+      <% @oral_history_requests.each do |oh_request| %>
         <tr class="d-flex" data-request-id="<%= oh_request.id %>">
           <td class="col-sm-2">
             <span class="text-nowrap small"><%= l(oh_request.created_at, format: '%b %d') %></span>
