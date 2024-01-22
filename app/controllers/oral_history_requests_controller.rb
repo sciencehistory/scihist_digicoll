@@ -61,7 +61,7 @@ class OralHistoryRequestsController < ApplicationController
     @other_assets = all_by_request_assets.find_all { |a| !@transcript_assets.include?(a) && !@audio_assets.include?(a) }
   end
 
-  # GET /works/4j03d09fr7t/request_oral_history_access
+  # GET /works/4j03d09fr7t/request_oral_history
   #
   # Form to fill out
   def new
