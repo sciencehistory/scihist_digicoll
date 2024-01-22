@@ -10,13 +10,13 @@ class Admin::OralHistoryRequestsController < AdminController
     order(created_at: :desc).strict_loading.to_a
   end
 
-  # GET /admin/oral_history_access_requests/:id
+  # GET /admin/oral_history_requests/:id
   def show
     @oral_history_access_request = OralHistoryRequest.find(params[:id])
   end
 
   # accept or reject
-  # POST /admin/oral_history_access_requests/:id/respond
+  # POST /admin/oral_history_requests/:id/respond
   def respond
     @oral_history_access_request = OralHistoryRequest.find(params[:id])
 
