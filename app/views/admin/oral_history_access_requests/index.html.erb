@@ -45,7 +45,7 @@
       </div>
     </div>
   <% end %>
-  <table class="table admin-list member-list">
+  <table class="table admin-list request-list">
     <thead>
       <tr class="d-flex">
         <th class="col-2">Date</th>
@@ -72,7 +72,7 @@
           <td class="col-sm-4">
              <%= oh_request.intended_use %>
           </td>
-          <td class="col-sm-1">
+          <td class="col-sm-1 request-list-delivery-status">
             <%= link_to oh_request.delivery_status, admin_oral_history_access_request_path(oh_request) %>
           </td>
         </tr>

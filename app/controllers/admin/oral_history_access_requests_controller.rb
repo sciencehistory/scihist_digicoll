@@ -1,7 +1,6 @@
 # STAFF FACING
 # Public facing actions are in app/controllers/oral_history_access_requests_controller.rb
 require 'csv'
-require "active_support/all"
 
 class Admin::OralHistoryAccessRequestsController < AdminController
   def index
@@ -14,13 +13,13 @@ class Admin::OralHistoryAccessRequestsController < AdminController
   end
 
   def status_filter_options
-    statuses = Admin::OralHistoryAccessRequest.delivery_statuses.keys
-    capital_statuses = statuses.map {|s|  ActiveSupport::Inflector.titleize(s) }
-    items =  ([['Any', 'any']] + capital_statuses.zip(statuses)).to_h
-    helpers.options_for_select(
-      items,
-      params.dig(:query, :status) || ""
-    )
+    status_filter_options ||= begin
+      selected_status = params.dig(:query, :status) || ""
+      statuses = Admin::OralHistoryAccessRequest.delivery_statuses.keys
+      capital_statuses = statuses.map { |s|  ActiveSupport::Inflector.titleize(s) }
+      options =  ([['Any', 'any']] + capital_statuses.zip(statuses)).to_h
+      helpers.options_for_select(options, selected_status)
+    end
   end
   helper_method :status_filter_options
 
