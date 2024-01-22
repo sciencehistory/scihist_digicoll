@@ -86,7 +86,7 @@ class OralHistoryRequestsController < ApplicationController
       want_request_dashboard_response(
         work: @work,
         requester_email: requester_email,
-        emailed_notice: "You have already requested this Oral History. We've sent another email to #{patron_email_param} with a sign-in link.",
+        emailed_notice: "You have already requested this Oral History. We've sent another email to #{patron_email_param} with a sign-in link, which you can use to view your requests.",
         immediate_notice: "You have already requested this Oral History: #{@work.title}"
       )
 
