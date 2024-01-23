@@ -6,11 +6,11 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
   before do
     # mock the link to test it ends up in email? Since it's dynamic and different
     # every time you call it, I guess this works?
-    allow_any_instance_of(Admin::OralHistoryRequesterEmail).to receive(:generate_token_for).with(:auto_login).and_return("TOKEN")
+    allow_any_instance_of(OralHistoryRequester).to receive(:generate_token_for).with(:auto_login).and_return("TOKEN")
   end
 
   describe "#approved_with_session_link_email" do
-    let(:access_request) { create(:oral_history_access_request, delivery_status: "approved") }
+    let(:access_request) { create(:oral_history_request, delivery_status: "approved") }
 
     let(:mail) do
       OralHistoryDeliveryMailer.
@@ -34,7 +34,7 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
 
   describe "#rejected_with_session_link_email" do
     let(:custom_message) { "Sorry, impossible at this time" }
-    let(:access_request) { create(:oral_history_access_request, delivery_status: "rejected", notes_from_staff: custom_message) }
+    let(:access_request) { create(:oral_history_request, delivery_status: "rejected", notes_from_staff: custom_message) }
 
     let(:mail) do
       OralHistoryDeliveryMailer.

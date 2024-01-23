@@ -1,19 +1,19 @@
 require 'rails_helper'
 
 describe "Login with Oral Histories magic link", queue_adapter: :inline do
-  let(:approved_request) { create(:oral_history_access_request) }
-  let(:requester_email) { approved_request.oral_history_requester_email }
+  let(:approved_request) { create(:oral_history_request) }
+  let(:requester) { approved_request.oral_history_requester }
   let(:oral_history_work) { approved_request.work }
 
   it "can request a link which works to log in" do
     visit new_oral_history_session_path
 
-    fill_in :email, with: requester_email.email
+    fill_in :email, with: requester.email
     click_on "Send me a login link"
 
-    expect(page).to have_text("A sign-in link for your Oral Histories requests has been emailed to #{requester_email.email}")
+    expect(page).to have_text("A sign-in link for your Oral Histories requests has been emailed to #{requester.email}")
 
-    mail = ActionMailer::Base.deliveries.find { |m| m.to == [requester_email.email] }
+    mail = ActionMailer::Base.deliveries.find { |m| m.to == [requester.email] }
     expect(mail).to be_present
 
     parsed_body = Nokogiri::HTML(mail.body.decoded)
@@ -23,7 +23,7 @@ describe "Login with Oral Histories magic link", queue_adapter: :inline do
 
     # requests dashboard
     expect(page).to have_selector("h2", text: "Oral History Requests")
-    expect(page).to have_text(requester_email.email)
+    expect(page).to have_text(requester.email)
 
     # Move to individual request page
     click_on oral_history_work.title

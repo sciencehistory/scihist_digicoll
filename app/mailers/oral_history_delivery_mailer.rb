@@ -17,7 +17,7 @@ class OralHistoryDeliveryMailer < ApplicationMailer
   # links to files
   def approved_with_session_link_email
     raise ArgumentError.new("Required params[:request] missing") unless request.present?
-    raise ArgumentError.new("Required request.oral_history_requester_email missing") unless request.oral_history_requester_email.present?
+    raise ArgumentError.new("Required request.oral_history_requester missing") unless request.oral_history_requester.present?
     raise ArgumentError.new("params[:request] must be approved but was #{request.delivery_status}") unless request.delivery_status_approved?
 
     mail(to: to_address, subject: "Science History Institute: Access files for #{work.title}", content_type: "text/html")
@@ -25,7 +25,7 @@ class OralHistoryDeliveryMailer < ApplicationMailer
 
   def rejected_with_session_link_email
     raise ArgumentError.new("Required params[:request] missing") unless request.present?
-    raise ArgumentError.new("Required request.oral_history_requester_email missing") unless request.oral_history_requester_email.present?
+    raise ArgumentError.new("Required request.oral_history_requester missing") unless request.oral_history_requester.present?
     raise ArgumentError.new("params[:request] must be rejected but was #{request.delivery_status}") unless request.delivery_status_rejected?
 
     mail(to: to_address, subject: "Science History Institute: Your request for #{work.title}", content_type: "text/html")
@@ -72,7 +72,7 @@ class OralHistoryDeliveryMailer < ApplicationMailer
   end
 
   def login_magic_link
-    token = request.oral_history_requester_email.generate_token_for(:auto_login)
+    token = request.oral_history_requester.generate_token_for(:auto_login)
 
     login_oral_history_session_url(token)
   end

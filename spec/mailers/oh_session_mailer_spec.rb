@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe OhSessionMailer, :type => :mailer do
-  let(:requester_email) { Admin::OralHistoryRequesterEmail.create(email: "somebody@example.com") }
+  let(:requester_email) { OralHistoryRequester.create(email: "somebody@example.com") }
 
   let(:mail) do
     OhSessionMailer.
@@ -18,7 +18,7 @@ RSpec.describe OhSessionMailer, :type => :mailer do
   it "includes an auto-login-link" do
     # mock the link to test it ends up in email? Since it's dynamic and different
     # every time you call it, I guess this works?
-    allow_any_instance_of(Admin::OralHistoryRequesterEmail).to receive(:generate_token_for).with(:auto_login).and_return("TOKEN")
+    allow_any_instance_of(OralHistoryRequester).to receive(:generate_token_for).with(:auto_login).and_return("TOKEN")
 
     expect(mail.body).to include("<a data-auto-login-link=\"true\" href=\"#{login_oral_history_session_url('TOKEN')}\">")
   end

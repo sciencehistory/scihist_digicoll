@@ -1,11 +1,11 @@
 require 'rails_helper'
 
-describe Admin::OralHistoryAccessRequest, type: :model do
+describe OralHistoryRequest, type: :model do
 
   let(:access_request) do
-    Admin::OralHistoryAccessRequest.create!(
+    OralHistoryRequest.create!(
       patron_name: "Patron",
-      oral_history_requester_email: Admin::OralHistoryRequesterEmail.create_or_find_by(email: "patron@institution.com"),
+      oral_history_requester: OralHistoryRequester.create_or_find_by(email: "patron@institution.com"),
       intended_use: "I will write 10 books.",
       work: create(:oral_history_work)
     )

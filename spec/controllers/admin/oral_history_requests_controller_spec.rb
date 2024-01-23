@@ -1,5 +1,5 @@
 require 'rails_helper'
-RSpec.describe Admin::OralHistoryAccessRequestsController, logged_in_user: :admin, type: :controller do
+RSpec.describe Admin::OralHistoryRequestsController, logged_in_user: :admin, type: :controller do
 
   describe "#index" do
     it "renders the list of requests even if an OH has no interview number" do
@@ -15,10 +15,10 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, logged_in_user: :admi
 
     let!(:access_request_array) do
         (1..10).to_a.map do |i|
-          Admin::OralHistoryAccessRequest.create!(
+          OralHistoryRequest.create!(
             created_at: latest_date - 100000 * i,
             patron_name: "Patron #{i}",
-            oral_history_requester_email: Admin::OralHistoryRequesterEmail.create_or_find_by(email: "patron@institution_#{i}.com"),
+            oral_history_requester: OralHistoryRequester.create_or_find_by(email: "patron@institution_#{i}.com"),
             patron_institution: "Institution #{i}",
             intended_use: "I will write #{i} books.",
             work: work
@@ -55,17 +55,17 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, logged_in_user: :admi
 
   describe "respond", queue_adapter: :inline do
     let(:message) { "custom message from staff" }
-    let(:oral_history_access_request) { create(:oral_history_access_request, delivery_status: "pending") }
+    let(:oral_history_access_request) { create(:oral_history_request, delivery_status: "pending") }
 
     it "can approve" do
       post :respond, params: {
         id: oral_history_access_request.id,
         disposition: "approve",
-        oral_history_access_request_approval: { notes_from_staff: message }
+        oral_history_request_approval: { notes_from_staff: message }
       }
 
       expect(flash[:notice]).to match /Approve email was sent to #{Regexp.escape oral_history_access_request.requester_email}/
-      expect(response).to redirect_to(admin_oral_history_access_requests_path)
+      expect(response).to redirect_to(admin_oral_history_requests_path)
 
       oral_history_access_request.reload
       expect(oral_history_access_request.delivery_status).to eq "approved"
@@ -81,12 +81,12 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, logged_in_user: :admi
       post :respond, params: {
         id: oral_history_access_request.id,
         disposition: "reject",
-        oral_history_access_request_approval: { notes_from_staff: message }
+        oral_history_request_approval: { notes_from_staff: message }
       }
 
 
       expect(flash[:notice]).to match /Reject email was sent to #{Regexp.escape oral_history_access_request.requester_email}/
-      expect(response).to redirect_to(admin_oral_history_access_requests_path)
+      expect(response).to redirect_to(admin_oral_history_requests_path)
 
       oral_history_access_request.reload
       expect(oral_history_access_request.delivery_status).to eq "rejected"
@@ -107,11 +107,11 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, logged_in_user: :admi
         post :respond, params: {
           id: oral_history_access_request.id,
           disposition: "approve",
-          oral_history_access_request_approval: { notes_from_staff: message }
+          oral_history_request_approval: { notes_from_staff: message }
         }
 
         expect(flash[:notice]).to match /Approve email was sent to #{Regexp.escape oral_history_access_request.requester_email}/
-        expect(response).to redirect_to(admin_oral_history_access_requests_path)
+        expect(response).to redirect_to(admin_oral_history_requests_path)
 
         oral_history_access_request.reload
         expect(oral_history_access_request.delivery_status).to eq "approved"
@@ -126,11 +126,11 @@ RSpec.describe Admin::OralHistoryAccessRequestsController, logged_in_user: :admi
         post :respond, params: {
           id: oral_history_access_request.id,
           disposition: "reject",
-          oral_history_access_request_approval: { notes_from_staff: message }
+          oral_history_request_approval: { notes_from_staff: message }
         }
 
         expect(flash[:notice]).to match /Reject email was sent to #{Regexp.escape oral_history_access_request.requester_email}/
-        expect(response).to redirect_to(admin_oral_history_access_requests_path)
+        expect(response).to redirect_to(admin_oral_history_requests_path)
 
         oral_history_access_request.reload
         expect(oral_history_access_request.delivery_status).to eq "rejected"

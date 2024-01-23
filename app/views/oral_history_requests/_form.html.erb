@@ -1,4 +1,4 @@
-<%= simple_form_for @oral_history_access_request,  :url => :request_oral_history_access  do |f| %>
+<%= simple_form_for @oral_history_request,  :url => :request_oral_history  do |f| %>
 
   <% remembered_form_values = oral_history_request_form_entry_read %>
 
@@ -18,11 +18,11 @@
     <p>Accessing this oral history requires a request due to privacy restritions stipulated by the interviewee.</p>
   </div>
 
-  <% if @oral_history_access_request.errors.any? %>
+  <% if @oral_history_request.errors.any? %>
     <div class="kithe-form-errors-top alert alert-danger mb-4" role="alert">
-      <h2 class="h4" class="alert-heading"><%= pluralize(@oral_history_access_request.errors.count, "error") %></h2>
+      <h2 class="h4" class="alert-heading"><%= pluralize(@oral_history_request.errors.count, "error") %></h2>
       <ol class="mb-0">
-        <% @oral_history_access_request.errors.full_messages.each do |msg| %>
+        <% @oral_history_request.errors.full_messages.each do |msg| %>
           <li><%= msg %></li>
         <% end %>
       </ol>
@@ -42,11 +42,11 @@
       <div class="col">
         <%# we'll use the name of the belongs_to association so validation errors work well,
             this is all kind of hacky %>
-        <%= f.input :oral_history_requester_email,
+        <%= f.input :oral_history_requester,
           as: :email,
           required: true,
           hint: "Links to files will be emailed to this address",
-          # override to NOT be nested in oral_history_access_request[], we'll handle special
+          # override to NOT be nested in oral_history_request[], we'll handle special
           input_html: {
             name: "patron_email",
             value: (remembered_form_values["patron_email"] || remembered_form_values["oral_history_requester_email"])
@@ -70,7 +70,7 @@
           label: "Intended use",
           hint: (@work.oral_history_content.available_by_request_automatic? ? "So that we can better understand our audience, please tell us how you plan to use the oral history you have requested." : "Please tell us how you intend to use this oral history interview to help us inform you about any relevant interviewee restrictions."),
           input_html: { value: remembered_form_values["intended_use"] },
-          required: @oral_history_access_request.work&.oral_history_content&.available_by_request_manual_review?
+          required: @oral_history_request.work&.oral_history_content&.available_by_request_manual_review?
         %>
       </div>
     </div>

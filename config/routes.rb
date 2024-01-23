@@ -70,10 +70,10 @@ Rails.application.routes.draw do
   end
 
   # By-request oral history stuff
-  get "works/:work_friendlier_id/request_oral_history_access", to: "oral_history_access_requests#new", as: 'request_oral_history_access_form'
-  post "request_oral_history_access", to: "oral_history_access_requests#create", as: 'request_oral_history_access'
-  get "oral_history_requests", to: "oral_history_access_requests#index", as: "oral_history_requests"
-  get "oral_history_requests/:id", to: "oral_history_access_requests#show", as: "oral_history_request"
+  get "works/:work_friendlier_id/request_oral_history", to: "oral_history_requests#new", as: 'oral_history_request_form'
+  post "request_oral_history", to: "oral_history_requests#create", as: 'request_oral_history'
+  get "oral_history_requests", to: "oral_history_requests#index", as: "oral_history_requests"
+  get "oral_history_requests/:id", to: "oral_history_requests#show", as: "oral_history_request"
 
   resource :oral_history_session, only: [:new, :create, :destroy] do
     member do
@@ -300,12 +300,12 @@ Rails.application.routes.draw do
     get "/storage_report", to: "storage_report#index", as: "storage_report"
     get "/orphan_report", to: "orphan_report#index", as: "orphan_report"
 
-    resources :oral_history_access_requests, only: [:index, :show] do
+    resources :oral_history_requests, only: [:index, :show] do
       member do
         post "respond"
       end
       collection do
-        post "report", to: "oral_history_access_requests#report"
+        post "report", to: "oral_history_requests#report"
       end
     end
 

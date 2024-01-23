@@ -1,4 +1,4 @@
-# Sort of represents an Oral Hsitory Requester (for non-public OH's), but really
+# Sort of represents an Oral History Requester (for non-public OH's), but really
 # just the email
 #
 # -- we let people request without authenticating, so all we know is the
@@ -8,14 +8,19 @@
 #
 # But this is the record that logins (really one-time magic link logins)
 # are attached to, that DO confirm the user has access to the email specified!
-class Admin::OralHistoryRequesterEmail < ApplicationRecord
+class OralHistoryRequester < ApplicationRecord
+  # longer table name for legacy reasons, cumbersome to change table name
+  # without downtime, good enough. eg https://docs.gitlab.com/ee/development/database/rename_database_tables.html
+  self.table_name = "oral_history_requester_emails"
+
   LOGIN_LINK_EXPIRE = 7.days
 
   # we don't have uniqueness validation cause it's incompatible with using create_or_find_by which
   # we want to.
   validates :email, presence: true
 
-  has_many :oral_history_access_requests
+  # legacy foreign key name, sorry
+  has_many :oral_history_requests, foreign_key: "oral_history_requester_email_id"
 
   generates_token_for :auto_login, expires_in: LOGIN_LINK_EXPIRE do
     # if email changes, link should no longer be good.

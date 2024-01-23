@@ -1,30 +1,30 @@
 # STAFF FACING
-# Public facing actions are in app/controllers/oral_history_access_requests_controller.rb
+# Public facing actions are in app/controllers/oral_history_requests_controller.rb
 require 'csv'
 
-class Admin::OralHistoryAccessRequestsController < AdminController
+class Admin::OralHistoryRequestsController < AdminController
   def index
-    @oral_history_access_requests = Admin::OralHistoryAccessRequest.
+    @oral_history_requests = OralHistoryRequest.
     where('created_at > ?', 3.months.ago).
-    includes(:oral_history_requester_email, :work).
+    includes(:oral_history_requester, :work).
     order(created_at: :desc).strict_loading.to_a
   end
 
-  # GET /admin/oral_history_access_requests/:id
+  # GET /admin/oral_history_requests/:id
   def show
-    @oral_history_access_request = Admin::OralHistoryAccessRequest.find(params[:id])
+    @oral_history_request = OralHistoryRequest.find(params[:id])
   end
 
   # accept or reject
-  # POST /admin/oral_history_access_requests/:id/respond
+  # POST /admin/oral_history_requests/:id/respond
   def respond
-    @oral_history_access_request = Admin::OralHistoryAccessRequest.find(params[:id])
+    @oral_history_request = OralHistoryRequest.find(params[:id])
 
     disposition = params[:disposition]
-    custom_message = params.dig(:oral_history_access_request_approval, :notes_from_staff)
+    custom_message = params.dig(:oral_history_request_approval, :notes_from_staff)
 
     if disposition == "approve"
-      @oral_history_access_request.update!(delivery_status: "approved", notes_from_staff: custom_message)
+      @oral_history_request.update!(delivery_status: "approved", notes_from_staff: custom_message)
 
       mailer_action = if ScihistDigicoll::Env.lookup("feature_new_oh_request_emails")
         :approved_with_session_link_email
@@ -33,22 +33,22 @@ class Admin::OralHistoryAccessRequestsController < AdminController
       end
 
       OralHistoryDeliveryMailer.
-        with(request: @oral_history_access_request, custom_message: custom_message).
+        with(request: @oral_history_request, custom_message: custom_message).
         public_send(mailer_action).
         deliver_later
     else
-      @oral_history_access_request.update!(delivery_status: "rejected", notes_from_staff: custom_message)
+      @oral_history_request.update!(delivery_status: "rejected", notes_from_staff: custom_message)
 
       if ScihistDigicoll::Env.lookup("feature_new_oh_request_emails")
         OralHistoryDeliveryMailer.
-          with(request: @oral_history_access_request, custom_message: custom_message).
+          with(request: @oral_history_request, custom_message: custom_message).
           rejected_with_session_link_email.
           deliver_later
       else
         # Let's just use the generic mailer with a text mail?
         ActionMailer::Base.mail(
           from: ScihistDigicoll::Env.lookup!(:oral_history_email_address),
-          to: @oral_history_access_request.requester_email,
+          to: @oral_history_request.requester_email,
           bcc: ScihistDigicoll::Env.lookup!(:oral_history_email_address),
           subject: "Science History Institute: Your request",
           body: custom_message
@@ -56,12 +56,12 @@ class Admin::OralHistoryAccessRequestsController < AdminController
       end
     end
 
-    redirect_to admin_oral_history_access_requests_path,
-      notice: "#{disposition.titlecase} email was sent to #{@oral_history_access_request.requester_email} for '#{@oral_history_access_request.work.title}'"
+    redirect_to admin_oral_history_requests_path,
+      notice: "#{disposition.titlecase} email was sent to #{@oral_history_request.requester_email} for '#{@oral_history_request.work.title}'"
   end
 
   def report
-    scope = Admin::OralHistoryAccessRequest
+    scope = OralHistoryRequest
 
     start_date = params.dig('report', 'start_date')
     scope = scope.where('created_at > ?', start_date) if start_date.present?

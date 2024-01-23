@@ -1,7 +1,7 @@
 require "rails_helper"
 
 describe OralHistorySessionsController, type: :controller, queue_adapter: :inline do
-  let(:requester_email) { Admin::OralHistoryRequesterEmail.create(email: "nobody@example.com" ) }
+  let(:requester_email) { OralHistoryRequester.create(email: "nobody@example.com" ) }
 
   describe "#create" do
     it "sends a login link" do

@@ -6,16 +6,16 @@ RSpec.describe "Oral History Access Request Administration", :logged_in_user, ty
   end
 
   context "A request exists for a manual_review work" do
-    let!(:oh_request) { Admin::OralHistoryAccessRequest.create!(
+    let!(:oh_request) { OralHistoryRequest.create!(
       patron_name: "George Washington Carver",
-      oral_history_requester_email: Admin::OralHistoryRequesterEmail.create_or_find_by(email: "george@example.org"),
+      oral_history_requester: OralHistoryRequester.create_or_find_by(email: "george@example.org"),
       patron_institution: "Tuskegee Institute",
       intended_use: "Recreational reading.",
       work: work
     )}
 
     it "can approve" do
-      visit admin_oral_history_access_requests_path
+      visit admin_oral_history_requests_path
 
       relevant_table_row = find("tr", text: oh_request.intended_use)
 
@@ -39,7 +39,7 @@ RSpec.describe "Oral History Access Request Administration", :logged_in_user, ty
     end
 
     it "can reject" do
-      visit admin_oral_history_access_requests_path
+      visit admin_oral_history_requests_path
 
       relevant_table_row = find("tr", text: oh_request.intended_use)
 

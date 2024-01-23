@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe OralHistoryAccessRequestsController, type: :controller do
+describe OralHistoryRequestsController, type: :controller do
   describe "#index" do
     it "rejects if no auth" do
       get :index
@@ -10,7 +10,7 @@ describe OralHistoryAccessRequestsController, type: :controller do
   end
 
   describe "#show" do
-    let(:oh_request) { create(:oral_history_access_request, delivery_status: "approved") }
+    let(:oh_request) { create(:oral_history_request, delivery_status: "approved") }
 
     describe "no authorized user" do
       it "404s" do
@@ -24,7 +24,7 @@ describe OralHistoryAccessRequestsController, type: :controller do
       before do
         allow(session).to receive(:[]).and_call_original
         allow(session).to receive(:[]).with(OralHistorySessionsController::SESSION_KEY).
-          and_return(Admin::OralHistoryRequesterEmail.create!(email: "example#{rand(999999)}@example.com").id)
+          and_return(OralHistoryRequester.create!(email: "example#{rand(999999)}@example.com").id)
       end
 
       it "404s" do
@@ -37,11 +37,11 @@ describe OralHistoryAccessRequestsController, type: :controller do
     describe "authorized user" do
       before do
         allow(session).to receive(:[]).and_call_original
-        allow(session).to receive(:[]).with(OralHistorySessionsController::SESSION_KEY).and_return(oh_request.oral_history_requester_email.id)
+        allow(session).to receive(:[]).with(OralHistorySessionsController::SESSION_KEY).and_return(oh_request.oral_history_requester.id)
       end
 
       describe "unapproved request" do
-        let(:oh_request) { create(:oral_history_access_request, delivery_status: "pending") }
+        let(:oh_request) { create(:oral_history_request, delivery_status: "pending") }
 
         it "404s" do
           expect {
@@ -51,7 +51,7 @@ describe OralHistoryAccessRequestsController, type: :controller do
       end
 
       describe "automatic request" do
-        let(:oh_request) { create(:oral_history_access_request, delivery_status: "automatic") }
+        let(:oh_request) { create(:oral_history_request, delivery_status: "automatic") }
 
         it "shows" do
           get :show, params: { id: oh_request.id }
@@ -60,7 +60,7 @@ describe OralHistoryAccessRequestsController, type: :controller do
       end
 
       describe "approved request" do
-        let(:oh_request) { create(:oral_history_access_request, delivery_status: "approved") }
+        let(:oh_request) { create(:oral_history_request, delivery_status: "approved") }
 
         it "shows" do
           get :show, params: { id: oh_request.id }
@@ -73,7 +73,7 @@ describe OralHistoryAccessRequestsController, type: :controller do
   describe "#create" do
     let(:full_create_params) do
       {
-        admin_oral_history_access_request: {
+        oral_history_request: {
           work_friendlier_id: work.friendlier_id,
           patron_name: "joe",
           patron_institution: "university of somewhere",
@@ -128,7 +128,7 @@ describe OralHistoryAccessRequestsController, type: :controller do
         let(:work) { create(:oral_history_work, :available_by_request, available_by_request_mode: :automatic)}
 
         describe "already logged in" do
-          let(:requester_email) { Admin::OralHistoryRequesterEmail.new(email: full_create_params[:patron_email]) }
+          let(:requester_email) { OralHistoryRequester.new(email: full_create_params[:patron_email]) }
 
           before do
             allow(controller).to receive(:current_oral_history_requester).and_return(requester_email)
@@ -178,11 +178,11 @@ describe OralHistoryAccessRequestsController, type: :controller do
 
 
       describe "already had made request" do
-        let(:requester_email) { Admin::OralHistoryRequesterEmail.new(email: full_create_params[:patron_email]) }
+        let(:requester_email) { OralHistoryRequester.new(email: full_create_params[:patron_email]) }
         let!(:existing_request) {
-          create(:oral_history_access_request,
+          create(:oral_history_request,
             work: work,
-            oral_history_requester_email: requester_email
+            oral_history_requester: requester_email
           )
         }
 
