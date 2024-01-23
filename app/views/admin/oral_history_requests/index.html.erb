@@ -28,7 +28,24 @@
 
 <h2>Three-month summary</h2>
 <div class="border p-2 mb-5">
-  <table class="table admin-list member-list">
+  <%= simple_form_for(:query, url: admin_oral_history_requests_path, method: :get) do |f| %>
+    <div class="row form-group">
+      <div class="input-group col-sm-10">
+        <div class="input-group-prepend">
+          <%= f.label :status, "Status", class: "input-group-text" %>
+        </div>
+        <%= f.select :status,
+          status_filter_options,
+          { selected: "Any"},
+            {
+            class: "custom-select",
+            onchange: "this.form.submit()"
+            }
+        %>
+      </div>
+    </div>
+  <% end %>
+  <table class="table admin-list request-list">
     <thead>
       <tr class="d-flex">
         <th class="col-2">Date</th>
@@ -55,7 +72,7 @@
           <td class="col-sm-4">
              <%= oh_request.intended_use %>
           </td>
-          <td class="col-sm-1">
+          <td class="col-sm-1 request-list-delivery-status">
             <%= link_to oh_request.delivery_status, admin_oral_history_request_path(oh_request) %>
           </td>
         </tr>
