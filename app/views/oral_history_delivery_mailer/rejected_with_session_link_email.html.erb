@@ -8,7 +8,7 @@
   <%= simple_format mailer.custom_message %>
 <% end %>
 
-<p>You can access all your Oral History requests using this special sign-in link:
-    <%= link_to "Sign In to Science History Institute Requests", login_magic_link, data: { auto_login_link: true}  %></p>
+<p><%= I18n.t("oral_history.sign_in_prompt") %>
+    <%= link_to I18n.t("oral_history.sign_in_link_label"), login_magic_link, data: { auto_login_link: true}  %></p>
 
 <p>If you have any questions, you can reply to this email, or write <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}" %>.<p>
