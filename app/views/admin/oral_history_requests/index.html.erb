@@ -26,7 +26,7 @@
   <% end %>
 </div>
 
-<h2>Three-month summary</h2>
+<h2>Oral History Requests</h2>
 <div class="border p-2 mb-5">
   <%= simple_form_for(:query, url: admin_oral_history_requests_path, method: :get) do |f| %>
     <div class="row form-group">
@@ -80,3 +80,5 @@
     </tbody>
   </table>
 </div>
+
+<%= paginate @oral_history_requests, theme: 'twitter-bootstrap-4' %>
