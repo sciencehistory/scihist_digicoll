@@ -180,30 +180,43 @@ module ScihistDigicoll
     #
     # @returns [Redis] some result of `Redis.new`
     #
-    # * If we have ENV variables set by Heroku, such as REDIS_TLS_URL
-    # or REDIS_URL.  (a `rediss:` url means to use secure TLS connection!)
+    # * We use ENV['REDIS_PROVIDER_ENV'] to point to name of ENV that has redis connection
+    #   url!
+    #
+    # * If not found, we try some used by our various redis providers. n!)
     #
     # * otherwise default to default redis location "localhost:6379"
     #
-    #
-    # Heroku says you really oughta use secure connection to redis, so we do:
-    # https://devcenter.heroku.com/articles/securing-heroku-redis
     def self.persistent_redis_connection!
       connection = nil
 
-      if ENV['REDIS_TLS_URL'] || ENV['REDIS_URL']
-        # We didn't get it from there, look for the args in ENV, sometimes heroku provides it in REDIS_TLS_URL
-        # (preferable to get a secure connection if available) other times just REDIS_URL -- which heroku may or may
-        # not supply a secure `rediss:` url for -- seems to change on differnet apps -- heroku is getting sloppy here.
-
-        # if it is a rediss secure connection, need to set for SSL verification, for self-signed cert.
-        # https://devcenter.heroku.com/articles/securing-heroku-redis
-        # If it was a cleartext `redis:` connection, the ssl_params will just be ignored.
-        connection = Redis.new(url: (ENV['REDIS_TLS_URL'] || ENV['REDIS_URL']), ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE })
+      # So many places the redis url can be, in a bit of indirection we use
+      # REDIS_PROVIDER to point to the name of the ENV that has it!
+      if ENV['REDIS_PROVIDER_ENV']
+        redis_url = ENV[ ENV['REDIS_PROVIDER_ENV'] ]
       end
 
-      # Still didn't find one? Probably in dev, just use default redis location.
-      connection ||= Redis.new(url: "redis://localhost:6379")
+      # we didn't find one, look in the various URLs that heroku redis or stack hero
+      # might use, which of course we are also free to use locally etc.
+      if redis_url.blank?
+        # def prever _TLS one with rediss: TLS connection if both alternatives are avail!
+        # https://devcenter.heroku.com/articles/securing-heroku-redis
+        redis_url = ENV['REDIS_TLS_URL'] || ENV['REDIS_URL'] || ENV['STACKHERO_REDIS_URL_TLS']
+      end
+
+      if redis_url
+        # We MAY have a `rediss:` SSL url, or may not; if we do, AND it's the heroku
+        # redis providr, we need to disable SSL verification, as they use a self-signed cert.
+        # https://devcenter.heroku.com/articles/securing-heroku-redis
+        #
+        # TODO: stop disabling verify if we are not using Heroku redis!
+        #
+        # If it was a cleartext `redis:` connection, the ssl_params will just be ignored.
+        Redis.new(url: redis_url, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE })
+      else
+        # Still didn't find one? Probably in dev, just use default redis location.
+        Redis.new(url: "redis://localhost:6379")
+      end
     end
 
     define_key :s3_bucket_originals
