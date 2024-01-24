@@ -9,7 +9,7 @@ class Admin::OralHistoryAccessRequestsController < AdminController
     unless status == "any" || status.blank?
       scope = scope.where(delivery_status: status)
     end
-    @oral_history_access_requests = scope.order(created_at: :desc).page(params[:page]).per(100)
+    @oral_history_access_requests = scope.order(created_at: :desc).page(params[:page]).per(300)
 
   end
 
