@@ -173,29 +173,25 @@ module ScihistDigicoll
     # for maintenance tasks.
     define_key :logins_disabled, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
 
-    # For ActiveJob queue, among maybe other things. For legacy reasons, in format "host:port"
-    # If we were to change it, we'd make it persistent_redis_uri with value in format `redis://host:port` etc.
-    define_key :persistent_redis_host
-
-    # Complicated logic to get network location of the Redis instance we will
+    # Logic to get network location of the Redis instance we will
     # use for persistent data -- such as our jobs queue for resque.
     #
     # Does not cache/memorize, will create a new one on every call, thus the ! in name.
     #
     # @returns [Redis] some result of `Redis.new`
     #
-    # * If we have a local_env/env :persistent_redis_host key, we will use that.
-    # * Otherwise do we have ENV variables set by Heroku, such as REDIS_TLS_URL
+    # * If we have ENV variables set by Heroku, such as REDIS_TLS_URL
     # or REDIS_URL.  (a `rediss:` url means to use secure TLS connection!)
+    #
     # * otherwise default to default redis location "localhost:6379"
     #
     #
     # Heroku says you really oughta use secure connection to redis, so we do:
     # https://devcenter.heroku.com/articles/securing-heroku-redis
     def self.persistent_redis_connection!
-      connection = lookup(:persistent_redis_host)&.yield_self {|value| Redis.new(url: "redis://#{value}")}
+      connection = nil
 
-      if (!connection) && (ENV['REDIS_TLS_URL'] || ENV['REDIS_URL'])
+      if ENV['REDIS_TLS_URL'] || ENV['REDIS_URL']
         # We didn't get it from there, look for the args in ENV, sometimes heroku provides it in REDIS_TLS_URL
         # (preferable to get a secure connection if available) other times just REDIS_URL -- which heroku may or may
         # not supply a secure `rediss:` url for -- seems to change on differnet apps -- heroku is getting sloppy here.
