@@ -82,3 +82,9 @@ en:
     transcript: "Transcript (Published Version)"
     front_matter: "Front Matter and Index"
 
+  oral_history:
+    sign_in_prompt: "You can access your Oral History requests using this special sign-in link:"
+    sign_in_link_label: "Sign In to Science History Institute Requests"
+
+
+
