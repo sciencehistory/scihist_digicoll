@@ -4,11 +4,24 @@ require 'csv'
 
 class Admin::OralHistoryRequestsController < AdminController
   def index
-    @oral_history_requests = OralHistoryRequest.
-    where('created_at > ?', 3.months.ago).
-    includes(:oral_history_requester, :work).
-    order(created_at: :desc).strict_loading.to_a
+    status = params.dig(:query, :status)
+    scope = OralHistoryRequest
+    unless status == "any" || status.blank?
+      scope = scope.where(delivery_status: status)
+    end
+    @oral_history_requests = scope.order(created_at: :desc).page(params[:page]).per(300)
   end
+
+  def status_filter_options
+    status_filter_options ||= begin
+      selected_status = params.dig(:query, :status) || ""
+      statuses = OralHistoryRequest.delivery_statuses.keys
+      capital_statuses = statuses.map { |s|  ActiveSupport::Inflector.titleize(s) }
+      options =  ([['Any', 'any']] + capital_statuses.zip(statuses)).to_h
+      helpers.options_for_select(options, selected_status)
+    end
+  end
+  helper_method :status_filter_options
 
   # GET /admin/oral_history_requests/:id
   def show

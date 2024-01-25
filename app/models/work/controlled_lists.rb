@@ -98,6 +98,7 @@ class Work
       'Lockard, Douglas',
       'Lu, Cathleen',
       'Miller, Megan',
+      'Mirror Image Media, LLC',
       'Muhlin, Jay',
       'Newhouse, Sarah',
       'Pinkney, Annabel',
@@ -105,6 +106,6 @@ class Work
       'The University of Pennsylvania Libraries',
       'Tobias, Gregory',
       'Voelkel, James',
-    ]
+    ].freeze
   end
 end

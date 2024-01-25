@@ -99,9 +99,12 @@ Rails.application.configure do
   mem_cache_store_config = {
     :socket_timeout => (ENV["MEMCACHE_TIMEOUT"] || 0.15).to_f,       # default is maybe 1 second?
     :socket_failure_delay => 0.08,                                   # retry failures with fairly quick 80ms delay
-    :failover => true,                                               # don't think it matters unless provider gives us more than one hostname
-    :pool_size => ENV.fetch("RAILS_MAX_THREADS") { 5 },              # should match puma, suggested by memcachier docs
-    :pool_timeout => (ENV["MEMCACHE_TIMEOUT"] || 0.15).to_f          # don't wait too long for a connection from pool either
+    :failover => true,                                              # don't think it matters unless provider gives us more than one hostname
+    # Rails 7.1+ uses :pool with sub-hash instead of individual pool_size and pool_timeout
+    :pool => {
+      :size => ENV.fetch("RAILS_MAX_THREADS") { 5 },              # should match puma, suggested by memcachier docs
+      :timeout => (ENV["MEMCACHE_TIMEOUT"] || 0.15).to_f          # don't wait too long for a connection from pool either
+    }
   }
 
   if ENV["MEMCACHIER_SERVERS"]
