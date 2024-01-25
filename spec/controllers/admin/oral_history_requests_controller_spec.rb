@@ -21,13 +21,10 @@ RSpec.describe Admin::OralHistoryRequestsController, :logged_in_user, type: :con
     describe "#index" do
       render_views
       let(:latest_date) {Time.now }
-      it "smoke test" do
-        get :index
-        expect(response.parsed_body.css('.request-list-delivery-status').count).to eq 10
-      end
       it "renders the list of requests even if an OH has no interview number" do
         get :index
         expect(response.code).to eq "200"
+        expect(response.parsed_body.css('.request-list-delivery-status').count).to eq 10
       end
       it "can show only pending" do
         get :index, params: { "query"=> {"status"=>"pending"} }
