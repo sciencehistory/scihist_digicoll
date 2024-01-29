@@ -212,11 +212,17 @@ module ScihistDigicoll
         # TODO: stop disabling verify if we are not using Heroku redis!
         #
         # If it was a cleartext `redis:` connection, the ssl_params will just be ignored.
-        Redis.new(url: redis_url, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE })
-      else
+        return Redis.new(url: redis_url, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE })
+      elsif !Rails.env.production?
         # Still didn't find one? Probably in dev, just use default redis location.
-        Redis.new(url: "redis://localhost:6379")
+        return Redis.new(url: "redis://localhost:6379")
       end
+
+      error_message = "No redis url could be found, cannot provide!\n\n" +
+       "REDIS_PROVIDER_ENV=='#{ENV['REDIS_PROVIDER_ENV']}' ;\n" +
+       "ENV[ ENV['REDIS_PROVIDER_ENV'] ]=='#{ENV[ ENV['REDIS_PROVIDER_ENV'] ]}'\n"
+
+      raise RuntimeError(error_message)
     end
 
     define_key :s3_bucket_originals
