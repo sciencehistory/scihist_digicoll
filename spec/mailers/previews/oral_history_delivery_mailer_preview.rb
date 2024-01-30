@@ -53,8 +53,8 @@ class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
   # http://localhost:3000/rails/mailers/oral_history_delivery_mailer/approved_with_session_link_email
   # http://localhost:3000/rails/mailers/oral_history_delivery_mailer/approved_with_session_link_email?request_id=134
   def approved_with_session_link_email
-    request = (params[:request_id].present? && Admin::OralHistoryAccessRequest.find(params[:request_id]) ||
-      Admin::OralHistoryAccessRequest.where(delivery_status: "approved").first ||
+    request = (params[:request_id].present? && OralHistoryRequest.find(params[:request_id]) ||
+      OralHistoryRequest.where(delivery_status: "approved").first ||
       (raise TypeError.new("need an approved request in db to preview")))
 
     OralHistoryDeliveryMailer.with(request: request).approved_with_session_link_email
@@ -63,8 +63,8 @@ class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
   # http://localhost:3000/rails/mailers/oral_history_delivery_mailer/rejected_with_session_link_email
   # http://localhost:3000/rails/mailers/oral_history_delivery_mailer/rejected_with_session_link_email=137
   def rejected_with_session_link_email
-    request = (params[:request_id].present? && Admin::OralHistoryAccessRequest.find(params[:request_id]) ||
-      Admin::OralHistoryAccessRequest.where(delivery_status: "rejected").first ||
+    request = (params[:request_id].present? && OralHistoryRequest.find(params[:request_id]) ||
+      OralHistoryRequest.where(delivery_status: "rejected").first ||
       (raise TypeError.new("need a rejected request in db to preview")))
 
     OralHistoryDeliveryMailer.with(request: request).rejected_with_session_link_email
