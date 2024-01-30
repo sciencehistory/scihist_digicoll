@@ -2,4 +2,4 @@
   (<%= ScihistDigicoll::Env.lookup(:service_level) %>),
   at <%= I18n.l(@oral_history_request.created_at, format: :long) %></p>
 
-<p><%= link_to "Review Request", admin_oral_history_access_request_url(@oral_history_request)%></p>
+<p><%= link_to "Review Request", admin_oral_history_request_url(@oral_history_request)%></p>
