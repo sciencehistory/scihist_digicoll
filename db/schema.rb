@@ -11,10 +11,7 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.1].define(version: 2024_01_25_204926) do
-  create_schema "heroku_ext"
-
   # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
 
   create_enum :available_by_request_mode_type, [
@@ -210,10 +207,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_25_204926) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "delivery_status", default: "pending"
-    t.bigint "oral_history_requester_email_id"
-    t.datetime "delivery_status_changed_at"
-    t.text "notes_from_staff"
-    t.index ["oral_history_requester_email_id"], name: "idx_on_oral_history_requester_email_id_ff2cc727ac"
     t.index ["work_id"], name: "index_oral_history_access_requests_on_work_id"
   end
 
@@ -231,13 +224,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_25_204926) do
     t.jsonb "json_attributes", default: {}
     t.jsonb "combined_audio_m4a_data"
     t.index ["work_id"], name: "index_oral_history_content_on_work_id", unique: true
-  end
-
-  create_table "oral_history_requester_emails", force: :cascade do |t|
-    t.string "email", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_oral_history_requester_emails_on_email", unique: true
   end
 
   create_table "orphan_reports", force: :cascade do |t|
@@ -299,7 +285,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_25_204926) do
   add_foreign_key "kithe_models", "kithe_models", column: "representative_id"
   add_foreign_key "on_demand_derivatives", "kithe_models", column: "work_id"
   add_foreign_key "oral_history_access_requests", "kithe_models", column: "work_id"
-  add_foreign_key "oral_history_access_requests", "oral_history_requester_emails"
   add_foreign_key "oral_history_content", "kithe_models", column: "work_id"
   add_foreign_key "queue_item_comments", "digitization_queue_items"
 end
