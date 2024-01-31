@@ -205,14 +205,17 @@ module ScihistDigicoll
       end
 
       if redis_url
-        # We MAY have a `rediss:` SSL url, or may not; if we do, AND it's the heroku
-        # redis providr, we need to disable SSL verification, as they use a self-signed cert.
+        ssl_params = {}
+        # Heroku redis super annoyingly requires us to disable SSL verification.
         # https://devcenter.heroku.com/articles/securing-heroku-redis
         #
-        # TODO: stop disabling verify if we are not using Heroku redis!
-        #
-        # If it was a cleartext `redis:` connection, the ssl_params will just be ignored.
-        return Redis.new(url: redis_url, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE })
+        # Super annoying, we default to disabling for an rediss secure connection
+        # from REDIS_URL or REDIS_TLS_URL
+        if redis_url.start_with?("rediss:") && redis_url.in?([ENV['REDIS_TLS_URL'], ENV['REDIS_URL']])
+          ssl_params = { verify_mode: OpenSSL::SSL::VERIFY_NONE }
+        end
+
+        return Redis.new(url: redis_url, ssl_params: ssl_params)
       elsif !Rails.env.production?
         # Still didn't find one? Probably in dev, just use default redis location.
         return Redis.new(url: "redis://localhost:6379")
