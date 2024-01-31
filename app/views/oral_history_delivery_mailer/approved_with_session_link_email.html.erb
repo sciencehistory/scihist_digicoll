@@ -1,6 +1,6 @@
 <p>Dear <%= mailer.patron_name %>,</p>
 
-<p>Thank you for your recent visit to the <%= link_to "Science History Institute’s Digital Collections", mailer.hostname %>. Your request for files from <%= link_to mailer.work.title, work_url(mailer.work.friendlier_id) %> has been approved.
+<p>Thank you for your recent visit to the <%= link_to "Science History Institute’s Digital Collections", mailer.hostname %>. Your request for files from <i><%= mailer.work.title %></i> has been approved.
 
 <% if mailer.custom_message.present? %>
   <%= simple_format mailer.custom_message %>
