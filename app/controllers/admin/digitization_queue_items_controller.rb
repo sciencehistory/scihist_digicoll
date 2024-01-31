@@ -165,13 +165,6 @@ class Admin::DigitizationQueueItemsController < AdminController
         },
         params.dig(:query, :status) || ""
       )
-
-      # helpers.options_for_select(
-      #   Admin::DigitizationQueueItem::STATUSES.
-      #     find_all {|s| s != "closed" }.
-      #     collect {|s| [s.humanize, s]},
-      #   params.dig(:query, :status)
-      # )
     end
     helper_method :status_filter_options
 

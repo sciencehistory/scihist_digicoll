@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_12_18_201400) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_25_204926) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -103,7 +103,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_18_201400) do
     t.text "scope"
     t.text "additional_notes"
     t.string "copyright_status"
-    t.string "status", default: "awaiting_dig_on_cart"
+    t.string "status", default: "awaiting_digitization"
     t.datetime "status_changed_at", precision: nil
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
