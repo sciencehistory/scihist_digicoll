@@ -227,7 +227,7 @@ module ScihistDigicoll
         error_message += "ENV[ ENV['REDIS_PROVIDER_ENV'] ]=='#{ENV[ ENV['REDIS_PROVIDER_ENV'] ]}'\n"
       end
 
-      raise RuntimeError(error_message)
+      raise RuntimeError.new(error_message)
     end
 
     define_key :s3_bucket_originals
