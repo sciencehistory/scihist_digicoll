@@ -109,7 +109,7 @@ class OralHistoryRequestsController < ApplicationController
             work: @work,
             requester_email: requester_email,
             emailed_notice: "The files you have requested are immediately available. We've sent an email to #{patron_email_param} with a sign-in link.",
-            immediate_notice: "The files you have requested are immediately available"
+            immediate_notice: "The files you requested are immediately available, from: #{@work.title}"
           )
         else
           OralHistoryDeliveryMailer.
