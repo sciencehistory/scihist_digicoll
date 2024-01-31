@@ -222,8 +222,10 @@ module ScihistDigicoll
       end
 
       error_message = "No redis url could be found, cannot provide!\n\n" +
-       "REDIS_PROVIDER_ENV=='#{ENV['REDIS_PROVIDER_ENV']}' ;\n" +
-       "ENV[ ENV['REDIS_PROVIDER_ENV'] ]=='#{ENV[ ENV['REDIS_PROVIDER_ENV'] ]}'\n"
+       "REDIS_PROVIDER_ENV=='#{ENV['REDIS_PROVIDER_ENV']}' ;\n"
+      if ENV['REDIS_PROVIDER_ENV']
+        error_message += "ENV[ ENV['REDIS_PROVIDER_ENV'] ]=='#{ENV[ ENV['REDIS_PROVIDER_ENV'] ]}'\n"
+      end
 
       raise RuntimeError(error_message)
     end
