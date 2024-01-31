@@ -216,7 +216,7 @@ module ScihistDigicoll
         end
 
         return Redis.new(url: redis_url, ssl_params: ssl_params)
-      elsif !Rails.env.production?
+      elsif false && !Rails.env.production?
         # Still didn't find one? Probably in dev, just use default redis location.
         return Redis.new(url: "redis://localhost:6379")
       end
@@ -226,8 +226,9 @@ module ScihistDigicoll
       if ENV['REDIS_PROVIDER_ENV']
         error_message += "ENV[ ENV['REDIS_PROVIDER_ENV'] ]=='#{ENV[ ENV['REDIS_PROVIDER_ENV'] ]}'\n"
       end
+      Rails.logger.fatal("#{self.name}#persistent_redis_connection! => #{error_message}")
 
-      raise RuntimeError.new(error_message)
+      return nil
     end
 
     define_key :s3_bucket_originals
