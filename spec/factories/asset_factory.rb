@@ -160,7 +160,7 @@ FactoryBot.define do
       trait :mp3 do
         faked_file { File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.mp3")) }
         faked_content_type { "audio/mpeg" }
-        faked_duration_seconds { "00:00:05" }
+        faked_duration_seconds { 5.02 }
         faked_bitrate { 8002 }
         faked_audio_bitrate { 8000 }
         faked_audio_sample_rate { 44100 }
@@ -172,7 +172,7 @@ FactoryBot.define do
       trait :m4a do
         faked_file { File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.m4a")) }
         faked_content_type { "audio/mp4" }
-        faked_duration_seconds { "00:00:05" }
+        faked_duration_seconds { 5.02 }
         faked_bitrate { 8002 }
         faked_audio_bitrate { 8000 }
         faked_audio_sample_rate { 44100 }
@@ -184,7 +184,7 @@ FactoryBot.define do
       trait :flac do
         faked_file { File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.flac")) }
         faked_content_type { "audio/flac" }
-        faked_duration_seconds { "00:00:05" }
+        faked_duration_seconds { 5.02 }
         faked_bitrate { 8002 }
         faked_audio_bitrate { 8000 }
         faked_audio_sample_rate { 44100 }

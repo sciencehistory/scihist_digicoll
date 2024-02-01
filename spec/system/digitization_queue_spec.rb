@@ -39,7 +39,7 @@ RSpec.describe "Digitization Queue", logged_in_user: :editor, type: :system, js:
     # START STATUS CHANGE AJAX TEST:
 
     # Change the status of the DQ item via the dropdown:
-    expect(dq.status).to eq("awaiting_dig_on_cart")
+    expect(dq.status).to eq("awaiting_digitization")
     expect(page).not_to have_selector :css, '.fa-spinner'
     select 'Imaging in process', from: 'admin_digitization_queue_item_status'
     click_button('Save')
@@ -64,7 +64,7 @@ RSpec.describe "Digitization Queue", logged_in_user: :editor, type: :system, js:
     # This block will throw a Selenium::WebDriver::Error::TimeOutError
     # unless the JS alert that we expect occurs.
     accept_alert do
-      select 'Batch metadata completed', from: 'admin_digitization_queue_item_status'
+      select 'Metadata in progress', from: 'admin_digitization_queue_item_status'
       click_button('Save')
     end
 
