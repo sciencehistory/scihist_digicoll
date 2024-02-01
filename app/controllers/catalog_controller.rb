@@ -486,7 +486,7 @@ class CatalogController < ApplicationController
 
     # someone trying to do an injection attack in the `page` param somehow
     # triggered a Solr 400, let's nip it in the bud.
-    if params[:page].present? && params[:page] !~ /\A\d+\Z/
+    if  params[:page].present? && (!params[:page].kind_of?(String) || params[:page] !~ /\A\d+\Z/)
       render(plain: "illegal page query parameter", status: 400) && return
     end
 
@@ -522,7 +522,7 @@ class CatalogController < ApplicationController
         #
         # `blacklight_range_limit` can show a "date missing" search link,
         # which adds an extra pair of range parameters:
-        #    range[-year_facet_isim][]=[* TO *] 
+        #    range[-year_facet_isim][]=[* TO *]
         # This would normally trigger our "Invalid URL query parameter" error below,
         # but we choose to let it through in this one particular case.
         next if _facet_key == "-year_facet_isim" && range_limits == ["[* TO *]"]
