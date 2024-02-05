@@ -17,7 +17,7 @@ class OralHistorySessionsController < ApplicationController
 
   # @param request [ActionDispatch::Request]
   # @return [OralHistoryRequester, nil]
-  def self.fetch_oral_history_current_requester(request:, reset_expiration_window: true)
+  def self.fetch_oral_history_current_requester(request:, reset_expiration_window: false)
     if request.cookie_jar.encrypted[SESSION_COOKIE_NAME].present?
       id = JSON.parse(request.cookie_jar.encrypted[SESSION_COOKIE_NAME])[SESSION_KEY]
       OralHistoryRequester.find_by(id: id).tap do |requester|
