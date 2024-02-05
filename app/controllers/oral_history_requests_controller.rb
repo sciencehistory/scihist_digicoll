@@ -199,7 +199,7 @@ private
 
   def current_oral_history_requester
     unless defined?(@current_oral_history_requester)
-      @current_oral_history_requester = (OralHistoryRequester.find_by(id: session[OralHistorySessionsController::SESSION_KEY]) if session[OralHistorySessionsController::SESSION_KEY].present?)
+      @current_oral_history_requester = OralHistorySessionsController.fetch_oral_history_current_requester(request: request)
     end
     @current_oral_history_requester
   end

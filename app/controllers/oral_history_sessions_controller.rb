@@ -3,6 +3,23 @@
 class OralHistorySessionsController < ApplicationController
   SESSION_KEY = :oral_history_requester_id
 
+
+  # @param request [ActionDispatch::Request]
+  # @param oral_history_requester [OralHistoryRequester]
+  def self.store_oral_history_current_requester(request:, oral_history_requester:)
+     request.session[SESSION_KEY] = oral_history_requester.id
+  end
+
+  # @param request [ActionDispatch::Request]
+  # @return [OralHistoryRequester, nil]
+  def self.fetch_oral_history_current_requester(request:)
+    if request.session[SESSION_KEY].present?
+      OralHistoryRequester.find_by(id: request.session[OralHistorySessionsController::SESSION_KEY])
+    else
+      nil
+    end
+  end
+
   # GET /oral_history_session/login/$TOKEN
   #
   # Actually logs someone in
@@ -10,7 +27,7 @@ class OralHistorySessionsController < ApplicationController
     requester_email = OralHistoryRequester.find_by_token_for(:auto_login, params[:token])
 
     if requester_email.present?
-      session[SESSION_KEY] = requester_email.id
+      self.class.store_oral_history_current_requester(request: request, oral_history_requester: requester_email)
       redirect_to oral_history_requests_path
     else
       # invalid/expired/missing token
