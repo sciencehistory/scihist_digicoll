@@ -17,10 +17,15 @@ class OralHistorySessionsController < ApplicationController
 
   # @param request [ActionDispatch::Request]
   # @return [OralHistoryRequester, nil]
-  def self.fetch_oral_history_current_requester(request:)
+  def self.fetch_oral_history_current_requester(request:, reset_expiration_window: true)
     if request.cookie_jar.encrypted[SESSION_COOKIE_NAME].present?
       id = JSON.parse(request.cookie_jar.encrypted[SESSION_COOKIE_NAME])[SESSION_KEY]
-      OralHistoryRequester.find_by(id: id)
+      OralHistoryRequester.find_by(id: id).tap do |requester|
+        if requester && reset_expiration_window
+          # push expiration to be further back
+          store_oral_history_current_requester(request: request, oral_history_requester: requester)
+        end
+      end
     else
       nil
     end
