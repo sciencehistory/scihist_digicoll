@@ -70,6 +70,43 @@ describe OralHistoryRequestsController, type: :controller do
     end
   end
 
+  describe "#new" do
+    let(:work) { create(:oral_history_work, :available_by_request)}
+
+    it "displays form" do
+      get :new, params: { work_friendlier_id: work.friendlier_id }
+      expect(response).to have_http_status(:success)
+    end
+
+    describe "with new email functionality" do
+      before do
+        allow(ScihistDigicoll::Env).to receive(:lookup).with("feature_new_oh_request_emails").and_return(true)
+      end
+
+      describe "logged in, already has made request" do
+        let(:patron_email) { "somebody@example.com" }
+        let(:requester_email) { OralHistoryRequester.new(email: patron_email) }
+        let!(:existing_request) {
+          create(:oral_history_request,
+            work: work,
+            oral_history_requester: requester_email
+          )
+        }
+
+        before do
+          allow(controller).to receive(:current_oral_history_requester).and_return(requester_email)
+        end
+
+        it "redirects to dashboard" do
+          get :new, params: { work_friendlier_id: work.friendlier_id }
+
+          expect(response).to redirect_to(oral_history_requests_path)
+          expect(flash[:notice]).to match /You have already requested this Oral History/
+        end
+      end
+    end
+  end
+
   describe "#create" do
     let(:full_create_params) do
       {
