@@ -66,6 +66,17 @@ class OralHistoryRequestsController < ApplicationController
   # Form to fill out
   def new
     @work = load_work(params['work_friendlier_id'])
+
+    # In new mode, check to see if the are logged in, and request already exists,
+    # just send them to their requests!
+    if ScihistDigicoll::Env.lookup("feature_new_oh_request_emails") && current_oral_history_requester &&
+          OralHistoryRequest.where(work: @work, oral_history_requester: current_oral_history_requester).exists?
+
+        redirect_to oral_history_requests_path, notice: "You have already requested this Oral History: #{@work.title}"
+
+        return # abort further processing
+    end
+
     @oral_history_request = OralHistoryRequest.new(work: @work)
   end
 
