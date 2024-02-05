@@ -1,23 +1,33 @@
 # We let OH requesters log in with magic links, using tokens
 # generated from OralHistoryRequesterEmail#generates_token_for(:auto_login)
 class OralHistorySessionsController < ApplicationController
-  SESSION_KEY = :oral_history_requester_id
+  SESSION_COOKIE_NAME = "scihist_oh_user"
+  SESSION_KEY = "oral_history_requester_id"
 
 
   # @param request [ActionDispatch::Request]
   # @param oral_history_requester [OralHistoryRequester]
   def self.store_oral_history_current_requester(request:, oral_history_requester:)
-     request.session[SESSION_KEY] = oral_history_requester.id
+    request.cookie_jar.encrypted[SESSION_COOKIE_NAME] = JSON.generate({ SESSION_KEY => oral_history_requester.id })
   end
 
   # @param request [ActionDispatch::Request]
   # @return [OralHistoryRequester, nil]
   def self.fetch_oral_history_current_requester(request:)
-    if request.session[SESSION_KEY].present?
-      OralHistoryRequester.find_by(id: request.session[OralHistorySessionsController::SESSION_KEY])
+    if request.cookie_jar.encrypted[SESSION_COOKIE_NAME].present?
+      id = JSON.parse(request.cookie_jar.encrypted[SESSION_COOKIE_NAME])[SESSION_KEY]
+      OralHistoryRequester.find_by(id: id)
     else
       nil
     end
+  rescue JSON::ParserError => e
+    Rails.logger.error("#{self.name}: #{e}")
+    return nil
+  end
+
+  # @param request [ActionDispatch::Request]
+  def self.sign_out_current_requester(request:)
+    request.cookie_jar.delete SESSION_COOKIE_NAME
   end
 
   # GET /oral_history_session/login/$TOKEN
@@ -25,7 +35,6 @@ class OralHistorySessionsController < ApplicationController
   # Actually logs someone in
   def login
     requester_email = OralHistoryRequester.find_by_token_for(:auto_login, params[:token])
-
     if requester_email.present?
       self.class.store_oral_history_current_requester(request: request, oral_history_requester: requester_email)
       redirect_to oral_history_requests_path
@@ -61,7 +70,7 @@ class OralHistorySessionsController < ApplicationController
   #
   # Log out!
   def destroy
-    session.delete(SESSION_KEY)
+    self.class.sign_out_current_requester(request: request)
 
     redirect_to helpers.root_path, notice: "You have been signed out of your Oral History requests. You can sign in again from the link in your email, or by making another request."
   end

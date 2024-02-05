@@ -36,8 +36,7 @@ describe OralHistoryRequestsController, type: :controller do
 
     describe "authorized user" do
       before do
-        allow(session).to receive(:[]).and_call_original
-        allow(session).to receive(:[]).with(OralHistorySessionsController::SESSION_KEY).and_return(oh_request.oral_history_requester.id)
+        allow(controller).to receive(:current_oral_history_requester).and_return(oh_request.oral_history_requester)
       end
 
       describe "unapproved request" do
