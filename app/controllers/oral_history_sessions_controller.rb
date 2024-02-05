@@ -3,12 +3,16 @@
 class OralHistorySessionsController < ApplicationController
   SESSION_COOKIE_NAME = "scihist_oh_user"
   SESSION_KEY = "oral_history_requester_id"
+  SESSION_EXPIRE_PERIOD = 30.days
 
 
   # @param request [ActionDispatch::Request]
   # @param oral_history_requester [OralHistoryRequester]
   def self.store_oral_history_current_requester(request:, oral_history_requester:)
-    request.cookie_jar.encrypted[SESSION_COOKIE_NAME] = JSON.generate({ SESSION_KEY => oral_history_requester.id })
+    request.cookie_jar.encrypted[SESSION_COOKIE_NAME] = {
+      value: JSON.generate({ SESSION_KEY => oral_history_requester.id }),
+      expires: SESSION_EXPIRE_PERIOD
+    }
   end
 
   # @param request [ActionDispatch::Request]
