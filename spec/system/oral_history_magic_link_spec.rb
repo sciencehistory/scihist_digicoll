@@ -9,7 +9,7 @@ describe "Login with Oral Histories magic link", queue_adapter: :inline do
     visit new_oral_history_session_path
 
     fill_in :email, with: requester.email
-    click_on "Send me a login link"
+    click_on "Send me a sign-in link"
 
     expect(page).to have_text("A sign-in link for your Oral Histories requests has been emailed to #{requester.email}")
 
@@ -51,6 +51,6 @@ describe "Login with Oral Histories magic link", queue_adapter: :inline do
     # make sure we're really signed out
     visit oral_history_requests_path
     expect(page).not_to have_selector("h2", text: "Oral History Requests")
-    expect(page).to have_content("Please fill out your email address, and you will be emailed a login link")
+    expect(page).to have_content("Please fill out your email address, and you will be emailed a sign-in link")
   end
 end
