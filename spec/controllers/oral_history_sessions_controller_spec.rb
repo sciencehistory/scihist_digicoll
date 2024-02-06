@@ -30,7 +30,7 @@ describe OralHistorySessionsController, type: :controller, queue_adapter: :inlin
     it "authenticates and stores login" do
       get :login, params: { token: auto_login_link}
 
-      expect(session[:oral_history_requester_id]).to eq requester_email.id
+      expect(OralHistorySessionsController.fetch_oral_history_current_requester(request: request)&.id).to eq requester_email.id
 
       expect(response).to redirect_to(oral_history_requests_path)
     end
@@ -65,7 +65,7 @@ describe OralHistorySessionsController, type: :controller, queue_adapter: :inlin
       session[:oral_history_requester_id] = requester_email.id
       delete :destroy
 
-      expect(session[:oral_history_requester_id]).to be nil
+      expect(OralHistorySessionsController.fetch_oral_history_current_requester(request: request)).to be nil
       expect(response).to have_http_status(:redirect)
       expect(flash[:notice]).to include("signed out")
     end
