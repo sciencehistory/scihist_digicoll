@@ -1,6 +1,6 @@
 
 <div class="mb-4 text-page">
-  <h2 class="brand-alt-h2 mb-4">Get Oral History Request login link</h2>
+  <h2 class="brand-alt-h2 mb-4">Get Oral History Request Sign-in Link</h2>
 
   <% if flash[:auto_link_message] %>
     <p class="alert alert-danger">
@@ -15,7 +15,7 @@
 
   <%= simple_form_for(:oral_history_session, url: oral_history_session_path, html: { class: "mb-4" }) do |f| %>
     <%= f.input :email, input_html: { name: "email" } %>
-    <%= f.submit value: "Send me a login link", class: "btn btn-brand-main" %>
+    <%= f.submit value: "Send me a sign-in link", class: "btn btn-brand-main" %>
   <% end %>
 
   <p>
