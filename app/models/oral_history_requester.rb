@@ -29,4 +29,9 @@ class OralHistoryRequester < ApplicationRecord
     # constant for token to be good.
     email
   end
+
+  # @param [Asset]
+  def has_approved_request_for_asset?(asset)
+    OralHistoryRequest.where(work: asset.parent, oral_history_requester: self, delivery_status: "approved").exists?
+  end
 end
