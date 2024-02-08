@@ -77,7 +77,9 @@ class DownloadsController < ApplicationController
   def set_asset
     @asset = Asset.find_by_friendlier_id!(params[:asset_id])
 
-    authorize! :read, @asset
+    if cannot?(:read, @asset)
+      raise AccessGranted::AccessDenied.new(:read, @asset, 'Access Denied')
+    end
 
     unless @asset.stored?
       raise ActiveRecord::RecordNotFound.new("No downloads allowed for non-promoted Asset '#{@asset.id}' or its derivatives",
