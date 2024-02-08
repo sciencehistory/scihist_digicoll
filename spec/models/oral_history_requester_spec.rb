@@ -28,5 +28,14 @@ describe OralHistoryRequester, type: :model do
         expect(oral_history_requester.has_approved_request_for_asset?(asset)).to be true
       end
     end
+
+    describe "with automatic request" do
+      let!(:oral_history_request) { create(:oral_history_request, oral_history_requester: oral_history_requester, delivery_status: "automatic") }
+      let(:asset) { oral_history_request.work.members.find { |m| m.oh_available_by_request? } }
+
+      it "is true" do
+        expect(oral_history_requester.has_approved_request_for_asset?(asset)).to be true
+      end
+    end
   end
 end

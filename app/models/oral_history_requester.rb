@@ -32,6 +32,6 @@ class OralHistoryRequester < ApplicationRecord
 
   # @param [Asset]
   def has_approved_request_for_asset?(asset)
-    OralHistoryRequest.where(work: asset.parent, oral_history_requester: self, delivery_status: "approved").exists?
+    OralHistoryRequest.where(work: asset.parent, oral_history_requester: self, delivery_status: ["approved", "automatic"]).exists?
   end
 end
