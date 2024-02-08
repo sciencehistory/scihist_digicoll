@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe DownloadsController do
-
+  let(:faked_download_url) { "http://test.host/faked_download_url" }
   # We're not actually using S3 in test, but we want to make sure
   # we're sending the right params to S3 url generation.
   # So we mock it out.
@@ -14,7 +14,7 @@ describe DownloadsController do
 
     allow_any_instance_of(Shrine::UploadedFile).to receive(:url) do |**args|
       @received_s3_url_args << args
-      "http://test.host/faked_download_url"
+      faked_download_url
     end
   end
 
@@ -35,6 +35,40 @@ describe DownloadsController do
       it "redirects to login page" do
         get :original, params: { asset_id: asset, file_category: file_category }
         expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    describe "by-request only asset" do
+      let(:work) { create(:oral_history_work, :available_by_request) }
+      let(:asset) { work.members.find { |m| m.oh_available_by_request? } }
+
+      describe "with permission, when logged in" do
+        let!(:approved_request) { create(:oral_history_request, work: work, delivery_status: "approved") }
+
+        before do
+          # mock signed-in OH requester
+          OralHistorySessionsController.store_oral_history_current_requester(request: request, oral_history_requester: approved_request.oral_history_requester)
+        end
+
+        it "returns redirect to file" do
+          get :original, params: { asset_id: asset, file_category: file_category }
+          expect(response.status).to eq 302
+          expect(response).not_to redirect_to(new_user_session_path)
+          expect(response.location).to eq faked_download_url
+        end
+      end
+
+      describe "logged in, but no request" do
+        let(:oral_history_requester) { OralHistoryRequester.new(email: "example#{rand(999999)}@example.com") }
+        before do
+          # mock signed-in OH requester
+          OralHistorySessionsController.store_oral_history_current_requester(request: request, oral_history_requester: oral_history_requester)
+        end
+
+        it "redirects to login page" do
+          get :original, params: { asset_id: asset, file_category: file_category }
+          expect(response).to redirect_to(new_user_session_path)
+        end
       end
     end
 
@@ -112,6 +146,40 @@ describe DownloadsController do
         expect {
           get :derivative, params: { asset_id: asset, derivative_key: "thumb_mini" }
         }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    describe "by-request only asset" do
+      let(:work) { create(:oral_history_work, :available_by_request_flac) }
+      let!(:asset) { work.members.find { |m| m.oh_available_by_request? && m.content_type == "audio/flac" } }
+
+      describe "with permission, when logged in" do
+        let!(:approved_request) { create(:oral_history_request, work: work, delivery_status: "approved") }
+
+        before do
+          # mock signed-in OH requester
+          OralHistorySessionsController.store_oral_history_current_requester(request: request, oral_history_requester: approved_request.oral_history_requester)
+        end
+
+        it "returns redirect to file" do
+          get :derivative, params: { asset_id: asset, derivative_key: asset.file_derivatives.keys.first }
+          expect(response.status).to eq 302
+          expect(response).not_to redirect_to(new_user_session_path)
+          expect(response.location).to eq faked_download_url
+        end
+      end
+
+      describe "logged in, but no request" do
+        let(:oral_history_requester) { OralHistoryRequester.new(email: "example#{rand(999999)}@example.com") }
+        before do
+          # mock signed-in OH requester
+          OralHistorySessionsController.store_oral_history_current_requester(request: request, oral_history_requester: oral_history_requester)
+        end
+
+        it "redirects to login page" do
+          get :derivative, params: { asset_id: asset, derivative_key: asset.file_derivatives.keys.first }
+          expect(response).to redirect_to(new_user_session_path)
+        end
       end
     end
 
