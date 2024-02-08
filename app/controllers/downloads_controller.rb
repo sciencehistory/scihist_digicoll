@@ -77,7 +77,7 @@ class DownloadsController < ApplicationController
   def set_asset
     @asset = Asset.find_by_friendlier_id!(params[:asset_id])
 
-    if cannot?(:read, @asset)
+    if cannot?(:read, @asset) && !is_requestable_oral_history_asset?(@asset)
       raise AccessGranted::AccessDenied.new(:read, @asset, 'Access Denied')
     end
 
@@ -85,6 +85,15 @@ class DownloadsController < ApplicationController
       raise ActiveRecord::RecordNotFound.new("No downloads allowed for non-promoted Asset '#{@asset.id}' or its derivatives",
                                               "Kithe::Asset")
     end
+  end
+
+  def is_requestable_oral_history_asset?(asset)
+    return false unless asset.oh_available_by_request?
+
+    oh_requester = OralHistorySessionsController.fetch_oral_history_current_requester(request: request)
+    return false unless oh_requester
+
+    oh_requester.has_approved_request_for_asset?(asset)
   end
 
   # sets @derivative (for derivatives action), raises RecordNotFound if we can't find it.
