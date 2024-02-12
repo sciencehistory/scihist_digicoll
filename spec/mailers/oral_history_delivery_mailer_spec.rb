@@ -28,7 +28,7 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
       expect(mail.body.raw_source).to include("<a data-auto-login-link=\"true\" href=\"#{login_oral_history_session_url('TOKEN')}\">")
 
       mail_body_html = Nokogiri::HTML(mail.body.raw_source)
-      expect(mail_body_html).to have_text("Your request for files from #{access_request.work.title} has been approved.")
+      expect(mail_body_html).to have_text(/Thank you for requesting #{Regexp.escape access_request.work.title}.*has been approved/)
     end
   end
 
