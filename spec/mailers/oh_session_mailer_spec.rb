@@ -12,7 +12,7 @@ RSpec.describe OhSessionMailer, :type => :mailer do
   it "it has good metadata" do
     expect(mail.to).to eq ([requester_email.email])
     expect(mail.from).to eq(["oralhistory@sciencehistory.org"])
-    expect(mail.subject).to eq "Sign-in to Science History Insitute Oral Histories Requests"
+    expect(mail.subject).to eq "Access Science History Insitute Requests"
   end
 
   it "includes an auto-login-link" do

@@ -128,7 +128,7 @@ RSpec.describe Admin::OralHistoryRequestsController, :logged_in_user, type: :con
           expect(oral_history_access_request.delivery_status).to eq "approved"
 
           last_email = ActionMailer::Base.deliveries.last
-          expect(last_email.subject).to eq "Science History Institute: Access files for #{oral_history_access_request.work.title}"
+          expect(last_email.subject).to eq "Science History Institute Oral History Request: Approved: #{oral_history_access_request.work.title}"
           expect(last_email.from).to eq [ScihistDigicoll::Env.lookup(:oral_history_email_address)]
           expect(last_email.body).to match /You can view the status of all of your oral history requests and download materials from approved requests using this special sign-in link/
         end
@@ -147,7 +147,7 @@ RSpec.describe Admin::OralHistoryRequestsController, :logged_in_user, type: :con
           expect(oral_history_access_request.delivery_status).to eq "rejected"
 
           last_email = ActionMailer::Base.deliveries.last
-          expect(last_email.subject).to eq "Science History Institute: Your request for #{oral_history_access_request.work.title}"
+          expect(last_email.subject).to eq "Science History Institute Oral History Request: #{oral_history_access_request.work.title}"
           expect(last_email.from).to eq [ScihistDigicoll::Env.lookup(:oral_history_email_address)]
           expect(last_email.body).to match /Unfortunately we could <b>not<\/b> approve your request/
           expect(last_email.body).to include(message)

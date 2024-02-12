@@ -21,7 +21,7 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
     it "it has good metadata" do
       expect(mail.to).to eq ([access_request.requester_email])
       expect(mail.from).to eq(["oralhistory@sciencehistory.org"])
-      expect(mail.subject).to eq "Science History Institute: Access files for #{access_request.work.title}"
+      expect(mail.subject).to eq "Science History Institute Oral History Request: Approved: #{access_request.work.title}"
     end
 
     it "includes an auto-login-link and body" do
@@ -45,7 +45,7 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
     it "it has good metadata" do
       expect(mail.to).to eq ([access_request.requester_email])
       expect(mail.from).to eq(["oralhistory@sciencehistory.org"])
-      expect(mail.subject).to eq "Science History Institute: Your request for #{access_request.work.title}"
+      expect(mail.subject).to eq "Science History Institute Oral History Request: #{access_request.work.title}"
     end
 
     it "includes an auto-login-link and body" do
