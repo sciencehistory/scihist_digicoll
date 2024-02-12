@@ -20,7 +20,7 @@ class OralHistoryDeliveryMailer < ApplicationMailer
     raise ArgumentError.new("Required request.oral_history_requester missing") unless request.oral_history_requester.present?
     raise ArgumentError.new("params[:request] must be approved but was #{request.delivery_status}") unless request.delivery_status_approved?
 
-    mail(to: to_address, subject: "Science History Institute: Access files for #{work.title}", content_type: "text/html")
+    mail(to: to_address, subject: "Science History Institute Oral History Request: Approved: #{work.title}", content_type: "text/html")
   end
 
   def rejected_with_session_link_email
@@ -28,7 +28,7 @@ class OralHistoryDeliveryMailer < ApplicationMailer
     raise ArgumentError.new("Required request.oral_history_requester missing") unless request.oral_history_requester.present?
     raise ArgumentError.new("params[:request] must be rejected but was #{request.delivery_status}") unless request.delivery_status_rejected?
 
-    mail(to: to_address, subject: "Science History Institute: Your request for #{work.title}", content_type: "text/html")
+    mail(to: to_address, subject: "Science History Institute Oral History Request: #{work.title}", content_type: "text/html")
   end
 
   def request
