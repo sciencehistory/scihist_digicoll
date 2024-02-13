@@ -185,8 +185,8 @@ describe OralHistoryRequestsController, type: :controller do
             expect {
               post :create, params: full_create_params
             }.to have_enqueued_job(ActionMailer::MailDeliveryJob).with { |class_name, action|
-                expect(class_name).to eq "OhSessionMailer"
-                expect(action).to eq "link_email"
+                expect(class_name).to eq "OralHistoryDeliveryMailer"
+                expect(action).to eq "approved_with_session_link_email"
             }
 
             expect(response).to redirect_to(work_path(work.friendlier_id))

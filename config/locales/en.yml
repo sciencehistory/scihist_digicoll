@@ -83,8 +83,8 @@ en:
     front_matter: "Front Matter and Index"
 
   oral_history:
-    sign_in_prompt: "You can access your Oral History requests using this special sign-in link:"
-    sign_in_link_label: "Sign In to Science History Institute Requests"
+    sign_in_prompt: "You can view the status of all of your oral history requests and download materials from approved requests using this special sign-in link:"
+    sign_in_link_label: "Access Science History Institute Requests"
 
 
 
