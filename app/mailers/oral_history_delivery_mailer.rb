@@ -18,7 +18,7 @@ class OralHistoryDeliveryMailer < ApplicationMailer
   def approved_with_session_link_email
     raise ArgumentError.new("Required params[:request] missing") unless request.present?
     raise ArgumentError.new("Required request.oral_history_requester missing") unless request.oral_history_requester.present?
-    raise ArgumentError.new("params[:request] must be approved but was #{request.delivery_status}") unless request.delivery_status_approved?
+    raise ArgumentError.new("params[:request] must be approved or automatic but was #{request.delivery_status}") unless request.delivery_status_approved? || request.delivery_status_automatic?
 
     mail(to: to_address, subject: "Science History Institute Oral History Request: Approved: #{work.title}", content_type: "text/html")
   end
