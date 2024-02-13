@@ -30,6 +30,19 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
       mail_body_html = Nokogiri::HTML(mail.body.raw_source)
       expect(mail_body_html).to have_text(/Thank you for requesting #{Regexp.escape access_request.work.title}.*has been approved/)
     end
+
+    describe "with automatic delivery" do
+      let(:access_request) { create(:oral_history_request, delivery_status: "automatic") }
+
+      it "also works" do
+        expect(mail.to).to eq ([access_request.requester_email])
+        expect(mail.from).to eq(["oralhistory@sciencehistory.org"])
+        expect(mail.subject).to eq "Science History Institute Oral History Request: Approved: #{access_request.work.title}"
+
+        mail_body_html = Nokogiri::HTML(mail.body.raw_source)
+        expect(mail_body_html).to have_text(/Thank you for requesting #{Regexp.escape access_request.work.title}.*has been approved/)
+      end
+    end
   end
 
   describe "#rejected_with_session_link_email" do
