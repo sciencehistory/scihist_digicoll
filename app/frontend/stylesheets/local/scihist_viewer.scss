@@ -25,7 +25,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
 
 
 // Override some bootstrap modal stuff with some hacks to give us a full-viewport modal
-#scihist-image-viewer-modal {
+.scihist-image-viewer-modal {
   .modal-dialog {
     position: fixed;
     height: 100%;
