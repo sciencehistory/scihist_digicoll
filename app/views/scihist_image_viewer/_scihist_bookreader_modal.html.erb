@@ -1,0 +1,42 @@
+<%# A modal to hold the Internet Archive BookReader, forked from the scihist_viewer modal, for similar
+    container styling.
+
+    local args:
+      * work (used for putting work title in modal header, and work id and info json path for work)
+        (Yes, that assumes at present on a given page can only host viewer for ONE single work)
+ %>
+
+<%# locals: (work:) -%>
+
+<div id="scihist-bookreader-viewer-modal" class="scihist-image-viewer-modal modal" tabindex="-1" role="dialog"
+     data-images-info-path="<%= viewer_images_info_path(work) %>"
+     data-work-id="<%= work.friendlier_id %>"
+>
+
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div id= "scihist-image-viewer" class="scihist-image-viewer">
+          <div class="viewer-header">
+
+            <%= link_to main_app.root_path do %>
+              <%= image_tag "partial-mark-75rotate-80.png", class: "scihist-logo", alt: "Science History Institute" %>
+            <% end %>
+
+            <h1>
+              <a data-dismiss="modal" href="#"><%= work.title %></a>
+            </h1>
+
+            <a href="#" data-dismiss="modal" title="close" aria-label="close" class="header-close">
+              <i class="fa fa-times aria-hidden=true"></i>
+            </a>
+          </div>
+
+          <div id="scihist-bookreader-viewer-content" class="viewer-content">
+            Loading...
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
