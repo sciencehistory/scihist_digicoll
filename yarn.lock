@@ -124,6 +124,252 @@
   resolved "https://registry.yarnpkg.com/@esbuild/win32-x64/-/win32-x64-0.19.11.tgz#a5d300008960bb39677c46bf16f53ec70d8dee04"
   integrity sha512-vfkhltrjCAb603XaFhqhAF4LGDi2M4OrCRrFusyQ+iTLQ/o60QQXxc9cZC/FFpihBI9N1Grn6SMKVJ4KP7Fuiw==
 
+"@internetarchive/bookreader@^5.0.0-79":
+  version "5.0.0-79"
+  resolved "https://registry.yarnpkg.com/@internetarchive/bookreader/-/bookreader-5.0.0-79.tgz#998f13dcfa33063d1c365880ce316650caefa8dd"
+  integrity sha512-aAWPzbz3QA8soJ6xVFK0MaktzgNi3TkI30gE/bRBMPoiAawaeS1+02IY2/aqQ7I/ePXh5cCiicVXn1x+kfhyyQ==
+  dependencies:
+    "@internetarchive/ia-activity-indicator" "^0.0.4"
+    "@internetarchive/ia-item-navigator" "^2.1.1"
+    "@internetarchive/icon-bookmark" "^1.3.4"
+    "@internetarchive/icon-dl" "^1.3.4"
+    "@internetarchive/icon-edit-pencil" "^1.3.4"
+    "@internetarchive/icon-magnify-minus" "^1.3.4"
+    "@internetarchive/icon-magnify-plus" "^1.3.4"
+    "@internetarchive/icon-search" "^1.3.4"
+    "@internetarchive/icon-toc" "^1.3.4"
+    "@internetarchive/icon-visual-adjustment" "^1.3.4"
+    "@internetarchive/modal-manager" "^0.2.12"
+    "@internetarchive/shared-resize-observer" "^0.2.0"
+    lit "^2.5.0"
+
+"@internetarchive/field-parsers@^0.1.0":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@internetarchive/field-parsers/-/field-parsers-0.1.3.tgz#c73f4a0cf9d03b64ab34cbcd4ccb8f9eb98c8021"
+  integrity sha512-gN7ivwHWlf8V7fD3VakQ4NtddSou5i3A3TqbIo8EKF+XTxJXaXpNBmzkZEGf2oMVK8rHvrabFxZKVEy9qG7Omw==
+
+"@internetarchive/ia-activity-indicator@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/ia-activity-indicator/-/ia-activity-indicator-0.0.4.tgz#22fa19b072e4084799cf4c71ab73e4973c2670c3"
+  integrity sha512-nJFs3uAnPyDLqtkEVV4vMD1dli+eOyovd5rY/un9nOahu2elTHOHrIfNH0YvBkLXR7C9GVCeI9H8BD8BXq+rhg==
+  dependencies:
+    lit "^2.2.2"
+
+"@internetarchive/ia-item-navigator@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@internetarchive/ia-item-navigator/-/ia-item-navigator-2.1.1.tgz#ee5f1f65de3cc840e809114393a996e1493baa5d"
+  integrity sha512-RaS9DpPGG7O+T/IP6KABDRSEnEa+FXs6D9a4xsfRo5wE7la3yF1BOzrkC3VhbOIssSM5ayDfTgV49C0ecepe0A==
+  dependencies:
+    "@internetarchive/icon-collapse-sidebar" "^1.3.4"
+    "@internetarchive/icon-ellipses" "^1.3.4"
+    "@internetarchive/icon-email" "^1.3.4"
+    "@internetarchive/icon-facebook" "^1.3.4"
+    "@internetarchive/icon-link" "^1.3.4"
+    "@internetarchive/icon-pinterest" "^1.3.4"
+    "@internetarchive/icon-share" "^1.3.4"
+    "@internetarchive/icon-tumblr" "^1.3.4"
+    "@internetarchive/icon-twitter" "^1.3.4"
+    "@internetarchive/icon-visual-adjustment" "^1.3.4"
+    "@internetarchive/modal-manager" "^0.2.7"
+    "@internetarchive/search-service" "^0.1.2"
+    "@internetarchive/shared-resize-observer" "^0.0.1"
+    "@types/resize-observer-browser" "^0.1.6"
+    lit "^2.8.0"
+
+"@internetarchive/icon-bookmark@^1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/icon-bookmark/-/icon-bookmark-1.3.4.tgz#c2fd9b79d2b1565e604bf671fca80aa86b7a5e91"
+  integrity sha512-bKTPeFqRyOJGA1vLi2Bzd1SnXEf3xxNiQwryZbN/+wz1sAQmFlAJm3e/czlSok+0XfF6ObOkWQEkhtNvyLokCA==
+  dependencies:
+    lit "^2.0.2"
+
+"@internetarchive/icon-close@^1.3.2":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/icon-close/-/icon-close-1.3.4.tgz#8ea2f1e530a191a9de7fb6d398d80224c939b1ee"
+  integrity sha512-1pYEV64zRhK3eZEY7F7bxs+TMW2zZKB8vd7fhJgbJMEGdJAPRahSUYPdlEZFg6cNDC/WzbcfERgFSstdRkolDw==
+  dependencies:
+    lit "^2.0.2"
+
+"@internetarchive/icon-collapse-sidebar@^1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/icon-collapse-sidebar/-/icon-collapse-sidebar-1.3.4.tgz#0aa232b5a153333d53ee7b5e3d8f32259d75bf2a"
+  integrity sha512-oxY3qvuaKzoMfw6xQhWTnzwgYZL1bBc7NdaQvBnBm5vddbqkw1hSxsixnh4r5LPXOY9HW5vibdW50Px0apGOrA==
+  dependencies:
+    lit "^2.0.2"
+
+"@internetarchive/icon-dl@^1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/icon-dl/-/icon-dl-1.3.4.tgz#a8e3b578cf33072b727f949cd5bf7c83b0545887"
+  integrity sha512-3gonzMbfVt2hR+4AIpnRXomRfUz5sW0IDhneI/G7CE8GG/E3Wpb3wOFsZ1rTOX1aIxTB/tcXTjXg6wdJHvtN8g==
+  dependencies:
+    lit "^2.0.2"
+
+"@internetarchive/icon-edit-pencil@^1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/icon-edit-pencil/-/icon-edit-pencil-1.3.4.tgz#19f4078d1f909b561de5c6a5cf8804e53f79973b"
+  integrity sha512-wJTXi5s8lDrYVlvlz5Jhpr0fPOq1RpFXMRtNQrsN+wXWX3qWMz9mutHC5gf/7rLvnxcBmz53cddHjW0zF516+A==
+  dependencies:
+    lit "^2.0.2"
+
+"@internetarchive/icon-ellipses@^1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/icon-ellipses/-/icon-ellipses-1.3.4.tgz#d233a7b2a390ac1d2bfc7cbbc0db0f388d7a44f5"
+  integrity sha512-ZSZXMH14IWU63z9cB5DoeGbF7qFLFsbKVJoahlVsUbEmjSpwRQaT7mnlmGG/Jfs0b3JzLH8SpTNSWAvPnWrhWw==
+  dependencies:
+    lit "^2.0.2"
+
+"@internetarchive/icon-email@^1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/icon-email/-/icon-email-1.3.4.tgz#4bf72e0fac8a785a3fae781164b7ca7f162f723a"
+  integrity sha512-Pr6yYSVkgb+hmqhgYOXpcspPAuVDp1/9CIqXzcMDvWvehzQJRn5X8D+y19ddOukGSVz++cVfZH+c5q+RTuQWEQ==
+  dependencies:
+    lit "^2.0.2"
+
+"@internetarchive/icon-facebook@^1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/icon-facebook/-/icon-facebook-1.3.4.tgz#2319dd039ceb02cc86754dc8996cc25fbd8eb105"
+  integrity sha512-oi4PT/d9qmfevDyqUddfFO/Al1t31ETMW7PIuJNUh/1c6yv9jy+xADLDCk8o0UBW66mlgKww52YULA30r6Rr9g==
+  dependencies:
+    lit "^2.0.2"
+
+"@internetarchive/icon-ia-logo@^1.3.2":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/icon-ia-logo/-/icon-ia-logo-1.3.4.tgz#5e6bbb1481e04d41568253793168db4f70e9a2b8"
+  integrity sha512-QsP14B+/MHHP3wu/HF52GQbcVV9nOorCUsweQppZrzVZlSwFm/gfd+yjm6g6vynYn6e7qsP2JK9ot47XzRT00w==
+  dependencies:
+    lit "^2.0.2"
+
+"@internetarchive/icon-link@^1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/icon-link/-/icon-link-1.3.4.tgz#8163e69daaa3063ed002085117f9e724f218f6ac"
+  integrity sha512-URnyyDfU1Rd8p8AgOsqXpUhMJ/Hl8cPNRchtxdCKcY8/9d0lPP89HIu1uLAW/j5ccTai1oCWgRFO/R/XyHw6Uw==
+  dependencies:
+    lit "^2.0.2"
+
+"@internetarchive/icon-magnify-minus@^1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/icon-magnify-minus/-/icon-magnify-minus-1.3.4.tgz#783811d48f24820d1c776462111c5c6f549aea0a"
+  integrity sha512-it6rpHOpLTk8uLT0kH5HdXbrDr2FGbL+b5fd0cddsXegs0izJKYBZ2fGsJYtSPeD8MgrtVh9V7/8+ryLkXyfGw==
+  dependencies:
+    lit "^2.0.2"
+
+"@internetarchive/icon-magnify-plus@^1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/icon-magnify-plus/-/icon-magnify-plus-1.3.4.tgz#2226978278c0c921f22dcc623dcd6382ee93fc24"
+  integrity sha512-21dR/oJx+Eb7pKcOt3YthTUwe2hibQza7kYte4eAEA+oMhjgEy57OxM0eTHcpUrpvDTVWFefZICaTlOySvn0rg==
+  dependencies:
+    lit "^2.0.2"
+
+"@internetarchive/icon-pinterest@^1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/icon-pinterest/-/icon-pinterest-1.3.4.tgz#14359583da89dcb06186143672609550c4615038"
+  integrity sha512-GwqOevdifnhTWY0/xbiTGlDeO3h3It23Oqq/8+rHvd2DUlj/VGwVr2RR0PflnSzfDPwKaf1O+ZsVxmo+G9UqlQ==
+  dependencies:
+    lit "^2.0.2"
+
+"@internetarchive/icon-search@^1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/icon-search/-/icon-search-1.3.4.tgz#1e719bbf88e35e9f6b10a8ebeab32e9ef6901656"
+  integrity sha512-htakh/aezlY4vVuKUkJGPpgGRhf7YJSHyhOFvH2NqzqbsYTFl2QuyJ14wUeLYLlTiGqwkfxitV3N/fuy+CKYdA==
+  dependencies:
+    lit "^2.0.2"
+
+"@internetarchive/icon-share@^1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/icon-share/-/icon-share-1.3.4.tgz#44c3431a8f1a478cf122d9e662321c96db919994"
+  integrity sha512-02xI0WYHtnD++uV4s4rtdgqiBZTN23gjvy6iDw9J23/wzVU4mkQDS6CYCyMVr5uU+5TYCA1k87Dj90TaQn1LsA==
+  dependencies:
+    lit "^2.0.2"
+
+"@internetarchive/icon-toc@^1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/icon-toc/-/icon-toc-1.3.4.tgz#21da2f86c27718ff6c0a32d4534c7f4ba095de02"
+  integrity sha512-HXAbSUQ8NbA2+NFZ18HCnH2V6IpMDxiOLelYvqR+FmB1Tz9RmYNZyzGafaGNreP1PJpU6LjwtDfiSAW1uyKsRQ==
+  dependencies:
+    lit "^2.0.2"
+
+"@internetarchive/icon-tumblr@^1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/icon-tumblr/-/icon-tumblr-1.3.4.tgz#6f829071adb1380f331edcb85d8a744a77cf66de"
+  integrity sha512-OgGVM2IZjBvyU4Jy9zbAQhZnQZW2uKAtyQaBtfjDm8Owv4qxbeR31UVvEBqsL48bkYXeV3pntWfHAoBra/Z80A==
+  dependencies:
+    lit "^2.0.2"
+
+"@internetarchive/icon-twitter@^1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/icon-twitter/-/icon-twitter-1.3.4.tgz#bada9a2ef30554d3c1904d868c2263747be960d3"
+  integrity sha512-lmnMD01Xvp1SeakAMBRDAROmcTZaw8HLBMeYysO3DLmW7gJxTkMA9QyKwbxHa/yD3NCAseHD3rENbt9UW2OVBw==
+  dependencies:
+    lit "^2.0.2"
+
+"@internetarchive/icon-user@^1.3.2":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/icon-user/-/icon-user-1.3.4.tgz#967f3d798fbb58756cee444f059b4565e21a07f0"
+  integrity sha512-GXdGKGsYVW0mlc3RpmY1/MsuKU6pEn/YXueS+xX0e620pcsjTRrtKn2RqwBmqkeQki4QakFg0gpM1NhauaKMtw==
+  dependencies:
+    lit "^2.0.2"
+
+"@internetarchive/icon-visual-adjustment@^1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@internetarchive/icon-visual-adjustment/-/icon-visual-adjustment-1.3.4.tgz#dfc51f0eee420c4ab98509afc57cbad2c8b6c8b2"
+  integrity sha512-QZ1Z5ikuV06ETj9lqJoaTSZWgdhI58yOWrh4M9X+kPIdy4xoQElaTs3PytTKinu6bcILDqJysfTF36acazWVrQ==
+  dependencies:
+    lit "^2.0.2"
+
+"@internetarchive/modal-manager@^0.2.12", "@internetarchive/modal-manager@^0.2.7":
+  version "0.2.12"
+  resolved "https://registry.yarnpkg.com/@internetarchive/modal-manager/-/modal-manager-0.2.12.tgz#e25eadcaf9e5720ae4e13fadfed67382f67b1c88"
+  integrity sha512-9n6fx8kz0TSUCSroemEzznuNtMiTchfVzXkbvueTRLOjNXFMePUl5dmQ376KRcfJZSCBdbMKIgsT383C9I95Tw==
+  dependencies:
+    "@internetarchive/ia-activity-indicator" "^0.0.4"
+    "@internetarchive/icon-close" "^1.3.2"
+    "@internetarchive/icon-ia-logo" "^1.3.2"
+    "@internetarchive/icon-user" "^1.3.2"
+    lit "^2.2.2"
+    throttle-debounce "^5.0.0"
+
+"@internetarchive/result-type@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@internetarchive/result-type/-/result-type-0.0.1.tgz#a1bda4428dc557cc644a67783f1b8d5944ae4d54"
+  integrity sha512-sWahff5oP1xAK1CwAu1/5GTG2RXsdx/sQKn4SSOWH0r0vU2QoX9kAom/jSXeBsmgK0IjTc+9Ty9407SMORi+nQ==
+
+"@internetarchive/search-service@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@internetarchive/search-service/-/search-service-0.1.2.tgz#b8b1138fc5f2f3f6aa9121452e5d50a4f9b698e8"
+  integrity sha512-NV4rU3lmAKKz+49HHKFMdCDppRsxJMv6v4Ac+GQqzcUstwhVryTd/BRobXr0R6zginuBDpaXl/cKISfoPrQ02A==
+  dependencies:
+    "@internetarchive/field-parsers" "^0.1.0"
+    "@internetarchive/result-type" "^0.0.1"
+
+"@internetarchive/shared-resize-observer@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@internetarchive/shared-resize-observer/-/shared-resize-observer-0.0.1.tgz#471d8e9700401f3261c0c726479646c428dd848e"
+  integrity sha512-NdtSk6O8Z4ALrdhPxLh9NutAGtQAxcA/4EAxgzUSAJetjEdUnOe1NVSfi7ElqRJFu39pUIsFPyuWWSnMoTxPaA==
+  dependencies:
+    "@juggle/resize-observer" "^3.3.0"
+
+"@internetarchive/shared-resize-observer@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@internetarchive/shared-resize-observer/-/shared-resize-observer-0.2.0.tgz#afe51f7dc9507ac6cf7be8966a49e2a4c6c25ff3"
+  integrity sha512-E5Jh6rX03usPkihB/lnGpoL3qedE84NLRHxuAEGrlwC0zyQ7xTr6NNQWwKBDzG1OBcCrUJXIWaQuJdjqo+og1Q==
+
+"@juggle/resize-observer@^3.3.0":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@juggle/resize-observer/-/resize-observer-3.4.0.tgz#08d6c5e20cf7e4cc02fd181c4b0c225cd31dbb60"
+  integrity sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==
+
+"@lit-labs/ssr-dom-shim@^1.0.0", "@lit-labs/ssr-dom-shim@^1.1.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@lit-labs/ssr-dom-shim/-/ssr-dom-shim-1.2.0.tgz#353ce4a76c83fadec272ea5674ede767650762fd"
+  integrity sha512-yWJKmpGE6lUURKAaIltoPIE/wrbY3TEkqQt+X0m+7fQNnAv0keydnYvbiJFP1PnMhizmIWRWOG5KLhYyc/xl+g==
+
+"@lit/reactive-element@^1.3.0", "@lit/reactive-element@^1.6.0":
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/@lit/reactive-element/-/reactive-element-1.6.3.tgz#25b4eece2592132845d303e091bad9b04cdcfe03"
+  integrity sha512-QuTgnG52Poic7uM1AN5yJ09QMe0O28e10XzSvWDz02TJiiKee4stsiownEIadWm8nYzyDAyT+gKzUoZmiWQtsQ==
+  dependencies:
+    "@lit-labs/ssr-dom-shim" "^1.0.0"
+
 "@nathanvda/cocoon@^1.2.14":
   version "1.2.14"
   resolved "https://registry.yarnpkg.com/@nathanvda/cocoon/-/cocoon-1.2.14.tgz#aaea910e4b9c0d28d5bdcb7f3743617db46b09af"
@@ -226,6 +472,16 @@
   version "1.0.0-beta.8"
   resolved "https://registry.yarnpkg.com/@shopify/draggable/-/draggable-1.0.0-beta.8.tgz#2eb3c2f72298ce3e53fe16f34ab124cc495cd4fc"
   integrity sha512-9IeBPQM93Ad4qFKUopwuTClzoST/1OId4MaSd/8FB5ScCL2tl25UaOGNR8E2hjiL7xK4LN5+I1Ews6amS7YAiA==
+
+"@types/resize-observer-browser@^0.1.6":
+  version "0.1.11"
+  resolved "https://registry.yarnpkg.com/@types/resize-observer-browser/-/resize-observer-browser-0.1.11.tgz#d3c98d788489d8376b7beac23863b1eebdd3c13c"
+  integrity sha512-cNw5iH8JkMkb3QkCoe7DaZiawbDQEUX8t7iuQaRTyLOyQCR2h+ibBD4GJt7p5yhUHrlOeL7ZtbxNHeipqNsBzQ==
+
+"@types/trusted-types@^2.0.2":
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-2.0.7.tgz#baccb07a970b91707df3a3e8ba6896c57ead2d11"
+  integrity sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==
 
 "@videojs/http-streaming@3.0.2":
   version "3.0.2"
@@ -567,6 +823,31 @@ lazysizes@^5.1.0:
   resolved "https://registry.yarnpkg.com/lazysizes/-/lazysizes-5.2.2.tgz#800e5914725fef1863bd9a1e19e1bb423c536f8b"
   integrity sha512-fYgOv1Y35M86/7qyAdPPqoOhuyZrjxEAPxqwToRY2bO/PoBJ4lSqZYuZoavNp6eyuLpIAdHodpsPfj2Lkt86FQ==
 
+lit-element@^3.3.0:
+  version "3.3.3"
+  resolved "https://registry.yarnpkg.com/lit-element/-/lit-element-3.3.3.tgz#10bc19702b96ef5416cf7a70177255bfb17b3209"
+  integrity sha512-XbeRxmTHubXENkV4h8RIPyr8lXc+Ff28rkcQzw3G6up2xg5E8Zu1IgOWIwBLEQsu3cOVFqdYwiVi0hv0SlpqUA==
+  dependencies:
+    "@lit-labs/ssr-dom-shim" "^1.1.0"
+    "@lit/reactive-element" "^1.3.0"
+    lit-html "^2.8.0"
+
+lit-html@^2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-2.8.0.tgz#96456a4bb4ee717b9a7d2f94562a16509d39bffa"
+  integrity sha512-o9t+MQM3P4y7M7yNzqAyjp7z+mQGa4NS4CxiyLqFPyFWyc4O+nodLrkrxSaCTrla6M5YOLaT3RpbbqjszB5g3Q==
+  dependencies:
+    "@types/trusted-types" "^2.0.2"
+
+lit@^2.0.2, lit@^2.2.2, lit@^2.5.0, lit@^2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/lit/-/lit-2.8.0.tgz#4d838ae03059bf9cafa06e5c61d8acc0081e974e"
+  integrity sha512-4Sc3OFX9QHOJaHbmTMk28SYgVxLN3ePDjg7hofEft2zWlehFL3LiAuapWc4U/kYwMYJSh2hTCPZ6/LIC7ii0MA==
+  dependencies:
+    "@lit/reactive-element" "^1.6.0"
+    lit-element "^3.3.0"
+    lit-html "^2.8.0"
+
 m3u8-parser@^6.0.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/m3u8-parser/-/m3u8-parser-6.2.0.tgz#5b2f2fe103b76bd3ffc77c6b1eafc3772b1251dd"
@@ -775,6 +1056,11 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
   integrity sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw=
+
+throttle-debounce@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/throttle-debounce/-/throttle-debounce-5.0.0.tgz#a17a4039e82a2ed38a5e7268e4132d6960d41933"
+  integrity sha512-2iQTSgkkc1Zyk0MeVrt/3BvuOXYPl/R8Z0U2xxo9rjwNciaHDG3R+Lm6dh4EeUci49DanvBnuqI6jshoQQRGEg==
 
 to-regex-range@^5.0.1:
   version "5.0.1"
