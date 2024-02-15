@@ -13,6 +13,8 @@ class OralHistoryRequester < ApplicationRecord
   # without downtime, good enough. eg https://docs.gitlab.com/ee/development/database/rename_database_tables.html
   self.table_name = "oral_history_requester_emails"
 
+  normalizes :email, with: -> email { email.downcase.strip }
+
   LOGIN_LINK_EXPIRE = 7.days
 
   # we don't have uniqueness validation cause it's incompatible with using create_or_find_by which

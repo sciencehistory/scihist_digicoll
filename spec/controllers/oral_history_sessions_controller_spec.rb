@@ -14,6 +14,16 @@ describe OralHistorySessionsController, type: :controller, queue_adapter: :inlin
       expect(email_delivery.to).to eq [requester_email.email]
     end
 
+    it "normalizes entry to send a login link" do
+      get :create, params: { email: " #{requester_email.email.upcase} " }
+
+      expect(response).to redirect_to root_path
+      expect(flash[:notice]).to eq "A sign-in link for your Oral Histories requests has been emailed to #{requester_email.email}"
+
+      email_delivery = ActionMailer::Base.deliveries.first
+      expect(email_delivery.to).to eq [requester_email.email]
+    end
+
     describe "for unknown email" do
       it "redirects to email entry form" do
         get :create, params: { email: "no_such_email@example.com" }
