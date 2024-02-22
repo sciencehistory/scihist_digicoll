@@ -14,7 +14,7 @@ class OhSessionMailer < ApplicationMailer
     # https://postmarkapp.com/blog/magic-links
     headers["references"] = "Unique-#{SecureRandom.hex(20)}"
 
-    mail to: @requester_email.email, subject: "Access Science History Insitute Requests"
+    mail to: @requester_email.email, subject: "Access Science History Institute Requests"
   end
 
   def login_magic_link
