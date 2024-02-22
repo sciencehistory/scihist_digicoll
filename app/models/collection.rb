@@ -64,6 +64,13 @@ class Collection < Kithe::Collection
     self.representative = CollectionThumbAsset.new(title: "collection-thumbnail-placeholder", parent: self)
   end
 
+  # Some collections define an arbitrary default sort field.
+  # We use this for the inital presentation when you first visit the collection page,
+  # before the user searches inside the collection or alter the sort order.
+  #
+  # Example value: 'oldest_date'.
+  attr_json :default_sort_field, :string, default: -> { nil }
+
   # For ransack use, we need to list all attributes we want to use ransack to SEARCH or SORT by.
   #
   # We really probably oughta stop using ransack, I hate having this in the model.
