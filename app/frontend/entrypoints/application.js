@@ -69,6 +69,7 @@ import '../javascript/custom_google_analytics_4_events.js';
 import '../javascript/cart_control.js';
 import '../javascript/date_range_render_workaround.js';
 import '../javascript/tab_selection_in_anchor';
+import "../javascript/load_book_reader_in_modal.js"
 
 // Generic tooltips
 import '../javascript/bootstrap_tooltips_activate';

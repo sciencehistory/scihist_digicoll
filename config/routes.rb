@@ -226,7 +226,8 @@ Rails.application.routes.draw do
 
   ##
   # End Blacklight-generated routes
-  ##
+
+  get :book_reader, to: "book_reader#show"
 
   # Routes will even only _show up_ for users who can :access_staff_functions; this applies
   # to internal rack apps we're mounting here too, like shrine upload endpoints,
