@@ -89,6 +89,14 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
       end
     end
 
+    describe "default sort order refers to a nonexistent sort field" do
+      let(:default_sort_field) { 'goat' }
+      it "sorts by the default sort" do
+        get :index, params: base_params
+        expect(titles_as_displayed).to eq four_titles_in_arbitrary_order
+      end
+    end
+
     describe "collection of serials with a default sort order: reverse chron by publication date" do
       let(:default_sort_field) { 'oldest_date' }
       it "sorts in chron order using the publication date" do
