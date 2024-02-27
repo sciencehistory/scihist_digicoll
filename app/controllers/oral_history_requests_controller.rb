@@ -72,7 +72,7 @@ class OralHistoryRequestsController < ApplicationController
     if ScihistDigicoll::Env.lookup("feature_new_oh_request_emails") && current_oral_history_requester &&
           OralHistoryRequest.where(work: @work, oral_history_requester: current_oral_history_requester).exists?
 
-        redirect_to oral_history_requests_path, notice: "You have already requested this Oral History: #{@work.title}"
+        redirect_to oral_history_requests_path, flash: { success: "You have already requested this Oral History: #{@work.title}" }
 
         return # abort further processing
     end
@@ -130,7 +130,7 @@ class OralHistoryRequestsController < ApplicationController
             oral_history_delivery_email.
             deliver_later
 
-          redirect_to work_path(@work.friendlier_id), notice: "Check your email! We are sending you links to the files you requested, to #{@oral_history_request.requester_email}."
+          redirect_to work_path(@work.friendlier_id), flash: { success: "Check your email! We are sending you links to the files you requested, to #{@oral_history_request.requester_email}." }
         end
       else # manual review
         OralHistoryRequestNotificationMailer.
@@ -138,7 +138,7 @@ class OralHistoryRequestsController < ApplicationController
           notification_email.
           deliver_later
 
-        redirect_to work_path(@work.friendlier_id), notice: "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll email you at #{@oral_history_request.requester_email}"
+        redirect_to work_path(@work.friendlier_id), flash: { success: "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll email you at #{@oral_history_request.requester_email}" }
       end
     else
      render :new
@@ -171,7 +171,7 @@ private
       redirect_to oral_history_requests_path, notice: immediate_notice
     else
       mailer_proc.call
-      redirect_to work_path(work.friendlier_id), notice: emailed_notice
+      redirect_to work_path(work.friendlier_id), flash: { success: emailed_notice }
     end
   end
 
