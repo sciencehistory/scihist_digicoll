@@ -168,7 +168,7 @@ private
   def want_request_dashboard_response(work:, requester_email:, emailed_notice:, immediate_notice:, mailer_proc:)
     # new style, if they are already logged in they have immediate access, else an email
     if current_oral_history_requester.present? && current_oral_history_requester.email == requester_email.email
-      redirect_to oral_history_requests_path, notice: immediate_notice
+      redirect_to oral_history_requests_path, flash: { success: immediate_notice }
     else
       mailer_proc.call
       redirect_to work_path(work.friendlier_id), flash: { success: emailed_notice }
