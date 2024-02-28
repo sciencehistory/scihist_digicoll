@@ -17,7 +17,7 @@ class Collection < Kithe::Collection
 
   DEFAULT_SORT_FIELDS = ([
     ['Not specified', nil],
-    ['Ascending chronological by publication date', 'oldest_date']
+    ['Oldest date', 'oldest_date']
   ]).freeze
 
   # automatic Solr indexing on save
