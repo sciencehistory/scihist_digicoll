@@ -80,9 +80,10 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
     let(:parsed){ parsed = Nokogiri::HTML(response.body) }
     let(:titles_as_displayed) { parsed.css('.scihist-results-list-item-head a').map {|x| x.text} }
     let(:years_as_displayed) { parsed.css('span[itemprop="date_created"]').map {|x| x.text.strip } }
+    let(:default_sort_field)  { nil }
+
 
     describe "no default sort order for this collection" do
-      let(:default_sort_field)  { nil }
       it "no default sort order for this collection: sort by date_published_dtsi desc" do
         get :index, params: base_params
         expect(titles_as_displayed).to eq four_titles_in_arbitrary_order
@@ -90,14 +91,17 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
     end
 
     describe "default sort order refers to a nonexistent sort field" do
-      let(:default_sort_field) { 'goat' }
+      before do
+        collection.update(default_sort_field:'goat')
+        collection.save(validate:false)
+      end
       it "sorts by the default sort" do
         get :index, params: base_params
         expect(titles_as_displayed).to eq four_titles_in_arbitrary_order
       end
     end
 
-    describe "collection of serials with a default sort order: reverse chron by publication date" do
+    describe "collection of serials with a default sort order: chron by publication date" do
       let(:default_sort_field) { 'oldest_date' }
       it "sorts in chron order using the publication date" do
         get :index, params: base_params
