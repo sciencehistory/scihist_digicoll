@@ -64,14 +64,24 @@
   padding: 2rem 3rem 1rem 3rem;
   background-color: $shi-maroon;
 
-  @include media-breakpoint-up(sm) {
+  .title-and-button {
     display: flex;
     align-items: flex-start;
     gap: 1rem;
-  }
+    flex-direction: column;
 
-  .signout {
-    flex-shrink: 0;
+    @include media-breakpoint-up(sm) {
+      flex-direction: row;
+    }
+
+    margin-bottom: $paragraph-spacer;
+
+    .text {
+      flex-grow: 1;
+    }
+    .signout {
+      flex-shrink: 0;
+    }
   }
 
   p {

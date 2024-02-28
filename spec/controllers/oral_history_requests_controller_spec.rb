@@ -100,7 +100,7 @@ describe OralHistoryRequestsController, type: :controller do
           get :new, params: { work_friendlier_id: work.friendlier_id }
 
           expect(response).to redirect_to(oral_history_requests_path)
-          expect(flash[:notice]).to match /You have already requested this Oral History/
+          expect(flash[:success]).to match /You have already requested this Oral History/
         end
       end
     end
@@ -132,7 +132,7 @@ describe OralHistoryRequestsController, type: :controller do
           }
 
           expect(response).to redirect_to(work_path(work.friendlier_id))
-          expect(flash[:notice]).to match /We are sending you links to the files you requested/
+          expect(flash[:success]).to match /We are sending you links to the files you requested/
         end
       end
 
@@ -148,7 +148,7 @@ describe OralHistoryRequestsController, type: :controller do
           }
 
           expect(response).to redirect_to(work_path(work.friendlier_id))
-          expect(flash[:notice]).to match /Your request will be reviewed/
+          expect(flash[:success]).to match /Your request will be reviewed/
         end
       end
     end
@@ -176,7 +176,7 @@ describe OralHistoryRequestsController, type: :controller do
             }.not_to have_enqueued_job
 
             expect(response).to redirect_to(oral_history_requests_path)
-            expect(flash[:notice]).to match /The files you requested are immediately available, from: #{Regexp.escape work.title}/
+            expect(flash[:success]).to match /The files you requested are immediately available, from: #{Regexp.escape work.title}/
           end
         end
 
@@ -190,7 +190,7 @@ describe OralHistoryRequestsController, type: :controller do
             }
 
             expect(response).to redirect_to(work_path(work.friendlier_id))
-            expect(flash[:notice]).to match /The files you have requested are immediately available. We've sent an email to #{Regexp.escape full_create_params[:patron_email]} with a sign-in link/
+            expect(flash[:success]).to match /The files you have requested are immediately available. We've sent an email to #{Regexp.escape full_create_params[:patron_email]} with a sign-in link/
           end
         end
       end
@@ -208,7 +208,7 @@ describe OralHistoryRequestsController, type: :controller do
           }
 
           expect(response).to redirect_to(work_path(work.friendlier_id))
-          expect(flash[:notice]).to match /Your request will be reviewed/
+          expect(flash[:success]).to match /Your request will be reviewed/
         end
       end
 
@@ -232,7 +232,7 @@ describe OralHistoryRequestsController, type: :controller do
             }
 
             expect(response).to redirect_to(work_path(work.friendlier_id))
-            expect(flash[:notice]).to match /We've sent another email to #{Regexp.escape full_create_params[:patron_email]}/
+            expect(flash[:success]).to match /We've sent another email to #{Regexp.escape full_create_params[:patron_email]}/
           end
         end
         describe "already logged in" do
@@ -246,7 +246,7 @@ describe OralHistoryRequestsController, type: :controller do
             }.not_to have_enqueued_job
 
             expect(response).to redirect_to(oral_history_requests_path)
-            expect(flash[:notice]).to match /You have already requested this Oral History/
+            expect(flash[:success]).to match /You have already requested this Oral History/
           end
         end
       end
