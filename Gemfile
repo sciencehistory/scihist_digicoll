@@ -12,7 +12,7 @@ ruby "~> #{File.read(File.join(__dir__ , '.ruby-version')).chomp.split('.').slic
 gem 'lockbox'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 7.1.0'
+gem 'rails', '~> 7.1.3'
 
 # While rails 7.1 supports rack 3, other things we're using actually don't yet,
 # but bundler can incorrectly resolve to REALLY OLD verisons of dependencies
