@@ -14,19 +14,19 @@ Just run:
 
 ## On heroku
 
-App needs to be installed to heroku first. Heroku by default does not install gems in `development` or `test` group, but we need them here.
+App needs to be installed to heroku first. By default, Heroku does not install gems in `development` or `test` group, but we need them here.
 
-So set:
+First, tell the app you want to install `rspec` on the next deploy:
 
     heroku config:set BUNDLE_WITHOUT=""
+   
+This sets `BUNDLE_WITHOUT` to the empty string (by default, the variable doesn't exist). Although this restarts the dyno, it doesn't actually trigger a deploy.
 
-(To set that variable to empty, different than it's default value)
+Next, trigger a deploy.  Use a null commit if you have to, and push it to production. On deploy, `rspec` will be installed.
 
-Then you can log into a terminal with `heroku run bash` and then run rspec as above, or just:
+ Finally, `heroku run "rspec system_env_spec"`
 
-    heroku run "rspec system_env_spec"
-
-When you are done, please unset the heroku config again:
+When you are done, remember to unset the heroku config again:
 
     heroku config:unset BUNDLE_WITHOUT
 
