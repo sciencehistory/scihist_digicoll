@@ -22,7 +22,7 @@ First, tell the app you want to install `rspec` on the next deploy:
    
 This sets `BUNDLE_WITHOUT` to the empty string (by default, the variable doesn't exist). Although this restarts the dyno, it doesn't actually trigger a deploy.
 
-Next, trigger a deploy.  Use a null commit if you have to, and push it to production. On deploy, `rspec` will be installed.
+Next, trigger a deploy.  Use a null commit if you have to, and deploy it to Heroku. On deploy, `rspec` will be installed.
 
  Finally, `heroku run "rspec system_env_spec"`
 
