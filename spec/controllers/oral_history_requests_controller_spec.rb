@@ -176,7 +176,7 @@ describe OralHistoryRequestsController, type: :controller do
             }.not_to have_enqueued_job
 
             expect(response).to redirect_to(oral_history_requests_path)
-            expect(flash[:notice]).to match /The files you requested are immediately available, from: #{Regexp.escape work.title}/
+            expect(flash[:notice]).to match /The files you requested from '#{Regexp.escape work.title}' are immediately available./
           end
         end
 

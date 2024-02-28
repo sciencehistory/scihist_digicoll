@@ -121,7 +121,7 @@ class OralHistoryRequestsController < ApplicationController
             work: @work,
             requester_email: requester_email,
             emailed_notice: "The files you have requested are immediately available. We've sent an email to #{patron_email_param} with a sign-in link.",
-            immediate_notice: "The files you requested are immediately available, from: #{@work.title}",
+            immediate_notice: "The files you requested from '#{@work.title}' are immediately available.",
             mailer_proc: -> { OralHistoryDeliveryMailer.with(request: @oral_history_request).approved_with_session_link_email.deliver_later }
           )
         else
