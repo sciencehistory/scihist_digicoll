@@ -94,13 +94,14 @@ class OralHistoryRequestsController < ApplicationController
     if ScihistDigicoll::Env.lookup("feature_new_oh_request_emails") && requester_email &&
         OralHistoryRequest.where(work: @work, oral_history_requester: requester_email).exists?
 
-      want_request_dashboard_response(
-        work: @work,
-        requester_email: requester_email,
-        emailed_notice: "You have already requested this Oral History. We've sent another email to #{patron_email_param} with a sign-in link, which you can use to view your requests.",
-        immediate_notice: "You have already requested this Oral History: #{@work.title}",
-        mailer_proc: -> { OhSessionMailer.with(requester_email: requester_email).link_email.deliver_later }
-      )
+      # If they are already authenticated, we can just direct them there,
+      # otherwise we send them a sign-in link
+      if current_oral_history_requester.present? && current_oral_history_requester.email == requester_email.email
+        redirect_to oral_history_requests_path, flash: { success: "You have already requested this Oral History: #{@work.title}" }
+      else
+        OhSessionMailer.with(requester_email: requester_email).link_email.deliver_later
+        redirect_to work_path(@work.friendlier_id), flash: { success: "You have already requested this Oral History. We've sent another email to #{patron_email_param} with a sign-in link, which you can use to view your requests.", }
+      end
 
       return # abort further processing
     end
@@ -117,13 +118,16 @@ class OralHistoryRequestsController < ApplicationController
         @oral_history_request.update!(delivery_status: "automatic")
 
         if ScihistDigicoll::Env.lookup("feature_new_oh_request_emails")
-          want_request_dashboard_response(
-            work: @work,
-            requester_email: requester_email,
-            emailed_notice: "The files you have requested are immediately available. We've sent an email to #{patron_email_param} with a sign-in link.",
-            immediate_notice: "The files you requested are immediately available, from: #{@work.title}",
-            mailer_proc: -> { OralHistoryDeliveryMailer.with(request: @oral_history_request).approved_with_session_link_email.deliver_later }
-          )
+
+          # If they are already logged in, they can just be directed to see this
+          # automatically-approved request. Otherwise they need a sign-in link emailed.
+          if current_oral_history_requester.present? && current_oral_history_requester.email == requester_email.email
+            redirect_to oral_history_requests_path, flash: { success: "The files you requested are immediately available, from: #{@work.title}" }
+          else
+            OralHistoryDeliveryMailer.with(request: @oral_history_request).approved_with_session_link_email.deliver_later
+            redirect_to work_path(@work.friendlier_id), flash: { success: "The files you have requested are immediately available. We've sent an email to #{patron_email_param} with a sign-in link." }
+          end
+
         else
           OralHistoryDeliveryMailer.
             with(request: @oral_history_request).
@@ -153,27 +157,6 @@ class OralHistoryRequestsController < ApplicationController
   end
 
 private
-
-  # If they are logged in, we want to redirect them to their request dashboard -- if they are not,
-  # we want to send them back to work page, and tell them we've sent them an email with
-  # magic login link.
-  #
-  # Used both for requesting "automatic" delivery, AND for re-requesting an already requested file,
-  # so we DRY extract to this method.
-  #
-  # @param work [Work] the OH work
-  # @param requester_email [OralHistoryRequester] need this one too
-  # @param emailed_notice [String] flash notice to let people know we'e emailed a link
-  # @param immediate_notice [String] flash notice when they're already logged in and we're sending them right there
-  def want_request_dashboard_response(work:, requester_email:, emailed_notice:, immediate_notice:, mailer_proc:)
-    # new style, if they are already logged in they have immediate access, else an email
-    if current_oral_history_requester.present? && current_oral_history_requester.email == requester_email.email
-      redirect_to oral_history_requests_path, flash: { success: immediate_notice }
-    else
-      mailer_proc.call
-      redirect_to work_path(work.friendlier_id), flash: { success: emailed_notice }
-    end
-  end
 
   def oral_history_request_params
     params.require(:oral_history_request).permit(
