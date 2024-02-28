@@ -76,6 +76,14 @@ class WorkIndexer < Kithe::Indexer
     end
 
 
+    # We use this a sort key when the work's title is
+    # a proxy for its order in a series,
+    # e.g. 'Chemical Heritage, Volume 15 Number 2'.
+    # See https://github.com/sciencehistory/scihist_digicoll/issues/2494
+    to_field "title" do |record, acc|
+      acc << record.title
+    end
+
     # We need to know what collection(s) this work is in, to support search-within-a-collection.
     #
     # NOTE: This will do an SQL query to fetch collection ids, if are you indexing a bunch

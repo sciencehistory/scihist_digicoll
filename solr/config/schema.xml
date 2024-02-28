@@ -251,11 +251,17 @@
     <field name="lat" type="pdouble" stored="true" indexed="true" multiValued="false"/>
     <field name="lng" type="pdouble" stored="true" indexed="true" multiValued="false"/>
 
-    <!-- added by CHF, our year sort fields -->
+    <!-- Our year sort fields. Added by Science History Institute. -->
     <field name="latest_year" type="int_sortmissinglast" stored="true" indexed="true" multiValued="false"/>
     <field name="earliest_year" type="int_sortmissinglast" stored="true" indexed="true" multiValued="false"/>
     <field name="latest_date" type="date_sortmissinglast" stored="true" indexed="true" multiValued="false"/>
     <field name="earliest_date" type="date_sortmissinglast" stored="true" indexed="true" multiValued="false"/>
+
+    <!-- Single-value title sort field. Used to sort collections of serials by title.
+    See https://github.com/sciencehistory/scihist_digicoll/issues/2494
+    If we can use the first value of (multivalued) text1_tesim instead, let's consider doing that.
+    -->
+    <field name="title"  type="string" stored="true" indexed="true" multiValued="false"/>
 
     <!-- Three full text fields (containing oral history transcripts, transcriptions, translations, OCR text, and the like).
 

@@ -57,4 +57,75 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
       expect(response).to have_http_status(:unprocessable_entity)
     end
   end
+
+  describe "sort", indexable_callbacks: true do
+    render_views
+    let(:requested_sort_order) { nil }
+    let(:four_dates_in_desc_order) { (1..4).to_a.map { |i| i.days.ago } }
+    let(:four_years_in_arbitrary_order) { [1992, 1990, 1991, 1993] }
+    let(:four_titles_in_arbitrary_order) { ['4', '1', '3', '2'] }
+
+    let!(:collection) { create(:collection, title: "The Collection", default_sort_field: default_sort_field) }
+    let!(:works) {
+      (0..3).to_a.map do |i|
+        create(:work,
+          title:          four_titles_in_arbitrary_order[i],
+          published_at:   four_dates_in_desc_order[i],
+          date_of_work:   [Work::DateOfWork.new(start: four_years_in_arbitrary_order[i])],
+          contained_by:   [collection]
+        )
+      end
+    }
+    let(:base_params) { { collection_id: collection.friendlier_id, sort: requested_sort_order } }
+    let(:parsed){ parsed = Nokogiri::HTML(response.body) }
+    let(:titles_as_displayed) { parsed.css('.scihist-results-list-item-head a').map {|x| x.text} }
+    let(:years_as_displayed) { parsed.css('span[itemprop="date_created"]').map {|x| x.text.strip } }
+    let(:default_sort_field)  { nil }
+
+
+    describe "no default sort order for this collection" do
+      it "no default sort order for this collection: sort by date_published_dtsi desc" do
+        get :index, params: base_params
+        expect(titles_as_displayed).to eq four_titles_in_arbitrary_order
+      end
+    end
+
+    describe "default sort order refers to a nonexistent sort field" do
+      before do
+        collection.update(default_sort_field:'goat')
+        collection.save(validate:false)
+      end
+      it "sorts by the default sort" do
+        get :index, params: base_params
+        expect(titles_as_displayed).to eq four_titles_in_arbitrary_order
+      end
+    end
+
+    describe "collection of serials with a default sort order: chron by publication date" do
+      let(:default_sort_field) { 'oldest_date' }
+      it "sorts in chron order using the publication date" do
+        get :index, params: base_params
+        expect(years_as_displayed).to eq ["1990", "1991", "1992", "1993"]
+      end
+    end
+
+    describe "default order overridden from the front-end sort order menu" do
+      let(:default_sort_field) { 'oldest_date' }      
+      let(:requested_sort_order) { 'newest_date'}
+      it "uses the order requested by the user" do
+        get :index, params: base_params
+        expect(years_as_displayed).to eq ["1993", "1992", "1991", "1990"]
+      end
+    end
+
+    describe "identical dates" do
+      let(:default_sort_field) { 'oldest_date' } 
+      let(:four_years_in_arbitrary_order) { [1990, 1991, 1991, 1991] }   
+      it "uses title as tiebreaker sort field" do
+        get :index, params: base_params
+        expect(years_as_displayed).to eq  ["1990", "1991", "1991", "1991"]
+        expect(titles_as_displayed).to eq ["4", "1", "2", "3"]
+      end
+    end
+  end
 end

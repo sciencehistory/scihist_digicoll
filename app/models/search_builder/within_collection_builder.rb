@@ -17,6 +17,10 @@ class SearchBuilder
     end
 
     private
+    # Overrides CustomSortLogic#default_sort_order
+    def default_sort_order
+      scope.context.dig(:collection_default_sort_order) || super
+    end
 
     def collection_id
       scope.context.fetch(:collection_id)

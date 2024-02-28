@@ -15,6 +15,11 @@ class Collection < Kithe::Collection
   DEPARTMENT_EXHIBITION_VALUE = "Exhibition"
   DEPARTMENTS = (Work::ControlledLists::DEPARTMENT + [DEPARTMENT_EXHIBITION_VALUE]).freeze
 
+  DEFAULT_SORT_FIELDS = ([
+    ['Not specified', nil],
+    ['Oldest date', 'oldest_date']
+  ]).freeze
+
   # automatic Solr indexing on save
   if ScihistDigicoll::Env.lookup(:solr_indexing) == 'true'
     self.kithe_indexable_mapper = CollectionIndexer.new
@@ -63,6 +68,16 @@ class Collection < Kithe::Collection
   def build_representative
     self.representative = CollectionThumbAsset.new(title: "collection-thumbnail-placeholder", parent: self)
   end
+
+  # Some collections define an arbitrary default sort field.
+  # We use this for the inital presentation when you first visit the collection page,
+  # before the user searches inside the collection or alter the sort order.
+  #
+  # Example value: 'oldest_date'.
+  attr_json :default_sort_field, :string, default: -> { nil }
+  validates :default_sort_field, inclusion: { in: DEFAULT_SORT_FIELDS.to_h.values, allow_blank: true }
+
+
 
   # For ransack use, we need to list all attributes we want to use ransack to SEARCH or SORT by.
   #
