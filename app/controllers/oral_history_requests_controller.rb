@@ -120,11 +120,12 @@ class OralHistoryRequestsController < ApplicationController
         if ScihistDigicoll::Env.lookup("feature_new_oh_request_emails")
 
           # If they are already logged in, they can just be directed to see this
-          # automatically-approved request. Otherwise they need a sign-in link emailed.
+          # automatically-approved request. Either way they should get an email,
+          # per specs from OH team.
+          OralHistoryDeliveryMailer.with(request: @oral_history_request).approved_with_session_link_email.deliver_later
           if current_oral_history_requester.present? && current_oral_history_requester.email == requester_email.email
             redirect_to oral_history_requests_path, flash: { success: "The files you requested are immediately available, from: #{@work.title}" }
           else
-            OralHistoryDeliveryMailer.with(request: @oral_history_request).approved_with_session_link_email.deliver_later
             redirect_to work_path(@work.friendlier_id), flash: { success: "The files you have requested are immediately available. We've sent an email to #{patron_email_param} with a sign-in link." }
           end
 

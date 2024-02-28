@@ -173,7 +173,10 @@ describe OralHistoryRequestsController, type: :controller do
           it "redirects to dashboard" do
             expect {
               post :create, params: full_create_params
-            }.not_to have_enqueued_job
+            }.to have_enqueued_job(ActionMailer::MailDeliveryJob).with { |class_name, action|
+                expect(class_name).to eq "OralHistoryDeliveryMailer"
+                expect(action).to eq "approved_with_session_link_email"
+            }
 
             expect(response).to redirect_to(oral_history_requests_path)
             expect(flash[:success]).to match /The files you requested are immediately available, from: #{Regexp.escape work.title}/
