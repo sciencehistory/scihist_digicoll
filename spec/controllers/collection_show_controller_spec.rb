@@ -90,7 +90,11 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
     end
 
     describe "default sort order refers to a nonexistent sort field" do
-      let(:default_sort_field) { 'goat' }
+      let(:default_sort_field)  { nil }
+      before do
+        collection.update(default_sort_field:'goat')
+        collection.save(validate:false)
+      end
       it "sorts by the default sort" do
         get :index, params: base_params
         expect(titles_as_displayed).to eq four_titles_in_arbitrary_order
