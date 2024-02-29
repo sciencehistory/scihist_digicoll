@@ -18,7 +18,7 @@ gem 'rails', '~> 7.1.3'
 # but bundler can incorrectly resolve to REALLY OLD verisons of dependencies
 # if we don't tell it, actually, we're not ready for rack 3. See:
 # https://bibwild.wordpress.com/2023/11/09/beware-sinatra-rails-7-1-rack-3-resque-bundler-dependency-resolution/
-gem "rack", "~> 2.0"
+gem "rack", "~> 2.2"
 
 # Our JS/CSS/asset bundler
 # After updating, you always need to run `bundle exec vite upgrade` to update JS packages to match
