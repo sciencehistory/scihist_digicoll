@@ -485,7 +485,7 @@ GEM
       rails (>= 5.0, < 7.2)
       rdf
     racc (1.7.3)
-    rack (2.2.8)
+    rack (2.2.8.1)
     rack-attack (6.7.0)
       rack (>= 1.0, < 4)
     rack-protection (3.2.0)
@@ -804,7 +804,7 @@ DEPENDENCIES
   pry-byebug
   puma (~> 6.4)
   qa (~> 5.2, >= 5.11.0)
-  rack (~> 2.0)
+  rack (~> 2.2)
   rack-attack (~> 6.6)
   rails (~> 7.1.3)
   rails-controller-testing
