@@ -29,5 +29,9 @@
   },
   "browserslist": [
     "defaults"
-  ]
+  ],
+  "engines": {
+    "node": "~20.9.0",
+    "yarn": "~1.22.19"
+  }
 }
