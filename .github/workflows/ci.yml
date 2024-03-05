@@ -49,10 +49,11 @@ jobs:
             sudo apt-get update
             sudo apt-get -y install libvips-tools ffmpeg mediainfo tesseract-ocr qpdf imagemagick exiftool
 
-        # The yarn install --ignore-engines is because Google CI
+        # The yarn install --ignore-engines is because GitHub CI
         # at the time of this writing provides yarn 18.19.1., which is incompatible
         # with the requirements in package.json.
-        # We don't really care that much.
+        #
+        # TODO: let's see if we can go back to plain old yarn install somehow.
         - name: Set up app
           run: |
             RAILS_ENV=test bundle exec rails db:test:prepare
