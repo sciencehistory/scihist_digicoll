@@ -15,6 +15,7 @@ namespace :scihist do
 
         if request.patron_email.present?
           original_email = request.patron_email
+          original_email_normalized = OralHistoryRequester.normalize_value_for(:email, original_email)
 
           request.oral_history_requester = OralHistoryRequester.find_or_create_by(email: request.patron_email)
           request.patron_email = nil
@@ -22,7 +23,7 @@ namespace :scihist do
 
           # double-check before we remove data
           request.reload
-          unless original_email == request.oral_history_requester.email
+          unless original_email_normalized == request.oral_history_requester.email
             raise "expected email (#{original_email}) missing for OralHistoryRequest #{request.id}, #{request.patron_email}"
           end
 
