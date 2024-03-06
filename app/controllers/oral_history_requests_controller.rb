@@ -191,7 +191,7 @@ private
       OralHistoryDeliveryMailer.with(request: @oral_history_request).approved_with_session_link_email.deliver_later
 
       if current_oral_history_requester.present? && current_oral_history_requester.email == @oral_history_request.requester_email
-        redirect_to oral_history_requests_path, flash: { success: "The files you requested are immediately available, from: #{@work.title}" }
+        redirect_to oral_history_requests_path, flash: { success: "The files you requested from '#{@work.title}' are immediately available." }
       else
         redirect_to work_path(@work.friendlier_id), flash: { success: "The files you have requested are immediately available. We've sent an email to #{patron_email_param} with a sign-in link." }
       end
