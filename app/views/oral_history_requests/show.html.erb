@@ -1,0 +1,92 @@
+<div class="shi-breadcrumbs">
+  <ul class="shi-breadcrumbs__list">
+    <li class="shi-breadcrumbs__list-item">
+      <%= link_to "Oral History Requests", oral_history_requests_path, class: "shi-breadcrumbs__link" %>
+    </li>
+  </ul>
+</div>
+
+
+<div class="oral-history-request-dashboard">
+  <div class="oral-history-request-dashboard-header-block">
+    <div class="flex-grow-1">
+      <h2 class="brand-alt-h2">
+        <%= link_to "Oral History Requests", oral_history_requests_path %>
+      </h2>
+      <p class="requester-email">
+        <%= current_oral_history_requester.email %>
+      </p>
+    </div>
+
+    <%= link_to "Sign out", oral_history_session_path, method: :delete, class: "btn btn-brand-main signout" %>
+  </div>
+
+
+  <div class="scihist-results-list-item">
+    <div class="scihist-results-list-item-thumb">
+      <%= render ThumbComponent.new(@access_request.work.leaf_representative, thumb_size: :standard, lazy: true) %>
+    </div>
+
+    <div class="scihist-results-list-item-content">
+      <div class="show-genre">Requested Files from</div>
+      <h3 class="scihist-results-list-item-head brand-alt-h3">
+        <%= @access_request.work.title %>
+      </h3>
+
+      <%= link_to "View description", work_path(@access_request.work), class: "btn btn-brand-main" %>
+    </div>
+  </div>
+
+  <% if @access_request.notes_from_staff.present? %>
+    <h4 class="h3 brand-alt-h3 notes-from-staff-header">Notes from staff</h4>
+    <%= simple_format @access_request.notes_from_staff %>
+  <% end %>
+
+  <% if @transcript_assets.present? %>
+    <h4 class="attribute-sub-head">Transcript</h4>
+    <ul class="list-unstyled">
+      <% @transcript_assets.each_with_index do |asset, index| %>
+        <li>
+          <%= render FileListItemComponent.new(asset, index: index, show_private_badge: false) %>
+        </li>
+      <% end %>
+    </ul>
+    <p class="small">
+      The published version of the transcript may diverge from the interview audio due to edits to the transcript made by staff of the Center for Oral History, often at the request of the interviewee, during the transcript review process.
+    </p>
+  <% end %>
+
+  <% if @audio_assets.present? %>
+    <h4 class="attribute-sub-head"><%= pluralize(@audio_assets.count, "Audio Inteview Segment") %></h4>
+    <ul class="list-unstyled">
+      <% @audio_assets.each_with_index do |asset, index| %>
+        <li>
+          <%= render FileListItemComponent.new(asset, index: index, show_private_badge: false) %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <% if @other_assets.present? %>
+    <h4 class="attribute-sub-head">Other</h4>
+    <ul class="list-unstyled">
+      <% @other_assets.each_with_index do |asset, index| %>
+        <li>
+          <%= render FileListItemComponent.new(asset, index: index) %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div class="rights-and-terms mt-5">
+    <%= render(RightsIconComponent.new(rights_id: @access_request.work.rights, work: @access_request.work)) %>
+
+    <div class="small">Your receipt of an electronic copy of this oral history indicates your agreement to abide by U.S. copyright law and terms of licensing. Please credit the "Science History Institute."</div>
+  </div>
+
+
+  <p class="alert alert-primary bottom-alert">
+    If you have any questions about transcripts, recordings, or usage permissions, contact the Center for Oral History at
+    <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}", class: "alert-link" %>.
+  </p>
+</div>

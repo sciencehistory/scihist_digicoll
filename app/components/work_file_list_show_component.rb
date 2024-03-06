@@ -56,6 +56,26 @@ class WorkFileListShowComponent < ApplicationComponent
     @available_by_request_audio_count ||= available_by_request_assets.find_all { |asset| asset.content_type&.start_with?("audio/") }.count
   end
 
+  def available_by_request_sentence
+    @available_by_request_sentance ||= begin
+      components = []
+
+      if available_by_request_pdf_count.nonzero?
+        components << "#{ available_by_request_pdf_count } PDF Transcript #{ "File".pluralize(available_by_request_pdf_count) }"
+      end
+
+      if available_by_request_audio_count.nonzero?
+        components << "#{ available_by_request_audio_count } Audio Recording #{ "File".pluralize(available_by_request_audio_count) }"
+      end
+
+      if components.empty?
+        components << '<li><span class="text-danger">No files available? Something has gone wrong with our system!</span>'
+      end
+
+      components.to_sentence
+    end
+  end
+
   def request_button_name
     if @work.oral_history_content.available_by_request_automatic?
       "Get Access"

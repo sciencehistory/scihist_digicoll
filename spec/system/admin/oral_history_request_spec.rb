@@ -6,16 +6,16 @@ RSpec.describe "Oral History Access Request Administration", :logged_in_user, ty
   end
 
   context "A request exists for a manual_review work" do
-    let!(:oh_request) { Admin::OralHistoryAccessRequest.create!(
+    let!(:oh_request) { OralHistoryRequest.create!(
       patron_name: "George Washington Carver",
-      patron_email: "george@example.org",
+      oral_history_requester: OralHistoryRequester.create_or_find_by(email: "george@example.org"),
       patron_institution: "Tuskegee Institute",
       intended_use: "Recreational reading.",
       work: work
     )}
 
     it "can approve" do
-      visit admin_oral_history_access_requests_path
+      visit admin_oral_history_requests_path
 
       relevant_table_row = find("tr", text: oh_request.intended_use)
 
@@ -30,6 +30,7 @@ RSpec.describe "Oral History Access Request Administration", :logged_in_user, ty
       expect(page).to have_text("Approve email was sent")
 
       expect(oh_request.reload.delivery_status).to eq("approved")
+      expect(oh_request.notes_from_staff).to eq("Hope you enjoy this!\r\n\r\nIt's a good one!")
 
       # not a great way to do this, but it tests at least something.
       enqueued_mail_job = ActiveJob::Base.queue_adapter.enqueued_jobs.find {|h| h["job_class"] == "ActionMailer::MailDeliveryJob"}
@@ -38,7 +39,7 @@ RSpec.describe "Oral History Access Request Administration", :logged_in_user, ty
     end
 
     it "can reject" do
-      visit admin_oral_history_access_requests_path
+      visit admin_oral_history_requests_path
 
       relevant_table_row = find("tr", text: oh_request.intended_use)
 
@@ -53,6 +54,7 @@ RSpec.describe "Oral History Access Request Administration", :logged_in_user, ty
       expect(page).to have_text("Reject email was sent")
 
       expect(oh_request.reload.delivery_status).to eq("rejected")
+      expect(oh_request.notes_from_staff).to eq("Sorry, you can't have this.")
 
       # not a great way to do this, but it tests at least something.
       enqueued_mail_job = ActiveJob::Base.queue_adapter.enqueued_jobs.find {|h| h["job_class"] == "ActionMailer::MailDeliveryJob"}

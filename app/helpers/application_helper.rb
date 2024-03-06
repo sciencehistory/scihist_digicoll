@@ -55,4 +55,8 @@ module ApplicationHelper
   def has_deeper_search?
     has_search_parameters? || (params[:page].present? && params[:page] != "1")
   end
+
+  def oral_histories_collection_path
+    collection_path(ScihistDigicoll::Env.lookup!(:oral_history_collection_id))
+  end
 end
