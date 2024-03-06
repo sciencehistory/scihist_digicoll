@@ -400,12 +400,12 @@ class CatalogController < ApplicationController
 
     config.add_sort_field("newest_date") do |field|
       field.label = "newest date"
-      field.sort = "latest_date desc"
+      field.sort = "latest_date desc, title desc"
     end
 
     config.add_sort_field("oldest_date") do |field|
       field.label = "oldest date"
-      field.sort = "earliest_date asc"
+      field.sort = "earliest_date asc, title asc"
     end
 
     config.add_sort_field("recently_added") do |field|

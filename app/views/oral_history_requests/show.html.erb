@@ -37,18 +37,10 @@
     </div>
   </div>
 
-
-  <div class="rights-and-terms">
-    <%= render(RightsIconComponent.new(rights_id: @access_request.work.rights, work: @access_request.work)) %>
-
-    <div class="small">Your receipt of an electronic copy of this oral history indicates your agreement to abide by U.S. copyright law and terms of licensing. Please credit the "Science History Institute."</div>
-  </div>
-
   <% if @access_request.notes_from_staff.present? %>
     <h4 class="h3 brand-alt-h3 notes-from-staff-header">Notes from staff</h4>
     <%= simple_format @access_request.notes_from_staff %>
   <% end %>
-
 
   <% if @transcript_assets.present? %>
     <h4 class="attribute-sub-head">Transcript</h4>
@@ -85,6 +77,13 @@
       <% end %>
     </ul>
   <% end %>
+
+  <div class="rights-and-terms mt-5">
+    <%= render(RightsIconComponent.new(rights_id: @access_request.work.rights, work: @access_request.work)) %>
+
+    <div class="small">Your receipt of an electronic copy of this oral history indicates your agreement to abide by U.S. copyright law and terms of licensing. Please credit the "Science History Institute."</div>
+  </div>
+
 
   <p class="alert alert-primary bottom-alert">
     If you have any questions about transcripts, recordings, or usage permissions, contact the Center for Oral History at

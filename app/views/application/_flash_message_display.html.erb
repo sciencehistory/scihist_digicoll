@@ -1,10 +1,15 @@
 <% {  notice: 'alert-info',
       error: 'alert-danger',
       alert: 'alert-warning',
-      success: 'alert-success'
+      success: 'alert-scihist-success'
     }.each do |type, css_class| %>
   <% if flash[type] %>
     <div class="notice alert <%= css_class %> alert-dismissible fade show" role="alert">
+      <% if type == :success %>
+        <%# use a graphic! no width/height let CSS style it %>
+        <%= bi_check_circle_fill_svg %>
+      <% end %>
+
       <%= flash[type] %>
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>

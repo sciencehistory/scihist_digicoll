@@ -279,3 +279,25 @@ hr.brand {
     transform: translateY(-0.04em);
   }
 }
+
+// A custom class we use for top-of-page success alerts
+.alert-scihist-success {
+  border: black 1px solid;
+  background-color: $shi-green-4;
+  color: white;
+
+  // there's an SVG icon, we use flex to position it next to text
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+
+  svg.bi-check-circle-fill {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .close {
+    opacity: 1;
+    color: white;
+  }
+}

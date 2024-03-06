@@ -1,16 +1,18 @@
 <div class="oral-history-request-dashboard">
   <div class="oral-history-request-dashboard-header-block">
-    <div>
-      <h2 class="brand-alt-h2">
-        <%= link_to "Oral History Requests", oral_history_requests_path %>
-      </h2>
-      <p class="requester-email">
-        <%= current_oral_history_requester.email %>
-      </p>
-      <p>Below you can view the status of your oral history requests and download materials from approved requests. Please note that some oral histories are available by request only and are not available on the public web.</p>
+    <div class="title-and-button">
+      <div class="text">
+        <h2 class="brand-alt-h2">
+          <%= link_to "Oral History Requests", oral_history_requests_path %>
+        </h2>
+        <div class="requester-email">
+          <%= current_oral_history_requester.email %>
+        </div>
+      </div>
+      <%= link_to "Sign out", oral_history_session_path, method: :delete, class: "btn btn-brand-main signout" %>
     </div>
 
-    <%= link_to "Sign out", oral_history_session_path, method: :delete, class: "btn btn-brand-main signout" %>
+    <p>Below you can view the status of your oral history requests and download materials from approved requests. Please note that some oral histories are available by request only and are not available on the public web.</p>
   </div>
 
   <p class="alert alert-primary mt-4 mb-4">
