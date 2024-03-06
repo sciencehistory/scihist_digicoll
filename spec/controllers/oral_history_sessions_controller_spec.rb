@@ -29,7 +29,7 @@ describe OralHistorySessionsController, type: :controller, queue_adapter: :inlin
         get :create, params: { email: "no_such_email@example.com" }
 
         expect(response).to redirect_to(new_oral_history_session_path)
-        expect(flash[:auto_link_message]).to eq "Sorry, we have no email on record for no_such_email@example.com, check your entry?"
+        expect(flash[:auto_link_message]).to eq "Sorry, we have no email on record for no_such_email@example.com. Please check your entry."
       end
     end
   end
