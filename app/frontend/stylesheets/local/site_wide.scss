@@ -245,3 +245,59 @@ hr.brand {
     }
   }
 }
+
+// breadcrumbs from main site, we don't use them very much, but copy the DOM and css,
+// adapt the CSS a bit.
+.shi-breadcrumbs {
+  margin-top: 0.5em;
+  margin-bottom: 1em;
+
+  .shi-breadcrumbs__list {
+    padding: 0;
+    list-style-type: none;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .shi-breadcrumbs__link {
+    @extend .small;
+    text-decoration: none;
+    color: $body-color;
+    display: flex;
+    align-items: baseline;
+
+    &:hover {
+      opacity: .7;
+    }
+  }
+
+  .shi-breadcrumbs__link::before {
+    // orig was an svg, but it just looks like a chevron come on!
+    content: "‹ ";
+    margin-right: 0.2em;
+    transform: translateY(-0.04em);
+  }
+}
+
+// A custom class we use for top-of-page success alerts
+.alert-scihist-success {
+  border: black 1px solid;
+  background-color: $shi-green-4;
+  color: white;
+
+  // there's an SVG icon, we use flex to position it next to text
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+
+  svg.bi-check-circle-fill {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .close {
+    opacity: 1;
+    color: white;
+  }
+}

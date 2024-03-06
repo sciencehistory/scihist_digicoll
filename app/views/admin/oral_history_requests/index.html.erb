@@ -5,7 +5,7 @@
 
 <h2>Download a spreadsheet of requests</h2>
 <div class="border p-2 mb-5">
-  <%= simple_form_for(:report, url: report_admin_oral_history_access_requests_path, method: :post) do |f| %>
+  <%= simple_form_for(:report, url: report_admin_oral_history_requests_path, method: :post) do |f| %>
     <div class="row">
       <div class="col">
         <%= f.input :start_date,
@@ -28,7 +28,7 @@
 
 <h2>Oral History Requests</h2>
 <div class="border p-2 mb-5">
-  <%= simple_form_for(:query, url: admin_oral_history_access_requests_path, method: :get) do |f| %>
+  <%= simple_form_for(:query, url: admin_oral_history_requests_path, method: :get) do |f| %>
     <div class="row form-group">
       <div class="input-group col-sm-10">
         <div class="input-group-prepend">
@@ -57,7 +57,7 @@
     </thead>
 
     <tbody>
-      <% @oral_history_access_requests.each do |oh_request| %>
+      <% @oral_history_requests.each do |oh_request| %>
         <tr class="d-flex" data-request-id="<%= oh_request.id %>">
           <td class="col-sm-2">
             <span class="text-nowrap small"><%= l(oh_request.created_at, format: '%b %d') %></span>
@@ -66,14 +66,14 @@
           </td>
           <td class="col-sm-2"><%= oh_request.patron_name %>
             <% if oh_request.patron_institution.present? %>, <%= oh_request.patron_institution %><% end %><br/>
-            <span class="small">(<%= link_to oh_request.patron_email, "mailto:#{oh_request.patron_email}" %>)</span>
+            <span class="small">(<%= link_to oh_request.requester_email, "mailto:#{oh_request.requester_email}" %>)</span>
           </td>
           <td class="col-sm-3"><%= link_to(oh_request.work.title.delete_prefix("Oral history interview with "), work_path(oh_request.work.friendlier_id))%> <span class="small">(#<%= oh_request.oral_history_number %>)</span></td>
           <td class="col-sm-4">
              <%= oh_request.intended_use %>
           </td>
           <td class="col-sm-1 request-list-delivery-status">
-            <%= link_to oh_request.delivery_status, admin_oral_history_access_request_path(oh_request) %>
+            <%= link_to oh_request.delivery_status, admin_oral_history_request_path(oh_request) %>
           </td>
         </tr>
       <%end %>
@@ -81,4 +81,5 @@
   </table>
 </div>
 
-<%= paginate @oral_history_access_requests, theme: 'twitter-bootstrap-4' %>
+<%= paginate @oral_history_requests, theme: 'twitter-bootstrap-4' %>
+index.html.erb

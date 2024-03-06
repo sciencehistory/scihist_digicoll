@@ -1,0 +1,96 @@
+.oral-history-request-dashboard {
+  max-width: $max-readable-width;
+  margin-left: auto;
+  margin-right: auto;
+
+  .scihist-results-list-item {
+    display: flex;
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+    overflow-x: hidden;
+
+    .scihist-results-list-item-thumb {
+      width: 6.75rem;
+      flex-shrink: 0;
+      padding-right: 1rem;
+    }
+
+    dt {
+      @extend %special-label;
+    }
+    dd {
+      margin-bottom: 0.125rem;
+    }
+  }
+
+  .attribute-sub-head.denied {
+    color: $shi-red;
+  }
+
+  .scihist-results-list-item-head {
+    margin-bottom: 0.66rem;
+  }
+
+  .notes-from-staff-head {
+    margin-top: 0;
+    @extend %special-label;
+    color: $shi-red;
+  }
+
+  .rights-and-terms {
+    display: flex;
+    align-items: flex-end;
+    gap: 3rem;
+    margin-bottom: 4rem;
+
+    .rights-statement {
+      max-width: 18rem;
+      flex-shrink: 0;
+    }
+  }
+
+  .notes-from-staff-header {
+    color: $shi-red;
+    border-bottom: 1px solid $table-border-color;
+  }
+
+  .bottom-alert {
+    margin-top: 4rem;
+    margin-bottom: 4rem;
+  }
+}
+
+.oral-history-request-dashboard-header-block {
+  padding: 2rem 3rem 1rem 3rem;
+  background-color: $shi-maroon;
+
+  .title-and-button {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-direction: column;
+
+    @include media-breakpoint-up(sm) {
+      flex-direction: row;
+    }
+
+    margin-bottom: $paragraph-spacer;
+
+    .text {
+      flex-grow: 1;
+    }
+    .signout {
+      flex-shrink: 0;
+    }
+  }
+
+  p {
+    color: white;
+  }
+  a:not(.btn) {
+    color: white;
+  }
+  .requester-email {
+    color: $shi-yellow;
+  }
+}

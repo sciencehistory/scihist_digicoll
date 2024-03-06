@@ -17,10 +17,12 @@ class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
   CUSTOM_MESSAGE = "[[This is optional customized per-email instructions written by staff to patron, possibly including usage restrictions.]]"
 
   # requires eg ?work_friendlier_id=adf34aefadf
+  #
+  # http://localhost:3000/rails/mailers/oral_history_delivery_mailer/oral_history_delivery_email?work_friendlier_id=adf34aefadf
   def oral_history_delivery_email
     work = Work.find_by_friendlier_id!(params[:work_friendlier_id])
 
-    request = Admin::OralHistoryAccessRequest.
+    request = OralHistoryRequest.
       create_with(patron_name: "John Smith",
                   patron_email: "smith@example.com",
                   intended_use: "just cause").
@@ -31,17 +33,43 @@ class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
       oral_history_delivery_email
   end
 
+  # http://localhost:3000/rails/mailers/oral_history_delivery_mailer/oral_history_delivery_email_mp3
   def oral_history_delivery_email_mp3
     OralHistoryDeliveryMailer.
       with(request: oral_history_request(file_type: :mp3), custom_message: CUSTOM_MESSAGE).
       oral_history_delivery_email
   end
 
+  # http://localhost:3000/rails/mailers/oral_history_delivery_mailer/oral_history_delivery_email_flac
   def oral_history_delivery_email_flac
     OralHistoryDeliveryMailer.
       with(request: oral_history_request(file_type: :flac), custom_message: CUSTOM_MESSAGE).
       oral_history_delivery_email
   end
+
+  ## new style emails
+
+
+  # http://localhost:3000/rails/mailers/oral_history_delivery_mailer/approved_with_session_link_email
+  # http://localhost:3000/rails/mailers/oral_history_delivery_mailer/approved_with_session_link_email?request_id=134
+  def approved_with_session_link_email
+    request = (params[:request_id].present? && OralHistoryRequest.find(params[:request_id]) ||
+      OralHistoryRequest.where(delivery_status: "approved").first ||
+      (raise TypeError.new("need an approved request in db to preview")))
+
+    OralHistoryDeliveryMailer.with(request: request).approved_with_session_link_email
+  end
+
+  # http://localhost:3000/rails/mailers/oral_history_delivery_mailer/rejected_with_session_link_email
+  # http://localhost:3000/rails/mailers/oral_history_delivery_mailer/rejected_with_session_link_email=137
+  def rejected_with_session_link_email
+    request = (params[:request_id].present? && OralHistoryRequest.find(params[:request_id]) ||
+      OralHistoryRequest.where(delivery_status: "rejected").first ||
+      (raise TypeError.new("need a rejected request in db to preview")))
+
+    OralHistoryDeliveryMailer.with(request: request).rejected_with_session_link_email
+  end
+
 
 
   protected
@@ -52,7 +80,7 @@ class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
 
   # find or create a test request, we're hopefully in development here!
   def oral_history_request(file_type:)
-    existing_sample = Admin::OralHistoryAccessRequest.joins(:work).
+    existing_sample = OralHistoryRequest.joins(:work).
                         where(work: { title: sample_work_title(file_type: file_type) }).first
 
     if params[:refresh] && existing_sample
@@ -78,7 +106,7 @@ class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
       raise ArgumentError, "don't know how to do file_type #{file_type}"
     end
 
-    request = Admin::OralHistoryAccessRequest.create!(
+    request = OralHistoryRequest.create!(
       work: work,
       patron_name: "John Smith",
       patron_email: "smith@example.com",
