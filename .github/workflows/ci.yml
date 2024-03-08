@@ -49,15 +49,13 @@ jobs:
             sudo apt-get update
             sudo apt-get -y install libvips-tools ffmpeg mediainfo tesseract-ocr qpdf imagemagick exiftool
 
-        # The yarn install --ignore-engines is because GitHub CI
-        # at the time of this writing provides yarn 18.19.1., which is incompatible
-        # with the requirements in package.json.
-        #
-        # TODO: let's see if we can go back to plain old yarn install somehow.
+        # Note: as of early 2024, 'yarn install' causes GitHub to install node 18.19.1.
+        # Whatever version is installed, make sure it is permitted in file
+        # package.json under key "engines".
         - name: Set up app
           run: |
             RAILS_ENV=test bundle exec rails db:test:prepare
-            yarn install --ignore-engines
+            yarn install
 
 
 
