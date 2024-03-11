@@ -49,9 +49,8 @@ jobs:
             sudo apt-get update
             sudo apt-get -y install libvips-tools ffmpeg mediainfo tesseract-ocr qpdf imagemagick exiftool
 
-        # Note: as of early 2024, 'yarn install' causes GitHub to install node 18.19.1.
-        # Whatever version is installed, make sure it is permitted in file
-        # package.json under key "engines".
+        # GitHub Actions VMs come with a pre-installed version of node.js - as of early 2024, 18.19.1.
+        # See package.json under key "engines", which lists allowed versions of node and yarn.
         - name: Set up app
           run: |
             RAILS_ENV=test bundle exec rails db:test:prepare
