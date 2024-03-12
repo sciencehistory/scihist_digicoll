@@ -17,6 +17,18 @@ class ApplicationController < ActionController::Base
   end
 
 
+  # Bots occasionally feed us URL params containing null bytes.
+  # Since normal use by humans never leads to this error,
+  # there's no point in throwing a distracting 500 error.
+  rescue_from "ArgumentError" do |exception|
+    # Is there some other way of distinguishing this error from another ArgumentError?
+    raise unless exception.message == "string contains null byte"
+    respond_to do |format|
+      Rails.logger.warn("string contains null byte error in #{params}")
+      format.any { redirect_to :controller => 'errors', :action => 'unacceptable' }
+    end
+  end
+
   rescue_from "AccessGranted::AccessDenied" do |exception|
     redirect_path = if current_user.present?
       root_path
