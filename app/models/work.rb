@@ -24,7 +24,7 @@ class Work < Kithe::Work
   belongs_to :digitization_queue_item, optional: true, class_name: "Admin::DigitizationQueueItem"
 
   has_many :on_demand_derivatives, inverse_of: :work, dependent: :destroy
-  has_many :oral_history_access_requests, inverse_of: :work, dependent: :destroy, class_name: "Admin::OralHistoryAccessRequest"
+  has_many :oral_history_requests, inverse_of: :work, dependent: :destroy
 
 
   has_many :cart_items, dependent: :delete_all

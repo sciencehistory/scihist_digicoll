@@ -124,7 +124,7 @@ class Admin::CollectionsController < AdminController
     # This could be done in a form object or otherwise abstracted, but this is good
     # enough for now.
     def collection_params
-      permitted_attributes = [:title, :description, :department]
+      permitted_attributes = [:title, :description, :department, :default_sort_field]
       permitted_attributes << :published if can?(:publish, @collection || Kithe::Model)
 
       Kithe::Parameters.new(params).

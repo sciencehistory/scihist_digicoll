@@ -142,8 +142,6 @@ We preferentially use Vite.js (an ES6-style JS bundler, https://vite-ruby.netlif
   * image is in `./app/frontend/images/*`
   * reference using standard CSS `url(@/images/*)`, vite will properly serve/build and translate url. Note the `@/` at the beginning that vite will use to look it up in vite entrypoint directories, which are configured by vite-ruby to include ./app/frontend/images.
 
-* vite-ruby tries to install yarn deps using `npx`, but heroku ruby buildpack doesn't offer `npx` we have a workaround to run `yarn install` with `assets:precompile` in local `./Rakefile`.
-
 #### Individual asset dependency special handling notes
 
 * blacklight JS and CSS now comes from the [blacklight-frontend npm package](https://www.npmjs.com/package/blacklight-frontend). If you update the blacklight rubygem, you will have to manually make sure to remember to check if a new `blacklight_frontend` npm package is available and update with yarn too! Letting these get out of sync could be disastrous, and is a somewhat confusing manual process.

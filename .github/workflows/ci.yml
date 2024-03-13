@@ -49,10 +49,14 @@ jobs:
             sudo apt-get update
             sudo apt-get -y install libvips-tools ffmpeg mediainfo tesseract-ocr qpdf imagemagick exiftool
 
+        # GitHub Actions VMs come with a pre-installed version of node.js - as of early 2024, 18.19.1.
+        # See package.json under key "engines", which lists allowed versions of node and yarn.
         - name: Set up app
           run: |
             RAILS_ENV=test bundle exec rails db:test:prepare
             yarn install
+
+
 
         # This cache probably doesn't actually save us any time, but it hopes to save
         # us being throttled by apache foundation servers unhappy that solr_wrapper

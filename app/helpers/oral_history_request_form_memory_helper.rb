@@ -14,7 +14,7 @@
 module OralHistoryRequestFormMemoryHelper
   COOKIE_KEY = "_scihist_digicoll_oh_request_entries"
   TTL = 1.day
-  ALLOWED_KEYS = %w{patron_name patron_email patron_institution intended_use}
+  ALLOWED_KEYS = %w{patron_name patron_email patron_institution intended_use oral_history_requester_email oral_history_requester}
 
   def oral_history_request_form_entry_read
     JSON.parse( cookies.signed[COOKIE_KEY] || "{}").slice(*ALLOWED_KEYS)

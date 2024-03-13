@@ -69,9 +69,16 @@ class CollectionShowController < CatalogController
 
   private
 
-  # Our custom SearchBuilder needs to know collection id (UUID)
+  # Our custom SearchBuilder needs to know:
+  #   collection id (UUID)
+  #   the default sort order for this collection, if specified.
   def search_service_context
-    super.merge!(collection_id: collection.id)
+    super.merge!(collection_id: collection.id, collection_default_sort_order: collection_default_sort_order)
+  end
+
+  # Some collections define a default sort field. Look up its sort order in blacklight_config and use that.
+  def collection_default_sort_order
+    blacklight_config.sort_fields.dig(collection&.default_sort_field)&.sort
   end
 
   def check_auth

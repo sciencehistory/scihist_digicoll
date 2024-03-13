@@ -31,36 +31,17 @@
       <div class="show-sub-head-body request-section">
         <div class="pr-2 mt-3">
 
-            <% if @work.oral_history_content.available_by_request_automatic? %>
-              <p>
-                Fill out a brief form to <span class="text-danger">receive immediate access</span> to these files.
-              </p>
-            <% else %>
-              <p>Fill out a brief form and a staff member will review your request for these files.
-                 <span class="text-danger">You should receive an email within 3 business days</span>.
-              </p>
-            <% end %>
-          </p>
+          <p><span class="by-request-items-label">By request</span> <%= available_by_request_sentence %></p>
 
-          <ul class="list-unstyled by-request-file-list">
-            <% if available_by_request_pdf_count.nonzero? %>
-              <li>
-                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                <%= available_by_request_pdf_count %> PDF Transcript <%= "File".pluralize(available_by_request_pdf_count) %>
-              </li>
-            <% end %>
-
-            <% if available_by_request_audio_count.nonzero? %>
-              <li>
-                <i class="fa fa-file-audio-o" aria-hidden="true"></i>
-                <%= available_by_request_audio_count %> Audio Recording <%= "File".pluralize(available_by_request_audio_count) %>
-              </li>
-            <% end %>
-
-            <% if available_by_request_pdf_count.zero? && available_by_request_audio_count.zero? %>
-              <li><span class="text-danger">No files available? Something has gone wrong with our system!</span>/li>
-            <% end %>
-          </ul>
+          <% if @work.oral_history_content.available_by_request_automatic? %>
+            <p>
+              Fill out a brief form to <span class="text-danger">receive immediate access</span> to these files.
+            </p>
+          <% else %>
+            <p>Fill out a brief form and a staff member will review your request for these files.
+               <span class="text-danger">You should receive an email within 3 business days</span>.
+            </p>
+          <% end %>
 
           <% unless @work.oral_history_content.available_by_request_automatic? %>
             <p>Usage is subject to restrictions set by the interviewee.</p>
@@ -68,12 +49,12 @@
 
           <div class="text-nowrap mt-4 mb-3 text-center">
             <%= link_to request_button_name,
-              request_oral_history_access_form_path(@work.friendlier_id),
+              oral_history_request_form_path(@work.friendlier_id),
               class: "btn btn-brand-main mb-2"
             %>
           </div>
 
-          <p class="alert alert-primary mt-4 mb-4">
+          <p>
             If you have any questions about transcripts, recordings, or usage permissions, contact the Center for Oral History at
             <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}", class: "alert-link" %>.
           </p>

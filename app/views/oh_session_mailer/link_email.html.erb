@@ -1,0 +1,12 @@
+<p><b>Science History Institute Oral History Requests</b></p>
+
+<p>
+  Thank you for requesting oral history interviews via the Science History Institute’s Digital Collections.
+</p>
+
+<p><%= I18n.t("oral_history.sign_in_prompt") %>
+    <%= link_to I18n.t("oral_history.sign_in_link_label"), login_magic_link, data: { auto_login_link: true}  %></p>
+
+<p>Please do not share this link with anyone without the permission of Science History Institute staff and please save this e-mail so that you can access your requests in the future.</p>
+
+<p>If you have any questions, please reply to this email, or write to <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}" %>.<p>
