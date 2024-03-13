@@ -23,7 +23,11 @@ Honeybadger.configure do |config|
   }.delete_if { |_k, v| v.blank? }
 
   config.before_notify do |notice|
-    notice.halt! if notice.error_message =~ /string contains null byte/
+    
+    # see https://github.com/sciencehistory/scihist_digicoll/issues/2352
+    if notice.error_message =~ /string contains null byte/ && notice.backtrace[0] =~ /postgresql_adapter\.rb/
+      notice.halt!
+    end
 
     secrets.each do |secret_name, secret_value|
       notice.error_message.gsub!(secret_value, "[:#{secret_name}]") unless secret_value.blank?
