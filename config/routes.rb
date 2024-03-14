@@ -91,6 +91,12 @@ Rails.application.routes.draw do
     format: false,
     as: :viewer_images_info
 
+  # JSON info for Internet Archive Book Reader implementation
+  get '/works/:id/book_reader_data' => 'works#book_reader_data',
+    defaults: {format: "json"},
+    format: false,
+    as: :book_reader_data
+
   get 'works/:id/transcription' => "works#transcription",
     defaults: {format: 'txt'},
     format: false,
