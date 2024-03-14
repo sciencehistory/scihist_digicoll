@@ -43,6 +43,11 @@ describe "Asset exiftool characterization on ingest" do
       expect(asset.exiftool_result["EXIF:ISO"]).to eq 50
       expect(asset.exiftool_result["ICC_Profile:ProfileDescription"]).to eq "Adobe RGB (1998)"
     end
+
+    it "includes selected values in normalized metadata" do
+      expect(asset.file_metadata["dpi"]).to be_present
+      expect(asset.file_metadata["dpi"]).to eq asset.exiftool_result["EXIF:XResolution"]
+    end
   end
 
   describe "file that causes exiftool error" do
