@@ -359,9 +359,29 @@ class Asset < Kithe::Asset
     Rails.logger.info("Asset Destroyed: #{info_str}")
   end
 
+  # Run exiftool and write results to attributes in memory, does not save record
   def store_exiftool
     Shrine.with_file(self.file) do |local_file|
+      # Store the full straight exiftool JSON result in case we want to refer to it again ever,
+      # for archival preservation.
       self.exiftool_result = Kithe::ExiftoolCharacterization.new.call(local_file.path)
+
+      # pull things out of it and store in normalized location for computation
+      self.set_selected_normalized_exiftool
+    end
+  end
+
+  # pull things out of native exiftool results and store in normalized location for computation
+  #
+  # Does not persist to DB
+  def set_selected_normalized_exiftool
+     parsed = Kithe::ExiftoolCharacterization.presenter_for(self.exiftool_result)
+
+     # For now only dpi, if not available then don't worry about it
+     metadata = { "dpi" => parsed.dpi }.compact
+
+     if metadata.present?
+      self.file_attacher.add_metadata(metadata)
     end
   end
 
