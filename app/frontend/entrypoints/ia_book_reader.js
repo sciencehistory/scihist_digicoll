@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
         { width: 2922, height: 4639, ppi: 580,
           //uri: '//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/download_full?disposition=inline',
           // widths to urls
-          scihist_urls: {
+          img_by_width: {
              54: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/thumb_mini?disposition=inline",
              108: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/thumb_mini_2X?disposition=inline",
              208: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/thumb_standard?disposition=inline",
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         { width: 2905, height: 4639, ppi: 580,
           //uri: '//staging-digital.sciencehistory.org/downloads/deriv/77j6z3w/download_full?disposition=inline',
-          scihist_urls: {
+          img_by_width: {
            54: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/thumb_mini?disposition=inline",
            108: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/thumb_mini_2X?disposition=inline",
            208: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/thumb_standard?disposition=inline",
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       const fullWidth = this.book.getPageProp(index, 'width');
       const targetWidth = fullWidth / reduce;
-      const urlOptions = this.book.getPageProp(index, 'scihist_urls');
+      const urlOptions = this.book.getPageProp(index, 'img_by_width');
 
       try {
         // Find the smallest image that is at least 90% of what we want
