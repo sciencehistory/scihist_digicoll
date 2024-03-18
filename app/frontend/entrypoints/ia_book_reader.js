@@ -7,55 +7,26 @@ import  "@internetarchive/bookreader/BookReader/BookReader.js";
 // BookReader wrapper web component
 import "@internetarchive/bookreader/BookReader/ia-bookreader-bundle.js"
 
-document.addEventListener('DOMContentLoaded', function () {
+async function loadBookReader(pageDataUrl) {
+  // Get the url to load page data, load the page data, then load the book reader with it!
+  const response = await fetch(pageDataUrl);
+  const readerData = await response.json();
 
   // As a proof of concept we're just hard-coding in some pages from staging...
   var options = {
     el: "#SciHistBookReader",
 
-    data: [
-      [
-        { width: 2922, height: 4639, ppi: 580,
-          //uri: '//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/download_full?disposition=inline',
-          // widths to urls
-          img_by_width: {
-             54: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/thumb_mini?disposition=inline",
-             108: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/thumb_mini_2X?disposition=inline",
-             208: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/thumb_standard?disposition=inline",
-             416: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/thumb_standard_2X?disposition=inline",
-             525: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/thumb_large?disposition=inline",
-             1050: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/thumb_large_2X?disposition=inline",
-             1200: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/download_medium?disposition=inline",
-             2880: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/download_large?disposition=inline",
-             2922: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/download_full?disposition=inline"
-          }
-        },
-        { width: 2905, height: 4639, ppi: 580,
-          //uri: '//staging-digital.sciencehistory.org/downloads/deriv/77j6z3w/download_full?disposition=inline',
-          img_by_width: {
-           54: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/thumb_mini?disposition=inline",
-           108: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/thumb_mini_2X?disposition=inline",
-           208: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/thumb_standard?disposition=inline",
-           416: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/thumb_standard_2X?disposition=inline",
-           525: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/thumb_large?disposition=inline",
-           1050: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/thumb_large_2X?disposition=inline",
-           1200: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/download_medium?disposition=inline",
-           2880: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/download_large?disposition=inline",
-           2905: "//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/download_full?disposition=inline"
-          }
-        },
-      ],
-    ],
+    data: readerData,
 
-    bookTitle: 'Letter from Thomas H. Garrett to Margaret M. Booth',
+    bookTitle: 'PLACEHOLDER',
 
     // thumbnail is optional, but it is used in the info dialog
-    thumbnail: '//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/thumb_standard?disposition=inline',
+    //thumbnail: '//staging-digital.sciencehistory.org/downloads/deriv/cg1vakf/thumb_standard?disposition=inline',
 
     // Metadata is optional, but it is used in the info dialog
-    metadata: [
-      {label: 'Title', value: 'Letter from Thomas H. Garrett to Margaret M. Booth'},
-    ],
+    // metadata: [
+    //   {label: 'Title', value: 'Letter from Thomas H. Garrett to Margaret M. Booth'},
+    // ],
 
     ui: 'full', // embed, full (responsive)
 
@@ -99,4 +70,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Let's go!
   ourReaderInstance.init();
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  const pageDataUrl = $("#SciHistBookReader").data("page-data-url");
+
+  if (!pageDataUrl) {
+    console.error("Could not find data url to load BookReader")
+    return
+  }
+
+  loadBookReader(pageDataUrl);
 });

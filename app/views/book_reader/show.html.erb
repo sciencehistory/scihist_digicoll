@@ -27,7 +27,7 @@
 </style>
 
 <ia-bookreader>
-  <div id="SciHistBookReader" class="BookReader" slot="main"></div>
+  <div id="SciHistBookReader" class="BookReader" slot="main" data-page-data-url="<%= book_reader_data_path(params[:id]) %>"></div>
 </ia-bookreader>
 
 <%= vite_javascript_tag "ia_book_reader.js" %>

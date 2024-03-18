@@ -14,6 +14,7 @@ class BookReaderController < ApplicationController
   # No layout, we control the whole thing in the single .html.erb
   layout false
 
+  # GET /book_reader/:id (work friendlier_id)
   def show
   end
 end
