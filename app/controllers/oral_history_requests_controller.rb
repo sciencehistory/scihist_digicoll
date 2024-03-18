@@ -34,8 +34,8 @@ class OralHistoryRequestsController < ApplicationController
     grouped_by = all_requests.group_by(&:delivery_status)
 
     @pending_requests = grouped_by["pending"] || []
-    @approved_requests = ((grouped_by["approved"] || []) + (grouped_by["automatic"] || [])).sort_by(&:delivery_status_changed_at)
-    @rejected_requests = (grouped_by["rejected"] || []).sort_by(&:delivery_status_changed_at)
+    @approved_requests = ((grouped_by["approved"] || []) + (grouped_by["automatic"] || [])).sort_by { |req| req.delivery_status_changed_at || 0 }
+    @rejected_requests = (grouped_by["rejected"] || []).sort_by { |req| req.delivery_status_changed_at || 0 }
   end
 
   # GET /oral_history_requests/:id
