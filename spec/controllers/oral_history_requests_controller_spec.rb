@@ -7,6 +7,30 @@ describe OralHistoryRequestsController, type: :controller do
       expect(response).to redirect_to(new_oral_history_session_path)
       expect(flash[:auto_link_message]).to eq "You must be authorized to access this page."
     end
+
+    describe "null values in delivery_status_changed_at" do
+      let!(:req_1) { create(:oral_history_request, delivery_status: "pending") }
+      let(:requester) { req_1.oral_history_requester }
+
+      let!(:req_2) { create(:oral_history_request, delivery_status: "approved",
+          oral_history_requester:requester) }
+      let!(:req_3) { create(:oral_history_request, delivery_status: "automatic",
+          oral_history_requester:requester) }
+      let!(:req_4) { create(:oral_history_request, delivery_status: "rejected",
+          oral_history_requester:requester) }
+      let!(:req_5) { create(:oral_history_request, delivery_status: "rejected",
+          oral_history_requester:requester) }
+
+      before do
+        allow(controller).to receive(:current_oral_history_requester).and_return(requester)
+        req_3.update(delivery_status_changed_at:nil)
+        req_4.update(delivery_status_changed_at:nil)
+      end
+
+      it "does not throw an error" do
+        get :index
+      end
+    end
   end
 
   describe "#show" do
