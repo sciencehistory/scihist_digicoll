@@ -34,9 +34,9 @@ async function loadBookReader(pageDataUrl) {
     // reduce is a reduction factor -- 2 means 1/2 (50%), 4 is 25% etc. Unclear if it ever sends higher than 4
     // rotate is an (integer?) representing rotation, but current bookreader seems not to ever send this anyway
     //
-    // This custom routine tries to find the derivative we have available that is CLOSEST to the reduction
-    // the reader requests, since we don't currently always have even reductions. We want the smallest
-    // available derivative at least as big as 90% of what reader requests.
+    // This custom routine tries to find the derivative we have available that is BEST MATCH to the reduction
+    // the reader requests, since we don't currently always have even reductions. We want something at least
+    // 90%, and ideally no more than 115% (but will go higher if that's all that's available!)
     //
     // TODO improve logic, it shouldn't take 90% if 100% or 101% is available!
     getPageURI: function(index, reduce, rotate) {
@@ -49,20 +49,35 @@ async function loadBookReader(pageDataUrl) {
       const targetWidth = fullWidth / reduce;
       const urlOptions = this.book.getPageProp(index, 'img_by_width');
 
-      try {
-        // Find the smallest image that is at least 90% of what we want
-        const [_width, url] = Object.entries(urlOptions).find( ([width, _url]) => width >= (targetWidth * .9) );
+      // We don't have exact reductions like BookReader wants, we watn to find
+      // a "good enough" one. We require at least 90%, ideally no more than 120%,
+      // but will take larger if that's all we have. If multiple are avail
+      // within 90% -- 115%, take the largest less than 115%!
 
-        console.log("index:" + index+ " reduction:" + reduce + " targetWidth:" + targetWidth + " actualWidth:" + _width + " url: " + url)
-        return url;
+      // Find all images that are at least 90% of what we want, as duples of [width, url]
+      const bigEnough = Object.entries(urlOptions).filter( ([width, _url]) => width >= (targetWidth * .9) );
+      // Sort by width HIGHEST first
+      const bigEnoughHighestFirst = bigEnough.toSorted( (a, b) => b[0] - a[0] );
+
+      // Find the FIRST one (largest one) that is no more than 110%
+      let found = bigEnoughHighestFirst.find( ([width, _url]) => width < (targetWidth * 1.15) );
+      // if we couldn't find one, just take the smallest that was more than 90%
+
+      var _width, url;
+      if (found == undefined) {
+        [_width, url] = bigEnoughHighestFirst[bigEnoughHighestFirst.length - 1];
+      } else {
+        [_width, url] = found;
       }
-      catch(err) {
-        debugger;
-        1+1;
-      }
+
+      console.log("index:" + index+ " reduction:" + reduce + " targetWidth:" + Math.trunc(targetWidth) + " actualWidth:" + _width + " url: " + url)
+
+      return url;
     },
 
-    reduceSet: 'integer'
+    // 'integer' == ask for any reduction value
+    // 'pow2' == only 2, 4, 8, etc
+    reduceSet: 'pow2'
   };
 
 
