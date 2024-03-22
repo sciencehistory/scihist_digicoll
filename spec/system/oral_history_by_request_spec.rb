@@ -78,7 +78,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       expect(new_req.patron_institution).to eq "Some Library"
       expect(new_req.delivery_status_automatic?).to be(true)
 
-      expect(page).to have_text("The files you have requested are immediately available. We've sent an email to patron@library.org with a sign-in link.")
+      expect(page).to have_text("We are sending you links to the files you requested")
 
       expect(ActionMailer::MailDeliveryJob).to have_been_enqueued
     end
@@ -140,7 +140,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
     let(:work2) { create(:oral_history_work, :available_by_request, published: true) }
 
     let(:patron_name) { "My Name" }
-    let(:patron_email_address) { "me@example.com" }
+    let(:patron_email) { "me@example.com" }
     let(:patron_institution) { "University of wherever"}
     let(:intended_use) { "for fun" }
 
@@ -150,7 +150,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       pr = '#oral_history_request_'
 
       find("#{pr}patron_name").fill_in  with: patron_name
-      find("#{pr}oral_history_requester").fill_in with: patron_email_address
+      find("#{pr}oral_history_requester").fill_in with: patron_email
       find("#{pr}patron_institution").fill_in with: patron_institution
       find("#{pr}intended_use").fill_in with: intended_use
 
@@ -161,7 +161,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       # by saving and restoring from cookie, the form should be pre-filled
       visit oral_history_request_form_path(work2.friendlier_id)
       expect(find("#{pr}patron_name").value).to eq patron_name
-      expect(find("#{pr}oral_history_requester").value).to eq patron_email_address
+      expect(find("#{pr}oral_history_requester").value).to eq patron_email
       expect(find("#{pr}patron_institution").value).to eq patron_institution
       expect(find("#{pr}intended_use").value).to eq intended_use
     end
