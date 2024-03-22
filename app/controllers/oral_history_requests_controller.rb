@@ -95,10 +95,40 @@ class OralHistoryRequestsController < ApplicationController
   #
   # Action to create request from form
   def create
-    if ScihistDigicoll::Env.lookup("feature_new_oh_request_emails")
-      new_style_create
-    else
-      old_style_create
+    # write entries to a cookie to pre-fill form next time; every time we write
+    # it will bump the TTL expiration too, so they get another day until it expires.
+    # Make sure to include the separate patron_eamil
+    oral_history_request_form_entry_write(
+      oral_history_request_params.merge(patron_email: patron_email_param).to_h
+    )
+
+    saved_valid = @oral_history_request.save
+
+    unless saved_valid
+      render :new
+      return
+    end
+
+    if @work.oral_history_content.available_by_request_automatic?
+      @oral_history_request.update!(delivery_status: "automatic")
+
+      # If they are already logged in, they can just be directed to see this
+      # automatically-approved request. Either way they should get an email,
+      # per specs from OH team.
+      OralHistoryDeliveryMailer.with(request: @oral_history_request).approved_with_session_link_email.deliver_later
+
+      if current_oral_history_requester.present? && current_oral_history_requester.email == @oral_history_request.requester_email
+        redirect_to oral_history_requests_path, flash: { success: "The files you requested from '#{@work.title}' are immediately available." }
+      else
+        redirect_to work_path(@work.friendlier_id), flash: { success: "The files you have requested are immediately available. We've sent an email to #{patron_email_param} with a sign-in link." }
+      end
+    else # manual review
+      OralHistoryRequestNotificationMailer.
+        with(request: @oral_history_request).
+        notification_email.
+        deliver_later
+
+      redirect_to work_path(@work.friendlier_id), flash: { success: "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll email you at #{@oral_history_request.requester_email}" }
     end
   end
 
@@ -141,78 +171,9 @@ private
     return true
   end
 
-  def old_style_create
-    # write entries to a cookie to pre-fill form next time; every time we write
-    # it will bump the TTL expiration too, so they get another day until it expires.
-    # Make sure to include the separate patron_eamil
-    oral_history_request_form_entry_write(
-      oral_history_request_params.merge(patron_email: patron_email_param).to_h
-    )
-
-    saved_valid = @oral_history_request.save
-
-    unless saved_valid
-      render :new
-      return
-    end
-
-    if @work.oral_history_content.available_by_request_automatic?
-      @oral_history_request.update!(delivery_status: "automatic")
-
-      OralHistoryDeliveryMailer.
-        with(request: @oral_history_request).
-        oral_history_delivery_email.
-        deliver_later
-
-      redirect_to work_path(@work.friendlier_id), flash: { success: "Check your email! We are sending you links to the files you requested, to #{@oral_history_request.requester_email}." }
-    else # manual review
-      OralHistoryRequestNotificationMailer.
-        with(request: @oral_history_request).
-        notification_email.
-        deliver_later
-
-      redirect_to work_path(@work.friendlier_id), flash: { success: "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll email you at #{@oral_history_request.requester_email}" }
-    end
-  end
 
 
-  def new_style_create
-    # write entries to a cookie to pre-fill form next time; every time we write
-    # it will bump the TTL expiration too, so they get another day until it expires.
-    # Make sure to include the separate patron_eamil
-    oral_history_request_form_entry_write(
-      oral_history_request_params.merge(patron_email: patron_email_param).to_h
-    )
 
-    saved_valid = @oral_history_request.save
-
-    unless saved_valid
-      render :new
-      return
-    end
-
-    if @work.oral_history_content.available_by_request_automatic?
-      @oral_history_request.update!(delivery_status: "automatic")
-
-      # If they are already logged in, they can just be directed to see this
-      # automatically-approved request. Either way they should get an email,
-      # per specs from OH team.
-      OralHistoryDeliveryMailer.with(request: @oral_history_request).approved_with_session_link_email.deliver_later
-
-      if current_oral_history_requester.present? && current_oral_history_requester.email == @oral_history_request.requester_email
-        redirect_to oral_history_requests_path, flash: { success: "The files you requested from '#{@work.title}' are immediately available." }
-      else
-        redirect_to work_path(@work.friendlier_id), flash: { success: "The files you have requested are immediately available. We've sent an email to #{patron_email_param} with a sign-in link." }
-      end
-    else # manual review
-      OralHistoryRequestNotificationMailer.
-        with(request: @oral_history_request).
-        notification_email.
-        deliver_later
-
-      redirect_to work_path(@work.friendlier_id), flash: { success: "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll email you at #{@oral_history_request.requester_email}" }
-    end
-  end
 
   def oral_history_request_params
     params.require(:oral_history_request).permit(

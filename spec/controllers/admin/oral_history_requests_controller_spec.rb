@@ -9,9 +9,9 @@ RSpec.describe Admin::OralHistoryRequestsController, :logged_in_user, type: :con
           OralHistoryRequest.create!(
             created_at: latest_date - 100000 * i,
             patron_name: "Patron #{i}",
-            patron_email: "patron@institution_#{i}.com",
             patron_institution: "Institution #{i}",
             intended_use: "I will write #{i} books.",
+            oral_history_requester: OralHistoryRequester.new(email: "patron@institution_#{i}.com"),
             work: work,
             delivery_status: delivery_status
           )
@@ -87,6 +87,7 @@ RSpec.describe Admin::OralHistoryRequestsController, :logged_in_user, type: :con
         expect(last_email.body).to match /Here are your requested files/
         expect(last_email.body).to include(message)
       end
+
 
       it "can reject" do
         post :respond, params: {
