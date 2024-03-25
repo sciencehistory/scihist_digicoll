@@ -546,7 +546,7 @@ GEM
       link_header (~> 0.0, >= 0.0.8)
     rdf-vocab (3.3.0)
       rdf (~> 3.3)
-    rdoc (6.6.2)
+    rdoc (6.6.3.1)
       psych (>= 4.0.0)
     redis (5.0.8)
       redis-client (>= 0.17.0)
