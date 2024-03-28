@@ -91,6 +91,12 @@ Rails.application.routes.draw do
     format: false,
     as: :viewer_images_info
 
+  # JSON info for Internet Archive Book Reader implementation
+  get '/works/:id/book_reader_data' => 'works#book_reader_data',
+    defaults: {format: "json"},
+    format: false,
+    as: :book_reader_data
+
   get 'works/:id/transcription' => "works#transcription",
     defaults: {format: 'txt'},
     format: false,
@@ -236,7 +242,8 @@ Rails.application.routes.draw do
 
   ##
   # End Blacklight-generated routes
-  ##
+
+  get "book_reader/:id", to: "book_reader#show", as: "book_reader_frame"
 
   # Routes will even only _show up_ for users who can :access_staff_functions; this applies
   # to internal rack apps we're mounting here too, like shrine upload endpoints,

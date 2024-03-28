@@ -72,6 +72,23 @@ RSpec.describe WorksController, type: :controller do
     end
   end
 
+
+  context("#book_reader_data") do
+    let(:unpublished_asset) { create(:asset_with_faked_file, published: false )}
+    let(:work) { create(:public_work, members: [create(:asset_with_faked_file), unpublished_asset]) }
+
+    it "returns JSON" do
+      get :book_reader_data, params: { id: work.friendlier_id }, as: :json
+      expect(response.status).to eq(200)
+      expect(response.media_type).to eq "application/json"
+
+      parsed = JSON.parse(response.body)
+
+      expect(parsed).to be_kind_of(Array)
+      expect(parsed.length).to eq 1
+    end
+  end
+
   ["transcription", "english_translation"].each do |trans_text_type|
     context trans_text_type do
       context "no suitable text" do

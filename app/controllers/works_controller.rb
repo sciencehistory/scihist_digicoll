@@ -36,6 +36,11 @@ class WorksController < ApplicationController
       ).as_hash
   end
 
+  def book_reader_data
+    # for now just include published images, even if logged-in staff viewer
+    render json: BookReaderDataSerializer.new(@work).as_array
+  end
+
 
   def transcription
     send_data(

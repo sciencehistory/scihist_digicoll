@@ -15,7 +15,8 @@
     "openseadragon": "^4.0.0",
     "popper.js": "^ 1.16.1",
     "tom-select": "^1.4.3",
-    "video.js": "^8.0.0"
+    "video.js": "^8.0.0",
+    "@internetarchive/bookreader": "^5.0.0-79"
   },
   "devDependencies": {
     "rollup-plugin-gzip": "^3.0.1",
