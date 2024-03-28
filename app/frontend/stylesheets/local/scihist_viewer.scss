@@ -137,6 +137,17 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     flex-direction: column;
   }
 
+  // possibly temporary positioning for draft
+  .viewer-search-area {
+    border-right: 2px solid $dark;
+    padding: $paragraph-spacer;
+  }
+
+  .viewer-search-highlight {
+    background-color: $shi-red;
+    opacity: 0.35;
+  }
+
   .viewer-image-and-navbar {
     // https://css-tricks.com/flexbox-truncated-text/
     min-width: 0;

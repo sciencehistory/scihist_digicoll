@@ -40,6 +40,18 @@ ScihistImageViewer.prototype.viewerPathComponentRe = /\/viewer\/(\w+)$/;
 // thumbnails generated and delivered in JSON info.
 ScihistImageViewer.prototype.thumbWidth = "54";
 
+// When we have search results loaded, this is an array keyed by Asset page friendlier
+// ID, whose value is an array of objects, where each has OpenSeadragon values
+// for x y width height (all proportional between 0 and 1), degrees, and anything else we need.
+// https://openseadragon.github.io/docs/OpenSeadragon.Rect.html
+ScihistImageViewer.prototype.searchResults = {
+  "bksm7ln" : [
+   {"x":0.30731,"y":1.37769,"width":0.09654,"height":0.01808},
+   {"x":0.33038,"y":1.21962,"width":0.09769,"height":0.01846},
+   {"x":0.14346,"y":1.52731,"width":0.11,"height":0.02731}
+  ]
+}
+
 ScihistImageViewer.prototype.show = function(id) {
   if (document.activeElement) {
     this.previousFocus = document.activeElement;
@@ -545,7 +557,32 @@ ScihistImageViewer.prototype.initOpenSeadragon = function() {
     }
   });
 
+
+  // When a new page is loaded, we add search results overlays
+  this.viewer.addHandler("open", function(event) {
+    _self.highlightSearchResults();
+  });
 };
+
+ScihistImageViewer.prototype.highlightSearchResults = function() {
+  const currentMemberId = this.selectedThumbData?.memberId;
+
+  const resultOverlaysForPage = this.searchResults[ currentMemberId ];
+
+  if (resultOverlaysForPage) {
+    for (let result of resultOverlaysForPage) {
+      let elt = document.createElement("div");
+      elt.className = "viewer-search-highlight";
+
+      this.viewer.addOverlay({
+          element: elt,
+          location: new OpenSeadragon.Rect(result.x, result.y, result.width, result.height)
+      });
+    }
+  }
+}
+
+
 
 ScihistImageViewer.prototype.hideUiElement = function(element) {
   element.style.display = "none";
