@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_25_204926) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_22_182902) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -201,13 +201,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_25_204926) do
   create_table "oral_history_access_requests", force: :cascade do |t|
     t.uuid "work_id", null: false
     t.text "patron_name_ciphertext"
-    t.text "patron_email_ciphertext"
     t.text "patron_institution_ciphertext"
     t.text "intended_use_ciphertext"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "delivery_status", default: "pending"
-    t.bigint "oral_history_requester_email_id"
+    t.bigint "oral_history_requester_email_id", null: false
     t.datetime "delivery_status_changed_at"
     t.text "notes_from_staff"
     t.index ["oral_history_requester_email_id"], name: "idx_on_oral_history_requester_email_id_ff2cc727ac"
