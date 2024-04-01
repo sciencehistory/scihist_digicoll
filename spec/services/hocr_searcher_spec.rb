@@ -15,6 +15,7 @@ describe HocrSearcher do
     result = results.first
     expect(result).to be_kind_of(Hash)
     expect(result['text']).to be_kind_of(String)
+    expect(result['text']).to match "<mark>units</mark>"
     expect(result['osd_rect']).to be_kind_of(Hash)
 
     # sanity check

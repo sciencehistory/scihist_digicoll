@@ -5,7 +5,6 @@
 #      * multi-word "or"
 #      * normalize query
 #      * search in DB first to identify matches, instead of fetching all into memory
-#      * HTML escaped text
 #
 class HocrSearcher
   attr_reader :work, :show_unpublished
@@ -61,10 +60,19 @@ class HocrSearcher
     end.flatten
   end
 
-  def extract_context(match)
-    match_id = match.attributes["id"].value
-    match.parent.xpath('*[@class="ocrx_word"]').map do |word|
-      (word['id'] == match_id) ? "{{{#{word.text}}}}" : word.text
+  # Take a nokogiri element for an ocrx_word representing a hit, return text showing hit
+  # in context, highlighted, for search results.
+  #
+  # @param ocrx_word_hit [Nokogiri::XML::Element] the element reprenseting a <span class="ocrx_word">, that
+  #   is a search hit.
+  #
+  # @returns text providing that hit in context of surrounding text. The hit itself will be surrounded
+  #   by html <mark></mark> tags.  All content will be HTNL-escaped, and html-safe.
+  def extract_context(ocrx_word_hit)
+    match_id = ocrx_word_hit.attributes["id"].value
+
+    ocrx_word_hit.parent.xpath('*[@class="ocrx_word"]').map do |word|
+      (word['id'] == match_id) ? "<mark>#{ERB::Util.html_escape word.text}</mark>" : ERB::Util.html_escape(word.text)
     end.join(' ')
   end
 
