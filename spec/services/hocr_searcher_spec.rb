@@ -26,4 +26,19 @@ describe HocrSearcher do
       expect(result['osd_rect'][key]).to be < (asset.width * 4)
     end
   end
+
+  # This needs to match what the viewer itself does, when we wrote this it does
+  describe "with child work" do
+    let(:parent_work) { create(:public_work, members: [work]) }
+
+    it "includes single representative, with direct member id" do
+      searcher = HocrSearcher.new(parent_work, query: "units")
+
+      results = searcher.results_for_osd_viewer
+      expect(results).to be_kind_of(Array)
+      expect(results.length).to be 1
+
+      expect(results.first["id"]).to eq work.friendlier_id
+    end
+  end
 end

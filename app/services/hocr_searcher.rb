@@ -49,7 +49,7 @@ class HocrSearcher
       asset = member.leaf_representative
 
       next unless asset.hocr
-      parsed_hocr = Nokogiri::XML(member.hocr) { |config| config.strict }
+      parsed_hocr = Nokogiri::XML(asset.hocr) { |config| config.strict }
       next unless parsed_hocr.css(".ocr_page").length >= 1
 
       matching_ocrx_words_for(parsed_hocr).collect do |ocrx_word|
