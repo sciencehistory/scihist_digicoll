@@ -45,7 +45,7 @@ class HocrSearcher
   #       }]
   #
   def results_for_osd_viewer
-    work.members.collect do |member|
+    included_members.collect do |member|
       asset = member.leaf_representative
 
       next unless asset.hocr
@@ -127,8 +127,10 @@ class HocrSearcher
 
   def included_members
     @included_members ||= begin
-      members = work.members.where(type: "Asset").order(:position)
+      members = work.members.order(:position).strict_loading
+
       members = members.where(published: true) unless show_unpublished
+
       members.includes(:leaf_representative).select do |member|
         member.leaf_representative &&
         member.leaf_representative.content_type&.start_with?("image/") &&

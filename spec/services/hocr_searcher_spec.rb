@@ -2,7 +2,7 @@ require "rails_helper"
 
 describe HocrSearcher do
   # set height and width to match the faked HOCR
-  let(:asset) { create(:asset_with_faked_file, :with_ocr, faked_width: 2767, faked_height: 3558)}
+  let(:asset) { create(:asset_with_faked_file, :with_ocr, published: true, faked_width: 2767, faked_height: 3558)}
   let(:work) { create(:public_work, members: [ asset ])}
 
   it "produces matches" do
@@ -39,6 +39,23 @@ describe HocrSearcher do
       expect(results.length).to be 1
 
       expect(results.first["id"]).to eq work.friendlier_id
+    end
+  end
+
+  describe "with unpublished member" do
+    let(:asset) { create(:asset_with_faked_file, :with_ocr, published: false, faked_width: 2767, faked_height: 3558) }
+
+    it "does not include unpublished asset" do
+      searcher = HocrSearcher.new(work, query: "units")
+      expect(searcher.results_for_osd_viewer).not_to include(an_object_satisfying { |h| h["id"] == asset.friendlier_id })
+    end
+
+    context "when including unpublished" do
+      it "includes unpublished asset" do
+        searcher = HocrSearcher.new(work, show_unpublished: true, query: "units")
+
+        expect(searcher.results_for_osd_viewer).to include(an_object_satisfying { |h| h["id"] == asset.friendlier_id })
+      end
     end
   end
 end
