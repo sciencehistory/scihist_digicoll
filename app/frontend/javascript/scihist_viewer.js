@@ -627,6 +627,11 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
   const searchResponse = await fetch(searchUrl);
   const searchResults  = await searchResponse.json();
 
+  if (searchResults.length == 0) {
+    searchResultsContainer.innerHTML = "<p>No search results</p>";
+    return;
+  }
+
   // For each search result, we need to render it in results, and index
   // it by page for showing highlights.
   this.searchResultHighlightsByPage = {};
