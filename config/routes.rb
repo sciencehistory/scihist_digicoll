@@ -91,6 +91,12 @@ Rails.application.routes.draw do
     format: false,
     as: :viewer_images_info
 
+  # display search-inside-book results in our local viewer
+  get '/works/:id/viewer_search' => 'works#viewer_search',
+    defaults: {format: "json"},
+    format: false,
+    as: :viewer_search
+
   get 'works/:id/transcription' => "works#transcription",
     defaults: {format: 'txt'},
     format: false,

@@ -36,6 +36,15 @@ class WorksController < ApplicationController
       ).as_hash
   end
 
+  def viewer_search
+    if params[:q].blank?
+      render status: 422, plain: "Error status 422: Missing required `q` parameter."
+    else
+      render json: HocrSearcher.new(@work, query: params[:q],
+          show_unpublished: can?(:read, Kithe::Model)
+      ).results_for_osd_viewer
+    end
+  end
 
   def transcription
     send_data(
