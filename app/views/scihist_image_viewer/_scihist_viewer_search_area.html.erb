@@ -1,8 +1,8 @@
 <div class="viewer-search-area d-none"> <%# initially hidden with d-none %>
 
-  <b>Search Inside</b>
+  <form class="viewer-search-controls" data-trigger="viewer-search">
+    <b>Search Inside</b>
 
-  <form data-trigger="viewer-search">
     <div class="input-group input-group-sm">
       <%= text_field_tag :q, '', class: "q form-control",
           id: "q",
@@ -28,6 +28,9 @@
       </div>
     </div>
   </form>
+
+
+
 
   <div class="search-results-container">
   </div>

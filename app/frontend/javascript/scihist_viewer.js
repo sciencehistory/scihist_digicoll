@@ -53,6 +53,9 @@ ScihistImageViewer.prototype.thumbWidth = "54";
 //
 ScihistImageViewer.prototype.searchResultHighlightsByPage = {}
 
+ScihistImageViewer.prototype.findThumbElement = function(memberId) {
+  return document.querySelector(".viewer-thumb-img[data-member-id='" + memberId + "']");
+};
 
 ScihistImageViewer.prototype.show = function(id) {
   if (document.activeElement) {
@@ -87,7 +90,7 @@ ScihistImageViewer.prototype.show = function(id) {
     var selectedThumb;
     // find the thumb
     if (id) {
-      selectedThumb = document.querySelector(".viewer-thumb-img[data-member-id='" + id + "']");
+      selectedThumb = _self.findThumbElement(id);
     }
     if (! selectedThumb) {
       // just use the first one
@@ -612,8 +615,11 @@ ScihistImageViewer.prototype.displayAlert = function(msg) {
 }
 
 ScihistImageViewer.prototype.getSearchResults = async function(query) {
+  const searchResultsContainer = document.querySelector(".viewer-search-area .search-results-container");
+
   // unset current results
   this.viewer.clearOverlays();
+  searchResultsContainer.innerHTML = "";
 
   const searchUrl = new URL(this.searchPath, window.location);
   searchUrl.searchParams.append("q", query);
@@ -631,6 +637,19 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
       this.searchResultHighlightsByPage[id] = [];
     }
     this.searchResultHighlightsByPage[id].push(result.osd_rect);
+
+    const resultHtml = document.createElement('a');
+    resultHtml["href"] = "#";
+    resultHtml.setAttribute('data-member-id', result.id);
+    resultHtml.setAttribute('data-rect-left', result.osd_rect.left);
+    resultHtml.setAttribute('data-rect-top', result.osd_rect.top);
+    resultHtml.setAttribute('data-rect-width', result.osd_rect.width);
+    resultHtml.setAttribute('data-rect-height', result.osd_rect.height);
+    resultHtml.setAttribute('data-trigger', 'viewer-search-result');
+    resultHtml.className = "result";
+    resultHtml.innerHTML = result.text;
+    searchResultsContainer.append(resultHtml)
+
   }
 
   // show highlights on current page
@@ -724,6 +743,15 @@ jQuery(document).ready(function($) {
       event.preventDefault();
 
       chf_image_viewer().getSearchResults( $(event.target).find("input").val() );
+    });
+
+    $(document).on("click", "*[data-trigger='viewer-search-result']", function(event) {
+      event.preventDefault();
+
+      const memberId = event.currentTarget.getAttribute('data-member-id')
+      const thumbElement = chf_image_viewer().findThumbElement(memberId);
+      chf_image_viewer().selectThumb(thumbElement);
+      chf_image_viewer().scrollSelectedIntoView();
     });
   }
 });

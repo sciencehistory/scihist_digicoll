@@ -137,11 +137,31 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     flex-direction: column;
   }
 
-  // possibly temporary positioning for draft
+
+
   .viewer-search-area {
     border-right: 2px solid $dark;
-    padding: $paragraph-spacer;
+    width: 18em;
+
+    .viewer-search-controls {
+      padding: $paragraph-spacer;
+    }
+
+    .search-results-container {
+      padding: $paragraph-spacer;
+      max-height: 100%;
+      overflow-y: scroll;
+      overflow-x: hidden;
+    }
+
+    .result {
+      color: $body-color;
+      display: block;
+      margin: $paragraph-spacer 0;
+    }
   }
+
+
 
   .viewer-search-highlight {
     background-color: $shi-red;
@@ -342,7 +362,6 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       }
     }
   }
-
 
   @media (max-width: 500px) {
     // On small screens, which are probably touch anyway, save space by
