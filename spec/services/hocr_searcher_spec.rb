@@ -2,8 +2,8 @@ require "rails_helper"
 
 describe HocrSearcher do
   # set height and width to match the faked HOCR
-  let(:asset) { create(:asset_with_faked_file, :with_ocr, published: true, faked_width: 2767, faked_height: 3558)}
-  let(:work) { create(:public_work, members: [ asset ])}
+  let(:asset) { create(:asset_with_faked_file, :with_ocr, published: true, faked_width: 2767, faked_height: 3558) }
+  let(:work) { create(:public_work, members: [ asset, create(:asset_with_faked_file) ])}
 
   it "produces matches" do
     searcher = HocrSearcher.new(work, query: "units")

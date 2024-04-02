@@ -59,7 +59,7 @@ class HocrSearcher
           "osd_rect" => extract_osd_rect(ocrx_word: ocrx_word, asset: asset)
         }
       end
-    end.flatten
+    end.flatten.compact
   end
 
   # Take a nokogiri element for an ocrx_word representing a hit, return text showing hit
