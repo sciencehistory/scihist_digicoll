@@ -78,7 +78,7 @@ class OralHistoryRequestsController < ApplicationController
 
     # In new mode, check to see if the are logged in, and request already exists,
     # just send them to their requests!
-    if ScihistDigicoll::Env.lookup("feature_new_oh_request_emails") && current_oral_history_requester &&
+    if current_oral_history_requester &&
           OralHistoryRequest.where(work: @work, oral_history_requester: current_oral_history_requester).exists?
 
         redirect_to oral_history_requests_path, flash: { success: "You have already requested this Oral History: #{@work.title}" }
@@ -95,88 +95,6 @@ class OralHistoryRequestsController < ApplicationController
   #
   # Action to create request from form
   def create
-    if ScihistDigicoll::Env.lookup("feature_new_oh_request_emails")
-      new_style_create
-    else
-      old_style_create
-    end
-  end
-
-private
-
-  # load @work, and create a new @oral_history_request
-  #
-  # Depending on config, we may abort if request already exists. As a before_action,
-  # redirecting or rendering will abort further processing.
-  def setup_create_request
-    @work = load_work(params['oral_history_request'].delete('work_friendlier_id'))
-
-    # note `create_or_find_by` is the version with fewer race conditions, to make
-    # this record if it doesn't already exist.
-    requester_email = (OralHistoryRequester.create_or_find_by!(email: patron_email_param) if patron_email_param.present?)
-
-
-    # Check to see if request already exists,
-    if ScihistDigicoll::Env.lookup("feature_new_oh_request_emails") && requester_email && OralHistoryRequest.where(work: @work, oral_history_requester: requester_email).exists?
-      # If they are already authenticated, we can just direct them there,
-      # otherwise we send them a sign-in link
-      if current_oral_history_requester.present? && current_oral_history_requester.email == requester_email.email
-        redirect_to oral_history_requests_path, flash: { success: "You have already requested this Oral History: #{@work.title}" }
-      else
-        OhSessionMailer.with(requester_email: requester_email).link_email.deliver_later
-        redirect_to work_path(@work.friendlier_id), flash: { success: "You have already requested this Oral History. We've sent another email to #{patron_email_param} with a sign-in link, which you can use to view your requests.", }
-      end
-
-      return false # abort further processing
-    end
-
-
-    @oral_history_request = OralHistoryRequest.new(
-      oral_history_request_params.merge(
-        work: @work,
-        oral_history_requester: requester_email
-      )
-    )
-
-    return true
-  end
-
-  def old_style_create
-    # write entries to a cookie to pre-fill form next time; every time we write
-    # it will bump the TTL expiration too, so they get another day until it expires.
-    # Make sure to include the separate patron_eamil
-    oral_history_request_form_entry_write(
-      oral_history_request_params.merge(patron_email: patron_email_param).to_h
-    )
-
-    saved_valid = @oral_history_request.save
-
-    unless saved_valid
-      render :new
-      return
-    end
-
-    if @work.oral_history_content.available_by_request_automatic?
-      @oral_history_request.update!(delivery_status: "automatic")
-
-      OralHistoryDeliveryMailer.
-        with(request: @oral_history_request).
-        oral_history_delivery_email.
-        deliver_later
-
-      redirect_to work_path(@work.friendlier_id), flash: { success: "Check your email! We are sending you links to the files you requested, to #{@oral_history_request.requester_email}." }
-    else # manual review
-      OralHistoryRequestNotificationMailer.
-        with(request: @oral_history_request).
-        notification_email.
-        deliver_later
-
-      redirect_to work_path(@work.friendlier_id), flash: { success: "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll email you at #{@oral_history_request.requester_email}" }
-    end
-  end
-
-
-  def new_style_create
     # write entries to a cookie to pre-fill form next time; every time we write
     # it will bump the TTL expiration too, so they get another day until it expires.
     # Make sure to include the separate patron_eamil
@@ -213,6 +131,47 @@ private
       redirect_to work_path(@work.friendlier_id), flash: { success: "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll email you at #{@oral_history_request.requester_email}" }
     end
   end
+
+
+private
+
+  # load @work, and create a new @oral_history_request
+  #
+  # Depending on config, we may abort if request already exists. As a before_action,
+  # redirecting or rendering will abort further processing.
+  def setup_create_request
+    @work = load_work(params['oral_history_request'].delete('work_friendlier_id'))
+
+    # note `create_or_find_by` is the version with fewer race conditions, to make
+    # this record if it doesn't already exist.
+    requester_email = (OralHistoryRequester.create_or_find_by!(email: patron_email_param) if patron_email_param.present?)
+
+
+    # Check to see if request already exists,
+    if requester_email && OralHistoryRequest.where(work: @work, oral_history_requester: requester_email).exists?
+      # If they are already authenticated, we can just direct them there,
+      # otherwise we send them a sign-in link
+      if current_oral_history_requester.present? && current_oral_history_requester.email == requester_email.email
+        redirect_to oral_history_requests_path, flash: { success: "You have already requested this Oral History: #{@work.title}" }
+      else
+        OhSessionMailer.with(requester_email: requester_email).link_email.deliver_later
+        redirect_to work_path(@work.friendlier_id), flash: { success: "You have already requested this Oral History. We've sent another email to #{patron_email_param} with a sign-in link, which you can use to view your requests.", }
+      end
+
+      return false # abort further processing
+    end
+
+
+    @oral_history_request = OralHistoryRequest.new(
+      oral_history_request_params.merge(
+        work: @work,
+        oral_history_requester: requester_email
+      )
+    )
+
+    return true
+  end
+
 
   def oral_history_request_params
     params.require(:oral_history_request).permit(

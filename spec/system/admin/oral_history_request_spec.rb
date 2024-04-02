@@ -35,7 +35,7 @@ RSpec.describe "Oral History Access Request Administration", :logged_in_user, ty
       # not a great way to do this, but it tests at least something.
       enqueued_mail_job = ActiveJob::Base.queue_adapter.enqueued_jobs.find {|h| h["job_class"] == "ActionMailer::MailDeliveryJob"}
       expect(enqueued_mail_job).to be_present
-      expect(enqueued_mail_job["arguments"][0..1]). to eq(["OralHistoryDeliveryMailer", "oral_history_delivery_email"])
+      expect(enqueued_mail_job["arguments"][0..1]). to eq(["OralHistoryDeliveryMailer", "approved_with_session_link_email"])
     end
 
     it "can reject" do

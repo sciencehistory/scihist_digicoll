@@ -38,35 +38,17 @@ class Admin::OralHistoryRequestsController < AdminController
 
     if disposition == "approve"
       @oral_history_request.update!(delivery_status: "approved", notes_from_staff: custom_message)
-
-      mailer_action = if ScihistDigicoll::Env.lookup("feature_new_oh_request_emails")
-        :approved_with_session_link_email
-      else
-        :oral_history_delivery_email
-      end
-
+      mailer_action = :approved_with_session_link_email
       OralHistoryDeliveryMailer.
         with(request: @oral_history_request, custom_message: custom_message).
         public_send(mailer_action).
         deliver_later
     else
       @oral_history_request.update!(delivery_status: "rejected", notes_from_staff: custom_message)
-
-      if ScihistDigicoll::Env.lookup("feature_new_oh_request_emails")
-        OralHistoryDeliveryMailer.
-          with(request: @oral_history_request, custom_message: custom_message).
-          rejected_with_session_link_email.
-          deliver_later
-      else
-        # Let's just use the generic mailer with a text mail?
-        ActionMailer::Base.mail(
-          from: ScihistDigicoll::Env.lookup!(:oral_history_email_address),
-          to: @oral_history_request.requester_email,
-          bcc: ScihistDigicoll::Env.lookup!(:oral_history_email_address),
-          subject: "Science History Institute: Your request",
-          body: custom_message
-        ).deliver_later
-      end
+      OralHistoryDeliveryMailer.
+        with(request: @oral_history_request, custom_message: custom_message).
+        rejected_with_session_link_email.
+        deliver_later
     end
 
     redirect_to admin_oral_history_requests_path,
