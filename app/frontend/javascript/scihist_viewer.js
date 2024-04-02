@@ -427,6 +427,12 @@ ScihistImageViewer.prototype.initModal = function(modalElement) {
   });
 
   this.workId = modalElement.getAttribute("data-work-id");
+  this.searchPath = modalElement.getAttribute("data-search-path");
+
+  if (this.searchPath) {
+    //If it's searchable, expose the search UI
+    this.modal.find('.viewer-search-area').removeClass("d-none");
+  }
 
   var _self = this;
   var imageInfoUrl = modalElement.getAttribute("data-images-info-path");
