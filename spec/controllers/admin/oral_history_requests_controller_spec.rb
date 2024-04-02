@@ -91,12 +91,14 @@ RSpec.describe Admin::OralHistoryRequestsController, :logged_in_user, type: :con
         expect(last_email.body).to match /You can view the status of all of your oral history requests and download materials from approved requests using this special sign-in link/
       end
 
+
       it "can reject" do
         post :respond, params: {
           id: oral_history_access_request.id,
           disposition: "reject",
           oral_history_request_approval: { notes_from_staff: message }
         }
+
 
         expect(flash[:notice]).to match /Reject email was sent to #{Regexp.escape oral_history_access_request.requester_email}/
         expect(response).to redirect_to(admin_oral_history_requests_path)
