@@ -132,7 +132,6 @@ class OralHistoryRequestsController < ApplicationController
     end
   end
 
-
 private
 
   # load @work, and create a new @oral_history_request

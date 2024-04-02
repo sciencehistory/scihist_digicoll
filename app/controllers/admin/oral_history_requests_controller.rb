@@ -38,10 +38,9 @@ class Admin::OralHistoryRequestsController < AdminController
 
     if disposition == "approve"
       @oral_history_request.update!(delivery_status: "approved", notes_from_staff: custom_message)
-      mailer_action = :approved_with_session_link_email
       OralHistoryDeliveryMailer.
         with(request: @oral_history_request, custom_message: custom_message).
-        public_send(mailer_action).
+        public_send(:approved_with_session_link_email).
         deliver_later
     else
       @oral_history_request.update!(delivery_status: "rejected", notes_from_staff: custom_message)
