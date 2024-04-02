@@ -44,13 +44,15 @@ ScihistImageViewer.prototype.thumbWidth = "54";
 // ID, whose value is an array of objects, where each has OpenSeadragon values
 // for x y width height (all proportional between 0 and 1), degrees, and anything else we need.
 // https://openseadragon.github.io/docs/OpenSeadragon.Rect.html
-ScihistImageViewer.prototype.searchResults = {
-  "bksm7ln" : [
-   {"x":0.30731,"y":1.37769,"width":0.09654,"height":0.01808},
-   {"x":0.33038,"y":1.21962,"width":0.09769,"height":0.01846},
-   {"x":0.14346,"y":1.52731,"width":0.11,"height":0.02731}
-  ]
-}
+//
+// {
+//   "bksm7ln" : [
+//     {"left":0.30731,"top":1.37769,"width":0.09654,"height":0.01808},
+//   ]
+// }
+//
+ScihistImageViewer.prototype.searchResultHighlightsByPage = {}
+
 
 ScihistImageViewer.prototype.show = function(id) {
   if (document.activeElement) {
@@ -573,7 +575,7 @@ ScihistImageViewer.prototype.initOpenSeadragon = function() {
 ScihistImageViewer.prototype.highlightSearchResults = function() {
   const currentMemberId = this.selectedThumbData?.memberId;
 
-  const resultOverlaysForPage = this.searchResults[ currentMemberId ];
+  const resultOverlaysForPage = this.searchResultHighlightsByPage[ currentMemberId ];
 
   if (resultOverlaysForPage) {
     for (let result of resultOverlaysForPage) {
@@ -582,7 +584,7 @@ ScihistImageViewer.prototype.highlightSearchResults = function() {
 
       this.viewer.addOverlay({
           element: elt,
-          location: new OpenSeadragon.Rect(result.x, result.y, result.width, result.height)
+          location: new OpenSeadragon.Rect(result.left, result.top, result.width, result.height)
       });
     }
   }
@@ -609,6 +611,31 @@ ScihistImageViewer.prototype.displayAlert = function(msg) {
   container.insertAdjacentHTML('beforebegin', alertHtml);
 }
 
+ScihistImageViewer.prototype.getSearchResults = async function(query) {
+  // unset current results
+  this.viewer.clearOverlays();
+
+  const searchUrl = new URL(this.searchPath, window.location);
+  searchUrl.searchParams.append("q", query);
+
+  const searchResponse = await fetch(searchUrl);
+  const searchResults  = await searchResponse.json();
+
+  // For each search result, we need to render it in results, and index
+  // it by page for showing highlights.
+  this.searchResultHighlightsByPage = {};
+
+  for (const result of searchResults) {
+    const id = result['id'];
+    if (! this.searchResultHighlightsByPage[id]) {
+      this.searchResultHighlightsByPage[id] = [];
+    }
+    this.searchResultHighlightsByPage[id].push(result.osd_rect);
+  }
+
+  // show highlights on current page
+  this.highlightSearchResults();
+};
 
 
 jQuery(document).ready(function($) {
@@ -691,6 +718,12 @@ jQuery(document).ready(function($) {
       } else {
         OpenSeadragon.requestFullScreen( document.body );
       }
+    });
+
+    $(document).on("submit", "*[data-trigger='viewer-search']", function(event) {
+      event.preventDefault();
+
+      chf_image_viewer().getSearchResults( $(event.target).find("input").val() );
     });
   }
 });

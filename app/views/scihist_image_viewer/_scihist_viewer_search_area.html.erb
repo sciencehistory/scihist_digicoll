@@ -2,29 +2,34 @@
 
   <b>Search Inside</b>
 
-  <div class="input-group input-group-sm">
-    <%= text_field_tag :q, '', class: "q form-control",
-        id: "q",
-        autocomplete: "off"
-    %>
+  <form data-trigger="viewer-search">
+    <div class="input-group input-group-sm">
+      <%= text_field_tag :q, '', class: "q form-control",
+          id: "q",
+          autocomplete: "off"
+      %>
 
-    <label class="sr-only" for="q"><%= t('blacklight.search.form.search_field.label') %></label>
+      <label class="sr-only" for="q"><%= t('blacklight.search.form.search_field.label') %></label>
 
 
-    <div class="input-group-append">
-      <button type="submit" class="btn btn-outline-dark" title="Search" id="search-submit-header">
-        <i class="fa fa-close" aria-hidden="true"></i>
-        <span class="sr-only">adf</span>
-      </button>
+      <div class="input-group-append">
+        <button class="btn btn-outline-dark" title="Search" id="search-submit-header">
+          <i class="fa fa-close" aria-hidden="true"></i>
+          <span class="sr-only">cancel search</span>
+        </button>
+      </div>
+
+
+      <div class="input-group-append">
+        <button type="submit" class="btn btn-brand-dark" title="Search" id="search-submit-header">
+          <i class="fa fa-search" aria-hidden="true"></i>
+          <span class="sr-only"><%= t('blacklight.search.form.submit') %></span>
+        </button>
+      </div>
     </div>
+  </form>
 
-
-    <div class="input-group-append">
-      <button type="submit" class="btn btn-brand-dark" title="Search" id="search-submit-header">
-        <i class="fa fa-search" aria-hidden="true"></i>
-        <span class="sr-only"><%= t('blacklight.search.form.submit') %></span>
-      </button>
-    </div>
+  <div class="search-results-container">
   </div>
 </div>
 
