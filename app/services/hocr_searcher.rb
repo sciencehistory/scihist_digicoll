@@ -12,7 +12,22 @@ class HocrSearcher
   def initialize(work, show_unpublished: false, query:)
     @work = work
     @show_unpublished = show_unpublished
-    @query = query.downcase
+    @query = normalize_query(query)
+  end
+
+  # Normalizes query for searching, spliting into separate tokens, downcase, and maybe
+  # removing some punctuation. Unicode normalize NFC, which we hope matches HOCR.
+  #
+  # @param query [String]
+  # @erturn [Array<String>]
+  def normalize_query(query)
+    # phrase searches not supported, double quotes gonna do nothing but mess us up...
+    # let's remove all punctuation at beginning or end of token, but not internal
+    # (don't want to mess up `isn't`)
+    #
+    query.downcase.split(/\s+/).
+      collect { |token| token.gsub(/\A[[:punct:]]+|[[:punct:]]+$/, '')}.
+      collect { |token| token.unicode_normalize }
   end
 
   # @param hocr_nokogiri [Nokogiri::XML::Document] representing an HOCR from Tesserat
@@ -24,7 +39,9 @@ class HocrSearcher
   #     <span class='ocrx_word' id='word_1_25' title='bbox 36 194 91 218; x_wconf 96'>The</span>
   #
   def matching_ocrx_words_for(hocr_nokogiri)
-    hocr_nokogiri.search('//*[@class="ocrx_word"]').select {|w| w.text().downcase.include? @query }
+    hocr_nokogiri.search('//*[@class="ocrx_word"]').select do |ocrx_word|
+      @query.any? { |token| ocrx_word.text.downcase.include? token }
+    end
   end
 
   # @return [Array<Hash>], where each hash has a "text" key with html text in context, and
@@ -131,7 +148,9 @@ class HocrSearcher
 
       members = members.where(published: true) unless show_unpublished
 
-      members.includes(:leaf_representative).select do |member|
+      members = members.includes(:leaf_representative)
+
+      members.select do |member|
         member.leaf_representative &&
         member.leaf_representative.content_type&.start_with?("image/") &&
         member.leaf_representative.stored?
