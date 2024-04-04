@@ -1,10 +1,16 @@
 # Takes a query, finds matches with coordinates and context using HOCR files
 # stored in Assets. HOCR is from Tesseract 4.x or 5.x.
 #
-# TODO:
-#      * multi-word "or"
-#      * normalize query
-#      * search in DB first to identify matches, instead of fetching all into memory
+# Our search semantics right now are:
+#
+#   * case insensitive
+#
+#   * For the most part only match exact matches, although we do some stripping of
+#     punctuation at edges of words
+#
+#   * partial word matches are allowed, but has to match "starts with" at beginning of word
+#
+#   * multi-word queries turn into just separate word matches, finding/highlighting an of those words
 #
 class HocrSearcher
   attr_reader :work, :show_unpublished
@@ -30,20 +36,6 @@ class HocrSearcher
       collect { |token| token.unicode_normalize }
   end
 
-  # @param hocr_nokogiri [Nokogiri::XML::Document] representing an HOCR from Tesserat
-  # @return [Array<Nokogiri::XML::Element>] array of Nokogiri::XML::Element representing matching
-  #    Tesserct <span class='ocrx_word'>
-  #
-  # ocrx_word may be vendor-specific to tesseract, but looks like this in Tesseract 4 or 5:
-  #
-  #     <span class='ocrx_word' id='word_1_25' title='bbox 36 194 91 218; x_wconf 96'>The</span>
-  #
-  def matching_ocrx_words_for(hocr_nokogiri)
-    hocr_nokogiri.search('//*[@class="ocrx_word"]').select do |ocrx_word|
-      @query.any? { |token| ocrx_word.text.downcase.include? token }
-    end
-  end
-
   # @return [Array<Hash>], where each hash has a "text" key with html text in context, and
   #   a "osd_rect" key which is a hash with left, top, height, and width in OpenSeadragon units
   #   proportional to image width.
@@ -62,7 +54,7 @@ class HocrSearcher
   #       }]
   #
   def results_for_osd_viewer
-    included_members.collect do |member|
+    identified_members.collect do |member|
       asset = member.leaf_representative
 
       next unless asset.hocr
@@ -77,6 +69,26 @@ class HocrSearcher
         }
       end
     end.flatten.compact
+  end
+
+  # @param hocr_nokogiri [Nokogiri::XML::Document] representing an HOCR from Tesserat
+  #
+  # @return [Array<Nokogiri::XML::Element>] array of Nokogiri::XML::Element representing matching
+  #    Tesserct <span class='ocrx_word'>
+  #
+  # ocrx_word may be vendor-specific to tesseract, but looks like this in Tesseract 4 or 5:
+  #
+  #     <span class='ocrx_word' id='word_1_25' title='bbox 36 194 91 218; x_wconf 96'>The</span>
+  #
+  # We want ones where one of our query words matches only at BEGINNING OF WORD, case insensitively
+  #
+  # There may be pages returned by our original postgres filter that were false positives,
+  # for instance matching XML tags instead of text, or for any other reason --
+  # this logic here, operating on parsed XML text should filter out false positives and only match what we want.
+  def matching_ocrx_words_for(hocr_nokogiri)
+    hocr_nokogiri.search("//*[@class=\"ocrx_word\"]").select do |ocrx_word|
+      @query.any? { |token| ocrx_word.text =~ /\b#{token}/i }
+    end
   end
 
   # Take a nokogiri element for an ocrx_word representing a hit, return text showing hit
@@ -95,7 +107,7 @@ class HocrSearcher
     end.join(' ')
   end
 
-  # Take Tesseract-provided ocrx_word span with bbox, and convert
+  # Take Tesseract-provided ocrx_word span with bbox (as nokogiri element), and convert
   # to coordinates that OpenSeadragon.Rect needs for an overlay.
   #
   # * Tessract hocr bbox is *pixels* in original image, x1 (left), y1 (top), x2 (right), y2 (bottom)
@@ -142,20 +154,85 @@ class HocrSearcher
 
   private
 
-  def included_members
-    @included_members ||= begin
-      members = work.members.order(:position).strict_loading
+  # Find possibly relevant Work children that may match query -- we do some postgres
+  # filtering, but may need some additional in-memory ruby filtering of identified
+  # members to avoid false positives for our full spec.
+  #
+  # @return [Array<Kithe::Model>]
+  def identified_members
+    @identified_members ||= begin
+      members = work.members.order(:position).includes(:leaf_representative).strict_loading
 
       members = members.where(published: true) unless show_unpublished
 
-      members = members.includes(:leaf_representative)
+      # Add in conditions to filter on our query
+      members = pg_sql_for_asset_hocr_matching_query(scope: members, query: @query)
 
-      members.select do |member|
-        member.leaf_representative &&
-        member.leaf_representative.content_type&.start_with?("image/") &&
-        member.leaf_representative.stored?
-      end
+      # don't actualy need this, if we include weird extras oh well they won't match
+      # our conditions.
+      # members.select do |member|
+      #   member.leaf_representative &&
+      #   member.leaf_representative.content_type&.start_with?("image/") &&
+      #   member.leaf_representative.stored?
+      # end
     end
+  end
+
+  # We have a list of words to query, in a work's members. Rather than pull back ALL
+  # members and filter in memory, it is better performance to filter with an SQL
+  # query to postgres first.
+  #
+  # BUT, this is a bit tricky for a few reasons:
+  #
+  # * Structure of our data, we need to reach into a JSON structure... that contains
+  #   XML, which we want to match text in. Using postgres regex search to match
+  #   only at beginning of words, as per our spec.
+  #
+  # * Child works! If we have a child work, we include it's leaf_reprentative
+  #   in the viewer, and want to match any text in it. Which requires us to do
+  #   a pretty confusing self-referential join to search both immediate asset
+  #   children AND any leaf_representatives of work children.
+  #
+  # The search doesn't need to be perfect, it can include false positives that
+  # are later filtered out in ruby, but if it can cut down on the number of
+  # DB results, it can improve performance significantly.
+  #
+  # postgres regexp reference: https://www.postgresql.org/docs/15/functions-matching.html#FUNCTIONS-POSIX-REGEXP
+  #
+  # @param scope [ActiveRecord::Relation] the base ActiveRecord scope to add our conditions on to
+  # @para query [Array<String>] Our query words
+  #
+  # @return [ActiveRecord::Relation] with our conditions added on
+  def pg_sql_for_asset_hocr_matching_query(scope:, query:)
+    # to  include  matches on a child work's main leaf representative, we need to do a pretty
+    # crazy manual SQL join on the leaf_representatives self-referential relationship -- so
+    # we can assign an SQL alias ourselves to refer to it.
+    scope = scope.joins("LEFT OUTER JOIN kithe_models AS leaf_representatives ON leaf_representatives.id = kithe_models.leaf_representative_id")
+
+    # For each clause in our query, we will see if it exists in the "hocr" data -- checking
+    # both direct member, and a member's leaf representative, so we have TWO clauses that both
+    # need a bound value.
+    #
+    # Note: ~* is pg case-insensitive regex match
+    #
+    # Note: This might create false positives matching on XML tags instead of just content,
+    # We experimented with using postgres xml fucntions, but the performance was bad,
+    # better performance to filter them out later in ruby.
+    clause= "(kithe_models.derived_metadata_jsonb ->> 'hocr') ~* ? OR (leaf_representatives.derived_metadata_jsonb ->> 'hocr') ~* ?"
+
+    # We repeat that clause once for every query token, joined with OR
+    sql = query.length.times.collect do
+      clause
+    end.join(" OR ")
+
+    # Now we need to supply params for each of those ? variables. We'll do it as
+    # a pg regexp using the \m "beginning of word boundary token", so that we only
+    # match on beginning of words.
+    params = query.collect { |token| "\\m#{token}" }
+    # but now we have to DOUBLE the parameters, cause each clause had one ? for main table and one for leaf representatives
+    params = params.collect { |re| [re, re] }.flatten
+
+    scope.where(sql, *params)
   end
 
 end
