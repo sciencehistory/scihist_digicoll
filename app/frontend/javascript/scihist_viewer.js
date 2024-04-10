@@ -757,7 +757,10 @@ jQuery(document).ready(function($) {
     $(document).on("submit", "*[data-trigger='viewer-search']", function(event) {
       event.preventDefault();
 
-      chf_image_viewer().getSearchResults( $(event.target).find("input").val() );
+      const query = $(event.target).find("input").val();
+      if (query.trim() != "") {
+        chf_image_viewer().getSearchResults( query );
+      }
     });
 
     $(document).on("click", "*[data-trigger='viewer-search-result']", function(event) {
