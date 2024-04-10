@@ -590,9 +590,17 @@ ScihistImageViewer.prototype.highlightSearchResults = function() {
       let elt = document.createElement("div");
       elt.className = "viewer-search-highlight";
 
+      // the bounding box is EXACTLY where OCR thinks letters stop/start. Making
+      // the highlight a bit bigger looks better. let's say 1/6th of (line) height padding
+      const padding = result.height / 6;
+      const left = result.left - padding;
+      const top = result.top - padding;
+      const width = result.width + (padding * 2);
+      const height = result.height + (padding * 2);
+
       this.viewer.addOverlay({
           element: elt,
-          location: new OpenSeadragon.Rect(result.left, result.top, result.width, result.height)
+          location: new OpenSeadragon.Rect(left, top, width, height)
       });
     }
   }
