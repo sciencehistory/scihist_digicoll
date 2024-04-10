@@ -81,7 +81,14 @@ RSpec.describe WorksController, type: :controller do
         get :viewer_search, params: { id: work.friendlier_id }
         expect(response).to have_http_status(422)
       end
+
+      it "returns error from normalized empty query too" do
+        get :viewer_search, params: { id: work.friendlier_id, q: " ;  ; " }
+        expect(response).to have_http_status(422)
+      end
     end
+
+
 
     it "returns JSON, not including unpublished item" do
       get :viewer_search, params: { id: work.friendlier_id, q: "unit" }, as: :json

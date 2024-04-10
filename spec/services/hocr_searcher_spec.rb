@@ -64,8 +64,10 @@ describe HocrSearcher do
       expect(HocrSearcher.new(nil, query: "isn't one-two").query).to eq ["isn't", "one-two"]
     end
 
-    it "ignores just punctuation and spaces" do
-      expect(HocrSearcher.new(nil, query: "  ;';  ....  ").query).to eq []
+    it "raises on just punctuation and spaces that get normalized to empty" do
+      expect {
+        HocrSearcher.new(nil, query: "  ;';  ....  ")
+      }.to raise_error(HocrSearcher::EmptyQueryError)
     end
   end
 

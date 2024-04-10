@@ -13,12 +13,18 @@
 #   * multi-word queries turn into just separate word matches, finding/highlighting an of those words
 #
 class HocrSearcher
+  class EmptyQueryError < ArgumentError ; end
+
   attr_reader :work, :show_unpublished, :query
 
   def initialize(work, show_unpublished: false, query:)
     @work = work
     @show_unpublished = show_unpublished
     @query = normalize_query(query)
+
+    if @query.empty?
+      raise EmptyQueryError.new("Normalized query is empty for query `#{query}`")
+    end
   end
 
   # Normalizes query for searching, spliting into separate tokens, downcase, and maybe
