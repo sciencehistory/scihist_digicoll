@@ -33,6 +33,7 @@ class HocrSearcher
 
     query.downcase.split(/\s+/).collect(&:presence).compact.
       collect { |token| token.gsub(/\A[[:punct:]]+|[[:punct:]]+$/, '')}.
+      collect { |token| token.presence }.compact. # eliminate any empty strings
       collect { |token| token.unicode_normalize }
   end
 

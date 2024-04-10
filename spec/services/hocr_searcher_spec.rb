@@ -63,6 +63,10 @@ describe HocrSearcher do
     it "leaves internal punctuation alone" do
       expect(HocrSearcher.new(nil, query: "isn't one-two").query).to eq ["isn't", "one-two"]
     end
+
+    it "ignores just punctuation and spaces" do
+      expect(HocrSearcher.new(nil, query: "  ;';  ....  ").query).to eq []
+    end
   end
 
   # This needs to match what the viewer itself does, when we wrote this it does
