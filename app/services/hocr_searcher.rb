@@ -228,7 +228,12 @@ class HocrSearcher
     # Now we need to supply params for each of those ? variables. We'll do it as
     # a pg regexp using the \m "beginning of word boundary token", so that we only
     # match on beginning of words.
-    params = query.collect { |token| "\\m#{token}" }
+    #
+    # The source in the DB is XML, so we need to XML-escape word-internal single and
+    # double quotes the same way tesseract does when creating the hocr
+    params = query.collect { |token| token.gsub("'", "&#39;").gsub('"', "&quot;") }.
+      collect { |token| "\\m#{token}" }
+
     # but now we have to DOUBLE the parameters, cause each clause had one ? for main table and one for leaf representatives
     params = params.collect { |re| [re, re] }.flatten
 

@@ -41,6 +41,19 @@ describe HocrSearcher do
     end
   end
 
+  describe "escaped quotes" do
+    let(:asset) { create(:asset_with_faked_file, hocr: HOCR_2_TXT, published: true, faked_width: 3348, faked_height: 4580) }
+    let(:work) { create(:public_work, members: [ asset ])}
+
+    it "finds words with internal escaped quotes" do
+      searcher = HocrSearcher.new(work, query: "single'quote")
+      expect(searcher.results_for_osd_viewer).to be_present
+
+      searcher = HocrSearcher.new(work, query: 'double"quote')
+      expect(searcher.results_for_osd_viewer).to be_present
+    end
+  end
+
   # cheaper tests
   describe "#normalize_query" do
     it "ignores extra spaces" do
@@ -123,8 +136,8 @@ HOCR_2_TXT = <<EOS
       <span class='ocrx_word' id='word_1_18' title='bbox 2042 1931 2091 1971; x_wconf 20'>«ant</span>
       <span class='ocrx_word' id='word_1_19' title='bbox 2129 1931 2218 1973; x_wconf 53'>thie</span>
       <span class='ocrx_word' id='word_1_20' title='bbox 2261 1935 2466 1990; x_wconf 96'>amazing</span>
-      <span class='ocrx_word' id='word_1_21' title='bbox 2510 1937 2782 1980; x_wconf 96'>insecticide.</span>
-      <span class='ocrx_word' id='word_1_22' title='bbox 2826 1942 3000 1997; x_wconf 96'>Today,</span>
+      <span class='ocrx_word' id='word_1_21' title='bbox 2510 1937 2782 1980; x_wconf 96'>double&quot;quote</span>
+      <span class='ocrx_word' id='word_1_22' title='bbox 2826 1942 3000 1997; x_wconf 96'>single&#39;quote</span>
      </span>
     </p>
    </div>
