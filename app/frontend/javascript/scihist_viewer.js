@@ -754,9 +754,12 @@ jQuery(document).ready(function($) {
       event.preventDefault();
 
       const memberId = event.currentTarget.getAttribute('data-member-id')
-      const thumbElement = chf_image_viewer().findThumbElement(memberId);
-      chf_image_viewer().selectThumb(thumbElement);
-      chf_image_viewer().scrollSelectedIntoView();
+
+      if (memberId != chf_image_viewer().selectedThumbData.memberId) {
+        const thumbElement = chf_image_viewer().findThumbElement(memberId);
+        chf_image_viewer().selectThumb(thumbElement);
+        chf_image_viewer().scrollSelectedIntoView();
+      }
     });
   }
 });
