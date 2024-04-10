@@ -303,6 +303,11 @@ ScihistImageViewer.prototype.locationWithNewPath = function(newPath) {
 };
 
 ScihistImageViewer.prototype.onKeyDown = function(event) {
+  // If we're in a text input, nevermind, just do the normal thing
+  if (event.target.tagName == "INPUT") {
+    return;
+  }
+
   // If dropdown is showing and it has links (unlike our shortcut legend),
   // let it capture keyboard to select and activate links.
   if ($(".dropdown-menu:visible a").length > 0) {
