@@ -13,7 +13,7 @@
 #   * multi-word queries turn into just separate word matches, finding/highlighting an of those words
 #
 class HocrSearcher
-  attr_reader :work, :show_unpublished
+  attr_reader :work, :show_unpublished, :query
 
   def initialize(work, show_unpublished: false, query:)
     @work = work
@@ -30,8 +30,8 @@ class HocrSearcher
     # phrase searches not supported, double quotes gonna do nothing but mess us up...
     # let's remove all punctuation at beginning or end of token, but not internal
     # (don't want to mess up `isn't`)
-    #
-    query.downcase.split(/\s+/).
+
+    query.downcase.split(/\s+/).collect(&:presence).compact.
       collect { |token| token.gsub(/\A[[:punct:]]+|[[:punct:]]+$/, '')}.
       collect { |token| token.unicode_normalize }
   end

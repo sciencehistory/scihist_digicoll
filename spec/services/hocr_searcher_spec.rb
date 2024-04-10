@@ -41,6 +41,16 @@ describe HocrSearcher do
     end
   end
 
+  # cheaper tests
+  describe "#normalize_query" do
+    it "ignores extra spaces" do
+      expect(HocrSearcher.new(nil, query: "   one   two   ").query).to eq ["one", "two"]
+    end
+
+    it "leaves internal punctuation alone" do
+      expect(HocrSearcher.new(nil, query: "isn't one-two").query).to eq ["isn't", "one-two"]
+    end
+  end
 
   # This needs to match what the viewer itself does, when we wrote this it does
   describe "with child work" do
