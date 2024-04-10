@@ -617,9 +617,7 @@ ScihistImageViewer.prototype.displayAlert = function(msg) {
 ScihistImageViewer.prototype.getSearchResults = async function(query) {
   const searchResultsContainer = document.querySelector(".viewer-search-area .search-results-container");
 
-  // unset current results
-  this.viewer.clearOverlays();
-  searchResultsContainer.innerHTML = "";
+  this.clearSearchResults();
 
   const searchUrl = new URL(this.searchPath, window.location);
   searchUrl.searchParams.append("q", query);
@@ -660,6 +658,13 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
   // show highlights on current page
   this.highlightSearchResults();
 };
+
+ScihistImageViewer.prototype.clearSearchResults = function() {
+  const searchResultsContainer = document.querySelector(".viewer-search-area .search-results-container");
+
+  this.viewer.clearOverlays();
+  searchResultsContainer.innerHTML = "";
+}
 
 
 jQuery(document).ready(function($) {
@@ -760,6 +765,11 @@ jQuery(document).ready(function($) {
         chf_image_viewer().selectThumb(thumbElement);
         chf_image_viewer().scrollSelectedIntoView();
       }
+    });
+
+    $(document).on("click", "*[data-trigger='clear-search-results']", function(event) {
+      event.target.closest("*[data-trigger='viewer-search']").querySelector("#q").value = '';
+      chf_image_viewer().clearSearchResults();
     });
   }
 });
