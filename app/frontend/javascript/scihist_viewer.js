@@ -688,6 +688,16 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
   }
 };
 
+ScihistImageViewer.prototype.selectSearchResult = function(resultElement) {
+  const memberId = resultElement.getAttribute('data-member-id')
+
+  if (memberId != this.selectedThumbData.memberId) {
+    const thumbElement = this.findThumbElement(memberId);
+    this.selectThumb(thumbElement);
+    this.scrollSelectedIntoView();
+  }
+}
+
 ScihistImageViewer.prototype.clearSearchResults = function() {
   const searchResultsContainer = document.querySelector(".viewer-search-area .search-results-container");
 
@@ -731,7 +741,6 @@ jQuery(document).ready(function($) {
       var id = this.getAttribute('data-member-id');
       chf_image_viewer().show(id);
     });
-
 
     // with keyboard-tab nav to our thumbs, let return/space trigger click as for normal links
     $(document).on("keydown", "*[data-trigger='scihist_image_viewer']", function(event) {
@@ -788,16 +797,30 @@ jQuery(document).ready(function($) {
       }
     });
 
+    // Search that's on main work page, before viewer is opened
+    $(document).on("submit", "*[data-trigger='show-viewer-search']", function(event) {
+      event.preventDefault();
+
+      const query = $(event.target).find("input").val();
+      if (query.trim() != "") {
+        chf_image_viewer().show();
+        chf_image_viewer().modal.find("#q").val(query); // set in search box in viewer
+        chf_image_viewer().getSearchResults( query ).then(function() {
+          // and go to first result if we have one, kinda hacky way to do it with
+          // DOM element
+          // hash
+          const firstSearchResult = chf_image_viewer().modal.find("*[data-member-id]").get(0);
+          if (firstSearchResult) {
+            chf_image_viewer().selectSearchResult(firstSearchResult);
+          }
+        });
+      }
+    });
+
     $(document).on("click", "*[data-trigger='viewer-search-result']", function(event) {
       event.preventDefault();
 
-      const memberId = event.currentTarget.getAttribute('data-member-id')
-
-      if (memberId != chf_image_viewer().selectedThumbData.memberId) {
-        const thumbElement = chf_image_viewer().findThumbElement(memberId);
-        chf_image_viewer().selectThumb(thumbElement);
-        chf_image_viewer().scrollSelectedIntoView();
-      }
+      chf_image_viewer().selectSearchResult(event.currentTarget);
     });
 
     $(document).on("click", "*[data-trigger='clear-search-results']", function(event) {
