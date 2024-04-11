@@ -630,46 +630,62 @@ ScihistImageViewer.prototype.displayAlert = function(msg) {
 ScihistImageViewer.prototype.getSearchResults = async function(query) {
   const searchResultsContainer = document.querySelector(".viewer-search-area .search-results-container");
 
-  this.clearSearchResults();
+  try {
+    this.clearSearchResults();
 
-  const searchUrl = new URL(this.searchPath, window.location);
-  searchUrl.searchParams.append("q", query);
+    searchResultsContainer.innerHTML = "<div class='viewer-results-loading'></div><p class='text-center'>Searching...</p>";
 
-  const searchResponse = await fetch(searchUrl);
-  const searchResults  = await searchResponse.json();
+    const searchUrl = new URL(this.searchPath, window.location);
+    searchUrl.searchParams.append("q", query);
 
-  if (searchResults.length == 0) {
-    searchResultsContainer.innerHTML = "<p>No search results</p>";
-    return;
-  }
+    const searchResponse = await fetch(searchUrl);
+    const searchResults  = await searchResponse.json();
 
-  // For each search result, we need to render it in results, and index
-  // it by page for showing highlights.
-  this.searchResultHighlightsByPage = {};
-
-  for (const result of searchResults) {
-    const id = result['id'];
-    if (! this.searchResultHighlightsByPage[id]) {
-      this.searchResultHighlightsByPage[id] = [];
+    if (! searchResponse?.ok) {
+      throw new Error(searchResults?.error)
     }
-    this.searchResultHighlightsByPage[id].push(result.osd_rect);
 
-    const resultHtml = document.createElement('a');
-    resultHtml["href"] = "#";
-    resultHtml.setAttribute('data-member-id', result.id);
-    resultHtml.setAttribute('data-rect-left', result.osd_rect.left);
-    resultHtml.setAttribute('data-rect-top', result.osd_rect.top);
-    resultHtml.setAttribute('data-rect-width', result.osd_rect.width);
-    resultHtml.setAttribute('data-rect-height', result.osd_rect.height);
-    resultHtml.setAttribute('data-trigger', 'viewer-search-result');
-    resultHtml.className = "result";
-    resultHtml.innerHTML = result.text;
-    searchResultsContainer.append(resultHtml)
+    searchResultsContainer.innerHTML = "";
 
+    if (searchResults.length == 0) {
+      searchResultsContainer.innerHTML = "<p>No results found.</p>";
+      return;
+    }
+
+    // For each search result, we need to render it in results, and index
+    // it by page for showing highlights.
+    this.searchResultHighlightsByPage = {};
+
+    for (const result of searchResults) {
+      const id = result['id'];
+      if (! this.searchResultHighlightsByPage[id]) {
+        this.searchResultHighlightsByPage[id] = [];
+      }
+      this.searchResultHighlightsByPage[id].push(result.osd_rect);
+
+      const resultHtml = document.createElement('a');
+      resultHtml["href"] = "#";
+      resultHtml.setAttribute('data-member-id', result.id);
+      resultHtml.setAttribute('data-rect-left', result.osd_rect.left);
+      resultHtml.setAttribute('data-rect-top', result.osd_rect.top);
+      resultHtml.setAttribute('data-rect-width', result.osd_rect.width);
+      resultHtml.setAttribute('data-rect-height', result.osd_rect.height);
+      resultHtml.setAttribute('data-trigger', 'viewer-search-result');
+      resultHtml.className = "result";
+      resultHtml.innerHTML = result.text;
+      searchResultsContainer.append(resultHtml)
+
+    }
+
+    // show highlights on current page
+    this.highlightSearchResults();
+  } catch (error) {
+    console.log("scihist_viewer, error fetching search results: " + error.message);
+    searchResultsContainer.innerHTML = "<p class='alert alert-danger' role='alert'>\
+      <i class='fa fa-exclamation-triangle' aria-hidden='true'></i>\
+      Sorry, our system experienced a problem and could not provide search results.\
+    </p>";
   }
-
-  // show highlights on current page
-  this.highlightSearchResults();
 };
 
 ScihistImageViewer.prototype.clearSearchResults = function() {

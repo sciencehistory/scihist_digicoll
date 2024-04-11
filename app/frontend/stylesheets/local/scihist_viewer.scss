@@ -158,6 +158,13 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       overflow-x: hidden;
     }
 
+    .viewer-results-loading {
+      width: 100%;
+      height: 3rem;
+      background: url('@/images/spinner.svg') no-repeat center;
+      background-size: contain;
+    }
+
     .result {
       color: $body-color;
       display: block;
