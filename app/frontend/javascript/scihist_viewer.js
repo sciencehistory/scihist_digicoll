@@ -693,6 +693,7 @@ ScihistImageViewer.prototype.clearSearchResults = function() {
 
   this.viewer.clearOverlays();
   searchResultsContainer.innerHTML = "";
+  this.searchResultHighlightsByPage = {};
 }
 
 
