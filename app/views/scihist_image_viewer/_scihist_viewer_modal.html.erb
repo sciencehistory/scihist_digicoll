@@ -7,11 +7,17 @@
       * work (used for putting work title in modal header, and work id and info json path for work)
         (Yes, that assumes at present on a given page can only host viewer for ONE single work)
  %>
-<div id="scihist-image-viewer-modal" class="modal" tabindex="-1" role="dialog"
-     data-images-info-path="<%= viewer_images_info_path(work) %>"
-     data-work-id="<%= work.friendlier_id %>"
->
 
+<%= content_tag("div",
+      id: "scihist-image-viewer-modal",
+      class: "modal",
+      tabindex: "-1",
+      role: "dialog",
+      data: {
+        "work-id": work.friendlier_id,
+        "images-info-path": viewer_images_info_path(work),
+        "search-path": (viewer_search_path(work) if ScihistDigicoll::Env.lookup("feature_search_inside_work") && work.ocr_requested?)
+      }) do %>
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-body">
@@ -32,6 +38,8 @@
           </div>
 
           <div class="viewer-content">
+            <%= render "scihist_image_viewer/scihist_viewer_search_area" %>
+
             <div class="viewer-image-and-navbar" data-alert-container>
               <div class="viewer-image" id="openseadragon-container">
                 <button href="#" id="viewer-left" class="viewer-image-prev" data-trigger="viewer-prev" aria-label="Previous image" tabindex="0"><i class="fa fa-chevron-left" title="Previous"></i></button>
@@ -48,4 +56,4 @@
       </div>
     </div>
   </div>
-</div>
+<% end %>
