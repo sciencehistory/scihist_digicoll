@@ -80,7 +80,9 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
   .viewer-alert {
     position: absolute;
     z-index: 1;
-    left: calc(50% - 200px); // hackily move out of the way of our left-hand search UI, good enough
+    // center
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   .viewer-header {
