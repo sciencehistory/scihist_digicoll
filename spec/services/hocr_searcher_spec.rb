@@ -32,8 +32,16 @@ describe HocrSearcher do
     let(:asset2) { create(:asset_with_faked_file, hocr: HOCR_2_TXT, published: true, faked_width: 3348, faked_height: 4580) }
     let(:work) { create(:public_work, members: [ asset1, asset2 ])}
 
-    it "finds both words, one on each page" do
+    it "does not find if both words aren't on same page" do
       searcher = HocrSearcher.new(work, query: "ddt units")
+
+      results = searcher.results_for_osd_viewer
+      expect(results).to be_kind_of(Array)
+      expect(results.length).to be 0
+    end
+
+    it "finds if both words are on same page" do
+      searcher = HocrSearcher.new(work, query: "expectations producers")
 
       results = searcher.results_for_osd_viewer
       expect(results).to be_kind_of(Array)
@@ -137,7 +145,7 @@ HOCR_2_TXT = <<EOS
      <span class='ocr_line' id='line_1_2' title="bbox 972 1909 3000 1997; baseline 0.016 -45; x_size 57; x_descenders 14; x_ascenders 19">
       <span class='ocrx_word' id='word_1_14' title='bbox 972 1909 1092 1951; x_wconf 75'>have</span>
       <span class='ocrx_word' id='word_1_15' title='bbox 1137 1911 1255 1952; x_wconf 89'>been</span>
-      <span class='ocrx_word' id='word_1_16' title='bbox 1301 1914 1520 1957; x_wconf 0'>xealized.,</span>
+      <span class='ocrx_word' id='word_1_16' title='bbox 1301 1914 1520 1957; x_wconf 0'>realized.,</span>
       <span class='ocrx_word' id='word_1_17' title='bbox 1568 1917 1932 1975; x_wconf 0'>Wurmel0dG.</span>
       <span class='ocrx_word' id='word_1_18' title='bbox 2042 1931 2091 1971; x_wconf 20'>«ant</span>
       <span class='ocrx_word' id='word_1_19' title='bbox 2129 1931 2218 1973; x_wconf 53'>thie</span>

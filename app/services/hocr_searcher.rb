@@ -225,12 +225,12 @@ class HocrSearcher
     # Note: This might create false positives matching on XML tags instead of just content,
     # We experimented with using postgres xml fucntions, but the performance was bad,
     # better performance to filter them out later in ruby.
-    clause= "(kithe_models.derived_metadata_jsonb ->> 'hocr') ~* ? OR (leaf_representatives.derived_metadata_jsonb ->> 'hocr') ~* ?"
+    clause= "((kithe_models.derived_metadata_jsonb ->> 'hocr') ~* ? OR (leaf_representatives.derived_metadata_jsonb ->> 'hocr') ~* ?)"
 
-    # We repeat that clause once for every query token, joined with OR
+    # We repeat that clause once for every query token, joined with AND -- all tokens must be on same page
     sql = query.length.times.collect do
       clause
-    end.join(" OR ")
+    end.join(" AND ")
 
     # Now we need to supply params for each of those ? variables. We'll do it as
     # a pg regexp using the \m "beginning of word boundary token", so that we only
