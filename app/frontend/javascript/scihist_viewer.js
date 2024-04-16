@@ -53,6 +53,9 @@ ScihistImageViewer.prototype.thumbWidth = "54";
 //
 ScihistImageViewer.prototype.searchResultHighlightsByPage = {}
 
+// and we store the current query if any
+ScihistImageViewer.prototype.currentSearchQuery = undefined;
+
 ScihistImageViewer.prototype.findThumbElement = function(memberId) {
   return document.querySelector(".viewer-thumb-img[data-member-id='" + memberId + "']");
 };
@@ -98,6 +101,11 @@ ScihistImageViewer.prototype.show = function(id) {
     }
     _self.selectThumb(selectedThumb);
 
+    // restore to bookmarkable URL if we have a current search
+    if (_self.currentSearchQuery) {
+      _self.storeQueryInUrl(_self.currentSearchQuery);
+    }
+
     // show the viewer
     $(_self.modal).modal("show");
 
@@ -112,8 +120,6 @@ ScihistImageViewer.prototype.show = function(id) {
 
     // make sure selected thumb in thumb list is in view
     _self.scrollSelectedIntoView();
-
-
 
     // Catch keyboard controls
     $("body").on("keydown.chf_image_viewer", function(event) {
@@ -167,6 +173,7 @@ ScihistImageViewer.prototype.hide = function() {
   this.viewer.close();
   $(this.modal).modal("hide");
   this.removeLocationUrl();
+  this.removeQueryInUrl();
   this.restoreFocus();
 };
 
@@ -281,26 +288,55 @@ ScihistImageViewer.prototype.setLocationUrl = function() {
   } else {
     newPath = currentPath + '/viewer/' + encodeURIComponent(selectedID);
   }
-  history.replaceState({}, "", this.locationWithNewPath(newPath));
+  const url = new URL(location.href);
+  url.pathname = newPath;
+  history.replaceState({}, "", url.href);
 };
 
 ScihistImageViewer.prototype.removeLocationUrl = function() {
   if (location.pathname.match(this.viewerPathComponentRe)) {
-    var newPath = location.pathname.replace(this.viewerPathComponentRe, '');
-    history.replaceState({}, "", this.locationWithNewPath(newPath));
+    const url = new URL(location.href);
+    url.pathname = url.pathname.replace(this.viewerPathComponentRe, '');
+
+    history.replaceState({}, "", url.href);
   }
 }
 
-ScihistImageViewer.prototype.locationWithNewPath = function(newPath) {
-  var newUrl = location.protocol + '//' + location.host + newPath;
-  if (location.query) {
-    newUrl += '?' + location.query;
-  }
-  if (location.hash) {
-    newUrl += location.hash;
-  }
-  return newUrl;
-};
+// Add query to current url as #q={query}
+// using replaceState to avoid adding a history entry
+ScihistImageViewer.prototype.storeQueryInUrl = function(query) {
+  const currentUrl = new URL(location.href);
+  const hashKeys = new URLSearchParams(
+    currentUrl.hash.replace(/^\#/, "")
+  )
+
+  hashKeys.set("q", query);
+  currentUrl.hash = hashKeys.toString();
+
+  history.replaceState({}, "", currentUrl.href);
+}
+
+// remove query in #fragment in current url, using replaceState
+// to avoid adding history entry
+ScihistImageViewer.prototype.removeQueryInUrl = function() {
+  const currentUrl = new URL(location.href);
+  const hashKeys = new URLSearchParams(
+    currentUrl.hash.replace(/^\#/, "")
+  )
+
+  hashKeys.delete("q");
+  currentUrl.hash = hashKeys.toString();
+  history.replaceState({}, "", currentUrl.href);
+}
+
+// retrieve bookmarked query from #fragment in url
+ScihistImageViewer.prototype.getQueryInUrl = function() {
+  const hashKeys = new URLSearchParams(
+    new URL(location.href).hash.replace(/^\#/, "")
+  )
+
+  return hashKeys.get("q");
+}
 
 ScihistImageViewer.prototype.onKeyDown = function(event) {
   // If we're in a text input, nevermind, just do the normal thing
@@ -650,6 +686,9 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
 
     searchResultsContainer.innerHTML = "";
 
+    this.storeQueryInUrl(query);
+    this.currentSearchQuery = query;
+
     if (searchResults.length == 0) {
       searchResultsContainer.innerHTML = "<p>No results found.</p>";
       return;
@@ -705,6 +744,8 @@ ScihistImageViewer.prototype.clearSearchResults = function() {
   const searchResultsContainer = document.querySelector(".viewer-search-area .search-results-container");
 
   this.viewer.clearOverlays();
+  this.removeQueryInUrl();
+  this.currentSearchQuery = undefined;
   searchResultsContainer.innerHTML = "";
   this.searchResultHighlightsByPage = {};
 }
@@ -735,6 +776,13 @@ jQuery(document).ready(function($) {
     if (viewerUrlMatch != null) {
       // we have a viewer thumb in URL, let's load the viewer on page load!
       chf_image_viewer().show(viewerUrlMatch[1]);
+    }
+
+    // If we have a query in the URL, load it
+    const queryFromUrl = chf_image_viewer().getQueryInUrl();
+    if (queryFromUrl) {
+      chf_image_viewer().modal.find("#q").val(queryFromUrl); // set in search box in viewer
+      chf_image_viewer().getSearchResults(queryFromUrl);
     }
 
     // Record whether dropdown is showing, so we can avoid keyboard handling
