@@ -147,11 +147,25 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     left: 0.5rem;
   }
 
+
   .viewer-search-area {
+    --search-area-width: 16rem;
     border-right: 2px solid $dark;
-    width: 18em;
+    width: var(--search-area-width);
     display: flex;
     flex-direction: column;
+
+    // originally hidden, in a weird way we can animate as slide-in, even in flex
+    flex-shrink: 0;
+    flex-grow: 0;
+    box-sizing: border-box;
+    margin-left: calc(-1 * var(--search-area-width));
+    transition: margin 0.5s;
+    &.show {
+      margin-left: 0;
+      transition: margin 0.5s;
+    }
+
 
     .viewer-search-controls {
       padding: $paragraph-spacer;
