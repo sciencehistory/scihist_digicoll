@@ -113,8 +113,6 @@ ScihistImageViewer.prototype.show = function(id) {
     // make sure selected thumb in thumb list is in view
     _self.scrollSelectedIntoView();
 
-
-
     // Catch keyboard controls
     $("body").on("keydown.chf_image_viewer", function(event) {
       _self.onKeyDown(event);
@@ -304,7 +302,8 @@ ScihistImageViewer.prototype.locationWithNewPath = function(newPath) {
 
 ScihistImageViewer.prototype.onKeyDown = function(event) {
   // If we're in a text input, nevermind, just do the normal thing
-  if (event.target.tagName == "INPUT") {
+  // if it's escape key though, keep going, to let escape key still close dialog
+  if (event.target.tagName == "INPUT" && event.which != 27) {
     return;
   }
 
