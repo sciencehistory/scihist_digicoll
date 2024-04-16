@@ -816,6 +816,7 @@ jQuery(document).ready(function($) {
       const query = $(event.target).find("input").val();
       if (query.trim() != "") {
         chf_image_viewer().show();
+        chf_image_viewer().showSearchDrawer();
         chf_image_viewer().modal.find("#q").val(query); // set in search box in viewer
         chf_image_viewer().getSearchResults( query ).then(function() {
           // and go to first result if we have one, kinda hacky way to do it with
