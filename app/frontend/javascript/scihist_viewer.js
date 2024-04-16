@@ -752,16 +752,24 @@ ScihistImageViewer.prototype.clearSearchResults = function() {
 
 ScihistImageViewer.prototype.showSearchDrawer = function() {
   this.modal.find("*[data-trigger='viewer-open-search']").addClass("d-none");
-  this.modal.find('.viewer-search-area').addClass("show");
+  this.modal.find('.viewer-search-area').addClass("slid-in drawer-visible");
   // focus on input, important accessibility
   this.modal.find('.viewer-search-area').find("#q").focus();
 }
 
 ScihistImageViewer.prototype.hideSearchDrawer = function() {
-  this.modal.find('.viewer-search-area').removeClass("show");
+  this.modal.find('.viewer-search-area').removeClass("slid-in");
   this.modal.find("*[data-trigger='viewer-open-search']").removeClass("d-none");
   // put focus on search toggle, good for accessibility to make sure focus is somewhere
   this.modal.find('.viewer-search-open').focus();
+
+  // after duration, remove visibility for accessibilty, duration needs to match
+  // our animation length.
+  // https://knowbility.org/blog/2020/accessible-slide-menus
+  const _self = this;
+  setTimeout(function() {
+    _self.modal.find('.viewer-search-area').removeClass("drawer-visible");
+  }, 500);
 }
 
 jQuery(document).ready(function($) {

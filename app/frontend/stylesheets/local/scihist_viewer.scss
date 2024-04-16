@@ -150,6 +150,8 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
 
   .viewer-search-area {
     --search-area-width: 16rem;
+    --slide-duration: 0.5s;
+
     border-right: 2px solid $dark;
     width: var(--search-area-width);
     display: flex;
@@ -160,10 +162,17 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     flex-grow: 0;
     box-sizing: border-box;
     margin-left: calc(-1 * var(--search-area-width));
-    transition: margin 0.5s;
-    &.show {
+    transition: margin var(--slide-duration);
+
+    // For accessibility purposes, it's important we visibility:hidden when off screen
+    // We'll need to use JS to make visible after animation
+    // https://knowbility.org/blog/2020/accessible-slide-menus
+    visibility: hidden;
+    &.slid-in {
       margin-left: 0;
-      transition: margin 0.5s;
+    }
+    &.drawer-visible {
+      visibility: visible;
     }
 
 
