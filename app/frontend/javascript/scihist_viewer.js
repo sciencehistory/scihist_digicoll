@@ -281,26 +281,19 @@ ScihistImageViewer.prototype.setLocationUrl = function() {
   } else {
     newPath = currentPath + '/viewer/' + encodeURIComponent(selectedID);
   }
-  history.replaceState({}, "", this.locationWithNewPath(newPath));
+  const url = new URL(location.href);
+  url.pathname = newPath;
+  history.replaceState({}, "", url.href);
 };
 
 ScihistImageViewer.prototype.removeLocationUrl = function() {
   if (location.pathname.match(this.viewerPathComponentRe)) {
-    var newPath = location.pathname.replace(this.viewerPathComponentRe, '');
-    history.replaceState({}, "", this.locationWithNewPath(newPath));
+    const url = new URL(location.href);
+    url.pathname = url.pathname.replace(this.viewerPathComponentRe, '');
+
+    history.replaceState({}, "", url.href);
   }
 }
-
-ScihistImageViewer.prototype.locationWithNewPath = function(newPath) {
-  var newUrl = location.protocol + '//' + location.host + newPath;
-  if (location.query) {
-    newUrl += '?' + location.query;
-  }
-  if (location.hash) {
-    newUrl += location.hash;
-  }
-  return newUrl;
-};
 
 ScihistImageViewer.prototype.onKeyDown = function(event) {
   // If we're in a text input, nevermind, just do the normal thing
