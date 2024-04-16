@@ -40,6 +40,23 @@ ScihistImageViewer.prototype.viewerPathComponentRe = /\/viewer\/(\w+)$/;
 // thumbnails generated and delivered in JSON info.
 ScihistImageViewer.prototype.thumbWidth = "54";
 
+// When we have search results loaded, this is an array keyed by Asset page friendlier
+// ID, whose value is an array of objects, where each has OpenSeadragon values
+// for x y width height (all proportional between 0 and 1), degrees, and anything else we need.
+// https://openseadragon.github.io/docs/OpenSeadragon.Rect.html
+//
+// {
+//   "bksm7ln" : [
+//     {"left":0.30731,"top":1.37769,"width":0.09654,"height":0.01808},
+//   ]
+// }
+//
+ScihistImageViewer.prototype.searchResultHighlightsByPage = {}
+
+ScihistImageViewer.prototype.findThumbElement = function(memberId) {
+  return document.querySelector(".viewer-thumb-img[data-member-id='" + memberId + "']");
+};
+
 ScihistImageViewer.prototype.show = function(id) {
   if (document.activeElement) {
     this.previousFocus = document.activeElement;
@@ -73,7 +90,7 @@ ScihistImageViewer.prototype.show = function(id) {
     var selectedThumb;
     // find the thumb
     if (id) {
-      selectedThumb = document.querySelector(".viewer-thumb-img[data-member-id='" + id + "']");
+      selectedThumb = _self.findThumbElement(id);
     }
     if (! selectedThumb) {
       // just use the first one
@@ -286,6 +303,11 @@ ScihistImageViewer.prototype.locationWithNewPath = function(newPath) {
 };
 
 ScihistImageViewer.prototype.onKeyDown = function(event) {
+  // If we're in a text input, nevermind, just do the normal thing
+  if (event.target.tagName == "INPUT") {
+    return;
+  }
+
   // If dropdown is showing and it has links (unlike our shortcut legend),
   // let it capture keyboard to select and activate links.
   if ($(".dropdown-menu:visible a").length > 0) {
@@ -415,6 +437,12 @@ ScihistImageViewer.prototype.initModal = function(modalElement) {
   });
 
   this.workId = modalElement.getAttribute("data-work-id");
+  this.searchPath = modalElement.getAttribute("data-search-path");
+
+  if (this.searchPath) {
+    //If it's searchable, expose the search UI
+    this.modal.find('.viewer-search-area').removeClass("d-none");
+  }
 
   var _self = this;
   var imageInfoUrl = modalElement.getAttribute("data-images-info-path");
@@ -545,7 +573,40 @@ ScihistImageViewer.prototype.initOpenSeadragon = function() {
     }
   });
 
+
+  // When a new page is loaded, we add search results overlays
+  this.viewer.addHandler("open", function(event) {
+    _self.highlightSearchResults();
+  });
 };
+
+ScihistImageViewer.prototype.highlightSearchResults = function() {
+  const currentMemberId = this.selectedThumbData?.memberId;
+
+  const resultOverlaysForPage = this.searchResultHighlightsByPage[ currentMemberId ];
+
+  if (resultOverlaysForPage) {
+    for (let result of resultOverlaysForPage) {
+      let elt = document.createElement("div");
+      elt.className = "viewer-search-highlight";
+
+      // the bounding box is EXACTLY where OCR thinks letters stop/start. Making
+      // the highlight a bit bigger looks better. let's say 1/6th of (line) height padding
+      const padding = result.height / 6;
+      const left = result.left - padding;
+      const top = result.top - padding;
+      const width = result.width + (padding * 2);
+      const height = result.height + (padding * 2);
+
+      this.viewer.addOverlay({
+          element: elt,
+          location: new OpenSeadragon.Rect(left, top, width, height)
+      });
+    }
+  }
+}
+
+
 
 ScihistImageViewer.prototype.hideUiElement = function(element) {
   element.style.display = "none";
@@ -566,6 +627,74 @@ ScihistImageViewer.prototype.displayAlert = function(msg) {
   container.insertAdjacentHTML('beforebegin', alertHtml);
 }
 
+ScihistImageViewer.prototype.getSearchResults = async function(query) {
+  const searchResultsContainer = document.querySelector(".viewer-search-area .search-results-container");
+
+  try {
+    this.clearSearchResults();
+
+    searchResultsContainer.innerHTML = "<div class='viewer-results-loading'></div><p class='text-center'>Searching...</p>";
+
+    const searchUrl = new URL(this.searchPath, window.location);
+    searchUrl.searchParams.append("q", query);
+
+    const searchResponse = await fetch(searchUrl);
+    const searchResults  = await searchResponse.json();
+
+    if (! searchResponse?.ok) {
+      throw new Error(searchResults?.error)
+    }
+
+    searchResultsContainer.innerHTML = "";
+
+    if (searchResults.length == 0) {
+      searchResultsContainer.innerHTML = "<p>No results found.</p>";
+      return;
+    }
+
+    // For each search result, we need to render it in results, and index
+    // it by page for showing highlights.
+    this.searchResultHighlightsByPage = {};
+
+    for (const result of searchResults) {
+      const id = result['id'];
+      if (! this.searchResultHighlightsByPage[id]) {
+        this.searchResultHighlightsByPage[id] = [];
+      }
+      this.searchResultHighlightsByPage[id].push(result.osd_rect);
+
+      const resultHtml = document.createElement('a');
+      resultHtml["href"] = "#";
+      resultHtml.setAttribute('data-member-id', result.id);
+      resultHtml.setAttribute('data-rect-left', result.osd_rect.left);
+      resultHtml.setAttribute('data-rect-top', result.osd_rect.top);
+      resultHtml.setAttribute('data-rect-width', result.osd_rect.width);
+      resultHtml.setAttribute('data-rect-height', result.osd_rect.height);
+      resultHtml.setAttribute('data-trigger', 'viewer-search-result');
+      resultHtml.className = "result";
+      resultHtml.innerHTML = result.text;
+      searchResultsContainer.append(resultHtml)
+
+    }
+
+    // show highlights on current page
+    this.highlightSearchResults();
+  } catch (error) {
+    console.log("scihist_viewer, error fetching search results: " + error.message);
+    searchResultsContainer.innerHTML = "<p class='alert alert-danger' role='alert'>\
+      <i class='fa fa-exclamation-triangle' aria-hidden='true'></i>\
+      Sorry, our system experienced a problem and could not provide search results.\
+    </p>";
+  }
+};
+
+ScihistImageViewer.prototype.clearSearchResults = function() {
+  const searchResultsContainer = document.querySelector(".viewer-search-area .search-results-container");
+
+  this.viewer.clearOverlays();
+  searchResultsContainer.innerHTML = "";
+  this.searchResultHighlightsByPage = {};
+}
 
 
 jQuery(document).ready(function($) {
@@ -648,6 +777,32 @@ jQuery(document).ready(function($) {
       } else {
         OpenSeadragon.requestFullScreen( document.body );
       }
+    });
+
+    $(document).on("submit", "*[data-trigger='viewer-search']", function(event) {
+      event.preventDefault();
+
+      const query = $(event.target).find("input").val();
+      if (query.trim() != "") {
+        chf_image_viewer().getSearchResults( query );
+      }
+    });
+
+    $(document).on("click", "*[data-trigger='viewer-search-result']", function(event) {
+      event.preventDefault();
+
+      const memberId = event.currentTarget.getAttribute('data-member-id')
+
+      if (memberId != chf_image_viewer().selectedThumbData.memberId) {
+        const thumbElement = chf_image_viewer().findThumbElement(memberId);
+        chf_image_viewer().selectThumb(thumbElement);
+        chf_image_viewer().scrollSelectedIntoView();
+      }
+    });
+
+    $(document).on("click", "*[data-trigger='clear-search-results']", function(event) {
+      event.target.closest("*[data-trigger='viewer-search']").querySelector("#q").value = '';
+      chf_image_viewer().clearSearchResults();
     });
   }
 });

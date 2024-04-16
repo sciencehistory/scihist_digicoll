@@ -620,5 +620,7 @@ module ScihistDigicoll
     #   # for now default false in real production true elsewhere
     #   ScihistDigicoll::Env.staging? || !Rails.env.production?
     # }, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
+
+    define_key "feature_search_inside_work", default: false, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
   end
 end

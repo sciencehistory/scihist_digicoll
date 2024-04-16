@@ -72,6 +72,47 @@ RSpec.describe WorksController, type: :controller do
     end
   end
 
+  context("#viewer_search") do
+    let(:unpublished_asset) { create(:asset_with_faked_file, :with_ocr, published: false )}
+    let(:work) { create(:public_work, members: [create(:asset_with_faked_file, :with_ocr), unpublished_asset]) }
+
+    context "without query" do
+      it "returns error" do
+        get :viewer_search, params: { id: work.friendlier_id }
+        expect(response).to have_http_status(422)
+      end
+
+      it "returns error from normalized empty query too" do
+        get :viewer_search, params: { id: work.friendlier_id, q: " ;  ; " }
+        expect(response).to have_http_status(422)
+      end
+    end
+
+
+
+    it "returns JSON, not including unpublished item" do
+      get :viewer_search, params: { id: work.friendlier_id, q: "unit" }, as: :json
+      expect(response.status).to eq(200)
+      expect(response.media_type).to eq "application/json"
+
+      parsed = JSON.parse(response.body)
+
+      expect(parsed).to be_kind_of(Array)
+      expect(parsed.length).to eq 1
+    end
+
+    describe "with logged-in user", :logged_in_user do
+      it "includes unpublished items" do
+        get :viewer_search, params: { id: work.friendlier_id, q: "unit" }, as: :json
+
+        parsed = JSON.parse(response.body)
+
+        expect(parsed).to be_kind_of(Array)
+        expect(parsed.length).to eq 2
+      end
+    end
+  end
+
   ["transcription", "english_translation"].each do |trans_text_type|
     context trans_text_type do
       context "no suitable text" do

@@ -80,6 +80,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
   .viewer-alert {
     position: absolute;
     z-index: 1;
+    left: calc(50% - 200px); // hackily move out of the way of our left-hand search UI, good enough
   }
 
   .viewer-header {
@@ -134,6 +135,52 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     // and a flex itself with content
     display: flex;
     flex-direction: column;
+  }
+
+
+
+  .viewer-search-area {
+    border-right: 2px solid $dark;
+    width: 18em;
+    display: flex;
+    flex-direction: column;
+
+    .viewer-search-controls {
+      padding: $paragraph-spacer;
+      flex-grow: 0;
+    }
+
+    .search-results-container {
+      padding: $paragraph-spacer;
+      flex-grow: 1;
+      width: 16rem;
+      overflow-y: scroll;
+      overflow-x: hidden;
+    }
+
+    .viewer-results-loading {
+      width: 100%;
+      height: 3rem;
+      background: url('@/images/spinner.svg') no-repeat center;
+      background-size: contain;
+    }
+
+    .result {
+      color: $body-color;
+      display: block;
+      margin-bottom: $paragraph-spacer * 2;
+
+      mark {
+        background-color: $shi-red-1;
+      }
+    }
+  }
+
+
+
+  .viewer-search-highlight {
+    background-color: $shi-red;
+    opacity: 0.35;
   }
 
   .viewer-image-and-navbar {
@@ -330,7 +377,6 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       }
     }
   }
-
 
   @media (max-width: 500px) {
     // On small screens, which are probably touch anyway, save space by
