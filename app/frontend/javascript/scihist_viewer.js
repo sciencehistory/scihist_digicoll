@@ -754,7 +754,7 @@ ScihistImageViewer.prototype.showSearchDrawer = function() {
   this.modal.find("*[data-trigger='viewer-open-search']").addClass("d-none");
   this.modal.find('.viewer-search-area').addClass("slid-in drawer-visible");
   // focus on input, important accessibility
-  this.modal.find('.viewer-search-area').find("#q").focus();
+  this.modal.find('.viewer-search-area').find("#q").get(0).focus();
 }
 
 ScihistImageViewer.prototype.hideSearchDrawer = function() {
