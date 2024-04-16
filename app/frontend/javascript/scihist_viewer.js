@@ -753,11 +753,15 @@ ScihistImageViewer.prototype.clearSearchResults = function() {
 ScihistImageViewer.prototype.showSearchDrawer = function() {
   this.modal.find("*[data-trigger='viewer-open-search']").addClass("d-none");
   this.modal.find('.viewer-search-area').addClass("show");
+  // focus on input, important accessibility
+  this.modal.find('.viewer-search-area').find("#q").focus();
 }
 
 ScihistImageViewer.prototype.hideSearchDrawer = function() {
   this.modal.find('.viewer-search-area').removeClass("show");
   this.modal.find("*[data-trigger='viewer-open-search']").removeClass("d-none");
+  // put focus on search toggle, good for accessibility to make sure focus is somewhere
+  this.modal.find('.viewer-search-open').focus();
 }
 
 jQuery(document).ready(function($) {
