@@ -29,6 +29,31 @@
         <div class="work-description">
           <%= DescriptionDisplayFormatter.new(work.description).format  %>
         </div>
+
+        <% if ScihistDigicoll::Env.lookup("feature_search_inside_work") && work.ocr_requested? %>
+          <form class="work-page-viewer-search-controls" data-trigger="show-viewer-search">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <label for="search-inside-q" class="input-group-text">
+                  Search inside this item
+                </label>
+              </div>
+
+              <%= text_field_tag :q, '', class: "q form-control",
+                  id: "search-inside-q",
+                  autocomplete: "off"
+              %>
+
+              <div class="input-group-append">
+                <button type="submit" class="btn btn-brand-main" aria-label="Submit search" title="Search" id="search-submit-header">
+                  <i class="fa fa-search" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+          </form>
+        <% end %>
+
+
         <%= render WorkShowInfoComponent.new(work: work) %>
         <%= render "works/citation", work: work  %>
 
