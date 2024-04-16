@@ -709,6 +709,15 @@ ScihistImageViewer.prototype.clearSearchResults = function() {
   this.searchResultHighlightsByPage = {};
 }
 
+ScihistImageViewer.prototype.showSearchDrawer = function() {
+  this.modal.find("*[data-trigger='viewer-open-search']").addClass("d-none");
+  this.modal.find('.viewer-search-area').addClass("show");
+}
+
+ScihistImageViewer.prototype.hideSearchDrawer = function() {
+  this.modal.find('.viewer-search-area').removeClass("show");
+  this.modal.find("*[data-trigger='viewer-open-search']").removeClass("d-none");
+}
 
 jQuery(document).ready(function($) {
   if ($("*[data-trigger='scihist_image_viewer']").length > 0) {
@@ -832,13 +841,11 @@ jQuery(document).ready(function($) {
     });
 
     $(document).on("click", "*[data-trigger='viewer-open-search']", function(event) {
-      chf_image_viewer().modal.find("*[data-trigger='viewer-open-search']").addClass("d-none");
-      chf_image_viewer().modal.find('.viewer-search-area').addClass("show");
+      chf_image_viewer().showSearchDrawer();
     });
 
     $(document).on("click", "*[data-trigger='viewer-close-search']", function(event) {
-      chf_image_viewer().modal.find('.viewer-search-area').removeClass("show");
-      chf_image_viewer().modal.find("*[data-trigger='viewer-open-search']").removeClass("d-none");
+      chf_image_viewer().hideSearchDrawer();
     });
   }
 });
