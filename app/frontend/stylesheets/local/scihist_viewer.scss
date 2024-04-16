@@ -140,6 +140,12 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
   }
 
 
+  .viewer-search-open {
+    z-index: 1000;
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+  }
 
   .viewer-search-area {
     border-right: 2px solid $dark;
@@ -186,6 +192,8 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
   }
 
   .viewer-image-and-navbar {
+    position: relative;
+
     // https://css-tricks.com/flexbox-truncated-text/
     min-width: 0;
     width: 100vw; // important to keep long child texts from overflowing on IE11

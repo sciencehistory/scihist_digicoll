@@ -1,7 +1,13 @@
 <div class="viewer-search-area d-none"> <%# initially hidden with d-none %>
 
   <form class="viewer-search-controls" data-trigger="viewer-search">
-    <b>Search Inside</b>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <b>Search Inside</b>
+      <button type='button' class="btn btn-sm btn-outline-dark" data-trigger="viewer-close-search">
+        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        <span class="sr-only">Close search area<
+      </button>
+    </div>
 
     <div class="input-group input-group-sm">
       <%= text_field_tag :q, '', class: "q form-control",

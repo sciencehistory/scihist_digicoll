@@ -440,8 +440,8 @@ ScihistImageViewer.prototype.initModal = function(modalElement) {
   this.searchPath = modalElement.getAttribute("data-search-path");
 
   if (this.searchPath) {
-    //If it's searchable, expose the search UI
-    this.modal.find('.viewer-search-area').removeClass("d-none");
+    //If it's searchable, expose the search toggle
+    this.modal.find("*[data-trigger='viewer-open-search']").removeClass("d-none");
   }
 
   var _self = this;
@@ -827,6 +827,16 @@ jQuery(document).ready(function($) {
     $(document).on("click", "*[data-trigger='clear-search-results']", function(event) {
       event.target.closest("*[data-trigger='viewer-search']").querySelector("#q").value = '';
       chf_image_viewer().clearSearchResults();
+    });
+
+    $(document).on("click", "*[data-trigger='viewer-open-search']", function(event) {
+      chf_image_viewer().modal.find("*[data-trigger='viewer-open-search']").addClass("d-none");
+      chf_image_viewer().modal.find('.viewer-search-area').removeClass("d-none");
+    });
+
+    $(document).on("click", "*[data-trigger='viewer-close-search']", function(event) {
+      chf_image_viewer().modal.find('.viewer-search-area').addClass("d-none");
+      chf_image_viewer().modal.find("*[data-trigger='viewer-open-search']").removeClass("d-none");
     });
   }
 });
