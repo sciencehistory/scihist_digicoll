@@ -781,6 +781,7 @@ jQuery(document).ready(function($) {
     // If we have a query in the URL, load it
     const queryFromUrl = chf_image_viewer().getQueryInUrl();
     if (queryFromUrl) {
+      chf_image_viewer().showSearchDrawer();
       chf_image_viewer().modal.find("#q").val(queryFromUrl); // set in search box in viewer
       chf_image_viewer().getSearchResults(queryFromUrl);
     }
