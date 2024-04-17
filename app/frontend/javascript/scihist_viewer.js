@@ -349,7 +349,8 @@ ScihistImageViewer.prototype.getQueryInUrl = function() {
 
 ScihistImageViewer.prototype.onKeyDown = function(event) {
   // If we're in a text input, nevermind, just do the normal thing
-  if (event.target.tagName == "INPUT") {
+  // if it's escape key though, keep going, to let escape key still close dialog
+  if (event.target.tagName == "INPUT" && event.which != 27) {
     return;
   }
 
@@ -670,7 +671,7 @@ ScihistImageViewer.prototype.displayAlert = function(msg) {
 
   var container = document.querySelector("*[data-alert-container]");
 
-  container.insertAdjacentHTML('beforeend', alertHtml);
+  container.insertAdjacentHTML('afterbegin', alertHtml);
 }
 
 ScihistImageViewer.prototype.getSearchResults = async function(query) {
