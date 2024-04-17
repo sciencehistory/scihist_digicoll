@@ -624,7 +624,7 @@ ScihistImageViewer.prototype.displayAlert = function(msg) {
 
   var container = document.querySelector("*[data-alert-container]");
 
-  container.insertAdjacentHTML('beforeend', alertHtml);
+  container.insertAdjacentHTML('afterbegin', alertHtml);
 }
 
 ScihistImageViewer.prototype.getSearchResults = async function(query) {
