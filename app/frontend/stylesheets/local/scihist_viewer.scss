@@ -184,7 +184,6 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     .search-results-container {
       padding: $paragraph-spacer;
       flex-grow: 1;
-      width: 16rem;
       overflow-y: scroll;
       overflow-x: hidden;
     }
