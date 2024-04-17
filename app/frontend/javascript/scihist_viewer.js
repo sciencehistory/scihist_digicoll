@@ -121,6 +121,15 @@ ScihistImageViewer.prototype.show = function(id) {
     // make sure selected thumb in thumb list is in view
     _self.scrollSelectedIntoView();
 
+    // If we have a query in the URL, and don't already have a search loaded, load it
+    if (! _self.currentSearchQuery) {
+      const queryFromUrl = _self.getQueryInUrl();
+      if (queryFromUrl) {
+        _self.modal.find("#q").val(queryFromUrl); // set in search box in viewer
+        _self.getSearchResults(queryFromUrl);
+      }
+    }
+
     // Catch keyboard controls
     $("body").on("keydown.chf_image_viewer", function(event) {
       _self.onKeyDown(event);
@@ -725,6 +734,7 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
       <i class='fa fa-exclamation-triangle' aria-hidden='true'></i>\
       Sorry, our system experienced a problem and could not provide search results.\
     </p>";
+    throw error;
   }
 };
 
@@ -765,13 +775,6 @@ jQuery(document).ready(function($) {
     if (viewerUrlMatch != null) {
       // we have a viewer thumb in URL, let's load the viewer on page load!
       chf_image_viewer().show(viewerUrlMatch[1]);
-    }
-
-    // If we have a query in the URL, load it
-    const queryFromUrl = chf_image_viewer().getQueryInUrl();
-    if (queryFromUrl) {
-      chf_image_viewer().modal.find("#q").val(queryFromUrl); // set in search box in viewer
-      chf_image_viewer().getSearchResults(queryFromUrl);
     }
 
     // Record whether dropdown is showing, so we can avoid keyboard handling
