@@ -101,27 +101,25 @@ describe OralHistoryRequestsController, type: :controller do
       expect(response).to have_http_status(:success)
     end
 
-    describe "with new email functionality" do
-      describe "logged in, already has made request" do
-        let(:patron_email) { "somebody@example.com" }
-        let(:requester_email) { OralHistoryRequester.new(email: patron_email) }
-        let!(:existing_request) {
-          create(:oral_history_request,
-            work: work,
-            oral_history_requester: requester_email
-          )
-        }
+    describe "logged in, already has made request" do
+      let(:patron_email) { "somebody@example.com" }
+      let(:requester_email) { OralHistoryRequester.new(email: patron_email) }
+      let!(:existing_request) {
+        create(:oral_history_request,
+          work: work,
+          oral_history_requester: requester_email
+        )
+      }
 
-        before do
-          allow(controller).to receive(:current_oral_history_requester).and_return(requester_email)
-        end
+      before do
+        allow(controller).to receive(:current_oral_history_requester).and_return(requester_email)
+      end
 
-        it "redirects to dashboard" do
-          get :new, params: { work_friendlier_id: work.friendlier_id }
+      it "redirects to dashboard" do
+        get :new, params: { work_friendlier_id: work.friendlier_id }
 
-          expect(response).to redirect_to(oral_history_requests_path)
-          expect(flash[:success]).to match /You have already requested this Oral History/
-        end
+        expect(response).to redirect_to(oral_history_requests_path)
+        expect(flash[:success]).to match /You have already requested this Oral History/
       end
     end
   end
