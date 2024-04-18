@@ -121,6 +121,15 @@ ScihistImageViewer.prototype.show = function(id) {
     // make sure selected thumb in thumb list is in view
     _self.scrollSelectedIntoView();
 
+    // If we have a query in the URL, and don't already have a search loaded, load it
+    if (! _self.currentSearchQuery) {
+      const queryFromUrl = _self.getQueryInUrl();
+      if (queryFromUrl) {
+        _self.modal.find("#q").val(queryFromUrl); // set in search box in viewer
+        _self.getSearchResults(queryFromUrl);
+      }
+    }
+
     // Catch keyboard controls
     $("body").on("keydown.chf_image_viewer", function(event) {
       _self.onKeyDown(event);
@@ -340,7 +349,8 @@ ScihistImageViewer.prototype.getQueryInUrl = function() {
 
 ScihistImageViewer.prototype.onKeyDown = function(event) {
   // If we're in a text input, nevermind, just do the normal thing
-  if (event.target.tagName == "INPUT") {
+  // if it's escape key though, keep going, to let escape key still close dialog
+  if (event.target.tagName == "INPUT" && event.which != 27) {
     return;
   }
 
@@ -663,7 +673,7 @@ ScihistImageViewer.prototype.displayAlert = function(msg) {
 
   var container = document.querySelector("*[data-alert-container]");
 
-  container.insertAdjacentHTML('beforeend', alertHtml);
+  container.insertAdjacentHTML('afterbegin', alertHtml);
 }
 
 ScihistImageViewer.prototype.getSearchResults = async function(query) {
@@ -727,6 +737,7 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
       <i class='fa fa-exclamation-triangle' aria-hidden='true'></i>\
       Sorry, our system experienced a problem and could not provide search results.\
     </p>";
+    throw error;
   }
 };
 
