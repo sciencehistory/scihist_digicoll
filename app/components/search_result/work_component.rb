@@ -36,7 +36,14 @@ module SearchResult
     end
 
     def link_to_href
-      work_path(model)
+      # include the current search query if any in a URL anchor/fragment
+      # that can be picked up by receiving page.
+      #
+      # While not ideal practice, we can access #params directly
+      #
+      # We use a different name than 'q' to avoid conflicting with actual viewer
+      current_query = params&.fetch("q", nil)&.truncate_words(6, omission: '')
+      work_path(model, anchor: ("prevq=#{current_query}" if current_query.present?))
     end
 
     # Returns a hash of lables and values for display on the tabular metadata field, for

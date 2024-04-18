@@ -719,6 +719,27 @@ jQuery(document).ready(function($) {
       return _chf_image_viewer;
     };
 
+
+    // Do we have a viewer search form on a work page, and a preserved
+    // main query in the current URL anchor to pre-fill it?
+    const searchInput = document.querySelector("#search-inside-q");
+    if (searchInput) {
+      const currentUrl = new URL(location.href);
+      const hashKeys = new URLSearchParams(
+        currentUrl.hash.replace(/^\#/, "")
+      );
+      const queryFromUrl = hashKeys.get("prevq");
+
+      if (queryFromUrl) {
+        searchInput.value = queryFromUrl;
+      }
+
+      // AND remove it to avoid it sticking around for viewer, and just generally being confusing
+      hashKeys.delete("prevq");
+      currentUrl.hash = hashKeys.toString();
+      history.replaceState({}, "", currentUrl.href);
+    }
+
     var viewerUrlMatch = ScihistImageViewer.prototype.viewerPathComponentRe.exec(location.pathname);
     if (viewerUrlMatch != null) {
       // we have a viewer thumb in URL, let's load the viewer on page load!
