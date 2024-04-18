@@ -36,14 +36,7 @@ module SearchResult
     end
 
     def link_to_href
-      # include the current search query if any in a URL anchor/fragment
-      # that can be picked up by receiving page.
-      #
-      # While not ideal practice, we can access #params directly
-      #
-      # We use a different name than 'q' to avoid conflicting with actual viewer
-      current_query = params&.fetch("q", nil)&.truncate_words(6, omission: '')
-      work_path(model, anchor: ("prevq=#{current_query}" if current_query.present?))
+      url_to_work(model)
     end
 
     # Returns a hash of lables and values for display on the tabular metadata field, for
@@ -83,7 +76,7 @@ module SearchResult
     # (Used to handle more possibilities is why this is written abstractly like this)
     def part_of_elements
       if model.parent.present?
-        [link_to(model.parent.title, work_path(model.parent))]
+        [link_to(model.parent.title, url_to_work(model.parent))]
       else
         []
       end
@@ -91,6 +84,19 @@ module SearchResult
 
     def show_cart_control?
       can? :access_staff_functions
+    end
+
+    private
+
+    # include the current search query if any in a URL anchor/fragment
+    # that can be picked up by receiving page.
+    #
+    # While not ideal practice, we can access #params directly
+    #
+    # We use a different name than 'q' to avoid conflicting with actual viewer
+    def url_to_work(work)
+      current_query = params&.fetch("q", nil)&.truncate_words(6, omission: '')
+      work_path(work, anchor: ("prevq=#{current_query}" if current_query.present?))
     end
   end
 end
