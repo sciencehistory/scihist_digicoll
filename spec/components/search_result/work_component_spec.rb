@@ -62,6 +62,24 @@ describe SearchResult::WorkComponent, type: :component do
     expect(rendered).not_to have_content("do_not_show")
   end
 
+  describe "on a search page with a query in params" do
+    let(:query) { "some search" }
+
+    around do |example|
+      with_request_url search_catalog_path(q: query) do
+        example.run
+      end
+    end
+
+    it "includes query as URL anchor fragment" do
+      link_to_work = rendered.at_css("a[itemprop='url']")
+      anchor_fragment = URI(link_to_work['href']).fragment
+
+      # eg #q=some%20search
+      expect(anchor_fragment).to eq "prevq=#{CGI.escapeURIComponent query}"
+    end
+  end
+
   describe "one child" do
     let(:work) { create(:work, members: [create(:asset)])}
 
