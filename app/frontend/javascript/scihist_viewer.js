@@ -486,8 +486,8 @@ ScihistImageViewer.prototype.initModal = function(modalElement) {
   this.searchPath = modalElement.getAttribute("data-search-path");
 
   if (this.searchPath) {
-    //If it's searchable, expose the search UI
-    this.modal.find('.viewer-search-area').removeClass("d-none");
+    //If it's searchable, expose the search toggle
+    this.modal.find("*[data-trigger='viewer-open-search']").removeClass("d-none");
   }
 
   var _self = this;
@@ -577,6 +577,8 @@ ScihistImageViewer.prototype.initOpenSeadragon = function() {
     rotateLeftButton:   "dummy-osd-rotate-left",
 
     tabIndex: "",
+
+    preserveImageSizeOnResize: true,
 
     gestureSettingsTouch: {
       pinchRotate: false
@@ -759,6 +761,27 @@ ScihistImageViewer.prototype.clearSearchResults = function() {
   this.searchResultHighlightsByPage = {};
 }
 
+ScihistImageViewer.prototype.showSearchDrawer = function() {
+  this.modal.find("*[data-trigger='viewer-open-search']").addClass("d-none");
+  this.modal.find('.viewer-search-area').addClass("slid-in drawer-visible");
+  // focus on input, important accessibility
+  this.modal.find('.viewer-search-area').find("#q").get(0).focus();
+}
+
+ScihistImageViewer.prototype.hideSearchDrawer = function() {
+  this.modal.find('.viewer-search-area').removeClass("slid-in");
+  this.modal.find("*[data-trigger='viewer-open-search']").removeClass("d-none");
+  // put focus on search toggle, good for accessibility to make sure focus is somewhere
+  this.modal.find('.viewer-search-open').focus();
+
+  // after duration, remove visibility for accessibilty, duration needs to match
+  // our animation length.
+  // https://knowbility.org/blog/2020/accessible-slide-menus
+  const _self = this;
+  setTimeout(function() {
+    _self.modal.find('.viewer-search-area').removeClass("drawer-visible");
+  }, 500);
+}
 
 jQuery(document).ready(function($) {
   if ($("*[data-trigger='scihist_image_viewer']").length > 0) {
@@ -776,6 +799,14 @@ jQuery(document).ready(function($) {
     if (viewerUrlMatch != null) {
       // we have a viewer thumb in URL, let's load the viewer on page load!
       chf_image_viewer().show(viewerUrlMatch[1]);
+    }
+
+    // If we have a query in the URL, load it
+    const queryFromUrl = chf_image_viewer().getQueryInUrl();
+    if (queryFromUrl) {
+      chf_image_viewer().showSearchDrawer();
+      chf_image_viewer().modal.find("#q").val(queryFromUrl); // set in search box in viewer
+      chf_image_viewer().getSearchResults(queryFromUrl);
     }
 
     // Record whether dropdown is showing, so we can avoid keyboard handling
@@ -857,6 +888,7 @@ jQuery(document).ready(function($) {
       const query = $(event.target).find("input").val();
       if (query.trim() != "") {
         chf_image_viewer().show();
+        chf_image_viewer().showSearchDrawer();
         chf_image_viewer().modal.find("#q").val(query); // set in search box in viewer
         chf_image_viewer().getSearchResults( query ).then(function() {
           // and go to first result if we have one, kinda hacky way to do it with
@@ -879,6 +911,14 @@ jQuery(document).ready(function($) {
     $(document).on("click", "*[data-trigger='clear-search-results']", function(event) {
       event.target.closest("*[data-trigger='viewer-search']").querySelector("#q").value = '';
       chf_image_viewer().clearSearchResults();
+    });
+
+    $(document).on("click", "*[data-trigger='viewer-open-search']", function(event) {
+      chf_image_viewer().showSearchDrawer();
+    });
+
+    $(document).on("click", "*[data-trigger='viewer-close-search']", function(event) {
+      chf_image_viewer().hideSearchDrawer();
     });
   }
 });

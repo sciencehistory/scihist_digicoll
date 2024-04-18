@@ -139,12 +139,41 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
   }
 
 
+  .viewer-search-open {
+    z-index: 1000;
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+  }
+
 
   .viewer-search-area {
+    --search-area-width: 16rem;
+    --slide-duration: 0.5s;
+
     border-right: 2px solid $dark;
-    width: 18em;
+    width: var(--search-area-width);
     display: flex;
     flex-direction: column;
+
+    // originally hidden, in a weird way we can animate as slide-in, even in flex
+    flex-shrink: 0;
+    flex-grow: 0;
+    box-sizing: border-box;
+    margin-left: calc(-1 * var(--search-area-width));
+    transition: margin var(--slide-duration);
+
+    // For accessibility purposes, it's important we visibility:hidden when off screen
+    // We'll need to use JS to make visible after animation
+    // https://knowbility.org/blog/2020/accessible-slide-menus
+    visibility: hidden;
+    &.slid-in {
+      margin-left: 0;
+    }
+    &.drawer-visible {
+      visibility: visible;
+    }
+
 
     .viewer-search-controls {
       padding: $paragraph-spacer;
@@ -154,7 +183,6 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     .search-results-container {
       padding: $paragraph-spacer;
       flex-grow: 1;
-      width: 16rem;
       overflow-y: scroll;
       overflow-x: hidden;
     }
@@ -185,6 +213,8 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
   }
 
   .viewer-image-and-navbar {
+    position: relative;
+
     // https://css-tricks.com/flexbox-truncated-text/
     min-width: 0;
     width: 100vw; // important to keep long child texts from overflowing on IE11

@@ -41,6 +41,12 @@
             <%= render "scihist_image_viewer/scihist_viewer_search_area" %>
 
             <div class="viewer-image-and-navbar">
+              <button type="button" class="btn btn-brand-main btn-sm viewer-search-open d-none" data-trigger="viewer-open-search">
+                <i class="fa fa-search" aria-hidden="true"></i>
+                Search
+              </button>
+
+
               <div class="viewer-image" id="openseadragon-container" data-alert-container>
                 <button href="#" id="viewer-left" class="viewer-image-prev" data-trigger="viewer-prev" aria-label="Previous image" tabindex="0"><i class="fa fa-chevron-left" title="Previous"></i></button>
                 <button href="#" id="viewer-right" class="viewer-image-next" data-trigger="viewer-next" aria-label="Next image" tabindex="0"><i class="fa fa-chevron-right" title="Next"></i></button>
