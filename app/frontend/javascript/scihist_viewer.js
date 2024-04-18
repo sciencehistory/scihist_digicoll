@@ -730,7 +730,7 @@ jQuery(document).ready(function($) {
       );
       const queryFromUrl = hashKeys.get("prevq");
 
-      if (queryFromUrl) {
+      if (queryFromUrl && searchInput.value == "") {
         searchInput.value = queryFromUrl;
       }
 
