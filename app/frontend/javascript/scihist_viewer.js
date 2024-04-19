@@ -704,6 +704,15 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
       return;
     }
 
+    let resultsCountMsg;
+    if (searchResults.length == 1) {
+      resultsCountMsg = "1 result"
+    } else {
+      resultsCountMsg = searchResults.length + " results";
+    }
+
+    searchResultsContainer.innerHTML = "<p class='font-weight-bold'>" + resultsCountMsg + "</p>";
+
     // For each search result, we need to render it in results, and index
     // it by page for showing highlights.
     this.searchResultHighlightsByPage = {};
