@@ -78,7 +78,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       expect(new_req.patron_institution).to eq "Some Library"
       expect(new_req.delivery_status_automatic?).to be(true)
 
-      expect(page).to have_text("We are sending you links to the files you requested")
+      expect(page).to have_text("We've sent an email to patron@library.org with a sign-in link")
 
       expect(ActionMailer::MailDeliveryJob).to have_been_enqueued
     end
