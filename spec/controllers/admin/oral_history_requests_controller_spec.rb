@@ -69,7 +69,6 @@ RSpec.describe Admin::OralHistoryRequestsController, :logged_in_user, type: :con
      let(:oral_history_access_request) { create(:oral_history_request, delivery_status: "pending") }
       before do
         allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
-        allow(ScihistDigicoll::Env).to receive(:lookup).with("feature_new_oh_request_emails").and_return(true)
       end
 
       it "can approve" do
