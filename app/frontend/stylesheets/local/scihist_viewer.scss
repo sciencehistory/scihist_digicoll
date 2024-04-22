@@ -70,6 +70,19 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
   }
 }
 
+// TEMPORARY hide search entirely on small screens
+// Needs to correspond to same place viewer nav goes vertical below
+@media (max-width: 767px) {
+  .work-page-viewer-search-controls {
+    display: none !important;
+  }
+ .scihist-image-viewer {
+    .viewer-search-area, .viewer-search-open {
+      display: none !important;
+    }
+  }
+}
+
 // Now styles for our actual viewer, which happens to be inside a bootstrap modal.
 .scihist-image-viewer {
   background-color: $body-bg;
