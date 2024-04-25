@@ -47,6 +47,9 @@ ScihistImageViewer.prototype.searchResults = undefined;
 // and we store the current query if any
 ScihistImageViewer.prototype.currentSearchQuery = undefined;
 
+// last iterated result for next/prev through results
+ScihistImageViewer.prototype.lastSelectedSearchResult = undefined;
+
 ScihistImageViewer.prototype.findThumbElement = function(memberId) {
   return document.querySelector(".viewer-thumb-img[data-member-id='" + memberId + "']");
 };
@@ -686,6 +689,7 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
     }
 
     searchResultsContainer.innerHTML = "";
+    document.getElementById("searchNav").style.display = "flex";
 
     this.storeQueryInUrl(query);
     this.currentSearchQuery = query;
@@ -695,17 +699,11 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
       return;
     }
 
-    let resultsCountMsg;
-    if (searchResults.length == 1) {
-      resultsCountMsg = "1 result"
-    } else {
-      resultsCountMsg = searchResults.length + " results";
-    }
-
-    searchResultsContainer.innerHTML = "<p class='font-weight-bold'>" + resultsCountMsg + "</p>";
 
     // set searchResultsObject
     this.searchResults = new ViewerSearchResults(searchResults);
+
+    document.getElementById("searchNavLabel").textContent = this.searchResults.resultsCountMessage();
 
     // For each search result, we need to render it in results
     for (const result of this.searchResults.jsonResults()) {
@@ -735,6 +733,10 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
 ScihistImageViewer.prototype.selectSearchResult = function(resultElement) {
   const searchResultIndex = parseInt( resultElement.getAttribute('data-search-result-index') );
   const resultData = this.searchResults.resultByIndex(searchResultIndex)
+
+  this.lastSelectedSearchResult = resultData;
+  document.getElementById("searchNavLabel").textContent = `${ searchResultIndex + 1 } / ${ this.searchResults.resultsCount()}`
+
   const memberId = resultData['id'];
 
   if (memberId != this.selectedThumbData.memberId) {
@@ -747,9 +749,12 @@ ScihistImageViewer.prototype.selectSearchResult = function(resultElement) {
 ScihistImageViewer.prototype.clearSearchResults = function() {
   const searchResultsContainer = document.querySelector(".viewer-search-area .search-results-container");
 
+  document.getElementById("searchNav").style.display = "none";
+
   this.viewer.clearOverlays();
   this.removeQueryInUrl();
   this.currentSearchQuery = undefined;
+  this.lastSelectedSearchResult = undefined;
   searchResultsContainer.innerHTML = "";
   this.searchResults = undefined;
 }
@@ -774,6 +779,24 @@ ScihistImageViewer.prototype.hideSearchDrawer = function() {
   setTimeout(function() {
     _self.modal.find('.viewer-search-area').removeClass("drawer-visible");
   }, 500);
+}
+
+ScihistImageViewer.prototype.nextSearchResult = function() {
+  const currentIndex = this.lastSelectedSearchResult ? this.lastSelectedSearchResult.resultIndex : -1;
+  // wrap around
+  const gotoIndex = (currentIndex < this.searchResults.resultsCount()-1) ? (currentIndex + 1) : 0;
+
+  const resultElement = document.querySelector(`.search-results-container *[data-search-result-index='${gotoIndex}']`);
+  this.selectSearchResult(resultElement);
+}
+
+ScihistImageViewer.prototype.previousSearchResult = function() {
+  const currentIndex = this.lastSelectedSearchResult ? this.lastSelectedSearchResult.resultIndex : this.searchResults.resultsCount();
+  // wrap around
+  const gotoIndex = currentIndex > 0  ? currentIndex - 1 : this.searchResults.resultsCount() - 1;
+
+  const resultElement = document.querySelector(`.search-results-container *[data-search-result-index='${gotoIndex}']`);
+  this.selectSearchResult(resultElement);
 }
 
 jQuery(document).ready(function($) {
@@ -934,6 +957,14 @@ jQuery(document).ready(function($) {
 
     $(document).on("click", "*[data-trigger='viewer-close-search']", function(event) {
       chf_image_viewer().hideSearchDrawer();
+    });
+
+    $(document).on("click", "*[data-trigger='viewer-result-next']", function(event) {
+      chf_image_viewer().nextSearchResult();
+    });
+
+    $(document).on("click", "*[data-trigger='viewer-result-previous']", function(event) {
+      chf_image_viewer().previousSearchResult();
     });
   }
 });

@@ -53,4 +53,16 @@ export default class ViewerSearchResults {
   resultByIndex(index) {
     return this._jsonResults[index];
   }
+
+  resultsCount() {
+    return this._jsonResults.length;
+  }
+
+  resultsCountMessage() {
+    if (this.resultsCount() == 1) {
+      return  "1 result"
+    } else {
+      return this.resultsCount() + " results";
+    }
+  }
 }
