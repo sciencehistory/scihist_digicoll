@@ -708,21 +708,16 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
     this.searchResults = new ViewerSearchResults(searchResults);
 
     // For each search result, we need to render it in results
-    for (const result of searchResults) {
+    for (const result of this.searchResults.jsonResults()) {
       const id = result['id'];
 
       const resultHtml = document.createElement('a');
       resultHtml["href"] = "#";
-      resultHtml.setAttribute('data-member-id', result.id);
-      resultHtml.setAttribute('data-rect-left', result.osd_rect.left);
-      resultHtml.setAttribute('data-rect-top', result.osd_rect.top);
-      resultHtml.setAttribute('data-rect-width', result.osd_rect.width);
-      resultHtml.setAttribute('data-rect-height', result.osd_rect.height);
+      resultHtml.setAttribute('data-search-result-index', result['resultIndex']);
       resultHtml.setAttribute('data-trigger', 'viewer-search-result');
       resultHtml.className = "result";
       resultHtml.innerHTML = result.text;
       searchResultsContainer.append(resultHtml)
-
     }
 
     // show highlights on current page
@@ -738,7 +733,9 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
 };
 
 ScihistImageViewer.prototype.selectSearchResult = function(resultElement) {
-  const memberId = resultElement.getAttribute('data-member-id')
+  const searchResultIndex = parseInt( resultElement.getAttribute('data-search-result-index') );
+  const resultData = this.searchResults.resultByIndex(searchResultIndex)
+  const memberId = resultData['id'];
 
   if (memberId != this.selectedThumbData.memberId) {
     const thumbElement = this.findThumbElement(memberId);

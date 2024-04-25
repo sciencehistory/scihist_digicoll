@@ -1,9 +1,10 @@
 export default class ViewerSearchResults {
   constructor(jsonResults) {
-    // Straight results stored, they should look like an array of
+    // Results stored, enhanced with index, they should look like an array of
     // {
     //    id: memberId,
     //    text: snippetText,
+    //    resultIndex: {0..length-1},
     //    osd_rect: {
     //      left: l,  # in OSD whole-image-widht units
     //      top: t,
@@ -42,5 +43,14 @@ export default class ViewerSearchResults {
 
   highlightsByPageId(pageId) {
     return this._highlightsByPageId[pageId] || []
+  }
+
+  // straight json results from server, but with resultIndex too
+  jsonResults() {
+    return this._jsonResults;
+  }
+
+  resultByIndex(index) {
+    return this._jsonResults[index];
   }
 }
