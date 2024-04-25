@@ -689,8 +689,6 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
     }
 
     searchResultsContainer.innerHTML = "";
-    document.getElementById("searchNav").style.display = "flex";
-
     this.storeQueryInUrl(query);
     this.currentSearchQuery = query;
 
@@ -704,6 +702,7 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
     this.searchResults = new ViewerSearchResults(searchResults);
 
     document.getElementById("searchNavLabel").textContent = this.searchResults.resultsCountMessage();
+    document.getElementById("searchNav").style.display = "flex";
 
     // For each search result, we need to render it in results
     for (const result of this.searchResults.jsonResults()) {
