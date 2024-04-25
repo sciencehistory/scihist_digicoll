@@ -807,19 +807,21 @@ jQuery(document).ready(function($) {
 
     // Do we have a viewer search form on a work page, and a preserved
     // main query in the current URL anchor to pre-fill it?
-    const searchInput = document.querySelector("#search-inside-q");
-    if (searchInput) {
-      const currentUrl = new URL(location.href);
-      const hashKeys = new URLSearchParams(
-        currentUrl.hash.replace(/^\#/, "")
-      );
-      const queryFromUrl = hashKeys.get("prevq");
+    const currentUrl = new URL(location.href);
+    const hashKeys = new URLSearchParams(
+      currentUrl.hash.replace(/^\#/, "")
+    );
+    const queryFromUrl = hashKeys.get("prevq");
 
-      if (queryFromUrl && searchInput.value == "") {
-        searchInput.value = queryFromUrl;
+    if(queryFromUrl) {
+      const searchInput = document.querySelector("#search-inside-q");
+      if (searchInput) {
+        if (searchInput.value == "") {
+          searchInput.value = queryFromUrl;
+        }
       }
 
-      // AND remove it to avoid it sticking around for viewer, and just generally being confusing
+      // AND remove it to provide a clean URL
       hashKeys.delete("prevq");
       currentUrl.hash = hashKeys.toString();
       history.replaceState({}, "", currentUrl.href);
@@ -832,7 +834,6 @@ jQuery(document).ready(function($) {
     }
 
     // If we have a query in the URL, load it
-    const queryFromUrl = chf_image_viewer().getQueryInUrl();
     if (queryFromUrl) {
       chf_image_viewer().showSearchDrawer();
       chf_image_viewer().modal.find("#q").val(queryFromUrl); // set in search box in viewer
