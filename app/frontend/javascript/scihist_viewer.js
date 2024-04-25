@@ -932,7 +932,7 @@ jQuery(document).ready(function($) {
           // and go to first result if we have one, kinda hacky way to do it with
           // DOM element
           // hash
-          const firstSearchResult = chf_image_viewer().modal.find("*[data-member-id]").get(0);
+          const firstSearchResult = chf_image_viewer().modal.find(".search-results-container .result").get(0);
           if (firstSearchResult) {
             chf_image_viewer().selectSearchResult(firstSearchResult);
           }
