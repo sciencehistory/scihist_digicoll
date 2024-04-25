@@ -25,6 +25,7 @@
 // app, it would take signifcant more work. :(
 
 import OpenSeadragon from 'openseadragon';
+import ViewerSearchResults from '../javascript/scihist_viewer/viewer_search_results.js';
 
 function ScihistImageViewer() {
   var modal = document.querySelector("#scihist-image-viewer-modal");
@@ -40,18 +41,8 @@ ScihistImageViewer.prototype.viewerPathComponentRe = /\/viewer\/(\w+)$/;
 // thumbnails generated and delivered in JSON info.
 ScihistImageViewer.prototype.thumbWidth = "54";
 
-// When we have search results loaded, this is an array keyed by Asset page friendlier
-// ID, whose value is an array of objects, where each has OpenSeadragon values
-// for x y width height (all proportional between 0 and 1), degrees, and anything else we need.
-// https://openseadragon.github.io/docs/OpenSeadragon.Rect.html
-//
-// {
-//   "bksm7ln" : [
-//     {"left":0.30731,"top":1.37769,"width":0.09654,"height":0.01808},
-//   ]
-// }
-//
-ScihistImageViewer.prototype.searchResultHighlightsByPage = {}
+// A ViewerSearchResults obj or undefined
+ScihistImageViewer.prototype.searchResults = undefined;
 
 // and we store the current query if any
 ScihistImageViewer.prototype.currentSearchQuery = undefined;
@@ -631,7 +622,7 @@ ScihistImageViewer.prototype.initOpenSeadragon = function() {
 ScihistImageViewer.prototype.highlightSearchResults = function() {
   const currentMemberId = this.selectedThumbData?.memberId;
 
-  const resultOverlaysForPage = this.searchResultHighlightsByPage[ currentMemberId ];
+  const resultOverlaysForPage = this.searchResults?.highlightsByPageId( currentMemberId );
 
   if (resultOverlaysForPage) {
     for (let result of resultOverlaysForPage) {
@@ -713,16 +704,12 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
 
     searchResultsContainer.innerHTML = "<p class='font-weight-bold'>" + resultsCountMsg + "</p>";
 
-    // For each search result, we need to render it in results, and index
-    // it by page for showing highlights.
-    this.searchResultHighlightsByPage = {};
+    // set searchResultsObject
+    this.searchResults = new ViewerSearchResults(searchResults);
 
+    // For each search result, we need to render it in results
     for (const result of searchResults) {
       const id = result['id'];
-      if (! this.searchResultHighlightsByPage[id]) {
-        this.searchResultHighlightsByPage[id] = [];
-      }
-      this.searchResultHighlightsByPage[id].push(result.osd_rect);
 
       const resultHtml = document.createElement('a');
       resultHtml["href"] = "#";
@@ -767,7 +754,7 @@ ScihistImageViewer.prototype.clearSearchResults = function() {
   this.removeQueryInUrl();
   this.currentSearchQuery = undefined;
   searchResultsContainer.innerHTML = "";
-  this.searchResultHighlightsByPage = {};
+  this.searchResults = undefined;
 }
 
 ScihistImageViewer.prototype.showSearchDrawer = function() {
