@@ -194,7 +194,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     }
 
     .search-results-container {
-      padding: $paragraph-spacer;
+      padding: 0 $paragraph-spacer $paragraph-spacer $paragraph-spacer;
       flex-grow: 1;
       overflow-y: scroll;
       overflow-x: hidden;
@@ -217,8 +217,6 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       }
     }
   }
-
-
 
   .viewer-search-highlight {
     background-color: $shi-red;
