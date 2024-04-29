@@ -214,7 +214,7 @@ ScihistImageViewer.prototype.selectThumb = function(thumbElement) {
 
   var index = parseInt(thumbElement.getAttribute("data-index"));
   var humanIndex = index + 1;
-  this.selectedThumbData = this.pageInfo.pageInfoByIndex(index);
+  this.selectedThumbData = this.pageInfo.getPageInfoByIndex(index);
 
   // toggle classes
   $('.viewer-thumbs .viewer-thumb-selected').removeClass('viewer-thumb-selected')
@@ -707,7 +707,7 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
 
 
     // set searchResultsObject
-    this.searchResults = new ViewerSearchResults(searchResults);
+    this.searchResults = new ViewerSearchResults(searchResults, this.pageInfo);
 
     document.getElementById("searchNavLabel").textContent = this.searchResults.resultsCountMessage();
     document.getElementById("searchNav").style.display = "flex";

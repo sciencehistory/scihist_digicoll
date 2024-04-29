@@ -1,10 +1,16 @@
 export default class ViewerSearchResults {
-  constructor(jsonResults) {
+
+  // @param jsonResults [json] json as returned by server for search results
+  //
+  // @param pageInfo [ViewerPageInfo] object we use temporarily to look up page indexes to assign,
+  //   we don't keep a reference.
+  constructor(jsonResults, pageInfo) {
     // Results stored, enhanced with index, they should look like an array of
     // {
     //    id: memberId,
     //    text: snippetText,
     //    resultIndex: {0..length-1},
+    //    pageIndex: {0..totalPages-1},
     //    osd_rect: {
     //      left: l,  # in OSD whole-image-widht units
     //      top: t,
@@ -14,8 +20,11 @@ export default class ViewerSearchResults {
     // }
     this._jsonResults = jsonResults;
 
-    // Add index number (0..n) to each result for convennience, and also
-    // Index each OSD highlight dimensions in a hash by member Id
+    // * Add index number (0..n) to each result for convenience
+    //
+    // * Add the PAGE index into total page results, need for looking up results
+    //
+    // * Index each OSD highlight dimensions in a hash by member Id
     //
     // _highlightsByPageId will be a lookup keyed by Asset page friendlier
     // ID, where values are an array of objects, where each has OpenSeadragon values
@@ -32,12 +41,18 @@ export default class ViewerSearchResults {
     let i = 0;
     this._highlightsByPageId = {};
     for (const result of this._jsonResults) {
+      // Add index number (0..n) to each result for convenience
       result['resultIndex'] = i;
       i++;
 
-      const id = result['id'];
-      this._highlightsByPageId[id] = (this._highlightsByPageId[id] || []);
-      this._highlightsByPageId[id].push(result.osd_rect);
+      const memberID = result['id'];
+
+      // Add the PAGE index into total page results, need for looking up results
+      result['pageIndex'] = pageInfo.getIndexByMemberId(memberID);
+
+      // Index each OSD highlight dimensions in a hash by member Id
+      this._highlightsByPageId[memberID] = (this._highlightsByPageId[memberID] || []);
+      this._highlightsByPageId[memberID].push(result.osd_rect);
     }
   }
 
