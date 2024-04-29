@@ -92,7 +92,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
 
   .viewer-alert {
     position: absolute;
-    z-index: 1;
+    z-index: 10;
     right: 0.5rem;
     top: 0.5rem;
   }
