@@ -26,6 +26,7 @@
 
 import OpenSeadragon from 'openseadragon';
 import ViewerSearchResults from '../javascript/scihist_viewer/viewer_search_results.js';
+import ViewerPageInfo from '../javascript/scihist_viewer/viewer_page_info.js';
 
 function ScihistImageViewer() {
   var modal = document.querySelector("#scihist-image-viewer-modal");
@@ -40,6 +41,9 @@ ScihistImageViewer.prototype.viewerPathComponentRe = /\/viewer\/(\w+)$/;
 // In pixels, has to match CSS, and should match actual width of
 // thumbnails generated and delivered in JSON info.
 ScihistImageViewer.prototype.thumbWidth = "54";
+
+// A ViewerPageInfo obj once loaded
+ScihistImageViewer.prototype.pageInfo = undefined;
 
 // A ViewerSearchResults obj or undefined
 ScihistImageViewer.prototype.searchResults = undefined;
@@ -210,7 +214,7 @@ ScihistImageViewer.prototype.selectThumb = function(thumbElement) {
 
   var index = parseInt(thumbElement.getAttribute("data-index"));
   var humanIndex = index + 1;
-  this.selectedThumbData = this.thumbnailData[index];
+  this.selectedThumbData = this.pageInfo.pageInfoByIndex(index);
 
   // toggle classes
   $('.viewer-thumbs .viewer-thumb-selected').removeClass('viewer-thumb-selected')
@@ -498,6 +502,10 @@ ScihistImageViewer.prototype.initModal = function(modalElement) {
 
   }).then(function(json) {
     _self.totalCount = json.length;
+
+    _self.pageInfo = new ViewerPageInfo(json);
+
+
     _self.makeThumbnails(json);
   });
 };
@@ -505,7 +513,7 @@ ScihistImageViewer.prototype.initModal = function(modalElement) {
 // From json data describing our images, make the thumbnail sidebar
 ScihistImageViewer.prototype.makeThumbnails = function(json) {
   var _self = this;
-  _self.thumbnailData = json;
+
   var container = $(this.modal).find("#viewer-thumbs");
   $.each(json, function(index, config) {
     if (! config) {
