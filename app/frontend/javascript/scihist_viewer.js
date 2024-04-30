@@ -136,15 +136,19 @@ ScihistImageViewer.prototype.show = function(id) {
   });
 };
 
+// Scroll given element into view only if it's not already in full view. Unlike built-into
+// browser function which always scrolls so it's at the top, even if it already was in view.
+//
 // position can be 'start', 'end'
-ScihistImageViewer.prototype.scrollSelectedIntoView = function(position) {
+ScihistImageViewer.prototype.scrollElementIntoView = function(elem, position = "start", container) {
   // only if the selected thing is not currently in scroll view, scroll
   // it to be so.
   // https://stackoverflow.com/a/16309126/307106
 
-  var elem = this.selectedThumb;
-
-  var container = $(".viewer-thumbs");
+  if (container == undefined) {
+    container = elem.parentNode;
+  }
+  container = $(container);
 
   var contHeight = container.height();
   var contTop = container.scrollTop();
@@ -164,11 +168,16 @@ ScihistImageViewer.prototype.scrollSelectedIntoView = function(position) {
 
   if (! isTotal) {
     if (position == "end") {
-      this.selectedThumb.scrollIntoView(false);
+      elem.scrollIntoView(false);
     } else {
-      this.selectedThumb.scrollIntoView();
+      elem.scrollIntoView();
     }
   }
+}
+
+// position can be 'start', 'end'
+ScihistImageViewer.prototype.scrollSelectedIntoView = function(position = "start") {
+  this.scrollElementIntoView(this.selectedThumb, position)
 }
 
 ScihistImageViewer.prototype.hide = function() {
