@@ -808,18 +808,39 @@ ScihistImageViewer.prototype.hideSearchDrawer = function() {
 }
 
 ScihistImageViewer.prototype.nextSearchResult = function() {
-  const currentIndex = this.currentSearchResult ? this.currentSearchResult.resultIndex : -1;
-  // wrap around
-  const gotoIndex = (currentIndex < this.searchResults.resultsCount()-1) ? (currentIndex + 1) : 0;
+  let gotoIndex; // 0-based index into searchResults
+
+  if (this.currentSearchResult) {
+    gotoIndex = this.currentSearchResult.resultIndex + 1;
+  } else {
+    // find next one from current page.
+    gotoIndex = this.searchResults.nextResultFromPageIndex(this.selectedThumbData.index)?.resultIndex;
+  }
+
+  // If we need to wrap around because we're too high or we didn't find one from current page,
+  // wrap around to start
+  if (gotoIndex == undefined || gotoIndex >= this.searchResults.resultsCount()) {
+    gotoIndex = 0;
+  }
 
   const resultElement = document.querySelector(`.search-results-container *[data-search-result-index='${gotoIndex}']`);
   this.selectSearchResult(resultElement);
 }
 
 ScihistImageViewer.prototype.previousSearchResult = function() {
-  const currentIndex = this.currentSearchResult ? this.currentSearchResult.resultIndex : this.searchResults.resultsCount();
-  // wrap around
-  const gotoIndex = currentIndex > 0  ? currentIndex - 1 : this.searchResults.resultsCount() - 1;
+  let gotoIndex; // 0-based index into searchResults
+
+  if (this.currentSearchResult) {
+    gotoIndex = this.currentSearchResult.resultIndex - 1;
+  } else {
+    gotoIndex = this.searchResults.previousResultFromPageIndex(this.selectedThumbData.index)?.resultIndex;
+  }
+
+  // if we need to wrap around because we're too low or we didn't find one, wrap around
+  // to last result.
+  if (gotoIndex == undefined || gotoIndex < 0) {
+    gotoIndex = this.searchResults.resultsCount() - 1;
+  }
 
   const resultElement = document.querySelector(`.search-results-container *[data-search-result-index='${gotoIndex}']`);
   this.selectSearchResult(resultElement);

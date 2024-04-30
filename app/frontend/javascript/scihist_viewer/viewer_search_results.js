@@ -80,4 +80,22 @@ export default class ViewerSearchResults {
       return this.resultsCount() + " results";
     }
   }
+
+  // @param {Integer} pageIndex 1-based current page index
+  //
+  // Find first result that is on the page with pageIndex given, or first page
+  // after that.
+  nextResultFromPageIndex(pageIndex) {
+    // Have to subtract one cause the argument was a 1-based base pagge index
+    return this._jsonResults.find( (element) => element.pageIndex >= pageIndex - 1);
+  }
+
+  // @param {Integer} pageIndex 1-based current page index
+  //
+  // Find first result that is on the page with pageIndex given, or closest PREVIOUS
+  // page before that.
+  previousResultFromPageIndex(pageIndex) {
+    // Have to subtract one cause the argument was a 1-based base pagge index
+    return this._jsonResults.findLast( (element) => element.pageIndex <= pageIndex - 1);
+  }
 }
