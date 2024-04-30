@@ -125,6 +125,7 @@ ScihistImageViewer.prototype.show = function(id) {
       if (queryFromUrl) {
         _self.modal.find("#q").val(queryFromUrl); // set in search box in viewer
         _self.getSearchResults(queryFromUrl);
+        _self.showSearchDrawer();
       }
     }
 
@@ -869,10 +870,8 @@ jQuery(document).ready(function($) {
 
     if(queryFromUrl) {
       const searchInput = document.querySelector("#search-inside-q");
-      if (searchInput) {
-        if (searchInput.value == "") {
-          searchInput.value = queryFromUrl;
-        }
+      if (searchInput && searchInput.value == "") {
+        searchInput.value = queryFromUrl;
       }
 
       // AND remove it to provide a clean URL
@@ -885,13 +884,6 @@ jQuery(document).ready(function($) {
     if (viewerUrlMatch != null) {
       // we have a viewer thumb in URL, let's load the viewer on page load!
       chf_image_viewer().show(viewerUrlMatch[1]);
-    }
-
-    // If we have a query in the URL, load it
-    if (queryFromUrl) {
-      chf_image_viewer().showSearchDrawer();
-      chf_image_viewer().modal.find("#q").val(queryFromUrl); // set in search box in viewer
-      chf_image_viewer().getSearchResults(queryFromUrl);
     }
 
     // Record whether dropdown is showing, so we can avoid keyboard handling
