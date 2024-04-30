@@ -235,6 +235,7 @@ ScihistImageViewer.prototype.selectThumb = function(thumbElement , { resetCurren
   // Normally we reset any current search result on page change, unless this was being
   // done to go to a search result!
   if (this.searchResults && this.currentSearchResult && resetCurrentSearchResult) {
+    $(".result.current-viewer-result").removeClass("current-viewer-result");
     document.getElementById("searchNavLabel").textContent = this.searchResults.resultsCountMessage();
     this.currentSearchResult = undefined;
   }
@@ -758,6 +759,10 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
 };
 
 ScihistImageViewer.prototype.selectSearchResult = function(resultElement) {
+  // Add class for highlighting search result, removing from any others
+  $(".result.current-viewer-result").removeClass("current-viewer-result")
+  $(resultElement).addClass("current-viewer-result");
+
   const searchResultIndex = parseInt( resultElement.getAttribute('data-search-result-index') );
   const resultData = this.searchResults.resultByIndex(searchResultIndex)
 

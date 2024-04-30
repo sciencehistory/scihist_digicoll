@@ -194,7 +194,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     }
 
     .search-results-container {
-      padding: 0 $paragraph-spacer $paragraph-spacer $paragraph-spacer;
+      padding: 0 ($paragraph-spacer / 2) $paragraph-spacer ($paragraph-spacer / 2);
       flex-grow: 1;
       overflow-y: scroll;
       overflow-x: hidden;
@@ -210,10 +210,18 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     .result {
       color: $body-color;
       display: block;
-      margin-bottom: $paragraph-spacer * 2;
+      // padding so highlighted background will include it
+      padding: $paragraph-spacer ($paragraph-spacer / 2);
+      // invisible border so adding a border for current doens't change size
+      border: 1px solid transparent;
 
       mark {
         background-color: $shi-red-1;
+      }
+
+      &.current-viewer-result {
+        border: 1px solid $body-color;
+        background-color: $shi-chartreuse-2;
       }
     }
   }
