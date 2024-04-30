@@ -52,7 +52,7 @@ ScihistImageViewer.prototype.searchResults = undefined;
 ScihistImageViewer.prototype.currentSearchQuery = undefined;
 
 // last iterated result for next/prev through results
-ScihistImageViewer.prototype.lastSelectedSearchResult = undefined;
+ScihistImageViewer.prototype.currentSearchResult = undefined;
 
 ScihistImageViewer.prototype.findThumbElement = function(memberId) {
   return document.querySelector(".viewer-thumb-img[data-member-id='" + memberId + "']");
@@ -209,7 +209,18 @@ ScihistImageViewer.prototype.removeLoading =  function() {
   }
 };
 
-ScihistImageViewer.prototype.selectThumb = function(thumbElement) {
+// @param thumbElement a DOM element for a thumbnail in the thumbnail list, to load that image
+//
+// @param {Boolean} resetCurrentSearchResult default true, will unselect any currently selected
+//    search result, since we'e done a page change making it no longer active. But when being
+//    done as part of search navigation itself, caller can pass in false.
+//
+// @example
+//
+//     this.selectThumb(domElement)
+//     this.selectThumb(domElement, { resetCurrentSearchResult: false })
+//
+ScihistImageViewer.prototype.selectThumb = function(thumbElement , { resetCurrentSearchResult = true } = {}) {
   this.selectedThumb = thumbElement;
 
   var index = parseInt(thumbElement.getAttribute("data-index"));
@@ -219,6 +230,14 @@ ScihistImageViewer.prototype.selectThumb = function(thumbElement) {
   // toggle classes
   $('.viewer-thumbs .viewer-thumb-selected').removeClass('viewer-thumb-selected')
   thumbElement.classList.add('viewer-thumb-selected');
+
+  // Normally we reset any current search result on page change, unless this was being
+  // done to go to a search result!
+  if (this.searchResults && this.currentSearchResult && resetCurrentSearchResult) {
+    document.getElementById("searchNavLabel").textContent = this.searchResults.resultsCountMessage();
+    this.currentSearchResult = undefined;
+  }
+
 
   var id = this.selectedThumbData.memberId;
   var shouldShowInfo = this.selectedThumbData.memberShouldShowInfo;
@@ -741,14 +760,14 @@ ScihistImageViewer.prototype.selectSearchResult = function(resultElement) {
   const searchResultIndex = parseInt( resultElement.getAttribute('data-search-result-index') );
   const resultData = this.searchResults.resultByIndex(searchResultIndex)
 
-  this.lastSelectedSearchResult = resultData;
+  this.currentSearchResult = resultData;
   document.getElementById("searchNavLabel").textContent = `${ searchResultIndex + 1 } / ${ this.searchResults.resultsCount()}`
 
   const memberId = resultData['id'];
 
   if (memberId != this.selectedThumbData.memberId) {
     const thumbElement = this.findThumbElement(memberId);
-    this.selectThumb(thumbElement);
+    this.selectThumb(thumbElement, { resetCurrentSearchResult: false });
     this.scrollSelectedIntoView();
   }
 }
@@ -761,7 +780,7 @@ ScihistImageViewer.prototype.clearSearchResults = function() {
   this.viewer.clearOverlays();
   this.removeQueryInUrl();
   this.currentSearchQuery = undefined;
-  this.lastSelectedSearchResult = undefined;
+  this.currentSearchResult = undefined;
   searchResultsContainer.innerHTML = "";
   this.searchResults = undefined;
 }
@@ -789,7 +808,7 @@ ScihistImageViewer.prototype.hideSearchDrawer = function() {
 }
 
 ScihistImageViewer.prototype.nextSearchResult = function() {
-  const currentIndex = this.lastSelectedSearchResult ? this.lastSelectedSearchResult.resultIndex : -1;
+  const currentIndex = this.currentSearchResult ? this.currentSearchResult.resultIndex : -1;
   // wrap around
   const gotoIndex = (currentIndex < this.searchResults.resultsCount()-1) ? (currentIndex + 1) : 0;
 
@@ -798,7 +817,7 @@ ScihistImageViewer.prototype.nextSearchResult = function() {
 }
 
 ScihistImageViewer.prototype.previousSearchResult = function() {
-  const currentIndex = this.lastSelectedSearchResult ? this.lastSelectedSearchResult.resultIndex : this.searchResults.resultsCount();
+  const currentIndex = this.currentSearchResult ? this.currentSearchResult.resultIndex : this.searchResults.resultsCount();
   // wrap around
   const gotoIndex = currentIndex > 0  ? currentIndex - 1 : this.searchResults.resultsCount() - 1;
 
