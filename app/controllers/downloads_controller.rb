@@ -33,7 +33,7 @@
 #
 class DownloadsController < ApplicationController
   # Will be sent to S3 as expires_in, seconds, max 1 week.
-  URL_EXPIRES_IN = 2.days.to_i
+  URL_EXPIRES_IN = 15.minutes.to_i # reduced to try to slow down bots. was 2.days.to_i
 
   before_action :set_asset
   before_action :set_derivative, only: :derivative
