@@ -771,6 +771,7 @@ ScihistImageViewer.prototype.selectSearchResult = function(resultElement) {
   // Add class for highlighting search result, removing from any others
   $(".result.current-viewer-result").removeClass("current-viewer-result")
   $(resultElement).addClass("current-viewer-result");
+  this.scrollElementIntoView(resultElement);
 
   const searchResultIndex = parseInt( resultElement.getAttribute('data-search-result-index') );
   const resultData = this.searchResults.resultByIndex(searchResultIndex)
