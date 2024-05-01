@@ -139,8 +139,7 @@ ScihistImageViewer.prototype.show = function(id) {
 // Scroll given element into view only if it's not already in full view. Unlike built-into
 // browser function which always scrolls so it's at the top, even if it already was in view.
 //
-// position can be 'start', 'end'
-ScihistImageViewer.prototype.scrollElementIntoView = function(elem, position = "start", container) {
+ScihistImageViewer.prototype.scrollElementIntoView = function(elem, container) {
   // only if the selected thing is not currently in scroll view, scroll
   // it to be so.
   // https://stackoverflow.com/a/16309126/307106
@@ -167,17 +166,21 @@ ScihistImageViewer.prototype.scrollElementIntoView = function(elem, position = "
   var isTotal = (elemTop >= 0 && elemBottom <= contHeight && elemLeft >= 0 && elemRight <= contWidth);
 
   if (! isTotal) {
-    if (position == "end") {
-      elem.scrollIntoView(false);
-    } else {
-      elem.scrollIntoView();
-    }
+    // We'd love to use smooth scroll, but bug in Chrome where it can't do two
+    // smooth scrolls at once, and we sometimes have both page thumb list and
+    // search result list.
+    // https://stackoverflow.com/questions/49318497/google-chrome-simultaneously-smooth-scrollintoview-with-more-elements-doesn
+
+    elem.scrollIntoView({
+        //behavior: 'smooth',
+        block: 'center',
+        inline: 'center'
+    });
   }
 }
 
-// position can be 'start', 'end'
-ScihistImageViewer.prototype.scrollSelectedIntoView = function(position = "start") {
-  this.scrollElementIntoView(this.selectedThumb, position)
+ScihistImageViewer.prototype.scrollSelectedIntoView = function() {
+  this.scrollElementIntoView(this.selectedThumb)
 }
 
 ScihistImageViewer.prototype.hide = function() {
@@ -300,7 +303,7 @@ ScihistImageViewer.prototype.next = function() {
   var nextElement = $(this.selectedThumb).next().get(0);
   if (nextElement) {
     this.selectThumb(nextElement);
-    this.scrollSelectedIntoView("start");
+    this.scrollSelectedIntoView();
   }
 };
 
@@ -308,7 +311,7 @@ ScihistImageViewer.prototype.prev = function() {
   var prevElement = $(this.selectedThumb).prev().get(0);
   if (prevElement) {
     this.selectThumb(prevElement);
-    this.scrollSelectedIntoView("end");
+    this.scrollSelectedIntoView();
   }
 };
 
