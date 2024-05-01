@@ -194,7 +194,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     }
 
     .search-results-container {
-      padding: 0 ($paragraph-spacer / 2) $paragraph-spacer ($paragraph-spacer / 2);
+      padding: 0 ($paragraph-spacer * 0.5) $paragraph-spacer ($paragraph-spacer * 0.5);
       flex-grow: 1;
       overflow-y: scroll;
       overflow-x: hidden;
@@ -211,7 +211,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       color: $body-color;
       display: block;
       // padding so highlighted background will include it
-      padding: $paragraph-spacer ($paragraph-spacer / 2);
+      padding: $paragraph-spacer ($paragraph-spacer * 0.5);
       // invisible border so adding a border for current doens't change size
       border: 1px solid transparent;
 
