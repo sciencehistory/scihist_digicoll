@@ -231,7 +231,7 @@ class DownloadDropdownComponent < ApplicationComponent
                         data: download_option.data_attrs)
     else
       # allow non-link label menu items. eg for disabled download notice
-      content_tag("span", label, class: "px-4 text-muted text-small")
+      content_tag("div", label, class: "px-4 text-muted text-small")
     end
   end
 

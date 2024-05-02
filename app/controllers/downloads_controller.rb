@@ -41,6 +41,14 @@ class DownloadsController < ApplicationController
 
   #GET /downloads/:asset_id
   def original
+    # for IMAGES only, when we have downloads disable, simply refuse to redirect IF the user
+    # is not logged in. PHEW lots of exceptions, trying to avoid breaking LOTS of our app.
+    if ScihistDigicoll::Env.lookup(:disable_downloads) && !current_user && @asset.content_type.start_with?("image/")
+      render status: 503, plain: "Sorry, this download is currently unavailable"
+
+      return
+    end
+
     # Tell shrine url method `public:false` to make sure we get a signed URL
     # that lets us set content-disposition and content-type, even if
     # it's public in S3.
