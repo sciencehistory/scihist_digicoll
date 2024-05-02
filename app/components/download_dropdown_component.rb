@@ -224,10 +224,15 @@ class DownloadDropdownComponent < ApplicationComponent
       download_option.label, (content_tag("small", download_option.subhead) if download_option.subhead.present?)
     ])
 
-    content_tag("a", label,
-                      class: "dropdown-item",
-                      href: download_option.url,
-                      data: download_option.data_attrs)
+    if download_option.url.present?
+      content_tag("a", label,
+                        class: "dropdown-item",
+                        href: download_option.url,
+                        data: download_option.data_attrs)
+    else
+      # allow non-link label menu items. eg for disabled download notice
+      content_tag("span", label, class: "px-4 text-muted text-small")
+    end
   end
 
   def rights_statement_item
