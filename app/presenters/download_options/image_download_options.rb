@@ -25,7 +25,7 @@ module DownloadOptions
       options = []
       # Sometimes we want the PDF link in the individual-image download links,
       # as per https://github.com/sciencehistory/scihist_digicoll/issues/2278 .
-      if show_pdf_link?
+      if !disabled_downloads && show_pdf_link?
         options << DownloadOption.for_on_demand_derivative(
           label: "PDF", derivative_type: "pdf_file", work_friendlier_id: @asset&.parent&.friendlier_id
         )
@@ -70,7 +70,7 @@ module DownloadOptions
         )
       end
 
-      if !disabled_downloads && asset.stored?
+      if asset.stored? && !(disabled_downloads && asset.content_type.start_with?("image/"))
         options << DownloadOption.with_formatted_subhead("Original file",
           url: download_path(asset.file_category, asset),
           work_friendlier_id: @asset.parent&.friendlier_id,
@@ -82,7 +82,7 @@ module DownloadOptions
         )
       end
 
-      if disabled_downloads
+      if disabled_downloads && options.empty?
         options << DownloadOption.new("Downloads temporarily unavailable", url:nil, work_friendlier_id:nil)
       end
 
