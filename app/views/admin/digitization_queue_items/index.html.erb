@@ -1,11 +1,11 @@
-<h1>Digitization Queue: <%= collecting_area.humanize %></h1>
+<h1>Digitization Queue</h1>
 
 <p>
-<%= link_to 'New Queue Item', new_admin_digitization_queue_items_path(collecting_area), class: "btn btn-primary" %>
+<%= link_to 'New Queue Item', new_admin_digitization_queue_item_path, class: "btn btn-primary" %>
 </p>
 
 <div class="my-2">
-  <%= simple_form_for(:query, url: admin_digitization_queue_item_path(collecting_area), method: :get) do |f| %>
+  <%= simple_form_for(:query, url: admin_digitization_queue_items_path, method: :get) do |f| %>
     <div class="row form-group">
       <div class="col-sm-10">
         <small class="text-muted">Title, or ID (bib, accession, or object)</small>
@@ -37,10 +37,28 @@
         %>
       </div>
     </div>
+
+
+    <div class="row form-group">
+      <div class="input-group col-sm-10">
+        <div class="input-group-prepend">
+          <%= f.label :collecting_area, "Collecting Area", class: "input-group-text" %>
+        </div>
+          <%= f.select(:collecting_area,
+                Admin::DigitizationQueueItem::COLLECTING_AREAS.collect {|s| [s.humanize, s]},
+                {
+                  include_blank: true,
+                  selected: collecting_area
+                },
+                class: "custom-select",
+                onchange: "this.form.submit()"
+              )
+          %>
+      </div>
+    </div>
+
   <% end %>
 </div>
-
-
 <%= render PageEntriesInfoComponent.new(@admin_digitization_queue_items) %>
 
 <div class="table-responsive">
@@ -65,6 +83,7 @@
           </td>
           <td>
             <%= link_to admin_digitization_queue_item.title, admin_digitization_queue_item_path(admin_digitization_queue_item) %>
+            (<%= admin_digitization_queue_item.collecting_area.humanize %>)
             <% if admin_digitization_queue_item.additional_notes.present? %>
               <p class="mb-0">
                 <%= admin_digitization_queue_item.additional_notes %>

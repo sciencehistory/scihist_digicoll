@@ -15,7 +15,7 @@ class Admin::DigitizationQueueItemsController < AdminController
 
   # GET /admin/digitization_queue_items/new
   def new
-    @admin_digitization_queue_item = Admin::DigitizationQueueItem.new(collecting_area: params[:collecting_area])
+    @admin_digitization_queue_item = Admin::DigitizationQueueItem.new
   end
 
   # GET /admin/digitization_queue_items/1/edit
@@ -33,9 +33,8 @@ class Admin::DigitizationQueueItemsController < AdminController
         if ScihistDigicoll::Env.lookup(:digitization_queue_alerts_email_address)
           DigitizationQueueMailer.with(digitization_queue_item: @admin_digitization_queue_item).new_item_email.deliver_later
         end
-
-        format.html { redirect_to admin_digitization_queue_items_url(@admin_digitization_queue_item.collecting_area), notice: 'Digitization queue item was successfully created.' }
-        format.json { render :show, status: :created, location: admin_digitization_queue_items_url(@admin_digitization_queue_item.collecting_area) }
+        format.html { redirect_to admin_digitization_queue_items_url, notice: 'Digitization queue item was successfully created.' }
+        format.json { render :show, status: :created, location: admin_digitization_queue_items_url(@admin_digitization_queue_item) }
       else
         format.html { render :new }
         format.json { render json: @admin_digitization_queue_item.errors, status: :unprocessable_entity }
@@ -54,7 +53,7 @@ class Admin::DigitizationQueueItemsController < AdminController
         format.json { render json: { notice: notice } }
       else
         @admin_digitization_queue_item.destroy!
-        format.html { redirect_to admin_digitization_queue_items_url(@admin_digitization_queue_item.collecting_area), notice: "Digitization queue item was successfully destroyed." }
+        format.html { redirect_to admin_digitization_queue_items_url(@admin_digitization_queue_item), notice: "Digitization queue item was successfully destroyed." }
         format.json { head :no_content }
       end
     end
@@ -82,7 +81,7 @@ class Admin::DigitizationQueueItemsController < AdminController
   end
 
   def collecting_area
-    @admin_digitization_queue_item.try(:collecting_area) || params.fetch(:collecting_area)
+    @admin_digitization_queue_item.try(:collecting_area) || params.dig(:query, "collecting_area")
   end
   helper_method :collecting_area
 
@@ -133,10 +132,14 @@ class Admin::DigitizationQueueItemsController < AdminController
     end
 
     def filtered_index_items
-      scope = Admin::DigitizationQueueItem.where(collecting_area: collecting_area).order(deadline: :asc)
+      scope = Admin::DigitizationQueueItem.order(deadline: :asc)
 
       if (q = params.dig(:query, :q)).present?
         scope = scope.where("title like ? OR bib_number = ? or accession_number = ? OR museum_object_id = ?", "%#{q}%", q, q, q)
+      end
+
+      if collecting_area.present?
+        scope = scope.where(collecting_area: collecting_area)
       end
 
       status = params.dig(:query, :status)

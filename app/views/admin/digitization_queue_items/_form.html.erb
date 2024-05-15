@@ -22,6 +22,12 @@
 
     <div class="row row-cols-lg-auto">
       <div class="col-3">
+        <%= f.input :collecting_area,
+          label: "Collecting Area",
+          collection: Admin::DigitizationQueueItem::COLLECTING_AREAS.collect {|s| [s.humanize, s]},
+          include_blank: false %>
+      </div>
+      <div class="col-3">
         <%= f.input :is_digital_collections, as: :boolean, label: "Digital Collections" %>
       </div>
       <div class="col-3">
