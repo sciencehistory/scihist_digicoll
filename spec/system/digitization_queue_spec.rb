@@ -2,14 +2,10 @@ require 'rails_helper'
 
 RSpec.describe "Digitization Queue", logged_in_user: :editor, type: :system, js: true do
   it "run-through" do
-    visit collecting_areas_admin_digitization_queue_items_path
-
-    click_on "Rare Books"
-
+    visit admin_digitization_queue_items_path
     click_on "New Queue Item"
-
     fill_in "Title", with: "Test Item"
-
+    select "library", from: "admin_digitization_queue_item_collecting_area"
     select "2020", from: "admin_digitization_queue_item_deadline_1i"
     select "February", from: "admin_digitization_queue_item_deadline_2i"
     select "3", from: "admin_digitization_queue_item_deadline_3i"
