@@ -47,7 +47,7 @@
           <%= f.select(:collecting_area,
                 Admin::DigitizationQueueItem::COLLECTING_AREAS.collect {|s| [s.humanize, s]},
                 {
-                  include_blank: true,
+                  include_blank: 'All collecting areas',
                   selected: collecting_area
                 },
                 class: "custom-select",
