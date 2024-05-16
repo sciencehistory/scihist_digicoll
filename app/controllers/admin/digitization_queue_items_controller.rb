@@ -26,7 +26,6 @@ class Admin::DigitizationQueueItemsController < AdminController
   # POST /admin/digitization_queue_items.json
   def create
     @admin_digitization_queue_item = Admin::DigitizationQueueItem.new(admin_digitization_queue_item_params)
-
     respond_to do |format|
       if @admin_digitization_queue_item.save
         # send an alert if email address is set
@@ -134,12 +133,10 @@ class Admin::DigitizationQueueItemsController < AdminController
     def filtered_index_items
       scope = Admin::DigitizationQueueItem.order(deadline: :asc)
 
+      scope = scope.where(collecting_area: collecting_area) if collecting_area.present?
+
       if (q = params.dig(:query, :q)).present?
         scope = scope.where("title like ? OR bib_number = ? or accession_number = ? OR museum_object_id = ?", "%#{q}%", q, q, q)
-      end
-
-      if collecting_area.present?
-        scope = scope.where(collecting_area: collecting_area)
       end
 
       status = params.dig(:query, :status)
