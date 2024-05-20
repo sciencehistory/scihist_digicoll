@@ -46,7 +46,7 @@
                                 <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/leadership') %>">Leadership</a>
                             </li>
                             <li id="menu-item-19110" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-19110">
-                                <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/staff') %>">Staff &amp; Fellows</a>
+                                <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/staff-fellows') %>">Staff &amp; Fellows</a>
                             </li>
                             <li id="menu-item-21314" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-21314">
                                 <a href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), '/projects-initiatives') %>">Projects &amp; Initiatives</a>
@@ -97,6 +97,15 @@
                         </ul>
                     </nav>
                     <div class="shi-social">
+                        <a href="https://www.instagram.com/scihistoryorg/" class="shi-social__link" target="_blank">
+                            <%= image_tag "from_main_website/instagram-icon.svg",
+                                    width:"19",
+                                    height:"19",
+                                    class:"shi-social__icon",
+                                    alt:"Instagram",
+                                    loading:"lazy"
+                            %>
+                        </a>
                         <a href="https://facebook.com/scihistoryorg" class="shi-social__link" target="_blank">
                             <%= image_tag "from_main_website/facebook-icon.svg",
                                     width:"13",
@@ -112,15 +121,6 @@
                                     height:"18",
                                     class:"shi-social__icon",
                                     alt:"Twitter",
-                                    loading:"lazy"
-                            %>
-                        </a>
-                        <a href="https://www.instagram.com/scihistoryorg/" class="shi-social__link" target="_blank">
-                            <%= image_tag "from_main_website/instagram-icon.svg",
-                                    width:"19",
-                                    height:"19",
-                                    class:"shi-social__icon",
-                                    alt:"Instagram",
                                     loading:"lazy"
                             %>
                         </a>
