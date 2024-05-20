@@ -23,7 +23,6 @@ class Admin::DigitizationQueueItem < ApplicationRecord
   COLLECTING_AREAS = %w{archives rare_books modern_library museum}
 
   validates :collecting_area, inclusion: { in: COLLECTING_AREAS }
-  validates :collecting_area, presence: true
 
   STATUSES = %w{
     awaiting_digitization
