@@ -319,19 +319,7 @@ Rails.application.routes.draw do
     post "/batch_create", to: "batch_create#add_files" # step 2
     post "/batch_create/finish", to: "batch_create#create" # step 3, create and redirect
 
-    resources :digitization_queue_items, except: [:index, :create, :new] do
-      collection do
-        get "collecting_areas"
-
-        # index, new and create need a /$collecting_area on them.
-        constraints(proc {|params, req|
-            Admin::DigitizationQueueItem::COLLECTING_AREAS.include?(params[:collecting_area])
-        }) do
-          get ":collecting_area", to: "digitization_queue_items#index", as: ""
-          post ":collecting_area", to: "digitization_queue_items#create", as: nil
-          get ":collecting_area/new", to: "digitization_queue_items#new", as: "new"
-        end
-      end
+    resources :digitization_queue_items do
       member do
         post :add_comment
       end

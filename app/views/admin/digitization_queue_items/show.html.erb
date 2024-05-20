@@ -1,5 +1,4 @@
 <div class="mb-2">
-  <div>Digitization Queue: <%= link_to @admin_digitization_queue_item.collecting_area.humanize, admin_digitization_queue_items_url(@admin_digitization_queue_item.collecting_area) %></div>
   <h1><%= @admin_digitization_queue_item.title %></h1>
 </div>
 
@@ -30,7 +29,7 @@
       <%= queue_item_show_field(@admin_digitization_queue_item, :title) %>
 
       <dt>Collecting area</dt>
-      <dd><%= link_to @admin_digitization_queue_item.collecting_area.humanize, admin_digitization_queue_items_url(@admin_digitization_queue_item.collecting_area) %></dd>
+      <dd><%= @admin_digitization_queue_item.collecting_area.humanize %></dd>
 
       <dt>Purpose</dt>
       <dd>
