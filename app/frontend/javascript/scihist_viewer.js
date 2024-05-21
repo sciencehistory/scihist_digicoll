@@ -658,7 +658,7 @@ ScihistImageViewer.prototype.initOpenSeadragon = function() {
 ScihistImageViewer.prototype.highlightSearchResults = function() {
   const currentMemberId = this.selectedThumbData?.memberId;
 
-  const resultOverlaysForPage = this.searchResults?.highlightsByPageId( currentMemberId );
+  const resultOverlaysForPage = this.searchResults?.resultsByPageId( currentMemberId );
 
   if (resultOverlaysForPage) {
     for (let result of resultOverlaysForPage) {
@@ -667,11 +667,11 @@ ScihistImageViewer.prototype.highlightSearchResults = function() {
 
       // the bounding box is EXACTLY where OCR thinks letters stop/start. Making
       // the highlight a bit bigger looks better. let's say 1/6th of (line) height padding
-      const padding = result.height / 6;
-      const left = result.left - padding;
-      const top = result.top - padding;
-      const width = result.width + (padding * 2);
-      const height = result.height + (padding * 2);
+      const padding = result.osd_rect.height / 6;
+      const left = result.osd_rect.left - padding;
+      const top = result.osd_rect.top - padding;
+      const width = result.osd_rect.width + (padding * 2);
+      const height = result.osd_rect.height + (padding * 2);
 
       this.viewer.addOverlay({
           element: elt,

@@ -39,7 +39,7 @@ export default class ViewerSearchResults {
     //
 
     let i = 0;
-    this._highlightsByPageId = {};
+    this._resultsByPageId = {};
     for (const result of this._jsonResults) {
       // Add index number (0..n) to each result for convenience
       result['resultIndex'] = i;
@@ -51,13 +51,13 @@ export default class ViewerSearchResults {
       result['pageIndex'] = pageInfo.getIndexByMemberId(memberID);
 
       // Index each OSD highlight dimensions in a hash by member Id
-      this._highlightsByPageId[memberID] = (this._highlightsByPageId[memberID] || []);
-      this._highlightsByPageId[memberID].push(result.osd_rect);
+      this._resultsByPageId[memberID] = (this._resultsByPageId[memberID] || []);
+      this._resultsByPageId[memberID].push(result);
     }
   }
 
-  highlightsByPageId(pageId) {
-    return this._highlightsByPageId[pageId] || []
+  resultsByPageId(pageId) {
+    return this._resultsByPageId[pageId] || []
   }
 
   // straight json results from server, but with resultIndex too
