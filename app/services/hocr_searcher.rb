@@ -51,7 +51,7 @@ class HocrSearcher
   #
   #       [{
   #         "text"=>"All {{{units}}} must be connected as above",
-  #         "id" => "adf8a7dfa",
+  #         "member_id" => "adf8a7dfa",
   #         "osd_rect"=>{
   #           "left"=>0.38815,
   #           "top"=>0.18576,
@@ -70,7 +70,7 @@ class HocrSearcher
 
       matching_ocrx_words_for(parsed_hocr).collect do |ocrx_word|
         {
-          "id"  => member.friendlier_id, # for child works, viewer uses the direct member id
+          "member_id"  => member.friendlier_id, # for child works, viewer uses the direct member id
           "text" => extract_context(ocrx_word),
           "osd_rect" => extract_osd_rect(ocrx_word: ocrx_word, asset: asset)
         }

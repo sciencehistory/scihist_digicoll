@@ -7,7 +7,7 @@ export default class ViewerSearchResults {
   constructor(jsonResults, pageInfo) {
     // Results stored, enhanced with index, they should look like an array of
     // {
-    //    id: memberId,
+    //    member_id: memberId,
     //    text: snippetText,
     //    resultIndex: {0..length-1},
     //    pageIndex: {0..totalPages-1},
@@ -45,7 +45,7 @@ export default class ViewerSearchResults {
       result['resultIndex'] = i;
       i++;
 
-      const memberID = result['id'];
+      const memberID = result['member_id'];
 
       // Add the PAGE index into total page results, need for looking up results
       result['pageIndex'] = pageInfo.getIndexByMemberId(memberID);

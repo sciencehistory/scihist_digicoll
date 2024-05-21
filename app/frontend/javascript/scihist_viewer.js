@@ -739,7 +739,7 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
 
     // For each search result, we need to render it in results
     for (const result of this.searchResults.jsonResults()) {
-      const id = result['id'];
+      const id = result['member_id'];
 
       const resultHtml = document.createElement('a');
       resultHtml["href"] = "#";
@@ -769,7 +769,7 @@ ScihistImageViewer.prototype.selectSearchResult = function(resultElement) {
   this.currentSearchResult = resultData;
   document.getElementById("searchNavLabel").textContent = `${ searchResultIndex + 1 } / ${ this.searchResults.resultsCount()}`
 
-  const memberId = resultData['id'];
+  const memberId = resultData['member_id'];
 
   if (memberId != this.selectedThumbData.memberId) {
     const thumbElement = this.findThumbElement(memberId);
