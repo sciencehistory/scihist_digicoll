@@ -679,6 +679,18 @@ ScihistImageViewer.prototype.highlightSearchResults = function() {
           location: new OpenSeadragon.Rect(left, top, width, height)
       });
     }
+
+    this.setSelectedHighlight();
+  }
+}
+
+// The .viewer-search-highlight OCR highlight div for the current result
+// gets a custom class which also has an initial animation
+ScihistImageViewer.prototype.setSelectedHighlight = function() {
+  $(".viewer-search-highlight").removeClass("selected-search-highlight");
+
+  if (this.currentSearchResult) {
+    $("#" + this.currentSearchResult.result_id).addClass("selected-search-highlight");
   }
 }
 
@@ -776,6 +788,8 @@ ScihistImageViewer.prototype.selectSearchResult = function(resultElement) {
     const thumbElement = this.findThumbElement(memberId);
     this.selectThumb(thumbElement, { resetCurrentSearchResult: false });
     this.scrollSelectedIntoView();
+  } else {
+    this.setSelectedHighlight();
   }
 }
 
