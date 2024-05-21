@@ -664,6 +664,7 @@ ScihistImageViewer.prototype.highlightSearchResults = function() {
     for (let result of resultOverlaysForPage) {
       let elt = document.createElement("div");
       elt.className = "viewer-search-highlight";
+      elt.id = result.result_id;
 
       // the bounding box is EXACTLY where OCR thinks letters stop/start. Making
       // the highlight a bit bigger looks better. let's say 1/6th of (line) height padding
