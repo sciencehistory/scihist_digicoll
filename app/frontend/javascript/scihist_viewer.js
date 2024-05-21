@@ -563,6 +563,11 @@ ScihistImageViewer.prototype.downloadMenuItems = function(thumbData) {
 
   htmlElements = htmlElements.concat(
     $.map(thumbData.downloads, function(downloadElement) {
+      if (! downloadElement.url) {
+        return '<div class="px-4 text-muted text-small">' + downloadElement.label + '</div>';
+      }
+
+
       return  '<a class="dropdown-item" target="_new" data-analytics-category="Work"' +
                 ' data-analytics-action="' + (downloadElement.analyticsAction || "download") + '"' +
                 ' data-analytics-label="' + _self.workId + '"' +

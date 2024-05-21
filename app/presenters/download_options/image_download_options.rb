@@ -25,7 +25,7 @@ module DownloadOptions
       options = []
       # Sometimes we want the PDF link in the individual-image download links,
       # as per https://github.com/sciencehistory/scihist_digicoll/issues/2278 .
-      if show_pdf_link?
+      if !disabled_downloads && show_pdf_link?
         options << DownloadOption.for_on_demand_derivative(
           label: "PDF", derivative_type: "pdf_file", work_friendlier_id: @asset&.parent&.friendlier_id
         )
@@ -37,7 +37,7 @@ module DownloadOptions
 
       # For historial reasons we have two download sizes MEDIUM and LARGE,
       # but we label the medium one as "small"
-      if dl_medium = asset.file_derivatives[:download_medium]
+      if !disabled_downloads && dl_medium = asset.file_derivatives[:download_medium]
         options << DownloadOption.with_formatted_subhead("Small JPG",
           work_friendlier_id: @asset.parent&.friendlier_id,
           url: download_derivative_path(asset, :download_medium),
@@ -48,7 +48,7 @@ module DownloadOptions
         )
       end
 
-      if dl_large = asset.file_derivatives[:download_large]
+      if !disabled_downloads && dl_large = asset.file_derivatives[:download_large]
         options << DownloadOption.with_formatted_subhead("Large JPG",
           work_friendlier_id: @asset.parent&.friendlier_id,
           url: download_derivative_path(asset, :download_large),
@@ -59,7 +59,7 @@ module DownloadOptions
         )
       end
 
-      if dl_full = asset.file_derivatives[:download_full]
+      if !disabled_downloads && dl_full = asset.file_derivatives[:download_full]
         options << DownloadOption.with_formatted_subhead("Full-sized JPG",
           url: download_derivative_path(asset, :download_full),
           work_friendlier_id: @asset.parent&.friendlier_id,
@@ -70,7 +70,7 @@ module DownloadOptions
         )
       end
 
-      if asset.stored?
+      if asset.stored? && !(disabled_downloads && asset.content_type.start_with?("image/"))
         options << DownloadOption.with_formatted_subhead("Original file",
           url: download_path(asset.file_category, asset),
           work_friendlier_id: @asset.parent&.friendlier_id,
@@ -82,7 +82,16 @@ module DownloadOptions
         )
       end
 
+      if disabled_downloads && options.empty?
+        options << DownloadOption.new("Downloads temporarily unavailable", url:nil, work_friendlier_id:nil)
+      end
+
       return options
+    end
+
+    def disabled_downloads
+      # wanted to allow for logged-in users, don't have access here.
+      ScihistDigicoll::Env.lookup(:disable_downloads)
     end
 
   end

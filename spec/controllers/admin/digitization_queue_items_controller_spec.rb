@@ -13,9 +13,34 @@ RSpec.describe Admin::DigitizationQueueItemsController, :logged_in_user, type: :
       ).save!
     end
 
-    it "can show a new DQ item form" do
-      get :new, params: { collecting_area: 'archives' }
+    it "shows the list of DQ items" do
+      get :index
       expect(response.code).to eq "200"
+    end
+
+    it "shows the new item form" do
+      get :new
+      expect(response.code).to eq "200"
+    end
+
+    it "sends email on creation", queue_adapter: :test do
+      expect do
+        post :create, params: {
+            admin_digitization_queue_item: {
+              collecting_area: queue_item.collecting_area,
+              title: "newer item",
+              accession_number: queue_item.accession_number
+            }
+        }
+        expect(response.code).to eq "302"
+        expect(flash[:notice]).to match /Digitization queue item was successfully created/
+      end.to have_enqueued_job(ActionMailer::MailDeliveryJob).with { |class_name, action|
+        expect(class_name).to eq "DigitizationQueueMailer"
+        expect(action).to eq "new_item_email"
+      }
+      new_item = Admin::DigitizationQueueItem.all.last
+      expect(new_item.collecting_area).to eq "archives"
+      expect(new_item.title).to eq "newer item"
     end
 
     it "can add, then delete a comment" do
@@ -36,22 +61,30 @@ RSpec.describe Admin::DigitizationQueueItemsController, :logged_in_user, type: :
       expect(Admin::QueueItemComment.count).to eq 1
     end
 
-    it "sends email on creation", queue_adapter: :test do
-      expect do
-        post :create, params: {
-            collecting_area: queue_item.collecting_area,
-            admin_digitization_queue_item: {
-              title: "new item #{Time.now}",
-              collecting_area: queue_item.collecting_area,
-              accession_number: queue_item.accession_number
-            }
-        }
-
-        expect(flash[:notice]).to match /Digitization queue item was successfully created/
-      end.to have_enqueued_job(ActionMailer::MailDeliveryJob).with { |class_name, action|
-        expect(class_name).to eq "DigitizationQueueMailer"
-        expect(action).to eq "new_item_email"
+    it "shows an item" do
+      post :show, params: {
+        id: queue_item.id,
       }
+      expect(response.code).to eq "200"
+    end
+
+    it "updates" do
+      post :update, params: {
+        id: queue_item.id,
+        admin_digitization_queue_item: {
+          title: "new_title",
+          collecting_area: "rare_books",
+          bib_number: "12345678",
+          location: "shelf",
+        }
+      }
+      expect(response.code).to eq "302"
+      expect(flash[:notice]).to match /Digitization queue item was successfully updated/
+      new_item = Admin::DigitizationQueueItem.all.last
+      expect(new_item.collecting_area).to eq "rare_books"
+      expect(new_item.title).to eq "new_title"
+      expect(new_item.bib_number).to eq "12345678"
+      expect(new_item.location).to eq "shelf"
     end
 
     describe "with attached work" do

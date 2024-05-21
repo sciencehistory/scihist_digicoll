@@ -33,7 +33,7 @@
 #
 class DownloadsController < ApplicationController
   # Will be sent to S3 as expires_in, seconds, max 1 week.
-  URL_EXPIRES_IN = 2.days.to_i
+  URL_EXPIRES_IN = 15.minutes.to_i # reduced to try to slow down bots. was 2.days.to_i
 
   before_action :set_asset
   before_action :set_derivative, only: :derivative
@@ -41,6 +41,14 @@ class DownloadsController < ApplicationController
 
   #GET /downloads/:asset_id
   def original
+    # for IMAGES only, when we have downloads disable, simply refuse to redirect IF the user
+    # is not logged in. PHEW lots of exceptions, trying to avoid breaking LOTS of our app.
+    if ScihistDigicoll::Env.lookup(:disable_downloads) && !current_user && @asset.content_type.start_with?("image/")
+      render status: 503, plain: "Sorry, this download is currently unavailable"
+
+      return
+    end
+
     # Tell shrine url method `public:false` to make sure we get a signed URL
     # that lets us set content-disposition and content-type, even if
     # it's public in S3.
