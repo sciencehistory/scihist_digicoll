@@ -227,7 +227,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
   .selected-search-highlight {
     outline: solid 4px $shi-green-4;
     outline-offset: 3px;
-    animation: highlight-flash 0.8s ease-in-out;
+    animation: highlight-flash 0.7s ease-in-out;
   }
 
   @keyframes highlight-flash {
