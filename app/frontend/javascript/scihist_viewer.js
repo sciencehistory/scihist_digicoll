@@ -25,6 +25,8 @@
 // app, it would take signifcant more work. :(
 
 import OpenSeadragon from 'openseadragon';
+import ViewerSearchResults from '../javascript/scihist_viewer/viewer_search_results.js';
+import ViewerPageInfo from '../javascript/scihist_viewer/viewer_page_info.js';
 
 function ScihistImageViewer() {
   var modal = document.querySelector("#scihist-image-viewer-modal");
@@ -40,21 +42,17 @@ ScihistImageViewer.prototype.viewerPathComponentRe = /\/viewer\/(\w+)$/;
 // thumbnails generated and delivered in JSON info.
 ScihistImageViewer.prototype.thumbWidth = "54";
 
-// When we have search results loaded, this is an array keyed by Asset page friendlier
-// ID, whose value is an array of objects, where each has OpenSeadragon values
-// for x y width height (all proportional between 0 and 1), degrees, and anything else we need.
-// https://openseadragon.github.io/docs/OpenSeadragon.Rect.html
-//
-// {
-//   "bksm7ln" : [
-//     {"left":0.30731,"top":1.37769,"width":0.09654,"height":0.01808},
-//   ]
-// }
-//
-ScihistImageViewer.prototype.searchResultHighlightsByPage = {}
+// A ViewerPageInfo obj once loaded
+ScihistImageViewer.prototype.pageInfo = undefined;
+
+// A ViewerSearchResults obj or undefined
+ScihistImageViewer.prototype.searchResults = undefined;
 
 // and we store the current query if any
 ScihistImageViewer.prototype.currentSearchQuery = undefined;
+
+// last iterated result for next/prev through results
+ScihistImageViewer.prototype.currentSearchResult = undefined;
 
 ScihistImageViewer.prototype.findThumbElement = function(memberId) {
   return document.querySelector(".viewer-thumb-img[data-member-id='" + memberId + "']");
@@ -212,16 +210,35 @@ ScihistImageViewer.prototype.removeLoading =  function() {
   }
 };
 
-ScihistImageViewer.prototype.selectThumb = function(thumbElement) {
+// @param thumbElement a DOM element for a thumbnail in the thumbnail list, to load that image
+//
+// @param {Boolean} resetCurrentSearchResult default true, will unselect any currently selected
+//    search result, since we'e done a page change making it no longer active. But when being
+//    done as part of search navigation itself, caller can pass in false.
+//
+// @example
+//
+//     this.selectThumb(domElement)
+//     this.selectThumb(domElement, { resetCurrentSearchResult: false })
+//
+ScihistImageViewer.prototype.selectThumb = function(thumbElement , { resetCurrentSearchResult = true } = {}) {
   this.selectedThumb = thumbElement;
 
   var index = parseInt(thumbElement.getAttribute("data-index"));
   var humanIndex = index + 1;
-  this.selectedThumbData = this.thumbnailData[index];
+  this.selectedThumbData = this.pageInfo.getPageInfoByIndex(index);
 
   // toggle classes
   $('.viewer-thumbs .viewer-thumb-selected').removeClass('viewer-thumb-selected')
   thumbElement.classList.add('viewer-thumb-selected');
+
+  // Normally we reset any current search result on page change, unless this was being
+  // done to go to a search result!
+  if (this.searchResults && this.currentSearchResult && resetCurrentSearchResult) {
+    document.getElementById("searchNavLabel").textContent = this.searchResults.resultsCountMessage();
+    this.currentSearchResult = undefined;
+  }
+
 
   var id = this.selectedThumbData.memberId;
   var shouldShowInfo = this.selectedThumbData.memberShouldShowInfo;
@@ -505,6 +522,10 @@ ScihistImageViewer.prototype.initModal = function(modalElement) {
 
   }).then(function(json) {
     _self.totalCount = json.length;
+
+    _self.pageInfo = new ViewerPageInfo(json);
+
+
     _self.makeThumbnails(json);
   });
 };
@@ -512,7 +533,7 @@ ScihistImageViewer.prototype.initModal = function(modalElement) {
 // From json data describing our images, make the thumbnail sidebar
 ScihistImageViewer.prototype.makeThumbnails = function(json) {
   var _self = this;
-  _self.thumbnailData = json;
+
   var container = $(this.modal).find("#viewer-thumbs");
   $.each(json, function(index, config) {
     if (! config) {
@@ -637,7 +658,7 @@ ScihistImageViewer.prototype.initOpenSeadragon = function() {
 ScihistImageViewer.prototype.highlightSearchResults = function() {
   const currentMemberId = this.selectedThumbData?.memberId;
 
-  const resultOverlaysForPage = this.searchResultHighlightsByPage[ currentMemberId ];
+  const resultOverlaysForPage = this.searchResults?.highlightsByPageId( currentMemberId );
 
   if (resultOverlaysForPage) {
     for (let result of resultOverlaysForPage) {
@@ -701,7 +722,6 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
     }
 
     searchResultsContainer.innerHTML = "";
-
     this.storeQueryInUrl(query);
     this.currentSearchQuery = query;
 
@@ -710,38 +730,24 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
       return;
     }
 
-    let resultsCountMsg;
-    if (searchResults.length == 1) {
-      resultsCountMsg = "1 result"
-    } else {
-      resultsCountMsg = searchResults.length + " results";
-    }
 
-    searchResultsContainer.innerHTML = "<p class='font-weight-bold'>" + resultsCountMsg + "</p>";
+    // set searchResultsObject
+    this.searchResults = new ViewerSearchResults(searchResults, this.pageInfo);
 
-    // For each search result, we need to render it in results, and index
-    // it by page for showing highlights.
-    this.searchResultHighlightsByPage = {};
+    document.getElementById("searchNavLabel").textContent = this.searchResults.resultsCountMessage();
+    document.getElementById("searchNav").style.display = "flex";
 
-    for (const result of searchResults) {
+    // For each search result, we need to render it in results
+    for (const result of this.searchResults.jsonResults()) {
       const id = result['id'];
-      if (! this.searchResultHighlightsByPage[id]) {
-        this.searchResultHighlightsByPage[id] = [];
-      }
-      this.searchResultHighlightsByPage[id].push(result.osd_rect);
 
       const resultHtml = document.createElement('a');
       resultHtml["href"] = "#";
-      resultHtml.setAttribute('data-member-id', result.id);
-      resultHtml.setAttribute('data-rect-left', result.osd_rect.left);
-      resultHtml.setAttribute('data-rect-top', result.osd_rect.top);
-      resultHtml.setAttribute('data-rect-width', result.osd_rect.width);
-      resultHtml.setAttribute('data-rect-height', result.osd_rect.height);
+      resultHtml.setAttribute('data-search-result-index', result['resultIndex']);
       resultHtml.setAttribute('data-trigger', 'viewer-search-result');
       resultHtml.className = "result";
       resultHtml.innerHTML = result.text;
       searchResultsContainer.append(resultHtml)
-
     }
 
     // show highlights on current page
@@ -757,11 +763,17 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
 };
 
 ScihistImageViewer.prototype.selectSearchResult = function(resultElement) {
-  const memberId = resultElement.getAttribute('data-member-id')
+  const searchResultIndex = parseInt( resultElement.getAttribute('data-search-result-index') );
+  const resultData = this.searchResults.resultByIndex(searchResultIndex)
+
+  this.currentSearchResult = resultData;
+  document.getElementById("searchNavLabel").textContent = `${ searchResultIndex + 1 } / ${ this.searchResults.resultsCount()}`
+
+  const memberId = resultData['id'];
 
   if (memberId != this.selectedThumbData.memberId) {
     const thumbElement = this.findThumbElement(memberId);
-    this.selectThumb(thumbElement);
+    this.selectThumb(thumbElement, { resetCurrentSearchResult: false });
     this.scrollSelectedIntoView();
   }
 }
@@ -769,11 +781,14 @@ ScihistImageViewer.prototype.selectSearchResult = function(resultElement) {
 ScihistImageViewer.prototype.clearSearchResults = function() {
   const searchResultsContainer = document.querySelector(".viewer-search-area .search-results-container");
 
+  document.getElementById("searchNav").style.display = "none";
+
   this.viewer.clearOverlays();
   this.removeQueryInUrl();
   this.currentSearchQuery = undefined;
+  this.currentSearchResult = undefined;
   searchResultsContainer.innerHTML = "";
-  this.searchResultHighlightsByPage = {};
+  this.searchResults = undefined;
 }
 
 ScihistImageViewer.prototype.showSearchDrawer = function() {
@@ -796,6 +811,45 @@ ScihistImageViewer.prototype.hideSearchDrawer = function() {
   setTimeout(function() {
     _self.modal.find('.viewer-search-area').removeClass("drawer-visible");
   }, 500);
+}
+
+ScihistImageViewer.prototype.nextSearchResult = function() {
+  let gotoIndex; // 0-based index into searchResults
+
+  if (this.currentSearchResult) {
+    gotoIndex = this.currentSearchResult.resultIndex + 1;
+  } else {
+    // find next one from current page.
+    gotoIndex = this.searchResults.nextResultFromPageIndex(this.selectedThumbData.index)?.resultIndex;
+  }
+
+  // If we need to wrap around because we're too high or we didn't find one from current page,
+  // wrap around to start
+  if (gotoIndex == undefined || gotoIndex >= this.searchResults.resultsCount()) {
+    gotoIndex = 0;
+  }
+
+  const resultElement = document.querySelector(`.search-results-container *[data-search-result-index='${gotoIndex}']`);
+  this.selectSearchResult(resultElement);
+}
+
+ScihistImageViewer.prototype.previousSearchResult = function() {
+  let gotoIndex; // 0-based index into searchResults
+
+  if (this.currentSearchResult) {
+    gotoIndex = this.currentSearchResult.resultIndex - 1;
+  } else {
+    gotoIndex = this.searchResults.previousResultFromPageIndex(this.selectedThumbData.index)?.resultIndex;
+  }
+
+  // if we need to wrap around because we're too low or we didn't find one, wrap around
+  // to last result.
+  if (gotoIndex == undefined || gotoIndex < 0) {
+    gotoIndex = this.searchResults.resultsCount() - 1;
+  }
+
+  const resultElement = document.querySelector(`.search-results-container *[data-search-result-index='${gotoIndex}']`);
+  this.selectSearchResult(resultElement);
 }
 
 jQuery(document).ready(function($) {
@@ -922,7 +976,7 @@ jQuery(document).ready(function($) {
           // and go to first result if we have one, kinda hacky way to do it with
           // DOM element
           // hash
-          const firstSearchResult = chf_image_viewer().modal.find("*[data-member-id]").get(0);
+          const firstSearchResult = chf_image_viewer().modal.find(".search-results-container .result").get(0);
           if (firstSearchResult) {
             chf_image_viewer().selectSearchResult(firstSearchResult);
           }
@@ -947,6 +1001,14 @@ jQuery(document).ready(function($) {
 
     $(document).on("click", "*[data-trigger='viewer-close-search']", function(event) {
       chf_image_viewer().hideSearchDrawer();
+    });
+
+    $(document).on("click", "*[data-trigger='viewer-result-next']", function(event) {
+      chf_image_viewer().nextSearchResult();
+    });
+
+    $(document).on("click", "*[data-trigger='viewer-result-previous']", function(event) {
+      chf_image_viewer().previousSearchResult();
     });
   }
 });
