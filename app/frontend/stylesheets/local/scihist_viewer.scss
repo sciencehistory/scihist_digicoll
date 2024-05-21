@@ -231,9 +231,9 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
   }
 
   @keyframes highlight-flash {
-    0% { opacity: 0.35; }
+    0% { opacity: 0.35; outline-style: none; }
     40% { opacity: 0; }
-    70% { opacity: .5; }
+    70% { opacity: .5; outline-style: solid; }
     85% { opacity: 0; }
     100% { opacity: .35; }
   }
