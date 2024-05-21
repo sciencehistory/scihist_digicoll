@@ -19,6 +19,9 @@ describe HocrSearcher do
     expect(result['text']).to match "<mark>units</mark>"
     expect(result['osd_rect']).to be_kind_of(Hash)
 
+    # unique ids
+    expect(results.collect { |h| h["result_id"]}.uniq.length).to eq results.length
+
     # sanity check
     %w{left top height width}.each do |key|
       expect(result['osd_rect'][key]).to be_kind_of(Float)
@@ -46,6 +49,9 @@ describe HocrSearcher do
       results = searcher.results_for_osd_viewer
       expect(results).to be_kind_of(Array)
       expect(results.length).to be 2
+
+      # unique ids
+      expect(results.collect { |h| h["result_id"]}.uniq.length).to eq results.length
     end
   end
 
