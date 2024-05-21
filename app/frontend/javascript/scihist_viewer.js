@@ -750,8 +750,12 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
       searchResultsContainer.append(resultHtml)
     }
 
-    // show highlights on current page
-    this.highlightSearchResults();
+    // show highlights on current page if it's already open. otherwise
+    // highlights will be triggered in our open callback, and we don't want to
+    // double render.
+    if (this.viewer.isOpen()) {
+      this.highlightSearchResults();
+    }
   } catch (error) {
     console.log("scihist_viewer, error fetching search results: " + error.message);
     searchResultsContainer.innerHTML = "<p class='alert alert-danger' role='alert'>\
