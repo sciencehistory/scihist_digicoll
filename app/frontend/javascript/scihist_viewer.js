@@ -54,6 +54,9 @@ ScihistImageViewer.prototype.currentSearchQuery = undefined;
 // last iterated result for next/prev through results
 ScihistImageViewer.prototype.currentSearchResult = undefined;
 
+// For persisting zoom level as you change pages
+ScihistImageViewer.prototype.restoreZoomValue = undefined;
+
 ScihistImageViewer.prototype.findThumbElement = function(memberId) {
   return document.querySelector(".viewer-thumb-img[data-member-id='" + memberId + "']");
 };
@@ -249,6 +252,9 @@ ScihistImageViewer.prototype.selectThumb = function(thumbElement , { resetCurren
   // hide any currently visible alerts, they only apply to
   // previously current image.
   $(this.modal).find(".viewer-alert").remove();
+
+  // store zoom to restore same zoom, if present
+  this.restoreZoomValue = this.viewer?.viewport?.getZoom();
 
   this.viewer.close();
 
@@ -649,9 +655,27 @@ ScihistImageViewer.prototype.initOpenSeadragon = function() {
   });
 
 
-  // When a new page is loaded, we add search results overlays
+  // When a new page is loaded
   this.viewer.addHandler("open", function(event) {
+     // we add search results overlays
     _self.highlightSearchResults();
+
+    // And keep consistent zoom level
+    if (_self.restoreZoomValue) {
+      var zoomToRefPoint;
+      if (_self.restoreZoomValue <= _self.viewer.viewport.getHomeZoom()) {
+        // entirely fits on screen, center it in viewport
+        zoomToRefPoint = new OpenSeadragon.Point(0.5, 0.5);
+      } else {
+        // too big to fit on screen, align top with top, center horizontally
+        zoomToRefPoint = new OpenSeadragon.Point(0.5, 0);
+      }
+
+      // put top left corner in top left corner?
+      _self.viewer.viewport.zoomTo(_self.restoreZoomValue, zoomToRefPoint, true);
+
+      _self.restoreZoomValue = undefined;
+    }
   });
 };
 
