@@ -676,6 +676,9 @@ ScihistImageViewer.prototype.initOpenSeadragon = function() {
 
       _self.restoreZoomValue = undefined;
     }
+
+    // If we have a current search result that's off screen, pan there
+    _self.ensureCurrentResultVisible(true);
   });
 };
 
@@ -717,6 +720,28 @@ ScihistImageViewer.prototype.setSelectedHighlight = function() {
     $("#" + this.currentSearchResult.result_id).addClass("selected-search-highlight");
   }
 }
+
+// If we have a current search result that's off screen, pan there
+//
+// @param immediate {Boolean} suppress pan animation, jump immediately
+ScihistImageViewer.prototype.ensureCurrentResultVisible = function(immediate = false) {
+  if (this.currentSearchResult) {
+    const viewportBounds = this.viewer.viewport.getBounds();
+
+    // TODO make this a function in currentSearchResult please, so we can add rotate later
+    const resultBox      = new OpenSeadragon.Rect(
+      this.currentSearchResult.osd_rect.left,
+      this.currentSearchResult.osd_rect.top,
+      this.currentSearchResult.osd_rect.height,
+      this.currentSearchResult.osd_rect.width
+    ).getBoundingBox();
+
+    if (! (viewportBounds.containsPoint(resultBox.getTopLeft()) && viewportBounds.containsPoint(resultBox.getBottomRight()))) {
+      this.viewer.viewport.panTo( resultBox.getCenter(), immediate);
+    }
+  }
+}
+
 
 
 
@@ -817,6 +842,10 @@ ScihistImageViewer.prototype.selectSearchResult = function(resultElement) {
     this.selectThumb(thumbElement, { resetCurrentSearchResult: false });
     this.scrollSelectedIntoView();
   } else {
+    // If we have a current search result that's off screen, pan there
+    this.ensureCurrentResultVisible();
+
+    // And make sure current highlight is styled
     this.setSelectedHighlight();
   }
 }
@@ -902,6 +931,7 @@ jQuery(document).ready(function($) {
     var chf_image_viewer = function() {
       if (typeof _chf_image_viewer == 'undefined') {
         _chf_image_viewer = new ScihistImageViewer();
+        window.chf = _chf_image_viewer;
       }
 
       return _chf_image_viewer;
