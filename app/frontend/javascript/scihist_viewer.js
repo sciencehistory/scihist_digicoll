@@ -658,26 +658,39 @@ ScihistImageViewer.prototype.initOpenSeadragon = function() {
 ScihistImageViewer.prototype.highlightSearchResults = function() {
   const currentMemberId = this.selectedThumbData?.memberId;
 
-  const resultOverlaysForPage = this.searchResults?.highlightsByPageId( currentMemberId );
+  const resultOverlaysForPage = this.searchResults?.resultsByPageId( currentMemberId );
 
   if (resultOverlaysForPage) {
     for (let result of resultOverlaysForPage) {
       let elt = document.createElement("div");
       elt.className = "viewer-search-highlight";
+      elt.id = result.result_id;
 
       // the bounding box is EXACTLY where OCR thinks letters stop/start. Making
       // the highlight a bit bigger looks better. let's say 1/6th of (line) height padding
-      const padding = result.height / 6;
-      const left = result.left - padding;
-      const top = result.top - padding;
-      const width = result.width + (padding * 2);
-      const height = result.height + (padding * 2);
+      const padding = result.osd_rect.height / 6;
+      const left = result.osd_rect.left - padding;
+      const top = result.osd_rect.top - padding;
+      const width = result.osd_rect.width + (padding * 2);
+      const height = result.osd_rect.height + (padding * 2);
 
       this.viewer.addOverlay({
           element: elt,
           location: new OpenSeadragon.Rect(left, top, width, height)
       });
     }
+
+    this.setSelectedHighlight();
+  }
+}
+
+// The .viewer-search-highlight OCR highlight div for the current result
+// gets a custom class which also has an initial animation
+ScihistImageViewer.prototype.setSelectedHighlight = function() {
+  $(".viewer-search-highlight").removeClass("selected-search-highlight");
+
+  if (this.currentSearchResult) {
+    $("#" + this.currentSearchResult.result_id).addClass("selected-search-highlight");
   }
 }
 
@@ -739,7 +752,7 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
 
     // For each search result, we need to render it in results
     for (const result of this.searchResults.jsonResults()) {
-      const id = result['id'];
+      const id = result['member_id'];
 
       const resultHtml = document.createElement('a');
       resultHtml["href"] = "#";
@@ -773,12 +786,14 @@ ScihistImageViewer.prototype.selectSearchResult = function(resultElement) {
   this.currentSearchResult = resultData;
   document.getElementById("searchNavLabel").textContent = `${ searchResultIndex + 1 } / ${ this.searchResults.resultsCount()}`
 
-  const memberId = resultData['id'];
+  const memberId = resultData['member_id'];
 
   if (memberId != this.selectedThumbData.memberId) {
     const thumbElement = this.findThumbElement(memberId);
     this.selectThumb(thumbElement, { resetCurrentSearchResult: false });
     this.scrollSelectedIntoView();
+  } else {
+    this.setSelectedHighlight();
   }
 }
 

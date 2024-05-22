@@ -51,7 +51,8 @@ class HocrSearcher
   #
   #       [{
   #         "text"=>"All {{{units}}} must be connected as above",
-  #         "id" => "adf8a7dfa",
+  #         "member_id" => "adf8a7dfa",
+  #         "result_id" => {unique id for result},
   #         "osd_rect"=>{
   #           "left"=>0.38815,
   #           "top"=>0.18576,
@@ -68,9 +69,10 @@ class HocrSearcher
       parsed_hocr = Nokogiri::XML(asset.hocr) { |config| config.strict }
       next unless parsed_hocr.css(".ocr_page").length >= 1
 
-      matching_ocrx_words_for(parsed_hocr).collect do |ocrx_word|
+      matching_ocrx_words_for(parsed_hocr).collect.with_index do |ocrx_word, index|
         {
-          "id"  => member.friendlier_id, # for child works, viewer uses the direct member id
+          "member_id"  => member.friendlier_id, # for child works, viewer uses the direct member id
+          "result_id"  => "r_#{member.friendlier_id}_#{index}", # unique id for the result hit
           "text" => extract_context(ocrx_word),
           "osd_rect" => extract_osd_rect(ocrx_word: ocrx_word, asset: asset)
         }

@@ -223,6 +223,21 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     opacity: 0.35;
   }
 
+  // the single actually selected one gets an outline and an initial blink animation
+  .selected-search-highlight {
+    outline: solid 4px $shi-green-4;
+    outline-offset: 3px;
+    animation: highlight-flash 0.7s ease-in-out;
+  }
+
+  @keyframes highlight-flash {
+    0% { opacity: 0.35; outline-style: none; }
+    40% { opacity: 0; }
+    70% { opacity: .5; outline-style: solid; }
+    85% { opacity: 0; }
+    100% { opacity: .35; }
+  }
+
   .viewer-image-and-navbar {
     position: relative;
 

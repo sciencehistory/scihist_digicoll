@@ -14,10 +14,13 @@ describe HocrSearcher do
 
     result = results.first
     expect(result).to be_kind_of(Hash)
-    expect(result["id"]).to eq asset.friendlier_id
+    expect(result["member_id"]).to eq asset.friendlier_id
     expect(result['text']).to be_kind_of(String)
     expect(result['text']).to match "<mark>units</mark>"
     expect(result['osd_rect']).to be_kind_of(Hash)
+
+    # unique ids
+    expect(results.collect { |h| h["result_id"]}.uniq.length).to eq results.length
 
     # sanity check
     %w{left top height width}.each do |key|
@@ -46,6 +49,9 @@ describe HocrSearcher do
       results = searcher.results_for_osd_viewer
       expect(results).to be_kind_of(Array)
       expect(results.length).to be 2
+
+      # unique ids
+      expect(results.collect { |h| h["result_id"]}.uniq.length).to eq results.length
     end
   end
 
@@ -90,7 +96,7 @@ describe HocrSearcher do
       expect(results).to be_kind_of(Array)
       expect(results.length).to be 1
 
-      expect(results.first["id"]).to eq work.friendlier_id
+      expect(results.first["member_id"]).to eq work.friendlier_id
     end
   end
 
@@ -99,14 +105,14 @@ describe HocrSearcher do
 
     it "does not include unpublished asset" do
       searcher = HocrSearcher.new(work, query: "units")
-      expect(searcher.results_for_osd_viewer).not_to include(an_object_satisfying { |h| h["id"] == asset.friendlier_id })
+      expect(searcher.results_for_osd_viewer).not_to include(an_object_satisfying { |h| h["member_id"] == asset.friendlier_id })
     end
 
     context "when including unpublished" do
       it "includes unpublished asset" do
         searcher = HocrSearcher.new(work, show_unpublished: true, query: "units")
 
-        expect(searcher.results_for_osd_viewer).to include(an_object_satisfying { |h| h["id"] == asset.friendlier_id })
+        expect(searcher.results_for_osd_viewer).to include(an_object_satisfying { |h| h["member_id"] == asset.friendlier_id })
       end
     end
   end
