@@ -58,7 +58,7 @@ ScihistImageViewer.prototype.currentSearchResult = undefined;
 ScihistImageViewer.prototype.restoreZoomValue = undefined;
 
 ScihistImageViewer.prototype.findThumbElement = function(memberId) {
-  return document.querySelector(".viewer-thumb-img[data-member-id='" + memberId + "']");
+  return document.querySelector(".viewer-thumb[data-member-id='" + memberId + "']");
 };
 
 ScihistImageViewer.prototype.show = function(id) {
@@ -98,7 +98,7 @@ ScihistImageViewer.prototype.show = function(id) {
     }
     if (! selectedThumb) {
       // just use the first one
-      selectedThumb = document.querySelector(".viewer-thumb-img");
+      selectedThumb = document.querySelector(".viewer-thumb");
     }
     _self.selectThumb(selectedThumb);
 
@@ -560,17 +560,21 @@ ScihistImageViewer.prototype.makeThumbnails = function(json) {
     }
 
     var calcPixelHeight = (_self.thumbWidth / config.thumbAspectRatio).toFixed(1);
+
     container.append(
-      '<img class="lazyload viewer-thumb-img"' +
-            ' alt="Image ' + (index + 1) + '" aria-label="Image ' + (index + 1) + '"' +
-            'tabindex="0" role="button"' +
-            ' data-member-id="' + config.memberId + '"' +
-            ' data-trigger="change-viewer-source"' +
-            ' data-src="' + config.thumbSrc + '"' +
-            ' data-srcset="' +  (config.thumbSrcset || '') + '"' +
-            ' data-index="' + index + '"' +
-            ' style="height:' + calcPixelHeight + 'px;"' +
-      '>'
+      '<button type="button" class="viewer-thumb"' +
+        ' data-member-id="' + config.memberId + '"' +
+        ' data-trigger="change-viewer-source"' +
+        ' data-index="' + index + '"' +
+      '>' +
+        '<img class="lazyload"' +
+              ' alt="Image ' + (index + 1) +
+              ' data-src="' + config.thumbSrc + '"' +
+              ' data-srcset="' +  (config.thumbSrcset || '') + '"' +
+              // not totally sure if this forced height is really necessary currently, maybe for lazyload?
+              ' style="height:' + calcPixelHeight + 'px;"' +
+        '>' +
+      '</button>'
     );
   });
 };
@@ -689,7 +693,7 @@ ScihistImageViewer.prototype.initOpenSeadragon = function() {
 
       _self.restoreZoomValue = undefined;
     }
-    
+
     // If we have a current search result that's off screen, pan there
     _self.ensureCurrentResultVisible(true);
 
