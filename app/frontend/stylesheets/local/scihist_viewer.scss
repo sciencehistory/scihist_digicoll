@@ -453,7 +453,6 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       &:after {
         content: attr(data-search-result-count);
 
-        z-index: 2;
         position: absolute;
         //min-width: 56%;
         top: 50%;
