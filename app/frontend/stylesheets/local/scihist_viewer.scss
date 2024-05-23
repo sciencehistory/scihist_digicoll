@@ -418,10 +418,11 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     background-color: $dark;
     padding: 7px;
 
-    .viewer-thumb-img {
+    .viewer-thumb {
       display: inline-block; // makes FF respect width on unloaded image, not sure why needed
       max-height: 80px;
       box-sizing: content-box;
+      background: transparent;
       width: $scihist_image_viewer_thumb_width;
 
       cursor: pointer;
@@ -434,7 +435,11 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
         border: 2px solid $shi-yellow;
       }
 
-      &.lazyload, &.lazyloading, &.lazyloaded {
+      img {
+        width: 100%;
+      }
+
+      img.lazyload, img.lazyloading, img.lazyloaded {
         background: $brand-image-placeholder-color url('@/images/static-progress.svg') no-repeat;
         background-size: 34px 34px;
         background-clip: content-box;
@@ -477,8 +482,9 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       text-align: center;
       flex-shrink: 0;
 
-      .viewer-thumb-img {
+      .viewer-thumb {
         max-height: $scihist_image_viewer_thumb_width * 2;
+        overflow: hidden;
       }
     }
     .viewer-download {
