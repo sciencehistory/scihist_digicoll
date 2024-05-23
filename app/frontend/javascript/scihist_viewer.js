@@ -689,9 +689,10 @@ ScihistImageViewer.prototype.initOpenSeadragon = function() {
 
       _self.restoreZoomValue = undefined;
     }
-
+    
     // If we have a current search result that's off screen, pan there
     _self.ensureCurrentResultVisible(true);
+
   });
 };
 
