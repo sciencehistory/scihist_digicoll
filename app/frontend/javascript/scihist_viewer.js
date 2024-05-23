@@ -139,15 +139,18 @@ ScihistImageViewer.prototype.show = function(id) {
   });
 };
 
-// position can be 'start', 'end'
-ScihistImageViewer.prototype.scrollSelectedIntoView = function(position) {
+// Scroll given element into view only if it's not already in full view. Unlike built-into
+// browser function which always scrolls so it's at the top, even if it already was in view.
+//
+ScihistImageViewer.prototype.scrollElementIntoView = function(elem, container) {
   // only if the selected thing is not currently in scroll view, scroll
   // it to be so.
   // https://stackoverflow.com/a/16309126/307106
 
-  var elem = this.selectedThumb;
-
-  var container = $(".viewer-thumbs");
+  if (container == undefined) {
+    container = elem.parentNode;
+  }
+  container = $(container);
 
   var contHeight = container.height();
   var contTop = container.scrollTop();
@@ -166,12 +169,21 @@ ScihistImageViewer.prototype.scrollSelectedIntoView = function(position) {
   var isTotal = (elemTop >= 0 && elemBottom <= contHeight && elemLeft >= 0 && elemRight <= contWidth);
 
   if (! isTotal) {
-    if (position == "end") {
-      this.selectedThumb.scrollIntoView(false);
-    } else {
-      this.selectedThumb.scrollIntoView();
-    }
+    // We'd love to use smooth scroll, but bug in Chrome where it can't do two
+    // smooth scrolls at once, and we sometimes have both page thumb list and
+    // search result list.
+    // https://stackoverflow.com/questions/49318497/google-chrome-simultaneously-smooth-scrollintoview-with-more-elements-doesn
+
+    elem.scrollIntoView({
+        //behavior: 'smooth',
+        block: 'center',
+        inline: 'center'
+    });
   }
+}
+
+ScihistImageViewer.prototype.scrollSelectedIntoView = function() {
+  this.scrollElementIntoView(this.selectedThumb)
 }
 
 ScihistImageViewer.prototype.hide = function() {
@@ -238,6 +250,7 @@ ScihistImageViewer.prototype.selectThumb = function(thumbElement , { resetCurren
   // Normally we reset any current search result on page change, unless this was being
   // done to go to a search result!
   if (this.searchResults && this.currentSearchResult && resetCurrentSearchResult) {
+    $(".result.current-viewer-result").removeClass("current-viewer-result");
     document.getElementById("searchNavLabel").textContent = this.searchResults.resultsCountMessage();
     this.currentSearchResult = undefined;
   }
@@ -296,7 +309,7 @@ ScihistImageViewer.prototype.next = function() {
   var nextElement = $(this.selectedThumb).next().get(0);
   if (nextElement) {
     this.selectThumb(nextElement);
-    this.scrollSelectedIntoView("start");
+    this.scrollSelectedIntoView();
   }
 };
 
@@ -304,7 +317,7 @@ ScihistImageViewer.prototype.prev = function() {
   var prevElement = $(this.selectedThumb).prev().get(0);
   if (prevElement) {
     this.selectThumb(prevElement);
-    this.scrollSelectedIntoView("end");
+    this.scrollSelectedIntoView();
   }
 };
 
@@ -804,6 +817,11 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
 };
 
 ScihistImageViewer.prototype.selectSearchResult = function(resultElement) {
+  // Add class for highlighting search result, removing from any others
+  $(".result.current-viewer-result").removeClass("current-viewer-result")
+  $(resultElement).addClass("current-viewer-result");
+  this.scrollElementIntoView(resultElement);
+
   const searchResultIndex = parseInt( resultElement.getAttribute('data-search-result-index') );
   const resultData = this.searchResults.resultByIndex(searchResultIndex)
 
