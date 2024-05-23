@@ -836,6 +836,12 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
     if (this.viewer.isOpen()) {
       this.highlightSearchResults();
     }
+
+    // Highlight thumbs in thumblist with result count. Add data attribute,
+    // CSS will take care of rest.
+    for (const [memberId, results] of Object.entries(this.searchResults.allResultsByPageId())) {
+      document.querySelector(".viewer-thumb[data-member-id='" + memberId + "']").setAttribute("data-search-result-count", results.length);
+    }
   } catch (error) {
     console.log("scihist_viewer, error fetching search results: " + error.message);
     searchResultsContainer.innerHTML = "<p class='alert alert-danger' role='alert'>\
@@ -877,6 +883,8 @@ ScihistImageViewer.prototype.clearSearchResults = function() {
   const searchResultsContainer = document.querySelector(".viewer-search-area .search-results-container");
 
   document.getElementById("searchNav").style.display = "none";
+
+  $(".viewer-thumb[data-search-result-count]").removeAttr("data-search-result-count");
 
   this.viewer.clearOverlays();
   this.removeQueryInUrl();
