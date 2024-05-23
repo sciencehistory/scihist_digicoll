@@ -424,6 +424,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       box-sizing: content-box;
       background: transparent;
       width: $scihist_image_viewer_thumb_width;
+      position: relative; // for overlay
 
       cursor: pointer;
 
@@ -444,6 +445,28 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
         background-size: 34px 34px;
         background-clip: content-box;
         background-position: center center;
+      }
+    }
+
+    // data-search-result-count attr indicates search results to show
+    .viewer-thumb[data-search-result-count] {
+      &:after {
+        content: attr(data-search-result-count);
+
+        position: absolute;
+        //min-width: 56%;
+        top: 50%;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50%);
+
+        background-color: rgba($shi-red-1, 0.9);
+        border: 1px solid $shi-red-2;
+
+        color: $body-color;
+        font-weight: bold;
+        text-align: center;
+        font-size: $scihist_image_viewer_thumb_width * 0.4;
+        padding: 0 0.5em;
       }
     }
   }

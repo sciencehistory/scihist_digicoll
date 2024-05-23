@@ -568,7 +568,8 @@ ScihistImageViewer.prototype.makeThumbnails = function(json) {
         ' data-index="' + index + '"' +
       '>' +
         '<img class="lazyload"' +
-              ' alt="Image ' + (index + 1) +
+              ' alt="Image ' + (index + 1) + '"' +
+              ' data-base-alt="Image ' + (index + 1) + '"' +
               ' data-src="' + config.thumbSrc + '"' +
               ' data-srcset="' +  (config.thumbSrcset || '') + '"' +
               // not totally sure if this forced height is really necessary currently, maybe for lazyload?
@@ -836,6 +837,16 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
     if (this.viewer.isOpen()) {
       this.highlightSearchResults();
     }
+
+    // Highlight thumbs in thumblist with result count. Add data attribute,
+    // CSS will take care of rest.
+    for (const [memberId, results] of Object.entries(this.searchResults.allResultsByPageId())) {
+      const elt = document.querySelector(".viewer-thumb[data-member-id='" + memberId + "']");
+      const imgElt = elt.querySelector("img");
+
+      elt.setAttribute("data-search-result-count", results.length);
+      imgElt.setAttribute("alt", imgElt.getAttribute("data-base-alt") + " (" + results.length + " results)");
+    }
   } catch (error) {
     console.log("scihist_viewer, error fetching search results: " + error.message);
     searchResultsContainer.innerHTML = "<p class='alert alert-danger' role='alert'>\
@@ -877,6 +888,13 @@ ScihistImageViewer.prototype.clearSearchResults = function() {
   const searchResultsContainer = document.querySelector(".viewer-search-area .search-results-container");
 
   document.getElementById("searchNav").style.display = "none";
+
+  document.querySelectorAll(".viewer-thumb[data-search-result-count]").forEach(function(el) {
+    el.removeAttribute("data-search-result-count");
+
+    const imgElt = el.querySelector("img");
+    imgElt.setAttribute("alt", imgElt.getAttribute("data-base-alt"));
+  });
 
   this.viewer.clearOverlays();
   this.removeQueryInUrl();

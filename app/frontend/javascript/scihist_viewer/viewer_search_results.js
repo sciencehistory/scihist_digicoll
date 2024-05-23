@@ -60,6 +60,10 @@ export default class ViewerSearchResults {
     return this._resultsByPageId[pageId] || []
   }
 
+  allResultsByPageId() {
+    return this._resultsByPageId;
+  }
+
   // straight json results from server, but with resultIndex too
   jsonResults() {
     return this._jsonResults;
