@@ -194,7 +194,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     }
 
     .search-results-container {
-      padding: 0 $paragraph-spacer $paragraph-spacer $paragraph-spacer;
+      padding: 0 ($paragraph-spacer * 0.5) $paragraph-spacer ($paragraph-spacer * 0.5);
       flex-grow: 1;
       overflow-y: scroll;
       overflow-x: hidden;
@@ -210,10 +210,18 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     .result {
       color: $body-color;
       display: block;
-      margin-bottom: $paragraph-spacer * 2;
+      // padding so highlighted background will include it
+      padding: $paragraph-spacer ($paragraph-spacer * 0.5);
+      // invisible border so adding a border for current doens't change size
+      border: 1px solid transparent;
 
       mark {
         background-color: $shi-red-1;
+      }
+
+      &.current-viewer-result {
+        border: 1px solid $body-color;
+        background-color: $shi-chartreuse-2;
       }
     }
   }
@@ -410,11 +418,13 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     background-color: $dark;
     padding: 7px;
 
-    .viewer-thumb-img {
+    .viewer-thumb {
       display: inline-block; // makes FF respect width on unloaded image, not sure why needed
       max-height: 80px;
       box-sizing: content-box;
+      background: transparent;
       width: $scihist_image_viewer_thumb_width;
+      position: relative; // for overlay
 
       cursor: pointer;
 
@@ -426,11 +436,37 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
         border: 2px solid $shi-yellow;
       }
 
-      &.lazyload, &.lazyloading, &.lazyloaded {
+      img {
+        width: 100%;
+      }
+
+      img.lazyload, img.lazyloading, img.lazyloaded {
         background: $brand-image-placeholder-color url('@/images/static-progress.svg') no-repeat;
         background-size: 34px 34px;
         background-clip: content-box;
         background-position: center center;
+      }
+    }
+
+    // data-search-result-count attr indicates search results to show
+    .viewer-thumb[data-search-result-count] {
+      &:after {
+        content: attr(data-search-result-count);
+
+        position: absolute;
+        //min-width: 56%;
+        top: 50%;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50%);
+
+        background-color: rgba($shi-red-1, 0.9);
+        border: 1px solid $shi-red-2;
+
+        color: $body-color;
+        font-weight: bold;
+        text-align: center;
+        font-size: $scihist_image_viewer_thumb_width * 0.4;
+        padding: 0 0.5em;
       }
     }
   }
@@ -469,8 +505,9 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       text-align: center;
       flex-shrink: 0;
 
-      .viewer-thumb-img {
+      .viewer-thumb {
         max-height: $scihist_image_viewer_thumb_width * 2;
+        overflow: hidden;
       }
     }
     .viewer-download {

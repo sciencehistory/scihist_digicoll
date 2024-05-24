@@ -54,8 +54,11 @@ ScihistImageViewer.prototype.currentSearchQuery = undefined;
 // last iterated result for next/prev through results
 ScihistImageViewer.prototype.currentSearchResult = undefined;
 
+// For persisting zoom level as you change pages
+ScihistImageViewer.prototype.restoreZoomValue = undefined;
+
 ScihistImageViewer.prototype.findThumbElement = function(memberId) {
-  return document.querySelector(".viewer-thumb-img[data-member-id='" + memberId + "']");
+  return document.querySelector(".viewer-thumb[data-member-id='" + memberId + "']");
 };
 
 ScihistImageViewer.prototype.show = function(id) {
@@ -95,7 +98,7 @@ ScihistImageViewer.prototype.show = function(id) {
     }
     if (! selectedThumb) {
       // just use the first one
-      selectedThumb = document.querySelector(".viewer-thumb-img");
+      selectedThumb = document.querySelector(".viewer-thumb");
     }
     _self.selectThumb(selectedThumb);
 
@@ -136,15 +139,18 @@ ScihistImageViewer.prototype.show = function(id) {
   });
 };
 
-// position can be 'start', 'end'
-ScihistImageViewer.prototype.scrollSelectedIntoView = function(position) {
+// Scroll given element into view only if it's not already in full view. Unlike built-into
+// browser function which always scrolls so it's at the top, even if it already was in view.
+//
+ScihistImageViewer.prototype.scrollElementIntoView = function(elem, container) {
   // only if the selected thing is not currently in scroll view, scroll
   // it to be so.
   // https://stackoverflow.com/a/16309126/307106
 
-  var elem = this.selectedThumb;
-
-  var container = $(".viewer-thumbs");
+  if (container == undefined) {
+    container = elem.parentNode;
+  }
+  container = $(container);
 
   var contHeight = container.height();
   var contTop = container.scrollTop();
@@ -163,12 +169,21 @@ ScihistImageViewer.prototype.scrollSelectedIntoView = function(position) {
   var isTotal = (elemTop >= 0 && elemBottom <= contHeight && elemLeft >= 0 && elemRight <= contWidth);
 
   if (! isTotal) {
-    if (position == "end") {
-      this.selectedThumb.scrollIntoView(false);
-    } else {
-      this.selectedThumb.scrollIntoView();
-    }
+    // We'd love to use smooth scroll, but bug in Chrome where it can't do two
+    // smooth scrolls at once, and we sometimes have both page thumb list and
+    // search result list.
+    // https://stackoverflow.com/questions/49318497/google-chrome-simultaneously-smooth-scrollintoview-with-more-elements-doesn
+
+    elem.scrollIntoView({
+        //behavior: 'smooth',
+        block: 'center',
+        inline: 'center'
+    });
   }
+}
+
+ScihistImageViewer.prototype.scrollSelectedIntoView = function() {
+  this.scrollElementIntoView(this.selectedThumb)
 }
 
 ScihistImageViewer.prototype.hide = function() {
@@ -235,6 +250,7 @@ ScihistImageViewer.prototype.selectThumb = function(thumbElement , { resetCurren
   // Normally we reset any current search result on page change, unless this was being
   // done to go to a search result!
   if (this.searchResults && this.currentSearchResult && resetCurrentSearchResult) {
+    $(".result.current-viewer-result").removeClass("current-viewer-result");
     document.getElementById("searchNavLabel").textContent = this.searchResults.resultsCountMessage();
     this.currentSearchResult = undefined;
   }
@@ -249,6 +265,9 @@ ScihistImageViewer.prototype.selectThumb = function(thumbElement , { resetCurren
   // hide any currently visible alerts, they only apply to
   // previously current image.
   $(this.modal).find(".viewer-alert").remove();
+
+  // store zoom to restore same zoom, if present
+  this.restoreZoomValue = this.viewer?.viewport?.getZoom();
 
   this.viewer.close();
 
@@ -290,7 +309,7 @@ ScihistImageViewer.prototype.next = function() {
   var nextElement = $(this.selectedThumb).next().get(0);
   if (nextElement) {
     this.selectThumb(nextElement);
-    this.scrollSelectedIntoView("start");
+    this.scrollSelectedIntoView();
   }
 };
 
@@ -298,7 +317,7 @@ ScihistImageViewer.prototype.prev = function() {
   var prevElement = $(this.selectedThumb).prev().get(0);
   if (prevElement) {
     this.selectThumb(prevElement);
-    this.scrollSelectedIntoView("end");
+    this.scrollSelectedIntoView();
   }
 };
 
@@ -541,17 +560,22 @@ ScihistImageViewer.prototype.makeThumbnails = function(json) {
     }
 
     var calcPixelHeight = (_self.thumbWidth / config.thumbAspectRatio).toFixed(1);
+
     container.append(
-      '<img class="lazyload viewer-thumb-img"' +
-            ' alt="Image ' + (index + 1) + '" aria-label="Image ' + (index + 1) + '"' +
-            'tabindex="0" role="button"' +
-            ' data-member-id="' + config.memberId + '"' +
-            ' data-trigger="change-viewer-source"' +
-            ' data-src="' + config.thumbSrc + '"' +
-            ' data-srcset="' +  (config.thumbSrcset || '') + '"' +
-            ' data-index="' + index + '"' +
-            ' style="height:' + calcPixelHeight + 'px;"' +
-      '>'
+      '<button type="button" class="viewer-thumb"' +
+        ' data-member-id="' + config.memberId + '"' +
+        ' data-trigger="change-viewer-source"' +
+        ' data-index="' + index + '"' +
+      '>' +
+        '<img class="lazyload"' +
+              ' alt="Image ' + (index + 1) + '"' +
+              ' data-base-alt="Image ' + (index + 1) + '"' +
+              ' data-src="' + config.thumbSrc + '"' +
+              ' data-srcset="' +  (config.thumbSrcset || '') + '"' +
+              // not totally sure if this forced height is really necessary currently, maybe for lazyload?
+              ' style="height:' + calcPixelHeight + 'px;"' +
+        '>' +
+      '</button>'
     );
   });
 };
@@ -649,9 +673,31 @@ ScihistImageViewer.prototype.initOpenSeadragon = function() {
   });
 
 
-  // When a new page is loaded, we add search results overlays
+  // When a new page is loaded
   this.viewer.addHandler("open", function(event) {
+     // we add search results overlays
     _self.highlightSearchResults();
+
+    // And keep consistent zoom level
+    if (_self.restoreZoomValue) {
+      var zoomToRefPoint;
+      if (_self.restoreZoomValue <= _self.viewer.viewport.getHomeZoom()) {
+        // entirely fits on screen, center it in viewport
+        zoomToRefPoint = new OpenSeadragon.Point(0.5, 0.5);
+      } else {
+        // too big to fit on screen, align top with top, center horizontally
+        zoomToRefPoint = new OpenSeadragon.Point(0.5, 0);
+      }
+
+      // put top left corner in top left corner?
+      _self.viewer.viewport.zoomTo(_self.restoreZoomValue, zoomToRefPoint, true);
+
+      _self.restoreZoomValue = undefined;
+    }
+
+    // If we have a current search result that's off screen, pan there
+    _self.ensureCurrentResultVisible(true);
+
   });
 };
 
@@ -693,6 +739,28 @@ ScihistImageViewer.prototype.setSelectedHighlight = function() {
     $("#" + this.currentSearchResult.result_id).addClass("selected-search-highlight");
   }
 }
+
+// If we have a current search result that's off screen, pan there
+//
+// @param immediate {Boolean} suppress pan animation, jump immediately
+ScihistImageViewer.prototype.ensureCurrentResultVisible = function(immediate = false) {
+  if (this.currentSearchResult) {
+    const viewportBounds = this.viewer.viewport.getBounds();
+
+    // TODO make this a function in currentSearchResult please, so we can add rotate later
+    const resultBox      = new OpenSeadragon.Rect(
+      this.currentSearchResult.osd_rect.left,
+      this.currentSearchResult.osd_rect.top,
+      this.currentSearchResult.osd_rect.height,
+      this.currentSearchResult.osd_rect.width
+    ).getBoundingBox();
+
+    if (! (viewportBounds.containsPoint(resultBox.getTopLeft()) && viewportBounds.containsPoint(resultBox.getBottomRight()))) {
+      this.viewer.viewport.panTo( resultBox.getCenter(), immediate);
+    }
+  }
+}
+
 
 
 
@@ -769,6 +837,16 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
     if (this.viewer.isOpen()) {
       this.highlightSearchResults();
     }
+
+    // Highlight thumbs in thumblist with result count. Add data attribute,
+    // CSS will take care of rest.
+    for (const [memberId, results] of Object.entries(this.searchResults.allResultsByPageId())) {
+      const elt = document.querySelector(".viewer-thumb[data-member-id='" + memberId + "']");
+      const imgElt = elt.querySelector("img");
+
+      elt.setAttribute("data-search-result-count", results.length);
+      imgElt.setAttribute("alt", imgElt.getAttribute("data-base-alt") + " (" + results.length + " results)");
+    }
   } catch (error) {
     console.log("scihist_viewer, error fetching search results: " + error.message);
     searchResultsContainer.innerHTML = "<p class='alert alert-danger' role='alert'>\
@@ -780,6 +858,11 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
 };
 
 ScihistImageViewer.prototype.selectSearchResult = function(resultElement) {
+  // Add class for highlighting search result, removing from any others
+  $(".result.current-viewer-result").removeClass("current-viewer-result")
+  $(resultElement).addClass("current-viewer-result");
+  this.scrollElementIntoView(resultElement);
+
   const searchResultIndex = parseInt( resultElement.getAttribute('data-search-result-index') );
   const resultData = this.searchResults.resultByIndex(searchResultIndex)
 
@@ -793,6 +876,10 @@ ScihistImageViewer.prototype.selectSearchResult = function(resultElement) {
     this.selectThumb(thumbElement, { resetCurrentSearchResult: false });
     this.scrollSelectedIntoView();
   } else {
+    // If we have a current search result that's off screen, pan there
+    this.ensureCurrentResultVisible();
+
+    // And make sure current highlight is styled
     this.setSelectedHighlight();
   }
 }
@@ -801,6 +888,13 @@ ScihistImageViewer.prototype.clearSearchResults = function() {
   const searchResultsContainer = document.querySelector(".viewer-search-area .search-results-container");
 
   document.getElementById("searchNav").style.display = "none";
+
+  document.querySelectorAll(".viewer-thumb[data-search-result-count]").forEach(function(el) {
+    el.removeAttribute("data-search-result-count");
+
+    const imgElt = el.querySelector("img");
+    imgElt.setAttribute("alt", imgElt.getAttribute("data-base-alt"));
+  });
 
   this.viewer.clearOverlays();
   this.removeQueryInUrl();
@@ -878,6 +972,7 @@ jQuery(document).ready(function($) {
     var chf_image_viewer = function() {
       if (typeof _chf_image_viewer == 'undefined') {
         _chf_image_viewer = new ScihistImageViewer();
+        window.chf = _chf_image_viewer;
       }
 
       return _chf_image_viewer;

@@ -48,8 +48,14 @@
 
 
               <div class="viewer-image" id="openseadragon-container" data-alert-container>
-                <button href="#" id="viewer-left" class="viewer-image-prev" data-trigger="viewer-prev" aria-label="Previous image" tabindex="0"><i class="fa fa-chevron-left" title="Previous"></i></button>
-                <button href="#" id="viewer-right" class="viewer-image-next" data-trigger="viewer-next" aria-label="Next image" tabindex="0"><i class="fa fa-chevron-right" title="Next"></i></button>
+                <button href="#" id="viewer-left" class="viewer-image-prev" data-trigger="viewer-prev" aria-label="Previous image" tabindex="0">
+                  <i class="fa fa-chevron-left" title="Previous"></i>
+                  <span class="sr-only">Prevoius image</span>
+                </button>
+                <button href="#" id="viewer-right" class="viewer-image-next" data-trigger="viewer-next" aria-label="Next image" tabindex="0">
+                  <i class="fa fa-chevron-right" title="Next"></i>
+                  <span class="sr-only">Next image</span>
+                </button>
               </div>
 
               <%= render "scihist_image_viewer/scihist_viewer_navbar", work: work %>
