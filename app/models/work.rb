@@ -56,7 +56,7 @@ class Work < Kithe::Work
       # ignore child works here.
       all_members = record.send(attribute)
       all_members.each do |mem|
-        if mem.is_a?(Asset) && mem.promotion_failed?
+        if mem.asset? && !mem.stored?
           Rails.logger.warn("Work '#{record.friendlier_id}' couldn't be published. Something was wrong with asset '#{mem.friendlier_id}'")
           record.errors.add :members, "Asset #{mem.title} (id #{mem.friendlier_id}) has something wrong with its file."
         end
