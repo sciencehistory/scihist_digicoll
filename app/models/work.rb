@@ -51,28 +51,6 @@ class Work < Kithe::Work
     work.validates_presence_of :rights
   end
 
-  # class AllMembersHaveValidFilesValidator < ActiveModel::EachValidator
-  #   def validate_each(record, attribute, value)
-  #     #return true if record.send('published?')
-  #     # ignore child works here.
-  #     all_members = record.send(attribute)
-  #     all_members.each do |mem|
-  #       if mem.asset? && mem.promotion_failed?
-  #         Rails.logger.warn("Work '#{record.friendlier_id}' couldn't be published. Something was wrong with asset '#{mem.friendlier_id}'")
-  #         record.errors.add :members, "Asset #{mem.title} (id #{mem.friendlier_id}) has something wrong with its file."
-  #       end
-  #     end
-  #   end
-  # end
-
-  # # If one of the files attached to this work's members has
-  # # zero length or isn't recognized as a valid file, you can't publish the work.
-  # This hits the DB only once:
-  #   SELECT kithe_models.friendlier_id,
-  #       kithe_models.file_data -> 'metadata' -> 'promotion_validation_errors'
-  #       FROM "kithe_models"
-  #       WHERE "kithe_models"."parent_id" = $1
-  #
   class AllMembersHaveValidFilesValidator < ActiveModel::Validator
     def validate(record)
       return true unless record.published?
