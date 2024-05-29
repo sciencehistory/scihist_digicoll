@@ -166,7 +166,8 @@ ScihistImageViewer.prototype.scrollElementIntoView = function(elem, container) {
   var elemLeft = $(elem).offset().left - container.offset().left;
   var elemRight = elemLeft + $(elem).width();
 
-  var isTotal = (elemTop >= 0 && elemBottom <= contHeight && elemLeft >= 0 && elemRight <= contWidth);
+  // Not sure why the +1 correction was needed
+  var isTotal = (elemTop >= 0 && elemBottom <= contHeight+1 && elemLeft >= 0 && elemRight <= contWidth);
 
   if (! isTotal) {
     // We'd love to use smooth scroll, but bug in Chrome where it can't do two
