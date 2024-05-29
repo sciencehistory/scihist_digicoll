@@ -403,11 +403,9 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     white-space: nowrap;
     overflow-x: auto;
     background-color: $dark;
-    padding: 7px;
 
     .viewer-thumb {
       display: inline-block; // makes FF respect width on unloaded image, not sure why needed
-      max-height: 80px;
       box-sizing: content-box;
       background: transparent;
       width: $scihist_image_viewer_thumb_width;
@@ -415,12 +413,28 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
 
       cursor: pointer;
 
-      // leave transparent space for selected border
-      border: 2px solid transparent;
-      padding: 1px;
+      margin: 5px;
+      border: 0;
+      padding: 0;
 
-      &.viewer-thumb-selected {
-        border: 2px solid $shi-yellow;
+      // Add an outline around current displayed thumb -- we add it over img
+      // inside of button, so that browser focus overlay for keyboard nav accessibility
+      // can still show on button itself over on top. (Although I dunno how visible it really is...)
+      &.viewer-thumb-selected img {
+        outline: 4px solid $shi-yellow;
+        outline-offset: 2px;
+      }
+
+      // Add semi-transparent overlay over current displayed thumb
+      &.viewer-thumb-selected:before {
+        content: " ";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+
+        background-color: rgba($shi-chartreuse-2, 0.7);
       }
 
       img {
@@ -488,12 +502,17 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       white-space: normal;
       overflow-y: auto;
       overflow-x: hidden;
-      // 20px, need to leave enough room for scroll-bar on browsers that count that inside
-      width: calc(#{$scihist_image_viewer_thumb_width} * 2 + 7px * 3 + 22px);
+      // Two images, 5px margin between them, and leave enough
+      // room for scrollbar on browsers that take this up internal (22), plus an extra 5px
+      // just for some extra padding looks better.
+      width: calc(#{$scihist_image_viewer_thumb_width} * 2 + (5px * 3) + 22px + 5px);
       text-align: center;
       flex-shrink: 0;
 
-      .viewer-thumb {
+      // If thumb image is very vertical aspect ratio, clip it to 1:2
+      .viewer-thumb img {
+        object-fit: cover;
+        object-position: 0 0;
         max-height: $scihist_image_viewer_thumb_width * 2;
         overflow: hidden;
       }
