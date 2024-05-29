@@ -428,12 +428,27 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
 
       cursor: pointer;
 
-      // leave transparent space for selected border
-      border: 2px solid transparent;
-      padding: 1px;
+      margin: 5px;
+      border: 0;
+      padding: 0;
 
-      &.viewer-thumb-selected {
-        border: 2px solid $shi-yellow;
+      // Add an outline around current displayed thumb, but not when browser is
+      // applying a focus outline for accessibility
+      &.viewer-thumb-selected:not(:focus-visible) {
+        outline: 4px solid $shi-yellow;
+        outline-offset: 2px;
+      }
+
+      // Add semi-transparent overlay over current displayed thumb
+      &.viewer-thumb-selected:before {
+        content: " ";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+
+        background-color: rgba($shi-chartreuse-2, 0.7);
       }
 
       img {
@@ -505,7 +520,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       text-align: center;
       flex-shrink: 0;
 
-      .viewer-thumb {
+      .viewer-thumb img {
         max-height: $scihist_image_viewer_thumb_width * 2;
         overflow: hidden;
       }
