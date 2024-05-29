@@ -70,19 +70,6 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
   }
 }
 
-// TEMPORARY hide search entirely on small screens
-// Needs to correspond to same place viewer nav goes vertical below
-@media (max-width: 767px) {
-  .work-page-viewer-search-controls {
-    display: none !important;
-  }
- .scihist-image-viewer {
-    .viewer-search-area, .viewer-search-open {
-      display: none !important;
-    }
-  }
-}
-
 // Now styles for our actual viewer, which happens to be inside a bootstrap modal.
 .scihist-image-viewer {
   background-color: $body-bg;
@@ -480,8 +467,9 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     }
   }
 
+  $viewer-collapse-point: 768px;
   // At larger screen sizes, thumbs go to a sidebar with multiple columns
-  @media (min-width: 768px) {
+  @media (min-width: $viewer-collapse-point) {
     // sorry the selectors get crazy unpredictable to ensure specificity
     // for override. needs refactor.
 
@@ -515,6 +503,41 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     }
     .viewer-image-and-navbar .viewer-navbar-label {
       display: inline;
+    }
+  }
+
+  // When we break down to vertical stack for mobile screen, we need to
+  // deal with our search-inside feature: hide snippet results; format
+  // the search box for full-width; disable animation that can't work
+  // with auto height.
+  //
+  // Sorry we do this as an override on small screen instead of override in the
+  // reverse direction above.
+  @media (max-width: $viewer-collapse-point - 1) {
+    .viewer-search-area {
+      width: auto;
+      margin-left: 0;
+      transition: none;
+      display: none;
+      border-right: none;
+      border-bottom: 2px solid $dark;
+
+      &.slid-in {
+        display: inherit;
+      }
+
+      .viewer-search-controls {
+        padding: 0.5rem;
+      }
+
+      .close-search-area {
+        // make close arrow point up why not
+        transform: rotate(90deg);
+      }
+    }
+
+    .viewer-search-area .search-results-container {
+      display: none;
     }
   }
 }
