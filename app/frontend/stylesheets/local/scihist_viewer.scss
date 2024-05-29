@@ -432,9 +432,10 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       border: 0;
       padding: 0;
 
-      // Add an outline around current displayed thumb, but not when browser is
-      // applying a focus outline for accessibility
-      &.viewer-thumb-selected:not(:focus-visible) {
+      // Add an outline around current displayed thumb -- we add it over img
+      // inside of button, so that browser focus overlay for keyboard nav accessibility
+      // can still show on button itself over on top. (Although I dunno how visible it really is...)
+      &.viewer-thumb-selected img {
         outline: 4px solid $shi-yellow;
         outline-offset: 2px;
       }
