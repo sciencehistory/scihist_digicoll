@@ -14,11 +14,12 @@ gem 'lockbox'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 7.1.3'
 
-# While rails 7.1 supports rack 3, other things we're using actually don't yet,
-# but bundler can incorrectly resolve to REALLY OLD verisons of dependencies
-# if we don't tell it, actually, we're not ready for rack 3. See:
+# Ensure we are using rack 3, with a new sinatra that can use it. Both of these
+# are indirect dependencies, in here only to force bundler NOT to do a weird
+# resolution to old versions of sinatra!
 # https://bibwild.wordpress.com/2023/11/09/beware-sinatra-rails-7-1-rack-3-resque-bundler-dependency-resolution/
-gem "rack", "~> 2.2"
+gem "rack", ">= 3.0"
+gem "sinatra", ">= 4.0"
 
 # Our JS/CSS/asset bundler
 # After updating, you always need to run `bundle exec vite upgrade` to update JS packages to match
