@@ -438,6 +438,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       }
 
       img {
+        display: inline-block;
         width: 100%;
       }
 
