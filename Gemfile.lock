@@ -210,6 +210,7 @@ GEM
       csl (~> 2.0)
     css_parser (1.17.1)
       addressable
+    csv (3.3.0)
     dalli (3.2.8)
     database_cleaner (2.0.2)
       database_cleaner-active_record (>= 2, < 3)
@@ -779,6 +780,7 @@ DEPENDENCIES
   citeproc-ruby (~> 2.0)
   content_disposition (~> 1.0)
   csl-styles (~> 2.0)
+  csv (~> 3.3.0)
   dalli (~> 3.2)
   database_cleaner (~> 2.0)
   db-query-matchers (< 2.0)

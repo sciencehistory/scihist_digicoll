@@ -256,6 +256,8 @@ end
  gem "faraday", "~> 2.0"
  gem "faraday-retry", "~> 2.0"
 
+ gem "csv", "~> 3.3.0"
+
 
 # Barnes reports Ruby runtime metrics to Heroku, where we can monitor them.
 # See https://devcenter.heroku.com/articles/language-runtime-metrics-ruby
