@@ -440,13 +440,22 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       img {
         display: inline-block;
         width: 100%;
-      }
 
-      img.lazyload, img.lazyloading, img.lazyloaded {
-        background: $brand-image-placeholder-color url('@/images/static-progress.svg') no-repeat;
-        background-size: 34px 34px;
-        background-clip: content-box;
-        background-position: center center;
+        // img before will be shown as placeholder when img is not yet loaded eg from lazy loading,
+        // but won't show up when image is loaded
+        &:after {
+          content: " ";
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+
+          background: $brand-image-placeholder-color url('@/images/static-progress.svg') no-repeat;
+          background-size: 34px 34px;
+          background-clip: content-box;
+          background-position: center center;
+        }
       }
     }
 
