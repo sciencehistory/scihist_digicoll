@@ -268,6 +268,13 @@ class Admin::WorksController < AdminController
   def publish
     authorize! :publish, @work
 
+    unless member_files_valid?(@work)
+      redirect_to admin_work_path(@work, anchor: "tab=nav-members"), flash: {
+        error: "Can't publish this work. One or more assets has invalid files."
+      }
+      return
+    end
+
     @work.class.transaction do
       @work.update!(published: true)
       if params[:cascade] == 'true'
@@ -278,6 +285,7 @@ class Admin::WorksController < AdminController
     end
 
     redirect_to admin_work_url(@work)
+
   rescue ActiveRecord::RecordInvalid => e
     # probably because missing a field required for a work to be published, but
     # could apply to a CHILD work, not just the parent you actually may have clicked 'publish'
@@ -458,6 +466,18 @@ class Admin::WorksController < AdminController
       raise ArgumentError.new("Need `publish` param to be `on` or off`")
     end
 
+    # Check works in cart for invalid files.
+    # Hits the DB once for each work checked.
+    # Fail on first error and redirect to the cart.
+    # Trouble with asset promotion is prominently noted in the UI,
+    # so we don't need to do a lot of reporting here.
+    current_user.works_in_cart.find_each do |work|
+      unless member_files_valid?(work)
+        redirect_to admin_cart_items_url, flash: { error: "No changes made due to error: \"#{work.title}\" (#{work.friendlier_id}) contains one or more assets with invalid files." }
+        return
+      end
+    end
+
     publish_value = params[:publish] == "on"
 
     Work.transaction do
@@ -502,6 +522,24 @@ class Admin::WorksController < AdminController
           format.json { render json: { error: notice }, status: 422 }
         end
       end
+    end
+
+    # Check all asset members of a work (ignoring child works) to see if any have an invalid file  (e.g. zero length).
+    # Problems are noted in the logs.
+    def member_files_valid?(work)
+      result = true
+      cols = [
+        "kithe_models.friendlier_id",
+        "kithe_models.file_data -> 'metadata' -> 'promotion_validation_errors'"
+      ].join(",")
+      promotion_errors = work.members.pluck(Arel.sql(cols)).to_h
+      promotion_errors.each do |id, promotion_errors|
+        unless promotion_errors.nil?
+          Rails.logger.warn("Work '#{work.friendlier_id}' couldn't be published. Something was wrong with the file for asset '#{id}.'")
+          result = false
+        end
+      end
+      result
     end
 
 
