@@ -51,25 +51,6 @@ class Work < Kithe::Work
     work.validates_presence_of :rights
   end
 
-  class AllMembersHaveValidFilesValidator < ActiveModel::Validator
-    def validate(record)
-      return true unless record.published?
-      cols = [
-        "kithe_models.friendlier_id",
-        "kithe_models.file_data -> 'metadata' -> 'promotion_validation_errors'"
-      ].join(",")
-      promotion_errors = record.members.pluck(Arel.sql(cols)).to_h
-      promotion_errors.each do |id, promotion_errors|
-        unless promotion_errors.nil?
-           Rails.logger.warn("Work '#{record.friendlier_id}' couldn't be published. Something was wrong with asset '#{id}'")
-           record.errors.add :members, "Could not publish work '#{record.friendlier_id}'. Member asset id #{id} has something wrong with its file."
-        end 
-      end
-    end
-  end
-
-  validates_with AllMembersHaveValidFilesValidator
-
   attr_json :review_requested, :boolean
   attr_json :review_requested_at, :datetime
   attr_json :review_requested_by, :string
