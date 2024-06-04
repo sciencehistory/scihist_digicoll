@@ -647,6 +647,8 @@ ScihistImageViewer.prototype.initOpenSeadragon = function() {
 
     tabIndex: "",
 
+    zoomPerClick: "1.5", // default 2, zoom slower
+
     preserveImageSizeOnResize: true,
 
     gestureSettingsTouch: {
