@@ -268,9 +268,10 @@ class Admin::WorksController < AdminController
   def publish
     authorize! :publish, @work
 
-    unless member_files_valid?(@work)
+    # Check for e.g. zero-length files.
+    unless works_with_members_with_invalid_files([@work]).empty?
       redirect_to admin_work_path(@work, anchor: "tab=nav-members"), flash: {
-        error: "Can't publish this work. One or more assets has invalid files."
+        error: "Can't publish this work. One or more of its assets has invalid files."
       }
       return
     end
@@ -467,17 +468,12 @@ class Admin::WorksController < AdminController
     end
 
     # Check works in cart for invalid files.
-    # Hits the DB once for each work checked.
-    # Fail on first error and redirect to the cart.
-    # Trouble with asset promotion is prominently noted in the UI,
-    # so we don't need to do a lot of reporting here.
-    current_user.works_in_cart.find_each do |work|
-      unless member_files_valid?(work)
-        redirect_to admin_cart_items_url, flash: { error: "No changes made due to error: \"#{work.title}\" (#{work.friendlier_id}) contains one or more assets with invalid files." }
-        return
-      end
+    unpublishable_works = works_with_members_with_invalid_files(current_user.works_in_cart)
+    unless unpublishable_works.empty?
+      example_work = unpublishable_works.first
+      redirect_to admin_cart_items_url, flash: { error: "No changes made due to error: \"#{example_work.title}\" (#{example_work.friendlier_id}) contains one or more assets with invalid files." }
+      return
     end
-
     publish_value = params[:publish] == "on"
 
     Work.transaction do
@@ -524,22 +520,25 @@ class Admin::WorksController < AdminController
       end
     end
 
-    # Check all asset members of a work (ignoring child works) to see if any have an invalid file  (e.g. zero length).
-    # Problems are noted in the logs.
-    def member_files_valid?(work)
-      result = true
+    # Check all asset members of an array of works
+    # (ignoring their child works) to see
+    # if any have an invalid file (e.g. zero length).
+    # All problems are noted in the logs, and the problem works are returned.
+    def works_with_members_with_invalid_files(work_array)
+      problem_works = Set.new
       cols = [
         "kithe_models.friendlier_id",
         "kithe_models.file_data -> 'metadata' -> 'promotion_validation_errors'"
       ].join(",")
-      promotion_errors = work.members.pluck(Arel.sql(cols)).to_h
-      promotion_errors.each do |id, promotion_errors|
-        unless promotion_errors.nil?
-          Rails.logger.warn("Work '#{work.friendlier_id}' couldn't be published. Something was wrong with the file for asset '#{id}.'")
-          result = false
+      promotion_errors = Asset.where(parent: work_array).pluck(Arel.sql(cols)).to_h
+      promotion_errors.each do |asset_id, promotion_errors|
+        if promotion_errors.present?
+          parent = Asset.find_by_friendlier_id(asset_id).parent
+          Rails.logger.warn("Work '#{parent.friendlier_id}' couldn't be published. Something was wrong with the file for asset '#{asset_id}.'")
+          problem_works << parent
         end
       end
-      result
+      problem_works
     end
 
 

@@ -142,9 +142,11 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       let(:corrupt_tiff_path) { Rails.root + "spec/test_support/images/corrupt_bad.tiff" }
       let(:bad_asset) {create(:asset, :inline_promoted_file, file: File.open(corrupt_tiff_path))}
       let(:good_asset) {create(:asset, :inline_promoted_file) }
-      let(:unpublishable_work) { create(:work, :with_complete_metadata, published: false, members: [bad_asset, good_asset]) }
+      let(:work_with_bad_asset) { create(:work, :with_complete_metadata, published: false, members: [bad_asset, good_asset]) }
       before do
         controller.current_user.works_in_cart << unpublishable_work
+        controller.current_user.works_in_cart << publishable_work
+        controller.current_user.works_in_cart << work_with_bad_asset
       end
       it "displays error on attempt to publish" do
         put :batch_publish_toggle, params: { publish: "on" }
