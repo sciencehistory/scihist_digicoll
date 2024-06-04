@@ -150,36 +150,53 @@ ScihistImageViewer.prototype.scrollElementIntoView = function(elem, container) {
   if (container == undefined) {
     container = elem.parentNode;
   }
-  container = $(container);
+  const jqContainer = $(container);
 
-  var contHeight = container.height();
-  var contTop = container.scrollTop();
-  var contBottom = contTop + contHeight ;
+  const contHeight = jqContainer.height();
+  const contTop = jqContainer.scrollTop();
+  const contBottom = contTop + contHeight ;
 
-  var contWidth = container.width();
-  var contLeft = container.scrollLeft();
-  var contRight = contLeft + contWidth;
+  const contWidth = jqContainer.width();
+  const contLeft = jqContainer.scrollLeft();
+  const contRight = contLeft + contWidth;
 
 
-  var elemTop = $(elem).offset().top - container.offset().top;
-  var elemBottom = elemTop + $(elem).height();
-  var elemLeft = $(elem).offset().left - container.offset().left;
-  var elemRight = elemLeft + $(elem).width();
+  const elemTop = $(elem).offset().top - jqContainer.offset().top;
+  const elemBottom = elemTop + $(elem).height();
+  const elemLeft = $(elem).offset().left - jqContainer.offset().left;
+  const elemRight = elemLeft + $(elem).width();
 
   // Not sure why the +1 correction was needed
-  var isTotal = (elemTop >= 0 && elemBottom <= contHeight+1 && elemLeft >= 0 && elemRight <= contWidth);
+  const onScreenVertical = (elemTop >= 0 && elemBottom <= contHeight+1);
+  const onScreenHorzontal = (elemLeft >= 0 && elemRight <= contWidth);
 
-  if (! isTotal) {
-    // We'd love to use smooth scroll, but bug in Chrome where it can't do two
-    // smooth scrolls at once, and we sometimes have both page thumb list and
+  if (!onScreenVertical || !onScreenHorzontal) {
+
+    // We want to use smooth scholl with elem.ScrollIntoView, but there's a bug in Chrome
+    // where it can't do two  smooth scrolls at once, and we sometimes have both page thumb list and
     // search result list.
+    //
     // https://stackoverflow.com/questions/49318497/google-chrome-simultaneously-smooth-scrollintoview-with-more-elements-doesn
+    //
+    // So we have to implement scrollIntoView in terms of container.scrollTo instead, as bug does not
+    // exhibit there.
 
-    elem.scrollIntoView({
-        //behavior: 'smooth',
-        block: 'center',
-        inline: 'center'
-    });
+    if (!onScreenVertical) {
+      const calculatedOffset = elem.offsetTop - container.offsetTop - container.getBoundingClientRect().height/2 + elem.getBoundingClientRect().height/2;
+      container.scrollTo({top: calculatedOffset, behavior: 'smooth'});
+    } else {
+      // horzontal scroll
+      const calculatedOffset = elem.offsetLeft - container.offsetLeft - container.getBoundingClientRect().width/2 + elem.getBoundingClientRect().width/2;
+      container.scrollTo({left: calculatedOffset, behavior: 'smooth'});
+    }
+
+    // This would be the simpler way but for bug in Chrome
+    //
+    // elem.scrollIntoView({
+    //     behavior: 'smooth',
+    //     block: 'center',
+    //     inline: 'center'
+    // });
   }
 }
 
