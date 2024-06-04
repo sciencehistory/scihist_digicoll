@@ -400,6 +400,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
 
   // single row with horizontal scrolling
   .viewer-thumbs {
+    padding: 2px 0;
     white-space: nowrap;
     overflow-x: auto;
     background-color: $dark;
@@ -421,7 +422,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
       // inside of button, so that browser focus overlay for keyboard nav accessibility
       // can still show on button itself over on top. (Although I dunno how visible it really is...)
       &.viewer-thumb-selected img {
-        outline: 4px solid $shi-yellow;
+        outline: 3px solid $shi-yellow;
         outline-offset: 2px;
       }
 
@@ -506,7 +507,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     }
 
     .viewer-thumbs {
-      padding-top: 0;
+      padding: 0;
       max-height: 100%; // IE 11 needs this, although others don't, i dunno.
 
       white-space: normal;
@@ -525,6 +526,10 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
         object-position: 0 0;
         max-height: $scihist_image_viewer_thumb_width * 2;
         overflow: hidden;
+      }
+
+      .viewer-thumb.viewer-thumb-selected img {
+        outline-width: 4px;
       }
     }
     .viewer-download {
