@@ -245,6 +245,9 @@ end
 # we use for data structures for citation models, and for generating citations
  gem "citeproc-ruby", '~> 2.0'
  gem 'csl-styles', '~> 2.0' # Need to load the styles so we can use chicago
+ # citeproc-ruby dep needs listing separately  for ruby 3.4 deprecation until
+ # fixed in citeproc-ruby. https://github.com/inukshuk/citeproc-ruby/issues/82
+ gem "observer"
 
  gem 'ruby-progressbar'
 
@@ -252,6 +255,8 @@ end
 # to configure Blacklight, for automatic retry
  gem "faraday", "~> 2.0"
  gem "faraday-retry", "~> 2.0"
+
+ gem "csv", "~> 3.3.0"
 
 
 # Barnes reports Ruby runtime metrics to Heroku, where we can monitor them.
