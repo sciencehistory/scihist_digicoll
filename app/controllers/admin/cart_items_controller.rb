@@ -1,5 +1,7 @@
 class Admin::CartItemsController < AdminController
   before_action :authenticate_user! # need to be logged in
+  require 'csv'
+
 
   # GET /admin/cart_items
   # GET /admin/cart_items.json
@@ -69,4 +71,18 @@ class Admin::CartItemsController < AdminController
     redirect_to admin_cart_items_url, notice: "emptied cart"
   end
 
+  def report
+    date_label = Date.today.to_s
+    report_array = CartExporter.new(current_user.works_in_cart).to_a
+    begin
+      output_csv_file = Tempfile.new
+      CSV.open(output_csv_file, "wb") do |csv|
+        report_array.each { |row| csv << row }
+      end
+      send_file output_csv_file.path, filename: "cart-report-#{date_label}.csv"
+    ensure
+      output_csv_file.close
+    end
+    #redirect_to admin_cart_items_url, notice: "Report complete."
+  end
 end
