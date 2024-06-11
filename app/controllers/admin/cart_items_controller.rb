@@ -1,5 +1,7 @@
 class Admin::CartItemsController < AdminController
   before_action :authenticate_user! # need to be logged in
+  require 'csv'
+
 
   # GET /admin/cart_items
   # GET /admin/cart_items.json
@@ -69,4 +71,13 @@ class Admin::CartItemsController < AdminController
     redirect_to admin_cart_items_url, notice: "emptied cart"
   end
 
+  def report
+    begin
+      serializer = WorkCartSerializer.new(current_user.works_in_cart)
+      output_csv_file = serializer.csv_tempfile
+      send_file output_csv_file.path, filename: "cart-report-#{Date.today.to_s}.csv"
+    ensure
+      output_csv_file.close
+    end
+  end
 end

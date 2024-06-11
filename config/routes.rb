@@ -329,9 +329,10 @@ Rails.application.routes.draw do
       to: "digitization_queue_items#delete_comment",
       as: "delete_digitization_queue_item_comment"
 
-    resources :cart_items, param: :work_friendlier_id, only: [:index, :update, :destroy] do
+    resources :cart_items, param: :work_friendlier_id, only: [:index, :update, :destroy, :report] do
       collection do
         delete 'clear'
+        post 'report'
       end
     end
 
