@@ -268,6 +268,14 @@ class Admin::WorksController < AdminController
   def publish
     authorize! :publish, @work
 
+    # Check for e.g. zero-length files.
+    unless works_with_members_with_invalid_files([@work]).empty?
+      redirect_to admin_work_path(@work, anchor: "tab=nav-members"), flash: {
+        error: "Can't publish this work. One or more of its assets has invalid files."
+      }
+      return
+    end
+
     @work.class.transaction do
       @work.update!(published: true)
       if params[:cascade] == 'true'
@@ -278,6 +286,7 @@ class Admin::WorksController < AdminController
     end
 
     redirect_to admin_work_url(@work)
+
   rescue ActiveRecord::RecordInvalid => e
     # probably because missing a field required for a work to be published, but
     # could apply to a CHILD work, not just the parent you actually may have clicked 'publish'
@@ -458,6 +467,13 @@ class Admin::WorksController < AdminController
       raise ArgumentError.new("Need `publish` param to be `on` or off`")
     end
 
+    # Check works in cart for invalid files.
+    unpublishable_works = works_with_members_with_invalid_files(current_user.works_in_cart)
+    unless unpublishable_works.empty?
+      example_work = unpublishable_works.first
+      redirect_to admin_cart_items_url, flash: { error: "No changes made due to error: \"#{example_work.title}\" (#{example_work.friendlier_id}) contains one or more assets with invalid files." }
+      return
+    end
     publish_value = params[:publish] == "on"
 
     Work.transaction do
@@ -502,6 +518,27 @@ class Admin::WorksController < AdminController
           format.json { render json: { error: notice }, status: 422 }
         end
       end
+    end
+
+    # Check all asset members of an array of works
+    # (ignoring their child works) to see
+    # if any have an invalid file (e.g. zero length).
+    # All problems are noted in the logs, and the problem works are returned.
+    def works_with_members_with_invalid_files(work_array)
+      problem_works = Set.new
+      cols = [
+        "kithe_models.friendlier_id",
+        "kithe_models.file_data -> 'metadata' -> 'promotion_validation_errors'"
+      ].join(",")
+      promotion_errors = Asset.where(parent: work_array).pluck(Arel.sql(cols)).to_h
+      promotion_errors.each do |asset_id, promotion_errors|
+        if promotion_errors.present?
+          parent = Asset.find_by_friendlier_id(asset_id).parent
+          Rails.logger.warn("Work '#{parent.friendlier_id}' couldn't be published. Something was wrong with the file for asset '#{asset_id}.'")
+          problem_works << parent
+        end
+      end
+      problem_works
     end
 
 

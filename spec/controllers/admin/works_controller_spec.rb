@@ -138,6 +138,23 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       end
     end
 
+    context "work with corrupt file" do
+      let(:corrupt_tiff_path) { Rails.root + "spec/test_support/images/corrupt_bad.tiff" }
+      let(:bad_asset) {create(:asset, :inline_promoted_file, file: File.open(corrupt_tiff_path))}
+      let(:good_asset) {create(:asset, :inline_promoted_file) }
+      let(:work_with_bad_asset) { create(:work, :with_complete_metadata, published: false, members: [bad_asset, good_asset]) }
+      before do
+        controller.current_user.works_in_cart << unpublishable_work
+        controller.current_user.works_in_cart << publishable_work
+        controller.current_user.works_in_cart << work_with_bad_asset
+      end
+      it "displays error on attempt to publish" do
+        put :batch_publish_toggle, params: { publish: "on" }
+        expect(response).to redirect_to(admin_cart_items_path)
+        expect(flash["error"]).to match /No changes made due to error/
+      end
+    end
+
     context "publishable works" do
       around do |example|
         freeze_time do
@@ -347,6 +364,22 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         around do |example|
           freeze_time do
             example.run
+          end
+        end
+
+        context "work has assets with invalid files" do
+          let(:corrupt_tiff_path) { Rails.root + "spec/test_support/images/corrupt_bad.tiff" }
+          let(:bad_asset) {create(:asset, :inline_promoted_file, file: File.open(corrupt_tiff_path))}
+          let(:good_asset) {create(:asset, :inline_promoted_file) }
+          let(:parent_work) { create(:work, :with_complete_metadata, published: false, members: [bad_asset, good_asset]) }
+          before do
+            allow(Rails.logger).to receive(:warn)
+          end
+          it "refuses to publish" do
+            expect(bad_asset.promotion_failed?).to be true
+            put :publish, params: { id: parent_work.friendlier_id, cascade: 'true' }
+            expect(response.status).to redirect_to(admin_work_path(parent_work, anchor: "tab=nav-members"))
+            expect(Rails.logger).to have_received(:warn).with(/.*couldn't be published. Something was wrong with the file for asset*/)
           end
         end
 
