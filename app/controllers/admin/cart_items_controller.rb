@@ -72,17 +72,12 @@ class Admin::CartItemsController < AdminController
   end
 
   def report
-    date_label = Date.today.to_s
-    report_array = CartExporter.new(current_user.works_in_cart).to_a
     begin
-      output_csv_file = Tempfile.new
-      CSV.open(output_csv_file, "wb") do |csv|
-        report_array.each { |row| csv << row }
-      end
-      send_file output_csv_file.path, filename: "cart-report-#{date_label}.csv"
+      serializer = WorkCartSerializer.new(current_user.works_in_cart)
+      output_csv_file = serializer.csv_tempfile
+      send_file output_csv_file.path, filename: "cart-report-#{Date.today.to_s}.csv"
     ensure
       output_csv_file.close
     end
-    #redirect_to admin_cart_items_url, notice: "Report complete."
   end
 end
