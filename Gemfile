@@ -14,11 +14,12 @@ gem 'lockbox'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 7.1.3'
 
-# While rails 7.1 supports rack 3, other things we're using actually don't yet,
-# but bundler can incorrectly resolve to REALLY OLD verisons of dependencies
-# if we don't tell it, actually, we're not ready for rack 3. See:
+# Ensure we are using rack 3, with a new sinatra that can use it. Both of these
+# are indirect dependencies, in here only to force bundler NOT to do a weird
+# resolution to old versions of sinatra!
 # https://bibwild.wordpress.com/2023/11/09/beware-sinatra-rails-7-1-rack-3-resque-bundler-dependency-resolution/
-gem "rack", "~> 2.2"
+gem "rack", ">= 3.0"
+gem "sinatra", ">= 4.0"
 
 # Our JS/CSS/asset bundler
 # After updating, you always need to run `bundle exec vite upgrade` to update JS packages to match
@@ -38,7 +39,7 @@ gem "mail", ">= 2.8.0.rc1", "< 3"
 gem "net-protocol", "!= 0.2.0"
 
 gem "view_component", "~> 3.9"
-gem "alba", "~> 2.0" # for JSON serialization of models
+gem "alba", "~> 3.1" # for JSON serialization of models
 
 #  Scout is a monitoring tool we are experimenting with
 gem 'scout_apm'
@@ -159,7 +160,7 @@ gem 'matrix', '~> 0.4'
 
 gem "pdf-reader", "~> 2.2" # simple metadata extraction from pdfs
 gem 'rubyzip', '~> 2.0'
-gem 'browser', '~> 5.0' # browser user-agent detection, maybe only for IE-unsupported warning.
+gem 'browser', '~> 6.0' # browser user-agent detection, maybe only for IE-unsupported warning.
 
 
 # Until oai 1.0 is released...

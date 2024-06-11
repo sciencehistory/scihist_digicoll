@@ -74,15 +74,5 @@ module ScihistDigicoll
     config.twitter_acct = "scihistoryorg"
     config.facebook_acct = "SciHistoryOrg"
     config.instagram_acct = "scihistoryorg"
-
-    # Default 65K limit was getting in the way of large ingests.
-    #
-    # https://github.com/sciencehistory/scihist_digicoll/issues/888
-    #
-    # We don't believe this limit actually does anything useful anyway,
-    # should be fine to set it to something absurdly large, we'll go with 10 megs
-    #
-    # https://github.com/rack/rack/pull/1487
-    Rack::Utils.key_space_limit = 10.megabytes.to_i
   end
 end
