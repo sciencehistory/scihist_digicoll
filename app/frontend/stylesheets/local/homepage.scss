@@ -170,13 +170,27 @@
           background-color: $tooltip-bg;
         }
 
+        .recent-item-video-cam-overlay {
+          position: relative;
+          z-index: 1;
+          left: 80%;
+          bottom: 2rem;
+          visibility: visible;
+          // and the image itself:
+          svg {
+            opacity: 0.8;
+            background-color: black;
+            height: 2rem;
+            width: 20%;
+          }
+        }
+
         // Enlarge the image on hover/focus, which also makes
         // the title box show up
         transition: transform .2s;
         &:hover, &:focus {
           transform: scale(1.2);
           z-index: 1;
-
           .recent-title {
             opacity: 1;
             visibility: visible;

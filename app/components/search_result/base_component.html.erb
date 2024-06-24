@@ -1,7 +1,7 @@
 <li id="document_<%= model.friendlier_id %>" class="scihist-results-list-item document <%# render_document_class generic_work %>" itemscope itemtype="<%# generic_model.itemtype %>">
 
 
-    <div class="scihist-results-list-item-thumb">
+    <div class="scihist-results-list-item-thumb <%= "video" if model.leaf_representative&.content_type&.start_with?("video/") %>">
       <%#  hide redundant thumb link from assitive tech
            https://www.sarasoueidan.com/blog/keyboard-friendlier-article-listings/.  -%>
       <%= link_to link_to_href, tabindex: "-1", "aria-hidden" => "true" do %>
