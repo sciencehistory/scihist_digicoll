@@ -195,10 +195,27 @@
       margin-right: 28px;
       flex-shrink: 0;
       text-align: right;
+      //opacity: 50%;
+      border-color: black;
 
       // Keep really high ones from taking up too much space
       max-height: $standard-thumb-width * 2.2;
       overflow: hidden;
+
+      .scihist-results-list-item-thumb-cam-overlay {
+        position: absolute;
+        z-index: 1;
+        //left: 0;
+        top: 10rem;
+        width: 10rem;
+        height: 10rem;
+        svg {
+          opacity: 0.8;
+          background-color: black;
+          //height: 2rem;
+          //width: 20%;
+        }
+      }
 
       .scihist-results-list-item-num-members {
         @extend %special-label;
