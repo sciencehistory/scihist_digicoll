@@ -172,11 +172,9 @@
 
         .recent-item-video-cam-overlay {
           position: relative;
-          z-index: 1;
-          left: 80%;
+          // TODO: express this in the form of something else
+          left:8.4rem;
           bottom: 2rem;
-          visibility: visible;
-          // and the image itself:
           svg {
             opacity: 0.8;
             background-color: black;

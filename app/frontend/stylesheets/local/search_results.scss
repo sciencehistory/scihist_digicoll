@@ -205,16 +205,14 @@
       .scihist-results-list-item-thumb-cam-overlay {
         position: absolute;
         z-index: 1;
-        //left: 0;
-        top: 10rem;
-        width: 10rem;
-        height: 10rem;
-        svg {
-          opacity: 0.8;
-          background-color: black;
-          //height: 2rem;
-          //width: 20%;
-        }
+        // TODO express the 0.1 in terms of something else
+        left: $standard-thumb-width - 0.1rem;
+        // TODO express the 7.2 in terms of something else
+        padding-top: 7.2rem;
+         svg {
+           opacity: 0.8;
+           background-color: black;
+         }
       }
 
       .scihist-results-list-item-num-members {
