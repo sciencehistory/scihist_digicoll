@@ -39,9 +39,9 @@ class ViewerMemberInfoSerializer
 
   def included_members
     @included_members ||= begin
-      members = work.members.order(:position)
+      members = work.members.order(:position).strict_loading
       members = members.where(published: true) unless show_unpublished
-      members.includes(:leaf_representative).select do |member|
+      members.includes(:leaf_representative => :parent).select do |member|
         member.leaf_representative &&
         member.leaf_representative.content_type&.start_with?("image/") &&
         member.leaf_representative.stored?
