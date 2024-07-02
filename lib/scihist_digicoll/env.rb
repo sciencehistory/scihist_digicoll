@@ -2,7 +2,7 @@ require 'socket'
 require "shrine/storage/file_system"
 require "shrine/storage/s3"
 require 'faster_s3_url/shrine/storage'
-require 'scihist_digicoll/shrine/cloudfront_s3_storage'
+require 'scihist_digicoll/shrine_storage/cloudfront_s3_storage'
 
 
 module ScihistDigicoll
@@ -427,7 +427,7 @@ module ScihistDigicoll
       elsif mode == "production"
         if host.present?
           # Assumed cloudfront if we have a host!
-          ScihistDigicoll::Shrine::CloudfrontS3Storage.new(**{
+          ScihistDigicoll::ShrineStorage::CloudfrontS3Storage.new(**{
             bucket:            lookup!(bucket_key),
             host:              host,
             public:            public,

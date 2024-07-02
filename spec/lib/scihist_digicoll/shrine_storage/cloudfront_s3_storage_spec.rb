@@ -1,13 +1,13 @@
 require 'rails_helper'
 
 require 'spec_helper'
-require 'scihist_digicoll/shrine/cloudfront_s3_storage'
+require 'scihist_digicoll/shrine_storage/cloudfront_s3_storage'
 
 # We're not gonna test everything and make sure it's good as a storage, we just
 # assume our light sub-class is doing what it's superclass is doing. Famous last words,
 # but it gets very complicated to test otherwise.
 #
-RSpec.describe ScihistDigicoll::Shrine::CloudfrontS3Storage do
+RSpec.describe ScihistDigicoll::ShrineStorage::CloudfrontS3Storage do
   let(:cloudfront_key_pair_id) { "fakeExampleAccessKeyId"}
   let(:cloudfront_private_key) { File.read(Rails.root + "spec/test_support/demo_private_key.pem") }
 
@@ -18,7 +18,7 @@ RSpec.describe ScihistDigicoll::Shrine::CloudfrontS3Storage do
 
   describe "unrestricted public distribution" do
     let(:storage) do
-      ScihistDigicoll::Shrine::CloudfrontS3Storage.new(
+      ScihistDigicoll::ShrineStorage::CloudfrontS3Storage.new(
         host: cloudfront_host,
         bucket: bucket_name,
         region: region,
@@ -46,7 +46,7 @@ RSpec.describe ScihistDigicoll::Shrine::CloudfrontS3Storage do
     describe "with shrine prefix" do
       let(:prefix) { "foo/bar" }
       let(:storage) do
-        ScihistDigicoll::Shrine::CloudfrontS3Storage.new(
+        ScihistDigicoll::ShrineStorage::CloudfrontS3Storage.new(
           host: cloudfront_host,
           bucket: bucket_name,
           region: region,
@@ -64,7 +64,7 @@ RSpec.describe ScihistDigicoll::Shrine::CloudfrontS3Storage do
 
   describe "restricted distribution" do
     let(:storage) do
-      ScihistDigicoll::Shrine::CloudfrontS3Storage.new(
+      ScihistDigicoll::ShrineStorage::CloudfrontS3Storage.new(
         host: cloudfront_host,
         bucket: bucket_name,
         region: region,

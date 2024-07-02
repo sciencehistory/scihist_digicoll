@@ -17,7 +17,7 @@ require "aws-sdk-cloudfront"
 #
 # For general write-up of how we've set things up, see https://bibwild.wordpress.com/2024/06/18/cloudfront-in-front-of-s3-using-response-content-disposition/
 module ScihistDigicoll
-  module Shrine
+  module ShrineStorage
     class CloudfrontS3Storage < ::Shrine::Storage::S3
       attr_reader :host, :public_mode, :cloudfront_signer, :key_pair_id
 
