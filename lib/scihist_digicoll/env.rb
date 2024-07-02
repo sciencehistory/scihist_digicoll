@@ -250,7 +250,7 @@ module ScihistDigicoll
     # or prod.
 
     define_key :s3_bucket_originals_host
-    define_key :s3_bucket_originals_video_host
+    define_key :s3_bucket_originals_video_host # not currently used as we don't provide access to originals
     define_key :s3_bucket_derivatives_host
     define_key :s3_bucket_derivatives_video_host
     define_key :s3_bucket_on_demand_derivatives_host
