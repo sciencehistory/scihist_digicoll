@@ -432,9 +432,11 @@ module ScihistDigicoll
             host:              host,
             public:            public,
             prefix:            prefix,
+            access_key_id:     lookup!(:aws_access_key_id),
+            secret_access_key: lookup!(:aws_secret_access_key),
+            region:            lookup!(:aws_region),
             cloudfront_key_pair_id:     lookup(:cloudfront_key_pair_id),
-            cloudfront_private_key: lookup(:cloudfront_private_key),
-            region:            lookup!(:aws_region)
+            cloudfront_private_key: lookup(:cloudfront_private_key)
           }.merge(s3_storage_options))
         else
           FasterS3Url::Shrine::Storage.new(**{

@@ -8,21 +8,25 @@ require 'scihist_digicoll/shrine_storage/cloudfront_s3_storage'
 # but it gets very complicated to test otherwise.
 #
 RSpec.describe ScihistDigicoll::ShrineStorage::CloudfrontS3Storage do
-  let(:cloudfront_key_pair_id) { "fakeExampleAccessKeyId"}
-  let(:cloudfront_private_key) { File.read(Rails.root + "spec/test_support/demo_private_key.pem") }
-
   let(:cloudfront_host) { "fakefakefake.cloudfront.net"}
   let(:bucket_name) { "my-bucket" }
   let(:object_key) { "some/directory/file.jpg" }
   let(:region) { "us-east-1"}
 
+  let(:default_storage_params) do
+    {
+      host: cloudfront_host,
+      bucket: bucket_name,
+      region: region,
+      access_key_id:     "faked",
+      secret_access_key: "faked",
+    }
+  end
+
   describe "unrestricted public distribution" do
     let(:storage) do
       ScihistDigicoll::ShrineStorage::CloudfrontS3Storage.new(
-        host: cloudfront_host,
-        bucket: bucket_name,
-        region: region,
-        public: true
+        **default_storage_params.merge(public: true)
       )
     end
 
@@ -47,11 +51,7 @@ RSpec.describe ScihistDigicoll::ShrineStorage::CloudfrontS3Storage do
       let(:prefix) { "foo/bar" }
       let(:storage) do
         ScihistDigicoll::ShrineStorage::CloudfrontS3Storage.new(
-          host: cloudfront_host,
-          bucket: bucket_name,
-          region: region,
-          public: true,
-          prefix: prefix
+          **default_storage_params.merge(public: true, prefix: prefix)
         )
 
       end
@@ -63,14 +63,16 @@ RSpec.describe ScihistDigicoll::ShrineStorage::CloudfrontS3Storage do
   end
 
   describe "restricted distribution" do
+    let(:cloudfront_key_pair_id) { "fakeExampleAccessKeyId"}
+    let(:cloudfront_private_key) { File.read(Rails.root + "spec/test_support/demo_private_key.pem") }
+
     let(:storage) do
       ScihistDigicoll::ShrineStorage::CloudfrontS3Storage.new(
-        host: cloudfront_host,
-        bucket: bucket_name,
-        region: region,
-        public: false,
-        cloudfront_key_pair_id: cloudfront_key_pair_id,
-        cloudfront_private_key: cloudfront_private_key
+        **default_storage_params.merge(
+          public: false,
+          cloudfront_key_pair_id: cloudfront_key_pair_id,
+          cloudfront_private_key: cloudfront_private_key
+        )
       )
     end
 

@@ -42,6 +42,10 @@ module ScihistDigicoll
       # @param cloudfront_key_pair_kid [String] required if public:false, the cloudfront_key_pair id used for signing
       #
       # @param cloudfront_private_key [String] required if public:false, RSA publikc key corresopnding to cloudfront_key_pair_id
+      #
+      # NOTE: You will still need keys `access_key_id:` and `secret_access_key:` (or otherwise have AWS credentials
+      #       auto-discoverable), because bucket edit operations etc require them!
+      #
       def initialize(host:, public: true, cloudfront_key_pair_id: nil, cloudfront_private_key: nil, **options)
         if options[:signer]
           raise ArgumentError.new("#{self.class.name} does not support :signer option of Shrine::Storage::S3.")
