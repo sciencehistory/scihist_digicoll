@@ -63,7 +63,10 @@ module ScihistDigicoll
           )
         end
 
-        super(public: public_mode, **options)
+        # We always tell the underlying shrine s3 storage we are NOt public, becuase we assume
+        # the underlying S3 bucket is not public, in case it matters, we need to be signing requests
+        # etc.
+        super(public: false, **options)
       end
 
       # unlike base Shrine::Storage::S3, does not support `host` here, do it in
