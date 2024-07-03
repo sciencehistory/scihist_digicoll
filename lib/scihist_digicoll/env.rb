@@ -381,7 +381,7 @@ module ScihistDigicoll
     # @param bucket_key [String] required. in `production` mode this is the bucket name, otherwise
     #                            it becomes part of the prefix location.
     #
-    # @param public [Boolean] (default true), if FALSE the bucket requires signed URLs, and
+    # @param public [Boolean] (default false), if FALSE the storage requires signed URLs, and
     #                         we will set up shrine storage to generate them -- either using
     #                         AWS access key (direct), or Cloudfront public key (if host is set for
     #                         Cloudfront distro in front)
@@ -402,7 +402,7 @@ module ScihistDigicoll
     #                       file system). Normally left unset, it will default to
     #                       env key :storage_mode, which is what you want it to do.
     #
-    def self.appropriate_shrine_storage(bucket_key:, public: true, mode: lookup!(:storage_mode), prefix: nil,
+    def self.appropriate_shrine_storage(bucket_key:, public: false, mode: lookup!(:storage_mode), prefix: nil,
                                         host: nil, s3_storage_options: {} )
       unless %I{s3_bucket_uploads s3_bucket_originals s3_bucket_originals_video s3_bucket_derivatives
                 s3_bucket_derivatives_video
