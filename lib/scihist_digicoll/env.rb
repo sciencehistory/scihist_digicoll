@@ -262,6 +262,9 @@ module ScihistDigicoll
     # private key can be found in 1password as:
     #   `scihist-digicoll-production_private_key.pem` or
     #   `scihist-digicoll-staging_private_key.pem`
+    #
+    #   Value needs to be exported from 1Password in `PKCS#8` format, will begin with
+    #   '-----BEGIN PRIVATE KEY-----' [NOT 'OPENSSH PRIVATE KEY']
     define_key :cloudfront_private_key
 
 
