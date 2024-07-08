@@ -520,7 +520,14 @@ module ScihistDigicoll
       @shrine_on_demand_derivatives_storage ||=
         appropriate_shrine_storage( bucket_key: :s3_bucket_on_demand_derivatives,
                                     host: lookup(:s3_bucket_on_demand_derivatives_host),
-                                    public: true
+                                    public: true,
+                                    s3_storage_options: {
+                                      upload_options: {
+                                        # these have fingerprints in their URLs, so they are
+                                        # cacheable forever. only started setting this in Jul 2024
+                                        cache_control: "max-age=31536000, public"
+                                      }
+                                    }
                                   )
     end
 
