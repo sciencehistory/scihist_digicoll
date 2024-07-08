@@ -539,6 +539,11 @@ module ScihistDigicoll
                                     prefix: "combined_audio_derivatives",
                                     public: true,
                                     s3_storage_options: {
+                                      upload_options: {
+                                        # these have fingerprints in their URLs, so they are
+                                        # cacheable forever. only started setting this in Jul 2024
+                                        cache_control: "max-age=31536000, public"
+                                      }
                                     })
     end
 
