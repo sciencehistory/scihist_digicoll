@@ -480,8 +480,8 @@ module ScihistDigicoll
       @shrine_derivatives_storage ||=
         appropriate_shrine_storage( bucket_key: :s3_bucket_derivatives,
                                     host: lookup(:s3_bucket_derivatives_host),
+                                    public: true,
                                     s3_storage_options: {
-                                      public: true,
                                       upload_options: {
                                         # derivatives are public and at unique random URLs, so
                                         # can be cached far-future
@@ -494,8 +494,8 @@ module ScihistDigicoll
       @shrine_derivatives_video_storage ||=
         appropriate_shrine_storage( bucket_key: :s3_bucket_derivatives_video,
                                     host: lookup(:s3_bucket_derivatives_video_host),
+                                    public: true,
                                     s3_storage_options: {
-                                      public: true,
                                       upload_options: {
                                         # derivatives are public and at unique random URLs, so
                                         # can be cached far-future
@@ -520,9 +520,8 @@ module ScihistDigicoll
       @shrine_on_demand_derivatives_storage ||=
         appropriate_shrine_storage( bucket_key: :s3_bucket_on_demand_derivatives,
                                     host: lookup(:s3_bucket_on_demand_derivatives_host),
-                                    s3_storage_options: {
-                                      public: true
-                                    })
+                                    public: true
+                                  )
     end
 
     def self.shrine_combined_audio_derivatives_storage
@@ -531,8 +530,8 @@ module ScihistDigicoll
         appropriate_shrine_storage( bucket_key: :s3_bucket_derivatives,
                                     host: lookup(:s3_bucket_derivatives_host),
                                     prefix: "combined_audio_derivatives",
+                                    public: true,
                                     s3_storage_options: {
-                                      public: true
                                     })
     end
 
@@ -540,8 +539,8 @@ module ScihistDigicoll
       @shrine_dzi_storage ||=
         appropriate_shrine_storage( bucket_key: :s3_bucket_dzi,
                                     host: lookup(:s3_bucket_dzi_host),
+                                    public: true,
                                     s3_storage_options: {
-                                      public: true,
                                       upload_options: {
                                         # our DZI's are all public right now, and at unique-to-content
                                         # URLs, cache forever.
