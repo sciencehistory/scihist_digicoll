@@ -25,7 +25,7 @@ module ScihistDigicoll
         response_cache_control: "response-cache-control",
         response_content_disposition: "response-content-disposition",
         response_content_encoding: "response-content-encoding",
-        response_content_language: "response-content-langauge",
+        response_content_language: "response-content-language",
         response_content_type: "response-content-type"
       }.freeze
 
