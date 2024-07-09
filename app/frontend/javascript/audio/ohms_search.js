@@ -65,7 +65,6 @@ Search.wrapInHighlight =  function(match) {
   return "<span class=\"ohms-highlight\">" + match + "</span>";
 };
 
-
 // After a search, we have a SearchResults object for Transcript, one
 // for Index (ToC); and a resultsMode state that should be either 'transcript',
 // or 'index' to tell us which is currently being displayed.
