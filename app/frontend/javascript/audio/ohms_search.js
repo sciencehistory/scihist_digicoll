@@ -63,9 +63,6 @@ Search.escapeRegExp = function(string) {
 // can include HTML, it will be presered.
 Search.wrapInHighlight =  function(match) {
   return "<span class=\"ohms-highlight\">" + match + "</span>";
-
-  // LET'S TRY NOT HIGHLIGHTING: (no, that didn't fix it)
-  //return match;
 };
 
 
