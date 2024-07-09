@@ -63,7 +63,11 @@ Search.escapeRegExp = function(string) {
 // can include HTML, it will be presered.
 Search.wrapInHighlight =  function(match) {
   return "<span class=\"ohms-highlight\">" + match + "</span>";
+
+  // LET'S TRY NOT HIGHLIGHTING: (no, that didn't fix it)
+  //return match;
 };
+
 
 // After a search, we have a SearchResults object for Transcript, one
 // for Index (ToC); and a resultsMode state that should be either 'transcript',
@@ -168,33 +172,26 @@ Search.searchTranscript = function(query) {
 // Highlights hits in index results.
 Search.searchIndex = function(query) {
   var _self = this;
-
   var reStr = new RegExp(_self.regexpStrForSearch(query), "gi");
-
-  return $(".ohms-index-point").map(function() {
+  var returnValue =  $(".ohms-index-point").map(function() {
     var section = $(this);
-
     var targetId = section.attr("id");
     if (! targetId) { throw "can't record ohms search without finding a dom id " + section.get(0) }
-
-    var replacementMade = false;
-    var original = section.html();
-    var replacedContent = original.replace(reStr, function(str) {
-      replacementMade = true;
-      return _self.wrapInHighlight(str);
-    });
-
-    if (replacementMade) {
-      // there was a hit, so, highlight and include result
-
-      section.html(replacedContent);
-
+    if (section.html().match(reStr) != null) {
+      // there was a hit. highlight and include result.
+      section.find('.highlight-matches').each(function() {
+        this.innerHTML = this.innerHTML.replace(reStr, function(str) {
+          return _self.wrapInHighlight(str);
+        });
+      });
       return {
         tabId: 'ohIndexTab',
-        targetId: targetId
+        targetId: targetId // the id of the accordion card for this match:
       };
     }
-  }).get() // plain array not jQuery object
+
+  }).get(); // plain array not jQuery object
+  return returnValue;
 };
 
 // Clears all search results state, restores to initial condition with no search
