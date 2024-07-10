@@ -48,21 +48,21 @@
           </div>
 
           <% if index_point.synopsis.present? %>
-            <p>
+            <p class="highlight-matches">
               <%= index_point.synopsis %>
             </p>
           <% end %>
 
 
           <% if index_point.partial_transcript.present? %>
-            <p class="attribute">
+            <p class="attribute highlight-matches">
               <span class="attribute-label">Begins with</span>
               <%= format_partial_transcript(index_point.partial_transcript) %>
             </p>
           <% end %>
 
           <% if index_point.all_keywords_and_subjects.present?  %>
-            <p class="attribute keywords">
+            <p class="attribute keywords highlight-matches">
               <span class="attribute-label">Keywords</span>
               <% index_point.all_keywords_and_subjects.each_with_index do |keyword, index| %> <span class="oh-keyword"><%= keyword %></span> <% if index < index_point.all_keywords_and_subjects.length - 1 %><span class="keyword-seperator ml-1 mr-1">•</span><% end %>
               <%- end -%>
@@ -70,7 +70,7 @@
           <% end %>
 
           <% if index_point.hyperlinks.present? %>
-            <div class="attribute ohms-hyperlinks">
+            <div class="attribute ohms-hyperlinks highlight-matches">
               <h4 class="attribute-label">Related <%= "URL".pluralize(index_point.hyperlinks.count) %></h4>
               <ul class="list-unstyled">
                 <% index_point.hyperlinks.each do |hyperlink| %>

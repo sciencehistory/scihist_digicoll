@@ -410,6 +410,10 @@ describe "Oral history with audio display", type: :system, js: true do
         click_on "Search"
       end
 
+      expect(page).to have_selector("*[data-trigger='linkClipboardCopy']")
+      page.find("*[data-trigger='linkClipboardCopy']").click
+      expect(page).to have_content("Copied to clipboard")
+
       # ToC tab should be selected as it is first tab with results from search
       expect(page).to have_selector("#ohTocTab[aria-selected='true']")
       expect(page).to have_content(%r{Table of Contents — 1 / 7}i)
