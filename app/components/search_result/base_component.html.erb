@@ -4,7 +4,7 @@
     <div class="scihist-results-list-item-thumb">
       <%#  hide redundant thumb link from assitive tech
            https://www.sarasoueidan.com/blog/keyboard-friendlier-article-listings/.  -%>
-      <%= link_to link_to_href, tabindex: "-1", "aria-hidden" => "true" do %>
+      <%= link_to link_to_href, tabindex: "-1", "aria-hidden" => "true", class: ("img-wrapper-video-icon" if model.leaf_representative&.content_type&.start_with?("video/"))  do %>
         <%= thumbnail_html %>
       <% end %>
       <%= display_num_children_and_extent %>

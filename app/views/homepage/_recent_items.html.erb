@@ -6,7 +6,7 @@
   <div class="recent-items-list">
       <% RecentItems.new.recent_items.each do |work| %>
           <%= link_to work_path(work.friendlier_id), class: "recent-item" do %>
-            <div class="image-wrapper">
+            <div class="image-wrapper <%= "img-wrapper-video-icon" if work.leaf_representative&.content_type&.start_with?("video/")%>">
               <%= render ThumbComponent.new(
                 work.leaf_representative,
                 thumb_size: :standard,

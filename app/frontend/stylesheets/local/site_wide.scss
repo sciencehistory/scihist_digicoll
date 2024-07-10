@@ -301,3 +301,34 @@ hr.brand {
     color: white;
   }
 }
+
+// Add to a WRAPPER class around an image to add a video icon overlay
+.img-wrapper-video-icon {
+  position: relative;
+  display: block;
+  &:after {
+    position: absolute;
+    content: "";
+
+    // center it
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+
+    // a square between min and max, or 50% of width of wrapper
+    width: clamp(1.5rem, 40%, 3rem);
+    aspect-ratio: 1;
+
+    // image from bootstrap icons https://icons.getbootstrap.com/icons/camera-reels-fill/
+    // https://github.com/twbs/bootstrap/blob/main/LICENSE
+    // removed height/width, specified color, converted to css url at https://www.svgbackgrounds.com/tools/svg-to-css/
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="black" viewBox="0 0 16 16"><path d="M6 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/><path d="M9 6a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/><path d="M9 6h.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 7.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 16H2a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/></svg>');
+    background-position: center;
+    background-size: 75%;
+    background-repeat: no-repeat;
+    border: 2px $shi-gray-3 solid;
+
+    background-color: $shi-gray-2;
+    opacity: 0.7;
+  }
+}
