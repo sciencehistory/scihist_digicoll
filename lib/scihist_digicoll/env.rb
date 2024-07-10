@@ -2,6 +2,7 @@ require 'socket'
 require "shrine/storage/file_system"
 require "shrine/storage/s3"
 require 'faster_s3_url/shrine/storage'
+require 'scihist_digicoll/shrine_storage/cloudfront_s3_storage'
 
 
 module ScihistDigicoll
@@ -236,14 +237,36 @@ module ScihistDigicoll
     define_key :s3_bucket_derivatives
     define_key :s3_bucket_derivatives_video
 
-    # Note: the values for :s3_bucket_derivatives_host and :s3_bucket_derivatives_video_host
-    # can be obtained by running `terraform output`.
-    define_key :s3_bucket_derivatives_host      # Cloudfront hostname for regular derivs bucket
-    define_key :s3_bucket_derivatives_video_host # Ditto, for video derivs bucket
-
     define_key :s3_bucket_uploads
     define_key :s3_bucket_on_demand_derivatives
     define_key :s3_bucket_dzi
+
+    # if we are using CloudFront in front of a bucket, we set Cloudfront Distro hostname
+    # in variables corresponding to bucket name env, with `_host` on the end. These
+    # are all assumed cloudfront if set.
+    #
+    # All of these cloudfront hostnames are somewhat opaque, and can be found
+    # from `terraform output` output from existing infrastructure, either staging
+    # or prod.
+
+    define_key :s3_bucket_originals_host
+    define_key :s3_bucket_originals_video_host # not currently used as we don't provide access to originals
+    define_key :s3_bucket_derivatives_host
+    define_key :s3_bucket_derivatives_video_host
+    define_key :s3_bucket_on_demand_derivatives_host
+    define_key :s3_bucket_dzi_host
+
+    # If we are using Cloudfront with restricted buckets, the key-pair id and RSA public
+    # key need to be set.
+    define_key :cloudfront_key_pair_id # from `terraform output`
+    # private key can be found in 1password as:
+    #   `scihist-digicoll-production_private_key.pem` or
+    #   `scihist-digicoll-staging_private_key.pem`
+    #
+    #   Value needs to be exported from 1Password in `PKCS#8` format, will begin with
+    #   '-----BEGIN PRIVATE KEY-----' [NOT 'OPENSSH PRIVATE KEY']
+    define_key :cloudfront_private_key
+
 
     define_key :ingest_bucket, default: -> {
       if !Rails.env.production?
@@ -361,13 +384,18 @@ module ScihistDigicoll
     # @param bucket_key [String] required. in `production` mode this is the bucket name, otherwise
     #                            it becomes part of the prefix location.
     #
+    # @param public [Boolean] (default false), if FALSE the storage requires signed URLs, and
+    #                         we will set up shrine storage to generate them -- either using
+    #                         AWS access key (direct), or Cloudfront public key (if host is set for
+    #                         Cloudfront distro in front)
+    #
     # @param prefix [String] prefix passed to shrine storage, a "directory" within the
     #                        storage. for dev_s3 and dev_file modes combined with
     #                        other pre-prefix.
     #
-    # @param host [String] used only for `production` S3 mode, passed to Shrine storage as
-    #                      'host' param, used for cloudfront CDN and/or other CNAME, alternate
-    #                      host used to access S3 bucket.
+    # @param host [String] used only for `production` S3 mode, if set we assume a CloudFront CDN distro
+    #                      on top of bucket, and set up url-generation accordingly, including with
+    #                      Cloudfront-style signing (using env for cloudfront public key which will be required)
     #
     # @param s3_storage_options [Hash] passed directly to Shrine storage for S3 modes, additional
     #                                  arbitrary options. Can override other defaults or params.
@@ -377,7 +405,7 @@ module ScihistDigicoll
     #                       file system). Normally left unset, it will default to
     #                       env key :storage_mode, which is what you want it to do.
     #
-    def self.appropriate_shrine_storage(bucket_key:, mode: lookup!(:storage_mode), prefix: nil,
+    def self.appropriate_shrine_storage(bucket_key:, public: false, mode: lookup!(:storage_mode), prefix: nil,
                                         host: nil, s3_storage_options: {} )
       unless %I{s3_bucket_uploads s3_bucket_originals s3_bucket_originals_video s3_bucket_derivatives
                 s3_bucket_derivatives_video
@@ -400,14 +428,29 @@ module ScihistDigicoll
           region:            lookup(:aws_region)
         }.merge(s3_storage_options))
       elsif mode == "production"
-        FasterS3Url::Shrine::Storage.new(**{
-          bucket:            lookup!(bucket_key),
-          host:              host,
-          prefix:            prefix,
-          access_key_id:     lookup!(:aws_access_key_id),
-          secret_access_key: lookup!(:aws_secret_access_key),
-          region:            lookup!(:aws_region)
-        }.merge(s3_storage_options))
+        if host.present?
+          # Assumed cloudfront if we have a host!
+          ScihistDigicoll::ShrineStorage::CloudfrontS3Storage.new(**{
+            bucket:            lookup!(bucket_key),
+            host:              host,
+            public:            public,
+            prefix:            prefix,
+            access_key_id:     lookup!(:aws_access_key_id),
+            secret_access_key: lookup!(:aws_secret_access_key),
+            region:            lookup!(:aws_region),
+            cloudfront_key_pair_id:     lookup(:cloudfront_key_pair_id),
+            cloudfront_private_key: lookup(:cloudfront_private_key)
+          }.merge(s3_storage_options))
+        else
+          FasterS3Url::Shrine::Storage.new(**{
+            bucket:            lookup!(bucket_key),
+            public:            public,
+            prefix:            prefix,
+            access_key_id:     lookup!(:aws_access_key_id),
+            secret_access_key: lookup!(:aws_secret_access_key),
+            region:            lookup!(:aws_region)
+          }.merge(s3_storage_options))
+        end
       else
         raise TypeError.new("unrecognized storage mode: #{mode}")
       end
@@ -423,13 +466,13 @@ module ScihistDigicoll
 
     def self.shrine_store_storage
       @shrine_store_storage ||=
-        appropriate_shrine_storage(bucket_key: :s3_bucket_originals)
+        appropriate_shrine_storage(bucket_key: :s3_bucket_originals, public: false, host: lookup(:s3_bucket_originals_host))
     end
 
     # we store video originals in separate location
     def self.shrine_store_video_storage
       @shrine_video_store_storage ||=
-        appropriate_shrine_storage(bucket_key: :s3_bucket_originals_video)
+        appropriate_shrine_storage(bucket_key: :s3_bucket_originals_video, public: false, host: lookup(:s3_bucket_originals_video_host))
     end
 
     # Note we set shrine S3 storage to public, to upload with public ACLs
@@ -437,8 +480,8 @@ module ScihistDigicoll
       @shrine_derivatives_storage ||=
         appropriate_shrine_storage( bucket_key: :s3_bucket_derivatives,
                                     host: lookup(:s3_bucket_derivatives_host),
+                                    public: true,
                                     s3_storage_options: {
-                                      public: true,
                                       upload_options: {
                                         # derivatives are public and at unique random URLs, so
                                         # can be cached far-future
@@ -451,8 +494,8 @@ module ScihistDigicoll
       @shrine_derivatives_video_storage ||=
         appropriate_shrine_storage( bucket_key: :s3_bucket_derivatives_video,
                                     host: lookup(:s3_bucket_derivatives_video_host),
+                                    public: true,
                                     s3_storage_options: {
-                                      public: true,
                                       upload_options: {
                                         # derivatives are public and at unique random URLs, so
                                         # can be cached far-future
@@ -467,6 +510,8 @@ module ScihistDigicoll
     def self.shrine_restricted_derivatives_storage
       @shrine_restricted_derivatives_storage ||=
         appropriate_shrine_storage( bucket_key: :s3_bucket_originals,
+                                    host: lookup(:s3_bucket_originals_host),
+                                    public: false,
                                     prefix: "restricted_derivatives")
     end
 
@@ -474,9 +519,16 @@ module ScihistDigicoll
     def self.shrine_on_demand_derivatives_storage
       @shrine_on_demand_derivatives_storage ||=
         appropriate_shrine_storage( bucket_key: :s3_bucket_on_demand_derivatives,
+                                    host: lookup(:s3_bucket_on_demand_derivatives_host),
+                                    public: true,
                                     s3_storage_options: {
-                                      public: true
-                                    })
+                                      upload_options: {
+                                        # these have fingerprints in their URLs, so they are
+                                        # cacheable forever. only started setting this in Jul 2024
+                                        cache_control: "max-age=31536000, public"
+                                      }
+                                    }
+                                  )
     end
 
     def self.shrine_combined_audio_derivatives_storage
@@ -485,16 +537,22 @@ module ScihistDigicoll
         appropriate_shrine_storage( bucket_key: :s3_bucket_derivatives,
                                     host: lookup(:s3_bucket_derivatives_host),
                                     prefix: "combined_audio_derivatives",
+                                    public: true,
                                     s3_storage_options: {
-                                      public: true
+                                      upload_options: {
+                                        # these have fingerprints in their URLs, so they are
+                                        # cacheable forever. only started setting this in Jul 2024
+                                        cache_control: "max-age=31536000, public"
+                                      }
                                     })
     end
 
     def self.shrine_dzi_storage
       @shrine_dzi_storage ||=
         appropriate_shrine_storage( bucket_key: :s3_bucket_dzi,
+                                    host: lookup(:s3_bucket_dzi_host),
+                                    public: true,
                                     s3_storage_options: {
-                                      public: true,
                                       upload_options: {
                                         # our DZI's are all public right now, and at unique-to-content
                                         # URLs, cache forever.
