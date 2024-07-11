@@ -429,7 +429,7 @@ describe "Oral history with audio display", type: :system, js: true do
       expect(page).to have_content(%r{Table of Contents — 1 / 7}i)
       expect(page).to have_selector("*[data-ohms-hitcount='index']", text: "7")
       expect(page).to have_selector("*[data-ohms-hitcount='transcript']", text: "43")
-
+      sleep 1
       click_on "Description"
       # We expect the Description tab to be moved to, but for some reason sometimes
       # the click doesn't work to change tabs... bootstrap tab wasn't ready for it for some reason?...
