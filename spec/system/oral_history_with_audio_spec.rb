@@ -410,8 +410,18 @@ describe "Oral history with audio display", type: :system, js: true do
         click_on "Search"
       end
 
-      expect(page).to have_selector("*[data-trigger='linkClipboardCopy']")
-      page.find("*[data-trigger='linkClipboardCopy']").click
+      copy_to_clipboard = "*[data-trigger='linkClipboardCopy']"
+      begin
+        expect(page).to have_selector(copy_to_clipboard, wait: 0.05)      
+      rescue RSpec::Expectations::ExpectationNotMetError
+        # the "copy to clipboard" button sometimes fails to show up fast enough.
+        # Just click "search" again.
+        # See similar workaround below.
+        within("*[data-ohms-search-form]") { click_on "Search" }
+        expect(page).to have_selector(copy_to_clipboard)
+      end
+
+      page.find(copy_to_clipboard).click
       expect(page).to have_content("Copied to clipboard")
 
       # ToC tab should be selected as it is first tab with results from search
@@ -419,7 +429,6 @@ describe "Oral history with audio display", type: :system, js: true do
       expect(page).to have_content(%r{Table of Contents — 1 / 7}i)
       expect(page).to have_selector("*[data-ohms-hitcount='index']", text: "7")
       expect(page).to have_selector("*[data-ohms-hitcount='transcript']", text: "43")
-
       click_on "Description"
       # We expect the Description tab to be moved to, but for some reason sometimes
       # the click doesn't work to change tabs... bootstrap tab wasn't ready for it for some reason?...
