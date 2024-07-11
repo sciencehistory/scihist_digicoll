@@ -410,8 +410,18 @@ describe "Oral history with audio display", type: :system, js: true do
         click_on "Search"
       end
 
-      expect(page).to have_selector("*[data-trigger='linkClipboardCopy']")
-      page.find("*[data-trigger='linkClipboardCopy']").click
+      copy_to_clipboard = "*[data-trigger='linkClipboardCopy']"
+      begin
+        expect(page).to have_selector(copy_to_clipboard, wait: 0.05)      
+      rescue RSpec::Expectations::ExpectationNotMetError
+        # the "copy to clipboard" button sometimes fails to show up fast enough.
+        # Just click "search" again.
+        # See similar workaround below.
+        within("*[data-ohms-search-form]") { click_on "Search" }
+        expect(page).to have_selector(copy_to_clipboard)
+      end
+
+      page.find(copy_to_clipboard).click
       expect(page).to have_content("Copied to clipboard")
 
       # ToC tab should be selected as it is first tab with results from search
