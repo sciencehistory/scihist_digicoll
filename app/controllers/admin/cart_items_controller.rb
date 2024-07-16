@@ -44,7 +44,23 @@ class Admin::CartItemsController < AdminController
   end
 
 
+  # POST /admin/cart_items/update_multiple/:list_of_ids(.:format)  admin/cart_items#add_multiple
+  def update_multiple
+    works = Work.where friendlier_id: params[:list_of_ids].split(',')
 
+    if params[:checkbox] == "1"
+      current_user.works_in_cart = Set.new(works + current_user.works_in_cart)
+    else
+      current_user.works_in_cart -= works
+    end
+    respond_to do |format|
+      format.json do
+        render json: {
+          cart_count: current_user.works_in_cart.count
+        }
+      end
+    end
+  end
 
 
   # DELETE /admin/cart_items/dj52w562t

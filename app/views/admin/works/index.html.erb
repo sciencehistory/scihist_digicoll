@@ -110,6 +110,16 @@
         <td><%= render CartControlComponent.new(work.friendlier_id, cart_presence: @cart_presence, label_sr_only: true) if can?(:update, work) %></td>
       </tr>
     <% end %>
+    <% if can?(:update, Kithe::Model) %>
+    <tr>
+      <td colspan="6" class="text-right">
+        <label for="check_all">Check or uncheck all</label>
+      </td>
+      <td>
+        <%= render CartControlComponentMultiple.new(@works.map {|w| w.friendlier_id}.join(",")) %>
+      </td>
+    </tr>
+    <% end %>
   </tbody>
 </table>
 
