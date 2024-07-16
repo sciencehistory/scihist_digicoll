@@ -116,7 +116,11 @@
         <label for="check_all">Check or uncheck all</label>
       </td>
       <td>
-        <%= render CartControlComponentMultiple.new(@works.map {|w| w.friendlier_id}.join(",")) %>
+        <%= render CartControlComponentMultiple.new(
+          @works.map {|w| w.friendlier_id}.join(","),
+          start_checked: @cart_presence.all_in_cart?(@works.map {|w| w.friendlier_id}),
+          label_sr_only: true
+        ) %>
       </td>
     </tr>
     <% end %>
