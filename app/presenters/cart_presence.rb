@@ -20,6 +20,10 @@ class CartPresence
     friendlier_ids_in_cart.include?(friendlier_id)
   end
 
+  def all_in_cart?(friendlier_ids_on_page)
+    Set.new(friendlier_ids_on_page).subset? friendlier_ids_in_cart
+  end
+
   private
 
   # important we are loading this LAZILY, not loaded on demand. So you can instantiate
