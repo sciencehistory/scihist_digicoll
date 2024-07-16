@@ -8,14 +8,24 @@
 jQuery( document ).ready(function( $ ) {
 
   function form_disable(form) {
-    form.find("input[data-cart-toggle-input=true], label").attr("disabled", "disabled");
+    form.find(".cart-checkbox, label").attr("disabled", "disabled");
   }
 
   function form_enable(form) {
-    form.find("input[data-cart-toggle-input=true], label").removeAttr("disabled");
+    form.find(".cart-checkbox, label").removeAttr("disabled");
   }
 
-  $(document).on("change", "input[data-cart-toggle-input=true]", function(event) {
+  function multiple_form_disable(form) {
+    form.find(".cart-multiple-checkbox, label").attr("disabled", "disabled");
+  }
+
+  function multiple_form_enable(form) {
+    form.find(".cart-multiple-checkbox, label").removeAttr("disabled");
+  }
+
+
+  // SINGLE work cart checkbox:
+  $(document).on("change", ".cart-checkbox", function(event) {
     var checkbox = $(this);
     var form = checkbox.closest("form");
 
@@ -52,18 +62,9 @@ jQuery( document ).ready(function( $ ) {
     });
   });
 
+  // MULTIPLE work cart checkbox:
 
-  /// Multiple-work checkbox:
-
-  function multiple_form_disable(form) {
-    form.find("input[data-multiple-cart-toggle-input=true], label").attr("disabled", "disabled");
-  }
-
-  function multiple_form_enable(form) {
-    form.find("input[data-multiple-cart-toggle-input=true], label").removeAttr("disabled");
-  }
-
-  $(document).on("change", "input[data-multiple-cart-toggle-input=true]", function(event) {
+  $(document).on("change", ".cart-multiple-checkbox", function(event) {
     var checkbox = $(this);
     var form = checkbox.closest("form");
 
@@ -88,10 +89,10 @@ jQuery( document ).ready(function( $ ) {
 
         success: function(data, status, xhr) {
           //Set all the checkboxes to the same status as this one:
-          $('.cart-toggle-form input[name=toggle]').each(function() {$(this).prop("checked", checkbox.prop("checked"))})
+          $('.cart-checkbox').each(function() {$(this).prop("checked", checkbox.prop("checked"))})
 
           //if app isn't running at all, xhr annoyingly
-          //reports success with status 0, so non-0 we consider success.
+          //reports errors with status 0, so non-0 we consider success.
           if (xhr.status != 0) {
             // update cart count
             $("span[data-role=cart-counter]").text(data["cart_count"]);
@@ -105,7 +106,5 @@ jQuery( document ).ready(function( $ ) {
           }
         }
     });
-
   });
-
 });
