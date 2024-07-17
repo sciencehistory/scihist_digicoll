@@ -1,6 +1,7 @@
 {
   "name": "scihist_digicoll",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@nathanvda/cocoon": "^1.2.14",
     "@rails/ujs": "^ 6.1.7",
