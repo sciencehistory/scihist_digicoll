@@ -46,12 +46,13 @@ class Admin::CartItemsController < AdminController
 
   # POST /admin/cart_items/update_multiple/:list_of_ids(.:format)  admin/cart_items#add_multiple
   def update_multiple
-    works = Work.where friendlier_id: params[:list_of_ids].split(',')
-
-    if params[:checkbox] == "1"
-      current_user.works_in_cart = Set.new(works + current_user.works_in_cart)
-    else
-      current_user.works_in_cart -= works
+    Work.transaction do
+      works = Work.where friendlier_id: params[:list_of_ids].split(',')
+      if params[:toggle] == "1"
+        current_user.works_in_cart = Set.new(works + current_user.works_in_cart)
+      else
+        current_user.works_in_cart -= works
+      end
     end
     respond_to do |format|
       format.json do
