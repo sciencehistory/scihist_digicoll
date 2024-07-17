@@ -31,13 +31,13 @@ RSpec.describe Admin::CartItemsController, :logged_in_user, type: :controller, q
   context "add /remove works from cart" do
     it "adds" do
       ids = [work_3, work_4, work_4, work_5, work_6].map{ |w| w.friendlier_id } + ['foo']
-      post :update_multiple, params: { list_of_ids: ids, checkbox: 1}, format: :json
+      post :update_multiple, params: { list_of_ids: ids, toggle: 1}, format: :json
       expect(works_in_cart).to match_array([work_1, work_2, work_3, work_4, work_5, work_6])
     end
 
     it "removes" do      
       ids = [work_1, work_1, work_3].map{ |w| w.friendlier_id } + ['foo']
-      post :update_multiple, params: { list_of_ids: ids, checkbox: 0 }, format: :json
+      post :update_multiple, params: { list_of_ids: ids, toggle: 0 }, format: :json
       expect(works_in_cart).to match_array(work_2)
     end
   end
