@@ -10,7 +10,6 @@ jQuery( document ).ready(function( $ ) {
 
   // SINGLE work cart checkbox:
   $(document).on("change", ".cart-checkbox", function(event) {
-    alert("FIRED!!!");
     var checkbox = $(this);
     var form = checkbox.closest("form");
 
@@ -74,13 +73,16 @@ jQuery( document ).ready(function( $ ) {
         success: function(data, status, xhr) {
           if (xhr.status != 0) {
             // SUCCESS
-            //Set all the "cart" checkboxes to the same status as this one:
-            $('.cart-checkbox').each(function() {$(this).prop("checked", checkbox.prop("checked"))})
 
-            ///CAREFUL -- we want to make sure this doesn't trigger the $(document).on("change", ".cart-checkbox" above.
+            // Set all the "cart" checkboxes to the same status as this one.
+            // This does *not* trigger a 'change' event, because we're using JS to change the value.
+            //     "Note: Changing the value of an input element using JavaScript, using .val() for example, won't fire the [change] event"
+            //     https://api.jquery.com/change/
+            $('.cart-checkbox').each(function() {$(this).prop("checked", checkbox.prop("checked"))})
 
             updateCount(data["cart_count"]);
             multipleFormEnable();
+
           } else {
             // FAILURE
             console.error("Error adding or removing multiple works from the user's cart. Details:\r\n" + error + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
