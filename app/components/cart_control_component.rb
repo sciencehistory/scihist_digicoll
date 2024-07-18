@@ -18,7 +18,8 @@ class CartControlComponent < ApplicationComponent
           "1",
           already_in_cart?,
           id: input_id,
-          data: { "cart-toggle-input" => true }
+          data: { "cart-toggle-input" => true },
+          class: "cart-checkbox"
          ),
         " ",
         label_tag(input_id, "In Cart", class: ("sr-only" if @label_sr_only))
