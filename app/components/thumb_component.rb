@@ -14,9 +14,9 @@
 # * By default it will display thumb size `standard`, suitable for use in results display, but you
 #   can supply any other thumb size we support, eg, :mini, :large, or for collections :collection_page
 #
-# * Optionally pass `lazy:true` to produce an image tag suitable for lazyloading with lazysizes.js,
-#   https://github.com/aFarkas/lazysizes , including a data-aspectratio tag for
-#   https://github.com/aFarkas/lazysizes/tree/gh-pages/plugins/aspectratio
+# * Optionally pass `lazy:true` to use native browser lazy loading
+#   https://developer.mozilla.org/en-US/docs/Web/Performance/Lazy_loading
+#   https://caniuse.com/loading-lazy-attr
 #
 # ## Placeholders
 #
