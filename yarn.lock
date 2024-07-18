@@ -847,10 +847,10 @@ vite-plugin-ruby@^5.0.0:
     debug "^4.3.4"
     fast-glob "^3.3.2"
 
-vite-plugin-sass-glob-import@^2.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/vite-plugin-sass-glob-import/-/vite-plugin-sass-glob-import-2.0.0.tgz#869671385c5752ac240b1657538dd9ee32efdcfc"
-  integrity sha512-lLeuhgouRveN4aCvyojdTXV0LStLCYa24Zua06N5tw2f0MsQSSwBfC6G/CMdHqidTyX1xHd4luNSkc1uudcxzA==
+vite-plugin-sass-glob-import@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/vite-plugin-sass-glob-import/-/vite-plugin-sass-glob-import-3.0.2.tgz#de932204a66ea287f982bf5637870acfeed453ff"
+  integrity sha512-Tu6M6Fn4pFp1Gsvt+uOKAmPQyspNJSAWKV8GepHGR9Rmx4wujfS0wPjfmVk7QGqD+bSzr+P7L5VGGw9nPgiaMA==
   dependencies:
     ansi-colors "^4.1.3"
     glob "^7.2.0"
