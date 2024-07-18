@@ -11,24 +11,24 @@
   <div class="collections-list">
     <div class="d-flex flex-wrap justify-content-center">
       <%= link_to collections_path(department_filter: "archives"), class: "collection" do %>
-        <%= image_tag "homepage/Archives1.jpg", srcset: {"homepage/Archives1.jpg" => "1x", "homepage/Archives1-2X.jpg" => "2x" }, alt: "" %>
+        <%= image_tag "homepage/Archives1.jpg", loading: "lazy", srcset: {"homepage/Archives1.jpg" => "1x", "homepage/Archives1-2X.jpg" => "2x" }, alt: "" %>
         <div class="title">Archives</div>
       <% end %>
 
       <%= link_to collections_path(department_filter: "center-for-oral-history"), class: "collection" do %>
-        <%= image_tag "homepage/OralHistory1.jpg", srcset: {"homepage/OralHistory1.jpg" => "1x", "homepage/OralHistory1-2X.jpg" => "2x" }, alt: "" %>
+        <%= image_tag "homepage/OralHistory1.jpg", loading: "lazy", srcset: {"homepage/OralHistory1.jpg" => "1x", "homepage/OralHistory1-2X.jpg" => "2x" }, alt: "" %>
         <div class="title">Oral History</div>
       <% end %>
     </div>
 
     <div class="d-flex flex-wrap justify-content-center">
       <%= link_to collections_path(department_filter: "library"), class: "collection" do %>
-        <%= image_tag "homepage/Library1.jpg", srcset: {"homepage/Library1.jpg" => "1x", "homepage/Library1-2X.jpg" => "2x" }, alt: "" %>
+        <%= image_tag "homepage/Library1.jpg", loading: "lazy", srcset: {"homepage/Library1.jpg" => "1x", "homepage/Library1-2X.jpg" => "2x" }, alt: "" %>
         <div class="title">Library</div>
       <% end %>
 
       <%= link_to collections_path(department_filter: "museum"), class: "collection" do %>
-        <%= image_tag "homepage/Museum1.jpg", srcset: {"homepage/Museum1.jpg" => "1x", "homepage/Museum1-2X.jpg" => "2x" }, alt: "" %>
+        <%= image_tag "homepage/Museum1.jpg", loading: "lazy", srcset: {"homepage/Museum1.jpg" => "1x", "homepage/Museum1-2X.jpg" => "2x" }, alt: "" %>
         <div class="title">Museum</div>
       <% end %>
     </div>
