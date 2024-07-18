@@ -133,18 +133,19 @@
     }
     .thumb img {
       cursor: zoom-in;
-      max-width: 100%;
+      width: 100%;
 
-      // Bg will be covered up by actual image src once loaded, but serves
-      // as a placeholder before loaded, whether for lazy loaded or browser loaded
+      // if image is in process of loading (maybe lazy) or broken, have a nice grey square
       background-color: $brand-image-placeholder-color;
-
-      // If our JS is actually loading, add a stationary "spinner" kind of icon.
-      // Actual animated one used too much CPU when on the page so many times.
-      &.lazyload, &.lazyloading {
-         background: $brand-image-placeholder-color url('@/images/static-progress.svg') no-repeat;
-         background-position: center center;
-         background-size: 50%;
+      position: relative;
+      &:after {
+        content: " ";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background-color: $brand-image-placeholder-color;
       }
 
       min-height: 50px; // just so it's something big enough to see! Will distort very wide images.
