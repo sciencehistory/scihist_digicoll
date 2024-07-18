@@ -71,10 +71,10 @@ jQuery( document ).ready(function( $ ) {
         },
 
         success: function(data, status, xhr) {
-          //Set all the "cart" checkboxes to the same status as this one:
-          $('.cart-checkbox').each(function() {$(this).prop("checked", checkbox.prop("checked"))})
           if (xhr.status != 0) {
             // SUCCESS
+            //Set all the "cart" checkboxes to the same status as this one:
+            $('.cart-checkbox').each(function() {$(this).prop("checked", checkbox.prop("checked"))})
             updateCount(data["cart_count"]);
             multipleFormEnable();
           } else {
