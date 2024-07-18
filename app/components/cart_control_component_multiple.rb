@@ -21,12 +21,14 @@ class CartControlComponentMultiple < ApplicationComponent
           "1",                    # value
           @start_checked,         # checked
           id: 'check-or-uncheck-all-works',
-          data: { "multiple-cart-toggle-input" => true },
+          data: {
+            "multiple-cart-toggle-input" => true, # do we really need this line anymore ???
+            "list_of_ids" => work_friendlier_ids
+          },
           class: "cart-multiple-checkbox"
          ),
         " ",
-        hidden_field_tag('list_of_ids', @work_friendlier_ids),
-        hidden_field_tag('start_checked_was', @start_checked)
+        hidden_field_tag('list_of_ids', @work_friendlier_ids)
       ])
     end
   end

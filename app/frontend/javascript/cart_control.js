@@ -16,8 +16,8 @@ jQuery( document ).ready(function( $ ) {
     $.ajax({
         url: form.attr('action'),
         dataType: 'json',
-        type: form.attr('method').toUpperCase(),
-        data: form.serialize(),
+        type: form.attr('method').toUpperCase(), 
+        data: form.serialize(), 
         beforeSend: function() {
           formDisable(form);
         },
@@ -49,14 +49,13 @@ jQuery( document ).ready(function( $ ) {
   // MULTIPLE work cart checkbox:
   $(document).on("change", ".cart-multiple-checkbox", function(event) {
     var checkbox = $(this);
-    var form = checkbox.closest("form");
 
     $.ajax({
-        url: form.attr('action'),
-        dataType: 'json',
-        type: form.attr('method').toUpperCase(),
-        data: form.serialize(),
-
+        url:        '/admin/cart_items/update_multiple',
+        dataType:   'json',
+        type:       'POST',
+        data:       { "list_of_ids": checkbox.data('list-of-ids') },
+        
         beforeSend: function() {
           // Disable the checkbox until server confirms the change went through.
           multipleFormDisable();
