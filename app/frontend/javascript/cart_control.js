@@ -10,6 +10,7 @@ jQuery( document ).ready(function( $ ) {
 
   // SINGLE work cart checkbox:
   $(document).on("change", ".cart-checkbox", function(event) {
+    alert("FIRED!!!");
     var checkbox = $(this);
     var form = checkbox.closest("form");
 
@@ -75,6 +76,9 @@ jQuery( document ).ready(function( $ ) {
             // SUCCESS
             //Set all the "cart" checkboxes to the same status as this one:
             $('.cart-checkbox').each(function() {$(this).prop("checked", checkbox.prop("checked"))})
+
+            ///CAREFUL -- we want to make sure this doesn't trigger the $(document).on("change", ".cart-checkbox" above.
+
             updateCount(data["cart_count"]);
             multipleFormEnable();
           } else {
