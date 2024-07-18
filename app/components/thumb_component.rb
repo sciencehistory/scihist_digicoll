@@ -53,25 +53,17 @@ class ThumbComponent < ApplicationComponent
   # @param recent_items [Boolean] The ThumbComponents used in the recent_itmes section of the homepage
   # function slightly differently: they are intended to be visible on screenreaders, so we
   # are allowing an alt text for them.
-  #
-  # @param aspect_ratio_container [Boolean] Default true, includes a wrapping div used for a "legacy"
-  #   method of reserving aspect-ratio space. In the future we may repalce with more recent
-  #   less hacky techniques. But setting to 'false' disables this container, for contexts
-  #   where it gets in the way and you don't need lazy loading.
-  #
   def initialize(asset,
     thumb_size: :standard,
     placeholder_img_url: nil,
     lazy: false,
-    alt_text_override: nil,
-    aspect_ratio_container: true)
+    alt_text_override: nil)
 
     @asset = asset
     @placeholder_img_url = placeholder_img_url
     @thumb_size = thumb_size.to_sym
     @lazy = lazy
     @alt_text_override = alt_text_override
-    @aspect_ratio_container = aspect_ratio_container
 
     unless ALLOWED_THUMB_SIZES.include? thumb_size
       raise ArgumentError.new("thumb_size must be in #{ALLOWED_THUMB_SIZES}, but was '#{thumb_size}'")
@@ -151,30 +143,24 @@ class ThumbComponent < ApplicationComponent
       img_attributes.merge!(decoding: "async")
     end
 
-    if aspect_ratio_padding_bottom
-      # the wrapper div with CSS aspect ratio hack helps reserve space on page before image is loaded.
-      # For lazy-loaded images -- but turns out, helpful even for immediate images, which may load slow
-      # or at any rate not yet be loaded when page is laid out. Minimize page jumping around.
-      content_tag("div", class: "img-aspectratio-container", style: "padding-bottom: #{aspect_ratio_padding_bottom};") do
-        tag("img", img_attributes)
-      end
-    else
-      # don't have aspect ratio to reserve space pre-load, just image tag
-      tag("img", img_attributes)
-    end
+    img_attributes.merge!(style: aspect_ratio_style_tag)
+
+    tag("img", img_attributes)
   end
 
-  # Used for padding bottom CSS aspect ratio trick. Get height and width from requested thumb.
-  def aspect_ratio_padding_bottom
-    return false unless @aspect_ratio_container
-
+  # style tag with aspect-ratio css to reserve proper space on page for lazy loading or not yet loaded images
+  def aspect_ratio_style_tag
+    # the asset itself could be weird media without height/width itself maybe?  So we look at
+    # thumb we're actually displaying for width and height
     thumb = asset&.file("thumb_#{thumb_size}")
 
-    return nil unless thumb && thumb.width && thumb.height
-
-    height_over_width = thumb.height.to_f / thumb.width.to_f
-
-    "#{(height_over_width * 100.0).truncate(1)}%"
+    if asset.width && asset.height
+      # width / height as string is supported
+      return "aspect-ratio: #{thumb.width} / #{thumb.height}"
+    elsif lazy?
+      Rails.logger.warn("Could not find height and width for aspect-ratio CSS for lazy-loaded image #{asset.friendlier_id}")
+      return nil
+    end
   end
 
   def res_1x_url

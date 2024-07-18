@@ -118,18 +118,6 @@ describe ThumbComponent, type: :component do
       end
     end
 
-    describe "aspect_ratio_container false" do
-      let(:instance) { ThumbComponent.new(argument, aspect_ratio_container: false) }
-
-      it "renders without aspectratio-container" do
-        wrapper = rendered.at_css(".img-aspectratio-container")
-        expect(wrapper).not_to be_present
-
-        img_tag = rendered.at_css("img")
-        expect(img_tag["src"]).to be_present
-      end
-    end
-
     describe "lazy load with native lazyloading" do
       let(:thumb_size) { :mini }
       let(:argument) { build(:asset_with_faked_file)}
