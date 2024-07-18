@@ -142,15 +142,13 @@ class ThumbComponent < ApplicationComponent
       img_attributes[:alt] = asset.alt_text
     end
 
-    if lazy?
-      # tell lazysizes.js to load with class, and put src/srcset only in
-      # data- attributes, so the image will not be loaded immediately, but lazily
-      # by lazysizes.js.
+    img_attributes.merge!(src_attributes)
 
-      img_attributes[:class] = "lazyload"
-      img_attributes[:data].merge!(src_attributes)
-    else
-      img_attributes.merge!(src_attributes)
+    if lazy?
+      # native browser lazy loading https://developer.mozilla.org/en-US/docs/Web/Performance/Lazy_loading
+      img_attributes.merge!(loading: "lazy")
+      # prob doens't matter but doesn't hurt and may help https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/decoding
+      img_attributes.merge!(decoding: "async")
     end
 
     if aspect_ratio_padding_bottom
