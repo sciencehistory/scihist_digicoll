@@ -20,7 +20,7 @@
 
   <div class="admin-filters">
     <div class="admin-filter">
-      <label for="q_published">Published</label>
+      <label for="q_published_eq">Published</label>
       <%= select_tag "q[published_eq]",
             options_for_select({"Yes" => true, "No" => false}, params[:q][:published_eq]),
             include_blank: "Any",
@@ -89,7 +89,10 @@
       <th class="datestamp"><%= sort_link(@q, :created_at, "Created", page: nil) %></th>
       <th class="datestamp"><%= sort_link(@q, :updated_at, "Last Modified", page: nil) %></th>
       <th class="action"></th>
-      <th>Cart</th>
+
+      <% if can?(:update, Kithe::Model) %>
+        <th>Cart</th>
+      <% end %>
     </tr>
   </thead>
 
@@ -111,18 +114,18 @@
       </tr>
     <% end %>
     <% if can?(:update, Kithe::Model) %>
-    <tr>
-      <td colspan="6" class="text-right">
-        <label for="check_all">Check or uncheck all</label>
-      </td>
-      <td>
-        <%= render CartControlComponentMultiple.new(
-          @works.map {|w| w.friendlier_id}.join(","),
-          start_checked: @cart_presence.all_in_cart?(@works.map {|w| w.friendlier_id}),
-          label_sr_only: true
-        ) %>
-      </td>
-    </tr>
+      <tr>
+        <td colspan="6" class="text-right">
+          <%# This label is displayed OUTSIDE the form, to simplify the component below. %>
+          <label for="check-or-uncheck-all-works">Check or uncheck all</label>
+        </td>
+        <td>
+          <%= render CartControlComponentMultiple.new(
+            @works.map {|w| w.friendlier_id}.join(","),
+            start_checked: @cart_presence.all_in_cart?(@works.map {|w| w.friendlier_id})
+          ) %>
+        </td>
+      </tr>
     <% end %>
   </tbody>
 </table>
