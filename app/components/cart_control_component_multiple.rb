@@ -3,10 +3,13 @@
 class CartControlComponentMultiple < ApplicationComponent
   attr_reader :work_friendlier_ids, :start_checked
 
-  def initialize(work_friendlier_ids, start_checked: false, label_sr_only: false)
+  def initialize(work_friendlier_ids, start_checked: false)
+
+    # Comma-separated list of friendlier_ids for works to either check or uncheck:
     @work_friendlier_ids = work_friendlier_ids
+
+    # Whether to display the checkbox as checked when the page loads:
     @start_checked = start_checked
-    @label_sr_only = label_sr_only
   end
 
   def call
@@ -21,8 +24,7 @@ class CartControlComponentMultiple < ApplicationComponent
           data: { "multiple-cart-toggle-input" => true },
           class: "cart-multiple-checkbox"
          ),
-        " ",
-        label_tag('check-or-uncheck-all-works', "Check or uncheck all works on this page", class: ("sr-only" if @label_sr_only))
+        " "
       ])
     end
   end
