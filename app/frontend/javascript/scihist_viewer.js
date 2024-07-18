@@ -2,7 +2,6 @@
 //
 //   * Depends on JQuery being available, although not imported webpacker style
 //   * Depends on Bootstrap modal JS being available, although not imported webpacker style
-//   * Depends on lazysizes.js (we load in separate webpack, so no "import")
 //
 // Image viewer is triggered with an <a> tag with these data attributes:
 //
@@ -577,7 +576,10 @@ ScihistImageViewer.prototype.makeThumbnails = function(json) {
       return;
     }
 
-    var calcPixelHeight = (_self.thumbWidth / config.thumbAspectRatio).toFixed(1);
+    const calcPixelHeight = (_self.thumbWidth / config.thumbAspectRatio).toFixed(1);
+    // not totally sure if this forced height is really necessary currently, maybe in collapsed horizontal mode?
+    // Need aspect-ratio to reserve proper space even before img is loaded, esp with lazy loading
+    const inlineStyles = 'height:' + calcPixelHeight + 'px; aspect-ratio: ' + config.thumbAspectRatio + ';';
 
     container.append(
       '<button type="button" class="viewer-thumb"' +
@@ -585,13 +587,14 @@ ScihistImageViewer.prototype.makeThumbnails = function(json) {
         ' data-trigger="change-viewer-source"' +
         ' data-index="' + index + '"' +
       '>' +
-        '<img class="lazyload"' +
+        '<img ' +
               ' alt="Image ' + (index + 1) + '"' +
               ' data-base-alt="Image ' + (index + 1) + '"' +
-              ' data-src="' + config.thumbSrc + '"' +
-              ' data-srcset="' +  (config.thumbSrcset || '') + '"' +
-              // not totally sure if this forced height is really necessary currently, maybe for lazyload?
-              ' style="height:' + calcPixelHeight + 'px;"' +
+              ' loading="lazy" ' +
+              ' src="' + config.thumbSrc + '"' +
+              ' srcset="' +  (config.thumbSrcset || '') + '"' +
+              ' style="' + inlineStyles + '"' +
+
         '>' +
       '</button>'
     );
