@@ -18,7 +18,7 @@ class CartControlComponentMultiple < ApplicationComponent
         "1",                    # value
         @start_checked,         # checked
         id: 'check-or-uncheck-all-works',
-        data: { "list_of_ids" => work_friendlier_ids },
+        data: { "list_of_ids" => @work_friendlier_ids },
         class: "cart-multiple-checkbox"
        ),
       " ",
