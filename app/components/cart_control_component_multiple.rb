@@ -13,18 +13,20 @@ class CartControlComponentMultiple < ApplicationComponent
   end
 
   def call
-    form_tag(admin_update_multiple_cart_items_path(work_friendlier_ids),
+    form_tag(admin_update_multiple_cart_items_path,
               class: "multiple-cart-toggle-form",
               method: :post) do
       safe_join([
-        check_box_tag("toggle",
-          "1",
-          @start_checked,
+        check_box_tag("toggle",   # name
+          "1",                    # value
+          @start_checked,         # checked
           id: 'check-or-uncheck-all-works',
           data: { "multiple-cart-toggle-input" => true },
           class: "cart-multiple-checkbox"
          ),
-        " "
+        " ",
+        hidden_field_tag('list_of_ids', @work_friendlier_ids),
+        hidden_field_tag('start_checked_was', @start_checked)
       ])
     end
   end

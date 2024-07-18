@@ -338,7 +338,7 @@ Rails.application.routes.draw do
       end
     end
 
-    post "cart_items/update_multiple/:list_of_ids",
+    post "cart_items/update_multiple",
       to: "cart_items#update_multiple",
       as: "update_multiple_cart_items",
       format: "json"
