@@ -54,7 +54,9 @@ jQuery( document ).ready(function( $ ) {
         url:        '/admin/cart_items/update_multiple',
         dataType:   'json',
         type:       'POST',
-        data:       { "list_of_ids": checkbox.data('list-of-ids') },
+        data:       { "list_of_ids": checkbox.data('list-of-ids'),
+                      "toggle": checkbox.prop("checked") ? 1 : 0
+                    },
         
         beforeSend: function() {
           // Disable the checkbox until server confirms the change went through.
