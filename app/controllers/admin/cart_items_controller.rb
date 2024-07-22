@@ -46,6 +46,11 @@ class Admin::CartItemsController < AdminController
 
   # POST /admin/cart_items/update_multiple/:list_of_ids(.:format)  admin/cart_items#add_multiple
   def update_multiple
+
+    unless ["1", "0"].include? params[:toggle]
+      raise ArgumentError, "params[:toggle] must be 0 or 1."
+    end
+
     Work.transaction do
       works = Work.where friendlier_id: params[:list_of_ids].split(',')
       if params[:toggle] == "1"
