@@ -48,15 +48,19 @@ jQuery( document ).ready(function( $ ) {
 
   // MULTIPLE work cart checkbox:
   $(document).on("change", ".cart-multiple-checkbox", function(event) {
-    var checkbox = $(this);
+    var multipleCheckbox = $(this);
 
     $.ajax({
-        url:        '/admin/cart_items/update_multiple',
+        // URL is admin_update_multiple_cart_items_path
+        url:        multipleCheckbox.data('url'), 
+        // comma-separated list of friendlier_ids
+        data:       {
+          "list_of_ids": multipleCheckbox.data('list-of-ids'),
+           "toggle": ( multipleCheckbox.prop("checked") ? 1 : 0 )
+        },
+
         dataType:   'json',
         type:       'POST',
-        data:       { "list_of_ids": checkbox.data('list-of-ids'),
-                      "toggle": checkbox.prop("checked") ? 1 : 0
-                    },
         
         beforeSend: function() {
           // Disable the checkbox until server confirms the change went through.
@@ -66,7 +70,7 @@ jQuery( document ).ready(function( $ ) {
         error: function(xhr, ajaxOptions, error) {
           console.error("Multiple cart item toggle error\r\n" + error + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
           // Revert the checkbox change
-          checkbox.prop("checked", !checkbox.prop("checked"));
+          multipleCheckbox.prop("checked", !multipleCheckbox.prop("checked"));
           alert("Unable to add or remove multiple works from your cart.");
           multipleFormEnable();
         },
@@ -79,7 +83,7 @@ jQuery( document ).ready(function( $ ) {
             // This does *not* trigger a 'change' event, because we're using JS to change the value.
             //     "Note: Changing the value of an input element using JavaScript, using .val() for example, won't fire the [change] event"
             //     https://api.jquery.com/change/
-            $('.cart-checkbox').each(function() {$(this).prop("checked", checkbox.prop("checked"))})
+            $('.cart-checkbox').each(function() {$(this).prop("checked", multipleCheckbox.prop("checked"))})
 
             updateCount(data["cart_count"]);
             multipleFormEnable();
@@ -88,7 +92,7 @@ jQuery( document ).ready(function( $ ) {
             // FAILURE
             console.error("Error adding or removing multiple works from the user's cart. Details:\r\n" + error + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
             // Revert the checkbox change
-            checkbox.prop("checked", !checkbox.prop("checked"));
+            multipleCheckbox.prop("checked", !multipleCheckbox.prop("checked"));
             alert("Unable to add or remove multiple works from your cart.");
             multipleFormEnable();
           }

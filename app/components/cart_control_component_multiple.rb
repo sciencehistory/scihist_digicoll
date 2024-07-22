@@ -14,13 +14,18 @@ class CartControlComponentMultiple < ApplicationComponent
 
   def call
     safe_join([
+      
       check_box_tag("toggle",   # name
         "1",                    # value
         @start_checked,         # checked
         id: 'check-or-uncheck-all-works',
-        data: { "list_of_ids" => @work_friendlier_ids },
+        data: {
+          'list_of_ids' => @work_friendlier_ids,
+          'url'         => admin_update_multiple_cart_items_path
+        },
         class: "cart-multiple-checkbox"
-       ),
+      ),
+
       " ",
       hidden_field_tag('list_of_ids', @work_friendlier_ids)
     ])
