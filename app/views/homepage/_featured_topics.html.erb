@@ -9,7 +9,7 @@
           <% group_of_two.each do |ft| %>
             <div class="collection featured-topic">
               <%= link_to ft.path do %>
-                <%= image_tag ft.thumb_asset_path, class: "featured-topic-image", width: "100%", alt: "" %>
+                <%= image_tag ft.thumb_asset_path, class: "featured-topic-image", width: "100%", alt: "", loading: "lazy" %>
                 <div class="featured-topic-title-wrapper">
                   <h3 class="featured-topic-title"><%= ft.title %></h3>
                 </div>

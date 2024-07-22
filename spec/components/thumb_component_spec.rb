@@ -91,15 +91,12 @@ describe ThumbComponent, type: :component do
       deriv    = argument.file_derivatives[:"thumb_#{thumb_size}"]
       deriv_2x = argument.file_derivatives[:"thumb_#{thumb_size}_2X"]
 
-      wrapper = rendered.at_css(".img-aspectratio-container")
-      expect(wrapper).to be_present
-      expect(wrapper["style"]).to eq("padding-bottom: #{expected_aspect_ratio}%;")
-
-      img_tag = wrapper.at_css("img")
+      img_tag = rendered.at_css("img")
 
       expect(img_tag).to be_present
       expect(img_tag["src"]).to eq(deriv.url)
       expect(img_tag["srcset"]).to eq("#{deriv.url} 1x, #{deriv_2x.url} 2x")
+      expect(img_tag["style"]).to eq "aspect-ratio: #{argument.width} / #{argument.height}"
     end
 
     describe "with no aspect ratio available" do
@@ -121,42 +118,29 @@ describe ThumbComponent, type: :component do
       end
     end
 
-    describe "aspect_ratio_container false" do
-      let(:instance) { ThumbComponent.new(argument, aspect_ratio_container: false) }
-
-      it "renders without aspectratio-container" do
-        wrapper = rendered.at_css(".img-aspectratio-container")
-        expect(wrapper).not_to be_present
-
-        img_tag = rendered.at_css("img")
-        expect(img_tag["src"]).to be_present
-      end
-    end
-
-    describe "lazy load with lazysizes.js" do
+    describe "lazy load with native lazyloading" do
       let(:thumb_size) { :mini }
       let(:argument) { build(:asset_with_faked_file)}
       let(:instance) { ThumbComponent.new(argument, thumb_size: thumb_size, lazy: true) }
       let(:expected_aspect_ratio) { (argument.height.to_f / argument.width.to_f * 100.0).truncate(1) }
 
 
-      it "renders with lazysizes class and data- attributes" do
+      it "renders with proper src and loading=lazy" do
         deriv    = argument.file_derivatives[:"thumb_#{thumb_size}"]
         deriv_2x = argument.file_derivatives[:"thumb_#{thumb_size}_2X"]
 
-        wrapper = rendered.at_css(".img-aspectratio-container")
-        expect(wrapper).to be_present
-        expect(wrapper["style"]).to eq("padding-bottom: #{expected_aspect_ratio}%;")
-
-        img_tag = wrapper.at_css("img")
+        img_tag = rendered.at_css("img")
 
         expect(img_tag).to be_present
-        expect(img_tag["src"]).not_to be_present
-        expect(img_tag["srcset"]).not_to be_present
+        expect(img_tag["src"]).to eq deriv.url
+        expect(img_tag["srcset"]).to eq("#{deriv.url} 1x, #{deriv_2x.url} 2x")
 
-        expect(img_tag["class"]).to eq "lazyload"
-        expect(img_tag["data-src"]).to eq(deriv.url)
-        expect(img_tag["data-srcset"]).to eq("#{deriv.url} 1x, #{deriv_2x.url} 2x")
+        expect(img_tag["loading"]).to eq "lazy"
+        expect(img_tag["decoding"]).to eq "async"
+
+        # old lazysizes.js
+        expect(img_tag["data-src"]).not_to eq(deriv.url)
+        expect(img_tag["data-srcset"]).not_to eq("#{deriv.url} 1x, #{deriv_2x.url} 2x")
       end
     end
 

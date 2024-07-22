@@ -38,11 +38,6 @@
 
         Javascript tags with defer FIRST in head may be more efficient
     %>
-
-    <%# separate and positioned per lazysizes docs
-        https://github.com/aFarkas/lazysizes#include-early%>
-    <%= vite_javascript_tag 'lazysizes', defer: true %>
-
     <%= vite_client_tag %>
     <%= vite_javascript_tag 'application', defer: true %>
     <%= javascript_include_tag "import_blacklight_range_limit", defer: true %>

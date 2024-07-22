@@ -452,10 +452,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
           top: 0;
           left: 0;
 
-          background: $brand-image-placeholder-color url('@/images/static-progress.svg') no-repeat;
-          background-size: 34px 34px;
-          background-clip: content-box;
-          background-position: center center;
+          background: $brand-image-placeholder-color no-repeat;
         }
       }
     }
