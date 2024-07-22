@@ -116,13 +116,17 @@
     <% if can?(:update, Kithe::Model) %>
       <tr>
         <td colspan="6" class="text-right">
-          <%# This label is displayed OUTSIDE the form, to simplify the component below. %>
-          <label for="check-or-uncheck-all-works">Check or uncheck all</label>
+          <label for="<%= CartControlComponentMultiple.dom_id %>" >Check or uncheck all</label>
         </td>
         <td>
-          <%= render CartControlComponentMultiple.new(
+          <%=
+          render CartControlComponentMultiple.new(
             @works.map {|w| w.friendlier_id}.join(","),
-            start_checked: @cart_presence.all_in_cart?(@works.map {|w| w.friendlier_id})
+            # Check the CartControlComponentMultiple checkbox at page load
+            # iff all the works on the page are already checked.
+            # This does not hit the database at all, as @cart_presence and @works
+            # are already in memory.
+            start_checked: @cart_presence.all_in_cart?(@works.map &:friendlier_id)
           ) %>
         </td>
       </tr>

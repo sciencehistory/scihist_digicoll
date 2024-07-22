@@ -12,13 +12,18 @@ class CartControlComponentMultiple < ApplicationComponent
     @start_checked = start_checked
   end
 
+
+  def self.dom_id
+    'check-or-uncheck-all-works'
+  end
+
   def call
     safe_join([
       
       check_box_tag("toggle",   # name
         "1",                    # value
         @start_checked,         # checked
-        id: 'check-or-uncheck-all-works',
+        id: self.class.dom_id,
         data: {
           'list_of_ids' => @work_friendlier_ids,
           'url'         => admin_update_multiple_cart_items_path
