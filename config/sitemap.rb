@@ -25,7 +25,9 @@ unless $force_local_sitemap_generation
     aws_access_key_id: ScihistDigicoll::Env.lookup!("aws_access_key_id"),
     aws_secret_access_key: ScihistDigicoll::Env.lookup!("aws_secret_access_key"),
     aws_region: ScihistDigicoll::Env.lookup!("aws_region"),
-    acl: '' # parent default public ACL would be rejectec by our S3 bucket, now fronted by cloudfront
+    acl: '', # parent default public ACL would be rejectec by our S3 bucket, now fronted by cloudfront
+    # while we only re-gen once a day, we don't want lag time. Let cloudfront cache 10 minutes.
+    cache_control: 'max-age=600, public'
   )
 end
 
