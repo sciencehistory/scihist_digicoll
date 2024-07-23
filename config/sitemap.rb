@@ -24,7 +24,8 @@ unless $force_local_sitemap_generation
     ScihistDigicoll::Env.lookup!("s3_sitemap_bucket"),
     aws_access_key_id: ScihistDigicoll::Env.lookup!("aws_access_key_id"),
     aws_secret_access_key: ScihistDigicoll::Env.lookup!("aws_secret_access_key"),
-    aws_region: ScihistDigicoll::Env.lookup!("aws_region")
+    aws_region: ScihistDigicoll::Env.lookup!("aws_region"),
+    acl: '' # parent default public ACL would be rejectec by our S3 bucket, now fronted by cloudfront
   )
 end
 
