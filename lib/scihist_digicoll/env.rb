@@ -285,6 +285,10 @@ module ScihistDigicoll
       # for now we keep Google sitemaps in our derivatives bucket
       ScihistDigicoll::Env.lookup(:s3_bucket_derivatives)
     }
+    define_key :s3_sitemap_bucket_host, default: -> {
+      # hacky way to deal with the fact that we need to use the cloudfront host as public host
+      ScihistDigicoll::Env.lookup(:s3_bucket_derivatives_host)
+    }
     define_key :sitemap_path, default: "__sitemaps/"
 
 
