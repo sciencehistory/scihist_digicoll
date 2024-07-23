@@ -20,7 +20,7 @@ class WorkShowInfoComponent < ApplicationComponent
     :contained_by, :date_of_work, :department,
     :description, :digitization_funder, :extent,
     :format, :genre, :inscription, :language, :medium,
-    :parent, :physical_container, :provenance, :published?,
+    :parent, :physical_container, :provenance, :pblished?,
     :rights, :rights_holder, :series_arrangement,
     :source, :subject, :title, to: :work
 
@@ -60,8 +60,13 @@ class WorkShowInfoComponent < ApplicationComponent
     @links_to_opac
   end
 
+
+  # We look these up via the collection and its related links.
   def links_to_finding_aids
-    @links_to_finding_aids ||= related_link_filter.finding_aid_related_links.collect(&:url).compact
+    @links_to_finding_aids ||= begin
+      collections =  @work.contained_by
+      collections.map { |col| col.related_link.select { |rl| rl.category == "finding_aid" }.map { |rl| rl.url } }.flatten
+    end
   end
 
   # Our creators are a list of Work::Creator object. We want to group them by
