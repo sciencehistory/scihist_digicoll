@@ -60,12 +60,18 @@ class WorkShowInfoComponent < ApplicationComponent
     @links_to_opac
   end
 
-
-  # We look these up via the collection and its related links.
+  # We look these up on the work itself, the work's parent, and the collections they're in.
+  # This would be simpler if we didn't have to support child works, but eh.
   def links_to_finding_aids
     @links_to_finding_aids ||= begin
-      collections =  @work.contained_by
-      collections.map { |col| col.related_link.select { |rl| rl.category == "finding_aid" }.map { |rl| rl.url } }.flatten
+      models = [
+        work,              work.parent,
+        work.contained_by, work.parent&.contained_by
+      ].flatten.compact
+
+      models.map do |mod|
+        mod.related_link.select { |rl| rl.category == "finding_aid" }.map &:url
+      end.flatten.uniq
     end
   end
 
@@ -145,7 +151,6 @@ class WorkShowInfoComponent < ApplicationComponent
   def public_exhibitions
     @public_exhibitions ||= public_contained_by.find_all { |c| c.department == Collection::DEPARTMENT_EXHIBITION_VALUE }
   end
-
 
   def oral_history_interviewer_profiles
     return @oral_history_interviewer_profiles if defined?(@oral_history_interviewer_profiles)
