@@ -140,10 +140,15 @@
         width: $recent-items-box-width;
         margin: $recent-items-box-margin;
 
-        // cut images off at no more than a certain aspect ratio
         .image-wrapper {
+          // cut images off at no more than a certain aspect ratio
           max-height: 2.2 * $recent-items-box-width;
           overflow: hidden;
+
+          // Size image to max width of container
+          img {
+            width: 100%;
+          }
         }
 
         // A title box below image, that only shows up on hover/focus!
