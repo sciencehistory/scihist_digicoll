@@ -12,7 +12,15 @@ namespace :scihist do
     task :create_collection => :environment do
       updater = SolrConfigsetUpdater.configured
 
-      updater.upload_and_create_collection(configset_name: updater.configset_digest_name)
+      configset_name = updater.configset_digest_name
+
+      # if configset name already exists, assume it's the one we want, since we put
+      # a digest value in configset name, it ought to be! If it's not, we need to upload it
+      unless updater.list.include?(configset_name)
+        updater.upload(configset_name: configset_name)
+      end
+
+      updater.create_collection(configset_name: configset_name)
     end
 
     desc "upload configset and (re-)attach to collection, only if it is not already up to date"
