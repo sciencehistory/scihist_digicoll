@@ -350,6 +350,20 @@
           <%= @exiftool_result.camera_iso %>
         </dd>
       <% end %>
+
+      <% if @exiftool_result.pdf_version.present? %>
+        <dt class="col-sm-4">PDF Version</dt>
+        <dd class="col-sm-8">
+          <%= @exiftool_result.pdf_version %>
+        </dd>
+      <% end %>
+
+      <% if @exiftool_result.page_count.present? %>
+        <dt class="col-sm-4">Page Count</dt>
+        <dd class="col-sm-8">
+          <%= @exiftool_result.page_count %>
+        </dd>
+      <% end %>
     </dl>
 
     <h2 class="mt-4">Derivatives</h2>
