@@ -20,7 +20,7 @@ class WorkShowInfoComponent < ApplicationComponent
     :contained_by, :date_of_work, :department,
     :description, :digitization_funder, :extent,
     :format, :genre, :inscription, :language, :medium,
-    :parent, :physical_container, :provenance, :pblished?,
+    :parent, :physical_container, :provenance, :published?,
     :rights, :rights_holder, :series_arrangement,
     :source, :subject, :title, to: :work
 
