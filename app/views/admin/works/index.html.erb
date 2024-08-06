@@ -20,7 +20,7 @@
 
   <div class="admin-filters">
     <div class="admin-filter">
-      <label for="q_published">Published</label>
+      <label for="q_published_eq">Published</label>
       <%= select_tag "q[published_eq]",
             options_for_select({"Yes" => true, "No" => false}, params[:q][:published_eq]),
             include_blank: "Any",
@@ -89,7 +89,10 @@
       <th class="datestamp"><%= sort_link(@q, :created_at, "Created", page: nil) %></th>
       <th class="datestamp"><%= sort_link(@q, :updated_at, "Last Modified", page: nil) %></th>
       <th class="action"></th>
-      <th>Cart</th>
+
+      <% if can?(:update, Kithe::Model) %>
+        <th>Cart</th>
+      <% end %>
     </tr>
   </thead>
 
@@ -108,6 +111,24 @@
           </div>
         </td>
         <td><%= render CartControlComponent.new(work.friendlier_id, cart_presence: @cart_presence, label_sr_only: true) if can?(:update, work) %></td>
+      </tr>
+    <% end %>
+    <% if can?(:update, Kithe::Model) %>
+      <tr>
+        <td colspan="6" class="text-right">
+          <label for="<%= CartControlComponentMultiple.dom_id %>" >Check or uncheck all</label>
+        </td>
+        <td>
+          <%=
+          render CartControlComponentMultiple.new(
+            @works.map {|w| w.friendlier_id}.join(","),
+            # Check the CartControlComponentMultiple checkbox at page load
+            # iff all the works on the page are already checked.
+            # This does not hit the database at all, as @cart_presence and @works
+            # are already in memory.
+            start_checked: @cart_presence.all_in_cart?(@works.map &:friendlier_id)
+          ) %>
+        </td>
       </tr>
     <% end %>
   </tbody>

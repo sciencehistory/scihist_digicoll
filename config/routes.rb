@@ -329,12 +329,19 @@ Rails.application.routes.draw do
       to: "digitization_queue_items#delete_comment",
       as: "delete_digitization_queue_item_comment"
 
+
+    #Cart:
     resources :cart_items, param: :work_friendlier_id, only: [:index, :update, :destroy, :report] do
       collection do
         delete 'clear'
         post 'report'
       end
     end
+
+    post "cart_items/update_multiple",
+      to: "cart_items#update_multiple",
+      as: "update_multiple_cart_items",
+      format: "json"
 
     resources :interviewer_profiles, except: [:show]
     resources :interviewee_biographies, except: [:show]

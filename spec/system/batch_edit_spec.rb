@@ -33,6 +33,45 @@ describe "Cart and Batch Edit", solr: true, indexable_callbacks: true, logged_in
   }
 
   it "smoke test" do
+
+    # Admin works page
+
+    visit admin_works_path
+
+
+    # Check all items
+    find("#check-or-uncheck-all-works").check
+
+    # Remove this line at your own risk.
+    stall =  [work0, work1, work2, work3,].map {|w| find("#cartToggle-#{w.friendlier_id}").checked?}
+
+    # Ensure all items get checked
+    expect(find("#cartToggle-#{work0.friendlier_id}").checked?).to eq true
+    expect(find("#cartToggle-#{work1.friendlier_id}").checked?).to eq true
+    expect(find("#cartToggle-#{work2.friendlier_id}").checked?).to eq true
+    expect(find("#cartToggle-#{work3.friendlier_id}").checked?).to eq true
+
+    # Ensure the total jumps to 4
+    expect(page).to have_selector("[data-role='cart-counter']", text: 4)
+
+    # Uncheck all items
+    find("#check-or-uncheck-all-works").uncheck
+
+    # Remove this line at your own risk.
+    stall =  [work0, work1, work2, work3,].map {|w| find("#cartToggle-#{w.friendlier_id}").checked?}
+
+    # Ensure all items get unchecked
+    expect(find("#cartToggle-#{work0.friendlier_id}").checked?).to eq false
+    expect(find("#cartToggle-#{work1.friendlier_id}").checked?).to eq false
+    expect(find("#cartToggle-#{work2.friendlier_id}").checked?).to eq false
+    expect(find("#cartToggle-#{work3.friendlier_id}").checked?).to eq false
+
+
+    # Ensure the total jumps to 0
+    expect(page).to have_selector("[data-role='cart-counter']", text: 0)
+
+
+    # Search results page
     visit search_catalog_path(search_field: "all_fields")
 
     # Mark checkbox for cart for both
