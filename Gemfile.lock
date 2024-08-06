@@ -346,7 +346,7 @@ GEM
       activerecord
       kaminari-core (= 1.2.2)
     kaminari-core (1.2.2)
-    kithe (2.13.0)
+    kithe (2.14.0)
       attr_json (~> 2.0)
       fastimage (~> 2.0)
       fx (>= 0.6.0, < 1)
