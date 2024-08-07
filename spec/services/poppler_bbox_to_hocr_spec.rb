@@ -12,4 +12,16 @@ describe PopplerBboxToHocr do
 
     expect(out).to be_equivalent_to(sample_output).respecting_element_order
   end
+
+  describe "dpi conversion" do
+    let(:dpi) { 300 }
+    let(:sample_output) { File.read(Rails.root + "spec/test_support/hocr_xml/extract_from_pdf_sample.300.hocr") }
+
+    it "translates to correct dpi pixels" do
+      obj = PopplerBboxToHocr.new(sample_input, dpi: dpi)
+      out = obj.transformed_to_hocr
+
+      expect(out).to be_equivalent_to(sample_output).respecting_element_order
+    end
+  end
 end

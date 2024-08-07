@@ -21,13 +21,36 @@
 #
 # For example intput and output see specs
 #
+# @example PopplerBboxToHocr.new(bbox_layout_doc_string).transformed_to_hocr
+#
+# ## DPI
+#
+# PDFs internal dimensions are always 72 dpi.  So the bbox produced by pdftotext will have pixels as if 72 dpi.
+#
+# But you may want the HOCR to go along with a different dpi. While `pdftotext` has a `--dpi` argument -- it
+# doesn't succesfully change the page dimensions itself.
+#
+# So instead you can use the dpi argument here.  Let's say you have a PDF, and you extracted a page image with:
+#
+#     vips copy original.pdf[page=0,dpi=300] page1.300dpi.jpeg
+#
+#  And you extracted text (without using --dpi arg!) with:
+#
+#     pdftotext -bbox-layout original.pdf -f 1 -l 1 output.bbox-layout.xml
+#
+#  If you want to get hocr that has pixel dimensions and coordinates that match your jpeg output,
+#  just pass that same DPI you used in the vips command to this object:
+#
+#      PopplerBboxToHocr.new(bbox_string, dpi: 300).transformed_to_hocr
+#
 class PopplerBboxToHocr
   XHTML_NS = "http://www.w3.org/1999/xhtml"
 
-  attr_reader :xml
+  attr_reader :xml, :dpi
 
-  def initialize(bbox_string)
+  def initialize(bbox_string, dpi: nil)
     @xml = Nokogiri::XML(bbox_string)
+    @dpi = dpi
 
     @page_id_counter = 0
     @block_id_counter = 0
@@ -58,6 +81,11 @@ class PopplerBboxToHocr
     xml.xpath("//x:page", x: XHTML_NS).each do |page_node|
       width = page_node["width"].to_f
       height = page_node["height"].to_f
+
+      if dpi
+        width = width / 72.0 * dpi
+        height = height / 72.0 * dpi
+      end
 
       remove_all_attributes!(page_node)
 
@@ -115,6 +143,13 @@ class PopplerBboxToHocr
   #
   def hocr_bbox_from(block_node)
     xMin, yMin, xMax, yMax = block_node['xMin'].to_f, block_node['yMin'].to_f, block_node['xMax'].to_f, block_node['yMax'].to_f
+
+    if dpi
+      xMin = xMin / 72.0 * dpi
+      yMin = yMin / 72.0 * dpi
+      xMax = xMax / 72.0 * dpi
+      yMax = yMax / 72.0 * dpi
+    end
 
     "bbox #{xMin.round} #{yMin.round} #{xMax.round} #{yMax.round}"
   end
