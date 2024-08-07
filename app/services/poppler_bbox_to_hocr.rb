@@ -46,11 +46,14 @@
 class PopplerBboxToHocr
   XHTML_NS = "http://www.w3.org/1999/xhtml"
 
-  attr_reader :xml, :dpi
+  attr_reader :xml, :dpi, :meta_tags
 
-  def initialize(bbox_string, dpi: nil)
+  # @param meta_tags [Hash] if you'd like to insert additional <meta> tags into the hocr output,
+  #                         pass in hash with key 'name' attribute and value `content' attribute.
+  def initialize(bbox_string, dpi: nil, meta_tags: {})
     @xml = Nokogiri::XML(bbox_string)
     @dpi = dpi
+    @meta_tags = meta_tags
 
     @page_id_counter = 0
     @block_id_counter = 0
@@ -132,6 +135,18 @@ class PopplerBboxToHocr
       word_node["class"] = "ocrx_word"
       word_node["id"] = "word_#{@page_id_counter}_#{@word_id_counter += 1}"
       word_node["title"] = bbox
+    end
+
+    # add meta tags
+    if meta_tags.present?
+      head = xml.at_xpath("//x:head", x: XHTML_NS)
+      meta_tags.each do |name, content|
+        meta = h3 = Nokogiri::XML::Node.new "meta", xml
+        meta["name"] = name
+        meta["content"] = content
+        head.add_child(meta)
+        head.add_child("\n")
+      end
     end
   end
 
