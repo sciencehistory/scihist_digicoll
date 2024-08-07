@@ -249,6 +249,8 @@ GEM
       oauth2 (~> 1.1)
     dry-cli (1.0.0)
     dumb_delegator (1.0.0)
+    equivalent-xml (0.6.0)
+      nokogiri (>= 1.4.3)
     erubi (1.12.0)
     ethon (0.16.0)
       ffi (>= 1.15.0)
@@ -797,6 +799,7 @@ DEPENDENCIES
   db-query-matchers (< 2.0)
   device_detector (~> 1.0)
   devise (~> 4.5)
+  equivalent-xml
   factory_bot_rails
   faraday (~> 2.0)
   faraday-retry (~> 2.0)
