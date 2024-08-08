@@ -40,4 +40,16 @@ describe PdfToPageImages do
       end
     end
   end
+
+  describe "#build_asset_for_page" do
+    let(:work) { create(:work) }
+    it "builds asset" do
+      asset = service.build_asset_for_page(1)
+      asset.parent = work
+      asset.title = "extracted page 1 from #{work.title}"
+
+      byebug
+      1+1
+    end
+  end
 end

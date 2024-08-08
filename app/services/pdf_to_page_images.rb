@@ -21,6 +21,19 @@ class PdfToPageImages
     @dpi = dpi
   end
 
+  # TODO: Check for already existing, with force overwrite? create and set roles.
+  #
+  # @param page_num 1-based page number of PDF
+  def build_asset_for_page(page_num)
+    image = extract_jpeg_for_page(page_num)
+    hocr = extract_hocr_for_page(page_num)
+
+    # TODO can we skip shrine cache phase?
+    asset = Asset.new(hocr: hocr, file: image)
+
+    asset
+  end
+
   # @param page_num 1-BASED page number of PDF
   # @return [TmpFile] pointing to a JPEG
   def extract_jpeg_for_page(page_num)
