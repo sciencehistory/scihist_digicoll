@@ -40,6 +40,28 @@ class PdfToPageImages
     raise e
   end
 
+  # @param page_num 1-BASED page number of PDF
+  # @return [String] containing HOCR, or nil if no text in PDF page
+  def extract_hocr_for_page(page_num)
+    poppler_bbox_layout_out, err = TTY::Command.new(printer: :null).run(
+      pdftotext_command,
+      "-bbox-layout",
+      pdf_file_path,
+      # this tool uses 1-based page numbers
+      "-f", page_num,
+      "-l", page_num,
+      "-" # stdout output
+    )
+
+    # if there are no actual words, this still gives us HTML skeleton back, but with
+    # nothing in it... just return nil, don't return an empty hocr
+    unless poppler_bbox_layout_out.include?("<word")
+      return nil
+    end
+
+    return PopplerBboxToHocr.new(poppler_bbox_layout_out).transformed_to_hocr
+  end
+
   def cleanup
     @pdf_file&.unlink
   end
