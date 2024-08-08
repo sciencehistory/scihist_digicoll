@@ -264,3 +264,5 @@ end
 # Barnes reports Ruby runtime metrics to Heroku, where we can monitor them.
 # See https://devcenter.heroku.com/articles/language-runtime-metrics-ruby
 gem "barnes"
+
+gem 'equivalent-xml'

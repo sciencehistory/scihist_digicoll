@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <!-- somehow can't stop nokogiri from adding meta http-equiv, even though we don't really want it
+       https://github.com/sparklemotion/nokogiri/discussions/3302 -->
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title></title>
+  <meta name="Creator" content="Adobe InDesign 14.0 (Macintosh)"/>
+  <meta name="Producer" content="Adobe PDF Library 15.0"/>
+  <meta name="CreationDate" content="2019-12-11T15:41:24-05"/>
+  <meta name="ModDate" content="2019-12-11T15:42:08-05"/>
+ </head>
+ <body>
+  <div class='ocr_page' id='page_1' title='bbox 0 0 5250 3225'>
+    <div class="ocr_carea" id="block_1_1" title="bbox 954 1151 1672 1841">
+      <div class="ocr_line" id="line_1_1" title="bbox 954 1151 1671 1191">
+        <div class="ocrx_word" id="word_1_1" title="bbox 954 1151 1021 1191">Paul</div>
+        <div class="ocrx_word" id="word_1_2" title="bbox 1032 1151 1174 1191">Langevin</div>
+        <div class="ocrx_word" id="word_1_3" title="bbox 1185 1151 1243 1191">and</div>
+        <div class="ocrx_word" id="word_1_4" title="bbox 1254 1151 1406 1191">published</div>
+        <div class="ocrx_word" id="word_1_5" title="bbox 1417 1151 1490 1191">their</div>
+        <div class="ocrx_word" id="word_1_6" title="bbox 1501 1151 1608 1191">private</div>
+        <div class="ocrx_word" id="word_1_7" title="bbox 1619 1151 1671 1191">let-</div>
+      </div>
+      <div class="ocr_line" id="line_1_2" title="bbox 954 1201 1672 1241">
+        <div class="ocrx_word" id="word_1_8" title="bbox 954 1201 1018 1241">ters.</div>
+        <div class="ocrx_word" id="word_1_9" title="bbox 1032 1201 1193 1241">Langevin’s</div>
+        <div class="ocrx_word" id="word_1_10" title="bbox 1208 1201 1272 1241">wife</div>
+        <div class="ocrx_word" id="word_1_11" title="bbox 1287 1201 1452 1241">threatened</div>
+        <div class="ocrx_word" id="word_1_12" title="bbox 1467 1201 1498 1241">to</div>
+        <div class="ocrx_word" id="word_1_13" title="bbox 1513 1201 1562 1241">kill</div>
+        <div class="ocrx_word" id="word_1_14" title="bbox 1577 1201 1672 1241">Curie,</div>
+      </div>
+      <div class="ocr_line" id="line_1_3" title="bbox 954 1251 1671 1291">
+        <div class="ocrx_word" id="word_1_15" title="bbox 954 1251 1012 1291">and</div>
+        <div class="ocrx_word" id="word_1_16" title="bbox 1021 1251 1163 1291">Langevin</div>
+        <div class="ocrx_word" id="word_1_17" title="bbox 1172 1251 1285 1291">himself</div>
+        <div class="ocrx_word" id="word_1_18" title="bbox 1295 1251 1459 1291">challenged</div>
+        <div class="ocrx_word" id="word_1_19" title="bbox 1468 1251 1517 1291">the</div>
+        <div class="ocrx_word" id="word_1_20" title="bbox 1526 1251 1671 1291">publisher</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
