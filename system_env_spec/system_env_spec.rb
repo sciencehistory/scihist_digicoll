@@ -199,4 +199,16 @@ describe "System Environment" do
       expect(ver).to match_version_requirements("~> 12.60")
     end
   end
+
+  describe "pdftotext (poppler utility)" do
+    it "is present with acceptable version" do
+      out = `pdftotext -v 2>&1`
+
+      expect(out).to match(/poppler/i)
+
+      expect(out =~ /version (\d+\.\d+\.\d+)/).not_to be nil
+      version = $1
+      expect(version).to match_version_requirements(">= 22.0")
+    end
+  end
 end
