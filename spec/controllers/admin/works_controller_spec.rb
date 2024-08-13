@@ -122,16 +122,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
   end
 
   context "#batch_publish_toggle", logged_in_user: :admin do
-    let(:representative) {
-      create(
-        :asset,
-        :inline_promoted_file,
-        file: File.open('spec/test_support/images/mini_page_scan.tiff'),
-        published:true
-      )
-    }
-
-    
+    let(:representative) {  build(:asset_with_faked_file, :tiff, published: true)}
     let(:publishable_work) { create(:work, :with_complete_metadata, published: false, members: [representative], representative: representative) }
     let(:unpublishable_work) { create(:work, published: false) }
 
