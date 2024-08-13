@@ -122,7 +122,16 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
   end
 
   context "#batch_publish_toggle", logged_in_user: :admin do
-    let(:representative) {  build(:asset_with_faked_file, published: true)}
+    let(:representative) {
+      create(
+        :asset,
+        :inline_promoted_file,
+        file: File.open('spec/test_support/images/mini_page_scan.tiff'),
+        published:true
+      )
+    }
+
+    
     let(:publishable_work) { create(:work, :with_complete_metadata, published: false, members: [representative], representative: representative) }
     let(:unpublishable_work) { create(:work, published: false) }
 
@@ -130,11 +139,10 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       before do
         controller.current_user.works_in_cart << unpublishable_work
       end
-      it "displays error on attempt to publish" do
+      it "lists missing metadata on attempt to publish" do
         put :batch_publish_toggle, params: { publish: "on" }
-
         expect(response).to redirect_to(admin_cart_items_path)
-        expect(flash["error"]).to match /No changes made due to error/
+        expect(flash["error"]).to match /Genre can.t be blank/
       end
     end
 
@@ -155,6 +163,37 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       end
     end
 
+    context "work with a png instead of a tiff" do
+      let(:png) { create(:asset, :inline_promoted_file) }
+      let(:work_with_png) { create(:work, :with_complete_metadata, published: false, members: [png]) }
+      
+      before do
+        controller.current_user.works_in_cart << work_with_png
+      end
+      it "refuses to publish: image assets need to be tiffs unless they are portraits or collection thumbs." do
+        expect(png.content_type).to eq "image/png"
+        put :batch_publish_toggle, params: { publish: "on" }
+        expect(response).to redirect_to(admin_cart_items_path)
+        expect(flash["error"]).to match /contains one or more assets with invalid files./
+        expect(work_with_png.reload.published?).to be false
+      end
+    end
+
+    context "work with a legitimate portrait png" do
+      let(:portrait_png) { create(:asset, :inline_promoted_file, role: "portrait") }
+      let(:work) { create(:work, :with_complete_metadata, published: false, members: [portrait_png]) }      
+      before do
+        controller.current_user.works_in_cart << work
+      end
+      it "No error; should publish the work" do
+        expect(publishable_work.members.first.content_type).to eq "image/tiff"
+        put :batch_publish_toggle, params: { publish: "on" }
+        expect(response).to redirect_to(admin_cart_items_path)
+        expect(flash["error"]).to be nil
+        expect(work.reload.published?).to be true
+      end
+    end
+
     context "publishable works" do
       around do |example|
         freeze_time do
@@ -167,6 +206,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       end
 
       it "publishes" do
+
         put :batch_publish_toggle, params: { publish: "on" }
 
         expect(response).to redirect_to(admin_cart_items_path)
@@ -355,7 +395,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     context "with a logged-in admin user", logged_in_user: :admin do
       # works that have the necessary metadata to be published, but aren't actually published yet
       let(:work_child) { build(:work, :published, published: false) }
-      let(:asset_child) { build(:asset, published: false) }
+      let(:asset_child) { build(:asset_with_faked_file, :tiff, published: false) }
       let(:work) do
         create(:work, :published, published: false, published_at: false, members: [asset_child, work_child])
       end
@@ -384,6 +424,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         end
 
         it "can publish, and publishes children" do
+          expect(work.members.first.content_type).to eq "image/tiff"
           put :publish, params: { id: work.friendlier_id, cascade: 'true' }
           expect(response.status).to redirect_to(admin_work_path(work))
           work.reload
@@ -415,7 +456,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       context "work missing required fields for publication" do
         render_views
 
-        let(:representative) {  build(:asset_with_faked_file, published: true)}
+        let(:representative) {  build(:asset_with_faked_file, :tiff, published: true)}
         let(:work) { create(:private_work, rights: nil, format: nil, genre: nil, department: nil, date_of_work: nil, members: [representative], representative: representative)}
 
         it "can not publish, displaying proper error and work form" do
