@@ -42,6 +42,11 @@ class Admin::OralHistoryRequestsController < AdminController
         with(request: @oral_history_request, custom_message: custom_message).
         public_send(:approved_with_session_link_email).
         deliver_later
+    elsif disposition == "dismiss"
+      @oral_history_request.update!(delivery_status: "dismissed", notes_from_staff: custom_message)
+      redirect_to admin_oral_history_requests_path,
+      notice: "#{@oral_history_request.requester_email}'s request for '#{@oral_history_request.work.title}' has been dismissed. The request has been set aside and no email will be sent to the requester."
+      return
     else
       @oral_history_request.update!(delivery_status: "rejected", notes_from_staff: custom_message)
       OralHistoryDeliveryMailer.
