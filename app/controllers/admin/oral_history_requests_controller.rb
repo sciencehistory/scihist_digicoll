@@ -51,6 +51,7 @@ class Admin::OralHistoryRequestsController < AdminController
         deliver_later
       notice = "#{disposition.titlecase} email was sent to #{@oral_history_request.requester_email} for '#{@oral_history_request.work.title}'"
     elsif disposition == "dismiss"
+      @oral_history_request.update!(delivery_status: "dismissed", notes_from_staff: custom_message)
       notice = "#{@oral_history_request.requester_email}'s request for '#{@oral_history_request.work.title}' has been dismissed. The request has been set aside and no email will be sent to the requester."
     else
       raise ArgumentError, "Unrecognized disposition."
