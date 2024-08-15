@@ -36,27 +36,35 @@ class Admin::OralHistoryRequestsController < AdminController
     disposition = params[:disposition]
     custom_message = params.dig(:oral_history_request_approval, :notes_from_staff)
 
-    if disposition == "approve"
-      @oral_history_request.update!(delivery_status: "approved", notes_from_staff: custom_message)
-      OralHistoryDeliveryMailer.
-        with(request: @oral_history_request, custom_message: custom_message).
-        public_send(:approved_with_session_link_email).
-        deliver_later
-      notice = "#{disposition.titlecase} email was sent to #{@oral_history_request.requester_email} for '#{@oral_history_request.work.title}'"
-    elsif disposition == "reject"
-      @oral_history_request.update!(delivery_status: "rejected", notes_from_staff: custom_message)
-      OralHistoryDeliveryMailer.
-        with(request: @oral_history_request, custom_message: custom_message).
-        rejected_with_session_link_email.
-        deliver_later
-      notice = "#{disposition.titlecase} email was sent to #{@oral_history_request.requester_email} for '#{@oral_history_request.work.title}'"
-    elsif disposition == "dismiss"
-      @oral_history_request.update!(delivery_status: "dismissed", notes_from_staff: custom_message)
-      notice = "#{@oral_history_request.requester_email}'s request for '#{@oral_history_request.work.title}' has been dismissed. The request has been set aside and no email will be sent to the requester."
+    # Update the request object
+    delivery_status = {
+      'approve' => 'approved',
+      'reject'  => 'rejected',
+      'dismiss' => 'dismissed' }[disposition]
+
+    if delivery_status.nil?
+      raise ArgumentError, "Unrecognized disposition: #{disposition}"
     else
-      raise ArgumentError, "Unrecognized disposition."
+      @oral_history_request.update!(delivery_status: delivery_status, notes_from_staff: custom_message)  
     end
 
+    email_method= {
+      'approve' => :approved_with_session_link_email,
+      'reject' =>  :rejected_with_session_link_email
+    }[disposition]
+
+    if email_method.present?
+      message = OralHistoryDeliveryMailer.with(request: @oral_history_request, custom_message: custom_message).send(email_method)
+      message.deliver_later
+    end
+
+    notice = if disposition == "approve"
+      "Approve email was sent to #{@oral_history_request.requester_email} for '#{@oral_history_request.work.title}'"
+    elsif disposition == "reject"
+      "Reject email was sent to #{@oral_history_request.requester_email} for '#{@oral_history_request.work.title}'"
+    elsif disposition == "dismiss"
+       "#{@oral_history_request.requester_email}'s request for '#{@oral_history_request.work.title}' has been dismissed. The request has been set aside and no email will be sent to the requester."      
+    end
     redirect_to admin_oral_history_requests_path, notice: notice
   end
 
