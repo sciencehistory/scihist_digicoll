@@ -27,6 +27,8 @@ import OpenSeadragon from 'openseadragon';
 import ViewerSearchResults from '../javascript/scihist_viewer/viewer_search_results.js';
 import ViewerPageInfo from '../javascript/scihist_viewer/viewer_page_info.js';
 
+import reportEventToGA from '../javascript/custom_google_analytics_4_events';
+
 function ScihistImageViewer() {
   var modal = document.querySelector("#scihist-image-viewer-modal");
   if (!modal) {
@@ -807,9 +809,13 @@ ScihistImageViewer.prototype.displayAlert = function(msg) {
   container.insertAdjacentHTML('afterbegin', alertHtml);
 }
 
+// // Report to Google Analytics.
+// // See https://github.com/sciencehistory/scihist_digicoll/issues/2606 .
+// ScihistImageViewer.prototype.reportEventToGoogleAnalytics = function (query, friendlierID) {  
+//   reportEventToGA('search_inside', 'work', friendlierID, query);
+// }
+
 ScihistImageViewer.prototype.getSearchResults = async function(query) {
-
-
   const searchResultsContainer = document.querySelector(".viewer-search-area .search-results-container");
 
   try {
@@ -879,25 +885,12 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
       Sorry, our system experienced a problem and could not provide search results.\
     </p>";
     throw error;
+  } finally {
+    // Report to Google Analytics.
+    // See https://github.com/sciencehistory/scihist_digicoll/issues/2606 .
+    // Defined in app/frontend/javascript/custom_google_analytics_4_events.js
+    reportEventToGA('search_inside', 'work', this.workId, query);
   }
-
-  // Report to Google Analytics.
-  // See https://github.com/sciencehistory/scihist_digicoll/issues/2606 .
-  if (typeof gtag === 'function') {
-    // See app/frontend/javascript/custom_google_analytics_4_events.js
-    // for more details about these parameters and how we are using them.
-    gtag( 'event',
-      'search_inside',
-      {
-        'event_category': 'work',
-        'event_label':   this.workId,
-        // We're sending the search phrase in event_value.
-        // We don't usually make use of this parameter.
-        'event_value':    query
-      }
-    );
-  }
-
 };
 
 ScihistImageViewer.prototype.selectSearchResult = function(resultElement) {
@@ -1113,7 +1106,6 @@ jQuery(document).ready(function($) {
 
     $(document).on("submit", "*[data-trigger='viewer-search']", function(event) {
       event.preventDefault();
-
       const query = $(event.target).find("input").val();
       if (query.trim() != "") {
         chf_image_viewer().getSearchResults( query );
