@@ -808,6 +808,8 @@ ScihistImageViewer.prototype.displayAlert = function(msg) {
 }
 
 ScihistImageViewer.prototype.getSearchResults = async function(query) {
+
+
   const searchResultsContainer = document.querySelector(".viewer-search-area .search-results-container");
 
   try {
@@ -878,6 +880,24 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
     </p>";
     throw error;
   }
+
+  // Report to Google Analytics.
+  // See https://github.com/sciencehistory/scihist_digicoll/issues/2606 .
+  if (typeof gtag === 'function') {
+    // See app/frontend/javascript/custom_google_analytics_4_events.js
+    // for more details about these parameters and how we are using them.
+    gtag( 'event',
+      'search_inside',
+      {
+        'event_category': 'work',
+        'event_label':   _self.workId,
+        // We're sending the search phrase in event_value.
+        // We don't usually make use of this parameter.
+        'event_value':    query
+      }
+    );
+  }
+
 };
 
 ScihistImageViewer.prototype.selectSearchResult = function(resultElement) {
