@@ -81,7 +81,7 @@ class OralHistorySessionsController < ApplicationController
   def destroy
     self.class.sign_out_current_requester(request: request)
 
-    redirect_to helpers.root_path, notice: "You have been signed out of your Oral History requests. You can sign in again from the link in your email, or by making another request."
+    redirect_to helpers.root_path, :flash => { :success => "You have been signed out of your Oral History requests. You can sign in again from the link in your email, or by making another request." }
   end
 
   private
