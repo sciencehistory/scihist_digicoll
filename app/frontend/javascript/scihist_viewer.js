@@ -890,7 +890,7 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
       'search_inside',
       {
         'event_category': 'work',
-        'event_label':   _self.workId,
+        'event_label':   this.workId,
         // We're sending the search phrase in event_value.
         // We don't usually make use of this parameter.
         'event_value':    query
