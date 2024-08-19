@@ -268,7 +268,9 @@ class Admin::WorksController < AdminController
   def publish
     authorize! :publish, @work
 
-    # Check for e.g. zero-length files.
+    # Check for invalid files:
+    #  e.g. zero-length files
+    # or jpgs that should really be tiffs.
     unless works_with_members_with_invalid_files([@work]).empty?
       redirect_to admin_work_path(@work, anchor: "tab=nav-members"), flash: {
         error: "Can't publish this work. One or more of its assets has invalid files."
@@ -521,22 +523,31 @@ class Admin::WorksController < AdminController
     end
 
     # Check all asset members of an array of works
-    # (ignoring their child works) to see
-    # if any have an invalid file (e.g. zero length).
+    # (ignoring their child works) for assets with invalid files.
     # All problems are noted in the logs, and the problem works are returned.
     def works_with_members_with_invalid_files(work_array)
       problem_works = Set.new
       cols = [
         "kithe_models.friendlier_id",
-        "kithe_models.file_data -> 'metadata' -> 'promotion_validation_errors'"
+        "kithe_models.file_data -> 'metadata' -> 'promotion_validation_errors'",
+        "kithe_models.file_data -> 'metadata' -> 'mime_type'",
+        "kithe_models.role",
       ].join(",")
-      promotion_errors = Asset.where(parent: work_array).pluck(Arel.sql(cols)).to_h
-      promotion_errors.each do |asset_id, promotion_errors|
+
+      Asset.where(parent: work_array).pluck(Arel.sql(cols)).each do |row|
+        asset_id, promotion_errors, mime_type, role = *row
         if promotion_errors.present?
           parent = Asset.find_by_friendlier_id(asset_id).parent
           Rails.logger.warn("Work '#{parent.friendlier_id}' couldn't be published. Something was wrong with the file for asset '#{asset_id}.'")
           problem_works << parent
         end
+        # Image assets published as part of a work need to be tiffs, except if they are portraits.
+        if mime_type.start_with?('image') && mime_type != 'image/tiff' && role != 'portrait'
+          parent = Asset.find_by_friendlier_id(asset_id).parent
+          Rails.logger.warn("Work '#{parent.friendlier_id}' couldn't be published. Asset '#{asset_id}' should be an image/tiff, but is a #{mime_type}.")
+          problem_works << parent
+        end
+
       end
       problem_works
     end
