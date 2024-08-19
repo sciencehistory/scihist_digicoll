@@ -60,7 +60,7 @@
       <% @oral_history_requests.each do |oh_request| %>
         <tr class="d-flex" data-request-id="<%= oh_request.id %>">
           <td class="col-sm-2">
-            <span class="text-nowrap small"><%= l(oh_request.created_at, format: '%b %d') %></span>
+            <span class="text-nowrap small"><%= l(oh_request.created_at, format: '%b %d %Y') %></span>
             <br/>
             <span class="text-nowrap small"><%= l(oh_request.created_at, format: '%H:%M %Z') %></span>
           </td>
@@ -82,4 +82,3 @@
 </div>
 
 <%= paginate @oral_history_requests, theme: 'twitter-bootstrap-4' %>
-index.html.erb
