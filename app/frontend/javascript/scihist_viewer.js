@@ -27,7 +27,7 @@ import OpenSeadragon from 'openseadragon';
 import ViewerSearchResults from '../javascript/scihist_viewer/viewer_search_results.js';
 import ViewerPageInfo from '../javascript/scihist_viewer/viewer_page_info.js';
 
-import reportEventToGA from '../javascript/custom_google_analytics_4_events';
+import { reportEventToGA } from '../javascript/custom_google_analytics_4_events';
 
 function ScihistImageViewer() {
   var modal = document.querySelector("#scihist-image-viewer-modal");
@@ -809,11 +809,6 @@ ScihistImageViewer.prototype.displayAlert = function(msg) {
   container.insertAdjacentHTML('afterbegin', alertHtml);
 }
 
-// // Report to Google Analytics.
-// // See https://github.com/sciencehistory/scihist_digicoll/issues/2606 .
-// ScihistImageViewer.prototype.reportEventToGoogleAnalytics = function (query, friendlierID) {  
-//   reportEventToGA('search_inside', 'work', friendlierID, query);
-// }
 
 ScihistImageViewer.prototype.getSearchResults = async function(query) {
   const searchResultsContainer = document.querySelector(".viewer-search-area .search-results-container");
@@ -887,8 +882,12 @@ ScihistImageViewer.prototype.getSearchResults = async function(query) {
     throw error;
   } finally {
     // Report to Google Analytics.
+    //
     // See https://github.com/sciencehistory/scihist_digicoll/issues/2606 .
-    // Defined in app/frontend/javascript/custom_google_analytics_4_events.js
+    //
+    // Function reportEventToGA is defined in
+    // app/frontend/javascript/custom_google_analytics_4_events.js
+    // reportEventToGA(action, category, label, value)
     reportEventToGA('search_inside', 'work', this.workId, query);
   }
 };
