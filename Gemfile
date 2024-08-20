@@ -12,7 +12,7 @@ ruby "~> #{File.read(File.join(__dir__ , '.ruby-version')).chomp.split('.').slic
 gem 'lockbox'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 7.1.3'
+gem 'rails', '~> 7.2.0'
 
 # Ensure we are using rack 3, with a new sinatra that can use it. Both of these
 # are indirect dependencies, in here only to force bundler NOT to do a weird
@@ -53,7 +53,7 @@ gem 'scout_apm'
 # NOTE ALSO: We are using `blacklight-frontend` JS NPM package, updating blacklight
 # version may require an update with yarn to `blacklight-frontend`, has to be
 # checked manually.
-gem "blacklight", "~> 7.35.0"
+gem "blacklight", "~> 7.38.0"
 gem "blacklight_range_limit", "~> 8.4.0" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
 # for some code to deal with transcoding video, via AWS MediaConvert
@@ -122,14 +122,14 @@ gem "device_detector", "~> 1.0" # user-agent parsing we use for logging
 
 gem "attr_json", "~> 2.3"
 
-gem 'kithe', "~> 2.13"
+gem 'kithe', "~> 2.15", ">= 2.15.1"
 
 gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 
 gem 'simple_form', "~> 5.0"
 
-gem "browse-everything", "~> 1.3"
-gem "qa", "~> 5.2", ">= 5.12.0"
+gem "browse-everything", "~> 1.3", github: "samvera/browse-everything", branch: "support_rails_7.2"
+gem "qa", "~> 5.2", ">= 5.12.0", github: "samvera/questioning_authority", branch: "allow_rails_7.2"
 gem "shrine", "~> 3.3" #, path: "../shrine"
 # shrine-compat endpoint to get uppy to direct upload to S3 with resumable multi-part upload
 gem "uppy-s3_multipart"
