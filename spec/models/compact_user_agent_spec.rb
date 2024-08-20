@@ -7,14 +7,14 @@ describe CompactUserAgent do
   subject { CompactUserAgent.new(user_agent).compact }
 
   describe "bad user agent" do
-    let(:user_agent) { "bad user agent" }
-    it { is_expected.to eq "bad_user_agent" }
+    let(:user_agent) { "bad value" }
+    it { is_expected.to eq "bad_value" }
   end
 
   describe "long bad user agent" do
-    let(:user_agent) { "a quite very long and terrible user agent that is very very long" }
+    let(:user_agent) { "a quite very long and terrible value that is very very long" }
     # truncates
-    it { is_expected.to eq "a_quite_very_long_and_terrible_user_agent_that_is_" }
+    it { is_expected.to eq "a_quite_very_long_and_terrible_value_that_is_very_" }
   end
 
   describe "nil user agent" do
