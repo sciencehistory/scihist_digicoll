@@ -88,15 +88,4 @@ class PdfToPageImages
 
     return PopplerBboxToHocr.new(poppler_bbox_layout_out).transformed_to_hocr
   end
-
-  def cleanup
-    @pdf_file&.unlink
-  end
-
-  protected
-
-  def pdf_file
-    @pdf_file ||= @pdf_asset.file.download
-  end
-
 end
