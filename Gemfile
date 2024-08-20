@@ -128,8 +128,8 @@ gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 
 gem 'simple_form', "~> 5.0"
 
-gem "browse-everything", "~> 1.3", github: "samvera/browse-everything", branch: "support_rails_7.2"
-gem "qa", "~> 5.2", ">= 5.12.0", github: "samvera/questioning_authority", branch: "allow_rails_7.2"
+gem "browse-everything", "~> 1.4"
+gem "qa", "~> 5.2", ">= 5.13.0"
 gem "shrine", "~> 3.3" #, path: "../shrine"
 # shrine-compat endpoint to get uppy to direct upload to S3 with resumable multi-part upload
 gem "uppy-s3_multipart"
