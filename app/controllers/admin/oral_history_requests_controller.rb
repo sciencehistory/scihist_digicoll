@@ -28,42 +28,14 @@ class Admin::OralHistoryRequestsController < AdminController
     @oral_history_request = OralHistoryRequest.find(params[:id])
   end
 
-  # accept or reject or dismiss
   # POST /admin/oral_history_requests/:id/respond
   def respond
     @oral_history_request = OralHistoryRequest.find(params[:id])
-    disposition = params[:disposition]
-    custom_message = params.dig(:oral_history_request_approval, :notes_from_staff)
-
-    delivery_status = {'approve'=>'approved', 'reject'=>'rejected', 'dismiss'=>'dismissed'}[disposition]
-    raise ArgumentError, "Unrecognized disposition: #{disposition}" if delivery_status.nil?    
+    raise ArgumentError, "Unrecognized disposition: #{disposition}" unless ['approve', 'reject', 'dismiss'].include? disposition
     @oral_history_request.update!(delivery_status: delivery_status, notes_from_staff: custom_message)    
-    
-    maybe_enqueue_email(disposition, custom_message)
-    
-    notice = if disposition == "approve"
-      "Approve email was sent to #{@oral_history_request.requester_email} for '#{@oral_history_request.work.title}'"
-    elsif disposition == "reject"
-      "Reject email was sent to #{@oral_history_request.requester_email} for '#{@oral_history_request.work.title}'"
-    elsif disposition == "dismiss"
-       "#{@oral_history_request.requester_email}'s request for '#{@oral_history_request.work.title}' has been dismissed. The request has been set aside and no email will be sent to the requester."      
-    end
-    
+    maybe_enqueue_email
     redirect_to admin_oral_history_requests_path, notice: notice
   end
-
-  def maybe_enqueue_email(disposition, msg)
-    mailer_method= {
-      'approve' => :approved_with_session_link_email,
-      'reject' =>  :rejected_with_session_link_email
-    }[disposition]
-    return if mailer_method.nil?
-    OralHistoryDeliveryMailer.
-      with(request: @oral_history_request, custom_message: msg).
-      send(mailer_method).deliver_later
-  end
-  helper_method :maybe_enqueue_email
-
 
   def report
     scope = OralHistoryRequest
@@ -114,5 +86,46 @@ class Admin::OralHistoryRequestsController < AdminController
     ensure
       output_csv_file.close
     end
+  end
+
+  private
+
+  def disposition
+    @disposition ||= params[:disposition]
+  end
+
+  def delivery_status
+    @delivery_status ||= {
+      'approve' => 'approved',
+      'reject'  => 'rejected',
+      'dismiss' => 'dismissed'
+    }[disposition]
+  end
+
+  def custom_message
+    @custom_message ||= params.dig(:oral_history_request_approval, :notes_from_staff)
+  end
+
+  def notice
+    @notice ||= case disposition
+      when "approve"
+        "Approve email was sent to #{@oral_history_request.requester_email} for '#{@oral_history_request.work.title}'"
+      when  "reject"
+        "Reject email was sent to #{@oral_history_request.requester_email} for '#{@oral_history_request.work.title}'"
+      when "dismiss"
+        "#{@oral_history_request.requester_email}'s request for '#{@oral_history_request.work.title}' has been dismissed. The request has been set aside and no email will be sent to the requester."      
+    end
+  end
+
+  def maybe_enqueue_email
+    mailer_method= {
+      'approve' => :approved_with_session_link_email,
+      'reject' =>  :rejected_with_session_link_email
+    }[disposition]
+    return if mailer_method.nil?
+    
+    OralHistoryDeliveryMailer.
+      with(request: @oral_history_request, custom_message: notice).
+      send(mailer_method).deliver_later
   end
 end
