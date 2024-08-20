@@ -40,4 +40,38 @@ describe PdfToPageImages do
       end
     end
   end
+
+  describe "#create_asset_for_page", queue_adapter: :test do
+    let(:work) { create(:work) }
+    it "builds asset" do
+      asset = service.create_asset_for_page(1, work: work)
+
+      # We did enqueue a fixity check job, oh well, but shouldn't have enqueued
+      # anything else
+      expect(ActiveJob::Base.queue_adapter.enqueued_jobs.size).to eq(1)
+      expect(ActiveJob::Base.queue_adapter.enqueued_jobs.first["job_class"]).to eq "SingleAssetCheckerJob"
+
+      expect(asset.valid?).to eq true
+      expect(asset.persisted?).to eq true
+      expect(asset.position).to eq 1
+      expect(asset.parent).to be work
+
+      expect(asset.stored?).to eq true
+      expect(asset.content_type).to eq "image/jpeg"
+      expect(asset.file_derivatives).to be_present
+      expect(asset.file_metadata["dpi"]).to eq PdfToPageImages::DEFAULT_TARGET_DPI
+      expect(asset.file_metadata["size"]).to be_present
+      expect(asset.file_metadata["width"]).to be_present
+      expect(asset.file_metadata["height"]).to be_present
+
+      expect(asset.hocr).to be_present
+      xml = Nokogiri::XML(asset.hocr)  { |config| config.strict }
+      expect(xml.css("div.ocr_page").length).to be 1
+
+      asset.file.download do |image_file|
+        expect(image_file).to be_kind_of(Tempfile)
+        expect(Marcel::MimeType.for(image_file)).to eq "image/jpeg"
+      end
+    end
+  end
 end

@@ -21,6 +21,33 @@ class PdfToPageImages
     @dpi = dpi
   end
 
+  # TODO: Check for already existing, with force overwrite? create and set roles.
+  #
+  # Creates an Asset with individual page extracted from PDF, including jpg and hocr,
+  # and the usual shrine derivatives etc.
+  #
+  # All work is done in foreground and can be slow!
+  #
+  # May enqueue a fixity checking bg job, which we don't really care about, but that's how
+  # we treat assets, so it's there.
+  #
+  # @param page_num 1-based page number of PDF
+  # @param work [Work] set parent work so we can set some metadata and parent
+  #
+  # @returns [Asset] persisted to db and fully shrine-promoted
+  def create_asset_for_page(page_num, work:)
+    image = extract_jpeg_for_page(page_num)
+    hocr = extract_hocr_for_page(page_num)
+
+    # Ideally we'd skip the shrine cache phase entirely, but it's too hard
+    # to at present. We do do promotion and derivatives inline
+    asset = Asset.new(hocr: hocr, file: image, position: page_num, parent: work, title: "page #{page_num} extracted from #{work.friendlier_id}")
+    asset.set_promotion_directives(promote: :inline, create_derivatives: :inline)
+    asset.save!
+
+    asset
+  end
+
   # @param page_num 1-BASED page number of PDF
   # @return [TmpFile] pointing to a JPEG
   def extract_jpeg_for_page(page_num)
