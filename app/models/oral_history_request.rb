@@ -18,6 +18,7 @@ class OralHistoryRequest < ApplicationRecord
 
   enum delivery_status: %w{pending automatic approved rejected dismissed}.map {|v| [v, v]}.to_h, _prefix: :delivery_status
 
+
   before_save do
     if delivery_status_changed?
       self.delivery_status_changed_at = Time.zone.now

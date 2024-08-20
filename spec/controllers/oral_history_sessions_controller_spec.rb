@@ -77,7 +77,7 @@ describe OralHistorySessionsController, type: :controller, queue_adapter: :inlin
 
       expect(OralHistorySessionsController.fetch_oral_history_current_requester(request: request)).to be nil
       expect(response).to have_http_status(:redirect)
-      expect(flash[:notice]).to include("signed out")
+      expect(flash[:success]).to include("signed out")
     end
   end
 end

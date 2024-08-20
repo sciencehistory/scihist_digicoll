@@ -30,7 +30,7 @@ class Asset < Kithe::Asset
   #
   # We use the kithe method kithe_earlier_after_commit to do so, when Rails doesn't really give us a way.
   # See https://github.com/sciencehistory/kithe/pull/178
-
+  #
   kithe_earlier_after_commit if: ->(asset) { asset.file_data_previously_changed? && asset.promotion_failed? } do
     Rails.logger.error("AssetPromotionValidation: Asset `#{friendlier_id}` failed ingest: #{promotion_validation_errors.inspect}")
   end
@@ -80,7 +80,7 @@ class Asset < Kithe::Asset
   # the 'portrait' attached to an oral history. This is sort of an extension to PCDM,
   # it's still a member, but it has a role on the relationship too. Initially we
   # are using this so we can provide specialized interface for oral histories.
-  enum role: %w{portrait transcript front_matter}.collect {|v| [v, v]}.to_h, _prefix: true
+  enum :role, %w{portrait transcript front_matter}.collect {|v| [v, v]}.to_h, prefix: true
 
   attr_json :admin_note, :text, array: true, default: -> { [] }
 
