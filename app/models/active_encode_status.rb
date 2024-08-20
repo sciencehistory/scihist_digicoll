@@ -3,7 +3,7 @@
 class ActiveEncodeStatus < ApplicationRecord
   belongs_to :asset, optional: true
 
-  enum state: [ "running", "cancelled", "failed", "completed" ].map {|v| [v, v]}.to_h
+  enum :state, [ "running", "cancelled", "failed", "completed" ].map {|v| [v, v]}.to_h
 
   def self.create_from!(asset:, active_encode_result:)
     ActiveEncodeStatus.create!(

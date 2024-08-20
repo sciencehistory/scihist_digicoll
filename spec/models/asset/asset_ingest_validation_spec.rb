@@ -32,13 +32,18 @@ describe "Asset ingest validation" do
     end
 
     describe "async promotion", queue_adapter: :async do
-      include ActiveJob::TestHelper
-
       it "does not ingest" do
-        asset = nil
-        perform_enqueued_jobs do
-          asset = create(:asset, file: File.open(corrupt_tiff_path))
+        asset = create(:asset, file: File.open(corrupt_tiff_path))
+
+        # Super hacky undocumented way to wait for Rails async bg job execution to complete
+        # We want to test async in separate thread promotion cause it has separate concerns,
+        # if this stops working, will have to figure out a better way to do so, or give up.
+        # https://stackoverflow.com/questions/38315548/rails-async-active-job-doesnt-execute-code-while-inline-does
+        executor = ActiveJob::Base._queue_adapter.instance_eval do
+          @scheduler.instance_eval { @async_executor }
         end
+        # wait until there are no scheduled jobs that haven't completed
+        sleep(0.075) while executor.scheduled_task_count > executor.completed_task_count
 
         asset.reload
 

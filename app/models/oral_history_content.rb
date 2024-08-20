@@ -47,7 +47,7 @@ class OralHistoryContent < ApplicationRecord
 
   include CombinedAudioUploader::Attachment.new(:combined_audio_m4a, store: :combined_audio_derivatives)
 
-  enum combined_audio_derivatives_job_status: {
+  enum :combined_audio_derivatives_job_status,  {
     queued:    'queued',
     started:   'started',
     failed:    'failed',
@@ -67,7 +67,7 @@ class OralHistoryContent < ApplicationRecord
   #
   # backed by a pg enum. methods such as `available_by_request_off?` are available,
   # along with scopes like `OralHistoryContent.available_by_request_automatic`
-  enum available_by_request_mode: {off: 'off', automatic: 'automatic', manual_review: 'manual_review'}, _prefix: :available_by_request
+  enum :available_by_request_mode, {off: 'off', automatic: 'automatic', manual_review: 'manual_review'}, prefix: :available_by_request
 
   after_commit :after_commit_update_work_index_if_needed
 

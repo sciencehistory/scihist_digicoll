@@ -30,13 +30,17 @@ module ScihistDigicoll
     # shouldn't be accessed:
     require 'scihist_digicoll/env'
 
+    # Enables YJIT as of Ruby 3.3, to bring sizeable performance improvements. If you are
+    # deploying to a memory constrained environment you may want to set this to `false`.
+    Rails.application.config.yjit = true
+
     if ScihistDigicoll::Env.lookup("rails_log_level")
       config.log_level = ScihistDigicoll::Env.lookup("rails_log_level")
     end
 
     # Initialize configuration defaults for originally generated Rails version,
     # or Rails version we have upgraded to and verified for new defaults.
-    config.load_defaults 7.1
+    config.load_defaults 7.2
 
     config.time_zone = "US/Eastern"
 
