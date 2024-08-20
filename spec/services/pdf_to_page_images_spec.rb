@@ -55,6 +55,7 @@ describe PdfToPageImages do
       expect(asset.persisted?).to eq true
       expect(asset.position).to eq 1
       expect(asset.parent).to be work
+      expect(asset.role).to eq PdfToPageImages::EXTRACTED_PAGE_ROLE
 
       expect(asset.stored?).to eq true
       expect(asset.content_type).to eq "image/jpeg"

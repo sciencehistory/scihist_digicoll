@@ -8,6 +8,7 @@
 # Call #cleanup after you are done to clean up internal tmp files please!
 class PdfToPageImages
   DEFAULT_TARGET_DPI = 300
+  EXTRACTED_PAGE_ROLE = "extracted_pdf_page"
 
   class_attribute :vips_command, default: "vips"
   class_attribute :pdftotext_command, default: "pdftotext"
@@ -41,7 +42,9 @@ class PdfToPageImages
 
     # Ideally we'd skip the shrine cache phase entirely, but it's too hard
     # to at present. We do do promotion and derivatives inline
-    asset = Asset.new(hocr: hocr, file: image, position: page_num, parent: work, title: "page #{page_num} extracted from #{work.friendlier_id}")
+    asset = Asset.new(hocr: hocr, file: image, position: page_num,
+                      role: EXTRACTED_PAGE_ROLE,
+                      parent: work, title: "page #{page_num} extracted from #{work.friendlier_id}")
     asset.set_promotion_directives(promote: :inline, create_derivatives: :inline)
     asset.save!
 
