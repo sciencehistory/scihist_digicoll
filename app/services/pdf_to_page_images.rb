@@ -37,6 +37,8 @@ class PdfToPageImages
   #
   # @returns [Asset] persisted to db and fully shrine-promoted
   def create_asset_for_page(page_num, work:)
+    page_num_arg_check!(page_num)
+
     image = extract_jpeg_for_page(page_num)
     hocr = extract_hocr_for_page(page_num)
 
@@ -54,6 +56,8 @@ class PdfToPageImages
   # @param page_num 1-BASED page number of PDF
   # @return [TmpFile] pointing to a JPEG
   def extract_jpeg_for_page(page_num)
+    page_num_arg_check!(page_num)
+
     tempfile = Tempfile.new(["tmp_#{self.class.name}_", ".jpg"])
 
     TTY::Command.new(printer: :null).run(
@@ -73,6 +77,8 @@ class PdfToPageImages
   # @param page_num 1-BASED page number of PDF
   # @return [String] containing HOCR, or nil if no text in PDF page
   def extract_hocr_for_page(page_num)
+    page_num_arg_check!(page_num)
+
     poppler_bbox_layout_out, err = TTY::Command.new(printer: :null).run(
       pdftotext_command,
       "-bbox-layout",
@@ -90,5 +96,15 @@ class PdfToPageImages
     end
 
     return PopplerBboxToHocr.new(poppler_bbox_layout_out).transformed_to_hocr
+  end
+
+  def num_pdf_pages
+    @num_pdf_pages ||= PDF::Reader.new(pdf_file_path).page_count
+  end
+
+  def page_num_arg_check!(arg)
+    unless arg > 0 && arg <= num_pdf_pages
+      raise ArgumentError.new("page_num arg '#{arg}' must be between 1 and #{num_pdf_pages}")
+    end
   end
 end

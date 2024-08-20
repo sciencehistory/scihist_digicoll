@@ -16,6 +16,18 @@ describe PdfToPageImages do
     ensure
       image_file&.unlink
     end
+
+    it "raises for 0" do
+      expect {
+        service.extract_jpeg_for_page(0)
+      }.to raise_error(ArgumentError)
+    end
+
+    it "raises for too great out of bounds" do
+      expect {
+        service.extract_jpeg_for_page(10)
+      }.to raise_error(ArgumentError)
+    end
   end
 
   describe "#extract_hocr_for_page" do
@@ -30,6 +42,18 @@ describe PdfToPageImages do
       expect(xml.css("div.ocr_carea")).to be_present
       expect(xml.css("div.ocr_line")).to be_present
       expect(xml.css("div.ocrx_word")).to be_present
+    end
+
+    it "raises for 0" do
+      expect {
+        service.extract_hocr_for_page(0)
+      }.to raise_error(ArgumentError)
+    end
+
+    it "raises for too great out of bounds" do
+      expect {
+        service.extract_hocr_for_page(10)
+      }.to raise_error(ArgumentError)
     end
 
     describe "on page with no text" do
