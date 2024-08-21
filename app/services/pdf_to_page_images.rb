@@ -5,7 +5,6 @@
 #  * vips
 #  * pdftotext (from poppler-utils)
 #
-# Call #cleanup after you are done to clean up internal tmp files please!
 class PdfToPageImages
   DEFAULT_TARGET_DPI = 300
   EXTRACTED_PAGE_ROLE = "extracted_pdf_page"
