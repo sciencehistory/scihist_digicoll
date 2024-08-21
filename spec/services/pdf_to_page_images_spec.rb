@@ -77,6 +77,7 @@ describe PdfToPageImages do
 
       expect(asset.valid?).to eq true
       expect(asset.persisted?).to eq true
+      expect(asset.changed?).to eq false
       expect(asset.position).to eq 1
       expect(asset.parent).to be work
       expect(asset.role).to eq PdfToPageImages::EXTRACTED_PAGE_ROLE
@@ -89,6 +90,9 @@ describe PdfToPageImages do
       expect(asset.file_metadata["width"]).to be_present
       expect(asset.file_metadata["height"]).to be_present
 
+      expect(asset.dzi_file).to be_present
+      expect(asset.dzi_file.exists?).to be true
+
       expect(asset.hocr).to be_present
       xml = Nokogiri::XML(asset.hocr)  { |config| config.strict }
       expect(xml.css("div.ocr_page").length).to be 1
@@ -97,6 +101,22 @@ describe PdfToPageImages do
         expect(image_file).to be_kind_of(Tempfile)
         expect(Marcel::MimeType.for(image_file)).to eq "image/jpeg"
       end
+    end
+  end
+
+  describe "#create_assets_for_pages" do
+    let(:pdf_path) { Rails.root + "spec/test_support/pdf/3-page-text-and-image.pdf"}
+    let(:work) { create(:work) }
+
+    it "creates all assets" do
+      service.create_assets_for_pages(work: work)
+
+      extracted_assets = work.members.where(role: PdfToPageImages::EXTRACTED_PAGE_ROLE).order(:position).to_a
+
+      expect(extracted_assets.count).to eq 3
+      expect(extracted_assets.collect(&:position)).to eq [1,2,3]
+      expect(extracted_assets.all? { |a| a.hocr.present? }).to be true
+      expect(extracted_assets.all? { |a| a.file.present? }).to be true
     end
   end
 end

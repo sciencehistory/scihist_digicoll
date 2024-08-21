@@ -21,6 +21,15 @@ class PdfToPageImages
     @dpi = dpi
   end
 
+  # Create multiple page extract Assets. Either for every page, or for a range between from and to pages inclusive
+  def create_assets_for_pages(work:, from:1, to:num_pdf_pages)
+    (from..to).each do |page_num|
+      create_asset_for_page(page_num, work: work)
+    end
+
+    nil
+  end
+
   # TODO: Check for already existing, with force overwrite? create and set roles.
   #
   # Creates an Asset with individual page extracted from PDF, including jpg and hocr,
