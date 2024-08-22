@@ -5,6 +5,18 @@
 #  * vips
 #  * pdftotext (from poppler-utils)
 #
+# Since we take a pdf file on disk as an argument, you must deal with getting that local pdf file.
+# Here's the most likely way you'll do that:
+#
+#     asset = Asset.find # something, get asset with original PDF
+#     asset.file.download do |pdf_file_tmp|
+#        # do as many operations in here as you want with a single PDF download,
+#        # that will be cleaned up for you after block ends
+#
+#        service = PdfToPageImages.new(pdf_file_temp)
+#        service.create_asset_for_page(1)
+#     end
+#
 class PdfToPageImages
   DEFAULT_TARGET_DPI = 300
   EXTRACTED_PAGE_ROLE = "extracted_pdf_page"
