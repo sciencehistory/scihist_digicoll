@@ -79,6 +79,7 @@ describe PdfToPageImages do
       expect(asset.persisted?).to eq true
       expect(asset.changed?).to eq false
       expect(asset.position).to eq 1
+      expect(asset.extracted_pdf_source_info.page_index).to eq 1
       expect(asset.parent).to be work
       expect(asset.role).to eq PdfToPageImages::EXTRACTED_PAGE_ROLE
 

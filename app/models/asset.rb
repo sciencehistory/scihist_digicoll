@@ -120,6 +120,9 @@ class Asset < Kithe::Asset
   # OCR data in hOCR format, for the image asset
   attr_json :hocr, :text, container_attribute: :derived_metadata_jsonb
 
+  # Only for assets with role `extracted_pdf_page`, some info about source of extraction
+  attr_json :extracted_pdf_source_info, ExtractedPdfSourceInfo.to_type
+
   # holds a JSON-able Hash, exiftool json output
   attr_json :exiftool_result, ActiveModel::Type::Value.new, container_attribute: :derived_metadata_jsonb
 
