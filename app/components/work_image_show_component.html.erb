@@ -39,12 +39,19 @@
                 </label>
               </div>
 
-              <%= search_field_tag :q, '', class: "q form-control",
+              <%= search_field_tag :q, '', class: "q form-control search-inside-query-field",
                   id: "search-inside-q"
               %>
 
               <div class="input-group-append">
-                <button type="submit" class="btn btn-brand-main" aria-label="Submit search" title="Search" id="search-submit-header">
+                <button type="submit" class="btn btn-brand-main" aria-label="Submit search" title="Search" id="search-submit-header"
+                  data-analytics-action="search_inside"
+                  data-analytics-category="work"
+                  data-analytics-label="<%=work.friendlier_id %>"
+                  <%# Look up an element using selector ".work-page-viewer-search-controls .search-inside-query-field",
+                    and pass that element's value to GA as event-value. %>
+                  data-analytics-value-css=".work-page-viewer-search-controls .search-inside-query-field"
+                >
                   <i class="fa fa-search" aria-hidden="true"></i>
                 </button>
               </div>

@@ -10,7 +10,7 @@
     </div>
 
     <div class="input-group input-group-sm">
-      <%= text_field_tag :q, '', class: "q form-control",
+      <%= text_field_tag :q, '', class: "q form-control search-inside-query-field",
           id: "q",
           autocomplete: "off"
       %>
@@ -27,7 +27,15 @@
 
 
       <div class="input-group-append">
-        <button type="submit" class="btn btn-brand-dark" title="Search" id="search-submit-header">
+        <button
+          type="submit" class="btn btn-brand-dark" title="Search" id="search-submit-header"
+          data-analytics-action="search_inside"
+          data-analytics-category="work"
+          data-analytics-label="<%= @work.friendlier_id %>"
+          <%# Look up an element using selector ".viewer-search-controls .search-inside-query-field",
+            and pass that element's value to GA as event-value. %>
+          data-analytics-value-css=".viewer-search-controls .search-inside-query-field"
+        >
           <i class="fa fa-search" aria-hidden="true"></i>
           <span class="sr-only"><%= t('blacklight.search.form.submit') %></span>
         </button>
