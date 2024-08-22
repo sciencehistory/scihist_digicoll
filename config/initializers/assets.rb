@@ -13,7 +13,3 @@ Rails.application.config.assets.paths << Rails.root.join('node_modules')
 # folder are already added.
 # Rails.application.config.assets.precompile += %w( admin.js admin.css )
 
-
-# We're going to use sprockets to compile static html error pages
-Rails.application.config.assets.paths << Rails.root.join('app', 'assets', 'html')
-Rails.application.config.assets.register_mime_type('text/html', '.html')

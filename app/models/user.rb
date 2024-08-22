@@ -19,7 +19,7 @@ class User < ApplicationRecord
   # "editor" will replace the current "staff" role.
   # A new "reader" type will be added in a future PR.
   USER_TYPES = %w{admin editor staff_viewer}.freeze
-  enum user_type: USER_TYPES.collect {|v| [v, v]}.to_h
+  enum :user_type, USER_TYPES.collect {|v| [v, v]}.to_h
   validates :user_type, presence: true
 
   def admin_user?

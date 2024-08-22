@@ -4,7 +4,7 @@
   "type": "module",
   "dependencies": {
     "@nathanvda/cocoon": "^1.2.14",
-    "@rails/ujs": "^ 6.1.7",
+    "@rails/ujs": "^ 7.1.3-4",
     "@shopify/draggable": "^1.0.0-beta.8",
     "blacklight-frontend": "^7.32.0",
     "bootstrap": "^ 4.6.2",
