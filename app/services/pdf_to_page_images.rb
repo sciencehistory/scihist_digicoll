@@ -14,7 +14,7 @@
 #        # that will be cleaned up for you after block ends
 #
 #        service = PdfToPageImages.new(pdf_file_temp)
-#        service.create_asset_for_page(1)
+#        service.create_asset_for_page(1, source_pdf_sha512: asset.sha512, source_pdf_asset_pk: asset.id)
 #     end
 #
 class PdfToPageImages
@@ -34,9 +34,13 @@ class PdfToPageImages
   end
 
   # Create multiple page extract Assets. Either for every page, or for a range between from and to pages inclusive
-  def create_assets_for_pages(work:, from:1, to:num_pdf_pages, on_existing_dup: :insert_dup)
+  def create_assets_for_pages(work:, from:1, to:num_pdf_pages, on_existing_dup: :insert_dup,
+                              source_pdf_sha512:, source_pdf_asset_pk:)
     (from..to).each do |page_num|
-      create_asset_for_page(page_num, work: work, on_existing_dup: on_existing_dup)
+      create_asset_for_page(page_num, work: work,
+          on_existing_dup: on_existing_dup,
+          source_pdf_sha512: source_pdf_sha512,
+          source_pdf_asset_pk: source_pdf_asset_pk)
     end
 
     nil
@@ -59,8 +63,15 @@ class PdfToPageImages
   #    * :abort : If one already exists, do nothing else but return it. Can be used to lazily create.
   #    * :overwrite : If one already exists, overwrite it's data with our data, keeping the record and it's friendlier_id
   #
+  # @param source_pdf_sha512 [string] for tracking purposes, pass in nil if you really don't want
+  # @param source_pdf_asset_pk [string] for tracking purposes, pass in nil if you really don't want
+  #
   # @returns [Asset] persisted to db and fully shrine-promoted
-  def create_asset_for_page(page_num, work:, on_existing_dup: :insert_dup)
+  def create_asset_for_page(page_num,
+                            work:,
+                            on_existing_dup: :insert_dup,
+                            source_pdf_sha512:,
+                            source_pdf_asset_pk:)
     page_num_arg_check!(page_num)
 
     unless on_existing_dup == :insert_dup
@@ -88,9 +99,12 @@ class PdfToPageImages
     asset.assign_attributes(hocr: hocr,
                             file: image,
                             position: page_num,
-                            extracted_pdf_source_info: { page_index: page_num },
+                            extracted_pdf_source_info: {
+                              page_index: page_num,
+                              source_pdf_sha512: source_pdf_sha512,
+                              source_pdf_asset_pk: source_pdf_asset_pk
+                            },
                             role: EXTRACTED_PAGE_ROLE,
-
                             # right-pad page with zeroes so sorts alphabetically if we do so in admin UI!
                             title: "#{"%04d" % page_num} page extracted from #{work.friendlier_id}"
     )

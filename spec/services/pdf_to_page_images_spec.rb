@@ -68,7 +68,7 @@ describe PdfToPageImages do
   describe "#create_asset_for_page", queue_adapter: :test do
     let(:work) { create(:work) }
     it "builds asset" do
-      asset = service.create_asset_for_page(1, work: work)
+      asset = service.create_asset_for_page(1, work: work, source_pdf_sha512: "fakesha512", source_pdf_asset_pk: "fakeassetid")
 
       # We did enqueue a fixity check job, oh well, but shouldn't have enqueued
       # anything else
@@ -80,6 +80,8 @@ describe PdfToPageImages do
       expect(asset.changed?).to eq false
       expect(asset.position).to eq 1
       expect(asset.extracted_pdf_source_info.page_index).to eq 1
+      expect(asset.extracted_pdf_source_info.source_pdf_sha512).to eq "fakesha512"
+      expect(asset.extracted_pdf_source_info.source_pdf_asset_pk).to eq "fakeassetid"
       expect(asset.title).to eq "0001 page extracted from #{work.friendlier_id}"
 
       expect(asset.parent).to be work
@@ -110,7 +112,7 @@ describe PdfToPageImages do
       let!(:duplicate) { create(:asset, file: nil, parent: work, extracted_pdf_source_info: { page_index: 1 }) }
 
       it ":abort uses existing without update" do
-        asset = service.create_asset_for_page(1, work: work, on_existing_dup: :abort)
+        asset = service.create_asset_for_page(1, work: work, on_existing_dup: :abort, source_pdf_sha512: nil, source_pdf_asset_pk: nil)
 
         expect(asset.id).to eq duplicate.id
         expect(Asset.jsonb_contains("extracted_pdf_source_info.page_index" => 1).where(parent_id: work.id).count).to eq 1
@@ -120,17 +122,20 @@ describe PdfToPageImages do
       end
 
       it ":overwrite uses existing with update" do
-        asset = service.create_asset_for_page(1, work: work, on_existing_dup: :overwrite)
+        asset = service.create_asset_for_page(1, work: work, on_existing_dup: :overwrite, source_pdf_sha512: "newsha512", source_pdf_asset_pk: "newid")
 
         expect(asset.id).to eq duplicate.id
         expect(Asset.jsonb_contains("extracted_pdf_source_info.page_index" => 1).where(parent_id: work.id).count).to eq 1
 
         expect(asset.hocr).not_to be nil
         expect(asset.file).not_to be nil
+
+        expect(asset.extracted_pdf_source_info.source_pdf_sha512).to eq "newsha512"
+        expect(asset.extracted_pdf_source_info.source_pdf_asset_pk).to eq "newid"
       end
 
       it ":insert_dup just inserts anyway" do
-        asset = service.create_asset_for_page(1, work: work, on_existing_dup: :insert_dup)
+        asset = service.create_asset_for_page(1, work: work, on_existing_dup: :insert_dup, source_pdf_sha512: nil, source_pdf_asset_pk: nil)
 
         expect(asset.id).not_to eq duplicate.id
         expect(Asset.jsonb_contains("extracted_pdf_source_info.page_index" => 1).where(parent_id: work.id).count).to eq 2
@@ -146,7 +151,7 @@ describe PdfToPageImages do
     let(:work) { create(:work) }
 
     it "creates all assets" do
-      service.create_assets_for_pages(work: work)
+      service.create_assets_for_pages(work: work, source_pdf_sha512: nil, source_pdf_asset_pk: nil)
 
       extracted_assets = work.members.where(role: PdfToPageImages::EXTRACTED_PAGE_ROLE).order(:position).to_a
 
