@@ -57,8 +57,9 @@ class PdfToPageImages
                       position: page_num,
                       extracted_pdf_source_info: { page_index: page_num },
                       role: EXTRACTED_PAGE_ROLE,
-                      parent: work, title:
-                      "page #{page_num} extracted from #{work.friendlier_id}")
+                      parent: work,
+                      # right-pad page with zeroes so sorts alphabetically if we do so in admin UI!
+                      title: "#{"%04d" % page_num} page extracted from #{work.friendlier_id}")
     asset.set_promotion_directives(promote: :inline, create_derivatives: :inline)
     asset.save!
 
