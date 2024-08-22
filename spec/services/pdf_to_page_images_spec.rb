@@ -105,6 +105,40 @@ describe PdfToPageImages do
         expect(Marcel::MimeType.for(image_file)).to eq "image/jpeg"
       end
     end
+
+    describe "on_existing_dup" do
+      let!(:duplicate) { create(:asset, file: nil, parent: work, extracted_pdf_source_info: { page_index: 1 }) }
+
+      it ":abort uses existing without update" do
+        asset = service.create_asset_for_page(1, work: work, on_existing_dup: :abort)
+
+        expect(asset.id).to eq duplicate.id
+        expect(Asset.jsonb_contains("extracted_pdf_source_info.page_index" => 1).where(parent_id: work.id).count).to eq 1
+
+        expect(asset.hocr).to be nil
+        expect(asset.file).to be nil
+      end
+
+      it ":overwrite uses existing with update" do
+        asset = service.create_asset_for_page(1, work: work, on_existing_dup: :overwrite)
+
+        expect(asset.id).to eq duplicate.id
+        expect(Asset.jsonb_contains("extracted_pdf_source_info.page_index" => 1).where(parent_id: work.id).count).to eq 1
+
+        expect(asset.hocr).not_to be nil
+        expect(asset.file).not_to be nil
+      end
+
+      it ":insert_dup just inserts anyway" do
+        asset = service.create_asset_for_page(1, work: work, on_existing_dup: :insert_dup)
+
+        expect(asset.id).not_to eq duplicate.id
+        expect(Asset.jsonb_contains("extracted_pdf_source_info.page_index" => 1).where(parent_id: work.id).count).to eq 2
+
+        expect(asset.hocr).not_to be nil
+        expect(asset.file).not_to be nil
+      end
+    end
   end
 
   describe "#create_assets_for_pages" do

@@ -22,9 +22,9 @@ class PdfToPageImages
   end
 
   # Create multiple page extract Assets. Either for every page, or for a range between from and to pages inclusive
-  def create_assets_for_pages(work:, from:1, to:num_pdf_pages)
+  def create_assets_for_pages(work:, from:1, to:num_pdf_pages, on_existing_dup: :insert_dup)
     (from..to).each do |page_num|
-      create_asset_for_page(page_num, work: work)
+      create_asset_for_page(page_num, work: work, on_existing_dup: on_existing_dup)
     end
 
     nil
@@ -42,24 +42,46 @@ class PdfToPageImages
   #
   # @param page_num 1-based page number of PDF
   # @param work [Work] set parent work so we can set some metadata and parent
+  # @param on_existing_dup [Symbol] Check for existing Asset representing this page_num?
+  #    * :insert_dup : Don't check, just go ahead and cretae a new one regardless
+  #    * :abort : If one already exists, do nothing else but return it. Can be used to lazily create.
+  #    * :overwrite : If one already exists, overwrite it's data with our data, keeping the record and it's friendlier_id
   #
   # @returns [Asset] persisted to db and fully shrine-promoted
-  def create_asset_for_page(page_num, work:)
+  def create_asset_for_page(page_num, work:, on_existing_dup: :insert_dup)
     page_num_arg_check!(page_num)
+
+    unless on_existing_dup == :insert_dup
+      # going to go to DB once per Asset, even if we're loading multiple, sorry,
+      # too complex to optimize when our main use case is likely to be one at a time
+      existing_asset = Asset.jsonb_contains("extracted_pdf_source_info.page_index" => page_num).where(parent_id: work.id).first
+
+      if existing_asset && on_existing_dup == :abort
+        return existing_asset
+      elsif existing_asset && on_existing_dup == :overwrite
+        asset = existing_asset
+      end
+    end
 
     image = extract_jpeg_for_page(page_num)
     hocr = extract_hocr_for_page(page_num)
 
+    # We might already have one from an existing asset to overwrite, in which
+    # case we overwrite attributes but keep friendlier_id intact! Otherwise,
+    # create a new one.
+    #
     # Ideally we'd skip the shrine cache phase entirely, but it's too hard
     # to at present. We do do promotion and derivatives inline
-    asset = Asset.new(hocr: hocr,
-                      file: image,
-                      position: page_num,
-                      extracted_pdf_source_info: { page_index: page_num },
-                      role: EXTRACTED_PAGE_ROLE,
-                      parent: work,
-                      # right-pad page with zeroes so sorts alphabetically if we do so in admin UI!
-                      title: "#{"%04d" % page_num} page extracted from #{work.friendlier_id}")
+    asset ||= Asset.new(parent: work)
+    asset.assign_attributes(hocr: hocr,
+                            file: image,
+                            position: page_num,
+                            extracted_pdf_source_info: { page_index: page_num },
+                            role: EXTRACTED_PAGE_ROLE,
+
+                            # right-pad page with zeroes so sorts alphabetically if we do so in admin UI!
+                            title: "#{"%04d" % page_num} page extracted from #{work.friendlier_id}"
+    )
     asset.set_promotion_directives(promote: :inline, create_derivatives: :inline)
     asset.save!
 
