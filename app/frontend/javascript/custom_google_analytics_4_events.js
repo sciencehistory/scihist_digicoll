@@ -15,12 +15,12 @@ $(document).on('click', '*[data-analytics-category]', function(e) {
       // param eventName
       // A string describing what the user did,
       // e.g. "download" or "transcription_pdf" or "english_translation_pdf" or "download_original"
-      e.target.getAttribute("data-analytics-action"),
+      e.currentTarget.getAttribute("data-analytics-action"),
       {
         // As of early 2023, this is always the string "work".
-        'event_category': e.target.getAttribute("data-analytics-category"),
+        'event_category': e.currentTarget.getAttribute("data-analytics-category"),
         // As of early 2023, this is always the work's friendlier_id.
-        'event_label':    e.target.getAttribute("data-analytics-label"),
+        'event_label':    e.currentTarget.getAttribute("data-analytics-label"),
       }
 
     );
