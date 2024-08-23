@@ -19,22 +19,22 @@ $(document).on('click', '*[data-analytics-category]', function(e) {
 
     // If we find a selector in data-analytics-value-css, we can look up the current value of the text input 
     // using that selector, and then pass that string to GA as event_value.
-    var elementToLookUp =  event.currentTarget.getAttribute("data-analytics-value-css");
+    var elementToLookUp =  e.currentTarget.getAttribute("data-analytics-value-css");
     var eventValue = elementToLookUp ?  $(elementToLookUp)[0].value.replace(/[^a-zA-Z 0-9]+/g, '') : null;
 
     gtag( 'event',
 
       // A string describing what the user did,
-      // e.g. "download" or "transcription_pdf" or "english_translation_pdf" or "download_original" or "search_inside"
-      event.currentTarget.getAttribute("data-analytics-action"),
+      // e.g. "download" or "transcription_pdf" or "english_translation_pdf" or "download_original"
+      e.currentTarget.getAttribute("data-analytics-action"),
 
       {
 
         // Always the string "work".
-        'event_category': event.currentTarget.getAttribute("data-analytics-category"),
+        'event_category': e.currentTarget.getAttribute("data-analytics-category"),
 
         // Always the work's friendlier_id.
-        'event_label': event.currentTarget.getAttribute("data-analytics-label"),
+        'event_label': e.currentTarget.getAttribute("data-analytics-label"),
 
         // Only used to send a search phrase (or, more frequently, null).
         'event_value': eventValue
