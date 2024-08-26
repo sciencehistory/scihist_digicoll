@@ -95,5 +95,5 @@ en:
         contained_by: >
           The sub-Collection within the Digital Collections Application to which the digital work belongs. Select the named collection that the work is part of, if applicable. If a desired entry is not available, contact the Digital Collections Librarian. Required if applicable.
         ocr_requested: >
-          Enable Optical Character Recognition (OCR) features for suitable works, with text that is believed likely legible to OCR processes, and in a supported language.
+          Enable Optical Character Recognition (OCR) processing, where software will try to extract text from images. Should be enabled for suitable works, with text that is believed likely legible to OCR processes, and in a supported language.
 

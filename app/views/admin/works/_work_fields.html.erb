@@ -55,7 +55,7 @@
       html_attributes: { "data-scihist-qa-autocomplete" => qa_search_vocab_path("local", "languages")} %>
 
     <%# ocr_requested does need to be in this form, so that we can include it in batch edits. %>
-    <%= f.input :ocr_requested, label: "OCR features enabled" %>
+    <%= f.input :ocr_requested, label: "OCR processing enabled" %>
 
     <%= f.input :description,       as: :text, input_html: { rows: 14 } %>
     <%= f.input :provenance,        as: :text, input_html: { rows: 5 }  %>
