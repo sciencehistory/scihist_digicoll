@@ -110,10 +110,16 @@ class PdfToPageImages
     asset.save!
 
     asset
+  ensure
+    #tempfile
+    if image
+      image.close
+      image.unlink
+    end
   end
 
   # @param page_num 1-BASED page number of PDF
-  # @return [TmpFile] pointing to a JPEG
+  # @return [TempFile] pointing to a JPEG
   def extract_jpeg_for_page(page_num)
     page_num_arg_check!(page_num)
 
