@@ -271,9 +271,11 @@ class Admin::WorksController < AdminController
     # Check for invalid files:
     #  e.g. zero-length files
     # or jpgs that should really be tiffs.
-    unless works_with_members_with_invalid_files([@work]).empty?
+
+    unpublishable_file_info = unpublishable_file_info([@work])
+    unless unpublishable_file_info[:works].empty?
       redirect_to admin_work_path(@work, anchor: "tab=nav-members"), flash: {
-        error: "Can't publish this work. One or more of its assets has invalid files."
+        error: "Can't publish this work. The following assets have unpublishable files: #{unpublishable_file_info[:asset_ids].join '; '}"
       }
       return
     end
@@ -470,9 +472,9 @@ class Admin::WorksController < AdminController
     end
 
     # Check works in cart for invalid files.
-    unpublishable_works = works_with_members_with_invalid_files(current_user.works_in_cart)
-    unless unpublishable_works.empty?
-      example_work = unpublishable_works.first
+    unpublishable_file_info = unpublishable_file_info(current_user.works_in_cart)
+    unless unpublishable_file_info[:works].empty?
+      example_work = unpublishable_file_info[:works].first
       redirect_to admin_cart_items_url, flash: { error: "No changes made due to error: \"#{example_work.title}\" (#{example_work.friendlier_id}) contains one or more assets with invalid files." }
       return
     end
@@ -524,9 +526,11 @@ class Admin::WorksController < AdminController
 
     # Check all asset members of an array of works
     # (ignoring their child works) for assets with invalid files.
-    # All problems are noted in the logs, and the problem works are returned.
-    def works_with_members_with_invalid_files(work_array)
+    # Details are noted in the logs, and a hash with problem works and problem asset_ids are returned.
+    def unpublishable_file_info(work_array)
       problem_works = Set.new
+      problem_asset_ids = Set.new
+
       cols = [
         "kithe_models.friendlier_id",
         "kithe_models.file_data -> 'metadata' -> 'promotion_validation_errors'",
@@ -540,16 +544,17 @@ class Admin::WorksController < AdminController
           parent = Asset.find_by_friendlier_id(asset_id).parent
           Rails.logger.warn("Work '#{parent.friendlier_id}' couldn't be published. Something was wrong with the file for asset '#{asset_id}.'")
           problem_works << parent
+          problem_asset_ids << asset_id
         end
         # Image assets published as part of a work need to be tiffs, except if they are in an identified special role
         if mime_type.start_with?('image/') && mime_type != 'image/tiff' && !role.in?(['portrait', 'extracted_pdf_page'])
           parent = Asset.find_by_friendlier_id(asset_id).parent
           Rails.logger.warn("Work '#{parent.friendlier_id}' couldn't be published. Asset '#{asset_id}' should be an image/tiff, but is a #{mime_type}.")
           problem_works << parent
+          problem_asset_ids << asset_id
         end
-
       end
-      problem_works
+      { works: problem_works, asset_ids: problem_asset_ids }
     end
 
 
