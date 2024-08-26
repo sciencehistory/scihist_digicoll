@@ -28,4 +28,10 @@
 
   <%= form.button :button, "Approve", type: "submit", name: "disposition", value: "approve", class: "btn-success" %>
   <%= form.button :button, "Reject", type: "submit", name: "disposition", value: "reject", class: "btn-danger float-right" %>
+
+  <small class="form-text text-muted scihist-hint mt-5 mb-2 w-25">You may also dismiss this request. The request will be marked as "dismissed" and set aside. No email will be sent to the requester. Use this for duplicate or stale requests.</small>
+  <%= form.button :button, "Dismiss", type: "submit", name: "disposition", value: "dismiss", class: "btn-danger",
+   data: { confirm: 'Are you sure you want to dismiss this request?
+The request will be set aside
+and the requester will NOT be notified.' } %>
 <% end %>
