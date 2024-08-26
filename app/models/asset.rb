@@ -83,8 +83,16 @@ class Asset < Kithe::Asset
   # * portrait: used for OH
   # * transcript: used for OH, the transcript PDF
   # * front_matter: used for OH, the limited excerpts "front matter" PDF
-  # * extracted_pdf_page: An Asset with a rendered page image of a single page from a PDF
-  enum :role, %w{portrait transcript front_matter extracted_pdf_page}.collect {|v| [v, v]}.to_h, prefix: true
+  # * work_source_pdf: single PDF asset that effective is the work, will have individual pages auto extracted
+  # * extracted_pdf_page: An Asset with a rendered page image of a single page from a PDF marked work_source_pdf
+  enum :role, %w{portrait transcript front_matter work_source_pdf extracted_pdf_page}.collect {|v| [v, v]}.to_h, prefix: true
+  validates :role, unless: Proc.new { |a| a.content_type == "application/pdf"},
+    exclusion: {
+      within: ["work_source_pdf"],
+      message: "work_source_pdf role can only be set on a PDF asset"
+    }
+
+
 
   attr_json :admin_note, :text, array: true, default: -> { [] }
 
