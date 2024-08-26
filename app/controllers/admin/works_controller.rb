@@ -541,8 +541,8 @@ class Admin::WorksController < AdminController
           Rails.logger.warn("Work '#{parent.friendlier_id}' couldn't be published. Something was wrong with the file for asset '#{asset_id}.'")
           problem_works << parent
         end
-        # Image assets published as part of a work need to be tiffs, except if they are portraits.
-        if mime_type.start_with?('image') && mime_type != 'image/tiff' && role != 'portrait'
+        # Image assets published as part of a work need to be tiffs, except if they are in an identified special role
+        if mime_type.start_with?('image/') && mime_type != 'image/tiff' && !role.in?(['portrait', 'extracted_pdf_page'])
           parent = Asset.find_by_friendlier_id(asset_id).parent
           Rails.logger.warn("Work '#{parent.friendlier_id}' couldn't be published. Asset '#{asset_id}' should be an image/tiff, but is a #{mime_type}.")
           problem_works << parent

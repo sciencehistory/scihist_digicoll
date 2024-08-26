@@ -41,5 +41,14 @@ describe AssetOcrCreator, type: :model do
       pdf_reader = PDF::Reader.new(textonly_pdf_file)
       expect(pdf_reader.pages.count).to eq 1
     end
+
+    describe "asset with role extracted_pdf_page" do
+      let(:asset) { create(:asset_with_faked_file, role: "extracted_pdf_page") }
+      it "raises error" do
+        expect {
+          creator.call
+        }.to raise_error(TypeError).with_message(/We refuse to OCR on a PDF with role extracted_pdf_page/)
+      end
+    end
   end
 end
