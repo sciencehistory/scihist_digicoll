@@ -46,8 +46,6 @@ class PdfToPageImages
     nil
   end
 
-  # TODO: Check for already existing, with force overwrite? create and set roles.
-  #
   # Creates an Asset with individual page extracted from PDF, including jpg and hocr,
   # and the usual shrine derivatives etc.
   #
