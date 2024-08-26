@@ -15,6 +15,17 @@ en:
         profile: "Allowed HTML tags: b, i, cite, a."
         name: 'Recommend "Lastname, First I.", but legacy data may not match.'
       asset:
+        # apparently html works in hint i18n? If it stops cause this is a bug, we'll have to refactor somehow
+        role: "<details>
+               <summary>Explanation of roles</summary>
+              <dl>
+                <dt>portrait</dt> <dd>Oral History only, single image used for portrait for OH subject</dd>
+                <dt>transcript</dt> <dd>Oral History only, the transcript PDF</dd>
+                <dt>front matter</dt><dd> Oral History only, the limited excerpts 'front matter' PDF</dd>
+                <dt>work source pdf</dt><dd> a single PDF asset that <b>is</b> the main work represented, will have individual pages auto extracted. <b>Must be only one in Work.</b></dd>
+                <dt>extracted pdf page</dt><dd> An Asset with a rendered page image of a single page from a PDF marked work_source_pdf. Not normally set manually.</dd>
+              </dl>
+              </details>"
         alt_text: "Alternative textual description for when asset can't be viewed directly, has accessibility uses."
         caption: "Used at present with role portrait on oral histories"
         suppress_ocr: "Check this box to suppress OCR for this asset, regardless of the settings for its work."
