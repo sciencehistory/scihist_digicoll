@@ -26,16 +26,11 @@
 
 
       <div class="input-group-append">
-        <%#
-          data-analytics-label is set to @work&.friendlier_id instead of @work.friendlier_id .
-          This is because spec/components/work_image_show_component_spec.rb renders this partial,
-          via app/components/work_image_show_component.html.erb, with a nil value for @work.
-        %>
         <button
           type="submit" class="btn btn-brand-dark" title="Search" id="search-submit-header"
           data-analytics-action="search_inside"
           data-analytics-category="work"
-          data-analytics-label="<%= @work&.friendlier_id %>"
+          data-analytics-label="<%= work.friendlier_id %>"
           <%# Look up an element using selector ".viewer-search-controls .search-inside-query-field",
             and pass that element's value to GA as event-value. %>
           data-analytics-value-css=".viewer-search-controls .search-inside-query-field"
