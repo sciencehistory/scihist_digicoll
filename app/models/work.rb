@@ -88,7 +88,12 @@ class Work < Kithe::Work
   attr_json :file_creator, :string
   attr_json :admin_note, :text, array: true, default: -> { [] }
 
-  attr_json :ocr_requested, :boolean, default: false
+  #attr_json :ocr_requested, :boolean, default: false
+  attr_json :text_extraction_mode, :string
+  validates :text_extraction_mode, inclusion: { in: ["ocr", "pdf_extraction"], allow_nil: true }
+  normalizes :text_extraction_mode, with: -> text_extraction { text_extraction.presence }
+
+
 
   # filter out empty strings, makes our forms easier, with the way checkbox
   # groups include hidden field with empty string. Kithe repeatable
@@ -98,6 +103,26 @@ class Work < Kithe::Work
       arr = arr.reject {|v| v.blank? }
     end
     super(arr)
+  end
+
+  def ocr_requested?
+    text_extraction_mode == "ocr"
+  end
+  # legacy backwards compat
+  def ocr_requested=(boolArg)
+    if ActiveModel::Type::Boolean.new.cast(boolArg)
+      self.text_extraction_mode = "ocr"
+    else
+      self.text_extraction_mode = nil
+    end
+  end
+
+  def pdf_text_extraction?
+    text_extraction_mode == "pdf_extraction"
+  end
+
+  def has_text_extraction?
+    ocr_requested? || pdf_text_extraction?
   end
 
   # With one pg recursive CTE find _all_ descendent members, through

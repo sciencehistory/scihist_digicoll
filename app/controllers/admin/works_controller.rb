@@ -79,7 +79,7 @@ class Admin::WorksController < AdminController
         # If this update also just switched ocr_requested, queue up a job to update its OCR
         # data accordingly. If for some reason this is missed, we still have a nightly rake
         # task to restore consistent state, but let's try to do it sooner.
-        if @work.ocr_requested_previously_changed?
+        if @work.text_extraction_mode_previously_changed?
           WorkOcrCreatorRemoverJob.perform_later(@work)
         end
 
@@ -577,7 +577,7 @@ class Admin::WorksController < AdminController
         recursive_strip_whitespace!(params["work"])
 
         Kithe::Parameters.new(params).require(:work).permit_attr_json(Work).permit(
-          :title, :parent_id, :representative_id, :digitization_queue_item_id, :contained_by_ids => []
+          :title, :ocr_requested, :parent_id, :representative_id, :digitization_queue_item_id, :contained_by_ids => []
         ).tap do |params|
           # sanitize description & provenance
           [:description, :provenance].each do |field|
@@ -682,9 +682,9 @@ class Admin::WorksController < AdminController
       end
 
       if params[:q][:ocr_requested] == 'true'
-        scope = scope.jsonb_contains(ocr_requested: true)
+        scope = scope.jsonb_contains(text_extraction_mode: "ocr")
       elsif params[:q][:ocr_requested] == 'false'
-        scope = scope.not_jsonb_contains(ocr_requested: true)
+        scope = scope.not_jsonb_contains(text_extraction_mode: "ocr")
       end
 
       scope.includes(:leaf_representative).page(params[:page]).per(20)
