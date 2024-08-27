@@ -22,24 +22,29 @@ $(document).on('click', '*[data-analytics-category]', function(e) {
     var elementToLookUp =  e.currentTarget.getAttribute("data-analytics-value-css");
     var eventValue = elementToLookUp ?  $(elementToLookUp)[0].value.replace(/[^a-zA-Z 0-9]+/g, '') : null;
 
-    gtag( 'event',
+    data_to_send = {
+      // Always the string "work".
+      'event_category': e.currentTarget.getAttribute("data-analytics-category"),
 
+      // Always the work's friendlier_id.
+      'event_label': e.currentTarget.getAttribute("data-analytics-label"),
+
+      // Only used to send a search phrase (or, more frequently, null).
+      'event_value': eventValue
+    }
+
+    // Based on https://support.google.com/analytics/answer/13675006?hl=en, let's try a more user-friendly format as well:
+    if (eventValue) {
+      data_to_send['search_phrase'] = eventValue;
+      data_to_send['friendlier_id'] = e.currentTarget.getAttribute("data-analytics-label");
+    }
+
+
+    gtag( 'event',
       // A string describing what the user did,
       // e.g. "download" or "transcription_pdf" or "english_translation_pdf" or "download_original"
       e.currentTarget.getAttribute("data-analytics-action"),
-
-      {
-
-        // Always the string "work".
-        'event_category': e.currentTarget.getAttribute("data-analytics-category"),
-
-        // Always the work's friendlier_id.
-        'event_label': e.currentTarget.getAttribute("data-analytics-label"),
-
-        // Only used to send a search phrase (or, more frequently, null).
-        'event_value': eventValue
-
-      }
+      data_to_send
     );
   }
 });
