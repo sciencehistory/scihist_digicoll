@@ -22,7 +22,7 @@ $(document).on('click', '*[data-analytics-category]', function(e) {
     var elementToLookUp =  e.currentTarget.getAttribute("data-analytics-value-css");
     var eventValue = elementToLookUp ?  $(elementToLookUp)[0].value.replace(/[^a-zA-Z 0-9]+/g, '') : null;
 
-    data_to_send = {
+    var data_to_send = {
       // Always the string "work".
       'event_category': e.currentTarget.getAttribute("data-analytics-category"),
 
