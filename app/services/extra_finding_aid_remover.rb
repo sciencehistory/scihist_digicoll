@@ -1,6 +1,8 @@
-# Invoked by:
 # See https://github.com/sciencehistory/scihist_digicoll/pull/2726 for context.
+#
+# Invoked by:
 # lib/tasks/remove_extra_finding_aids.rake
+#
 # We're leaving both the rake task and the service class around - it's likely enough that we will have to run this helper (or something very similar to it) in the future.
 # We are going to remove the test from the repo, though, as we don't really need it slowing down our tests.
 class ExtraFindingAidRemover

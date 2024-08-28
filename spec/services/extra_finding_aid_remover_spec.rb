@@ -5,7 +5,7 @@ require 'rails_helper'
 # This test is for code that will be run only once:
 # lib/tasks/remove_extra_finding_aids.rake
 
-# We will need to delete it after we run this code.
+# We will need to delete this test after we run this code.
 
 describe ExtraFindingAidRemover, queue_adapter: :test do
 
