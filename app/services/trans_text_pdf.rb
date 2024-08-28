@@ -138,7 +138,7 @@ class TransTextPdf
 
   def text_page_objects
     # whether user is administrator or not, we don't include private pages for now.
-    @text_page_objects ||= Work::TextPage.compile(work.ordered_viewable_members(current_user: nil), accessor: mode)
+    @text_page_objects ||= Work::TextPage.compile(work.ordered_viewable_members(current_user: nil).to_a, accessor: mode)
   end
 
   # some trying-to-keep-it-simple CSS, that will be converted to PDF by
