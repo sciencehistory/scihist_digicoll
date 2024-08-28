@@ -143,13 +143,40 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
     end
   end
 
+  # almost more of an integration test, we're going to do real stuff, it will be slow
+  context "#setup_work_from_pdf_source", queue_adapter: :inline do
+    let(:asset) do
+      create(:asset, :inline_promoted_file,
+              file: File.open(Rails.root + "spec/test_support/pdf/sample-text-and-image-small.pdf"),
+              parent: create(:work))
+    end
+
+    it "properly sets up" do
+      allow(PdfToPageImages).to receive(:new).and_call_original
+
+      put :setup_work_from_pdf_source, params: {
+        id: asset.friendlier_id
+      }
+
+      expect(PdfToPageImages).to have_received(:new)
+
+      asset.reload
+
+      expect(asset.role).to eq "work_source_pdf"
+      expect(asset.parent.text_extraction_mode).to eq "pdf_extraction"
+
+      # 1 pdf page extracted
+      expect(asset.parent.members.where(role: PdfToPageImages::EXTRACTED_PAGE_ROLE).count).to eq 1
+    end
+  end
+
   # Note: more extensive tests of the helper object are at asset_hocr_and_pdf_uploader_spec.rb
   context "Add an HOCR and a textonly_pdf file (smoke test)", logged_in_user: :editor do
     let(:valid_hocr_path) { Rails.root + "spec/test_support/hocr_xml/hocr.xml" }
     let(:valid_pdf_path)  { Rails.root + "spec/test_support/pdf/textonly.pdf" }
     let(:asset) {  create(:asset, parent: parent_work, hocr:nil, suppress_ocr: true, ocr_admin_note: "File was too wide") }
     it "can add HOCR and PDF" do
-      put :submit_hocr_and_textonly_pdf, params: { id: asset.friendlier_id, 
+      put :submit_hocr_and_textonly_pdf, params: { id: asset.friendlier_id,
           hocr: Rack::Test::UploadedFile.new(valid_hocr_path, "application/xml"),
           textonly_pdf: Rack::Test::UploadedFile.new(valid_pdf_path, "application/xml")}
       expect(response).to redirect_to(admin_asset_url(asset.reload))

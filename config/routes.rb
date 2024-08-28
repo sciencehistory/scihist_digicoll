@@ -295,6 +295,7 @@ Rails.application.routes.draw do
     resources :assets, path: "asset_files", except: [:new, :create] do
       member do
         put "convert_to_child_work"
+        put "setup_work_from_pdf_source"
       end
     end
 

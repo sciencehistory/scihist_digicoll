@@ -366,6 +366,27 @@
       <% end %>
     </dl>
 
+    <% if @asset.content_type == "application/pdf" %>
+      <h2 class="mt-4">Setup Work from PDF source</h2>
+
+      <p class="text-muted small mt-3">
+        It's okay to run this on a work more than once, or a work that's already been set up. It will try to fill in any missing configuration and assets.
+      </p>
+
+      <%= link_to "Setup work from this PDF source", setup_work_from_pdf_source_admin_asset_path(@asset), method: "put", class: "btn btn-primary" %>
+
+      <% if flash[:make_work_source_pdf_errors].present? %>
+        <div class="alert alert-danger mt-4" role="alert">
+          <ul class="list-unstyled">
+            <h4 class="alert-heading"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Could build create PDF-sourced work</h4>
+            <% flash[:make_work_source_pdf_errors].each do |str| %>
+              <li class="mb-2"><%= str %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+    <% end %>
+
     <h2 class="mt-4">Derivatives</h2>
 
     <% if asset_is_collection_thumbnail? %>
