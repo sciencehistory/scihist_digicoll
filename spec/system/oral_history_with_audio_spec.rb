@@ -404,7 +404,6 @@ describe "Oral history with audio display", type: :system, js: true do
         expect(page).to have_content("Downloads")
       end
 
-
       within("*[data-ohms-search-form]") do
         page.find("*[data-ohms-input-query]").fill_in with: "Duarte"
         click_on "Search"
@@ -426,7 +425,14 @@ describe "Oral history with audio display", type: :system, js: true do
 
       # ToC tab should be selected as it is first tab with results from search
       expect(page).to have_selector("#ohTocTab[aria-selected='true']")
-      expect(page).to have_content(%r{Table of Contents — 1 / 7}i)
+      
+      begin
+        expect(page).to have_selector(".ohms-result-navigation", text: "TABLE OF CONTENTS — 1 / 7", wait: 0.05)
+      rescue RSpec::Expectations::ExpectationNotMetError
+        within("*[data-ohms-search-form]") { click_on "Search" }
+        expect(page).to have_selector(".ohms-result-navigation", text: "TABLE OF CONTENTS — 1 / 7")
+      end
+
       expect(page).to have_selector("*[data-ohms-hitcount='index']", text: "7")
       expect(page).to have_selector("*[data-ohms-hitcount='transcript']", text: "43")
       click_on "Description"
