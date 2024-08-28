@@ -1,3 +1,10 @@
+# See https://github.com/sciencehistory/scihist_digicoll/pull/2726 for context.
+
+# This test is for code that will be run only once:
+# lib/tasks/remove_extra_finding_aids.rake
+
+# We will need to delete it after we run this code.
+
 namespace :scihist do
   namespace :data_fixes do
     desc "Remove duplicate finding aids on child works and works that are in collections"

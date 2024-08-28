@@ -1,5 +1,12 @@
 require 'rails_helper'
 
+# See https://github.com/sciencehistory/scihist_digicoll/pull/2726 for context.
+
+# This test is for code that will be run only once:
+# lib/tasks/remove_extra_finding_aids.rake
+
+# We will need to delete it after we run this code.
+
 describe ExtraFindingAidRemover, queue_adapter: :test do
 
   let(:link_array_1) {[RelatedLink.new(category: 'finding_aid', url: 'https://archives.sciencehistory.org/repositories/3/resources/1')]}
