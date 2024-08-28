@@ -44,7 +44,10 @@ class WorkImageShowComponent < ApplicationComponent
   # All DISPLAYABLE (to current user) members, in order, and
   # with proper pre-fetches.
   def ordered_viewable_members
-    @ordered_members ||= work.ordered_viewable_members(current_user: current_user).to_a
+    @ordered_members ||= work.
+                          ordered_viewable_members(current_user: current_user).
+                          where("role is null OR role != ?", PdfToPageImages::SOURCE_PDF_ROLE).
+                          to_a
   end
 
   def transcription_texts
@@ -67,7 +70,7 @@ class WorkImageShowComponent < ApplicationComponent
     # memoize with a value that could be nil....
     return @representative_member if defined?(@representative_member)
 
-    @representative_member = work.representative
+    @representative_member = (work.representative.try(:role) != PdfToPageImages::SOURCE_PDF_ROLE) ?  work.representative : nil
   end
 
   # A weird helper method to lset us conditionally sometimes wrap
