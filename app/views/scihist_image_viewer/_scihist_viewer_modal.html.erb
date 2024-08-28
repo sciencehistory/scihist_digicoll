@@ -16,7 +16,7 @@
       data: {
         "work-id": work.friendlier_id,
         "images-info-path": viewer_images_info_path(work),
-        "search-path": (viewer_search_path(work) if ScihistDigicoll::Env.lookup("feature_search_inside_work") && work.ocr_requested?)
+        "search-path": (viewer_search_path(work) if ScihistDigicoll::Env.lookup("feature_search_inside_work") && work.has_text_extraction?)
       }) do %>
   <div class="modal-dialog" role="document">
     <div class="modal-content">
