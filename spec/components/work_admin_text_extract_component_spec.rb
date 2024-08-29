@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-describe WorkShowOcrComponent, type: :component do
-  let(:component) { WorkShowOcrComponent.new(work) }
+describe WorkAdminTextExtractInfoComponent, type: :component do
+  let(:component) { WorkAdminTextExtractInfoComponent.new(work) }
 
   describe "work with good OCR" do
     let(:work) do

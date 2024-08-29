@@ -3,7 +3,7 @@
 # Identify mismatches betweene expected `hocr` text and actual
 #
 # Displayed in a tab on work admin page?
-class WorkShowOcrComponent < ApplicationComponent
+class WorkAdminTextExtractInfoComponent < ApplicationComponent
   attr_reader :work
 
   def initialize(work)

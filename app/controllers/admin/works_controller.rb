@@ -343,7 +343,7 @@ class Admin::WorksController < AdminController
     # instantiate this in an iVar so we can use it in two different places in template,
     # without double instantiation or double load of SQL query inside. A little bit hacky,
     # but this works out.
-    @work_show_ocr_component = WorkShowOcrComponent.new(@work)
+    @work_admin_text_extract_info_component = WorkAdminTextExtractInfoComponent.new(@work)
   end
 
   def reorder_members_form
