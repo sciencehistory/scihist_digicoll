@@ -25,7 +25,6 @@ class WorkOcrCreatorRemover
   end
 
   def process
-    byebug
     if @work.ocr_requested
       if AssetOcrCreator.suitable_language?(work)
         image_assets.each do |a|
