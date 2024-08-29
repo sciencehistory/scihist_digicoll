@@ -7,6 +7,8 @@
       * work (used for putting work title in modal header, and work id and info json path for work)
         (Yes, that assumes at present on a given page can only host viewer for ONE single work)
  %>
+ 
+ <%# locals: (work:) %>
 
 <%= content_tag("div",
       id: "scihist-image-viewer-modal",
@@ -38,7 +40,7 @@
           </div>
 
           <div class="viewer-content">
-            <%= render "scihist_image_viewer/scihist_viewer_search_area" %>
+            <%= render "scihist_image_viewer/scihist_viewer_search_area", work: work %>
 
             <div class="viewer-image-and-navbar">
               <button type="button" class="btn btn-brand-main btn-sm viewer-search-open d-none" data-trigger="viewer-open-search">
