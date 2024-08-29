@@ -134,4 +134,14 @@ describe WorkAdminTextExtractInfoComponent, type: :component do
       render_inline(component)
     end
   end
+
+  describe "work with no text extraction set and no assets" do
+    let(:work) do
+      create(:work, text_extraction_mode: nil, language: ["English"])
+    end
+
+    it "has no warnings" do
+      expect(component.warnings?).to eq false
+    end
+  end
 end

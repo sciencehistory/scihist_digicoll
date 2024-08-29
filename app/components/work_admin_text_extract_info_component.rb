@@ -90,7 +90,7 @@ class WorkAdminTextExtractInfoComponent < ApplicationComponent
   end
 
   def extra_ocr_warning?
-    (work.text_extraction_mode.nil? && (assets_with_ocr_count >= 0))
+    (work.text_extraction_mode.nil? && (assets_with_ocr_count > 0))
   end
 
   def work_language_warning?
@@ -98,7 +98,8 @@ class WorkAdminTextExtractInfoComponent < ApplicationComponent
   end
 
   def pdf_extraction_count_warning?
-    @work.pdf_text_extraction? &&
+    return false unless @work.pdf_text_extraction?
+
     (
       (assets_with_extracted_pdf_page_role_count != assets_with_ocr_count) ||
       assets_with_source_pdf_role_count != 1
