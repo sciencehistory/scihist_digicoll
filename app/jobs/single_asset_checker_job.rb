@@ -13,6 +13,8 @@ class SingleAssetCheckerJob < ApplicationJob
   discard_on ActiveJob::DeserializationError do |job, error|
     # This is probably already logged by Rails with these same details,
     # but just to be sure we have it logged, let's do it too.
-    Rails.logger.error("#{job.class.name} (#{job&.id}): Cancelling job due to ActiveJob::DeserializationError: #{error&.message}")
+
+
+    Rails.logger.error("#{job.class.name} (#{ job.nil? ? 'No job ID available' : job.id}): Cancelling job due to ActiveJob::DeserializationError: #{error&.message}")
   end
 end
