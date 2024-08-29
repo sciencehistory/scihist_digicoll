@@ -55,7 +55,9 @@
       html_attributes: { "data-scihist-qa-autocomplete" => qa_search_vocab_path("local", "languages")} %>
 
     <%# text_extraction does need to be in this form, so that we can include it in batch edits. %>
-    <%= f.input :text_extraction_mode, label: "Text extraction mode (OCR or PDF)", collection: ["ocr", "pdf_extraction"] %>
+    <%= f.input :text_extraction_mode, label: "Text extraction mode (OCR or PDF)",
+          collection: {"-none-" => "", "OCR" => "ocr", "PDF extraction" => "pdf_extraction"},
+          as: :radio_buttons %>
 
     <%= f.input :description,       as: :text, input_html: { rows: 14 } %>
     <%= f.input :provenance,        as: :text, input_html: { rows: 5 }  %>
