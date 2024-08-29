@@ -81,6 +81,22 @@ describe WorkOcrCreatorRemover, queue_adapter: :test do
         expect(CreateAssetOcrJob).not_to have_been_enqueued
       end
     end
+
+    context "with extracted_pdf_page" do
+      let(:asset) { create(:asset_with_faked_file, hocr: "test hocr", role: PdfToPageImages::EXTRACTED_PAGE_ROLE, faked_derivatives: {}) }
+      let(:work) do
+        create(:public_work,
+          language: 'English',
+          ocr_requested: true,
+          members: [ asset ]
+        )
+      end
+
+      it "does not enqueue CreateAssetOcrJob" do
+        WorkOcrCreatorRemover.new(work).process
+        expect(CreateAssetOcrJob).not_to have_been_enqueued
+      end
+    end
   end
 
   context "work does not need OCR" do
@@ -92,6 +108,22 @@ describe WorkOcrCreatorRemover, queue_adapter: :test do
         expect(CreateAssetOcrJob).not_to have_been_enqueued.with(m)
         expect(m.hocr).to be_nil if m.asset?
         expect(m.file_derivatives[:textonly_pdf]).to be_nil if m.asset?
+      end
+    end
+
+    context "with extracted_pdf_page" do
+      let(:asset) { create(:asset_with_faked_file, hocr: "test hocr", role: PdfToPageImages::EXTRACTED_PAGE_ROLE, faked_derivatives: {}) }
+      let(:work) do
+        create(:public_work,
+          ocr_requested: false,
+          members: [ asset ]
+        )
+      end
+
+      it "leaves hocr alone" do
+        WorkOcrCreatorRemover.new(work).process
+
+        expect(asset.reload.hocr).to eq "test hocr"
       end
     end
   end
