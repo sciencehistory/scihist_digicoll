@@ -23,9 +23,9 @@ describe "Member list displays OCR info", logged_in_user: :editor do
       visit admin_work_path(work)
 
       click_on "OCR"
-      expect(page).to have_text(/OCR enabled\:\s+YES/)
+      expect(page).to have_text(/text extraction mode\:\s+OCR/i)
       expect(page).to have_text("Out of 5 assets")
-      expect(page).to have_text("1 asset currently has OCR")
+      expect(page).to have_text("1 asset currently has extracted hocr text")
       expect(page).to have_text("1 asset has OCR suppressed")
       expect(page).to have_text("OCR enabled, but work does not include languages compatible with OCR.")
 

@@ -89,12 +89,12 @@
     <a class="nav-item nav-link" id="nav-ocr-tab" data-toggle="tab" href="#nav-ocr" role="tab" aria-controls="nav-profile" aria-selected="false">
       <% if @work_show_ocr_component.warnings? %>
         <i class="fa fa-exclamation-triangle" aria-label="(WARNING)"></i>
-      <% elsif @work.ocr_requested? %>
+      <% elsif @work.text_extraction_mode.present? %>
         <i class="fa fa-check-circle" aria-label="(ON)"></i>
       <% else %>
         <i class="fa fa-minus-circle" aria-hidden="(OFF)"></i>
       <% end %>
-      OCR
+      <%= @work_show_ocr_component.heading_label %>
     </a>
 
   </div>
