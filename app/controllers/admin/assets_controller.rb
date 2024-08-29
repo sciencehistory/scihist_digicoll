@@ -205,7 +205,7 @@ class Admin::AssetsController < AdminController
       return
     end
 
-    page_count = Kithe::ExiftoolCharacterization.presenter_for(@asset&.exiftool_result).page_count
+    page_count = @asset.file_metadata["page_count"]
 
     @asset.update!(role: PdfToPageImages::SOURCE_PDF_ROLE)
     @asset.parent.update!(text_extraction_mode: "pdf_extraction")

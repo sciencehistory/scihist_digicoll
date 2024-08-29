@@ -393,7 +393,7 @@ class Asset < Kithe::Asset
      parsed = Kithe::ExiftoolCharacterization.presenter_for(self.exiftool_result)
 
      # For now only dpi, if not available then don't worry about it
-     metadata = { "dpi" => parsed.dpi }.compact
+     metadata = { "dpi" => parsed.dpi, "page_count" => parsed.page_count }.compact
 
      if metadata.present?
       self.file_attacher.add_metadata(metadata)
