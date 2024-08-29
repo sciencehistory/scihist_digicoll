@@ -89,6 +89,9 @@ FactoryBot.define do
         faked_md5 { Digest::MD5.hexdigest rand(10000000).to_s }
         faked_sha512 { Digest::SHA512.hexdigest rand(10000000).to_s }
 
+        # other arbitrary metadata
+        faked_metadata { {} }
+
         # An array of Kithe::Derivative objects that we will add to the faked Asset.
         # By default, we take every derivative defined in Kithe::Asset, if they
         # apply to this Asset, and just fake the original asset as the derivative.
@@ -223,7 +226,8 @@ FactoryBot.define do
           md5: evaluator.faked_md5,
           sha512: evaluator.faked_sha512,
           filename: evaluator.faked_filename,
-          size: evaluator.faked_size)
+          size: evaluator.faked_size,
+          other_metadata: evaluator.faked_metadata)
 
         asset.file_data = uploaded_file.as_json
 
