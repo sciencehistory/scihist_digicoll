@@ -23,6 +23,7 @@ FactoryBot.define do
       sha512 { Digest::SHA512.hexdigest rand(10000000).to_s }
       filename { nil }
       size { nil }
+      other_metadata { {} }
     end
 
     id { SecureRandom.hex }
@@ -41,7 +42,7 @@ FactoryBot.define do
         "video_bitrate" => video_bitrate,
         "audio_sample_rate" => audio_sample_rate,
         "sha512" => sha512
-      }.compact
+      }.merge(other_metadata).compact
     end
 
     initialize_with { new(
