@@ -34,9 +34,13 @@ class AssetOcrCreator
   end
 
 
-  def initialize(asset)
+  def initialize(asset, force_ocr_over_extracted_page: false)
     unless asset&.content_type&.start_with?("image/")
       raise ArgumentError, "Can only use with content type begining `image/`, not #{asset.content_type}"
+    end
+
+    if asset.role == PdfToPageImages::EXTRACTED_PAGE_ROLE && !force_ocr_over_extracted_page
+      raise TypeError.new("We refuse to OCR on a PDF with role #{PdfToPageImages::EXTRACTED_PAGE_ROLE} because you probably don't want this?")
     end
 
     @asset = asset

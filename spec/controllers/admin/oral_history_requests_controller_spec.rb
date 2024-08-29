@@ -111,6 +111,20 @@ RSpec.describe Admin::OralHistoryRequestsController, :logged_in_user, type: :con
         expect(last_email.body).to match /Unfortunately we could <b>not<\/b> approve your request/
         expect(last_email.body).to include(message)
       end
+
+
+      it "can dismiss" do
+        post :respond, params: {
+          id: oral_history_access_request.id,
+          disposition: "dismiss",
+          oral_history_request_approval: { notes_from_staff: message }
+        }
+        expect(flash[:notice]).to match /#{Regexp.escape oral_history_access_request.requester_email}'s request for .* has been dismissed./
+        expect(response).to redirect_to(admin_oral_history_requests_path)
+        expect(oral_history_access_request.reload.delivery_status).to eq "dismissed"
+        # email should not be sent.
+        expect(ActionMailer::Base.deliveries.last).to be_nil
+      end
     end
   end
 end

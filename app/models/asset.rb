@@ -78,9 +78,13 @@ class Asset < Kithe::Asset
 
   # The 'role' column says what role an asset plays in the work, for instance
   # the 'portrait' attached to an oral history. This is sort of an extension to PCDM,
-  # it's still a member, but it has a role on the relationship too. Initially we
-  # are using this so we can provide specialized interface for oral histories.
-  enum :role, %w{portrait transcript front_matter}.collect {|v| [v, v]}.to_h, prefix: true
+  # it's still a member, but it has a role on the relationship too.
+  #
+  # * portrait: used for OH
+  # * transcript: used for OH, the transcript PDF
+  # * front_matter: used for OH, the limited excerpts "front matter" PDF
+  # * extracted_pdf_page: An Asset with a rendered page image of a single page from a PDF
+  enum :role, %w{portrait transcript front_matter extracted_pdf_page}.collect {|v| [v, v]}.to_h, prefix: true
 
   attr_json :admin_note, :text, array: true, default: -> { [] }
 
@@ -115,6 +119,9 @@ class Asset < Kithe::Asset
 
   # OCR data in hOCR format, for the image asset
   attr_json :hocr, :text, container_attribute: :derived_metadata_jsonb
+
+  # Only for assets with role `extracted_pdf_page`, some info about source of extraction
+  attr_json :extracted_pdf_source_info, ExtractedPdfSourceInfo.to_type
 
   # holds a JSON-able Hash, exiftool json output
   attr_json :exiftool_result, ActiveModel::Type::Value.new, container_attribute: :derived_metadata_jsonb
