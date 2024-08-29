@@ -127,6 +127,8 @@ class Work < Kithe::Work
 
   # All DISPLAYABLE (to current user) members, in order, and
   # with proper pre-fetches.
+  #
+  # @return [ActiveRecord::Relation] relation, not yet fetched, fetching desired records. Call #to_a on it if you want to trigger fetch to db.
   def ordered_viewable_members(current_user:)
 
 
@@ -142,7 +144,7 @@ class Work < Kithe::Work
     # it turns out you can do on an association/relation
     members = members.strict_loading
 
-    members.to_a
+    members
   end
 
   # Ensures the optional sidecar OralHistoryContent is present if it wans't already

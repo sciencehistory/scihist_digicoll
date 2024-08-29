@@ -44,7 +44,7 @@ class WorkImageShowComponent < ApplicationComponent
   # All DISPLAYABLE (to current user) members, in order, and
   # with proper pre-fetches.
   def ordered_viewable_members
-    @ordered_members ||= work.ordered_viewable_members(current_user: current_user)
+    @ordered_members ||= work.ordered_viewable_members(current_user: current_user).to_a
   end
 
   def transcription_texts
