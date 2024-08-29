@@ -15,6 +15,6 @@ class SingleAssetCheckerJob < ApplicationJob
     # but just to be sure we have it logged, let's do it too.
 
 
-    Rails.logger.error("#{job.class.name} (#{ job.nil? ? 'No job ID available' : job.id}): Cancelling job due to ActiveJob::DeserializationError: #{error&.message}")
+    Rails.logger.error("#{job.class.name} (#{job.job_id}): Cancelling job due to ActiveJob::DeserializationError: #{error&.message}")
   end
 end
