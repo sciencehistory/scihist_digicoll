@@ -144,7 +144,7 @@ class PdfToPageImages
   def extract_hocr_for_page(page_num)
     page_num_arg_check!(page_num)
 
-    poppler_bbox_layout_out, err = TTY::Command.new(printer: :null).run(
+    args = [
       pdftotext_command,
       "-bbox-layout",
       pdf_file_path,
@@ -152,7 +152,10 @@ class PdfToPageImages
       "-f", page_num,
       "-l", page_num,
       "-" # stdout output
-    )
+    ]
+
+    poppler_bbox_layout_out, err = TTY::Command.new(printer: :null).run( *args)
+
 
     # if there are no actual words, this still gives us HTML skeleton back, but with
     # nothing in it... just return nil, don't return an empty hocr
@@ -160,7 +163,14 @@ class PdfToPageImages
       return nil
     end
 
-    return PopplerBboxToHocr.new(poppler_bbox_layout_out, dpi: dpi).transformed_to_hocr
+    meta_tags = {
+      "pdftotext-command" => args.join(" "),
+      "pdftotext-version" => `#{pdftotext_command} -v 2>&1`,
+      "pdftotext-conversion" => "converted from pdftotext to hocr by ScihistDigicoll app PopplerBboxToHocr class",
+      "pdftotext-generation-date" => DateTime.now.iso8601
+    }
+
+    return PopplerBboxToHocr.new(poppler_bbox_layout_out, dpi: dpi, meta_tags: meta_tags).transformed_to_hocr
   end
 
   def num_pdf_pages
