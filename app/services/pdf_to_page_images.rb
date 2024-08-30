@@ -160,7 +160,7 @@ class PdfToPageImages
       return nil
     end
 
-    return PopplerBboxToHocr.new(poppler_bbox_layout_out).transformed_to_hocr
+    return PopplerBboxToHocr.new(poppler_bbox_layout_out, dpi: dpi).transformed_to_hocr
   end
 
   def num_pdf_pages
