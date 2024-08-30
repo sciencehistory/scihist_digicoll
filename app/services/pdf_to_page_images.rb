@@ -27,7 +27,8 @@ class PdfToPageImages
   attr_reader :pdf_file_path, :dpi
 
   # @param pdf_asset [Asset] asset holding a pdf
-  # @param dpi [Integer] dpi we are extracting page image at, defaults to 300
+  # @param dpi [Integer] dpi we are extracting page image at, defaults to 300. We need to make sure we target
+  #   consistent DPI in image and hocr, so they match!
   def initialize(pdf_file_path, dpi: DEFAULT_TARGET_DPI)
     @pdf_file_path = pdf_file_path
     @dpi = dpi
