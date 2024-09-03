@@ -36,7 +36,7 @@
                 <% if member.suppress_ocr %>
                   <small>OCR suppressed</small>
                 <% elsif member.hocr.present? %>
-                  <li><small><%=link_to("OCR", admin_asset_path(member, anchor: "ocr"), class: "ocr-link") %></small></li>
+                  <li><small class="badge badge-info"><%=link_to("hOCR Text", admin_asset_path(member, anchor: "hocr"), class: "ocr-link") %></small></li>
                 <% end %>
               <% end %>
             </ul>
