@@ -11,7 +11,7 @@ namespace :scihist do
       progress_bar = ProgressBar.create(total: scope.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
 
       Kithe::Indexable.index_with(batching: true) do
-        scope.find_each do |work|
+        ScihistDigicoll::Util.find_each(scope) do |work|
           value = work.json_attributes.delete('ocr_requested')
           if ActiveModel::Type::Boolean.new.cast(value)
             work.text_extraction_mode = "ocr"
