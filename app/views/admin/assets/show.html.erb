@@ -165,7 +165,7 @@
 
       <%if @asset.stored? %>
         <dt class="col-sm-4">File in S3</dt>
-        <dd class="col-sm-8"><%= link_to @asset.file.url(public: true).split('/').last, S3ConsoleUri.from_shrine_uploaded_file(@asset.file).console_uri %></dd>
+        <dd class="col-sm-8 text-break"><%= link_to @asset.file.url(public: true).split('/').last, S3ConsoleUri.from_shrine_uploaded_file(@asset.file).console_uri %></dd>
 
         <dt class="col-sm-4">Stored in S3 bucket</dt>
         <dd class="col-sm-8"><%= @asset.file.storage.try(:bucket).try(:name) || "UNKNOWN" %></dd>
