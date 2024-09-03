@@ -10,13 +10,15 @@ namespace :scihist do
 
       progress_bar = ProgressBar.create(total: scope.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
 
-      scope.find_each do |work|
-        value = work.json_attributes.delete('ocr_requested')
-        if ActiveModel::Type::Boolean.new.cast(value)
-          work.text_extraction_mode = "ocr"
+      Kithe::Indexable.index_with(batching: true) do
+        scope.find_each do |work|
+          value = work.json_attributes.delete('ocr_requested')
+          if ActiveModel::Type::Boolean.new.cast(value)
+            work.text_extraction_mode = "ocr"
+          end
+          work.save!
+          progress_bar.increment
         end
-        work.save!
-        progress_bar.increment
       end
     end
   end
