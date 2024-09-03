@@ -20,7 +20,7 @@
   <% end %>
 </p>
 
-<div class="row">
+<div class="row overflow-hidden">
   <div class="col-sm-6">
     <% if @asset.file_derivatives[:thumb_large] && @asset.file_derivatives[:thumb_large_2X] %>
       <%= thumb_image_tag @asset, size: :large, style: "max-width: 100%" %>
