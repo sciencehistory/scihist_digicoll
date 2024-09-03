@@ -17,3 +17,10 @@ dl.admin-metadata {
     width: auto;
   }
 }
+
+// try to avoid so many intra-paragraph line breaks in our hOCR text admin display
+.admin-ocr-display {
+  .ocr_line, .ocrx_word,  {
+    display: inline;
+  }
+}
