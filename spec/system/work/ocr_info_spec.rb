@@ -30,7 +30,7 @@ describe "Member list displays OCR info", logged_in_user: :editor do
       expect(page).to have_text("OCR enabled, but work does not include languages compatible with OCR.")
 
       click_on "Members"
-      path_to_ocr = admin_asset_path(image_asset_with_hocr, anchor: "ocr")
+      path_to_ocr = admin_asset_path(image_asset_with_hocr, anchor: "hocr")
       expect(page.find_all('table.member-list a.ocr-link').count).to eq 1
       expect(page).to have_link(:href=>path_to_ocr)
     end
