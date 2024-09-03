@@ -68,9 +68,13 @@ class WorkOcrCreatorRemover
   end
 
   def image_assets
+    # ignore extracted_pdf_page Assets entirely, not our responsibilty, they are the product of
+    # of a PDF page render, and in our present use cases should not get OCR'd, and if they did
+    # get OCR'd it might accidentally overwrite a PDF text extraction stored in hocr field
     @work.
       members.
       where(type: 'Asset').
+      where("role is null OR role != ?", PdfToPageImages::EXTRACTED_PAGE_ROLE).
       order(:position).
       select { |m| m.content_type.start_with?("image/") }
   end
