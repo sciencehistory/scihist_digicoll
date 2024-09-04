@@ -94,6 +94,7 @@ en:
         representative: "Select the file with media that represents this Work and is used as a thumbnail."
         contained_by: >
           The sub-Collection within the Digital Collections Application to which the digital work belongs. Select the named collection that the work is part of, if applicable. If a desired entry is not available, contact the Digital Collections Librarian. Required if applicable.
-        ocr_requested: >
-          Enable Optical Character Recognition (OCR) features for suitable works, with text that is believed likely legible to OCR processes, and in a supported language.
+        text_extraction: >
+          "OCR" to Enable Optical Character Recognition (OCR) processing, where software will try to extract text from images. Should be enabled for suitable works, with text that is believed likely legible to OCR processes, and in a supported language.<br>
+          "PDF" for work_source_pdf PDF text extraction, used when we are going to have a born-digital PDF work
 

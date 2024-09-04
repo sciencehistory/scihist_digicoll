@@ -25,19 +25,20 @@ class WorkOcrCreatorRemover
   end
 
   def process
-    if @work.ocr_requested
-      if AssetOcrCreator.suitable_language?(work)
-        image_assets.each do |a|
-          if a.suppress_ocr
-            maybe_remove(a)
-          else
-            maybe_add(a)
-          end
-        end
-      else
+    if @work.ocr_requested?
+      unless AssetOcrCreator.suitable_language?(work)
         Rails.logger.warn("#{self.class}: OCR enabled for work #{work.friendlier_id}, but it does not have suitable languages: #{work.language.inspect}")
+        return
       end
-    else
+
+      image_assets.each do |a|
+        if a.suppress_ocr
+          maybe_remove(a)
+        else
+          maybe_add(a)
+        end
+      end
+    elsif @work.text_extraction_mode.blank? # not PDF extraction either
       image_assets.each { |a| maybe_remove(a) }
     end
   end

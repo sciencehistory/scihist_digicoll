@@ -157,7 +157,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     context "work with a png instead of a tiff" do
       let(:png) { create(:asset, :inline_promoted_file) }
       let(:work_with_png) { create(:work, :with_complete_metadata, published: false, members: [png]) }
-      
+
       before do
         controller.current_user.works_in_cart << work_with_png
       end
@@ -172,7 +172,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
 
     context "work with a legitimate portrait png" do
       let(:portrait_png) { create(:asset, :inline_promoted_file, role: "portrait") }
-      let(:work) { create(:work, :with_complete_metadata, published: false, members: [portrait_png]) }      
+      let(:work) { create(:work, :with_complete_metadata, published: false, members: [portrait_png]) }
       before do
         controller.current_user.works_in_cart << work
       end

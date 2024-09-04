@@ -1,5 +1,5 @@
 # Background job to ensure a work's assets all have OCR (or don't) consistent
-# with the Work#ocr_requested_attribute
+# with the Work#text_extraction
 #
 class WorkOcrCreatorRemoverJob < ApplicationJob
   if ScihistDigicoll::Env.lookup("active_job_ocr_queue").present?
