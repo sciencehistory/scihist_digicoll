@@ -10,19 +10,19 @@ $(document).on('click', '*[data-analytics-category]', function(e) {
   // (This in turn is controlled by ScihistDigicoll::Env.lookup(:google_analytics_4_tag_id).
   if (typeof gtag === 'function') {
 
-    var data_to_send = {
-      // Always the string "work".
-      'event_category': e.currentTarget.getAttribute("data-analytics-category"),
-
-      // Always the work's friendlier_id.
-      'event_label': e.currentTarget.getAttribute("data-analytics-label"),
-    }
-
     gtag( 'event',
+
+      // param eventName
       // A string describing what the user did,
       // e.g. "download" or "transcription_pdf" or "english_translation_pdf" or "download_original"
       e.currentTarget.getAttribute("data-analytics-action"),
-      data_to_send
+      {
+        // As of early 2023, this is always the string "work".
+        'event_category': e.currentTarget.getAttribute("data-analytics-category"),
+        // As of early 2023, this is always the work's friendlier_id.
+        'event_label':    e.currentTarget.getAttribute("data-analytics-label"),
+      }
+
     );
   }
 });
