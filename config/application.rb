@@ -32,7 +32,15 @@ module ScihistDigicoll
 
     # Enables YJIT as of Ruby 3.3, to bring sizeable performance improvements. If you are
     # deploying to a memory constrained environment you may want to set this to `false`.
-    Rails.application.config.yjit = true
+
+    # scihist: on heroku that are NOT web workers (bg workers, console), we are currently
+    # memory constrained, and also don't need this performance, so disable.  Dyno type
+    # is available from Heroku $DYNO. https://devcenter.heroku.com/articles/dynos#local-environment-variables
+    if ENV['DYNO'].present? && ! ENV['DYNO'].start_with?("web.")
+      Rails.application.config.yjit = false
+    else
+      Rails.application.config.yjit = true
+    end
 
     if ScihistDigicoll::Env.lookup("rails_log_level")
       config.log_level = ScihistDigicoll::Env.lookup("rails_log_level")
