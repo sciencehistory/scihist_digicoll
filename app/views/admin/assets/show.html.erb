@@ -144,6 +144,18 @@
         <dd class="col-sm-8"><span class="badge badge-info"><%= @asset.role.humanize.downcase %></span></dd>
       <% end %>
 
+      <% if @asset.role == PdfToPageImages::EXTRACTED_PAGE_ROLE && @asset.extracted_pdf_source_info.present? %>
+        <dt class="col-sm-4">Extracted PDF</dt>
+        <dd class="col-sm-8">
+          <dl>
+            <dt>Source page number</dt>
+            <dd><%= @asset.extracted_pdf_source_info.page_index %></dd>
+            <dt>Source sha512</dt>
+            <dd><%= text_field_tag "", @asset.extracted_pdf_source_info.source_pdf_sha512, readonly: true, style: "width: 100%" %></dd>
+          </dl>
+        </dd>
+      <% end %>
+
       <dt class="col-sm-4">Created</dt>
       <dd class="col-sm-8"><%= l @asset.created_at, format: :admin %></dd>
 
