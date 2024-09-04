@@ -109,7 +109,10 @@ describe PdfToPageImages do
     end
 
     describe "on_existing_dup" do
-      let!(:duplicate) { create(:asset, file: nil, parent: work, extracted_pdf_source_info: { page_index: 1 }) }
+      let!(:duplicate) { create(:asset, :inline_promoted_file, file: File.open(pdf_path), parent: work, extracted_pdf_source_info: { page_index: 1 }) }
+      let!(:original_file_id) { duplicate.file.id }
+      let!(:original_dzi_id) { duplicate.dzi_file.dzi_uploaded_file.id }
+      let!(:original_derivatives_json) { duplicate.file_derivatives.as_json }
 
       it ":abort uses existing without update" do
         asset = service.create_asset_for_page(1, work: work, on_existing_dup: :abort, source_pdf_sha512: nil, source_pdf_asset_pk: nil)
@@ -118,20 +121,35 @@ describe PdfToPageImages do
         expect(Asset.jsonb_contains("extracted_pdf_source_info.page_index" => 1).where(parent_id: work.id).count).to eq 1
 
         expect(asset.hocr).to be nil
-        expect(asset.file).to be nil
+        expect(asset.file&.id).to eq original_file_id
       end
 
-      it ":overwrite uses existing with update" do
+      it ":overwrite uses existing with update", queue_adapter: :test do
         asset = service.create_asset_for_page(1, work: work, on_existing_dup: :overwrite, source_pdf_sha512: "newsha512", source_pdf_asset_pk: "newid")
 
         expect(asset.id).to eq duplicate.id
         expect(Asset.jsonb_contains("extracted_pdf_source_info.page_index" => 1).where(parent_id: work.id).count).to eq 1
+
+        asset.reload
 
         expect(asset.hocr).not_to be nil
         expect(asset.file).not_to be nil
 
         expect(asset.extracted_pdf_source_info.source_pdf_sha512).to eq "newsha512"
         expect(asset.extracted_pdf_source_info.source_pdf_asset_pk).to eq "newid"
+
+        # it should have new derivatives and dzi created, all inline!
+        expect(asset.dzi_file&.present?).to eq true
+        expect(asset.dzi_file.dzi_uploaded_file.id).not_to eq original_dzi_id
+
+        expect(asset.file_derivatives).to be_present
+        expect(asset.file_derivatives.as_json).not_to eq original_derivatives_json
+
+        # Everything should have been inline, no bg job but fixity, which we don't
+        # really care about but it's fine. Also has some delete jobs
+
+        enqueued_jobs = ActiveJob::Base.queue_adapter.enqueued_jobs.collect { |h| h["job_class"] }
+        expect(enqueued_jobs.all? { |job_name| job_name.in?(["SingleAssetCheckerJob", "DeleteDziJob", "Kithe::AssetDeleteJob"]) })
       end
 
       it ":insert_dup just inserts anyway" do
@@ -142,6 +160,7 @@ describe PdfToPageImages do
 
         expect(asset.hocr).not_to be nil
         expect(asset.file).not_to be nil
+        expect(asset.file.id).not_to eq original_file_id
       end
     end
   end
