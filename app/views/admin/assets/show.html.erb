@@ -20,7 +20,7 @@
   <% end %>
 </p>
 
-<div class="row">
+<div class="row overflow-hidden">
   <div class="col-sm-6">
     <% if @asset.file_derivatives[:thumb_large] && @asset.file_derivatives[:thumb_large_2X] %>
       <%= thumb_image_tag @asset, size: :large, style: "max-width: 100%" %>
@@ -44,9 +44,11 @@
     <% end %>
 
     <% if @asset.file %>
-      <%= link_to "Download Original",
-            @asset.file.url(response_content_disposition: ContentDisposition.format(disposition: :attachment, filename: DownloadFilenameHelper.filename_for_asset(@asset))),
-            class: "btn btn-outline-secondary btn-lg mt-4" %>
+      <p>
+        <%= link_to "Download Original",
+              @asset.file.url(response_content_disposition: ContentDisposition.format(disposition: :attachment, filename: DownloadFilenameHelper.filename_for_asset(@asset))),
+              class: "btn btn-outline-secondary btn-lg mt-4" %>
+      </p>
     <% end %>
 
 
@@ -162,8 +164,8 @@
 
 
       <%if @asset.stored? %>
-        <dt class="col-sm-4">File in s3</dt>
-        <dd class="col-sm-8"><%= link_to @asset.file.url(public: true).split('/').last, S3ConsoleUri.from_shrine_uploaded_file(@asset.file).console_uri %></dd>
+        <dt class="col-sm-4">File in S3</dt>
+        <dd class="col-sm-8 text-break"><%= link_to File.basename(URI.parse(@asset.file.url(public: true)).path), S3ConsoleUri.from_shrine_uploaded_file(@asset.file).console_uri %></dd>
 
         <dt class="col-sm-4">Stored in S3 bucket</dt>
         <dd class="col-sm-8"><%= @asset.file.storage.try(:bucket).try(:name) || "UNKNOWN" %></dd>
