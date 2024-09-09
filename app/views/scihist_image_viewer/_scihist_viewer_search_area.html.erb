@@ -1,7 +1,6 @@
 <%# locals: (work:) %>
 
 <div class="viewer-search-area">
-
   <form class="viewer-search-controls" data-trigger="viewer-search">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <b>Search Inside</b>
@@ -27,9 +26,16 @@
         </button>
       </div>
 
+      
 
       <div class="input-group-append">
-        <button type="submit" class="btn btn-brand-dark" title="Search" id="search-submit-header">
+        <%# This GA action is also reported from app/views/scihist_image_viewer/_scihist_viewer_search_area.html.erb %>
+        <button
+          type="submit" class="btn btn-brand-dark" title="Search" id="search-submit-header"
+          data-analytics-action="search_inside_work"
+          data-analytics-category="work"
+          data-analytics-label="<%= work.friendlier_id %>"
+        >
           <i class="fa fa-search" aria-hidden="true"></i>
           <span class="sr-only"><%= t('blacklight.search.form.submit') %></span>
         </button>
