@@ -20,6 +20,7 @@
 class PdfToPageImages
   DEFAULT_TARGET_DPI = 300
   EXTRACTED_PAGE_ROLE = "extracted_pdf_page"
+  SOURCE_PDF_ROLE = "work_source_pdf"
 
   class_attribute :vips_command, default: "vips"
   class_attribute :pdftotext_command, default: "pdftotext"

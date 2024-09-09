@@ -178,6 +178,45 @@ class Admin::AssetsController < AdminController
     redirect_to edit_admin_work_path(new_child), notice: "Asset promoted to child work #{new_child.title}"
   end
 
+  # PUT /admin/asset_files/:id/setup_work_from_pdf_source
+  #
+  # Will try to take this PDF asset, and extract all it's pages into extracted page assets, also
+  # setting some work and asset metadata properly for those roles.
+  def setup_work_from_pdf_source
+    @asset = Asset.find_by_friendlier_id!(params[:id])
+
+    errors = []
+    unless @asset.content_type == "application/pdf"
+      errors << "This asset is not a PDF, so cannot be used"
+    end
+    unless @asset.stored?
+      errors << "This asset is not fully ingested, please try again later"
+    end
+    if @asset.parent.text_extraction_mode == "ocr"
+      errors << "This asset's work parent is set to `ocr` text_extraction_mode, which is incompatible with PDF-sourced work."
+    end
+    already = @asset.members.where(role: PdfToPageImages::SOURCE_PDF_ROLE).where("id != ?", @asset.id).first
+    if already
+      errors << "There is already an asset in parent work with role `work_source_pdf, there can't be more than one. See #{already.friendlier_id}"
+    end
+
+    if errors.present?
+      redirect_to admin_asset_path(@asset), flash: { error: "Could not make PDF work, see errors below", make_work_source_pdf_errors: errors }
+      return
+    end
+
+    page_count = @asset.file_metadata["page_count"]
+
+    @asset.update!(role: PdfToPageImages::SOURCE_PDF_ROLE)
+    @asset.parent.update!(text_extraction_mode: "pdf_extraction")
+
+    1.upto(page_count).each do |page_num|
+      CreatePdfPageImageAssetJob.perform_later(@asset, page_num)
+    end
+
+    redirect_to admin_asset_path(@asset), flash: { success: "Started creation of PDF page assets, it could take a few minutes to complete." }
+  end
+
   # requires params[:active_encode_status_id]
   def refresh_active_encode_status
     status = ActiveEncodeStatus.find(params[:active_encode_status_id])

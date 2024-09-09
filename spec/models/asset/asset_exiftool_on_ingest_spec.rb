@@ -50,6 +50,17 @@ describe "Asset exiftool characterization on ingest" do
     end
   end
 
+  describe "pdf" do
+    let(:asset) {
+      create(:asset, file: File.open(Rails.root + "spec/test_support/pdf/3-page-text-and-image.pdf"))
+    }
+
+    it "includes page_count in normalized metadata" do
+      expect(asset.file_metadata["page_count"]).to be_present
+      expect(asset.file_metadata["page_count"]).to eq asset.exiftool_result["PDF:PageCount"]
+    end
+  end
+
   describe "file that causes exiftool error" do
     let(:asset)  {
       create(:asset, file: File.open(Rails.root + "spec/test_support/audio/zero_bytes.flac"))
