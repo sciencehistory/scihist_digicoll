@@ -1,5 +1,7 @@
 class Admin::CollectionsController < AdminController
+  
   before_action :set_collection, only: [:show, :edit, :update, :destroy]
+  before_action :setup_sort_links, only: [:index]
 
   # GET /collections
   # GET /collections.json
@@ -8,14 +10,9 @@ class Admin::CollectionsController < AdminController
     # We're assuming if you can view the index, you can see all published and
     # unpublished collections.
 
+    scope = Collection
+    scope = scope.order(Arel.sql("#{params[:sort_field]} #{params[:sort_order]}"))
 
-    # NOTE WELL: To use ransack, all attributes we want ransack to search or sort
-    # on NEED TO be listed in Colletion.ransackable_attributes and/or Collection.ransackable_associations
-    @q = Collection.ransack(params[:q]).tap do |ransack|
-      ransack.sorts = 'title asc' if ransack.sorts.empty?
-    end
-
-    scope = @q.result
     if params[:title_or_id].present?
       scope = scope.where(id: params[:title_or_id]
       ).or(
@@ -111,8 +108,22 @@ class Admin::CollectionsController < AdminController
   end
   helper_method :representative_dimensions_correct?
 
-
   private
+
+
+
+    def setup_sort_links      
+      params[:sort_field] ||= "title"
+      params[:sort_order] ||= "asc"
+      @links = SortedTableHeaderLinkCreator.new(
+        controller:          self,
+        path:                :admin_collections_path,
+        current_sort_field:  params[:sort_field],
+        current_sort_order:  params[:sort_order],
+        extra_params: { search_phrase: params[:title_or_id], page: params[:page] }
+      )
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_collection
       @collection = Collection.find_by_friendlier_id!(params[:id])
