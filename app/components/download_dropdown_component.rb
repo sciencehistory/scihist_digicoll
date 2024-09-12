@@ -243,16 +243,6 @@ class DownloadDropdownComponent < ApplicationComponent
     whole_work_download_options.present?
   end
 
-  # Extracted for re-use in other places, see #has_work_download_options?
-  #
-  # TODO, get rid of, along with member_content_types  maybe member_count too, isn't that just size?
-  def self.work_has_multiple_published_images?(work)
-    work &&
-    work.published? &&
-    work.member_count > 1 &&
-    work.member_content_types(mode: :query).all? {|t| t.start_with?("image/")}
-  end
-
   def whole_work_download_options
     @whole_work_download_options = WorkDownloadOptions.new(work: display_parent_work).options
   end
