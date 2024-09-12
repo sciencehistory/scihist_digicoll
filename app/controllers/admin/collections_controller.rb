@@ -1,7 +1,5 @@
 class Admin::CollectionsController < AdminController
-  
-  before_action :set_collection, only: [:show, :edit, :update, :destroy]
-  before_action :setup_sort_links, only: [:index]
+    before_action :set_collection, only: [:show, :edit, :update, :destroy]
 
   # GET /collections
   # GET /collections.json
@@ -11,6 +9,9 @@ class Admin::CollectionsController < AdminController
     # unpublished collections.
 
     scope = Collection
+    params[:sort_field] = "title" unless ['title', 'created_at', 'updated_at'].include? params[:sort_field]
+    params[:sort_order] = "asc"   unless ['asc', 'desc'].include?                       params[:sort_order]
+
     scope = scope.order(Arel.sql("#{params[:sort_field]} #{params[:sort_order]}"))
 
     if params[:title_or_id].present?
@@ -90,6 +91,25 @@ class Admin::CollectionsController < AdminController
     end
   end
 
+  def header_link(column_title:, sort_field:)
+    SortedTableHeaderLinkComponent.new(
+      column_title: column_title, sort_field: sort_field,
+
+      # Info about the table's current sort field and order.
+      table_sort: {
+          field: params[:sort_field],
+          order: params[:sort_order],
+        },
+      
+      # Extra params to put in the header links 
+      extra_params: {
+        title_or_id:      params[:title_or_id],
+        page:             params[:page],
+      }
+    )
+  end
+  helper_method :header_link
+
   def representative
     @collection&.representative
   end
@@ -109,21 +129,6 @@ class Admin::CollectionsController < AdminController
   helper_method :representative_dimensions_correct?
 
   private
-
-
-
-    def setup_sort_links      
-      params[:sort_field] ||= "title"
-      params[:sort_order] ||= "asc"
-      @links = SortedTableHeaderLinkCreator.new(
-        controller:          self,
-        path:                :admin_collections_path,
-        current_sort_field:  params[:sort_field],
-        current_sort_order:  params[:sort_order],
-        extra_params: { search_phrase: params[:title_or_id], page: params[:page] }
-      )
-    end
-
     # Use callbacks to share common setup or constraints between actions.
     def set_collection
       @collection = Collection.find_by_friendlier_id!(params[:id])

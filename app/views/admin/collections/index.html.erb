@@ -40,10 +40,10 @@
     <tr>
       <th class="thumbnail">thumbnail</th>
       <th class="id">ID</th>
-      <th class="title"><%= @links.sort_link(link_field: "title", title:"Title") %></th>
+      <th class="title"><%= render header_link column_title: "title", sort_field: "title" %></th>
       <th class="department">Department</th>
-      <th class="datestamp"><%= @links.sort_link(link_field: "created_at", title:"Created") %></th>
-      <th class="datestamp"><%= @links.sort_link(link_field: "updated_at", title:"Last Modified") %></th>
+      <th class="datestamp"><%= render header_link column_title: "Created", sort_field: "created_at" %></th>
+      <th class="datestamp"><%= render header_link column_title: "Last Modified", sort_field: "updated_at" %></th>
       <th class="action"></th>
       <th></th>
     </tr>
