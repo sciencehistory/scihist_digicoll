@@ -14,9 +14,12 @@
 class WorkDownloadOptions
   attr_reader :work, :options
 
-  def initialize(work:)
+  # @param pdf_option_args over-ride some of the args for pdf option, like label and subhead,
+  #   we needed in a certain use.
+  def initialize(work:, pdf_option_args: {})
     @work = work
-    @options = work ? construct_options.presence : []
+    @pdf_option_args = { label: "PDF", subhead: nil }.merge(pdf_option_args || {})
+    @options = construct_options
   end
 
   protected
@@ -26,7 +29,7 @@ class WorkDownloadOptions
 
     # if we have more than one child, and all children are images, is how we've done this
     # historically, may have to be changed as our uses change! May have just been doing this for efficiency?
-    @has_constructed_pdf = work.published? && work_member_count > 1 && work_member_content_types.all? { |c| c.start_with?("image/")}
+    @has_constructed_pdf = work && work.published? && work_member_count > 1 && work_member_content_types.all? { |c| c.start_with?("image/")}
   end
 
   def has_constructed_zip?
@@ -34,7 +37,7 @@ class WorkDownloadOptions
 
     # if we have more than one child, and all children are images, is how we've done this
     # historically, may have to be changed as our uses change! May have just been doing this for efficiency?
-    @has_constructed_zip = work.published? && work_member_count > 1 && work_member_content_types.all? { |c| c.start_with?("image/")}
+    @has_constructed_zip = work && work.published? && work_member_count > 1 && work_member_content_types.all? { |c| c.start_with?("image/")}
   end
 
 
@@ -43,7 +46,7 @@ class WorkDownloadOptions
 
     if has_constructed_pdf?
       options << DownloadOption.for_on_demand_derivative(
-        label: "PDF", derivative_type: "pdf_file", work_friendlier_id: work.friendlier_id
+        **@pdf_option_args, derivative_type: "pdf_file", work_friendlier_id: work.friendlier_id
       )
     end
 

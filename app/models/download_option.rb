@@ -8,7 +8,7 @@ class DownloadOption
 
   # Create a DownloadOption for one of our on-demand derivatives, DRY it up here
   # so we can re-use equivalently.
-  def self.for_on_demand_derivative(label:, derivative_type:, work_friendlier_id:)
+  def self.for_on_demand_derivative(label:, derivative_type:, work_friendlier_id:, subhead:nil)
     derivative_type = derivative_type.to_s
 
     unless derivative_type.in?(["pdf_file", "zip_file"])
@@ -20,7 +20,8 @@ class DownloadOption
       "zip_file" => "download_zip"
     }[derivative_type]
 
-    subhead = {
+    # defaults\
+    subhead ||= {
      "pdf_file" => nil,
       "zip_file" => "of full-sized JPGs"
     }[derivative_type]

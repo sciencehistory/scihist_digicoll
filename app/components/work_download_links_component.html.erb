@@ -1,58 +1,27 @@
 <div class="on-page-work-downloads">
-
-  <% if has_any_pdf? %>
+  <% download_options.each do |download_option| %>
     <div class="on-page-work-downloads-item">
       <div class="image">
-        <%= link_to(pdf_download_option.url, data: pdf_download_option.data_attrs, tabindex: -1, "aria-label": "Download PDF") do %>
+        <%= link_to(download_option.url, data: download_option.data_attrs, tabindex: -1, "aria-label": download_button_label(download_option)) do %>
           <%= helpers.file_earmark_pdf_fill_svg %>
         <% end %>
       </div>
 
       <div class="text">
-          <%= link_to(pdf_download_option.url, data: pdf_download_option.data_attrs, tabindex: -1) do %>
-            <% if has_searchable_pdf? %>
-              Searchable PDF
-            <% else %>
-              PDF
-            <% end %>
+          <%= link_to(download_option.url, data: download_option.data_attrs, tabindex: -1) do %>
+            <%= download_option.label %>
           <% end %>
 
-          <% if has_searchable_pdf? %>
+          <% if download_option.subhead.present? %>
             <div class="hint">
-              <small>may contain errors</small>
+              <small><%= download_option.subhead %></small>
             </div>
           <% end %>
       </div>
 
       <div class="action">
-        <%= link_to(pdf_download_option.url, data: pdf_download_option.data_attrs, class: "btn btn-brand-main less-padding") do %>
-          Download PDF
-        <% end %>
-      </div>
-    </div>
-  <% end %>
-
-  <% if has_downloadable_zip? %>
-    <div class="on-page-work-downloads-item">
-      <div class="image">
-        <%= link_to(zip_download_option.url, data: zip_download_option.data_attrs, tabindex: -1, "aria-label": "Download ZIP") do %>
-          <%= helpers.file_earmark_zip_fill_svg %>
-        <% end %>
-      </div>
-
-      <div class="text">
-          <%= link_to(zip_download_option.url, data: zip_download_option.data_attrs, tabindex: -1) do %>
-            ZIP
-          <% end %>
-
-          <div>
-            <small>of full-sized JPGs</small>
-          </div>
-      </div>
-
-      <div class="action" style="border-top: none; padding-right: 0;">
-        <%= link_to(zip_download_option.url, data: zip_download_option.data_attrs, class: "btn btn-brand-main less-padding") do %>
-          Download ZIP
+        <%= link_to(download_option.url, data: download_option.data_attrs, class: "btn btn-brand-main less-padding") do %>
+          <%= download_button_label(download_option) %>
         <% end %>
       </div>
     </div>

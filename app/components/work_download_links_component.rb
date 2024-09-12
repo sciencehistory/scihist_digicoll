@@ -18,35 +18,21 @@ class WorkDownloadLinksComponent < ApplicationComponent
     @has_searchable_pdf = work.ocr_requested? # && !WorkShowOcrComponent.new(work).asset_ocr_count_warning?
   end
 
-  # has some PDF as long as we have at least ONE published image
-  def has_any_pdf?
-    return @has_any_pdf if defined?(@has_any_pdf)
+  def download_options
+    pdf_option_args = if has_searchable_pdf?
+      { label: "Searchable PDF", subhead: "may contain errors"}
+    else
+      {}
+    end
 
-    @has_any_pdf = work &&
-      work.published? &&
-      work.member_count > 0 &&
-      work.member_content_types(mode: :query).any? {|t| t.start_with?("image/")}
+    @download_options ||= WorkDownloadOptions.new(work: work, pdf_option_args: pdf_option_args).options
   end
 
-  def has_downloadable_zip?
-    return @has_downloadable_zip if defined?(@has_downloadable_zip)
-
-    # We use DownloadDropdownComponent to try to decide if it's going to have a ZIP link or not
-    # using same logic it will...
-    @has_downloadable_zip = DownloadDropdownComponent.work_has_multiple_published_images?(work)
-  end
-
-  def pdf_download_option
-    # We don't actually use label, but want to get attributes out
-    @pdf_download_option ||= DownloadOption.for_on_demand_derivative(
-        label: "", derivative_type: "pdf_file", work_friendlier_id: work.friendlier_id
-      )
-  end
-
-  def zip_download_option
-    # We don't actually use label, but want to get attributes out
-    @zip_download_option ||= DownloadOption.for_on_demand_derivative(
-      label: "", derivative_type: "zip_file", work_friendlier_id: work.friendlier_id
-    )
+  def download_button_label(download_option)
+    case download_option.data_attrs[:derivative_type].to_s
+    when "pdf_file" ; "Download PDF"
+    when "zip_file" ; "Download ZIP"
+    else "Download"
+    end
   end
 end
