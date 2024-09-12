@@ -122,7 +122,10 @@ class DownloadDropdownComponent < ApplicationComponent
       # want it in individual image download options, as per
       # https://github.com/sciencehistory/scihist_digicoll/issues/2278
       #
-      DownloadOptions::ImageDownloadOptions.new(asset, show_pdf_link: (!has_work_download_options? && display_parent_work&.published? && asset.content_type.start_with?("image/"))).options
+      # If we only have ONE member, we just merge any whole work options in
+      # to accomodate this and other edge cases
+      #
+      ( display_parent_work&.member_count == 1 ? whole_work_download_options : []) + DownloadOptions::ImageDownloadOptions.new(asset).options
    end
   end
 
@@ -240,7 +243,9 @@ class DownloadDropdownComponent < ApplicationComponent
   end
 
   def has_work_download_options?
-    whole_work_download_options.present?
+    # if the member count is only 1, we don't display a whole-work section, we just merge
+    # any whole-work options into the current asset section
+    display_parent_work&.member_count.to_i > 1 && whole_work_download_options.present?
   end
 
   def whole_work_download_options

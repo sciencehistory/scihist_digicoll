@@ -12,24 +12,12 @@ module DownloadOptions
 
     attr_reader :asset
 
-    def initialize(asset, show_pdf_link: false)
+    def initialize(asset)
       @asset = asset
-      @show_pdf_link = show_pdf_link
-    end
-
-    def show_pdf_link?
-      !!@show_pdf_link
     end
 
     def options
       options = []
-      # Sometimes we want the PDF link in the individual-image download links,
-      # as per https://github.com/sciencehistory/scihist_digicoll/issues/2278 .
-      if !disabled_downloads && show_pdf_link?
-        options << DownloadOption.for_on_demand_derivative(
-          label: "PDF", derivative_type: "pdf_file", work_friendlier_id: @asset&.parent&.friendlier_id
-        )
-      end
 
       # We don't use content_type in derivative option subheads,
       # cause it's in the main label. But do use it for original.

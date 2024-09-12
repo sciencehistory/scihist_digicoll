@@ -27,9 +27,11 @@ class WorkDownloadOptions
   def has_constructed_pdf?
     return @has_constructed_pdf if defined? @has_constructed_pdf
 
-    # if we have more than one child, and all children are images, is how we've done this
+    # if we AT LEAST one child, and all children are images, is how we've done this
     # historically, may have to be changed as our uses change! May have just been doing this for efficiency?
-    @has_constructed_pdf = work && work.published? && work_member_count > 1 && work_member_content_types.all? { |c| c.start_with?("image/")}
+    #
+    # Not sure why we are delivering PDF for single page image with no OCR, but we are! for consistency?
+    @has_constructed_pdf = work && work.published? && work_member_count > 0 && work_member_content_types.all? { |c| c.start_with?("image/")}
   end
 
   def has_constructed_zip?
