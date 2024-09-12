@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 class SortedTableHeaderLinkComponent < ApplicationComponent     
   def initialize(column_title:, sort_field:, table_sort:, extra_params: {})
-
       # Info about the link we're about to render:
       # Column title
       @column_title = column_title
@@ -23,6 +22,10 @@ class SortedTableHeaderLinkComponent < ApplicationComponent
       # Any extra params to tack on to the end of the URL, to maintain the state of the page:
       # e.g. page number, a search phrase, anything else you need:
       @extra_params = extra_params
+  end
+
+  def call
+    link_to sort_column_title,  sort_column_path
   end
 
   def sort_column_path
