@@ -239,23 +239,13 @@ class DownloadDropdownComponent < ApplicationComponent
     render(RightsIconComponent.new(mode: :dropdown_item, rights_id: display_parent_work&.rights, work: display_parent_work))
   end
 
-  # have a PUBLISHED parent work, with more than 1 child, and AT LEAST ONE of it's children are images,
-  # provide multi-image downloads. These are the only whole-work-download options we provide at present.
-  #
-  # (Our current PDF and Zip creators only create for published items, they can't create
-  # for non-published items. But we don't have an easy way to efficiently access
-  # number of published child items, we just use the parent being unpublished as a proxy
-  # for "not ready")
-  #
-  # NOTE: We had been checking to make sure ALL members were images, but that was FAR
-  # too resource intensive, it destroyed ramelli. Checking just one is okay though.
   def has_work_download_options?
-    return @has_work_download_options if defined?(@has_work_download_options)
-
-    @has_work_download_options = self.class.work_has_multiple_published_images?(display_parent_work)
+    whole_work_download_options.present?
   end
 
   # Extracted for re-use in other places, see #has_work_download_options?
+  #
+  # TODO, get rid of, along with member_content_types  maybe member_count too, isn't that just size?
   def self.work_has_multiple_published_images?(work)
     work &&
     work.published? &&
@@ -264,16 +254,7 @@ class DownloadDropdownComponent < ApplicationComponent
   end
 
   def whole_work_download_options
-    return [] unless has_work_download_options?
-
-    [
-      DownloadOption.for_on_demand_derivative(
-        label: "PDF", derivative_type: "pdf_file", work_friendlier_id: @asset&.parent&.friendlier_id
-      ),
-      DownloadOption.for_on_demand_derivative(
-        label: "ZIP", derivative_type: "zip_file", work_friendlier_id: @asset&.parent&.friendlier_id
-      )
-    ]
+    @whole_work_download_options = WorkDownloadOptions.new(work: display_parent_work).options
   end
 
 end
