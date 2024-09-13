@@ -1,5 +1,6 @@
 class Admin::CollectionsController < AdminController
-    before_action :set_collection, only: [:show, :edit, :update, :destroy]
+  before_action :set_collection, only: [:show, :edit, :update, :destroy]
+  before_action :link_maker, only: [:index]
 
   # GET /collections
   # GET /collections.json
@@ -8,12 +9,8 @@ class Admin::CollectionsController < AdminController
     # We're assuming if you can view the index, you can see all published and
     # unpublished collections.
 
+    # Searching, filtering, sorting and pagination:
     scope = Collection
-    params[:sort_field] = "title" unless ['title', 'created_at', 'updated_at'].include? params[:sort_field]
-    params[:sort_order] = "asc"   unless ['asc', 'desc'].include?                       params[:sort_order]
-
-    scope = scope.order(Arel.sql("#{params[:sort_field]} #{params[:sort_order]}"))
-
     if params[:title_or_id].present?
       scope = scope.where(id: params[:title_or_id]
       ).or(
@@ -22,14 +19,24 @@ class Admin::CollectionsController < AdminController
         Collection.where("title ilike ?", "%" + Collection.sanitize_sql_like(params[:title_or_id]) + "%")
       )
     end
-
     if params[:department].present?
       scope = scope.where("json_attributes ->> 'department' = :department", department: params[:department])
       @department =  params[:department]
     end
-
+    scope = scope.order(Arel.sql("#{params[:sort_field]} #{params[:sort_order]}"))
     @collections = scope.page(params[:page]).per(100)
   end
+
+  # Set up click-to-sort column headers for the table of collections:
+  def link_maker
+    @link_maker ||= SortedTableHeaderLinkComponent.link_maker(
+      params:               collection_params,
+      table_sort_field_key: :sort_field,
+      table_sort_order_key: :sort_order,
+      extra_param_keys:     [:title_or_id, :page, :department]
+    )
+  end
+  helper_method :link_maker
 
   # GET /collections/1
   # GET /collections/1.json
@@ -91,24 +98,6 @@ class Admin::CollectionsController < AdminController
     end
   end
 
-  def header_link(column_title:, sort_field:)
-    SortedTableHeaderLinkComponent.new(
-      column_title: column_title, sort_field: sort_field,
-
-      # Info about the table's current sort field and order.
-      table_sort: {
-          field: params[:sort_field],
-          order: params[:sort_order],
-        },
-      
-      # Extra params to put in the header links 
-      extra_params: {
-        title_or_id:      params[:title_or_id],
-        page:             params[:page],
-      }
-    )
-  end
-  helper_method :header_link
 
   def representative
     @collection&.representative
@@ -140,17 +129,24 @@ class Admin::CollectionsController < AdminController
     # This could be done in a form object or otherwise abstracted, but this is good
     # enough for now.
     def collection_params
-      permitted_attributes = [:title, :description, :department, :default_sort_field]
+      permitted_attributes = [
+        :title, :description, :department, :default_sort_field,
+        :page, :title_or_id, :collection, :sort_field, :sort_order,
+        :button
+      ]
       permitted_attributes << :published if can?(:publish, @collection || Kithe::Model)
 
       Kithe::Parameters.new(params).
-        require(:collection).
         permit(*permitted_attributes,
                 :representative_attributes => {},
                 :funding_credit_attributes => {},
                 :related_link_attributes => {},
                 :external_id_attributes => true
         ).tap do |hash|
+
+          # default sort for index is title:
+          hash[:sort_field] = "title" unless ['title', 'created_at', 'updated_at'].include? hash[:sort_field]
+          hash[:sort_order] = "asc"   unless ['asc', 'desc'].include?                       hash[:sort_order]
 
           # sanitize description
           if hash[:description].present?
