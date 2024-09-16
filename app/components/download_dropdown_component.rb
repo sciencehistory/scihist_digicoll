@@ -42,7 +42,7 @@
 # and re-use them. WorkDownloadOptionsCreator class can calculate them.
 #
 class DownloadDropdownComponent < ApplicationComponent
-  attr_reader :display_parent_work, :asset, :aria_label, :btn_class_name, :whole_work_options
+  attr_reader :display_parent_work, :asset, :aria_label, :btn_class_name, :work_download_options
 
 
   # @param asset [Asset] asset to display download links for
@@ -62,13 +62,13 @@ class DownloadDropdownComponent < ApplicationComponent
   # @param btn_class_name [String] default "btn-brand-alt", but maybe you want "btn-brand-main".
   #   The specific btn theme added on to bootstrap `btn` that will be there anyway.
   #
-  # @param whole_work_options [Array<DownloadOption>] should we include whole-work download options?
+  # @param work_download_options [Array<DownloadOption>] should we include whole-work download options?
   #   As they are somewhat expensive to calculate and context-dependent, caller should pass in
   #   already calculated if desired! And up to caller to make sure they are computed and cached
   #   efficiently and not calculated many times over and over again for same work.
   def initialize(asset,
       display_parent_work:,
-      whole_work_options: nil,
+      work_download_options: nil,
       use_link: false,
       viewer_template: false,
       aria_label: nil,
@@ -85,7 +85,7 @@ class DownloadDropdownComponent < ApplicationComponent
     @asset = asset
     @aria_label = aria_label
     @btn_class_name = btn_class_name
-    @whole_work_options = whole_work_options || [] # empty array not nil or false
+    @work_download_options = work_download_options || [] # empty array not nil or false
   end
 
   def call
@@ -130,7 +130,7 @@ class DownloadDropdownComponent < ApplicationComponent
       # If we only have ONE member, we just merge any whole work options in
       # to accomodate this and other edge cases
       #
-      ( display_parent_work&.member_count == 1 ? whole_work_options : []) + DownloadOptions::ImageDownloadOptions.new(asset).options
+      ( display_parent_work&.member_count == 1 ? work_download_options : []) + DownloadOptions::ImageDownloadOptions.new(asset).options
    end
   end
 
@@ -208,7 +208,7 @@ class DownloadDropdownComponent < ApplicationComponent
 
     if has_work_download_options?
       elements << content_tag("h3", "Download all #{display_parent_work.member_count} images", class:'dropdown-header')
-      whole_work_options.each do |download_option|
+      work_download_options.each do |download_option|
         elements << format_download_option(download_option)
       end
       elements << content_tag("div", nil,  class:'dropdown-divider')
@@ -250,6 +250,6 @@ class DownloadDropdownComponent < ApplicationComponent
   def has_work_download_options?
     # if the member count is only 1, we don't display a whole-work section, we just merge
     # any whole-work options into the current asset section
-    display_parent_work&.member_count.to_i > 1 && whole_work_options.present?
+    display_parent_work&.member_count.to_i > 1 && work_download_options.present?
   end
 end

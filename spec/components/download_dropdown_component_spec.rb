@@ -44,7 +44,7 @@ describe DownloadDropdownComponent, type: :component do
       )
     end
     let(:options) { WorkDownloadOptionsCreator.new(asset.parent).options }
-    let(:rendered) { render_inline(DownloadDropdownComponent.new(asset, display_parent_work: asset.parent, whole_work_options: options)) }
+    let(:rendered) { render_inline(DownloadDropdownComponent.new(asset, display_parent_work: asset.parent, work_download_options: options)) }
 
     it "renders asset download options" do
       expect(div).to be_present
@@ -198,7 +198,7 @@ describe DownloadDropdownComponent, type: :component do
     let(:asset) { create(:asset_with_faked_file) }
     let(:work) { create(:public_work, members: [asset, build(:asset_with_faked_file)]) }
     let(:options) { WorkDownloadOptionsCreator.new(work).options }
-    let(:component) { DownloadDropdownComponent.new(asset, display_parent_work: work, whole_work_options: options) }
+    let(:component) { DownloadDropdownComponent.new(asset, display_parent_work: work, work_download_options: options) }
     let(:rendered) { render_inline(component) }
 
     it "renders options and heading" do
@@ -218,7 +218,7 @@ describe DownloadDropdownComponent, type: :component do
     end
 
     describe "with empty whole-work options" do
-      let(:component) { DownloadDropdownComponent.new(asset, display_parent_work: work, whole_work_options: []) }
+      let(:component) { DownloadDropdownComponent.new(asset, display_parent_work: work, work_download_options: []) }
 
       it "does not include whole-work download options" do
         expect(div).not_to have_selector(".dropdown-header", text: "Download all 3 images")
@@ -228,7 +228,7 @@ describe DownloadDropdownComponent, type: :component do
     end
 
     describe "as viewer_template" do
-      let(:component) { DownloadDropdownComponent.new(nil, display_parent_work: work, viewer_template: true, whole_work_options: options) }
+      let(:component) { DownloadDropdownComponent.new(nil, display_parent_work: work, viewer_template: true, work_download_options: options) }
 
       it "renders only slot" do
         expect(div).to have_selector(".dropdown-header", text: "Download selected image")

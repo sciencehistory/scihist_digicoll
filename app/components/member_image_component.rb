@@ -170,7 +170,7 @@ class MemberImageComponent < ApplicationComponent
   def download_button
     # We only include whole-work download menu section for large size, used as hero.
     render DownloadDropdownComponent.new(representative_asset,
-                                          whole_work_options: work_download_options,
+                                          work_download_options: work_download_options,
                                           display_parent_work: member.parent,
                                           aria_label: ("Download #{image_label}" if image_label),
                                           btn_class_name: btn_class_name)
