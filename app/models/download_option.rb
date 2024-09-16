@@ -116,6 +116,6 @@ class DownloadOption
   # sometimes we want to modify one, treat as immutable but let modify like this!
   # Can override any element as if it were initializer
   def dup_with(label=self.label, url: self.url, work_friendlier_id: self.work_friendlier_id, subhead:self.subhead, analyticsAction:self.analyticsAction, data_attrs: self.data_attrs, content_type: self.content_type)
-    self.class.new(label, url: url, work_friendlier_id: work_friendlier_id, subhead:subhead, analyticsAction:analyticsAction, data_attrs: data_attrs)
+    self.class.new(label, url: url, work_friendlier_id: work_friendlier_id, subhead:subhead, analyticsAction:analyticsAction, data_attrs: data_attrs, content_type: content_type)
   end
 end
