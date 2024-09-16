@@ -39,7 +39,7 @@
 #
 # Are passed in as an array of DownloadOptions.  These can be complicated and expensive to calculate,
 # so if you are displaying many DownloadDropdownComponent for same work, best to cache them
-# and re-use them. WorkDownloadOptions class can calculate them.
+# and re-use them. WorkDownloadOptionsCreator class can calculate them.
 #
 class DownloadDropdownComponent < ApplicationComponent
   attr_reader :display_parent_work, :asset, :aria_label, :btn_class_name, :whole_work_options

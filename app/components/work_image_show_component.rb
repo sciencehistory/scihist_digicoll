@@ -13,7 +13,7 @@ class WorkImageShowComponent < ApplicationComponent
 
     # work download options are expensive, so we calculate them here so we can use them
     # in several places
-    @work_download_options = WorkDownloadOptions.new(work: work).options
+    @work_download_options = WorkDownloadOptionsCreator.new(work: work).options
   end
 
   # Public members, ordered, to be displayed as thumbnails

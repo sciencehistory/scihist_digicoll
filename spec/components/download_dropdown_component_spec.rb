@@ -43,7 +43,7 @@ describe DownloadDropdownComponent, type: :component do
         parent: build(:public_work, members: [], friendlier_id: "faked#{rand(1000000).to_s(16)}", rights: "http://creativecommons.org/publicdomain/mark/1.0/")
       )
     end
-    let(:options) { WorkDownloadOptions.new(work: asset.parent).options }
+    let(:options) { WorkDownloadOptionsCreator.new(work: asset.parent).options }
     let(:rendered) { render_inline(DownloadDropdownComponent.new(asset, display_parent_work: asset.parent, whole_work_options: options)) }
 
     it "renders asset download options" do
@@ -197,7 +197,7 @@ describe DownloadDropdownComponent, type: :component do
   describe "with whole-work options" do
     let(:asset) { create(:asset_with_faked_file) }
     let(:work) { create(:public_work, members: [asset, build(:asset_with_faked_file)]) }
-    let(:options) { WorkDownloadOptions.new(work: work).options }
+    let(:options) { WorkDownloadOptionsCreator.new(work: work).options }
     let(:component) { DownloadDropdownComponent.new(asset, display_parent_work: work, whole_work_options: options) }
     let(:rendered) { render_inline(component) }
 

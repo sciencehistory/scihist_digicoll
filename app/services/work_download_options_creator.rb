@@ -11,7 +11,7 @@
 # number of published child items, we just use the parent being unpublished as a proxy
 # for "not ready")
 #
-class WorkDownloadOptions
+class WorkDownloadOptionsCreator
   attr_reader :work, :options
 
   def initialize(work:)
