@@ -61,18 +61,14 @@ class WorkDownloadOptionsCreator
   def work_member_content_types
     return @work_has_image_members if defined? @work_has_image_members
 
-    @work_has_image_members = if work.members.loaded?
-      # search in memory cause they're already all loaded
-      work.members.collect { |member| member.leaf_representative&.content_type }.compact.uniq
-    else
-      # go to DB with an efficient fetch
-      work.members.
+    # go to DB with an efficient fetch. We could do in-memory if memberes are already loaded,
+    # but it's not worth the complexity.
+    @work_has_image_members = work.members.
           includes(:leaf_representative).
           references(:leaf_representative).
           pluck(Arel.sql("
             DISTINCT leaf_representatives_kithe_models.file_data -> 'metadata' -> 'mime_type', kithe_models.file_data -> 'metadata' -> 'mime_type'"
           )).flatten.compact.uniq
-    end
   end
 
   def work_member_count
