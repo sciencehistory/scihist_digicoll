@@ -11,7 +11,8 @@
   </div>
 
   <div class="show-hero">
-    <%= render MemberImageComponent.new(representative_member, size: :large) %>
+    <%# note the large hero one gets work_download_options %>
+    <%= render MemberImageComponent.new(representative_member, size: :large, work_download_options: work_download_options) %>
     <%= render "works/rights_and_social", work: work %>
 
     <%= render WorkDownloadLinksComponent.new(work) %>
