@@ -3,7 +3,7 @@
 require "rails_helper"
 
 RSpec.describe WorkDownloadLinksComponent, type: :component do
-  let(:download_options) { WorkDownloadOptionsCreator.new(work: work).options }
+  let(:download_options) { WorkDownloadOptionsCreator.new(work).options }
   let!(:rendered) { render_inline(WorkDownloadLinksComponent.new(work, download_options: download_options)) }
 
   describe "multi-item work with OCR" do

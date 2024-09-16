@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe WorkDownloadOptionsCreator do
   let(:asset) { create(:asset_with_faked_file) }
-  let(:service) { WorkDownloadOptionsCreator.new(work: work) }
+  let(:service) { WorkDownloadOptionsCreator.new(work) }
   let(:options) { service.options }
 
 

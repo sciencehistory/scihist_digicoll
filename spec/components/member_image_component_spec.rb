@@ -31,7 +31,7 @@ describe MemberImageComponent, type: :component do
     end
 
     describe "with whole-work download options passed in" do
-      let(:presenter) { MemberImageComponent.new(member, size: :large, work_download_options: WorkDownloadOptionsCreator.new(work: parent).options) }
+      let(:presenter) { MemberImageComponent.new(member, size: :large, work_download_options: WorkDownloadOptionsCreator.new(parent).options) }
 
       it "download button includes whole-work derivatives" do
         expect(wrapper_div).to have_selector(".btn-group.downloads a.dropdown-item:contains('ZIP')")

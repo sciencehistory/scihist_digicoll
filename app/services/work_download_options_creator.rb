@@ -14,7 +14,7 @@
 class WorkDownloadOptionsCreator
   attr_reader :work, :options
 
-  def initialize(work:)
+  def initialize(work)
     @work = work
     @options = construct_options
   end
