@@ -3,9 +3,13 @@
 
     Many of the content areas in here are actually filled in by the viewer JS.
 
-    Needs a 'work' local to generate fixed rights statement and whole-work download
-    options for fixed work this modal is for.
+    Needs a 'work' local to generate fixed rights statement,
+    and whole-work download options for fixed work this modal is for.
+
+
 %>
+
+<%# locals: (work:,work_download_options:) %>
 
 <div class="viewer-navbar btn-group" role="group" aria-label="actions">
     <div id="viewer-pagination" class="viewer-pagination viewer-navbar-btn">
@@ -27,7 +31,7 @@
     Yes, this is kinda messy/hacky/non-DRY interaction/duplication with the DownloadDropdownComponent
     ViewModel.  %>
 
-    <%= render DownloadDropdownComponent.new(nil, display_parent_work: work, viewer_template: true, whole_work_options: WorkDownloadOptions.new(work: work).options) %>
+    <%= render DownloadDropdownComponent.new(nil, display_parent_work: work, viewer_template: true, whole_work_options: work_download_options) %>
 
     <button class="viewer-navbar-btn btn btn-lg btn-emphasis viewer-fullscreen viewer-thin-btn" id="viewer-fullscreen"
             data-trigger="viewer-fullscreen" tabindex="0" title="Fullscreen" aria-label="full screen">
