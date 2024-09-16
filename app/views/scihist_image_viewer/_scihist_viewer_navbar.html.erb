@@ -25,10 +25,9 @@
     to fill in as selected thumb is changed for member-specific options.
 
     Yes, this is kinda messy/hacky/non-DRY interaction/duplication with the DownloadDropdownComponent
-    ViewModel. Doesn't yet include whole-work download options. Good enough for now. %>
+    ViewModel.  %>
 
-
-    <%= render DownloadDropdownComponent.new(nil, display_parent_work: work, viewer_template: true, include_whole_work_options: true) %>
+    <%= render DownloadDropdownComponent.new(nil, display_parent_work: work, viewer_template: true, whole_work_options: WorkDownloadOptions.new(work: work).options) %>
 
     <button class="viewer-navbar-btn btn btn-lg btn-emphasis viewer-fullscreen viewer-thin-btn" id="viewer-fullscreen"
             data-trigger="viewer-fullscreen" tabindex="0" title="Fullscreen" aria-label="full screen">

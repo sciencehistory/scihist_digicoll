@@ -31,7 +31,7 @@ describe DownloadDropdownComponent, type: :component do
     end
   end
 
-  describe "work with one image file and derivatives" do
+  describe "work with one image file and derivatives, and whole-work options" do
     let(:asset) do
       create(:asset_with_faked_file,
         faked_derivatives: {
@@ -43,6 +43,8 @@ describe DownloadDropdownComponent, type: :component do
         parent: build(:public_work, members: [], friendlier_id: "faked#{rand(1000000).to_s(16)}", rights: "http://creativecommons.org/publicdomain/mark/1.0/")
       )
     end
+    let(:options) { WorkDownloadOptions.new(work: asset.parent).options }
+    let(:rendered) { render_inline(DownloadDropdownComponent.new(asset, display_parent_work: asset.parent, whole_work_options: options)) }
 
     it "renders asset download options" do
       expect(div).to be_present
@@ -191,98 +193,51 @@ describe DownloadDropdownComponent, type: :component do
     end
   end
 
-  describe "with parent work" do
-    let(:rendered) { render_inline(DownloadDropdownComponent.new(asset, display_parent_work: parent_work, include_whole_work_options: true)) }
 
-    describe "with all image files" do
-      let(:asset) do
-        create(:asset_with_faked_file,
-              faked_derivatives: {})
-      end
+  describe "with whole-work options" do
+    let(:asset) { create(:asset_with_faked_file) }
+    let(:work) { create(:public_work, members: [asset, build(:asset_with_faked_file)]) }
+    let(:options) { WorkDownloadOptions.new(work: work).options }
+    let(:component) { DownloadDropdownComponent.new(asset, display_parent_work: work, whole_work_options: options) }
+    let(:rendered) { render_inline(component) }
 
-      let(:parent_work) do
-        create(:public_work, members: [asset, build(:asset_with_faked_file), build(:asset_with_faked_file)])
-      end
+    it "renders options and heading" do
+      expect(div).to have_selector(".dropdown-header", text: "Download all 2 images")
 
-      it "renders whole-work download options" do
-        expect(div).to have_selector(".dropdown-header", text: "Download all 3 images")
+      options.each do |option_conf|
+        option_html = option = div.at_css("a.dropdown-item:contains('#{option_conf.label}')")
 
-        zip_option = div.at_css("a.dropdown-item:contains('ZIP')")
-        expect(zip_option).to be_present
-        expect(zip_option["data-trigger"]).to eq "on-demand-download"
-        expect(zip_option["data-derivative-type"]).to eq "zip_file"
-        expect(zip_option["data-work-id"]).to eq parent_work.friendlier_id
-        expect(zip_option["data-analytics-category"]).to eq "Work"
-        expect(zip_option["data-analytics-action"]).to eq "download_zip"
-        expect(zip_option["data-analytics-label"]).to eq parent_work.friendlier_id
+        expect(option_html).to be_present
+        expect(option_html["href"]).to eq option_conf.url
+        expect(option_html["data-analytics-action"]).to eq option_conf.analyticsAction
 
-        pdf_option = div.at_css("a.dropdown-item:contains('PDF')")
-        expect(pdf_option).to be_present
-        expect(pdf_option["data-trigger"]).to eq "on-demand-download"
-        expect(pdf_option["data-derivative-type"]).to eq "pdf_file"
-        expect(pdf_option["data-work-id"]).to eq parent_work.friendlier_id
-        expect(pdf_option["data-analytics-category"]).to eq "Work"
-        expect(pdf_option["data-analytics-action"]).to eq "download_pdf"
-        expect(pdf_option["data-analytics-label"]).to eq parent_work.friendlier_id
-      end
-
-      describe "unpublished parent work" do
-        let(:parent_work) do
-          create(:work, published: false, members: [asset, build(:asset_with_faked_file), build(:asset_with_faked_file)])
-        end
-
-        # whole work download options are cached publically, they only include public
-        # members, and don't make sense on non-public work, and sometimes create errors
-        # if clicked there.
-        it "does not include whole-work download options" do
-          expect(div).not_to have_selector(".dropdown-header", text: "Download all 3 images")
-          expect(div).not_to have_selector("a.dropdown-item:contains('ZIP')")
-          expect(div).not_to have_selector("a.dropdown-item:contains('PDF')")
-        end
-      end
-
-      describe "template_only" do
-        let(:rendered) { render_inline(DownloadDropdownComponent.new(nil, display_parent_work: parent_work, viewer_template: true)) }
-
-        it "renders only slot" do
-          expect(div).to have_selector(".dropdown-header", text: "Download selected image")
-          expect(div).to have_selector('*[data-slot="selected-downloads"]')
-
-          expect(div).not_to have_selector("a.dropdown-item", text: /Small JPG/)
-          expect(div).not_to have_selector("a.dropdown-item", text: /Medium JPG/)
-          expect(div).not_to have_selector("a.dropdown-item", text: /Large JPG/)
-          expect(div).not_to have_selector("a.dropdown-item", text: /Full-sized JPG/)
-        end
-      end
-
-      describe "without include_whole_work_options" do
-        let(:rendered) { render_inline(DownloadDropdownComponent.new(asset, display_parent_work: parent_work)) }
-
-        it "does not include them" do
-          expect(div).not_to have_selector(".dropdown-header", text: "Download all 3 images")
-
-          zip_option = div.at_css("a.dropdown-item:contains('ZIP')")
-          expect(zip_option).not_to be_present
-
-          pdf_option = div.at_css("a.dropdown-item:contains('PDF')")
-          expect(pdf_option).not_to be_present
+        option_conf.data_attrs.each_pair do |key, value|
+          expect(option_html[ "data-#{key.to_s.dasherize}" ]).to eq value
         end
       end
     end
 
-    describe "without image files" do
-      let(:asset) do
-        create(:asset_with_faked_file, :pdf,
-              faked_derivatives: {})
-      end
+    describe "with empty whole-work options" do
+      let(:component) { DownloadDropdownComponent.new(asset, display_parent_work: work, whole_work_options: []) }
 
-      let(:parent_work) do
-        create(:work, members: [asset, build(:asset_with_faked_file, :mp3), build(:asset_with_faked_file, :mp3)])
-      end
-
-      it "does not render whole-work download options" do
+      it "does not include whole-work download options" do
         expect(div).not_to have_selector(".dropdown-header", text: "Download all 3 images")
-        expect(div).not_to have_selector(".dropdown-item", text: /ZIP/)
+        expect(div).not_to have_selector("a.dropdown-item:contains('ZIP')")
+        expect(div).not_to have_selector("a.dropdown-item:contains('PDF')")
+      end
+    end
+
+    describe "as viewer_template" do
+      let(:component) { DownloadDropdownComponent.new(nil, display_parent_work: work, viewer_template: true, whole_work_options: options) }
+
+      it "renders only slot" do
+        expect(div).to have_selector(".dropdown-header", text: "Download selected image")
+        expect(div).to have_selector('*[data-slot="selected-downloads"]')
+
+        expect(div).not_to have_selector("a.dropdown-item", text: /Small JPG/)
+        expect(div).not_to have_selector("a.dropdown-item", text: /Medium JPG/)
+        expect(div).not_to have_selector("a.dropdown-item", text: /Large JPG/)
+        expect(div).not_to have_selector("a.dropdown-item", text: /Full-sized JPG/)
       end
     end
   end
