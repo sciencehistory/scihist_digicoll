@@ -42,4 +42,12 @@ class WorkDownloadLinksComponent < ApplicationComponent
     else "Download"
     end
   end
+
+  def download_file_icon(download_option)
+    case download_option.data_attrs[:derivative_type].to_s
+    when "pdf_file" ; helpers.file_earmark_pdf_fill_svg
+    when "zip_file" ; helpers.file_earmark_zip_fill_svg
+    else "x"
+    end
+  end
 end
