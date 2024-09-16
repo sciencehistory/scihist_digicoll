@@ -14,11 +14,8 @@
 class WorkDownloadOptions
   attr_reader :work, :options
 
-  # @param pdf_option_args over-ride some of the args for pdf option, like label and subhead,
-  #   we needed in a certain use.
-  def initialize(work:, pdf_option_args: {})
+  def initialize(work:)
     @work = work
-    @pdf_option_args = { label: "PDF", subhead: nil }.merge(pdf_option_args || {})
     @options = construct_options
   end
 
@@ -48,7 +45,7 @@ class WorkDownloadOptions
 
     if has_constructed_pdf?
       options << DownloadOption.for_on_demand_derivative(
-        **@pdf_option_args, derivative_type: "pdf_file", work_friendlier_id: work.friendlier_id
+        label: "PDF", derivative_type: "pdf_file", work_friendlier_id: work.friendlier_id
       )
     end
 

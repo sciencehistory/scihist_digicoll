@@ -1,11 +1,27 @@
 # frozen_string_literal: true
 
 # ON-PAGE download links for Work page, for whole-work downloads
+#
+# We use a list of DownloadOption elements, but format them on page -- and change name/subhead
+# from usual in some cases.
 class WorkDownloadLinksComponent < ApplicationComponent
-  attr_reader :work
+  attr_reader :work, :download_options
 
-  def initialize(work)
+  def initialize(work, download_options:)
     @work = work
+
+    @download_options = download_options
+
+    if has_searchable_pdf?
+      # override some values in options
+      @download_options.collect! do |option|
+        if option.analyticsAction.to_s == "download_pdf"
+          option.dup_with("Searchable PDF", subhead: "may contain errors")
+        else
+          option
+        end
+      end
+    end
   end
 
   def has_searchable_pdf?
@@ -18,15 +34,6 @@ class WorkDownloadLinksComponent < ApplicationComponent
     @has_searchable_pdf = work.ocr_requested? # && !WorkShowOcrComponent.new(work).asset_ocr_count_warning?
   end
 
-  def download_options
-    pdf_option_args = if has_searchable_pdf?
-      { label: "Searchable PDF", subhead: "may contain errors"}
-    else
-      {}
-    end
-
-    @download_options ||= WorkDownloadOptions.new(work: work, pdf_option_args: pdf_option_args).options
-  end
 
   def download_button_label(download_option)
     case download_option.data_attrs[:derivative_type].to_s
