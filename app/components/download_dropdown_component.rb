@@ -207,7 +207,13 @@ class DownloadDropdownComponent < ApplicationComponent
     end
 
     if has_work_download_options?
-      elements << content_tag("h3", "Download all #{display_parent_work.member_count} images", class:'dropdown-header')
+      heading = if display_parent_work.text_extraction_mode == "pdf_extraction"
+        "Download entire document"
+      else
+        "Download all #{display_parent_work.member_count} images"
+      end
+
+      elements << content_tag("h3", heading, class:'dropdown-header')
       work_download_options.each do |download_option|
         elements << format_download_option(download_option)
       end

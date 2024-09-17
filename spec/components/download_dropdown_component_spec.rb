@@ -217,6 +217,15 @@ describe DownloadDropdownComponent, type: :component do
       end
     end
 
+    describe "with text_extraction_mode pdf_extraction" do
+      let(:asset) { create(:asset_with_faked_file, :pdf, role: "work_source_pdf", ) }
+      let(:work) { create(:public_work, text_extraction_mode: "pdf_extraction", members: [asset, build(:asset_with_faked_file)]) }
+
+      it "uses custom heading" do
+        expect(div).to have_selector(".dropdown-header", text: "Download entire document")
+      end
+    end
+
     describe "with empty whole-work options" do
       let(:component) { DownloadDropdownComponent.new(asset, display_parent_work: work, work_download_options: []) }
 
