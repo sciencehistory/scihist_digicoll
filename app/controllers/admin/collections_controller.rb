@@ -36,10 +36,9 @@ class Admin::CollectionsController < AdminController
   # This code does NOT perform any actual sorting or filtering.
   def link_maker
     @link_maker ||= SortedTableHeaderLinkComponent.link_maker(
-      params:               collection_params,
+      params: collection_params,
       table_sort_field_key: :sort_field,
       table_sort_order_key: :sort_order,
-      extra_param_keys:     [:title_or_id, :page, :department]
     )
   end
   helper_method :link_maker
@@ -134,11 +133,10 @@ class Admin::CollectionsController < AdminController
     # This does not actually perform any sorting or filtering.
     def index_params
       @index_params ||= Kithe::Parameters.new(params).permit(
-        :department, :page, :title_or_id,
-        :sort_field, :sort_order, :button
+        :sort_field, :sort_order, :department, :page, :title_or_id
       ).tap do |hash|
-        hash[:sort_field] = "title" unless ['title', 'created_at', 'updated_at'].include? hash[:sort_field]
-        hash[:sort_order] = "asc"   unless ['asc', 'desc'].include?                       hash[:sort_order]
+        hash[:sort_field] = "title" unless hash[:sort_field].in? ['title', 'created_at', 'updated_at']
+        hash[:sort_order] = "asc"   unless hash[:sort_order].in? ['asc', 'desc']
       end
     end
 
