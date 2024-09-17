@@ -214,6 +214,11 @@ class Admin::AssetsController < AdminController
       CreatePdfPageImageAssetJob.perform_later(@asset, page_num)
     end
 
+    # if we don't have a scaled_down_pdf derivative yet, kick off a job for that too!
+    unless @asset.file_derivatives[:screen_pdf].present?
+      CreateScaledDownPdfDerivativeJob.perform_later(@asset)
+    end
+
     redirect_to admin_asset_path(@asset), flash: { success: "Started creation of PDF page assets, it could take a few minutes to complete." }
   end
 
