@@ -11,10 +11,11 @@
   </div>
 
   <div class="show-hero">
-    <%= render MemberImageComponent.new(representative_member, size: :large) %>
+    <%# note the large hero one gets work_download_options %>
+    <%= render MemberImageComponent.new(representative_member, size: :large, work_download_options: work_download_options) %>
     <%= render "works/rights_and_social", work: work %>
 
-    <%= render WorkDownloadLinksComponent.new(work) %>
+    <%= render WorkDownloadLinksComponent.new(work, download_options: work_download_options) %>
   </div>
 
   <div class="show-metadata">
@@ -80,4 +81,4 @@
 </div>
 
 <%# hidden modal used by viewer %>
-<%= render 'scihist_image_viewer/scihist_viewer_modal', work: work  %>
+<%= render 'scihist_image_viewer/scihist_viewer_modal', work: work, work_download_options: work_download_options  %>
