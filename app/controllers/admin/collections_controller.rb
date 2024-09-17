@@ -9,7 +9,8 @@ class Admin::CollectionsController < AdminController
     # We're assuming if you can view the index, you can see all published and
     # unpublished collections.
 
-    # Searching, filtering, sorting and pagination:
+    # Searching, filtering, sorting and pagination.
+    # (This work used to be partly done by ransack, but it was too clunky).
     scope = Collection
     if params[:title_or_id].present?
       scope = scope.where(id: params[:title_or_id]
@@ -19,15 +20,20 @@ class Admin::CollectionsController < AdminController
         Collection.where("title ilike ?", "%" + Collection.sanitize_sql_like(params[:title_or_id]) + "%")
       )
     end
+
     if params[:department].present?
       scope = scope.where("json_attributes ->> 'department' = :department", department: params[:department])
       @department =  params[:department]
     end
+
     scope = scope.order(Arel.sql("#{params[:sort_field]} #{params[:sort_order]}"))
     @collections = scope.page(params[:page]).per(100)
   end
 
-  # Set up click-to-sort column headers for the table of collections:
+  # Set up click-to-sort column headers.
+  # Note that link_maker is not a component, but
+  # an object that can *return* a component.
+  # This code does NOT perform any actual sorting or filtering.
   def link_maker
     @link_maker ||= SortedTableHeaderLinkComponent.link_maker(
       params:               collection_params,
@@ -98,7 +104,6 @@ class Admin::CollectionsController < AdminController
     end
   end
 
-
   def representative
     @collection&.representative
   end
@@ -117,10 +122,24 @@ class Admin::CollectionsController < AdminController
   end
   helper_method :representative_dimensions_correct?
 
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_collection
       @collection = Collection.find_by_friendlier_id!(params[:id])
+    end
+
+    # Params method just for #index.
+    # Also sets default sort column and order.
+    # This does not actually perform any sorting or filtering.
+    def index_params
+      @index_params ||= Kithe::Parameters.new(params).permit(
+        :department, :page, :title_or_id,
+        :sort_field, :sort_order, :button
+      ).tap do |hash|
+        hash[:sort_field] = "title" unless ['title', 'created_at', 'updated_at'].include? hash[:sort_field]
+        hash[:sort_order] = "asc"   unless ['asc', 'desc'].include?                       hash[:sort_order]
+      end
     end
 
     # only allow whitelisted params through (TODO, we're allowing all collection params!)
@@ -129,24 +148,19 @@ class Admin::CollectionsController < AdminController
     # This could be done in a form object or otherwise abstracted, but this is good
     # enough for now.
     def collection_params
-      permitted_attributes = [
-        :title, :description, :department, :default_sort_field,
-        :page, :title_or_id, :collection, :sort_field, :sort_order,
-        :button
-      ]
+      return index_params if params[:action] == "index"
+
+      permitted_attributes = [:title, :description, :department, :default_sort_field]
       permitted_attributes << :published if can?(:publish, @collection || Kithe::Model)
 
       Kithe::Parameters.new(params).
+        require(:collection).
         permit(*permitted_attributes,
                 :representative_attributes => {},
                 :funding_credit_attributes => {},
                 :related_link_attributes => {},
                 :external_id_attributes => true
         ).tap do |hash|
-
-          # default sort for index is title:
-          hash[:sort_field] = "title" unless ['title', 'created_at', 'updated_at'].include? hash[:sort_field]
-          hash[:sort_order] = "asc"   unless ['asc', 'desc'].include?                       hash[:sort_order]
 
           # sanitize description
           if hash[:description].present?

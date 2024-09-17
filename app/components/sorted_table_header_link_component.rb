@@ -12,10 +12,10 @@
 #   @link_maker = SortedTableHeaderLinkComponent.link_maker(
 #     params:               collection_params, # the controller's permitted ActiveRecord params
 #     table_sort_field_key: :sort_field,       # keys for looking up the table's current sort field in the above
-#     table_sort_order_key: :sort_order        # keys for looking up the table's current sort order (asc or desc)
+#     table_sort_order_key: :sort_order,       # keys for looking up the table's current sort order (asc or desc)
+#     extra_param_keys:     [:title_or_id]     # any extra parameters you want to tack on to the URL.
 #   )
 #
-# SortedTableHeaderLinkComponent.link_maker also offers an optional extra_param_keys - pass in an array of param keys that are tacked on to all the links.
 #
 # Now, for each sortable column in the template, call @link_maker.link with the column info to render the actual title link:
 #   render(@link_maker.link(column_title: "title",         sort_field: "title"     ))
@@ -35,7 +35,7 @@ class SortedTableHeaderLinkComponent < ApplicationComponent
       params: params,
       table_sort_field_key: table_sort_field_key,
       table_sort_order_key: table_sort_order_key,
-      extra_param_keys: extra_param_keys
+      extra_param_keys:     extra_param_keys
     )
   end
 
@@ -55,7 +55,7 @@ class SortedTableHeaderLinkComponent < ApplicationComponent
   end
 
   def call
-    link_to sort_column_title,  sort_column_path
+    link_to sort_column_title, sort_column_path
   end
 
   def sort_column_path
@@ -79,7 +79,6 @@ class SortedTableHeaderLinkComponent < ApplicationComponent
     (@table_sort_order == "asc") ? "desc" : "asc"
   end
 
-
   # Nested class whose #link method returns a SortedTableHeaderLinkComponent.
   class LinkMaker
     # @param [ActionController::Parameters] params the permitted params from the controller
@@ -90,8 +89,7 @@ class SortedTableHeaderLinkComponent < ApplicationComponent
       # Look up the params using the keys we were given:
       @table_sort_field = params[table_sort_field_key]
       @table_sort_order = params[table_sort_order_key]
-      raise ArgumentError.new("Sort order needs to be asc or desc") unless ['asc', 'desc'].include? @table_sort_order
-      @extra_params =     params.slice(*extra_param_keys).to_h
+      @extra_params     = params.slice(*extra_param_keys).to_h
     end
 
     # @param [String] column_title The text of the link; the column title as displayed to the user.
@@ -100,7 +98,7 @@ class SortedTableHeaderLinkComponent < ApplicationComponent
     def link(column_title:, sort_field:)
       SortedTableHeaderLinkComponent.new(
         column_title: column_title,
-        sort_field: sort_field,
+        sort_field:   sort_field,
         
         table_sort_field: @table_sort_field,
         table_sort_order: @table_sort_order,
