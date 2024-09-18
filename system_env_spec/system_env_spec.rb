@@ -49,7 +49,7 @@ describe "System Environment" do
   end
 
   describe "vips" do
-    let(:version_requirements) { [">= 8.12.1", "< 8.15.0"] }
+    let(:version_requirements) { [">= 8.12.1", "< 9"] }
 
     it "is present" do
       `vips -h`
@@ -121,7 +121,7 @@ describe "System Environment" do
 
     it "has acceptable version" do
       `ffmpeg -version` =~ /ffmpeg version (\d+\.\d+(\.\d)?)/
-      expect($1).to match_version_requirements(">= 5.1.2", "< 7")
+      expect($1).to match_version_requirements(">= 5.1.2", "< 8")
     end
   end
 
@@ -132,7 +132,7 @@ describe "System Environment" do
 
     it "has acceptable version" do
       `ffprobe -version` =~ /ffprobe version (\d+\.\d+(\.\d)?)/
-      expect($1).to match_version_requirements(">= 5.1.2", "< 7")
+      expect($1).to match_version_requirements(">= 5.1.2", "< 8")
     end
 
     # this was a regression, requires ffmpeg to be linked correctly to network routines
