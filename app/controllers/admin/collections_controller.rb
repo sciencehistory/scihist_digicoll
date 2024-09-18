@@ -35,7 +35,7 @@ class Admin::CollectionsController < AdminController
   # This code does NOT perform any actual sorting or filtering.
   def link_maker
     @link_maker ||= SortedTableHeaderLinkComponent.link_maker(
-      params: collection_params,
+      params: index_params,
       table_sort_field_key: :sort_field,
       table_sort_order_key: :sort_order,
     )
@@ -146,8 +146,6 @@ class Admin::CollectionsController < AdminController
     # This could be done in a form object or otherwise abstracted, but this is good
     # enough for now.
     def collection_params
-      return index_params if params[:action] == "index"
-
       permitted_attributes = [:title, :description, :department, :default_sort_field]
       permitted_attributes << :published if can?(:publish, @collection || Kithe::Model)
 
