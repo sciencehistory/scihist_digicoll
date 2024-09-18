@@ -7,7 +7,10 @@
 #
 class ScaleDownPdf
   class_attribute :ghostscript_command, default: "gs"
-  class_attribute :ghostscript_pseudo_device, default: "screen"
+  # gs ebook pre-set is 150dpi, and we decided was best compromise for a screen view. 72 dpi
+  # "screen" preset looked chunky. 150 "ebook" looks good
+  class_attribute :ghostscript_pseudo_device, default: "ebook"
+  DPI = 150
 
   def call(original)
     output_tempfile = Tempfile.new([self.class.name, ".pdf"])
