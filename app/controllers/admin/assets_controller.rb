@@ -215,7 +215,7 @@ class Admin::AssetsController < AdminController
     end
 
     # if we don't have a scaled_down_pdf derivative yet, kick off a job for that too!
-    unless @asset.file_derivatives[:screen_pdf].present?
+    unless @asset.file_derivatives[AssetUploader::SCALED_PDF_DERIV_KEY].present?
       CreateScaledDownPdfDerivativeJob.perform_later(@asset)
     end
 

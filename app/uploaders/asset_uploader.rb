@@ -1,4 +1,6 @@
 class AssetUploader < Kithe::AssetUploader
+  SCALED_PDF_DERIV_KEY = :scaled_down_pdf
+
   # gives us md5, sha1, sha512
   plugin :kithe_checksum_signatures
 
@@ -96,7 +98,7 @@ class AssetUploader < Kithe::AssetUploader
   # only for work_source_pdf PDFs, we create a lower resolution "optimized for screen" PDF.
   # not automatically created by default, we call it was part of our `setup_work_from_pdf_source`
   # routine in CreatePdfPageImageAssetJob
-  Attacher.define_derivative(:screen_pdf, content_type: "application/pdf", default_create: false) do |original_file, attacher:|
+  Attacher.define_derivative(SCALED_PDF_DERIV_KEY, content_type: "application/pdf", default_create: false) do |original_file, attacher:|
     if attacher.record.role == PdfToPageImages::SOURCE_PDF_ROLE
       ScaleDownPdf.new.call(original_file)
     end

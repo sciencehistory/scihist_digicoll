@@ -169,9 +169,9 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
       expect(asset.parent.members.where(role: PdfToPageImages::EXTRACTED_PAGE_ROLE).count).to eq 1
 
       # scaled down derivative created
-      expect(asset.file_derivatives[:screen_pdf]).to be_present
-      expect(asset.file_derivatives[:screen_pdf].content_type).to eq "application/pdf"
-      expect(asset.file_derivatives[:screen_pdf].size).to be > 0
+      expect(asset.file_derivatives[AssetUploader::SCALED_PDF_DERIV_KEY]).to be_present
+      expect(asset.file_derivatives[AssetUploader::SCALED_PDF_DERIV_KEY].content_type).to eq "application/pdf"
+      expect(asset.file_derivatives[AssetUploader::SCALED_PDF_DERIV_KEY].size).to be > 0
     end
   end
 
