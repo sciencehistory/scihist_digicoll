@@ -67,11 +67,11 @@ class SortedTableHeaderLinkComponent < ApplicationComponent
   end
 
   def sort_column_title
-    "#{@column_title} #{sort_arrow if @sort_field == @table_sort_field}"
+    "#{@column_title}#{sort_arrow if @sort_field == @table_sort_field}"
   end
 
   def sort_arrow
-    (@table_sort_order == "asc") ? "▲" : "▼"
+    (@table_sort_order == "asc") ? " ▲" : " ▼"
   end
 
   def reversed_sort_order
