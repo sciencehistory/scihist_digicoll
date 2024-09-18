@@ -10,7 +10,6 @@ class Admin::CollectionsController < AdminController
     # unpublished collections.
 
     # Searching, filtering, sorting and pagination.
-    # (This work used to be partly done by ransack, but it was too clunky).
     scope = Collection
     if params[:title_or_id].present?
       scope = scope.where(id: params[:title_or_id]
@@ -137,6 +136,7 @@ class Admin::CollectionsController < AdminController
       ).tap do |hash|
         hash[:sort_field] = "title" unless hash[:sort_field].in? ['title', 'created_at', 'updated_at']
         hash[:sort_order] = "asc"   unless hash[:sort_order].in? ['asc', 'desc']
+        hash.delete("button")
       end
     end
 
