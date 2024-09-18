@@ -12,19 +12,23 @@ class ScaleDownPdf
   class_attribute :ghostscript_pseudo_device, default: "ebook"
   DPI = 150
 
-  def call(original)
+  # @param linearize [Boolean] "linearizing" with fast web view increases size somewhat, but makes web loading faster.
+  #     matters more the bigger PDFs, caller just tell us if you want it.
+  def call(original, linearize: false)
     output_tempfile = Tempfile.new([self.class.name, ".pdf"])
 
     cmd = TTY::Command.new(printer: :null)
 
     args = [
       ghostscript_command,
+      #
+      ("-dFastWebView" if linearize),
       "-sDEVICE=pdfwrite",
       "-dPDFSETTINGS=/#{ghostscript_pseudo_device}",
       "-q",
       "-o", output_tempfile.path,
       original.path
-    ]
+    ].compact
 
     cmd.run(*args)
 

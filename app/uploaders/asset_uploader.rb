@@ -100,7 +100,9 @@ class AssetUploader < Kithe::AssetUploader
   # routine in CreatePdfPageImageAssetJob
   Attacher.define_derivative(SCALED_PDF_DERIV_KEY, content_type: "application/pdf", default_create: false) do |original_file, attacher:|
     if attacher.record.role == PdfToPageImages::SOURCE_PDF_ROLE
-      ScaleDownPdf.new.call(original_file)
+      # linearizing increases file size a bit for faster display on download. Do it only for
+      # more than 3 pages and more than 2MB.
+      ScaleDownPdf.new.call(original_file, linearize: (attacher.record.file_metadata["page_count"].to_i > 3 && attacher.record.size > 2.megabytes.to_i))
     end
   end
 
