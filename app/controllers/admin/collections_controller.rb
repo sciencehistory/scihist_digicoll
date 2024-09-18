@@ -133,7 +133,7 @@ class Admin::CollectionsController < AdminController
     # This does not actually perform any sorting or filtering.
     def index_params
       @index_params ||= Kithe::Parameters.new(params).permit(
-        :sort_field, :sort_order, :department, :page, :title_or_id
+        :sort_field, :sort_order, :department, :page, :title_or_id, :button
       ).tap do |hash|
         hash[:sort_field] = "title" unless hash[:sort_field].in? ['title', 'created_at', 'updated_at']
         hash[:sort_order] = "asc"   unless hash[:sort_order].in? ['asc', 'desc']
