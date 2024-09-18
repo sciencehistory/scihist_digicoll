@@ -72,7 +72,8 @@ class WorkDownloadOptionsCreator
       subhead_parts << ScihistDigicoll::Util.simple_bytes_to_human_string(original_pdf_asset.size) if original_pdf_asset.size
 
       options << DownloadOption.new("Original PDF",
-        url: download_path(original_pdf_asset.file_category, original_pdf_asset),
+        url: download_path(original_pdf_asset.file_category, original_pdf_asset, disposition: :inline),
+        download_url: download_path(original_pdf_asset.file_category, original_pdf_asset),
         work_friendlier_id: work.friendlier_id,
         analyticsAction: "download_original",
         subhead: subhead_parts.compact.join(", "),
@@ -93,7 +94,8 @@ class WorkDownloadOptionsCreator
 
       options << DownloadOption.new("Screen-Optimized PDF",
         subhead: subhead_parts.compact.join(", "),
-        url: download_derivative_path(original_pdf_asset, AssetUploader::SCALED_PDF_DERIV_KEY),
+        url: download_derivative_path(original_pdf_asset, AssetUploader::SCALED_PDF_DERIV_KEY, disposition: :inline),
+        download_url: download_derivative_path(original_pdf_asset, AssetUploader::SCALED_PDF_DERIV_KEY),
         analyticsAction: "download_pdf_screen",
         work_friendlier_id: work.friendlier_id,
         content_type: "application/pdf"

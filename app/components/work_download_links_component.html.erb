@@ -2,13 +2,13 @@
   <% download_options.each do |download_option| %>
     <div class="on-page-work-downloads-item">
       <div class="image">
-        <%= link_to(download_option.url, data: download_option.data_attrs, tabindex: -1, "aria-label": download_button_label(download_option)) do %>
+        <%= link_to(download_option.url, data: download_option.data_attrs, tabindex: -1, "aria-label": download_button_label(download_option), target: "_blank") do %>
           <%= download_file_icon(download_option) %>
         <% end %>
       </div>
 
       <div class="text">
-          <%= link_to(download_option.url, data: download_option.data_attrs, tabindex: -1) do %>
+          <%= link_to(download_option.url, data: download_option.data_attrs, target: "_blank") do %>
             <%= download_option.label %>
           <% end %>
 
@@ -20,7 +20,7 @@
       </div>
 
       <div class="action">
-        <%= link_to(download_option.url, data: download_option.data_attrs, class: "btn btn-brand-main less-padding") do %>
+        <%= link_to(download_option.download_url, data: download_option.data_attrs, class: "btn btn-brand-main less-padding") do %>
           <%= download_button_label(download_option) %>
         <% end %>
       </div>
