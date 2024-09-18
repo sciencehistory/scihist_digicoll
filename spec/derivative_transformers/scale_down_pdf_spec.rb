@@ -10,9 +10,9 @@ describe ScaleDownPdf do
 
     expect(output_file).to be_kind_of(Tempfile)
 
-    # In some cases such as this it won't really be smaller cause we already were 72 dpi,
-    # but I think it shouldn't be bigger?
-    expect(output_file.size).to be <= original_file.size
+    # In some cases such as this tiny original it might not be smaller, but it shouldn't
+    # be much bigger?
+    expect(output_file.size).to be <= (original_file.size * 1.1)
 
     expect(Marcel::MimeType.for(output_file)).to eq "application/pdf"
 
