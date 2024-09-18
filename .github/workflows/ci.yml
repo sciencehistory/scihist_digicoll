@@ -47,7 +47,7 @@ jobs:
         - name: Install apt dependencies
           run: |
             sudo apt-get update
-            sudo apt-get -y install libvips-tools ffmpeg mediainfo tesseract-ocr qpdf imagemagick exiftool poppler-utils
+            sudo apt-get -y install libvips-tools ffmpeg mediainfo tesseract-ocr qpdf imagemagick exiftool poppler-utils ghostscript
 
         # GitHub Actions VMs come with a pre-installed version of node.js - as of early 2024, 18.19.1.
         # See package.json under key "engines", which lists allowed versions of node and yarn.

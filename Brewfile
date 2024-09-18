@@ -27,3 +27,5 @@ brew 'tesseract-lang'
 
 # For characterization
 brew 'exiftool'
+
+brew "ghostscript" # maybe already a dependency of vips but we also use directly for PDF downscaling
