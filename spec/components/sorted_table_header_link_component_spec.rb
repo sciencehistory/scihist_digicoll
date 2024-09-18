@@ -38,6 +38,15 @@ describe SortedTableHeaderLinkComponent, type: :component do
     end
   end
 
+  describe "different column title" do
+    let(:displayer) { link_maker.link(column_title: "*Title*", sort_field: "title") }
+    it "renders" do
+      with_request_url "/admin" do
+        expect(rendered.to_s).to eq '<a href="/admin?sort_field=title&amp;sort_order=desc">*Title* ▲</a>'
+      end
+    end
+  end
+
   describe "arrow matches current sort; clicking link changes direction of sort" do
     let(:params) {
       { sort_field:'title', sort_order: 'desc'}
