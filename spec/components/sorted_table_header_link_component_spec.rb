@@ -58,9 +58,9 @@ describe SortedTableHeaderLinkComponent, type: :component do
     let(:params) {
       { sort_field:'department', sort_order: 'desc' }
     }
-    it "does not show arrow; preserves the direction of the previous sort" do
+    it "does not show arrow; link is for default asc" do
       with_request_url "/admin" do
-        expect(rendered.to_s).to eq '<a href="/admin?sort_field=title&amp;sort_order=desc">Title</a>'
+        expect(rendered.to_s).to eq '<a href="/admin?sort_field=title&amp;sort_order=asc">Title</a>'
       end
     end
   end
@@ -71,7 +71,7 @@ describe SortedTableHeaderLinkComponent, type: :component do
     }
     it "tacked on to the link" do
       with_request_url "/admin" do
-        expect(rendered.to_s).to eq  '<a href="/admin?search_phrase=goat&amp;sort_field=title&amp;sort_order=desc">Title</a>'
+        expect(rendered.to_s).to eq  '<a href="/admin?search_phrase=goat&amp;sort_field=title&amp;sort_order=asc">Title</a>'
       end
     end
   end
