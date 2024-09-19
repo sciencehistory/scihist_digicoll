@@ -75,6 +75,8 @@
       %>
     </div>
   </div>
+  <%= hidden_field_tag :sort_field,   params[:sort_field]%>
+  <%= hidden_field_tag :sort_order,   params[:sort_order]%>
 <% end %>
 
 <%= render PageEntriesInfoComponent.new(@works) %>
