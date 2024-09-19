@@ -33,7 +33,7 @@
 # we don't want to show people the placeholder, this is just a fail-safe to avoid
 # showing non-public content in case of other errors.
 class MemberImageComponent < ApplicationComponent
-  attr_reader :size, :lazy, :member, :image_label
+  attr_reader :size, :lazy, :member, :image_label, :work_download_options
 
   delegate :can?, to: :helpers
 
@@ -57,12 +57,16 @@ class MemberImageComponent < ApplicationComponent
   #    Will be used to construct labels like "View Image 10".  Will default to `alt_text` set on
   #    Asset, if present. Not actually necessarily suitable "alt" text, instead
   #    it's used to construct action labels like that!
-  def initialize(member, size: :standard, lazy: false, image_label: nil)
+  #
+  #  @param work_download_options [Array<DownloadOption>] sometimes we want to show them, sometimes we
+  #     don't, and they are expensive, so pass them in if you want them.
+  def initialize(member, size: :standard, lazy: false, image_label: nil, work_download_options: nil)
     @lazy = !!lazy
     @size = size
     @member = member
 
     @image_label = image_label
+    @work_download_options = work_download_options
   end
 
   def call
@@ -166,7 +170,7 @@ class MemberImageComponent < ApplicationComponent
   def download_button
     # We only include whole-work download menu section for large size, used as hero.
     render DownloadDropdownComponent.new(representative_asset,
-                                          include_whole_work_options: (size == :large),
+                                          work_download_options: work_download_options,
                                           display_parent_work: member.parent,
                                           aria_label: ("Download #{image_label}" if image_label),
                                           btn_class_name: btn_class_name)

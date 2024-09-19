@@ -1,11 +1,27 @@
 # frozen_string_literal: true
 
 # ON-PAGE download links for Work page, for whole-work downloads
+#
+# We use a list of DownloadOption elements, but format them on page -- and change name/subhead
+# from usual in some cases.
 class WorkDownloadLinksComponent < ApplicationComponent
-  attr_reader :work
+  attr_reader :work, :download_options
 
-  def initialize(work)
+  def initialize(work, download_options:)
     @work = work
+
+    @download_options = download_options
+
+    if has_searchable_pdf?
+      # override some values in options
+      @download_options.collect! do |option|
+        if option.analyticsAction.to_s == "download_pdf"
+          option.dup_with("Searchable PDF", subhead: "may contain errors")
+        else
+          option
+        end
+      end
+    end
   end
 
   def has_searchable_pdf?
@@ -18,35 +34,20 @@ class WorkDownloadLinksComponent < ApplicationComponent
     @has_searchable_pdf = work.ocr_requested? # && !WorkShowOcrComponent.new(work).asset_ocr_count_warning?
   end
 
-  # has some PDF as long as we have at least ONE published image
-  def has_any_pdf?
-    return @has_any_pdf if defined?(@has_any_pdf)
 
-    @has_any_pdf = work &&
-      work.published? &&
-      work.member_count > 0 &&
-      work.member_content_types(mode: :query).any? {|t| t.start_with?("image/")}
+  def download_button_label(download_option)
+    case download_option.data_attrs[:derivative_type].to_s
+    when "pdf_file" ; "Download PDF"
+    when "zip_file" ; "Download ZIP"
+    else "Download"
+    end
   end
 
-  def has_downloadable_zip?
-    return @has_downloadable_zip if defined?(@has_downloadable_zip)
-
-    # We use DownloadDropdownComponent to try to decide if it's going to have a ZIP link or not
-    # using same logic it will...
-    @has_downloadable_zip = DownloadDropdownComponent.work_has_multiple_published_images?(work)
-  end
-
-  def pdf_download_option
-    # We don't actually use label, but want to get attributes out
-    @pdf_download_option ||= DownloadOption.for_on_demand_derivative(
-        label: "", derivative_type: "pdf_file", work_friendlier_id: work.friendlier_id
-      )
-  end
-
-  def zip_download_option
-    # We don't actually use label, but want to get attributes out
-    @zip_download_option ||= DownloadOption.for_on_demand_derivative(
-      label: "", derivative_type: "zip_file", work_friendlier_id: work.friendlier_id
-    )
+  def download_file_icon(download_option)
+    case download_option.data_attrs[:derivative_type].to_s
+    when "pdf_file" ; helpers.file_earmark_pdf_fill_svg
+    when "zip_file" ; helpers.file_earmark_zip_fill_svg
+    else "x"
+    end
   end
 end

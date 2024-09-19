@@ -6,10 +6,14 @@
 class WorkImageShowComponent < ApplicationComponent
   delegate :construct_page_title, :current_user, to: :helpers
 
-  attr_reader :work
+  attr_reader :work, :work_download_options
 
   def initialize(work)
     @work = work
+
+    # work download options are expensive, so we calculate them here so we can use them
+    # in several places
+    @work_download_options = WorkDownloadOptionsCreator.new(work).options
   end
 
   # Public members, ordered, to be displayed as thumbnails
