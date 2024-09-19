@@ -21,7 +21,6 @@
 #   render(@link_maker.link(column_title: "Created",       sort_field: "created_at"))
 #   render(@link_maker.link(column_title: "Last Modified", sort_field: "updated_at"))
 class SortedTableHeaderLinkComponent < ApplicationComponent
-
   # @param [ActionController::Parameters] params the permitted params from the controller
   # @param [Symbol] table_sort_field_key the current sort field of the table.
   # @param [Symbol] table_sort_order_key the current sort order of the table.
@@ -47,10 +46,10 @@ class SortedTableHeaderLinkComponent < ApplicationComponent
     table_sort_field_key: :sort_field, table_sort_order_key: :sort_order,
     other_params:)
     unless column_title.present? && sort_field.present?
-      raise ArgumentError.new("Missing arguments: column_title or sort field") 
+      raise ArgumentError.new("Missing arguments: column_title or sort field")
     end
     unless table_sort_order.in? ['asc', 'desc']
-      raise ArgumentError.new("Sort order needs to be asc or desc") 
+      raise ArgumentError.new("Sort order needs to be asc or desc")
     end
     @column_title = column_title
     @sort_field = sort_field
@@ -67,30 +66,19 @@ class SortedTableHeaderLinkComponent < ApplicationComponent
 
 
   def sort_column_path
+    # if we're generating a link for the currently sorted-upon field which is currently
+    # `asc`, we reverse it to `desc` in the selected sort -- otherwise the click is always requesting `asc`,
+    # our default.
+    new_table_sort_order = if @sort_field == @table_sort_field && @table_sort_order == 'asc'
+      'desc'
+    else
+      'asc'
+    end
+
     url_param_hash = @other_params || {}
     url_param_hash[@table_sort_field_key] = @sort_field
+    url_param_hash[@table_sort_order_key] = new_table_sort_order
 
-    # SORT ORDER:
-    # We support only two possible sort orders: ascending and descending.
-    # We are not managing default per-column sort orders.
-    if @sort_field == @table_sort_field
-      # IF the column whose title we want to display is the *same*
-      # as the column the table is currently sorted by,
-      # THEN, IF the user clicks on this title,
-      #  we reverse the direction of the sort.
-      url_param_hash[@table_sort_order_key] = reversed_sort_order
-    else
-      # For columns OTHER than the one the table is currently sorted by,
-      # clicking the title of the column will sort the table by that column,
-      # in an arbitrary order.
-      #
-      # That order (whether asc or desc) *happens* to be the same as whatever we were using
-      # to sort a different column before the click, but it is arbitrary nonetheless.
-      #
-      # If the user is not happy with that order, s/he can click the link again to
-      # toggle the sort direction.
-      url_param_hash[@table_sort_order_key] = @table_sort_order
-    end
     url_for url_param_hash
   end
 
@@ -100,10 +88,6 @@ class SortedTableHeaderLinkComponent < ApplicationComponent
 
   def sort_arrow
     (@table_sort_order == "asc") ? " ▲" : " ▼"
-  end
-
-  def reversed_sort_order
-    (@table_sort_order == "asc") ? "desc" : "asc"
   end
 
   # Nested class whose #link method returns a SortedTableHeaderLinkComponent.
