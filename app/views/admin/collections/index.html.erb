@@ -27,6 +27,8 @@
           class: "custom-select" %>
     </div>
   </div>
+  <%= hidden_field_tag :sort_field,   params[:sort_field]%>
+  <%= hidden_field_tag :sort_order,   params[:sort_order]%>
 <% end %>
 
 <% if @collections.total_count > 0 %>
