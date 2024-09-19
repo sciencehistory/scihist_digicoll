@@ -52,9 +52,9 @@
     </div>
 
     <div class="admin-filter">
-      <label for="parent_id_null">Child Works</label>
-      <%= select_tag "parent_id_null",
-            options_for_select({"Yes" => "", "No" => true}, params[:parent_id_null]),
+      <label for="include_child_works">Child Works</label>
+      <%= select_tag "include_child_works",
+            options_for_select({ "Yes" => true, "No" => false}, (params[:include_child_works] || "false")),
             class: "custom-select"
       %>
     </div>

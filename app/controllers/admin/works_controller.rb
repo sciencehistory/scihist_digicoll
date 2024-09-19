@@ -19,6 +19,8 @@ class Admin::WorksController < AdminController
   def index
     # No authorize! call here. We're assuming if you can view the
     # index, you can see all published and unpublished works.
+    params = index_params
+
     scope = Work
     if params[:title_or_id].present?
       scope = scope.where("(title ILIKE ? OR friendlier_id ILIKE ? OR id = ?)",
@@ -52,10 +54,12 @@ class Admin::WorksController < AdminController
     elsif params[:published] == 'false'
       scope = scope.where(published: false)
     end
+    if params[:include_child_works] == 'false'
+      scope = scope.where("parent_id IS NULL")
+    end
 
     scope = scope.order(Arel.sql("#{params[:sort_field]} #{params[:sort_order]}"))
     @works =  scope.includes(:leaf_representative).page(params[:page]).per(20)
-
 
     @cart_presence = CartPresence.new(@works.collect(&:friendlier_id), current_user: current_user)
   end
@@ -71,12 +75,21 @@ class Admin::WorksController < AdminController
 
   def index_params
     @index_params ||= Kithe::Parameters.new(params).permit(
-      :button, :sort_field, :sort_order, :department, :page, :title_or_id, :published, :genre, :format, :parent_id_null, :ocr_requested, :review_requested
+      :button, # irksome
+      :sort_field, :sort_order, :department, :page,
+      :title_or_id, :published, :genre, :format, :include_child_works,
+      :ocr_requested, :review_requested
     ).tap do |hash|
-      hash[:sort_field] = "updated_at" unless hash[:sort_field].in? ['friendlier_id', 'title', 'created_at', 'updated_at']
-      hash[:sort_order] = "desc"   unless hash[:sort_order].in? ['asc', 'desc']
-      hash[:parent_id_null] = true if hash[:parent_id_null].nil?
-      hash.delete("button")
+      hash.delete("button") # irksome
+      unless hash[:sort_field].in? ['friendlier_id', 'title', 'created_at', 'updated_at']
+        hash[:sort_field] = "updated_at"
+      end
+      unless hash[:sort_order].in? ['asc', 'desc']
+        hash[:sort_order] = "desc"
+      end
+      unless hash[:include_child_works] == "true"
+        hash[:include_child_works] = "false"
+      end
     end
   end
 
