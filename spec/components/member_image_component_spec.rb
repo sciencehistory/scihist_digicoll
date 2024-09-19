@@ -28,6 +28,10 @@ describe MemberImageComponent, type: :component do
         expect(poster_link["tabindex"]).to eq "-1"
         expect(poster_link["aria-hidden"]).to eq "true"
       end
+    end
+
+    describe "with whole-work download options passed in" do
+      let(:presenter) { MemberImageComponent.new(member, size: :large, work_download_options: WorkDownloadOptionsCreator.new(parent).options) }
 
       it "download button includes whole-work derivatives" do
         expect(wrapper_div).to have_selector(".btn-group.downloads a.dropdown-item:contains('ZIP')")

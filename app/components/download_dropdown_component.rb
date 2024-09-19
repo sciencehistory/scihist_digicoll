@@ -10,12 +10,6 @@
 #     # Don't know if it's a work or an asset?
 #     DownloadDropdownComponent.new(member.leaf_representative, display_parent_work: work)
 #
-# This class uses other "DownloadOptions" classes to actually figure out the
-# appropriate options for a given asset of given type and state, if you need
-# that info directly to present in some other way, see those classes in
-# app/presenters/download_options. (Right now the logic for picking _which_ one of
-# those to use for a given asset is in here, but could be extracted out.)
-#
 # `display_parent_work` is used for determining any "whole-work" download options (zip or pdf
 # of images), and will have it's `members` and their leaf_representatives accessed,
 # so should have them pre-loaded to avoid n+1 queries if needed.
@@ -41,29 +35,40 @@
 #
 # (This is a bit hacky)
 #
+# ## Whole-work options
+#
+# Are passed in as an array of DownloadOptions.  These can be complicated and expensive to calculate,
+# so if you are displaying many DownloadDropdownComponent for same work, best to cache them
+# and re-use them. WorkDownloadOptionsCreator class can calculate them.
+#
 class DownloadDropdownComponent < ApplicationComponent
-  attr_reader :display_parent_work, :asset, :aria_label, :btn_class_name, :include_whole_work_options
+  attr_reader :display_parent_work, :asset, :aria_label, :btn_class_name, :work_download_options
 
 
   # @param asset [Asset] asset to display download links for
   # @param display_parent_work [Work] the Work we are in the context of displaying, used
-  #   to determine whole-work download links (zip or pdf of all images), will have it's
-  #   `members` and their `leaf_representative`s accessed so should be pre-loaded if needed for performance.
+  #   for rights statements, counts of children in headings, and other things.
   #
   #   We don't just get from asset.parent, because intervening child work hieararchy
   #   may make it complicated, we need to be told our display parent context.
   #
-  #   display_parent_work is also used for determining "rights" statement.
   # @param use_link [Boolean], default false, if true will make the link that opens the menu an
   #   ordinary hyperlink, instead of a button (used on audio playlist).
+  #
   # @param aria_label [String] aria_label for the primary "Download" button, we
   #   use to make it more specific like "Download Image 1" to avoid tons of
   #   identical "Download" buttons on page.
+  #
   # @param btn_class_name [String] default "btn-brand-alt", but maybe you want "btn-brand-main".
   #   The specific btn theme added on to bootstrap `btn` that will be there anyway.
+  #
+  # @param work_download_options [Array<DownloadOption>] should we include whole-work download options?
+  #   As they are somewhat expensive to calculate and context-dependent, caller should pass in
+  #   already calculated if desired! And up to caller to make sure they are computed and cached
+  #   efficiently and not calculated many times over and over again for same work.
   def initialize(asset,
       display_parent_work:,
-      include_whole_work_options: false,
+      work_download_options: nil,
       use_link: false,
       viewer_template: false,
       aria_label: nil,
@@ -80,7 +85,7 @@ class DownloadDropdownComponent < ApplicationComponent
     @asset = asset
     @aria_label = aria_label
     @btn_class_name = btn_class_name
-    @include_whole_work_options = include_whole_work_options
+    @work_download_options = work_download_options || [] # empty array not nil or false
   end
 
   def call
@@ -122,7 +127,10 @@ class DownloadDropdownComponent < ApplicationComponent
       # want it in individual image download options, as per
       # https://github.com/sciencehistory/scihist_digicoll/issues/2278
       #
-      DownloadOptions::ImageDownloadOptions.new(asset, show_pdf_link: (!has_work_download_options? && display_parent_work&.published? && asset.content_type.start_with?("image/"))).options
+      # If we only have ONE member, we just merge any whole work options in
+      # to accomodate this and other edge cases
+      #
+      ( display_parent_work&.member_count == 1 ? work_download_options : []) + DownloadOptions::ImageDownloadOptions.new(asset).options
    end
   end
 
@@ -198,9 +206,9 @@ class DownloadDropdownComponent < ApplicationComponent
       elements << content_tag("div", nil,  class:'dropdown-divider')
     end
 
-    if include_whole_work_options && has_work_download_options?
+    if has_work_download_options?
       elements << content_tag("h3", "Download all #{display_parent_work.member_count} images", class:'dropdown-header')
-      whole_work_download_options.each do |download_option|
+      work_download_options.each do |download_option|
         elements << format_download_option(download_option)
       end
       elements << content_tag("div", nil,  class:'dropdown-divider')
@@ -239,41 +247,9 @@ class DownloadDropdownComponent < ApplicationComponent
     render(RightsIconComponent.new(mode: :dropdown_item, rights_id: display_parent_work&.rights, work: display_parent_work))
   end
 
-  # have a PUBLISHED parent work, with more than 1 child, and AT LEAST ONE of it's children are images,
-  # provide multi-image downloads. These are the only whole-work-download options we provide at present.
-  #
-  # (Our current PDF and Zip creators only create for published items, they can't create
-  # for non-published items. But we don't have an easy way to efficiently access
-  # number of published child items, we just use the parent being unpublished as a proxy
-  # for "not ready")
-  #
-  # NOTE: We had been checking to make sure ALL members were images, but that was FAR
-  # too resource intensive, it destroyed ramelli. Checking just one is okay though.
   def has_work_download_options?
-    return @has_work_download_options if defined?(@has_work_download_options)
-
-    @has_work_download_options = self.class.work_has_multiple_published_images?(display_parent_work)
+    # if the member count is only 1, we don't display a whole-work section, we just merge
+    # any whole-work options into the current asset section
+    display_parent_work&.member_count.to_i > 1 && work_download_options.present?
   end
-
-  # Extracted for re-use in other places, see #has_work_download_options?
-  def self.work_has_multiple_published_images?(work)
-    work &&
-    work.published? &&
-    work.member_count > 1 &&
-    work.member_content_types(mode: :query).all? {|t| t.start_with?("image/")}
-  end
-
-  def whole_work_download_options
-    return [] unless has_work_download_options?
-
-    [
-      DownloadOption.for_on_demand_derivative(
-        label: "PDF", derivative_type: "pdf_file", work_friendlier_id: @asset&.parent&.friendlier_id
-      ),
-      DownloadOption.for_on_demand_derivative(
-        label: "ZIP", derivative_type: "zip_file", work_friendlier_id: @asset&.parent&.friendlier_id
-      )
-    ]
-  end
-
 end
