@@ -1,6 +1,6 @@
 class Admin::CollectionsController < AdminController
   before_action :set_collection, only: [:show, :edit, :update, :destroy]
-  before_action :link_maker, only: [:index]
+  before_action :sort_link_maker, only: [:index]
 
   # GET /collections
   # GET /collections.json
@@ -10,7 +10,6 @@ class Admin::CollectionsController < AdminController
     # unpublished collections.
 
     # Searching, filtering, sorting and pagination.
-    params.delete("button")
     scope = Collection
     if params[:title_or_id].present?
       scope = scope.where(id: params[:title_or_id]
@@ -31,17 +30,10 @@ class Admin::CollectionsController < AdminController
   end
 
   # Set up click-to-sort column headers.
-  # Note that link_maker is not a component, but
-  # an object that can *return* a component.
-  # This code does NOT perform any actual sorting or filtering.
-  def link_maker
-    @link_maker ||= SortedTableHeaderLinkComponent.link_maker(
-      params: index_params,
-      table_sort_field_key: :sort_field,
-      table_sort_order_key: :sort_order,
-    )
+  def sort_link_maker
+    @sort_link_maker ||= SortedTableHeaderLinkComponent.link_maker params: index_params
   end
-  helper_method :link_maker
+  helper_method :sort_link_maker
 
   # GET /collections/1
   # GET /collections/1.json

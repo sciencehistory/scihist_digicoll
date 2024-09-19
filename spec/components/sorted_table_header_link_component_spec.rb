@@ -13,11 +13,7 @@ describe SortedTableHeaderLinkComponent, type: :component do
     end
   }
   let(:link_maker) {
-  	SortedTableHeaderLinkComponent.link_maker(
-      params: permitted_params,
-      table_sort_field_key: :sort_field,
-      table_sort_order_key: :sort_order,
-    )
+  	SortedTableHeaderLinkComponent.link_maker params: permitted_params
   }
   let(:displayer) { link_maker.link(column_title: "Title", sort_field: "title") }
   let(:rendered) { render_inline displayer }
@@ -62,9 +58,9 @@ describe SortedTableHeaderLinkComponent, type: :component do
     let(:params) {
       { sort_field:'department', sort_order: 'desc' }
     }
-    it "does not show arrow" do
+    it "does not show arrow; preserves the direction of the previous sort" do
       with_request_url "/admin" do
-        expect(rendered.to_s).to eq '<a href="/admin?sort_field=title">Title</a>'
+        expect(rendered.to_s).to eq '<a href="/admin?sort_field=title&amp;sort_order=desc">Title</a>'
       end
     end
   end
@@ -75,8 +71,30 @@ describe SortedTableHeaderLinkComponent, type: :component do
     }
     it "tacked on to the link" do
       with_request_url "/admin" do
-        expect(rendered.to_s).to eq  '<a href="/admin?search_phrase=goat&amp;sort_field=title">Title</a>'
+        expect(rendered.to_s).to eq  '<a href="/admin?search_phrase=goat&amp;sort_field=title&amp;sort_order=desc">Title</a>'
       end
     end
   end
+
+  describe "arbirary sort field and order keys" do
+    let(:params) {
+      { sf: 'title', so: 'asc'}
+    }
+    let(:permitted_params) { Kithe::Parameters.new(params).permit :sf, :so }
+    let(:link_maker) {
+      SortedTableHeaderLinkComponent.link_maker(
+        params: permitted_params,
+        table_sort_field_key: :sf,
+        table_sort_order_key: :so,
+      )
+    }
+    let(:displayer) { link_maker.link(column_title: "Column_1", sort_field: "col_1") }
+    it "params keys are not hardcoded" do
+      with_request_url "/admin?sf=col_2&so=asc" do
+        expect(rendered.to_s).to eq  '<a href="/admin?sf=col_1&amp;so=asc">Column_1</a>'
+      end
+    end
+  end
+
+
 end

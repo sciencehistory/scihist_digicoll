@@ -12,7 +12,7 @@ class Admin::WorksController < AdminController
            :remove_searchable_transcript_source, :create_combined_audio_derivatives, :update_oh_available_by_request,
            :update_oral_history_content]
 
-  before_action :link_maker, only: [:index]
+  before_action :sort_link_maker, only: [:index]
 
   # GET /admin/works
   # GET /admin/works.json
@@ -64,14 +64,10 @@ class Admin::WorksController < AdminController
     @cart_presence = CartPresence.new(@works.collect(&:friendlier_id), current_user: current_user)
   end
 
-  def link_maker
-    @link_maker ||= SortedTableHeaderLinkComponent.link_maker(
-      params: index_params,
-      table_sort_field_key: :sort_field,
-      table_sort_order_key: :sort_order,
-    )
+  def sort_link_maker
+    @sort_link_maker ||= SortedTableHeaderLinkComponent.link_maker params: index_params
   end
-  helper_method :link_maker
+  helper_method :sort_link_maker
 
   def index_params
     @index_params ||= Kithe::Parameters.new(params).permit(

@@ -85,10 +85,10 @@
   <thead>
     <tr>
       <th class="thumbnail">thumbnail</th>
-      <th class="id"><%=        render @link_maker.link(column_title: "ID",            sort_field: "friendlier_id") %></th>
-      <th class="title"><%=     render @link_maker.link(column_title: "Title",         sort_field: "title") %></th>
-      <th class="datestamp"><%= render @link_maker.link(column_title: "Created",       sort_field: "created_at") %></th>
-      <th class="datestamp"><%= render @link_maker.link(column_title: "Last Modified", sort_field: "updated_at") %></th>
+      <th class="id"><%=        render @sort_link_maker.link(column_title: "ID",            sort_field: "friendlier_id") %></th>
+      <th class="title"><%=     render @sort_link_maker.link(column_title: "Title",         sort_field: "title") %></th>
+      <th class="datestamp"><%= render @sort_link_maker.link(column_title: "Created",       sort_field: "created_at") %></th>
+      <th class="datestamp"><%= render @sort_link_maker.link(column_title: "Last Modified", sort_field: "updated_at") %></th>
       <th class="action"></th>
       <% if can?(:update, Kithe::Model) %>
         <th>Cart</th>
