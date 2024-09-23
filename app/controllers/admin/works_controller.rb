@@ -70,13 +70,12 @@ class Admin::WorksController < AdminController
   helper_method :sort_link_maker
 
   def index_params
-    @index_params ||= Kithe::Parameters.new(params).permit(
-      :button, # irksome
+    @index_params ||= params.permit(
+      :button,
       :sort_field, :sort_order, :department, :page,
       :title_or_id, :published, :genre, :format, :include_child_works,
       :ocr_requested, :review_requested
     ).tap do |hash|
-      hash.delete("button") # irksome
       unless hash[:sort_field].in? ['friendlier_id', 'title', 'created_at', 'updated_at']
         hash[:sort_field] = "updated_at"
       end
