@@ -58,7 +58,7 @@ class Admin::WorksController < AdminController
       scope = scope.where("parent_id IS NULL")
     end
 
-    scope = scope.order(Arel.sql("#{params[:sort_field]} #{params[:sort_order]}"))
+    scope.order(index_params[:sort_field] => index_params[:sort_order])
     @works =  scope.includes(:leaf_representative).page(params[:page]).per(20)
 
     @cart_presence = CartPresence.new(@works.collect(&:friendlier_id), current_user: current_user)
