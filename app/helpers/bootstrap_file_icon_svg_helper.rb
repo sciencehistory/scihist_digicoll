@@ -31,6 +31,14 @@ module BootstrapFileIconSvgHelper
     EOS
   end
 
+  def file_earmark_fill_svg
+    <<-EOS.strip_heredoc.html_safe
+      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="16" fill="currentColor" class="bi bi-file-earmark-fill" viewBox="0 0 12 16">
+        <path d="M 2,0 H 7.293 A 1,1 0 0 1 8,0.293 L 11.707,4 A 1,1 0 0 1 12,4.707 V 14 a 2,2 0 0 1 -2,2 H 2 A 2,2 0 0 1 0,14 V 2 A 2,2 0 0 1 2,0 m 5.5,1.5 v 2 a 1,1 0 0 0 1,1 h 2 z" id="path2" />
+      </svg>
+    EOS
+  end
+
   def bi_check_circle_fill_svg
     <<-EOS.strip_heredoc.html_safe
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
@@ -38,6 +46,7 @@ module BootstrapFileIconSvgHelper
       </svg>
     EOS
   end
+
 
   # okay, actually from fontawesome.
   # https://fontawesome.com/icons/file-audio?f=classic&s=solid

@@ -12,6 +12,8 @@
 # for "not ready")
 #
 class WorkDownloadOptionsCreator
+  include Rails.application.routes.url_helpers
+
   attr_reader :work, :options
 
   def initialize(work)
@@ -20,6 +22,10 @@ class WorkDownloadOptionsCreator
   end
 
   protected
+
+  def has_original_pdf?
+    original_pdf_asset.present?
+  end
 
   def has_constructed_pdf?
     return @has_constructed_pdf if defined? @has_constructed_pdf
@@ -40,10 +46,29 @@ class WorkDownloadOptionsCreator
   end
 
 
+  def original_pdf_asset
+    return @original_pdf_asset if defined? @original_pdf_asset
+
+    @original_pdf_asset = work.members.where(role: PdfToPageImages::SOURCE_PDF_ROLE).first
+  end
+
   def construct_options
     options = []
 
-    if has_constructed_pdf?
+    if has_original_pdf?
+      subhead_parts = []
+      subhead_parts << "#{original_pdf_asset.file_metadata["page_count"]} pages" if original_pdf_asset.file_metadata["page_count"].present?
+      subhead_parts << ScihistDigicoll::Util.simple_bytes_to_human_string(original_pdf_asset.size) if original_pdf_asset.size
+
+      options << DownloadOption.new("Original PDF",
+        url: download_path(original_pdf_asset.file_category, original_pdf_asset),
+        work_friendlier_id: work.friendlier_id,
+        analyticsAction: "download_original",
+        subhead: subhead_parts.compact.join(", "),
+        content_type: "application/pdf"
+
+      )
+    elsif has_constructed_pdf?
       options << DownloadOption.for_on_demand_derivative(
         label: "PDF", derivative_type: "pdf_file", work_friendlier_id: work.friendlier_id
       )

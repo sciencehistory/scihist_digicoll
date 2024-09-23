@@ -102,10 +102,17 @@ describe DownloadFilenameHelper, type: :model do
       expect(DownloadFilenameHelper.filename_for_asset(asset, derivative_key: derivative_key)).to eq "plastics_make_the_#{asset.parent.friendlier_id}_12_#{asset.friendlier_id}_#{derivative_key}.jpeg"
     end
 
-    describe "PDF asset" do
-      let(:asset) { create(:asset_with_faked_file, :pdf) }
+    describe "OH PDF asset" do
+      let(:asset) { create(:asset_with_faked_file, :pdf, role: "front_matter") }
       it "uses original filename plus ID" do
         expect(DownloadFilenameHelper.filename_for_asset(asset)).to eq("#{File.basename(asset.original_filename, '.*')}_#{asset.friendlier_id}#{File.extname(asset.original_filename)}")
+      end
+    end
+
+    describe "non-OH PDF asset" do
+      let(:asset) { create(:asset_with_faked_file, :pdf, position: 1, parent: create(:work, title: "Plastics make the package Dow makes the plastics")) }
+      it "uses work title" do
+        expect(DownloadFilenameHelper.filename_for_asset(asset)).to eq("plastics_make_the_#{asset.parent.friendlier_id}_1_#{asset.friendlier_id}.pdf")
       end
     end
 
