@@ -124,6 +124,11 @@
   resolved "https://registry.yarnpkg.com/@esbuild/win32-x64/-/win32-x64-0.20.2.tgz#9c907b21e30a52db959ba4f80bb01a0cc403d5cc"
   integrity sha512-N49X4lJX27+l9jbLKSqZ6bKNjzQvHaT8IIFUy+YIqmXQdjYCToGWwOItDrfby14c78aDd5NHQl29xingXfCdLQ==
 
+"@kurkle/color@^0.3.0":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@kurkle/color/-/color-0.3.2.tgz#5acd38242e8bde4f9986e7913c8fdf49d3aa199f"
+  integrity sha512-fuscdXJ9G1qb7W8VdHi+IwRqij3lBkosAm4ydQtEmbY58OzHXqQhvlxqEkoz0yssNVn38bcpRWgA9PP+OGoisw==
+
 "@nathanvda/cocoon@^1.2.14":
   version "1.2.14"
   resolved "https://registry.yarnpkg.com/@nathanvda/cocoon/-/cocoon-1.2.14.tgz#aaea910e4b9c0d28d5bdcb7f3743617db46b09af"
@@ -361,6 +366,13 @@ braces@^3.0.3, braces@~3.0.2:
   integrity sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==
   dependencies:
     fill-range "^7.1.1"
+
+"chart.js@^ 4.4.1":
+  version "4.4.4"
+  resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-4.4.4.tgz#b682d2e7249f7a0cbb1b1d31c840266ae9db64b7"
+  integrity sha512-emICKGBABnxhMjUjlYRR12PmOXhJ2eJjEHL2/dZlWjxRAZT1D8xplLFq5M0tMQK8ja+wBS/tuVEJB5C6r7VxJA==
+  dependencies:
+    "@kurkle/color" "^0.3.0"
 
 "chokidar@>=3.0.0 <4.0.0":
   version "3.5.3"
