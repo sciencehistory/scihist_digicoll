@@ -40,10 +40,10 @@
     %>
     <%= vite_client_tag %>
     <%= vite_javascript_tag 'application', defer: true %>
-    <%= javascript_include_tag "import_blacklight_range_limit", defer: true %>
+    <%# javascript_include_tag "import_blacklight_`limit", defer: true %>
 
     <%= vite_stylesheet_tag 'application.scss', media: "all" %>
-    <%= stylesheet_link_tag "import_blacklight_range_limit", media: "all" %>
+    <%# stylesheet_link_tag "import_blacklight_range_limit", media: "all" %>
 
     <%= render "layouts/head_tag_common" %>
 
