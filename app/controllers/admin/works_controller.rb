@@ -82,8 +82,28 @@ class Admin::WorksController < AdminController
       unless hash[:sort_order].in? ['asc', 'desc']
         hash[:sort_order] = "desc"
       end
+      if hash[:title_or_id].present?
+        hash[:title_or_id] = Work.sanitize_sql_like(hash[:title_or_id])
+      end
+      if hash[:department].present? && !hash[:department].in?(Work::ControlledLists::DEPARTMENT)
+        raise ArgumentError.new("Unrecognized department: #{hash[:department]}")
+      end
+      if hash[:genre].present? && !hash[:genre].in?(Work::ControlledLists::GENRE)
+        raise ArgumentError.new("Unrecognized genre: #{hash[:genre]}")
+      end
+      if hash[:format].present? && !hash[:format].in?(Work::ControlledLists::FORMAT)
+        raise ArgumentError.new("Unrecognized format: #{hash[:format]}")
+      end
       unless hash[:include_child_works] == "true"
         hash[:include_child_works] = "false"
+      end
+      [:published, :ocr_requested].each do |k|
+        if hash[k].present? && !hash[k].in?(['true', 'false'])
+          raise ArgumentError.new("Value not allowed for #{k}: #{hash[k]}")
+        end
+      end
+      if hash[:review_requested].present? && !hash[:review_requested].in?(['requested', 'by_others'])
+        raise ArgumentError.new("Value not allowed for review_requested: #{hash[k]}")
       end
     end
   end
