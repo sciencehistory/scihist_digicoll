@@ -11,22 +11,22 @@ class Admin::CollectionsController < AdminController
 
     # Searching, filtering, sorting and pagination.
     scope = Collection
-    if params[:title_or_id].present?
-      scope = scope.where(id: params[:title_or_id]
+    if index_params[:title_or_id].present?
+      scope = scope.where(id: index_params[:title_or_id]
       ).or(
-        Collection.where(friendlier_id: params[:title_or_id])
+        Collection.where(friendlier_id: index_params[:title_or_id])
       ).or(
-        Collection.where("title ilike ?", "%" + Collection.sanitize_sql_like(params[:title_or_id]) + "%")
+        Collection.where("title ilike ?", "%" + index_params[:title_or_id] + "%")
       )
     end
 
-    if params[:department].present?
-      scope = scope.where("json_attributes ->> 'department' = :department", department: params[:department])
-      @department =  params[:department]
+    if index_params[:department].present?
+      scope = scope.where("json_attributes ->> 'department' = :department", department: index_params[:department])
+      @department =  index_params[:department]
     end
 
-    scope = scope.order(Arel.sql("#{params[:sort_field]} #{params[:sort_order]}"))
-    @collections = scope.page(params[:page]).per(100)
+    scope.order(index_params[:sort_field] => index_params[:sort_order])
+    @collections = scope.page(index_params[:page]).per(100)
   end
 
   # Set up click-to-sort column headers.
@@ -121,14 +121,20 @@ class Admin::CollectionsController < AdminController
     end
 
     # Params method just for #index.
-    # Also sets default sort column and order.
-    # This does not actually perform any sorting or filtering.
+    # Also sets default sort column and order, and
+    # sanitizes all strings used in sorting and filtering.
     def index_params
       @index_params ||= params.permit(
         :sort_field, :sort_order, :department, :page, :title_or_id, :button,
       ).tap do |hash|
         hash[:sort_field] = "title" unless hash[:sort_field].in? ['title', 'created_at', 'updated_at']
         hash[:sort_order] = "asc"   unless hash[:sort_order].in? ['asc', 'desc']
+        if hash[:title_or_id].present?
+          hash[:title_or_id] = Collection.sanitize_sql_like hash[:title_or_id]
+        end
+        unless hash[:department].nil? || hash[:department].in?(Collection::DEPARTMENTS)
+          raise ArgumentError.new("Unrecognized department: #{hash[:department]}")
+        end
       end
     end
 
