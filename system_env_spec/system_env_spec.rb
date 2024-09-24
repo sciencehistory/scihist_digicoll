@@ -211,4 +211,16 @@ describe "System Environment" do
       expect(version).to match_version_requirements(">= 22.0")
     end
   end
+
+  # Should be on heroku automatically, but some issues with heroku-24. custom build script
+  # may be needed. See https://www.reddit.com/r/Heroku/comments/1fj3cr4/ghostscript_on_heroku24/
+  describe "ghostscript" do
+    it "is present with acceptable version" do
+      out = `gs -v 2>&1`
+
+      expect(out).to match(/GPL Ghostscript (\d+\.\d+\.\d+)/)
+      version = $1
+      expect(version).to match_version_requirements(">= 9.55.0")
+    end
+  end
 end

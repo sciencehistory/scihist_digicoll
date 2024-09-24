@@ -45,6 +45,37 @@ describe WorkDownloadOptionsCreator do
     end
   end
 
+  describe "work_source_pdf with derivative" do
+    let(:source_pdf_asset) { build(:asset_with_faked_source_pdf) }
+    let(:work) do
+      create(:public_work, members: [
+        source_pdf_asset,
+        build(:asset_with_faked_file)
+      ])
+    end
+
+    it "has original PDF and scaled PDF options" do
+      original_option =  options.find { |o| o.label == "Original PDF" }
+      expect(original_option).to be_present
+      # 10 pages, 80.5 MB
+      expect(original_option.subhead).to match /\d+ pages — (\d+\.?)+ [A-Z]{2}/
+      expect(original_option.work_friendlier_id).to eq work.friendlier_id
+      expect(original_option.url).to include source_pdf_asset.friendlier_id
+      expect(original_option.analyticsAction).to eq "download_original"
+      expect(original_option.content_type).to eq "application/pdf"
+
+      scaled = options.find { |o| o.label == "Screen-Optimized PDF" }
+      expect(scaled).to be_present
+      # 124 MB, 150 dpi
+      expect(scaled.subhead).to match /150 dpi — (\d+\.?)+ [A-Z]{2}/
+      expect(scaled.work_friendlier_id).to eq work.friendlier_id
+      expect(scaled.url).to include source_pdf_asset.friendlier_id
+      expect(scaled.url).to include AssetUploader::SCALED_PDF_DERIV_KEY.to_s
+      expect(scaled.analyticsAction).to eq "download_pdf_screen"
+      expect(scaled.content_type).to eq "application/pdf"
+    end
+  end
+
   describe "unpublished parent work" do
     let(:work) do
       create(:work, published: false, members: [build(:asset_with_faked_file), build(:asset_with_faked_file)])

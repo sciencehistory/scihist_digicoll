@@ -23,6 +23,10 @@ class WorkDownloadOptionsCreator
 
   protected
 
+  def has_screen_pdf_derivative?
+    screen_pdf_derivative.present?
+  end
+
   def has_original_pdf?
     original_pdf_asset.present?
   end
@@ -52,6 +56,13 @@ class WorkDownloadOptionsCreator
     @original_pdf_asset = work.members.where(role: PdfToPageImages::SOURCE_PDF_ROLE).first
   end
 
+  # @return Shrine::UploadedFile
+  def screen_pdf_derivative
+    return @screen_pdf_derivative if defined? @screen_pdf_derivative
+
+    @screen_pdf_derivative = has_original_pdf? && original_pdf_asset.file_derivatives[AssetUploader::SCALED_PDF_DERIV_KEY]
+  end
+
   def construct_options
     options = []
 
@@ -64,13 +75,28 @@ class WorkDownloadOptionsCreator
         url: download_path(original_pdf_asset.file_category, original_pdf_asset),
         work_friendlier_id: work.friendlier_id,
         analyticsAction: "download_original",
-        subhead: subhead_parts.compact.join(", "),
+        subhead: subhead_parts.compact.join(" — "),
         content_type: "application/pdf"
 
       )
     elsif has_constructed_pdf?
       options << DownloadOption.for_on_demand_derivative(
         label: "PDF", derivative_type: "pdf_file", work_friendlier_id: work.friendlier_id
+      )
+    end
+
+    if has_screen_pdf_derivative?
+      subhead_parts = []
+      #subhead_parts << "#{original_pdf_asset.file_metadata["page_count"]} pages" if original_pdf_asset.file_metadata["page_count"].present?
+      subhead_parts << "#{ScaleDownPdf::DPI} dpi"
+      subhead_parts << ScihistDigicoll::Util.simple_bytes_to_human_string(screen_pdf_derivative.size) if screen_pdf_derivative.size
+
+      options << DownloadOption.new("Screen-Optimized PDF",
+        subhead: subhead_parts.compact.join(" — "),
+        url: download_derivative_path(original_pdf_asset, AssetUploader::SCALED_PDF_DERIV_KEY),
+        analyticsAction: "download_pdf_screen",
+        work_friendlier_id: work.friendlier_id,
+        content_type: "application/pdf"
       )
     end
 
