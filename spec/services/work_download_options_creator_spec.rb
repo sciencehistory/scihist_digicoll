@@ -58,7 +58,7 @@ describe WorkDownloadOptionsCreator do
       original_option =  options.find { |o| o.label == "Original PDF" }
       expect(original_option).to be_present
       # 10 pages, 80.5 MB
-      expect(original_option.subhead).to match /\d+ pages, (\d+\.?)+ [A-Z]{2}/
+      expect(original_option.subhead).to match /\d+ pages — (\d+\.?)+ [A-Z]{2}/
       expect(original_option.work_friendlier_id).to eq work.friendlier_id
       expect(original_option.url).to include source_pdf_asset.friendlier_id
       expect(original_option.analyticsAction).to eq "download_original"
@@ -67,7 +67,7 @@ describe WorkDownloadOptionsCreator do
       scaled = options.find { |o| o.label == "Screen-Optimized PDF" }
       expect(scaled).to be_present
       # 124 MB, 150 dpi
-      expect(scaled.subhead).to match /(\d+\.?)+ [A-Z]{2}, 150 dpi/
+      expect(scaled.subhead).to match /150 dpi — (\d+\.?)+ [A-Z]{2}/
       expect(scaled.work_friendlier_id).to eq work.friendlier_id
       expect(scaled.url).to include source_pdf_asset.friendlier_id
       expect(scaled.url).to include AssetUploader::SCALED_PDF_DERIV_KEY.to_s
