@@ -132,8 +132,10 @@ class Admin::CollectionsController < AdminController
         if hash[:title_or_id].present?
           hash[:title_or_id] = Collection.sanitize_sql_like hash[:title_or_id]
         end
-        unless hash[:department].nil? || hash[:department].in?(Collection::DEPARTMENTS)
-          raise ArgumentError.new("Unrecognized department: #{hash[:department]}")
+        if hash[:department].present?
+          unless hash[:department].in?(Collection::DEPARTMENTS)
+            raise ArgumentError.new("Unrecognized department: #{hash[:department]}")
+          end
         end
       end
     end
