@@ -38,32 +38,35 @@ class BlacklightRangeLimit {
   // create chart element in DOM (replacing existing fetch link), chart
   // with chart.js, store state in instance variables.
   //
-  // This is idempotent in that it will no-op if a.load_distribution has already
-  // been removed from dom, which it does.
+  // This is idempotent in that if the items it creates appear to already have been
+  // created, it will skip creating them.
   setup() {
+    // we replace this link in DOM after loaded, so if it's there, we need to load
     const loadLink = this.container.querySelector("a.load_distribution");
-    // we replace that link in DOM after loaded, so if it's there, we need to load
-    if (!loadLink) {
-      return;
+
+    // What we'll do to put the chart on page whether or not we need to load --
+    // when query has range limits, we don't need to load, it's already there.
+    let handleOnPageData = () => {
+      if (this.container.classList.contains("chart_js")) {
+        this.extractBucketData();
+        this.chartCanvasElement = this.setupDomForChart();
+        this.drawChart(this.chartCanvasElement);
+      }
     }
 
-    fetch(loadLink["href"]).
-      then( response => response.ok ? response.text() : Promise.reject(response)).
-      then( responseBody => new DOMParser().parseFromString(responseBody, "text/html")).
-      then( responseDom => responseDom.querySelector(".facet-values")).
-      then( element =>  this.container.innerHTML = element.outerHTML  ).
-      then( _ => {
-        //  class chart_js on container indicates charting is enabled in config
-        if (this.container.classList.contains("chart_js")) {
-          this.extractBucketData();
-          this.chartCanvasElement = this.setupDomForChart();
-          this.drawChart(this.chartCanvasElement);
-        }
-
-      }).
-      catch( error => {
-        console.error(error);
-      });
+    if (loadLink) {
+      fetch(loadLink["href"]).
+        then( response => response.ok ? response.text() : Promise.reject(response)).
+        then( responseBody => new DOMParser().parseFromString(responseBody, "text/html")).
+        then( responseDom => responseDom.querySelector(".facet-values")).
+        then( element =>  this.container.innerHTML = element.outerHTML  ).
+        then( _ => { handleOnPageData()  }).
+        catch( error => {
+          console.error(error);
+        });
+    } else {
+      handleOnPageData();
+    }
   }
 
   // Extract our bucket ranges from HTML DOM, and store in our instance variables
@@ -81,6 +84,9 @@ class BlacklightRangeLimit {
         avg: avg,
       }
     });
+
+    this.lineDataPoints = [];
+    this.xTicks = [];
 
     // Points to graph on our line chart to make it look like a histogram.
     // We use the avg as the y-coord, to make the area of each
@@ -100,6 +106,11 @@ class BlacklightRangeLimit {
   }
 
   setupDomForChart() {
+    if(this.chartCanvasElement) {
+      // already there, we're good.
+      return this.chartCanvasElement;
+    }
+
     // We keep the textual facet data as accessible screen-reader, add .sr-only to it though
     let listDiv = this.container.querySelector(".facet-values");
     //listDiv.classList.add("sr-only");
@@ -136,7 +147,8 @@ class BlacklightRangeLimit {
         responsiveAnimationDuration: 0,
 
         plugins: {
-          legend: false
+          legend: false,
+          tooltip: { enabled: false} // tooltips don't currently show anything useful for our
         },
         elements: {
           // hide points, and hide hover tooltip, which is not useful in our simulated histogram
