@@ -120,6 +120,9 @@ class BlacklightRangeLimit {
   // Somehow this method should be locally over-rideable if you want to change parameters for chart, just
   // override and draw the chart how you want?
   drawChart(chartCanvasElement) {
+    const minX = this.lineDataPoints[0].x;
+    const maxX = this.lineDataPoints[this.lineDataPoints.length - 1].x;
+
     new Chart(chartCanvasElement.getContext("2d"), {
       type: 'line',
       options: {
@@ -143,18 +146,18 @@ class BlacklightRangeLimit {
         },
         scales: {
           x: {
-            // scale should go from our actual min and max x values
-            min: this.lineDataPoints[0].x,
-            max: this.lineDataPoints[this.lineDataPoints.length - 1].x,
+            // scale should go from our actual min and max x values, we need min/max here and in ticks
+            min: minX,
+            max: maxX,
             type: 'linear',
-            min: 1809,
-            max: 2023,
             afterBuildTicks: axis => {
               // will autoskip to remove ticks that don't fit, but give it our segment boundaries
               // to start with
               axis.ticks = this.xTicks.map(v => ({ value: v }))
             },
             ticks: {
+              min: minX,
+              max: maxX,
               autoSkip: true, // supposed to skip when can't fit, but does not always work
               maxRotation: 0,
               maxTicksLimit: 4, // try a number that should fit
