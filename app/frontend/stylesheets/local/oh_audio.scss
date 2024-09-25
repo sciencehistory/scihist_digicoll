@@ -233,6 +233,8 @@
   }
 
   .downloads-pdf {
+    border-top: 3px solid $table-border-color;
+
     .attribute-sub-head {
       margin-top: 0;
     }
