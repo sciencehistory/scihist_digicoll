@@ -142,6 +142,7 @@ class BlacklightRangeLimit {
         },
         scales: {
           x: {
+            beginAtZero: false, // we really do NOT want to beginAtZero
             type: 'linear',
             min: 1809,
             max: 2023,
