@@ -108,6 +108,7 @@ class BlacklightRangeLimit {
 
     // We create a <chart>, insert it into DOM before listDiv
     this.chartCanvasElement = this.container.ownerDocument.createElement("canvas");
+    this.chartCanvasElement.setAttribute("aria-hidden", "true"); // textual facets sr-only are alternative
     this.chartCanvasElement.classList.add("blacklight-range-limit-chart");
     this.container.insertBefore(this.chartCanvasElement, listDiv);
 
@@ -142,7 +143,9 @@ class BlacklightRangeLimit {
         },
         scales: {
           x: {
-            beginAtZero: false, // we really do NOT want to beginAtZero
+            // scale should go from our actual min and max x values
+            min: this.lineDataPoints[0].x,
+            max: this.lineDataPoints[this.lineDataPoints.length - 1].x,
             type: 'linear',
             min: 1809,
             max: 2023,
