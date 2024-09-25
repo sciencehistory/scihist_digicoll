@@ -114,8 +114,12 @@ class BlacklightRangeLimit {
     return this.chartCanvasElement;
   }
 
-  drawChart(chartCanvas) {
-    new Chart(chartCanvas.getContext("2d"), {
+  // Draw chart to a <canvas> element
+  //
+  // Somehow this method should be locally over-rideable if you want to change parameters for chart, just
+  // override and draw the chart how you want?
+  drawChart(chartCanvasElement) {
+    new Chart(chartCanvasElement.getContext("2d"), {
       type: 'line',
       options: {
         // disable all animations
@@ -158,6 +162,7 @@ class BlacklightRangeLimit {
             }
           },
           y: {
+            beginAtZero: true,
             // hide axis labels and grid lines on y, to save space and
             // because it's kind of meant to be relative?
             ticks: {
