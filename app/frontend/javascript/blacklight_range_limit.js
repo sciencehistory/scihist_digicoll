@@ -11,6 +11,8 @@ class BlacklightRangeLimit {
     return range_limit;
   }
 
+  hideTextFacets = true;
+
   rangeBuckets = []; // array of objects with bucket range info
 
   xTicks = []; // array of x values to use as chart ticks
@@ -111,11 +113,14 @@ class BlacklightRangeLimit {
       return this.chartCanvasElement;
     }
 
-    // We keep the textual facet data as accessible screen-reader, add .sr-only to it though
     let listDiv = this.container.querySelector(".facet-values");
-    //listDiv.classList.add("sr-only");
-    // and hide the legend as to total range sr-only too
-    //this.container.closest(".profile").querySelector("p.range").classList.add("sr-only");
+
+    if (this.hideTextFacets) {
+      // We keep the textual facet data as accessible screen-reader, add .sr-only to it though
+      listDiv.classList.add("sr-only");
+      // and hide the legend as to total range sr-only too
+      this.container.closest(".profile").querySelector("p.range").classList.add("sr-only");
+    }
 
     // We create a <chart>, insert it into DOM before listDiv
     this.chartCanvasElement = this.container.ownerDocument.createElement("canvas");
