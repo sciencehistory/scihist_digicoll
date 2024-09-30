@@ -36,18 +36,18 @@ class WorkDownloadLinksComponent < ApplicationComponent
 
 
   def download_button_label(download_option)
-    case download_option.data_attrs[:derivative_type].to_s
-    when "pdf_file" ; "Download PDF"
-    when "zip_file" ; "Download ZIP"
+    case download_option.content_type
+    when "application/pdf" ; "Download PDF"
+    when "application/zip" ; "Download ZIP"
     else "Download"
     end
   end
 
   def download_file_icon(download_option)
-    case download_option.data_attrs[:derivative_type].to_s
-    when "pdf_file" ; helpers.file_earmark_pdf_fill_svg
-    when "zip_file" ; helpers.file_earmark_zip_fill_svg
-    else "x"
+    case download_option.content_type
+    when "application/pdf" ; helpers.file_earmark_pdf_fill_svg
+    when "application/zip" ; helpers.file_earmark_zip_fill_svg
+    else helpers.file_earmark_fill_svg
     end
   end
 end

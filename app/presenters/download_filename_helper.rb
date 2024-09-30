@@ -44,14 +44,15 @@ class DownloadFilenameHelper
   # For image files, the original_filename is pretty opaque, derive
   # a base filename from first words of title of parent work.
   #
-  # But for audio and PDF, use original filename with friendlier_id for guaranteed uniqueness.
+  # But for audio and Oral History PDF, use original filename with friendlier_id for guaranteed uniqueness.
   # Intended use case for these is oral history files, where the original filenames
   # are possibly meaningful to users and usually unique -- but work titles all
   # begin with "oral history"
   #
   def self.filename_base_for_asset(asset)
     raise ArgumentError, 'Pass in an asset.' unless asset.is_a? Asset
-    if asset.content_type && asset.content_type.start_with?("audio/") || asset.content_type == "application/pdf"
+
+    if asset.content_type && asset.content_type.start_with?("audio/") || (asset.content_type == "application/pdf" && asset.role.in?(["transcript", "front_matter"]))
       return [File.basename(asset.original_filename, ".*"), asset.friendlier_id].join("_")
     end
 

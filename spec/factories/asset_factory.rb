@@ -88,6 +88,7 @@ FactoryBot.define do
         faked_audio_sample_rate { nil }
         faked_md5 { Digest::MD5.hexdigest rand(10000000).to_s }
         faked_sha512 { Digest::SHA512.hexdigest rand(10000000).to_s }
+        faked_page_count { nil }
 
         # other arbitrary metadata
         faked_metadata { {} }
@@ -227,7 +228,8 @@ FactoryBot.define do
           sha512: evaluator.faked_sha512,
           filename: evaluator.faked_filename,
           size: evaluator.faked_size,
-          other_metadata: evaluator.faked_metadata)
+          other_metadata: evaluator.faked_metadata,
+          page_count: evaluator.faked_page_count)
 
         asset.file_data = uploaded_file.as_json
 
@@ -265,5 +267,11 @@ FactoryBot.define do
       faked_width { nil }
     end
 
+    factory :asset_with_faked_source_pdf, parent: :asset_with_faked_file do
+      pdf
+      role { PdfToPageImages::SOURCE_PDF_ROLE }
+      faked_derivatives { { AssetUploader::SCALED_PDF_DERIV_KEY => create(:stored_uploaded_file, content_type: "application/pdf") } }
+      faked_page_count  { 10 }
+    end
   end
 end

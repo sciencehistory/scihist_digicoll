@@ -24,6 +24,7 @@ FactoryBot.define do
       filename { nil }
       size { nil }
       other_metadata { {} }
+      page_count { nil }
     end
 
     id { SecureRandom.hex }
@@ -41,7 +42,8 @@ FactoryBot.define do
         "audio_bitrate" => audio_bitrate,
         "video_bitrate" => video_bitrate,
         "audio_sample_rate" => audio_sample_rate,
-        "sha512" => sha512
+        "sha512" => sha512,
+        "page_count" => page_count
       }.merge(other_metadata).compact
     end
 

@@ -3,7 +3,7 @@
 # A simple value object representing a download option, used for constructing our download
 # menus
 class DownloadOption
-  attr_reader :label, :subhead, :url, :analyticsAction, :data_attrs, :work_friendlier_id
+  attr_reader :label, :subhead, :url, :analyticsAction, :data_attrs, :work_friendlier_id, :content_type
 
 
   # Create a DownloadOption for one of our on-demand derivatives, DRY it up here
@@ -20,6 +20,11 @@ class DownloadOption
       "zip_file" => "download_zip"
     }[derivative_type]
 
+    content_type = {
+      "pdf_file" => "application/pdf",
+      "zip_file" => "application/zip"
+    }[derivative_type]
+
     # defaults\
     subhead ||= {
      "pdf_file" => nil,
@@ -29,6 +34,7 @@ class DownloadOption
     DownloadOption.new(label, url: "#", analyticsAction: analytics_action,
       work_friendlier_id: work_friendlier_id,
       subhead: subhead,
+      content_type: content_type,
       data_attrs: {
         trigger: "on-demand-download",
         derivative_type: derivative_type,
@@ -54,7 +60,8 @@ class DownloadOption
   # @param data_attrs[Hash] hash compatible with rails content_tag `data:` argument, for additional data attributes
   #   to add to link.
   # @param work_friendlier_id [String] used for analytics data attributes
-  def self.with_formatted_subhead(label, url:, work_friendlier_id:, analyticsAction:nil, width: nil, height: nil, size: nil, content_type: nil)
+  # @param content_type [String] MIME/IANA content-type, sometimes used for icons and such on display
+  def self.with_formatted_subhead(label, url:, work_friendlier_id:, analyticsAction:nil, width: nil, height: nil, size: nil, content_type: nil, download_url: nil)
     parts = []
     parts << ScihistDigicoll::Util.humanized_content_type(content_type) if content_type.present?
     parts << "#{width.to_s} x #{height.to_s}px" if width.present? && height.present?
@@ -64,7 +71,7 @@ class DownloadOption
 
     subhead = parts.join(" — ") # em-dash
 
-    new(label, url: url, work_friendlier_id: work_friendlier_id, analyticsAction: analyticsAction, subhead: subhead.presence)
+    new(label, url: url, work_friendlier_id: work_friendlier_id, analyticsAction: analyticsAction, subhead: subhead.presence, download_url: download_url)
   end
 
   # @param label [String] main label for the download link
@@ -73,13 +80,17 @@ class DownloadOption
   # @param subhead [String] a subheading/hint/more info for the label for the download link
   # @param analyticsAction [String] a key to record in our analytics logging, up to caller
   #   to decide what to do with it, but probably will turn into a data- attribute for JS.
-  def initialize(label, url:, work_friendlier_id:, subhead:nil, analyticsAction:nil, data_attrs: {})
+  # @param download_url [String] some options have a separate "force download" URL, when the main url is viewed inline.
+  #    Some of our UI offers both options. Optionally provide an alternate force download url.
+  def initialize(label, url:, work_friendlier_id:, subhead:nil, analyticsAction:nil, content_type: nil, data_attrs: {}, download_url: nil)
     @label = label
     @subhead = subhead
     @url = url
     @analyticsAction = analyticsAction
     @data_attrs = data_attrs
     @work_friendlier_id = work_friendlier_id
+    @content_type = content_type
+    @download_url = download_url
 
     # Add in analytics data- attributes
     @data_attrs.merge!(analytics_data_attributes)
@@ -105,9 +116,17 @@ class DownloadOption
     }
   end
 
+  # Some of our UI offers a main link to view inline, and a download link to force download.
+  #
+  # If we have an alternate download_url great, if not just use the main url here
+  def download_url
+    @download_url.presence || url
+  end
+
+
   # sometimes we want to modify one, treat as immutable but let modify like this!
   # Can override any element as if it were initializer
-  def dup_with(label=self.label, url: self.url, work_friendlier_id: self.work_friendlier_id, subhead:self.subhead, analyticsAction:self.analyticsAction, data_attrs: self.data_attrs)
-    self.class.new(label, url: url, work_friendlier_id: work_friendlier_id, subhead:subhead, analyticsAction:analyticsAction, data_attrs: data_attrs)
+  def dup_with(label=self.label, url: self.url, work_friendlier_id: self.work_friendlier_id, subhead:self.subhead, analyticsAction:self.analyticsAction, data_attrs: self.data_attrs, content_type: self.content_type, download_url: self.download_url)
+    self.class.new(label, url: url, work_friendlier_id: work_friendlier_id, subhead:subhead, analyticsAction:analyticsAction, data_attrs: data_attrs, content_type: content_type, download_url: download_url)
   end
 end

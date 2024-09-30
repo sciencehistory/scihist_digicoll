@@ -11,9 +11,9 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
         representative,
         create(:asset_with_faked_file, :mp3, published: false,
           oh_available_by_request: true, title: "Protected mp3", faked_filename: "Protected mp3", position: 2),
-        create(:asset_with_faked_file, :pdf, published: false,
+        create(:asset_with_faked_file, :pdf, published: false, role: "transcript",
           oh_available_by_request: true,  title: "Protected PDF", faked_filename: "Protected PDF", position: 3),
-        create(:asset_with_faked_file, :pdf, published: false,
+        create(:asset_with_faked_file, :pdf, published: false, role: "transcript",
           title: "We will get sued if you send this out.", position: 4)
       ]
     end
