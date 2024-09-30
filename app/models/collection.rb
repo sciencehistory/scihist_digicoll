@@ -76,17 +76,4 @@ class Collection < Kithe::Collection
   # Example value: 'oldest_date'.
   attr_json :default_sort_field, :string, default: -> { nil }
   validates :default_sort_field, inclusion: { in: DEFAULT_SORT_FIELDS.to_h.values, allow_blank: true }
-
-
-
-  # For ransack use, we need to list all attributes we want to use ransack to SEARCH or SORT by.
-  #
-  # We really probably oughta stop using ransack, I hate having this in the model.
-  def self.ransackable_attributes(auth_obj=nil)
-    ["title", "id", "created_at", "updated_at"]
-  end
-  # We don't use ransack with associations, but still have to include this method
-  def self.ransackable_associations(auth_object = nil)
-    []
-  end
 end

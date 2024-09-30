@@ -1,5 +1,6 @@
 class Admin::CollectionsController < AdminController
   before_action :set_collection, only: [:show, :edit, :update, :destroy]
+  before_action :sort_link_maker, only: [:index]
 
   # GET /collections
   # GET /collections.json
@@ -8,30 +9,31 @@ class Admin::CollectionsController < AdminController
     # We're assuming if you can view the index, you can see all published and
     # unpublished collections.
 
-
-    # NOTE WELL: To use ransack, all attributes we want ransack to search or sort
-    # on NEED TO be listed in Colletion.ransackable_attributes and/or Collection.ransackable_associations
-    @q = Collection.ransack(params[:q]).tap do |ransack|
-      ransack.sorts = 'title asc' if ransack.sorts.empty?
-    end
-
-    scope = @q.result
-    if params[:title_or_id].present?
-      scope = scope.where(id: params[:title_or_id]
+    # Searching, filtering, sorting and pagination.
+    scope = Collection
+    if index_params[:title_or_id].present?
+      scope = scope.where(id: index_params[:title_or_id]
       ).or(
-        Collection.where(friendlier_id: params[:title_or_id])
+        Collection.where(friendlier_id: index_params[:title_or_id])
       ).or(
-        Collection.where("title ilike ?", "%" + Collection.sanitize_sql_like(params[:title_or_id]) + "%")
+        Collection.where("title ilike ?", "%" + index_params[:title_or_id] + "%")
       )
     end
 
-    if params[:department].present?
-      scope = scope.where("json_attributes ->> 'department' = :department", department: params[:department])
-      @department =  params[:department]
+    if index_params[:department].present?
+      scope = scope.where("json_attributes ->> 'department' = :department", department: index_params[:department])
+      @department =  index_params[:department]
     end
 
-    @collections = scope.page(params[:page]).per(100)
+    scope.order(index_params[:sort_field] => index_params[:sort_order])
+    @collections = scope.page(index_params[:page]).per(100)
   end
+
+  # Set up click-to-sort column headers.
+  def sort_link_maker
+    @sort_link_maker ||= SortedTableHeaderLinkComponent.link_maker params: index_params
+  end
+  helper_method :sort_link_maker
 
   # GET /collections/1
   # GET /collections/1.json
@@ -116,6 +118,26 @@ class Admin::CollectionsController < AdminController
     # Use callbacks to share common setup or constraints between actions.
     def set_collection
       @collection = Collection.find_by_friendlier_id!(params[:id])
+    end
+
+    # Params method just for #index.
+    # Also sets default sort column and order, and
+    # sanitizes all strings used in sorting and filtering.
+    def index_params
+      @index_params ||= params.permit(
+        :sort_field, :sort_order, :department, :page, :title_or_id, :button,
+      ).tap do |hash|
+        hash[:sort_field] = "title" unless hash[:sort_field].in? ['title', 'created_at', 'updated_at']
+        hash[:sort_order] = "asc"   unless hash[:sort_order].in? ['asc', 'desc']
+        if hash[:title_or_id].present?
+          hash[:title_or_id] = Collection.sanitize_sql_like hash[:title_or_id]
+        end
+        if hash[:department].present?
+          unless hash[:department].in?(Collection::DEPARTMENTS)
+            raise ArgumentError.new("Unrecognized department: #{hash[:department]}")
+          end
+        end
+      end
     end
 
     # only allow whitelisted params through (TODO, we're allowing all collection params!)

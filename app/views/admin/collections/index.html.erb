@@ -27,9 +27,9 @@
           class: "custom-select" %>
     </div>
   </div>
+  <%= hidden_field_tag :sort_field,   params[:sort_field]%>
+  <%= hidden_field_tag :sort_order,   params[:sort_order]%>
 <% end %>
-
-
 
 <% if @collections.total_count > 0 %>
   <p>
@@ -42,10 +42,10 @@
     <tr>
       <th class="thumbnail">thumbnail</th>
       <th class="id">ID</th>
-      <th class="title"><%= sort_link(@q, :title, page: nil) %></th>
+      <th class="title"><%= render @sort_link_maker.link(column_title: "Title", sort_field: "title") %></th>
       <th class="department">Department</th>
-      <th class="datestamp"><%= sort_link(@q, :created_at, "Created", page: nil) %></th>
-      <th class="datestamp"><%= sort_link(@q, :updated_at, "Last Modified", page: nil) %></th>
+      <th class="datestamp"><%= render @sort_link_maker.link(column_title: "Created", sort_field: "created_at") %></th>
+      <th class="datestamp"><%= render @sort_link_maker.link(column_title: "Last Modified", sort_field: "updated_at") %></th>
       <th class="action"></th>
       <th></th>
     </tr>
