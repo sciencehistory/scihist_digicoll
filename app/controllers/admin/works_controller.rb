@@ -19,48 +19,7 @@ class Admin::WorksController < AdminController
   def index
     # No authorize! call here. We're assuming if you can view the
     # index, you can see all published and unpublished works.
-    params = index_params
-
-    scope = Work
-    if params[:title_or_id].present?
-      scope = scope.where("(title ILIKE ? OR friendlier_id ILIKE ? OR id = ?)",
-        "%#{params[:title_or_id]}%",
-        "%#{params[:title_or_id]}%",
-        Work.type_for_attribute(:id).cast(params[:title_or_id])
-      )
-    end
-    if params[:genre].present?
-      scope = scope.where("json_attributes -> 'genre' ? :genre", genre: params[:genre])
-    end
-    if params[:format].present?
-      scope = scope.where("json_attributes -> 'format' ? :format", format: params[:format])
-    end
-    if params[:department].present?
-      scope = scope.where("json_attributes ->> 'department' = :department", department: params[:department])
-    end
-    if params[:review_requested].present?
-      scope = scope.jsonb_contains(review_requested: true)
-      if params[:review_requested] == "by_others"
-        scope = scope.not_jsonb_contains(review_requested_by: current_user.email )
-      end
-    end
-    if params[:ocr_requested] == 'true'
-      scope = scope.jsonb_contains(text_extraction_mode: "ocr")
-    elsif params[:ocr_requested] == 'false'
-      scope = scope.not_jsonb_contains(text_extraction_mode: "ocr")
-    end
-    if params[:published] == 'true'
-      scope = scope.where(published: true)
-    elsif params[:published] == 'false'
-      scope = scope.where(published: false)
-    end
-    if params[:include_child_works] == 'false'
-      scope = scope.where("parent_id IS NULL")
-    end
-
-    scope.order(index_params[:sort_field] => index_params[:sort_order])
-    @works =  scope.includes(:leaf_representative).page(params[:page]).per(20)
-
+    @works = build_search(index_params)
     @cart_presence = CartPresence.new(@works.collect(&:friendlier_id), current_user: current_user)
   end
 
@@ -81,9 +40,6 @@ class Admin::WorksController < AdminController
       end
       unless hash[:sort_order].in? ['asc', 'desc']
         hash[:sort_order] = "desc"
-      end
-      if hash[:title_or_id].present?
-        hash[:title_or_id] = Work.sanitize_sql_like(hash[:title_or_id])
       end
       if hash[:department].present? && !hash[:department].in?(Work::ControlledLists::DEPARTMENT)
         raise ArgumentError.new("Unrecognized department: #{hash[:department]}")
@@ -707,4 +663,47 @@ class Admin::WorksController < AdminController
       admin_works_path
     end
     helper_method :cancel_url
+
+    # Searching, filtering, and pagination for the #index method
+    def build_search(params)
+      scope = Work
+      if params[:title_or_id].present?
+        sanitized_search_phrase = Work.sanitize_sql_like(params[:title_or_id])
+        scope = scope.where("(title ILIKE ? OR friendlier_id ILIKE ? OR id = ?)",
+          "%#{sanitized_search_phrase}%",
+          "%#{sanitized_search_phrase}%",
+          Work.type_for_attribute(:id).cast(params[:title_or_id])
+        )
+      end
+      if params[:genre].present?
+        scope = scope.where("json_attributes -> 'genre' ? :genre", genre: params[:genre])
+      end
+      if params[:format].present?
+        scope = scope.where("json_attributes -> 'format' ? :format", format: params[:format])
+      end
+      if params[:department].present?
+        scope = scope.where("json_attributes ->> 'department' = :department", department: params[:department])
+      end
+      if params[:review_requested].present?
+        scope = scope.jsonb_contains(review_requested: true)
+        if params[:review_requested] == "by_others"
+          scope = scope.not_jsonb_contains(review_requested_by: current_user.email )
+        end
+      end
+      if params[:ocr_requested] == 'true'
+        scope = scope.jsonb_contains(text_extraction_mode: "ocr")
+      elsif params[:ocr_requested] == 'false'
+        scope = scope.not_jsonb_contains(text_extraction_mode: "ocr")
+      end
+      if params[:published] == 'true'
+        scope = scope.where(published: true)
+      elsif params[:published] == 'false'
+        scope = scope.where(published: false)
+      end
+      if params[:include_child_works] == 'false'
+        scope = scope.where("parent_id IS NULL")
+      end
+      scope.order(index_params[:sort_field] => index_params[:sort_order])
+      scope.includes(:leaf_representative).page(params[:page]).per(20)
+    end
 end
