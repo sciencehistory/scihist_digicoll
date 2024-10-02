@@ -225,16 +225,4 @@ class Work < Kithe::Work
     genre && genre.include?("Oral histories")
   end
 
-
-  # For ransack use, we need to list all attributes we want to use ransack to SEARCH or SORT by.
-  #
-  # We really probably oughta stop using ransack, I hate having this in the model.
-  def self.ransackable_attributes(auth_obj=nil)
-    ["id", "title", "created_at", "updated_at", "parent_id", "published"]
-  end
-  # We don't use ransack with associations, but still have to include this method
-  def self.ransackable_associations(auth_object = nil)
-    []
-  end
-
 end

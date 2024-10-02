@@ -4,78 +4,79 @@
     <%= link_to 'Batch create works', admin_batch_create_path, class: "btn btn-outline-secondary #{"disabled" unless can?(:create, Kithe::Model) }" %>
   </p>
 
-<%# this is ransack %>
-<%= search_form_for [:admin, @q]  do |f| %>
+<%= simple_form_for(admin_works_path, method: "get") do %>
   <div class="row">
     <div class="input-group col-sm-10 mb-3">
       <div class="input-group-prepend">
-        <%= label_tag "q[q]", "In Title or ID", class: "input-group-text" %>
+        <%= label_tag "title_or_id", "In Title or ID", class: "input-group-text" %>
       </div>
-      <%= search_field_tag "q[q]", params[:q][:q], class: "form-control" %>
+      <%= search_field_tag "title_or_id", params[:title_or_id], class: "form-control" %>
       <div class="input-group-append">
-        <%= f.button "Search", class: "btn btn-primary" %>
+        <%= button_tag "Search", class: "btn btn-primary" %>
       </div>
     </div>
   </div>
 
   <div class="admin-filters">
     <div class="admin-filter">
-      <label for="q_published_eq">Published</label>
-      <%= select_tag "q[published_eq]",
-            options_for_select({"Yes" => true, "No" => false}, params[:q][:published_eq]),
+      <label for="published">Published</label>
+      <%= select_tag "published",
+            options_for_select({"Yes" => true, "No" => false}, params[:published]),
             include_blank: "Any",
             class: "custom-select" %>
     </div>
 
     <div class="admin-filter">
-      <label for="q_genre">Genre</label>
-      <%= select_tag "q[genre]",
-            options_for_select(Work::ControlledLists::GENRE, params[:q][:genre]),
+      <label for="genre">Genre</label>
+      <%= select_tag "genre",
+            options_for_select(Work::ControlledLists::GENRE, params[:genre]),
             include_blank: "Any",
             class: "custom-select" %>
     </div>
 
 
     <div class="admin-filter">
-        <label for="q_format">Format</label>
-        <%= select_tag "q[format]",
-              options_for_select(Work::ControlledLists::FORMAT.collect {|t| [t.titleize, t]}, params[:q][:format]),
+        <label for="format">Format</label>
+        <%= select_tag "format",
+              options_for_select(Work::ControlledLists::FORMAT.collect {|t| [t.titleize, t]}, params[:format]),
               include_blank: "Any",
               class: "custom-select" %>
     </div>
 
     <div class="admin-filter">
-        <label for="q_department">Department</label>
-        <%= select_tag "q[department]",
-              options_for_select(Work::ControlledLists::DEPARTMENT, params[:q][:department]),
+        <label for="department">Department</label>
+        <%= select_tag "department",
+              options_for_select(Work::ControlledLists::DEPARTMENT, params[:department]),
               include_blank: "Any",
               class: "custom-select" %>
     </div>
 
     <div class="admin-filter">
-      <label for="q_parent_id_null">Child Works</label>
-      <%= select_tag "q[parent_id_null]",
-            options_for_select({"Yes" => "", "No" => true}, params[:q][:parent_id_null]),
+      <label for="include_child_works">Child Works</label>
+      <%= select_tag "include_child_works",
+            options_for_select({ "Yes" => true, "No" => false}, (params[:include_child_works] || "false")),
             class: "custom-select"
       %>
     </div>
 
     <div class="admin-filter">
-      <label for="q_ocr_requested">OCR</label>
-      <%= select_tag "q[ocr_requested]",
-        options_for_select({"Any" => "", "Requested" => true, "Not requested" => false}, params[:q][:ocr_requested]),
+      <label for="ocr_requested">OCR</label>
+      <%= select_tag "ocr_requested",
+        options_for_select({"Any" => "", "Requested" => true, "Not requested" => false}, params[:ocr_requested]),
         class: "custom-select"
       %>
     </div>
 
     <div class="admin-filter">
-      <label for="q_review_requested">Review requested</label>
-      <%= select_tag "q[review_requested]",
-            options_for_select({"Any" => "", "Requested" => "requested", "By others" => "by_others"}, params[:q][:review_requested]),
+      <label for="review_requested">Review requested</label>
+      <%= select_tag "review_requested",
+            options_for_select({"Any" => "", "Requested" => "requested", "By others" => "by_others"}, params[:review_requested]),
             class: "custom-select"
       %>
     </div>
   </div>
+  <%= hidden_field_tag :sort_field,   params[:sort_field]%>
+  <%= hidden_field_tag :sort_order,   params[:sort_order]%>
 <% end %>
 
 <%= render PageEntriesInfoComponent.new(@works) %>
@@ -84,12 +85,11 @@
   <thead>
     <tr>
       <th class="thumbnail">thumbnail</th>
-      <th class="id"><%= sort_link(@q, :id, "ID", page: nil) %></th>
-      <th class="title"><%= sort_link(@q, :title, page: nil) %></th>
-      <th class="datestamp"><%= sort_link(@q, :created_at, "Created", page: nil) %></th>
-      <th class="datestamp"><%= sort_link(@q, :updated_at, "Last Modified", page: nil) %></th>
+      <th class="id"><%=        render @sort_link_maker.link(column_title: "ID",            sort_field: "friendlier_id") %></th>
+      <th class="title"><%=     render @sort_link_maker.link(column_title: "Title",         sort_field: "title") %></th>
+      <th class="datestamp"><%= render @sort_link_maker.link(column_title: "Created",       sort_field: "created_at") %></th>
+      <th class="datestamp"><%= render @sort_link_maker.link(column_title: "Last Modified", sort_field: "updated_at") %></th>
       <th class="action"></th>
-
       <% if can?(:update, Kithe::Model) %>
         <th>Cart</th>
       <% end %>

@@ -12,16 +12,57 @@ class Admin::WorksController < AdminController
            :remove_searchable_transcript_source, :create_combined_audio_derivatives, :update_oh_available_by_request,
            :update_oral_history_content]
 
+  before_action :sort_link_maker, only: [:index]
+
   # GET /admin/works
   # GET /admin/works.json
   def index
     # No authorize! call here. We're assuming if you can view the
     # index, you can see all published and unpublished works.
-    @q = ransack_object
-    @works = index_work_search(@q)
+    @works = build_search(index_params)
     @cart_presence = CartPresence.new(@works.collect(&:friendlier_id), current_user: current_user)
   end
 
+  def sort_link_maker
+    @sort_link_maker ||= SortedTableHeaderLinkComponent.link_maker params: index_params
+  end
+  helper_method :sort_link_maker
+
+  def index_params
+    @index_params ||= params.permit(
+      :button,
+      :sort_field, :sort_order, :department, :page,
+      :title_or_id, :published, :genre, :format, :include_child_works,
+      :ocr_requested, :review_requested
+    ).tap do |hash|
+      unless hash[:sort_field].in? ['friendlier_id', 'title', 'created_at', 'updated_at']
+        hash[:sort_field] = "updated_at"
+      end
+      unless hash[:sort_order].in? ['asc', 'desc']
+        hash[:sort_order] = "desc"
+      end
+      if hash[:department].present? && !hash[:department].in?(Work::ControlledLists::DEPARTMENT)
+        raise ArgumentError.new("Unrecognized department: #{hash[:department]}")
+      end
+      if hash[:genre].present? && !hash[:genre].in?(Work::ControlledLists::GENRE)
+        raise ArgumentError.new("Unrecognized genre: #{hash[:genre]}")
+      end
+      if hash[:format].present? && !hash[:format].in?(Work::ControlledLists::FORMAT)
+        raise ArgumentError.new("Unrecognized format: #{hash[:format]}")
+      end
+      unless hash[:include_child_works] == "true"
+        hash[:include_child_works] = "false"
+      end
+      [:published, :ocr_requested].each do |k|
+        if hash[k].present? && !hash[k].in?(['true', 'false'])
+          raise ArgumentError.new("Value not allowed for #{k}: #{hash[k]}")
+        end
+      end
+      if hash[:review_requested].present? && !hash[:review_requested].in?(['requested', 'by_others'])
+        raise ArgumentError.new("Value not allowed for review_requested: #{hash[k]}")
+      end
+    end
+  end
 
   # GET /admin/works/new
   def new
@@ -610,86 +651,6 @@ class Admin::WorksController < AdminController
       end
     end
 
-    # Some of our query SQL is prepared by ransack, which automatically makes
-    # queries from specially named param fields.  (And also has conveniences
-    # for sort UI especially).
-    #
-    # https://github.com/activerecord-hackery/ransack
-    #
-    # NOTE: While currently poorly documented, all attributes or associations
-    #       we want to use with ransack NEED TO  be listed in an allowlist
-    #       in method Work.ransackable_attributes and Work.ransackable_associations
-    #
-    # that includes our sorting, and also
-    # 'published' and "include or exclude Child Works that match query"
-    #
-    # But other things we add on in ordinary AR, including even our main
-    # query field. see #index_work_search
-    def ransack_object
-      # weird ransack param, we want it to default to true
-      if params.dig(:q, "parent_id_null").nil?
-        params[:q] ||= {}
-        params[:q]["parent_id_null"] = true
-      end
-
-      ransack_obj = Work.ransack(params[:q]).tap do |ransack|
-        ransack.sorts = 'updated_at desc' if ransack.sorts.empty?
-      end
-    end
-
-
-    # Take a ransack object that already has an ActiveRecord scope
-    # with some of our search conditions in it, and add on a bunch
-    # of other ones that were easier to do manually instead of
-    # fighting with ransack.
-    #
-    # * things related to our JSON fields
-    # * our main search query that we want to search UUID too, which
-    #   requires special code since it's not a string field.
-    # * pagination and eager-loading
-    def index_work_search(ransack_object)
-      scope = ransack_object.result
-
-      if params[:q][:q].present?
-        q = params[:q][:q]
-        scope = scope.where("(title ILIKE ? OR friendlier_id ILIKE ? OR id = ?)",
-          "%#{q}%",
-          "%#{q}%",
-          Work.type_for_attribute(:id).cast(q)
-        )
-      end
-
-      if params[:q][:genre].present?
-        # fancy postgres json operators, may not be using indexes not sure.
-        # genre is actually a JSON array so we use postgres ? operator
-        scope = scope.where("json_attributes -> 'genre' ? :genre", genre: params[:q][:genre])
-      end
-
-      if params[:q][:format].present?
-        scope = scope.where("json_attributes -> 'format' ? :format", format: params[:q][:format])
-      end
-
-      if params[:q][:department].present?
-        scope = scope.where("json_attributes ->> 'department' = :department", department: params[:q][:department])
-      end
-
-      if params[:q][:review_requested].present?
-        scope = scope.jsonb_contains(review_requested: true)
-
-        if params[:q][:review_requested] == "by_others"
-          scope = scope.not_jsonb_contains(review_requested_by: current_user.email )
-        end
-      end
-
-      if params[:q][:ocr_requested] == 'true'
-        scope = scope.jsonb_contains(text_extraction_mode: "ocr")
-      elsif params[:q][:ocr_requested] == 'false'
-        scope = scope.not_jsonb_contains(text_extraction_mode: "ocr")
-      end
-
-      scope.includes(:leaf_representative).page(params[:page]).per(20)
-    end
-
     def cancel_url
       if @work && @work.parent
         return admin_work_path(@work.parent)
@@ -703,5 +664,46 @@ class Admin::WorksController < AdminController
     end
     helper_method :cancel_url
 
-
+    # Searching, filtering, and pagination for the #index method
+    def build_search(params)
+      scope = Work
+      if params[:title_or_id].present?
+        sanitized_search_phrase = Work.sanitize_sql_like(params[:title_or_id])
+        scope = scope.where("(title ILIKE ? OR friendlier_id ILIKE ? OR id = ?)",
+          "%#{sanitized_search_phrase}%",
+          "%#{sanitized_search_phrase}%",
+          Work.type_for_attribute(:id).cast(params[:title_or_id])
+        )
+      end
+      if params[:genre].present?
+        scope = scope.where("json_attributes -> 'genre' ? :genre", genre: params[:genre])
+      end
+      if params[:format].present?
+        scope = scope.where("json_attributes -> 'format' ? :format", format: params[:format])
+      end
+      if params[:department].present?
+        scope = scope.where("json_attributes ->> 'department' = :department", department: params[:department])
+      end
+      if params[:review_requested].present?
+        scope = scope.jsonb_contains(review_requested: true)
+        if params[:review_requested] == "by_others"
+          scope = scope.not_jsonb_contains(review_requested_by: current_user.email )
+        end
+      end
+      if params[:ocr_requested] == 'true'
+        scope = scope.jsonb_contains(text_extraction_mode: "ocr")
+      elsif params[:ocr_requested] == 'false'
+        scope = scope.not_jsonb_contains(text_extraction_mode: "ocr")
+      end
+      if params[:published] == 'true'
+        scope = scope.where(published: true)
+      elsif params[:published] == 'false'
+        scope = scope.where(published: false)
+      end
+      if params[:include_child_works] == 'false'
+        scope = scope.where("parent_id IS NULL")
+      end
+      scope.order(index_params[:sort_field] => index_params[:sort_order])
+      scope.includes(:leaf_representative).page(params[:page]).per(20)
+    end
 end
