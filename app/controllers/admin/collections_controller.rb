@@ -16,7 +16,7 @@ class Admin::CollectionsController < AdminController
       ).or(
         Collection.where(friendlier_id: index_params[:title_or_id])
       ).or(
-        Collection.where("title ilike ?", "%" + index_params[:title_or_id] + "%")
+        Collection.where("title ilike ?", "%" + Collection.sanitize_sql_like(index_params[:title_or_id]) + "%")
       )
     end
 
@@ -129,9 +129,6 @@ class Admin::CollectionsController < AdminController
       ).tap do |hash|
         hash[:sort_field] = "title" unless hash[:sort_field].in? ['title', 'created_at', 'updated_at']
         hash[:sort_order] = "asc"   unless hash[:sort_order].in? ['asc', 'desc']
-        if hash[:title_or_id].present?
-          hash[:title_or_id] = Collection.sanitize_sql_like hash[:title_or_id]
-        end
         if hash[:department].present?
           unless hash[:department].in?(Collection::DEPARTMENTS)
             raise ArgumentError.new("Unrecognized department: #{hash[:department]}")
