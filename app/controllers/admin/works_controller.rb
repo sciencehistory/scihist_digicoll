@@ -703,7 +703,7 @@ class Admin::WorksController < AdminController
       if params[:include_child_works] == 'false'
         scope = scope.where("parent_id IS NULL")
       end
-      scope.order(index_params[:sort_field] => index_params[:sort_order])
+      scope.order!(index_params[:sort_field] => index_params[:sort_order])
       scope.includes(:leaf_representative).page(params[:page]).per(20)
     end
 end
