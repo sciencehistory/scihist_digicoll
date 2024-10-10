@@ -363,6 +363,24 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         expect(response).not_to be_redirect
         expect(response.status).to eq(200)
       end
+
+      context "sorting, filtering and pagination" do
+        render_views
+        let!(:works) { [
+          create(:work, title: "work_a"),
+          create(:work, title: "work_b") 
+          ] }
+        it "sorts correctly by title" do
+          get :index, params: { sort_field: :title, sort_order: :asc }
+          rows = response.parsed_body.css('.table.admin-list tbody tr')
+          expect(rows[0].inner_html).to include works[0].title
+          expect(rows[1].inner_html).to include works[1].title
+          get :index, params: { sort_field: :title, sort_order: :desc }
+          rows = response.parsed_body.css('.table.admin-list tbody tr')
+          expect(rows[0].inner_html).to include works[1].title
+          expect(rows[1].inner_html).to include works[0].title
+        end
+      end
     end
   end
 
