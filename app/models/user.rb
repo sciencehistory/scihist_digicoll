@@ -9,15 +9,19 @@ class User < ApplicationRecord
   #
   # jrochkind did:
   # * comment out registerable, we don't allow registrations
-  devise :database_authenticatable,
-         :recoverable, :rememberable, :validatable
+
+  # Removing :database_authenticatable: we're now using oauth to log in.
+  # Removing :validatable:
+  #  "validatable module is a group of common validations, which expect a
+  #      resource that uses an email/password combination."
+  # See https://github.com/heartcombo/devise/issues/4913
+  devise :recoverable, :rememberable,
+  :omniauthable, omniauth_providers: %i[azure_activedirectory_v2]
 
   has_many :cart_items, dependent: :delete_all
   has_many :works_in_cart, through: :cart_items, source: :work
 
   # This will correspond to a "role" in the AccessPolicy class.
-  # "editor" will replace the current "staff" role.
-  # A new "reader" type will be added in a future PR.
   USER_TYPES = %w{admin editor staff_viewer}.freeze
   enum :user_type, USER_TYPES.collect {|v| [v, v]}.to_h
   validates :user_type, presence: true
@@ -30,13 +34,6 @@ class User < ApplicationRecord
   end
   def staff_viewer_user?
     user_type == "staff_viewer"
-  end
-
-  # Only used by devise validatable, we want to allow user accounts
-  # to be saved with nil password, means they won't be able to log in
-  # with any password.
-  def password_required?
-    false
   end
 
   # Override of a devise method to lock users out if their individual `locked_out`
