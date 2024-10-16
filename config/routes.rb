@@ -55,10 +55,14 @@ Rails.application.routes.draw do
   # We aren't using session cause we define em ourselves manually.
   devise_for :users,
     skip: [:session, :registration],
-    controllers: { omniauth_callbacks: 'omniauth_callbacks'}
+    controllers: { omniauth_callbacks: 'auth'}
   devise_scope :user do
     delete 'logout', to: 'devise/sessions#destroy', as: :destroy_user_session
+    get 'dev_login', to: "auth#dev_login", as: :dev_login
+
   end
+
+
 
   # Dynamic robots.txt
   # this will fall through to ./views/application/robots.text.erb, no need for an action method
