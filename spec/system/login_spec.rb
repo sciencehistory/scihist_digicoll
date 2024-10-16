@@ -17,9 +17,8 @@ RSpec.describe "Logins", type: :system do
     OmniAuth.config.mock_auth[:azure_activedirectory_v2] = nil
   end
 
-  # TODO test redirect from loggiong in from an arbitrary page, e.g. the faq page
-
   context "admin user" do
+    let(:work) { FactoryBot.create(:public_work, title: "Redirect to me")}
     it "can login and log out" do
       visit root_path
       click_on "Log in"
@@ -28,6 +27,14 @@ RSpec.describe "Logins", type: :system do
       expect(page).to have_text("New Collection")
       click_on "Logout"
       expect(page).to have_text("Signed out successfully")
+    end
+
+    it "redirects after login to where you were before" do
+      visit work_path(work)
+      expect(page).to have_text("Redirect to me")
+      click_on "Log in"
+      expect(page).to have_text("Signed in successfully")
+      expect(page).to have_text("Redirect to me")
     end
   end
 
