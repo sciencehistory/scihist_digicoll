@@ -1,4 +1,4 @@
-class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
+class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def azure_activedirectory_v2
     response_params = request.env['omniauth.auth']['info']
     sanitized_email = User.sanitize_sql_like response_params['email']
