@@ -11,4 +11,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       redirect_back(fallback_location: root_path)
     end
   end
+
+  def new_session_path  *args
+    flash[:notice] = "This URL is not meant for regular users."
+    root_path
+  end
+
 end
