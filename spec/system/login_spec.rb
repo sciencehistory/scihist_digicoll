@@ -1,8 +1,10 @@
 require 'rails_helper'
 RSpec.describe "Logins", type: :system do
+  
   # NOTE:
   # System tests are slow and tend to be flaky, so please try
   # putting your test in spec/requests/auth_controller_spec.rb first.
+
   # An authenticated email. This email address belongs to a person who has gotten authenticated.
   let(:incoming_email) { 'the_user@sciencehistory.org' }
   # This is the user that gets looked up in the DB:
