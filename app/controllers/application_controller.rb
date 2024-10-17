@@ -18,13 +18,7 @@ class ApplicationController < ActionController::Base
 
 
   rescue_from "AccessGranted::AccessDenied" do |exception|
-    redirect_path = if current_user.present?
-      root_path
-    else
-      new_user_session_path
-    end
-
-    redirect_to redirect_path, alert: "You don't have permission to access requested page."
+    redirect_to root_path, alert: "You don't have permission to access that page."
   end
 
   around_action :batch_kithe_indexable
@@ -50,4 +44,11 @@ class ApplicationController < ActionController::Base
     browser.ie? && !cookies[:ieWarnDismiss]
   end
   helper_method :show_ie_unsupported_warning?
+
+  # After the user logs in successfully, redirect to wherever they were
+  # See https://www.rubydoc.info/github/plataformatec/devise/Devise/Controllers/Helpers
+  def after_sign_in_path_for(resource)
+    stored_location_for(resource) || request.env['omniauth.origin'] || super
+  end
+
 end

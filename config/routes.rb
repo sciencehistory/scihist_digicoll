@@ -53,12 +53,16 @@ Rails.application.routes.draw do
   # https://github.com/plataformatec/devise/wiki/how-to:-change-the-default-sign_in-and-sign_out-routes
   # We aren't using :registration cause we don't want to allow self-registration,
   # We aren't using session cause we define em ourselves manually.
-  devise_for :users, skip: [:session, :registration]
+  devise_for :users,
+    skip: [:session, :registration],
+    controllers: { omniauth_callbacks: 'auth'}
   devise_scope :user do
-    get 'login', to: 'devise/sessions#new', as: :new_user_session
-    post 'login', to: 'devise/sessions#create', as: :user_session
     delete 'logout', to: 'devise/sessions#destroy', as: :destroy_user_session
+    get 'dev_login', to: "auth#dev_login", as: :dev_login
+
   end
+
+
 
   # Dynamic robots.txt
   # this will fall through to ./views/application/robots.text.erb, no need for an action method

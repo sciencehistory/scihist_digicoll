@@ -353,7 +353,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     context "without a logged-in user", logged_in_user: false do
       it "redirects to login" do
         get :index
-        expect(response).to redirect_to(new_user_session_path)
+        expect(response).to redirect_to root_path
       end
     end
 

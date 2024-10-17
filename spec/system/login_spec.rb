@@ -1,66 +1,39 @@
 require 'rails_helper'
-
 RSpec.describe "Logins", type: :system do
-  let(:password) { "test_password" }
-  let!(:user) { FactoryBot.create(:user, password: password) }
+  
+  # NOTE:
+  # System tests are slow and tend to be flaky, so please try
+  # putting your test in spec/requests/auth_controller_spec.rb first.
 
-  it "can login" do
-    visit new_user_session_path
-
-    fill_in "Email", with: user.email
-    fill_in "Password", with: user.password
-    click_on "Log in"
-
-    expect(page).to have_text("Signed in successfully")
+  # An authenticated email. This email address belongs to a person who has gotten authenticated.
+  let(:incoming_email) { 'the_user@sciencehistory.org' }
+  # This is the user that gets looked up in the DB:
+  let!(:user) { FactoryBot.create(:admin_user, email: 'the_user@sciencehistory.org') }
+  before do
+    OmniAuth.config.test_mode = true
+    OmniAuth.config.mock_auth[:azure_activedirectory_v2] = OmniAuth::AuthHash.new({
+      :provider => 'azure_activedirectory_v2',
+      :uid => '12345', :email => incoming_email,
+      :info => OmniAuth::AuthHash::InfoHash.new({ email: incoming_email })
+    })
   end
-
-  context "locked out user" do
-    it "can't log in" do
-      user.update(locked_out: true)
-
-      visit new_user_session_path
-
-      fill_in "Email", with: user.email
-      fill_in "Password", with: user.password
-      click_on "Log in"
-
-      expect(page).to have_text("your account is disabled")
-    end
-
-    it "kicked out if already logged in" do
-      sign_in user
-      user.update(locked_out: true)
-
-      visit admin_works_path
-      expect(page).to have_text("your account is disabled")
-    end
+  after do
+    OmniAuth.config.test_mode = false
+    OmniAuth.config.mock_auth[:azure_activedirectory_v2] = nil
   end
-
-  context "global lock-out" do
-    it "can't log in" do
-      allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
-      allow(ScihistDigicoll::Env).to receive(:lookup).with(:logins_disabled).and_return(true)
-
-      visit new_user_session_path
-
-      fill_in "Email", with: user.email
-      fill_in "Password", with: user.password
-      click_on "Log in"
-
-      expect(page).to have_text("logins are temporarily disabled")
+  context "staging or prod" do
+    before do
+      allow(ScihistDigicoll::Env).to receive(:staging?).and_return('true')
     end
-
-    it "kicked out if already logged in" do
-      sign_in user
-      visit admin_works_path
-      expect(page).to have_text("Works")
-
-      allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
-      allow(ScihistDigicoll::Env).to receive(:lookup).with(:logins_disabled).and_return(true)
-
-      visit admin_works_path
-      expect(page).to have_text("logins are temporarily disabled")
+    context "admin user" do
+      let(:work) { FactoryBot.create(:public_work, title: "Redirect to me")}
+      it "redirects after login to where you were before" do
+        visit work_path(work)
+        expect(page).to have_text("Redirect to me")
+        click_on "Log in"
+        expect(page).to have_text("Signed in successfully")
+        expect(page).to have_text("Redirect to me")
+      end
     end
   end
-
 end

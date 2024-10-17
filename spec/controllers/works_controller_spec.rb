@@ -157,7 +157,7 @@ RSpec.describe WorksController, type: :controller do
           it "denies access" do
             get trans_text_type, params: { id: work.friendlier_id }, as: :pdf
 
-            expect(response).to redirect_to(new_user_session_path)
+            expect(response).to redirect_to root_path
             expect(flash.alert).to match /You don't have permission to access/
           end
         end
