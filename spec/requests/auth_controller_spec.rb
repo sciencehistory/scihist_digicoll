@@ -36,7 +36,6 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
         allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
         allow(ScihistDigicoll::Env).to receive(:lookup).with(:dev_login).and_return nil
         get root_path
-        #pp response.body[-10000..-7000]
         expect(response.body).to match /Dev log in unavailable/
       end
 
@@ -65,9 +64,6 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
          delete destroy_user_session_path
          follow_redirect!
          expect(response.body).to match /Signed out successfully/
-      end
-      it "redirects after login to where you were before" do
-        # CAN'T DO THIS IN THIS TEST!!!
       end
       it "doesn't allow dev login" do
         get dev_login_path
