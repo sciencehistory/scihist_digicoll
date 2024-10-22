@@ -10,33 +10,12 @@ class User < ApplicationRecord
   # jrochkind did:
   # * comment out registerable, we don't allow registrations
 
-  #  As we switch to single sign-on using Azure,
-  #  we're removing 4 devise models as we switch to logging in via Azure:
-  #
-  #
-  #  1) Removing :database_authenticatable
-  #     we're now using Azure to log in.
-  #
-  #  2) Removing :validatable
-  #     "validatable module is a group of common validations, which expect a
-  #     resource that uses an email/password combination."
-  #     See https://github.com/heartcombo/devise/issues/4913
-  #
-  #  3) Removing :recoverable
-  #    We no longer support resetting your password,
-  #    since we aren't storing user passwords anymore.
-  #
-  #  4) Removing :rememberable
-  #     You are logged in as long as Azure says you're logged in.
-  devise :database_authenticatable, :recoverable, :rememberable, :validatable, :omniauthable, omniauth_providers: %i[azure_activedirectory_v2]
-
-  # We're removing :validatable, which used to do email validation.
-  # Let's add a couple of validations from
-  # https://github.com/heartcombo/devise/blob/main/lib/devise/models/validatable.rb:
-  validates_presence_of   :email
-  validates_uniqueness_of :email, allow_blank: true, case_sensitive: true, if: :devise_will_save_change_to_email?
-  validates_format_of     :email, with: URI::MailTo::EMAIL_REGEXP, allow_blank: true, if: :devise_will_save_change_to_email?
-
+  devise :database_authenticatable,
+    :recoverable,
+    :rememberable,
+    :validatable,
+    :omniauthable,
+    omniauth_providers: %i[azure_activedirectory_v2]
 
   has_many :cart_items, dependent: :delete_all
   has_many :works_in_cart, through: :cart_items, source: :work
