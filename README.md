@@ -149,8 +149,6 @@ We preferentially use Vite.js (an ES6-style JS bundler, https://vite-ruby.netlif
 
 * browse_everything is handled weirdly, with local copy and fork of browse everything assets, and a separte frontend loaded only on admin layout. See ./app/frontend/browse_everything/README.md
 
-* There was no reasonable way found to incorporate blacklight_range_limit in the vite build, we still load it via sprockets, with it's own sprockets manifest files just for it. `./app/asssets/javasripts/import_blacklight_range_limit.js` and `./app/asssets/stylesheets/import_blacklight_range_limit.css`. These are also linked to separately from layouts. It is all we are using sprockets for.
-
 * uppy (JS for fancy file upload func) is still being loaded in it's own separate script tag from remote CDN (see admin.html.erb layout). This is recommended against by the uppy docs, and we should transition to providing via webpacker and `import` statement, just including the parts of uppy we need, but haven't figured out how to do that yet (including uppy css)
 
 
