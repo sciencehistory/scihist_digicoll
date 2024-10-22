@@ -2,24 +2,31 @@ class AuthController < Devise::OmniauthCallbacksController
 
   # This method signs a user in after they authenticate with Microsoft Azure.
   def azure_activedirectory_v2
-    final_sign_in request.env['omniauth.auth']['info']['email']
+    unless ScihistDigicoll::Env.lookup(:log_in_using_azure)
+      flash[:alert] = "Sorry, you can't log in this way."
+      redirect_back(fallback_location: root_path)
+      return
+    end
+
+    email = request.env['omniauth.auth']['info']['email']
+    @user = User.where('email ILIKE ?', "%#{ User.sanitize_sql_like(email) }%").first
+
+    unless @user&.persisted?
+      flash[:alert] = "You can't currently log in to the Digital Collections. Please contact a Digital Collections administrator."
+      redirect_back(fallback_location: root_path)
+      return
+    end
+
+    if @user.locked_out?
+      flash[:alert] = "Sorry, this user is not allowed to log in."
+      redirect_back(fallback_location: root_path)
+      return
+    end
+
+    flash[:notice] = 'Signed in successfully.'
+    sign_in_and_redirect @user, event: :authentication
   end
 
-  # Allows a developer to sign on without using OAuth.
-  def dev_login
-    if ScihistDigicoll::Env.staging? || ScihistDigicoll::Env.production?
-      flash[:alert] = "Can't log you in this way."
-      redirect_back(fallback_location: root_path)
-      return
-    end
-    dev_login = ScihistDigicoll::Env.lookup(:dev_login)
-    unless dev_login =~URI::MailTo::EMAIL_REGEXP
-      flash[:alert] = "Please set DEV_LOGIN to a valid email address."
-      redirect_back(fallback_location: root_path)
-      return
-    end
-    final_sign_in dev_login
-  end
 
   private
 

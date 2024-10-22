@@ -16,6 +16,8 @@ RSpec.describe "Logins", type: :system do
       :uid => '12345', :email => incoming_email,
       :info => OmniAuth::AuthHash::InfoHash.new({ email: incoming_email })
     })
+    allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
+    allow(ScihistDigicoll::Env).to receive(:lookup).with(:log_in_using_azure).and_return(true)
   end
   after do
     OmniAuth.config.test_mode = false

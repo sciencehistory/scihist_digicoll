@@ -104,11 +104,11 @@ module ScihistDigicoll
       self.class.aws_credentials.secret_access_key if Rails.env.development?
     }
 
+
+    define_key :log_in_using_azure, default: false, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
     define_key :azure_client_id
     define_key :azure_client_secret
     define_key :azure_tenant_id
-    define_key :dev_login, default: nil
-
 
     # MediaConvert requires a special role to be passed to MediaConvert
     # jobs, that has access to input/output buckets, and MediaConvert itself.

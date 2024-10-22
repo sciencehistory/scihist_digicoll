@@ -57,9 +57,12 @@ Rails.application.routes.draw do
     skip: [:session, :registration],
     controllers: { omniauth_callbacks: 'auth'}
   devise_scope :user do
-    delete 'logout', to: 'devise/sessions#destroy', as: :destroy_user_session
-    get 'dev_login', to: "auth#dev_login", as: :dev_login
+    # These only work if you're not using Devise.
+    # TODO: prevent these from being used by subclassing.
+    get 'login', to: 'devise/sessions#new', as: :new_user_session
+    post 'login', to: 'devise/sessions#create', as: :user_session
 
+    delete 'logout', to: 'devise/sessions#destroy', as: :destroy_user_session
   end
 
 

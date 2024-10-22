@@ -28,8 +28,7 @@ class User < ApplicationRecord
   #
   #  4) Removing :rememberable
   #     You are logged in as long as Azure says you're logged in.
-  devise :omniauthable, omniauth_providers: %i[azure_activedirectory_v2]
-
+  devise :database_authenticatable, :recoverable, :rememberable, :validatable, :omniauthable, omniauth_providers: %i[azure_activedirectory_v2]
 
   # We're removing :validatable, which used to do email validation.
   # Let's add a couple of validations from
@@ -55,6 +54,13 @@ class User < ApplicationRecord
   end
   def staff_viewer_user?
     user_type == "staff_viewer"
+  end
+
+  # Only used by devise validatable, we want to allow user accounts
+  # to be saved with nil password, means they won't be able to log in
+  # with any password.
+  def password_required?
+    false
   end
 
   # Override of a devise method to lock users out if their individual `locked_out`
