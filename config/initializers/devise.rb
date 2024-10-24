@@ -265,6 +265,8 @@ Devise.setup do |config|
   # up on your models and hooks.
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
 
+  # Note: ScihistDigicoll::Env.lookup(:azure_client_id) should also return true
+  # if you want to use Azure.
   config.omniauth(
     :azure_activedirectory_v2,
     {

@@ -55,7 +55,7 @@ Rails.application.routes.draw do
   # We aren't using session cause we define em ourselves manually.
   devise_for :users,
     skip: [:session, :registration],
-    controllers: { omniauth_callbacks: 'auth'}
+    controllers: { omniauth_callbacks: 'auth',  passwords: 'passwords' }
   devise_scope :user do
     # These only work if you're not using Devise.
     # TODO: prevent these from being used by subclassing.
