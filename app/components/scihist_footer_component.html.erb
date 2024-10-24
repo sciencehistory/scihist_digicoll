@@ -10,15 +10,7 @@
                 <% if ScihistDigicoll::Env.lookup(:log_in_using_azure) %>
                     <li>
                         <% if helpers.can? :access_staff_functions %>
-                            <%= link_to "Log out",
-                                destroy_user_session_path, method: :delete,
-                                class: 'btn btn-brand-main'
-                            %>
-                            <%= link_to "Log out of both",
-                                "#{OmniAuth::Strategies::EntraId::BASE_URL}/common/oauth2/v2.0/logout?post_logout_redirect_uri=#{ScihistDigicoll::Env.lookup(:app_url_base)}#{logout_via_get_path}",
-                                class: 'btn btn-brand-main'
-                            %>
-
+                            <%= link_to "Log out", logout_path, class: 'btn btn-brand-main' %>
                         <% else %>
                             <%= link_to "Log in",
                                 user_entra_id_omniauth_authorize_path, method: :post,

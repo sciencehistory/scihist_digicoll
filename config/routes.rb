@@ -62,10 +62,14 @@ Rails.application.routes.draw do
     get 'login', to: 'devise/sessions#new', as: :new_user_session
     post 'login', to: 'devise/sessions#create', as: :user_session
 
-    delete 'logout', to: 'devise/sessions#destroy', as: :destroy_user_session
+    # Point links at this (logout_path)
+    # This will log you out regardless of whether Microsoft SSO is turned on or off.
+    # If you are using Microsoft SSO, it will point you to their SSO, which will then send you to the local end_session link.
+    get 'logout', to: 'auth#logout'
 
-    # Adding this for Microsoft SSO:
-    get    'logout', to: 'devise/sessions#destroy', as: :logout_via_get
+    # This only destroys the local session.
+    # This needs to be a GET so Microsoft can redirect to it after logging us out of Entra.
+    get 'end_session', to: 'devise/sessions#destroy'
   end
 
 

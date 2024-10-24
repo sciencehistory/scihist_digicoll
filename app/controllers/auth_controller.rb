@@ -38,6 +38,16 @@ class AuthController < Devise::OmniauthCallbacksController
   end
 
 
+  def logout
+    if ScihistDigicoll::Env.lookup(:log_in_using_azure)
+      redirect_to "#{OmniAuth::Strategies::EntraId::BASE_URL}/common/oauth2/v2.0/logout?post_logout_redirect_uri=#{ScihistDigicoll::Env.lookup(:app_url_base)}#{end_session_path}", allow_other_host: true
+      return
+    else
+      redirect_to end_session_path
+      return
+    end
+  end
+
   private
 
   # We need to provide a default path for newly signed-in users.
