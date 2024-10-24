@@ -63,6 +63,9 @@ Rails.application.routes.draw do
     post 'login', to: 'devise/sessions#create', as: :user_session
 
     delete 'logout', to: 'devise/sessions#destroy', as: :destroy_user_session
+
+    # Adding this for Microsoft SSO:
+    get    'logout', to: 'devise/sessions#destroy', as: :logout_via_get
   end
 
 
