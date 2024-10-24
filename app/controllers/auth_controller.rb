@@ -11,7 +11,7 @@ class AuthController < Devise::OmniauthCallbacksController
 
 
   # This method signs a user in after they authenticate with Microsoft Azure.
-  def azure_activedirectory_v2
+  def entra_id
     unless ScihistDigicoll::Env.lookup(:log_in_using_azure)
       flash[:alert] = "Sorry, you can't log in this way."
       redirect_back(fallback_location: root_path)

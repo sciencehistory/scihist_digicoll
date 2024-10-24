@@ -142,7 +142,7 @@ gem 'bootstrap4-kaminari-views'
 
 gem 'devise', "~> 4.5" # user accounts and login
 gem 'access-granted', "~> 1.0" # authorization
-gem 'omniauth-azure-activedirectory-v2'
+gem 'omniauth-entra-id'
 gem 'omniauth-rails_csrf_protection'
 
 

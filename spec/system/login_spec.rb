@@ -11,8 +11,8 @@ RSpec.describe "Logins", type: :system do
   let!(:user) { FactoryBot.create(:admin_user, email: 'the_user@sciencehistory.org') }
   before do
     OmniAuth.config.test_mode = true
-    OmniAuth.config.mock_auth[:azure_activedirectory_v2] = OmniAuth::AuthHash.new({
-      :provider => 'azure_activedirectory_v2',
+    OmniAuth.config.mock_auth[:entra_id] = OmniAuth::AuthHash.new({
+      :provider => 'entra_id',
       :uid => '12345', :email => incoming_email,
       :info => OmniAuth::AuthHash::InfoHash.new({ email: incoming_email })
     })
@@ -21,7 +21,7 @@ RSpec.describe "Logins", type: :system do
   end
   after do
     OmniAuth.config.test_mode = false
-    OmniAuth.config.mock_auth[:azure_activedirectory_v2] = nil
+    OmniAuth.config.mock_auth[:entra_id] = nil
   end
   context "staging or prod" do
     before do

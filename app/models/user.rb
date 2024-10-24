@@ -15,7 +15,7 @@ class User < ApplicationRecord
     :rememberable,
     :validatable,
     :omniauthable,
-    omniauth_providers: %i[azure_activedirectory_v2]
+    omniauth_providers: %i[entra_id]
 
   has_many :cart_items, dependent: :delete_all
   has_many :works_in_cart, through: :cart_items, source: :work

@@ -17,8 +17,8 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
       allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
       allow(ScihistDigicoll::Env).to receive(:lookup).with(:log_in_using_azure).and_return(true)
       OmniAuth.config.test_mode = true
-      OmniAuth.config.mock_auth[:azure_activedirectory_v2] = OmniAuth::AuthHash.new({
-        :provider => 'azure_activedirectory_v2',
+      OmniAuth.config.mock_auth[:entra_id] = OmniAuth::AuthHash.new({
+        :provider => 'entra_id',
         :uid => '12345',
         :email => incoming_email,
         :info => OmniAuth::AuthHash::InfoHash.new({ email: incoming_email })
@@ -26,13 +26,13 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
     end
     after do
       OmniAuth.config.test_mode = false
-      OmniAuth.config.mock_auth[:azure_activedirectory_v2] = nil
+      OmniAuth.config.mock_auth[:entra_id] = nil
     end
 
     context "admin user" do
       let(:work) { FactoryBot.create(:public_work, title: "Redirect to me")}
       it "can login and log out" do
-        get user_azure_activedirectory_v2_omniauth_callback_path
+        get user_entra_id_omniauth_callback_path
         follow_redirect!
         expect(response.body).to match /Signed in successfully/
         get admin_collections_path
@@ -46,7 +46,7 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
     context "SSO succeeds, but no account by that name in our DB" do
       let(:incoming_email) { 'some_other_user@sciencehistory.org' }
       it "can't log in" do
-        get user_azure_activedirectory_v2_omniauth_callback_path
+        get user_entra_id_omniauth_callback_path
         follow_redirect!
         expect(response).to have_http_status(200)
         expect(response.body).to match /Digital Collections administrator/
@@ -55,7 +55,7 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
     context "locked out user" do
       let!(:user) { FactoryBot.create(:admin_user, email: 'the_user@sciencehistory.org', password: "goatgoat", locked_out: true) }
       it "can't log in" do
-        get user_azure_activedirectory_v2_omniauth_callback_path
+        get user_entra_id_omniauth_callback_path
         follow_redirect!
         expect(response.body).to match /Sorry, this user is not allowed to log in./
       end
@@ -64,7 +64,7 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
       it "locked out immediately" do
         get root_path
         expect(response.body).to match /Log in/
-        get user_azure_activedirectory_v2_omniauth_callback_path
+        get user_entra_id_omniauth_callback_path
         follow_redirect!
         expect(response.body).to match /Signed in successfully/
         expect(response.body).to match /Log out/
@@ -78,7 +78,7 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
     context "global lock-out" do
       it "can't log in" do
         allow(ScihistDigicoll::Env).to receive(:lookup).with(:logins_disabled).and_return(true)
-        get user_azure_activedirectory_v2_omniauth_callback_path
+        get user_entra_id_omniauth_callback_path
         follow_redirect!
         expect(response.body).to match /Log in/
         expect(response.body).to match /logins are temporarily disabled/

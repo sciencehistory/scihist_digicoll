@@ -268,7 +268,7 @@ Devise.setup do |config|
   # Note: ScihistDigicoll::Env.lookup(:azure_client_id) should also return true
   # if you want to use Azure.
   config.omniauth(
-    :azure_activedirectory_v2,
+    :entra_id,
     {
       client_id:     ScihistDigicoll::Env.lookup(:azure_client_id),
       client_secret: ScihistDigicoll::Env.lookup(:azure_client_secret),
