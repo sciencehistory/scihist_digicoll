@@ -38,9 +38,19 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
         get admin_collections_path
         expect(response).to have_http_status(200)
         expect(response.body).to match /New Collection/
-        delete destroy_user_session_path
+        #Not testing SSO log out here, just end_session_path.
+        get end_session_path
         follow_redirect!
         expect(response.body).to match /Signed out successfully/
+      end
+    end
+    describe "logout" do
+      it "sends user to microsoft logout" do
+        sign_in user
+        get admin_works_path
+        expect(response).to have_http_status(200)
+        get logout_path
+        expect(response.headers['location']).to eq "#{OmniAuth::Strategies::EntraId::BASE_URL}/common/oauth2/v2.0/logout?post_logout_redirect_uri=#{ScihistDigicoll::Env.lookup(:app_url_base)}/end_session"
       end
     end
     context "SSO succeeds, but no account by that name in our DB" do

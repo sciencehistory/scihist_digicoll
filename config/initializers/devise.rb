@@ -265,14 +265,14 @@ Devise.setup do |config|
   # up on your models and hooks.
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
 
-  # Note: ScihistDigicoll::Env.lookup(:azure_client_id) should also return true
+  # Note: ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso) should also return true
   # if you want to use Azure.
   config.omniauth(
     :entra_id,
     {
-      client_id:     ScihistDigicoll::Env.lookup(:azure_client_id),
-      client_secret: ScihistDigicoll::Env.lookup(:azure_client_secret),
-      tenant_id:     ScihistDigicoll::Env.lookup(:azure_tenant_id),
+      client_id:     ScihistDigicoll::Env.lookup(:microsoft_sso_client_id),
+      client_secret: ScihistDigicoll::Env.lookup(:microsoft_sso_client_secret),
+      tenant_id:     ScihistDigicoll::Env.lookup(:microsoft_sso_tenant_id),
     }
   )
 

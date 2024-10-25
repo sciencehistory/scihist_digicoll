@@ -1,7 +1,7 @@
 class AuthController < Devise::OmniauthCallbacksController
 
   def passthru
-    unless ScihistDigicoll::Env.lookup(:log_in_using_azure)
+    unless ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
       flash[:alert] = "Sorry, you can't log in this way."
       redirect_back(fallback_location: root_path)
       return
@@ -12,7 +12,7 @@ class AuthController < Devise::OmniauthCallbacksController
 
   # This method signs a user in after they authenticate with Microsoft Azure.
   def entra_id
-    unless ScihistDigicoll::Env.lookup(:log_in_using_azure)
+    unless ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
       flash[:alert] = "Sorry, you can't log in this way."
       redirect_back(fallback_location: root_path)
       return
@@ -39,8 +39,8 @@ class AuthController < Devise::OmniauthCallbacksController
 
 
   def logout
-    if ScihistDigicoll::Env.lookup(:log_in_using_azure)
-      redirect_to "#{OmniAuth::Strategies::EntraId::BASE_URL}/common/oauth2/v2.0/logout?post_logout_redirect_uri=#{ScihistDigicoll::Env.lookup(:app_url_base)}#{end_session_path}", allow_other_host: true
+    if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
+      redirect_to logout_path, allow_other_host: true
       return
     else
       redirect_to end_session_path
@@ -58,5 +58,13 @@ class AuthController < Devise::OmniauthCallbacksController
   def new_session_path  *args
     flash[:notice] = "This URL is not meant for regular users."
     root_path
+  end
+
+  def logout_path
+    @logout_path ||= OmniAuth::Strategies::EntraId::BASE_URL + 
+      "/common/oauth2/v2.0/logout" + 
+      "?post_logout_redirect_uri=" + 
+      ScihistDigicoll::Env.lookup(:app_url_base) +
+      end_session_path
   end
 end
