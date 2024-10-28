@@ -24,7 +24,7 @@ RSpec.describe "passwords", type: :request, queue_adapter: :test do
     end
 
     describe "Password reset request for a particular user" do
-      it "doesn't work" do
+      it "refuses" do
         sign_in user
         # This is going to the users controller.
         post send_password_reset_admin_user_path(id: user.id)
@@ -34,28 +34,28 @@ RSpec.describe "passwords", type: :request, queue_adapter: :test do
       end
     end
     describe "reset password" do
-      it "doesn't work" do
+      it "refuses" do
         get new_user_password_path
         follow_redirect!
         expect(response.body).to match /Passwords are managed in Microsoft SSO now/
-      SSO
+      end
     end
     describe "edit password" do
-      it "doesn't work" do
+      it "refuses" do
         get edit_user_password_path(reset_password_token:"abcde")
         follow_redirect!
         expect(response.body).to match /Passwords are managed in Microsoft SSO now/
       end
     end
     describe "update password" do
-      it "doesn't work" do
+      it "refuses" do
         put '/users/password'
         follow_redirect!
         expect(response.body).to match /Passwords are managed in Microsoft SSO now/
       end
     end
     describe "create password" do
-      it "doesn't work" do
+      it "refuses" do
         post '/users/password'
         follow_redirect!
         expect(response.body).to match /Passwords are managed in Microsoft SSO now/
