@@ -61,10 +61,10 @@ class Admin::UsersController < AdminController
   # POST /admin/users/:id/send_password_reset
   def send_password_reset
     # The send password reset button should not be displayed
-    # if ScihistDigicoll::Env.lookup(:log_in_using_azure) == true ,
+    # if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso) == true ,
     # but just in case:
-    if ScihistDigicoll::Env.lookup(:log_in_using_azure)
-      flash[:alert] = "Passwords are managed in Microsoft Azure now."
+    if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
+      flash[:alert] = "Passwords are managed in Microsoft SSO now."
       redirect_back(fallback_location: root_path)
       return
     end

@@ -68,7 +68,7 @@ Rails.application.routes.draw do
     get 'logout', to: 'auth#logout'
 
     # This only destroys the local session.
-    # This needs to be a GET so Microsoft can redirect to it after logging us out of Entra.
+    # This needs to be GETable so Microsoft can redirect to it after logging us out of Entra.
     get 'end_session', to: 'devise/sessions#destroy'
   end
 

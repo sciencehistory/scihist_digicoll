@@ -8,14 +8,14 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
   # This is the user that gets looked up in the DB:
   let!(:user) { FactoryBot.create(:admin_user, email: 'the_user@sciencehistory.org', password: "goatgoat") }
 
-  context "using Azure to log in" do
+  context "using Microsoft SSO to log in" do
 
     # An authenticated email. This email address belongs to a person who has gotten authenticated.
     let(:incoming_email) { 'the_user@sciencehistory.org' }
   
     before do
       allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
-      allow(ScihistDigicoll::Env).to receive(:lookup).with(:log_in_using_azure).and_return(true)
+      allow(ScihistDigicoll::Env).to receive(:lookup).with(:log_in_using_microsoft_sso).and_return(true)
       OmniAuth.config.test_mode = true
       OmniAuth.config.mock_auth[:entra_id] = OmniAuth::AuthHash.new({
         :provider => 'entra_id',
@@ -106,10 +106,10 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
     end
   end
 
-  context "Without Azure" do
+  context "With Microsoft SSO" do
     before do
       allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
-      allow(ScihistDigicoll::Env).to receive(:lookup).with(:log_in_using_azure).and_return(false)
+      allow(ScihistDigicoll::Env).to receive(:lookup).with(:log_in_using_microsoft_sso).and_return(false)
     end
     it "can login" do
       get new_user_session_path

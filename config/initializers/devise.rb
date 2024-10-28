@@ -266,7 +266,7 @@ Devise.setup do |config|
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
 
   # Note: ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso) should also return true
-  # if you want to use Azure.
+  # if you want to use Microsoft SSO.
   config.omniauth(
     :entra_id,
     {

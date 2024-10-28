@@ -4,12 +4,12 @@ RSpec.describe "passwords", type: :request, queue_adapter: :test do
 
   let!(:user) { FactoryBot.create(:admin_user, email: 'the_user@sciencehistory.org', password: "goatgoat") }
 
-  context "using Azure to log in" do
+  context "using Microsoft SSO to log in" do
     # An authenticated email. This email address belongs to a person who has gotten authenticated.
     let(:incoming_email) { 'the_user@sciencehistory.org' }
     before do
       allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
-      allow(ScihistDigicoll::Env).to receive(:lookup).with(:log_in_using_azure).and_return(true)
+      allow(ScihistDigicoll::Env).to receive(:lookup).with(:log_in_using_microsoft_sso).and_return(true)
       OmniAuth.config.test_mode = true
       OmniAuth.config.mock_auth[:entra_id] = OmniAuth::AuthHash.new({
         :provider => 'entra_id',
@@ -30,43 +30,43 @@ RSpec.describe "passwords", type: :request, queue_adapter: :test do
         post send_password_reset_admin_user_path(id: user.id)
         expect(response).to have_http_status(302)
         follow_redirect!
-        expect(response.body).to match /Passwords are managed in Microsoft Azure now/
+        expect(response.body).to match /Passwords are managed in Microsoft SSO now/
       end
     end
     describe "reset password" do
       it "doesn't work" do
         get new_user_password_path
         follow_redirect!
-        expect(response.body).to match /Passwords are managed in Microsoft Azure now/
-      end
+        expect(response.body).to match /Passwords are managed in Microsoft SSO now/
+      SSO
     end
     describe "edit password" do
       it "doesn't work" do
         get edit_user_password_path(reset_password_token:"abcde")
         follow_redirect!
-        expect(response.body).to match /Passwords are managed in Microsoft Azure now/
+        expect(response.body).to match /Passwords are managed in Microsoft SSO now/
       end
     end
     describe "update password" do
       it "doesn't work" do
         put '/users/password'
         follow_redirect!
-        expect(response.body).to match /Passwords are managed in Microsoft Azure now/
+        expect(response.body).to match /Passwords are managed in Microsoft SSO now/
       end
     end
     describe "create password" do
       it "doesn't work" do
         post '/users/password'
         follow_redirect!
-        expect(response.body).to match /Passwords are managed in Microsoft Azure now/
+        expect(response.body).to match /Passwords are managed in Microsoft SSO now/
       end
     end
   end
 
-  context "Without Azure (smoke tests)" do
+  context "Without Microsoft SSO (smoke tests)" do
     before do
       allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
-      allow(ScihistDigicoll::Env).to receive(:lookup).with(:log_in_using_azure).and_return(false)
+      allow(ScihistDigicoll::Env).to receive(:lookup).with(:log_in_using_microsoft_sso).and_return(false)
     end
     # This is going to the users controller.
     describe "Request to reset password" do

@@ -1,29 +1,27 @@
 class PasswordsController < Devise::PasswordsController
   def new
-    return redirect_if_azure if ScihistDigicoll::Env.lookup(:log_in_using_azure)
+    return back if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
     super
   end
 
   def edit
-    return redirect_if_azure if ScihistDigicoll::Env.lookup(:log_in_using_azure)
+    return back if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
     super
   end
 
   def update
-    return redirect_if_azure if ScihistDigicoll::Env.lookup(:log_in_using_azure)
+    return back if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
     super
   end
 
   def create
-    return redirect_if_azure if ScihistDigicoll::Env.lookup(:log_in_using_azure)
+    return back if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
     super
   end
 
   private
-  def redirect_if_azure
-    if ScihistDigicoll::Env.lookup(:log_in_using_azure)
-      flash[:alert] = "Passwords are managed in Microsoft Azure now."
-      redirect_back(fallback_location: root_path)
-    end
+  def back
+    flash[:alert] = "Passwords are managed in Microsoft SSO now."
+    redirect_back(fallback_location: root_path)
   end
 end

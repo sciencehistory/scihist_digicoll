@@ -10,7 +10,7 @@ class AuthController < Devise::OmniauthCallbacksController
   end
 
 
-  # This method signs a user in after they authenticate with Microsoft Azure.
+  # This method signs a user in after they authenticate with Microsoft SSO.
   def entra_id
     unless ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
       flash[:alert] = "Sorry, you can't log in this way."
