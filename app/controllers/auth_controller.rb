@@ -1,23 +1,9 @@
 class AuthController < Devise::OmniauthCallbacksController
 
-  def passthru
-    unless ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
-      flash[:alert] = "Sorry, you can't log in this way."
-      redirect_back(fallback_location: root_path)
-      return
-    end
-    super
-  end
-
+  before_action :maybe_redirect_back, only: [:passthru, :entra_id]
 
   # This method signs a user in after they authenticate with Microsoft SSO.
   def entra_id
-    unless ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
-      flash[:alert] = "Sorry, you can't log in this way."
-      redirect_back(fallback_location: root_path)
-      return
-    end
-
     email = request.env['omniauth.auth']['info']['email']
     @user = User.where('email ILIKE ?', "%#{ User.sanitize_sql_like(email) }%").first
 
@@ -37,7 +23,7 @@ class AuthController < Devise::OmniauthCallbacksController
     sign_in_and_redirect @user, event: :authentication
   end
 
-
+  # TODO do this in routes!!
   def logout
     if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
       redirect_to logout_path, allow_other_host: true
@@ -46,6 +32,12 @@ class AuthController < Devise::OmniauthCallbacksController
       redirect_to end_session_path
       return
     end
+  end
+
+  # Let's tell users who navigate to /login what they should be doing:
+  def courtesy_notice
+    flash[:alert] = 'To log in using Microsoft Single Sign-On, click the "log in" button at the bottom of the page.'
+    redirect_back(fallback_location: root_path)
   end
 
   private
@@ -67,4 +59,14 @@ class AuthController < Devise::OmniauthCallbacksController
       ScihistDigicoll::Env.lookup(:app_url_base) +
       end_session_path
   end
+
+
+  def maybe_redirect_back
+    unless ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
+      flash[:alert] = "Sorry, you can't log in this way."
+      redirect_back(fallback_location: root_path)
+      return
+    end
+  end
+
 end

@@ -57,8 +57,17 @@ Rails.application.routes.draw do
     skip: [:session, :registration],
     controllers: { omniauth_callbacks: 'auth',  passwords: 'passwords' }
   devise_scope :user do
-    get 'login', to: 'devise/sessions#new', as: :new_user_session
-    post 'login', to: 'devise/sessions#create', as: :user_session
+    #get 'login', to: 'devise/sessions#new', as: :new_user_session
+    #ost 'login', to: 'devise/sessions#create', as: :user_session
+
+    if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
+      # just show an alert reminding the user what to do.
+      get 'login',   to: "auth#courtesy_notice",    as: :new_user_session
+      post 'login',  to: "auth#courtesy_notice",    as: :user_session
+    else
+      get  'login',  to: 'devise/sessions#new',     as: :new_user_session
+      post 'login',  to: 'devise/sessions#create',  as: :user_session
+    end
 
     # Point links at this (logout_path)
     # This will log you out regardless of whether Microsoft SSO is turned on or off.

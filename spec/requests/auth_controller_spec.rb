@@ -81,7 +81,9 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
         user.update(locked_out: true)
         get root_path
         follow_redirect!
+        pp response.headers['location']
         expect(response.body).to match /your account is disabled/
+        # might actually be: You don't have permission to access that page.
         expect(response.body).to match /Log in/
       end
     end
@@ -106,7 +108,7 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
     end
   end
 
-  context "With Microsoft SSO" do
+  context "Old-style password login" do
     before do
       allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
       allow(ScihistDigicoll::Env).to receive(:lookup).with(:log_in_using_microsoft_sso).and_return(false)

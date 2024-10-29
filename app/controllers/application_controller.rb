@@ -18,6 +18,7 @@ class ApplicationController < ActionController::Base
 
 
   rescue_from "AccessGranted::AccessDenied" do |exception|
+    puts "OK here"
     redirect_to root_path, alert: "You don't have permission to access that page."
   end
 
