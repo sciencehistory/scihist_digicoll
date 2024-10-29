@@ -57,14 +57,12 @@ Rails.application.routes.draw do
     skip: [:session, :registration],
     controllers: { omniauth_callbacks: 'auth',  passwords: 'passwords' }
   devise_scope :user do
-    # These only work if you're not using Devise.
-    # TODO: prevent these from being used by subclassing.
     get 'login', to: 'devise/sessions#new', as: :new_user_session
     post 'login', to: 'devise/sessions#create', as: :user_session
 
     # Point links at this (logout_path)
     # This will log you out regardless of whether Microsoft SSO is turned on or off.
-    # If you are using Microsoft SSO, it will point you to their SSO, which will then send you to the local end_session link.
+    # If you are using Microsoft SSO, it will point you to Microsoft's logout link, which will then send you to the local end_session link.
     get 'logout', to: 'auth#logout'
 
     # This only destroys the local session.
