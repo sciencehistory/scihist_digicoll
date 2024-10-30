@@ -266,7 +266,7 @@ GEM
       net-http
     faraday-retry (2.2.1)
       faraday (~> 2.0)
-    faster_s3_url (1.1.0)
+    faster_s3_url (1.2.0)
     fastimage (2.3.1)
     ffi (1.17.0)
     ffi (1.17.0-arm64-darwin)
