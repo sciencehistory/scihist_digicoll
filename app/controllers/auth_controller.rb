@@ -23,15 +23,12 @@ class AuthController < Devise::OmniauthCallbacksController
     sign_in_and_redirect @user, event: :authentication
   end
 
-  # TODO do this in routes!!
-  def logout
-    if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
-      redirect_to logout_path, allow_other_host: true
-      return
-    else
-      redirect_to end_session_path
-      return
-    end
+
+  def sso_logout
+    # There is no route to this method under unless :log_in_using_microsoft_sso
+    raise "This method should be unreachable." unless ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
+    sign_out current_user
+    redirect_to sso_logout_path, allow_other_host: true
   end
 
   private
@@ -46,12 +43,12 @@ class AuthController < Devise::OmniauthCallbacksController
     root_path
   end
 
-  def logout_path
+  def sso_logout_path
     @logout_path ||= OmniAuth::Strategies::EntraId::BASE_URL + 
       "/common/oauth2/v2.0/logout" + 
       "?post_logout_redirect_uri=" + 
       ScihistDigicoll::Env.lookup(:app_url_base) +
-      end_session_path
+      root_path
   end
 
 

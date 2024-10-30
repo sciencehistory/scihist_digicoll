@@ -35,26 +35,27 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
 
     context "admin user" do
       let(:work) { FactoryBot.create(:public_work, title: "Redirect to me")}
-      it "can login and log out" do
+      it "can login" do
         get user_entra_id_omniauth_callback_path
         follow_redirect!
         expect(response.body).to match /Signed in successfully/
         get admin_collections_path
         expect(response).to have_http_status(200)
         expect(response.body).to match /New Collection/
-        #Not testing SSO log out here, just end_session_path.
-        get end_session_path
-        follow_redirect!
-        expect(response.body).to match /Signed out successfully/
       end
     end
+
     describe "logout" do
-      it "sends user to microsoft logout" do
+      it "logs the user out, then browser to microsoft logout" do
         sign_in user
         get admin_works_path
         expect(response).to have_http_status(200)
         get logout_path
-        expect(response.headers['location']).to eq "#{OmniAuth::Strategies::EntraId::BASE_URL}/common/oauth2/v2.0/logout?post_logout_redirect_uri=#{ScihistDigicoll::Env.lookup(:app_url_base)}/end_session"
+        expect(response.headers['location']).to eq "#{OmniAuth::Strategies::EntraId::BASE_URL}/common/oauth2/v2.0/logout?post_logout_redirect_uri=#{ScihistDigicoll::Env.lookup(:app_url_base)}/"
+        get admin_collections_path
+        expect(response).to have_http_status(302)
+        follow_redirect!
+        expect(response.body).to match /You don.*t have permission/
       end
     end
     context "SSO succeeds, but no account by that name in our DB" do
