@@ -1,27 +1,13 @@
+# To minimize confusion, let's make password manipulation unavailable if we're currently managing
+# auth using Microsoft. These passwords are irrelevant and will just cause confusion, since the user likely
+# has a totally different password in Entra.
 class PasswordsController < Devise::PasswordsController
-  def new
-    return back if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
-    super
-  end
-
-  def edit
-    return back if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
-    super
-  end
-
-  def update
-    return back if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
-    super
-  end
-
-  def create
-    return back if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
-    super
-  end
-
+  before_action :maybe_redirect_back
   private
-  def back
+  def maybe_redirect_back
+    return unless ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
     flash[:alert] = "Passwords are managed in Microsoft SSO now."
     redirect_back(fallback_location: root_path)
+    return
   end
 end
