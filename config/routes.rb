@@ -55,25 +55,23 @@ Rails.application.routes.draw do
   # We aren't using session cause we define em ourselves manually.
   devise_for :users,
     skip: [:session, :registration],
-    controllers: ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso) ? { omniauth_callbacks: 'auth', passwords: 'passwords' } : { passwords: 'passwords' }
-
-  devise_scope :user do
-    unless ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
-      get  'login',  to: 'devise/sessions#new',     as: :new_user_session
-      post 'login',  to: 'devise/sessions#create',  as: :user_session
+    controllers: if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
+      { passwords: 'passwords', omniauth_callbacks: 'auth',  }
+    else
+      { passwords: 'passwords' }
     end
 
-    # Point links at this (logout_path)
-    # This will log you out regardless of whether Microsoft SSO is turned on or off.
-    # If you are using Microsoft SSO, it will point you to Microsoft's logout link, which will then send you to the local end_session link.
-    get 'logout', to: 'auth#logout'
-
-    # This only destroys the local session.
-    # This needs to be GETable so Microsoft can redirect to it after logging us out of Entra.
-    get 'end_session', to: 'devise/sessions#destroy'
+  if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
+    devise_scope :user do
+      get 'logout', to:'auth#sso_logout'
+    end
+  else
+    devise_scope :user do
+      get  'login',  to: 'devise/sessions#new',     as: :new_user_session
+      post 'login',  to: 'devise/sessions#create',  as: :user_session
+      get  'logout', to: 'devise/sessions#destroy'
+    end
   end
-
-
 
   # Dynamic robots.txt
   # this will fall through to ./views/application/robots.text.erb, no need for an action method
