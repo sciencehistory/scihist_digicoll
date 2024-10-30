@@ -16,6 +16,8 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
     before do
       allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
       allow(ScihistDigicoll::Env).to receive(:lookup).with(:log_in_using_microsoft_sso).and_return(true)
+      Rails.application.reload_routes!
+
       OmniAuth.config.test_mode = true
       OmniAuth.config.mock_auth[:entra_id] = OmniAuth::AuthHash.new({
         :provider => 'entra_id',
@@ -27,6 +29,8 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
     after do
       OmniAuth.config.test_mode = false
       OmniAuth.config.mock_auth[:entra_id] = nil
+      allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
+      Rails.application.reload_routes!
     end
 
     context "admin user" do
@@ -81,12 +85,11 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
         user.update(locked_out: true)
         get root_path
         follow_redirect!
-        pp response.headers['location']
         expect(response.body).to match /your account is disabled/
-        # might actually be: You don't have permission to access that page.
         expect(response.body).to match /Log in/
       end
     end
+
     context "global lock-out" do
       it "can't log in" do
         allow(ScihistDigicoll::Env).to receive(:lookup).with(:logins_disabled).and_return(true)
@@ -95,6 +98,7 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
         expect(response.body).to match /Log in/
         expect(response.body).to match /logins are temporarily disabled/
       end
+
       it "kicked out if already logged in" do
         sign_in user
         get admin_works_path
@@ -108,11 +112,18 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
     end
   end
 
-  context "Old-style password login" do
+  context "Without Microsoft SSO - use password login" do
     before do
       allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
       allow(ScihistDigicoll::Env).to receive(:lookup).with(:log_in_using_microsoft_sso).and_return(false)
+      Rails.application.reload_routes!
     end
+    after do
+      allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
+      Rails.application.reload_routes!
+    end
+
+
     it "can login" do
       get new_user_session_path
       expect(response).to have_http_status(200)

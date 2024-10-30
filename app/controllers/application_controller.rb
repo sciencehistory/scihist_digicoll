@@ -18,7 +18,6 @@ class ApplicationController < ActionController::Base
 
 
   rescue_from "AccessGranted::AccessDenied" do |exception|
-    puts "OK here"
     redirect_to root_path, alert: "You don't have permission to access that page."
   end
 
@@ -46,7 +45,9 @@ class ApplicationController < ActionController::Base
   end
   helper_method :show_ie_unsupported_warning?
 
-  # After the user logs in successfully, redirect to wherever they were
+  # Since we're displaying the log in link on every page,
+  # after the user logs in successfully, let's redirect to
+  # wherever they were before they clicked the log in link.
   # See https://www.rubydoc.info/github/plataformatec/devise/Devise/Controllers/Helpers
   def after_sign_in_path_for(resource)
     stored_location_for(resource) || request.env['omniauth.origin'] || super

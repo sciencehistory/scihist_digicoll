@@ -10,6 +10,7 @@ RSpec.describe "passwords", type: :request, queue_adapter: :test do
     before do
       allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
       allow(ScihistDigicoll::Env).to receive(:lookup).with(:log_in_using_microsoft_sso).and_return(true)
+      Rails.application.reload_routes!
       OmniAuth.config.test_mode = true
       OmniAuth.config.mock_auth[:entra_id] = OmniAuth::AuthHash.new({
         :provider => 'entra_id',
@@ -21,6 +22,8 @@ RSpec.describe "passwords", type: :request, queue_adapter: :test do
     after do
       OmniAuth.config.test_mode = false
       OmniAuth.config.mock_auth[:entra_id] = nil
+      allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
+      Rails.application.reload_routes!
     end
 
     describe "Password reset request for a particular user" do
@@ -67,7 +70,13 @@ RSpec.describe "passwords", type: :request, queue_adapter: :test do
     before do
       allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
       allow(ScihistDigicoll::Env).to receive(:lookup).with(:log_in_using_microsoft_sso).and_return(false)
+      Rails.application.reload_routes!
     end
+    after do
+      allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
+      Rails.application.reload_routes!
+    end
+
     # This is going to the users controller.
     describe "Request to reset password" do
       it "routes to the devise password controller" do

@@ -34,12 +34,6 @@ class AuthController < Devise::OmniauthCallbacksController
     end
   end
 
-  # Let's tell users who navigate to /login what they should be doing:
-  def courtesy_notice
-    flash[:alert] = 'To log in using Microsoft Single Sign-On, click the "log in" button at the bottom of the page.'
-    redirect_back(fallback_location: root_path)
-  end
-
   private
 
   # We need to provide a default path for newly signed-in users.
