@@ -55,10 +55,7 @@ Rails.application.routes.draw do
   # We aren't using session cause we define em ourselves manually.
   devise_for :users,
     skip: [:session, :registration],
-    controllers: {
-      omniauth_callbacks: 'auth',
-      passwords: 'passwords'
-    }
+    controllers: ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso) ? { omniauth_callbacks: 'auth', passwords: 'passwords' } : { passwords: 'passwords' }
 
   devise_scope :user do
     unless ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
