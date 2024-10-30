@@ -26,16 +26,6 @@ RSpec.describe "passwords", type: :request, queue_adapter: :test do
       Rails.application.reload_routes!
     end
 
-    describe "Password reset request for a particular user" do
-      it "refuses" do
-        sign_in user
-        # This is going to the users controller.
-        post send_password_reset_admin_user_path(id: user.id)
-        expect(response).to have_http_status(302)
-        follow_redirect!
-        expect(response.body).to match /Passwords are managed in Microsoft SSO now/
-      end
-    end
     describe "reset password" do
       it "refuses" do
         get new_user_password_path

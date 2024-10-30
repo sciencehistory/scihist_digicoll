@@ -55,7 +55,11 @@ Rails.application.routes.draw do
   # We aren't using session cause we define em ourselves manually.
   devise_for :users,
     skip: [:session, :registration],
-    controllers: { omniauth_callbacks: 'auth',  passwords: 'passwords' }
+    controllers: {
+      omniauth_callbacks: 'auth',
+      passwords: 'passwords'
+    }
+
   devise_scope :user do
     unless ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
       get  'login',  to: 'devise/sessions#new',     as: :new_user_session
@@ -266,7 +270,7 @@ Rails.application.routes.draw do
 
     resources :users, except: [:destroy, :show] do
       member do
-        post "send_password_reset"
+        post "send_password_reset" unless ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
       end
     end
 
