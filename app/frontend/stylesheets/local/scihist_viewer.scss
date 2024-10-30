@@ -353,12 +353,12 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
         font-weight: $btn-font-weight;
         text-align: center;
         vertical-align: middle;
-        @include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-line-height-lg, 0);
+        @include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-border-radius-lg);;
 
         white-space: nowrap;
       }
       .viewer-member-info {
-        @include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-line-height-lg, 0);
+        @include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-border-radius-lg);;
         border: 1px solid $primary;
         flex-grow: 4;
         white-space: nowrap;
