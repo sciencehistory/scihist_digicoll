@@ -17,11 +17,14 @@ RSpec.describe "Logins", type: :system do
       :info => OmniAuth::AuthHash::InfoHash.new({ email: incoming_email })
     })
     allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
-    allow(ScihistDigicoll::Env).to receive(:lookup).with(:log_in_using_microsoft_sso).and_return(true)
+    allow(ScihistDigicoll::Env).to receive(:lookup).with(:log_in_using_microsoft_sso).and_return(true)    
+    Rails.application.reload_routes!
   end
   after do
     OmniAuth.config.test_mode = false
     OmniAuth.config.mock_auth[:entra_id] = nil
+    allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
+    Rails.application.reload_routes!
   end
   context "staging or prod" do
     before do
