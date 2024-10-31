@@ -33,7 +33,7 @@
 
             <% if has_ohms_index? || has_ohms_transcript? %>
               <div>
-                <button class="btn btn-sm btn-emphasis text-nowrap" data-trigger="ohms-jump-to-text">Jump to text</button>
+                <button class="btn btn-sm btn-emphasis text-nowrap" data-bs-trigger="ohms-jump-to-text">Jump to text</button>
               </div>
             <% end %>
           </div>
@@ -65,14 +65,14 @@
 
         <ul class="nav ohms-nav-tabs" role="tablist">
           <li class="nav-item" role="presentation">
-            <a class="nav-link active btn btn-danger" id="ohDescriptionTab" data-toggle="tab" href="#ohDescription" role="tab" aria-controls="ohDescription" aria-selected="true">
+            <a class="nav-link active btn btn-danger" id="ohDescriptionTab" data-bs-toggle="tab" href="#ohDescription" role="tab" aria-controls="ohDescription" aria-selected="true">
               Description
             </a>
           </li>
 
           <% if has_ohms_index? %>
             <li class="nav-item" role="presentation">
-              <a class="nav-link btn btn-danger" id="ohTocTab" data-toggle="tab" href="#ohToc" role="tab" aria-controls="ohToc" aria-selected="false">
+              <a class="nav-link btn btn-danger" id="ohTocTab" data-bs-toggle="tab" href="#ohToc" role="tab" aria-controls="ohToc" aria-selected="false">
                 Table of Contents <span data-ohms-hitcount="index"></span>
               </a>
             </li>
@@ -80,14 +80,14 @@
 
           <% if has_ohms_transcript? %>
             <li class="nav-item" role="presentation">
-              <a class="nav-link btn btn-danger" id="ohTranscriptTab" data-toggle="tab" href="#ohTranscript" role="tab" aria-controls="ohTranscript" aria-selected="false">
+              <a class="nav-link btn btn-danger" id="ohTranscriptTab" data-bs-toggle="tab" href="#ohTranscript" role="tab" aria-controls="ohTranscript" aria-selected="false">
                 Transcript <span data-ohms-hitcount="transcript"></span>
               </a>
             </li>
           <% end %>
 
           <li class="nav-item" role="presentation">
-            <a class="nav-link btn btn-danger" id="ohDownloadsTab" data-toggle="tab" href="#ohDownloads" role="tab" aria-controls="ohDownloads" aria-selected="false">Downloads</a>
+            <a class="nav-link btn btn-danger" id="ohDownloadsTab" data-bs-toggle="tab" href="#ohDownloads" role="tab" aria-controls="ohDownloads" aria-selected="false">Downloads</a>
           </li>
         </ul>
       </div>
@@ -126,7 +126,7 @@
             <div class='expanded-social-share'>
               <%= render SocialShareComponent.new(work) %>
 
-              <a href="#" class="btn btn-secondary rounded-sides share-link" data-toggle="linkShareModal" data-target="#audioLinkShare">
+              <a href="#" class="btn btn-secondary rounded-sides share-link" data-bs-toggle="linkShareModal" data-bs-target="#audioLinkShare">
                 <i class="fa fa-share" aria-hidden="true"></i>
                 Share link
               </a>
@@ -178,32 +178,32 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Share link to this page</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+          
         </button>
       </div>
       <div class="modal-body" data-area="media-link-share">
 
-        <div class="form-group">
-          <div class="input-group mb-3" data-trigger="copyInputGroup">
+        <div class="mb-3">
+          <div class="input-group mb-3" data-bs-trigger="copyInputGroup">
             <div class="input-group-prepend">
               <span class="input-group-text">
                 <i class="fa fa-link" aria-hidden="true"></i>
-                <span class="sr-only">Link</span>
+                <span class="visually-hidden">Link</span>
               </span>
             </div>
 
             <input type="text" aria-label="URL to copy" class="form-control" data-slot="shareURL" readonly value="<%= work_url(work) %>">
 
             <div class="input-group-append">
-              <button class="btn btn-outline-secondary" data-trigger="linkClipboardCopy">
+              <button class="btn btn-outline-secondary" data-bs-trigger="linkClipboardCopy">
                 <i class="fa fa-clipboard" aria-hidden="true"></i> Copy
               </button>
             </div>
           </div>
         </div>
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="includeTimecode" data-slot="timecode" data-trigger="updateLinkTimecode">
+          <input class="form-check-input" type="checkbox" value="" id="includeTimecode" data-slot="timecode" data-bs-trigger="updateLinkTimecode">
           <label class="form-check-label" for="includeTimecode">
             Start audio at <code data-slot="humanTimecode"></code>
           </label>
@@ -211,7 +211,7 @@
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>

@@ -7,16 +7,16 @@
     but how it is for now.
 %>
 
-<ul class="nav nav-tabs mt-4 mb-2" data-trigger="responsive-tabs-lg" role="tablist">
+<ul class="nav nav-tabs mt-4 mb-2" data-bs-trigger="responsive-tabs-lg" role="tablist">
   <li class="nav-item" role="presentation">
-    <a class="nav-link active" id="description-tab" data-toggle="tab" href="#description" role="tab" aria-controls="description" aria-selected="true">
+    <a class="nav-link active" id="description-tab" data-bs-toggle="tab" href="#description" role="tab" aria-controls="description" aria-selected="true">
       Description
     </a>
   </li>
 
   <% if transcription_texts.present? %>
     <li class="nav-item" role="presentation">
-      <a class="nav-link" id="transcription-tab" data-toggle="tab" href="#transcription" role="tab" aria-controls="transcription">
+      <a class="nav-link" id="transcription-tab" data-bs-toggle="tab" href="#transcription" role="tab" aria-controls="transcription">
         Transcription
       </a>
     </li>
@@ -24,7 +24,7 @@
 
   <% if translation_texts.present? %>
     <li class="nav-item" role="presentation">
-      <a class="nav-link" id="translation-tab" data-toggle="tab" href="#translation" role="tab" aria-controls="translation" aria-selected="true">
+      <a class="nav-link" id="translation-tab" data-bs-toggle="tab" href="#translation" role="tab" aria-controls="translation" aria-selected="true">
         English Translation
       </a>
     </li>

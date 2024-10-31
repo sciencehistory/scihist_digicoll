@@ -55,10 +55,10 @@
     <% if @asset.transcription.present? || @asset.english_translation.present? %>
       <ul class="nav nav-tabs mt-4" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-          <a class="nav-link active" id="transcription-tab" data-toggle="tab" href="#transcriptionText" role="tab" aria-controls="transcriptionText" aria-selected="true">Transcription</a>
+          <a class="nav-link active" id="transcription-tab" data-bs-toggle="tab" href="#transcriptionText" role="tab" aria-controls="transcriptionText" aria-selected="true">Transcription</a>
         </li>
         <li class="nav-item" role="presentation">
-          <a class="nav-link" id="english-translation-tab" data-toggle="tab" href="#englishTranslationText" role="tab" aria-controls="englishTranslationText" aria-selected="false">English Translation</a>
+          <a class="nav-link" id="english-translation-tab" data-bs-toggle="tab" href="#englishTranslationText" role="tab" aria-controls="englishTranslationText" aria-selected="false">English Translation</a>
         </li>
       </ul>
       <div class="tab-content pt-2 pb-2 border-bottom" id="myTabContent">
@@ -128,7 +128,7 @@
         <div class="row">
           <div class="col-sm-12">
             <span class="h3">
-              <span class="badge badge-warning">Un-published, but marked available by request</span>
+              <span class="badge text-bg-warning">Un-published, but marked available by request</span>
             </span>
               <% if @asset.parent %>
                 More info at <%= link_to "Work Oral History Management", admin_work_path(@asset.parent, anchor: "tab=nav-oral-histories") %>
@@ -141,7 +141,7 @@
 
       <% if @asset.role.present? %>
         <dt class="col-sm-4">Role</dt>
-        <dd class="col-sm-8"><span class="badge badge-info"><%= @asset.role.humanize.downcase %></span></dd>
+        <dd class="col-sm-8"><span class="badge text-bg-info"><%= @asset.role.humanize.downcase %></span></dd>
       <% end %>
 
       <% if @asset.role == PdfToPageImages::EXTRACTED_PAGE_ROLE && @asset.extracted_pdf_source_info.present? %>
@@ -163,7 +163,7 @@
       <dd class="col-sm-8"><%= l @asset.updated_at, format: :admin %></dd>
 
       <dt class="col-sm-4">Internal ID</dt>
-      <dd class="col-sm-8 text-monospace small"><%= @asset.id %></dd>
+      <dd class="col-sm-8 font-monospace small"><%= @asset.id %></dd>
 
       <dt class="col-sm-4">Orig. Filename</dt>
       <dd class="col-sm-8"><%= @asset&.file&.metadata.try { |h| h["filename"]} %></dd>
@@ -439,9 +439,9 @@
         <li>
           <%= link_to key, derivative.url %>
           <% if derivative.storage_key == :restricted_kithe_derivatives %>
-            <span class="badge badge-warning">on restricted storage</span>
+            <span class="badge text-bg-warning">on restricted storage</span>
           <% elsif @asset.derivative_storage_type == "restricted" %>
-            <span class="badge badge-danger">unexpectedly on public storage</span>
+            <span class="badge text-bg-danger">unexpectedly on public storage</span>
           <% end %>
         </li>
       <% end %>
@@ -451,13 +451,13 @@
     <% if @asset.suppress_ocr %>
        <small>
         OCR is suppressed for this asset. Note:<br/>
-        <span class="text-monospace text-muted admin-ocr-display">
+        <span class="font-monospace text-muted admin-ocr-display">
           <%= @asset.ocr_admin_note%>
         </span>
       </small>
     <% elsif @asset.hocr.present? %>
       <small>
-        <span class="text-monospace text-muted admin-ocr-display">
+        <span class="font-monospace text-muted admin-ocr-display">
           <%= HocrComponent.new(@asset.hocr).html_body_without_ids %>
         </span>
       </small>

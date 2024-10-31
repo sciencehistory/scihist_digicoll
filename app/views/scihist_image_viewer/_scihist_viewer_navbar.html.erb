@@ -34,7 +34,7 @@
     <%= render DownloadDropdownComponent.new(nil, display_parent_work: work, viewer_template: true, work_download_options: work_download_options) %>
 
     <button class="viewer-navbar-btn btn btn-lg btn-emphasis viewer-fullscreen viewer-thin-btn" id="viewer-fullscreen"
-            data-trigger="viewer-fullscreen" tabindex="0" title="Fullscreen" aria-label="full screen">
+            data-bs-trigger="viewer-fullscreen" tabindex="0" title="Fullscreen" aria-label="full screen">
       <i class="fa fa-arrows-alt" aria-hidden="true"></i>
     </button>
 
@@ -61,7 +61,7 @@
           a starting point for a popup info area, it turns out. popover doesn't
           behave how we want. %>
       <button id="btnViewerKeyboard" type="button" class="viewer-navbar-btn btn btn-lg btn-emphasis dropdown-toggle"
-              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" tabindex="0"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" tabindex="0"
               aria-label="Keyboard shortcut legend" title="Keyboard shortcut legend">
         <i class="fa fa-keyboard-o" aria-hidden="true"></i>
       </button>

@@ -22,7 +22,7 @@
         :"aria-label" => t('blacklight.search.form.search_field.label')
     %>
 
-    <label class="sr-only" for="q"><%= t('blacklight.search.form.search_field.label') %></label>
+    <label class="visually-hidden" for="q"><%= t('blacklight.search.form.search_field.label') %></label>
 
     <div class="input-group-append">
       <button type="submit" class="btn btn-brand-dark" title="Search" id="search-submit-header">
@@ -32,20 +32,20 @@
   </div>
 
   <div class="search-options">
-    <div role="group" aria-labelledby="limit-dates-heading" class="form-group limit-dates">
+    <div role="group" aria-labelledby="limit-dates-heading" class="mb-3 limit-dates">
       <div class="limit-dates-heading" id="limit-dates-heading">
         Limit Dates
       </div>
       <div class="limit-dates-body">
-        <label class="sr-only" for="search-option-date-from">From start year</label>
+        <label class="visually-hidden" for="search-option-date-from">From start year</label>
         <input type="text" inputmode="numeric" name="range[year_facet_isim][begin]" class="form-control search-option-year" autocomplete="off" placeholder="from" id="search-option-date-from" pattern="[0-9]{3,4}" title="start year (yyyy)" aria-label="From start year">
         <span class="text">&nbsp;&ndash;&nbsp;</span>
-        <label class="sr-only" for="search-option-date-to">To end year</label>
+        <label class="visually-hidden" for="search-option-date-to">To end year</label>
         <input type="text" inputmode="numeric" name="range[year_facet_isim][end]" class="form-control search-option-year"  autocomplete="off" placeholder="to" id="search-option-date-to" pattern="[0-9]{3,4}" title="end year (yyyy)" aria-label="To end year">
       </div>
     </div>
 
-    <div class="form-group checkbox">
+    <div class="mb-3 checkbox">
       <label for="filter_copyright_free"><%= check_box_tag 'f[rights_facet][]', "Copyright Free", nil, id: "filter_copyright_free" %> Copyright Free Only </label>
     </div>
   </div>

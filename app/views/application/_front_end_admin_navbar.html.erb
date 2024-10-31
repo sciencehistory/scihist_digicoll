@@ -14,7 +14,7 @@
       <% if can?(:update, Kithe::Model) %>
         <li class="nav-item">
           <%= link_to admin_cart_items_path, class: "nav-link" do %>
-            <span class="badge badge-secondary" data-role="cart-counter"><%= current_user.works_in_cart.count %></span> Cart
+            <span class="badge text-bg-secondary" data-role="cart-counter"><%= current_user.works_in_cart.count %></span> Cart
           <% end %>
         </li>
       <% end %> 

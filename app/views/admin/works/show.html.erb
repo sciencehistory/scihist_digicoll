@@ -24,7 +24,7 @@
     <div class="m-2">
       <% if @work.published? %>
         <div class="btn-group" role="group">
-          <button id="UnpublishButtonGroup" type="button" class="btn btn-secondary dropdown-toggle #{'disabled' unless can?(:publish, @work)}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <button id="UnpublishButtonGroup" type="button" class="btn btn-secondary dropdown-toggle #{'disabled' unless can?(:publish, @work)}" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Unpublish
           </button>
           <div class="dropdown-menu" aria-labelledby="UnpublishButtonGroup">
@@ -42,7 +42,7 @@
         </div>
       <% else %>
         <div class="btn-group" role="group">
-          <button id="publishButtonGroup" type="button" class="btn btn-secondary dropdown-toggle #{'disabled' unless can?(:publish, @work)}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <button id="publishButtonGroup" type="button" class="btn btn-secondary dropdown-toggle #{'disabled' unless can?(:publish, @work)}" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Publish
           </button>
           <div class="dropdown-menu" aria-labelledby="publishButtonGroup">
@@ -63,7 +63,7 @@
     <div class="m-2">
       <div class="alert alert-light">
         <h2 class="h4 alert-heading">
-          <a data-toggle="collapse" href="#deleteBtn1" role="button" aria-expanded="false" aria-controls="deleteBtn1">
+          <a data-bs-toggle="collapse" href="#deleteBtn1" role="button" aria-expanded="false" aria-controls="deleteBtn1">
             Delete
           </a>
         </h2>
@@ -79,14 +79,14 @@
 
 <nav class="mb-2">
   <div class="nav nav-tabs" id="nav-tab" role="tablist">
-    <a class="nav-item nav-link active" id="nav-metadata-tab" data-toggle="tab" href="#nav-metadata" role="tab" aria-controls="nav-home" aria-selected="true">Metadata</a>
-    <a class="nav-item nav-link" id="nav-members-tab" data-toggle="tab" href="#nav-members" role="tab" aria-controls="nav-profile" aria-selected="false">Members</a>
+    <a class="nav-item nav-link active" id="nav-metadata-tab" data-bs-toggle="tab" href="#nav-metadata" role="tab" aria-controls="nav-home" aria-selected="true">Metadata</a>
+    <a class="nav-item nav-link" id="nav-members-tab" data-bs-toggle="tab" href="#nav-members" role="tab" aria-controls="nav-profile" aria-selected="false">Members</a>
 
     <% if @work.is_oral_history? %>
-      <a class="nav-item nav-link" id="nav-oral-histories-tab" data-toggle="tab" href="#nav-oral-histories" role="tab" aria-controls="nav-profile" aria-selected="false">Oral History</a>
+      <a class="nav-item nav-link" id="nav-oral-histories-tab" data-bs-toggle="tab" href="#nav-oral-histories" role="tab" aria-controls="nav-profile" aria-selected="false">Oral History</a>
     <% end %>
 
-    <a class="nav-item nav-link" id="nav-ocr-tab" data-toggle="tab" href="#nav-ocr" role="tab" aria-controls="nav-profile" aria-selected="false">
+    <a class="nav-item nav-link" id="nav-ocr-tab" data-bs-toggle="tab" href="#nav-ocr" role="tab" aria-controls="nav-profile" aria-selected="false">
       <% if @work_admin_text_extract_info_component.warnings? %>
         <i class="fa fa-exclamation-triangle" aria-label="(WARNING)"></i>
       <% elsif @work.text_extraction_mode.present? %>

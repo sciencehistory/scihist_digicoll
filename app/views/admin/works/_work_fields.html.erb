@@ -99,7 +99,7 @@
     <%= f.input :rights_holder %>
 
     <%= f.repeatable_attr_input :additional_credit, build: :at_least_one do |sub_form| %>
-      <div class="form-row">
+      <div class="row">
         <div class="col-left">
           <%= sub_form.input :role, label: false,
             collection: Work::AdditionalCredit::ROLES,
@@ -117,7 +117,7 @@
     <%= f.input :file_creator, collection: Work::ControlledLists::FILE_CREATOR %>
 
     <%= f.repeatable_attr_input(:admin_note, build: :at_least_one) do |input_name, value| %>
-      <div class="form-group">
+      <div class="mb-3">
         <%= f.input_field :admin_note, name: input_name, value: value, as: :text, class: "form-control", rows: 4 %>
       </div>
     <% end %>

@@ -62,7 +62,7 @@
         <td class="datestamp"><%=  l collection.updated_at.to_date, format: :admin %> </td>
         <td>
           <div class="dropdown">
-            <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
+            <a href="#" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
             <%= admin_dropdown_for_collection(collection, labelled_by_id: "dropdownMenuButton") %>
           </div>
         </td>

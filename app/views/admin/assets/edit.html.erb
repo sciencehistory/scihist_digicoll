@@ -40,7 +40,7 @@
     <%= f.input :english_translation, as: :text, input_html: { rows: 6 } %>
 
     <%= f.repeatable_attr_input(:admin_note, build: :at_least_one) do |input_name, value| %>
-      <div class="form-group">
+      <div class="mb-3">
         <%= f.input_field :admin_note, name: input_name, value: value, as: :text, class: "form-control", rows: 4 %>
       </div>
     <% end %>
