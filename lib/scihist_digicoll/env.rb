@@ -105,10 +105,30 @@ module ScihistDigicoll
     }
 
 
+    # MICROSOFT SINGLE SIGN ON / SSO / ENTRA / AZURE / OAUTH
+
+    # More details about how we use Microsoft SSO (aka Entra, aka Azure) are in the wiki.
+    # See also https://github.com/sciencehistory/scihist_digicoll/pull/2769
+    # See also config/initializers/devise.rb
+    # See also the wiki
+    # See also https://portal.azure.com/
+    # See also our password store.
+
+    # This key switches Microsoft SSO (aka Entra, aka Azure) on or off.
     define_key :log_in_using_microsoft_sso, default: false, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
-    define_key :microsoft_sso_client_id
-    define_key :microsoft_sso_client_secret
+
+    # "Tenant" or "Directory" is what Microsoft calls our Entra directory.
+    # This will have the same value for *all* applications (digital collections or other)
+    # that authenticate using Microsoft SSO.
     define_key :microsoft_sso_tenant_id
+
+    # "Client" or "Application" is what Microsoft calls a website that uses Microsoft SSO.
+    # This will have a different value for dev; staging; and production.
+    define_key :microsoft_sso_client_id
+
+    # This is effectively a password - a shared secret.
+    define_key :microsoft_sso_client_secret
+
 
     # MediaConvert requires a special role to be passed to MediaConvert
     # jobs, that has access to input/output buckets, and MediaConvert itself.

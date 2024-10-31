@@ -260,19 +260,48 @@ Devise.setup do |config|
   # The default HTTP method used to sign out a resource. Default is :delete.
   config.sign_out_via = :delete
 
-  # ==> OmniAuth
-  # Add a new OmniAuth provider. Check the wiki for more information on setting
-  # up on your models and hooks.
-  # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
 
-  # Note: ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso) should also return true
-  # if you want to use Microsoft SSO.
+  # MICROSOFT SINGLE SIGN ON / SSO / ENTRA / AZURE / OAUTH
+  # More details about how we use Microsoft SSO (aka Entra, aka Azure) are in the wiki.
+  #
+  # See also https://github.com/sciencehistory/scihist_digicoll/pull/2769
+  # See also config/initializers/devise.rb
+  # See also the wiki
+  # See also https://portal.azure.com/
+  # See also our password store.
+
+  ready_to_configure_microsoft_sso = [
+    ScihistDigicoll::Env.lookup(:microsoft_sso_tenant_id    ).present?,
+    ScihistDigicoll::Env.lookup(:microsoft_sso_client_id    ).present?,
+    ScihistDigicoll::Env.lookup(:microsoft_sso_client_secret).present?
+  ].all?
+
+
+  # If you turn on :log_in_using_microsoft_sso
+  if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
+    # we will refuse to turn on Microsoft SSO, or start the app,
+    # unless we have all the config variables we need
+    unless ready_to_configure_microsoft_sso
+      raise "Setting log_in_using_microsoft_sso is set to true, but we are missing some values we need to configure Microsoft SSO."
+    end
+  end
+
   config.omniauth(
     :entra_id,
     {
-      client_id:     ScihistDigicoll::Env.lookup(:microsoft_sso_client_id),
-      client_secret: ScihistDigicoll::Env.lookup(:microsoft_sso_client_secret),
+
+      # "Tenant" or "Directory" is what Microsoft calls our Entra directory.
+      # This will have the same value for *all* applications (digital collections or other)
+      # that authenticate using Microsoft SSO.
       tenant_id:     ScihistDigicoll::Env.lookup(:microsoft_sso_tenant_id),
+
+      # "Client" or "Application" is what Microsoft calls a website that uses Microsoft SSO.
+      # This will have a different value for dev; staging; and production.
+      client_id:     ScihistDigicoll::Env.lookup(:microsoft_sso_client_id),
+
+      # This is effectively a password - a shared secret.
+      client_secret: ScihistDigicoll::Env.lookup(:microsoft_sso_client_secret),
+
     }
   )
 
