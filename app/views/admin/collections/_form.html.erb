@@ -86,7 +86,7 @@
               }.merge(UploadUtil.kithe_upload_data_config(toggle_value: "scihist-simple-uppy-file"))
         %>
 
-        <div class="image-preview mb-2" data-bs-toggle="scihist-simple-uppy-file-preview">
+        <div class="image-preview mb-2" data-toggle="scihist-simple-uppy-file-preview">
           <% if representative.cached_file_data  %>
             <p>Will be saved: <%= representative.original_filename %></p>
           <% elsif representative_is_image? %>

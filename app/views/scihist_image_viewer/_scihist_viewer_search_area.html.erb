@@ -1,10 +1,10 @@
 <%# locals: (work:) %>
 
 <div class="viewer-search-area">
-  <form class="viewer-search-controls" data-bs-trigger="viewer-search">
+  <form class="viewer-search-controls" data-trigger="viewer-search">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <b>Search Inside</b>
-      <button type='button' class="btn btn-sm btn-outline-dark close-search-area" data-bs-trigger="viewer-close-search" title="Close search area">
+      <button type='button' class="btn btn-sm btn-outline-dark close-search-area" data-trigger="viewer-close-search" title="Close search area">
         <i class="fa fa-chevron-left" aria-hidden="true"></i>
         <span class="visually-hidden">Close search area
       </button>
@@ -20,13 +20,13 @@
 
 
       <div class="input-group-append">
-        <button type="button" class="btn btn-outline-dark" title="Reset search" id="search-submit-header" data-bs-trigger="clear-search-results">
+        <button type="button" class="btn btn-outline-dark" title="Reset search" id="search-submit-header" data-trigger="clear-search-results">
           <i class="fa fa-close" aria-hidden="true"></i>
           <span class="visually-hidden">Reset search</span>
         </button>
       </div>
 
-      
+
 
       <div class="input-group-append">
         <%# This GA action is also reported from app/views/scihist_image_viewer/_scihist_viewer_search_area.html.erb %>
@@ -44,14 +44,14 @@
 
     <%# switch to display:flex to show, display:none to hide %>
     <div id="searchNav" class="justify-content-between align-items-center mt-3" style="display: none">
-      <button type="button" class="btn btn-brand-dark btn-sm" title="Prevous result" data-bs-trigger="viewer-result-previous">
+      <button type="button" class="btn btn-brand-dark btn-sm" title="Prevous result" data-trigger="viewer-result-previous">
         <i class="fa fa-arrow-left" aria-hidden="true"></i>
         <span class="visually-hidden">Previous result</span>
       </button>
 
       <span id="searchNavLabel"></span>
 
-      <button type="button" class="btn btn-brand-dark btn-sm" title="Next result" data-bs-trigger="viewer-result-next">
+      <button type="button" class="btn btn-brand-dark btn-sm" title="Next result" data-trigger="viewer-result-next">
         <i class="fa fa-arrow-right" aria-hidden="true"></i>
         <span class="visually-hidden">Next result</span>
       </button>

@@ -33,7 +33,7 @@
 
             <% if has_ohms_index? || has_ohms_transcript? %>
               <div>
-                <button class="btn btn-sm btn-emphasis text-nowrap" data-bs-trigger="ohms-jump-to-text">Jump to text</button>
+                <button class="btn btn-sm btn-emphasis text-nowrap" data-trigger="ohms-jump-to-text">Jump to text</button>
               </div>
             <% end %>
           </div>
@@ -179,13 +179,13 @@
       <div class="modal-header">
         <h5 class="modal-title">Share link to this page</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-          
+
         </button>
       </div>
       <div class="modal-body" data-area="media-link-share">
 
         <div class="mb-3">
-          <div class="input-group mb-3" data-bs-trigger="copyInputGroup">
+          <div class="input-group mb-3" data-trigger="copyInputGroup">
             <div class="input-group-prepend">
               <span class="input-group-text">
                 <i class="fa fa-link" aria-hidden="true"></i>
@@ -196,14 +196,14 @@
             <input type="text" aria-label="URL to copy" class="form-control" data-slot="shareURL" readonly value="<%= work_url(work) %>">
 
             <div class="input-group-append">
-              <button class="btn btn-outline-secondary" data-bs-trigger="linkClipboardCopy">
+              <button class="btn btn-outline-secondary" data-trigger="linkClipboardCopy">
                 <i class="fa fa-clipboard" aria-hidden="true"></i> Copy
               </button>
             </div>
           </div>
         </div>
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="includeTimecode" data-slot="timecode" data-bs-trigger="updateLinkTimecode">
+          <input class="form-check-input" type="checkbox" value="" id="includeTimecode" data-slot="timecode" data-trigger="updateLinkTimecode">
           <label class="form-check-label" for="includeTimecode">
             Start audio at <code data-slot="humanTimecode"></code>
           </label>

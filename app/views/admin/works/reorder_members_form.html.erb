@@ -7,11 +7,11 @@
     <h2 class="h3">Drag to re-order for '<%= @work.title %>'</h2>
     <div>
       <%= link_to "Cancel", admin_work_path(@work, anchor: "nav-members"), class: "btn btn-outline-secondary" %>
-      <button type="submit" class="btn btn-danger" disabled data-bs-trigger="member-sort-save">Save</button>
+      <button type="submit" class="btn btn-danger" disabled data-trigger="member-sort-save">Save</button>
     </div>
   </div>
 
-  <table class="table member-list" data-bs-trigger="member-sort-table">
+  <table class="table member-list" data-trigger="member-sort-table">
     <thead>
       <tr>
         <th>thumbnail</th>
