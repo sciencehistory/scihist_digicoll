@@ -345,6 +345,9 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
         width: 100%;
       }
       .viewer-pagination {
+        font-size: $btn-font-size-lg;
+        padding: $btn-padding-y-lg $btn-padding-x-lg;
+
         flex-grow: 0;
 
         background-color: $dark;
@@ -353,12 +356,13 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
         font-weight: $btn-font-weight;
         text-align: center;
         vertical-align: middle;
-        @include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-border-radius-lg);;
 
-        white-space: nowrap;
+        white-space: nowrap;;
       }
       .viewer-member-info {
-        @include button-size($btn-padding-y-lg, $btn-padding-x-lg, $btn-font-size-lg, $btn-border-radius-lg);;
+        font-size: $btn-font-size-lg;
+        padding: $btn-padding-y-lg $btn-padding-x-lg;
+
         border: 1px solid $primary;
         flex-grow: 4;
         white-space: nowrap;
