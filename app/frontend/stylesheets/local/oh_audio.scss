@@ -28,6 +28,8 @@
 }
 
   .audio-navbar {
+    @extend .row;
+
     position: sticky;
     top: 0 !important;
     z-index: $zindex-fixed; // make sure bootstrap popovers et al scroll UNDER, but modal goes OVER
@@ -89,10 +91,10 @@
       // keep navbar contents the same width as our general contents,
       // within the full-viewport background-color of the navbar.
       // Calc needed for convoluted reasons trying to mimic bootstrap grid poorly. :(
-      max-width: calc(#{$main-container-max-width} - 30px);
+      max-width: calc(#{$main-container-max-width} - #{$grid-gutter-width});
       margin-right: auto;
       margin-left: auto;
-      @extend .col-md-12;
+      //@extend .col-md-12;
 
 
       .now-playing-container {
