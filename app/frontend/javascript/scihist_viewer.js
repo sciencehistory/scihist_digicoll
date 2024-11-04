@@ -797,7 +797,7 @@ ScihistImageViewer.prototype.showUiElement = function(element) {
 
 ScihistImageViewer.prototype.displayAlert = function(msg) {
   var alertHtml = '<div class="viewer-alert alert alert-warning alert-dismissible" role="alert">' +
-                  '    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                  '    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
                   '    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> ' +
                        msg +
                   '</div>';
