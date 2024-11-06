@@ -58,7 +58,7 @@
 <div class="sans-serif track-listings" data-role="track-listings" >
   <% audio_members.each do |track| %>
     <div  class="track-listing" data-role="track-listing"
-          data-bs-title="<%= track.title %>"
+          data-title="<%= track.title %>"
           data-member-id="<%= track.id %>"
           data-original-url="<%= download_path(track.file_category, track.id) %>"
       >
