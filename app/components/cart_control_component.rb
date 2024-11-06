@@ -22,7 +22,7 @@ class CartControlComponent < ApplicationComponent
           class: "cart-checkbox"
          ),
         " ",
-        label_tag(input_id, "In Cart", class: ("sr-only" if @label_sr_only))
+        label_tag(input_id, "In Cart", class: ("visually-hidden" if @label_sr_only))
       ])
     end
   end
