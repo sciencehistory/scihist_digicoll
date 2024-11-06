@@ -352,9 +352,9 @@ describe "Oral history with audio display", type: :system, js: true do
           # All tracks are displayed, including the unpublished ones:
           expect(page).to have_css(track_listing_css)
           if audio_asset.published?
-            expect(page).not_to have_css("#{track_listing_css} .badge-warning[title=Private]")
+            expect(page).not_to have_css("#{track_listing_css} .badge[title=Private]")
           else
-            expect(page).to have_css("#{track_listing_css} .badge-warning[title=Private]")
+            expect(page).to have_css("#{track_listing_css} .badge[title=Private]")
           end
         end
       end
@@ -376,9 +376,9 @@ describe "Oral history with audio display", type: :system, js: true do
 
         expect(asset).not_to eq nil
         if asset.published?
-          expect(file_listing).to have_no_css('.badge-warning[title=Private]')
+          expect(file_listing).to have_no_css('.badge[title=Private]')
         else
-          expect(file_listing).to have_css('.badge-warning[title=Private]')
+          expect(file_listing).to have_css('.badge[title=Private]')
         end
       end
     end
@@ -411,7 +411,7 @@ describe "Oral history with audio display", type: :system, js: true do
 
       copy_to_clipboard = "*[data-trigger='linkClipboardCopy']"
       begin
-        expect(page).to have_selector(copy_to_clipboard, wait: 0.05)      
+        expect(page).to have_selector(copy_to_clipboard, wait: 0.05)
       rescue RSpec::Expectations::ExpectationNotMetError
         # the "copy to clipboard" button sometimes fails to show up fast enough.
         # Just click "search" again.
@@ -425,7 +425,7 @@ describe "Oral history with audio display", type: :system, js: true do
 
       # ToC tab should be selected as it is first tab with results from search
       expect(page).to have_selector("#ohTocTab[aria-selected='true']")
-      
+
       begin
         expect(page).to have_selector(".ohms-result-navigation", text: "TABLE OF CONTENTS — 1 / 7", wait: 0.05)
       rescue RSpec::Expectations::ExpectationNotMetError
