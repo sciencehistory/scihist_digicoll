@@ -2,7 +2,7 @@
   <div class="input-group input-group-sm flex-nowrap">
     <%= f.collection_select :status,
           model.available_statuses.collect {|s| [s.humanize, s]}, :second, :first, {},
-          class: "form-control custom-select"
+          class: "form-control form-select"
     %>
     <div class="input-group-append">
       <%= f.button_button '<i class="fa fa-floppy-o fa-fw" aria-hidden="true" title="Save"></i><span class="visually-hidden">Save</span>'.html_safe,
