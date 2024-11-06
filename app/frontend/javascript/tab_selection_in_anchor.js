@@ -14,7 +14,7 @@ domready(function() {
   // should we limit to only certain data tags instead of all bootstrap tab links?
   var anchor = new URLSearchParams(window.location.hash.replace(/^#/, '')).get("tab");
   if (anchor) {
-    $(`*[data-toggle="tab"][href="#${anchor}"]`).tab("show")
+    $(`*[data-bs-toggle="tab"][href="#${anchor}"]`).tab("show")
   }
 
   // when showing on a bootstrap tab, put the relevant ID in anchor,
