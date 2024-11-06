@@ -267,7 +267,7 @@ describe DownloadDropdownComponent, type: :component do
     it "renders as <a> tag" do
       expect(div).to be_present
 
-      link = div.at_css("a[data-toggle='dropdown']")
+      link = div.at_css("a[data-bs-toggle='dropdown']")
       expect(link).to be_present
 
       # bootstrap docs for dropdown with <a> suggest what should be there
