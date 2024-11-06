@@ -186,20 +186,16 @@
 
         <div class="mb-3">
           <div class="input-group mb-3" data-trigger="copyInputGroup">
-            <div class="input-group-prepend">
-              <span class="input-group-text">
-                <i class="fa fa-link" aria-hidden="true"></i>
-                <span class="visually-hidden">Link</span>
-              </span>
-            </div>
+            <span class="input-group-text">
+              <i class="fa fa-link" aria-hidden="true"></i>
+              <span class="visually-hidden">Link</span>
+            </span>
 
             <input type="text" aria-label="URL to copy" class="form-control" data-slot="shareURL" readonly value="<%= work_url(work) %>">
 
-            <div class="input-group-append">
-              <button class="btn btn-outline-secondary" data-trigger="linkClipboardCopy">
-                <i class="fa fa-clipboard" aria-hidden="true"></i> Copy
-              </button>
-            </div>
+            <button class="btn btn-outline-secondary" data-trigger="linkClipboardCopy">
+              <i class="fa fa-clipboard" aria-hidden="true"></i> Copy
+            </button>
           </div>
         </div>
         <div class="form-check">
