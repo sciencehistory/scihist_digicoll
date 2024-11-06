@@ -44,7 +44,7 @@ domready(function() {
         });
       } else {
         if (hashParams.get("tab") != "ohTranscript") {
-          $(`*[data-toggle="tab"][href="#ohTranscript"]`).tab("show");
+          $(`*[data-bs-toggle="tab"][href="#ohTranscript"]`).tab("show");
         }
         execWhenTabActive("ohTranscript", function() {
           gotoTranscriptTimecode(timeCodeSeconds);
@@ -65,7 +65,7 @@ function execWhenTabActive(targetTabId, procArg) {
   } else {
     // not shown yet, other code will async make it shown, we have
     // to say once it's shown, open and scroll  to toc segment.
-    jQuery(`*[data-toggle="tab"][href="#${targetTabId}"]`).one('shown.bs.tab', function(event) {
+    jQuery(`*[data-bs-toggle="tab"][href="#${targetTabId}"]`).one('shown.bs.tab', function(event) {
       procArg();
     });
   }
