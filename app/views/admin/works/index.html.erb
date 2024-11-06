@@ -23,7 +23,7 @@
       <%= select_tag "published",
             options_for_select({"Yes" => true, "No" => false}, params[:published]),
             include_blank: "Any",
-            class: "custom-select" %>
+            class: "form-select" %>
     </div>
 
     <div class="admin-filter">
@@ -31,7 +31,7 @@
       <%= select_tag "genre",
             options_for_select(Work::ControlledLists::GENRE, params[:genre]),
             include_blank: "Any",
-            class: "custom-select" %>
+            class: "form-select" %>
     </div>
 
 
@@ -40,7 +40,7 @@
         <%= select_tag "format",
               options_for_select(Work::ControlledLists::FORMAT.collect {|t| [t.titleize, t]}, params[:format]),
               include_blank: "Any",
-              class: "custom-select" %>
+              class: "form-select" %>
     </div>
 
     <div class="admin-filter">
@@ -48,14 +48,14 @@
         <%= select_tag "department",
               options_for_select(Work::ControlledLists::DEPARTMENT, params[:department]),
               include_blank: "Any",
-              class: "custom-select" %>
+              class: "form-select" %>
     </div>
 
     <div class="admin-filter">
       <label for="include_child_works">Child Works</label>
       <%= select_tag "include_child_works",
             options_for_select({ "Yes" => true, "No" => false}, (params[:include_child_works] || "false")),
-            class: "custom-select"
+            class: "form-select"
       %>
     </div>
 
@@ -63,7 +63,7 @@
       <label for="ocr_requested">OCR</label>
       <%= select_tag "ocr_requested",
         options_for_select({"Any" => "", "Requested" => true, "Not requested" => false}, params[:ocr_requested]),
-        class: "custom-select"
+        class: "form-select"
       %>
     </div>
 
@@ -71,7 +71,7 @@
       <label for="review_requested">Review requested</label>
       <%= select_tag "review_requested",
             options_for_select({"Any" => "", "Requested" => "requested", "By others" => "by_others"}, params[:review_requested]),
-            class: "custom-select"
+            class: "form-select"
       %>
     </div>
   </div>

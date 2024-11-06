@@ -425,7 +425,7 @@
                 collection: Asset::DERIVATIVE_STORAGE_TYPE_LOCATIONS.keys,
                 include_blank: false,
                 disabled: cannot?(:update, @asset),
-                class: "custom-select" %>
+                class: "form-select" %>
             </div>
           </div>
           <%= f.button :submit, "Update Derivative Storage Type", disabled: cannot?(:update, @asset)%>

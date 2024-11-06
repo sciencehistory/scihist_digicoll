@@ -24,7 +24,7 @@
           options_for_select(Collection::DEPARTMENTS, @department),
           onchange: "this.form.submit()",
           include_blank: "Any",
-          class: "custom-select" %>
+          class: "form-select" %>
     </div>
   </div>
   <%= hidden_field_tag :sort_field,   params[:sort_field]%>

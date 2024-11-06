@@ -11,7 +11,7 @@
         <label for="filter">Show</label>
         <%= select_tag "filter",
           options_for_select(['Current', 'All'] + @user_types_map.values, @filter),
-          onchange: "this.form.submit()", class: "custom-select" %>
+          onchange: "this.form.submit()", class: "form-select" %>
     </div>
   </div>
 <% end %>
