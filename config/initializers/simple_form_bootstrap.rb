@@ -1,5 +1,18 @@
 # frozen_string_literal: true
 
+
+#########
+#
+# SCIHIST: This was generated from simple_form 5.3.1 with `rails generate simple_form:install --bootstrap`
+#
+# But we have customized. It seems like customizing is basically expected/necessary. Which is honestly
+# kind of a pain and not DRY, but at least it is very customizable.
+#
+# * We want hints to be ON TOP of input, and spaced appropriately for that. (On bottom
+# makes especially little sense for our repeatable fields, and we want to be consistent.)
+#
+##########
+
 # These defaults are defined and maintained by the community at
 # https://github.com/heartcombo/simple_form-bootstrap
 # Please submit feedback, changes and tests only there.
@@ -56,9 +69,9 @@ SimpleForm.setup do |config|
     b.optional :min_max
     b.optional :readonly
     b.use :label, class: 'form-label'
+    b.use :hint, wrap_with: { class: 'form-text scihist-hint mb-2 mt-0' }
     b.use :input, class: 'form-control', error_class: 'is-invalid', valid_class: 'is-valid'
     b.use :full_error, wrap_with: { class: 'invalid-feedback' }
-    b.use :hint, wrap_with: { class: 'form-text' }
   end
 
   # vertical input for boolean
@@ -68,8 +81,8 @@ SimpleForm.setup do |config|
     b.wrapper :form_check_wrapper, class: 'form-check' do |bb|
       bb.use :input, class: 'form-check-input', error_class: 'is-invalid', valid_class: 'is-valid'
       bb.use :label, class: 'form-check-label'
+      bb.use :hint, wrap_with: { class: 'form-text scihist-hint mb-2 mt-0' }
       bb.use :full_error, wrap_with: { class: 'invalid-feedback' }
-      bb.use :hint, wrap_with: { class: 'form-text' }
     end
   end
 
@@ -80,9 +93,9 @@ SimpleForm.setup do |config|
     b.wrapper :legend_tag, tag: 'legend', class: 'col-form-label pt-0' do |ba|
       ba.use :label_text
     end
+    b.use :hint, wrap_with: { class: 'form-text scihist-hint mb-2 mt-0' }
     b.use :input, class: 'form-check-input', error_class: 'is-invalid', valid_class: 'is-valid'
     b.use :full_error, wrap_with: { class: 'invalid-feedback d-block' }
-    b.use :hint, wrap_with: { class: 'form-text' }
   end
 
   # vertical input for inline radio buttons and check boxes
@@ -92,9 +105,9 @@ SimpleForm.setup do |config|
     b.wrapper :legend_tag, tag: 'legend', class: 'col-form-label p-0' do |ba|
       ba.use :label_text
     end
+    b.use :hint, wrap_with: { class: 'form-text scihist-hint mb-2 mt-0' }
     b.use :input, class: 'form-check-input', error_class: 'is-invalid', valid_class: 'is-valid'
     b.use :full_error, wrap_with: { class: 'invalid-feedback d-block' }
-    b.use :hint, wrap_with: { class: 'form-text' }
   end
 
   # vertical file input
@@ -105,9 +118,9 @@ SimpleForm.setup do |config|
     b.optional :minlength
     b.optional :readonly
     b.use :label, class: 'form-label'
+    b.use :hint, wrap_with: { class: 'form-text scihist-hint mb-2 mt-0' }
     b.use :input, class: 'form-control', error_class: 'is-invalid', valid_class: 'is-valid'
     b.use :full_error, wrap_with: { class: 'invalid-feedback' }
-    b.use :hint, wrap_with: { class: 'form-text' }
   end
 
   # vertical select input
@@ -115,9 +128,9 @@ SimpleForm.setup do |config|
     b.use :html5
     b.optional :readonly
     b.use :label, class: 'form-label'
+    b.use :hint, wrap_with: { class: 'form-text scihist-hint mb-2 mt-0' }
     b.use :input, class: 'form-select', error_class: 'is-invalid', valid_class: 'is-valid'
     b.use :full_error, wrap_with: { class: 'invalid-feedback' }
-    b.use :hint, wrap_with: { class: 'form-text' }
   end
 
   # vertical multi select
@@ -125,11 +138,11 @@ SimpleForm.setup do |config|
     b.use :html5
     b.optional :readonly
     b.use :label, class: 'form-label'
+    b.use :hint, wrap_with: { class: 'form-text scihist-hint mb-2 mt-0' }
     b.wrapper class: 'd-flex flex-row justify-content-between align-items-center' do |ba|
       ba.use :input, class: 'form-select mx-1', error_class: 'is-invalid', valid_class: 'is-valid'
     end
     b.use :full_error, wrap_with: { class: 'invalid-feedback d-block' }
-    b.use :hint, wrap_with: { class: 'form-text' }
   end
 
   # vertical range input
@@ -139,9 +152,9 @@ SimpleForm.setup do |config|
     b.optional :readonly
     b.optional :step
     b.use :label, class: 'form-label'
+    b.use :hint, wrap_with: { class: 'form-text scihist-hint mb-2 mt-0' }
     b.use :input, class: 'form-range', error_class: 'is-invalid', valid_class: 'is-valid'
     b.use :full_error, wrap_with: { class: 'invalid-feedback' }
-    b.use :hint, wrap_with: { class: 'form-text' }
   end
 
 
@@ -184,9 +197,9 @@ SimpleForm.setup do |config|
     b.optional :readonly
     b.use :label, class: 'col-sm-3 col-form-label pt-0'
     b.wrapper :grid_wrapper, class: 'col-sm-9' do |ba|
+      ba.use :hint, wrap_with: { class: 'form-text scihist-hint mb-2 mt-0' }
       ba.use :input, class: 'form-check-input', error_class: 'is-invalid', valid_class: 'is-valid'
       ba.use :full_error, wrap_with: { class: 'invalid-feedback d-block' }
-      ba.use :hint, wrap_with: { class: 'form-text' }
     end
   end
 
@@ -270,10 +283,9 @@ SimpleForm.setup do |config|
     b.optional :min_max
     b.optional :readonly
     b.use :label, class: 'visually-hidden'
-
+    b.optional :hint, wrap_with: { class: 'form-text scihist-hint mb-2 mt-0' }
     b.use :input, class: 'form-control', error_class: 'is-invalid', valid_class: 'is-valid'
     b.use :error, wrap_with: { class: 'invalid-feedback' }
-    b.optional :hint, wrap_with: { class: 'form-text' }
   end
 
   # inline input for boolean
