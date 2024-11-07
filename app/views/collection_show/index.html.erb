@@ -54,11 +54,9 @@
                     :"aria-label" => t('collection.search_form.search_field.label')
                 %>
                 <label class="visually-hidden" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
-                <div class="input-group-append">
-                  <button type="submit" class="btn btn-brand-main" title="Search">
-                    <%= t('blacklight.search.form.submit') %>
-                  </button>
-                </div>
+                <button type="submit" class="btn btn-brand-main" title="Search">
+                  <%= t('blacklight.search.form.submit') %>
+                </button>
               </div>
               <%= hidden_field_tag :sort, params[:sort], id: 'collection_sort' %>
             <% end %>

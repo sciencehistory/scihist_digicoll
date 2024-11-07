@@ -8,23 +8,19 @@
     <%= render Blacklight::HiddenSearchStateComponent.new(params: search_context_params) %>
 
     <div class="input-group input-group-sm">
-      <div class="input-group-prepend">
-        <span class="input-group-text"><i class="fa fa-search" aria-hidden="true"></i><span class="visually-hidden">Search</span></span>
-      </div>
+      <span class="input-group-text"><i class="fa fa-search" aria-hidden="true"></i><span class="visually-hidden">Search</span></span>
 
       <label class="visually-hidden" for="constraintsQueryInput">Query</label>
       <%= text_field_tag "q", current_search_q, placeholder: "Search within results", class: "form-control", id: "constraintsQueryInput" %>
 
-      <div class="input-group-append">
-        <button class="btn btn-primary" title="Search within results" aria-label="Search within results">
-          Go
-        </button>
-        <% if current_search_q.present? %>
-            <%= link_to(search_context_params,  { class:"btn btn-primary remove", title:"Remove" }) do %>
-              <span class="remove-icon">✖</span><span class="visually-hidden">Remove query constraint '<%= current_search_q %>'</span>
-            <% end %>
-        <% end %>
-      </div>
+      <button class="btn btn-primary" title="Search within results" aria-label="Search within results">
+        Go
+      </button>
+      <% if current_search_q.present? %>
+          <%= link_to(search_context_params,  { class:"btn btn-primary remove", title:"Remove" }) do %>
+            <span class="remove-icon">✖</span><span class="visually-hidden">Remove query constraint '<%= current_search_q %>'</span>
+          <% end %>
+      <% end %>
     </div>
 </form>
 
