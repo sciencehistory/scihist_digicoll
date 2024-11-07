@@ -90,16 +90,6 @@
       border-left-color: $input-border-color;
     }
 
-    .input-group-prepend .input-group-text {
-      border-bottom-left-radius: $btn-border-radius;
-      border-top-left-radius: $btn-border-radius;
-    }
-    .input-group-append{
-      a:last-child, button:last-child {
-        border-top-right-radius: $btn-border-radius;
-        border-bottom-right-radius: $btn-border-radius;
-      }
-    }
     input[type=text] {
       border-color: $shi-bg-gray-border;
     }

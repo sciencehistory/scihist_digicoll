@@ -152,10 +152,6 @@
       .ohms-search {
         max-width: $max-readable-width; // doesn't need to be this specifically, but works fine
         margin-top: $spacer;
-
-        .input-group-append .btn {
-          border-left: 1px solid $shi-dark-gray;
-        }
       }
 
       .ohms-search-results {
