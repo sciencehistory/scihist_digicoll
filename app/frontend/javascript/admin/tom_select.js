@@ -2,7 +2,7 @@
 
 // tom-select does not require JQuery, and we use no JQuery in this file.
 
-import 'tom-select/dist/css/tom-select.bootstrap4.min.css';
+import 'tom-select/dist/css/tom-select.bootstrap5.min.css';
 
 // Not sure how I figured out these paths to load tom-select base and then selected plugins
 // from npm tom-select... but here it is. See: https://github.com/orchidjs/tom-select/issues/57

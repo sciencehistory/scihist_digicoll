@@ -152,6 +152,11 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@orchidjs/sifter@^0.8.1":
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/@orchidjs/sifter/-/sifter-0.8.2.tgz#50f0a4ba8783f2bfbde1bcec9ed97e632940555d"
+  integrity sha512-aDemVMJL2cGo82EVHXMM2y6WoWlk00V2aibvNAl2djtZG1OquirMvnOTlb2L4tjcH5cT2q1/dyHepZcxnFW5zQ==
+
 "@popperjs/core@^2.11.8":
   version "2.11.8"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
@@ -809,9 +814,11 @@ to-regex-range@^5.0.1:
     is-number "^7.0.0"
 
 tom-select@^1.4.3:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/tom-select/-/tom-select-1.5.0.tgz#a51212bee410d4375176f957dc116bd63f6ad0f1"
-  integrity sha512-6nv/dGswJNkyLVnzUwYF2+EeQXF9uy769paw6njk5DhG815+rlA8xHn4BLsbuOsGvemcNwl8mPi2QKs/hZINbQ==
+  version "1.7.8"
+  resolved "https://registry.yarnpkg.com/tom-select/-/tom-select-1.7.8.tgz#484a33b800d8574767a5803ccaad1cd6d996d17e"
+  integrity sha512-b9K+RYhbmcGiaqKssKf4N/fkn/Hle330OwOaAO786TtUNfGImR6J/IAuJP3lNOAl4rZyC4Q0uLuxE+1367rQtg==
+  dependencies:
+    "@orchidjs/sifter" "^0.8.1"
 
 typeahead.js@^0.11.1:
   version "0.11.1"
