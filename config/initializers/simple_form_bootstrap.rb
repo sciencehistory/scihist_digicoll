@@ -56,7 +56,10 @@ SimpleForm.setup do |config|
 
   # add validation classes to `input_field`
   config.input_field_error_class = 'is-invalid'
-  config.input_field_valid_class = 'is-valid'
+
+  # Bootstrap 5 is insisting on including this in all fields,
+  # which then gives us a checkmark style we don't want
+  #config.input_field_valid_class = 'is-valid'
 
 
   # vertical forms
