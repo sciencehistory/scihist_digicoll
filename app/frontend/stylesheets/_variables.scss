@@ -181,9 +181,12 @@ $layout-expand-up: 'md';
  *
  */
 
+
 // We developed originally in Bootstrap 4, so setting some settings to be more
 // like bootstrap 4.
 $grid-gutter-width: 2rem;
+$badge-padding-x: 0.6em;
+$badge-padding-y: 0.25em;
 
 // We will leave the font-size base 1rem (usually 16px), to leave a nice round
 // number for calclulations based on it... BUT we elsehwere set defualt body
