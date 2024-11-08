@@ -7,8 +7,8 @@
     }
   }
 
-  .form-inputs > .form-group {
-    @extend .mb-4;
+  .form-inputs .form-group {
+    @extend .mb-3;
   }
 
   // a column for a select box in category-and-value, or label in sub-labelled models.
