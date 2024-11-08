@@ -2,7 +2,7 @@
   max-width: 800px;
 
   label, legend {
-    &.form-label, &.form-check-label, &.col-form-label {
+    &.form-label, &.col-form-label {
       @extend .h5;
       padding: 0;
     }
