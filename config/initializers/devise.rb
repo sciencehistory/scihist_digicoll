@@ -266,46 +266,44 @@ Devise.setup do |config|
   #
   # See also https://github.com/sciencehistory/scihist_digicoll/pull/2769
   # See also config/initializers/devise.rb
-  # See also the wiki at https://sciencehistory.atlassian.net/wiki/spaces/HDC/pages/1915748368/Heroku+Operational+Components+Overview#Microsoft-SSO
+  # See also the wiki
   # See also https://portal.azure.com/
-  # See also 1Password (or equivalent password store).
-
+  # See also our password store.
 
   # If you turn on :log_in_using_microsoft_sso
-  if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
 
+
+  if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
+    # we will refuse to turn on Microsoft SSO, or start the app,
+    # unless we have all the config variables we need
     ready_to_configure_microsoft_sso = [
       ScihistDigicoll::Env.lookup(:microsoft_sso_tenant_id    ).present?,
       ScihistDigicoll::Env.lookup(:microsoft_sso_client_id    ).present?,
       ScihistDigicoll::Env.lookup(:microsoft_sso_client_secret).present?
     ].all?
-
-    # we will refuse to turn on Microsoft SSO, or start the app,
-    # unless we have all the config variables we need
     unless ready_to_configure_microsoft_sso
       raise "Setting log_in_using_microsoft_sso is set to true, but we are missing some values we need to configure Microsoft SSO."
     end
-
-    config.omniauth(
-      :entra_id,
-      {
-
-        # "Tenant" or "Directory" is what Microsoft calls our Entra directory.
-        # This will have the same value for *all* applications (digital collections or other)
-        # that authenticate using Microsoft SSO.
-        tenant_id:     ScihistDigicoll::Env.lookup(:microsoft_sso_tenant_id),
-
-        # "Client" or "Application" is what Microsoft calls a website that uses Microsoft SSO.
-        # This will have a different value for dev; staging; and production.
-        client_id:     ScihistDigicoll::Env.lookup(:microsoft_sso_client_id),
-
-        # This is effectively a password - a shared secret.
-        client_secret: ScihistDigicoll::Env.lookup(:microsoft_sso_client_secret),
-
-      }
-    )
-
   end
+
+  config.omniauth(
+    :entra_id,
+    {
+
+      # "Tenant" or "Directory" is what Microsoft calls our Entra directory.
+      # This will have the same value for *all* applications (digital collections or other)
+      # that authenticate using Microsoft SSO.
+      tenant_id:     ScihistDigicoll::Env.lookup(:microsoft_sso_tenant_id),
+
+      # "Client" or "Application" is what Microsoft calls a website that uses Microsoft SSO.
+      # This will have a different value for dev; staging; and production.
+      client_id:     ScihistDigicoll::Env.lookup(:microsoft_sso_client_id),
+
+      # This is effectively a password - a shared secret.
+      client_secret: ScihistDigicoll::Env.lookup(:microsoft_sso_client_secret),
+
+    }
+  )
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
