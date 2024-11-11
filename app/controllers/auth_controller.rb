@@ -1,6 +1,10 @@
 # This controller provides methods used to authenticate a user using
 # Microsoft Single Sign On / Entra / Azure.
 # Links to more documentation are at config/initializers/devise.rb.
+#
+# Note that if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso) is not set to true, 
+# this *entire* controller is turned off in config/routes.rb .
+# (See devise_for :users in that file.)
 class AuthController < Devise::OmniauthCallbacksController
 
   before_action :maybe_redirect_back, only: [:passthru, :entra_id]
