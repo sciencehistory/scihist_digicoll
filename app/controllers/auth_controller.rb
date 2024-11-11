@@ -1,3 +1,6 @@
+# This controller provides methods used to authenticate a user using
+# Microsoft Single Sign On / Entra / Azure.
+# Links to more documentation are at config/initializers/devise.rb.
 class AuthController < Devise::OmniauthCallbacksController
 
   before_action :maybe_redirect_back, only: [:passthru, :entra_id]
@@ -23,9 +26,10 @@ class AuthController < Devise::OmniauthCallbacksController
     sign_in_and_redirect @user, event: :authentication
   end
 
-
+  # Log a user out of the digital collections,
+  # *then* log them out of Microsoft SSO.
   def sso_logout
-    # There is no route to this method under unless :log_in_using_microsoft_sso
+    # There should not be a route to this method unless ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso).
     raise "This method should be unreachable." unless ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
     sign_out current_user
     redirect_to sso_logout_path, allow_other_host: true
@@ -50,7 +54,6 @@ class AuthController < Devise::OmniauthCallbacksController
       ScihistDigicoll::Env.lookup(:app_url_base) +
       root_path
   end
-
 
   def maybe_redirect_back
     unless ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
