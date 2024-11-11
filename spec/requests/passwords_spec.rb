@@ -10,6 +10,7 @@ RSpec.describe "passwords", type: :request, queue_adapter: :test do
     before do
       allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
       allow(ScihistDigicoll::Env).to receive(:lookup).with(:log_in_using_microsoft_sso).and_return(true)
+      # Reload_routes! takes on the order of 10 milliseconds.
       Rails.application.reload_routes!
       OmniAuth.config.test_mode = true
       OmniAuth.config.mock_auth[:entra_id] = OmniAuth::AuthHash.new({
