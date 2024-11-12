@@ -350,7 +350,7 @@ Configuration for solr_wrapper is at `./.solr_wrapper.yml`
 
 ### Account management
 
-We shouldn't have to use account management rake tasks as much, since there is now admin web interface for creating and editing accounts. But they are still there, as they can be convenient for setting up a dev environment or perhaps bootstrapping a production environment with an admin account, or in general automating things involving users.
+We shouldn't have to use account management rake tasks as much, since we provide an admin web interface for creating and editing accounts. But they are still there, as they can be convenient for setting up a dev environment or perhaps bootstrapping a production environment with an admin account, or in general automating things involving users.
 
 ```shell
 ./bin/rake scihist:user:create[someone@example.com]
@@ -368,6 +368,11 @@ Set `logins_disabled: true` in `./config/local_env.yml`, or somehow set a shell 
 This can be useful if we need to do some maintenance that doesn't bring down the public interface, but we want to keep staff out while it goes on, so they can't edit things.
 
 This feature was in our v1 sufia-based app, we copied it over.
+
+
+## Using Microsoft SSO
+It's possible to configure the app to use Microsoft single sign-on (SSO) instead of standard email-and-password authentication.
+Details are at ./config/initializers/MICROSOFT_SSO_README.md
 
 ## Thanks
 
