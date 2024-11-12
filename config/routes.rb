@@ -53,11 +53,24 @@ Rails.application.routes.draw do
   # https://github.com/plataformatec/devise/wiki/how-to:-change-the-default-sign_in-and-sign_out-routes
   # We aren't using :registration cause we don't want to allow self-registration,
   # We aren't using session cause we define em ourselves manually.
-  devise_for :users, skip: [:session, :registration]
-  devise_scope :user do
-    get 'login', to: 'devise/sessions#new', as: :new_user_session
-    post 'login', to: 'devise/sessions#create', as: :user_session
-    delete 'logout', to: 'devise/sessions#destroy', as: :destroy_user_session
+  devise_for :users,
+    skip: [:session, :registration],
+    controllers: if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
+      { passwords: 'passwords', omniauth_callbacks: 'auth',  }
+    else
+      { passwords: 'passwords' }
+    end
+
+  if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
+    devise_scope :user do
+      get 'logout', to:'auth#sso_logout'
+    end
+  else
+    devise_scope :user do
+      get  'login',  to: 'devise/sessions#new',     as: :new_user_session
+      post 'login',  to: 'devise/sessions#create',  as: :user_session
+      get  'logout', to: 'devise/sessions#destroy'
+    end
   end
 
   # Dynamic robots.txt
@@ -252,7 +265,7 @@ Rails.application.routes.draw do
 
     resources :users, except: [:destroy, :show] do
       member do
-        post "send_password_reset"
+        post "send_password_reset" unless ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
       end
     end
 

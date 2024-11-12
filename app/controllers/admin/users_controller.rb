@@ -58,8 +58,9 @@ class Admin::UsersController < AdminController
     end
   end
 
-  # POST /users/1
+  # POST /admin/users/:id/send_password_reset
   def send_password_reset
+    raise "This method should be unreachable." if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
     @user.send_reset_password_instructions
     redirect_to admin_users_path, notice: "Password reset email sent to #{@user.email}"
   end

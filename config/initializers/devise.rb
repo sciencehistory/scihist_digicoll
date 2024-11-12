@@ -260,10 +260,60 @@ Devise.setup do |config|
   # The default HTTP method used to sign out a resource. Default is :delete.
   config.sign_out_via = :delete
 
-  # ==> OmniAuth
-  # Add a new OmniAuth provider. Check the wiki for more information on setting
-  # up on your models and hooks.
-  # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
+  ####
+  # START MICROSOFT SINGLE SIGN ON / SSO / ENTRA / AZURE / OAUTH / OMNIAUTH
+  # More details about how we use Microsoft SSO (aka Entra, aka Azure) are in the wiki.
+  #
+  # See also https://github.com/sciencehistory/scihist_digicoll/pull/2769
+  # See also config/initializers/devise.rb
+  # See also the https://sciencehistory.atlassian.net/wiki/spaces/HDC/pages/1915748368/Heroku+Operational+Components+Overview#Microsoft-SSO
+  # See also https://portal.azure.com/
+  # See also 1Password (or equivalent password store).
+  #
+
+  # If you turn on :log_in_using_microsoft_sso ...
+  if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
+    # ... we will refuse to turn on Microsoft SSO, or even start the app,
+    # unless we have all the config variables we need.
+    ready_to_configure_microsoft_sso = [
+      ScihistDigicoll::Env.lookup(:microsoft_sso_tenant_id    ).present?,
+      ScihistDigicoll::Env.lookup(:microsoft_sso_client_id    ).present?,
+      ScihistDigicoll::Env.lookup(:microsoft_sso_client_secret).present?
+    ].all?
+    unless ready_to_configure_microsoft_sso
+      raise "Setting log_in_using_microsoft_sso is set to true, but we are missing some values we need to configure Microsoft SSO."
+    end
+  end
+
+  # Devise's configuration options cannot be reloaded on the fly:
+  #   see https://github.com/heartcombo/devise?tab=readme-ov-file#getting-started .
+  # However, we still need to maintain tests of *both* authentication workflows,
+  #   both with and without Microsoft SSO.
+  # This means that we still need to configure Microsoft SSO here for testing purposes,
+  # even if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso) happens to be false.
+  config.omniauth(
+    :entra_id,
+    {
+
+      # "Tenant" or "Directory" is what Microsoft calls our Entra directory.
+      # This will have the same value for *all* applications (digital collections or other)
+      # that authenticate using Microsoft SSO.
+      tenant_id:     ScihistDigicoll::Env.lookup(:microsoft_sso_tenant_id),
+
+      # "Client" or "Application" is what Microsoft calls a website that uses Microsoft SSO.
+      # This will have a different value for dev; staging; and production.
+      client_id:     ScihistDigicoll::Env.lookup(:microsoft_sso_client_id),
+
+      # This is effectively a password - a shared secret.
+      client_secret: ScihistDigicoll::Env.lookup(:microsoft_sso_client_secret),
+
+    }
+  )
+
+  #
+  # END MICROSOFT SINGLE SIGN ON / SSO / ENTRA / AZURE / OAUTH / OMNIAUTH
+  ####
+
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or

@@ -34,7 +34,7 @@ describe DownloadsController do
       let(:asset) { create(:asset, published: false) }
       it "redirects to login page" do
         get :original, params: { asset_id: asset, file_category: file_category }
-        expect(response).to redirect_to(new_user_session_path)
+        expect(response).to redirect_to root_path
       end
     end
 
@@ -53,7 +53,7 @@ describe DownloadsController do
         it "returns redirect to file" do
           get :original, params: { asset_id: asset, file_category: file_category }
           expect(response.status).to eq 302
-          expect(response).not_to redirect_to(new_user_session_path)
+          expect(response).not_to redirect_to(root_path)
           expect(response.location).to eq faked_download_url
         end
       end
@@ -67,7 +67,7 @@ describe DownloadsController do
 
         it "redirects to login page" do
           get :original, params: { asset_id: asset, file_category: file_category }
-          expect(response).to redirect_to(new_user_session_path)
+          expect(response).to redirect_to root_path
         end
       end
     end
@@ -135,7 +135,7 @@ describe DownloadsController do
       let(:asset) { create(:asset, published: false) }
       it "redirects to login page" do
         get :derivative, params: { asset_id: asset, derivative_key: "thumb_mini" }
-        expect(response).to redirect_to(new_user_session_path)
+        expect(response).to redirect_to root_path
       end
     end
 
@@ -164,7 +164,7 @@ describe DownloadsController do
         it "returns redirect to file" do
           get :derivative, params: { asset_id: asset, derivative_key: asset.file_derivatives.keys.first }
           expect(response.status).to eq 302
-          expect(response).not_to redirect_to(new_user_session_path)
+          expect(response).not_to redirect_to root_path
           expect(response.location).to eq faked_download_url
         end
       end
@@ -178,7 +178,7 @@ describe DownloadsController do
 
         it "redirects to login page" do
           get :derivative, params: { asset_id: asset, derivative_key: asset.file_derivatives.keys.first }
-          expect(response).to redirect_to(new_user_session_path)
+          expect(response).to redirect_to root_path
         end
       end
     end

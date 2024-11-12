@@ -45,14 +45,21 @@ namespace :scihist do
 
 
   namespace :user do
-    desc 'Create a user without a password; they can request one from the UI. `RAILS_ENV=production bundle exec rake chf:user:create[newuser@chemheritage.org]`'
+    desc 'Create a user without a password  `RAILS_ENV=production bundle exec rake scihist:user:create[newuser@sciencehistory.org]`'
     task :create, [:email] => :environment do |t, args|
       u = User.create!(email: args[:email])
       puts "User created with email address #{u.email}."
-      puts "Please request a password via the 'Forgot your password?' page."
+      unless ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
+        puts "Please request a password via the 'Forgot your password?' page."
+      end
     end
 
+    desc 'Send a password reset to a given user: `RAILS_ENV=production bundle exec rake scihist:user:send_password_reset[user@sciencehistory.org]`'
     task :send_password_reset, [:email] => :environment do |t, args|
+      if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
+        abort """The app won't show the password reset form when it's in SSO mode, so we won't send out a link to that form.
+          Use the console to reset database passwords, or unset :log_in_using_microsoft_sso"""
+      end
       user = User.find_by_email!(args[:email])
       user.send_reset_password_instructions
       puts "Password reset email sent to #{user.email}"
@@ -62,7 +69,10 @@ namespace :scihist do
       desc 'Create a test user with a password; not secure for actual users'
       task :create, [:email, :pass] => ["production_guard", :environment] do |t, args|
         u = User.create!(email: args[:email], password: args[:pass])
-        puts "Test user created"
+        puts "Test user created."
+        if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
+          abort("Note that the app does not currently accept password logins, as :log_in_using_microsoft_sso is currently set.")
+        end
       end
     end
 
