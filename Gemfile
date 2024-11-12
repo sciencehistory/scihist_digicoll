@@ -19,9 +19,6 @@ gem 'rails', '~> 7.2.0'
 # resolution to old versions of sinatra!
 # https://bibwild.wordpress.com/2023/11/09/beware-sinatra-rails-7-1-rack-3-resque-bundler-dependency-resolution/
 gem "rack", ">= 3.0"
-# rackup is normally indirect dependency of Rails. We need to temporarily stick to
-# older rackup, causing problems: https://github.com/rack/rackup/issues/26
-gem "rackup", "< 2.2.0"
 
 gem "sinatra", ">= 4.0"
 
