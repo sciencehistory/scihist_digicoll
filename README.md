@@ -48,7 +48,7 @@ If you have problems installing the `pg` gem, which I did on an M1 Mac running M
 
 ### Create an admin user for yourself
 
-    ./bin/rake scihist:user:create[email_addr] scihist:user:admin:grant[email_addr]
+    ./bin/rake scihist:user:test:create[email_addr,password] scihist:user:admin:grant[email_addr]
 
 Now you can login in a running app at probably `http://locahost:3000/login` with those credentials.
 
@@ -354,7 +354,8 @@ We shouldn't have to use account management rake tasks as much, since there is n
 
 ```shell
 ./bin/rake scihist:user:create[someone@example.com]
-./bin/rake scihist:user:test:create[someone@example.com]
+./bin/rake scihist:user:send_password_reset[someone@example.com]
+./bin/rake scihist:user:test:create[someone@example.com,password]
 ./bin/rake scihist:user:admin:grant[someone@example.com]
 ./bin/rake scihist:user:admin:revoke[someone@example.com]
 ./bin/rake scihist:user:admin:list
