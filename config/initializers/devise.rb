@@ -260,22 +260,21 @@ Devise.setup do |config|
   # The default HTTP method used to sign out a resource. Default is :delete.
   config.sign_out_via = :delete
 
-
-  # MICROSOFT SINGLE SIGN ON / SSO / ENTRA / AZURE / OAUTH
+  ####
+  # START MICROSOFT SINGLE SIGN ON / SSO / ENTRA / AZURE / OAUTH / OMNIAUTH
   # More details about how we use Microsoft SSO (aka Entra, aka Azure) are in the wiki.
   #
   # See also https://github.com/sciencehistory/scihist_digicoll/pull/2769
   # See also config/initializers/devise.rb
-  # See also the wiki
+  # See also the https://sciencehistory.atlassian.net/wiki/spaces/HDC/pages/1915748368/Heroku+Operational+Components+Overview#Microsoft-SSO
   # See also https://portal.azure.com/
-  # See also our password store.
+  # See also 1Password (or equivalent password store).
+  #
 
-  # If you turn on :log_in_using_microsoft_sso
-
-
+  # If you turn on :log_in_using_microsoft_sso ...
   if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso)
-    # we will refuse to turn on Microsoft SSO, or start the app,
-    # unless we have all the config variables we need
+    # ... we will refuse to turn on Microsoft SSO, or even start the app,
+    # unless we have all the config variables we need.
     ready_to_configure_microsoft_sso = [
       ScihistDigicoll::Env.lookup(:microsoft_sso_tenant_id    ).present?,
       ScihistDigicoll::Env.lookup(:microsoft_sso_client_id    ).present?,
@@ -286,6 +285,12 @@ Devise.setup do |config|
     end
   end
 
+  # Devise's configuration options cannot be reloaded on the fly:
+  #   see https://github.com/heartcombo/devise?tab=readme-ov-file#getting-started .
+  # However, we still need to maintain tests of *both* authentication workflows,
+  #   both with and without Microsoft SSO.
+  # This means that we still need to configure Microsoft SSO here for testing purposes,
+  # even if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso) happens to be false.
   config.omniauth(
     :entra_id,
     {
@@ -304,6 +309,11 @@ Devise.setup do |config|
 
     }
   )
+
+  #
+  # END MICROSOFT SINGLE SIGN ON / SSO / ENTRA / AZURE / OAUTH / OMNIAUTH
+  ####
+
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or

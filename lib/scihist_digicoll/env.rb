@@ -105,14 +105,12 @@ module ScihistDigicoll
     }
 
 
-    # MICROSOFT SINGLE SIGN ON / SSO / ENTRA / AZURE / OAUTH
-
-    # More details about how we use Microsoft SSO (aka Entra, aka Azure) are in the wiki.
+    # MICROSOFT SINGLE SIGN ON / SSO / ENTRA / AZURE / OAUTH / OMNIAUTH
     # See also https://github.com/sciencehistory/scihist_digicoll/pull/2769
     # See also config/initializers/devise.rb
-    # See also the wiki
+    # See also https://sciencehistory.atlassian.net/wiki/spaces/HDC/pages/1915748368/Heroku+Operational+Components+Overview#Microsoft-SSO
     # See also https://portal.azure.com/
-    # See also our password store.
+    # See also 1Password (or equivalent password store).
 
     # This key switches Microsoft SSO (aka Entra, aka Azure) on or off.
     define_key :log_in_using_microsoft_sso, default: false, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
