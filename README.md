@@ -372,7 +372,7 @@ This feature was in our v1 sufia-based app, we copied it over.
 
 ## Using Microsoft SSO
 It's possible to configure the app to use Microsoft single sign-on (SSO) instead of standard email-and-password authentication.
-Details are at ./config/initializers/MICROSOFT_SSO_README.md
+Details are in [a separate README file](config/initializers/MICROSOFT_SSO_README.md).
 
 ## Thanks
 
