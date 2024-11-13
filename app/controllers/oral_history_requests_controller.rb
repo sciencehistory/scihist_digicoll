@@ -24,7 +24,8 @@ class OralHistoryRequestsController < ApplicationController
     unless current_oral_history_requester.present?
       raise AccessDenied.new
     end
-
+    
+    raise "Eddie here, triggering an error on purpose in staging. See https://github.com/sciencehistory/scihist_digicoll/issues/2579 ."
 
     all_requests = current_oral_history_requester.oral_history_requests.
       includes(:work => [:leaf_representative, { :oral_history_content => :interviewee_biographies } ]).
