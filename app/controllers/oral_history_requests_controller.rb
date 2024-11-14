@@ -3,8 +3,10 @@
 # Actions to make requests, and also to view your requsets.
 #
 # Staff-facing actions are in app/controllers/admin/oral_history_requests_controller.rb
-
 class OralHistoryRequestsController < ApplicationController
+
+  before_action :add_requester_email_to_honeybadger_context
+
   # message is publicly visible please
   class AccessDenied < StandardError
     def initialize(msg = "You must be authorized to access this page.")
@@ -25,51 +27,50 @@ class OralHistoryRequestsController < ApplicationController
     unless current_oral_history_requester.present?
       raise AccessDenied.new
     end
-    Honeybadger.context({ requester_email: current_oral_history_requester&.email }) do
-      all_requests = current_oral_history_requester.oral_history_requests.
-        includes(:work => [:leaf_representative, { :oral_history_content => :interviewee_biographies } ]).
-        order(created_at: :asc).
-        strict_loading
 
-      grouped_by = all_requests.group_by(&:delivery_status)
-      null_ts = Time.utc(1,1,1,1,1,1)
 
-      @pending_requests = grouped_by["pending"] || []
+    all_requests = current_oral_history_requester.oral_history_requests.
+      includes(:work => [:leaf_representative, { :oral_history_content => :interviewee_biographies } ]).
+      order(created_at: :asc).
+      strict_loading
 
-      @approved_requests = (
-        (grouped_by["approved"]  || []) + (grouped_by["automatic"] || [])
-      ).sort_by do |req|
-        req.delivery_status_changed_at || null_ts
-      end
+    grouped_by = all_requests.group_by(&:delivery_status)
+    null_ts = Time.utc(1,1,1,1,1,1)
 
-      @rejected_requests = (grouped_by["rejected"] || []).sort_by do |req|
-        req.delivery_status_changed_at || null_ts
-      end
+    @pending_requests = grouped_by["pending"] || []
+
+    @approved_requests = (
+      (grouped_by["approved"]  || []) + (grouped_by["automatic"] || [])
+    ).sort_by do |req|
+      req.delivery_status_changed_at || null_ts
+    end
+
+    @rejected_requests = (grouped_by["rejected"] || []).sort_by do |req|
+      req.delivery_status_changed_at || null_ts
     end
   end
 
   # GET /oral_history_requests/:id
   def show
     @access_request = OralHistoryRequest.find(params[:id])
-    Honeybadger.context({ requester_email: @access_request.requester_email }) do
-      # If they can't see it for any reason, just 404 as if it was not there.
-      unless current_oral_history_requester == @access_request.oral_history_requester &&
-            (@access_request.delivery_status_approved? || @access_request.delivery_status_automatic?)
-        raise ActionController::RoutingError.new("Not found.")
+
+    # If they can't see it for any reason, just 404 as if it was not there.
+    unless current_oral_history_requester == @access_request.oral_history_requester &&
+          (@access_request.delivery_status_approved? || @access_request.delivery_status_automatic?)
+      raise ActionController::RoutingError.new("Not found.")
+    end
+
+    # Calculate assets avail by request, broken up by type
+    all_by_request_assets = @access_request.work.members.
+      where(published: false).
+      includes(:leaf_representative).order(:position).strict_loading.
+      to_a.find_all do |member|
+        member.kind_of?(Asset) &&  member.oh_available_by_request?
       end
 
-      # Calculate assets avail by request, broken up by type
-      all_by_request_assets = @access_request.work.members.
-        where(published: false).
-        includes(:leaf_representative).order(:position).strict_loading.
-        to_a.find_all do |member|
-          member.kind_of?(Asset) &&  member.oh_available_by_request?
-        end
-
-      @transcript_assets = all_by_request_assets.find_all { |a| a.role == "transcript" }
-      @audio_assets = all_by_request_assets.find_all { |a| a.content_type.start_with?("audio/") }
-      @other_assets = all_by_request_assets.find_all { |a| !@transcript_assets.include?(a) && !@audio_assets.include?(a) }
-    end
+    @transcript_assets = all_by_request_assets.find_all { |a| a.role == "transcript" }
+    @audio_assets = all_by_request_assets.find_all { |a| a.content_type.start_with?("audio/") }
+    @other_assets = all_by_request_assets.find_all { |a| !@transcript_assets.include?(a) && !@audio_assets.include?(a) }
   end
 
   # GET /works/4j03d09fr7t/request_oral_history
@@ -77,19 +78,18 @@ class OralHistoryRequestsController < ApplicationController
   # Form to fill out
   def new
     @work = load_work(params['work_friendlier_id'])
-    Honeybadger.context({ requester_email: current_oral_history_requester&.email }) do
-      # In new mode, check to see if the are logged in, and request already exists,
-      # just send them to their requests!
-      if current_oral_history_requester &&
-            OralHistoryRequest.where(work: @work, oral_history_requester: current_oral_history_requester).exists?
 
-          redirect_to oral_history_requests_path, flash: { success: "You have already requested this Oral History: #{@work.title}" }
+    # In new mode, check to see if the are logged in, and request already exists,
+    # just send them to their requests!
+    if current_oral_history_requester &&
+          OralHistoryRequest.where(work: @work, oral_history_requester: current_oral_history_requester).exists?
 
-          return # abort further processing
-      end
+        redirect_to oral_history_requests_path, flash: { success: "You have already requested this Oral History: #{@work.title}" }
 
-      @oral_history_request = OralHistoryRequest.new(work: @work)
+        return # abort further processing
     end
+
+    @oral_history_request = OralHistoryRequest.new(work: @work)
   end
 
   before_action :setup_create_request, only: :create
@@ -98,42 +98,40 @@ class OralHistoryRequestsController < ApplicationController
   #
   # Action to create request from form
   def create
-    Honeybadger.context({ requester_email: patron_email_param }) do
-      # write entries to a cookie to pre-fill form next time; every time we write
-      # it will bump the TTL expiration too, so they get another day until it expires.
-      # Make sure to include the separate patron_eamil
-      oral_history_request_form_entry_write(
-        oral_history_request_params.merge(patron_email: patron_email_param).to_h
-      )
+    # write entries to a cookie to pre-fill form next time; every time we write
+    # it will bump the TTL expiration too, so they get another day until it expires.
+    # Make sure to include the separate patron_eamil
+    oral_history_request_form_entry_write(
+      oral_history_request_params.merge(patron_email: patron_email_param).to_h
+    )
 
-      saved_valid = @oral_history_request.save
+    saved_valid = @oral_history_request.save
 
-      unless saved_valid
-        render :new
-        return
+    unless saved_valid
+      render :new
+      return
+    end
+
+    if @work.oral_history_content.available_by_request_automatic?
+      @oral_history_request.update!(delivery_status: "automatic")
+
+      # If they are already logged in, they can just be directed to see this
+      # automatically-approved request. Either way they should get an email,
+      # per specs from OH team.
+      OralHistoryDeliveryMailer.with(request: @oral_history_request).approved_with_session_link_email.deliver_later
+
+      if current_oral_history_requester.present? && current_oral_history_requester.email == @oral_history_request.requester_email
+        redirect_to oral_history_requests_path, flash: { success: "The files you requested from '#{@work.title}' are immediately available." }
+      else
+        redirect_to work_path(@work.friendlier_id), flash: { success: "The files you have requested are immediately available. We've sent an email to #{patron_email_param} with a sign-in link." }
       end
+    else # manual review
+      OralHistoryRequestNotificationMailer.
+        with(request: @oral_history_request).
+        notification_email.
+        deliver_later
 
-      if @work.oral_history_content.available_by_request_automatic?
-        @oral_history_request.update!(delivery_status: "automatic")
-
-        # If they are already logged in, they can just be directed to see this
-        # automatically-approved request. Either way they should get an email,
-        # per specs from OH team.
-        OralHistoryDeliveryMailer.with(request: @oral_history_request).approved_with_session_link_email.deliver_later
-
-        if current_oral_history_requester.present? && current_oral_history_requester.email == @oral_history_request.requester_email
-          redirect_to oral_history_requests_path, flash: { success: "The files you requested from '#{@work.title}' are immediately available." }
-        else
-          redirect_to work_path(@work.friendlier_id), flash: { success: "The files you have requested are immediately available. We've sent an email to #{patron_email_param} with a sign-in link." }
-        end
-      else # manual review
-        OralHistoryRequestNotificationMailer.
-          with(request: @oral_history_request).
-          notification_email.
-          deliver_later
-
-        redirect_to work_path(@work.friendlier_id), flash: { success: "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll email you at #{@oral_history_request.requester_email}" }
-      end
+      redirect_to work_path(@work.friendlier_id), flash: { success: "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll email you at #{@oral_history_request.requester_email}" }
     end
   end
 
@@ -208,12 +206,11 @@ private
   end
   helper_method :current_oral_history_requester
 
-  def current_oral_history_requester_for_hb
-    unless defined?(@current_oral_history_requester_for_hb)
-      @current_oral_history_requester_for_hb = OralHistorySessionsController.fetch_oral_history_current_requester(request: request, reset_expiration_window: false)
-    end
-    @current_oral_history_requester_for_hb
+
+  def add_requester_email_to_honeybadger_context
+    # Get this info either from the session (via current_oral_history_requester) or from the actual parameter.
+    email = current_oral_history_requester&.email || params[:patron_email]
+    Honeybadger.context({ oral_history_requester_email: email  })
   end
-  helper_method :current_oral_history_requester_for_hb
 
 end
