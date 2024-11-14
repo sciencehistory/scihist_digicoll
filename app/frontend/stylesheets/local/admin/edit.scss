@@ -6,9 +6,6 @@
       @extend .h5;
       padding: 0;
     }
-    // Bootstrap5 default reboot has the legend floating, which confuses me,
-    // this helps avoid it doing weird things.
-    float: none;
   }
 
   .form-inputs .form-group {
@@ -34,12 +31,12 @@
   }
 
   // Give em a red bar alongside for visibility. Only top-level.
-  .form-inputs > .form-group.form-group-invalid,
+  .form-inputs > .form-group-invalid,
   .oral-history-biography > .form-group.form-group-invalid,
   .oral-history-biography  .birth-fields .form-group.form-group-invalid,
   .oral-history-biography  .death-fields .form-group.form-group-invalid,
    {
-    border-left: 2px solid $danger;
+    border-left: 3px solid $danger;
     padding-left: 8px;
     margin-left: -11px;
   }
