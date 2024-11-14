@@ -19,6 +19,7 @@ gem 'rails', '~> 7.2.0'
 # resolution to old versions of sinatra!
 # https://bibwild.wordpress.com/2023/11/09/beware-sinatra-rails-7-1-rack-3-resque-bundler-dependency-resolution/
 gem "rack", ">= 3.0"
+
 gem "sinatra", ">= 4.0"
 
 # Our JS/CSS/asset bundler
@@ -143,6 +144,9 @@ gem 'bootstrap4-kaminari-views'
 
 gem 'devise', "~> 4.5" # user accounts and login
 gem 'access-granted', "~> 1.0" # authorization
+gem 'omniauth-entra-id'
+gem 'omniauth-rails_csrf_protection'
+
 
 # decorating and truncating html
 gem "rinku", '~> 2.0' # auto-linking
@@ -205,7 +209,7 @@ group :development do
 end
 
 group :test do
-  gem 'rspec-rails', '~> 6.0'
+  gem 'rspec-rails', '~> 7.0'
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '>= 2.15'
   gem 'selenium-webdriver'

@@ -95,9 +95,9 @@
               <li><%= link_to "Orphan Report", admin_orphan_report_path %></li>
               <li><hr></li>
               <% if current_user %>
-                <li><%= link_to("Logout", destroy_user_session_path, method: :delete) %></li>
+                <li><%= link_to "Logout", logout_path %></li>
               <% else %>
-                <li><%= link_to('Login', new_user_session_path)  %></li>
+                <li><%= link_to 'Login', new_user_session_path %></li>
               <% end %>
             </ul>
           </div>

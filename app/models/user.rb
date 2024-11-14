@@ -9,15 +9,18 @@ class User < ApplicationRecord
   #
   # jrochkind did:
   # * comment out registerable, we don't allow registrations
+
   devise :database_authenticatable,
-         :recoverable, :rememberable, :validatable
+    :recoverable,
+    :rememberable,
+    :validatable,
+    :omniauthable,
+    omniauth_providers: %i[entra_id]
 
   has_many :cart_items, dependent: :delete_all
   has_many :works_in_cart, through: :cart_items, source: :work
 
   # This will correspond to a "role" in the AccessPolicy class.
-  # "editor" will replace the current "staff" role.
-  # A new "reader" type will be added in a future PR.
   USER_TYPES = %w{admin editor staff_viewer}.freeze
   enum :user_type, USER_TYPES.collect {|v| [v, v]}.to_h
   validates :user_type, presence: true

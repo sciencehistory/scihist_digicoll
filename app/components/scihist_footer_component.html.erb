@@ -7,6 +7,18 @@
                 <li><%= link_to "About", about_url, class: "btn btn-brand-main" %></li>
                 <li><%= link_to "FAQ", faq_url, class: "btn btn-brand-main" %></li>
                 <li><%= link_to "Contact", contact_url, class: "btn btn-brand-main" %></li>
+                <% if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso) %>
+                    <li>
+                        <% if helpers.can? :access_staff_functions %>
+                            <%= link_to "Log out", logout_path, class: 'btn btn-brand-main' %>
+                        <% else %>
+                            <%= link_to "Log in",
+                                user_entra_id_omniauth_authorize_path, method: :post,
+                                class: 'btn btn-brand-main'
+                            %>
+                        <% end %>
+                    </li>
+                <% end %>
             </ul>
         </div>
     </div>
