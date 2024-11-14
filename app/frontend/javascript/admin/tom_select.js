@@ -4,12 +4,12 @@
 
 import 'tom-select/dist/css/tom-select.bootstrap5.min.css';
 
-// Not sure how I figured out these paths to load tom-select base and then selected plugins
-// from npm tom-select... but here it is. See: https://github.com/orchidjs/tom-select/issues/57
-import TomSelect from 'tom-select/dist/esm/tom-select'; // tom-select base
-import 'tom-select/dist/esm/plugins/remove_button/plugin'; // specific desired plugin(s)
-
+// https://tom-select.js.org/docs/plugins/
+import TomSelect from 'tom-select/dist/js/tom-select.base.js';
+import TomSelect_remove_button from 'tom-select/dist/js/plugins/remove_button.js';
 import domready from 'domready';
+
+TomSelect.define('remove_button', TomSelect_remove_button);
 
 domready(function() {
 
