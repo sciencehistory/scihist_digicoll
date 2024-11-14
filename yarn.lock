@@ -152,10 +152,17 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@orchidjs/sifter@^0.8.1":
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/@orchidjs/sifter/-/sifter-0.8.2.tgz#50f0a4ba8783f2bfbde1bcec9ed97e632940555d"
-  integrity sha512-aDemVMJL2cGo82EVHXMM2y6WoWlk00V2aibvNAl2djtZG1OquirMvnOTlb2L4tjcH5cT2q1/dyHepZcxnFW5zQ==
+"@orchidjs/sifter@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@orchidjs/sifter/-/sifter-1.0.3.tgz#43f42519472282eb632d0a1589184f044d64129b"
+  integrity sha512-zCZbwKegHytfsPm8Amcfh7v/4vHqTAaOu6xFswBYcn8nznBOuseu6COB2ON7ez0tFV0mKL0nRNnCiZZA+lU9/g==
+  dependencies:
+    "@orchidjs/unicode-variants" "^1.0.4"
+
+"@orchidjs/unicode-variants@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@orchidjs/unicode-variants/-/unicode-variants-1.0.4.tgz#6d2f812e3b19545bba2d81caffff1204de9a6a58"
+  integrity sha512-NvVBRnZNE+dugiXERFsET1JlKZfM5lJDEpSMilKW4bToYJ7pxf0Zne78xyXB2ny2c2aHfJ6WLnz1AaTNHAmQeQ==
 
 "@popperjs/core@^2.11.8":
   version "2.11.8"
@@ -813,12 +820,13 @@ to-regex-range@^5.0.1:
   dependencies:
     is-number "^7.0.0"
 
-tom-select@^1.4.3:
-  version "1.7.8"
-  resolved "https://registry.yarnpkg.com/tom-select/-/tom-select-1.7.8.tgz#484a33b800d8574767a5803ccaad1cd6d996d17e"
-  integrity sha512-b9K+RYhbmcGiaqKssKf4N/fkn/Hle330OwOaAO786TtUNfGImR6J/IAuJP3lNOAl4rZyC4Q0uLuxE+1367rQtg==
+tom-select@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/tom-select/-/tom-select-2.3.1.tgz#df338d9082874cd0bceb3bee87ed0184447c47f1"
+  integrity sha512-QS4vnOcB6StNGqX4sGboGXL2fkhBF2gIBB+8Hwv30FZXYPn0CyYO8kkdATRvwfCTThxiR4WcXwKJZ3cOmtI9eg==
   dependencies:
-    "@orchidjs/sifter" "^0.8.1"
+    "@orchidjs/sifter" "^1.0.3"
+    "@orchidjs/unicode-variants" "^1.0.4"
 
 typeahead.js@^0.11.1:
   version "0.11.1"
