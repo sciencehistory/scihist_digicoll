@@ -208,7 +208,8 @@ private
 
 
   def add_requester_email_to_honeybadger_context
-    # Get this info either from the session (via current_oral_history_requester) or from the actual parameter.
+    # Get this info either from the session (via current_oral_history_requester) or from the :patron_email parameter.
+    # Note: this method has the side effect of resetting the expiration window of the OH request.
     email = current_oral_history_requester&.email || params[:patron_email]
     Honeybadger.context({ oral_history_requester_email: email  })
   end
