@@ -666,7 +666,7 @@ class Admin::WorksController < AdminController
 
     # Searching, filtering, and pagination for the #index method
     def build_search(params)
-      scope = Work
+      scope = Work.all
       if params[:title_or_id].present?
         sanitized_search_phrase = Work.sanitize_sql_like(params[:title_or_id])
         scope = scope.where("(title ILIKE ? OR friendlier_id ILIKE ? OR id = ?)",

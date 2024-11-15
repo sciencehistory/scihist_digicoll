@@ -380,6 +380,14 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
           expect(rows[0].inner_html).to include works[1].title
           expect(rows[1].inner_html).to include works[0].title
         end
+
+        it "uses default sort with only include_child_works in the params" do
+          get :index, params: { "include_child_works" => "true" }
+          rows = response.parsed_body.css('.table.admin-list tbody tr')
+          expect(rows[0].inner_html).to include works[1].title
+          expect(rows[1].inner_html).to include works[0].title
+        end
+
       end
     end
   end
