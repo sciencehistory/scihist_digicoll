@@ -388,6 +388,22 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
           expect(rows[1].inner_html).to include works[0].title
         end
 
+        # format is a reserved word
+        # (see https://stackoverflow.com/questions/70726614/ruby-on-rails-use-format-as-a-url-get-parameter )
+        # so let's use work_format instead.
+        it "can filter on work format using work_format param" do
+          get :index, params: { work_format: "mixed_material" }
+          rows = response.parsed_body.css('.table.admin-list tbody tr')
+          expect(rows.length).to eq 0
+        end
+
+        it "can filter on work format using work_format param" do
+          get :index, params: { work_format: "" }
+          rows = response.parsed_body.css('.table.admin-list tbody tr')
+          expect(rows.length).to eq 2
+        end
+
+
       end
     end
   end
