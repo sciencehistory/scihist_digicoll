@@ -33,7 +33,7 @@
   "science_history_institute_comment_about_engines" :
     "Heroku installs the latest version of node and yarn that conform to the requirements below. (As of early 2024, Heroku installs node 20.9, and GitHub Actions VMs come with node 18.19. Hence the range of versions below.)",
   "engines": {
-    "node": ">=18.19.0 <23.0.0",
+    "node": ">=18.19.0 <24.0.0",
     "yarn": "^1.22.19"
   }
 }
