@@ -1,6 +1,9 @@
 .admin-edit {
   max-width: 800px;
 
+  // Smaller gutters between our input elements
+  .row { --bs-gutter-x: 0.6rem; }
+
   label, legend {
     &.form-label, &.col-form-label {
       @extend .h5;
