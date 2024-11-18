@@ -3,5 +3,4 @@
 //
 //= link_tree ../images
 //
-//= link_directory ../javascripts .js
-//= link_directory ../stylesheets .css
+// we are not using sprockets for JS or CSS anymore. Maybe only for images?
