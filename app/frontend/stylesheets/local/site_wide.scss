@@ -190,6 +190,12 @@ hr.brand {
   border-right-color: $shi-bg-gray-border;
 }
 
+// Make more like bootstrap 4
+.rounded-pill {
+  padding-right: 0.6em;
+  padding-left: 0.6em;
+}
+
 // Some custom overrides to bootstrap accordion style, to make it brand-specific
 // based on styles found at: https://www.sciencehistory.org/accessibility
 //
