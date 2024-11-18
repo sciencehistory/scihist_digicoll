@@ -13,6 +13,10 @@
       width: 6.75rem;
       flex-shrink: 0;
       padding-right: 1rem;
+
+      img {
+        max-width: 100%;
+      }
     }
 
     dt {
