@@ -29,3 +29,7 @@ import 'blacklight-frontend/app/javascript/blacklight/core';
 import 'blacklight-frontend/app/javascript/blacklight/facet_load';
 import 'blacklight-frontend/app/javascript/blacklight/modal';
 //import 'blacklight-frontend/app/javascript/blacklight/search_context';
+
+
+import BlacklightRangeLimit from "blacklight-range-limit";
+BlacklightRangeLimit.init({onLoadHandler: Blacklight.onLoad });

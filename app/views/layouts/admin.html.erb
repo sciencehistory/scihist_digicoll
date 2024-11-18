@@ -33,12 +33,9 @@
         to get blacklight_range_limit assets %>
 
     <%= vite_stylesheet_tag 'application.scss', media: "all" %>
-    <%= stylesheet_link_tag 'import_blacklight_range_limit', media: 'all' %>
 
     <%= vite_client_tag %>
     <%= vite_javascript_tag 'application', defer: true %>
-
-    <%= javascript_include_tag 'import_blacklight_range_limit', defer: true %>
 
     <%# admin-specific JS built by vite, will also include css if needed automatically %>
     <%= vite_javascript_tag 'admin', defer: true %>

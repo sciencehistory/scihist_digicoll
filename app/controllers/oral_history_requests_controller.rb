@@ -4,6 +4,9 @@
 #
 # Staff-facing actions are in app/controllers/admin/oral_history_requests_controller.rb
 class OralHistoryRequestsController < ApplicationController
+
+  before_action :add_requester_email_to_honeybadger_context
+
   # message is publicly visible please
   class AccessDenied < StandardError
     def initialize(msg = "You must be authorized to access this page.")
@@ -202,5 +205,13 @@ private
     @current_oral_history_requester
   end
   helper_method :current_oral_history_requester
+
+
+  def add_requester_email_to_honeybadger_context
+    # Get this info either from the session (via current_oral_history_requester) or from the :patron_email parameter.
+    # Note: this method has the side effect of resetting the expiration window of the OH request.
+    email = current_oral_history_requester&.email || params[:patron_email]
+    Honeybadger.context({ oral_history_requester_email: email  })
+  end
 
 end

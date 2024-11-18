@@ -32,7 +32,7 @@ class Admin::WorksController < AdminController
     @index_params ||= params.permit(
       :button,
       :sort_field, :sort_order, :department, :page,
-      :title_or_id, :published, :genre, :format, :include_child_works,
+      :title_or_id, :published, :genre, :work_format, :include_child_works,
       :ocr_requested, :review_requested
     ).tap do |hash|
       unless hash[:sort_field].in? ['friendlier_id', 'title', 'created_at', 'updated_at']
@@ -47,9 +47,14 @@ class Admin::WorksController < AdminController
       if hash[:genre].present? && !hash[:genre].in?(Work::ControlledLists::GENRE)
         raise ArgumentError.new("Unrecognized genre: #{hash[:genre]}")
       end
-      if hash[:format].present? && !hash[:format].in?(Work::ControlledLists::FORMAT)
-        raise ArgumentError.new("Unrecognized format: #{hash[:format]}")
+
+      # format is a reserved word
+      # (see https://stackoverflow.com/questions/70726614/ruby-on-rails-use-format-as-a-url-get-parameter )
+      # so let's use work_format instead.      
+      if hash[:work_format].present? && !hash[:work_format].in?(Work::ControlledLists::FORMAT)
+        raise ArgumentError.new("Unrecognized format: #{hash[:work_format]}")
       end
+
       unless hash[:include_child_works] == "true"
         hash[:include_child_works] = "false"
       end
@@ -666,7 +671,7 @@ class Admin::WorksController < AdminController
 
     # Searching, filtering, and pagination for the #index method
     def build_search(params)
-      scope = Work
+      scope = Work.all
       if params[:title_or_id].present?
         sanitized_search_phrase = Work.sanitize_sql_like(params[:title_or_id])
         scope = scope.where("(title ILIKE ? OR friendlier_id ILIKE ? OR id = ?)",
@@ -678,9 +683,16 @@ class Admin::WorksController < AdminController
       if params[:genre].present?
         scope = scope.where("json_attributes -> 'genre' ? :genre", genre: params[:genre])
       end
-      if params[:format].present?
-        scope = scope.where("json_attributes -> 'format' ? :format", format: params[:format])
+
+
+      # format is a reserved word
+      # (see https://stackoverflow.com/questions/70726614/ruby-on-rails-use-format-as-a-url-get-parameter )
+      # so let's use work_format instead.
+      if params[:work_format].present?
+        scope = scope.where("json_attributes -> 'format' ? :work_format", work_format: params[:work_format])
       end
+
+
       if params[:department].present?
         scope = scope.where("json_attributes ->> 'department' = :department", department: params[:department])
       end

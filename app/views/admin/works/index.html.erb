@@ -32,9 +32,9 @@
 
 
     <div class="admin-filter">
-        <label for="format">Format</label>
-        <%= select_tag "format",
-              options_for_select(Work::ControlledLists::FORMAT.collect {|t| [t.titleize, t]}, params[:format]),
+        <label for="work_format">Format</label>
+        <%= select_tag "work_format",
+              options_for_select(Work::ControlledLists::FORMAT.collect {|t| [t.titleize, t]}, params[:work_format]),
               include_blank: "Any",
               class: "form-select" %>
     </div>
