@@ -132,11 +132,17 @@
     text-transform: uppercase;
     letter-spacing: $small-caps-letter-spacing;
   }
-  .active > a, .active > a:hover, .active > a:focus {
+
+  .gap a {
+    background: inherit;
+  }
+
+  .page-item > a:hover {
     background-color: $bg-lightly-shaded;
     border-color: $pagination-border-color;
     color: $body-color;
   }
+
   &.chf-pagination > li > a, &.chf-pagination > li > span {
     border: none;
   }
