@@ -1,31 +1,31 @@
 <%# navbar that is shown at very top of page in "front-end" end-user-accessible
     pages, if admin is logged in. May use it in admin pages too? Maybe change
     name if so. %>
-<nav class="navbar navbar-expand-sm topbar <%= ScihistDigicoll::Env.lookup(:service_level).try(&:underscore) %>" role="navigation" aria-label="Administrative Functions">
-  <div class="navbar-text">
-    Management: <%= ScihistDigicoll::Env.lookup(:service_level).try(&:upcase) %>
-  </div>
-  <div class="navbar-collapse justify-content-md-end" id="user-util-collapse">
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <%= link_to "Dashboard", admin_root_path, class: "nav-link" %>
-      </li>
-
-      <% if can?(:update, Kithe::Model) %>
+<nav class="navbar navbar-expand-sm topbar <%= ScihistDigicoll::Env.lookup(:service_level).try(&:underscore) %>" aria-label="Administrative Functions">
+    <span class="navbar-text">
+      Management: <%= ScihistDigicoll::Env.lookup(:service_level).try(&:upcase) %>
+    </span>
+    <div class="navbar-collapse justify-content-md-end" id="user-util-collapse">
+      <ul class="navbar-nav">
         <li class="nav-item">
-          <%= link_to admin_cart_items_path, class: "nav-link" do %>
-            <span class="badge text-bg-secondary" data-role="cart-counter"><%= current_user.works_in_cart.count %></span> Cart
-          <% end %>
+          <%= link_to "Dashboard", admin_root_path, class: "nav-link" %>
         </li>
-      <% end %> 
 
-      <li class="nav-item">
-        <span class="navbar-text"><%= current_user.email %></span>
-      </li>
+        <% if can?(:update, Kithe::Model) %>
+          <li class="nav-item">
+            <%= link_to admin_cart_items_path, class: "nav-link" do %>
+              <span class="badge text-bg-secondary" data-role="cart-counter"><%= current_user.works_in_cart.count %></span> Cart
+            <% end %>
+          </li>
+        <% end %>
 
-      <li class="nav-item">
-        <%= link_to("Logout", logout_path, class: "nav-link") %>
-      </li>
-    </ul>
-  </div>
+        <li class="nav-item navbar-text">
+          <%= current_user.email %>
+        </li>
+
+        <li class="nav-item">
+          <%= link_to("Logout", logout_path, class: "nav-link") %>
+        </li>
+      </ul>
+    </div>
 </nav>
