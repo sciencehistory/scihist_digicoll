@@ -188,6 +188,11 @@ $grid-gutter-width: 2rem;
 $badge-padding-x: 0.4em;
 $badge-padding-y: 0.25em;
 
+// Restore bootstrap 4 links not underlined by default. Yes underline by default is
+// better, but we designed CSS based on this default, easier to do this.
+$link-decoration: none;
+$link-hover-decoration: underline;
+
 // We will leave the font-size base 1rem (usually 16px), to leave a nice round
 // number for calclulations based on it... BUT we elsehwere set defualt body
 // text size to 1.0625rem (usually 17px)
