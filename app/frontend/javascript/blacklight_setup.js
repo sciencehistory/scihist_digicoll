@@ -1,6 +1,4 @@
-<<<<<<< HEAD
 // Import all blacklight javascript, in BL 8 via a rollup derived combo file
-=======
 // While not doc'd very well, this seems to be [the/a] way to import all blacklight Javascript.
 
 import Blacklight from 'blacklight-frontend';
