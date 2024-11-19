@@ -1,0 +1,7 @@
+// Blacklight removes underlines from hover too, which is not our style, annoying.
+// https://github.com/projectblacklight/blacklight/blob/1494bd0884efe7a48623e9b37abe558fa6348e2a/app/assets/stylesheets/blacklight/_facets.scss#L78
+.facet-values a:hover {
+  text-decoration: underline;
+}
+
+
