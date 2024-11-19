@@ -5,3 +5,9 @@
 }
 
 
+// https://github.com/projectblacklight/blacklight/pull/3445
+.facet-pagination {
+  display: flex;
+  width: 100%;
+}
+
