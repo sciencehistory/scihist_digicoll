@@ -37,7 +37,12 @@
 
   .facet-values li {
     line-height: 1.2;
+    // override blacklight spacing to be better
+    padding-top: 0;
+    padding-bottom: 0.5rem;
   }
+
+
 
   // eliminate any special styles on active facet by overrides
   // Originally active facet gets green bg and white text, we don't want!
