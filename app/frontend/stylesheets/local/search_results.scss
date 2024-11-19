@@ -1,11 +1,3 @@
-// For some reason the unicode ✖ char that Blacklight is using here isn't
-// taking CSS colors.  We need to use this hack to get it to be white instead of
-// black. Black isn't showing up on new darker blue.
-.btn-outline-secondary.remove .remove-icon {
-  color: transparent;
-  text-shadow: 0 0 0 white;
-}
-
 // override sufia facet widget styles to be more brand-like, and generally neater
 .facets {
   .facets-header {
