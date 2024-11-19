@@ -1,10 +1,7 @@
-// Bootstrap 4 popovers are opt-in, we need to activate them.
-// https://getbootstrap.com/docs/4.0/components/popovers/#example-enable-popovers-everywhere
+// Bootstrap 5 popovers are opt-in, we need to activate them.
+// https://getbootstrap.com/docs/5.0/components/popovers/#example-enable-popovers-everywhere
 
-// Does use JQuery
+import { Popover } from 'bootstrap';
 
-import domready from 'domready';
-
-domready(function() {
-  $('[data-toggle="popover"]').popover()
-});
+const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new Popover(popoverTriggerEl));
