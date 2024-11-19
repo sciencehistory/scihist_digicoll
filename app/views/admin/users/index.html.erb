@@ -30,7 +30,7 @@
       <tr>
         <td><%= user.name %><br/><small class="font-monospace text-muted"><%= user.email %></small></td>
         <td>
-          <span class="badge badge-<%= user.admin_user? ? "primary" : "light"%>"><%= user&.user_type&.titleize %></span>
+          <span class="badge text-bg-<%= user.admin_user? ? "primary" : "light"%>"><%= user&.user_type&.titleize %></span>
           <% if user.locked_out? %>
             <span class="badge text-bg-danger">Locked out</span>
           <% end %>
