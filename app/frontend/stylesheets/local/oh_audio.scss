@@ -125,13 +125,13 @@
         .btn-danger {
           border-radius: 0;
           border: 0;
+          color: white;
+
           &:not(.active):not(:hover):not(:focus) {
             background-color: transparent;
-            color: white;
           }
           &.active {
             background-color: transparent;
-            color: white;
             border-bottom: 3px solid $shi-turquoise;
           }
         }
