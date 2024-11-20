@@ -386,7 +386,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
         }
         .dropdown-menu {
           left: auto;
-          right: 5px;
+          right: 5px !important; // keep it away from edge
 
           min-width: 280px;
           padding: 5px;
