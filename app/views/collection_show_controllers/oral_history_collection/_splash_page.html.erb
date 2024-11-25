@@ -18,7 +18,7 @@ we want the full width of the screen, no margins or padding. %>
             <h1>
               <%= link_to collection.title, collection_path(collection), class: "title-link" %> <%= publication_badge(collection) %>
               <% if can? :update, collection %>
-                <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-secondary float-right" %>
+                <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-secondary float-end" %>
               <% end %>
             </h1>
           </header>
