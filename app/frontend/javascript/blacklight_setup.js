@@ -23,3 +23,38 @@ import Blacklight from 'blacklight-frontend';
 
 import BlacklightRangeLimit from "blacklight-range-limit";
 BlacklightRangeLimit.init({onLoadHandler: Blacklight.onLoad });
+
+
+// Patch in some blacklight modal fixes
+
+if (Blacklight.Modal.target()) {
+
+  // Disable scrollbar on body when modal is open
+  // https://github.com/projectblacklight/blacklight/pull
+
+  Blacklight.Modal.target().addEventListener("show.blacklight.blacklight-modal", (event) => {
+    // Turn off body scrolling
+    Blacklight.Modal.originalBodyOverflow = document.body.style['overflow'];
+    Blacklight.Modal.originalBodyPaddingRight = document.body.style['padding-right'];
+    document.body.style["overflow"] = "hidden"
+    document.body.style["padding-right"] = "0px"
+  });
+
+  Blacklight.Modal.target().addEventListener("hide.blacklight.blacklight-modal", (event) => {
+    // Turn body scrolling back to what it was
+    document.body.style["overflow"] = Blacklight.Modal.originalBodyOverflow;
+    document.body.style["padding-right"] = Blacklight.Modal.originalBodyPaddingRight;
+    Blacklight.Modal.originalBodyOverflow = undefined;
+    Blacklight.Modal.originalBodyPaddingRight = undefined;
+  });
+
+
+  // Make click on background overlay close modal
+
+  Blacklight.Modal.target().addEventListener("click", (event) => {
+    if (event.target.matches(Blacklight.Modal.modalSelector)) {
+      Blacklight.Modal.hide();
+    }
+  });
+}
+
