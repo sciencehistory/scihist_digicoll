@@ -18,6 +18,33 @@ class CollectionShowController < CatalogController
     @related_link_filter ||= RelatedLinkFilter.new(collection.related_link)
   end
 
+
+  # GET /collections/wh246s128/box/1/
+  def box
+    if params[:box_id].chomp.match(/^[\d]+$/).nil?
+      flash[:alert] = "Sorry, the box number should contain only digits."
+      redirect_to :index
+      return
+    end
+    redirect_to "/collections/#{params[:collection_id]}?q=\"Box #{params[:box_id]}\""
+  end
+
+
+  # GET /collections/wh246s128/box/1/folder/29
+  def box_and_folder
+    if params[:box_id].chomp.match(/^[\d]+$/).nil? || params[:folder_id].chomp.match(/^[\d]+$/).nil?
+      flash[:alert] = "Sorry, the box and folder numbers should contain only digits."
+      redirect_to :index
+      return
+    end
+    if params[:folder_id].present? && params[:box_id].empty?
+      flash[:alert] = "If you specify a folder, please also specify a box."
+      redirect_to :index
+      return
+    end
+    redirect_to "/collections/#{params[:collection_id]}?q=\"Box #{params[:box_id]}, Folder #{params[:folder_id]}\""
+  end
+
   # This method can be overridden from blacklight to provide *dynamic* blacklight
   # config
   def blacklight_config
@@ -65,6 +92,8 @@ class CollectionShowController < CatalogController
     # and we need to make sure collection_id is allowed by BL, don't totally
     # understand this, as of BL 7.25
     config.search_state_fields << :collection_id
+    config.search_state_fields << :box_id
+    config.search_state_fields << :folder_id
   end
 
   private

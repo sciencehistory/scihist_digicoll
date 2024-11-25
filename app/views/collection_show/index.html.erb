@@ -54,12 +54,20 @@
                     :"aria-label" => t('collection.search_form.search_field.label')
                 %>
                 <label class="sr-only" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
+
                 <div class="input-group-append">
                   <button type="submit" class="btn btn-brand-main" title="Search">
                     <%= t('blacklight.search.form.submit') %>
                   </button>
                 </div>
               </div>
+
+              <br />
+              <div>Just for testing:</div>
+              <%= search_field_tag :box_id,    params[:box_id],    class: "box_id form-control",    id: "box_id" %>
+              <br />
+              <%= search_field_tag :folder_id, params[:folder_id], class: "folder_id form-control", id: "folder_id" %>
+
               <%= hidden_field_tag :sort, params[:sort], id: 'collection_sort' %>
             <% end %>
           </div>

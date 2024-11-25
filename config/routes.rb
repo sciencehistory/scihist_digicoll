@@ -148,6 +148,11 @@ Rails.application.routes.draw do
     get "collections/:collection_id/range_limit" => "#{options[:controller]}#range_limit"
     get "collections/:collection_id/range_limit_panel" => "#{options[:controller]}#range_limit_panel"
     get "collections/:collection_id/facet" => "#{options[:controller]}#facet"
+
+
+    # EDDIE ADDING THESE:
+    get "collections/:collection_id/box/:box_id" => "#{options[:controller]}#box"
+    get "collections/:collection_id/box/:box_id/folder/:folder_id" => "#{options[:controller]}#box_and_folder"
   end
 
 
