@@ -115,7 +115,7 @@
 
     <% @admin_digitization_queue_item.queue_item_comments.includes(:user).order(created_at: :desc).each do |comment| %>
       <div>
-        <div class="card queue-comment mb-3 d-inline-flex <% if comment.system_action? %>text-white bg-info<% end %>">
+        <div class="card queue-comment mb-3 d-inline-flex <% if comment.system_action? %>text-bg-info<% end %>">
           <div class="card-header">
             <% if comment.user %>
               <%= comment.user&.name || comment.user&.email %>,
