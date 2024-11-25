@@ -18,7 +18,7 @@
       </button>
       <% if current_search_q.present? %>
           <%= link_to(search_context_params,  { class:"btn btn-primary remove", title:"Remove" }) do %>
-            <span class="remove-icon">✖</span><span class="visually-hidden">Remove query constraint '<%= current_search_q %>'</span>
+            <span class="remove-icon"><%= raw Blacklight::Icons::RemoveComponent.svg %></span><span class="visually-hidden">Remove query constraint '<%= current_search_q %>'</span>
           <% end %>
       <% end %>
     </div>
