@@ -110,7 +110,7 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
     end
 
     describe "default order overridden from the front-end sort order menu" do
-      let(:default_sort_field) { 'oldest_date' }      
+      let(:default_sort_field) { 'oldest_date' }
       let(:requested_sort_order) { 'newest_date'}
       it "uses the order requested by the user" do
         get :index, params: base_params
@@ -119,12 +119,37 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
     end
 
     describe "identical dates" do
-      let(:default_sort_field) { 'oldest_date' } 
-      let(:four_years_in_arbitrary_order) { [1990, 1991, 1991, 1991] }   
+      let(:default_sort_field) { 'oldest_date' }
+      let(:four_years_in_arbitrary_order) { [1990, 1991, 1991, 1991] }
       it "uses title as tiebreaker sort field" do
         get :index, params: base_params
         expect(years_as_displayed).to eq  ["1990", "1991", "1991", "1991"]
         expect(titles_as_displayed).to eq ["4", "1", "2", "3"]
+      end
+    end
+  end
+
+  describe "#facet", indexable_callbacks: true do
+    render_views
+
+    let!(:collection) { create(:collection, friendlier_id: "faked", published: true) }
+    let!(:collection_work) { create(:public_work, subject: ["Inside Subject 1", "Inside Subject 2"], contained_by: [collection]) }
+    let!(:non_collection_work) { create(:public_work, subject: ["Outside Subject 1", "Outside Subject 2"]) }
+
+    it "includes only collection work values" do
+      get :facet, params: {
+        id:              "subject_facet",
+        collection_id:   collection.friendlier_id
+      }
+
+      doc = Nokogiri::HTML(response.body)
+
+      collection_work.subject.each do |subject|
+        expect(doc).to have_selector(".facet-values li", text: subject)
+      end
+
+      non_collection_work.subject.each do |subject|
+        expect(doc).not_to have_selector(".facet-values li", text: subject)
       end
     end
   end
