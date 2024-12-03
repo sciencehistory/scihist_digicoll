@@ -32,7 +32,7 @@
 en:
   simple_form:
     required:
-      html: '<span class="badge badge-pill badge-warning">required</span>'
+      html: '<span class="badge rounded-pill text-bg-warning">required</span>'
 
   date:
     formats:

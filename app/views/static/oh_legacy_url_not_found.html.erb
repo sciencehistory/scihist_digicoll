@@ -35,14 +35,12 @@
                 :"aria-label" => t('collection.search_form.search_field.label')
             %>
 
-            <label class="sr-only" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
+            <label class="visually-hidden" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
 
-            <div class="input-group-append">
-              <button type="submit" class="btn btn-emphasis" title="Search">
-                <i class="fa fa-search" aria-hidden="true"></i>
-                <%= t('blacklight.search.form.submit') %>
-              </button>
-            </div>
+            <button type="submit" class="btn btn-emphasis" title="Search">
+              <i class="fa fa-search" aria-hidden="true"></i>
+              <%= t('blacklight.search.form.submit') %>
+            </button>
           </div>
 
           <%= hidden_field_tag :sort, params[:sort], id: 'collection_sort' %>

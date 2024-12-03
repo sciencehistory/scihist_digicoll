@@ -6,7 +6,7 @@
       <b>Search Inside</b>
       <button type='button' class="btn btn-sm btn-outline-dark close-search-area" data-trigger="viewer-close-search" title="Close search area">
         <i class="fa fa-chevron-left" aria-hidden="true"></i>
-        <span class="sr-only">Close search area
+        <span class="visually-hidden">Close search area
       </button>
     </div>
 
@@ -16,44 +16,37 @@
           autocomplete: "off"
       %>
 
-      <label class="sr-only" for="q"><%= t('blacklight.search.form.search_field.label') %></label>
+      <label class="visually-hidden" for="q"><%= t('blacklight.search.form.search_field.label') %></label>
 
+      <button type="button" class="btn btn-outline-dark" title="Reset search" id="search-submit-header" data-trigger="clear-search-results">
+        <i class="fa fa-close" aria-hidden="true"></i>
+        <span class="visually-hidden">Reset search</span>
+      </button>
 
-      <div class="input-group-append">
-        <button type="button" class="btn btn-outline-dark" title="Reset search" id="search-submit-header" data-trigger="clear-search-results">
-          <i class="fa fa-close" aria-hidden="true"></i>
-          <span class="sr-only">Reset search</span>
-        </button>
-      </div>
-
-      
-
-      <div class="input-group-append">
-        <%# This GA action is also reported from app/views/scihist_image_viewer/_scihist_viewer_search_area.html.erb %>
-        <button
-          type="submit" class="btn btn-brand-dark" title="Search" id="search-submit-header"
-          data-analytics-action="search_inside_work"
-          data-analytics-category="work"
-          data-analytics-label="<%= work.friendlier_id %>"
-        >
-          <i class="fa fa-search" aria-hidden="true"></i>
-          <span class="sr-only"><%= t('blacklight.search.form.submit') %></span>
-        </button>
-      </div>
+      <%# This GA action is also reported from app/views/scihist_image_viewer/_scihist_viewer_search_area.html.erb %>
+      <button
+        type="submit" class="btn btn-brand-dark" title="Search" id="search-submit-header"
+        data-analytics-action="search_inside_work"
+        data-analytics-category="work"
+        data-analytics-label="<%= work.friendlier_id %>"
+      >
+        <i class="fa fa-search" aria-hidden="true"></i>
+        <span class="visually-hidden"><%= t('blacklight.search.form.submit') %></span>
+      </button>
     </div>
 
     <%# switch to display:flex to show, display:none to hide %>
     <div id="searchNav" class="justify-content-between align-items-center mt-3" style="display: none">
       <button type="button" class="btn btn-brand-dark btn-sm" title="Prevous result" data-trigger="viewer-result-previous">
         <i class="fa fa-arrow-left" aria-hidden="true"></i>
-        <span class="sr-only">Previous result</span>
+        <span class="visually-hidden">Previous result</span>
       </button>
 
       <span id="searchNavLabel"></span>
 
       <button type="button" class="btn btn-brand-dark btn-sm" title="Next result" data-trigger="viewer-result-next">
         <i class="fa fa-arrow-right" aria-hidden="true"></i>
-        <span class="sr-only">Next result</span>
+        <span class="visually-hidden">Next result</span>
       </button>
     </div>
   </form>

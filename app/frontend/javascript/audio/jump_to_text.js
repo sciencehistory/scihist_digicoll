@@ -18,7 +18,7 @@ domready(function() {
         // if we have anything else, jump to transcript point, activating
         // transcript tab first if needed.
         if (activeTab.id != "ohTranscriptTab") {
-          $('*[data-toggle="tab"][href="#ohTranscript"]').tab("show");
+          $('*[data-bs-toggle="tab"][href="#ohTranscript"]').tab("show");
         }
         gotoTranscriptTimecode(timeCodeSeconds)
       }

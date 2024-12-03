@@ -9,15 +9,21 @@ body {
 }
 
 
+// Bring back a bit of bootstrap 4 class
+.form-group {
+  margin-bottom: 1rem;
+}
+
+// work around for some weirdness in bootstrap where float:left radio/check
+// comes right after float:left legend...
+.form-check {
+  clear: both;
+}
+
+
 // fade on color change on hover, matches style on www.sciencehistory.org.
 a {
   transition: color 0.25s ease;
-}
-
-// slightly lighten bg of bootstrap alert-danger, using one of our brand
-// colors instead of letting bootstrap automatically generate a shade
-.alert-danger {
-  background-color: $shi-red-1;
 }
 
 // a link class from main site that we use where we can, especially in "text blocks"
@@ -188,6 +194,12 @@ hr.brand {
 .panel-default {
   border-left-color: $shi-bg-gray-border;
   border-right-color: $shi-bg-gray-border;
+}
+
+// Make more like bootstrap 4
+.rounded-pill {
+  padding-right: 0.6em;
+  padding-left: 0.6em;
 }
 
 // Some custom overrides to bootstrap accordion style, to make it brand-specific

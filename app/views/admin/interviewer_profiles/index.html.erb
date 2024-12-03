@@ -7,13 +7,9 @@
 <%= form_with(url: admin_interviewer_profiles_path, method: :get, class: 'edit-work admin-edit') do |f| %>
   <div class="row">
     <div class="input-group col-sm-10 mb-3">
-      <div class="input-group-prepend">
-        <%= f.label(:q, "Search", class: "input-group-text") %>
-      </div>
-      <div class="input-group-append">
-        <%= f.text_field(:q, value:params[:q], class: "form-control") %>
-        <%= f.button("Search", class: "btn btn-primary")%>
-      </div>
+      <%= f.label(:q, "Search", class: "input-group-text") %>
+      <%= f.text_field(:q, value:params[:q], class: "form-control") %>
+      <%= f.button("Search", class: "btn btn-primary")%>
     </div>
   </div>
 <% end %>

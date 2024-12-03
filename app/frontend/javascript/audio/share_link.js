@@ -3,12 +3,15 @@
 // of sessions.
 
 import domready from 'domready';
+import { Modal } from 'bootstrap'
 
 domready(function() {
   document.querySelector("*[data-toggle='linkShareModal']")?.addEventListener("click", function(event) {
+
     event.preventDefault();
     setupTimecode();
-    $('#audioLinkShare').modal();
+
+    Modal.getOrCreateInstance(document.getElementById('audioLinkShare')).show();
   });
 
   // Checkbox click to include timecode alters url

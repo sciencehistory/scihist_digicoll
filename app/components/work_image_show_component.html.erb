@@ -34,26 +34,22 @@
         <% if ScihistDigicoll::Env.lookup("feature_search_inside_work") && work.has_text_extraction? %>
           <form class="work-page-viewer-search-controls" data-trigger="show-viewer-search">
             <div class="input-group">
-              <div class="input-group-prepend">
-                <label for="search-inside-q" class="input-group-text">
-                  Search inside this item
-                </label>
-              </div>
+              <label for="search-inside-q" class="input-group-text">
+                Search inside this item
+              </label>
 
               <%= search_field_tag :q, '', class: "q form-control",
                   id: "search-inside-q"
               %>
 
-              <div class="input-group-append">
-                <%# This GA action is also reported from app/views/scihist_image_viewer/_scihist_viewer_search_area.html.erb %>
-                <button type="submit" class="btn btn-brand-main" aria-label="Submit search" title="Search" id="search-submit-header"
-                  data-analytics-action="search_inside_work"
-                  data-analytics-category="work"
-                  data-analytics-label="<%=work.friendlier_id %>"
-                >
-                  <i class="fa fa-search" aria-hidden="true"></i>
-                </button>
-              </div>
+              <%# This GA action is also reported from app/views/scihist_image_viewer/_scihist_viewer_search_area.html.erb %>
+              <button type="submit" class="btn btn-brand-main" aria-label="Submit search" title="Search" id="search-submit-header"
+                data-analytics-action="search_inside_work"
+                data-analytics-category="work"
+                data-analytics-label="<%=work.friendlier_id %>"
+              >
+                <i class="fa fa-search" aria-hidden="true"></i>
+              </button>
             </div>
           </form>
         <% end %>

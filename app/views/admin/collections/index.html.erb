@@ -7,13 +7,9 @@
 <%= simple_form_for(admin_collections_path, method: "get") do %>
   <div class="row">
     <div class="input-group col-sm-10 mb-3">
-      <div class="input-group-prepend">
-        <%= label_tag "title_or_id", "In Title or ID", class: "input-group-text" %>
-      </div>
-        <%= search_field_tag "title_or_id", params[:title_or_id], class: "form-control" %>
-      <div class="input-group-append">
-        <%= button_tag "Search", type: "submit", class: "btn btn-primary" %>
-      </div>
+      <%= label_tag "title_or_id", "In Title or ID", class: "input-group-text" %>
+      <%= search_field_tag "title_or_id", params[:title_or_id], class: "form-control" %>
+      <%= button_tag "Search", type: "submit", class: "btn btn-primary" %>
     </div>
   </div>
 
@@ -24,7 +20,7 @@
           options_for_select(Collection::DEPARTMENTS, @department),
           onchange: "this.form.submit()",
           include_blank: "Any",
-          class: "custom-select" %>
+          class: "form-select" %>
     </div>
   </div>
   <%= hidden_field_tag :sort_field,   params[:sort_field]%>
@@ -62,7 +58,7 @@
         <td class="datestamp"><%=  l collection.updated_at.to_date, format: :admin %> </td>
         <td>
           <div class="dropdown">
-            <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
+            <a href="#" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
             <%= admin_dropdown_for_collection(collection, labelled_by_id: "dropdownMenuButton") %>
           </div>
         </td>

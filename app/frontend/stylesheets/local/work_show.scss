@@ -51,8 +51,8 @@
   // matches the attribute table, although it's not really a table.
   .show-sub-head-body {
     border-top: 3px solid $table-border-color;
-    padding: $table-cell-padding-sm;
-    margin-left: -1 * $table-cell-padding-sm;
+    padding: $table-cell-padding-y-sm $table-cell-padding-x-sm;
+    margin-left: -1 * $table-cell-padding-x-sm;
     margin-bottom: ($paragraph-spacer * 2);
   }
   .show-metadata .show-sub-head-body {
@@ -218,7 +218,7 @@
     border-bottom-right-radius: 0;
 
     z-index: 1; // didn't used to be necesssary but some adjustment made it become so
-    .badge-warning {
+    .text-bg-warning {
       padding-top: 0;
       padding-bottom: 0;
       border-radius:0;
@@ -232,8 +232,8 @@
     .on-page-work-downloads-item {
       display: flex;
       flex-wrap: wrap; // just in case things get really really small
-      gap: $table-cell-padding;
-      margin-bottom: ($table-cell-padding * 2);
+      gap: $table-cell-padding-y;
+      margin-bottom: ($table-cell-padding-y * 2);
 
       .image {
         width: 36px;

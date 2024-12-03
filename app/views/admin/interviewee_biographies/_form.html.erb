@@ -1,7 +1,7 @@
 <%= kithe_form_for([:admin, @interviewee_biography],
   class: 'edit-work mx-auto admin-edit') do |f| %>
   <div class="admin-header sticky-top d-flex justify-content-between p-2 mb-4 mt-1 bg-light border">
-    <div class="mr-2">
+    <div class="me-2">
       <h1 class="h3">
         <% if @interviewee_biography.persisted? %>
           Editing
@@ -30,7 +30,7 @@
     </div>
   <% end %>
 
-  <div class="ml-2 form-inputs admin-edit">
+  <div class="ms-2 form-inputs admin-edit">
     <div class="oral-history-biography">
 
       <%= f.input :name %>
@@ -38,9 +38,9 @@
 
       <%= f.input(:birth, wrapper: :vertical_collection) do %>
           <%= f.simple_fields_for :birth do |sub_form| %>
-            <div class="form-row">
+            <div class="row">
 
-              <div class="col-md-2 col-form-label text-right">
+              <div class="col-md-2 col-form-label text-end">
                 <%= sub_form.label :date %>
               </div>
               <div class="col-md-4">
@@ -48,7 +48,7 @@
                   hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
                   wrapper: :scihist_no_label_input %>
               </div>
-              <div class="col-md-2 col-form-label text-right">
+              <div class="col-md-2 col-form-label text-end">
                 <%= sub_form.label :city %>
               </div>
               <div class="col-md-4">
@@ -58,8 +58,8 @@
               </div>
             </div>
 
-            <div class="form-row">
-              <div class="col-md-2 col-form-label text-right">
+            <div class="row">
+              <div class="col-md-2 col-form-label text-end">
                 <%= sub_form.label :state %>
               </div>
 
@@ -70,7 +70,7 @@
                   wrapper: :scihist_no_label_input %>
               </div>
 
-              <div class="col-md-2 col-form-label text-right">
+              <div class="col-md-2 col-form-label text-end">
                 <%= sub_form.label :province %>
               </div>
 
@@ -82,7 +82,7 @@
                   wrapper: :scihist_no_label_input %>
               </div>
 
-              <div class="col-md-2 col-form-label text-right">
+              <div class="col-md-2 col-form-label text-end">
                 <%= sub_form.label :country %>
               </div>
 
@@ -99,9 +99,9 @@
 
       <%= f.input(:death, wrapper: :vertical_collection) do %>
           <%= f.simple_fields_for :death do |sub_form| %>
-            <div class="form-row">
+            <div class="row">
 
-              <div class="col-md-2 col-form-label text-right">
+              <div class="col-md-2 col-form-label text-end">
                 <%= sub_form.label :date %>
               </div>
               <div class="col-md-4">
@@ -109,7 +109,7 @@
                   hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
                   wrapper: :scihist_no_label_input %>
               </div>
-              <div class="col-md-2 col-form-label text-right">
+              <div class="col-md-2 col-form-label text-end">
                 <%= sub_form.label :city %>
               </div>
               <div class="col-md-4">
@@ -119,8 +119,8 @@
               </div>
             </div>
 
-            <div class="form-row">
-              <div class="col-md-2 col-form-label text-right">
+            <div class="row">
+              <div class="col-md-2 col-form-label text-end">
                 <%= sub_form.label :state %>
               </div>
 
@@ -131,7 +131,7 @@
                   wrapper: :scihist_no_label_input %>
               </div>
 
-              <div class="col-md-2 col-form-label text-right">
+              <div class="col-md-2 col-form-label text-end">
                 <%= sub_form.label :province %>
               </div>
 
@@ -143,7 +143,7 @@
                   wrapper: :scihist_no_label_input %>
               </div>
 
-              <div class="col-md-2 col-form-label text-right">
+              <div class="col-md-2 col-form-label text-end">
                 <%= sub_form.label :country %>
               </div>
 
@@ -160,8 +160,8 @@
 
       <%= f.repeatable_attr_input(:school, simple_form_input_args: { :label => "Education" }, build: :at_least_one) do |sub_form| %>
         <div class="border-bottom pb-3 mb-4">
-          <div class="form-row">
-            <div class="col-md-2 col-form-label text-md-right">
+          <div class="row">
+            <div class="col-md-2 col-form-label text-md-end">
               <%= sub_form.label :date %>
             </div>
             <div class="col-md-4">
@@ -169,21 +169,21 @@
                 hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
                 wrapper: :scihist_no_label_input %>
             </div>
-            <div class="col-md-2 col-form-label text-md-right">
+            <div class="col-md-2 col-form-label text-md-end">
               <%= sub_form.label :institution %>
             </div>
             <div class="col-md-4">
               <%= sub_form.input :institution,  input_html: { data: { "scihist-qa-autocomplete" => qa_search_vocab_path("assign_fast", "corporate")}}, wrapper: :scihist_no_label_input %>
             </div>
           </div>
-          <div class="form-row">
-            <div class="col-md-2 col-form-label text-md-right">
+          <div class="row">
+            <div class="col-md-2 col-form-label text-md-end">
               <%= sub_form.label :degree %>
             </div>
             <div class="col-md-4">
               <%= sub_form.input :degree, wrapper: :scihist_no_label_input %>
             </div>
-            <div class="col-md-2 col-form-label text-md-right">
+            <div class="col-md-2 col-form-label text-md-end">
               <%= sub_form.label :discipline %>
             </div>
             <div class="col-md-4">
@@ -195,15 +195,15 @@
 
       <%= f.repeatable_attr_input(:job, simple_form_input_args: { :label => "Professional experience" }, build: :at_least_one) do |sub_form| %>
         <div class="border-bottom pb-3 mb-4">
-          <div class="form-row">
-            <div class="col-md-2 col-form-label text-md-right">
+          <div class="row">
+            <div class="col-md-2 col-form-label text-md-end">
               <%= sub_form.label :start %>
             </div>
             <div class="col-md-4">
               <%= sub_form.input :start, wrapper: :scihist_no_label_input,
                 hint: 'YYYY-MM-DD or YYYY-MM or YYYY'%>
             </div>
-            <div class="col-md-2 col-form-label text-md-right">
+            <div class="col-md-2 col-form-label text-md-end">
               <%= sub_form.label :end %>
             </div>
             <div class="col-md-4">
@@ -212,15 +212,15 @@
             </div>
           </div>
 
-          <div class="form-row">
-            <div class="col-md-2 col-form-label text-md-right">
+          <div class="row">
+            <div class="col-md-2 col-form-label text-md-end">
               <%= sub_form.label :institution %>
             </div>
 
             <div class="col-md-4">
               <%= sub_form.input :institution,  input_html: { data: { "scihist-qa-autocomplete" => qa_search_vocab_path("assign_fast", "corporate")} }, wrapper: :scihist_no_label_input %>
             </div>
-            <div class="col-md-2 col-form-label text-md-right">
+            <div class="col-md-2 col-form-label text-md-end">
               <%= sub_form.label :role %>
             </div>
             <div class="col-md-4">
@@ -232,8 +232,8 @@
 
       <%= f.repeatable_attr_input(:honor, simple_form_input_args: { :label => "Honors" }, build: :at_least_one) do |sub_form| %>
         <div class="border-bottom pb-3 mb-4">
-          <div class="form-row">
-              <div class="col-md-2 col-form-label text-right">
+          <div class="row">
+              <div class="col-md-2 col-form-label text-end">
                 <%= sub_form.label :start_date, label: "Start" %>
               </div>
               <div class="col-md-4">
@@ -242,7 +242,7 @@
                   hint: 'YYYY-MM-DD or YYYY-MM or YYYY',
                   wrapper: :scihist_no_label_input %>
               </div>
-              <div class="col-form-label col-md-2 text-right">
+              <div class="col-form-label col-md-2 text-end">
                 <%= sub_form.label :end_date, label: "End" %>
               </div>
               <div class="col-md-4">
@@ -252,8 +252,8 @@
                   wrapper: :scihist_no_label_input %>
               </div>
           </div>
-          <div class="form-row">
-            <div class="col-md-2 col-form-label text-right">
+          <div class="row">
+            <div class="col-md-2 col-form-label text-end">
               <%= sub_form.label :honor %>
             </div>
             <div class="col-md-10">

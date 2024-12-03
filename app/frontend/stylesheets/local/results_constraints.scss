@@ -23,7 +23,7 @@
   // The "you searched for"
   h2 {
     // We need to hackily UNDO sr-only, we want it on the screen
-    position: static;
+    position: static !important;
     width: auto;
     height: auto;
     margin: 0;
@@ -35,7 +35,7 @@
     text-transform: uppercase;
     letter-spacing: $small-caps-letter-spacing;
     font-weight: $semi-bold-weight;
-    margin-right: 0.66em;
+    margin-right: 0.66em !important;
     color: $shi-blackish;
     vertical-align: middle;
   }
@@ -90,16 +90,6 @@
       border-left-color: $input-border-color;
     }
 
-    .input-group-prepend .input-group-text {
-      border-bottom-left-radius: $btn-border-radius;
-      border-top-left-radius: $btn-border-radius;
-    }
-    .input-group-append{
-      a:last-child, button:last-child {
-        border-top-right-radius: $btn-border-radius;
-        border-bottom-right-radius: $btn-border-radius;
-      }
-    }
     input[type=text] {
       border-color: $shi-bg-gray-border;
     }

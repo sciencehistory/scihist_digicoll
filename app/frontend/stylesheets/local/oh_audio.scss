@@ -28,6 +28,8 @@
 }
 
   .audio-navbar {
+    @extend .row;
+
     position: sticky;
     top: 0 !important;
     z-index: $zindex-fixed; // make sure bootstrap popovers et al scroll UNDER, but modal goes OVER
@@ -89,10 +91,10 @@
       // keep navbar contents the same width as our general contents,
       // within the full-viewport background-color of the navbar.
       // Calc needed for convoluted reasons trying to mimic bootstrap grid poorly. :(
-      max-width: calc(#{$main-container-max-width} - 30px);
+      max-width: calc(#{$main-container-max-width} - #{$grid-gutter-width});
       margin-right: auto;
       margin-left: auto;
-      @extend .col-md-12;
+      //@extend .col-md-12;
 
 
       .now-playing-container {
@@ -123,13 +125,13 @@
         .btn-danger {
           border-radius: 0;
           border: 0;
+          color: white;
+
           &:not(.active):not(:hover):not(:focus) {
             background-color: transparent;
-            color: white;
           }
           &.active {
             background-color: transparent;
-            color: white;
             border-bottom: 3px solid $shi-turquoise;
           }
         }
@@ -150,10 +152,6 @@
       .ohms-search {
         max-width: $max-readable-width; // doesn't need to be this specifically, but works fine
         margin-top: $spacer;
-
-        .input-group-append .btn {
-          border-left: 1px solid $shi-dark-gray;
-        }
       }
 
       .ohms-search-results {
@@ -259,7 +257,7 @@
       align-items: center;
       border-top: $table-border-width solid $table-border-color;
       &>  div > a, & > div .dropdown-toggle {
-        padding: $table-cell-padding;
+        padding: $table-cell-padding-y $table-cell-padding-x;
       }
 
       .title {

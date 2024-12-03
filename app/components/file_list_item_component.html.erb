@@ -12,7 +12,7 @@
         <%= member_label %>
       <% end %>
       <% if show_private_badge && !member.published?  %>
-          <span title="Private" class="badge badge-warning">Private</span>
+          <span title="Private" class="badge text-bg-warning">Private</span>
       <% end %>
     </div>
     <% if member.kind_of?(Asset) %>

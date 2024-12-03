@@ -3,7 +3,7 @@
 </div>
 
 <div class="row">
-  <div class="col-lg-5 pr-4 mb-4">
+  <div class="col-lg-5 pe-4 mb-4">
     <%= render DigitizationQueueItemStatusFormComponent.new(@admin_digitization_queue_item) %>
   </div>
 </div>
@@ -78,12 +78,12 @@
     </dl>
   </div>
 
-  <div class="col-md-5 order-md-1 pr-4">
+  <div class="col-md-5 order-md-1 pe-4">
 
     <div class="card mb-3">
       <div class="card-header" id="attachedHeading">
         <h2 class="h5 mb-0">
-          <a href="#" data-toggle="collapse" data-target="#attachedWorks" aria-expanded="false" aria-controls="attachedWorks">
+          <a href="#" data-bs-toggle="collapse" data-bs-target="#attachedWorks" aria-expanded="false" aria-controls="attachedWorks">
             <%= @admin_digitization_queue_item.works.count %> Attached Works
           </a>
         </h5>
@@ -106,7 +106,7 @@
     <h2>Comments</h2>
 
     <%= form_tag add_comment_admin_digitization_queue_item_path do %>
-      <div class="mb-4 text-right">
+      <div class="mb-4 text-end">
         <h3 class="h5"><label for="addComment">Add Comment</label></h3>
         <textarea class="form-control" name="comment" id="addComment" rows="3"></textarea>
         <button class="btn btn-primary mt-1">Submit comment</button>
@@ -125,7 +125,7 @@
           <div class="card-body pb-0">
             <%= simple_format(comment.text) %>
             <% if can?(:destroy, comment) %>
-              <div class="text-right">
+              <div class="text-end">
                 <%= link_to "Delete",
                   admin_delete_digitization_queue_item_comment_path(id: @admin_digitization_queue_item.id, comment_id: comment.id),
                   class: "btn btn-primary mb-1",

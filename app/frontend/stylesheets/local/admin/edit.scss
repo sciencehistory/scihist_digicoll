@@ -1,9 +1,13 @@
 .admin-edit {
   max-width: 800px;
 
+  // Smaller gutters between our input elements
+  .row { --bs-gutter-x: 0.6rem; }
+
   label, legend {
-    &.form-control-label, &.form-check-label, &.col-form-label {
+    &.form-label, &.col-form-label {
       @extend .h5;
+      padding: 0;
     }
   }
 
@@ -30,12 +34,12 @@
   }
 
   // Give em a red bar alongside for visibility. Only top-level.
-  .form-inputs > .form-group.form-group-invalid,
+  .form-inputs > .form-group-invalid,
   .oral-history-biography > .form-group.form-group-invalid,
   .oral-history-biography  .birth-fields .form-group.form-group-invalid,
   .oral-history-biography  .death-fields .form-group.form-group-invalid,
    {
-    border-left: 2px solid $danger;
+    border-left: 3px solid $danger;
     padding-left: 8px;
     margin-left: -11px;
   }

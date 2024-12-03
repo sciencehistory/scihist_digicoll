@@ -46,7 +46,7 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
       all_items = work.send(p)
       all_items.length.times do |i|
         click_link("Add another #{attr_name}") unless i == 0
-        all("fieldset.work_#{p} input[type=text]")[i].
+        all("fieldset.work_#{p} input[type=text]", minimum: i + 1)[i].
           fill_in with: all_items[i]
       end
     end
@@ -57,7 +57,7 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
       all_items = work.send(p)
       all_items.length.times do |i|
         click_link("Add another #{attr_name}") unless i == 0
-        all("fieldset.work_#{p} textarea")[i].
+        all("fieldset.work_#{p} textarea", minimum: i + 1)[i].
           fill_in with: all_items[i]
       end
     end
@@ -72,7 +72,7 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
         scrollToTop
 
         click_link("Add another #{attr_name}")
-        all("fieldset.work_#{p} input[type=text]")[i].fill_in with: all_items[i]
+        all("fieldset.work_#{p} input[type=text]", minimum: i + 1)[i].fill_in with: all_items[i]
       end
     end
 
@@ -84,9 +84,9 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
         val =  all_items[i].value
         cat =  all_items[i].category
         click_link("Add another #{attr_name}") unless i == 0
-        all("fieldset.work_#{p} select")[i].
+        all("fieldset.work_#{p} select", minimum: i + 1)[i].
           find("option[value='#{cat}']").select_option
-        all("fieldset.work_#{p} input[type=text]")[i].
+        all("fieldset.work_#{p} input[type=text]", minimum: i + 1)[i].
           fill_in with: val
       end
     end
@@ -97,7 +97,7 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
       all_items.length.times do |i|
         click_link("Add another #{attr_name}") unless i == 0
         val = work.send(p)[i]
-        all("fieldset.work_#{p} select")[i].
+        all("fieldset.work_#{p} select", minimum: i + 1)[i].
           find("option[value='#{val}']").
           select_option
       end
@@ -116,12 +116,12 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
       all_items.length.times do |i|
         click_link("Add another #{attr_name}") unless i == 0
         %w(start note finish).each do |p|
-          all("fieldset.work_#{property} input[type=text][name*=#{p}]")[i].
+          all("fieldset.work_#{property} input[type=text][name*=#{p}]", minimum: i + 1)[i].
             fill_in with: all_items[i].attributes[p]
         end
         %w(start_qualifier finish_qualifier).each do |p|
           val = all_items[i].attributes[p]
-          all("fieldset.work_#{property} select[name*=#{p}]")[i].
+          all("fieldset.work_#{property} select[name*=#{p}]", minimum: i + 1)[i].
             find("option[value='#{val}']").select_option
         end
       end
@@ -134,7 +134,7 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
       all_items.length.times do |i|
         click_link("Add another #{attr_name}")
         %w(location text).each do |p|
-          all("fieldset.work_#{property} input[type=text][name*=#{p}]")[i].
+          all("fieldset.work_#{property} input[type=text][name*=#{p}]", minimum: i + 1)[i].
             fill_in with: all_items[i].attributes[p]
         end
       end
@@ -145,9 +145,9 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
     all_items.length.times do |i|
       click_link("Add another Related link")
 
-      all("fieldset.work_related_link select[name*=category]")[i].find("option[value=#{all_items[i].category}").select_option
-      all("fieldset.work_related_link input[type=url][name*=url]")[i].fill_in with: all_items[i].url
-      all("fieldset.work_related_link input[type=text][name*=label]")[i].fill_in with: all_items[i].label
+      all("fieldset.work_related_link select[name*=category]", minimum: i + 1)[i].find("option[value=#{all_items[i].category}").select_option
+      all("fieldset.work_related_link input[type=url][name*=url]", minimum: i + 1)[i].fill_in with: all_items[i].url
+      all("fieldset.work_related_link input[type=text][name*=label]", minimum: i + 1)[i].fill_in with: all_items[i].label
     end
 
     # Physical container:
@@ -170,7 +170,7 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
         click_link("Add another #{attr_name}")
         %w(role name).each do |p|
           val = all_items[i].attributes[p]
-          all("fieldset.work_#{property} select[name*=#{p}]")[i].
+          all("fieldset.work_#{property} select[name*=#{p}]", minimum: i + 1)[i].
             find("option[value='#{val}']").select_option
         end
       end

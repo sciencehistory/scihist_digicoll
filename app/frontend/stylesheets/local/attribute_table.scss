@@ -18,7 +18,7 @@ $attribute-table-max-tabular: 22.5em;
 
   // Make text in table line up with text above or below it not in table,
   // and thus border lines will extend a bit outside the ordinary space, negative margin.
-  margin-left: -1 * $table-cell-padding-sm;
+  margin-left: -1 * $table-cell-padding-x-sm;
 
   td, th {
     padding: 0.3em; // 5px at 17px font em
@@ -95,5 +95,5 @@ $attribute-table-max-tabular: 22.5em;
   margin-top: ($paragraph-spacer * 4);
   margin-bottom: 1px;
   // 0 padding on left to line up with table negative margin
-  padding: $table-cell-padding-sm $table-cell-padding-sm $table-cell-padding-sm 0;
+  padding: $table-cell-padding-y-sm $table-cell-padding-x-sm $table-cell-padding-y-sm 0;
 }

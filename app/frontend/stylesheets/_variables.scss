@@ -1,3 +1,5 @@
+@import "../node_modules/bootstrap/scss/functions";
+
 // SCSS variables both purely local and overriding some from Bootstrap
 //
 // Needs to be imported _before_ bootstrap and other things that may need to use
@@ -181,14 +183,28 @@ $layout-expand-up: 'md';
  *
  */
 
+
+// We developed originally in Bootstrap 4, so setting some settings to be more
+// like bootstrap 4.
+$grid-gutter-width: 2rem;
+$badge-padding-x: 0.4em;
+$badge-padding-y: 0.25em;
+
+// Restore bootstrap 4 links not underlined by default. Yes underline by default is
+// better, but we designed CSS based on this default, easier to do this.
+$link-decoration: none;
+$link-hover-decoration: underline;
+
 // We will leave the font-size base 1rem (usually 16px), to leave a nice round
 // number for calclulations based on it... BUT we elsehwere set defualt body
 // text size to 1.0625rem (usually 17px)
 $font-size-base: 1rem;
 $body-font-size: 1.0625rem; // not a bootstrap variable
+$pagination-font-size: $body-font-size;
 
 $h4-font-size: 22px;
 $body-color: #222; // little bit darker
+$navbar-light-color: #222;
 
 //$line-height-base: 1.5; // default 1.5 works for us, liked better than smaller
 $headings-line-height: 1.13; // a bit smaller than default 1.2
@@ -198,12 +214,24 @@ $headings-line-height: 1.13; // a bit smaller than default 1.2
 $headings-color: $shi-blackish;
 
 // bootstrap brand colors
+// The variations are used in alerts among other places.
 $primary: $shi-teal; // main buttons actually use $shi-yellow, but we don't want to put that everywhere bootstrap primary goes
 $secondary: $shi-blackish;
 $info: $shi-bg-turquoise;
+  $info-bg-subtle: $shi-teal-1;
+  $info-border-subtle: $shi-teal-3;
+  $info-text-emphasis: #204C5A; // shade-color($shi-teal-4, 20%); for sufficient contrast
 $success: $shi-green;
+  $success-bg-subtle: $shi-green-1;
+  $success-border-subtle: $shi-green-3;
 $warning: $shi-yellow;
+  $warning-bg-subtle: $shi-chartreuse-2;
+  $warning-border-subtle: $shi-chartreuse-3;
+  $warning-text-emphasis: $body-color;
 $danger: $shi-red;
+  $danger-bg-subtle: $shi-red-1;
+  $danger-border-subtle: $shi-red-2;
+  $danger-text-empahsis: $shi-red-4;
 $light: $shi-bg-gray; // not sure if we use in public front-end at present
 $dark: $shi-dark-gray;
 

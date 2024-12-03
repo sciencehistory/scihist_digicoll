@@ -123,7 +123,8 @@ gem "device_detector", "~> 1.0" # user-agent parsing we use for logging
 
 gem "attr_json", "~> 2.3"
 
-gem 'kithe', "~> 2.15", ">= 2.15.1"
+# temporarily use kithe off main git, that has updates to work with bootstrap 5
+gem 'kithe', "~> 2.15", ">= 2.15.1", git: "https://github.com/sciencehistory/kithe.git"
 
 gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 

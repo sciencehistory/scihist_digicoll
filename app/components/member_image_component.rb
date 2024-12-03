@@ -113,7 +113,7 @@ class MemberImageComponent < ApplicationComponent
   def private_label
     return ''.html_safe if member.published?
     content_tag(:div, class: "private-badge-div") do
-      content_tag(:span, title: "Private", class: "badge badge-warning") do
+      content_tag(:span, title: "Private", class: "badge text-bg-warning") do
         "Private"
       end
     end

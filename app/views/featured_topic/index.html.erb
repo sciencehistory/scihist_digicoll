@@ -38,12 +38,10 @@
                 placeholder: t("collection.search_form.search_field.placeholder"),
                 :"aria-label" => t('collection.search_form.search_field.label')
                 %>
-                <label class="sr-only" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
-                <div class="input-group-append">
-                  <button type="submit" class="btn btn-brand-main" title="Search">
-                    <%= t('blacklight.search.form.submit') %>
-                  </button>
-                </div>
+                <label class="visually-hidden" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
+                <button type="submit" class="btn btn-brand-main" title="Search">
+                  <%= t('blacklight.search.form.submit') %>
+                </button>
               </div>
               <%= hidden_field_tag :sort, params[:sort], id: 'collection_sort' %>
             <% end %>
@@ -78,7 +76,7 @@
         <%= render 'catalog/results_pagination' %>
       </div>
       <% else %>
-        <div class="ml-3">
+        <div class="ms-3">
           <%= render 'catalog/zero_results' %>
         </div>
       <% end %>

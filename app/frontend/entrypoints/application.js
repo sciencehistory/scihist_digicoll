@@ -32,7 +32,7 @@ console.log('Visit the guide for more information: ', 'https://vite-ruby.netlify
 
 
 import '../javascript/jquery_setup.js'
-import '../javascript/bootstrap_setup.js'
+import "bootstrap";
 
 // We're still using rails-ujs for now.
 //

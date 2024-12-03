@@ -630,18 +630,24 @@
 }
 
 
-// local content, management-only top bar
-.navbar.topbar {
+// local content, management-only top bar, .
+.topbar {
     // take from theme color after we fix theme?
     background-color: $shi-bg-gray;
-    padding-top: 0;
-    padding-bottom: 0;
+    padding: 0 1rem;
+
 
     font-size: 0.875rem;
     line-height: 1;
 
     .nav-item:not(:last-child) {
         margin-right: $spacer;
+    }
+
+    // Please just look like regular links, bootstrap
+    .nav-link {
+        @extend a;
+        text-decoration: none;
     }
 
     &.staging {

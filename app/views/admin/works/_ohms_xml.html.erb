@@ -3,7 +3,7 @@
   <div class="card-body">
     <% if @work.oral_history_content!.ohms_xml.present? %>
       <dl class="row">
-          <dt class="col-sm-6">attached?</dt><dd class="col-sm-6"><span class="text-success font-weight-bold">YES</span></dd>
+          <dt class="col-sm-6">attached?</dt><dd class="col-sm-6"><span class="text-success fw-bold">YES</span></dd>
           <dt class="col-sm-6">id</dt><dd class="col-sm-6"><%= @work.oral_history_content!.ohms_xml.record_id %></dd>
           <dt class="col-sm-6">dt</dt><dd class="col-sm-6"><%= @work.oral_history_content!.ohms_xml.record_dt %></dd>
           <dt class="col-sm-6">accession</dt><dd class="col-sm-6"><%= @work.oral_history_content!.ohms_xml.accession %></dd>
@@ -19,7 +19,7 @@
       </div>
     <% else %>
       <dl class="row">
-        <dt class="col-sm-6">attached?</dt><dd class="col-sm-6"><span class="text-danger font-weight-bold">NO</span></dd>
+        <dt class="col-sm-6">attached?</dt><dd class="col-sm-6"><span class="text-danger fw-bold">NO</span></dd>
       </dl>
     <% end %>
     <hr>
