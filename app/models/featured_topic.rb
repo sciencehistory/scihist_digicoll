@@ -441,6 +441,10 @@ class FeaturedTopic
     end
   end
 
+  def subjects
+    definition[:subject]
+  end
+
   def solr_fq
     fq_elements = []
 
