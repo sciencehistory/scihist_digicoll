@@ -59,6 +59,41 @@ describe "Collection show page", solr: true, indexable_callbacks: true do
     end
   end
 
+  # This broke once when we upgraded BL
+  describe "facets and facet more button" do
+    let(:collection) do
+      create(:collection,
+        description: "some description",
+        external_id: [{category: "bib", value: "b9999999"}],
+      ).tap do |col|
+        # doing these as separate creates after collection exists necessary for them to have collection
+        # on save, so to get indexed properly
+        #
+        # Different dates to make sure we exersize blacklight_range_limit a bit.
+        create(:public_work,
+          title: "public work one",
+          subject: 1.upto(100).collect { |i| "Subject #{i}" },
+          date_of_work: Work::DateOfWork.new(start: "2019"),
+          contained_by: [col]
+        )
+      end
+    end
+
+    it "can access" do
+      visit collection_path(collection)
+
+      within(".facets") do
+        click_on "Subject"
+      end
+
+      within("#facet-subject_facet") do
+        find("a", text: /more/).click
+      end
+
+      expect(page).to have_selector(".modal-header", text: "Subject")
+    end
+  end
+
   describe "generic oral history collection" do
     let(:collection) { create(:collection, department: CollectionShowController::ORAL_HISTORY_DEPARTMENT_VALUE) }
     let!(:oral_history) { create(:oral_history_work, published: true, subject: ["Chemistry"], contained_by: [collection]) }
