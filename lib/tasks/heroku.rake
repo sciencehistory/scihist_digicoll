@@ -12,7 +12,7 @@ namespace :scihist do
       end
 
       if ENV['SOLR_URL']
-        Rake::Task["scihist:solr_cloud:sync_configset"].invoke
+        # Rake::Task["scihist:solr_cloud:sync_configset"].invoke
       else
         $stderr.puts "\n!!! WARNING, no ENV['SOLR_URL'], not running rake scihist:solr_cloud:sync_configset as part of heroku release !!!\n\n"
       end
