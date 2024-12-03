@@ -134,7 +134,7 @@ describe CatalogController, solr: true, indexable_callbacks: true do
         labels = page.find_all('.facet-label', visible:true).map { |label| label.text }
         counts = page.find_all('.facet-count', visible:true).map { |count| count.text.to_i }
         expect(labels.zip(counts).to_h).to eq ({
-          "Copyright Free✖\n[remove]" => 4,
+          "Copyright Free\n[remove]" => 4,
           "Public Domain Mark 1.0" => 1,
           "No Known Copyright" => 1,
           "No Copyright - Other Known Legal Restrictions" => 1,

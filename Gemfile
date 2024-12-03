@@ -54,7 +54,7 @@ gem 'scout_apm'
 # NOTE ALSO: We are using `blacklight-frontend` JS NPM package, updating blacklight
 # version may require an update with yarn to `blacklight-frontend`, has to be
 # checked manually.
-gem "blacklight", "~> 7.38.0"
+gem "blacklight", "~> 8.6.1"
 gem "blacklight_range_limit", "9.0.0.beta1" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
 # for some code to deal with transcoding video, via AWS MediaConvert
@@ -112,6 +112,7 @@ gem 'jbuilder', '~> 2.5'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
 
+# note if updating to 5, you should change bootstrap_version config in catalog_controller
 gem 'bootstrap', '~> 4.6', '>= 4.6.2'
 
 gem 'sprockets-rails', '>= 3.4.2'
@@ -124,7 +125,7 @@ gem "device_detector", "~> 1.0" # user-agent parsing we use for logging
 gem "attr_json", "~> 2.3"
 
 # temporarily use kithe off main git, that has updates to work with bootstrap 5
-gem 'kithe', "~> 2.15", ">= 2.15.1", git: "https://github.com/sciencehistory/kithe.git"
+gem 'kithe', "~> 2.16"
 
 gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 

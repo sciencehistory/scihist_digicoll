@@ -1,23 +1,3 @@
-GIT
-  remote: https://github.com/sciencehistory/kithe.git
-  revision: 27310b256e51a6fdf75f9c85d5e4c5ed4739338d
-  specs:
-    kithe (2.15.1)
-      attr_json (~> 2.0)
-      fastimage (~> 2.0)
-      fx (>= 0.6.0, < 1)
-      marcel
-      mini_mime
-      pdf-reader (~> 2.0)
-      rails (>= 6.0, < 8.1)
-      rsolr (~> 2.2)
-      ruby-progressbar (~> 1.0)
-      shrine (~> 3.3)
-      shrine-url (~> 2.0)
-      simple_form (>= 4.0, < 6.0)
-      traject (~> 3.0, >= 3.1.0.rc1)
-      tty-command (>= 0.8.2, < 2)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -158,16 +138,15 @@ GEM
     bcrypt (3.1.20)
     bigdecimal (3.1.8)
     bindex (0.8.1)
-    blacklight (7.38.0)
-      deprecation
+    blacklight (8.6.1)
       globalid
-      hashdiff
       i18n (>= 1.7.0)
       jbuilder (~> 2.7)
       kaminari (>= 0.15)
       ostruct (>= 0.3.2)
-      rails (>= 5.1, < 7.3)
-      view_component (>= 2.66, < 4)
+      rails (>= 6.1, < 8)
+      view_component (>= 2.74, < 4)
+      zeitwerk
     blacklight_range_limit (9.0.0.beta1)
       blacklight (>= 7.25.2, < 9)
       view_component (>= 2.54, < 4)
@@ -366,6 +345,21 @@ GEM
       activerecord
       kaminari-core (= 1.2.2)
     kaminari-core (1.2.2)
+    kithe (2.16.0)
+      attr_json (~> 2.0)
+      fastimage (~> 2.0)
+      fx (>= 0.6.0, < 1)
+      marcel
+      mini_mime
+      pdf-reader (~> 2.0)
+      rails (>= 6.0, < 8.1)
+      rsolr (~> 2.2)
+      ruby-progressbar (~> 1.0)
+      shrine (~> 3.3)
+      shrine-url (~> 2.0)
+      simple_form (>= 4.0, < 6.0)
+      traject (~> 3.0, >= 3.1.0.rc1)
+      tty-command (>= 0.8.2, < 2)
     launchy (3.0.1)
       addressable (~> 2.8)
       childprocess (~> 5.0)
@@ -467,7 +461,7 @@ GEM
       omniauth (~> 2.0)
     orm_adapter (0.5.0)
     os (1.1.4)
-    ostruct (0.6.0)
+    ostruct (0.6.1)
     parser (3.3.4.2)
       ast (~> 2.4.1)
       racc
@@ -792,7 +786,7 @@ DEPENDENCIES
   aws-sdk-s3 (~> 1.0)
   axe-core-rspec (~> 4.3)
   barnes
-  blacklight (~> 7.38.0)
+  blacklight (~> 8.6.1)
   blacklight_range_limit (= 9.0.0.beta1)
   bootsnap (>= 1.4.4)
   bootstrap (~> 4.6, >= 4.6.2)
@@ -822,7 +816,7 @@ DEPENDENCIES
   irb (>= 1.3.1)
   jbuilder (~> 2.5)
   kaminari (~> 1.2)
-  kithe (~> 2.15, >= 2.15.1)!
+  kithe (~> 2.16)
   listen (~> 3.3)
   lockbox
   lograge (< 2)

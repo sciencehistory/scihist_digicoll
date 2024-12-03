@@ -423,7 +423,7 @@
             // for consisteny with our site, collapsed padding is
             // 15px horizontal.
             //padding: .8125em 1em .8125em 1.6875em
-            padding: .8125em 15px .8125em 15px;
+            padding: .8125em ($grid-gutter-width * 0.5) .8125em ($grid-gutter-width * 0.5);
         }
 
         .header:not(.header_mobile) .header__inner {
@@ -571,8 +571,8 @@
     // function), 30px
     @include media-breakpoint-up($layout-expand-up) {
         .header:not(.header_mobile) {
-            padding-left: 30px;
-            padding-right: 30px;
+            padding-left: $grid-gutter-width;
+            padding-right: $grid-gutter-width;
         }
     }
 
