@@ -96,4 +96,8 @@ $attribute-table-max-tabular: 22.5em;
   margin-bottom: 1px;
   // 0 padding on left to line up with table negative margin
   padding: $table-cell-padding-y-sm $table-cell-padding-x-sm $table-cell-padding-y-sm 0;
+
+  .text-muted {
+    font-weight: 400;
+  }
 }

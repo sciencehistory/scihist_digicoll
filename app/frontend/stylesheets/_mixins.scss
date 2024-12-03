@@ -34,13 +34,13 @@
 
   // perceived margins are done with padding, on small
   // screens fairly tight.
-  padding-left: 15px;
-  padding-right: 15px;
+  padding-left: $grid-gutter-width * 0.5;
+  padding-right: $grid-gutter-width * 0.5;
 
   @include media-breakpoint-up($layout-expand-up) {
     // large screen, bigger margins
-    padding-left: 30px;
-    padding-right: 30px;
+    padding-left: $grid-gutter-width;
+    padding-right: $grid-gutter-width;
   }
 }
 

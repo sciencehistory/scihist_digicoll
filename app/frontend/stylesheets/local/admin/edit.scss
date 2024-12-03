@@ -33,6 +33,11 @@
     @extend .mb-2;
   }
 
+  // Weird workaround can't get bootstrap templates to do form-select all the time.
+  .form-control.select {
+    @extend .form-select;
+  }
+
   // Give em a red bar alongside for visibility. Only top-level.
   .form-inputs > .form-group-invalid,
   .oral-history-biography > .form-group.form-group-invalid,

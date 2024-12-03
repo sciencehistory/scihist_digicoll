@@ -6,6 +6,9 @@
 // font size to 17px (1.0625rem for 16px==1rem)
 body {
   font-size: $body-font-size;
+
+  // Override Blacklight CSS variables
+  --bl-main-padding-y: 0; // we didn't design for this
 }
 
 

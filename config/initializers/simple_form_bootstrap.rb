@@ -19,6 +19,8 @@
 #
 # * instead of an mb-3 utility on each wrapper, we use bootstrap 4-style  .form-group, which we style manually.
 #
+# * date and datetime types use vertical_form instead of vertical_multi_select, was adding a caret we didn't want
+#
 ##########
 
 # These defaults are defined and maintained by the community at
@@ -384,8 +386,8 @@ SimpleForm.setup do |config|
   config.wrapper_mappings = {
     boolean:       :vertical_boolean,
     check_boxes:   :vertical_collection,
-    date:          :vertical_multi_select,
-    datetime:      :vertical_multi_select,
+    date:          :vertical_form, # was vertical_multi_select from simple form, but that was wrong
+    datetime:      :vertical_form, # was vertical_multi_select from simple form, but that was wrong
     file:          :vertical_file,
     radio_buttons: :vertical_collection,
     range:         :vertical_range,
