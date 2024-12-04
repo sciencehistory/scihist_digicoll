@@ -14,7 +14,18 @@ gem 'lockbox'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 7.2.0'
 
+# We no longer COMPILE/BUNDLE any assets with sprockets, that's all in vite now.
+# But we're using sprockets for terminal static asset delivery of vite-bundled, as
+# well as fonts and images.
+#
+# Could switch to rails preferred propshaft in future.
+#
+# Sprocket seems to REQUIRE sassc-rails *even though* we aren't as far as we know using it,
+# it wants to require it at boot in our and we can't figure out how to stop it. so it's
+# there only for that.
 gem 'sprockets-rails', '>= 3.4.2'
+gem "sassc-rails"
+
 
 # Ensure we are using rack 3, with a new sinatra that can use it. Both of these
 # are indirect dependencies, in here only to force bundler NOT to do a weird

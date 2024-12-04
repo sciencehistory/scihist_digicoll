@@ -632,6 +632,14 @@ GEM
     ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
     sane_patch (1.0.0)
+    sassc (2.4.0)
+      ffi (~> 1.9)
+    sassc-rails (2.1.2)
+      railties (>= 4.0.0)
+      sassc (>= 2.0)
+      sprockets (> 3.0)
+      sprockets-rails
+      tilt
     scout_apm (5.3.8)
       parser
     scrub_rb (1.0.1)
@@ -830,6 +838,7 @@ DEPENDENCIES
   ruby-progressbar
   rubyzip (~> 2.0)
   sane_patch (< 2.0)
+  sassc-rails
   scout_apm
   selenium-webdriver
   shrine (~> 3.3)
