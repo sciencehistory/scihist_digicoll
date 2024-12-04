@@ -1,3 +1,12 @@
+GIT
+  remote: https://github.com/projectblacklight/blacklight_range_limit.git
+  revision: c7769415a4e79523d6d43b109036cc65238fafcf
+  branch: bad_range_limit_params
+  specs:
+    blacklight_range_limit (9.0.0.beta2)
+      blacklight (>= 7.25.2, < 9)
+      view_component (>= 2.54, < 4)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -150,9 +159,6 @@ GEM
       rails (>= 6.1, < 9)
       view_component (>= 2.74, < 4)
       zeitwerk
-    blacklight_range_limit (9.0.0.beta2)
-      blacklight (>= 7.25.2, < 9)
-      view_component (>= 2.54, < 4)
     bootsnap (1.18.4)
       msgpack (~> 1.2)
     bootstrap4-kaminari-views (1.0.1)
@@ -791,7 +797,7 @@ DEPENDENCIES
   axe-core-rspec (~> 4.3)
   barnes
   blacklight (~> 8.7.0)
-  blacklight_range_limit (= 9.0.0.beta2)
+  blacklight_range_limit (= 9.0.0.beta2)!
   bootsnap (>= 1.4.4)
   bootstrap4-kaminari-views
   browse-everything (~> 1.4)
