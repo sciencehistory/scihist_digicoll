@@ -67,7 +67,7 @@ gem 'scout_apm'
 # version may require an update with yarn to `blacklight-frontend`, has to be
 # checked manually.
 gem "blacklight", "~> 8.7.0"
-gem "blacklight_range_limit", "9.0.0.beta2", github: "projectblacklight/blacklight_range_limit", branch: "bad_range_limit_params" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
+gem "blacklight_range_limit", "9.0.0.beta2"
 
 # for some code to deal with transcoding video, via AWS MediaConvert
 # Lower than 1.2.1 had far too big gem builds! https://github.com/samvera-labs/active_encode/issues/126
