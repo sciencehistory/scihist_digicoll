@@ -30,6 +30,17 @@ RSpec.describe CatalogController, solr: true, type: :controller do
 
   # See more at bad_blacklight_requests_spec.rb
   describe "malformed URL params" do
+    around do |example|
+      # Temporarily turn off raise-on-unpermitted-param to test production
+      # behavior
+      original = ActionController::Parameters.action_on_unpermitted_parameters
+      ActionController::Parameters.action_on_unpermitted_parameters = false
+
+      example.run
+
+      ActionController::Parameters.action_on_unpermitted_parameters = original
+    end
+
     describe "facet values as Hash" do
       render_views
 
@@ -55,9 +66,9 @@ RSpec.describe CatalogController, solr: true, type: :controller do
     end
 
     describe "range param as string" do
-      it "returns http 400" do
+      it "ignores" do
         get :index, params: { range: "bad" }
-        expect(response).to have_http_status(400)
+        expect(response).to have_http_status(200)
       end
     end
 
@@ -100,14 +111,25 @@ RSpec.describe CatalogController, solr: true, type: :controller do
     describe "empty range param", solr: false do
       let(:params) { { "range" => { "year_facet_isim" => nil } } }
 
-      it "responds with 400" do
+      it "ignores" do
         get :index, params: params
-        expect(response.status).to eq(400)
+        expect(response.status).to eq(200)
       end
     end
   end
 
   describe "bad URL params passed to range_limit (should not happen under normal use)" do
+    around do |example|
+      # Temporarily turn off raise-on-unpermitted-param to test production
+      # behavior
+      original = ActionController::Parameters.action_on_unpermitted_parameters
+      ActionController::Parameters.action_on_unpermitted_parameters = false
+
+      example.run
+
+      ActionController::Parameters.action_on_unpermitted_parameters = original
+    end
+
     let(:no_start_params) do
       {
         "range_field"=>"year_facet_isim",
@@ -135,21 +157,29 @@ RSpec.describe CatalogController, solr: true, type: :controller do
       }
     end
 
-    it "throws 406 unless start param is present" do
-      get :range_limit, params: no_start_params
-      expect(response.status).to eq(406)
+    it "raises BadReqeust without start param" do
+      # turned to an http 400 response by rails
+      expect {
+        get :range_limit, params: no_start_params
+      }.to raise_error(ActionController::BadRequest)
     end
-    it "throws 406 unless end param is present" do
-      get :range_limit, params: no_end_params
-      expect(response.status).to eq(406)
+    it "raises BadRequest without end param" do
+      # turned to an http 400 response by rails
+      expect {
+        get :range_limit, params: no_end_params
+      }.to raise_error(ActionController::BadRequest)
     end
-    it "throws 406 if params out of order" do
-      get :range_limit, params: end_before_start_params
-      expect(response.status).to eq(406)
+    it "raises BadRequest if params out of order" do
+      # turned to an http 400 response by rails
+      expect {
+        get :range_limit, params: end_before_start_params
+      }.to raise_error(ActionController::BadRequest)
     end
-    it "throws 406 if one of the params is an array" do
-      get :range_limit, params: not_strings
-      expect(response.status).to eq(406)
+    it "raises BadRequest if one of the params is an array" do
+      # turned to an http 400 response by rails
+      expect {
+        get :range_limit, params: not_strings
+      }.to raise_error(ActionController::BadRequest)
     end
   end
 
