@@ -9,17 +9,13 @@ Rails.application.configure do
   config.enable_reloading = true
 
   # Do not eager load code on boot.
-  config.eager_load = false
+  config.eager_load = true
 
   # Show full error reports. Chagne to false to see production-style error page
   config.consider_all_requests_local = true
 
   # use custom error pages when consider_all_requests_local = false
   config.exceptions_app = self.routes
-
-  # sassc-rails
-  config.sass.inline_source_maps = true
-
 
   # Enable/disable caching. By default caching is disabled.
   # Run rails dev:cache to toggle caching.

@@ -14,12 +14,24 @@ gem 'lockbox'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 7.2.0'
 
+# We no longer COMPILE/BUNDLE any assets with sprockets, that's all in vite now.
+# But we're using sprockets for terminal static asset delivery of vite-bundled, as
+# well as fonts and images.
+#
+# Could switch to rails preferred propshaft in future.
+#
+# Sprocket seems to REQUIRE sassc-rails *even though* we aren't as far as we know using it,
+# it wants to require it at boot in our and we can't figure out how to stop it. so it's
+# there only for that.
+gem 'sprockets-rails', '>= 3.4.2'
+gem "sassc-rails"
+
+
 # Ensure we are using rack 3, with a new sinatra that can use it. Both of these
 # are indirect dependencies, in here only to force bundler NOT to do a weird
 # resolution to old versions of sinatra!
 # https://bibwild.wordpress.com/2023/11/09/beware-sinatra-rails-7-1-rack-3-resque-bundler-dependency-resolution/
 gem "rack", ">= 3.0"
-
 gem "sinatra", ">= 4.0"
 
 # Our JS/CSS/asset bundler
@@ -87,21 +99,6 @@ gem "dalli", "~> 3.2"
 
 gem 'honeybadger', '~> 5.0'
 
-# Until we get things working under sprockets 4, lock to sprockets 3
-# https://github.com/sciencehistory/scihist_digicoll/issues/458
-gem "sprockets", "~> 4.0"
-
-# We no longer use sass through sprockets, only through vite!
-# So don't need a sass gem, we have sass npm package instead.
-# gem 'sassc-rails', '~> 2.0'
-
-# Use terser as compressor for any JavaScript assets still used via sprockets
-gem 'terser', '~> 1.1'
-# See https://github.com/rails/execjs#readme for more supported runtimes
-# gem 'mini_racer', platforms: :ruby
-
-# Use CoffeeScript for .coffee assets and views
-#gem 'coffee-rails', '~> 5.0'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'
 # Use Redis adapter to run Action Cable in production
@@ -111,11 +108,6 @@ gem 'jbuilder', '~> 2.5'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
-
-# note if updating to 5, you should change bootstrap_version config in catalog_controller
-gem 'bootstrap', '~> 4.6', '>= 4.6.2'
-
-gem 'sprockets-rails', '>= 3.4.2'
 
 gem 'font-awesome-rails', '~> 4.7'
 
