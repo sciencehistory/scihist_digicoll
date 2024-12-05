@@ -422,8 +422,17 @@ describe "Oral history with audio display", type: :system, js: true do
 
       # ToC animation has weird jumping around, let's try to make sure
       # our button is actually on-screen before clicking
-      find("body").scroll_to(copy_button, align: :bottom)
-      copy_button.click
+      begin
+        find("body").scroll_to(copy_button, align: :bottom)
+        copy_button.click
+      rescue Selenium::WebDriver::Error::ElementClickInterceptedError
+        # try scrolling again, page may still have been in motion
+        find("body").scroll_to(copy_button, align: :bottom)
+        copy_button.click
+      end
+
+
+
       expect(page).to have_content("Copied to clipboard")
 
       # ToC tab should be selected as it is first tab with results from search
