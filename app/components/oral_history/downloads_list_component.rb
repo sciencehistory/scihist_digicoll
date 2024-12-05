@@ -33,6 +33,7 @@ module OralHistory
 
     def file_list_members
       @file_list_members ||= all_members.select do |m|
+         m.asset? &&
          !m.leaf_representative&.content_type&.start_with?("audio/") && # exclude audio
          !m.role_portrait?  # exclude portrait role
        end

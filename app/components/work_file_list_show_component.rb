@@ -30,7 +30,7 @@ class WorkFileListShowComponent < ApplicationComponent
       end
 
       # omit "portrait" role
-      members = members.find_all {|m| ! m.role_portrait? }
+      members = members.find_all {|m| !(m.asset? && m.role_portrait?) }
 
       members
     end
