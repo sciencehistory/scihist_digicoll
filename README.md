@@ -113,7 +113,8 @@ Then:
 
 ### Assets: Javascript, CSS, etc
 
-We preferentially use Vite.js (an ES6-style JS bundler, https://vite-ruby.netlify.app/) for managing and assembling our **javascript AND CSS stylesheets**. -- although some dependencies may still require sprockets.The diversity of things we need to handle still makes things somewhat confusing.
+We preferentially use Vite.js (an ES6-style JS bundler, https://vite-ruby.netlify.app/) for managing and assembling our **javascript AND CSS stylesheets**.  (Sprockets is still used for
+last-mile asset delivery and static images and fonts, until we replace with rails-preferred propshaft)
 
 
 * Frontend assets managed by vite source are at `./app/frontend`.

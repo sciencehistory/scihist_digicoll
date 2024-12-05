@@ -31,14 +31,6 @@ Rails.application.configure do
   # Apache or NGINX already handles this.
   config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
 
-  # Compress JavaScripts and CSS.
-  #
-  # This is not used for our vite-built things, only for remaining sprockets-built things.
-  # But it has to be able to handle ES6, so we've moved from uglifier to the more maintained
-  # terser.
-  config.assets.js_compressor = :terser
-  # config.assets.css_compressor = :sass
-
   # Do not fallback to assets pipeline if a precompiled asset is missed.
   config.assets.compile = false
 
