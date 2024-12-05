@@ -1,7 +1,7 @@
 <%= kithe_form_for([:admin, work], :html=> { novalidate: true, class: 'edit-work mx-auto admin-edit' }) do |f| %>
   <div class="admin-header sticky-top d-flex justify-content-between p-2 mb-4 mt-1 bg-light border">
     <% if work.leaf_representative.present? %>
-      <div class="mr-2">
+      <div class="me-2">
         <%= thumb_image_tag(work.leaf_representative, size: :mini, image_missing_text: true) %>
       </div>
     <% end %>
@@ -15,7 +15,7 @@
       <%= hidden_field_tag "work[digitization_queue_item_id]", @work.digitization_queue_item_id  %>
     <% end %>
 
-    <div class="mr-2">
+    <div class="me-2">
       <h1 class="h5">
         <% if @work.persisted? %>
           <i>Editing</i> <%= truncate(@work.title, length: 80) %> <i>(<%= @work.friendlier_id %>)</i>

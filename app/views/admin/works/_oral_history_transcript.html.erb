@@ -17,9 +17,9 @@
     <dl class="row">
         <dt class="col-sm-6">present?</dt><dd class="col-sm-6">
           <% if @work.oral_history_content!&.searchable_transcript_source.present? %>
-            <span class="text-success font-weight-bold">YES</span>
+            <span class="text-success fw-bold">YES</span>
           <% else %>
-            <span class="text-danger font-weight-bold">NO</span>
+            <span class="text-danger fw-bold">NO</span>
           <% end %>
         </dd>
         <% if @work.oral_history_content!&.searchable_transcript_source.present? %>

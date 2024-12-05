@@ -12,7 +12,7 @@
     <p>
       <%= @rights_term.description %>
     </p>
-    <p class="text-right"><i>Adapted from <%= link_to "rightsstatements.org", @rights_term.id %></i></p>
+    <p class="text-end"><i>Adapted from <%= link_to "rightsstatements.org", @rights_term.id %></i></p>
 
     <% if @work&.rights_holder&.present? %>
     <dl class="mt-4">

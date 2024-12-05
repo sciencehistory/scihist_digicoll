@@ -1,11 +1,11 @@
 <p>
   Text extraction mode:
   <% if @work.text_extraction_mode.present? %>
-    <span class="text-success font-weight-bold">
+    <span class="text-success fw-bold">
       <i class="fa fa-check-circle" aria-hidden="true"></i> <%= @work.text_extraction_mode.titleize %>
     </span>
   <% else %>
-    <span class="text-danger font-weight-bold">
+    <span class="text-danger fw-bold">
       <i class="fa fa-minus-circle" aria-hidden="true"></i> NONE
     </span>
   <% end %>
@@ -36,12 +36,12 @@
   <ul>
     <% if @work.pdf_text_extraction? || assets_with_source_pdf_role_count > 0 %>
       <li>
-        <b><%= assets_with_source_pdf_role_count %></b> </b> <%= 'asset'.pluralize(assets_with_source_pdf_role_count) %> with <code>role</code> <span class="badge badge-info"><%= PdfToPageImages::SOURCE_PDF_ROLE.humanize.downcase %></span>
+        <b><%= assets_with_source_pdf_role_count %></b> </b> <%= 'asset'.pluralize(assets_with_source_pdf_role_count) %> with <code>role</code> <span class="badge text-bg-info"><%= PdfToPageImages::SOURCE_PDF_ROLE.humanize.downcase %></span>
       </li>
     <% end %>
     <% if @work.pdf_text_extraction? || assets_with_extracted_pdf_page_role_count > 0 %>
       <li>
-        <b><%= assets_with_extracted_pdf_page_role_count %></b> </b> <%= 'asset'.pluralize(assets_with_extracted_pdf_page_role_count) %> with <code>role</code> <span class="badge badge-info"><%= PdfToPageImages::EXTRACTED_PAGE_ROLE.humanize.downcase %></span>
+        <b><%= assets_with_extracted_pdf_page_role_count %></b> </b> <%= 'asset'.pluralize(assets_with_extracted_pdf_page_role_count) %> with <code>role</code> <span class="badge text-bg-info"><%= PdfToPageImages::EXTRACTED_PAGE_ROLE.humanize.downcase %></span>
       </li>
     <% end %>
     <li>

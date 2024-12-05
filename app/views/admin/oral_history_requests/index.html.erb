@@ -29,16 +29,14 @@
 <h2>Oral History Requests</h2>
 <div class="border p-2 mb-5">
   <%= simple_form_for(:query, url: admin_oral_history_requests_path, method: :get) do |f| %>
-    <div class="row form-group">
+    <div class="row mb-3">
       <div class="input-group col-sm-10">
-        <div class="input-group-prepend">
-          <%= f.label :status, "Status", class: "input-group-text" %>
-        </div>
+        <%= f.label :status, "Status", class: "input-group-text" %>
         <%= f.select :status,
           status_filter_options,
           { selected: "Any"},
             {
-            class: "custom-select",
+            class: "form-select",
             onchange: "this.form.submit()"
             }
         %>

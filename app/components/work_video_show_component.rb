@@ -39,7 +39,7 @@ class WorkVideoShowComponent < ApplicationComponent
 
   def private_label
     content_tag(:div, class: "private-badge-div") do
-      content_tag(:span, title: "Private", class: "badge badge-warning") do
+      content_tag(:span, title: "Private", class: "badge text-bg-warning") do
         '<i class="fa fa-exclamation-triangle" aria-hidden="true"></i>'.html_safe +
           " Private"
       end

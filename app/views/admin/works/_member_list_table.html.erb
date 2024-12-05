@@ -36,7 +36,7 @@
                 <% if member.suppress_ocr %>
                   <small>OCR suppressed</small>
                 <% elsif member.hocr.present? %>
-                  <li><small class="badge badge-info"><%=link_to("hOCR Text", admin_asset_path(member, anchor: "hocr"), class: "ocr-link") %></small></li>
+                  <li><small class="badge text-bg-info"><%=link_to("hOCR Text", admin_asset_path(member, anchor: "hocr"), class: "ocr-link") %></small></li>
                 <% end %>
               <% end %>
             </ul>
@@ -47,26 +47,26 @@
             <%= link_to member.title, [:admin, member] %>
 
             <% if member.kind_of?(Asset) && member.promotion_failed? %>
-              <span class="badge badge-danger">Ingest Failed</span>
+              <span class="badge text-bg-danger">Ingest Failed</span>
             <% end %>
 
             <%= publication_badge(member) %>
 
             <% if member.kind_of?(Asset) && member.derivative_storage_type == "restricted" %>
-              <span class="badge badge-warning">Restricted derivatives storage</span>
+              <span class="badge text-bg-warning">Restricted derivatives storage</span>
             <% end %>
 
             <% if member.role.present? %>
-              <span class="badge badge-info"><%= member.role.humanize.downcase %></span>
+              <span class="badge text-bg-info"><%= member.role.humanize.downcase %></span>
             <% end %>
 
           </td>
           <td class="datestamp"><%= l member.created_at.to_date, format: :admin  %></td>
           <td class="datestamp"><%= l member.updated_at.to_date, format: :admin %></td>
           <td>
-            <div class="dropdown dropdown-menu-right">
+            <div class="dropdown dropdown-menu-end">
 
-              <a href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
+              <a href="#" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
 
               <% if member.kind_of?(Work) %>
                 <%= admin_dropdown_for_work(member, labelled_by_id: "dropdownMenuButton") %>

@@ -1,10 +1,10 @@
 <div class="container-fluid homepage-wrapper">
-    <div class="row no-gutters">
+    <div class="row g-0">
         <div class="col-lg">
             <%= render HomePageHeroImageComponent.new(override:params[:hero_image]) %>
         </div>
         <div class="col-lg home-right-column">
-            <div class="search-container no-gutters">
+            <div class="search-container g-0">
                 <div class="digital-description">
                     <h1>Digital Collections</h1>
                     <p class="blurb">Search <%= number_with_delimiter(Kithe::Model.where(:published => true, :type => ['Work', 'Collection']).count) %> of our digitized items: artifacts, photographs, advertisements, letters, rare books, oral histories, and more.

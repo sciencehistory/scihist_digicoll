@@ -3,13 +3,9 @@
 <%= simple_form_for(admin_assets_path, method: "get") do %>
   <div class="row">
     <div class="input-group col-sm-10 mb-3">
-      <div class="input-group-prepend">
-        <%= label_tag "q", "In Title or ID", class: "input-group-text" %>
-      </div>
-        <%= search_field_tag "q", params[:q], class: "form-control" %>
-      <div class="input-group-append">
-        <%= button_tag "Search", type: "submit", class: "btn btn-primary" %>
-      </div>
+      <%= label_tag "q", "In Title or ID", class: "input-group-text" %>
+      <%= search_field_tag "q", params[:q], class: "form-control" %>
+      <%= button_tag "Search", type: "submit", class: "btn btn-primary" %>
     </div>
   </div>
 <% end %>
@@ -37,7 +33,7 @@
         <td>
           <%= link_to asset.title, admin_asset_path(asset) %>
           <% if asset.promotion_failed? %>
-            <span class="badge badge-danger">Ingest Failed</span>
+            <span class="badge text-bg-danger">Ingest Failed</span>
           <% end %>
         </td>
         <td>

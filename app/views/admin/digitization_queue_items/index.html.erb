@@ -6,32 +6,26 @@
 
 <div class="my-2">
   <%= simple_form_for(:query, url: admin_digitization_queue_items_path, method: :get) do |f| %>
-    <div class="row form-group">
+    <div class="row mb-3">
       <div class="col-sm-10">
         <small class="text-muted">Title, or ID (bib, accession, or object)</small>
       </div>
       <div class="input-group col-sm-10">
-        <div class="input-group-prepend">
-          <%= f.label :q, "Search", class: "input-group-text" %>
-        </div>
+        <%= f.label :q, "Search", class: "input-group-text" %>
         <%= f.search_field :q, class: "form-control", value: params.dig(:query, :q) %>
-        <div class="input-group-append">
-          <%= f.button :submit, value: "Go", class: "btn btn-primary" %>
-        </div>
+        <%= f.button :submit, value: "Go", class: "btn btn-primary" %>
       </div>
     </div>
 
-    <div class="row form-group">
+    <div class="row mb-3">
       <div class="input-group col-sm-10">
-        <div class="input-group-prepend">
-          <%= f.label :status, "Status", class: "input-group-text" %>
-        </div>
+        <%= f.label :status, "Status", class: "input-group-text" %>
 
         <%= f.select :status,
             status_filter_options,
             { selected: "closed"},
             {
-              class: "custom-select",
+              class: "form-select",
               onchange: "this.form.submit()"
             }
         %>
@@ -39,21 +33,19 @@
     </div>
 
 
-    <div class="row form-group">
+    <div class="row mb-3">
       <div class="input-group col-sm-10">
-        <div class="input-group-prepend">
-          <%= f.label :collecting_area, "Collecting Area", class: "input-group-text" %>
-        </div>
-          <%= f.select(:collecting_area,
-                Admin::DigitizationQueueItem::COLLECTING_AREAS.collect {|s| [s.humanize, s]},
-                {
-                  include_blank: 'All collecting areas',
-                  selected: collecting_area
-                },
-                class: "custom-select",
-                onchange: "this.form.submit()"
-              )
-          %>
+        <%= f.label :collecting_area, "Collecting Area", class: "input-group-text" %>
+        <%= f.select(:collecting_area,
+              Admin::DigitizationQueueItem::COLLECTING_AREAS.collect {|s| [s.humanize, s]},
+              {
+                include_blank: 'All collecting areas',
+                selected: collecting_area
+              },
+              class: "form-select",
+              onchange: "this.form.submit()"
+            )
+        %>
       </div>
     </div>
 

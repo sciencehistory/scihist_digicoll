@@ -44,7 +44,7 @@ module FormInputHelper
 
     category_list = vocab_collection_options(model: model, attribute_name: category_key, value_list: category_list)
 
-    content_tag("div", class: "form-row category-and-value") do
+    content_tag("div", class: "row category-and-value") do
       content_tag("div", class: "col-left category") do
         builder.input category_key, collection: category_list, label: false, include_blank: false
       end +

@@ -171,7 +171,7 @@ class DownloadDropdownComponent < ApplicationComponent
 
     options = {
       id: menu_button_id,
-      "data-toggle" => "dropdown",
+      "data-bs-toggle" => "dropdown",
       "aria-haspopup" => "true",
       "aria-expanded" => "false",
       "data-boundary": "viewport"

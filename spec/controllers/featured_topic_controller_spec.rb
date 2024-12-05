@@ -25,4 +25,32 @@ RSpec.describe FeaturedTopicController, solr: true, type: :controller do
       end
     end
   end
+
+   describe "#facet", indexable_callbacks: true do
+    render_views
+
+    let(:topic_id) { 'color' }
+
+    let(:featured_subjects) { FeaturedTopic.from_slug(topic_id).subjects.slice(0..7) }
+
+    let!(:featured_work) { create(:public_work, subject: featured_subjects) }
+    let!(:non_featured_work) { create(:public_work, subject: ["Outside Subject 1", "Outside Subject 2"]) }
+
+    it "includes only featured work values" do
+      get :facet, params: {
+        id:    "subject_facet",
+        slug:  topic_id
+      }
+
+      doc = Nokogiri::HTML(response.body)
+
+      featured_work.subject.each do |subject|
+        expect(doc).to have_selector(".facet-values li", text: subject)
+      end
+
+      non_featured_work.subject.each do |subject|
+        expect(doc).not_to have_selector(".facet-values li", text: subject)
+      end
+    end
+  end
 end

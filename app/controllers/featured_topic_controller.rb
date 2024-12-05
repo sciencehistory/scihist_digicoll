@@ -2,27 +2,6 @@
 class FeaturedTopicController < CatalogController
   before_action :set_featured_topic
 
-  # params[:id] is being hogged by Blacklight.
-  # It refers to the facet id.
-  def facet
-    unless (params[:id] && blacklight_config.facet_fields[params[:id]])
-      raise ActionController::RoutingError, 'Not Found'
-    end
-    @facet = blacklight_config.facet_fields[params[:id]]
-
-    @response = search_service.facet_field_response(@facet.key)
-    @display_facet = @response.aggregations[@facet.field]
-    @pagination = facet_paginator(@facet, @display_facet)
-    respond_to do |format|
-      format.html do
-        # Draw the partial for the "more" facet modal window:
-        return render layout: false if request.xhr?
-        # Otherwise draw the facet selector for users who have javascript disabled.
-      end
-      format.json
-    end
-  end
-
   configure_blacklight do |config|
     # Limit just to items in the featured topic.
     config.search_builder_class = ::SearchBuilder::WithinFeaturedTopicBuilder

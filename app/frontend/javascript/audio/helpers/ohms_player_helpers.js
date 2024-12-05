@@ -117,5 +117,5 @@ export function scrollToElement(element) {
 // call tab() on).
 export function getActiveTab() {
   var content = document.querySelector("#ohmsScrollable .tab-pane.active");
-  return content && document.querySelector(`*[data-toggle="tab"][href="#${content.id}"]`);
+  return content && document.querySelector(`*[data-bs-toggle="tab"][href="#${content.id}"]`);
 }

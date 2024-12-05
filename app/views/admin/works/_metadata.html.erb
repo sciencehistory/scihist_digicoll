@@ -4,7 +4,7 @@
 
 <div class="d-md-flex">
 
-  <div class="pb-3 pr-3" style="flex-basis: 50%">
+  <div class="pb-3 pe-3" style="flex-basis: 50%">
     <% if work.representative_id.present? %>
       <%= thumb_image_tag(work.leaf_representative, size: :large, image_missing_text: true, class: "w-100") %>
       <p><i>assigned representative image: <%= work.representative.title %></i></p>
@@ -37,9 +37,9 @@
     <dt>Review</dt>
     <dd>
       <%= form_tag set_review_requested_admin_work_path(@work), method: :put do %>
-        <div class="custom-control custom-switch">
+        <div class="form-check form-switch">
           <%= check_box_tag "review_requested", 1, @work.review_requested, class: "custom-control-input", onchange: "this.form.submit()" %>
-          <label class="custom-control-label" for="review_requested">Review requested</label>
+          <label class="form-check-label" for="review_requested">Review requested</label>
           <% if @work.review_requested_by %>
             <div><%= @work.review_requested_by %></div>
           <% end %>
@@ -60,7 +60,7 @@
     <dd><%= l @work.updated_at, format: :admin %></dd>
 
     <dt>Internal ID</dt>
-    <dd class="text-monospace small"><%= @work.id %></dd>
+    <dd class="font-monospace small"><%= @work.id %></dd>
 
     <dt>Title</dt>
     <dd><%= work.title %></dd>

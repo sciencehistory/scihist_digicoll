@@ -11,7 +11,7 @@
         <label for="filter">Show</label>
         <%= select_tag "filter",
           options_for_select(['Current', 'All'] + @user_types_map.values, @filter),
-          onchange: "this.form.submit()", class: "custom-select" %>
+          onchange: "this.form.submit()", class: "form-select" %>
     </div>
   </div>
 <% end %>
@@ -28,11 +28,11 @@
   <tbody>
     <% @users.each do |user| %>
       <tr>
-        <td><%= user.name %><br/><small class="text-monospace text-muted"><%= user.email %></small></td>
+        <td><%= user.name %><br/><small class="font-monospace text-muted"><%= user.email %></small></td>
         <td>
-          <span class="badge badge-<%= user.admin_user? ? "primary" : "light"%>"><%= user&.user_type&.titleize %></span>
+          <span class="badge text-bg-<%= user.admin_user? ? "primary" : "light"%>"><%= user&.user_type&.titleize %></span>
           <% if user.locked_out? %>
-            <span class="badge badge-danger">Locked out</span>
+            <span class="badge text-bg-danger">Locked out</span>
           <% end %>
         </td>
         <td>

@@ -13,7 +13,7 @@ module ApplicationHelper
   # if anyone, can see non-public things in end-user front-end).
   def publication_badge(kithe_model)
     unless kithe_model.published?
-      '<span class="badge badge-warning">Private</span>'.html_safe
+      '<span class="badge text-bg-warning">Private</span>'.html_safe
     end
   end
 

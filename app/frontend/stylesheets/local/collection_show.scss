@@ -185,8 +185,8 @@
   // match work-show, for our related links
   .show-sub-head-body {
     border-top: 3px solid $table-border-color;
-    padding: $table-cell-padding-sm;
-    margin-left: -1 * $table-cell-padding-sm;
+    padding: $table-cell-padding-y-sm $table-cell-padding-x-sm;
+    margin-left: -1 * $table-cell-padding-x-sm;
     margin-bottom: ($paragraph-spacer * 2);
   }
   .related-link-component:not(:last-child) {

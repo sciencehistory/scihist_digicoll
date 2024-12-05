@@ -3,10 +3,10 @@
     <div class="ohms-index-point card" id="<%= accordion_wrapper_id(index) %>">
       <div class="card-header" id="<%= accordion_header_id(index) %>">
         <h3 class="ohms-index-point-title mb-0">
-          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#<%= accordion_element_id(index) %>" aria-expanded="false" aria-controls="<%= accordion_element_id(index) %>">
-              <i class="fa fa-plus float-right toggle-icon" aria-hidden="true"></i>
-              <i class="fa fa-minus float-right toggle-icon" aria-hidden="true"></i>
-              <span class="mr-3"><%= format_ohms_timestamp(index_point.timestamp) %></span> <%= index_point.html_safe_title %>
+          <button class="btn btn-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#<%= accordion_element_id(index) %>" aria-expanded="false" aria-controls="<%= accordion_element_id(index) %>">
+              <i class="fa fa-plus float-end toggle-icon" aria-hidden="true"></i>
+              <i class="fa fa-minus float-end toggle-icon" aria-hidden="true"></i>
+              <span class="me-3"><%= format_ohms_timestamp(index_point.timestamp) %></span> <%= index_point.html_safe_title %>
           </button>
         </h3>
       </div>
@@ -14,11 +14,11 @@
       <div id="<%= accordion_element_id(index) %>" class="collapse card-body ohms-index-list" aria-labelledby="<%= accordion_header_id(index) %>" data-parent="#ohmsIndexAccordionParent">
           <p>
             <a href="#t=<%= index_point.timestamp %>" class="btn btn-emphasis" data-ohms-timestamp-s="<%= index_point.timestamp %>">
-              <i class="fa fa-play-circle mr-1" aria-hidden="true"></i> Play segment
+              <i class="fa fa-play-circle me-1" aria-hidden="true"></i> Play segment
             </a>
 
             <button class="btn btn-outline-secondary"
-                  data-toggle="collapse"
+                  data-bs-toggle="collapse"
                   href="#<%= share_link_area_id(index) %>"
                   role="button"
                   aria-expanded="false"
@@ -30,20 +30,16 @@
 
           <div class="collapse" id="<%= share_link_area_id(index) %>">
             <div class="input-group mb-3" data-trigger="copyInputGroup">
-              <div class="input-group-prepend">
-                <span class="input-group-text">
-                  <i class="fa fa-link" aria-hidden="true"></i>
-                  <span class="sr-only">Link</span>
-                </span>
-              </div>
+              <span class="input-group-text">
+                <i class="fa fa-link" aria-hidden="true"></i>
+                <span class="visually-hidden">Link</span>
+              </span>
 
               <input type="text" aria-label="URL to copy" class="form-control" data-slot="shareURL" readonly value="<%= direct_to_segment_link(index_point) %>">
 
-              <div class="input-group-append">
-                <button class="btn btn-outline-secondary" data-trigger="linkClipboardCopy">
-                  <i class="fa fa-clipboard" aria-hidden="true"></i> Copy
-                </button>
-              </div>
+              <button class="btn btn-outline-secondary" data-trigger="linkClipboardCopy">
+                <i class="fa fa-clipboard" aria-hidden="true"></i> Copy
+              </button>
             </div>
           </div>
 
@@ -64,7 +60,7 @@
           <% if index_point.all_keywords_and_subjects.present?  %>
             <p class="attribute keywords highlight-matches">
               <span class="attribute-label">Keywords</span>
-              <% index_point.all_keywords_and_subjects.each_with_index do |keyword, index| %> <span class="oh-keyword"><%= keyword %></span> <% if index < index_point.all_keywords_and_subjects.length - 1 %><span class="keyword-seperator ml-1 mr-1">•</span><% end %>
+              <% index_point.all_keywords_and_subjects.each_with_index do |keyword, index| %> <span class="oh-keyword"><%= keyword %></span> <% if index < index_point.all_keywords_and_subjects.length - 1 %><span class="keyword-seperator ms-1 me-1">•</span><% end %>
               <%- end -%>
             </p>
           <% end %>

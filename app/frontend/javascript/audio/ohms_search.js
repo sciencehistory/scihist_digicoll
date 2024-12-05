@@ -267,7 +267,7 @@ Search.onSearchSubmit = function(event) {
     transcriptResults,
     "transcript"
   );
-  $("*[data-ohms-hitcount='transcript']").html('<span class="badge badge-pill badge-danger">' + transcriptResults.length + '</span>');
+  $("*[data-ohms-hitcount='transcript']").html('<span class="badge rounded-pill text-bg-danger">' + transcriptResults.length + '</span>');
 
   var indexResults = Search.searchIndex(query);
   Search.currentIndexResults = new Search.SearchResults(
@@ -275,7 +275,7 @@ Search.onSearchSubmit = function(event) {
     indexResults,
     "index"
   );
-  $("*[data-ohms-hitcount='index']").html('<span class="badge badge-pill badge-danger">' + indexResults.length + '</span>');
+  $("*[data-ohms-hitcount='index']").html('<span class="badge rounded-pill text-bg-danger">' + indexResults.length + '</span>');
 
   Search.currentResults().draw();
   Search.currentResults().scrollToCurrentResult();

@@ -9,7 +9,7 @@ we want the full width of the screen, no margins or padding. %>
 <div itemscope itemtype="http://schema.org/CollectionPage" class="container-fluid collection-show oral-history-collection-splash">
   <div class="collection-banner"></div>
 
-  <div class="collection-top row no-gutters">
+  <div class="collection-top row g-0">
     <div class="collection-desc-container col-lg">
       <div class="collection-desc">
         <div class="show-title">
@@ -18,7 +18,7 @@ we want the full width of the screen, no margins or padding. %>
             <h1>
               <%= link_to collection.title, collection_path(collection), class: "title-link" %> <%= publication_badge(collection) %>
               <% if can? :update, collection %>
-                <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-secondary float-right" %>
+                <%= link_to "Edit", edit_admin_collection_path(collection), class: "btn btn-secondary float-end" %>
               <% end %>
             </h1>
           </header>
@@ -38,13 +38,11 @@ we want the full width of the screen, no margins or padding. %>
                   :"aria-label" => t('collection.search_form.search_field.label')
               %>
 
-              <label class="sr-only" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
+              <label class="visually-hidden" for="collectionQ"><%= t('collection.search_form.search_field.label') %></label>
 
-              <div class="input-group-append">
-                <button type="submit" class="btn btn-brand-main" title="Search">
-                  <%= t('blacklight.search.form.submit') %>
-                </button>
-              </div>
+              <button type="submit" class="btn btn-brand-main" title="Search">
+                <%= t('blacklight.search.form.submit') %>
+              </button>
             </div>
           <% end %>
         </div>

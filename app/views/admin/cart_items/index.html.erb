@@ -10,11 +10,11 @@
   <% if can?(:publish, Kithe::Model) %>
     <div>
        <div class="btn-group" role="group">
-          <button id="UnpublishButtonGroup" type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <button id="UnpublishButtonGroup" type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fa fa-ban" aria-hidden="true"></i>  Unpublish All Items
           </button>
 
-          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="UnpublishButtonGroup">
+          <div class="dropdown-menu dropdown-menu-end" aria-labelledby="UnpublishButtonGroup">
             <%= link_to "Also unpublish all child members of items",
               batch_publish_toggle_admin_works_path(publish: "off", cascade: "true"),
               method: "put",
@@ -29,10 +29,10 @@
         </div>
 
         <div class="btn-group" role="group">
-          <button id="publishButtonGroup" type="button" class="btn btn-outline-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <button id="publishButtonGroup" type="button" class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fa fa-eye" aria-hidden="true"></i> Publish All Items
           </button>
-          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="publishButtonGroup">
+          <div class="dropdown-menu dropdown-menu-end" aria-labelledby="publishButtonGroup">
             <%= link_to "Also publish all child members of items",
               batch_publish_toggle_admin_works_path(publish: "on", cascade: "true"),
               method: "put",
