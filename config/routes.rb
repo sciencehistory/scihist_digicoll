@@ -226,7 +226,7 @@ Rails.application.routes.draw do
       # TODO: Can we get away without actuallymounting Blacklight, just using the CatalogController?
       # mount Blacklight::Engine => '/'
       concern :searchable, Blacklight::Routes::Searchable.new
-      resource :catalog, only: [:index], as: 'catalog', path: '/catalog', controller: 'catalog' do
+      resource :catalog, only: [], as: 'catalog', path: '/catalog', controller: 'catalog' do
         concerns :searchable
         concerns :range_searchable # for blacklight_range_limit
       end
@@ -345,7 +345,7 @@ Rails.application.routes.draw do
 
 
     #Cart:
-    resources :cart_items, param: :work_friendlier_id, only: [:index, :update, :destroy, :report] do
+    resources :cart_items, param: :work_friendlier_id, only: [:index, :update, :destroy] do
       collection do
         delete 'clear'
         post 'report'
