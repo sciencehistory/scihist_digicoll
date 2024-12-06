@@ -13,6 +13,21 @@ class CollectionShowController < CatalogController
   ORAL_HISTORY_DEPARTMENT_VALUE = "Center for Oral History"
 
   def index
+    if params[:box_id].present? && params[:box_id].chomp.match(/^[\d]+$/).nil?
+      flash[:alert] = "Sorry, the box number should contain only digits."
+      params[:box_id] = nil
+    end
+    if params[:folder_id].present?
+      if params[:folder_id].chomp.match(/^[\d]+$/).nil?
+        flash[:alert] = "Sorry, the box and folder numbers should contain only digits."
+        params[:folder_id] = nil
+      end
+      if params[:box_id]&.empty?
+        flash[:alert] = "If you specify a folder, please also specify a box."
+        params[:box_id] = nil
+        params[:folder_id] = nil
+      end
+    end
     super
     @collection_opac_urls = CollectionOpacUrls.new(collection)
     @related_link_filter ||= RelatedLinkFilter.new(collection.related_link)

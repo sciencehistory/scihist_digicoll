@@ -59,12 +59,11 @@
                 </button>
               </div>
 
-              <br />
-              <div>Just for testing:</div>
-              <%= search_field_tag :box_id,    params[:box_id],    class: "box_id form-control",    id: "box_id" %>
-              <br />
-              <%= search_field_tag :folder_id, params[:folder_id], class: "folder_id form-control", id: "folder_id" %>
-
+              <div>
+                <h4>User interface TBD - just testing for now.</h4>
+                <div>Box: <%= search_field_tag :box_id,    params[:box_id],    class: "box_id form-control",    id: "box_id" %></div>
+                <div>Folder: <%= search_field_tag :folder_id, params[:folder_id], class: "folder_id form-control", id: "folder_id" %></div>
+              </div>
               <%= hidden_field_tag :sort, params[:sort], id: 'collection_sort' %>
             <% end %>
           </div>
