@@ -18,33 +18,6 @@ class CollectionShowController < CatalogController
     @related_link_filter ||= RelatedLinkFilter.new(collection.related_link)
   end
 
-
-  # GET /collections/wh246s128/box/1/
-  def box
-    if params[:box_id].chomp.match(/^[\d]+$/).nil?
-      flash[:alert] = "Sorry, the box number should contain only digits."
-      redirect_to :index
-      return
-    end
-    redirect_to "/collections/#{params[:collection_id]}?q=\"Box #{params[:box_id]}\""
-  end
-
-
-  # GET /collections/wh246s128/box/1/folder/29
-  def box_and_folder
-    if params[:box_id].chomp.match(/^[\d]+$/).nil? || params[:folder_id].chomp.match(/^[\d]+$/).nil?
-      flash[:alert] = "Sorry, the box and folder numbers should contain only digits."
-      redirect_to :index
-      return
-    end
-    if params[:folder_id].present? && params[:box_id].empty?
-      flash[:alert] = "If you specify a folder, please also specify a box."
-      redirect_to :index
-      return
-    end
-    redirect_to "/collections/#{params[:collection_id]}?q=\"Box #{params[:box_id]}, Folder #{params[:folder_id]}\""
-  end
-
   # This method can be overridden from blacklight to provide *dynamic* blacklight
   # config
   def blacklight_config
@@ -77,7 +50,7 @@ class CollectionShowController < CatalogController
   #   collection id (UUID)
   #   the default sort order for this collection, if specified.
   def search_service_context
-    super.merge!(collection_id: collection.id, collection_default_sort_order: collection_default_sort_order)
+    super.merge!(collection_id: collection.id, collection_default_sort_order: collection_default_sort_order, box_id: params[:box_id], folder_id: params[:folder_id])
   end
 
   # Some collections define a default sort field. Look up its sort order in blacklight_config and use that.
