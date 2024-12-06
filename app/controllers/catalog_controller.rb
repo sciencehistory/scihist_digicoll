@@ -361,6 +361,23 @@ class CatalogController < ApplicationController
     # case for a BL "search field", which is really a dismax aggregate
     # of Solr search fields.
 
+
+    config.add_search_field('box') do |field|
+      field.label = 'Box'
+      field.solr_parameters = {
+        qf: 'box_isi',
+        pf: 'box_isi'
+      }
+    end
+
+    config.add_search_field('folder') do |field|
+      field.label = 'Folder'
+      field.solr_parameters = {
+        qf: 'folder_isi',
+        pf: 'folder_isi'
+      }
+    end
+
     # config.add_search_field('title') do |field|
     #   # solr_parameters hash are sent to Solr as ordinary url query params.
     #   field.solr_parameters = {
