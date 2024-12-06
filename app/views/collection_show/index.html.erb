@@ -60,9 +60,16 @@
               </div>
 
               <div>
-                <h4>User interface TBD - just testing for now.</h4>
-                <div>Box: <%= search_field_tag :box_id,    params[:box_id],    class: "box_id form-control",    id: "box_id" %></div>
-                <div>Folder: <%= search_field_tag :folder_id, params[:folder_id], class: "folder_id form-control", id: "folder_id" %></div>
+                <label  for="box_id">Box</label>
+                <div><%= search_field_tag :box_id,    params[:box_id],    class: "box_id form-control",    id: "box_id",
+                :"aria-label" => 'box'
+                %></div>
+
+
+                <div>
+                  <label for="folder_id">Folder</label>
+                  <%= search_field_tag :folder_id, params[:folder_id], class: "folder_id form-control", id: "folder_id",
+                :"aria-label" => 'folder' %></div>
               </div>
               <%= hidden_field_tag :sort, params[:sort], id: 'collection_sort' %>
             <% end %>
