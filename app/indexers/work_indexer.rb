@@ -61,6 +61,12 @@ class WorkIndexer < Kithe::Indexer
       acc.concat(DateIndexHelper.new(record).expanded_years)
     end
 
+    # Box number (archival storage location)
+    to_field "box_isi", obj_extract("physical_container"), transform( ->(v) { v.box if v.box&.chomp&.match(/^[\d]+$/)})
+
+    # Folder number (archival storage location)
+    to_field "folder_isi", obj_extract("physical_container"), transform( ->(v) { v.folder  if v.folder&.chomp&.match(/^[\d]+$/)})
+
     # For sorting by oldest first
     to_field "earliest_date" do |record, acc|
       # for Solr, we need in "xml schema" format, with 00:00:00 time, and UTC timezone

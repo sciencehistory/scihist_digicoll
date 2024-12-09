@@ -18,7 +18,7 @@
       <% end %>
 
       <h2 class="scihist-results-list-item-head brand-alt-h2" itemprop="name">
-        <%= link_to model.title, link_to_href, itemprop: "url" %>
+        <%= link_to model.title, link_to_href, itemprop: "url" %> ( <%= "b. #{model&.physical_container&.box}" if model.work?%> <%= "f. #{model&.physical_container&.folder}" if model.work? %> )
         <%= publication_badge(model) %>
       </h2>
 
