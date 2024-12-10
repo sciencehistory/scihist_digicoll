@@ -22,7 +22,7 @@ class CollectionShowController < CatalogController
         flash[:alert] = "Sorry, the box and folder numbers should contain only digits."
         params[:folder_id] = nil
       end
-      if params[:box_id]&.empty?
+      if params[:box_id].nil? || params[:box_id].empty?
         flash[:alert] = "If you specify a folder, please also specify a box."
         params[:box_id] = nil
         params[:folder_id] = nil
