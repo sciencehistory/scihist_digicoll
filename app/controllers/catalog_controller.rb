@@ -467,6 +467,12 @@ class CatalogController < ApplicationController
       field.if = ->(controller, field) { controller.can?(:access_staff_functions) }
     end
 
+    config.add_sort_field("box_fonder") do |field|
+      field.label = "Box and folder"
+      field.sort = "box_isi asc, folder_isi asc"
+    end
+
+
 
     # If there are more than this many search results, no spelling ("did you
     # mean") suggestion is offered.
