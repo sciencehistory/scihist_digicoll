@@ -150,6 +150,7 @@ Rails.application.routes.draw do
     get "collections/:collection_id/facet" => "#{options[:controller]}#facet"
   end
 
+
   # Overrides of collection show controller for specific collections with custom
   # pages, needs to come BEFORE main collection routing, to take precedence. We use
   # Rails routing constraints feature to say if collection_id is a specific one, use
