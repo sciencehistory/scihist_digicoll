@@ -41,6 +41,19 @@ describe WorkIndexer do
     end
   end
 
+
+  describe "box and folder" do
+    let(:container_info) do
+      Work::PhysicalContainer.new({"box"=>"1", "folder"=>"3"})
+    end
+    let(:work) { create(:work, physical_container: container_info) }
+    it "indexes the box and folder" do
+      output_hash = WorkIndexer.new.map_record(work)
+      expect(output_hash["box_isi"]).to eq ["1"]
+      expect(output_hash["folder_isi"]).to eq ["3"]
+    end
+  end
+
   describe "oral history" do
     let(:work) { create(:oral_history_work, format: ['text']) }
 
