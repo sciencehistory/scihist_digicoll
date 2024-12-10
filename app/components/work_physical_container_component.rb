@@ -27,8 +27,8 @@ class WorkPhysicalContainerComponent < ApplicationComponent
 
   def link_to_box_and_folder
     collection = public_contained_by.first
-    return nil if collection.nil? || box_id.nil? || 
-    if folder_id.present?
+    return nil if collection.nil? || box_id.nil?
+    if folder_id.present? && folder_id&.chomp&.match(/^[\d]+$/)
       collection_path(collection_id = collection.friendlier_id, box_id:box_id, folder_id: folder_id, sort:'box_folder')
     else
       collection_path(collection_id = collection.friendlier_id, box_id:box_id, sort:'box_folder')
