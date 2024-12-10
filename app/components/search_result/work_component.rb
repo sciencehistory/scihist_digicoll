@@ -39,6 +39,14 @@ module SearchResult
       url_to_work(model)
     end
 
+    def display_box_and_folder
+      return nil if model&.physical_container.nil?
+      container = model.physical_container
+      box =    "Box #{container.box}"       if container.box.present?
+      folder = "Folder #{container.folder}" if container.folder.present?
+      [box, folder].compact.join (", ")
+    end
+
     # Returns a hash of lables and values for display on the tabular metadata field, for
     # subjects and creators.
     #
