@@ -1,4 +1,6 @@
 // override sufia facet widget styles to be more brand-like, and generally neater
+
+
 .facets {
   .facets-header {
     // To try to make top line of search results all line up, we hackily try to make
@@ -164,7 +166,6 @@
 }
 
 
-
 .other-searches {
   .card-header {
     text-transform: uppercase;
@@ -181,6 +182,16 @@
     font-size: 1rem; // 16px instead of 17px body font
   }
   margin-bottom: $paragraph-spacer * 2;
+}
+
+// Only show box and folder metadata for archival collections
+.scihist-results-list-item-box-and-folder {
+  display: none;
+}
+.collection-show.archives .scihist-results-list-item-box-and-folder {
+  display: block;
+  margin-top: $paragraph-spacer * 0.5;
+
 }
 
 // Styling of actual hits on search results page. .documents-list parent selector
@@ -223,6 +234,9 @@
         max-width: 100%;
       }
     }
+
+
+
 
     .scihist-results-list-item-content {
       max-width: calc(67% - 1.75rem);
@@ -284,6 +298,23 @@
       margin-bottom: .125rem;
     }
 
+
+
+    // .collection-show {
+    //   color: green !important;
+    //   background-color: green !important;
+    // }
+
+    // // div {
+    // //   color: green;
+    // //   background-color: green;
+    // // }
+
+    // .archives {
+    //   color: green !important;
+    //   background-color: green !important;
+    // }
+
     .scihist-results-list-item-additional-titles, .scihist-results-list-item-parents {
       margin-bottom: ($paragraph-spacer * 0.5);
       font-weight: 500;
@@ -305,6 +336,7 @@
         margin-top: $paragraph-spacer * 0.25;
       }
     }
+
 
     .scihist-results-list-item-description, .scihist-results-list-item-highlights {
       margin-top: $paragraph-spacer;
