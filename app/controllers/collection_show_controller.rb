@@ -57,6 +57,13 @@ class CollectionShowController < CatalogController
     config.search_state_fields << :collection_id
     config.search_state_fields << :box_id
     config.search_state_fields << :folder_id
+
+
+    config.add_sort_field("box_folder") do |field|
+      field.label = "box and folder"
+      field.sort = "box_isi asc, folder_isi asc"
+    end
+
   end
 
   private
