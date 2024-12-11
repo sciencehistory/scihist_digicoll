@@ -21,6 +21,7 @@ As we interact with Bootstrap 4 Javascript in here, it does include some JQuery 
 to be available. We try to avoid JQuery except for that.
  */
 
+import * as bootstrap from 'bootstrap';
 
 // Does not switch to tab, assumes ToC tab is open.
 export function gotoTocSegmentAtTimecode(timeinSeconds) {
@@ -64,11 +65,14 @@ export function goToTocCollapsible(collapsible) {
   var elementScrollTarget = collapsible.closest(".card").querySelector(".card-header");
 
   if (collapsible.classList.contains("collapse")) {
-    jQuery(collapsible).collapse("show");
+    bootstrap.Collapse.getOrCreateInstance(collapsible).show();
+
     // We have to wait until it's done being shown to scroll to it, to make
     // sure we're scrolling to correct place.
-    jQuery(collapsible).one("shown.bs.collapse", function(event) {
+    collapsible.addEventListener('shown.bs.collapse', () => {
       scrollToElement(elementScrollTarget);
+    }, {
+      once: true,
     });
   } else {
     scrollToElement(elementScrollTarget);
