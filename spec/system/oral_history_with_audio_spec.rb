@@ -422,6 +422,8 @@ describe "Oral history with audio display", type: :system, js: true do
         expect(page).to have_selector(copy_to_clipboard)
       end
 
+      # Make sure we're scrolled to it, below the fixed navbar
+      page.find("body").scroll_to(page.find(copy_to_clipboard), align: :bottom)
       page.find(copy_to_clipboard).click
       expect(page).to have_content("Copied to clipboard")
 
