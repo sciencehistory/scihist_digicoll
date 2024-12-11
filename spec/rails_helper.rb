@@ -58,6 +58,7 @@ RSpec.configure do |config|
   # Capyabara.javascript_driver setting directly applies to 'feature' spec
   Capybara.default_driver = :rack_test # Faster but doesn't do Javascript
   Capybara.javascript_driver = $capybara_js_driver
+  Capybara.disable_animation = true
 
   # Customized from driver built into capybara to add custom chrome options, like
   # disable smooth scrolling.
