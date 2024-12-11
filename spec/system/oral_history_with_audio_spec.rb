@@ -409,6 +409,8 @@ describe "Oral history with audio display", type: :system, js: true do
         click_on "Search"
       end
 
+      click_on "Share link"
+
       copy_to_clipboard = "*[data-trigger='linkClipboardCopy']"
       begin
         expect(page).to have_selector(copy_to_clipboard, wait: 0.05)
