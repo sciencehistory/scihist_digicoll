@@ -423,12 +423,14 @@ describe "Oral history with audio display", type: :system, js: true do
       # ToC animation has weird jumping around, let's try to make sure
       # our button is actually on-screen before clicking
       begin
+        copy_button = page.find(copy_to_clipboard, wait: 0.5)
         find("body").scroll_to(copy_button, align: :bottom)
-        copy_button.click
+        copy_button.lock
       rescue Selenium::WebDriver::Error::ElementClickInterceptedError
         # try scrolling again, page may still have been in motion
+        copy_button = page.find(copy_to_clipboard, wait: 0.5)
         find("body").scroll_to(copy_button, align: :bottom)
-        copy_button.click
+        copy_button.lock
       end
 
 
