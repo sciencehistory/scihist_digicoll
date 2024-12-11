@@ -53,11 +53,31 @@ RSpec.configure do |config|
 
   # eg `SHOW_BROWSER=true ./bin/rspec` will show you an actual chrome browser
   # being operated by capybara.
-  $capybara_js_driver = ENV['SHOW_BROWSER'] ? :selenium_chrome : :selenium_chrome_headless
+  $capybara_js_driver = ENV['SHOW_BROWSER'] ? :selenium_chrome : :my_selenium_chrome_headless
 
   # Capyabara.javascript_driver setting directly applies to 'feature' spec
   Capybara.default_driver = :rack_test # Faster but doesn't do Javascript
   Capybara.javascript_driver = $capybara_js_driver
+
+  # Customized from driver built into capybara to add custom chrome options, like
+  # disable smooth scrolling.
+  #
+  # https://github.com/teamcapybara/capybara/blob/0480f90168a40780d1398c75031a255c1819dce8/lib/capybara/registrations/drivers.rb#L31C1-L42C4
+  Capybara.register_driver :my_selenium_chrome_headless do |app|
+    version = Capybara::Selenium::Driver.load_selenium
+    options_key = Capybara::Selenium::Driver::CAPS_VERSION.satisfied_by?(version) ? :capabilities : :options
+    browser_options = Selenium::WebDriver::Chrome::Options.new.tap do |opts|
+      opts.add_argument('--headless=new')
+      opts.add_argument('--disable-gpu') if Gem.win_platform?
+      # Workaround https://bugs.chromium.org/p/chromedriver/issues/detail?id=2650&q=load&sort=-id&colspec=ID%20Status%20Pri%20Owner%20Summary
+      opts.add_argument('--disable-site-isolation-trials')
+
+      # custom
+      opts.add_argument('--disable-smooth-scrolling')
+    end
+
+    Capybara::Selenium::Driver.new(app, **{ :browser => :chrome, options_key => browser_options })
+  end
 
 
   # https://viewcomponent.org/guide/testing.html#rspec-configuration
