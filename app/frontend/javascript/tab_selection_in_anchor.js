@@ -8,13 +8,16 @@
 // Uses jQuery here only for bootstrap 4 JS tabs which uses/requires it.
 
 import domready from 'domready';
+import * as bootstrap from 'bootstrap';
 
 domready(function() {
   // if there's an #anchor in the URL referencing a bootstrap tab, make that tab selected.
   // should we limit to only certain data tags instead of all bootstrap tab links?
   var anchor = new URLSearchParams(window.location.hash.replace(/^#/, '')).get("tab");
   if (anchor) {
-    $(`*[data-bs-toggle="tab"][href="#${anchor}"]`).tab("show")
+    bootstrap.Tab.getOrCreateInstance(
+      document.querySelector(`*[data-bs-toggle="tab"][href="#${anchor}"]`)
+    ).show();
   }
 
   // when showing on a bootstrap tab, put the relevant ID in anchor,
