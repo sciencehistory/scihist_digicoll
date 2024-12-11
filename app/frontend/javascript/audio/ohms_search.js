@@ -210,8 +210,7 @@ Search.clearSearchResults = function() {
 //
 //   * If id is in a tab that isn't currently visible, switch to that tab.
 //
-//   * If id is in a bootstrap collapsed that isn't currently expanded, expand it.
-//     (intended for Table of Contents section)
+//   * If id contains a collapsible ToC that isn't shown, show it.
 //
 // Second optional argument is either "smooth" or "auto", with "auto" being the
 // default. As in HTML5 scroll functions which it will be passed to, "smooth"
@@ -236,7 +235,7 @@ Search.scrollToId = function(domID, scrollBehavior) {
 
   // If our target element CONTAINS a bootstrap collapsible that is collapsed,
   // show it. This is intended for our ToC accordion.
-  var collapsible = $(element).find(".collapse");
+  var collapsible = $(element).find(".collapse.ohms-index-list");
   if (collapsible && ! collapsible.hasClass("show")) {
     collapsible.collapse("show");
   }
