@@ -59,6 +59,12 @@ RSpec.configure do |config|
   Capybara.default_driver = :rack_test # Faster but doesn't do Javascript
   Capybara.javascript_driver = $capybara_js_driver
 
+  # telling browser to reduce motion helps with some of our flakey browser
+  # tests involving lots of scrolling and moving around, such as in OHMS ToC
+  unless ENV['DISABLE_BROWSER_ANIMATION'] == "false"
+    Capybara.disable_animation = true
+  end
+
 
   # https://viewcomponent.org/guide/testing.html#rspec-configuration
   config.include ViewComponent::TestHelpers, type: :component
