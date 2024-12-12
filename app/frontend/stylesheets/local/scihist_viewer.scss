@@ -364,6 +364,7 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
         padding: $btn-padding-y-lg $btn-padding-x-lg;
 
         border: 1px solid $primary;
+        max-width: unset;
         flex-grow: 4;
         white-space: nowrap;
         overflow: hidden;
