@@ -13,20 +13,6 @@ GIT
       signet (~> 0.8)
       typhoeus
 
-GIT
-  remote: https://github.com/samvera/questioning_authority.git
-  revision: 652d95a404b7d93d8c422a623c62069fe45d0e04
-  specs:
-    qa (5.13.0)
-      activerecord-import
-      deprecation
-      faraday (< 3.0, != 2.0.0)
-      geocoder
-      ldpath
-      nokogiri (~> 1.6)
-      rails (>= 5.0, < 8.1)
-      rdf
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -521,6 +507,15 @@ GEM
     public_suffix (6.0.1)
     puma (6.5.0)
       nio4r (~> 2.0)
+    qa (5.14.0)
+      activerecord-import
+      deprecation
+      faraday (< 3.0, != 2.0.0)
+      geocoder
+      ldpath
+      nokogiri (~> 1.6)
+      rails (>= 5.0, < 8.1)
+      rdf
     racc (1.8.1)
     rack (3.1.8)
     rack-attack (6.7.0)
@@ -847,7 +842,7 @@ DEPENDENCIES
   prawn-svg (< 2)
   pry-byebug
   puma (~> 6.4)
-  qa (~> 5.2, >= 5.13.0)!
+  qa (~> 5.2, >= 5.14.0)
   rack (>= 3.0)
   rack-attack (~> 6.6)
   rails (~> 8.0.0)
