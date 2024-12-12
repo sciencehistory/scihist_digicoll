@@ -61,6 +61,19 @@ class WorkIndexer < Kithe::Indexer
       acc.concat(DateIndexHelper.new(record).expanded_years)
     end
 
+    # Note that a Work can be associated with two consecutive containers,
+    # in which case e.g. the box number can be something like "34-35".
+    # Searches for box 35 should match any work that is associated with box 35.
+    to_field "box_isim" do |record, acc|
+      val = record&.physical_container&.box
+      acc.concat val.scan(/\d+/) if val.present?
+    end
+
+    to_field "folder_isim" do |record, acc|
+      val = record&.physical_container&.folder
+      acc.concat val.scan(/\d+/) if val.present?
+    end
+
     # For sorting by oldest first
     to_field "earliest_date" do |record, acc|
       # for Solr, we need in "xml schema" format, with 00:00:00 time, and UTC timezone
