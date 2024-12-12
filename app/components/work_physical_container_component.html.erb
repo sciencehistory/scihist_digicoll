@@ -1,0 +1,5 @@
+<% if @work&.department == 'Archives' %>
+  <%= link_to box_and_folder, link_to_box_and_folder %>
+<% else %>
+  <%= @work&.physical_container&.display_as %>
+<% end %>
