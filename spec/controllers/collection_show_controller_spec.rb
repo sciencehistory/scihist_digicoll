@@ -118,6 +118,33 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
       end
     end
 
+
+    describe "box and folder order" do
+      let(:requested_sort_order) { 'box_and_folder' }
+
+      let(:physical_containers) {[
+        Work::PhysicalContainer.new({ "box"=> "1",  "folder"=> "1"  }),
+        Work::PhysicalContainer.new({ "box"=> "2",  "folder"=> "1"  }),
+        Work::PhysicalContainer.new({ "box"=> "2",  "folder"=> "2"  }),
+        Work::PhysicalContainer.new({ "box"=> "3",  "folder"=> "1"  }),
+        Work::PhysicalContainer.new({ "box"=> "3",  "folder"=> "2"  }),
+        Work::PhysicalContainer.new({ "box"=> "3",  "folder"=> "3-4"}),
+        Work::PhysicalContainer.new({ "box"=> "3",  "folder"=> "5"  })
+      ]}
+
+      let!(:works) {
+        (0..6).to_a.map do |i|
+          create(:work, contained_by:   [collection],
+            title: i, physical_container: physical_containers[i])
+        end.shuffle
+      }
+
+      it "can sort by box and folder" do
+        get :index, params: {"q"=>"", "sort"=>"box_and_folder", "collection_id"=> collection.friendlier_id }
+        expect(titles_as_displayed).to eq (0..6).map &:to_s
+      end
+    end
+
     describe "identical dates" do
       let(:default_sort_field) { 'oldest_date' }
       let(:four_years_in_arbitrary_order) { [1990, 1991, 1991, 1991] }
