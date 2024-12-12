@@ -9,6 +9,7 @@
 
 import domready from 'domready';
 import {gotoTocSegmentAtTimecode, gotoTranscriptTimecode} from './helpers/ohms_player_helpers.js';
+import * as bootstrap from 'bootstrap';
 
 domready(function() {
   var hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
@@ -44,7 +45,9 @@ domready(function() {
         });
       } else {
         if (hashParams.get("tab") != "ohTranscript") {
-          $(`*[data-bs-toggle="tab"][href="#ohTranscript"]`).tab("show");
+          bootstrap.Tab.getOrCreateInstance(
+            document.querySelector('*[data-bs-toggle="tab"][href="#ohTranscript"]')
+          ).show();
         }
         execWhenTabActive("ohTranscript", function() {
           gotoTranscriptTimecode(timeCodeSeconds);
