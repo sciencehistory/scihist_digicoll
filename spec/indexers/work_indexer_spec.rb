@@ -7,41 +7,6 @@ describe WorkIndexer do
     create(:public_work, members: [])
   end
 
-  # See https://github.com/sciencehistory/scihist_digicoll/issues/2585
-
-
-
-
-  describe "box and folder" do
-    let(:container_info) do
-      Work::PhysicalContainer.new({"box"=>"1", "folder"=>"3"})
-    end
-    let(:work_2) { create(:work, physical_container: container_info) }
-
-    it "does not index this metadata unless there are digits" do
-      output_hash = WorkIndexer.new.map_record(work)
-      expect(output_hash["box_isim"]).to eq nil
-      expect(output_hash["folder_isim"]).to eq nil
-    end
-
-    it "indexes the box and folder" do
-      output_hash = WorkIndexer.new.map_record(work_2)
-      expect(output_hash["box_isim"]).to eq ["1"]
-      expect(output_hash["folder_isim"]).to eq ["3"]
-    end
-
-    describe "more than one box or folder associated with the work" do
-      let(:container_info) do
-        Work::PhysicalContainer.new({"box"=>"1 - 2", "folder"=>"3 - 4"})
-      end
-      it "splits multiple boxes / folders into two integers so they can be matched" do
-        output_hash = WorkIndexer.new.map_record(work_2)
-        expect(output_hash["box_isim"]).to eq ["1", "2"]
-        expect(output_hash["folder_isim"]).to eq ["3", "4"]
-      end
-    end
-  end
-
   it "indexes" do
     output_hash = WorkIndexer.new.map_record(work)
     expect(output_hash).to be_present
@@ -75,8 +40,37 @@ describe WorkIndexer do
       expect(output_hash["description_text4_tesim"]).to eq ["This originally had html and stuff."]
     end
   end
-  # BOX AND FOLDER USED TO GO HERE
 
+  # See https://github.com/sciencehistory/scihist_digicoll/issues/2585
+  describe "box and folder" do
+    let(:container_info) do
+      Work::PhysicalContainer.new({"box"=>"1", "folder"=>"3"})
+    end
+    let(:work_2) { create(:work, physical_container: container_info) }
+
+    it "does not index this metadata unless there are digits" do
+      output_hash = WorkIndexer.new.map_record(work)
+      expect(output_hash["box_isim"]).to eq nil
+      expect(output_hash["folder_isim"]).to eq nil
+    end
+
+    it "indexes the box and folder" do
+      output_hash = WorkIndexer.new.map_record(work_2)
+      expect(output_hash["box_isim"]).to eq ["1"]
+      expect(output_hash["folder_isim"]).to eq ["3"]
+    end
+
+    describe "more than one box or folder associated with the work" do
+      let(:container_info) do
+        Work::PhysicalContainer.new({"box"=>"1 - 2", "folder"=>"3 - 4"})
+      end
+      it "splits multiple boxes / folders into two integers so they can be matched" do
+        output_hash = WorkIndexer.new.map_record(work_2)
+        expect(output_hash["box_isim"]).to eq ["1", "2"]
+        expect(output_hash["folder_isim"]).to eq ["3", "4"]
+      end
+    end
+  end
 
   describe "oral history" do
     let(:work) { create(:oral_history_work, format: ['text']) }
