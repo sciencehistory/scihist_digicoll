@@ -368,7 +368,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         render_views
         let!(:works) { [
           create(:work, title: "work_a"),
-          create(:work, title: "work_b") 
+          create(:work, title: "work_b")
           ] }
         it "sorts correctly by title" do
           get :index, params: { sort_field: :title, sort_order: :asc }
@@ -430,7 +430,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       let(:work_child) { build(:work, :published, published: false) }
       let(:asset_child) { build(:asset_with_faked_file, :tiff, published: false) }
       let(:work) do
-        create(:work, :published, published: false, published_at: false, members: [asset_child, work_child])
+        create(:work, :published, published: false, published_at: nil, members: [asset_child, work_child])
       end
 
       describe "publishing" do
