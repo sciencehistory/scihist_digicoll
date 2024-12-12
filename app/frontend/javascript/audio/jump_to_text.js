@@ -3,6 +3,7 @@
 
 import {gotoTocSegmentAtTimecode, gotoTranscriptTimecode, getActiveTab} from "./helpers/ohms_player_helpers.js";
 import domready from 'domready';
+import * as bootstrap from 'bootstrap';
 
 domready(function() {
   document.body.addEventListener("click", function (event) {
@@ -18,7 +19,9 @@ domready(function() {
         // if we have anything else, jump to transcript point, activating
         // transcript tab first if needed.
         if (activeTab.id != "ohTranscriptTab") {
-          $('*[data-bs-toggle="tab"][href="#ohTranscript"]').tab("show");
+          bootstrap.Tab.getOrCreateInstance(
+            document.querySelector('*[data-bs-toggle="tab"][href="#ohTranscript"]')
+          ).show();
         }
         gotoTranscriptTimecode(timeCodeSeconds)
       }

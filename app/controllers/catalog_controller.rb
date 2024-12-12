@@ -368,7 +368,6 @@ class CatalogController < ApplicationController
       field.label = 'Box'
       field.solr_parameters = {
         qf: 'box_isim',
-        pf: 'box_isim'
       }
     end
 
@@ -376,7 +375,6 @@ class CatalogController < ApplicationController
       field.label = 'Folder'
       field.solr_parameters = {
         qf: 'folder_isim',
-        pf: 'folder_isim'
       }
     end
 
