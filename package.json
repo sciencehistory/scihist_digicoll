@@ -25,9 +25,6 @@
     "vite-plugin-ruby": "^5.1.0",
     "vite-plugin-sass-glob-import": "^3.0.2"
   },
-  "resolutions": {
-    "blacklight-frontend/bootstrap": "^4.6.2"
-  },
   "browserslist": [
     "defaults"
   ],
