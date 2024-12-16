@@ -56,6 +56,19 @@ class CollectionShowController < CatalogController
     super.merge!(collection_id: collection.id, collection_default_sort_order: collection_default_sort_order)
   end
 
+  # What ViewComponent class to use for a given search result on the results screen, for
+  # Work or Collection. Called by _document_list.
+  def view_component_class_for(model)
+    if model.kind_of?(Work)
+      SearchResult::SearchWithinCollectionWorkComponent
+    else
+      super
+    end
+  end
+  helper_method :view_component_class_for
+
+
+
   # Some collections define a default sort field. Look up its sort order in blacklight_config and use that.
   def collection_default_sort_order
     blacklight_config.sort_fields.dig(collection&.default_sort_field)&.sort
