@@ -50,7 +50,7 @@ module ScihistDigicoll
     # or Rails version we have upgraded to and verified for new defaults.
     config.load_defaults 7.2
 
-    config.time_zone = "US/Eastern"
+    config.time_zone = ENV['TZ'].presence || "America/New_York"
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
