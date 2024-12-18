@@ -61,18 +61,10 @@ class WorkIndexer < Kithe::Indexer
       acc.concat(DateIndexHelper.new(record).expanded_years)
     end
 
-    # Note that a Work can be associated with two consecutive containers,
-    # in which case e.g. the box number can be something like "34-35".
-    # Searches for box 35 should match any work that is associated with box 35.
-    to_field "box_isim" do |record, acc|
-      val = record&.physical_container&.box
-      acc.concat val.scan(/\d+/) if val.present?
-    end
-
-    to_field "folder_isim" do |record, acc|
-      val = record&.physical_container&.folder
-      acc.concat val.scan(/\d+/) if val.present?
-    end
+    to_field "box_tsi",     obj_extract("physical_container"), transform( ->(v) { v.box    if v.box.present?    })
+    to_field "folder_tsi",  obj_extract("physical_container"), transform( ->(v) { v.folder if v.folder.present? })
+    to_field "box_sort",    obj_extract("physical_container"), transform( ->(v) { v.box[/\d+/]   if v.box.present?    })
+    to_field "folder_sort", obj_extract("physical_container"), transform( ->(v) { v.folder[/\d+/] if v.folder.present? })
 
     # For sorting by oldest first
     to_field "earliest_date" do |record, acc|

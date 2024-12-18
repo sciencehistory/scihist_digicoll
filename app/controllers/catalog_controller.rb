@@ -367,14 +367,14 @@ class CatalogController < ApplicationController
     config.add_search_field('box') do |field|
       field.label = 'Box'
       field.solr_parameters = {
-        qf: 'box_isim',
+        qf: 'box_tsi',
       }
     end
 
     config.add_search_field('folder') do |field|
       field.label = 'Folder'
       field.solr_parameters = {
-        qf: 'folder_isim',
+        qf: 'folder_tsi',
       }
     end
 
