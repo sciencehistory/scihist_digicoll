@@ -257,6 +257,12 @@
     <field name="latest_date" type="date_sortmissinglast" stored="true" indexed="true" multiValued="false"/>
     <field name="earliest_date" type="date_sortmissinglast" stored="true" indexed="true" multiValued="false"/>
 
+
+    <!-- Box and folder sort fields. Added by Science History Institute. -->
+    <field name="box_sort"    type="int_sortmissinglast" stored="true" indexed="true" multiValued="false"/>
+    <field name="folder_sort" type="int_sortmissinglast" stored="true" indexed="true" multiValued="false"/>
+
+
     <!-- Single-value title sort field. Used to sort collections of serials by title.
     See https://github.com/sciencehistory/scihist_digicoll/issues/2494
     If we can use the first value of (multivalued) text1_tesim instead, let's consider doing that.
