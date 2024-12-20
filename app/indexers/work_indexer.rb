@@ -66,6 +66,7 @@ class WorkIndexer < Kithe::Indexer
     to_field "box_sort",    obj_extract("physical_container"), transform( ->(v) { v.box[/\d+/]   if v.box.present?    })
     to_field "folder_sort", obj_extract("physical_container"), transform( ->(v) { v.folder[/\d+/] if v.folder.present? })
 
+
     # For sorting by oldest first
     to_field "earliest_date" do |record, acc|
       # for Solr, we need in "xml schema" format, with 00:00:00 time, and UTC timezone
