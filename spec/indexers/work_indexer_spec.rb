@@ -43,32 +43,27 @@ describe WorkIndexer do
 
   # See https://github.com/sciencehistory/scihist_digicoll/issues/2585
   describe "box and folder" do
-    let(:container_info) do
-      Work::PhysicalContainer.new({"box"=>"1", "folder"=>"3"})
-    end
-    let(:work_2) { create(:work, physical_container: container_info) }
+    let(:box_search_field) {'box_tsi'}
+    let(:box_sort_field)  {'box_sort'}
+    let(:folder_search_field) {'folder_tsi'}
+    let(:folder_sort_field)   {'folder_sort'}
 
-    it "does not index this metadata unless there are digits" do
-      output_hash = WorkIndexer.new.map_record(work)
-      expect(output_hash["box_isim"]).to eq nil
-      expect(output_hash["folder_isim"]).to eq nil
-    end
+    let(:work_2) { create(:work, physical_container: Work::PhysicalContainer.new({"box"=>"1", "folder"=>"3"})) }
+    let(:work_3) { create(:work, physical_container: Work::PhysicalContainer.new({"box"=>"12, 34, 56", "folder"=>"56, 78, 10"})) }
+    let(:output_hash)   { WorkIndexer.new.map_record(work) }
+    let(:output_hash_2) { WorkIndexer.new.map_record(work_2) }
+    let(:output_hash_3) { WorkIndexer.new.map_record(work_3) }
 
-    it "indexes the box and folder" do
-      output_hash = WorkIndexer.new.map_record(work_2)
-      expect(output_hash["box_isim"]).to eq ["1"]
-      expect(output_hash["folder_isim"]).to eq ["3"]
-    end
+    it "puts the first consecutive digits, if found, into the sort fields, and everything into the search fields" do
+      expect(output_hash[box_search_field]).to eq ['Box']
+      expect(output_hash[folder_search_field]).to eq ['Folder']
+      expect(output_hash[box_sort_field]).to be_nil
+      expect(output_hash[folder_sort_field]).to be_nil
 
-    describe "more than one box or folder associated with the work" do
-      let(:container_info) do
-        Work::PhysicalContainer.new({"box"=>"1 - 2", "folder"=>"3 - 4"})
-      end
-      it "splits multiple boxes / folders into two integers so they can be matched" do
-        output_hash = WorkIndexer.new.map_record(work_2)
-        expect(output_hash["box_isim"]).to eq ["1", "2"]
-        expect(output_hash["folder_isim"]).to eq ["3", "4"]
-      end
+      expect(output_hash_3[box_search_field]).to eq ['12, 34, 56']
+      expect(output_hash_3[folder_search_field]).to eq ['56, 78, 10']
+      expect(output_hash_3[box_sort_field]).to eq ['12']
+      expect(output_hash_3[folder_sort_field]).to eq ['56']
     end
   end
 

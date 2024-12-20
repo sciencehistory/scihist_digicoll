@@ -43,7 +43,7 @@ class CollectionShowController < CatalogController
 
     config.add_sort_field("box_folder") do |field|
       field.label = "box and folder"
-      field.sort = "box_isim asc, folder_isim asc"
+      field.sort = "box_sort asc, folder_sort asc, title asc"
     end
   end
 
