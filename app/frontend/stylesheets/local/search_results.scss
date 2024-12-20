@@ -1,4 +1,6 @@
 // override sufia facet widget styles to be more brand-like, and generally neater
+
+
 .facets {
   .facets-header {
     // To try to make top line of search results all line up, we hackily try to make
@@ -181,6 +183,11 @@
     font-size: 1rem; // 16px instead of 17px body font
   }
   margin-bottom: $paragraph-spacer * 2;
+}
+
+.collection-show.archives .scihist-results-list-item-box-and-folder {
+  display: block;
+  margin-top: $paragraph-spacer * 0.5;
 }
 
 // Styling of actual hits on search results page. .documents-list parent selector

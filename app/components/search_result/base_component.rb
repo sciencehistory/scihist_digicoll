@@ -25,7 +25,11 @@ module SearchResult
     end
 
 
-    # Instantiated in SearchWithinCollectionWorkComponent
+    # Instantiated in SearchWithinCollectionWorkComponent.
+    # Returns a string representing the box and folder, if the model is
+    # a work and it's part
+    # of an archival collection.
+    # Otherwise, returns nil.
     def box_and_folder
     end
 
