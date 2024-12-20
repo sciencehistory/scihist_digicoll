@@ -24,6 +24,15 @@ module SearchResult
       @solr_document = solr_document
     end
 
+
+    # Instantiated in SearchWithinCollectionWorkComponent.
+    # Returns a string representing the box and folder, if the model is
+    # a work and it's part
+    # of an archival collection.
+    # Otherwise, returns nil.
+    def box_and_folder
+    end
+
     # results in context highlights from solr, if available
     #
     # If multiple highlight results, we join them together with ellipses. We put ellipses at beginning
