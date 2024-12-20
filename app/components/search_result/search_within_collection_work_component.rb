@@ -1,21 +1,22 @@
 module SearchResult
+
+  # A subclass of WorkComponent which just adds one additional public method,
+  # which provides a string representation of the box and folder info.
+  # Only designed for use on collection work pages.
   class SearchWithinCollectionWorkComponent < WorkComponent
     def box_and_folder
-      @box_and_folder ||= archives? ? box_and_folder_string : nil
+      @box_and_folder ||=  if display_box_and_folder?
+        [
+          (box_id.present?    ? "Box #{box_id}"       : nil),
+          (folder_id.present? ? "Folder #{folder_id}" : nil)
+        ].compact.join (", ")
+      end
     end
-
-    def box_and_folder_string
-      @box_and_folder ||= [
-        (box_id.present? ? "Box #{box_id}" : nil),
-        (folder_id.present? ? "Folder #{folder_id}" : nil)
-      ].compact.join (", ")
-    end
-
 
     private
 
-    def archives?
-      model&.department == 'Archives'
+    def display_box_and_folder?
+      model.work? && model&.department == 'Archives'
     end
 
     def box_id

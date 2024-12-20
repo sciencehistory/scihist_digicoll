@@ -59,7 +59,7 @@ class CollectionShowController < CatalogController
   # What ViewComponent class to use for a given search result on the results screen, for
   # Work or Collection. Called by _document_list.
   def view_component_class_for(model)
-    if model.kind_of?(Work)
+    if model.work?
       SearchResult::SearchWithinCollectionWorkComponent
     else
       super
