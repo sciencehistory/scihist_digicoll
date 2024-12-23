@@ -361,23 +361,6 @@ class CatalogController < ApplicationController
     # case for a BL "search field", which is really a dismax aggregate
     # of Solr search fields.
 
-
-    # See https://github.com/sciencehistory/scihist_digicoll/issues/2585
-    # Note that a Work can be associated with two consecutive boxes, in which case the box number is something like "34-35".
-    config.add_search_field('box') do |field|
-      field.label = 'Box'
-      field.solr_parameters = {
-        qf: 'box_tsi',
-      }
-    end
-
-    config.add_search_field('folder') do |field|
-      field.label = 'Folder'
-      field.solr_parameters = {
-        qf: 'folder_tsi',
-      }
-    end
-
     # config.add_search_field('title') do |field|
     #   # solr_parameters hash are sent to Solr as ordinary url query params.
     #   field.solr_parameters = {

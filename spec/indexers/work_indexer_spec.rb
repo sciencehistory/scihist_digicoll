@@ -41,32 +41,6 @@ describe WorkIndexer do
     end
   end
 
-  # See https://github.com/sciencehistory/scihist_digicoll/issues/2585
-  describe "box and folder" do
-    let(:box_search_field) {'box_tsi'}
-    let(:box_sort_field)  {'box_sort'}
-    let(:folder_search_field) {'folder_tsi'}
-    let(:folder_sort_field)   {'folder_sort'}
-
-    let(:work_2) { create(:work, physical_container: Work::PhysicalContainer.new({"box"=>"1", "folder"=>"3"})) }
-    let(:work_3) { create(:work, physical_container: Work::PhysicalContainer.new({"box"=>"12, 34, 56", "folder"=>"56, 78, 10"})) }
-    let(:output_hash)   { WorkIndexer.new.map_record(work) }
-    let(:output_hash_2) { WorkIndexer.new.map_record(work_2) }
-    let(:output_hash_3) { WorkIndexer.new.map_record(work_3) }
-
-    it "puts the first consecutive digits, if found, into the sort fields, and everything into the search fields" do
-      expect(output_hash[box_search_field]).to eq ['Box']
-      expect(output_hash[folder_search_field]).to eq ['Folder']
-      expect(output_hash[box_sort_field]).to be_nil
-      expect(output_hash[folder_sort_field]).to be_nil
-
-      expect(output_hash_3[box_search_field]).to eq ['12, 34, 56']
-      expect(output_hash_3[folder_search_field]).to eq ['56, 78, 10']
-      expect(output_hash_3[box_sort_field]).to eq ['12']
-      expect(output_hash_3[folder_sort_field]).to eq ['56']
-    end
-  end
-
   describe "oral history" do
     let(:work) { create(:oral_history_work, format: ['text']) }
 
