@@ -116,55 +116,36 @@ ActiveSupport::Notifications.subscribe(/throttle\.rack_attack|track\.rack_attack
 end
 
 
-## Turnstile bot detection throttling
-#
-# for paths matched by `rate_limited_paths`, after over rate_limit count requests in rate_limit_period,
-# token will be stored in rack env instructing challenge is required.
-#
-# For actual challenge, need before_action in controller.
-#
-# You could rate limit detect on wider paths than you actually challenge on, or the same. You probably
-# don't want to rate-limit detect on narrower list of paths than you challenge on!
-$bot_detect_config = ActiveSupport::OrderedOptions.new
-$bot_detect_config.env_challenge_trigger_key = "bot_detect.should_challenge"
-$bot_detect_config.rate_limit_period        =  1.hour
-$bot_detect_config.rate_limit_count         = 3
-# discriminator could expand to subnet instead, or use user-agent or whatever. If it returns
-# nil, then won't be tracked.
-$bot_detect_config.rate_limit_discriminator = ->(req) { req.ip }
-$bot_detect_config.rate_limited_paths       = [  # regexp
-                                                %r{\A/catalog([/?]|\Z)}
-                                              ]
-$bot_detect_config.cf_turnstile_sitekey = "1x00000000000000000000AA" # testing key that always passes
-$bot_detect_config.cf_turnstile_secret_key = "1x0000000000000000000000000000000AA" # testing always passes
-#$bot_detect_config.cf_turnstile_sitekey = '3x00000000000000000000FF' # testing, manual check required
-$bot_detect_config.cf_turnstile_js_url = "https://challenges.cloudflare.com/turnstile/v0/api.js"
-$bot_detect_config.cf_turnstile_validation_url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
-$bot_detect_config.cf_timeout = 3
+Rails.application.config.to_prepare do
+  ## Turnstile bot detection throttling
+  #
+  # for paths matched by `rate_limited_paths`, after over rate_limit count requests in rate_limit_period,
+  # token will be stored in rack env instructing challenge is required.
+  #
+  # For actual challenge, need before_action in controller.
+  #
+  # You could rate limit detect on wider paths than you actually challenge on, or the same. You probably
+  # don't want to rate-limit detect on narrower list of paths than you challenge on!
+  Rack::Attack.track("bot_detect/rate_exceeded",
+      limit: BotDetectController.rate_limit_count,
+      period: BotDetectController.rate_limit_period) do |req|
 
-$bot_detect_config.session_passed_key = "bot_detection-passed"
-$bot_detect_config.session_passed_good_for = 24.hours
-
-Rack::Attack.track("bot_detect/rate_exceeded",
-    limit: $bot_detect_config.rate_limit_count!,
-    period: $bot_detect_config.rate_limit_period!) do |req|
-
-  if $bot_detect_config.rate_limited_paths!.any? { |re| re =~ req.path }
-    $bot_detect_config.rate_limit_discriminator!.call(req)
+    if BotDetectController.rate_limited_paths.any? { |re| re =~ req.path }
+      BotDetectController.rate_limit_discriminator.call(req)
+    end
   end
-end
 
   ActiveSupport::Notifications.subscribe("track.rack_attack") do |_name, _start, _finish, request_id, payload|
     rack_request = payload[:request]
     rack_env     = rack_request.env
     match_name = rack_env["rack.attack.matched"]  # name of rack-attack rule
 
-  if match_name == "bot_detect/rate_exceeded"
-    match_data   = rack_env["rack.attack.match_data"]
-    match_data_formatted = match_data.slice(:count, :limit, :period).map { |k, v| "#{k}=#{v}"}.join(" ")
-    discriminator = rack_env["rack.attack.match_discriminator"] # unique key for rate limit, usually includes ip
+    if match_name == "bot_detect/rate_exceeded"
+      match_data   = rack_env["rack.attack.match_data"]
+      match_data_formatted = match_data.slice(:count, :limit, :period).map { |k, v| "#{k}=#{v}"}.join(" ")
+      discriminator = rack_env["rack.attack.match_discriminator"] # unique key for rate limit, usually includes ip
 
-    rack_env[$bot_detect_config.env_challenge_trigger_key!] = true
+      rack_env[BotDetectController.env_challenge_trigger_key] = true
+    end
   end
 end
-
