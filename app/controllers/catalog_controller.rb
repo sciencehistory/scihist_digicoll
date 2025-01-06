@@ -15,8 +15,6 @@ class CatalogController < ApplicationController
 
   rescue_from ActionController::UnpermittedParameters, with: :handle_unpermitted_params
 
-  before_action &BotDetectController.bot_detection_enforce_filter
-
   # Blacklight wanted Blacklight::Controller included in ApplicationController,
   # we do it just here instead.
   include Blacklight::Controller
