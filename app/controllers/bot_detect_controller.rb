@@ -68,6 +68,20 @@ class BotDetectController < ApplicationController
     end
   end
 
+  # Usually in your ApplicationController,
+  #
+  #     before_action &BotDetectController.bot_detection_enforce_filter
+  def self.bot_detection_enforce_filter
+    _bot_detection_controller = self # in case there's a subclass, capture under closure
+    lambda do |controller|
+      if controller.request.env[_bot_detection_controller.env_challenge_trigger_key] &&
+         !controller.session[_bot_detection_controller.session_passed_key].try { |date| Time.now - Time.new(date) < _bot_detection_controller.session_passed_good_for }
+        # status code temporary
+        controller.redirect_to bot_detect_challenge_path(dest: controller.request.original_fullpath), status: 307
+      end
+    end
+  end
+
 
   def challenge
   end
