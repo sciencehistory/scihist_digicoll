@@ -15,6 +15,14 @@ class CatalogController < ApplicationController
 
   rescue_from ActionController::UnpermittedParameters, with: :handle_unpermitted_params
 
+  before_action { |controller|
+    if controller.request.env[$bot_detect_config.env_challenge_trigger_key!] &&
+       !controller.session[$bot_detect_config.session_passed_key].try { |date| Time.now - Time.new(date) < $bot_detect_config.session_passed_good_for }
+      # status code temporary
+      redirect_to bot_detect_challenge_path(dest: controller.request.original_fullpath), status: 307
+    end
+  }
+
   # Blacklight wanted Blacklight::Controller included in ApplicationController,
   # we do it just here instead.
   include Blacklight::Controller

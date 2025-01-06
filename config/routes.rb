@@ -11,6 +11,10 @@ Rails.application.routes.draw do
   end
 
 
+  # bot detection challenge
+  get "/challenge", to: "bot_detect#challenge", as: :bot_detect_challenge
+  post "/challenge", to: "bot_detect#verify_challenge"
+
   # custom error pages
   # https://www.marcelofossrj.com/recipe/2019/04/14/custom-errors.html
   get "/404", to: "errors#not_found", :via => :all
