@@ -94,6 +94,8 @@ gem "resque-pool"
 gem "resque-heroku-signals" # gah, weirdly needed for graceful shutdown on heroku. https://github.com/resque/resque#heroku
 
 
+gem "http", "~> 5.2" # for http client access
+
 # using memcached for Rails.cache in production, requires dalli
 gem "dalli", "~> 3.2"
 
