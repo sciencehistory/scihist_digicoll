@@ -115,37 +115,6 @@ ActiveSupport::Notifications.subscribe(/throttle\.rack_attack|track\.rack_attack
   end
 end
 
-
 Rails.application.config.to_prepare do
-  ## Turnstile bot detection throttling
-  #
-  # for paths matched by `rate_limited_paths`, after over rate_limit count requests in rate_limit_period,
-  # token will be stored in rack env instructing challenge is required.
-  #
-  # For actual challenge, need before_action in controller.
-  #
-  # You could rate limit detect on wider paths than you actually challenge on, or the same. You probably
-  # don't want to rate-limit detect on narrower list of paths than you challenge on!
-  Rack::Attack.track("bot_detect/rate_exceeded",
-      limit: BotDetectController.rate_limit_count,
-      period: BotDetectController.rate_limit_period) do |req|
-
-    if BotDetectController.rate_limited_paths.any? { |re| re =~ req.path }
-      BotDetectController.rate_limit_discriminator.call(req)
-    end
-  end
-
-  ActiveSupport::Notifications.subscribe("track.rack_attack") do |_name, _start, _finish, request_id, payload|
-    rack_request = payload[:request]
-    rack_env     = rack_request.env
-    match_name = rack_env["rack.attack.matched"]  # name of rack-attack rule
-
-    if match_name == "bot_detect/rate_exceeded"
-      match_data   = rack_env["rack.attack.match_data"]
-      match_data_formatted = match_data.slice(:count, :limit, :period).map { |k, v| "#{k}=#{v}"}.join(" ")
-      discriminator = rack_env["rack.attack.match_discriminator"] # unique key for rate limit, usually includes ip
-
-      rack_env[BotDetectController.env_challenge_trigger_key] = true
-    end
-  end
+  BotDetectController.rack_attack_init
 end
