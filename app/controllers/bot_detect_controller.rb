@@ -1,10 +1,13 @@
 class BotDetectController < ApplicationController
   # Config for bot detection is held here in class_attributes, kind of wonky, but it works
-  class_attribute :env_challenge_trigger_key, default: "bot_detect.should_challenge"
 
   # up to rate_limit_count requests in rate_limit_period before challenged
   class_attribute :rate_limit_period, default: 1.hour
   class_attribute :rate_limit_count, default: 3
+
+  class_attribute :cf_turnstile_sitekey , default: "1x00000000000000000000AA" # a testing key that always passes
+  class_attribute :cf_turnstile_secret_key, default: "1x0000000000000000000000000000000AA" # a testing key always passes
+  # '3x00000000000000000000FF' # testing, manual check required
 
   # discriminator is how we batch requests for counting rate limit, ordinarily by ip,
   # but we could expand to subnet instead, or use user-agent or whatever. If it returns
@@ -12,12 +15,6 @@ class BotDetectController < ApplicationController
   class_attribute :rate_limit_discriminator, default: ->(req) { req.ip }
   class_attribute :rate_limited_paths, default: [  # regexp
                                                   %r{\A/catalog([/?]|\Z)}
-                                                ]
-
-  class_attribute :cf_turnstile_sitekey , default: "1x00000000000000000000AA" # a testing key that always passes
-  class_attribute :cf_turnstile_secret_key, default: "1x0000000000000000000000000000000AA" # a testing key always passes
-  # '3x00000000000000000000FF' # testing, manual check required
-
   class_attribute :cf_turnstile_js_url, default: "https://challenges.cloudflare.com/turnstile/v0/api.js"
   class_attribute :cf_turnstile_validation_url, default:  "https://challenges.cloudflare.com/turnstile/v0/siteverify"
   class_attribute :cf_timeout, default: 3 # max timeout seconds waiting on Cloudfront Turnstile api
@@ -28,6 +25,8 @@ class BotDetectController < ApplicationController
   # how long is a challenge pass good for before re-challenge?
   class_attribute :session_passed_good_for, default: 24.hours
 
+  # key in rack env that says challenge is required
+  class_attribute :env_challenge_trigger_key, default: "bot_detect.should_challenge"
 
   # perhaps in an initializer, and after changing any config, run:
   #
