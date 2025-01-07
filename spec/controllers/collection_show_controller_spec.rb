@@ -199,7 +199,7 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
         end
         it "go at the end, sorted by title" do
           get :index, params: {"q"=>"", "sort"=>"box_folder", "collection_id"=> collection.friendlier_id }
-          expect(titles_as_displayed).to match_array ["1", "a", "b",
+          expect(titles_as_displayed).to eq ["1", "a", "b",
             "empty physical_container",
             "nil physical_container a", "nil physical_container b", "nil physical_container c"]
         end
@@ -233,7 +233,7 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
         end
         it "go at the end, sorted by title" do
           get :index, params: {"q"=>"", "sort"=>"box_folder", "collection_id"=> collection.friendlier_id }
-          expect(titles_as_displayed).to match_array  ["aa", "ab", "ac", "za"]
+          expect(titles_as_displayed).to eq  ["aa", "ab", "ac", "za"]
         end
 
       end
