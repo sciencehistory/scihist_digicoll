@@ -1,6 +1,4 @@
 // override sufia facet widget styles to be more brand-like, and generally neater
-
-
 .facets {
   .facets-header {
     // To try to make top line of search results all line up, we hackily try to make
@@ -185,8 +183,7 @@
   margin-bottom: $paragraph-spacer * 2;
 }
 
-.collection-show.archives .scihist-results-list-item-box-and-folder {
-  display: block;
+.scihist-results-list-item-box-and-folder {
   margin-top: $paragraph-spacer * 0.5;
 }
 
