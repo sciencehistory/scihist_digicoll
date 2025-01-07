@@ -372,10 +372,10 @@ blacklight-frontend@^8.7.0:
   dependencies:
     bootstrap ">=4.3.1 <6.0.0"
 
-blacklight-range-limit@9.0.0-beta2:
-  version "9.0.0-beta2"
-  resolved "https://registry.yarnpkg.com/blacklight-range-limit/-/blacklight-range-limit-9.0.0-beta2.tgz#780e72bb7f21b99aeedac36ecfdf6da6bda7f5ff"
-  integrity sha512-iGeOOkY1Vu/GPdF9DwbuNZtlYHVyZ0owHY1HvfIOsJS50xDjyriKW+LnXTBn3rPQrZzFFKRvQJTi8Oi0rqg0LA==
+blacklight-range-limit@9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/blacklight-range-limit/-/blacklight-range-limit-9.0.0.tgz#89e1e7d36cef7fef205d0266fa0591006801f05d"
+  integrity sha512-Qr+3Rr0jOeoSNN5kN3fmZYqggAgpPpu3LX7HAHkCtrkHG5gPKqV+TK8BLvila9zueAs77dbWV7AmucZEvE+IBg==
   dependencies:
     chart.js "^ 4.4.1"
 
