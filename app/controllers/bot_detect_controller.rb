@@ -1,9 +1,9 @@
 class BotDetectController < ApplicationController
   # Config for bot detection is held here in class_attributes, kind of wonky, but it works
 
-  class_attribute :cf_turnstile_sitekey , default: "1x00000000000000000000AA" # a testing key that always passes
-  class_attribute :cf_turnstile_secret_key, default: "1x0000000000000000000000000000000AA" # a testing key always passes
-  # '3x00000000000000000000FF' # testing, manual check required
+  class_attribute :cf_turnstile_sitekey, default: "1x00000000000000000000AA" # a testing key that always passes
+  class_attribute :cf_turnstile_secret_key, default: "2x0000000000000000000000000000000AA" #default: "1x0000000000000000000000000000000AA" # a testing key always passes
+  # Turnstile testing keys: https://developers.cloudflare.com/turnstile/troubleshooting/testing/
 
   # up to rate_limit_count requests in rate_limit_period before challenged
   class_attribute :rate_limit_period, default: 1.hour
@@ -117,6 +117,7 @@ class BotDetectController < ApplicationController
 
     result = response.parse
     # {"success"=>true, "error-codes"=>[], "challenge_ts"=>"2025-01-06T17:44:28.544Z", "hostname"=>"example.com", "metadata"=>{"result_with_testing_key"=>true}}
+    # {"success"=>false, "error-codes"=>["invalid-input-response"], "messages"=>[], "metadata"=>{"result_with_testing_key"=>true}}
 
     if result["success"]
       # mark it as succesful in session, and record time. They do need a session/cookies
