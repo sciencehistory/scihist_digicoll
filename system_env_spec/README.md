@@ -18,9 +18,9 @@ App needs to be installed to heroku first. By default, Heroku does not install g
 
 First, tell the app you want to install `rspec` on the next deploy:
 
-    heroku config:set BUNDLE_WITHOUT=""
-   
-This sets `BUNDLE_WITHOUT` to the empty string (by default, the variable doesn't exist). Although this restarts the dyno, it doesn't actually trigger a deploy.
+    heroku config:set BUNDLE_WITHOUT=" "
+
+This sets `BUNDLE_WITHOUT` to be a space (by default, the variable doesn't exist; empty string is ignored by heroku, need one space!). Although this restarts the dyno, it doesn't actually trigger a deploy.
 
 Next, trigger a deploy.  Use a null commit if you have to, and deploy it to Heroku. On deploy, `rspec` will be installed.
 
