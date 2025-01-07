@@ -40,6 +40,11 @@ class CollectionShowController < CatalogController
     # and we need to make sure collection_id is allowed by BL, don't totally
     # understand this, as of BL 7.25
     config.search_state_fields << :collection_id
+
+    config.add_sort_field("box_folder") do |field|
+      field.label = "box and folder"
+      field.sort = "box_sort asc, folder_sort asc, title asc"
+    end
   end
 
   private

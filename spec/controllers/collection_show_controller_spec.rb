@@ -82,7 +82,6 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
     let(:years_as_displayed) { parsed.css('span[itemprop="date_created"]').map {|x| x.text.strip } }
     let(:default_sort_field)  { nil }
 
-
     describe "no default sort order for this collection" do
       it "no default sort order for this collection: sort by date_published_dtsi desc" do
         get :index, params: base_params
@@ -116,6 +115,129 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
         get :index, params: base_params
         expect(years_as_displayed).to eq ["1993", "1992", "1991", "1990"]
       end
+    end
+
+    describe "box and folder order" do
+
+      let(:random_order) { (0..containers.length - 1).to_a.shuffle }
+
+      let(:containers) do  
+        [
+          { "box"=> "1",  "folder"=> "1"  },
+          { "box"=> "1" },
+          
+          { "box"=> "2",   "folder"=> "1"  },
+          { "box"=> "2",   "folder"=> "2"  },
+
+          { "box"=> "3",   "folder"=> "1"  },
+          { "box"=> "3",   "folder"=> "2"  },
+          { "box"=> "3-5", "folder"=> "6-4"},
+        ]
+      end
+
+
+      let(:titles) do
+        containers.map do |pc|
+          "#{pc.try('box', 'none')},#{pc.try('folder', 'none')}"
+        end   
+      end
+
+      let!(:works) do
+        random_order.map do |i|
+          create( :work,
+            title:              titles[i],
+            physical_container: Work::PhysicalContainer.new(containers[i]),
+            contained_by:       [collection]
+          )
+        end
+      end
+
+      it "can sort by box and folder" do
+        get :index, params: {"q"=>"", "sort"=>"box_folder", "collection_id"=> collection.friendlier_id }
+        expect(titles_as_displayed).to eq titles
+      end
+
+      describe "works with non-numeric boxes and folders" do
+        let!(:works) do
+          [
+            create( :work,
+              title:              "1",
+              physical_container: Work::PhysicalContainer.new({ "folder"=> "1"   }),
+              contained_by:       [collection]
+            ),
+            create( :work,
+              title:              "a",
+              physical_container: Work::PhysicalContainer.new({ "folder"=> "a"   }),
+              contained_by:       [collection]
+            ),
+            create( :work,
+              title:              "b",
+              physical_container: Work::PhysicalContainer.new({ "folder"=> "b"   }),
+              contained_by:       [collection]
+            ),
+            create( :work,
+              title:              "empty physical_container",
+              physical_container: (Work::PhysicalContainer.new({})),
+              contained_by:       [collection]
+            ),
+            create( :work,
+              title:              "nil physical_container a",
+              physical_container: nil,
+              contained_by:       [collection]
+            ),
+            create( :work,
+              title:              "nil physical_container b",
+              physical_container: (Work::PhysicalContainer.new({})),
+              contained_by:       [collection]
+            ),
+            create( :work,
+              title:              "nil physical_container c",
+              physical_container: nil,
+              contained_by:       [collection]
+            ),
+          ].shuffle
+        end
+        it "go at the end, sorted by title" do
+          get :index, params: {"q"=>"", "sort"=>"box_folder", "collection_id"=> collection.friendlier_id }
+          expect(titles_as_displayed).to match_array ["1", "a", "b",
+            "empty physical_container",
+            "nil physical_container a", "nil physical_container b", "nil physical_container c"]
+        end
+      end
+
+
+      describe "works within same non-integer box" do
+        let!(:works) do
+          [
+            create( :work,
+              title:              "za",
+              physical_container: Work::PhysicalContainer.new({ "folder"=> "z", "box" => "a" }),
+              contained_by:       [collection]
+            ),
+            create( :work,
+              title:              "aa",
+              physical_container: Work::PhysicalContainer.new({ "folder"=> "a", "box" => "a" }),
+              contained_by:       [collection]
+            ),
+            create( :work,
+              title:              "ab",
+              physical_container: Work::PhysicalContainer.new({ "folder"=> "a", "box" => "b" }),
+              contained_by:       [collection]
+            ),
+            create( :work,
+              title:              "ac",
+              physical_container: Work::PhysicalContainer.new({ "folder"=> "a", "box" => "c" }),
+              contained_by:       [collection]
+            ),
+          ].shuffle
+        end
+        it "go at the end, sorted by title" do
+          get :index, params: {"q"=>"", "sort"=>"box_folder", "collection_id"=> collection.friendlier_id }
+          expect(titles_as_displayed).to match_array  ["aa", "ab", "ac", "za"]
+        end
+
+      end
+
     end
 
     describe "identical dates" do
