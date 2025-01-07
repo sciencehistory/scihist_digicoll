@@ -150,7 +150,7 @@ GEM
       rails (>= 6.1, < 9)
       view_component (>= 2.74, < 4)
       zeitwerk
-    blacklight_range_limit (9.0.0.beta2)
+    blacklight_range_limit (9.0.0)
       blacklight (>= 7.25.2, < 9)
       view_component (>= 2.54, < 4)
     bootsnap (1.18.4)
@@ -791,7 +791,7 @@ DEPENDENCIES
   axe-core-rspec (~> 4.3)
   barnes
   blacklight (~> 8.7.0)
-  blacklight_range_limit (= 9.0.0.beta2)
+  blacklight_range_limit (~> 9.0.0)
   bootsnap (>= 1.4.4)
   bootstrap4-kaminari-views
   browse-everything (~> 1.4)
