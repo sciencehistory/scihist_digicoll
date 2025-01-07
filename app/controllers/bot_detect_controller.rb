@@ -20,10 +20,7 @@ class BotDetectController < ApplicationController
   #     or `{ controller: "something", action: "index" }
   #
   # Used by default :location_matcher, if set custom may not be used
-  class_attribute :rate_limited_locations, default: [
-                                                  '/catalog',
-                                                  { controller: "collection_show" }
-                                                ]
+  class_attribute :rate_limited_locations, default: []
 
   class_attribute :location_matcher, default: ->(path) {
     parsed_route = nil
