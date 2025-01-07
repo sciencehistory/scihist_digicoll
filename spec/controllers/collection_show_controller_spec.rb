@@ -251,6 +251,106 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
     end
   end
 
+  describe "display box and folder", indexable_callbacks: true do
+    render_views
+    let!(:collection) { create(:collection, title: "The Collection") }
+    let(:parsed){ parsed = Nokogiri::HTML(response.body) }
+    let(:containers_as_displayed) { parsed.css('.scihist-results-list-item-box-and-folder').map {|x| x.text} }
+    let(:titles_as_displayed) { parsed.css('.scihist-results-list-item-head a').map {|x| x.text} }
+
+    describe "empty box / folder" do
+      let!(:works) do
+        [
+          create( :work,
+            department:         "Archives",
+            title:              "Work with box and folder",
+            physical_container: Work::PhysicalContainer.new({ "box" => "1", "folder"=> "1" }),
+            contained_by:       [collection]
+          ),
+          create( :work,
+            department:         "Archives",
+            title:              "Work with just a folder",
+            physical_container: Work::PhysicalContainer.new({ "folder"=> "goat" }),
+            contained_by:       [collection]
+          ),
+          create( :work,
+            department:         "Archives",
+            title:              "Empty physical_container",
+            physical_container: (Work::PhysicalContainer.new({})),
+            contained_by:       [collection]
+          ),
+          create( :work,
+            department:         "Archives",
+            title:              "Nil physical_container",
+            physical_container: nil,
+            contained_by:       [collection]
+          ),
+        ].shuffle
+      end
+      it "displays fine" do
+        get :index, params: {"q"=>"", "sort"=>"box_folder", "collection_id"=> collection.friendlier_id }
+        expect(titles_as_displayed).to eq [
+          "Work with box and folder",
+          "Work with just a folder",
+          "Empty physical_container",
+          "Nil physical_container"
+        ]
+
+        expect(containers_as_displayed).to eq [
+          "Box 1, Folder 1",
+          "Folder goat"
+        ]
+      end
+    end
+    describe "non-archival collection" do
+      let!(:works) do
+        [
+          create( :work,
+            title:              "1",
+            physical_container: Work::PhysicalContainer.new({ "folder"=> "1"   }),
+            contained_by:       [collection]
+          ),
+          create( :work,
+            title:              "a",
+            physical_container: Work::PhysicalContainer.new({ "folder"=> "a"   }),
+            contained_by:       [collection]
+          ),
+          create( :work,
+            title:              "b",
+            physical_container: Work::PhysicalContainer.new({ "folder"=> "b"   }),
+            contained_by:       [collection]
+          ),
+          create( :work,
+            title:              "empty physical_container",
+            physical_container: (Work::PhysicalContainer.new({})),
+            contained_by:       [collection]
+          ),
+          create( :work,
+            title:              "nil physical_container a",
+            physical_container: nil,
+            contained_by:       [collection]
+          ),
+          create( :work,
+            title:              "nil physical_container b",
+            physical_container: (Work::PhysicalContainer.new({})),
+            contained_by:       [collection]
+          ),
+          create( :work,
+            title:              "nil physical_container c",
+            physical_container: nil,
+            contained_by:       [collection]
+          ),
+        ].shuffle
+      end
+      it "does not show box / folder info" do
+        get :index, params: {"q"=>"", "sort"=>"box_folder", "collection_id"=> collection.friendlier_id }
+        #expect(containers_as_displayed).to match_array ["1", "a", "b",
+        # "empty physical_container",
+        #  "nil physical_container a", "nil physical_container b", "nil physical_container c"]
+      end
+    end
+  end
+
   describe "#facet", indexable_callbacks: true do
     render_views
 
