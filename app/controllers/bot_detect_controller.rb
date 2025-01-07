@@ -13,8 +13,32 @@ class BotDetectController < ApplicationController
   # but we could expand to subnet instead, or use user-agent or whatever. If it returns
   # nil, then won't be tracked.
   class_attribute :rate_limit_discriminator, default: ->(req) { req.ip }
-  class_attribute :rate_limited_paths, default: [  # regexp
-                                                  %r{\A/catalog([/?]|\Z)}
+
+  # An array, can be:
+  #   * a string, path prefix
+  #   * a hash of rails route-decoded params, like `{ controller: "something" }`,
+  #     or `{ controller: "something", action: "index" }
+  #
+  # Used by default :location_matcher, if set custom may not be used
+  class_attribute :rate_limited_locations, default: [
+                                                  '/catalog',
+                                                  { controller: "collection_show" }
+                                                ]
+
+  class_attribute :location_matcher, default: ->(path) {
+    parsed_route = nil
+    rate_limited_locations.any? do |val|
+      case val
+      when Hash
+        parsed_route ||= Rails.application.routes.recognize_path(path)
+        parsed_route >= val
+      when String
+        # string complete path at beginning, must end in ?, or end of string
+        /\A#{Regexp.escape val}(\?|\Z)/ =~ path
+      end
+    end
+  }
+
   class_attribute :cf_turnstile_js_url, default: "https://challenges.cloudflare.com/turnstile/v0/api.js"
   class_attribute :cf_turnstile_validation_url, default:  "https://challenges.cloudflare.com/turnstile/v0/siteverify"
   class_attribute :cf_timeout, default: 3 # max timeout seconds waiting on Cloudfront Turnstile api
@@ -36,7 +60,7 @@ class BotDetectController < ApplicationController
   def self.rack_attack_init
     ## Turnstile bot detection throttling
     #
-    # for paths matched by `rate_limited_paths`, after over rate_limit count requests in rate_limit_period,
+    # for paths matched by `rate_limited_locations`, after over rate_limit count requests in rate_limit_period,
     # token will be stored in rack env instructing challenge is required.
     #
     # For actual challenge, need before_action in controller.
@@ -47,7 +71,7 @@ class BotDetectController < ApplicationController
         limit: self.rate_limit_count,
         period: self.rate_limit_period) do |req|
 
-      if self.rate_limited_paths.any? { |re| re =~ req.path }
+      if self.location_matcher.call(req.path)
         self.rate_limit_discriminator.call(req)
       end
     end
