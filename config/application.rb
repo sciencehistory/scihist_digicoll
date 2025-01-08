@@ -48,7 +48,7 @@ module ScihistDigicoll
 
     # Initialize configuration defaults for originally generated Rails version,
     # or Rails version we have upgraded to and verified for new defaults.
-    config.load_defaults 7.2
+    config.load_defaults 8.0
 
     config.time_zone = ENV['TZ'].presence || "America/New_York"
 
