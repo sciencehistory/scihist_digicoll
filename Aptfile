@@ -14,6 +14,9 @@ libglib2.0-0
 libglib2.0-dev
 libpoppler-glib8
 
+# to get vips CLI tools we need
+libvips-tools
+
 # we use qpdf for assembling text+graphic pdf files for OCR
 qpdf
 
