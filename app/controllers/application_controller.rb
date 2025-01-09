@@ -23,6 +23,8 @@ class ApplicationController < ActionController::Base
 
   around_action :batch_kithe_indexable
 
+  before_action { |controller| BotDetectController.bot_detection_enforce_filter(controller) }
+
   def batch_kithe_indexable
     Kithe::Indexable.index_with(batching: true) do
       yield

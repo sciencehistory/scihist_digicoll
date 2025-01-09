@@ -114,3 +114,18 @@ ActiveSupport::Notifications.subscribe(/throttle\.rack_attack|track\.rack_attack
     Rack::Attack.cache.write(last_logged_key, JSON.dump(last_logged_info), alert_only_per)
   end
 end
+
+Rails.application.config.to_prepare do
+  # any custom collection controllers or other controllers that offer search have to be listed here
+  # to rate-limit them!
+  BotDetectController.rate_limited_locations = [
+    { controller: "catalog" },
+    { controller: "featured_topic" },
+    { controller: "collection_show" },
+    { controller: "collection_show_controllers/immigrants_and_innovation_collection" },
+    { controller: "collection_show_controllers/oral_history_collection"},
+    { controller: "collection_show_controllers/bredig_collection"}
+  ]
+
+  BotDetectController.rack_attack_init
+end
