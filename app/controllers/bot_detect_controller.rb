@@ -117,6 +117,8 @@ class BotDetectController < ApplicationController
   def self.bot_detection_enforce_filter(controller)
     if controller.request.env[self.env_challenge_trigger_key] &&
        !controller.session[self.session_passed_key].try { |date| Time.now - Time.new(date) < self.session_passed_good_for }
+
+      Rails.logger.info("#{self.name}: Cloudflare Turnstile challenge redirect: (#{controller.request.remote_ip}, #{controller.request.user_agent}): from #{controller.request.url}")
       # status code temporary
       controller.redirect_to controller.bot_detect_challenge_path(dest: controller.request.original_fullpath), status: 307
     end

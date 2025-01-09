@@ -44,6 +44,7 @@ describe "Cart and Batch Edit" do
     let(:cf_turnstile_secret_key) { cf_turnstile_secret_key_pass }
 
     before do
+      allow(Rails.logger).to receive(:info)
       stub_turnstile_success(request_body: {"secret"=>BotDetectController.cf_turnstile_secret_key, "response"=>"XXXX.DUMMY.TOKEN.XXXX", "remoteip"=>"127.0.0.1"})
     end
 
@@ -57,6 +58,8 @@ describe "Cart and Batch Edit" do
 
       # which eventually will redirect back to search
       expect(page).to have_content(/You Searched For/i)
+
+      expect(Rails.logger).to have_received(:info).with(/BotDetectController: Cloudflare Turnstile challenge redirect/)
     end
   end
 
