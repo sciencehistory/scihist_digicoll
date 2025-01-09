@@ -366,7 +366,7 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
         expect(response.body).to include("If you specify a folder, please also specify a box")
       end
     end
-    describe "edge cases" do
+   describe "edge cases" do
       let(:parsed){ parsed = Nokogiri::HTML(response.body) }
       let(:titles_as_displayed) { parsed.css('.scihist-results-list-item-head a').map {|x| x.text} }
       let!(:work) { create(:work, :published,
@@ -378,6 +378,16 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
         contained_by:   [collection])
       }
       let!(:collection) { create(:collection, friendlier_id: "faked", department: "Archives") }
+      it "does not return works that don't match" do
+        get :index, params: {
+          "q"=>"",
+          "box_id"=>"goat",
+          "folder_id"=>"goat",
+          "sort"=>"",
+          "collection_id"=> collection.friendlier_id
+        }
+        expect(response.body).not_to include(work.title)
+      end
       it "matches partial matches" do
         get :index, params: {
           "q"=>"",
@@ -388,15 +398,15 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
         }
         expect(response.body).to include(work.title)
       end
-      it "does not return works that don't match" do
+      it "matches partial matches in any order" do
         get :index, params: {
           "q"=>"",
-          "box_id"=>"goat",
-          "folder_id"=>"goat",
+          "box_id"=>"mangos, pears",
+          "folder_id"=>"bears,lions",
           "sort"=>"",
           "collection_id"=> collection.friendlier_id
         }
-        expect(response.body).not_to include(work.title)
+        expect(response.body).to include(work.title)
       end
       it "returns exact matches" do
         get :index, params: {
