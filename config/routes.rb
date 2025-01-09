@@ -6,7 +6,7 @@ Rails.application.routes.draw do
 
   class CanAccessStaffFunctionsConstraint
     def self.matches?(request)
-      AccessPolicy.new(request.env['warden'].user).can? :access_staff_functions
+      AccessPolicy.new(request.env['warden']&.user).can? :access_staff_functions
     end
   end
 

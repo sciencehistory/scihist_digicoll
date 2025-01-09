@@ -2,7 +2,7 @@ class BotDetectController < ApplicationController
   # Config for bot detection is held here in class_attributes, kind of wonky, but it works
 
   class_attribute :cf_turnstile_sitekey, default: "1x00000000000000000000AA" # a testing key that always passes
-  class_attribute :cf_turnstile_secret_key, default: "2x0000000000000000000000000000000AA" #default: "1x0000000000000000000000000000000AA" # a testing key always passes
+  class_attribute :cf_turnstile_secret_key, default: "1x0000000000000000000000000000000AA" # a testing key always passes
   # Turnstile testing keys: https://developers.cloudflare.com/turnstile/troubleshooting/testing/
 
   # up to rate_limit_count requests in rate_limit_period before challenged
@@ -16,6 +16,8 @@ class BotDetectController < ApplicationController
   #   * a string, path prefix
   #   * a hash of rails route-decoded params, like `{ controller: "something" }`,
   #     or `{ controller: "something", action: "index" }
+  #     The hash is more expensive to check and uses some not-technically-public
+  #     Rails api, but it's just so convenient.
   #
   # Used by default :location_matcher, if set custom may not be used
   class_attribute :rate_limited_locations, default: []
@@ -26,16 +28,24 @@ class BotDetectController < ApplicationController
   # nil, then won't be tracked.
   class_attribute :rate_limit_discriminator, default: ->(req) { req.ip }
 
-  class_attribute :location_matcher, default: ->(path) {
+  class_attribute :location_matcher, default: ->(rack_req) {
     parsed_route = nil
     rate_limited_locations.any? do |val|
       case val
       when Hash
-        parsed_route ||= Rails.application.routes.recognize_path(path)
-        parsed_route >= val
+        begin
+          # #recognize_path may e not techinically public API, and may be expensive, but
+          # no other way to do this, and it's mentioned in rack-attack:
+          # https://github.com/rack/rack-attack/blob/86650c4f7ea1af24fe4a89d3040e1309ee8a88bc/docs/advanced_configuration.md#match-actions-in-rails
+          # We do it lazily only if needed so if you don't want that don't use it.
+          parsed_route ||= rack_req.env["action_dispatch.routes"].recognize_path(rack_req.url, method: rack_req.request_method)
+          parsed_route && parsed_route >= val
+        rescue ActionController::RoutingError
+          false
+        end
       when String
         # string complete path at beginning, must end in ?, or end of string
-        /\A#{Regexp.escape val}(\?|\Z)/ =~ path
+        /\A#{Regexp.escape val}(\?|\Z)/ =~ rack_req.path
       end
     end
   }
@@ -69,7 +79,7 @@ class BotDetectController < ApplicationController
         limit: self.rate_limit_count,
         period: self.rate_limit_period) do |req|
 
-      if self.location_matcher.call(req.path)
+      if self.location_matcher.call(req)
         self.rate_limit_discriminator.call(req)
       end
     end
