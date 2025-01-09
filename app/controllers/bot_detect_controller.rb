@@ -2,11 +2,11 @@ class BotDetectController < ApplicationController
   # Config for bot detection is held here in class_attributes, kind of wonky, but it works
 
   class_attribute :cf_turnstile_sitekey, default: "1x00000000000000000000AA" # a testing key that always passes
-  class_attribute :cf_turnstile_secret_key, default: "1x0000000000000000000000000000000AA" # a testing key always passes
+  class_attribute :cf_turnstile_secret_key, default: "2x0000000000000000000000000000000AA" #"1x0000000000000000000000000000000AA" # a testing key always passes
   # Turnstile testing keys: https://developers.cloudflare.com/turnstile/troubleshooting/testing/
 
   # up to rate_limit_count requests in rate_limit_period before challenged
-  class_attribute :rate_limit_period, default: 1.hour
+  class_attribute :rate_limit_period, default: 12.hour
   class_attribute :rate_limit_count, default: 3
 
   # how long is a challenge pass good for before re-challenge?
@@ -145,6 +145,8 @@ class BotDetectController < ApplicationController
       # mark it as succesful in session, and record time. They do need a session/cookies
       # to get through the challenge.
       session[self.session_passed_key] = Time.now.utc.iso8601
+    else
+      Rails.logger.warn("#{self.class.name}: Cloudflare Turnstile validation failed (#{request.remote_ip}, #{request.user_agent}): #{result}")
     end
 
     # let's just return the whole thing to client? Is there anything confidential there?

@@ -10,8 +10,9 @@ describe "Cart and Batch Edit" do
   end
 
 
-  let (:cf_turnstile_sitekey_pass) { "1x00000000000000000000AA" } # a test key
-  let (:cf_turnstile_secret_key_pass) { "1x0000000000000000000000000000000AA" } # a testing key always passes
+  let(:cf_turnstile_sitekey_pass) { "1x00000000000000000000AA" } # a test key
+  let(:cf_turnstile_secret_key_pass) { "1x0000000000000000000000000000000AA" } # a testing key always passes
+  let(:cf_turnstile_secret_key_fail) { "2x0000000000000000000000000000000AA" } # a testing key that produces failure
 
   let(:rate_limit_count) { 1 } # one hit then challenge
 
@@ -42,10 +43,11 @@ describe "Cart and Batch Edit" do
     let(:cf_turnstile_sitekey) { cf_turnstile_sitekey_pass }
     let(:cf_turnstile_secret_key) { cf_turnstile_secret_key_pass }
 
+    before do
+      stub_turnstile_success(request_body: {"secret"=>BotDetectController.cf_turnstile_secret_key, "response"=>"XXXX.DUMMY.TOKEN.XXXX", "remoteip"=>"127.0.0.1"})
+    end
 
     it "smoke tests" do
-      stub_turnstile_success(request_body: {"secret"=>BotDetectController.cf_turnstile_secret_key, "response"=>"XXXX.DUMMY.TOKEN.XXXX", "remoteip"=>"127.0.0.1"})
-
       visit search_catalog_path(q: "foo")
       expect(page).to have_content(/You Searched For/i) # one search results page
 
@@ -55,6 +57,30 @@ describe "Cart and Batch Edit" do
 
       # which eventually will redirect back to search
       expect(page).to have_content(/You Searched For/i)
+    end
+  end
+
+  describe "failed challenge" do
+    let(:cf_turnstile_sitekey) { cf_turnstile_sitekey_pass }
+    let(:cf_turnstile_secret_key) { cf_turnstile_secret_key_fail }
+
+    before do
+      allow(Rails.logger).to receive(:warn)
+      stub_turnstile_failure(request_body: {"secret"=>BotDetectController.cf_turnstile_secret_key, "response"=>"XXXX.DUMMY.TOKEN.XXXX", "remoteip"=>"127.0.0.1"})
+    end
+
+    it "stays on page with failure" do
+      visit search_catalog_path(q: "foo")
+      expect(page).to have_content(/You Searched For/i) # one search results page
+
+      # on second try, we're gonna get redirected to bot check page
+      visit search_catalog_path(q: "bar")
+      expect(page).to have_content("Traffic control and bot detection")
+
+      # which is going to get a failure message
+      expect(page).to have_content("Check failed. Sorry, something has gone wrong, or your traffic looks unusual to us. You can try refreshing this page to try again.")
+
+      expect(Rails.logger).to have_received(:warn).with(/BotDetectController: Cloudflare Turnstile validation failed/)
     end
   end
 end

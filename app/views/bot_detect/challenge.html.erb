@@ -42,7 +42,13 @@
       // replace the challenge page in history
       window.location.replace(dest);
     } else {
-      // error message?
+      console.log("Turnstile response reported as failure: " + JSON.stringify(result))
+      document.querySelector(".cf-turnstile").outerHTML = `
+        <div class="alert alert-danger" role="alert">
+          <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+          Check failed. Sorry, something has gone wrong, or your traffic looks unusual to us. You can try refreshing this page to try again.
+        </div>
+      `;
     }
     //todo catch JS errors too
   }
