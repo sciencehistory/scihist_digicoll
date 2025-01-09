@@ -60,12 +60,19 @@ class BotDetectController < ApplicationController
   # key in rack env that says challenge is required
   class_attribute :env_challenge_trigger_key, default: "bot_detect.should_challenge"
 
+  # for allowing unsubscribe for testing
+  class_attribute :_track_notification_subsription, instance_accessor: false
+
   # perhaps in an initializer, and after changing any config, run:
   #
   #     Rails.application.config.to_prepare do
   #       BotDetectController.rack_attack_init
   #     end
+  #
+  # Safe to call more than once if you change config and want to call again, say in testing.
   def self.rack_attack_init
+    self._rack_attack_uninit # make it safe for calling multiple times
+
     ## Turnstile bot detection throttling
     #
     # for paths matched by `rate_limited_locations`, after over rate_limit count requests in rate_limit_period,
@@ -78,13 +85,12 @@ class BotDetectController < ApplicationController
     Rack::Attack.track("bot_detect/rate_exceeded",
         limit: self.rate_limit_count,
         period: self.rate_limit_period) do |req|
-
       if self.location_matcher.call(req)
         self.rate_limit_discriminator.call(req)
       end
     end
 
-    ActiveSupport::Notifications.subscribe("track.rack_attack") do |_name, _start, _finish, request_id, payload|
+    self._track_notification_subsription = ActiveSupport::Notifications.subscribe("track.rack_attack") do |_name, _start, _finish, request_id, payload|
       rack_request = payload[:request]
       rack_env     = rack_request.env
       match_name = rack_env["rack.attack.matched"]  # name of rack-attack rule
@@ -97,6 +103,12 @@ class BotDetectController < ApplicationController
         rack_env[self.env_challenge_trigger_key] = true
       end
     end
+  end
+
+  def self._rack_attack_uninit
+    Rack::Attack.track("bot_detect/rate_exceeded") {} # overwrite track name with empty proc
+    ActiveSupport::Notifications.unsubscribe(self._track_notification_subsription) if self._track_notification_subsription
+    self._track_notification_subsription = nil
   end
 
   # Usually in your ApplicationController,
