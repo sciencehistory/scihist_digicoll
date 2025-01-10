@@ -17,14 +17,8 @@ class SearchBuilder
     def within_collection(solr_parameters)
       solr_parameters[:fq] ||= []
       solr_parameters[:fq] << "{!term f=#{collection_id_solr_field}}#{collection_id}"
-
-      box_id&.scan(/[a-zA-Z0-9]+/)&.each do |word|
-        solr_parameters[:fq] << "#{box_id_solr_field}:#{word}"
-      end
-
-      folder_id&.scan(/[a-zA-Z0-9]+/)&.each do |word|
-        solr_parameters[:fq] << "#{folder_id_solr_field}:#{word}"
-      end
+      solr_parameters[:fq] << "#{box_id_solr_field}:(#{box_id})" if box_id.present?
+      solr_parameters[:fq] << "#{folder_id_solr_field}:(#{folder_id})" if folder_id.present?
     end
 
     private
