@@ -59,6 +59,22 @@
                 </button>
               </div>
               <%= hidden_field_tag :sort, params[:sort], id: 'collection_sort' %>
+
+              <% if collection.department == 'Archives' %>
+                <div class="row mx-0">
+                  <div class="col gx-0">
+                    <label  for="box_id">Box</label>
+                    <%= search_field_tag :box_id,    params[:box_id],    class: "box_id form-control",    id: "box_id",
+                    :"aria-label" => 'Box'
+                    %>
+                  </div>
+                  <div class="col gx-0 ms-3">
+                    <label for="folder_id">Folder</label>
+                    <%= search_field_tag :folder_id, params[:folder_id], class: "folder_id form-control", id: "folder_id",
+                    :"aria-label" => 'Folder' %>
+                  </div>
+                </div>
+              <% end %>
             <% end %>
           </div>
 

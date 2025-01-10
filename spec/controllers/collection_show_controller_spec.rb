@@ -326,6 +326,120 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
     end
   end
 
+  describe "search form with box and folder", indexable_callbacks: true do
+    render_views
+    describe "smoke test" do
+      let(:b1f1) {
+        Work::PhysicalContainer.new({ box:1, folder:1 })
+      }
+      let(:b1f2) {
+        Work::PhysicalContainer.new({ box:1, folder:2 })
+      }
+      let(:b12f1) {
+        Work::PhysicalContainer.new({ box:12, folder:1 })
+      }
+      let!(:works) {
+        [
+          create(:work, :published, physical_container: b1f1, title: "b1_f1_1", contained_by:   [collection]),
+          create(:work, :published, physical_container: b1f1, title: "b1_f1_2", contained_by:   [collection]),
+          create(:work, :published, physical_container: b1f2, title: "b1_f1_3", contained_by:   [collection]),
+          create(:work, :published, physical_container: b1f2, title: "b12_f1",  contained_by:   [collection]),
+        ]
+      }
+      let!(:collection) { create(:collection, friendlier_id: "faked", department: "Archives") }
+      let(:box_and_folder_params) do
+        {"q"=>"", "box_id"=>"1", "folder_id"=>"1", "sort"=>"", "collection_id"=> collection.friendlier_id }
+      end
+      it "finds works by box and folder" do
+        get :index, params: box_and_folder_params
+        expect(response).to have_http_status(200)
+        expect(response.body).to     include(works[0].title)
+        expect(response.body).to     include(works[1].title)
+        expect(response.body).not_to include(works[2].title)
+        # Box numbers treated like integers, not strings:
+        # A search for box "1" should not match box "12"
+        expect(response.body).not_to include(works[3].title)
+      end
+      it "requires user to specify containing box" do
+        get :index, params: {"q"=>"", "folder_id"=>"1", "sort"=>"", "collection_id"=> collection.friendlier_id }
+        expect(response).to have_http_status(200)
+        expect(response.body).to include("If you specify a folder, please also specify a box")
+      end
+    end
+   describe "edge cases" do
+      let(:parsed){ parsed = Nokogiri::HTML(response.body) }
+      let(:titles_as_displayed) { parsed.css('.scihist-results-list-item-head a').map {|x| x.text} }
+      let!(:work) { create(:work, :published,
+        title: "archival_work",
+        physical_container: Work::PhysicalContainer.new({
+          "box"=>"apples, pears and mangos 1234",
+          "folder"=> "lions and tigers and bears oh my 5678"
+        }),
+        contained_by:   [collection])
+      }
+      let!(:collection) { create(:collection, friendlier_id: "faked", department: "Archives") }
+      it "does not return works that don't match" do
+        get :index, params: {
+          "q"=>"",
+          "box_id"=>"goat",
+          "folder_id"=>"goat",
+          "sort"=>"",
+          "collection_id"=> collection.friendlier_id
+        }
+        expect(response.body).not_to include(work.title)
+      end
+      it "matches partial matches" do
+        get :index, params: {
+          "q"=>"",
+          "box_id"=>"pears",
+          "folder_id"=>"bears",
+          "sort"=>"",
+          "collection_id"=> collection.friendlier_id
+        }
+        expect(response.body).to include(work.title)
+      end
+      it "matches partial matches in any order" do
+        get :index, params: {
+          "q"=>"",
+          "box_id"=>"mangos, pears",
+          "folder_id"=>"bears,lions",
+          "sort"=>"",
+          "collection_id"=> collection.friendlier_id
+        }
+        expect(response.body).to include(work.title)
+      end
+      it "returns exact matches" do
+        get :index, params: {
+          "q"=>"",
+          "box_id"=> work.physical_container.box,
+          "folder_id"=> work.physical_container.folder,
+          "sort"=>"",
+          "collection_id"=> collection.friendlier_id
+        }
+        expect(response.body).to include(work.title)
+      end
+      it "123 should not match 1234" do
+        get :index, params: {
+          "q"=>"",
+          "box_id"=>"12",
+          "sort"=>"",
+          "collection_id"=> collection.friendlier_id
+        }
+        expect(response.body).not_to include(work.title)
+      end
+      it "is case insensitive" do
+        get :index, params: {
+          "q"=>"",
+          "box_id"=>"PeArS",
+          "folder_id"=>"BeArS",
+          "sort"=>"",
+          "collection_id"=> collection.friendlier_id
+        }
+        expect(response.body).to include(work.title)
+      end
+    end
+  end
+
   describe "#facet", indexable_callbacks: true do
     render_views
 
