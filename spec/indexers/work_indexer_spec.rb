@@ -43,9 +43,9 @@ describe WorkIndexer do
 
   # See https://github.com/sciencehistory/scihist_digicoll/issues/2585
   describe "box and folder" do
-    let(:box_search_field) {'box_tsi'}
+    let(:box_search_field) {'box_tsim'}
     let(:box_sort_field)  {'box_sort'}
-    let(:folder_search_field) {'folder_tsi'}
+    let(:folder_search_field) {'folder_tsim'}
     let(:folder_sort_field)   {'folder_sort'}
 
     let(:work_2) { create(:work, physical_container: Work::PhysicalContainer.new({"box"=>"1", "folder"=>"3"})) }

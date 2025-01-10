@@ -9,22 +9,16 @@ class SearchBuilder
   # Used on CollectionShowController search within a collection
   class WithinCollectionBuilder < ::SearchBuilder
     class_attribute :collection_id_solr_field, default: "collection_id_ssim"
-    class_attribute :box_id_solr_field,        default: "box_tsi"
-    class_attribute :folder_id_solr_field,     default: "folder_tsi"
+    class_attribute :box_id_solr_field,        default: "box_tsim"
+    class_attribute :folder_id_solr_field,     default: "folder_tsim"
 
     self.default_processor_chain += [:within_collection]
 
     def within_collection(solr_parameters)
       solr_parameters[:fq] ||= []
       solr_parameters[:fq] << "{!term f=#{collection_id_solr_field}}#{collection_id}"
-
-      box_id&.scan(/[a-zA-Z0-9]+/)&.each do |word|
-        solr_parameters[:fq] << "#{box_id_solr_field}:#{word}"
-      end
-
-      folder_id&.scan(/[a-zA-Z0-9]+/)&.each do |word|
-        solr_parameters[:fq] << "#{folder_id_solr_field}:#{word}"
-      end
+      solr_parameters[:fq] << "#{box_id_solr_field}:(#{box_id})" if box_id.present?
+      solr_parameters[:fq] << "#{folder_id_solr_field}:(#{folder_id})" if folder_id.present?
     end
 
     private

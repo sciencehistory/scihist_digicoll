@@ -61,8 +61,8 @@ class WorkIndexer < Kithe::Indexer
       acc.concat(DateIndexHelper.new(record).expanded_years)
     end
 
-    to_field "box_tsi",     obj_extract("physical_container"), transform( ->(v) { v.box    if v.box.present?    })
-    to_field "folder_tsi",  obj_extract("physical_container"), transform( ->(v) { v.folder if v.folder.present? })
+    to_field "box_tsim",     obj_extract("physical_container"), transform( ->(v) { v.box    if v.box.present?    })
+    to_field "folder_tsim",  obj_extract("physical_container"), transform( ->(v) { v.folder if v.folder.present? })
     to_field "box_sort",    obj_extract("physical_container"), transform( ->(v) { v.box[/\d+/]   if v.box.present?    })
     to_field "folder_sort", obj_extract("physical_container"), transform( ->(v) { v.folder[/\d+/] if v.folder.present? })
 
