@@ -114,3 +114,29 @@ ActiveSupport::Notifications.subscribe(/throttle\.rack_attack|track\.rack_attack
     Rack::Attack.cache.write(last_logged_key, JSON.dump(last_logged_info), alert_only_per)
   end
 end
+
+Rails.application.config.to_prepare do
+  # allow rate_limit_count requests in rate_limit_period, before issuing challenge
+  BotDetectController.rate_limit_period = 12.hour
+  BotDetectController.rate_limit_count = 3
+
+  # How long a challenge pass is good for
+  BotDetectController.session_passed_good_for = 24.hours
+
+  BotDetectController.enabled                 = ScihistDigicoll::Env.lookup(:cf_turnstile_enabled)
+  BotDetectController.cf_turnstile_sitekey    = ScihistDigicoll::Env.lookup(:cf_turnstile_sitekey)
+  BotDetectController.cf_turnstile_secret_key = ScihistDigicoll::Env.lookup(:cf_turnstile_secret_key)
+
+  # any custom collection controllers or other controllers that offer search have to be listed here
+  # to rate-limit them!
+  BotDetectController.rate_limited_locations = [
+    { controller: "catalog" },
+    { controller: "featured_topic" },
+    { controller: "collection_show" },
+    { controller: "collection_show_controllers/immigrants_and_innovation_collection" },
+    { controller: "collection_show_controllers/oral_history_collection"},
+    { controller: "collection_show_controllers/bredig_collection"}
+  ]
+
+  BotDetectController.rack_attack_init
+end

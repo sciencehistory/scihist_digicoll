@@ -6,10 +6,14 @@ Rails.application.routes.draw do
 
   class CanAccessStaffFunctionsConstraint
     def self.matches?(request)
-      AccessPolicy.new(request.env['warden'].user).can? :access_staff_functions
+      AccessPolicy.new(request.env['warden']&.user).can? :access_staff_functions
     end
   end
 
+
+  # bot detection challenge
+  get "/challenge", to: "bot_detect#challenge", as: :bot_detect_challenge
+  post "/challenge", to: "bot_detect#verify_challenge"
 
   # custom error pages
   # https://www.marcelofossrj.com/recipe/2019/04/14/custom-errors.html
