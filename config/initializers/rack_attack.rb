@@ -116,6 +116,13 @@ ActiveSupport::Notifications.subscribe(/throttle\.rack_attack|track\.rack_attack
 end
 
 Rails.application.config.to_prepare do
+  # allow rate_limit_count requests in rate_limit_period, before issuing challenge
+  BotDetectController.rate_limit_period = 12.hour
+  BotDetectController.rate_limit_count = 3
+
+  # How long a challenge pass is good for
+  BotDetectController.session_passed_good_for = 24.hours
+
   BotDetectController.enabled                 = ScihistDigicoll::Env.lookup(:cf_turnstile_enabled)
   BotDetectController.cf_turnstile_sitekey    = ScihistDigicoll::Env.lookup(:cf_turnstile_sitekey)
   BotDetectController.cf_turnstile_secret_key = ScihistDigicoll::Env.lookup(:cf_turnstile_secret_key)

@@ -1,5 +1,8 @@
 class BotDetectController < ApplicationController
   # Config for bot detection is held here in class_attributes, kind of wonky, but it works
+  #
+  # These are defaults ready for extraction to a gem, in general here at Sci Hist if we want
+  # to set config we do it in ./config/initializers/rack_attack.rb
 
   class_attribute :enabled, default: false # Must set to true to turn on at all
 
@@ -9,7 +12,7 @@ class BotDetectController < ApplicationController
 
   # up to rate_limit_count requests in rate_limit_period before challenged
   class_attribute :rate_limit_period, default: 12.hour
-  class_attribute :rate_limit_count, default: 3
+  class_attribute :rate_limit_count, default: 10
 
   # how long is a challenge pass good for before re-challenge?
   class_attribute :session_passed_good_for, default: 24.hours
