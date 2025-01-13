@@ -20,10 +20,12 @@ describe "Cart and Batch Edit" do
   # Temporarily change desired mocked config
   # Kinda hacky because we need to keep re-registering the tracks
   around(:each) do |example|
+    orig_enabled = BotDetectController.enabled
     orig_sitekey = BotDetectController.cf_turnstile_sitekey
     orig_secretkey = BotDetectController.cf_turnstile_secret_key
     orig_ratelimitcount = BotDetectController.rate_limit_count
 
+    BotDetectController.enabled = true
     BotDetectController.cf_turnstile_sitekey = cf_turnstile_sitekey
     BotDetectController.cf_turnstile_secret_key = cf_turnstile_secret_key
     BotDetectController.rate_limit_count = rate_limit_count
@@ -31,6 +33,8 @@ describe "Cart and Batch Edit" do
     BotDetectController.rack_attack_init
 
     example.run
+
+    BotDetectController.enabled = orig_enabled
 
     BotDetectController.cf_turnstile_sitekey = orig_sitekey
     BotDetectController.cf_turnstile_secret_key = orig_secretkey
