@@ -65,6 +65,7 @@ class WorkCartSerializer
       medium:                   'Medium',
       extent:                   'Extent',
       place:                    'Place',
+      format:                   'Format',
       genre:                    'Genre',
       description:              'Description',
       subject:                  'Subject/s',

@@ -11,7 +11,7 @@ describe WorkCartSerializer do
       expect(report[0]).to eq [
         "Title", "Additional title",
         "URL", "External ID", "Department", "Creator",
-        "Date", "Medium", "Extent", "Place", "Genre",
+        "Date", "Medium", "Extent", "Place", "Format", "Genre",
         "Description", "Subject/s", "Series Arrangement",
         "Physical Container", "Collection", "Rights",
         "Rights Holder", "Additional Credit",
@@ -39,19 +39,20 @@ describe WorkCartSerializer do
       expect(report[1][7]).to  eq 'Audiocassettes|Celluloid|Dye'
       expect(report[1][8]).to  eq '0.75 in. H x 2.5 in. W|80 cm L x 22 cm Diam.'
       expect(report[1][9]).to  eq 'Illinois--Peoria'    # place
-      expect(report[1][10]).to eq 'Lithographs'         # genre
-      expect(report[1][11]).to eq 'Description 1'       # description
-      expect(report[1][12]).to eq 's1|s2|s3'            # subject
-      expect(report[1][13]).to eq 'Series arrangement 1|Series arrangement 2'
-      expect(report[1][14]).to eq 'Box: Box|Page: Page|Part: Part|Reel: Reel|Folder: Folder|Volume: Volume|Shelfmark: Shelfmark'
-      expect(report[1][15]).to eq 'Test title' # collection
-      expect(report[1][16]).to eq "http://rightsstatements.org/vocab/NoC-US/1.0/"
-      expect(report[1][17]).to eq "Rights Holder"
-      expect(report[1][18]).to eq "photographed_by:Douglas Lockard|photographed_by:Mark Backrath"
-      expect(report[1][19]).to eq "Daniel Sanford"
-      expect(report[1][20]).to eq "Admin Note"
-      expect(Date.parse(report[1][21])).to be_a Date
+      expect(report[1][10]).to eq 'image|mixed_material' # format
+      expect(report[1][11]).to eq 'Lithographs'         # genre
+      expect(report[1][12]).to eq 'Description 1'       # description
+      expect(report[1][13]).to eq 's1|s2|s3'            # subject
+      expect(report[1][14]).to eq 'Series arrangement 1|Series arrangement 2'
+      expect(report[1][15]).to eq 'Box: Box|Page: Page|Part: Part|Reel: Reel|Folder: Folder|Volume: Volume|Shelfmark: Shelfmark'
+      expect(report[1][16]).to eq 'Test title' # collection
+      expect(report[1][17]).to eq "http://rightsstatements.org/vocab/NoC-US/1.0/"
+      expect(report[1][18]).to eq "Rights Holder"
+      expect(report[1][19]).to eq "photographed_by:Douglas Lockard|photographed_by:Mark Backrath"
+      expect(report[1][20]).to eq "Daniel Sanford"
+      expect(report[1][21]).to eq "Admin Note"
       expect(Date.parse(report[1][22])).to be_a Date
+      expect(Date.parse(report[1][23])).to be_a Date
     end
   end
 
