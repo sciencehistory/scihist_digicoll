@@ -116,7 +116,8 @@ ActiveSupport::Notifications.subscribe(/throttle\.rack_attack|track\.rack_attack
 end
 
 Rails.application.config.to_prepare do
-  BotDetectController.cf_turnstile_sitekey = ScihistDigicoll::Env.lookup(:cf_turnstile_sitekey)
+  BotDetectController.enabled                 = ScihistDigicoll::Env.lookup(:cf_turnstile_enabled)
+  BotDetectController.cf_turnstile_sitekey    = ScihistDigicoll::Env.lookup(:cf_turnstile_sitekey)
   BotDetectController.cf_turnstile_secret_key = ScihistDigicoll::Env.lookup(:cf_turnstile_secret_key)
 
   # any custom collection controllers or other controllers that offer search have to be listed here

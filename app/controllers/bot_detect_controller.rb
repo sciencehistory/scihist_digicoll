@@ -1,6 +1,8 @@
 class BotDetectController < ApplicationController
   # Config for bot detection is held here in class_attributes, kind of wonky, but it works
 
+  class_attribute :enabled, default: false # Must set to true to turn on at all
+
   class_attribute :cf_turnstile_sitekey, default: "1x00000000000000000000AA" # a testing key that always passes
   class_attribute :cf_turnstile_secret_key, default: "1x0000000000000000000000000000000AA" # a testing key always passes
   # Turnstile testing keys: https://developers.cloudflare.com/turnstile/troubleshooting/testing/
@@ -85,7 +87,7 @@ class BotDetectController < ApplicationController
     Rack::Attack.track("bot_detect/rate_exceeded",
         limit: self.rate_limit_count,
         period: self.rate_limit_period) do |req|
-      if self.location_matcher.call(req)
+      if self.enabled && self.location_matcher.call(req)
         self.rate_limit_discriminator.call(req)
       end
     end
@@ -115,7 +117,8 @@ class BotDetectController < ApplicationController
   #
   #     before_action { |controller| BotDetectController.bot_detection_enforce_filter(controller) }
   def self.bot_detection_enforce_filter(controller)
-    if controller.request.env[self.env_challenge_trigger_key] &&
+    if self.enabled &&
+       controller.request.env[self.env_challenge_trigger_key] &&
        !controller.session[self.session_passed_key].try { |date| Time.now - Time.new(date) < self.session_passed_good_for }
 
       Rails.logger.info("#{self.name}: Cloudflare Turnstile challenge redirect: (#{controller.request.remote_ip}, #{controller.request.user_agent}): from #{controller.request.url}")
