@@ -13,12 +13,10 @@ class CollectionShowController < CatalogController
   ORAL_HISTORY_DEPARTMENT_VALUE = "Center for Oral History"
 
   def index
-    if params[:folder_id].present?
-      if params[:box_id].nil? || params[:box_id].empty?
-        flash[:alert] = "If you specify a folder, please also specify a box."
-        params[:box_id] = nil
-        params[:folder_id] = nil
-      end
+    if params[:folder_id].present? && params[:box_id].blank?
+      flash[:alert] = "If you specify a folder, please also specify a box."
+      params[:box_id] = nil
+      params[:folder_id] = nil
     end
     super
     @collection_opac_urls = CollectionOpacUrls.new(collection)
