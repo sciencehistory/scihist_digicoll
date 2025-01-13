@@ -20,36 +20,48 @@
 
 <script type="text/javascript">
   async function turnstileCallback(token) {
-    // I don't know if we should be disabling CSRF for this one, but we'll just use it
-    const csrfToken = document.querySelector("[name='csrf-token']");
+    try {
+      // I don't know if we should be disabling CSRF for this one, but we'll just use it
+      const csrfToken = document.querySelector("[name='csrf-token']");
 
-    const response = await fetch('<%= bot_detect_challenge_path %>', {
-      method: 'POST',
-      headers: {
-        "X-CSRF-Token": csrfToken?.content,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ cf_turnstile_response: token }),
-    });
+      const response = await fetch('<%= bot_detect_challenge_path %>', {
+        method: 'POST',
+        headers: {
+          "X-CSRF-Token": csrfToken?.content,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ cf_turnstile_response: token }),
+      });
 
-    result = await response.json();
-    if (result["success"]) {
-      const dest = new URLSearchParams(window.location.search).get("dest");
-      // For security make sure it only has path and on
-      if (!dest.startsWith("/") || dest.startsWith("//")) {
-        throw new Error("illegal non-local redirect: " + dest);
+      if (!response.ok) {
+        throw new Error('bad response: ' + response.status + ": " + response.url);
       }
-      // replace the challenge page in history
-      window.location.replace(dest);
-    } else {
-      console.log("Turnstile response reported as failure: " + JSON.stringify(result))
-      document.querySelector(".cf-turnstile").outerHTML = `
-        <div class="alert alert-danger" role="alert">
-          <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-          Check failed. Sorry, something has gone wrong, or your traffic looks unusual to us. You can try refreshing this page to try again.
-        </div>
-      `;
+
+      result = await response.json();
+      if (result["success"] == true) {
+        const dest = new URLSearchParams(window.location.search).get("dest");
+        // For security make sure it only has path and on
+        if (!dest.startsWith("/") || dest.startsWith("//")) {
+          throw new Error("illegal non-local redirect: " + dest);
+        }
+        // replace the challenge page in history
+        window.location.replace(dest);
+      } else {
+        console.error("Turnstile response reported as failure: " + JSON.stringify(result))
+        _displayChallengeError();
+      }
+    } catch(error) {
+      console.error("Error processing turnstile challenge backend action: " + error);
+      _displayChallengeError();
     }
-    //todo catch JS errors too
+  }
+
+  function _displayChallengeError() {
+    document.querySelector(".cf-turnstile").outerHTML = `
+      <div class="alert alert-danger" role="alert">
+        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        Check failed. Sorry, something has gone wrong, or your traffic looks unusual to us. You can try refreshing this page to try again.
+      </div>
+    `;
   }
 </script>
