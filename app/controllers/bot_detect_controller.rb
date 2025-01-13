@@ -141,7 +141,7 @@ class BotDetectController < ApplicationController
       remoteip: request.remote_ip
     }
 
-    http = HTTP.timeout(timeout: self.cf_timeout)
+    http = HTTP.timeout(self.cf_timeout)
     response = http.post(self.cf_turnstile_validation_url,
       json: body)
 
