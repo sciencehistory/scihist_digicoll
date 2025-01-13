@@ -40,6 +40,11 @@ class CollectionShowController < CatalogController
     # and we need to make sure collection_id is allowed by BL, don't totally
     # understand this, as of BL 7.25
     config.search_state_fields << :collection_id
+
+    config.add_sort_field("box_folder") do |field|
+      field.label = "box and folder"
+      field.sort = "box_sort asc, folder_sort asc, title asc"
+    end
   end
 
   private
@@ -50,6 +55,19 @@ class CollectionShowController < CatalogController
   def search_service_context
     super.merge!(collection_id: collection.id, collection_default_sort_order: collection_default_sort_order)
   end
+
+  # What ViewComponent class to use for a given search result on the results screen, for
+  # Work or Collection. Called by _document_list.
+  def view_component_class_for(model)
+    if model.work? && model&.department == 'Archives'
+      SearchResult::SearchWithinCollectionWorkComponent
+    else
+      super
+    end
+  end
+  helper_method :view_component_class_for
+
+
 
   # Some collections define a default sort field. Look up its sort order in blacklight_config and use that.
   def collection_default_sort_order
