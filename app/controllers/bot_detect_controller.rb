@@ -2,7 +2,7 @@ class BotDetectController < ApplicationController
   # Config for bot detection is held here in class_attributes, kind of wonky, but it works
 
   class_attribute :cf_turnstile_sitekey, default: "1x00000000000000000000AA" # a testing key that always passes
-  class_attribute :cf_turnstile_secret_key, default: "2x0000000000000000000000000000000AA" #"1x0000000000000000000000000000000AA" # a testing key always passes
+  class_attribute :cf_turnstile_secret_key, default: "1x0000000000000000000000000000000AA" # a testing key always passes
   # Turnstile testing keys: https://developers.cloudflare.com/turnstile/troubleshooting/testing/
 
   # up to rate_limit_count requests in rate_limit_period before challenged
@@ -153,8 +153,12 @@ class BotDetectController < ApplicationController
 
     # let's just return the whole thing to client? Is there anything confidential there?
     render json: result
-  rescue HTTP::Error => e
-    byebug
-    1+1
+  rescue HTTP::Error, JSON::ParserError => e
+    # probably an http timeout? or something weird.
+    Rails.logger.warn("#{self.class.name}: Cloudflare turnstile validation error (#{request.remote_ip}, #{request.user_agent}): #{e}: #{response&.body}")
+    render json: {
+      success: false,
+      http_exception: e
+    }
   end
 end
