@@ -198,6 +198,11 @@ module ScihistDigicoll
     # for maintenance tasks.
     define_key :logins_disabled, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
 
+    # https://www.cloudflare.com/application-services/products/turnstile/
+    define_key :cf_turnstile_sitekey
+    define_key :cf_turnstile_secret_key
+
+
     # Logic to get network location of the Redis instance we will
     # use for persistent data -- such as our jobs queue for resque.
     #
