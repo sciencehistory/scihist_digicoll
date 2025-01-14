@@ -58,7 +58,7 @@ class BotDetectController < ApplicationController
         end
       when String
         # string complete path at beginning, must end in ?, or end of string
-        /\A#{Regexp.escape val}(\?|\Z)/ =~ rack_req.path
+        /\A#{Regexp.escape val}(\/|\?|\Z)/ =~ rack_req.path
       end
     end
   }
