@@ -132,9 +132,9 @@ Rails.application.config.to_prepare do
   # any custom collection controllers or other controllers that offer search have to be listed here
   # to rate-limit them!
   BotDetectController.rate_limited_locations = [
-    '/catalog/',
-    '/focus/',
-    '/collections/'
+    '/catalog',
+    '/focus',
+    '/collections'
   ]
 
   BotDetectController.rack_attack_init
