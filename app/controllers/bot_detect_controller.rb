@@ -74,7 +74,7 @@ class BotDetectController < ApplicationController
   class_attribute :env_challenge_trigger_key, default: "bot_detect.should_challenge"
 
   # for allowing unsubscribe for testing
-  class_attribute :_track_notification_subsription, instance_accessor: false
+  class_attribute :_track_notification_subscription, instance_accessor: false
 
   # perhaps in an initializer, and after changing any config, run:
   #
@@ -103,7 +103,7 @@ class BotDetectController < ApplicationController
       end
     end
 
-    self._track_notification_subsription = ActiveSupport::Notifications.subscribe("track.rack_attack") do |_name, _start, _finish, request_id, payload|
+    self._track_notification_subscription = ActiveSupport::Notifications.subscribe("track.rack_attack") do |_name, _start, _finish, request_id, payload|
       rack_request = payload[:request]
       rack_env     = rack_request.env
       match_name = rack_env["rack.attack.matched"]  # name of rack-attack rule
