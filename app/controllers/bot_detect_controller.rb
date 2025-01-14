@@ -1,3 +1,13 @@
+# This controller has actions for issuing a challenge page for CloudFlare Turnstile product,
+# and then redirecting back to desired page.
+#
+# It also includes logic for configuring rack attack and a Rails controller filter to enforce
+# redirection to these actions. All the logic related to bot detection with turnstile is
+# mostly in this file -- with very flexible configuration in class_attributes -- to faciliate
+# future extraction to a re-usable gem if desired.
+#
+# See more local docs at https://sciencehistory.atlassian.net/wiki/spaces/HDC/pages/2645098498/Cloudflare+Turnstile+bot+detection
+#
 class BotDetectController < ApplicationController
   # Config for bot detection is held here in class_attributes, kind of wonky, but it works
   #
