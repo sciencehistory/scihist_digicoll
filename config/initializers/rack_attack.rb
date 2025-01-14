@@ -120,7 +120,7 @@ end
 Rails.application.config.to_prepare do
   # allow rate_limit_count requests in rate_limit_period, before issuing challenge
   BotDetectController.rate_limit_period = 12.hour
-  BotDetectController.rate_limit_count = 3
+  BotDetectController.rate_limit_count = 10
 
   # How long a challenge pass is good for
   BotDetectController.session_passed_good_for = 24.hours
