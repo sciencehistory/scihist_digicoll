@@ -130,8 +130,8 @@ class BotDetectController < ApplicationController
 
   def self._rack_attack_uninit
     Rack::Attack.track("bot_detect/rate_exceeded") {} # overwrite track name with empty proc
-    ActiveSupport::Notifications.unsubscribe(self._track_notification_subsription) if self._track_notification_subsription
-    self._track_notification_subsription = nil
+    ActiveSupport::Notifications.unsubscribe(self._track_notification_subscription) if self._track_notification_subscription
+    self._track_notification_subscription = nil
   end
 
   # Usually in your ApplicationController,
