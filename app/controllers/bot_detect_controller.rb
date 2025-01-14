@@ -28,10 +28,18 @@ class BotDetectController < ApplicationController
   class_attribute :rate_limited_locations, default: []
 
 
-  # discriminator is how we batch requests for counting rate limit, ordinarily by ip,
-  # but we could expand to subnet instead, or use user-agent or whatever. If it returns
-  # nil, then won't be tracked.
-  class_attribute :rate_limit_discriminator, default: ->(req) { req.ip }
+  # rate limit per subnet, following lehigh's lead, although we use a smaller
+  # subnet: /24 for IPv4, and /72 for IPv6
+  # https://git.drupalcode.org/project/turnstile_protect/-/blob/0dae9f95d48f9d8cae5a8e61e767c69f64490983/src/EventSubscriber/Challenge.php#L140-151
+  class_attribute :rate_limit_discriminator, default: (lambda do |req|
+    if req.ip.index(":") # ipv6
+      IPAddr.new("#{req.ip}/24").to_string
+    else
+      IPAddr.new("#{req.ip}/72").to_string
+    end
+  rescue IPAddr::InvalidAddressError
+    req.ip
+  end)
 
   class_attribute :location_matcher, default: ->(rack_req) {
     parsed_route = nil
