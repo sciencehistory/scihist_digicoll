@@ -674,7 +674,15 @@ class Admin::WorksController < AdminController
       scope = Work.all
       if params[:title_or_id].present?
         sanitized_search_phrase = Work.sanitize_sql_like(params[:title_or_id])
-        scope = scope.where("(title ILIKE ? OR friendlier_id ILIKE ? OR id = ?)",
+
+        # This expression will match any element of the external_id jsonb array,
+        # as long as its value is sanitized_search_phrase, regardless of the value of 'category'.
+        jsonb_match_value = "'[{\"value\": \"#{sanitized_search_phrase}\"}]'::jsonb"
+
+        # This condition attempts to match external_id against jsonb_match_value:
+        matches_external_id = "json_attributes -> 'external_id' @> #{jsonb_match_value}"
+
+        scope = scope.where("(title ILIKE ? OR friendlier_id ILIKE ? OR #{matches_external_id} OR id = ?)",
           "%#{sanitized_search_phrase}%",
           "%#{sanitized_search_phrase}%",
           Work.type_for_attribute(:id).cast(params[:title_or_id])
