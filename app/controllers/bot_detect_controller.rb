@@ -37,6 +37,10 @@ class BotDetectController < ApplicationController
   # Used by default :location_matcher, if set custom may not be used
   class_attribute :rate_limited_locations, default: []
 
+  # Executed at the _controller_ filter level, to last minute exempt certain
+  # actions from protection.
+  class_attribute :allow_exempt, default: ->(controller) { false }
+
 
   # rate limit per subnet, following lehigh's lead, although we use a smaller
   # subnet: /24 for IPv4, and /72 for IPv6
@@ -141,7 +145,8 @@ class BotDetectController < ApplicationController
     if self.enabled &&
         controller.request.env[self.env_challenge_trigger_key] &&
         !controller.session[self.session_passed_key].try { |date| Time.now - Time.new(date) < self.session_passed_good_for } &&
-        !controller.kind_of?(self) # don't ever guard ourself, that'd be a mess!
+        !controller.kind_of?(self) && # don't ever guard ourself, that'd be a mess!
+        ! self.allow_exempt.call(controller)
 
       # we can only do GET requests right now
       if !controller.request.get?
