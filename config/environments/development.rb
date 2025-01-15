@@ -17,7 +17,7 @@ Rails.application.configure do
   # use custom error pages when consider_all_requests_local = false
   config.exceptions_app = self.routes
 
-  # Enable/disable caching. By default caching is disabled.
+  # Enable/disable other caching. By default caching is disabled.
   # Run rails dev:cache to toggle caching.
   if Rails.root.join('tmp', 'caching-dev.txt').exist?
     config.action_controller.perform_caching = true
@@ -29,8 +29,11 @@ Rails.application.configure do
     }
   else
     config.action_controller.perform_caching = false
+  end
 
-    config.cache_store = :null_store
+  # But force Rails.cache to memory store if we're doing turnstile bot detection,
+  if ScihistDigicoll::Env.lookup(:cf_turnstile_enabled)
+    config.cache_store = :memory_store
   end
 
   # Only in dev or test, let us know if we are passing params that haven't

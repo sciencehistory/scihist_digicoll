@@ -114,3 +114,37 @@ ActiveSupport::Notifications.subscribe(/throttle\.rack_attack|track\.rack_attack
     Rack::Attack.cache.write(last_logged_key, JSON.dump(last_logged_info), alert_only_per)
   end
 end
+
+
+# Explained at https://sciencehistory.atlassian.net/wiki/spaces/HDC/pages/2645098498/Cloudflare+Turnstile+bot+detection
+Rails.application.config.to_prepare do
+  # allow rate_limit_count requests in rate_limit_period, before issuing challenge
+  BotDetectController.rate_limit_period = 12.hour
+  BotDetectController.rate_limit_count = 2
+
+  # How long a challenge pass is good for
+  BotDetectController.session_passed_good_for = 24.hours
+
+  BotDetectController.enabled                 = ScihistDigicoll::Env.lookup(:cf_turnstile_enabled)
+  BotDetectController.cf_turnstile_sitekey    = ScihistDigicoll::Env.lookup(:cf_turnstile_sitekey)
+  BotDetectController.cf_turnstile_secret_key = ScihistDigicoll::Env.lookup(:cf_turnstile_secret_key)
+
+  # any custom collection controllers or other controllers that offer search have to be listed here
+  # to rate-limit them!
+  BotDetectController.rate_limited_locations = [
+    '/catalog',
+    '/focus',
+    '/collections'
+  ]
+
+  # But except any Catalog #facet action that looks like an ajax/fetch request, the redirect
+  # ain't gonna work there, we just exempt it.
+  #
+  # sec-fetch-dest is set to 'empty' by browser on fetch requests, to limit us further;
+  # sure an attacker could fake it, we don't mind if someone determined can avoid rate-limiting on this one action
+  BotDetectController.allow_exempt = ->(controller) {
+    controller.params[:action] == "facet" && controller.request.headers["sec-fetch-dest"] == "empty" && controller.kind_of?(CatalogController)
+  }
+
+  BotDetectController.rack_attack_init
+end

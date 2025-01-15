@@ -198,6 +198,14 @@ module ScihistDigicoll
     # for maintenance tasks.
     define_key :logins_disabled, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
 
+    # https://www.cloudflare.com/application-services/products/turnstile/
+    # Default to some always-good testing keys if in development
+    # https://developers.cloudflare.com/turnstile/troubleshooting/testing/
+    define_key :cf_turnstile_sitekey, default: ("1x00000000000000000000AA" if Rails.env.development?)
+    define_key :cf_turnstile_secret_key, default: ("1x0000000000000000000000000000000AA" if Rails.env.development?)
+    define_key :cf_turnstile_enabled, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM, default: false
+
+
     # Logic to get network location of the Redis instance we will
     # use for persistent data -- such as our jobs queue for resque.
     #
