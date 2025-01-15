@@ -139,8 +139,14 @@ class BotDetectController < ApplicationController
   #     before_action { |controller| BotDetectController.bot_detection_enforce_filter(controller) }
   def self.bot_detection_enforce_filter(controller)
     if self.enabled &&
-       controller.request.env[self.env_challenge_trigger_key] &&
-       !controller.session[self.session_passed_key].try { |date| Time.now - Time.new(date) < self.session_passed_good_for }
+        controller.request.env[self.env_challenge_trigger_key] &&
+        !controller.session[self.session_passed_key].try { |date| Time.now - Time.new(date) < self.session_passed_good_for }
+
+      # we can only do GET requests right now
+      if !controller.request.get?
+        Rails.logger.warn("#{self}: Asked to protect request we could not, unprotected: #{controller.requet.method} #{controller.request.url}, (#{controller.request.remote_ip}, #{controller.request.user_agent})")
+        return
+      end
 
       Rails.logger.info("#{self.name}: Cloudflare Turnstile challenge redirect: (#{controller.request.remote_ip}, #{controller.request.user_agent}): from #{controller.request.url}")
       # status code temporary
