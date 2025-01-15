@@ -403,6 +403,25 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
           expect(rows.length).to eq 2
         end
 
+        # object bib item accn aspace interview
+        context "filtering by external_id" do
+          let!(:works) { [
+            create(:work, title: "work_a", external_id: [
+              Work::ExternalId.new({"value"=>"1111",   "category"=>"interview"}),
+            ]),
+            create(:work, title: "work_b", external_id: [
+              Work::ExternalId.new({"value"=>"2222",   "category"=>"aspace"}),
+            ]),
+          ] }
+          it "can filter on external id, regardless of the category of the ID" do
+            get :index, params: { title_or_id: "1111" }
+            rows = response.parsed_body.css('.table.admin-list tbody tr')
+            expect(rows.length).to eq 1
+            get :index, params: { title_or_id: "2222" }
+            rows = response.parsed_body.css('.table.admin-list tbody tr')
+            expect(rows.length).to eq 1
+          end
+        end
 
       end
     end
