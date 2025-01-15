@@ -140,7 +140,8 @@ class BotDetectController < ApplicationController
   def self.bot_detection_enforce_filter(controller)
     if self.enabled &&
         controller.request.env[self.env_challenge_trigger_key] &&
-        !controller.session[self.session_passed_key].try { |date| Time.now - Time.new(date) < self.session_passed_good_for }
+        !controller.session[self.session_passed_key].try { |date| Time.now - Time.new(date) < self.session_passed_good_for } &&
+        !controller.kind_of?(self) # don't ever guard ourself, that'd be a mess!
 
       # we can only do GET requests right now
       if !controller.request.get?
