@@ -12,22 +12,19 @@ class Admin::CollectionsController < AdminController
     # Searching, filtering, sorting and pagination.
     scope = Collection
     if index_params[:title_or_id].present?
-      sanitized_search_phrase = Collection.sanitize_sql_like(params[:title_or_id])
-      # This expression will match any element of the external_id jsonb array,
-      # as long as its value is sanitized_search_phrase, regardless of the value of 'category'.
+      sanitized_search_phrase = Collection.sanitize_sql_like params[:title_or_id]
+
+      # Match on the `value` of external_id, regardless of `category`.
       jsonb_match_value = "'[{\"value\": \"#{sanitized_search_phrase}\"}]'::jsonb"
-
-      # This condition attempts to match external_id against jsonb_match_value:
       matches_external_id = "json_attributes -> 'external_id' @> #{jsonb_match_value}"
-
 
       scope = scope.where(id: index_params[:title_or_id]
       ).or(
-        scope.where(friendlier_id: index_params[:title_or_id])
+        Collection.where(friendlier_id: index_params[:title_or_id])
       ).or(
-        scope.where("title ilike ?", "%" + sanitized_search_phrase + "%")
+        Collection.where("title ilike ?", "%" + sanitized_search_phrase + "%")
       ).or(
-        scope.where(matches_external_id)
+        Collection.where matches_external_id
       )
     end
 
