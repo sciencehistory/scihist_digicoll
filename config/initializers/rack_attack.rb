@@ -134,7 +134,11 @@ Rails.application.config.to_prepare do
   BotDetectController.rate_limited_locations = [
     '/catalog',
     '/focus',
-    '/collections'
+    # we want to omit `/collections` list page, so we do these by controller
+    { controller: "collection_show" },
+    { controller: "collection_show_controllers/immigrants_and_innovation_collection" },
+    { controller: "collection_show_controllers/oral_history_collection"},
+    { controller: "collection_show_controllers/bredig_collection"}
   ]
 
   # But except any Catalog #facet action that looks like an ajax/fetch request, the redirect
