@@ -160,7 +160,7 @@ Rails.application.config.to_prepare do
     (
       controller.kind_of?(CollectionShowController) &&
       controller.respond_to?(:has_search_parameters?) &&
-      controller.has_search_parameters?
+      !controller.has_search_parameters?
     )
   }
 
