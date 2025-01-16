@@ -68,10 +68,14 @@ alert_only_per = 1.day
 ActiveSupport::Notifications.subscribe(/throttle\.rack_attack|track\.rack_attack/) do |name, start, finish, request_id, payload|
   rack_request = payload[:request]
   rack_env     = rack_request.env
+  match_name = rack_env["rack.attack.matched"]
+
+  # only log here for our `req/` throttles and tracks above, not our other ones such as bot detect
+  next unless match_name.start_with?("req/")
+
   match_data   = rack_env["rack.attack.match_data"]
   match_data_formatted = match_data.slice(:count, :limit, :period).map { |k, v| "#{k}=#{v}"}.join(" ")
 
-  match_name = rack_env["rack.attack.matched"]
   discriminator = rack_env["rack.attack.match_discriminator"] # generally the IP address
   last_logged_key = "rack_attack_notification_#{name}_#{match_name}_#{discriminator}"
 
