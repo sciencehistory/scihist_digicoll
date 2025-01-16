@@ -182,9 +182,10 @@ class BotDetectController < ApplicationController
     if result["success"]
       # mark it as succesful in session, and record time. They do need a session/cookies
       # to get through the challenge.
+      Rails.logger.info("#{self.class.name}: Cloudflare Turnstile validation passed api (#{request.remote_ip}, #{request.user_agent}): #{request.url}")
       session[self.session_passed_key] = Time.now.utc.iso8601
     else
-      Rails.logger.warn("#{self.class.name}: Cloudflare Turnstile validation failed (#{request.remote_ip}, #{request.user_agent}): #{result}")
+      Rails.logger.warn("#{self.class.name}: Cloudflare Turnstile validation failed (#{request.remote_ip}, #{request.user_agent}): #{result}: #{request.url}")
     end
 
     # let's just return the whole thing to client? Is there anything confidential there?
