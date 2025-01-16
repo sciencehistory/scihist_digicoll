@@ -134,16 +134,30 @@ Rails.application.config.to_prepare do
   BotDetectController.rate_limited_locations = [
     '/catalog',
     '/focus',
-    '/collections'
+    # we want to omit `/collections` list page, so we do these by controller
+    { controller: "collection_show" },
+    { controller: "collection_show_controllers/immigrants_and_innovation_collection" },
+    { controller: "collection_show_controllers/oral_history_collection"},
+    { controller: "collection_show_controllers/bredig_collection"}
   ]
 
-  # But except any Catalog #facet action that looks like an ajax/fetch request, the redirect
-  # ain't gonna work there, we just exempt it.
-  #
-  # sec-fetch-dest is set to 'empty' by browser on fetch requests, to limit us further;
-  # sure an attacker could fake it, we don't mind if someone determined can avoid rate-limiting on this one action
   BotDetectController.allow_exempt = ->(controller) {
-    controller.params[:action] == "facet" && controller.request.headers["sec-fetch-dest"] == "empty" && controller.kind_of?(CatalogController)
+    # Excempt any Catalog #facet action that looks like an ajax/fetch request, the redirect
+    # ain't gonna work there, we just exempt it.
+    #
+    # sec-fetch-dest is set to 'empty' by browser on fetch requests, to limit us further;
+    # sure an attacker could fake it, we don't mind if someone determined can avoid rate-limiting on this one action
+    ( controller.params[:action] == "facet" &&
+      controller.request.headers["sec-fetch-dest"] == "empty" &&
+      controller.kind_of?(CatalogController)
+    ) ||
+    # Exempt a collection controller (or sub-class!) with _no query params_, we want to
+    # let Google and other bots into colleciton home pages, even though they show search results.
+    (
+      controller.kind_of?(CollectionShowController) &&
+      controller.respond_to?(:has_search_parameters?) &&
+      controller.has_search_parameters?
+    )
   }
 
   BotDetectController.rack_attack_init
