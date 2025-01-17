@@ -33,14 +33,14 @@ module OralHistory
 
     def file_list_members
       @file_list_members ||= all_members.select do |m|
-         m.asset? &&
+         m.asset? && # you can't download a child work (unlikely but possible)
          !m.leaf_representative&.content_type&.start_with?("audio/") && # exclude audio
          !m.role_portrait?  # exclude portrait role
        end
     end
 
     def audio_members
-      @audio_members ||= all_members.select { |m| m.leaf_representative&.content_type&.start_with?("audio/") }
+      @audio_members ||= all_members.select { |m| m.asset? && m.leaf_representative&.content_type&.start_with?("audio/") }
     end
 
     # An array of start times for each audio member.
