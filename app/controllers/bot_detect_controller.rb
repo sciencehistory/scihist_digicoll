@@ -83,6 +83,8 @@ class BotDetectController < ApplicationController
 
   # key stored in Rails session object with channge passed confirmed
   class_attribute :session_passed_key, default: "bot_detection-passed"
+  SESSION_DATETIME_KEY = "t"
+  SESSION_IP_KEY = "i"
 
   # key in rack env that says challenge is required
   class_attribute :env_challenge_trigger_key, default: "bot_detect.should_challenge"
@@ -144,8 +146,8 @@ class BotDetectController < ApplicationController
   def self.bot_detection_enforce_filter(controller)
     if self.enabled &&
         controller.request.env[self.env_challenge_trigger_key] &&
-        !controller.session[self.session_passed_key].try { |date| Time.now - Time.new(date) < self.session_passed_good_for } &&
-        !controller.kind_of?(self) && # don't ever guard ourself, that'd be a mess!
+        ! self._bot_detect_passed_good?(controller.request) &&
+        ! controller.kind_of?(self) && # don't ever guard ourself, that'd be a mess!
         ! self.allow_exempt.call(controller)
 
       # we can only do GET requests right now
@@ -158,6 +160,19 @@ class BotDetectController < ApplicationController
       # status code temporary
       controller.redirect_to controller.bot_detect_challenge_path(dest: controller.request.original_fullpath), status: 307
     end
+  end
+
+  # Does the session already contain a bot detect pass that is good for this request
+  # Tie to IP address to prevent session replay shared among IPs
+  def self._bot_detect_passed_good?(request)
+    session_data = request.session[self.session_passed_key]
+
+    return false unless session_data && session_data.kind_of?(Hash)
+
+    datetime = session_data[SESSION_DATETIME_KEY]
+    ip   = session_data[SESSION_IP_KEY]
+
+    (ip == request.remote_ip) && (Time.now - Time.new(datetime) < self.session_passed_good_for )
   end
 
 
@@ -183,7 +198,10 @@ class BotDetectController < ApplicationController
       # mark it as succesful in session, and record time. They do need a session/cookies
       # to get through the challenge.
       Rails.logger.info("#{self.class.name}: Cloudflare Turnstile validation passed api (#{request.remote_ip}, #{request.user_agent}): #{params["dest"]}")
-      session[self.session_passed_key] = Time.now.utc.iso8601
+      session[self.session_passed_key] = {
+        SESSION_DATETIME_KEY => Time.now.utc.iso8601,
+        SESSION_IP_KEY   => request.remote_ip
+      }
     else
       Rails.logger.warn("#{self.class.name}: Cloudflare Turnstile validation failed (#{request.remote_ip}, #{request.user_agent}): #{result}: #{params["dest"]}")
     end
