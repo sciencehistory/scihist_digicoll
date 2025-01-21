@@ -33,9 +33,8 @@ module OralHistory
 
     def file_list_members
       @file_list_members ||= all_members.select do |m|
-         m.asset? && # you can't download a child work (unlikely but possible)
          !m.leaf_representative&.content_type&.start_with?("audio/") && # exclude audio
-         !m.role_portrait?  # exclude portrait role
+         !m.try(:role_portrait?)  # exclude portrait role
        end
     end
 

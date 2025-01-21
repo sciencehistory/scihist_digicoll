@@ -38,7 +38,7 @@ class WorkFileListShowComponent < ApplicationComponent
 
   def portrait_asset
     unless defined?(@portrait_asset)
-      @portrait_asset = all_members.find {|mem| mem.published? && mem.role_portrait? }&.leaf_representative
+      @portrait_asset = all_members.find {|mem| mem.published? && mem.try(:role_portrait?) }&.leaf_representative
     end
 
     @portrait_asset
