@@ -13,6 +13,11 @@ class CollectionShowController < CatalogController
   ORAL_HISTORY_DEPARTMENT_VALUE = "Center for Oral History"
 
   def index
+    if params[:folder_id].present? && params[:box_id].blank?
+      flash[:alert] = "If you specify a folder, please also specify a box."
+      params[:box_id] = nil
+      params[:folder_id] = nil
+    end
     super
     @collection_opac_urls = CollectionOpacUrls.new(collection)
     @related_link_filter ||= RelatedLinkFilter.new(collection.related_link)
@@ -40,6 +45,13 @@ class CollectionShowController < CatalogController
     # and we need to make sure collection_id is allowed by BL, don't totally
     # understand this, as of BL 7.25
     config.search_state_fields << :collection_id
+    config.search_state_fields << :box_id
+    config.search_state_fields << :folder_id
+
+    config.add_sort_field("box_folder") do |field|
+      field.label = "box and folder"
+      field.sort = "box_sort asc, folder_sort asc, title asc"
+    end
   end
 
   private
@@ -48,8 +60,21 @@ class CollectionShowController < CatalogController
   #   collection id (UUID)
   #   the default sort order for this collection, if specified.
   def search_service_context
-    super.merge!(collection_id: collection.id, collection_default_sort_order: collection_default_sort_order)
+    super.merge!(collection_id: collection.id, collection_default_sort_order: collection_default_sort_order, box_id: params[:box_id], folder_id: params[:folder_id])
   end
+
+  # What ViewComponent class to use for a given search result on the results screen, for
+  # Work or Collection. Called by _document_list.
+  def view_component_class_for(model)
+    if model.work? && model&.department == 'Archives'
+      SearchResult::SearchWithinCollectionWorkComponent
+    else
+      super
+    end
+  end
+  helper_method :view_component_class_for
+
+
 
   # Some collections define a default sort field. Look up its sort order in blacklight_config and use that.
   def collection_default_sort_order

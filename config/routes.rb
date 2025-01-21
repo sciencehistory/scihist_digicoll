@@ -6,10 +6,14 @@ Rails.application.routes.draw do
 
   class CanAccessStaffFunctionsConstraint
     def self.matches?(request)
-      AccessPolicy.new(request.env['warden'].user).can? :access_staff_functions
+      AccessPolicy.new(request.env['warden']&.user).can? :access_staff_functions
     end
   end
 
+
+  # bot detection challenge
+  get "/challenge", to: "bot_detect#challenge", as: :bot_detect_challenge
+  post "/challenge", to: "bot_detect#verify_challenge"
 
   # custom error pages
   # https://www.marcelofossrj.com/recipe/2019/04/14/custom-errors.html
@@ -226,7 +230,7 @@ Rails.application.routes.draw do
       # TODO: Can we get away without actuallymounting Blacklight, just using the CatalogController?
       # mount Blacklight::Engine => '/'
       concern :searchable, Blacklight::Routes::Searchable.new
-      resource :catalog, only: [:index], as: 'catalog', path: '/catalog', controller: 'catalog' do
+      resource :catalog, only: [], as: 'catalog', path: '/catalog', controller: 'catalog' do
         concerns :searchable
         concerns :range_searchable # for blacklight_range_limit
       end
@@ -345,7 +349,7 @@ Rails.application.routes.draw do
 
 
     #Cart:
-    resources :cart_items, param: :work_friendlier_id, only: [:index, :update, :destroy, :report] do
+    resources :cart_items, param: :work_friendlier_id, only: [:index, :update, :destroy] do
       collection do
         delete 'clear'
         post 'report'

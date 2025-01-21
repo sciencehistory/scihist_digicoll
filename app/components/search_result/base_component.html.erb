@@ -44,6 +44,10 @@
         </div>
       <% end %>
 
+      <% if box_and_folder&.present? %>
+        <div class="scihist-results-list-item-box-and-folder"><%= box_and_folder %></div>
+      <% end %>
+
       <% if display_dates.present? %>
         <div class="scihist-results-list-item-date">
           <ul>

@@ -68,7 +68,7 @@ class OnDemandDerivativeCreator
     return record
   rescue ActiveRecord::RecordNotUnique
     # race condition, someone else created it, no biggy, just try again
-    return find_or_create_record(type, retry_count: retry_count + 1)
+    return find_or_create_record(retry_count: retry_count + 1)
   end
 
   # @return OnDemandDerivative record that will have status and data for work and derivative type

@@ -368,7 +368,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         render_views
         let!(:works) { [
           create(:work, title: "work_a"),
-          create(:work, title: "work_b") 
+          create(:work, title: "work_b")
           ] }
         it "sorts correctly by title" do
           get :index, params: { sort_field: :title, sort_order: :asc }
@@ -403,6 +403,25 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
           expect(rows.length).to eq 2
         end
 
+        # object bib item accn aspace interview
+        context "filtering by external_id" do
+          let!(:works) { [
+            create(:work, title: "work_a", external_id: [
+              Work::ExternalId.new({"value"=>"1111",   "category"=>"interview"}),
+            ]),
+            create(:work, title: "work_b", external_id: [
+              Work::ExternalId.new({"value"=>"2222",   "category"=>"aspace"}),
+            ]),
+          ] }
+          it "can filter on external id, regardless of the category of the ID" do
+            get :index, params: { title_or_id: "1111" }
+            rows = response.parsed_body.css('.table.admin-list tbody tr')
+            expect(rows.length).to eq 1
+            get :index, params: { title_or_id: "2222" }
+            rows = response.parsed_body.css('.table.admin-list tbody tr')
+            expect(rows.length).to eq 1
+          end
+        end
 
       end
     end
@@ -430,7 +449,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       let(:work_child) { build(:work, :published, published: false) }
       let(:asset_child) { build(:asset_with_faked_file, :tiff, published: false) }
       let(:work) do
-        create(:work, :published, published: false, published_at: false, members: [asset_child, work_child])
+        create(:work, :published, published: false, published_at: nil, members: [asset_child, work_child])
       end
 
       describe "publishing" do

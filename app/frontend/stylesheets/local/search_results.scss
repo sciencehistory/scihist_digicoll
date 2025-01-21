@@ -183,6 +183,10 @@
   margin-bottom: $paragraph-spacer * 2;
 }
 
+.scihist-results-list-item-box-and-folder {
+  margin-top: $paragraph-spacer * 0.5;
+}
+
 // Styling of actual hits on search results page. .documents-list parent selector
 // needed to succesfully override some BL styles.
 .documents-list {

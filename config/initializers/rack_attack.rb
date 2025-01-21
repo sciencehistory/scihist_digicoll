@@ -68,10 +68,14 @@ alert_only_per = 1.day
 ActiveSupport::Notifications.subscribe(/throttle\.rack_attack|track\.rack_attack/) do |name, start, finish, request_id, payload|
   rack_request = payload[:request]
   rack_env     = rack_request.env
+  match_name = rack_env["rack.attack.matched"]
+
+  # only log here for our `req/` throttles and tracks above, not our other ones such as bot detect
+  next unless match_name.start_with?("req/")
+
   match_data   = rack_env["rack.attack.match_data"]
   match_data_formatted = match_data.slice(:count, :limit, :period).map { |k, v| "#{k}=#{v}"}.join(" ")
 
-  match_name = rack_env["rack.attack.matched"]
   discriminator = rack_env["rack.attack.match_discriminator"] # generally the IP address
   last_logged_key = "rack_attack_notification_#{name}_#{match_name}_#{discriminator}"
 
@@ -113,4 +117,52 @@ ActiveSupport::Notifications.subscribe(/throttle\.rack_attack|track\.rack_attack
     # not to alert more than that.
     Rack::Attack.cache.write(last_logged_key, JSON.dump(last_logged_info), alert_only_per)
   end
+end
+
+
+# Explained at https://sciencehistory.atlassian.net/wiki/spaces/HDC/pages/2645098498/Cloudflare+Turnstile+bot+detection
+Rails.application.config.to_prepare do
+  # allow rate_limit_count requests in rate_limit_period, before issuing challenge
+  BotDetectController.rate_limit_period = 12.hour
+  BotDetectController.rate_limit_count = 10
+
+  # How long a challenge pass is good for
+  BotDetectController.session_passed_good_for = 24.hours
+
+  BotDetectController.enabled                 = ScihistDigicoll::Env.lookup(:cf_turnstile_enabled)
+  BotDetectController.cf_turnstile_sitekey    = ScihistDigicoll::Env.lookup(:cf_turnstile_sitekey)
+  BotDetectController.cf_turnstile_secret_key = ScihistDigicoll::Env.lookup(:cf_turnstile_secret_key)
+
+  # any custom collection controllers or other controllers that offer search have to be listed here
+  # to rate-limit them!
+  BotDetectController.rate_limited_locations = [
+    '/catalog',
+    '/focus',
+    # we want to omit `/collections` list page, so we do these by controller
+    { controller: "collection_show" },
+    { controller: "collection_show_controllers/immigrants_and_innovation_collection" },
+    { controller: "collection_show_controllers/oral_history_collection"},
+    { controller: "collection_show_controllers/bredig_collection"}
+  ]
+
+  BotDetectController.allow_exempt = ->(controller) {
+    # Excempt any Catalog #facet action that looks like an ajax/fetch request, the redirect
+    # ain't gonna work there, we just exempt it.
+    #
+    # sec-fetch-dest is set to 'empty' by browser on fetch requests, to limit us further;
+    # sure an attacker could fake it, we don't mind if someone determined can avoid rate-limiting on this one action
+    ( controller.params[:action] == "facet" &&
+      controller.request.headers["sec-fetch-dest"] == "empty" &&
+      controller.kind_of?(CatalogController)
+    ) ||
+    # Exempt a collection controller (or sub-class!) with _no query params_, we want to
+    # let Google and other bots into colleciton home pages, even though they show search results.
+    (
+      controller.kind_of?(CollectionShowController) &&
+      controller.respond_to?(:has_search_parameters?) &&
+      !controller.has_search_parameters?
+    )
+  }
+
+  BotDetectController.rack_attack_init
 end

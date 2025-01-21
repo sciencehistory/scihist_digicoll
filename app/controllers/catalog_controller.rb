@@ -11,8 +11,6 @@ class CatalogController < ApplicationController
   before_action :catch_bad_request_headers, only: :index
   before_action :catch_bad_format_param,  only: :index
 
-  before_action :screen_params_for_range_limit, only: :range_limit
-
   rescue_from ActionController::UnpermittedParameters, with: :handle_unpermitted_params
 
   # Blacklight wanted Blacklight::Controller included in ApplicationController,
@@ -361,6 +359,23 @@ class CatalogController < ApplicationController
     # case for a BL "search field", which is really a dismax aggregate
     # of Solr search fields.
 
+
+    # See https://github.com/sciencehistory/scihist_digicoll/issues/2585
+    # Note that a Work can be associated with two consecutive boxes, in which case the box number is something like "34-35".
+    config.add_search_field('box') do |field|
+      field.label = 'Box'
+      field.solr_parameters = {
+        qf: 'box_tsi',
+      }
+    end
+
+    config.add_search_field('folder') do |field|
+      field.label = 'Folder'
+      field.solr_parameters = {
+        qf: 'folder_tsi',
+      }
+    end
+
     # config.add_search_field('title') do |field|
     #   # solr_parameters hash are sent to Solr as ordinary url query params.
     #   field.solr_parameters = {
@@ -499,47 +514,6 @@ class CatalogController < ApplicationController
       render(plain: "illegal q query parameter", status: 400) && return
     end
 
-
-    # Correct range facets look like:
-    # params[:range] == {"year_facet_isim"=>{"begin"=>"1900", "end"=>"1950"}}
-    # &range%5Byear_facet_isim%5D%5Bbegin%5D=1900&range%5Byear_facet_isim%5D%5Bend%5D=1950
-    #
-    # Can also be empty string values in there.
-    #
-    # Make sure it has that shape, or just abort, becuase it is likely to make blacklight_range_limit
-    # choke and uncaught exception 500.
-    #
-    # Additionally, newlines and other things that aren't just integers can cause an error too,
-    # just insist on \d+ or empty string only.
-    #
-    # We do allow one exception through: the URL `blacklight_range_limit` uses
-    # to display a link to a search for records with no dates.
-
-    if params[:range].present?
-
-      unless params[:range].respond_to?(:to_hash)
-        render(plain: "Invalid URL query parameter range=#{param_display.call(params[:range])}", status: 400) && return
-      end
-
-      params[:range].each_pair do |_facet_key, range_limits|
-        # Workaround for issue https://github.com/sciencehistory/scihist_digicoll/issues/2231
-        #
-        # `blacklight_range_limit` can show a "date missing" search link,
-        # which adds an extra pair of range parameters:
-        #    range[-year_facet_isim][]=[* TO *]
-        # This would normally trigger our "Invalid URL query parameter" error below,
-        # but we choose to let it through in this one particular case.
-        next if _facet_key == "-year_facet_isim" && range_limits == ["[* TO *]"]
-
-        unless range_limits.respond_to?(:to_hash) && range_limits[:begin].is_a?(String) && range_limits[:end].is_a?(String) &&
-          range_limits[:begin] =~ /\A\d*\z/ && range_limits[:end] =~ /\A\d*\z/ &&
-          range_limits[:begin].to_i < 3000 && range_limits[:end].to_i < 3000
-          render(plain: "Invalid URL query parameter range=#{param_display.call(params[:range])}", status: 400) && return
-        end
-      end
-    end
-
-
     # facet param :f is a hash of keys and values, where each key is a facet name, and
     # each value is an *array* of strings. Anything else, we should reject it as no good,
     # because Blacklight is likely to raise an uncaught exception over it.
@@ -672,11 +646,14 @@ class CatalogController < ApplicationController
 
   # If the user enters an impossible date range with begin after end, swap the dates by actually
   # mutating `params` (ugly but it works), instead of letting blacklight_range_limit raise.
+  #
+  # Could we put this in blacklight_range_limit upstream instead? see:
+  # https://github.com/projectblacklight/blacklight_range_limit/issues/300
   def swap_range_limit_params_if_needed
     return if params.empty?
 
-    start_date = params.dig(:range, :year_facet_isim, :begin)
-    end_date   = params.dig(:range, :year_facet_isim, :end)
+    start_date = params.dig(:range).try(:dig, :year_facet_isim).try(:dig , :begin)
+    end_date   = params.dig(:range).try(:dig, :year_facet_isim).try(:dig, :end)
 
     return unless start_date.present? && end_date.present?
     return unless start_date.to_i > end_date.to_i
@@ -685,20 +662,6 @@ class CatalogController < ApplicationController
     params['range']['year_facet_isim']['end']   = start_date
   end
 
-  # When a user (in practice, a bot) makes a call directly to /catalog/range_limit
-  # rather than the usual /catalog?q=&range, this bypasses the preprocessing normally
-  # performed by the `before_action` methods for #index, which supplies a
-  # range_start and range_end parameter and ensures they are in the correct order,
-  # then makes a second request to #range_limit .
-  def screen_params_for_range_limit
-    if (params['range_end'].class != String) ||
-      (params['range_start'].class != String) ||
-      (params['range_start'].to_i > params['range_end'].to_i)
-        render plain: "Calls to range_limit should have a range_start " +
-          "and a range_end parameter, and range_start " +
-          "should be before range_end.", status: 406
-    end
-  end
 
   # Suppress noisy UnpermittedParameters errors, caused in practice by a bot.
   # Respond instead with :unprocessable_entity.
