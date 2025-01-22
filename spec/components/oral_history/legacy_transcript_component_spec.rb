@@ -1,14 +1,14 @@
 require 'rails_helper'
 
-describe OralHistory::TranscriptComponent, type: :component do
+describe OralHistory::LegacyTranscriptComponent, type: :component do
   let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml"}
   let(:ohms_xml) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path))}
-  let(:ohms_transcript_display) { OralHistory::TranscriptComponent.new(ohms_xml.legacy_transcript, transcript_log_id: ohms_xml.accession) }
+  let(:ohms_transcript_display) { OralHistory::LegacyTranscriptComponent.new(ohms_xml.legacy_transcript, transcript_log_id: ohms_xml.accession) }
 
 
   let(:ohms_xml_path_with_footnotes) { Rails.root + "spec/test_support/ohms_xml/hanford_OH0139.xml"}
   let(:ohms_xml_with_footnotes) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path_with_footnotes))}
-  let(:ohms_transcript_display_with_footnotes) { OralHistory::TranscriptComponent.new(ohms_xml_with_footnotes.legacy_transcript, transcript_log_id: ohms_xml_with_footnotes.accession) }
+  let(:ohms_transcript_display_with_footnotes) { OralHistory::LegacyTranscriptComponent.new(ohms_xml_with_footnotes.legacy_transcript, transcript_log_id: ohms_xml_with_footnotes.accession) }
 
   let(:transcript_text) { ohms_xml.parsed.at_xpath("//ohms:transcript", ohms: OralHistoryContent::OhmsXml::OHMS_NS).text }
 

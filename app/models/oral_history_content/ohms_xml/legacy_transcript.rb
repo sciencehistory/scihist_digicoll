@@ -1,5 +1,7 @@
 class OralHistoryContent
   class OhmsXml
+
+    # For LEGACY kind of Ohms XML, with <ohms:sync> and <ohms:transcript> elements.
     class LegacyTranscript
       attr_reader :nokogiri_xml
 

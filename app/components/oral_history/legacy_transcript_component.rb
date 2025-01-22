@@ -2,10 +2,13 @@ module OralHistory
   # Turn OHMS XML into HTML, using tags based on OHMS native viewer, at
   # around OHMS version ~3.8.
   #
+  # Takes a OralHistoryContent::OhmsXml::LegacyTranscript with LEGACY kind of OHMS XML, with
+  # <ohms:sync> and <ohms:transcript> elements.
+  #
   # Includes timestamp tags at appropriate place, from <sync> data.
   #
   # Input is our OralHistoryContent::OhmsXml wrapper/helper object.
-  class TranscriptComponent < ApplicationComponent
+  class LegacyTranscriptComponent < ApplicationComponent
     OHMS_NS = OralHistoryContent::OhmsXml::OHMS_NS
 
     delegate :format_ohms_timestamp, to: :helpers
