@@ -157,7 +157,8 @@
 
         <% if has_ohms_transcript? %>
           <div class="tab-pane" id="ohTranscript" role="tabpanel" aria-labelledby="ohTranscriptTab">
-            <%= render OralHistory::TranscriptComponent.new(work.oral_history_content.ohms_xml) %>
+            <%= render OralHistory::TranscriptComponent.new(work.oral_history_content.ohms_xml.legacy_transcript,
+                                                            transcript_log_id: work.oral_history_content.ohms_xml.accession) %>
           </div>
         <% end %>
 

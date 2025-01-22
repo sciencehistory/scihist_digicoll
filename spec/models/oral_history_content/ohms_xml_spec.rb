@@ -1,15 +1,39 @@
 require 'rails_helper'
 
 describe OralHistoryContent::OhmsXml do
-  describe "#footnote_array" do
-    let(:ohms_xml) { OralHistoryContent::OhmsXml.new(File.read(Rails.root + "spec/test_support/ohms_xml/hanford_OH0139.xml"))}
+  let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml"}
+  let(:ohms_xml) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path))}
+  let(:ohms_xml_path_with_footnotes) { Rails.root + "spec/test_support/ohms_xml/hanford_OH0139.xml"}
+  let(:ohms_xml_with_footnotes) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path_with_footnotes))}
 
-    it "has parsed content" do
-      footnotes_array = ohms_xml.footnote_array
+  describe "#index_points" do
+    it "are as expected" do
+      expect(ohms_xml.index_points).to be_present
+      expect(ohms_xml.index_points.count).to eq(7)
 
-      expect(footnotes_array.length).to eq(2)
-      expect(footnotes_array[0]).to eq "William E. Hanford (to E.I. DuPont de Nemours & Co.), \"Polyamides,\" U.S. Patent 2,281,576, issued 5 May 1942."
-      expect(footnotes_array[1]).to eq "Howard N. and Lucille L. Sloane, A Pictorial History of American Mining: The adventure and drama of finding and extracting nature's wealth from the earth, from pre-Columbian times to the present (New York: Crown Publishers, Inc., 1970)."
+      # spot check one
+      expect(ohms_xml.index_points.second.title).to eq("Growing up with Gordon Moore")
+      expect(ohms_xml.index_points.second.timestamp).to eq(212)
+      expect(ohms_xml.index_points.second.synopsis).to eq("Gordon Moore’s mother Myra. Gordon Moore moving to Redwood City. Getting into trouble with a wagon. Gordon Moore visiting Pescadero. Gordon Moore tinkering. Grammar school. Sequoia High School. Friends. Gordon Moore as a student.")
+      expect(ohms_xml.index_points.second.partial_transcript).to eq("BROCK:  That general store was just down the street, not too far from your family’s tavern?\nDUARTE:  Yes.  The general store is called Muzzi’s now.")
+      expect(ohms_xml.index_points.second.keywords).to eq(["Azores", "Gordon E. Moore", "Half Moon Bay", "Pescadero", "ranching", "San Mateo", "sheriff", "Walter E. Moore", "whaling", "Williamson family"])
+    end
+
+    describe "with hyperlinks" do
+      let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/index_hyperlinks_example.xml" }
+
+      it "get parsed" do
+        no_hyperlinks = ohms_xml.index_points.first
+        has_hyperlinks = ohms_xml.index_points.second
+
+        expect(no_hyperlinks.hyperlinks).to eq([])
+
+        expect(has_hyperlinks.hyperlinks.collect(&:to_h)).to eq([
+          {:href=>"https://digital.sciencehistory.org/works/cf95jc49c", :text=>"Oral history interview with Hubert N. Alyea"},
+          {:href=>"https://digital.sciencehistory.org/works/g445cf063", :text=>"Oral history interview with William E. Hanford"},
+          {:href=>"https://digital.sciencehistory.org/works/1n79h560c", :text=>"Oral history interview with Malcolm M. Renfrew"}
+        ])
+      end
     end
   end
 
