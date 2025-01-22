@@ -124,7 +124,7 @@ end
 Rails.application.config.to_prepare do
   # allow rate_limit_count requests in rate_limit_period, before issuing challenge
   BotDetectController.rate_limit_period = 12.hour
-  BotDetectController.rate_limit_count = 10
+  BotDetectController.rate_limit_count = 2 # seriously reduced to see if that helps
 
   # How long a challenge pass is good for
   BotDetectController.session_passed_good_for = 24.hours
@@ -142,7 +142,9 @@ Rails.application.config.to_prepare do
     { controller: "collection_show" },
     { controller: "collection_show_controllers/immigrants_and_innovation_collection" },
     { controller: "collection_show_controllers/oral_history_collection"},
-    { controller: "collection_show_controllers/bredig_collection"}
+    { controller: "collection_show_controllers/bredig_collection"},
+    '/downloads/orig' # block originals, with exception for PDF originals in other config
+
   ]
 
   BotDetectController.allow_exempt = ->(controller) {
@@ -161,6 +163,11 @@ Rails.application.config.to_prepare do
       controller.kind_of?(CollectionShowController) &&
       controller.respond_to?(:has_search_parameters?) &&
       !controller.has_search_parameters?
+    ) ||
+    ## exempt PDF original downloads
+    (
+      controller.kind_of?(DownloadsController) &&
+      controller.params[:file_category] == "pdf"
     )
   }
 
