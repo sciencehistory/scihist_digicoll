@@ -385,7 +385,7 @@ describe "Oral history with audio display", type: :system, js: true do
   end
 
   describe "With OHMS synchronized transcript and ToC" do
-    let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml" }
+    let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/duarte_OH0344.xml" }
     let(:interviewer_profile) { InterviewerProfile.create(name: "Smith, John", profile: "This has some <i>html</i>")}
 
     let(:parent_work) {

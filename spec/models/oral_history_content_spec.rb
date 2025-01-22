@@ -112,7 +112,7 @@ describe OralHistoryContent do
 
     it "does update_index if ohms_xml_text changed" do
       expect(oral_history_content.work).to receive(:update_index)
-      oral_history_content.update(ohms_xml_text: File.open(Rails.root + "spec/test_support/ohms_xml/alyea_OH0010.xml"))
+      oral_history_content.update(ohms_xml_text: File.open(Rails.root + "spec/test_support/ohms_xml/legacy/alyea_OH0010.xml"))
     end
 
     it "does update_index if searchable_transcript_source changed" do
@@ -126,7 +126,7 @@ describe OralHistoryContent do
     # we're catching it.
     let(:oral_history_content) {
       work.create_oral_history_content(
-        ohms_xml_text: File.read(Rails.root + "spec/test_support/ohms_xml/alyea_OH0010.xml")
+        ohms_xml_text: File.read(Rails.root + "spec/test_support/ohms_xml/legacy/alyea_OH0010.xml")
       )
     }
 

@@ -186,8 +186,8 @@ describe CatalogController, solr: true, indexable_callbacks: true do
     end
   end
 
-  describe "transcrpt search highlights" do
-    let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/hanford_OH0139.xml" }
+  describe "transcirpt search highlights" do
+    let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/hanford_OH0139.xml" }
     let!(:published_work) do
       create(:public_work, title: "an oral history", genre: "Oral histories", description: "this is a description").tap do |work|
         work.oral_history_content!.update(ohms_xml_text: File.read(ohms_xml_path))
