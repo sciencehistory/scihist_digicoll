@@ -157,6 +157,12 @@ Rails.application.config.to_prepare do
       controller.request.headers["sec-fetch-dest"] == "empty" &&
       controller.kind_of?(CatalogController)
     ) ||
+    # Exempt honeybadger token from uptime checker
+    # https://docs.honeybadger.io/guides/security/
+    (
+      ENV['HONEYBADGER_TOKEN'].present? &&
+      controller.request.headers['Honeybadger-Token'] == ENV['HONEYBADGER_TOKEN']
+    ) ||
     # Exempt a collection controller (or sub-class!) with _no query params_, we want to
     # let Google and other bots into colleciton home pages, even though they show search results.
     (
