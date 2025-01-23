@@ -287,7 +287,7 @@ FactoryBot.define do
 
       trait :ohms_xml do
         transient do
-          ohms_xml_text { File.read(Rails.root + "spec/test_support/ohms_xml/smythe_OH0042.xml") }
+          ohms_xml_text { File.read(Rails.root + "spec/test_support/ohms_xml/legacy/smythe_OH0042.xml") }
         end
         after(:build) do |work, evaluator|
           work.oral_history_content.ohms_xml_text = evaluator.ohms_xml_text

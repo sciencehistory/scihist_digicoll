@@ -13,11 +13,11 @@ describe OralHistoryContent::OhmsXmlValidator do
     footnotes_re = /\[\[footnotes\]\].*?\[\[\/footnotes\]\]/m
   }
   let(:hanford_xml) {
-    File.read(Rails.root + "spec/test_support/ohms_xml/hanford_OH0139.xml")
+    File.read(Rails.root + "spec/test_support/ohms_xml/legacy/hanford_OH0139.xml")
   }
 
   let(:duarte_xml) {
-      File.read(Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml")
+      File.read(Rails.root + "spec/test_support/ohms_xml/legacy/duarte_OH0344.xml")
   }
 
   describe "ill-formed_xml" do

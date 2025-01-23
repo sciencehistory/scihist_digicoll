@@ -171,7 +171,7 @@ describe WorkIndexer do
     end
 
     describe "complete ohms_xml, plus plaintext searchable" do
-      let(:ohms_xml) { File.read(Rails.root + "spec/test_support/ohms_xml/smythe_OH0042.xml") }
+      let(:ohms_xml) { File.read(Rails.root + "spec/test_support/ohms_xml/legacy/smythe_OH0042.xml") }
       let(:oral_history_content) { OralHistoryContent.new(
                                   searchable_transcript_source: "searchable_transcript_source",
                                   ohms_xml_text: ohms_xml) }

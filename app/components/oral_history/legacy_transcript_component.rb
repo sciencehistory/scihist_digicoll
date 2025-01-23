@@ -2,20 +2,25 @@ module OralHistory
   # Turn OHMS XML into HTML, using tags based on OHMS native viewer, at
   # around OHMS version ~3.8.
   #
+  # Takes a OralHistoryContent::OhmsXml::LegacyTranscript with LEGACY kind of OHMS XML, with
+  # <ohms:sync> and <ohms:transcript> elements.
+  #
   # Includes timestamp tags at appropriate place, from <sync> data.
   #
   # Input is our OralHistoryContent::OhmsXml wrapper/helper object.
-  class TranscriptComponent < ApplicationComponent
+  class LegacyTranscriptComponent < ApplicationComponent
     OHMS_NS = OralHistoryContent::OhmsXml::OHMS_NS
 
     delegate :format_ohms_timestamp, to: :helpers
 
-    attr_reader :ohms_xml, :references_already_output
+    attr_reader :legacy_transcript, :references_already_output, :transcript_log_id
 
-    # @param ohms_xml [OralHistoryContent::OhmsXml]
-    def initialize(ohms_xml)
-      @ohms_xml = ohms_xml
+    # @param legacy_transcript [OralHistoryContent::OhmsXml::LegacyTranscript]
+    # @param ohms_transcript_id [String] just for identification in error messages
+    def initialize(legacy_transcript, transcript_log_id:)
+      @legacy_transcript = legacy_transcript
       @references_already_output = Set.new()
+      @transcript_log_id = transcript_log_id
     end
 
     # Trying to display somewhat like OHMS does. We need to track lines separated by individual "\n", that
@@ -34,7 +39,7 @@ module OralHistory
     def call
       paragraphs = []
       current_paragraph = []
-      ohms_xml.transcript_lines.each_with_index do |line, index|
+      legacy_transcript.transcript_lines.each_with_index do |line, index|
         current_paragraph << { text: line, line_num: index + 1}
 
         if line.empty?
@@ -54,9 +59,9 @@ module OralHistory
 
       transcript_html = content_tag("div", safe_join(paragraph_html_arr), class: "ohms-transcript-container")
 
-      if ohms_xml.footnote_array.present?
+      if legacy_transcript.footnote_array.present?
         transcript_html << content_tag("div") do
-          render OralHistory::FootnotesSectionComponent.new(footnote_array: ohms_xml.footnote_array)
+          render OralHistory::FootnotesSectionComponent.new(footnote_array: legacy_transcript.footnote_array)
         end
       end
 
@@ -68,10 +73,10 @@ module OralHistory
     # ensuring empty string instead of nil, and logging a warning
     # if we can't find it.
     def footnote_text_for(number)
-      footnote_text = ohms_xml.footnote_array[number.to_i - 1]  || ''
+      footnote_text = legacy_transcript.footnote_array[number.to_i - 1]  || ''
 
       if footnote_text == ''
-        Rails.logger.warn("WARNING: Reference to empty or missing footnote #{number} for OHMS transcript #{ohms_xml.accession}")
+        Rails.logger.warn("WARNING: Reference to empty or missing footnote #{number} for OHMS transcript #{transcript_log_id}")
       end
 
       footnote_text
@@ -80,7 +85,7 @@ module OralHistory
     #private
 
     def sync_timecodes
-      ohms_xml.sync_timecodes
+      legacy_transcript.sync_timecodes
     end
 
     # * adds a timecode anchor if needed.

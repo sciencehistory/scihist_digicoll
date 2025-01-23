@@ -1,14 +1,14 @@
 require 'rails_helper'
 
-describe OralHistory::TranscriptComponent, type: :component do
-  let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml"}
+describe OralHistory::LegacyTranscriptComponent, type: :component do
+  let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/duarte_OH0344.xml"}
   let(:ohms_xml) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path))}
-  let(:ohms_transcript_display) { OralHistory::TranscriptComponent.new(ohms_xml) }
+  let(:ohms_transcript_display) { OralHistory::LegacyTranscriptComponent.new(ohms_xml.legacy_transcript, transcript_log_id: ohms_xml.accession) }
 
 
-  let(:ohms_xml_path_with_footnotes) { Rails.root + "spec/test_support/ohms_xml/hanford_OH0139.xml"}
+  let(:ohms_xml_path_with_footnotes) { Rails.root + "spec/test_support/ohms_xml/legacy/hanford_OH0139.xml"}
   let(:ohms_xml_with_footnotes) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path_with_footnotes))}
-  let(:ohms_transcript_display_with_footnotes) { OralHistory::TranscriptComponent.new(ohms_xml_with_footnotes) }
+  let(:ohms_transcript_display_with_footnotes) { OralHistory::LegacyTranscriptComponent.new(ohms_xml_with_footnotes.legacy_transcript, transcript_log_id: ohms_xml_with_footnotes.accession) }
 
   let(:transcript_text) { ohms_xml.parsed.at_xpath("//ohms:transcript", ohms: OralHistoryContent::OhmsXml::OHMS_NS).text }
 
@@ -19,7 +19,7 @@ describe OralHistory::TranscriptComponent, type: :component do
     expect(parsed.css("span.ohms-transcript-line").count).to eq(transcript_text.split("\n").count)
     expect(parsed.css("p.ohms-transcript-paragraph").count).to eq(transcript_text.split("\n\n").count)
     # plus one because we have added one for the 0 timestamp
-    expect(parsed.css("a.ohms-transcript-timestamp").count).to eq(ohms_xml.sync_timecodes.count + 1)
+    expect(parsed.css("a.ohms-transcript-timestamp").count).to eq(ohms_xml.legacy_transcript.sync_timecodes.count + 1)
 
     first_line = parsed.css("div.ohms-transcript-container > p.ohms-transcript-paragraph > span.ohms-transcript-line").first
     expect(first_line.to_html).to eq(
@@ -43,17 +43,17 @@ describe OralHistory::TranscriptComponent, type: :component do
   # If there are references to empty or missing footnotes,
   # there should not be a 500 error.
   it "does not raise if footnotes are not available" do
-    allow(ohms_xml_with_footnotes).to receive(:footnote_array).and_return([])
+    allow(ohms_xml_with_footnotes.legacy_transcript).to receive(:footnote_array).and_return([])
 
     render_inline ohms_transcript_display_with_footnotes
 
-    expect(ohms_xml_with_footnotes.footnote_array.count).to eq 0
+    expect(ohms_xml_with_footnotes.legacy_transcript.footnote_array.count).to eq 0
     expect { ohms_transcript_display_with_footnotes.footnote_text_for(1) }.not_to raise_error
     expect { ohms_transcript_display_with_footnotes.footnote_text_for(42) }.not_to raise_error
   end
 
   it "Correctly handles several footnotes on one line -- and footnotes with spaces around the integer" do
-    allow(ohms_xml_with_footnotes).
+    allow(ohms_xml_with_footnotes.legacy_transcript).
       to receive(:footnote_array).
       and_return(["one", "two", "three"])
     line = {
@@ -71,7 +71,7 @@ describe OralHistory::TranscriptComponent, type: :component do
 
   context "Various placements of timecodes" do
     let(:ohms_ns) { "https://www.weareavp.com/nunncenter/ohms" }
-    let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/various_gaps.xml"}
+    let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/various_gaps.xml"}
     let(:parsed) { render_inline(ohms_transcript_display)}
 
     let(:raw_timecodes) do
@@ -190,7 +190,7 @@ describe OralHistory::TranscriptComponent, type: :component do
     end
 
     context "real world example w/ 25 minutes of silence" do
-      let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/smythe_OH0042.xml"}
+      let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/smythe_OH0042.xml"}
       let(:start_line) { 1710 }
       let(:end_line)   { 1725 }
 
@@ -216,7 +216,7 @@ describe OralHistory::TranscriptComponent, type: :component do
     end
 
     context "real world example w/ minute-1 timecode at word 1 and small pileup at line 3" do
-      let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/smythe_OH0042.xml"}
+      let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/smythe_OH0042.xml"}
       let(:start_line) { 1 }
       let(:end_line)   { 5 }
 

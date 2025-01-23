@@ -11,7 +11,7 @@ describe AssetHocrAndPdfUploader, type: :model do
   let(:hocr) {
     Rack::Test::UploadedFile.new(Rails.root + "spec/test_support/hocr_xml/hocr.xml",          "application/xml") }
   let(:bad_hocr)   {
-    Rack::Test::UploadedFile.new(Rails.root + "spec/test_support/ohms_xml/smythe_OH0042.xml", "application/xml") }
+    Rack::Test::UploadedFile.new(Rails.root + "spec/test_support/ohms_xml/legacy/smythe_OH0042.xml", "application/xml") }
   let(:pdf)  {
     Rack::Test::UploadedFile.new(Rails.root + "spec/test_support/pdf/textonly.pdf",           "application/xml") }
   let(:bad_pdf)    {
