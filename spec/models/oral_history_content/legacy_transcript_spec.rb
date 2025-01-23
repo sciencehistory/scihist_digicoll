@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 describe OralHistoryContent::OhmsXml::LegacyTranscript do
-  let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml"}
+  let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/duarte_OH0344.xml"}
   let(:legacy_transcript) { described_class.new(Nokogiri::XML(File.read(ohms_xml_path)))}
-  let(:ohms_xml_path_with_footnotes) { Rails.root + "spec/test_support/ohms_xml/hanford_OH0139.xml"}
+  let(:ohms_xml_path_with_footnotes) { Rails.root + "spec/test_support/ohms_xml/legacy/hanford_OH0139.xml"}
   let(:legacy_transcript_with_footnotes) { described_class.new(Nokogiri::XML(File.read(ohms_xml_path_with_footnotes)))}
 
   describe "#sync_timecodes" do
@@ -45,7 +45,7 @@ describe OralHistoryContent::OhmsXml::LegacyTranscript do
   end
 
   describe "#footnote_array" do
-    let(:legacy_transcript) { described_class.new(Nokogiri::XML(File.read(Rails.root + "spec/test_support/ohms_xml/hanford_OH0139.xml")))}
+    let(:legacy_transcript) { described_class.new(Nokogiri::XML(File.read(Rails.root + "spec/test_support/ohms_xml/legacy/hanford_OH0139.xml")))}
 
     it "has parsed content" do
       footnotes_array = legacy_transcript.footnote_array

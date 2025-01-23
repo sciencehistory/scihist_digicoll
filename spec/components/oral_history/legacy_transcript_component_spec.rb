@@ -1,12 +1,12 @@
 require 'rails_helper'
 
 describe OralHistory::LegacyTranscriptComponent, type: :component do
-  let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml"}
+  let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/duarte_OH0344.xml"}
   let(:ohms_xml) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path))}
   let(:ohms_transcript_display) { OralHistory::LegacyTranscriptComponent.new(ohms_xml.legacy_transcript, transcript_log_id: ohms_xml.accession) }
 
 
-  let(:ohms_xml_path_with_footnotes) { Rails.root + "spec/test_support/ohms_xml/hanford_OH0139.xml"}
+  let(:ohms_xml_path_with_footnotes) { Rails.root + "spec/test_support/ohms_xml/legacy/hanford_OH0139.xml"}
   let(:ohms_xml_with_footnotes) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path_with_footnotes))}
   let(:ohms_transcript_display_with_footnotes) { OralHistory::LegacyTranscriptComponent.new(ohms_xml_with_footnotes.legacy_transcript, transcript_log_id: ohms_xml_with_footnotes.accession) }
 
@@ -71,7 +71,7 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
 
   context "Various placements of timecodes" do
     let(:ohms_ns) { "https://www.weareavp.com/nunncenter/ohms" }
-    let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/various_gaps.xml"}
+    let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/various_gaps.xml"}
     let(:parsed) { render_inline(ohms_transcript_display)}
 
     let(:raw_timecodes) do
@@ -190,7 +190,7 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
     end
 
     context "real world example w/ 25 minutes of silence" do
-      let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/smythe_OH0042.xml"}
+      let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/smythe_OH0042.xml"}
       let(:start_line) { 1710 }
       let(:end_line)   { 1725 }
 
@@ -216,7 +216,7 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
     end
 
     context "real world example w/ minute-1 timecode at word 1 and small pileup at line 3" do
-      let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/smythe_OH0042.xml"}
+      let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/smythe_OH0042.xml"}
       let(:start_line) { 1 }
       let(:end_line)   { 5 }
 

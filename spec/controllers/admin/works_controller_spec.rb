@@ -213,7 +213,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     let(:work) { create(:oral_history_work) }
 
     context "add an OHMS XML file" do
-      let(:valid_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml" }
+      let(:valid_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/duarte_OH0344.xml" }
 
       it "can add valid file" do
         put :submit_ohms_xml, params: { id: work.friendlier_id, ohms_xml: Rack::Test::UploadedFile.new(valid_xml_path, "application/xml")}

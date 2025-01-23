@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe OralHistory::OhmsIndexComponent, type: :component do
   let(:work) { create(:oral_history_work)}
-  let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/duarte_OH0344.xml"}
+  let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/duarte_OH0344.xml"}
   let(:ohms_xml) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path))}
   let(:ohms_index_display) { OralHistory::OhmsIndexComponent.new(ohms_xml, work: work) }
   let(:parsed) { render_inline ohms_index_display}
