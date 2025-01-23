@@ -190,6 +190,8 @@ gem "warning", "~> 1.2" # managing ruby warning output
 
 gem "rack-attack", "~> 6.6" # throttling excessive requests
 
+gem "webvtt", "< 2" # https://github.com/jronallo/webvtt
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]
