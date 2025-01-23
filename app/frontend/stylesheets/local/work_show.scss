@@ -130,6 +130,7 @@
 
     .thumb {
       display: block; // sometimes an 'a', normalize it to block
+      border: 2px solid $table-border-color;
     }
     .thumb img {
       cursor: zoom-in;
