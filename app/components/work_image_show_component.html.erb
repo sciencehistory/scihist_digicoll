@@ -74,6 +74,13 @@
         <%= render MemberImageComponent.new(member_for_thumb.member, lazy: (index > 5), image_label: member_for_thumb.image_label) %>
       </div>
   <% end %>
+
+  <% if more_members_to_show? %>
+    <div><%= link_to "Show #{hidden_viewable_members_count} more #{pluralize(hidden_viewable_members_count, 'item')} ...", show_all: true %></div>
+  <% else %>
+    <div>No more members to show. You already see all <%= viewable_members_count %> and <%= hidden_viewable_members_count %> is zero.</div>
+  <% end %>
+
 </div>
 
 <%# hidden modal used by viewer %>

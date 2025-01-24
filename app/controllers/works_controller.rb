@@ -80,8 +80,16 @@ class WorksController < ApplicationController
       WorkVideoShowComponent.new(@work)
     else
       # standard image-based template.
-      WorkImageShowComponent.new(@work)
+      WorkImageShowComponent.new(@work, show_all_members: show_all_members?)
     end
+  end
+
+  # We only want to show a maximum of DEFAULT_THUMBNAIL_NUMBER thumbnails to the user by default,
+  # to speed up the page.
+  # See https://github.com/sciencehistory/scihist_digicoll/issues/905
+  # See https://github.com/sciencehistory/scihist_digicoll/issues/2491
+  def show_all_members?
+    params[:show_all] == 'true'
   end
 
   # Is an Oral History with at least one audio member?
