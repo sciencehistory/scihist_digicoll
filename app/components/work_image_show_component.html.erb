@@ -76,9 +76,7 @@
   <% end %>
 
   <% if more_members_to_show? %>
-    <div><%= link_to "Show #{hidden_viewable_members_count} more #{pluralize(hidden_viewable_members_count, 'item')} ...", show_all: true %></div>
-  <% else %>
-    <div>No more members to show. You already see all <%= viewable_members_count %> and <%= hidden_viewable_members_count %> is zero.</div>
+    <div><%= link_to "Show #{pluralize(hidden_viewable_members_count, 'more item')} ...", show_all: true %></div>
   <% end %>
 
 </div>

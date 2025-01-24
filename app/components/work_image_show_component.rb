@@ -6,7 +6,7 @@
 class WorkImageShowComponent < ApplicationComponent
   delegate :construct_page_title, :current_user, to: :helpers
 
-  DEFAULT_THUMBNAIL_NUMBER = 2.freeze
+  DEFAULT_THUMBNAIL_NUMBER = 80.freeze
 
   attr_reader :work, :work_download_options
 
@@ -32,15 +32,14 @@ class WorkImageShowComponent < ApplicationComponent
   # So we return MemberForThumbnailDisplay objects that have both the "member"
   # (Work or Asset), AND it's accessible label eg "Image 5"
   #
-
-  # We only want to show a maximum of DEFAULT_THUMBNAIL_NUMBER thumbnails to the user by default,
-  # to speed up the page.
-  # See https://github.com/sciencehistory/scihist_digicoll/issues/905
-  # See https://github.com/sciencehistory/scihist_digicoll/issues/2491
   def member_list_for_display
     @member_list_for_display ||= begin
       members = ordered_viewable_members
-
+   
+      # We only want to show a maximum of DEFAULT_THUMBNAIL_NUMBER thumbnails to the user by default,
+      # to speed up the page.
+      # See https://github.com/sciencehistory/scihist_digicoll/issues/905
+      # See https://github.com/sciencehistory/scihist_digicoll/issues/2491
       unless @show_all_members
         members = members.limit DEFAULT_THUMBNAIL_NUMBER
       end
@@ -62,22 +61,28 @@ class WorkImageShowComponent < ApplicationComponent
 
   # All DISPLAYABLE (to current user) members, in order, and
   # with proper pre-fetches.
+  #
+  # This includes members that might be hidden
+  # because there are more than DEFAULT_THUMBNAIL_NUMBER of them.
+  #
+  # Returns a Kithe::Model::ActiveRecord_AssociationRelation .
   def ordered_viewable_members
     @ordered_viewable_members ||= work.ordered_viewable_members(current_user: current_user).
-        where("role is null OR role != ?", PdfToPageImages::SOURCE_PDF_ROLE)
+      where("role is null OR role != ?", PdfToPageImages::SOURCE_PDF_ROLE)
+  end
+
+  def more_members_to_show?
+    @show_all_members ? false : (hidden_viewable_members_count > 0)
+  end
+
+  def hidden_viewable_members_count
+    @hidden_viewable_members_count ||= viewable_members_count - DEFAULT_THUMBNAIL_NUMBER
   end
 
   def viewable_members_count
     @viewable_members_count ||= ordered_viewable_members.count
   end
 
-  def hidden_viewable_members_count
-    @hidden_viewable_members_count ||= @show_all_members ? 0 : (viewable_members_count - DEFAULT_THUMBNAIL_NUMBER)
-  end
-
-  def more_members_to_show?
-    more_members_to_show? ||= viewable_members_count > DEFAULT_THUMBNAIL_NUMBER && !@show_all_members
-  end
 
   def transcription_texts
     @transcription_texts ||= Work::TextPage.compile(ordered_viewable_members, accessor: :transcription)
