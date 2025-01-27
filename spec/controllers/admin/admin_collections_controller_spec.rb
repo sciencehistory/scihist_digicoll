@@ -8,5 +8,19 @@ RSpec.describe Admin::CollectionsController, :logged_in_user, type: :controller 
       expect(newly_created).to be_present
       expect(newly_created.published?).to be true
     end
+
+    context "filter collections" do
+      render_views
+      let!(:collection) {
+        create(:collection, external_id: [
+          Work::ExternalId.new( {"value"=>"2010.028",   "category"=>"accn"} ),
+        ])
+      }
+      it "can filter on external id, regardless of the category of the ID" do
+        get :index, params: { title_or_id: "2010.028" }
+        rows = response.parsed_body.css('.table.admin-list tbody tr')
+        expect(rows.length).to eq 1
+      end
+    end
   end
 end
