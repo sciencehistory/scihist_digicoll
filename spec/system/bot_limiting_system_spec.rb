@@ -82,11 +82,7 @@ describe "Turnstile bot limiting", js:true do
       expect(shows_turnstile).to be true
 
       # which eventually will redirect back to search.
-      begin
-        expect(page).to have_content turnstile_success_re
-      rescue RSpec::Expectations::ExpectationNotMetError
-        expect(page).to have_content turnstile_success_re
-      end
+      expect(page).to have_content(turnstile_success_re, wait: 4)
       expect(Rails.logger).to have_received(:info).with(/BotDetectController: Cloudflare Turnstile challenge redirect/)
     end
   end
@@ -109,11 +105,7 @@ describe "Turnstile bot limiting", js:true do
       expect(shows_turnstile).to be true
 
       # which is going to get a failure message
-      begin
-        expect(page).to have_content turnstile_failure_re
-      rescue RSpec::Expectations::ExpectationNotMetError
-        expect(page).to have_content turnstile_failure_re
-      end
+      expect(page).to have_content(turnstile_failure_re, wait: 4)
       expect(Rails.logger).to have_received(:warn).with(/BotDetectController: Cloudflare Turnstile validation failed/)
     end
   end
