@@ -19,25 +19,6 @@ describe "Turnstile bot limiting", js:true do
 
   let(:rate_limit_count) { 1 } # one hit then challenge
 
-  let(:search_successful) do
-    begin
-      expect(page).to have_content(/You Searched For/i, wait: 0.05) # one search results page
-    rescue RSpec::Expectations::ExpectationNotMetError
-      expect(page).to have_content(/You Searched For/i, wait: 0.05) # one search results page
-    end
-  end
-
-
-  let(:shows_turnstile) do
-    begin
-      expect(page).to have_content(/traffic control/i, wait: 0.05)
-    rescue RSpec::Expectations::ExpectationNotMetError
-      expect(page).to have_content(/traffic control/i, wait: 0.05)
-    end
-  end
-
-
-
   # Temporarily change desired mocked config
   # Kinda hacky because we need to keep re-registering the tracks
   around(:each) do |example|
@@ -75,11 +56,11 @@ describe "Turnstile bot limiting", js:true do
 
     it "smoke tests" do
       visit search_catalog_path(q: "foo")
-      expect(search_successful).to be true
+      expect(page).to have_content(/you searched for/i)
 
       # on second try, we're gonna get redirected to bot check page
       visit search_catalog_path(q: "bar")
-      expect(shows_turnstile).to be true
+      expect(page).to have_content(/traffic control/i)
 
       # which eventually will redirect back to search.
       expect(page).to have_content(turnstile_success_re, wait: 4)
@@ -98,11 +79,11 @@ describe "Turnstile bot limiting", js:true do
 
     it "stays on page with failure" do
       visit search_catalog_path(q: "foo")
-      expect(search_successful).to be true
+      expect(page).to have_content(/you searched for/i)
       
       # on second try, we're gonna get redirected to bot check page
       visit search_catalog_path(q: "bar")
-      expect(shows_turnstile).to be true
+      expect(page).to have_content(/traffic control/i)
 
       # which is going to get a failure message
       expect(page).to have_content(turnstile_failure_re, wait: 4)
