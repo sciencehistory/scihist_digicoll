@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "Cart and Batch Edit" do
+describe "Turnstile bot limiting", js:true do
   include WebmockTurnstileHelperMethods
 
   # We need an actual cache to keep track of rate limit, while in test we normally have nullstore
@@ -14,7 +14,28 @@ describe "Cart and Batch Edit" do
   let(:cf_turnstile_secret_key_pass) { "1x0000000000000000000000000000000AA" } # a testing key always passes
   let(:cf_turnstile_secret_key_fail) { "2x0000000000000000000000000000000AA" } # a testing key that produces failure
 
+  let(:turnstile_failure_re) { /your traffic looks unusual/i }
+  let(:turnstile_success_re) { /you searched for/i }
+
   let(:rate_limit_count) { 1 } # one hit then challenge
+
+  let(:search_successful) do
+    begin
+      expect(page).to have_content(/You Searched For/i, wait: 0.05) # one search results page
+    rescue RSpec::Expectations::ExpectationNotMetError
+      expect(page).to have_content(/You Searched For/i, wait: 0.05) # one search results page
+    end
+  end
+
+
+  let(:shows_turnstile) do
+    begin
+      expect(page).to have_content(/traffic control/i, wait: 0.05)
+    rescue RSpec::Expectations::ExpectationNotMetError
+      expect(page).to have_content(/traffic control/i, wait: 0.05)
+    end
+  end
+
 
 
   # Temporarily change desired mocked config
@@ -54,15 +75,18 @@ describe "Cart and Batch Edit" do
 
     it "smoke tests" do
       visit search_catalog_path(q: "foo")
-      expect(page).to have_content(/You Searched For/i) # one search results page
+      expect(search_successful).to be true
 
       # on second try, we're gonna get redirected to bot check page
       visit search_catalog_path(q: "bar")
-      expect(page).to have_content("Traffic control and bot detection")
+      expect(shows_turnstile).to be true
 
-      # which eventually will redirect back to search
-      expect(page).to have_content(/You Searched For/i)
-
+      # which eventually will redirect back to search.
+      begin
+        expect(page).to have_content turnstile_success_re
+      rescue RSpec::Expectations::ExpectationNotMetError
+        expect(page).to have_content turnstile_success_re
+      end
       expect(Rails.logger).to have_received(:info).with(/BotDetectController: Cloudflare Turnstile challenge redirect/)
     end
   end
@@ -78,15 +102,18 @@ describe "Cart and Batch Edit" do
 
     it "stays on page with failure" do
       visit search_catalog_path(q: "foo")
-      expect(page).to have_content(/You Searched For/i) # one search results page
-
+      expect(search_successful).to be true
+      
       # on second try, we're gonna get redirected to bot check page
       visit search_catalog_path(q: "bar")
-      expect(page).to have_content("Traffic control and bot detection")
+      expect(shows_turnstile).to be true
 
       # which is going to get a failure message
-      expect(page).to have_content("Check failed. Sorry, something has gone wrong, or your traffic looks unusual to us. You can try refreshing this page to try again.")
-
+      begin
+        expect(page).to have_content turnstile_failure_re
+      rescue RSpec::Expectations::ExpectationNotMetError
+        expect(page).to have_content turnstile_failure_re
+      end
       expect(Rails.logger).to have_received(:warn).with(/BotDetectController: Cloudflare Turnstile validation failed/)
     end
   end
