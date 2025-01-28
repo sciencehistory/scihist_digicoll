@@ -13,23 +13,43 @@ class OralHistoryContent
     #
     # For OHMS, the WebVTT `<v>` voice tag is crucial for labelling speakers.
     class VttTranscript
-      attr_reader :transcript_txt
+      FullSanitizer = Rails::HTML5::FullSanitizer.new
 
-      # @param transcript_txt [String] WebVTT text as included in an OHMS xml export
-      def initialize(transcript_txt)
-        @transcript_txt = transcript_txt || ""
+      attr_reader :raw_webvtt_text
+
+      # @param raw_webvtt_text [String] WebVTT text as included in an OHMS xml export
+      def initialize(raw_webvtt_text)
+        @raw_webvtt_text = raw_webvtt_text || ""
       end
 
       def cues
         @cues ||= begin
           # parser requires initial WEBVTT line, which OHMS omits
-          src = transcript_txt
+          src = raw_webvtt_text
           unless src.start_with?('WEBVTT')
             src = "WEBVTT\n" + src
           end
 
+          # original gem is sometimes picking up empty cues, which is annoying
           Webvtt::File.new(src).cues.collect { |webvtt_cue| Cue.new(webvtt_cue) }
         end
+      end
+
+      # eg for indexing, actual human-readable indexable plain text after parsed and extracted webVTT
+      def transcript_text
+        @transcript_text ||= cues.collect { |c| c.paragraphs }.flatten.collect do |p|
+          if p.speaker_name
+            "#{strip_tags p.speaker_name}: #{strip_tags p.raw_html}"
+          else
+            strip_tags p.raw_html
+          end
+        end.join("\n\n")
+      end
+
+      def strip_tags(s)
+        # for some reason sometimes br's in input, which can end up eating up whitespace
+        # and jamming two words together on strip, so we replace first
+        FullSanitizer.sanitize( s.gsub("<br>", "\n") )
       end
 
       # our cue wraps webvtt cue with further parsed escaped content
@@ -70,7 +90,7 @@ class OralHistoryContent
             # This tricky regex using both positive lookahead and negative lookahead
             # will split into voice tags, taking into account that some text might not
             # be in a voice tag, and that voice tag does not have to ber closed when it's the whole cue
-            text.split(/(?=\<v[ .])|(?<=\<\/v>)/).collect do |voice_span|
+            (text || -"").split(/(?=\<v[ .])|(?<=\<\/v>)/).collect do |voice_span|
               # <v some name> or <v.class1.class2 some name>, in some cases ended with </v>
               if voice_span.gsub!(/\A\<v(?:\.[\w.]+)?\ ([^>]+)>/, '')
                 speaker_name = $1
@@ -90,9 +110,10 @@ class OralHistoryContent
           scrubber.tags = ['i', 'b', 'u']
         end
 
-        attr_reader :speaker_name, :safe_html
+        attr_reader :speaker_name, :safe_html, :raw_html
 
         def initialize(speaker_name:, raw_html:)
+          @raw_html = raw_html
           @speaker_name = speaker_name
 
           html_fragment = Loofah.fragment(raw_html)

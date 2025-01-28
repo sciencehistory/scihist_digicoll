@@ -35,6 +35,8 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
   it "parses" do
     cues = vtt_transcript.cues
 
+    expect(cues.length).to eq 4
+
     first_cue = cues[0]
     expect(first_cue.start).to eq "00:00.000"
     expect(first_cue.start_sec_f).to eq 0.0
@@ -69,5 +71,13 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
     expect(fourth_cue.paragraphs.length).to eq 2
     expect(fourth_cue.paragraphs.collect(&:safe_html)).to eq ['Why did the chicken cross the road', 'To get to the other side']
     expect(fourth_cue.paragraphs.collect(&:speaker_name)).to eq ['Mary', 'Doug']
+  end
+
+  it "has transcript_text" do
+    text = vtt_transcript.transcript_text
+    expect(text).to be_present
+
+    expect(text).to include "Esme Johnson: It’s a blue apple tree!"
+    expect(text).to include "Why did the chicken cross the road"
   end
 end
