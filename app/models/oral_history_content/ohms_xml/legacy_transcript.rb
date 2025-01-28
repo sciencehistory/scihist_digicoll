@@ -20,7 +20,7 @@ class OralHistoryContent
       end
 
       def transcript_text
-       @transcript_text = nokogiri_xml.at_xpath("//ohms:transcript", ohms: OHMS_NS).text
+       @transcript_text = nokogiri_xml.at_xpath("//ohms:transcript", ohms: OHMS_NS)&.text
       end
 
       # An array of footnotes, such that [[footnote]]1[[/footnote]]

@@ -170,7 +170,7 @@ describe WorkIndexer do
       end
     end
 
-    describe "complete ohms_xml, plus plaintext searchable" do
+    describe "complete legacy ohms_xml, plus plaintext searchable" do
       let(:ohms_xml) { File.read(Rails.root + "spec/test_support/ohms_xml/legacy/smythe_OH0042.xml") }
       let(:oral_history_content) { OralHistoryContent.new(
                                   searchable_transcript_source: "searchable_transcript_source",
@@ -182,6 +182,7 @@ describe WorkIndexer do
         output_hash = WorkIndexer.new.map_record(work)
 
         expect(output_hash["searchable_fulltext_en"]).to be_present
+
         expect(output_hash["searchable_fulltext_en"].first).to start_with("[untranscribed pre-interview discussion]")
         # exactly how many entries depends on how many toc entries have synopsis, keywords, etc.
         expect(output_hash["searchable_fulltext_en"].length).to be > (1 + index_toc_entries_count)
@@ -200,6 +201,23 @@ describe WorkIndexer do
         # for greater boosting
         all_keywords = work.oral_history_content.ohms_xml.index_points.collect(&:all_keywords_and_subjects).flatten.compact.uniq
         expect(all_keywords - output_hash["text3_tesim"]).to be_empty
+      end
+    end
+
+    describe "new style OHMS xml" do
+      let(:ohms_xml) { File.read(Rails.root + "spec/test_support/ohms_xml/small-sample-vtt-ohms.xml") }
+      let(:oral_history_content) { OralHistoryContent.new(
+                                  searchable_transcript_source: "searchable_transcript_source",
+                                  ohms_xml_text: ohms_xml) }
+      it "uses ohmx_xml" do
+        index_toc_entries_count = work.oral_history_content.ohms_xml.index_points.count { |i| i.keywords.present? }
+
+        output_hash = WorkIndexer.new.map_record(work)
+
+        expect(output_hash["searchable_fulltext_en"]).to be_present
+        expect(output_hash["searchable_fulltext_en"].first).to start_with("Sample Time Stamp Document (with fake interview content)")
+        # exactly how many entries depends on how many toc entries have synopsis, keywords, etc.
+        expect(output_hash["searchable_fulltext_en"].length).to be >= (1 + index_toc_entries_count)
       end
     end
 

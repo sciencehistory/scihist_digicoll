@@ -8,11 +8,18 @@ class OralHistoryContent
     OHMS_NS = "https://www.weareavp.com/nunncenter/ohms"
 
     # parsed nokogiri object for OHMS xml
-    attr_reader :parsed, :legacy_transcript
+    attr_reader :parsed, :legacy_transcript, :vtt_transcript
 
     def initialize(xml_str)
       @parsed = Nokogiri::XML(xml_str)
-      @legacy_transcript = ::OralHistoryContent::OhmsXml::LegacyTranscript.new(@parsed)
+
+      if vtt_str = @parsed&.at_xpath("//ohms:record/ohms:vtt_transcript", ohms: OhmsXml::OHMS_NS)&.text.presence
+        # new style
+        @vtt_transcript = ::OralHistoryContent::OhmsXml::VttTranscript.new(vtt_str)
+      else
+        # legacy OHMS transcript
+        @legacy_transcript = ::OralHistoryContent::OhmsXml::LegacyTranscript.new(@parsed)
+      end
     end
 
     def record_dt
@@ -35,9 +42,12 @@ class OralHistoryContent
     end
 
     def transcript_text
-      @legacy_transcript.transcript_text
+      if @vtt_transcript
+        @vtt_transcript.transcript_text
+      else
+        @legacy_transcript.transcript_text
+      end
     end
-
 
     # Represents an ohms //index/point element, what ohms calls an index we might
     # really call a Table of Contents. We're not currently using all the elements,
