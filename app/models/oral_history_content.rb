@@ -89,10 +89,12 @@ class OralHistoryContent < ApplicationRecord
   end
 
   def has_ohms_transcript?
-    @has_ohms_transcript ||= begin
-      transcript_text = ohms_xml&.parsed&.at_xpath("//ohms:record/ohms:transcript[normalize-space(text())]", ohms: OhmsXml::OHMS_NS)
-      # OHMS gives you a transcript body that says "No transcript.", argh!
-      transcript_text && transcript_text.text != "No transcript."
+    return @has_ohms_transcript if defined?(@has_ohms_transcript)
+
+    @has_ohms_transcript = begin
+      transcript_text = ohms_xml&.transcript_text
+      # OHMS sometimes gives you a transcript body that says "No transcript.", argh!
+      transcript_text.present? && transcript_text != "No transcript."
     end
   end
 

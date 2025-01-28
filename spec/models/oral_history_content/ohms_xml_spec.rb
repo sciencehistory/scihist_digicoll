@@ -35,6 +35,25 @@ describe OralHistoryContent::OhmsXml do
         ])
       end
     end
+
+    describe "with legacy transcript" do
+      it "has transcript" do
+        expect(ohms_xml.vtt_transcript).not_to be_present
+        expect(ohms_xml.legacy_transcript).to be_present
+      end
+    end
+
+    describe "with vtt transcript" do
+      let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/small-sample-vtt-ohms.xml" }
+
+      it "has transcript with correct number of cues" do
+        expect(ohms_xml.vtt_transcript).to be_present
+        expect(ohms_xml.legacy_transcript).not_to be_present
+
+        expect(ohms_xml.vtt_transcript.cues.length).to eq 15
+      end
+    end
+
   end
 
   describe OralHistoryContent::OhmsXml::IndexPoint do
