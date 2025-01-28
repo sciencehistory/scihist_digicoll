@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "Cart and Batch Edit" do
+describe "Turnstile bot limiting", js:true do
   include WebmockTurnstileHelperMethods
 
   # We need an actual cache to keep track of rate limit, while in test we normally have nullstore
@@ -14,8 +14,10 @@ describe "Cart and Batch Edit" do
   let(:cf_turnstile_secret_key_pass) { "1x0000000000000000000000000000000AA" } # a testing key always passes
   let(:cf_turnstile_secret_key_fail) { "2x0000000000000000000000000000000AA" } # a testing key that produces failure
 
-  let(:rate_limit_count) { 1 } # one hit then challenge
+  let(:turnstile_failure_re) { /your traffic looks unusual/i }
+  let(:turnstile_success_re) { /you searched for/i }
 
+  let(:rate_limit_count) { 1 } # one hit then challenge
 
   # Temporarily change desired mocked config
   # Kinda hacky because we need to keep re-registering the tracks
@@ -54,15 +56,14 @@ describe "Cart and Batch Edit" do
 
     it "smoke tests" do
       visit search_catalog_path(q: "foo")
-      expect(page).to have_content(/You Searched For/i) # one search results page
+      expect(page).to have_content(/you searched for/i)
 
       # on second try, we're gonna get redirected to bot check page
       visit search_catalog_path(q: "bar")
-      expect(page).to have_content("Traffic control and bot detection")
+      expect(page).to have_content(/traffic control/i)
 
-      # which eventually will redirect back to search
-      expect(page).to have_content(/You Searched For/i)
-
+      # which eventually will redirect back to search.
+      expect(page).to have_content(turnstile_success_re, wait: 4)
       expect(Rails.logger).to have_received(:info).with(/BotDetectController: Cloudflare Turnstile challenge redirect/)
     end
   end
@@ -78,15 +79,14 @@ describe "Cart and Batch Edit" do
 
     it "stays on page with failure" do
       visit search_catalog_path(q: "foo")
-      expect(page).to have_content(/You Searched For/i) # one search results page
-
+      expect(page).to have_content(/you searched for/i)
+      
       # on second try, we're gonna get redirected to bot check page
       visit search_catalog_path(q: "bar")
-      expect(page).to have_content("Traffic control and bot detection")
+      expect(page).to have_content(/traffic control/i)
 
       # which is going to get a failure message
-      expect(page).to have_content("Check failed. Sorry, something has gone wrong, or your traffic looks unusual to us. You can try refreshing this page to try again.")
-
+      expect(page).to have_content(turnstile_failure_re, wait: 4)
       expect(Rails.logger).to have_received(:warn).with(/BotDetectController: Cloudflare Turnstile validation failed/)
     end
   end
