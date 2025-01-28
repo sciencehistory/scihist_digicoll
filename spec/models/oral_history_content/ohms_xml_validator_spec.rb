@@ -40,8 +40,17 @@ describe OralHistoryContent::OhmsXmlValidator do
     end
   end
 
-  describe "valid OHMS xml" do
+  describe "valid OHMS xml with legacy transcript" do
     let(:xml_str) { duarte_xml }
+
+    it "is valid" do
+      expect(validator.valid?).to be(true)
+      expect(validator.errors).to be_empty
+    end
+  end
+
+  describe "valid OHMS xml with vtt transcript" do
+    let(:xml_str) { File.read(Rails.root + "spec/test_support/ohms_xml/small-sample-vtt-ohms.xml") }
 
     it "is valid" do
       expect(validator.valid?).to be(true)

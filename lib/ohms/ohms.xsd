@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="https://www.weareavp.com/nunncenter/ohms" xmlns="https://www.weareavp.com/nunncenter/ohms/ohms.xsd" version="5.4" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="https://www.weareavp.com/nunncenter/ohms" xmlns="https://www.weareavp.com/nunncenter/ohms/ohms.xsd" version="6.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
     <xs:element name="ROOT">
         <xs:complexType>
             <xs:sequence>
@@ -58,6 +58,7 @@
                                                     <xs:enumeration value="Vimeo" />
                                                     <xs:enumeration value="YouTube" />
                                                     <xs:enumeration value="Other" />
+                                                    <xs:enumeration value="" />
                                                 </xs:restriction>
                                             </xs:simpleType>
                                         </xs:element>
@@ -70,6 +71,7 @@
                                                 <xs:restriction base="xs:string">
                                                     <xs:enumeration value="audio" />
                                                     <xs:enumeration value="video" />
+                                                    <xs:enumeration value="" />
                                                 </xs:restriction>
                                             </xs:simpleType>
                                         </xs:element>
@@ -101,34 +103,34 @@
                                                             <xs:sequence>
                                                                 <xs:element name="gps" minOccurs="0" maxOccurs="1" type="xs:string"></xs:element>
                                                                 <xs:element name='gps_zoom'>
-		                                                        	<xs:simpleType>
-			                                                            <xs:union>
-			                                                                <xs:simpleType>
-			                                                                    <xs:restriction base='xs:string'>
-			                                                                        <xs:length value='0'/>
-			                                                                    </xs:restriction>
-			                                                                </xs:simpleType>
-			                                                                <xs:simpleType>
-			                                                                    <xs:restriction base='xs:integer'>
-			                                                                    </xs:restriction>
-			                                                                </xs:simpleType>
-			                                                            </xs:union>
-			                                                        </xs:simpleType>
-			                                                    </xs:element>
+                                                                    <xs:simpleType>
+                                                                        <xs:union>
+                                                                            <xs:simpleType>
+                                                                                <xs:restriction base='xs:string'>
+                                                                                    <xs:length value='0'/>
+                                                                                </xs:restriction>
+                                                                            </xs:simpleType>
+                                                                            <xs:simpleType>
+                                                                                <xs:restriction base='xs:integer'>
+                                                                                </xs:restriction>
+                                                                            </xs:simpleType>
+                                                                        </xs:union>
+                                                                    </xs:simpleType>
+                                                                </xs:element>
                                                                 <xs:element name="gps_text" minOccurs="0" maxOccurs="1" type="xs:string"></xs:element>
                                                                 <xs:element name="gps_text_alt" minOccurs="0" maxOccurs="1" type="xs:string"></xs:element>
                                                             </xs:sequence>
                                                         </xs:complexType>
-	                                                </xs:element>
-	                                                <xs:element name="hyperlinks" minOccurs="0" maxOccurs="unbounded">
-	                                                    <xs:complexType>
-	                                                        <xs:sequence>
-	                                                            <xs:element name="hyperlink" minOccurs="0" maxOccurs="1" type="xs:string"></xs:element>
-	                                                            <xs:element name="hyperlink_text" minOccurs="0" maxOccurs="1" type="xs:string"></xs:element>
-	                                                            <xs:element name="hyperlink_text_alt" minOccurs="0" maxOccurs="1" type="xs:string"></xs:element>
-	                                                        </xs:sequence>
-	                                                    </xs:complexType>
-	                                                </xs:element>
+                                                    </xs:element>
+                                                    <xs:element name="hyperlinks" minOccurs="0" maxOccurs="unbounded">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element name="hyperlink" minOccurs="0" maxOccurs="1" type="xs:string"></xs:element>
+                                                                <xs:element name="hyperlink_text" minOccurs="0" maxOccurs="1" type="xs:string"></xs:element>
+                                                                <xs:element name="hyperlink_text_alt" minOccurs="0" maxOccurs="1" type="xs:string"></xs:element>
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>
@@ -140,6 +142,8 @@
                             <xs:element name="rel" type="xs:string" minOccurs="0" maxOccurs="1" />
                             <xs:element name="transcript" type="xs:string" minOccurs="0" maxOccurs="1" />
                             <xs:element name="transcript_alt" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="vtt_transcript" type="xs:string" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="vtt_transcript_alt" type="xs:string" minOccurs="0" maxOccurs="1" />
                             <xs:element name="rights" type="xs:string" minOccurs="0" maxOccurs="1" />
                             <xs:element name="fmt" minOccurs="0" maxOccurs="1">
                                 <xs:simpleType>
@@ -171,4 +175,3 @@
         </xs:complexType>
     </xs:element>
 </xs:schema>
-
