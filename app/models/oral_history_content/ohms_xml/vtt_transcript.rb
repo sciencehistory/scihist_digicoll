@@ -12,6 +12,8 @@ class OralHistoryContent
     # to get what we need.
     #
     # For OHMS, the WebVTT `<v>` voice tag is crucial for labelling speakers.
+    #
+    # See an example mock OHMS XML with WebVTT at ./spec/test_support/ohms_xml/small-sample-vtt-ohms.xml
     class VttTranscript
       FullSanitizer = Rails::HTML5::FullSanitizer.new
 
