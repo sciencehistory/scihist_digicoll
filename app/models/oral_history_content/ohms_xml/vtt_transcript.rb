@@ -7,6 +7,8 @@ class OralHistoryContent
     # new-style 2025 OHMS transcript with <vtt_transcript> element in xml.
     # https://www.w3.org/TR/webvtt1/
     #
+    # Also handles some OHMS quirks.
+    #
     # Uses the `webvtt` gem for initial parsing, but that gem is basic and
     # not very maintained, so we need some massaging and post-processing
     # to get what we need.
@@ -31,6 +33,10 @@ class OralHistoryContent
           unless src.start_with?('WEBVTT')
             src = "WEBVTT\n" + src
           end
+
+          # and OHMS also often omits final empty line also required, adding an
+          # extra doesn't hurt
+          src = src + "\n"
 
           # original gem is sometimes picking up empty cues, which is annoying
           Webvtt::File.new(src).cues.collect { |webvtt_cue| Cue.new(webvtt_cue) }
@@ -126,9 +132,6 @@ class OralHistoryContent
           @safe_html = html_fragment.to_s.strip.html_safe
         end
       end
-
     end
-
-
   end
 end
