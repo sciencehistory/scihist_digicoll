@@ -5,22 +5,23 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
     # Example includes what OHMS might, but also some extra stuff in WebVTT
     # standard (but not necessarily everything!), to be a bit forward looking.
     <<~EOS
+      WEBVTT
 
       NOTE
       TRANSCRIPTION BEGIN
 
-      00:00.000 --> 00:02.000 align:left size:50%
+      00:00:00.000 --> 00:00:02.000 align:left size:50%
       <v.first.loud Esme Johnson>It’s a <i>blue</i> <script>apple</script> tree!
 
-      00:02.400 --> 00:04.000
+      00:00:02.400 --> 00:00:04.000
       <v Mary>This content has some internal line breaks.
          Like this is a paragraph two.
          And even three.
 
-      00:04.400 --> 00:06.000
+      00:00:04.400 --> 00:00:06.000
       <v Esme>Hee!</v> <i>laughter</i>
 
-      00:06.000 --> 00:08.000
+      00:00:06.000 --> 00:00:08.000
       <v Mary>Why did the chicken cross the road</v>
       <v Doug>To get to the other side</v>
 
@@ -38,9 +39,9 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
     expect(cues.length).to eq 4
 
     first_cue = cues[0]
-    expect(first_cue.start).to eq "00:00.000"
+    expect(first_cue.start).to eq "00:00:00.000"
     expect(first_cue.start_sec_f).to eq 0.0
-    expect(first_cue.end).to eq "00:02.000"
+    expect(first_cue.end).to eq "00:00:02.000"
     expect(first_cue.end_sec_f).to eq 2.0
     expect(first_cue.paragraphs.length).to eq 1
     expect(first_cue.paragraphs[0].speaker_name).to eq "Esme Johnson"
@@ -48,9 +49,9 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
     expect(first_cue.paragraphs[0].safe_html.html_safe?).to be true
 
     second_cue = cues[1]
-    expect(second_cue.start).to eq "00:02.400"
+    expect(second_cue.start).to eq "00:00:02.400"
     expect(second_cue.start_sec_f).to eq 2.4
-    expect(second_cue.end).to eq "00:04.000"
+    expect(second_cue.end).to eq "00:00:04.000"
     expect(second_cue.end_sec_f).to eq 4.0
 
     expect(second_cue.paragraphs.length).to eq 3
@@ -79,5 +80,33 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
 
     expect(text).to include "Esme Johnson: It’s a blue apple tree!"
     expect(text).to include "Why did the chicken cross the road"
+  end
+
+  describe "minute-second timecodes" do
+    let(:sample_webvtt) do
+      # mm:ss.fff timestamps without hh
+      <<~EOS
+        WEBVTT
+
+        00:00.000 --> 00:02.000 align:left size:50%
+        <v.first.loud Esme Johnson>It’s a <i>blue</i> <script>apple</script> tree!
+
+        00:02.400 --> 00:04.000
+        <v Mary>This content has some internal line breaks.
+           Like this is a paragraph two.
+           And even three.
+
+      EOS
+    end
+
+    it "still parses" do
+      expect(vtt_transcript.cues.length).to eq 2
+
+      expect(vtt_transcript.cues.first.start_sec_f).to eq 0
+      expect(vtt_transcript.cues.first.end_sec_f).to eq 2
+
+      expect(vtt_transcript.cues.second.start_sec_f).to eq 2.4
+      expect(vtt_transcript.cues.second.end_sec_f).to eq 4
+    end
   end
 end

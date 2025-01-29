@@ -72,18 +72,20 @@ class OralHistoryContent
         end
 
         # parse start str into number of seconds as float
+        # times can be hh:mm:ss.ff or mm:ss.ff
         def start_sec_f
           @start_sec_f ||= begin
-            start =~ /(\d+):(\d\d)(\.\d\d\d)?/
-            ($1.to_i * 60) + $2.to_i + $3.to_f
+            self.start =~ /(?:(\d+):)?(\d+):(\d\d)(\.\d+)?/
+            ($1.to_i * 60 * 60) + ($2.to_i * 60) + $3.to_i + $4.to_f
           end
         end
 
         #  parase end str into number of seconds as float
+        #  times can be hh:mm:ss.ff or mm:ss.ff
         def end_sec_f
           @end_sec_f ||= begin
-            self.end =~ /(\d+):(\d\d)(\.\d\d\d)?/
-            ($1.to_i * 60) + $2.to_i + $3.to_f
+            self.end =~ /(?:(\d+):)?(\d+):(\d\d)(\.\d\d\d)?/
+            ($1.to_i * 60 * 60) + ($2.to_i * 60) + $3.to_i + $4.to_f
           end
         end
 
