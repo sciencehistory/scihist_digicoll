@@ -206,7 +206,6 @@
       margin-right: 28px;
       flex-shrink: 0;
       text-align: right;
-      border: 1px solid $table-border-color;
 
       // Keep really high ones from taking up too much space
       max-height: $standard-thumb-width * 2.2;
@@ -226,6 +225,7 @@
 
       img {
         max-width: 100%;
+        border: 1px solid $table-border-color;
       }
     }
 
