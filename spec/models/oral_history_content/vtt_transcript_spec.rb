@@ -133,4 +133,22 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
       expect(vtt_transcript.cues.last.text).to eq "Two"
     end
   end
+
+  describe "paragraphs split by br tags ala OHMS" do
+    let(:sample_webvtt) do
+      <<~EOS
+      WEBVTT
+
+      00:00:04.400 --> 00:00:06.000
+      Paragraph One<br><br>Paragraph Two
+
+      EOS
+    end
+
+    it "splits paragraphs" do
+      expect(vtt_transcript.cues.first.paragraphs.length).to eq 2
+      expect(vtt_transcript.cues.first.paragraphs.first.raw_html).to eq "Paragraph One"
+      expect(vtt_transcript.cues.first.paragraphs.second.raw_html).to eq "Paragraph Two"
+    end
+  end
 end

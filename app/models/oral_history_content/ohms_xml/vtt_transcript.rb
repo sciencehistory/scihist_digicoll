@@ -95,6 +95,13 @@ class OralHistoryContent
           end
         end
 
+        # split text inside a cue into paragraphs.
+        #
+        # Paragraphs are split on newlines (WebVTT standard) -- also on <br><br> (two in a row br tag),
+        # which OHMS at least sometimes does.
+        #
+        # A change in WebVTT "voice" (speaker) will also result in a paragraph split, which
+        # isn't quite right, but works out fine for how OHMS does things.
         def paragraphs
           @paragraphs ||= begin
             # This tricky regex using both positive lookahead and negative lookahead
@@ -107,7 +114,9 @@ class OralHistoryContent
               end
 
               # \R is any kind of linebreak
-              voice_span.split(/\R/).collect do |paragraph_text|
+              # Things coming from OHMS separate paragraphs by `<br><br>` instead
+              # sometimes annoyingly
+              voice_span.split(/\R|(?:\<br\>\<br\>)/).collect do |paragraph_text|
                 Paragraph.new(speaker_name: speaker_name, raw_html: paragraph_text)
               end
             end.flatten
