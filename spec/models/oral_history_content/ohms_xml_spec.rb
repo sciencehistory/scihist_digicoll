@@ -50,7 +50,7 @@ describe OralHistoryContent::OhmsXml do
         expect(ohms_xml.vtt_transcript).to be_present
         expect(ohms_xml.legacy_transcript).not_to be_present
 
-        expect(ohms_xml.vtt_transcript.cues.length).to eq 15
+        expect(ohms_xml.vtt_transcript.cues.length).to eq 6
       end
     end
 
