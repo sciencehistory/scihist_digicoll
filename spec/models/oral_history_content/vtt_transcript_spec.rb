@@ -109,4 +109,46 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
       expect(vtt_transcript.cues.second.end_sec_f).to eq 4
     end
   end
+
+  describe "no newline at end of terminal note" do
+    # While I think the spec actually requires it, WebVTT from OHMS doesn't always
+    # have a trailing newline after last note
+    let(:sample_webvtt) do
+      <<~EOS
+      WEBVTT
+
+      00:00:04.400 --> 00:00:06.000
+      One
+
+      00:00:06.000 --> 00:00:08.000
+      Two
+
+      NOTE
+      TRANSCRIPTION END
+      EOS
+    end
+
+    it "parses all cues" do
+      expect(vtt_transcript.cues.length).to eq 2
+      expect(vtt_transcript.cues.last.text).to eq "Two"
+    end
+  end
+
+  describe "paragraphs split by br tags ala OHMS" do
+    let(:sample_webvtt) do
+      <<~EOS
+      WEBVTT
+
+      00:00:04.400 --> 00:00:06.000
+      Paragraph One<br><br>Paragraph Two
+
+      EOS
+    end
+
+    it "splits paragraphs" do
+      expect(vtt_transcript.cues.first.paragraphs.length).to eq 2
+      expect(vtt_transcript.cues.first.paragraphs.first.raw_html).to eq "Paragraph One"
+      expect(vtt_transcript.cues.first.paragraphs.second.raw_html).to eq "Paragraph Two"
+    end
+  end
 end

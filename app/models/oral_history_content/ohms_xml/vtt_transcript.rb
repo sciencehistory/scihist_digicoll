@@ -7,6 +7,8 @@ class OralHistoryContent
     # new-style 2025 OHMS transcript with <vtt_transcript> element in xml.
     # https://www.w3.org/TR/webvtt1/
     #
+    # Also handles some OHMS quirks.
+    #
     # Uses the `webvtt` gem for initial parsing, but that gem is basic and
     # not very maintained, so we need some massaging and post-processing
     # to get what we need.
@@ -31,6 +33,10 @@ class OralHistoryContent
           unless src.start_with?('WEBVTT')
             src = "WEBVTT\n" + src
           end
+
+          # and OHMS also often omits final empty line also required, adding an
+          # extra doesn't hurt
+          src = src + "\n"
 
           # original gem is sometimes picking up empty cues, which is annoying
           Webvtt::File.new(src).cues.collect { |webvtt_cue| Cue.new(webvtt_cue) }
@@ -89,6 +95,13 @@ class OralHistoryContent
           end
         end
 
+        # split text inside a cue into paragraphs.
+        #
+        # Paragraphs are split on newlines (WebVTT standard) -- also on <br><br> (two in a row br tag),
+        # which OHMS at least sometimes does.
+        #
+        # A change in WebVTT "voice" (speaker) will also result in a paragraph split, which
+        # isn't quite right, but works out fine for how OHMS does things.
         def paragraphs
           @paragraphs ||= begin
             # This tricky regex using both positive lookahead and negative lookahead
@@ -101,7 +114,9 @@ class OralHistoryContent
               end
 
               # \R is any kind of linebreak
-              voice_span.split(/\R/).collect do |paragraph_text|
+              # Things coming from OHMS separate paragraphs by `<br><br>` instead
+              # sometimes annoyingly
+              voice_span.split(/\R|(?:\<br\>\<br\>)/).collect do |paragraph_text|
                 Paragraph.new(speaker_name: speaker_name, raw_html: paragraph_text)
               end
             end.flatten
@@ -126,9 +141,6 @@ class OralHistoryContent
           @safe_html = html_fragment.to_s.strip.html_safe
         end
       end
-
     end
-
-
   end
 end
