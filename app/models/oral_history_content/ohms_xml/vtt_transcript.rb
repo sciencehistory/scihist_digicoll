@@ -129,7 +129,7 @@ class OralHistoryContent
             # This tricky regex using both positive lookahead and negative lookahead
             # will split into voice tags, taking into account that some text might not
             # be in a voice tag, and that voice tag does not have to ber closed when it's the whole cue
-            (text || -"").split(/(?=\<v[ .])|(?<=\<\/v>)/).collect do |voice_span|
+            (text || -"").split(/(?=\<v[ .])|(?:\<\/v>)/).collect do |voice_span|
               # <v some name> or <v.class1.class2 some name>, in some cases ended with </v>
               if voice_span.gsub!(/\A\<v(?:\.[\w.]+)?\ ([^>]+)>/, '')
                 speaker_name = $1
@@ -139,6 +139,7 @@ class OralHistoryContent
               # Things coming from OHMS separate paragraphs by `<br><br>` instead
               # sometimes annoyingly
               voice_span.split(/\R|(?:\<br\>\<br\>)/).collect do |paragraph_text|
+                paragraph_text.gsub!("</v>", "") # remove stray ending tags
                 Paragraph.new(speaker_name: speaker_name, raw_html: paragraph_text)
               end
             end.flatten
@@ -147,20 +148,12 @@ class OralHistoryContent
       end
 
       class Paragraph
-        Scrubber = Rails::Html::PermitScrubber.new.tap do |scrubber|
-          scrubber.tags = ['i', 'b', 'u']
-        end
-
-        attr_reader :speaker_name, :safe_html, :raw_html
+        # named raw_html to make sure we don't forget to scrub!
+        attr_reader :speaker_name, :raw_html
 
         def initialize(speaker_name:, raw_html:)
-          @raw_html = raw_html
+          @raw_html = raw_html.strip
           @speaker_name = speaker_name
-
-          html_fragment = Loofah.fragment(raw_html)
-          html_fragment.scrub!(Scrubber)
-
-          @safe_html = html_fragment.to_s.strip.html_safe
         end
       end
     end

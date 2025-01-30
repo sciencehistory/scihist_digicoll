@@ -45,8 +45,7 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
     expect(first_cue.end_sec_f).to eq 2.0
     expect(first_cue.paragraphs.length).to eq 1
     expect(first_cue.paragraphs[0].speaker_name).to eq "Esme Johnson"
-    expect(first_cue.paragraphs[0].safe_html).to eq "It’s a <i>blue</i> apple tree!"
-    expect(first_cue.paragraphs[0].safe_html.html_safe?).to be true
+    expect(first_cue.paragraphs[0].raw_html).to eq "It’s a <i>blue</i> <script>apple</script> tree!"
 
     second_cue = cues[1]
     expect(second_cue.start).to eq "00:00:02.400"
@@ -55,7 +54,7 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
     expect(second_cue.end_sec_f).to eq 4.0
 
     expect(second_cue.paragraphs.length).to eq 3
-    expect(second_cue.paragraphs.collect(&:safe_html)).to eq [
+    expect(second_cue.paragraphs.collect(&:raw_html)).to eq [
       "This content has some internal line breaks.",
       "Like this is a paragraph two.",
       "And even three."
@@ -64,13 +63,13 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
 
     third_cue = cues[2]
     expect(third_cue.paragraphs.length).to eq 2
-    expect(third_cue.paragraphs.collect(&:safe_html)).to eq ['Hee!', '<i>laughter</i>']
+    expect(third_cue.paragraphs.collect(&:raw_html)).to eq ['Hee!', '<i>laughter</i>']
     expect(third_cue.paragraphs.collect(&:speaker_name)).to eq ['Esme', nil]
-    expect(third_cue.paragraphs.collect(&:safe_html).all? {|a| a.html_safe?}).to be true
+    expect(third_cue.paragraphs.collect(&:raw_html)).not_to include( be_html_safe)
 
     fourth_cue = cues[3]
     expect(fourth_cue.paragraphs.length).to eq 2
-    expect(fourth_cue.paragraphs.collect(&:safe_html)).to eq ['Why did the chicken cross the road', 'To get to the other side']
+    expect(fourth_cue.paragraphs.collect(&:raw_html)).to eq ['Why did the chicken cross the road', 'To get to the other side']
     expect(fourth_cue.paragraphs.collect(&:speaker_name)).to eq ['Mary', 'Doug']
   end
 
