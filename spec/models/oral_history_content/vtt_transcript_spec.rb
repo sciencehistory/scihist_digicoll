@@ -151,4 +151,47 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
       expect(vtt_transcript.cues.first.paragraphs.second.raw_html).to eq "Paragraph Two"
     end
   end
+
+  describe "ohms annotation references" do
+    let(:sample_webvtt) do
+      <<~EOS
+      WEBVTT
+
+      00:00:04.400 --> 00:00:06.000
+      One
+
+      NOTE
+      TRANSCRIPTION END
+
+      NOTE
+      ANNOTATIONS BEGIN
+      Annotation Set Title: Lorem Ipsum Transcript Annotations
+      Annotation Set Creator: Lorem Ipsum Generator
+      Annotation Set Date: 1985-10-26
+
+      NOTE
+      <annotation ref="1">Lorem ipsum <b>dolor</b> sit <i>amet</i>, consectetur adipiscing elit</annotation>
+      <annotation ref="2">Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</annotation>
+      <annotation ref="3">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. See:<a href="https://en.wikipedia.org/wiki/Lorem_ipsum" target="_blank" rel="noopener">Lorem Ipsum</a></annotation>
+
+      NOTE
+      ANNOTATIONS END
+
+      EOS
+    end
+
+    it "gets annotations as indexed footnotes" do
+      expect(vtt_transcript.footnotes).to be_present
+      expect(vtt_transcript.footnotes.length).to eq 3
+
+      expect(vtt_transcript.footnotes.keys).to eq ["1", "2", "3"]
+
+      # strings have not been sanitized and should not be marked html-safe
+      expect(vtt_transcript.footnotes.values).not_to include( be_html_safe )
+
+      expect(vtt_transcript.footnotes["1"]).to eq "Lorem ipsum <b>dolor</b> sit <i>amet</i>, consectetur adipiscing elit"
+      expect(vtt_transcript.footnotes["2"]).to eq "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"
+      expect(vtt_transcript.footnotes["3"]).to eq 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. See:<a href="https://en.wikipedia.org/wiki/Lorem_ipsum" target="_blank" rel="noopener">Lorem Ipsum</a>'
+    end
+  end
 end
