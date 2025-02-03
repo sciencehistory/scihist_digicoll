@@ -10,7 +10,7 @@ describe OralHistory::FootnoteReferenceComponent, type: :component do
     it "includes text in title attribute with proper escaping" do
       result = render_inline described_class.new(footnote_text: footnote_text, number: number, show_dom_id:true)
 
-      expect(result.at_css("a")["title"]).to eq(footnote_text)
+      expect(result.at_css("a")["data-bs-content"]).to eq(footnote_text)
       expect(result.at_css("a")['id']).to eq("footnote-reference-1")
     end
 

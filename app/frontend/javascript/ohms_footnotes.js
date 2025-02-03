@@ -15,9 +15,9 @@ jQuery(document).ready(function() {
 
 OhmsFootnotes.setUpFootnoteEvents = function() {
   // Show the tooltip if you hover over a footnote referecne.
-  jQuery('[data-toggle="ohms-tooltip"]').each(function() {
+  jQuery('[data-toggle="ohms-reference"]').each(function() {
     var $elem = jQuery(this);
-    $elem.tooltip({
+    $elem.popover({
         // sets the container to be the span
         // element that contains the footnote,
         // which will prevent a mouseout event
