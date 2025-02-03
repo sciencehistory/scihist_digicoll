@@ -1,6 +1,7 @@
 <a  class="footnote"
     data-toggle="ohms-reference"
     data-bs-content="<%= footnote_text %>"
+    <% if footnote_text.html_safe? %> data-bs-html="true" <% end %>
     data-bs-custom-class="ohms-footnote-popover"
     data-bs-trigger="hover focus"
     aria-label="footnote <%= number %>"
@@ -9,5 +10,5 @@
     aria-describedby="footnote-text-<%=number%>"
     <% if show_dom_id %> id="footnote-reference-<%= number %>"<% end %>
     >
-  [<%= number %>]
+  <%= link_content %> [<%= number %>]
 </a>
