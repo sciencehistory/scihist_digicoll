@@ -27,17 +27,6 @@ describe OralHistory::VttTranscriptComponent, type: :component do
     ]
   end
 
-  describe "#scrub_text" do
-    let(:unsafe_text) { "It’s a <i>blue</i> <script>apple</script> tree!" }
-
-    it "scrubs" do
-      scrubbed = vtt_transcript_component.scrub_text(unsafe_text)
-
-      expect(scrubbed).to eq "It’s a <i>blue</i> apple tree!"
-      expect(scrubbed).to be_html_safe
-    end
-  end
-
   describe "unsafe html in text" do
     let(:ohms_webvtt) do
       # Example includes what OHMS might, but also some extra stuff in WebVTT
@@ -74,6 +63,53 @@ describe OralHistory::VttTranscriptComponent, type: :component do
       expect(paragraphs[1].inner_html).to include "This content has some <b>bold</b> and <i>italics</i>"
 
       expect(paragraphs[3].inner_html).to include "<i>laughter</i>"
+    end
+  end
+
+  describe "with annotations" do
+    let(:ohms_webvtt) do
+      # Example includes what OHMS might, but also some extra stuff in WebVTT
+      # standard (but not necessarily everything!), to be a bit forward looking.
+      <<~EOS
+        WEBVTT
+
+        NOTE
+        TRANSCRIPTION BEGIN
+
+        00:00:00.000 --> 00:00:02.000
+        <v.first.loud Esme Johnson>We have a <c.1>footnote <b>ref</b> <script>no script tag</script></c>
+
+        NOTE
+        TRANSCRIPTION END
+
+        NOTE
+        ANNOTATIONS BEGIN
+        Annotation Set Title: Lorem Ipsum Transcript Annotations
+        Annotation Set Creator: Lorem Ipsum Generator
+        Annotation Set Date: 1985-10-26
+
+        NOTE
+        <annotation ref="1">Lorem ipsum <b>dolor</b> sit <i>amet</i>, consectetur <script>no script tag</script> <a href="https://example.com">internal link</a></annotation>
+
+        NOTE
+        ANNOTATIONS END
+
+      EOS
+    end
+
+    it "replaces WebVTT <c.1> classes with our footnote references, html-safely" do
+      parsed = render_inline vtt_transcript_component # need to set up test so we can do inline render next
+
+      footnote_link = parsed.at_css("a.footnote")
+
+      expect(footnote_link).to be_present
+      expect(footnote_link.inner_html.strip).to eq "footnote <b>ref</b> no script tag [1]"
+
+      # Nokogiri unescapes for us
+      expect(footnote_link['data-bs-content']).to eq (
+        'Lorem ipsum <b>dolor</b> sit <i>amet</i>, consectetur no script tag <a href="https://example.com" target="_blank" rel="noopener">internal link</a>'
+      )
+      expect(footnote_link['data-bs-html']).to eq "true"
     end
   end
 end

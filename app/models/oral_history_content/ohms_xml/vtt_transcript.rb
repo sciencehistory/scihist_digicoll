@@ -65,6 +65,12 @@ class OralHistoryContent
         end
       end
 
+      # scrubbed, ordered, html_safe values for printing footnotes at bottom
+      def safe_footnote_values
+        safe_footnote_values ||= footnote_array
+      end
+
+
       # eg for indexing, actual human-readable indexable plain text after parsed and extracted webVTT
       def transcript_text
         @transcript_text ||= cues.collect { |c| c.paragraphs }.flatten.collect do |p|
