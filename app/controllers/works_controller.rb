@@ -30,6 +30,16 @@ class WorksController < ApplicationController
     end
   end
 
+  def work_batch
+    @show_deai_header = true
+
+    respond_to do |format|
+      format.html {
+        render WorkBatchComponent.new(@work)
+      }
+    end
+  end
+
   def viewer_images_info
     render json: ViewerMemberInfoSerializer.new(@work,
         show_unpublished: can?(:read, Kithe::Model)

@@ -125,6 +125,10 @@ Rails.application.routes.draw do
     as: :work_english_translation_download
 
 
+  get 'works/:id/work_batch' => "works#work_batch",
+    as: :work_batch
+
+
   # Make the viewer  URL lead to ordinary show page, so JS can pick it up and launch viewer.
   get '/works/:id/viewer/:viewer_member_id(.:format)' => 'works#show', as: :viewer
 
