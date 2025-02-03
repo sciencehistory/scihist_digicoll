@@ -60,7 +60,7 @@ module OralHistory
         scrub!(FootnoteTextScrubber).
         scrub!(:targetblank).
         scrub!(:noopener).
-        to_s
+        to_s.html_safe
     end
 
     def display_paragraphs
