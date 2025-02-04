@@ -215,7 +215,7 @@ describe WorkIndexer do
         output_hash = WorkIndexer.new.map_record(work)
 
         expect(output_hash["searchable_fulltext_en"]).to be_present
-        expect(output_hash["searchable_fulltext_en"].first).to start_with("SCHNEIDER:   Today is December 16, 2024. I am Sarah Schneider")
+        expect(output_hash["searchable_fulltext_en"].first).to start_with("SCHNEIDER: Today is December 16, 2024. I am Sarah Schneider")
         # exactly how many entries depends on how many toc entries have synopsis, keywords, etc.
         expect(output_hash["searchable_fulltext_en"].length).to be >= (1 + index_toc_entries_count)
       end
