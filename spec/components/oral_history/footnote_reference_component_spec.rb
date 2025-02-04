@@ -7,11 +7,12 @@ describe OralHistory::FootnoteReferenceComponent, type: :component do
     let(:footnote_text) { "The mathematician's \"daughter\" proved that x > 4." }
     let(:number) { 1 }
 
-    it "includes text in attribute" do
+    it "includes text in attribute, properly escaped" do
       result = render_inline described_class.new(footnote_text: footnote_text, number: number, show_dom_id:true)
 
       expect(result.at_css("a")["data-bs-content"]).to eq(footnote_text)
       expect(result.at_css("a")['id']).to eq("footnote-reference-1")
+      expect(result.at_css("a")['data-bs-html']).not_to eq "true"
     end
 
     it "does not include html-safety by default" do
@@ -35,9 +36,12 @@ describe OralHistory::FootnoteReferenceComponent, type: :component do
       expect(result.at_css("a").text.strip).to eq "extra text [#{number}]"
     end
 
-    it "tells bootstrap html if footnote_text is html_safe" do
-      result = render_inline described_class.new(footnote_text: "This is <b>html safe</b>".html_safe, number: number)
-      expect(result.at_css("a")["data-bs-content"]).to eq("This is <b>html safe</b>")
+    it "includes html footnote text with bootstrap html attribute" do
+      result = render_inline described_class.new(
+        footnote_text: 'footnote with <b>bold</b> and <a href="http://example.com">link</a>',
+        footnote_is_html: true,
+        number: number)
+      expect(result.at_css("a")["data-bs-content"]).to eq('footnote with <b>bold</b> and <a href="http://example.com">link</a>')
       expect(result.at_css("a")['data-bs-html']).to eq "true"
     end
   end
