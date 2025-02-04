@@ -311,6 +311,9 @@
   // URLs in footnotes should be forced to break if needed to fit on screen
   .footnote-list {
     overflow-wrap: break-word;
+    a {
+      @extend .text-link;
+    }
   }
 }
 
