@@ -51,5 +51,5 @@ OhmsFootnotes.setUpFootnoteEvents = function() {
 OhmsFootnotes.jump = function(event, destination) {
   event.preventDefault();
   var destination = jQuery(destination);
-  window.scrollTo({top: destination.offset().top - jQuery("#ohmsAudioNavbar").height()});
+  window.scrollTo({top: destination.offset().top - jQuery("#ohmsAudioNavbar").outerHeight() - 8});
 }
