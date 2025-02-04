@@ -31,11 +31,9 @@ class WorksController < ApplicationController
   end
 
   def work_batch
-    @show_deai_header = true
-
     respond_to do |format|
       format.html {
-        render WorkBatchComponent.new(@work)
+        render WorkBatchComponent.new(@work), :layout => false
       }
     end
   end
