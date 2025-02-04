@@ -19,6 +19,10 @@ module OralHistory
       @vtt_transcript = vtt_transcript
     end
 
+    def sanitized_footnotes
+      @sanitized_footnotes ||= vtt_transcript.footnotes.collect { |ref, text| [ref, scrub_footnote_text(text)] }.to_h
+    end
+
     # Replace the VTT <c.N> tags used by OHMS for annotation/footnote references
     # with our footnote <a> tags.
     #
@@ -37,10 +41,8 @@ module OralHistory
         refNum = $1
         inner_content = $2.html_safe
 
-        footnote_text = scrub_footnote_text(vtt_transcript.footnotes[refNum])
-
         render(OralHistory::FootnoteReferenceComponent.new(
-          footnote_text: footnote_text,
+          footnote_text: sanitized_footnotes[refNum],
           footnote_is_html: true,
           number: refNum,
           link_content: inner_content

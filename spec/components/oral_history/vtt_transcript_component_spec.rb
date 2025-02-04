@@ -98,7 +98,7 @@ describe OralHistory::VttTranscriptComponent, type: :component do
     end
 
     it "replaces WebVTT <c.1> classes with our footnote references, html-safely" do
-      parsed = render_inline vtt_transcript_component # need to set up test so we can do inline render next
+      parsed = render_inline vtt_transcript_component
 
       footnote_link = parsed.at_css("a.footnote")
 
@@ -110,6 +110,21 @@ describe OralHistory::VttTranscriptComponent, type: :component do
         'Lorem ipsum <b>dolor</b> sit <i>amet</i>, consectetur no script tag <a href="https://example.com" target="_blank" rel="noopener">internal link</a>'
       )
       expect(footnote_link['data-bs-html']).to eq "true"
+    end
+
+    it "renders footnotes at the bottom" do
+      parsed = render_inline vtt_transcript_component
+
+      footnotes = parsed.css(".footnote-list .footnote-page-bottom-container")
+
+      expect(footnotes.length).to eq 1
+      expect(footnotes.first.inner_html.strip.gsub(/\s+/, ' ')).to eq(
+        <<~EOS.gsub(/\s+/, ' ').strip
+          <a id="footnote-1" data-role="ohms-navbar-aware-internal-link" href="#footnote-reference-1"> 1.</a>
+          <span id="footnote-text-1">Lorem ipsum <b>dolor</b> sit <i>amet</i>,
+            consectetur no script tag <a href="https://example.com" target="_blank" rel="noopener">internal link</a></span>
+        EOS
+      )
     end
   end
 end
