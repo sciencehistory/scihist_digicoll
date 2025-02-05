@@ -8,8 +8,9 @@ class WorkBatchComponent < ApplicationComponent
 
   attr_reader :work, :work_download_options
 
-  def initialize(work)
+  def initialize(work, page=1)
     @work = work
+    @page = page
 
     # work download options are expensive, so we calculate them here so we can use them
     # in several places
@@ -30,8 +31,7 @@ class WorkBatchComponent < ApplicationComponent
   #
   def member_list_for_display
     @member_list_display ||= begin
-      members = ordered_viewable_members.dup
-
+      members = ordered_viewable_members.page(@page).per(80).to_a
       # If the representative image is the first item in the list, don't show it twice.
       start_image_number = 1
       if members[0] == representative_member
@@ -39,7 +39,7 @@ class WorkBatchComponent < ApplicationComponent
         start_image_number = 2
       end
 
-      members[0..10].collect.with_index do |member, index|
+      members.collect.with_index do |member, index|
         MemberForThumbnailDisplay.new(member: member, image_label: "Image #{start_image_number + index}")
       end
     end
@@ -48,10 +48,9 @@ class WorkBatchComponent < ApplicationComponent
   # All DISPLAYABLE (to current user) members, in order, and
   # with proper pre-fetches.
   def ordered_viewable_members
-    @ordered_members ||= work.
+    @ordered_viewable_members ||= work.
                           ordered_viewable_members(current_user: current_user).
-                          where("role is null OR role != ?", PdfToPageImages::SOURCE_PDF_ROLE).
-                          to_a
+                          where("role is null OR role != ?", PdfToPageImages::SOURCE_PDF_ROLE)
   end
 
   def transcription_texts
