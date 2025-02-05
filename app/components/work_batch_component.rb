@@ -39,7 +39,7 @@ class WorkBatchComponent < ApplicationComponent
         start_image_number = 2
       end
 
-      members.collect.with_index do |member, index|
+      members[0..10].collect.with_index do |member, index|
         MemberForThumbnailDisplay.new(member: member, image_label: "Image #{start_image_number + index}")
       end
     end
@@ -73,25 +73,9 @@ class WorkBatchComponent < ApplicationComponent
   def representative_member
     # memoize with a value that could be nil....
     return @representative_member if defined?(@representative_member)
-
     @representative_member = (work.representative.try(:role) != PdfToPageImages::SOURCE_PDF_ROLE) ?  work.representative : nil
   end
 
-  # A weird helper method to lset us conditionally sometimes wrap
-  # the work description in TranslationTabsComponent, other times not.
-  #
-  #   <%= maybe_wrap_with_component(wrapping_component: WrappingComponent.new, should_wrap: boolean) do %>
-  #      More content that may or may not be wrapped.
-  #   <% end %>
-  def maybe_wrap_with_component(wrapping_component:, should_wrap:)
-    if should_wrap
-      render wrapping_component do
-        yield
-      end
-    else
-      yield
-    end
-  end
 
   # Encapsulates a member (Asset or Work), and an `image_label` like
   # "Image 5" that we use as a "best we've got" accessible label for
