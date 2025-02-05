@@ -4,10 +4,7 @@ let WorkBatch = (function () {
 
   function getFriendlierId() {
     var urlMatches = window.location.href.match(/\/works\/([^\/]*)/);
-    if (urlMatches === null) {
-      return;
-    }
-    return urlMatches[1];
+    return (urlMatches === null) ? null : urlMatches[1];
   }
 
   function getMembers() {
