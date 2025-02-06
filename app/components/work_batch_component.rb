@@ -8,6 +8,9 @@ class WorkBatchComponent < ApplicationComponent
 
   attr_reader :work, :work_download_options
 
+  NUMBER_OF_WORKS_PER_BATCH = 3
+
+
   def initialize(work, page=1)
     @work = work
     @page = page
@@ -31,7 +34,7 @@ class WorkBatchComponent < ApplicationComponent
   #
   def member_list_for_display
     @member_list_display ||= begin
-      members = ordered_viewable_members.page(@page).per(80).to_a
+      members = ordered_viewable_members.page(@page).per(NUMBER_OF_WORKS_PER_BATCH).to_a
       # If the representative image is the first item in the list, don't show it twice.
       start_image_number = 1
       if members[0] == representative_member
