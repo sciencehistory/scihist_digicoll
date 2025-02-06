@@ -80,5 +80,10 @@
   -->
 </div>
 
+<div><%= link_to("Fetch more works", "", class:"work-batch-link") %></div>
+
+
+<div>Just loaded page <span class="last-loaded-page"></span>.</div>
+
 <%# hidden modal used by viewer %>
 <%= render 'scihist_image_viewer/scihist_viewer_modal', work: work, work_download_options: work_download_options  %>
