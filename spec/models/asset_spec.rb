@@ -224,4 +224,14 @@ describe Asset do
       end
     end
   end
+
+  describe "white edge detection", queue_adapter: :inline do
+    let(:asset) {
+      create(:asset, file: File.open(Rails.root + "spec/test_support/images/white_border_scan_80px.jpg"))
+    }
+
+    it "detects" do
+      expect(asset.file_metadata[AssetUploader::WHITE_EDGE_DETECT_KEY]).to be true
+    end
+  end
 end

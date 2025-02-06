@@ -1,5 +1,6 @@
 class AssetUploader < Kithe::AssetUploader
   SCALED_PDF_DERIV_KEY = :scaled_down_pdf
+  WHITE_EDGE_DETECT_KEY = "white_edge_detect"
 
   # gives us md5, sha1, sha512
   plugin :kithe_checksum_signatures
@@ -24,6 +25,17 @@ class AssetUploader < Kithe::AssetUploader
   # audio/video file characterization
   add_metadata do |source_io, **context|
     Kithe::FfprobeCharacterization.characterize_from_uploader(source_io, context)
+  end
+
+  add_metadata WHITE_EDGE_DETECT_KEY do |source_io, **context|
+    # only run for images! magick is gonna fail on other things!
+    next unless context[:metadata]["mime_type"].start_with?("image/")
+
+    Shrine.with_file(source_io) do |local_file|
+      DetectWhiteImageEdge.new.call(local_file.path) # returns true/false
+    end
+  rescue TTY::Command::ExitError => e
+    Rails.logger.warn("Could not metadata #{WHITE_EDGE_DETECT_KEY}: #{e.message}")
   end
 
   # Re-set shrine derivatives setting, to put DERIVATIVES on restricted storage
