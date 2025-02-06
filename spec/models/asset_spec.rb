@@ -100,19 +100,19 @@ describe Asset do
       end
     end
 
-    describe "create new asset" do
+    describe "create new child asset" do
       let(:parent) do
         Kithe::Indexable.index_with(disable_callbacks: true) do
           create(:work)
         end
       end
 
-      it "does not re-index without relevant attributes" do
+      it "does not re-index parent without relevant attributes in child" do
         Asset.create!(title: "asset", parent: parent)
         expect(WebMock).not_to have_requested(:post, solr_update_url_regex)
       end
 
-      it "re-indexes with relevant attributes" do
+      it "re-indexes parent with relevant attributes in child" do
         Asset.create!(title: "asset", transcription: "transcription", parent: parent)
         expect(WebMock).to have_requested(:post, solr_update_url_regex)
       end
