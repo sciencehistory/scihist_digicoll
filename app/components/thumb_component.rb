@@ -33,6 +33,7 @@
 class ThumbComponent < ApplicationComponent
   attr_accessor :placeholder_img_url, :thumb_size, :asset
 
+  delegate :needs_border?, to: :helpers
 
   # collection_page for CollectionThumbAssets only, oh well we allow them all for now.
   ALLOWED_THUMB_SIZES = Asset::THUMB_WIDTHS.keys + [:collection_page, :collection_show_page]
@@ -141,6 +142,10 @@ class ThumbComponent < ApplicationComponent
       img_attributes.merge!(loading: "lazy")
       # prob doens't matter but doesn't hurt and may help https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/decoding
       img_attributes.merge!(decoding: "async")
+    end
+
+    if needs_border?(asset)
+      img_attributes[:class] = "bordered"
     end
 
     img_attributes.merge!(style: aspect_ratio_style_tag)

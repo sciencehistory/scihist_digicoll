@@ -148,6 +148,9 @@
           // Size image to max width of container
           img {
             width: 100%;
+            &.bordered {
+              border: 2px solid $table-border-color;
+            }
           }
         }
 
