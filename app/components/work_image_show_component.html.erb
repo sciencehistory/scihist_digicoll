@@ -68,16 +68,11 @@
     big representative image %>
   <div style="clear: left"></div>
 
-  <div class="show-member-list-items"></div>
 
-  <!--
-  <%# member_list_for_display.each_with_index do |member_for_thumb, index| %>
-      <div class="show-member-list-item">
-        <%# lazyload all but first 6 images, supply an image_label for accessible labels %>
-        <%#= render MemberImageComponent.new(member_for_thumb.member, lazy: (index > 5), image_label: member_for_thumb.image_label) %>
-      </div>
-  <%# end %>
-  -->
+  <div class="show-member-list-items">
+    <%= render WorkBatchComponent.new(@work, page=0) %>
+  </div>
+
 </div>
 
 <div><%= link_to("Fetch more works", "", class:"work-batch-link") %></div>
