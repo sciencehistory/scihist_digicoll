@@ -68,17 +68,17 @@
     big representative image %>
   <div style="clear: left"></div>
 
-
   <div class="show-member-list-items">
-    <%= render WorkBatchComponent.new(@work, page=0) %>
+    <%= render WorkBatchComponent.new @work %>
   </div>
+
+  <div><%= link_to("Fetch more works", "", class:"work-batch-link") %></div>
+
+  <div style="display:none">Just loaded page <span class="last-loaded-page"></span>.</div>
 
 </div>
 
-<div><%= link_to("Fetch more works", "", class:"work-batch-link") %></div>
 
-
-<div>Just loaded page <span class="last-loaded-page"></span>.</div>
 
 <%# hidden modal used by viewer %>
 <%= render 'scihist_image_viewer/scihist_viewer_modal', work: work, work_download_options: work_download_options  %>

@@ -9,7 +9,7 @@ let WorkBatch = (function () {
   }
 
   function getPage() { 
-    return parseInt(document.querySelector('.last-loaded-page').innerHTML) || 0;
+    return parseInt(document.querySelector('.last-loaded-page').innerHTML) || 1;
   }
 
   function incrementPage() {
