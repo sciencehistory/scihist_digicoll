@@ -6,19 +6,29 @@
 class WorkBatchComponent < ApplicationComponent
   delegate :construct_page_title, :current_user, to: :helpers
 
-  attr_reader :work, :work_download_options
+  attr_reader :work , :work_download_options
 
   NUMBER_OF_WORKS_PER_BATCH = 3
 
 
-  def initialize(work, page=1)
+  def initialize(work, batch:1)
     @work = work
-    @page = page
+    @batch = batch
 
-    # work download options are expensive, so we calculate them here so we can use them
-    # in several places
     @work_download_options = WorkDownloadOptionsCreator.new(work).options
   end
+
+
+  # using an html.erb template for now.
+  # TODO use this method instead.
+  # def call
+  #   member_list_for_display.each_with_index do |member_for_thumb, index| 
+  #     content_tag("div", class: ['show-member-list-item']) do
+  #       #lazyload all but first 6 images, supply an image_label for accessible labels
+  #       MemberImageComponent.new(member_for_thumb.member, lazy: (index > 5), image_label: member_for_thumb.image_label).call
+  #     end
+  #   end
+  # end
 
   # Public members, ordered, to be displayed as thumbnails
   # underneath the hero/representative image -- excluding the hero if it's the
@@ -34,7 +44,7 @@ class WorkBatchComponent < ApplicationComponent
   #
   def member_list_for_display
     @member_list_display ||= begin
-      members = ordered_viewable_members.page(@page).per(NUMBER_OF_WORKS_PER_BATCH).to_a
+      members = ordered_viewable_members.page(@batch).per(NUMBER_OF_WORKS_PER_BATCH).to_a
       # If the representative image is the first item in the list, don't show it twice.
       start_image_number = 1
       if members[0] == representative_member

@@ -33,7 +33,7 @@ class WorksController < ApplicationController
   def work_batch
     respond_to do |format|
       format.html {
-        render WorkBatchComponent.new(@work, page=params[:page]), :layout => false
+        render WorkBatchComponent.new(@work, batch:params[:batch]), :layout => false
       }
     end
   end

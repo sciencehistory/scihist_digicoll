@@ -8,19 +8,20 @@ let WorkBatch = (function () {
     return (urlMatches === null) ? null : urlMatches[1];
   }
 
-  function getPage() { 
-    return parseInt(document.querySelector('.last-loaded-page').innerHTML) || 1;
+  // Note: Batch zero is already present at page load.
+  function getBatch() { 
+    return parseInt(document.querySelector('.last-loaded-batch').innerHTML) || 1;
   }
 
-  function incrementPage() {
-    document.querySelector('.last-loaded-page').innerHTML = (getPage() + 1);
+  function incrementBatch() {
+    document.querySelector('.last-loaded-batch').innerHTML = (getBatch() + 1);
   }
 
 
   function getMembers(event) {
     var friendlierId = getFriendlierId();
     if (friendlierId !== null) {
-      var url = "http://localhost:3000/works/" + friendlierId + "/work_batch" + "?page=" + (getPage() + 1);
+      var url = "http://localhost:3000/works/" + friendlierId + "/work_batch" + "?batch=" + (getBatch() + 1);
       getWorks(url);
     }
     event.preventDefault();
@@ -37,7 +38,7 @@ let WorkBatch = (function () {
       var tagToReplace = document.querySelector('div.show-member-list-items');
       if (tagToReplace !== null) {
         tagToReplace.insertAdjacentHTML('beforeend', html);
-        incrementPage();
+        incrementBatch();
       }
     } catch (error) {
       console.error('Error fetching or inserting HTML:', error);
