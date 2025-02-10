@@ -29,11 +29,17 @@ class DetectWhiteImageEdge
       "-border", "1x1",
       "-fuzz", @fuzz,
       "-trim",
-      #{}"-format", "%O", # `page (canvas) offset ( = %X%Y )`
+      "-format", "%O", # `page (canvas) offset ( = %X%Y )`
       "info:" # don't write out an image, just write out info on the image, perfect! with format being what info in what format
     ]
 
     output = @cmd.run(*args).out
+
+    if output == "-1-1"
+      # special sign it was totally white image that was totally trimmed to oblivion
+      return true
+    end
+
     output =~ /\+(\d+)\+(\d+)/
     x_offset, y_offset = $1.to_i, $2.to_i
 

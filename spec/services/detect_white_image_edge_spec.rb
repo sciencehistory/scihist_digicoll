@@ -50,4 +50,12 @@ describe DetectWhiteImageEdge do
       expect(service.call(image_path)).to eq true
     end
   end
+
+  describe "all white jpg" do
+    let(:image_path) { Rails.root + "spec/test_support/images/all_white_50px.jpg" }
+
+    it "detects true" do
+      expect(service.call(image_path)).to eq true
+    end
+  end
 end
