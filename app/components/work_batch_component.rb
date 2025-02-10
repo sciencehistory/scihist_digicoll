@@ -8,7 +8,7 @@ class WorkBatchComponent < ApplicationComponent
 
   attr_reader :work , :work_download_options
 
-  NUMBER_OF_WORKS_PER_BATCH = 3
+  NUMBER_OF_WORKS_PER_BATCH = 100
 
 
   def initialize(work, batch:1)
