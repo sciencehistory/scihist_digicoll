@@ -10,7 +10,7 @@
 # slow heroku, not too bad.
 #
 class DetectWhiteImageEdge
-  class_attribute :magick_command, default: "magick"
+  class_attribute :magick_command, default: "convert"
 
   def initialize(color: "white", fuzz: "5%")
     @color = color
