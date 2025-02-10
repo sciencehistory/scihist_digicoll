@@ -311,6 +311,9 @@
   // URLs in footnotes should be forced to break if needed to fit on screen
   .footnote-list {
     overflow-wrap: break-word;
+    a {
+      @extend .text-link;
+    }
   }
 }
 
@@ -344,6 +347,12 @@
 
   .ohms-footnote-popover {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+
+    a {
+      // Make it look like a link, not sure why it wasn't looking like any kind
+      // of link otherwise
+      @extend .text-link;
+    }
   }
 }
 
