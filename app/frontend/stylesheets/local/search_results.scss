@@ -225,6 +225,9 @@
 
       img {
         max-width: 100%;
+        &.bordered {
+          border: 2px solid $table-border-color;
+        }
       }
     }
 
