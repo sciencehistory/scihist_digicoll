@@ -31,9 +31,10 @@ class WorksController < ApplicationController
   end
 
   def work_batch
+    work_download_options =  WorkDownloadOptionsCreator.new(@work).options
     respond_to do |format|
       format.html {
-        render WorkBatchComponent.new(@work, batch:params[:batch]), :layout => false
+        render WorkBatchComponent.new(@work, batch:params[:batch], work_download_options: work_download_options), :layout => false
       }
     end
   end

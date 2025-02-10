@@ -69,7 +69,7 @@
   <div style="clear: left"></div>
 
   <div class="show-member-list-items">
-    <%= render WorkBatchComponent.new @work %>
+    <%= render WorkBatchComponent.new(@work, work_download_options: @work_download_options) %>
   </div>
 
   <div><%= link_to("Fetch more works", "", class:"work-batch-link") %></div>
