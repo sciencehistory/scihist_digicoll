@@ -698,7 +698,10 @@ ScihistImageViewer.prototype.initOpenSeadragon = function() {
 
   // When a new page is loaded
   this.viewer.addHandler("open", function(event) {
-     // we add search results overlays
+    // Add gray border for white-edged images, usually born-digital pages
+    _self.addBorderIfNeeded();
+
+    // we add search results overlays
     _self.highlightSearchResults();
 
     // And keep consistent zoom level
@@ -723,6 +726,17 @@ ScihistImageViewer.prototype.initOpenSeadragon = function() {
 
   });
 };
+
+ScihistImageViewer.prototype.addBorderIfNeeded = function() {
+  if (this.selectedThumbData.whiteEdge) {
+    const elt = document.createElement("div");
+    elt.className = "viewer-page-border";
+    this.viewer.addOverlay({
+      element: elt,
+      location: new OpenSeadragon.Rect(0, 0, 1, this.viewer.world.getItemAt(0).getBounds().height)
+    });
+  }
+}
 
 ScihistImageViewer.prototype.highlightSearchResults = function() {
   const currentMemberId = this.selectedThumbData?.memberId;

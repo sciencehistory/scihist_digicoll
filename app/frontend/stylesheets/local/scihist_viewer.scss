@@ -213,6 +213,10 @@ $scihist_image_viewer_thumb_width: 54px; // Needs to match ImageServiceHelper::T
     }
   }
 
+  .viewer-page-border {
+    border: 2px solid $table-border-color;
+  }
+
   .viewer-search-highlight {
     background-color: $shi-red;
     opacity: 0.35;
