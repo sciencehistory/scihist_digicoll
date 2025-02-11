@@ -1,5 +1,4 @@
 let WorkBatch = (function () {
-  let privateVariable = "I am private";
 
   document.querySelector(".work-batch-link")?.addEventListener("click", getMembers);
 
@@ -14,7 +13,11 @@ let WorkBatch = (function () {
   }
 
   function incrementBatch() {
-    document.querySelector('.last-loaded-batch').innerHTML = (getBatch() + 1);
+    return document.querySelector('.last-loaded-batch').innerHTML = (getBatch() + 1);
+  }
+
+  function allMembersLoaded() {
+    return parseInt(document.querySelector('.member-count').innerHTML) >= document.querySelectorAll('.show-member-list-items .show-member-list-item').length;
   }
 
 
@@ -40,6 +43,11 @@ let WorkBatch = (function () {
         tagToReplace.insertAdjacentHTML('beforeend', html);
         incrementBatch();
       }
+
+      if (allMembersLoaded()) {
+        document.querySelector(".work-batch-link").style.display = "none";
+      }
+
     } catch (error) {
       console.error('Error fetching or inserting HTML:', error);
     }
