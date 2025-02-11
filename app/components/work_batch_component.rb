@@ -55,6 +55,10 @@ class WorkBatchComponent < ApplicationComponent
                           where("role is null OR role != ?", PdfToPageImages::SOURCE_PDF_ROLE)
   end
 
+  def show_link?
+    ordered_viewable_members.count > NUMBER_OF_WORKS_PER_BATCH 
+  end
+
   # TODO: DRY: this method exists already in work_image_show_component - why can't we use delegate here?
   #
   # We don't want the leaf_representative, we want the direct representative member
