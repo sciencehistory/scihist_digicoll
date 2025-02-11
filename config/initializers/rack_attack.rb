@@ -7,6 +7,8 @@ if Rails.env.production? && (Rack::Attack.cache.nil? || Rack::Attack.cache.store
   Rails.logger.warn("rack_attack: rack-attack is not throttling, as we do not have a real Rails.cache available!")
 end
 
+RACK_ATTACK_THROTTLE_EXEMPT_IPS = ScihistDigicoll::Env.lookup(:main_office_ips) || []
+
 # If any single client IP is making tons of requests, then they're
 # probably malicious or a poorly-configured scraper. Either way, they
 # don't deserve to hog all of the app server's CPU. Cut them off!
@@ -34,7 +36,7 @@ Rack::Attack.throttle('req/ip', limit: 180, period: 1.minutes) do |req|
   # We also try to exempt our "api" responses from rate limit, although
   # we still include them in tracking logging below.
   req.ip unless (
-                  req.ip.in?(ScihistDigicoll::Env.lookup(:main_office_ips)) || # exempt 315 chestnut from this rate limit
+                  req.ip.in?(RACK_ATTACK_THROTTLE_EXEMPT_IPS) || # exempt 315 chestnut from this rate limit
                   req.path.start_with?('/assets') ||
                   req.path.end_with?(".atom") ||
                   req.path.end_with?(".xml") ||
