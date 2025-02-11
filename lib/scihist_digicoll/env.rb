@@ -193,6 +193,14 @@ module ScihistDigicoll
 
     define_key :main_website_base, default: "https://sciencehistory.org"
 
+    # IPs at 315 chestnut
+    define_key :main_office_ips,
+      default: [ '173.161.142.4', '173.167.214.146'],
+      system_env_transform: ->(v) {
+        # YAML load can turn "['string', 'string']" into the array represented
+        YAML.safe_load(v.to_s)
+      }
+
     # set in ENV LOGINS_DISABLED or local_env.yml, to globally
     # prevent access to pages requiring authentication. May be useful
     # for maintenance tasks.
