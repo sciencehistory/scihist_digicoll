@@ -50,4 +50,12 @@ module ImageHelper
       srcset: "#{derivative_url} 1x, #{derivative_2x_url} 2x",
       **image_tag_options
   end
+
+  # if it's been detected as with a white border and is NOT a photo of a museum object,
+  # it needs to be displayed with a little border to look right.
+  #
+  # We like the border blending into bg for physical object photos
+  def needs_border?(asset)
+    asset.file_metadata[AssetUploader::WHITE_EDGE_DETECT_KEY] && !asset.parent.format.include?("physical_object")
+  end
 end

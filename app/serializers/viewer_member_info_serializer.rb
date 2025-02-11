@@ -25,13 +25,14 @@ class ViewerMemberInfoSerializer
         memberShouldShowInfo: member.kind_of?(Work),
         title: member.title,
         memberId: member.friendlier_id,
+        whiteEdge: asset.file_metadata[AssetUploader::WHITE_EDGE_DETECT_KEY].presence,
         memberShowUrl: (work_path(member) if member.kind_of?(Work)),
         tileSource: asset.dzi_file.url,
         # if tilesource DZI is unavailable, give them a more reasonable sized JPG
         fallbackTileSource: { type: "image", url: download_derivative_path(asset, :download_medium, disposition: "inline") },
         thumbAspectRatio: ("#{asset.width.to_f / asset.height}" if asset.width && asset.height),
         downloads: download_options(asset).as_json
-      }.merge(thumb_src_attributes(asset))
+      }.merge(thumb_src_attributes(asset)).compact
     end
   end
 

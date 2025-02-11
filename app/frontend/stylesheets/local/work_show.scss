@@ -157,6 +157,10 @@
       max-height: 300vw;
     }
 
+    .thumb img.bordered {
+      border: 2px solid $table-border-color;
+    }
+
     // A div of btn's
     .action-item-bar {
       display: flex;

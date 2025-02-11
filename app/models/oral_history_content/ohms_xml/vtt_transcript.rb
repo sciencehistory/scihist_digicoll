@@ -7,7 +7,8 @@ class OralHistoryContent
     # new-style 2025 OHMS transcript with <vtt_transcript> element in xml.
     # https://www.w3.org/TR/webvtt1/
     #
-    # Also handles some OHMS quirks.
+    # Also handles some OHMS quirks, strips and formats OHMS-style citation
+    # footnotes, etc.  This really is OHMS-speciifc in the end.
     #
     # Uses the `webvtt` gem for initial parsing, but that gem is basic and
     # not very maintained, so we need some massaging and post-processing
@@ -42,6 +43,33 @@ class OralHistoryContent
           Webvtt::File.new(src).cues.collect { |webvtt_cue| Cue.new(webvtt_cue) }
         end
       end
+
+      # delivers extracted and indexed footnotes from OHMS WebVTT
+      # using OHMS own custom format standards for such.
+      #
+      # Warning: Text is NOT sanitized!
+      #
+      # @returns a hash where index are OHMS footnote numbers/indicators
+      def footnotes
+        @footnotes ||= begin
+          by_ref = {}
+
+          raw_webvtt_text =~ /ANNOTATIONS BEGIN(.*)ANNOTATIONS END/m
+          Nokogiri::XML.fragment($1 || "").xpath("annotation").each do |node|
+            next unless node['ref'].present?
+
+            by_ref[node['ref']] = node.inner_html
+          end
+
+          by_ref
+        end
+      end
+
+      # scrubbed, ordered, html_safe values for printing footnotes at bottom
+      def safe_footnote_values
+        safe_footnote_values ||= footnote_array
+      end
+
 
       # eg for indexing, actual human-readable indexable plain text after parsed and extracted webVTT
       def transcript_text
@@ -97,7 +125,7 @@ class OralHistoryContent
 
         # split text inside a cue into paragraphs.
         #
-        # Paragraphs are split on newlines (WebVTT standard) -- also on <br><br> (two in a row br tag),
+        # Paragraphs are split on newlines (WebVTT standard) -- also on <br><br> (two+ in a row br tag),
         # which OHMS at least sometimes does.
         #
         # A change in WebVTT "voice" (speaker) will also result in a paragraph split, which
@@ -107,16 +135,17 @@ class OralHistoryContent
             # This tricky regex using both positive lookahead and negative lookahead
             # will split into voice tags, taking into account that some text might not
             # be in a voice tag, and that voice tag does not have to ber closed when it's the whole cue
-            (text || -"").split(/(?=\<v[ .])|(?<=\<\/v>)/).collect do |voice_span|
+            (text || -"").split(/(?=\<v[ .])|(?:\<\/v>)/).collect do |voice_span|
               # <v some name> or <v.class1.class2 some name>, in some cases ended with </v>
               if voice_span.gsub!(/\A\<v(?:\.[\w.]+)?\ ([^>]+)>/, '')
                 speaker_name = $1
               end
 
               # \R is any kind of linebreak
-              # Things coming from OHMS separate paragraphs by `<br><br>` instead
-              # sometimes annoyingly
-              voice_span.split(/\R|(?:\<br\>\<br\>)/).collect do |paragraph_text|
+              # Things coming from OHMS can separate paragraphs by `<br><br>`, annoyingly:
+              # Split paragraphs on two more consecutive <br>
+              voice_span.split(/\R|(?:\<br\>){2,}/).collect do |paragraph_text|
+                paragraph_text.gsub!("</v>", "") # remove stray ending tags
                 Paragraph.new(speaker_name: speaker_name, raw_html: paragraph_text)
               end
             end.flatten
@@ -125,20 +154,12 @@ class OralHistoryContent
       end
 
       class Paragraph
-        Scrubber = Rails::Html::PermitScrubber.new.tap do |scrubber|
-          scrubber.tags = ['i', 'b', 'u']
-        end
-
-        attr_reader :speaker_name, :safe_html, :raw_html
+        # named raw_html to make sure we don't forget to scrub!
+        attr_reader :speaker_name, :raw_html
 
         def initialize(speaker_name:, raw_html:)
-          @raw_html = raw_html
+          @raw_html = raw_html.strip
           @speaker_name = speaker_name
-
-          html_fragment = Loofah.fragment(raw_html)
-          html_fragment.scrub!(Scrubber)
-
-          @safe_html = html_fragment.to_s.strip.html_safe
         end
       end
     end
