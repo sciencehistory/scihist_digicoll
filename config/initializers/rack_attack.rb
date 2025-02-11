@@ -34,6 +34,7 @@ Rack::Attack.throttle('req/ip', limit: 80, period: 1.minutes) do |req|
   # We also try to exempt our "api" responses from rate limit, although
   # we still include them in tracking logging below.
   req.ip unless (
+                  req.ip.in?(ScihistDigicoll::Env.lookup(:main_office_ips)) || # exempt 315 chestnut from this rate limit
                   req.path.start_with?('/assets') ||
                   req.path.end_with?(".atom") ||
                   req.path.end_with?(".xml") ||
