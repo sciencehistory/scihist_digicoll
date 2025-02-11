@@ -29,7 +29,7 @@ end
 #
 # May 1 2024: Limiting much more extensively to 30 req per minute -- one per every two seconds
 # averaging over a minute -- after bot  attacks costing us money from s3.
-Rack::Attack.throttle('req/ip', limit: 80, period: 1.minutes) do |req|
+Rack::Attack.throttle('req/ip', limit: 180, period: 1.minutes) do |req|
   # On heroku, we may be delivering assets via rack, I think.
   # We also try to exempt our "api" responses from rate limit, although
   # we still include them in tracking logging below.
@@ -44,7 +44,7 @@ end
 
 # But we're also going to TRACK at half that limit, for ease
 # of understanding what's going on in our logs
-Rack::Attack.track("req/ip_track", limit: 60, period: 1.minute) do |req|
+Rack::Attack.track("req/ip_track", limit: 90, period: 1.minute) do |req|
   req.ip unless req.path.start_with?('/assets')
 end
 
