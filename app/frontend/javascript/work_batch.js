@@ -1,3 +1,4 @@
+// TODO rename -- these are members, not works
 let WorkBatch = (function () {
 
   document.querySelector(".work-batch-link")?.addEventListener("click", getMembers);
@@ -17,7 +18,7 @@ let WorkBatch = (function () {
   }
 
   function allMembersLoaded() {
-    return parseInt(document.querySelector('.member-count').innerHTML) >= document.querySelectorAll('.show-member-list-items .show-member-list-item').length;
+    return document.querySelectorAll('.show-member-list-items .show-member-list-item').length >= parseInt(document.querySelector('.member-count').innerHTML);
   }
 
 

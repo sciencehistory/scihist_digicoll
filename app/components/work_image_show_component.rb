@@ -7,7 +7,6 @@ class WorkImageShowComponent < ApplicationComponent
   delegate :construct_page_title, :current_user, to: :helpers
 
   attr_reader :work, :work_download_options
-
   def initialize(work)
     @work = work
 
@@ -31,19 +30,20 @@ class WorkImageShowComponent < ApplicationComponent
   def member_list_for_display
     @member_list_display ||= begin
       members = ordered_viewable_members.dup
-
-      # If the representative image is the first item in the list, don't show it twice.
-      start_image_number = 1
-      if members[0] == representative_member
-        members.delete_at(0)
-        start_image_number = 2
-      end
-
+        
+      members.delete_at(0) if start_image_number == 2
+    
       members.collect.with_index do |member, index|
         MemberForThumbnailDisplay.new(member: member, image_label: "Image #{start_image_number + index}")
       end
     end
   end
+
+  # If the representative image is the first item in the list, don't show it twice.
+  def start_image_number
+    (ordered_viewable_members[0] == representative_member) ? 2 : 1
+  end
+
 
   # All DISPLAYABLE (to current user) members, in order, and
   # with proper pre-fetches.
