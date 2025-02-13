@@ -124,6 +124,8 @@ Rails.application.routes.draw do
     format: false,
     as: :work_english_translation_download
 
+  get 'works/:id/lazy_member_images' => "works#lazy_member_images",
+    as: :lazy_member_images
 
   # Make the viewer  URL lead to ordinary show page, so JS can pick it up and launch viewer.
   get '/works/:id/viewer/:viewer_member_id(.:format)' => 'works#show', as: :viewer

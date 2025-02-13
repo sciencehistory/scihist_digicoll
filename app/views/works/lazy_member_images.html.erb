@@ -1,0 +1,9 @@
+<% @slice.each_with_index do |member_for_thumb, index| %>
+	<%= render MemberImageComponent.new(
+		member_for_thumb.member,
+		lazy: false,
+		image_label: member_for_thumb.image_label,
+		containing_div_class: 'show-member-list-item'
+	) %>
+<% end %>
+<span class="next-start-index" style="display:none"><%= @start_index + @images_per_page %></span></div>

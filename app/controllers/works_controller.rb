@@ -30,6 +30,27 @@ class WorksController < ApplicationController
     end
   end
 
+  # TODO  don't calculate work_download_options a bunch of times.
+  def lazy_member_images
+    @start_index = params[:start_index].to_i
+    @images_per_page = params[:images_per_page].to_i
+    ordered_viewable_members = @work.ordered_viewable_members(current_user: current_user, exclude_pdf_source: true)
+
+    # todo -- instead of slice use some activerecord stuff...
+    @slice = ordered_viewable_members.
+      slice(@start_index, @images_per_page).
+      collect.with_index do |member, index|
+        # Todo: check that start_index is correct here
+        WorkImageShowComponent::MemberForThumbnailDisplay.new(member: member, image_label: "Image #{@start_index + index}")
+    end
+
+    respond_to do |format|
+      format.html {
+        render :layout => false
+      }
+    end
+  end
+
   def viewer_images_info
     render json: ViewerMemberInfoSerializer.new(@work,
         show_unpublished: can?(:read, Kithe::Model)
@@ -80,7 +101,8 @@ class WorksController < ApplicationController
       WorkVideoShowComponent.new(@work)
     else
       # standard image-based template.
-      WorkImageShowComponent.new(@work)
+      ordered_viewable_members = @work.ordered_viewable_members(current_user: current_user, exclude_pdf_source: true)
+      WorkImageShowComponent.new(@work, ordered_viewable_members:ordered_viewable_members)
     end
   end
 
