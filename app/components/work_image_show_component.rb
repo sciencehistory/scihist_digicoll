@@ -8,14 +8,14 @@ class WorkImageShowComponent < ApplicationComponent
 
   attr_reader :work, :work_download_options
 
-  def initialize(work, images_per_page:10, ordered_viewable_members:)
+  def initialize(work, images_per_page:100, ordered_viewable_members:)
     @work = work
     @images_per_page = images_per_page
+    
     # we turn this into an array here.
-
     @ordered_viewable_members = ordered_viewable_members.to_a
 
-    if ordered_viewable_members.count > @images_per_page 
+    if show_link? 
       @ordered_viewable_members_first_batch = ordered_viewable_members.limit(@images_per_page)
     else
       @ordered_viewable_members_first_batch = ordered_viewable_members
@@ -30,9 +30,11 @@ class WorkImageShowComponent < ApplicationComponent
     @ordered_viewable_members.count > @images_per_page 
   end
 
-  # TODO might need to check start_image_number in #member_liost_for_display in calculating this
+  # Start index for next batch.
+  # The first time, we set this to @images per page so the next batch of images will start at the next page.
+  # After that, if needed, the lazy_member_images method in the works controller provides a "next-start-index" >
   def start_index
-    @start_index = @images_per_page + 1
+    @start_index = @images_per_page
   end
 
   # Public members, ordered, to be displayed as thumbnails
