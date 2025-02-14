@@ -34,14 +34,18 @@ class WorksController < ApplicationController
   def lazy_member_images
     @start_index = params[:start_index].to_i
     @images_per_page = params[:images_per_page].to_i
+
     ordered_viewable_members = @work.ordered_viewable_members(current_user: current_user, exclude_pdf_source: true)
 
+    @members = ordered_viewable_members.
+      offset(@start_index).
+      limit(@images_per_page)
+
+    @no_more_images = (@start_index + @images_per_page > ordered_viewable_members.count)
+
     # todo -- instead of slice use some activerecord stuff...
-    @slice = ordered_viewable_members.
-      slice(@start_index, @images_per_page).
-      collect.with_index do |member, index|
-        # Todo: check that start_index is correct here
-        WorkImageShowComponent::MemberForThumbnailDisplay.new(member: member, image_label: "Image #{@start_index + index}")
+    @slice = @members.collect.with_index do |member, index|
+      WorkImageShowComponent::MemberForThumbnailDisplay.new(member: member, image_label: "Image #{@start_index + index}")
     end
 
     respond_to do |format|
