@@ -43,7 +43,6 @@ class WorksController < ApplicationController
 
     @no_more_images = (@start_index + @images_per_page > ordered_viewable_members.count)
 
-    # todo -- instead of slice use some activerecord stuff...
     @slice = @members.collect.with_index do |member, index|
       WorkImageShowComponent::MemberForThumbnailDisplay.new(member: member, image_label: "Image #{@start_index + index}")
     end
