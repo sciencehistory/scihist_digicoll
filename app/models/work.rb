@@ -161,7 +161,7 @@ class Work < Kithe::Work
   # with proper pre-fetches.
   #
   # @return [ActiveRecord::Relation] relation, not yet fetched, fetching desired records. Call #to_a on it if you want to trigger fetch to db.
-  def ordered_viewable_members(current_user:)
+  def ordered_viewable_members(current_user:, exclude_pdf_source:false)
 
 
     members = self.members.includes(:leaf_representative)
@@ -170,7 +170,12 @@ class Work < Kithe::Work
       members = members.where(published: true)
     end
 
+    if exclude_pdf_source
+      members = members.where("role is null OR role != ?", PdfToPageImages::SOURCE_PDF_ROLE)
+    end
+
     members = members.order(:position)
+
 
     # the point of this is to avoid n+1's, so let's set strict_loading, which
     # it turns out you can do on an association/relation
