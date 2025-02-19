@@ -146,8 +146,6 @@ Rails.application.config.to_prepare do
     { controller: "collection_show_controllers/immigrants_and_innovation_collection" },
     { controller: "collection_show_controllers/oral_history_collection"},
     { controller: "collection_show_controllers/bredig_collection"},
-    '/downloads/orig' # block originals, with exception for PDF originals in other config
-
   ]
 
   BotDetectController.allow_exempt = ->(controller) {
@@ -172,11 +170,6 @@ Rails.application.config.to_prepare do
       controller.kind_of?(CollectionShowController) &&
       controller.respond_to?(:has_search_parameters?) &&
       !controller.has_search_parameters?
-    ) ||
-    ## exempt PDF original downloads
-    (
-      controller.kind_of?(DownloadsController) &&
-      controller.params[:file_category] == "pdf"
     )
   }
 
