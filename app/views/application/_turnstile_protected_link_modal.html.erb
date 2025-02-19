@@ -1,0 +1,25 @@
+<div class="modal" tabindex="-1" id="turnstile-protected-link-modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Traffic control and bot detection...</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+
+            <%# implicit render turnstile %>
+            <div
+              id="turnstile-protected-link-widget"
+              data-sitekey="<%= BotDetectController.cf_turnstile_sitekey %>"
+            ></div>
+
+            <div id="turnstile-protected-link-modal-error" class="mt-3"></div>
+
+            <p class="mt-3">We strive to make our content freely available. If this check is preventing you from making use of our resources, make sure you have cookies enabled. If you still have trouble, please <a href="mailto:digital@sciencehistory.org">get in touch</a>. You can also take a look at our information on <a href="https://digital.sciencehistory.org/api_docs">API and Machine Access</a>.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>

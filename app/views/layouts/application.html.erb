@@ -109,5 +109,8 @@
       </section>
     <% end %>
     <%= render ScihistFooterComponent.new %>
+
+    <%# include modal so JS can use it %>
+    <%= render "turnstile_protected_link_modal" %>
   </body>
 </html>
