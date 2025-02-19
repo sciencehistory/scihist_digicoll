@@ -124,6 +124,9 @@ class DownloadsController < ApplicationController
   # in local BotDetectController, being extracted to BotChallengePage gem. Or maybe it's
   # okay like so!
   def turnstile_protect
+    # don't protect PDFs, we want google to crawl them
+    return if @asset.content_type == "application/pdf"
+
     body = {
       secret: BotDetectController.cf_turnstile_secret_key,
       response: params["cf_turnstile_response"],

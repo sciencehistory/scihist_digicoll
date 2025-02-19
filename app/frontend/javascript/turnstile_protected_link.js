@@ -12,6 +12,12 @@ domready(function() {
   var loadedWidgetId;
 
   document.querySelector("a[data-turnstile-protection=true],a[data-analytics-action=download_original]")?.addEventListener("click", function(event) {
+    // Hacky exempt if it's a PDF download, because we want google to crawl PDFs
+    // We can tell only by href path sorry
+    if (event.currentTarget.getAttribute("href")?.includes('downloads/orig/pdf')) {
+      return;
+    }
+
     event.preventDefault();
     const origHref = event.currentTarget.getAttribute("href");
 
