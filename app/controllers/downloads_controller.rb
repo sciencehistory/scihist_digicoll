@@ -38,6 +38,8 @@ class DownloadsController < ApplicationController
   before_action :set_asset
   before_action :set_derivative, only: :derivative
 
+  before_action :turnstile_protect, only: :original
+
 
   #GET /downloads/:asset_id
   def original
@@ -116,5 +118,33 @@ class DownloadsController < ApplicationController
 
   def content_disposition_mode
     params["disposition"] == "inline" ? "inline" : "attachment"
+  end
+
+  # This maybe should be DRY'd with our page-redirect turnstile protection, currently
+  # in local BotDetectController, being extracted to BotChallengePage gem. Or maybe it's
+  # okay like so!
+  def turnstile_protect
+    body = {
+      secret: BotDetectController.cf_turnstile_secret_key,
+      response: params["cf_turnstile_response"],
+      remoteip: request.remote_ip
+    }
+
+    http = HTTP.timeout(BotDetectController.cf_timeout)
+    response = http.post(BotDetectController.cf_turnstile_validation_url,
+      json: body)
+
+    result = response.parse
+    # {"success"=>true, "error-codes"=>[], "challenge_ts"=>"2025-01-06T17:44:28.544Z", "hostname"=>"example.com", "metadata"=>{"result_with_testing_key"=>true}}
+    # {"success"=>false, "error-codes"=>["invalid-input-response"], "messages"=>[], "metadata"=>{"result_with_testing_key"=>true}}
+
+    if !result["success"]
+      Rails.logger.warn("#{self.class.name}: Cloudflare Turnstile validation failed (#{request.remote_ip}, #{request.user_agent}): #{result}: #{params["dest"]}")
+      render plain: "Denied due to traffic and bot controls. If this check is intefering with your use, please contact us at digital@sciencehistory.org", status: 403
+    end
+  rescue HTTP::Error, JSON::ParserError => e
+    # probably an http timeout? or something weird.
+    Rails.logger.warn("#{self.class.name}: Cloudflare turnstile validation error (#{request.remote_ip}, #{request.user_agent}): #{e}: #{response&.body}")
+    render plain: "Denied due to traffic and bot controls. If this check is intefering with your use, please contact us at digital@sciencehistory.org", status: 403
   end
 end
