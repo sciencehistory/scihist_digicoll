@@ -119,6 +119,42 @@ describe DownloadsController do
         expect(s3_url_args[:response_content_disposition]).to include(expected_filename)
       end
     end
+
+    describe "with turnstile protection" do
+      include WebmockTurnstileHelperMethods
+
+      let(:asset) { create(:asset_with_faked_file,
+                           faked_derivatives: {},
+                           parent: create(:work, title: "Plastics make the package Dow makes the plastics"))}
+
+      before do
+        allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
+        allow(ScihistDigicoll::Env).to receive(:lookup).with(:cf_turnstile_downloads_enabled).and_return(true)
+      end
+
+      it "denies if no turnstile token present" do
+        get :original, params: { asset_id: asset, file_category: file_category }
+        expect(response).to have_http_status(403)
+      end
+
+      it "denies with bad turnstile token present" do
+        stub_turnstile_failure(request_body: {"secret"=>BotDetectController.cf_turnstile_secret_key, "response"=>"bad", "remoteip"=>request.ip})
+
+        get :original, params: { asset_id: asset, file_category: file_category, cf_turnstile_response: "bad" }
+        expect(response).to have_http_status(403)
+      end
+
+      it "redirects with good turnstile token present" do
+        stub_turnstile_success(request_body: {"secret"=>BotDetectController.cf_turnstile_secret_key, "response"=>"good", "remoteip"=>request.ip})
+
+        get :original, params: { asset_id: asset, file_category: file_category, cf_turnstile_response: "good" }
+        expect(response).to have_http_status(302)
+
+        expect(@received_s3_url_args.length).to eq 1
+        s3_url_args = @received_s3_url_args.first
+        expect(s3_url_args[:response_content_disposition]).to start_with("attachment;")
+      end
+    end
   end
 
 

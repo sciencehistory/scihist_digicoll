@@ -40,8 +40,7 @@ class DownloadsController < ApplicationController
 
   before_action :turnstile_protect, only: :original, if: -> { ScihistDigicoll::Env.lookup(:cf_turnstile_downloads_enabled) }
 
-
-  #GET /downloads/:asset_id
+  #GET /downloads/original/:asset_id
   def original
     # for IMAGES only, when we have downloads disable, simply refuse to redirect IF the user
     # is not logged in. PHEW lots of exceptions, trying to avoid breaking LOTS of our app.
@@ -126,6 +125,10 @@ class DownloadsController < ApplicationController
   def turnstile_protect
     # don't protect PDFs, we want google to crawl them
     return if @asset.content_type == "application/pdf"
+
+    if params["cf_turnstile_response"].blank?
+      raise HTTP::Error.new("No cf_turnstile_response param")
+    end
 
     body = {
       secret: BotDetectController.cf_turnstile_secret_key,
