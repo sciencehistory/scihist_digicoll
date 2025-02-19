@@ -94,6 +94,11 @@ class DownloadOption
 
     # Add in analytics data- attributes
     @data_attrs.merge!(analytics_data_attributes)
+
+    # Sneakily add in data-turnstile-protection-true for originals that aren't PDFs
+    if @analyticsAction == "download_original" && @content_type != "application/pdf" && ScihistDigicoll::Env.lookup(:cf_turnstile_downloads_enabled)
+      @data_attrs.merge!({"turnstile-protection" => "true"})
+    end
   end
 
   # trigger analytics JS, eg Google Analytics prob

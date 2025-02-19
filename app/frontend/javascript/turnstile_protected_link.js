@@ -2,9 +2,6 @@
 // we will put up a quick bootstrap modal form to do a turnstile bot challenge
 // before sending them on to their ordinary destination via a GET request.
 //
-// Also target data-analytics-action=downloadOriginal, lazy way to avoid having
-// to add attribute to those links thanks.
-
 import domready from 'domready';
 import * as bootstrap from 'bootstrap';
 
@@ -12,7 +9,7 @@ domready(function() {
   var loadedWidgetId;
 
   document.addEventListener("click", function(event) {
-    const link = event.target.closest("a[data-turnstile-protection=true],a[data-analytics-action=download_original]");
+    const link = event.target.closest("a[data-turnstile-protection=true]");
 
     if (!link) {
       // not the droids we are looking for

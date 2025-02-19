@@ -38,7 +38,7 @@ class DownloadsController < ApplicationController
   before_action :set_asset
   before_action :set_derivative, only: :derivative
 
-  before_action :turnstile_protect, only: :original
+  before_action :turnstile_protect, only: :original, if: -> { ScihistDigicoll::Env.lookup(:cf_turnstile_downloads_enabled) }
 
 
   #GET /downloads/:asset_id

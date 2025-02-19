@@ -110,7 +110,9 @@
     <% end %>
     <%= render ScihistFooterComponent.new %>
 
-    <%# include modal so JS can use it %>
-    <%= render "turnstile_protected_link_modal" %>
+    <% if ScihistDigicoll::Env.lookup(:cf_turnstile_downloads_enabled) %>
+      <%# include modal so JS can use it %>
+      <%= render "turnstile_protected_link_modal" %>
+    <% end %>
   </body>
 </html>

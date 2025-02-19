@@ -212,6 +212,9 @@ module ScihistDigicoll
     define_key :cf_turnstile_sitekey, default: ("1x00000000000000000000AA" if Rails.env.development?)
     define_key :cf_turnstile_secret_key, default: ("1x0000000000000000000000000000000AA" if Rails.env.development?)
     define_key :cf_turnstile_enabled, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM, default: false
+    # specifically for downloads, can be turned on/off independently
+    define_key :cf_turnstile_downloads_enabled, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM, default: -> { ScihistDigicoll::Env.lookup(:cf_turnstile_enabled) }
+
 
 
     # Logic to get network location of the Redis instance we will
