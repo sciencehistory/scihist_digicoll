@@ -33,7 +33,7 @@ class WorkJsonSerializer
     # * html_self: just hard-code cause we don't have access to route helpers here
     {
       img_thumbnail: WorkOaiDcSerialization.shareable_thumbnail_url(object),
-      html_self: "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/works/#{object.id}"
+      html_self: "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/works/#{object.friendlier_id}"
     }
   end
 
