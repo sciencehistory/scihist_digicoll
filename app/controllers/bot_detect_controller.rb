@@ -143,9 +143,11 @@ class BotDetectController < ApplicationController
   # Usually in your ApplicationController,
   #
   #     before_action { |controller| BotDetectController.bot_detection_enforce_filter(controller) }
-  def self.bot_detection_enforce_filter(controller)
+  #
+  # @param immediate [Boolean] always force bot protection, ignore any allowed pre-challenge rate limit
+  def self.bot_detection_enforce_filter(controller, immediate: false)
     if self.enabled &&
-        controller.request.env[self.env_challenge_trigger_key] &&
+        (controller.request.env[self.env_challenge_trigger_key] || immediate) &&
         ! self._bot_detect_passed_good?(controller.request) &&
         ! controller.kind_of?(self) && # don't ever guard ourself, that'd be a mess!
         ! self.allow_exempt.call(controller)
