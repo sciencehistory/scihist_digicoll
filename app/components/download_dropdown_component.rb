@@ -239,10 +239,13 @@ class DownloadDropdownComponent < ApplicationComponent
     ])
 
     if download_option.url.present?
+      # download_original gets target=_blank becuase it's protected by bot protection,
+      # so needs to open a tab for the bot challenge if necessary. A bit kludgey.
       content_tag("a", label,
                         class: "dropdown-item",
                         href: download_option.url,
-                        data: download_option.data_attrs)
+                        data: download_option.data_attrs,
+                        target: ("_blank" if download_option.data_attrs[:analytics_action] == "download_original"))
     else
       # allow non-link label menu items. eg for disabled download notice
       content_tag("div", label, class: "px-4 text-muted text-small")
