@@ -97,7 +97,7 @@ class DownloadOption
 
     # Sneakily add in data-turnstile-protection-true for originals that aren't PDFs
     if @analyticsAction == "download_original" && @content_type != "application/pdf" && ScihistDigicoll::Env.lookup(:cf_turnstile_downloads_enabled)
-      @data_attrs.merge!({"turnstile-protection" => "true"})
+      @data_attrs.merge!({turnstile_protection: "true"})
     end
   end
 

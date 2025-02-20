@@ -77,4 +77,21 @@ describe DownloadOption do
     end
   end
 
+  describe "turnstile protect data attribute" do
+    before do
+      allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
+      allow(ScihistDigicoll::Env).to receive(:lookup).with(:cf_turnstile_downloads_enabled).and_return(true)
+    end
+
+    it "is automatically included for analyticsAction download_original" do
+      download_option = DownloadOption.new("some label", work_friendlier_id: "work-id", analyticsAction: "download_original", url: "#")
+      expect(download_option.data_attrs[:turnstile_protection]).to eq "true"
+    end
+
+    it "but not with content-type pdf" do
+      download_option = DownloadOption.new("some label", content_type: "application/pdf", work_friendlier_id: "work-id", analyticsAction: "download_original", url: "#")
+      expect(download_option.data_attrs[:turnstile_protection]).to be_nil
+    end
+  end
+
 end
