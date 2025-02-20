@@ -45,6 +45,8 @@ RSpec.describe "New Collection form", logged_in_user: :editor, type: :system, js
 
     # the hidden file input used by uppy, we can target directly...
     add_file_via_uppy_dashboard input_name: "files[]", file_path: (Rails.root + "spec/test_support/images/30x30.png").to_s
+    # wait for it to be uploaded async
+    expect(page).to have_text("Will be saved")
 
     click_button "Create Collection"
     expect(page).to have_text("1 error prohibited this collection from being saved")
