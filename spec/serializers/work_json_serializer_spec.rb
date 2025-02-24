@@ -32,6 +32,7 @@ describe WorkJsonSerializer, type: :model, queue_adapter: :inline do
 
     expect(serializable_hash[:links][:img_thumbnail]).to be_present
     expect(serializable_hash[:links][:html_self]).to be_present
+    expect(serializable_hash[:links][:html_self]).to include(work.friendlier_id)
 
     expect(serializable_hash[:description]).to eq work.description
     expect(serializable_hash[:description_html]).to eq DescriptionDisplayFormatter.new(work.description).format
