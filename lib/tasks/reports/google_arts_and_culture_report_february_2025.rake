@@ -4,33 +4,6 @@ namespace :scihist do
       See https://github.com/sciencehistory/scihist_digicoll/issues/2893 .
       bundle exec rake scihist:reports:google_arts_and_culture_report_february_2025
 
-      [
-            Format = Physical Object
-          AND
-            Department = Museum
-          AND
-            Rights = Creative Commons Attribution 4.0 International License
-      ]( should be 435 items as of 2/24/25 )
-
-      OR
-
-      [
-          Format = Image
-        AND
-          Department = Library
-        AND
-          Rights = Public Domain Mark 1.0
-        AND
-          Date = 1450-1929
-      ] (s/b 1882 items as of 2/24/25)
-
-
-      For each work:        
-        friendlier_id
-        .json metadata url
-
-      For each published image asset in these works, ordered by paqge number, we will need:
-        image URL for full-sized JPEGs
 
     """
 
@@ -42,12 +15,14 @@ namespace :scihist do
       where("json_attributes -> 'department' ?| array[:depts  ]", depts:   ['Museum'] ).
       where("json_attributes -> 'format'     ?| array[:formats]", formats: ['physical_object'] ).
       where("json_attributes -> 'rights'     ?| array[:rights ]", rights:  ['https://creativecommons.org/licenses/by/4.0/'] ).
+      limit(3).
       includes(:members)
 
       scope_2 = Work.where(published: true).
       where("json_attributes -> 'department' ?| array[:depts  ]", depts:   ['Library'] ).
       where("json_attributes -> 'format'     ?| array[:formats]", formats: ['image'] ).
       where("json_attributes -> 'rights'     ?| array[:rights ]", rights:  ['http://creativecommons.org/publicdomain/mark/1.0/'] ).
+      limit(3).
       includes(:members).
 
       select do |w|
