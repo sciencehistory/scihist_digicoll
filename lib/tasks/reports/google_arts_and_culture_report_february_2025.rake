@@ -24,13 +24,13 @@ namespace :scihist do
       where("json_attributes -> 'rights'     ?| array[:rights ]", rights:  ['http://creativecommons.org/publicdomain/mark/1.0/'] ).
       limit(3).
       includes(:members).
-
       select do |w|
         helper = DateIndexHelper.new(w)
         earliest = helper.min_date&.year
         latest =   helper.max_date&.year
         earliest.present? && earliest >= 1450 && latest.present? && latest <= 1929
       end
+      
       base_url = ScihistDigicoll::Env.lookup!(:app_url_base)
       works_to_include = scope_1.to_a + scope_2.to_a
       result = []
