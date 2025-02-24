@@ -37,6 +37,15 @@
         throw new Error('bad response: ' + response.status + ": " + response.url);
       }
 
+      // This page may end up staying around on sucesss, stay if the dest url is a media
+      // type that can only be downloaded.
+      //
+      // When so, if the page stays around, it may end up
+      // calling turnstile and this callback over and over again, without an  (that
+      // we're not tracking) this will remove the most recent turnstile widget executed,
+      // we only expect one.
+      turnstile.remove();
+
       result = await response.json();
       if (result["success"] == true) {
         const dest = new URLSearchParams(window.location.search).get("dest");
@@ -46,6 +55,18 @@
         }
         // replace the challenge page in history
         window.location.replace(dest);
+
+      // in case this page stays around, (say it was rediret to media asset), let's add a failsafe message after
+      // a couple seconds.
+      window.setTimeout(function() {
+        document.querySelector(".cf-turnstile")?.insertAdjacentHTML("afterend", `<div class="alert alert-info" role="alert">
+          <i class="fa fa-info-circle" aria-hidden="true"></i>
+          The traffic check has completed. You may need to return to your original browser tab or press the back button.
+        </div>`);;
+      }, 1200);
+
+
+
       } else {
         console.error("Turnstile response reported as failure: " + JSON.stringify(result))
         _displayChallengeError();
