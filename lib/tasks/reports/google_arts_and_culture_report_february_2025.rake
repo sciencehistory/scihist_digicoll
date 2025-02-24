@@ -14,33 +14,38 @@ namespace :scihist do
       scope_1 = Work.where(published: true).
       where("json_attributes -> 'department' ?| array[:depts  ]", depts:   ['Museum'] ).
       where("json_attributes -> 'format'     ?| array[:formats]", formats: ['physical_object'] ).
-      where("json_attributes -> 'rights'     ?| array[:rights ]", rights:  ['https://creativecommons.org/licenses/by/4.0/'] ).
-      limit(3).
-      includes(:members)
+      where("json_attributes -> 'rights'     ?| array[:rights ]", rights:  ['https://creativecommons.org/licenses/by/4.0/'] )
 
       scope_2 = Work.where(published: true).
       where("json_attributes -> 'department' ?| array[:depts  ]", depts:   ['Library'] ).
       where("json_attributes -> 'format'     ?| array[:formats]", formats: ['image'] ).
-      where("json_attributes -> 'rights'     ?| array[:rights ]", rights:  ['http://creativecommons.org/publicdomain/mark/1.0/'] ).
-      limit(3).
-      includes(:members).
-      select do |w|
-        helper = DateIndexHelper.new(w)
-        earliest = helper.min_date&.year
-        latest =   helper.max_date&.year
-        earliest.present? && earliest >= 1450 && latest.present? && latest <= 1929
-      end
+      where("json_attributes -> 'rights'     ?| array[:rights ]", rights:  ['http://creativecommons.org/publicdomain/mark/1.0/'] )
+
+      ids_to_include = scope_1.or(scope_2).pluck(:id)
 
       base_url = ScihistDigicoll::Env.lookup!(:app_url_base)
-      works_to_include = scope_1.to_a + scope_2.to_a
+      
       result = []
-      works_to_include.each do |w|
-        members = w.members.where(published: true).where(type: 'Asset').order(:position).includes(:leaf_representative)
+
+      ids_to_include.each do |id|
+        w = Work.find(id)
+
+        # Only include library works if they're published between 1450 and 1929
+        if w.department == "Library"
+          helper = DateIndexHelper.new(w)
+          earliest = helper.min_date&.year
+          latest =   helper.max_date&.year
+          unless earliest.present? && earliest >= 1450 && latest.present? && latest <= 1929
+            next
+          end
+        end
+        
+        members = w.members.where(published: true).where(type: 'Asset').order(:position)
         members.each do |mem|
           result << [ w.friendlier_id,  "#{base_url}/works/#{w.friendlier_id}.json",  "#{base_url}/downloads/deriv/#{mem.friendlier_id}/download_full" ]
         end
       end
-      puts(JSON.pretty_generate(result))
+      puts JSON.pretty_generate(result)
     end
   end
 end
