@@ -30,14 +30,14 @@ namespace :scihist do
         latest =   helper.max_date&.year
         earliest.present? && earliest >= 1450 && latest.present? && latest <= 1929
       end
-      
+
       base_url = ScihistDigicoll::Env.lookup!(:app_url_base)
       works_to_include = scope_1.to_a + scope_2.to_a
       result = []
       works_to_include.each do |w|
         members = w.members.where(published: true).where(type: 'Asset').order(:position).includes(:leaf_representative)
         members.each do |mem|
-          result << [ w.friendlier_id,  "#{base_url}/admin/asset_files/#{w.friendlier_id}.json",  "#{base_url}/downloads/deriv/#{mem.friendlier_id}/download_full" ]
+          result << [ w.friendlier_id,  "#{base_url}/works/#{w.friendlier_id}.json",  "#{base_url}/downloads/deriv/#{mem.friendlier_id}/download_full" ]
         end
       end
       puts(JSON.pretty_generate(result))
