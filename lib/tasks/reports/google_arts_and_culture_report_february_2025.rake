@@ -41,10 +41,14 @@ namespace :scihist do
         end
         
         members = w.members.where(published: true).where(type: 'Asset').order(:position)
-        members.each do |mem|
-          result << [ w.friendlier_id,  "#{base_url}/works/#{w.friendlier_id}.json",  "#{base_url}/downloads/deriv/#{mem.friendlier_id}/download_full" ]
-        end
+        
+        result << {
+          id: w.friendlier_id,
+          metadata: "#{base_url}/works/#{w.friendlier_id}.json",
+          images: members.map { |mem| "#{base_url}/downloads/deriv/#{mem.friendlier_id}/download_full" }
+        }
       end
+
       puts JSON.pretty_generate(result)
     end
   end
