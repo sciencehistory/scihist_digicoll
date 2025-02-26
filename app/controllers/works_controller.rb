@@ -35,7 +35,8 @@ class WorksController < ApplicationController
     @start_index = params[:start_index].to_i
     @images_per_page = params[:images_per_page].to_i
 
-    ordered_viewable_members = @work.ordered_viewable_members(current_user: current_user, exclude_pdf_source: true)
+    ordered_viewable_members = @work.ordered_viewable_members(current_user: current_user).
+      where("role is null OR role != ?", PdfToPageImages::SOURCE_PDF_ROLE)
 
     @members = ordered_viewable_members.
       offset(@start_index).

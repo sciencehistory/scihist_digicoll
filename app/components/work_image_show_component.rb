@@ -18,10 +18,10 @@ class WorkImageShowComponent < ApplicationComponent
     @work_download_options = WorkDownloadOptionsCreator.new(work).options
   end
 
-
-  # returns an association, not an array
   def ordered_viewable_members
-    ordered_viewable_members ||= @work.ordered_viewable_members(current_user: @user, exclude_pdf_source: true)
+    ordered_viewable_members ||= @work.
+      ordered_viewable_members(current_user: @user).
+      where("role is null OR role != ?", PdfToPageImages::SOURCE_PDF_ROLE)
   end
 
   def show_link?
