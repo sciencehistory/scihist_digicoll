@@ -593,9 +593,10 @@ class Admin::WorksController < AdminController
           problem_asset_ids << asset_id
         end
         # Image assets published as part of a work need to be tiffs, except if they are in an identified special role
-        if mime_type.start_with?('image/') && mime_type != 'image/tiff' && !role.in?(['portrait', 'extracted_pdf_page'])
+        if mime_type.nil? || mime_type.start_with?('image/') && mime_type != 'image/tiff' && !role.in?(['portrait', 'extracted_pdf_page'])
+          problem = mime_type.nil? ? "has no mime_type" : "is a #{mime_type} instead"
           parent = Asset.find_by_friendlier_id(asset_id).parent
-          Rails.logger.warn("Work '#{parent.friendlier_id}' couldn't be published. Asset '#{asset_id}' should be an image/tiff, but is a #{mime_type}.")
+          Rails.logger.warn("Work '#{parent.friendlier_id}' couldn't be published. Asset '#{asset_id}' should be an image/tiff, but #{problem}.")
           problem_works << parent
           problem_asset_ids << asset_id
         end
