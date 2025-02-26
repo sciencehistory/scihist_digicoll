@@ -170,6 +170,22 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       end
     end
 
+
+    context "work with an asset with no mimetype" do
+      let(:no_file_type) { create(:asset_with_faked_file, faked_content_type:nil) }
+      let(:work_with_no_file_type) { create(:work, :with_complete_metadata, published: false, members: [no_file_type]) }
+      before do
+        controller.current_user.works_in_cart << work_with_no_file_type
+      end
+      it "refuses to publish: image assets need to be have a mime type." do
+        expect(no_file_type.content_type).to be_nil
+        put :batch_publish_toggle, params: { publish: "on" }
+        expect(response).to redirect_to(admin_cart_items_path)
+        expect(flash["error"]).to match /contains one or more assets with invalid files./
+        expect(work_with_no_file_type.reload.published?).to be false
+      end
+    end
+
     context "work with a legitimate portrait png" do
       let(:portrait_png) { create(:asset, :inline_promoted_file, role: "portrait") }
       let(:work) { create(:work, :with_complete_metadata, published: false, members: [portrait_png]) }
