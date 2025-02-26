@@ -4,37 +4,35 @@
 # we don't have a special purpose work show page.
 
 class WorkImageShowComponent < ApplicationComponent
-  delegate :construct_page_title, :current_user, to: :helpers
+  delegate :construct_page_title, to: :helpers
 
   attr_reader :work, :work_download_options
 
-  def initialize(work, images_per_page:100, ordered_viewable_members:)
+  def initialize(work, images_per_page:100, user: nil)
     @work = work
     @images_per_page = images_per_page
-    
-    # we turn this into an array here.
-    @ordered_viewable_members = ordered_viewable_members.to_a
-
-    if show_link? 
-      @ordered_viewable_members_first_batch = ordered_viewable_members.limit(@images_per_page)
-    else
-      @ordered_viewable_members_first_batch = ordered_viewable_members
-    end
+    @user = user
 
     # work download options are expensive, so we calculate them here so we can use them
     # in several places
     @work_download_options = WorkDownloadOptionsCreator.new(work).options
   end
 
+
+  # returns an association, not an array
+  def ordered_viewable_members
+    ordered_viewable_members ||= @work.ordered_viewable_members(current_user: @user, exclude_pdf_source: true)
+  end
+
   def show_link?
-    @ordered_viewable_members.count > @images_per_page 
+    ordered_viewable_members.count > @images_per_page
   end
 
   # Start index for next batch.
   # The first time, we set this to @images per page so the next batch of images will start at the next page.
   # After that, if needed, the lazy_member_images method in the works controller provides a "next-start-index" >
   def start_index
-    @start_index = @images_per_page
+    @start_index ||= @images_per_page
   end
 
   # Public members, ordered, to be displayed as thumbnails
@@ -51,8 +49,9 @@ class WorkImageShowComponent < ApplicationComponent
   #
   def member_list_for_display
     @member_list_display ||= begin
-      members = @ordered_viewable_members_first_batch.dup.to_a
-
+      members = ordered_viewable_members
+      members = members.limit(@images_per_page) if show_link?
+      members = members.to_a
       # If the representative image is the first item in the list, don't show it twice.
       start_image_number = 1
       if members[0] == representative_member
@@ -66,18 +65,12 @@ class WorkImageShowComponent < ApplicationComponent
     end
   end
 
-  # # All DISPLAYABLE (to current user) members, in order, and
-  # # with proper pre-fetches.
-  # def ordered_viewable_members
-  #   @ordered_members ||= work.ordered_viewable_members(current_user: current_user, exclude_pdf_source: true).to_a
-  # end
-
   def transcription_texts
-    @transcription_texts ||= Work::TextPage.compile(@ordered_viewable_members, accessor: :transcription)
+    @transcription_texts ||= Work::TextPage.compile(ordered_viewable_members, accessor: :transcription)
   end
 
   def translation_texts
-    @translation_texts ||= Work::TextPage.compile(@ordered_viewable_members, accessor: :english_translation)
+    @translation_texts ||= Work::TextPage.compile(ordered_viewable_members, accessor: :english_translation)
   end
 
   def has_transcription_or_translation?

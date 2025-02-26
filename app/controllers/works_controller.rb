@@ -104,8 +104,7 @@ class WorksController < ApplicationController
       WorkVideoShowComponent.new(@work)
     else
       # standard image-based template.
-      ordered_viewable_members = @work.ordered_viewable_members(current_user: current_user, exclude_pdf_source: true)
-      WorkImageShowComponent.new(@work, ordered_viewable_members:ordered_viewable_members)
+      WorkImageShowComponent.new(@work, user:current_user)
     end
   end
 
