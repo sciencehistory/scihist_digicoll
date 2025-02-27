@@ -77,7 +77,7 @@
     <% end %>
     <%= render InvisibleSpanComponent.new(klass:"next-start-index", contents: start_index) %>
   </span>
-  <div><%= link_to("Fetch more works", "", class:"lazy-member-images-link", data: { start_index: start_index, images_per_page: @images_per_page }) if show_link? %></div>
+  <div><%= link_to("Fetch more works", "", class:"lazy-member-images-link", data: { start_index: start_index, images_per_page: images_per_page }) if show_link? %></div>
 </div>
 
 <%# hidden modal used by viewer %>

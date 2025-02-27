@@ -3,10 +3,14 @@
 # The standard image-centered work show page, used for works by default, when
 # we don't have a special purpose work show page.
 
+# If you pass in images_per_page, we will only show that number of thumbnails.
+# The template will also include an invisible span giving the JS code on the front end
+# the start index at which to start retrieving more thumbnails.
+
 class WorkImageShowComponent < ApplicationComponent
   delegate :construct_page_title, :current_user, to: :helpers
 
-  attr_reader :work, :work_download_options
+  attr_reader :work, :work_download_options, :images_per_page
 
   def initialize(work, images_per_page:100)
     @work = work
@@ -24,14 +28,12 @@ class WorkImageShowComponent < ApplicationComponent
   end
 
   def show_link?
-    ordered_viewable_members.count > @images_per_page
+    ordered_viewable_members.count > images_per_page
   end
 
-  # Start index for next batch.
-  # The first time, we set this to @images per page so the next batch of images will start at the next page.
-  # After that, if needed, the lazy_member_images method in the works controller provides a "next-start-index" >
+  # Zero-based start index for next batch of thumbnails, if needed.
   def start_index
-    @start_index ||= @images_per_page
+    images_per_page
   end
 
   # Public members, ordered, to be displayed as thumbnails
@@ -49,7 +51,7 @@ class WorkImageShowComponent < ApplicationComponent
   def member_list_for_display
     @member_list_display ||= begin
       members = ordered_viewable_members
-      members = members.limit(@images_per_page) if show_link?
+      members = members.limit(images_per_page) if show_link?
       members = members.to_a
       # If the representative image is the first item in the list, don't show it twice.
       start_image_number = 1
