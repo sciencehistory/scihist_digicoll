@@ -30,6 +30,31 @@ class WorksController < ApplicationController
     end
   end
 
+  # TODO  don't calculate work_download_options a bunch of times.
+  def lazy_member_images
+    @start_index = params[:start_index].to_i
+    @images_per_page = params[:images_per_page].to_i
+
+    ordered_viewable_members = @work.ordered_viewable_members(current_user: current_user).
+      where("role is null OR role != ?", PdfToPageImages::SOURCE_PDF_ROLE)
+
+    @members = ordered_viewable_members.
+      offset(@start_index).
+      limit(@images_per_page)
+
+    @no_more_images = (@start_index + @images_per_page > ordered_viewable_members.count)
+
+    @slice = @members.collect.with_index do |member, index|
+      WorkImageShowComponent::MemberForThumbnailDisplay.new(member: member, image_label: "Image #{@start_index + index}")
+    end
+
+    respond_to do |format|
+      format.html {
+        render :layout => false
+      }
+    end
+  end
+
   def viewer_images_info
     render json: ViewerMemberInfoSerializer.new(@work,
         show_unpublished: can?(:read, Kithe::Model)
