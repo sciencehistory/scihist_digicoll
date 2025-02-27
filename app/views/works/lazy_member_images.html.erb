@@ -8,10 +8,6 @@
 			) %>
 		</div>
 	<% end %>
-	<span  style="display:none"> Next start index: 
-		<span class="next-start-index"><%= @start_index + @images_per_page %></span>
-	</span>
+	<%= render InvisibleSpanComponent.new(klass:"next-start-index", contents: @start_index + @images_per_page) %>
 <% end %>
-<% if @no_more_images %>
-	<span class="no-more-images" style="display:none">No more images!</span>
-<% end %>
+<%= render InvisibleSpanComponent.new(klass:"no-more-images") if @no_more_images%>
