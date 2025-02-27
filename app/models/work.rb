@@ -162,14 +162,20 @@ class Work < Kithe::Work
   #
   # @return [ActiveRecord::Relation] relation, not yet fetched, fetching desired records. Call #to_a on it if you want to trigger fetch to db.
   def ordered_viewable_members(current_user:)
+
+
     members = self.members.includes(:leaf_representative)
+
     unless AccessPolicy.new(current_user).can_see_unpublished_records?
       members = members.where(published: true)
     end
+
     members = members.order(:position)
+
     # the point of this is to avoid n+1's, so let's set strict_loading, which
     # it turns out you can do on an association/relation
     members = members.strict_loading
+
     members
   end
 
