@@ -4,14 +4,13 @@
 # we don't have a special purpose work show page.
 
 class WorkImageShowComponent < ApplicationComponent
-  delegate :construct_page_title, to: :helpers
+  delegate :construct_page_title, :current_user, to: :helpers
 
   attr_reader :work, :work_download_options
 
-  def initialize(work, images_per_page:100, user: nil)
+  def initialize(work, images_per_page:100)
     @work = work
     @images_per_page = images_per_page
-    @user = user
 
     # work download options are expensive, so we calculate them here so we can use them
     # in several places
@@ -20,7 +19,7 @@ class WorkImageShowComponent < ApplicationComponent
 
   def ordered_viewable_members
     ordered_viewable_members ||= @work.
-      ordered_viewable_members(current_user: @user).
+      ordered_viewable_members(current_user: current_user).
       where("role is null OR role != ?", PdfToPageImages::SOURCE_PDF_ROLE)
   end
 

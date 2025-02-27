@@ -105,7 +105,7 @@ class WorksController < ApplicationController
       WorkVideoShowComponent.new(@work)
     else
       # standard image-based template.
-      WorkImageShowComponent.new(@work, user:current_user)
+      WorkImageShowComponent.new(@work)
     end
   end
 

@@ -102,8 +102,7 @@ describe WorkImageShowComponent, type: :component do
       end
 
       it "shows unpublished asset to a logged-in admin user", logged_in_user: :admin do
-        admin_user = vc_test_controller.current_user
-        render_inline described_class.new(work, user: admin_user)
+        render_inline described_class.new(work)
         hero = page.first(".show-hero .member-image-presentation")
         hero_poster = hero.first("a.thumb")
         expect(hero_poster["data-member-id"]).to eq(asset1.friendlier_id)
