@@ -8,7 +8,7 @@ class InvisibleSpanComponent < ApplicationComponent
 
   def initialize(klass:, contents:"")
     @klass = klass
-    @contents = contents # also a reserved word apparently
+    @contents = contents
   end
 
   def call

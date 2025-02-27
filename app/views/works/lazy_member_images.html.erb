@@ -1,11 +1,7 @@
 <% if @slice.present? %>
 	<% @slice.each_with_index do |member_for_thumb, index| %>
 		<div class="show-member-list-item">
-			<%= render MemberImageComponent.new(
-				member_for_thumb.member,
-				lazy: false,
-				image_label: member_for_thumb.image_label
-			) %>
+			<%= render MemberImageComponent.new(member_for_thumb.member, image_label: member_for_thumb.image_label) %>
 		</div>
 	<% end %>
 	<%= render InvisibleSpanComponent.new(klass:"next-start-index", contents: @start_index + @images_per_page) %>
