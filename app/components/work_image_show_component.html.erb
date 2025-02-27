@@ -73,7 +73,9 @@
   <span class="member-divs">
     <% member_list_for_display.each_with_index do |member_for_thumb, index| %>
       <%# lazyload all but first 6 images, supply an image_label for accessible labels %>
-      <%= render MemberImageComponent.new(member_for_thumb.member, lazy: (index > 5), image_label: member_for_thumb.image_label, containing_div_class: 'show-member-list-item') %>
+      <div class="show-member-list-item">
+        <%= render MemberImageComponent.new(member_for_thumb.member, lazy: (index > 5), image_label: member_for_thumb.image_label) %>
+      </div>
     <% end %>
     <span  style="display:none"> Next start index:
       <span class="next-start-index"><%= start_index %></span>

@@ -33,7 +33,7 @@
 # we don't want to show people the placeholder, this is just a fail-safe to avoid
 # showing non-public content in case of other errors.
 class MemberImageComponent < ApplicationComponent
-  attr_reader :size, :lazy, :member, :image_label, :work_download_options, :containing_div_class
+  attr_reader :size, :lazy, :member, :image_label, :work_download_options
 
   delegate :can?, to: :helpers
 
@@ -60,46 +60,33 @@ class MemberImageComponent < ApplicationComponent
   #
   #  @param work_download_options [Array<DownloadOption>] sometimes we want to show them, sometimes we
   #     don't, and they are expensive, so pass them in if you want them.
-  def initialize(member, size: :standard, lazy: false, image_label: nil, work_download_options: nil, containing_div_class: nil )
+  def initialize(member, size: :standard, lazy: false, image_label: nil, work_download_options: nil)
     @lazy = !!lazy
     @size = size
     @member = member
-    @containing_div_class = containing_div_class
 
     @image_label = image_label
     @work_download_options = work_download_options
   end
 
   def call
-    if containing_div_class.present?
-      content_tag("div", class: containing_div_class) do
-        main_content
+    if member.nil? || representative_asset.nil? || !user_has_access_to_asset?
+      return not_available_placeholder
+    end
+
+    content_tag("div", class: "member-image-presentation") do
+      private_label +
+      content_tag("a", **thumb_link_attributes) do
+        render ThumbComponent.new(representative_asset, thumb_size: size, lazy: lazy, alt_text_override: "")
+      end +
+
+      content_tag("div", class: "action-item-bar") do
+        action_buttons_display
       end
-    else # used for the hero image
-      main_content
     end
   end
 
-
-
   private
-
-  def main_content
-    if member.nil? || representative_asset.nil? || !user_has_access_to_asset?
-        return not_available_placeholder
-      end
-
-      content_tag("div", class: "member-image-presentation") do
-        private_label +
-        content_tag("a", **thumb_link_attributes) do
-          render ThumbComponent.new(representative_asset, thumb_size: size, lazy: lazy, alt_text_override: "")
-        end +
-
-        content_tag("div", class: "action-item-bar") do
-          action_buttons_display
-        end
-      end
-  end
 
   # Link around big poster image, when we're in "large" size it duplicates
   # the "view" link, so should be hidden from accessible tech.
