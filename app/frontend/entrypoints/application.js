@@ -86,3 +86,4 @@ import "../javascript/audio/clipboard_copy_input.js";
 import "../javascript/video_player.js";
 
 import "../javascript/main_nav_collapse_toggle.js";
+import "../javascript/lazy_member_images.js"
