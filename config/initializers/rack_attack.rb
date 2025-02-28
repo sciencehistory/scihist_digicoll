@@ -29,8 +29,6 @@ RACK_ATTACK_THROTTLE_EXEMPT_IPS = ScihistDigicoll::Env.lookup(:main_office_ips) 
 # But we're going to try a more generous 3 per second over
 # 1 minute instead.
 #
-# May 1 2024: Limiting much more extensively to 30 req per minute -- one per every two seconds
-# averaging over a minute -- after bot  attacks costing us money from s3.
 Rack::Attack.throttle('req/ip', limit: 180, period: 1.minutes) do |req|
   # On heroku, we may be delivering assets via rack, I think.
   # We also try to exempt our "api" responses from rate limit, although
@@ -42,12 +40,6 @@ Rack::Attack.throttle('req/ip', limit: 180, period: 1.minutes) do |req|
                   req.path.end_with?(".xml") ||
                   req.path.end_with?(".json")
                  )
-end
-
-# But we're also going to TRACK at half that limit, for ease
-# of understanding what's going on in our logs
-Rack::Attack.track("req/ip_track", limit: 90, period: 1.minute) do |req|
-  req.ip unless req.path.start_with?('/assets')
 end
 
 # And we want to log rack-attack track and throttle  notifications. But we get
@@ -73,8 +65,8 @@ ActiveSupport::Notifications.subscribe(/throttle\.rack_attack|track\.rack_attack
   rack_env     = rack_request.env
   match_name = rack_env["rack.attack.matched"]
 
-  # only log here for our `req/` throttles and tracks above, not our other ones such as bot detect
-  next unless match_name.start_with?("req/")
+  # only log here for our `req/` throttle  above, not our other ones such as bot detect
+  next unless match_name == "req/ip"
 
   match_data   = rack_env["rack.attack.match_data"]
   match_data_formatted = match_data.slice(:count, :limit, :period).map { |k, v| "#{k}=#{v}"}.join(" ")
