@@ -23,8 +23,7 @@ class WorkImageShowComponent < ApplicationComponent
 
   def ordered_viewable_members
     ordered_viewable_members ||= @work.
-      ordered_viewable_members(current_user: current_user).
-      where("role is null OR role != ?", PdfToPageImages::SOURCE_PDF_ROLE)
+      ordered_viewable_members_excluding_pdf_source(current_user: current_user)
   end
 
   def show_link?

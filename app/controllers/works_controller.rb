@@ -41,9 +41,9 @@ class WorksController < ApplicationController
     end
     @start_index = params[:start_index].to_i
     @images_per_page = params[:images_per_page].to_i
-    @ordered_viewable_members = @work.ordered_viewable_members(current_user: current_user).
-      where("role is null OR role != ?", PdfToPageImages::SOURCE_PDF_ROLE)
-    @lazy_member_images = @ordered_viewable_members.
+
+    @lazy_member_images = @work.
+      ordered_viewable_members_excluding_pdf_source(current_user: current_user).
       offset(@start_index).
       limit(@images_per_page).
       collect.with_index do |member, i|
