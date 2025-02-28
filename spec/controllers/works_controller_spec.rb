@@ -174,4 +174,44 @@ RSpec.describe WorksController, type: :controller do
       expect(JSON.parse(response.body)).to be_kind_of(Hash)
     end
   end
+  context "#lazy_member_images" do
+    let(:work){ create(:public_work, :published) }
+
+    it "smoke test" do
+      get :lazy_member_images, params: { id: work.friendlier_id}
+      expect(work.members.count).to eq 1
+      expect(response.status).to eq(200)
+    end
+
+    it "can handle weird start_index and images_per_page values" do
+      get :lazy_member_images, params: { id: work.friendlier_id, start_index: -9035.4, images_per_page: "asdasd"}
+      expect(response.status).to eq(200)
+    end
+
+    context "work with five images" do
+      let(:asset1) {
+        create(:asset_with_faked_file, faked_derivatives: {}, position: 0)
+      }
+      let(:asset2) {
+        create(:asset_with_faked_file, faked_derivatives: {},  position: 1)
+      }
+      let(:asset3) {
+        create(:asset_with_faked_file, faked_derivatives: {},  position: 2)
+      }
+      let(:asset4) {
+        create(:asset_with_faked_file, faked_derivatives: {},  position: 3)
+      }
+      let(:asset5) {
+        create(:asset_with_faked_file, faked_derivatives: {},  position: 4)
+      }
+      let(:members) {[asset1, asset2, asset3, asset4, asset5]}
+      let(:work) {
+        create(:work, :published, members: members, representative: asset1)
+      }
+      it "shows items 3-5 correctly" do
+        get :lazy_member_images, params: { id: work.friendlier_id, start_index: 2, images_per_page: 3}
+        expect(response.status).to eq(200)
+      end
+    end
+  end
 end

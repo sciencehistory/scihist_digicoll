@@ -1,9 +1,9 @@
-<% if @slice.present? %>
-	<% @slice.each_with_index do |member_for_thumb, index| %>
+<% if @lazy_member_images.present? %>
+	<% @lazy_member_images.each_with_index do |member_for_thumb, index| %>
 		<div class="show-member-list-item">
 			<%= render MemberImageComponent.new(member_for_thumb.member, image_label: member_for_thumb.image_label) %>
 		</div>
 	<% end %>
 	<%= render InvisibleSpanComponent.new(klass:"next-start-index", contents: @start_index + @images_per_page) %>
 <% end %>
-<%= render InvisibleSpanComponent.new(klass:"no-more-images") if @no_more_images%>
+<%= render InvisibleSpanComponent.new(klass:"no-more-images") if (@start_index + @images_per_page > @ordered_viewable_members.count) %>

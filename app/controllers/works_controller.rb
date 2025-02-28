@@ -30,29 +30,26 @@ class WorksController < ApplicationController
     end
   end
 
-  # TODO  don't calculate work_download_options a bunch of times.
+  # lazy_member_images.js calls this method on work pages with lots of members.
+  # Returns a page containing just member images, which lazy_member_images.js retrieves and inserts into the DOM.
+  # Takes an offset and a limit.
+  # See also WorkImageShowComponent, which shows the first batch of images and provides the script with what it needs.
   def lazy_member_images
+    if !(params[:start_index] =~ /\A\d+\Z/) || !(params[:images_per_page]  =~ /\A\d+\Z/ )
+      render :nothing => true
+      return
+    end
     @start_index = params[:start_index].to_i
     @images_per_page = params[:images_per_page].to_i
-
-    ordered_viewable_members = @work.ordered_viewable_members(current_user: current_user).
+    @ordered_viewable_members = @work.ordered_viewable_members(current_user: current_user).
       where("role is null OR role != ?", PdfToPageImages::SOURCE_PDF_ROLE)
-
-    @members = ordered_viewable_members.
+    @lazy_member_images = @ordered_viewable_members.
       offset(@start_index).
-      limit(@images_per_page)
-
-    @no_more_images = (@start_index + @images_per_page > ordered_viewable_members.count)
-
-    @slice = @members.collect.with_index do |member, index|
-      WorkImageShowComponent::MemberForThumbnailDisplay.new(member: member, image_label: "Image #{@start_index + index}")
+      limit(@images_per_page).
+      collect.with_index do |member, i|
+        WorkImageShowComponent::MemberForThumbnailDisplay.new(member: member, image_label: "Image #{@start_index + i}")
     end
-
-    respond_to do |format|
-      format.html {
-        render :layout => false
-      }
-    end
+    render :layout => false
   end
 
   def viewer_images_info
