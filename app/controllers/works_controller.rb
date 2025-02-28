@@ -41,9 +41,7 @@ class WorksController < ApplicationController
     end
     @start_index = params[:start_index].to_i
     @images_per_page = params[:images_per_page].to_i
-
-    @lazy_member_images = @work.
-      ordered_viewable_members_excluding_pdf_source(current_user: current_user).
+    @lazy_member_images = ordered_viewable_members_excluding_pdf_source.
       offset(@start_index).
       limit(@images_per_page).
       collect.with_index do |member, i|
@@ -89,6 +87,11 @@ class WorksController < ApplicationController
   end
 
   private
+
+  def ordered_viewable_members_excluding_pdf_source
+    @ordered_viewable_members_excluding_pdf_source ||=  @work.
+      ordered_viewable_members_excluding_pdf_source(current_user: current_user)
+  end
 
   # We use a different ViewComponent depending on work characteristics, polymorophically kind of.
   def view_component
