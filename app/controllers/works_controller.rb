@@ -36,7 +36,7 @@ class WorksController < ApplicationController
   # See also WorkImageShowComponent, which shows the first batch of images and provides the script with what it needs.
   def lazy_member_images
     if !(params[:start_index] =~ /\A\d+\Z/) || !(params[:images_per_page]  =~ /\A\d+\Z/ )
-      render :nothing => true
+      render :nothing => true, :layout => false
       return
     end
     @start_index = params[:start_index].to_i
