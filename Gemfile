@@ -268,3 +268,5 @@ end
 gem "barnes"
 
 gem 'equivalent-xml'
+
+gem "bot_challenge_page"

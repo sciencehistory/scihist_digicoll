@@ -40,7 +40,7 @@ class DownloadsController < ApplicationController
 
   # protect originals only from bots with bot challenge redirect, no allowed pre-challenge
   # rate limit.
-  before_action(only: :original) { |controller| BotDetectController.bot_detection_enforce_filter(controller, immediate: true) }
+  before_action(only: :original) { |controller| BotChallengePage::BotChallengePageController.bot_challenge_enforce_filter(controller, immediate: true) }
 
   #GET /downloads/:asset_id
   def original
