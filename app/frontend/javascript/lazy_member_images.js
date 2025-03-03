@@ -1,8 +1,26 @@
+// GET a batch of thumbnails from the lazy images method in the public works controller. A typical path to GET would be:
+//      /works/WORK_FRIENDLIER_ID/lazy_member_images?start_index=100&images_per_page=100
+// and then insert them directly into the DOM.
+//
+// This is intended to speed up the perceived loading of books with over 500 pages.
+// See https://github.com/sciencehistory/scihist_digicoll/issues/905 for context.
+//
+// See also :
+//   app/components/work_image_show_component.rb
+//      (provides this script with friendlierID, startIndex, and imagesPerPage)
+//   app/controllers/works_controller.rb#lazy_member_images
+//      (provides this script with the images)
+//
+// Contains no JQuery code.
+
 class LazyMemberImages {
+
+  // this link won't be necessary; we'll just call the method automatically
   constructor() {
      document.querySelector(".lazy-member-images-link")?.addEventListener("click", this.#getMoreMemberImages.bind(this));
   }
 
+  // Retrieve the images and insert them
   #getMoreMemberImages(event) {
     event.preventDefault();
     if (this.#tagForImages() === null) { return; }
@@ -12,6 +30,8 @@ class LazyMemberImages {
     }
   }
 
+
+  // Calculate the URL where the images can be GETted from
   #constructUrl() {
     var friendlierId =  this.#getFriendlierId();
     var startIndex =    this.#getStartIndex();
@@ -53,17 +73,21 @@ class LazyMemberImages {
     return document.querySelector('.member-divs');
   }
 
+  // this work's friendlier ID
   #getFriendlierId() {
     var urlMatches = window.location.pathname.match(/^\/works\/([^\/]*)/);
     return (urlMatches === null) ? null : urlMatches[1];
   }
 
-  // there might be more than one of these tags on the page.
+
+  // The zero-based index of the next image to fetch.
+  // Note that there might be more than one of these .next-start-index tags on the page;
   // We just want the contents of the last one.
   #getStartIndex() {
     return parseInt(Array.from(document.querySelectorAll('.next-start-index')).pop().innerHTML);
   }
 
+  // How many images to request.
   #getImagesPerPage() {
     return parseInt(document.querySelector('.images-per-page').innerHTML);
   }
