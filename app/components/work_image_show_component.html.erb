@@ -44,7 +44,7 @@
 
               <%# This GA action is also reported from app/views/scihist_image_viewer/_scihist_viewer_search_area.html.erb %>
               <button type="submit" class="btn btn-brand-main" aria-label="Submit search" title="Search" id="search-submit-header"
-                data-analytics-action="search_inside_work"
+                data-analytics-action="search_inside_work
                 data-analytics-category="work"
                 data-analytics-label="<%=work.friendlier_id %>"
               >
@@ -68,16 +68,13 @@
     big representative image %>
   <div style="clear: left"></div>
 
-  <span class="member-divs">
-    <% member_list_for_display.each_with_index do |member_for_thumb, index| %>
-      <%# lazyload all but first 6 images, supply an image_label for accessible labels %>
-      <div class="show-member-list-item">
-        <%= render MemberImageComponent.new(member_for_thumb.member, lazy: (index > 5), image_label: member_for_thumb.image_label) %>
-      </div>
-    <% end %>
-  </span>
-
-  <div><%= render FetchMorePagesLinkComponent.new(start_index: start_index, images_per_page: images_per_page) if more_pages_to_load? %></div>
+  <% member_list_for_display.each_with_index do |member_for_thumb, index| %>
+    <%# lazyload all but first 6 images, supply an image_label for accessible labels %>
+    <div class="show-member-list-item">
+      <%= render MemberImageComponent.new(member_for_thumb.member, lazy: (index > 5), image_label: member_for_thumb.image_label) %>
+    </div>
+  <% end %>
+  <%= render FetchMorePagesLinkComponent.new(start_index: start_index, images_per_page: images_per_page) if more_pages_to_load? %>
 </div>
 
 <%# hidden modal used by viewer %>
