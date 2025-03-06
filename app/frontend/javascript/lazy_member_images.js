@@ -17,21 +17,24 @@ class LazyMemberImages {
 
   constructor() {
     document.querySelector(".work-show")?.addEventListener("click", (event) => {
-      if(event.target.getAttribute("data-trigger") === 'lazy-member-images') {
-        this.#getMoreMemberImages(event);
+      event.preventDefault();
+
+      const link = event.target.closest('[data-trigger="lazy-member-images"]');
+
+      if (link) {
+        this.#getMoreMemberImages(link);
       }
     });
   }
 
   // Retrieve the images and insert them
-  #getMoreMemberImages(event) {
-    event.preventDefault();
+  #getMoreMemberImages(linkEl) {
 
     // The zero-based index of the next image to fetch.
-    const startIndex = parseInt(event.target.getAttribute("data-start-index"));
+    const startIndex = parseInt(linkEl.getAttribute("data-start-index"));
 
     // How many images to request.
-    const imagesPerPage = parseInt(event.target.getAttribute("data-images-per-page"));
+    const imagesPerPage = parseInt(linkEl.getAttribute("data-images-per-page"));
 
     var urlForMoreImages = this.#constructUrl(startIndex, imagesPerPage);
     if (urlForMoreImages) {
