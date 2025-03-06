@@ -67,8 +67,7 @@
     div to take up all space. A bit hacky but it works. A clear hack to make sure they start after
     big representative image %>
   <div style="clear: left"></div>
-  <%#  images-per-page span is used by lazy_member_images.js %>
-  <span class="images-per-page"><%= @images_per_page %></span>
+
   <span class="member-divs">
     <% member_list_for_display.each_with_index do |member_for_thumb, index| %>
       <%# lazyload all but first 6 images, supply an image_label for accessible labels %>
@@ -76,9 +75,8 @@
         <%= render MemberImageComponent.new(member_for_thumb.member, lazy: (index > 5), image_label: member_for_thumb.image_label) %>
       </div>
     <% end %>
-    <%# next-start-index is used by lazy_member_images.js %>
-    <span class="next-start-index"><%= start_index %></span>
   </span>
+
   <div><%= render FetchMorePagesLinkComponent.new(start_index: start_index, images_per_page: images_per_page) if more_pages_to_load? %></div>
 </div>
 
