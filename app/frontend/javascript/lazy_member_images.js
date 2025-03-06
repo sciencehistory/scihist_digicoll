@@ -26,7 +26,6 @@ class LazyMemberImages {
   // Retrieve the images and insert them
   #getMoreMemberImages(event) {
     event.preventDefault();
-    if (this.#tagForImages() === null) { return; }
     var urlForMoreImages = this.#constructUrl();
     if (urlForMoreImages) {
       this.#fetchAndInsertLazyMemberImages(urlForMoreImages);
@@ -58,22 +57,14 @@ class LazyMemberImages {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       const html = await response.text();
-      // pop it in the tag, right before the end
-      this.#tagForImages().insertAdjacentHTML('beforeend', html);
+
+      // put it into page REPLACING existing link -- this HTML will have another
+      // link if needed.
+      document.querySelector('*[data-trigger="lazy-member-images"]').outerHTML = html;
     }
     catch (error) {
       console.error('Error fetching or inserting HTML:', error);
     }
-
-    // if there are no more images to fetch, hide the now-useless link
-    if (document.querySelector(".no-more-images") !== null) {
-      document.querySelector(".lazy-member-images-link").style.display = "none";
-    }
-  }
-
-  // where to insert the images
-  #tagForImages() {
-    return document.querySelector('.member-divs');
   }
 
   // this work's friendlier ID
