@@ -79,7 +79,7 @@
     <%# next-start-index is used by lazy_member_images.js %>
     <span class="next-start-index"><%= start_index %></span>
   </span>
-  <div><%= link_to("Fetch more works", "", class:"lazy-member-images-link", data: { start_index: start_index, images_per_page: images_per_page }) if more_pages_to_load? %></div>
+  <div><%= render FetchMorePagesLinkComponent.new(start_index: start_index, images_per_page: images_per_page) if more_pages_to_load? %></div>
 </div>
 
 <%# hidden modal used by viewer %>
