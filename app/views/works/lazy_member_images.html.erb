@@ -1,7 +1,7 @@
 <% if @lazy_member_images.present? %>
 	<% @lazy_member_images.each_with_index do |member_for_thumb, index| %>
 		<div class="show-member-list-item">
-			<%= render MemberImageComponent.new(member_for_thumb.member, image_label: member_for_thumb.image_label) %>
+			<%= render MemberImageComponent.new(member_for_thumb.member, lazy: true, image_label: member_for_thumb.image_label) %>
 		</div>
 	<% end %>
 
