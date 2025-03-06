@@ -26,7 +26,7 @@ class WorkImageShowComponent < ApplicationComponent
       ordered_viewable_members_excluding_pdf_source(current_user: current_user)
   end
 
-  def show_link?
+  def more_pages_to_load?
     ordered_viewable_members.count > images_per_page
   end
 
@@ -50,7 +50,7 @@ class WorkImageShowComponent < ApplicationComponent
   def member_list_for_display
     @member_list_display ||= begin
       members = ordered_viewable_members
-      members = members.limit(images_per_page) if show_link?
+      members = members.limit(images_per_page) if more_pages_to_load?
       members = members.to_a
       # If the representative image is the first item in the list, don't show it twice.
       start_image_number = 1
