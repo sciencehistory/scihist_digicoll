@@ -15,9 +15,12 @@
 
 class LazyMemberImages {
 
-  // this link won't be necessary; we'll just call the method automatically
   constructor() {
-     document.querySelector(".lazy-member-images-link")?.addEventListener("click", this.#getMoreMemberImages.bind(this));
+    document.querySelector(".work-show")?.addEventListener("click", (event) => {
+      if(event.target.getAttribute("data-trigger") === 'lazy-member-images') {
+        this.#getMoreMemberImages(event);
+      }
+    });
   }
 
   // Retrieve the images and insert them
