@@ -74,7 +74,7 @@
       <%= render MemberImageComponent.new(member_for_thumb.member, lazy: (index > 5), image_label: member_for_thumb.image_label) %>
     </div>
   <% end %>
-  <%= render FetchMorePagesLinkComponent.new(start_index: start_index, images_per_page: images_per_page) if more_pages_to_load? %>
+  <%= render FetchMorePagesLinkComponent.new(start_index: start_index, images_per_page: images_per_page, total_count: total_count) if more_pages_to_load? %>
 </div>
 
 <%# hidden modal used by viewer %>

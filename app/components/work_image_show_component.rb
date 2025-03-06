@@ -27,8 +27,13 @@ class WorkImageShowComponent < ApplicationComponent
   end
 
   def more_pages_to_load?
-    ordered_viewable_members.count > images_per_page
+    total_count > images_per_page
   end
+
+  def total_count
+    ordered_viewable_members.count
+  end
+
 
   # Zero-based start index for next batch of thumbnails, if needed.
   def start_index

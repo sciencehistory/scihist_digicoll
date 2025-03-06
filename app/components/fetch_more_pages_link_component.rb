@@ -1,5 +1,5 @@
 class FetchMorePagesLinkComponent < ApplicationComponent
-  def initialize(start_index:, images_per_page:)
+  def initialize(start_index:, images_per_page:, total_count:)
     @start_index = start_index
     @images_per_page = images_per_page
   end
