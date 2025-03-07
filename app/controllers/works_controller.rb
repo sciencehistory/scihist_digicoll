@@ -30,6 +30,26 @@ class WorksController < ApplicationController
     end
   end
 
+  # lazy_member_images.js calls this method on work pages with lots of members.
+  # Returns a page containing just member images, which lazy_member_images.js retrieves and inserts into the DOM.
+  # Takes an offset and a limit.
+  # See also WorkImageShowComponent, which shows the first batch of images and provides the script with what it needs.
+  def lazy_member_images
+    if !(params[:start_index] =~ /\A\d+\Z/) || !(params[:images_per_page]  =~ /\A\d+\Z/ )
+      render :nothing => true, :layout => false
+      return
+    end
+    @start_index = params[:start_index].to_i
+    @images_per_page = params[:images_per_page].to_i
+    @lazy_member_images = ordered_viewable_members_excluding_pdf_source.
+      offset(@start_index).
+      limit(@images_per_page).
+      collect.with_index do |member, i|
+        WorkImageShowComponent::MemberForThumbnailDisplay.new(member: member, image_label: "Image #{@start_index + i}")
+    end
+    render :layout => false
+  end
+
   def viewer_images_info
     render json: ViewerMemberInfoSerializer.new(@work,
         show_unpublished: can?(:read, Kithe::Model)
@@ -67,6 +87,11 @@ class WorksController < ApplicationController
   end
 
   private
+
+  def ordered_viewable_members_excluding_pdf_source
+    @ordered_viewable_members_excluding_pdf_source ||=  @work.
+      ordered_viewable_members_excluding_pdf_source(current_user: current_user)
+  end
 
   # We use a different ViewComponent depending on work characteristics, polymorophically kind of.
   def view_component
