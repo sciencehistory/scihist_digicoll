@@ -17,11 +17,10 @@ class LazyMemberImages {
 
   constructor() {
     document.querySelector(".work-show")?.addEventListener("click", (event) => {
-      event.preventDefault();
-
       const link = event.target.closest('[data-trigger="lazy-member-images"]');
 
       if (link) {
+        event.preventDefault();
         this.#getMoreMemberImages(link);
       }
     });
