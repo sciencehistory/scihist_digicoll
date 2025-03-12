@@ -62,28 +62,40 @@ describe WorkImageShowComponent, type: :component do
       end
     end
 
-    context "work with unpublished assets" do
+    context "work with five assets, the first two of which are unpublished" do
+      let(:asset1) {
+        create(:asset_with_faked_file, published: false, faked_derivatives: {}, position: 0)
+      }
       let(:asset2) {
         create(:asset_with_faked_file, published: false, faked_derivatives: {}, position: 1)
       }
-      let(:asset3) {
-        create(:asset_with_faked_file, published: false, faked_derivatives: {}, position: 2)
-      }
-      let(:asset4) {
-        create(:asset_with_faked_file, published: false, faked_derivatives: {}, position: 3)
-      }
-
-      it "unpublished assets are counted towards the images-per-page total" do
-        pending "This test needs to be rewritten to be sure it's testing for what we think and isn't broken please"
-
-        render_inline described_class.new(work, images_per_page: 4)
-        expect(hero_friendlier_id).to eq(asset1.friendlier_id)
-        # Assets 2, 3, and 4 are hidden.
-        expect(other_thumbs_friendlier_id_list).to eq [ asset5.friendlier_id ]
-        # The next batch of assets fetched will start with the fifth asset:
-        expect(page.first('*[data-trigger="lazy-member-images"]')['data-start-index']).to eq "4"
+      context "user not logged in" do
+        it "does not show a hero image, since the representative is unpublished" do
+          expect(members.map { |x| [x.position, x.published?]}).to eq [
+            [0, false], [1, false],
+            [2, true], [3, true], [4, true]
+          ]
+          render_inline described_class.new(work)
+          expect(page.find_all(".show-hero .member-image-presentation a.thumb").count).to eq 0
+        end
+        it "if the user requests two images, the first two viewable images are shown (asset3 and asset4)" do
+          render_inline described_class.new(work, images_per_page: 2)
+          # no hero image
+          expect(page.find_all(".show-hero .member-image-presentation a.thumb").count).to eq 0
+          # shows 3 and 4
+          expect(other_thumbs_friendlier_id_list).to eq [ asset3.friendlier_id, asset4.friendlier_id ]
+        end
+        it "the next batch of thumbnails fetched will start with asset5)" do
+          component = described_class.new(work, images_per_page: 2)
+          render_inline component
+          viewable_members = component.ordered_viewable_members
+          # next start index is 2 (i.e. the third VIEWABLE member)
+          next_start_index =  page.first('*[data-trigger="lazy-member-images"]')['data-start-index'].to_i
+          expect(next_start_index).to eq 2
+          # next thumbnail to display will be the third VIEWABLE member, namely asset 5.
+          expect(viewable_members[next_start_index].friendlier_id).to eq asset5.friendlier_id
+        end
       end
-
       it "does show unpublished assets to a logged-in user", logged_in_user: :admin do
         render_inline described_class.new(work, images_per_page: 3)
         expect(hero_friendlier_id).to eq(asset1.friendlier_id)
@@ -106,8 +118,6 @@ describe WorkImageShowComponent, type: :component do
           asset4.friendlier_id
         ]
         # The next batch of assets fetched will start with the fifth asset:
-        #
-        #
         expect(page.first('*[data-trigger="lazy-member-images"]')['data-start-index']).to eq "4"
       end
     end
