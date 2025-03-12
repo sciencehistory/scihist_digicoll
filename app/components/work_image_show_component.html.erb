@@ -4,7 +4,7 @@
   <%= render "works/meta_tags", work: work  %>
 <% end %>
 
-<div class="show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
+<div class="show-page-layout work-show" data-lazy-load-image-container itemscope itemtype="http://schema.org/CreativeWork" class="row">
 
   <div class="show-title">
     <%= render WorkTitleAndDatesComponent.new(work) %>

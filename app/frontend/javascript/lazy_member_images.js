@@ -16,7 +16,7 @@
 class LazyMemberImages {
 
   constructor() {
-    document.querySelector(".work-show")?.addEventListener("click", (event) => {
+    document.querySelector("*[data-lazy-load-image-container]")?.addEventListener("click", (event) => {
       const link = event.target.closest('[data-trigger="lazy-member-images"]');
 
       if (link) {
