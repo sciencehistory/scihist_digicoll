@@ -10,10 +10,9 @@ Rails.application.routes.draw do
     end
   end
 
-
   # bot detection challenge
-  get "/challenge", to: "bot_detect#challenge", as: :bot_detect_challenge
-  post "/challenge", to: "bot_detect#verify_challenge"
+  post "/challenge", to: "bot_challenge_page/bot_challenge_page#verify_challenge"
+  get "/challenge", to: "bot_challenge_page/bot_challenge_page#challenge", as: :bot_detect_challenge
 
   # custom error pages
   # https://www.marcelofossrj.com/recipe/2019/04/14/custom-errors.html

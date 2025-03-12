@@ -70,6 +70,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
 
       expect(OralHistoryRequest.count).to eq 0
       click_on 'Submit request'
+      expect(page).to have_text("The files you have requested are immediately available")
       expect(OralHistoryRequest.count).to eq 1
 
       new_req = OralHistoryRequest.last
@@ -121,6 +122,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
 
       expect(OralHistoryRequest.count).to eq 0
       click_on 'Submit request'
+      expect(page).to have_text("Your request will be reviewed")
       expect(OralHistoryRequest.count).to eq 1
 
       new_req = OralHistoryRequest.last

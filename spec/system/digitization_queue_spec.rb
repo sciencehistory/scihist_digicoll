@@ -21,8 +21,8 @@ RSpec.describe "Digitization Queue", logged_in_user: :editor, type: :system, js:
     fill_in "Location", with: "Some location"
 
     click_on "Create Digitization queue item"
-    # return to listing page, now click on item we just made
-
+    # return to listing page, make sure we wait for it
+    expect(page).to have_selector("h1", text: "Digitization Queue")
     dq  = Admin::DigitizationQueueItem.order(created_at: :desc).last
     expect(dq.deadline).to eq Date.new(2020, 2, 3)
 

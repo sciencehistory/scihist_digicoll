@@ -70,6 +70,8 @@ module ScihistDigicoll
 
     # code to be executed when launching `rails console`
     # https://github.com/rails/rails/blob/cf27cfa18bc3742cfaf732da5a839521d6662785/railties/lib/rails/railtie.rb#L143
+
+require 'rack/attack'
     console do
       # Disable honeybadger reporting in conosle. Avoid those annoying SIGHUP errors
       # reported for timed out console you left running.

@@ -15,16 +15,27 @@
 
 class LazyMemberImages {
 
-  // this link won't be necessary; we'll just call the method automatically
   constructor() {
-     document.querySelector(".lazy-member-images-link")?.addEventListener("click", this.#getMoreMemberImages.bind(this));
+    document.querySelector("*[data-lazy-load-image-container]")?.addEventListener("click", (event) => {
+      const link = event.target.closest('[data-trigger="lazy-member-images"]');
+
+      if (link) {
+        event.preventDefault();
+        this.#getMoreMemberImages(link);
+      }
+    });
   }
 
   // Retrieve the images and insert them
-  #getMoreMemberImages(event) {
-    event.preventDefault();
-    if (this.#tagForImages() === null) { return; }
-    var urlForMoreImages = this.#constructUrl();
+  #getMoreMemberImages(linkEl) {
+
+    // The zero-based index of the next image to fetch.
+    const startIndex = parseInt(linkEl.getAttribute("data-start-index"));
+
+    // How many images to request.
+    const imagesPerPage = parseInt(linkEl.getAttribute("data-images-per-page"));
+
+    var urlForMoreImages = this.#constructUrl(startIndex, imagesPerPage);
     if (urlForMoreImages) {
       this.#fetchAndInsertLazyMemberImages(urlForMoreImages);
     }
@@ -32,10 +43,9 @@ class LazyMemberImages {
 
 
   // Calculate the URL where the images can be GETted from
-  #constructUrl() {
+  #constructUrl(startIndex, imagesPerPage) {
     var friendlierId =  this.#getFriendlierId();
-    var startIndex =    this.#getStartIndex();
-    var imagesPerPage = this.#getImagesPerPage();
+
     if (friendlierId === null || !Number.isInteger( startIndex + imagesPerPage)) {
       console.error('Could not calculate friendlier ID, start index, or images per page:');
       return;
@@ -55,41 +65,20 @@ class LazyMemberImages {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       const html = await response.text();
-      // pop it in the tag, right before the end
-      this.#tagForImages().insertAdjacentHTML('beforeend', html);
+
+      // put it into page REPLACING existing link -- this HTML will have another
+      // link if needed.
+      document.querySelector('*[data-trigger="lazy-member-images"]').outerHTML = html;
     }
     catch (error) {
       console.error('Error fetching or inserting HTML:', error);
     }
-
-    // if there are no more images to fetch, hide the now-useless link
-    if (document.querySelector(".no-more-images") !== null) {
-      document.querySelector(".lazy-member-images-link").style.display = "none";
-    }
-  }
-
-  // where to insert the images
-  #tagForImages() {
-    return document.querySelector('.member-divs');
   }
 
   // this work's friendlier ID
   #getFriendlierId() {
     var urlMatches = window.location.pathname.match(/^\/works\/([^\/]*)/);
     return (urlMatches === null) ? null : urlMatches[1];
-  }
-
-
-  // The zero-based index of the next image to fetch.
-  // Note that there might be more than one of these .next-start-index tags on the page;
-  // We just want the contents of the last one.
-  #getStartIndex() {
-    return parseInt(Array.from(document.querySelectorAll('.next-start-index')).pop().innerHTML);
-  }
-
-  // How many images to request.
-  #getImagesPerPage() {
-    return parseInt(document.querySelector('.images-per-page').innerHTML);
   }
 }
 

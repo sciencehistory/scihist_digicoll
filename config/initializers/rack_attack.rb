@@ -29,8 +29,6 @@ RACK_ATTACK_THROTTLE_EXEMPT_IPS = ScihistDigicoll::Env.lookup(:main_office_ips) 
 # But we're going to try a more generous 3 per second over
 # 1 minute instead.
 #
-# May 1 2024: Limiting much more extensively to 30 req per minute -- one per every two seconds
-# averaging over a minute -- after bot  attacks costing us money from s3.
 Rack::Attack.throttle('req/ip', limit: 180, period: 1.minutes) do |req|
   # On heroku, we may be delivering assets via rack, I think.
   # We also try to exempt our "api" responses from rate limit, although
@@ -42,12 +40,6 @@ Rack::Attack.throttle('req/ip', limit: 180, period: 1.minutes) do |req|
                   req.path.end_with?(".xml") ||
                   req.path.end_with?(".json")
                  )
-end
-
-# But we're also going to TRACK at half that limit, for ease
-# of understanding what's going on in our logs
-Rack::Attack.track("req/ip_track", limit: 90, period: 1.minute) do |req|
-  req.ip unless req.path.start_with?('/assets')
 end
 
 # And we want to log rack-attack track and throttle  notifications. But we get
@@ -73,8 +65,8 @@ ActiveSupport::Notifications.subscribe(/throttle\.rack_attack|track\.rack_attack
   rack_env     = rack_request.env
   match_name = rack_env["rack.attack.matched"]
 
-  # only log here for our `req/` throttles and tracks above, not our other ones such as bot detect
-  next unless match_name.start_with?("req/")
+  # only log here for our `req/` throttle  above, not our other ones such as bot detect
+  next unless match_name == "req/ip"
 
   match_data   = rack_env["rack.attack.match_data"]
   match_data_formatted = match_data.slice(:count, :limit, :period).map { |k, v| "#{k}=#{v}"}.join(" ")
@@ -120,63 +112,4 @@ ActiveSupport::Notifications.subscribe(/throttle\.rack_attack|track\.rack_attack
     # not to alert more than that.
     Rack::Attack.cache.write(last_logged_key, JSON.dump(last_logged_info), alert_only_per)
   end
-end
-
-
-# Explained at https://sciencehistory.atlassian.net/wiki/spaces/HDC/pages/2645098498/Cloudflare+Turnstile+bot+detection
-Rails.application.config.to_prepare do
-  # allow rate_limit_count requests in rate_limit_period, before issuing challenge
-  BotDetectController.rate_limit_period = 12.hour
-  BotDetectController.rate_limit_count = 2 # seriously reduced to see if that helps
-
-  # How long a challenge pass is good for
-  BotDetectController.session_passed_good_for = 24.hours
-
-  BotDetectController.enabled                 = ScihistDigicoll::Env.lookup(:cf_turnstile_enabled)
-  BotDetectController.cf_turnstile_sitekey    = ScihistDigicoll::Env.lookup(:cf_turnstile_sitekey)
-  BotDetectController.cf_turnstile_secret_key = ScihistDigicoll::Env.lookup(:cf_turnstile_secret_key)
-
-  # any custom collection controllers or other controllers that offer search have to be listed here
-  # to rate-limit them!
-  BotDetectController.rate_limited_locations = [
-    '/catalog',
-    '/focus',
-    # we want to omit `/collections` list page, so we do these by controller
-    { controller: "collection_show" },
-    { controller: "collection_show_controllers/immigrants_and_innovation_collection" },
-    { controller: "collection_show_controllers/oral_history_collection"},
-    { controller: "collection_show_controllers/bredig_collection"}
-  ]
-
-  BotDetectController.allow_exempt = ->(controller) {
-    # Excempt any Catalog #facet action that looks like an ajax/fetch request, the redirect
-    # ain't gonna work there, we just exempt it.
-    #
-    # sec-fetch-dest is set to 'empty' by browser on fetch requests, to limit us further;
-    # sure an attacker could fake it, we don't mind if someone determined can avoid rate-limiting on this one action
-    ( controller.params[:action] == "facet" &&
-      controller.request.headers["sec-fetch-dest"] == "empty" &&
-      controller.kind_of?(CatalogController)
-    ) ||
-    # Exempt honeybadger token from uptime checker
-    # https://docs.honeybadger.io/guides/security/
-    (
-      ENV['HONEYBADGER_TOKEN'].present? &&
-      controller.request.headers['Honeybadger-Token'] == ENV['HONEYBADGER_TOKEN']
-    ) ||
-    # Exempt a collection controller (or sub-class!) with _no query params_, we want to
-    # let Google and other bots into colleciton home pages, even though they show search results.
-    (
-      controller.kind_of?(CollectionShowController) &&
-      controller.respond_to?(:has_search_parameters?) &&
-      !controller.has_search_parameters?
-    ) ||
-    ## exempt PDF original downloads, which are protected with an 'immediate' filter
-    (
-      controller.kind_of?(DownloadsController) &&
-      controller.params[:file_category] == "pdf"
-    )
-  }
-
-  BotDetectController.rack_attack_init
 end
