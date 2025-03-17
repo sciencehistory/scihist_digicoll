@@ -176,9 +176,16 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
       end
     end
 
+    # Collection, try to select reliably from tom-select
     within find("div.work_contained_by") do
       find('div.select').click
       find('input').fill_in with: "#{collection.title}\n"
+    end
+    # make sure selection has happened in hidden select field before we move on
+    expect(page).to have_field("work[contained_by_ids][]",  multiple: true, visible: :all) do |select_tag|
+      # not sure why we had ot do this in a custom block, using `with` arg wasn' working for multiple
+      # value select.
+      select_tag.value == [ collection.id ]
     end
 
     click_button "Create Work"
@@ -199,7 +206,8 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
       expect(newly_added_work.send(prop)).to eq work.send(prop)
     end
 
-    expect(newly_added_work.contained_by).to include(collection)
+    #newly_added_work.reload
+    expect(newly_added_work.contained_by.to_a).to include(collection)
   end
 
   context "creating a child work" do
