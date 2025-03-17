@@ -4,7 +4,7 @@
   <%= render "works/meta_tags", work: work  %>
 <% end %>
 
-<div class="show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
+<div class="show-page-layout work-show" data-lazy-load-image-container itemscope itemtype="http://schema.org/CreativeWork" class="row">
 
   <div class="show-title">
     <%= render WorkTitleAndDatesComponent.new(work) %>
@@ -67,19 +67,14 @@
     div to take up all space. A bit hacky but it works. A clear hack to make sure they start after
     big representative image %>
   <div style="clear: left"></div>
-  <%#  images-per-page span is used by lazy_member_images.js %>
-  <span class="images-per-page"><%= @images_per_page %></span>
-  <span class="member-divs">
-    <% member_list_for_display.each_with_index do |member_for_thumb, index| %>
-      <%# lazyload all but first 6 images, supply an image_label for accessible labels %>
-      <div class="show-member-list-item">
-        <%= render MemberImageComponent.new(member_for_thumb.member, lazy: (index > 5), image_label: member_for_thumb.image_label) %>
-      </div>
-    <% end %>
-    <%# next-start-index is used by lazy_member_images.js %>
-    <span class="next-start-index"><%= start_index %></span>
-  </span>
-  <div><%= link_to("Fetch more works", "", class:"lazy-member-images-link", data: { start_index: start_index, images_per_page: images_per_page }) if show_link? %></div>
+
+  <% member_list_for_display.each_with_index do |member_for_thumb, index| %>
+    <%# lazyload all but first 6 images, supply an image_label for accessible labels %>
+    <div class="show-member-list-item">
+      <%= render MemberImageComponent.new(member_for_thumb.member, lazy: (index > 5), image_label: member_for_thumb.image_label) %>
+    </div>
+  <% end %>
+  <%= render FetchMorePagesLinkComponent.new(start_index: start_index, images_per_page: images_per_page, total_count: total_count) if more_pages_to_load? %>
 </div>
 
 <%# hidden modal used by viewer %>

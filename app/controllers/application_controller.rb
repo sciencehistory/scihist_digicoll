@@ -1,4 +1,10 @@
 class ApplicationController < ActionController::Base
+  # This will only protect CONFIGURED routes, but also could be put on just certain
+  # controllers, it does not need to be in ApplicationController
+  before_action do |controller|
+    BotChallengePage::BotChallengePageController.bot_challenge_enforce_filter(controller)
+  end
+
   # Blacklight tried to add some things to ApplicationController, but
   # we pretty much only want to use CatalogController from Blacklight, so
   # are trying just doing these things there instead
@@ -22,8 +28,6 @@ class ApplicationController < ActionController::Base
   end
 
   around_action :batch_kithe_indexable
-
-  before_action { |controller| BotDetectController.bot_detection_enforce_filter(controller) }
 
   def batch_kithe_indexable
     Kithe::Indexable.index_with(batching: true) do

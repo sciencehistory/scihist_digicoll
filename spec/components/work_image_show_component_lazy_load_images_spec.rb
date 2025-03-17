@@ -22,15 +22,15 @@ describe WorkImageShowComponent, type: :component do
       create(:work, :published, members: members, representative: asset1)
     }
 
-    let(:hero_friendlier_id) do 
+    let(:hero_friendlier_id) do
       hero = page.first(".show-hero .member-image-presentation")
-      hero.first("a.thumb")["data-member-id"]      
+      hero.first("a.thumb")["data-member-id"]
     end
 
     let(:images_per_page) do
-      page.first(".images-per-page", visible: :all).text.strip
+      page.first('*[data-trigger="lazy-member-images"]')['data-images-per-page']
     end
-    
+
     let(:other_thumbs_friendlier_id_list) do
       page.all(".show-member-list-item .member-image-presentation a.thumb").map { |thumb| thumb["data-member-id"] }
     end
@@ -45,7 +45,7 @@ describe WorkImageShowComponent, type: :component do
           expect(other_thumbs_friendlier_id_list).to eq [ asset2.friendlier_id, asset3.friendlier_id ]
           # JS code will fetch more more thumbnails on request, starting with the fourth thumbnail
           # (next-start-index starts at zero)
-          expect(page.first(".next-start-index", visible: :all).text.strip).to eq "3"
+          expect(page.first('*[data-trigger="lazy-member-images"]')['data-start-index']).to eq "3"
         end
       end
 
@@ -57,7 +57,7 @@ describe WorkImageShowComponent, type: :component do
           render_inline described_class.new(work, images_per_page: 3)
           expect(hero_friendlier_id).to eq(asset2.friendlier_id)
           expect(other_thumbs_friendlier_id_list).to eq [ asset1.friendlier_id, asset2.friendlier_id, asset3.friendlier_id ]
-          expect(page.first(".next-start-index", visible: :all).text.strip).to eq "3"
+          expect(page.first('*[data-trigger="lazy-member-images"]')['data-start-index']).to eq "3"
         end
       end
     end
@@ -90,7 +90,7 @@ describe WorkImageShowComponent, type: :component do
           render_inline component
           viewable_members = component.ordered_viewable_members
           # next start index is 2 (i.e. the third VIEWABLE member)
-          next_start_index = page.first(".next-start-index", visible: :all).text.strip.to_i
+          next_start_index =  page.first('*[data-trigger="lazy-member-images"]')['data-start-index'].to_i
           expect(next_start_index).to eq 2
           # next thumbnail to display will be the third VIEWABLE member, namely asset 5.
           expect(viewable_members[next_start_index].friendlier_id).to eq asset5.friendlier_id
@@ -100,7 +100,7 @@ describe WorkImageShowComponent, type: :component do
         render_inline described_class.new(work, images_per_page: 3)
         expect(hero_friendlier_id).to eq(asset1.friendlier_id)
         expect(other_thumbs_friendlier_id_list).to eq [ asset2.friendlier_id, asset3.friendlier_id ]
-        expect(page.first(".next-start-index", visible: :all).text.strip).to eq "3"
+        expect(page.first('*[data-trigger="lazy-member-images"]')['data-start-index']).to eq "3"
       end
     end
 
@@ -118,7 +118,7 @@ describe WorkImageShowComponent, type: :component do
           asset4.friendlier_id
         ]
         # The next batch of assets fetched will start with the fifth asset:
-        expect(page.first(".next-start-index", visible: :all).text.strip).to eq "4"
+        expect(page.first('*[data-trigger="lazy-member-images"]')['data-start-index']).to eq "4"
       end
     end
   end

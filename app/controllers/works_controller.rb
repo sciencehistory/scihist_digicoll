@@ -47,6 +47,9 @@ class WorksController < ApplicationController
       collect.with_index do |member, i|
         WorkImageShowComponent::MemberForThumbnailDisplay.new(member: member, image_label: "Image #{@start_index + i}")
     end
+    @total_count = @ordered_viewable_members_excluding_pdf_source.count
+    @more_pages_to_load = @start_index + @images_per_page <= @total_count
+
     render :layout => false
   end
 
