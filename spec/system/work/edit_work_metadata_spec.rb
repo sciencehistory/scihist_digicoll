@@ -25,7 +25,7 @@ RSpec.describe "Edit work metadata form", logged_in_user: :editor, type: :system
     click_button "Update Work"
 
     # check page, before checking data, to make sure action has completed.
-    expect(page).to have_css("h1", text: work.title)
+    expect(page).to have_text("was successfully updated.")
 
     # check data
     work.reload
@@ -49,7 +49,7 @@ RSpec.describe "Edit work metadata form", logged_in_user: :editor, type: :system
     click_button "Update Work"
 
     # check page, before checking data, to make sure action has completed.
-    expect(page).to have_css("h1", text: work.title)
+    expect(page).to have_text("was successfully updated.")
     work.reload
 
     expect(work.description).to eq(<<~EOS)
