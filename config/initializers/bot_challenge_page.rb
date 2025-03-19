@@ -1,6 +1,6 @@
 # Some explanation at https://sciencehistory.atlassian.net/wiki/spaces/HDC/pages/2645098498/Cloudflare+Turnstile+bot+detection
 Rails.application.config.to_prepare do
-  config = BotChallengePage::BotChallengePageController.bot_challenge_config
+config = BotChallengePage::BotChallengePageController.bot_challenge_config
 
   # allow rate_limit_count requests in rate_limit_period, before issuing challenge
   config.rate_limit_period = 12.hour
@@ -53,6 +53,11 @@ Rails.application.config.to_prepare do
       controller.kind_of?(DownloadsController) &&
       controller.params[:file_category] == "pdf"
     )
+  }
+
+  config.after_blocked = ->(bot_detect_class) {
+    logger.info "challenge blocked"
+    request.env["bot_detect.blocked_for_challenge"] = true
   }
 
   BotChallengePage::BotChallengePageController.rack_attack_init
