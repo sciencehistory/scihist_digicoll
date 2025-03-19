@@ -31,7 +31,7 @@ config = BotChallengePage::BotChallengePageController.bot_challenge_config
     #
     # sec-fetch-dest is set to 'empty' by browser on fetch requests, to limit us further;
     # sure an attacker could fake it, we don't mind if someone determined can avoid rate-limiting on this one action
-    ( controller.params[:action] == "facet" &&
+    ( controller.params[:action].in?(["facet", "range_limit"]) &&
       controller.request.headers["sec-fetch-dest"] == "empty" &&
       controller.kind_of?(CatalogController)
     ) ||
