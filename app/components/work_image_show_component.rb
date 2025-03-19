@@ -3,17 +3,41 @@
 # The standard image-centered work show page, used for works by default, when
 # we don't have a special purpose work show page.
 
+# If you pass in images_per_page, we will only show that number of thumbnails.
+# The template will also include an invisible span giving the JS code on the front end
+# the start index at which to start retrieving more thumbnails.
+
 class WorkImageShowComponent < ApplicationComponent
   delegate :construct_page_title, :current_user, to: :helpers
 
-  attr_reader :work, :work_download_options
+  attr_reader :work, :work_download_options, :images_per_page
 
-  def initialize(work)
+  def initialize(work, images_per_page:100)
     @work = work
+    @images_per_page = images_per_page
 
     # work download options are expensive, so we calculate them here so we can use them
     # in several places
     @work_download_options = WorkDownloadOptionsCreator.new(work).options
+  end
+
+  def ordered_viewable_members
+    ordered_viewable_members ||= @work.
+      ordered_viewable_members_excluding_pdf_source(current_user: current_user)
+  end
+
+  def more_pages_to_load?
+    total_count > images_per_page
+  end
+
+  def total_count
+    ordered_viewable_members.count
+  end
+
+
+  # Zero-based start index for next batch of thumbnails, if needed.
+  def start_index
+    images_per_page
   end
 
   # Public members, ordered, to be displayed as thumbnails
@@ -30,8 +54,9 @@ class WorkImageShowComponent < ApplicationComponent
   #
   def member_list_for_display
     @member_list_display ||= begin
-      members = ordered_viewable_members.dup
-
+      members = ordered_viewable_members
+      members = members.limit(images_per_page) if more_pages_to_load?
+      members = members.to_a
       # If the representative image is the first item in the list, don't show it twice.
       start_image_number = 1
       if members[0] == representative_member
@@ -43,15 +68,6 @@ class WorkImageShowComponent < ApplicationComponent
         MemberForThumbnailDisplay.new(member: member, image_label: "Image #{start_image_number + index}")
       end
     end
-  end
-
-  # All DISPLAYABLE (to current user) members, in order, and
-  # with proper pre-fetches.
-  def ordered_viewable_members
-    @ordered_members ||= work.
-                          ordered_viewable_members(current_user: current_user).
-                          where("role is null OR role != ?", PdfToPageImages::SOURCE_PDF_ROLE).
-                          to_a
   end
 
   def transcription_texts

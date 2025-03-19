@@ -110,6 +110,21 @@
       border-radius: 2px;
     }
 
+    &.lazy-member-images-link {
+      aspect-ratio: 1;
+      background-color: $shi-gray-2;
+      color: $body-color; // need to reset for min WCAG contrast
+      vertical-align: top; // some crazy CSS, this is best we can do
+
+      padding: 0.5em;
+
+      // try to center content
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
     // Sizing the images to exactly line up with hero at various sizes,
     // 2 or 3 images accross. This math is weird, not sure why we need the +/-
     // 1 or 2 pixels at the end, but it lines up. (browser-added whitespace?)
