@@ -13,6 +13,7 @@ class SearchBuilder < Blacklight::SearchBuilder
   include SearchBuilder::AccessControlFilter
   include SearchBuilder::AdminOnlySearchFields
   include SearchBuilder::CustomSortLogic
+  include SearchBuilder::AllSearchResultIdsBuilder
 
   ##
   # @example Adding a new step to the processor chain

@@ -1,0 +1,1 @@
+json.array! @presenter.documents.map {|doc| doc.id}
