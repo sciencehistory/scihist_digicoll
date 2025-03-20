@@ -193,7 +193,9 @@ Rails.application.routes.draw do
   get "focus/:slug/facet" => "featured_topic#facet"
 
   # Run a Blacklight search, but ONLY return the friendlier_ids, and return ALL of them (not just the first 25.)
-  get "all_search_result_ids" => "all_search_result_ids#index", format: "json"
+  get "all_search_result_ids/index" => "all_search_result_ids#index",             format: "json"
+  # Same but add them to the logged-in user's cart
+  get "all_search_result_ids/add_to_cart" => "all_search_result_ids#add_to_cart", format: "json"
 
 
   # the file_category is in here solely so we can distinguish in robots.txt,
