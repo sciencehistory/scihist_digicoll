@@ -101,6 +101,9 @@ class LazyMemberImages {
       }
     }
     catch (error) {
+      document.querySelector(this.#triggerSelector).innerHTML = `
+        <span><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Error loading images</span>
+      `;
       console.error('Error fetching or inserting HTML:', error);
     }
   }
