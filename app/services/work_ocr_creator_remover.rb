@@ -77,6 +77,6 @@ class WorkOcrCreatorRemover
       where(type: 'Asset').
       where("role is null OR role != ?", PdfToPageImages::EXTRACTED_PAGE_ROLE).
       order(:position).
-      select { |m| m.content_type.start_with?("image/") }
+      select { |m| m.content_type&.start_with?("image/") }
   end
 end
