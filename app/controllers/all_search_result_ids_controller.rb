@@ -14,15 +14,10 @@ class AllSearchResultIdsController < CatalogController
 
 
   # TODO make this a POST request
-  # add them to the logged-in-user's cart
   def add_to_cart
-
-
-
     Work.transaction do
-      all_ids_from_search.each_slice(100) do |current_slice|
-        current_user.works_in_cart << Work.where(friendlier_id: current_slice)
-        current_user.works_in_cart = Set.new(current_user.works_in_cart)
+      all_ids_from_search.each_slice(500) do |current_slice|
+        result = ActiveRecord::Base.connection.execute(sql_insert(current_user, current_slice))
       end
     end
     render plain: "OK"
@@ -52,5 +47,32 @@ private
   def all_ids_from_search
     Set.new(search_service.search_results['response']['docs'].map { |doc| doc['id'] })
   end
+
+  def sql_insert (user, ids)
+    """
+    INSERT INTO cart_items
+      (
+        user_id,
+        work_id,
+        created_at,
+        updated_at
+      )
+    SELECT #{current_user.id},
+      the_id,
+      now(),
+      now()
+    FROM   (
+      SELECT kithe_models.id AS the_id
+      FROM   kithe_models
+      WHERE  friendlier_id IN ( #{ ids.map {|id| "'#{id}'"}.join(", ") } )
+      AND    type = 'Work'
+      AND    id NOT IN
+        (
+          SELECT work_id
+          FROM   cart_items
+          WHERE  user_id = #{current_user.id} ) ) AS foo
+    """
+  end
+
 
 end
