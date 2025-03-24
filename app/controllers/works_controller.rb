@@ -44,6 +44,7 @@ class WorksController < ApplicationController
     @lazy_member_images = ordered_viewable_members_excluding_pdf_source.
       offset(@start_index).
       limit(@images_per_page).
+      strict_loading.
       collect.with_index do |member, i|
         WorkImageShowComponent::MemberForThumbnailDisplay.new(member: member, image_label: "Image #{@start_index + i}")
     end

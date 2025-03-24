@@ -23,7 +23,7 @@ class WorkImageShowComponent < ApplicationComponent
 
   def ordered_viewable_members
     ordered_viewable_members ||= @work.
-      ordered_viewable_members_excluding_pdf_source(current_user: current_user)
+      ordered_viewable_members_excluding_pdf_source(current_user: current_user).strict_loading
   end
 
   def more_pages_to_load?
