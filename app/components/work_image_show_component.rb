@@ -79,7 +79,10 @@ class WorkImageShowComponent < ApplicationComponent
   end
 
   def has_transcription_or_translation?
-    transcription_texts.present? || translation_texts.present?
+    # at least one 'english_translation' or 'transcription' that is not NULL and not empty string
+    @has_transcription_or_translation ||= ordered_viewable_members.
+      where("NULLIF(json_attributes ->> 'english_translation', '') is not null OR NULLIF(json_attributes ->> 'transcription', '') is not null").
+      exists?
   end
 
 
