@@ -14,10 +14,22 @@
 // Contains no JQuery code.
 
 class LazyMemberImages {
+  #triggerSelector = '*[data-trigger="lazy-member-images"]';
 
   constructor() {
+    this.intersectionObserver = new IntersectionObserver((entries, observer) => {
+        this.#triggerIntersectionCallback(entries, observer);
+      },
+      { rootMargin: "40%"} // If it gets within 40% of size of viewport, load it
+    );
+
+    const trigger = document.querySelector(this.#triggerSelector);
+    if (trigger) {
+      this.intersectionObserver.observe(trigger);
+    }
+
     document.querySelector("*[data-lazy-load-image-container]")?.addEventListener("click", (event) => {
-      const link = event.target.closest('[data-trigger="lazy-member-images"]');
+      const link = event.target.closest(this.#triggerSelector);
 
       if (link) {
         event.preventDefault();
@@ -28,6 +40,9 @@ class LazyMemberImages {
 
   // Retrieve the images and insert them
   #getMoreMemberImages(linkEl) {
+    linkEl.removeAttribute("href");
+    linkEl.classList.add("pe-none");
+    linkEl.innerHTML = "Loading more...";
 
     // The zero-based index of the next image to fetch.
     const startIndex = parseInt(linkEl.getAttribute("data-start-index"));
@@ -56,6 +71,15 @@ class LazyMemberImages {
       "start_index=" + startIndex + '&images_per_page=' + imagesPerPage;
   }
 
+  #triggerIntersectionCallback(entries, observer) {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        observer.disconnect(); // remove current observing, we're handling it
+        this.#getMoreMemberImages(entry.target);
+      }
+    });
+  }
+
   // Attempt to fetch the lazy member images, and insert them right before the end of a div:
   async #fetchAndInsertLazyMemberImages(url) {
     try {
@@ -68,9 +92,18 @@ class LazyMemberImages {
 
       // put it into page REPLACING existing link -- this HTML will have another
       // link if needed.
-      document.querySelector('*[data-trigger="lazy-member-images"]').outerHTML = html;
+      document.querySelector(this.#triggerSelector).outerHTML = html;
+
+      // And observe it if we have a new trigger
+      const newTrigger = document.querySelector(this.#triggerSelector);
+      if (newTrigger) {
+        this.intersectionObserver.observe(newTrigger);
+      }
     }
     catch (error) {
+      document.querySelector(this.#triggerSelector).innerHTML = `
+        <span><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Error loading images</span>
+      `;
       console.error('Error fetching or inserting HTML:', error);
     }
   }
