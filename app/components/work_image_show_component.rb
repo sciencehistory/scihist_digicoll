@@ -12,7 +12,7 @@ class WorkImageShowComponent < ApplicationComponent
 
   attr_reader :work, :work_download_options, :images_per_page
 
-  def initialize(work, images_per_page:100)
+  def initialize(work, images_per_page:50)
     @work = work
     @images_per_page = images_per_page
 
