@@ -70,14 +70,6 @@ class WorkImageShowComponent < ApplicationComponent
     end
   end
 
-  def transcription_texts
-    @transcription_texts ||= Work::TextPage.compile(ordered_viewable_members, accessor: :transcription)
-  end
-
-  def translation_texts
-    @translation_texts ||= Work::TextPage.compile(ordered_viewable_members, accessor: :english_translation)
-  end
-
   def has_transcription_or_translation?
     # at least one 'english_translation' or 'transcription' that is not NULL and not empty string
     @has_transcription_or_translation ||= ordered_viewable_members.
