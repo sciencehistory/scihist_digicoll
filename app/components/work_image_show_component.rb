@@ -31,7 +31,7 @@ class WorkImageShowComponent < ApplicationComponent
   end
 
   def total_count
-    ordered_viewable_members.count
+    @total_count ||= ordered_viewable_members.count
   end
 
 
