@@ -1,0 +1,5 @@
+<% if can?(:update, Kithe::Model)%>
+  <div id="add-results-to-cart" class="add-results-to-cart">
+    <%= link_to 'ADD RESULTS TO CART', request.params.merge(action: "add_to_cart", controller: 'all_search_result_ids'), class:"btn btn-outline-secondary" %>
+  </div>
+<% end %>

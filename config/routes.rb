@@ -192,6 +192,10 @@ Rails.application.routes.draw do
   get "focus/:slug/range_limit_panel" => "featured_topic#range_limit_panel"
   get "focus/:slug/facet" => "featured_topic#facet"
 
+  # Run a Blacklight search, but ONLY return the friendlier_ids, and return ALL of them.
+  # Add them to the user's cart.
+  get "all_search_result_ids/add_to_cart" => "all_search_result_ids#add_to_cart", as: :all_search_result_ids_add_to_cart
+
 
   # the file_category is in here solely so we can distinguish in robots.txt,
   # we want the file type in the URL. It's not actually used by controller.
