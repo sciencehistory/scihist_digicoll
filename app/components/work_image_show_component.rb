@@ -71,6 +71,14 @@ class WorkImageShowComponent < ApplicationComponent
   end
 
   def members_for_transcription_tabs
+    # We never have this state, so didn't write code to handle it. Currently we don't
+    # have any bredig-transcription-type works with more than 8 pages. If we do exceed
+    # batch size, have to figure out how to get what we need to transcripton tabs, perhaps
+    # change UX.
+    if has_transcription_or_translation? && total_count > images_per_page
+      raise "We were not expecting and can not currently handle a Work that needs transcription tabs and has more than #{images_per_page} members. This one (#{work.friendlier_id}) has #{total_count}"
+    end
+
     limited_ordered_viewable_members
   end
 
