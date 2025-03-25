@@ -27,8 +27,8 @@ describe WorkImageShowComponent, type: :component do
       hero.first("a.thumb")["data-member-id"]
     end
 
-    let(:images_per_page) do
-      page.first('*[data-trigger="lazy-member-images"]')['data-images-per-page']
+    let(:members_per_batch) do
+      page.first('*[data-trigger="lazy-member-images"]')['data-members-per-batch']
     end
 
     let(:other_thumbs_friendlier_id_list) do
@@ -37,8 +37,9 @@ describe WorkImageShowComponent, type: :component do
     context "published work" do
       context "first image is representative" do
         it "shows the representative at the top, two more images underneath" do
-          render_inline described_class.new(work, images_per_page: 3)
-          expect(images_per_page).to eq "3"
+          html = render_inline described_class.new(work, members_per_batch: 3)
+
+          expect(members_per_batch).to eq "3"
           expect(hero_friendlier_id).to eq asset1.friendlier_id
           thumbs = page.all(".show-member-list-item .member-image-presentation")
           expect(thumbs.length).to be(2)
@@ -54,7 +55,7 @@ describe WorkImageShowComponent, type: :component do
           create(:work, :published, :with_complete_metadata, members: members, representative: asset2)
         }
         it "displays all three thumbnails in small thumb list" do
-          render_inline described_class.new(work, images_per_page: 3)
+          render_inline described_class.new(work, members_per_batch: 3)
           expect(hero_friendlier_id).to eq(asset2.friendlier_id)
           expect(other_thumbs_friendlier_id_list).to eq [ asset1.friendlier_id, asset2.friendlier_id, asset3.friendlier_id ]
           expect(page.first('*[data-trigger="lazy-member-images"]')['data-start-index']).to eq "3"
@@ -79,14 +80,14 @@ describe WorkImageShowComponent, type: :component do
           expect(page.find_all(".show-hero .member-image-presentation a.thumb").count).to eq 0
         end
         it "if the user requests two images, the first two viewable images are shown (asset3 and asset4)" do
-          render_inline described_class.new(work, images_per_page: 2)
+          render_inline described_class.new(work, members_per_batch: 2)
           # no hero image
           expect(page.find_all(".show-hero .member-image-presentation a.thumb").count).to eq 0
           # shows 3 and 4
           expect(other_thumbs_friendlier_id_list).to eq [ asset3.friendlier_id, asset4.friendlier_id ]
         end
         it "the next batch of thumbnails fetched will start with asset5)" do
-          component = described_class.new(work, images_per_page: 2)
+          component = described_class.new(work, members_per_batch: 2)
           render_inline component
           viewable_members = component.ordered_viewable_members_scope.to_a
           # next start index is 2 (i.e. the third VIEWABLE member)
@@ -97,7 +98,7 @@ describe WorkImageShowComponent, type: :component do
         end
       end
       it "does show unpublished assets to a logged-in user", logged_in_user: :admin do
-        render_inline described_class.new(work, images_per_page: 3)
+        render_inline described_class.new(work, members_per_batch: 3)
         expect(hero_friendlier_id).to eq(asset1.friendlier_id)
         expect(other_thumbs_friendlier_id_list).to eq [ asset2.friendlier_id, asset3.friendlier_id ]
         expect(page.first('*[data-trigger="lazy-member-images"]')['data-start-index']).to eq "3"
@@ -110,7 +111,7 @@ describe WorkImageShowComponent, type: :component do
       let(:child_work) { create(:work, :published, position: 1) }
       let(:members) {[asset1, child_work, asset3, asset4, asset5]}
       it "unpublished assets are counted towards the images-per-page total" do
-        render_inline described_class.new(work, images_per_page: 4)
+        render_inline described_class.new(work, members_per_batch: 4)
         expect(hero_friendlier_id).to eq(asset1.friendlier_id)
         expect(other_thumbs_friendlier_id_list).to eq [
           child_work.friendlier_id,

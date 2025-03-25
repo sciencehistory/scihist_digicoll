@@ -3,18 +3,20 @@
 # The standard image-centered work show page, used for works by default, when
 # we don't have a special purpose work show page.
 
-# If you pass in images_per_page, we will only show that number of thumbnails.
+# We will only show `members_per_batch` number of thumbnails in initial load.
 # The template will also include an invisible span giving the JS code on the front end
 # the start index at which to start retrieving more thumbnails.
 
 class WorkImageShowComponent < ApplicationComponent
   delegate :construct_page_title, :current_user, to: :helpers
 
-  attr_reader :work, :work_download_options, :images_per_page
+  attr_reader :work, :work_download_options, :members_per_batch
 
-  def initialize(work, images_per_page:50)
+  DEFAULT_MEMBERS_PER_BATCH = 50
+
+  def initialize(work, members_per_batch: DEFAULT_MEMBERS_PER_BATCH)
     @work = work
-    @images_per_page = images_per_page
+    @members_per_batch = members_per_batch
 
     # work download options are expensive, so we calculate them here so we can use them
     # in several places
@@ -26,11 +28,11 @@ class WorkImageShowComponent < ApplicationComponent
   end
 
   def limited_ordered_viewable_members
-    @limited_ordered_viewable_members ||= ordered_viewable_members_scope.limit(images_per_page).strict_loading.to_a
+    @limited_ordered_viewable_members ||= ordered_viewable_members_scope.limit(members_per_batch).strict_loading.to_a
   end
 
   def more_pages_to_load?
-    total_count > images_per_page
+    total_count > members_per_batch
   end
 
   def total_count
@@ -39,7 +41,7 @@ class WorkImageShowComponent < ApplicationComponent
 
   # Zero-based start index for next batch of thumbnails, if needed.
   def start_index
-    images_per_page
+    members_per_batch
   end
 
   # Public members, ordered, to be displayed as thumbnails
@@ -75,8 +77,8 @@ class WorkImageShowComponent < ApplicationComponent
     # have any bredig-transcription-type works with more than 8 pages. If we do exceed
     # batch size, have to figure out how to get what we need to transcripton tabs, perhaps
     # change UX.
-    if has_transcription_or_translation? && total_count > images_per_page
-      raise "We were not expecting and can not currently handle a Work that needs transcription tabs and has more than #{images_per_page} members. This one (#{work.friendlier_id}) has #{total_count}"
+    if has_transcription_or_translation? && total_count > members_per_batch
+      raise "We were not expecting and can not currently handle a Work that needs transcription tabs and has more than #{members_per_batch} members. This one (#{work.friendlier_id}) has #{total_count}"
     end
 
     limited_ordered_viewable_members

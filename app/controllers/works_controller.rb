@@ -35,21 +35,22 @@ class WorksController < ApplicationController
   # Takes an offset and a limit.
   # See also WorkImageShowComponent, which shows the first batch of images and provides the script with what it needs.
   def lazy_member_images
-    if !(params[:start_index] =~ /\A\d+\Z/) || !(params[:images_per_page]  =~ /\A\d+\Z/ )
+    if !(params[:start_index] =~ /\A\d+\Z/) || !(params[:members_per_batch]  =~ /\A\d+\Z/ )
       render :nothing => true, :layout => false
       return
     end
+
     @start_index = params[:start_index].to_i
-    @images_per_page = params[:images_per_page].to_i
+    @members_per_batch = params[:members_per_batch].to_i
     @lazy_member_images = ordered_viewable_members_excluding_pdf_source.
       offset(@start_index).
-      limit(@images_per_page).
+      limit(@members_per_batch).
       strict_loading.
       collect.with_index do |member, i|
         WorkImageShowComponent::MemberForThumbnailDisplay.new(member: member, image_label: "Image #{@start_index + i}")
     end
     @total_count = @ordered_viewable_members_excluding_pdf_source.count
-    @more_pages_to_load = @start_index + @images_per_page <= @total_count
+    @more_pages_to_load = @start_index + @members_per_batch <= @total_count
 
     render :layout => false
   end
