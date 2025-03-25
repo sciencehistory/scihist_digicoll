@@ -6,6 +6,6 @@
 	<% end %>
 
   <% if @more_pages_to_load %>
-    <%= render FetchMorePagesLinkComponent.new(start_index: @start_index + @images_per_page, total_count: @total_count, images_per_page: @images_per_page) %>
+    <%= render FetchMorePagesLinkComponent.new(start_index: @start_index + @members_per_batch, total_count: @total_count, members_per_batch: @members_per_batch) %>
   <% end %>
 <% end %>
