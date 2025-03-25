@@ -111,6 +111,56 @@ describe "Public work show page", type: :system, js: false do
 
       expect_attribute_row("Physical container", work.physical_container.display_as)
     end
+
+    describe "lazy load of batches of members", js: true do
+      let(:work) do
+        create(
+          :work, :published, :with_complete_metadata, members: [
+            create(:asset_with_faked_file,
+              title: "First asset (representative)",
+              position: 0),
+            create(:asset_with_faked_file,
+              title: "Second asset",
+              position: 1),
+            create(:asset_with_faked_file,
+              title: "Third asset",
+              position: 2),
+            create(:asset_with_faked_file,
+              title: "Fourth asset",
+              position: 3)
+            ]
+        ).tap do |work|
+          work.representative = work.members.first
+          work.save!
+        end
+      end
+
+      before do
+        stub_const("WorkImageShowComponent::DEFAULT_MEMBERS_PER_BATCH", 2)
+
+        # tiny window to force batching with tiny size
+        # for complicated reasons doing this in an `around` block as would be cleaner didn't work
+        #
+        # If you make it TOO small has trouble sometimes on github actions, but this seems
+        # be okay, and small enough to make sure we don't load all at once.
+        Capybara.page.current_window.resize_to(500, 650)
+      end
+
+      it "loads in remaining images only on scroll" do
+        visit work_path(work)
+        expect(page).to have_selector(".show-member-list-item", count: 2)
+        expect(page).to have_text(/Load 2 more items/)
+        expect(page).to have_selector('*[data-trigger="lazy-member-images"]')
+
+        # scroll to load marker to trigger it
+        page.scroll_to(find('*[data-trigger="lazy-member-images"]'), align: :center)
+
+        expect(page).not_to have_text(/Load \d+ more items/)
+        expect(page).not_to have_text("Loading")
+        expect(page).to have_selector(".show-member-list-item", count: 3)
+        expect(page).not_to have_selector('*[data-trigger="lazy-member-images"]')
+      end
+    end
   end
 
   describe "work with very little metadata" do
