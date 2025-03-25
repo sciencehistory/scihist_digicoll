@@ -5,4 +5,5 @@
 class CartItem < ApplicationRecord
   belongs_to :user
   belongs_to :work
+  validates_uniqueness_of :work, :scope => :user
 end

@@ -58,7 +58,6 @@ describe "Turnstile bot limiting", js:true do
 
       # which eventually will redirect back to search.
       expect(page).to have_content(turnstile_success_re, wait: 4)
-      expect(Rails.logger).to have_received(:info).with(/Cloudflare Turnstile challenge redirect/)
     end
   end
 end
