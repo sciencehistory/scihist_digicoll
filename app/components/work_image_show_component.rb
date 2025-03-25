@@ -12,7 +12,7 @@ class WorkImageShowComponent < ApplicationComponent
 
   attr_reader :work, :work_download_options, :images_per_page
 
-  def initialize(work, images_per_page:100)
+  def initialize(work, images_per_page:50)
     @work = work
     @images_per_page = images_per_page
 
@@ -21,9 +21,12 @@ class WorkImageShowComponent < ApplicationComponent
     @work_download_options = WorkDownloadOptionsCreator.new(work).options
   end
 
-  def ordered_viewable_members
-    ordered_viewable_members ||= @work.
-      ordered_viewable_members_excluding_pdf_source(current_user: current_user)
+  def ordered_viewable_members_scope
+    @ordered_viewable_members_scope ||= @work.ordered_viewable_members_excluding_pdf_source(current_user: current_user)
+  end
+
+  def limited_ordered_viewable_members
+    @limited_ordered_viewable_members ||= ordered_viewable_members_scope.limit(images_per_page).strict_loading.to_a
   end
 
   def more_pages_to_load?
@@ -31,9 +34,8 @@ class WorkImageShowComponent < ApplicationComponent
   end
 
   def total_count
-    ordered_viewable_members.count
+    @total_count ||= ordered_viewable_members_scope.count
   end
-
 
   # Zero-based start index for next batch of thumbnails, if needed.
   def start_index
@@ -54,9 +56,7 @@ class WorkImageShowComponent < ApplicationComponent
   #
   def member_list_for_display
     @member_list_display ||= begin
-      members = ordered_viewable_members
-      members = members.limit(images_per_page) if more_pages_to_load?
-      members = members.to_a
+      members = limited_ordered_viewable_members
       # If the representative image is the first item in the list, don't show it twice.
       start_image_number = 1
       if members[0] == representative_member
@@ -70,16 +70,23 @@ class WorkImageShowComponent < ApplicationComponent
     end
   end
 
-  def transcription_texts
-    @transcription_texts ||= Work::TextPage.compile(ordered_viewable_members, accessor: :transcription)
-  end
+  def members_for_transcription_tabs
+    # We never have this state, so didn't write code to handle it. Currently we don't
+    # have any bredig-transcription-type works with more than 8 pages. If we do exceed
+    # batch size, have to figure out how to get what we need to transcripton tabs, perhaps
+    # change UX.
+    if has_transcription_or_translation? && total_count > images_per_page
+      raise "We were not expecting and can not currently handle a Work that needs transcription tabs and has more than #{images_per_page} members. This one (#{work.friendlier_id}) has #{total_count}"
+    end
 
-  def translation_texts
-    @translation_texts ||= Work::TextPage.compile(ordered_viewable_members, accessor: :english_translation)
+    limited_ordered_viewable_members
   end
 
   def has_transcription_or_translation?
-    transcription_texts.present? || translation_texts.present?
+    # at least one 'english_translation' or 'transcription' that is not NULL and not empty string
+    @has_transcription_or_translation ||= ordered_viewable_members_scope.
+      where("NULLIF(json_attributes ->> 'english_translation', '') is not null OR NULLIF(json_attributes ->> 'transcription', '') is not null").
+      exists?
   end
 
 
