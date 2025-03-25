@@ -21,9 +21,12 @@ class WorkImageShowComponent < ApplicationComponent
     @work_download_options = WorkDownloadOptionsCreator.new(work).options
   end
 
-  def ordered_viewable_members
-    ordered_viewable_members ||= @work.
-      ordered_viewable_members_excluding_pdf_source(current_user: current_user).strict_loading
+  def ordered_viewable_members_scope
+    @ordered_viewable_members_scope ||= @work.ordered_viewable_members_excluding_pdf_source(current_user: current_user)
+  end
+
+  def limited_ordered_viewable_members
+    @limited_ordered_viewable_members ||= ordered_viewable_members_scope.limit(images_per_page).strict_loading.to_a
   end
 
   def more_pages_to_load?
@@ -31,9 +34,8 @@ class WorkImageShowComponent < ApplicationComponent
   end
 
   def total_count
-    @total_count ||= ordered_viewable_members.count
+    @total_count ||= ordered_viewable_members_scope.count
   end
-
 
   # Zero-based start index for next batch of thumbnails, if needed.
   def start_index
@@ -54,9 +56,7 @@ class WorkImageShowComponent < ApplicationComponent
   #
   def member_list_for_display
     @member_list_display ||= begin
-      members = ordered_viewable_members
-      members = members.limit(images_per_page) if more_pages_to_load?
-      members = members.to_a
+      members = limited_ordered_viewable_members
       # If the representative image is the first item in the list, don't show it twice.
       start_image_number = 1
       if members[0] == representative_member
@@ -70,9 +70,13 @@ class WorkImageShowComponent < ApplicationComponent
     end
   end
 
+  def members_for_transcription_tabs
+    limited_ordered_viewable_members
+  end
+
   def has_transcription_or_translation?
     # at least one 'english_translation' or 'transcription' that is not NULL and not empty string
-    @has_transcription_or_translation ||= ordered_viewable_members.
+    @has_transcription_or_translation ||= ordered_viewable_members_scope.
       where("NULLIF(json_attributes ->> 'english_translation', '') is not null OR NULLIF(json_attributes ->> 'transcription', '') is not null").
       exists?
   end

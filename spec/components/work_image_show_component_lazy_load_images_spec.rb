@@ -88,7 +88,7 @@ describe WorkImageShowComponent, type: :component do
         it "the next batch of thumbnails fetched will start with asset5)" do
           component = described_class.new(work, images_per_page: 2)
           render_inline component
-          viewable_members = component.ordered_viewable_members
+          viewable_members = component.ordered_viewable_members_scope.to_a
           # next start index is 2 (i.e. the third VIEWABLE member)
           next_start_index =  page.first('*[data-trigger="lazy-member-images"]')['data-start-index'].to_i
           expect(next_start_index).to eq 2
