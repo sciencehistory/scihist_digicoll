@@ -12,6 +12,6 @@ class FetchMorePagesLinkComponent < ApplicationComponent
   end
 
   def remaining_items_count
-    @total_count - @start_index
+    @total_count - @start_index - 1
   end
 end

@@ -149,7 +149,7 @@ describe "Public work show page", type: :system, js: false do
       it "loads in remaining images only on scroll" do
         visit work_path(work)
         expect(page).to have_selector(".show-member-list-item", count: 2)
-        expect(page).to have_text(/Load 2 more items/)
+        expect(page).to have_text(/Load 1 more item/)
         expect(page).to have_selector('*[data-trigger="lazy-member-images"]')
 
         # scroll to load marker to trigger it
