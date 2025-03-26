@@ -216,7 +216,22 @@ class CatalogController < ApplicationController
     # config.add_results_document_tool(:bookmark, partial: 'bookmark_control', if: :render_bookmarks_control?)
 
     config.add_results_collection_tool(:sort_widget)
-    config.add_results_collection_tool(:all_search_results_add_to_cart, opts = {})
+
+
+    # See also:
+    # app/models/search_builder/all_search_result_ids_builder.rb
+    # app/controllers/all_search_result_ids_controller.rb
+    #
+    # Don't show this tool on e.g. the collection results page or the featured topics page.
+    config.add_results_collection_tool(
+      :all_search_results_add_to_cart,
+      opts = {
+        if: ->(controller) {
+          controller.can?(:update, Kithe::Model) && controller.class.name == 'CatalogController'
+        }
+      }
+    )
+
     # config.add_results_collection_tool(:per_page_widget)
     # config.add_results_collection_tool(:view_type_group)
 
