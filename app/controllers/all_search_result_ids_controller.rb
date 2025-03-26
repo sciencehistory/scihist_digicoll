@@ -8,15 +8,20 @@ class AllSearchResultIdsController < CatalogController
   end
 
 
-  # A CartItem doesn't contain a lot of data, so this goes quite quickly:
+  # A CartItem doesn't contain a lot of data, so this goes fast, even for thousands of ids
   def add_to_cart
     conn = ActiveRecord::Base.connection
     CartItem.transaction do
       all_ids_from_search.each_slice(500) do |ids|
-        conn.execute(add_friendlier_ids_to_cart_sql(ids))
+        conn.execute add_friendlier_ids_to_cart_sql(ids)
       end
     end
-    redirect_back_or_to '/', allow_other_host: false
+    notice =  "Added these works to your cart."
+  rescue StandardError => e
+    notice = "Error adding these works to your cart: #{e.message}"
+    raise
+  ensure
+    redirect_back_or_to '/', allow_other_host: false, notice: notice
   end
 
   # tell AllSearchResultIdsBuilder to modify the solr params before connecting to solr
@@ -47,10 +52,9 @@ class AllSearchResultIdsController < CatalogController
     friendlier_id_list = friendlier_ids.map {|id| "'#{id}'"}.join(",")
     """
     INSERT INTO cart_items
-    (
-      user_id, work_id, created_at, updated_at
-    )
-    SELECT #{ user_id }, cart_work_friendlier_id, now(), now()
+      ( user_id, work_id, created_at, updated_at )
+    SELECT
+      #{ user_id }, cart_work_friendlier_id, now(), now()
     FROM   (
       SELECT kithe_models.id AS cart_work_friendlier_id
       FROM   kithe_models
