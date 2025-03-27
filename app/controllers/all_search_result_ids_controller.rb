@@ -40,27 +40,25 @@ class AllSearchResultIdsController < CatalogController
   end
 
 
-  # The "on conflict do nothing" part will only work with PostGres.
-  # You could also use a subquery like:
-  #         AND    id NOT IN
-  #         (
-  #           SELECT work_id
-  #           FROM   cart_items
-  #           WHERE  user_id = #{ user_id }
-  #         )
   def add_friendlier_ids_to_cart_sql(friendlier_ids)
     friendlier_id_list = friendlier_ids.map {|id| "'#{id}'"}.join(",")
+
+    # an array of all the work IDs
+    work_id_array = """
+    unnest(
+      array(
+        SELECT  kithe_models.id
+        FROM    kithe_models
+        WHERE   friendlier_id IN ( #{friendlier_id_list} )
+        AND     type = 'Work'
+      )
+    )
     """
-    INSERT INTO cart_items
-      ( user_id, work_id, created_at, updated_at )
-    SELECT
-      #{ user_id }, cart_work_friendlier_id, now(), now()
-    FROM   (
-      SELECT kithe_models.id AS cart_work_friendlier_id
-      FROM   kithe_models
-      WHERE  friendlier_id IN ( #{ friendlier_id_list } )
-      AND    type = 'Work'
-    ) AS foo
+
+    """
+    INSERT INTO
+      cart_items (user_id, work_id, created_at, updated_at)
+    VALUES ( #{user_id}, #{work_id_array}, now(), now() )
     ON CONFLICT (user_id, work_id) DO NOTHING
     """
   end
