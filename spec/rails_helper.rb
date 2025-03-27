@@ -81,6 +81,10 @@ RSpec.configure do |config|
     Capybara::Selenium::Driver.new(app, **{ :browser => :chrome, options_key => browser_options })
   end
 
+  Capybara::Screenshot.register_driver(:local_selenium_chrome_headless) do |driver, path|
+    driver.browser.save_screenshot(path)
+  end
+
 
 
   # eg `SHOW_BROWSER=true ./bin/rspec` will show you an actual chrome browser
