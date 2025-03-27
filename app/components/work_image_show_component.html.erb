@@ -4,7 +4,7 @@
   <%= render "works/meta_tags", work: work  %>
 <% end %>
 
-<div class="show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
+<div class="show-page-layout work-show" data-lazy-load-image-container itemscope itemtype="http://schema.org/CreativeWork" class="row">
 
   <div class="show-title">
     <%= render WorkTitleAndDatesComponent.new(work) %>
@@ -20,11 +20,7 @@
 
   <div class="show-metadata">
       <%= maybe_wrap_with_component(
-            wrapping_component: TranscriptionTabsComponent.new(
-                                  work: work,
-                                  translation_texts: translation_texts,
-                                  transcription_texts: transcription_texts
-                                ),
+            wrapping_component: TranscriptionTabsComponent.new(work: work, members: members_for_transcription_tabs),
             should_wrap: has_transcription_or_translation?) do %>
 
         <div class="work-description">
@@ -69,11 +65,12 @@
   <div style="clear: left"></div>
 
   <% member_list_for_display.each_with_index do |member_for_thumb, index| %>
-      <div class="show-member-list-item">
-        <%# lazyload all but first 6 images, supply an image_label for accessible labels %>
-        <%= render MemberImageComponent.new(member_for_thumb.member, lazy: (index > 5), image_label: member_for_thumb.image_label) %>
-      </div>
+    <%# lazyload all but first 6 images, supply an image_label for accessible labels %>
+    <div class="show-member-list-item">
+      <%= render MemberImageComponent.new(member_for_thumb.member, lazy: (index > 5), image_label: member_for_thumb.image_label) %>
+    </div>
   <% end %>
+  <%= render FetchMorePagesLinkComponent.new(start_index: start_index, members_per_batch: members_per_batch, total_count: total_count) if more_pages_to_load? %>
 </div>
 
 <%# hidden modal used by viewer %>

@@ -1,0 +1,11 @@
+<% if @lazy_member_images.present? %>
+	<% @lazy_member_images.each_with_index do |member_for_thumb, index| %>
+		<div class="show-member-list-item">
+			<%= render MemberImageComponent.new(member_for_thumb.member, lazy: true, image_label: member_for_thumb.image_label) %>
+		</div>
+	<% end %>
+
+  <% if @more_pages_to_load %>
+    <%= render FetchMorePagesLinkComponent.new(start_index: @start_index + @members_per_batch, total_count: @total_count, members_per_batch: @members_per_batch) %>
+  <% end %>
+<% end %>
