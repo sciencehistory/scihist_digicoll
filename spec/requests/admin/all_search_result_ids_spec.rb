@@ -13,12 +13,12 @@ describe AllSearchResultIdsController, type: :request, solr: true, queue_adapter
   }
 
 
-
   context "smoke test" do
     let!(:works) { [
-      create(:work, title: "work_a"),
-      create(:work, title: "work_b")
+      create(:work),
+      create(:work)
     ] }
+    let!(:collection) { create(:collection)}
 
     it "successfully adds works to the user's cart" do
       get all_search_result_ids_add_to_cart_path
@@ -65,7 +65,7 @@ describe AllSearchResultIdsController, type: :request, solr: true, queue_adapter
       get all_search_result_ids_add_to_cart_path, params: complex_query_with_facets
 
       # should return exclusively IDs:
-      expect(solr_params['fl']).to eq  "id"
+      expect(solr_params['fl']).to eq  "model_pk_ssi"
 
       # should return ten million works, max:
       expect(solr_params['rows']).to eq "10000000"

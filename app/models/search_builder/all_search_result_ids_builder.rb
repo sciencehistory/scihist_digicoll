@@ -20,7 +20,7 @@ class SearchBuilder
       facet_limit_keys = solr_parameters.keys.select  {|k| k.include? 'facet.limit'}
       solr_parameters.except!(*facet_limit_keys)
   
-      solr_parameters.merge!({fl:"id", rows: '10000000'})
+      solr_parameters.merge!({fl:"model_pk_ssi", rows: '10000000'})
     end
 
     def unneeded_keys
