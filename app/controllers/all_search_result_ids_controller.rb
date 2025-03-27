@@ -11,7 +11,7 @@ class AllSearchResultIdsController < CatalogController
   def add_to_cart
     CartItem.transaction do
       all_ids_from_search.each_slice(500) do |ids|
-        CartItem.upsert_all( ids.map { |id| { user_id: user_id, work_id: id } } )
+        CartItem.upsert_all( ids.map { |id| { user_id: user_id, work_id: id } } ,  unique_by: [:user_id, :work_id])
       end
     end
     notice =  "Added these works to your cart."
