@@ -3,17 +3,45 @@
 # The standard image-centered work show page, used for works by default, when
 # we don't have a special purpose work show page.
 
+# We will only show `members_per_batch` number of thumbnails in initial load.
+# The template will also include an invisible span giving the JS code on the front end
+# the start index at which to start retrieving more thumbnails.
+
 class WorkImageShowComponent < ApplicationComponent
   delegate :construct_page_title, :current_user, to: :helpers
 
-  attr_reader :work, :work_download_options
+  attr_reader :work, :work_download_options, :members_per_batch
 
-  def initialize(work)
+  DEFAULT_MEMBERS_PER_BATCH = 50
+
+  def initialize(work, members_per_batch: DEFAULT_MEMBERS_PER_BATCH)
     @work = work
+    @members_per_batch = members_per_batch
 
     # work download options are expensive, so we calculate them here so we can use them
     # in several places
     @work_download_options = WorkDownloadOptionsCreator.new(work).options
+  end
+
+  def ordered_viewable_members_scope
+    @ordered_viewable_members_scope ||= @work.ordered_viewable_members_excluding_pdf_source(current_user: current_user)
+  end
+
+  def limited_ordered_viewable_members
+    @limited_ordered_viewable_members ||= ordered_viewable_members_scope.limit(members_per_batch).strict_loading.to_a
+  end
+
+  def more_pages_to_load?
+    total_count > members_per_batch
+  end
+
+  def total_count
+    @total_count ||= ordered_viewable_members_scope.count
+  end
+
+  # Zero-based start index for next batch of thumbnails, if needed.
+  def start_index
+    members_per_batch
   end
 
   # Public members, ordered, to be displayed as thumbnails
@@ -30,8 +58,7 @@ class WorkImageShowComponent < ApplicationComponent
   #
   def member_list_for_display
     @member_list_display ||= begin
-      members = ordered_viewable_members.dup
-
+      members = limited_ordered_viewable_members
       # If the representative image is the first item in the list, don't show it twice.
       start_image_number = 1
       if members[0] == representative_member
@@ -45,25 +72,23 @@ class WorkImageShowComponent < ApplicationComponent
     end
   end
 
-  # All DISPLAYABLE (to current user) members, in order, and
-  # with proper pre-fetches.
-  def ordered_viewable_members
-    @ordered_members ||= work.
-                          ordered_viewable_members(current_user: current_user).
-                          where("role is null OR role != ?", PdfToPageImages::SOURCE_PDF_ROLE).
-                          to_a
-  end
+  def members_for_transcription_tabs
+    # We never have this state, so didn't write code to handle it. Currently we don't
+    # have any bredig-transcription-type works with more than 8 pages. If we do exceed
+    # batch size, have to figure out how to get what we need to transcripton tabs, perhaps
+    # change UX.
+    if has_transcription_or_translation? && total_count > members_per_batch
+      raise "We were not expecting and can not currently handle a Work that needs transcription tabs and has more than #{members_per_batch} members. This one (#{work.friendlier_id}) has #{total_count}"
+    end
 
-  def transcription_texts
-    @transcription_texts ||= Work::TextPage.compile(ordered_viewable_members, accessor: :transcription)
-  end
-
-  def translation_texts
-    @translation_texts ||= Work::TextPage.compile(ordered_viewable_members, accessor: :english_translation)
+    limited_ordered_viewable_members
   end
 
   def has_transcription_or_translation?
-    transcription_texts.present? || translation_texts.present?
+    # at least one 'english_translation' or 'transcription' that is not NULL and not empty string
+    @has_transcription_or_translation ||= ordered_viewable_members_scope.
+      where("NULLIF(json_attributes ->> 'english_translation', '') is not null OR NULLIF(json_attributes ->> 'transcription', '') is not null").
+      exists?
   end
 
 

@@ -179,6 +179,12 @@ class Work < Kithe::Work
     members
   end
 
+
+  def ordered_viewable_members_excluding_pdf_source(current_user:)
+    ordered_viewable_members(current_user: current_user).
+      where("role is null OR role != ?", PdfToPageImages::SOURCE_PDF_ROLE)
+  end
+
   # Ensures the optional sidecar OralHistoryContent is present if it wans't already
   # (saving to db if receiver is persisted), and returns it.
   #
