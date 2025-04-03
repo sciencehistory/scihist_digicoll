@@ -15,8 +15,9 @@ class WorkFileListShowComponent < ApplicationComponent
 
   attr_reader :work
 
-  def initialize(work)
+  def initialize(work, show_unpublished_if_authed: false)
     @work = work
+    @show_unpublished_if_authed = show_unpublished_if_authed
   end
 
   # Public members, ordered.
@@ -25,7 +26,9 @@ class WorkFileListShowComponent < ApplicationComponent
     @member_list_display ||= begin
       members = all_members
 
-      unless can_see_unpublished_records?
+      # Let's stop letting admins see all in this screen, go to admin screen for that
+      # it's confusing
+      unless (@show_unpublished_if_authed && can_see_unpublished_records?)
         members = members.find_all(&:published?)
       end
 
