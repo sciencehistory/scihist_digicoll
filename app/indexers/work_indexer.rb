@@ -147,14 +147,17 @@ class WorkIndexer < Kithe::Indexer
 
     to_field "oh_availability_facet" do |rec, acc|
       if rec.is_oral_history? && rec.oral_history_content
-        acc << case rec.oral_history_content.available_by_request_mode
-        when "automatic"
+        request_mode = rec.oral_history_content.available_by_request_mode
+
+        value = if request_mode == "automatic"
           "Upon request"
-        when "manual_review"
+        elsif request_mode == "manual_review"
           "Permission required"
-        when "off"
+        elsif request_mode == "off" && rec.members.any? { |m| m.published? && !m.role_portrait? }
           "Immediate"
         end
+
+        acc << value if value
       end
     end
 
@@ -217,7 +220,7 @@ class WorkIndexer < Kithe::Indexer
     to_field "searchable_fulltext_de" do |rec, acc|
       if rec.language == ['German']
         # Index the transcription and OCR here if the work is entirely in German.
-        acc.concat get_string_from_each_published_member(rec, :transcription) 
+        acc.concat get_string_from_each_published_member(rec, :transcription)
         acc.concat get_string_from_each_published_member(rec, :hocr).map { |hocr| ocr_text(hocr) }
       end
     end
@@ -227,7 +230,7 @@ class WorkIndexer < Kithe::Indexer
       entirely_in_english = (rec.language == ['English'])
       entirely_in_german  = (rec.language == ['German'])
       unless entirely_in_english || entirely_in_german
-        acc.concat get_string_from_each_published_member(rec, :transcription) 
+        acc.concat get_string_from_each_published_member(rec, :transcription)
         acc.concat get_string_from_each_published_member(rec, :hocr).map { |hocr| ocr_text(hocr) }
       end
     end

@@ -68,7 +68,7 @@ describe WorkIndexer do
   end
 
   describe "oral history" do
-    let(:work) { create(:oral_history_work, format: ['text']) }
+    let(:work) { create(:oral_history_work, :published, format: ['text']) }
 
     it "indexes interviewer_facet" do
       output_hash = WorkIndexer.new.map_record(work)
@@ -98,6 +98,29 @@ describe WorkIndexer do
       expect(output_hash["oh_institution_facet"]).to match_array(institutions)
 
       expect(output_hash["oh_birth_country_facet"]).to eq(work.oral_history_content.interviewee_biographies.collect(&:birth).flatten.collect(&:country_name))
+    end
+
+    it "indexes availability" do
+      output_hash = WorkIndexer.new.map_record(work)
+
+      expect(output_hash["oh_availability_facet"]).to eq ["Immediate"]
+    end
+
+    describe "with no published or requestable files" do
+      let(:work) do
+        work = build(:oral_history_work, :published, format: ['text'])
+        work.members.each { |m| m.published = false }
+        work.members.concat build(:asset_with_faked_file, published: true, role: "portrait")
+        work.oral_history_content!.available_by_request_mode = "off"
+
+        work
+      end
+
+      it "does not have an availability value at all" do
+        output_hash = WorkIndexer.new.map_record(work)
+
+        expect(output_hash["oh_availability_facet"]).to be_blank
+      end
     end
 
     describe 'dates' do
