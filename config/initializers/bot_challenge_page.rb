@@ -4,7 +4,7 @@ config = BotChallengePage::BotChallengePageController.bot_challenge_config
 
   # allow rate_limit_count requests in rate_limit_period, before issuing challenge
   config.rate_limit_period = 12.hour
-  config.rate_limit_count = 2 # seriously reduced to see if that helps
+  config.rate_limit_count = 1 # one un-gated before we challenge. these bots are intensely distributed.
 
   # How long a challenge pass is good for
   config.session_passed_good_for = 24.hours
