@@ -147,7 +147,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
     it "shows no files and shows message" do
       visit work_path(work.friendlier_id)
 
-      expect(page).to have_text("This oral history is currently sealed and can not be accessed.")
+      expect(page).to have_text("This oral history is currently unavailable. Please see the description of this interview to learn more about its future availability")
       expect(page).to have_text("If you have any questions about transcripts, recordings, or usage permissions, contact the Center for Oral History at oralhistory@sciencehistory.org")
 
       expect(page).not_to have_selector(".show-member-file-list-item")
