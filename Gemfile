@@ -192,6 +192,8 @@ gem "rack-attack", "~> 6.6" # throttling excessive requests
 
 gem "webvtt", "< 2" # https://github.com/jronallo/webvtt
 
+gem "docx" # MS Word .docx for some OH transcript handling
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]

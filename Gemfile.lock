@@ -237,6 +237,9 @@ GEM
       responders
       warden (~> 1.2.3)
     diff-lcs (1.5.1)
+    docx (0.8.0)
+      nokogiri (~> 1.13, >= 1.13.0)
+      rubyzip (~> 2.0)
     domain_name (0.6.20240107)
     dot-properties (0.1.4)
       bundler (>= 2.2.33)
@@ -820,6 +823,7 @@ DEPENDENCIES
   db-query-matchers (< 2.0)
   device_detector (~> 1.0)
   devise (~> 4.5)
+  docx
   equivalent-xml
   factory_bot_rails
   faraday (~> 2.0)
