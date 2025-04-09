@@ -12,4 +12,5 @@ module OhmsHelper
 
     "#{'%02d' % hours}:#{'%02d' % minutes}:#{'%02d' % seconds}"
   end
+  module_function :format_ohms_timestamp
 end
