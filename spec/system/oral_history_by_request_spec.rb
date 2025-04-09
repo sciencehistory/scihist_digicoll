@@ -137,6 +137,24 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
     end
   end
 
+  describe "when you visit an OH with nothing available at all period", js: false do
+    let!(:work) do
+      build(:oral_history_work, :published, members: [build(:asset_with_faked_file, :pdf, role: :transcript, published: false)]).tap do |work|
+        work.oral_history_content!.update(available_by_request_mode: :off)
+      end
+    end
+
+    it "shows no files and shows message" do
+      visit work_path(work.friendlier_id)
+
+      expect(page).to have_text("This oral history is currently unavailable. Please see the description of this interview to learn more about its future availability")
+      expect(page).to have_text("If you have any questions about transcripts, recordings, or usage permissions, contact the Center for Oral History at oralhistory@sciencehistory.org")
+
+      expect(page).not_to have_selector(".show-member-file-list-item")
+      expect(page).not_to have_text(work.members.first.title)
+    end
+  end
+
   describe "for multiple requests", js: false do
     let(:work1) { create(:oral_history_work, :available_by_request, published: true) }
     let(:work2) { create(:oral_history_work, :available_by_request, published: true) }

@@ -63,8 +63,18 @@
       </div>
     <% end %>
 
+
     <div class="mb-4 pe-3">
-      <%= render "rights_and_social", work: @work %>
+      <% if available_by_request_assets.present? || member_list_for_display.present? %>
+        <%= render "rights_and_social", work: @work %>
+      <% else %>
+        <div class="alert alert-info" role="alert">
+          <i class="fa fa-info-circle" aria-hidden="true"></i>
+          This oral history is currently unavailable. Please see the description of this interview to learn more about its future availability.
+        </div>
+          If you have any questions about transcripts, recordings, or usage permissions, contact the Center for Oral History at
+              <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}", class: "alert-link" %>.
+      <% end %>
     </div>
 
     <% member_list_for_display.each_with_index do |member, index| %>
