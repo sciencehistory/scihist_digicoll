@@ -64,4 +64,34 @@ describe SequenceOhTimestamps do
       )
     end
   end
+
+  describe "with more start_times transript markers" do
+    let(:start_times) {
+      { 1 => 0, 2 => 60*60*2, 3=>7927, 4=> 10000 }
+    }
+
+    it "raises" do
+      expect {
+        out_file = service.process
+      }.to raise_error(ArgumentError) do |error|
+        expect(error.message).to match /3 markers in transcript/
+        expect(error.message).to match /4 values in file_start_times/
+      end
+    end
+  end
+
+  describe "with fewer start_times transript markers" do
+    let(:start_times) {
+      { 1 => 0, 2 => 60*60*2 }
+    }
+
+    it "raises" do
+      expect {
+        out_file = service.process
+      }.to raise_error(ArgumentError) do |error|
+        expect(error.message).to match /3 markers in transcript/
+        expect(error.message).to match /2 values in file_start_times/
+      end
+    end
+  end
 end

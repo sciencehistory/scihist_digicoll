@@ -24,6 +24,10 @@ SanePatch.patch('docx', '0.8.0') do
 end
 
 # arithematically alter timestamps in multi-part joined Oral History transcripts to be in proper sequence
+#
+# Transcript is a MS Word .docx file that has timestamps in it of the form `[hhh:mm:ss]`, and tape split
+# markers in it that *are in paragraphs of their own* and look like `[END OF AUDIO, FILE ...]`
+#
 class SequenceOhTimestamps
   attr_reader :transcript_docx, :file_start_times
 
@@ -70,7 +74,7 @@ class SequenceOhTimestamps
 
           # assume the hash is ordered, so we take the ith key, and find the start time for it
           # to add on
-          timecode_seconds += file_start_times[ file_start_times.keys[file_index] ]
+          timecode_seconds += file_start_times[ file_start_times.keys[file_index] ] if file_start_times[ file_start_times.keys[file_index] ]
 
           "[#{OhmsHelper.format_ohms_timestamp(timecode_seconds)}]"
         end
@@ -78,8 +82,7 @@ class SequenceOhTimestamps
     end
 
     if file_index != file_start_times.count
-      byebug
-      raise "Uh oh mismatch"
+      raise ArgumentError.new("file_start_times arg do not match END OF AUDIO markers in transcript. #{file_index} markers in transcript, but #{file_start_times.count} values in file_start_times arg #{file_start_times.inspect}")
     end
 
     tmpfile = Tempfile.new([self.class.name, ".docx"])
