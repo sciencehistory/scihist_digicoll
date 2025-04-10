@@ -1,0 +1,34 @@
+<div class="card bg-light mb-3">
+  <h2 class="card-header h3">Fix Timestamps from Separate Recordings for Combined Sequence</h2>
+  <div class="card-body">
+    <p class="small">A tool to take oral history transcripts in a <code>.docx</code> file; which have timestamps that begin again at 0 at every internal end of recording; and re-sequence them into a continuous combined sequence going throughout the file. The result can be imported into OHMS Studio.</p>
+
+    <p class="small">The original transcript needs to:
+      <ul>
+        <li class="small">have timecodes in it of the form <code>[(h)hh:mm:ss(.ddd)]</code></li>
+        <li class="small">contain recording split markers of the form <code>[END OF AUDIO, FILE ...]</code> <strong>which are in their own separate paragraphs</strong>.</li>
+        <li class="small">have the count of <code>[END OF AUDIO, FILE ...]</code> markers in file match the same count of audio files attached to this work.</li>
+      </ul>
+    </p>
+
+    <hr>
+
+    <h3>Original Docx Transcript </h3>
+    <% if @work.oral_history_content&.input_docx_transcript&.present? %>
+       <p class="text-success fw-bold">ATTACHED</p>
+    <% end %>
+
+    <%= form_with(url: store_input_docx_transcript_admin_work_path(@work), local: true, multipart: true, method: :put) do %>
+      <%= file_field_tag 'docx', accept: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", disabled: cannot?(:update, @work) %>
+      <%= submit_tag (@work.oral_history_content&.input_docx_transcript&.present? ? "Replace" : "Upload"),
+            class: "btn btn-primary", disabled: cannot?(:update, @work) %>
+    <% end %>
+
+    <% if @work.oral_history_content&.input_docx_transcript&.present? %>
+      <hr>
+      <h3>Generated Sequence-fixed Transcript .docx</h3>
+      <%= link_to "Download", get_output_sequenced_docx_transcript_admin_work_path(@work), class: "btn btn-primary" %>
+    <% end %>
+
+  </div>
+</div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_03_25_175532) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_09_195338) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -227,6 +227,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_25_175532) do
     t.enum "available_by_request_mode", default: "off", null: false, enum_type: "available_by_request_mode_type"
     t.jsonb "json_attributes", default: {}
     t.jsonb "combined_audio_m4a_data"
+    t.jsonb "input_docx_transcript_data"
+    t.jsonb "output_sequenced_docx_transcript_data"
     t.index ["work_id"], name: "index_oral_history_content_on_work_id", unique: true
   end
 
