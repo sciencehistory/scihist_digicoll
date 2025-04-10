@@ -73,7 +73,7 @@ describe SequenceOhTimestamps do
     it "raises" do
       expect {
         out_file = service.process
-      }.to raise_error(ArgumentError) do |error|
+      }.to raise_error(SequenceOhTimestamps::InputError) do |error|
         expect(error.message).to match /3 markers in transcript/
         expect(error.message).to match /4 values in file_start_times/
       end
@@ -88,7 +88,7 @@ describe SequenceOhTimestamps do
     it "raises" do
       expect {
         out_file = service.process
-      }.to raise_error(ArgumentError) do |error|
+      }.to raise_error(SequenceOhTimestamps::InputError) do |error|
         expect(error.message).to match /3 markers in transcript/
         expect(error.message).to match /2 values in file_start_times/
       end

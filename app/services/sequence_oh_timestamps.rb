@@ -31,6 +31,8 @@ end
 class SequenceOhTimestamps
   attr_reader :transcript_docx, :file_start_times
 
+  class InputError < StandardError
+  end
 
   # @param transcript_docx_file [String,File] path or File object pointing to a .docx transcript with timestamps
   #
@@ -82,7 +84,7 @@ class SequenceOhTimestamps
     end
 
     if file_index != file_start_times.count
-      raise ArgumentError.new("file_start_times arg do not match END OF AUDIO markers in transcript. #{file_index} markers in transcript, but #{file_start_times.count} values in file_start_times arg #{file_start_times.inspect}")
+      raise InputError.new("file_start_times arg do not match END OF AUDIO markers in transcript. #{file_index} markers in transcript, but #{file_start_times.count} values in file_start_times arg #{file_start_times.inspect}")
     end
 
     tmpfile = Tempfile.new([self.class.name, ".docx"])
