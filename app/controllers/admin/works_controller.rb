@@ -184,7 +184,8 @@ class Admin::WorksController < AdminController
   def store_input_docx_transcript
     authorize! :update, @work
 
-    # Store file to shrine in normal way.
+    # Store file to shrine in normal way. Clear out output that won't go with any new file.
+    @work.oral_history_content!.output_sequenced_docx_transcript = nil
     @work.oral_history_content!.input_docx_transcript = params[:docx]
     @work.oral_history_content.save!
 
