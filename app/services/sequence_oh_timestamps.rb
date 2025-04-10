@@ -57,6 +57,8 @@ class SequenceOhTimestamps
 
     @transcript_docx = Docx::Document.open(transcript_docx_file)
     @file_start_times = file_start_times
+  rescue Errno::ENOENT, Zip::Error, Nokogiri::SyntaxError => e
+    raise InputError.new("transcript_docx_file is bad: #{e.inspect}")
   end
 
   # @return [Tempfile] docx with timecodes adjusted

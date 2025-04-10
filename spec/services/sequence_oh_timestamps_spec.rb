@@ -94,4 +94,14 @@ describe SequenceOhTimestamps do
       end
     end
   end
+
+  describe "with bad file" do
+    let(:path) { Rails.root + "spec/test_support/images/20x20.png" }
+
+    it "raises appropriate error" do
+      expect {
+        service.process
+      }.to raise_error(SequenceOhTimestamps::InputError)
+    end
+  end
 end
