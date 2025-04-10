@@ -31,7 +31,7 @@ end
 class SequenceOhTimestamps
   attr_reader :transcript_docx, :file_start_times
 
-  class InputError < StandardError
+  class InputError < ArgumentError
   end
 
   # @param transcript_docx_file [String,File] path or File object pointing to a .docx transcript with timestamps
@@ -47,6 +47,14 @@ class SequenceOhTimestamps
   #    The key uuid is actually ignored, but the ORDER in hash matters, to represent
   #    actual order of files.
   def initialize(transcript_docx_file, file_start_times)
+    unless transcript_docx_file.present?
+      raise InputError.new("transcript_docx_file is blank")
+    end
+
+    unless file_start_times.present?
+      raise InputError.new("file_start_times is blank")
+    end
+
     @transcript_docx = Docx::Document.open(transcript_docx_file)
     @file_start_times = file_start_times
   end

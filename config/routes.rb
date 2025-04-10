@@ -292,12 +292,16 @@ Rails.application.routes.draw do
         get "download_ohms_xml"
         put "remove_ohms_xml"
         put "set_review_requested"
+
+        # oral history stuff, probably should extract to separate controller....
         put "submit_searchable_transcript_source"
         get "download_searchable_transcript_source"
         put "remove_searchable_transcript_source"
         put "create_combined_audio_derivatives"
         put "update_oh_available_by_request"
         patch "update_oral_history_content"
+        put "store_input_docx_transcript"
+        get "get_output_sequenced_docx_transcript"
       end
       collection do
         get 'batch_update', to: "works#batch_update_form"
