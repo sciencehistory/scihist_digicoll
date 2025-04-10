@@ -252,6 +252,24 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       end
     end
 
+    context "correcting timestamp sequence for multiple files" do
+      let(:work) { create(:oral_history_work) }
+      let(:docx_path) { Rails.root + "spec/test_support/oh_docx/sample-oh-timecode-need-sequencing.docx" }
+
+      it "#store_input_docx_transcript" do
+        expect(work.oral_history_content.input_docx_transcript_data).not_to be_present
+
+        put :store_input_docx_transcript, params: {
+          id: work.friendlier_id,
+          docx: Rack::Test::UploadedFile.new(docx_path)
+        }
+
+        work.reload
+        expect(work.oral_history_content.input_docx_transcript_data).to be_present
+        expect(SequenceOhTimestampsJob).to have_been_enqueued.with(work)
+      end
+    end
+
     context "Adding, updating and removing full-text searches " do
       let(:transcript_path) { Rails.root + "spec/test_support/text/0767.txt" }
       let(:pdf_path) { Rails.root + "spec/test_support/pdf/sample.pdf" }
