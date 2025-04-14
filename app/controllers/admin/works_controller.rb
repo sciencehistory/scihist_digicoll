@@ -3,6 +3,9 @@
 # Started with generated code from Rails 5.2 scaffold.
 #
 # We'll probably handle `show` in a different controller, for now no show.
+#
+# There's a lot of Oral history specific special purpose stuff in here, which should
+# prob be moved to a different controller.
 class Admin::WorksController < AdminController
   before_action :set_work,
     only: [:show, :edit, :update, :destroy, :reorder_members,
@@ -10,7 +13,7 @@ class Admin::WorksController < AdminController
            :submit_ohms_xml, :download_ohms_xml, :set_review_requested,
            :remove_ohms_xml, :submit_searchable_transcript_source, :download_searchable_transcript_source,
            :remove_searchable_transcript_source, :create_combined_audio_derivatives, :update_oh_available_by_request,
-           :update_oral_history_content]
+           :update_oral_history_content, :store_input_docx_transcript, :get_output_sequenced_docx_transcript]
 
   before_action :sort_link_maker, only: [:index]
 
@@ -50,7 +53,7 @@ class Admin::WorksController < AdminController
 
       # format is a reserved word
       # (see https://stackoverflow.com/questions/70726614/ruby-on-rails-use-format-as-a-url-get-parameter )
-      # so let's use work_format instead.      
+      # so let's use work_format instead.
       if hash[:work_format].present? && !hash[:work_format].in?(Work::ControlledLists::FORMAT)
         raise ArgumentError.new("Unrecognized format: #{hash[:work_format]}")
       end
@@ -176,6 +179,37 @@ class Admin::WorksController < AdminController
         error: "OHMS XML file was invalid and could not be accepted: #{validator.errors.join('; ')}"
       }
     end
+  end
+
+  def store_input_docx_transcript
+    authorize! :update, @work
+
+    # Store file to shrine in normal way. Clear out output that won't go with any new file.
+    @work.oral_history_content!.output_sequenced_docx_transcript = nil
+    @work.oral_history_content!.input_docx_transcript = params[:docx]
+    @work.oral_history_content.save!
+
+    SequenceOhTimestampsJob.perform_later(@work)
+
+    redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), notice: "Input .docx transcript sequencing started..."
+  end
+
+  def get_output_sequenced_docx_transcript
+    authorize! :update, @work
+
+    unless @work.oral_history_content.output_sequenced_docx_transcript.present?
+      raise ActionController::RoutingError.new('Not Found')
+    end
+
+    # one way to stream it?
+    response.headers['Content-Type'] = @work.oral_history_content.output_sequenced_docx_transcript.metadata["mime_type"]
+    response.headers['Content-Disposition'] = ContentDisposition.format(disposition: "attachment", filename: @work.oral_history_content.output_sequenced_docx_transcript.metadata["filename"])
+    stream = @work.oral_history_content.output_sequenced_docx_transcript.to_io
+    stream.each_chunk do |chunk|
+      response.stream.write chunk
+    end
+  ensure
+    stream.close if stream
   end
 
   # PATCH/PUT /admin/works/ab2323ac/remove_ohms_xml

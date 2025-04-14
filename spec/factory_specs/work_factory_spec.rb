@@ -37,6 +37,21 @@ describe "work factory" do
         expect(work.representative).to be_present
       end
     end
+
+    describe "combined_derivative" do
+      let(:work) { build(:oral_history_work, :combined_derivative)}
+
+      it "is good" do
+        combined = CombinedAudioDerivatives.new(work)
+        expect(combined.derivatives_up_to_date?).to be true
+        expect(combined.m4a_audio_download_url).to be_present
+
+        start_times = work.oral_history_content.combined_audio_component_metadata['start_times']
+        expect(start_times).to be_present
+
+        expect(start_times.count).to eq work.members.find_all {|m| m.content_type.start_with?("audio/")}.count
+      end
+    end
   end
 
   describe "video work" do

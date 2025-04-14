@@ -12,4 +12,7 @@ module OhmsHelper
 
     "#{'%02d' % hours}:#{'%02d' % minutes}:#{'%02d' % seconds}"
   end
+
+  # make methods availble as static/module methods too
+  extend self
 end

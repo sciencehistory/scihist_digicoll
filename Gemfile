@@ -192,6 +192,11 @@ gem "rack-attack", "~> 6.6" # throttling excessive requests
 
 gem "webvtt", "< 2" # https://github.com/jronallo/webvtt
 
+# MS Word .docx for some OH transcript handling
+# Appears entirely unmaintained and has some bugfixes we need in unreleased master
+# We will lock to SHA for safety.
+gem "docx", github: "ruby-docx/docx", ref: "c5bcb57"
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]

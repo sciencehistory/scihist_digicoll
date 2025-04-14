@@ -47,6 +47,10 @@ class OralHistoryContent < ApplicationRecord
 
   include CombinedAudioUploader::Attachment.new(:combined_audio_m4a, store: :combined_audio_derivatives)
 
+  # Generic attachment with with no custom uploader behavior at all
+  include GenericActiveRecordUploader::Attachment.new(:input_docx_transcript)
+  include GenericActiveRecordUploader::Attachment.new(:output_sequenced_docx_transcript)
+
   enum :combined_audio_derivatives_job_status,  {
     queued:    'queued',
     started:   'started',
