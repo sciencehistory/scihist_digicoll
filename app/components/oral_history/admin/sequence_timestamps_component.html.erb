@@ -14,12 +14,20 @@
     <hr>
 
 
-    <h3>Original Docx Transcript </h3>
+    <h3 class="h4">Original Docx Transcript </h3>
 
     <% if has_good_combined_audio? %>
       <% if @work.oral_history_content&.input_docx_transcript&.present? %>
          <p class="text-success fw-bold">ATTACHED</p>
       <% end %>
+
+      <% if @work.oral_history_content&.input_docx_transcript&.metadata&.dig(SequenceOhTimestampsJob::METADATA_ERROR_KEY).present? %>
+         <p class="alert alert-error">
+           <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+           Error in input: <code><%= @work.oral_history_content.input_docx_transcript.metadata[SequenceOhTimestampsJob::METADATA_ERROR_KEY] %></code>
+         </p>
+      <% end %>
+
 
       <%= form_with(url: store_input_docx_transcript_admin_work_path(@work), local: true, multipart: true, method: :put) do %>
         <%= file_field_tag 'docx', accept: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", disabled: cannot?(:update, @work) %>
@@ -31,9 +39,9 @@
         Combined audio derivative is missing or not up to date, can't sequence transcript!</p>
     <% end %>
 
-    <% if @work.oral_history_content&.input_docx_transcript&.present? %>
+    <% if @work.oral_history_content&.output_sequenced_docx_transcript&.present? %>
       <hr>
-      <h3>Generated Sequence-fixed Transcript .docx</h3>
+      <h3 class="h4">Generated Sequence-fixed Transcript .docx</h3>
       <%= link_to "Download", get_output_sequenced_docx_transcript_admin_work_path(@work), class: "btn btn-primary" %>
     <% end %>
 

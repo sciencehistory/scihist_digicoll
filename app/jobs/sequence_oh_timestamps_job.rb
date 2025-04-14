@@ -1,4 +1,6 @@
 class SequenceOhTimestampsJob < ApplicationJob
+  METADATA_ERROR_KEY = "SequenceOhTimestamps_InputError"
+
   def perform(work)
     # looks like Shrine IO is not IO-like-enough for Docx gem, we have to
     # download
@@ -18,8 +20,8 @@ class SequenceOhTimestampsJob < ApplicationJob
 
       output.unlink
     rescue SequenceOhTimestamps::InputError => e
-      work.oral_history_content.input_docx_transcript.metadata["SequenceOhTimestamps_InputError"] = e.message
-      work.save!
+      work.oral_history_content.input_docx_transcript.metadata[METADATA_ERROR_KEY] = e.message
+      work.oral_history_content.save!
     end
   end
 
