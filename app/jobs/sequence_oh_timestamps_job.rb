@@ -17,6 +17,9 @@ class SequenceOhTimestampsJob < ApplicationJob
       work.oral_history_content.save!
 
       output.unlink
+    rescue SequenceOhTimestamps::InputError => e
+      work.oral_history_content.input_docx_transcript.metadata["SequenceOhTimestamps_InputError"] = e.message
+      work.save!
     end
   end
 
