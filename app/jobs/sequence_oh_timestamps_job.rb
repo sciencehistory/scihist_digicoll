@@ -13,8 +13,7 @@ class SequenceOhTimestampsJob < ApplicationJob
 
       # shrine  way to assign explicit mime-type and file-name, why not
       work.oral_history_content.output_sequenced_docx_transcript_attacher.
-        model_assign(output, metadata: { mime_type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", filename: filename })
-
+        model_assign(output, metadata: { "mime_type" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "filename" => filename })
       work.oral_history_content.save!
 
       output.unlink
