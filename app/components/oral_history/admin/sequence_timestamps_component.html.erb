@@ -13,15 +13,22 @@
 
     <hr>
 
-    <h3>Original Docx Transcript </h3>
-    <% if @work.oral_history_content&.input_docx_transcript&.present? %>
-       <p class="text-success fw-bold">ATTACHED</p>
-    <% end %>
 
-    <%= form_with(url: store_input_docx_transcript_admin_work_path(@work), local: true, multipart: true, method: :put) do %>
-      <%= file_field_tag 'docx', accept: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", disabled: cannot?(:update, @work) %>
-      <%= submit_tag (@work.oral_history_content&.input_docx_transcript&.present? ? "Replace" : "Upload"),
-            class: "btn btn-primary", disabled: cannot?(:update, @work) %>
+    <h3>Original Docx Transcript </h3>
+
+    <% if has_good_combined_audio? %>
+      <% if @work.oral_history_content&.input_docx_transcript&.present? %>
+         <p class="text-success fw-bold">ATTACHED</p>
+      <% end %>
+
+      <%= form_with(url: store_input_docx_transcript_admin_work_path(@work), local: true, multipart: true, method: :put) do %>
+        <%= file_field_tag 'docx', accept: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", disabled: cannot?(:update, @work) %>
+        <%= submit_tag (@work.oral_history_content&.input_docx_transcript&.present? ? "Replace" : "Upload"),
+              class: "btn btn-primary", disabled: cannot?(:update, @work) %>
+      <% end %>
+    <% else %>
+      <p><i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        Combined audio derivative is missing or not up to date, can't sequence transcript!</p>
     <% end %>
 
     <% if @work.oral_history_content&.input_docx_transcript&.present? %>
