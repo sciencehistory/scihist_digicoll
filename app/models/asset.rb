@@ -436,7 +436,6 @@ class Asset < Kithe::Asset
   # See https://github.com/sciencehistory/scihist_digicoll/issues/2939
   def more_than_one_layer_or_page?
     layer_or_page_keys = [
-      'Photoshop:PhotoshopThumbnail',
       'Photoshop:LayerCount',
       'EXIF:PageNumber'
     ]
