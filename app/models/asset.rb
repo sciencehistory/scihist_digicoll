@@ -429,6 +429,19 @@ class Asset < Kithe::Asset
     end
   end
 
+
+  # returns true for TIFFs that have more than one layer or page.
+  # returns false for all other TIFFs, including ones with a thumbnail.
+  # See https://sciencehistory.atlassian.net/wiki/spaces/HDC/pages/2775351299/TIFF+files+in+the+digital+collections
+  # See https://github.com/sciencehistory/scihist_digicoll/issues/2939
+  def more_than_one_layer_or_page?
+    layer_or_page_keys = [
+      'Photoshop:LayerCount',
+      'EXIF:PageNumber'
+    ]
+    (self.exiftool_result.keys & layer_or_page_keys).any?
+  end
+
   def invalidate_corrupt_tiff
     exif = Kithe::ExiftoolCharacterization.presenter_for(self.exiftool_result)
 
@@ -447,6 +460,11 @@ class Asset < Kithe::Asset
       /IFD0:StripByteCounts is zero/,
       /Undersized IFD0 StripByteCounts/
     ].map { |error_regexp| exif.exiftool_validation_warnings.grep(error_regexp) }.flatten.uniq
+
+    # also reject multipage or multilayer tiffs.
+    if more_than_one_layer_or_page?
+      fatal_errors << 'More than one layer or page detected.'
+    end
 
     if fatal_errors.present?
       # We need to disable promotion, so that we can save our errors despite
