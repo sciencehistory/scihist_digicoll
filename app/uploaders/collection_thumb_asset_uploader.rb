@@ -11,20 +11,19 @@ class CollectionThumbAssetUploader < AssetUploader
   Attacher.remove_derivative_definition!(*Attacher.defined_derivative_keys.find_all { |key| key.start_with?("download_")})
   Attacher.remove_derivative_definition!(:thumb_large, :thumb_large_2X, :graphiconly_pdf)
 
-  Attacher.define_derivative("thumb_collection_page", content_type: "image") do |original_file|
-    Kithe::VipsCliImageToJpeg.new(max_width: COLLECTION_LIST_PAGE_THUMB_SIZE, thumbnail_mode: true).call(original_file)
+  Attacher.define_derivative("thumb_collection_page", content_type: "image") do |original_file, add_metadata:|
+    Kithe::VipsCliImageToJpeg.new(max_width: COLLECTION_LIST_PAGE_THUMB_SIZE, thumbnail_mode: true).call(original_file, add_metadata: add_metadata)
   end
 
-  Attacher.define_derivative("thumb_collection_page_2X", content_type: "image") do |original_file|
-    Kithe::VipsCliImageToJpeg.new(max_width: COLLECTION_LIST_PAGE_THUMB_SIZE * 2, thumbnail_mode: true).call(original_file)
+  Attacher.define_derivative("thumb_collection_page_2X", content_type: "image") do |original_file, add_metadata:|
+    Kithe::VipsCliImageToJpeg.new(max_width: COLLECTION_LIST_PAGE_THUMB_SIZE * 2, thumbnail_mode: true).call(original_file, add_metadata: add_metadata)
   end
 
-  Attacher.define_derivative("thumb_collection_show_page", content_type: "image") do |original_file|
-    Kithe::VipsCliImageToJpeg.new(max_width: COLLECTION_SHOW_PAGE_THUMB_SIZE, thumbnail_mode: true).call(original_file)
+  Attacher.define_derivative("thumb_collection_show_page", content_type: "image") do |original_file, add_metadata:|
+    Kithe::VipsCliImageToJpeg.new(max_width: COLLECTION_SHOW_PAGE_THUMB_SIZE, thumbnail_mode: true).call(original_file, add_metadata: add_metadata)
   end
 
-  Attacher.define_derivative("thumb_collection_show_page_2X", content_type: "image") do |original_file|
-    Kithe::VipsCliImageToJpeg.new(max_width: COLLECTION_SHOW_PAGE_THUMB_SIZE * 2, thumbnail_mode: true).call(original_file)
+  Attacher.define_derivative("thumb_collection_show_page_2X", content_type: "image") do |original_file, add_metadata:|
+    Kithe::VipsCliImageToJpeg.new(max_width: COLLECTION_SHOW_PAGE_THUMB_SIZE * 2, thumbnail_mode: true).call(original_file, add_metadata: add_metadata)
   end
-
 end

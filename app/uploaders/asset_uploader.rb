@@ -64,8 +64,8 @@ class AssetUploader < Kithe::AssetUploader
  # define thumb derivatives for TIFF, PDF, and other image input: :thumb_mini, :thumb_mini_2X, etc.
   THUMB_WIDTHS.each_pair do |key, width|
     # Single-width thumbnails
-    Attacher.define_derivative("thumb_#{key}", content_type: "image") do |original_file|
-      Kithe::VipsCliImageToJpeg.new(max_width: width, thumbnail_mode: true).call(original_file)
+    Attacher.define_derivative("thumb_#{key}", content_type: "image") do |original_file, add_metadata:|
+      Kithe::VipsCliImageToJpeg.new(max_width: width, thumbnail_mode: true).call(original_file, add_metadata: add_metadata)
     end
 
     Attacher.define_derivative("thumb_#{key}", content_type: "application/pdf") do |original_file|
@@ -73,8 +73,8 @@ class AssetUploader < Kithe::AssetUploader
     end
 
     # Double-width thumbnails
-    Attacher.define_derivative("thumb_#{key}_2X", content_type: "image") do |original_file|
-      Kithe::VipsCliImageToJpeg.new(max_width: width * 2, thumbnail_mode: true).call(original_file)
+    Attacher.define_derivative("thumb_#{key}_2X", content_type: "image") do |original_file, add_metadata:|
+      Kithe::VipsCliImageToJpeg.new(max_width: width * 2, thumbnail_mode: true).call(original_file, add_metadata: add_metadata)
     end
 
     Attacher.define_derivative("thumb_#{key}_2X", content_type: "application/pdf") do |original_file|
@@ -84,33 +84,33 @@ class AssetUploader < Kithe::AssetUploader
 
   # Define download derivatives for TIFF and other image input.
   IMAGE_DOWNLOAD_WIDTHS.each_pair do |key, derivative_width|
-    Attacher.define_derivative("download_#{key}", content_type: "image") do |original_file, attacher:|
+    Attacher.define_derivative("download_#{key}", content_type: "image") do |original_file, attacher:, add_metadata:|
       # only create download if it would be SMALLER than original, we don't want to lossily upscale!
       if attacher.file.width > derivative_width
-        Kithe::VipsCliImageToJpeg.new(max_width: derivative_width).call(original_file)
+        Kithe::VipsCliImageToJpeg.new(max_width: derivative_width).call(original_file, add_metadata: add_metadata)
       end
     end
   end
 
   # and a full size jpg
-  Attacher.define_derivative("download_full", content_type: "image") do |original_file, attacher:|
+  Attacher.define_derivative("download_full", content_type: "image") do |original_file, attacher:, add_metadata:|
     # No need to do this if our original is a JPG
     unless attacher.file.content_type == "image/jpeg"
-      Kithe::VipsCliImageToJpeg.new.call(original_file)
+      Kithe::VipsCliImageToJpeg.new.call(original_file, add_metadata: add_metadata)
     end
   end
 
   # a one-page graphic-only PDF, containing a carefully sized image,
   # that we use to assemble multi-page work PDFs, combined with ocr
   # text from `textonly_pdf` derivative that is created non-automatically
-  Attacher.define_derivative("graphiconly_pdf", content_type: "image/tiff") do |original_file, attacher:|
+  Attacher.define_derivative("graphiconly_pdf", content_type: "image/tiff") do |original_file, attacher:, add_metadata:|
     AssetGraphicOnlyPdfCreator.new(attacher.record, original_file: original_file).create
   end
 
   # only for work_source_pdf PDFs, we create a lower resolution "optimized for screen" PDF.
   # not automatically created by default, we call it was part of our `setup_work_from_pdf_source`
   # routine in CreatePdfPageImageAssetJob
-  Attacher.define_derivative(SCALED_PDF_DERIV_KEY, content_type: "application/pdf", default_create: false) do |original_file, attacher:|
+  Attacher.define_derivative(SCALED_PDF_DERIV_KEY, content_type: "application/pdf", default_create: false) do |original_file, attacher:, add_metadata:|
     if attacher.record.role == PdfToPageImages::SOURCE_PDF_ROLE
       # linearizing increases file size a bit for faster display on download. Do it only for
       # more than 3 pages and more than 2MB.
@@ -126,12 +126,12 @@ class AssetUploader < Kithe::AssetUploader
   #
   # See also the settings at app/services/combined_audio_derivative_creator.rb
   # which are identical (similar use case).
-  Attacher.define_derivative('m4a', content_type: "audio") do |original_file, attacher:|
+  Attacher.define_derivative('m4a', content_type: "audio") do |original_file, attacher:, add_metadata:|
     # Both audio/flac or audio/x-flac seem to be valid, so let's check for either.
     if attacher.file&.content_type.in?(["audio/flac", "audio/x-flac"])
       Kithe::FfmpegTransformer.new(
         bitrate: '64k', force_mono: true, audio_codec: 'aac', output_suffix: 'm4a',
-      ).call(original_file)
+      ).call(original_file, add_metadata: add_metadata)
     end
   end
 
@@ -164,7 +164,7 @@ class AssetUploader < Kithe::AssetUploader
     # https://github.com/sciencehistory/scihist_digicoll/issues/1697#issuecomment-1128072969
     base_image_file = Kithe::FfmpegExtractJpg.
       new(start_seconds: start_seconds, frame_sample_size: 30).
-      call(original)
+      call(original, add_metadata: options[:add_metadata])
 
     derivatives_created = {}
 
@@ -176,12 +176,12 @@ class AssetUploader < Kithe::AssetUploader
     AssetUploader::THUMB_WIDTHS.each_pair do |thumb_key, width|
       if process_kithe_derivative?("thumb_#{thumb_key}", **options)
         derivatives_created["thumb_#{thumb_key}"] =
-          Kithe::VipsCliImageToJpeg.new(max_width: width, thumbnail_mode: true).call(base_image_file)
+          Kithe::VipsCliImageToJpeg.new(max_width: width, thumbnail_mode: true).call(base_image_file, add_metadata: options[:add_metadata])
       end
 
       if process_kithe_derivative?("thumb_#{thumb_key}_2X", **options)
         derivatives_created["thumb_#{thumb_key}_2X"] =
-          Kithe::VipsCliImageToJpeg.new(max_width: width * 2, thumbnail_mode: true).call(base_image_file)
+          Kithe::VipsCliImageToJpeg.new(max_width: width * 2, thumbnail_mode: true).call(base_image_file, add_metadata: options[:add_metadata])
       end
     end
 
