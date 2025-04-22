@@ -91,16 +91,31 @@ class DziFiles
   def create_and_yield
     raise ArgumentError.new("Can only create DZI from assets of type 'image/'") unless asset.content_type&.start_with?("image/")
 
+    color_corrected_path = nil
+
     asset.file.download do |original_file|
       Dir.mktmpdir("dzi_#{asset.friendlier_id}_") do |tmp_output_dir|
         vips_output_pathname = Pathname.new(tmp_output_dir).join(base_file_path)
         FileUtils.mkdir_p(vips_output_pathname.dirname)
 
-        TTY::Command.new(printer: :null).run(vips_command, "dzsave", original_file.path, vips_output_pathname.to_s, "--suffix", ".jpg[Q=#{jpeg_quality}]")
+        # Vips dzsave will corrupt colors unless original TIFF is in srgb. Because it removes color
+        # profile info, but does not do color transformation.
+        #
+        # https://github.com/libvips/libvips/discussions/4470
+        #
+        # So we need to first convert tiff to srgb, then run dzsave. Found no way to do this
+        # in one command line, although there may be!
+        tty = TTY::Command.new(printer: :null)
+        color_corrected_path = original_file.path.gsub(/\.[^\.]*$/, "-srgb\\0")
+
+        tty.run(vips_command, "icc_transform", original_file.path, color_corrected_path, "srgb")
+        tty.run(vips_command, "dzsave", color_corrected_path, vips_output_pathname.to_s, "--suffix", ".jpg[Q=#{jpeg_quality}]")
 
         yield tmp_output_dir
       end
     end
+  ensure
+    File.unlink(color_corrected_path) if color_corrected_path && File.exist?(color_corrected_path)
   end
 
 
