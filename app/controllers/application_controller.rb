@@ -5,6 +5,13 @@ class ApplicationController < ActionController::Base
     BotChallengePage::BotChallengePageController.bot_challenge_enforce_filter(controller)
   end
 
+  # Store bot challenged requests to database, because we won't be logging them
+  after_action do |controller|
+    if controller.request.env["bot_detect.blocked_for_challenge"]
+      BotChallengedRequest.save_from_request(controller.request)
+    end
+  end
+
   # Blacklight tried to add some things to ApplicationController, but
   # we pretty much only want to use CatalogController from Blacklight, so
   # are trying just doing these things there instead

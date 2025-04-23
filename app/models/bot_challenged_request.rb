@@ -2,7 +2,7 @@ class BotChallengedRequest < ApplicationRecord
   def self.save_from_request!(request)
     self.create!(
       path: request.filtered_path,
-      request_id: request.id,
+      request_id: request.request_id,
       client_ip: request.ip,
       user_agent: request.user_agent,
       normalized_user_agent: CompactUserAgent.new(request.user_agent).compact,
