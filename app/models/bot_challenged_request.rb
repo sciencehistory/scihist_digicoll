@@ -1,4 +1,11 @@
 class BotChallengedRequest < ApplicationRecord
+
+  #  bin/rails runner 'BotChallengedRequest.trim_old'
+  def self.trim_old(since: 2.weeks.ago)
+    self.where("created_at <= ?", since).delete_all
+  end
+
+
   def self.save_from_request!(request)
     self.create!(
       path: request.filtered_path,
