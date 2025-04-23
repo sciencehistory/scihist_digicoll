@@ -200,26 +200,9 @@ Rails.application.configure do
 
 
   # Actually use lograge instead https://github.com/roidrage/lograge
-
+  # lograge config in config/application.rb
   config.lograge.enabled = true
-  #
-  # custom_payload is merged into log data automatically
-  config.lograge.custom_payload do |controller|
-    # default lograge in `path` would put just eg `/catalog`, we want the whole
-    # URL in there eg `/catalog?q=foo`, so we override. Alternately, you could
-    # of course add this as `fullpath` to have both.
-    # https://bibwild.wordpress.com/2021/08/04/logging-uri-query-params-with-lograge/
-    #
-    # Also we include some user-agent info, but compressed with device_detector gem
-    {
-      path: controller.request.filtered_path,
-      ua: CompactUserAgent.new(controller.request.user_agent).compact,
-      # wasn't sure if we should use request.remote_ip or request.ip, the
-      # difference is not clear, or what it seems, in docs or online info
-      ip: controller.request.ip,
-      bot_chlng: controller.request.env["bot_detect.blocked_for_challenge"]
-    }.compact
-  end
+
 
   # This default Rails log config probably doesn't do anything if we're using
   # lograge anyway, but we leave it here in case we turn lograge off again,
