@@ -1,3 +1,12 @@
+GIT
+  remote: https://github.com/ruby-docx/docx.git
+  revision: c5bcb57b3d21fead105f1c7af8d3881dd31674cc
+  ref: c5bcb57
+  specs:
+    docx (0.8.0)
+      nokogiri (~> 1.13, >= 1.13.0)
+      rubyzip (~> 2.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -158,7 +167,7 @@ GEM
     bootstrap4-kaminari-views (1.0.1)
       kaminari (>= 0.13)
       rails (>= 3.1)
-    bot_challenge_page (0.3.1)
+    bot_challenge_page (0.4.0)
       http (~> 5.2)
       rack-attack (~> 6.7)
       rails (>= 7.1, < 8.1)
@@ -433,12 +442,12 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     nio4r (2.7.4)
-    nokogiri (1.18.4)
+    nokogiri (1.18.8)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
-    nokogiri (1.18.4-arm64-darwin)
+    nokogiri (1.18.8-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.18.4-x86_64-linux-gnu)
+    nokogiri (1.18.8-x86_64-linux-gnu)
       racc (~> 1.4)
     oai (1.3.0)
       builder (>= 3.1.0)
@@ -820,6 +829,7 @@ DEPENDENCIES
   db-query-matchers (< 2.0)
   device_detector (~> 1.0)
   devise (~> 4.5)
+  docx!
   equivalent-xml
   factory_bot_rails
   faraday (~> 2.0)
