@@ -67,6 +67,12 @@ module ScihistDigicoll
       }.compact
     end
 
+    config.lograge.ignore_custom = lambda do |event|
+      # omit logging of bot-challenged requests, there are too many, filling up
+      # our papertrail account. We still store them in db BotChallengedRequest
+      event.payload[:request].env["bot_detect.should_challenge"]
+    end
+
     # Initialize configuration defaults for originally generated Rails version,
     # or Rails version we have upgraded to and verified for new defaults.
     config.load_defaults 8.0
