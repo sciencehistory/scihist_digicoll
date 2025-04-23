@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_09_195338) do
+ActiveRecord::Schema[8.0].define(version: 2025_04_23_154128) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -79,6 +79,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_09_195338) do
     t.jsonb "data_for_report", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "bot_challenged_requests", force: :cascade do |t|
+    t.string "path"
+    t.string "request_id"
+    t.string "client_ip"
+    t.string "user_agent"
+    t.string "normalized_user_agent"
+    t.jsonb "headers"
+    t.datetime "created_at", null: false
+    t.index ["client_ip"], name: "index_bot_challenged_requests_on_client_ip"
+    t.index ["request_id"], name: "index_bot_challenged_requests_on_request_id"
   end
 
   create_table "cart_items", force: :cascade do |t|

@@ -56,8 +56,10 @@ config = BotChallengePage::BotChallengePageController.bot_challenge_config
   }
 
   config.after_blocked = ->(bot_detect_class) {
-    logger.info "challenge blocked"
     request.env["bot_detect.blocked_for_challenge"] = true
+
+    # Log it in our local DB
+    BotChallengedRequest.save_from_request!(request)
   }
 
   BotChallengePage::BotChallengePageController.rack_attack_init
