@@ -81,6 +81,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_09_195338) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "bot_challenged_requests", force: :cascade do |t|
+    t.string "path"
+    t.string "request_id"
+    t.string "client_ip"
+    t.string "user_agent"
+    t.string "normalized_user_agent"
+    t.jsonb "headers"
+    t.datetime "created_at", null: false
+    t.index ["client_ip"], name: "index_bot_challenged_requests_on_client_ip"
+    t.index ["request_id"], name: "index_bot_challenged_requests_on_request_id"
+  end
+
   create_table "cart_items", force: :cascade do |t|
     t.bigint "user_id"
     t.uuid "work_id"
