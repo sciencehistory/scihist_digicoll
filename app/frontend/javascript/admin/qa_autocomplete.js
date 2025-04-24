@@ -83,10 +83,6 @@ function addAutocomplete(element) {
       showNoSuggestionNotice: true,
       serviceUrl: qa_search_url,
 
-      // see https://github.com/devbridge/jQuery-Autocomplete
-      // see https://api.jquery.com/jquery.ajax/#jQuery-ajax-settings
-      ajaxSettings: { timeout: 5000 },
-
       onSearchError: function (query, jqXHR, textStatus, errorThrown) {
         console.log("autocomplete error fetching results: " + textStatus + ": " + errorThrown);
 
