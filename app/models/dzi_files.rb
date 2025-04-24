@@ -98,24 +98,27 @@ class DziFiles
         vips_output_pathname = Pathname.new(tmp_output_dir).join(base_file_path)
         FileUtils.mkdir_p(vips_output_pathname.dirname)
 
-        # Vips dzsave will corrupt colors unless original TIFF is in srgb. Because it removes color
+        # `vips` dzsave will corrupt colors unless original TIFF is in srgb. Because it removes color
         # profile info, but does not do color transformation.
+        #
+        # So we use this more complex invocation that should properly convert to sRGB too.
         #
         # https://github.com/libvips/libvips/discussions/4470
         #
-        # So we need to first convert tiff to srgb, then run dzsave. Found no way to do this
-        # in one command line, although there may be!
-        tty = TTY::Command.new(printer: :null)
-        color_corrected_path = original_file.path.gsub(/\.[^\.]*$/, "-srgb\\0")
+        TTY::Command.new(printer: :null).run(
+          vips_command,
+          "icc_transform",
+          "--embedded", # important to say use embedded color profile as source!
+          original_file.path,
+          "#{vips_output_pathname}.dz[container=fs,suffix=.jpg[Q=#{jpeg_quality}]]", "srgb"
+        )
 
-        tty.run(vips_command, "icc_transform", original_file.path, color_corrected_path, "srgb")
-        tty.run(vips_command, "dzsave", color_corrected_path, vips_output_pathname.to_s, "--suffix", ".jpg[Q=#{jpeg_quality}]")
+        # Due to bug in some versions of vips, may leave an empty .dz file, remove it
+        FileUtils.rm("#{vips_output_pathname}.dz", force: true)
 
         yield tmp_output_dir
       end
     end
-  ensure
-    File.unlink(color_corrected_path) if color_corrected_path && File.exist?(color_corrected_path)
   end
 
 
