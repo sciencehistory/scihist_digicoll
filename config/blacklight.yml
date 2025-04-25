@@ -7,4 +7,4 @@ test: &test
 production:
   adapter: solr
   url: <%= ScihistDigicoll::Env.lookup!(:solr_url) %>
-  timeout: 4
+  timeout: 2
