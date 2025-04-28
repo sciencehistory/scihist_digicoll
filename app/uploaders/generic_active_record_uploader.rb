@@ -3,6 +3,6 @@
 #
 # Also does a good on-storage location based on model name and id.
 class GenericActiveRecordUploader < Shrine
-    plugin :activerecord
-    plugin :pretty_location
+  plugin :activerecord
+  plugin :pretty_location
 end
