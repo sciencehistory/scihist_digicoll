@@ -14,12 +14,12 @@ describe DziFiles do
       # we aren't gonna test for every tile.
       uploaded_file_0_0 = Shrine::UploadedFile.new(
         "id"    => "#{dzi_management.base_file_path}_files/0/0_0.jpg",
-        "storage" => dzi_management.shrine_storage_key
+        "storage" => dzi_management.class::DEFAULT_SHRINE_STORAGE_KEY
       )
       expect(uploaded_file_0_0.exists?).to be true
 
       dzi_management.delete
-      expect(dzi_management.exists?).to be false
+      expect(dzi_management.exists?).to be_falsey
       expect(uploaded_file_0_0.exists?).to be false
     end
   end
@@ -42,11 +42,13 @@ describe DziFiles do
     end
 
     describe "asset deletion" do
-      let(:asset) { create(:asset_with_faked_file) }
+      let(:asset) { create(:asset_with_faked_file, :fake_dzi) }
 
       it "queues dzi deletion" do
+        id, storage_key = asset.dzi_manifest_file.id, asset.dzi_manifest_file.storage_key
+
         asset.destroy
-        expect(DeleteDziJob).to have_been_enqueued.with(asset.dzi_file.dzi_uploaded_file.id)
+        expect(DeleteDziJob).to have_been_enqueued.with(id, storage_key)
       end
 
       it "respects disabled promotion_directive" do
@@ -71,12 +73,13 @@ describe DziFiles do
 
       it "deletes original and creates new" do
         asset.set_promotion_directives(promote: :inline)
-        original_dzi_id = asset.dzi_file.dzi_uploaded_file.id
+        original_dzi_id = asset.dzi_manifest_file.id
+        original_dzi_storage_key = asset.dzi_manifest_file.storage_key.to_s
 
         asset.file = File.open((Rails.root + "spec/test_support/images/30x30.jpg").to_s)
         asset.save!
 
-        expect(DeleteDziJob).to have_been_enqueued.once.with(original_dzi_id)
+        expect(DeleteDziJob).to have_been_enqueued.once.with(original_dzi_id, original_dzi_storage_key)
         expect(CreateDziJob).to have_been_enqueued.once.with(asset)
       end
     end

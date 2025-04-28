@@ -23,11 +23,13 @@ require 'tty-command'
 # are registered in Asset, to class methods here. Creation and deletion when triggered by lifecycle hooks
 # is done in background ActiveJobs.
 class DziFiles
+  DEFAULT_SHRINE_STORAGE_KEY = :dzi_storage
+
   class_attribute :vips_command, default: "vips"
   class_attribute :jpeg_quality, default: "85"
-  class_attribute :shrine_storage_key, default: :dzi_storage
 
-  delegate :exists?, :url, to: :dzi_uploaded_file
+  delegate :dzi_manifest_file, to: :asset
+  delegate :exists?, :url, to: :dzi_manifest_file, allow_nil: true
 
   attr_reader :asset, :md5
 
@@ -38,47 +40,48 @@ class DziFiles
     raise ArgumentError.new*("need an asset") if asset.nil?
   end
 
-  # The main .dzi file as a Shrine::UploadedFile.
-  # It may or may not actually exist, depending on if it's been created.
-  #
-  # You can do things like call #exists? or #url on it, per Shrine::UploadedFile API.
-  #
-  # @return [Shrine::UploadedFile]
-  def dzi_uploaded_file
-    @dzi_uploaded_file ||= Shrine::UploadedFile.new(
-      "id" => "#{base_file_path}.dzi",
-      "storage" => shrine_storage_key
-    )
-  end
-
-
 
   # Creates the DZI and uploads to remote storage. This method works inline,
   # it does not call a bg job or work async. It will normally be called
   # in a bg job.
-  def create
+  def create(storage_key: DEFAULT_SHRINE_STORAGE_KEY)
     create_and_yield do |tmp_output_dir|
-      upload(tmp_output_dir)
+      upload(tmp_output_dir, storage_key: storage_key)
     end
+
+    # assign file metadata pointing to an existing file
+    asset.dzi_manifest_file_attacher.set(Shrine::UploadedFile.new(
+      "id" => "#{base_file_path}.dzi",
+      "storage" => storage_key.to_s
+    ))
+    asset.save!
   end
 
   # Deletes ALL files associated with a dzi set, the main dzi and in _files subdir.
   # Will work inline.
   def delete
-    self.class.delete(dzi_uploaded_file.id)
+    self.class.delete(dzi_manifest_file&.id, storage_key: dzi_manifest_file&.storage_key)
+    unless asset.destroyed?
+      asset.dzi_manifest_file_attacher.set(nil)
+      asset.save!
+    end
   end
 
   # class method to delete without a model, so we can easily delete DZI's after the
   # model/DB record is already deleted and we don't have it anymore, in a bg job.
   #
   # The arg is the shrine id (path) of the *.dzi file.
-  def self.delete(dzi_file_id, storage_key: shrine_storage_key)
-    storage = Shrine.storages[storage_key]
+  def self.delete(dzi_file_id, storage_key: DEFAULT_SHRINE_STORAGE_KEY)
+    unless dzi_file_id.present?
+      raise ArgumentError.new("required dzi_file_id was nil")
+    end
+
+    storage = Shrine.storages[storage_key.to_sym]
 
     # Delete manifest .dzi file
     Shrine::UploadedFile.new(
       "id" => dzi_file_id,
-      "storage" => storage_key
+      "storage" => storage_key.to_s
     ).delete
 
     # Delete tiles
@@ -106,14 +109,17 @@ class DziFiles
 
 
   # Just takes all files in tmp_output_dir passed in, and uploads them at exactly the
-  # path they have (with input arg as base) to the remote storage.
+  # path they have (with input arg as base) to the remote storage, properly next
+  # to the current manifest file.
   #
   # Uses concurrent-ruby to do the uploads concurrently, which speeds things up
   # significantly, currently with a thread pool of 8 threads.
   # http://ruby-concurrency.github.io/concurrent-ruby/master/file.promises.out.html
-  def upload(tmp_output_dir)
+  def upload(tmp_output_dir, storage_key: DEFAULT_SHRINE_STORAGE_KEY)
     thread_pool = Concurrent::FixedThreadPool.new(8, auto_terminate: false)
     futures = []
+
+    destination_storage = Shrine.storages[storage_key.to_sym]
 
     Dir.glob("#{tmp_output_dir}/**/*", base: "#{tmp_output_dir}/").each_with_index do |path, i|
       next if File.directory?(path)
@@ -138,11 +144,5 @@ class DziFiles
   # automatically not used when file content changes.
   def base_file_path
     "#{asset.id}/md5_#{md5}"
-  end
-
-  private
-
-  def destination_storage
-    Shrine.storages[shrine_storage_key]
   end
 end
