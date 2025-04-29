@@ -84,6 +84,25 @@ describe DziFiles do
       end
     end
 
+    describe "set new DZI in new location", queue_adapter: :test do
+      let(:asset) { create(:asset_with_faked_file, :fake_dzi) }
+
+      it "enqueues job to delete old dzi files" do
+        original_dzi_id = asset.dzi_manifest_file.id
+        original_dzi_storage_key = asset.dzi_manifest_file.storage_key.to_s
+
+        asset.dzi_manifest_file_attacher.set(
+          Shrine::UploadedFile.new(
+            storage: described_class::DEFAULT_SHRINE_STORAGE_KEY.to_s,
+            id: "some/new/location.dzi"
+          )
+        )
+        asset.save!
+
+        expect(DeleteDziJob).to have_been_enqueued.once.with(original_dzi_id, original_dzi_storage_key)
+      end
+    end
+
     describe "non-image file" do
       describe "asset creation" do
         let(:asset) {

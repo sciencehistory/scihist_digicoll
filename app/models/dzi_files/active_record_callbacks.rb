@@ -38,24 +38,31 @@ class DziFiles
           end
         end
       else
+
         # file changed, need to delete an old dzi?
         old_file_data, new_file_data = asset.file_data_previous_change
-        if old_file_data.present?
+        old_dzi_manifest_file_data, new_dzi_manifest_file_data = asset.dzi_manifest_file_data_previous_change
+
+
+        if old_file_data.present? || old_dzi_manifest_file_data.present?
           if asset.dzi_manifest_file.blank?
-            Rails.logger.warn("Deleting file without a dzi_manifest_file listed, can't find/delete DZI: #{asset.friendlier_id || asset.id}")
+            Rails.logger.warn("Altering file without a dzi_manifest_file listed, can't find/delete DZI: #{asset.friendlier_id || asset.id}")
             return
           end
 
-          if old_file_data.kind_of?(String) # not sure why this happens, it should be JSON already
-            old_file_data = JSON.parse(old_file_data)
-          end
-          if old_file_data["id"] != new_file_data["id"] &&
-             old_md5 = old_file_data.dig("metadata", "md5")
+          if (old_file_data && old_file_data["id"] != new_file_data["id"] &&
+             old_md5 = old_file_data.dig("metadata", "md5")) ||
+             old_dzi_manifest_file_data && old_dzi_manifest_file_data != new_dzi_manifest_file_data
 
-            DeleteDziJob.perform_later(asset.dzi_manifest_file.id, asset.dzi_manifest_file.storage_key.to_s)
+             # asset.json_attributes_previously_was
+            DeleteDziJob.perform_later(
+              asset.json_attributes_previously_was.dig("dzi_manifest_file_data", "id"),
+              asset.json_attributes_previously_was.dig("dzi_manifest_file_data", "storage")
+            )
           end
         end
       end
+      #
     end
   end
 end
