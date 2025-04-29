@@ -65,7 +65,7 @@ describe DziFiles do
       end
     end
 
-    describe "asset file change" do
+    describe "asset file change",  queue_adapter: :test do
       let(:asset) {
         create(:asset_with_faked_file, faked_file: File.open((Rails.root + "spec/test_support/images/30x30.png").to_s)).
         tap {|a| a.dzi_file.create }
@@ -79,8 +79,12 @@ describe DziFiles do
         asset.file = File.open((Rails.root + "spec/test_support/images/30x30.jpg").to_s)
         asset.save!
 
-        expect(DeleteDziJob).to have_been_enqueued.once.with(original_dzi_id, original_dzi_storage_key)
         expect(CreateDziJob).to have_been_enqueued.once.with(asset)
+
+        # okay cause we're just doing test adapter and it doesn't ACTUALLY get
+        # deleted/removed on first save we get two of these, another on promotion.
+        # Yeah, confusing.
+        expect(DeleteDziJob).to have_been_enqueued.at_least(1).with(original_dzi_id, original_dzi_storage_key)
       end
     end
 

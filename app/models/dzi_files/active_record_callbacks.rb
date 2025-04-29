@@ -50,11 +50,9 @@ class DziFiles
             return
           end
 
-          if (old_file_data && old_file_data["id"] != new_file_data["id"] &&
-             old_md5 = old_file_data.dig("metadata", "md5")) ||
+          if (old_file_data && old_file_data["id"] != new_file_data["id"]) ||
              old_dzi_manifest_file_data && old_dzi_manifest_file_data != new_dzi_manifest_file_data
 
-             # asset.json_attributes_previously_was
             DeleteDziJob.perform_later(
               asset.json_attributes_previously_was.dig("dzi_manifest_file_data", "id"),
               asset.json_attributes_previously_was.dig("dzi_manifest_file_data", "storage")
