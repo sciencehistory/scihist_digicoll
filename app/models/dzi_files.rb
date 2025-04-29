@@ -24,6 +24,7 @@ require 'tty-command'
 # is done in background ActiveJobs.
 class DziFiles
   DEFAULT_SHRINE_STORAGE_KEY = :dzi_storage
+  CACHE_VERSION = "1" # included in location, so we can bump to bust cache when derivation changes. Since we cache these forever in cloudfront.
 
   class_attribute :vips_command, default: "vips"
   class_attribute :jpeg_quality, default: "85"
@@ -51,7 +52,7 @@ class DziFiles
 
     # assign file metadata pointing to an existing file
     asset.dzi_manifest_file_attacher.set(Shrine::UploadedFile.new(
-      "id" => "#{base_file_path}.dzi",
+      "id" => "#{base_file_path_to_use}.dzi",
       "storage" => storage_key.to_s
     ))
     asset.save!
@@ -98,7 +99,7 @@ class DziFiles
 
     asset.file.download do |original_file|
       Dir.mktmpdir("dzi_#{asset.friendlier_id}_") do |tmp_output_dir|
-        vips_output_pathname = Pathname.new(tmp_output_dir).join(base_file_path)
+        vips_output_pathname = Pathname.new(tmp_output_dir).join(base_file_path_to_use)
         FileUtils.mkdir_p(vips_output_pathname.dirname)
 
         TTY::Command.new(printer: :null).run(vips_command, "dzsave", original_file.path, vips_output_pathname.to_s, "--suffix", ".jpg[Q=#{jpeg_quality}]")
@@ -144,7 +145,7 @@ class DziFiles
   # includes asset ID (actual PK, it's long), and a digest checksum,
   # so it will be unique to actual file content, cacheable forever, and
   # automatically not used when file content changes.
-  def base_file_path
-    "#{asset.id}/md5_#{md5}"
+  def base_file_path_to_use
+    "#{asset.id}/md5_#{md5}_#{CACHE_VERSION}"
   end
 end
