@@ -60,6 +60,8 @@ class DziFiles
   # Deletes ALL files associated with a dzi set, the main dzi and in _files subdir.
   # Will work inline.
   def delete
+    return unless dzi_manifest_file.present?
+
     self.class.delete(dzi_manifest_file&.id, storage_key: dzi_manifest_file&.storage_key)
     unless asset.destroyed?
       asset.dzi_manifest_file_attacher.set(nil)
