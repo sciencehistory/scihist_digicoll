@@ -53,8 +53,14 @@ class DziFiles
     # assign file metadata pointing to an existing file
     asset.dzi_manifest_file_attacher.set(Shrine::UploadedFile.new(
       "id" => "#{base_file_path_to_use}.dzi",
-      "storage" => storage_key.to_s
+      "storage" => storage_key.to_s,
+      "metadata" => {
+        "created_at" => Time.current.utc.iso8601.to_s,
+        "vips_command" => vips_command_args("$ORIG_FILE", "$OUTPUT_BASE").join(" "),
+        "vips_version" => @captured_vips_version
+      }
     ))
+
     asset.save!
   end
 
@@ -102,11 +108,27 @@ class DziFiles
         vips_output_pathname = Pathname.new(tmp_output_dir).join(base_file_path_to_use)
         FileUtils.mkdir_p(vips_output_pathname.dirname)
 
-        TTY::Command.new(printer: :null).run(vips_command, "dzsave", original_file.path, vips_output_pathname.to_s, "--suffix", ".jpg[Q=#{jpeg_quality}]")
+        out, err = TTY::Command.new(printer: :null).run(*vips_command_args(original_file.path, vips_output_pathname))
+        out =~ /vips[ \-](\d+\.\d+\.\d+.*$)/
+        if $1
+          @captured_vips_version = $1
+        end
 
         yield tmp_output_dir
       end
     end
+  end
+
+  def vips_command_args(original_file_path, vips_output_pathname)
+    [
+      vips_command,
+      "dzsave",
+      "--version",
+      original_file_path,
+      vips_output_pathname.to_s,
+      "--suffix",
+      ".jpg[Q=#{jpeg_quality}]"
+    ]
   end
 
 

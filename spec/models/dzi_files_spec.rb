@@ -18,9 +18,18 @@ describe DziFiles do
       )
       expect(uploaded_file_0_0.exists?).to be true
 
+
+      expect(asset.dzi_manifest_file).to be_present
+      expect(asset.dzi_manifest_file.exists?).to be true
+      expect(asset.dzi_manifest_file.metadata["vips_version"]).to match /\d+\.\d+\.\d+/
+      expect(DateTime.iso8601(asset.dzi_manifest_file.metadata["created_at"])).to be_present
+      expect(asset.dzi_manifest_file.metadata["vips_command"]).to eq "vips dzsave --version $ORIG_FILE $OUTPUT_BASE --suffix .jpg[Q=85]"
+
       dzi_management.delete
       expect(dzi_management.exists?).to be_falsey
       expect(uploaded_file_0_0.exists?).to be false
+
+      expect(asset.dzi_manifest_file).to be_nil
     end
   end
 
