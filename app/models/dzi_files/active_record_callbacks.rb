@@ -32,7 +32,7 @@ class DziFiles
             directives: asset.file_attacher.promotion_directives) do |directive|
 
           if directive.inline?
-            asset.dzi_file.delete
+            asset.dzi_package.delete
           elsif directive.background?
             DeleteDziJob.perform_later(asset.dzi_manifest_file&.id, asset.dzi_manifest_file&.storage_key)
           end
