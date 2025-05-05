@@ -63,6 +63,12 @@ FactoryBot.define do
       end
     end
 
+    trait :fake_dzi do
+      after(:build) do |asset, evaluator|
+        asset.dzi_manifest_file_attacher.set(Shrine::UploadedFile.new(id: "faked", storage: DziFiles::DEFAULT_SHRINE_STORAGE_KEY.to_s))
+      end
+    end
+
     # While it still uses a real file, it skips all of the (slow) standard metadata extraction
     # and derivative generation, instead just SETTING the metadata and derivatives to fixed
     # values (which may not be actually right, but that doesn't matter for many tests).

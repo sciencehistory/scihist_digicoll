@@ -7,7 +7,7 @@ describe "EnsureCorrectDerivativesStorageJob" do
     let(:sample_file_location) {  Rails.root + "spec/test_support/images/20x20.png" }
     let(:asset) do
       # create one with no derivatives
-      a = create(:asset_with_faked_file,
+      a = create(:asset_with_faked_file, :fake_dzi,
         derivative_storage_type: "restricted",
         faked_derivatives: {})
 
@@ -43,7 +43,7 @@ describe "EnsureCorrectDerivativesStorageJob" do
 
     it "Deletes DZI files when ensuring restricted" do
       expect(Shrine.storages[:dzi_storage]).to receive(:delete_prefixed).with(
-        asset.dzi_file.dzi_uploaded_file.id.sub(/\.dzi$/, "_files/")
+        asset.dzi_manifest_file.id.sub(/\.dzi$/, "_files/")
       )
       job.perform_now
     end

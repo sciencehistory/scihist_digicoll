@@ -109,9 +109,9 @@ describe PdfToPageImages do
     end
 
     describe "on_existing_dup" do
-      let!(:duplicate) { create(:asset, :inline_promoted_file, file: File.open(pdf_path), parent: work, extracted_pdf_source_info: { page_index: 1 }) }
+      let!(:duplicate) { create(:asset, :fake_dzi, :inline_promoted_file, file: File.open(pdf_path), parent: work, extracted_pdf_source_info: { page_index: 1 }) }
       let!(:original_file_id) { duplicate.file.id }
-      let!(:original_dzi_id) { duplicate.dzi_file.dzi_uploaded_file.id }
+      let!(:original_dzi_id) { duplicate.dzi_manifest_file.id }
       let!(:original_derivatives_json) { duplicate.file_derivatives.as_json }
 
       it ":abort uses existing without update" do
@@ -140,7 +140,7 @@ describe PdfToPageImages do
 
         # it should have new derivatives and dzi created, all inline!
         expect(asset.dzi_file&.present?).to eq true
-        expect(asset.dzi_file.dzi_uploaded_file.id).not_to eq original_dzi_id
+        expect(asset.dzi_file.dzi_manifest_file.id).not_to eq original_dzi_id
 
         expect(asset.file_derivatives).to be_present
         expect(asset.file_derivatives.as_json).not_to eq original_derivatives_json

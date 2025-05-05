@@ -56,6 +56,12 @@ class Asset < Kithe::Asset
   attr_json :hls_playlist_file_data, ActiveModel::Type::Value.new
   include VideoHlsUploader::Attachment(:hls_playlist_file, store: :video_derivatives, column_serializer: nil)
 
+  # And similar for storing the DZI manifest file -- DZI tiles filess are also stored adjacent,
+  # but not pointed to by shrine file, just this one.
+  attr_json :dzi_manifest_file_data, ActiveModel::Type::Value.new
+  include GenericActiveRecordUploader::Attachment(:dzi_manifest_file, store: :dzi_storage, column_serializer: nil)
+
+
   before_promotion :store_exiftool
   before_promotion :invalidate_audio_missing_metadata, if: ->(asset) { asset.content_type&.start_with?("audio/") }
   before_promotion :invalidate_corrupt_tiff, if: ->(asset) { asset.content_type == "image/tiff" }
