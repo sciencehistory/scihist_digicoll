@@ -20,7 +20,7 @@ describe "Asset exiftool characterization on ingest" do
     it "extracts exiftool result as hash with location prefix" do
       expect(asset.exiftool_result).to be_present
       expect(asset.exiftool_result).to be_kind_of(Hash)
-
+      expect(asset.invalidate_corrupt_tiff).to be nil
       expect(asset.exiftool_result["ExifTool:ExifToolVersion"]).to match /^\d+(\.\d+)+$/
 
       # we add cli args...
@@ -73,4 +73,35 @@ describe "Asset exiftool characterization on ingest" do
       expect(asset.exiftool_result["ExifTool:Error"]).to eq "File is empty"
     end
   end
+
+  describe "file with two pages" do
+    let(:asset)  {
+      create(:asset, file: File.open(Rails.root + "spec/test_support/images/two_pages.tiff"))
+    }
+
+    it "detected as invalid" do
+      expect(asset.exiftool_result).to be_present
+      expect(asset.exiftool_result).to be_kind_of(Hash)
+      expect(asset.more_than_one_layer_or_page?).to be true
+      expect { asset.invalidate_corrupt_tiff }.to raise_error(UncaughtThrowError) do |exception|
+        expect(exception).to have_attributes(message: "uncaught throw :abort")
+      end
+    end
+  end
+
+  describe "file with two layers" do
+    let(:asset)  {
+      create(:asset, file: File.open(Rails.root + "spec/test_support/images/two_layers.tiff"))
+    }
+
+    it "detected as invalid" do
+      expect(asset.exiftool_result).to be_present
+      expect(asset.exiftool_result).to be_kind_of(Hash)
+      expect(asset.more_than_one_layer_or_page?).to be true
+      expect { asset.invalidate_corrupt_tiff }.to raise_error(UncaughtThrowError) do |exception|
+        expect(exception).to have_attributes(message: "uncaught throw :abort")
+      end
+    end
+  end
+
 end
