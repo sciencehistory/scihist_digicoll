@@ -166,7 +166,7 @@ class OrphanS3Dzi
   #
   # Expected path is stored inside the asset
   def expected_second_level_folder_pattern(asset)
-    path_prefix = asset.dzi_manifest_file.id.gsub("/.dzi$/", "")
+    path_prefix = asset.dzi_manifest_file.id.gsub(/\.dzi$/, '')
     # eg "386122f1-19af-4b84-a641-9e1814be1824/md5_a5d00feca441d17c5e27c663693d38cd.dzi" with .dzi removed
 
     /^#{bucket_prefix}#{path_prefix}(\.dzi|_files\/)$/
