@@ -103,6 +103,8 @@ class DziFiles
   def create_and_yield
     raise ArgumentError.new("Can only create DZI from assets of type 'image/'") unless asset.content_type&.start_with?("image/")
 
+    color_corrected_path = nil
+
     asset.file.download do |original_file|
       Dir.mktmpdir("dzi_#{asset.friendlier_id}_") do |tmp_output_dir|
         vips_output_pathname = Pathname.new(tmp_output_dir).join(base_file_path_to_use)
@@ -110,9 +112,13 @@ class DziFiles
 
         out, err = TTY::Command.new(printer: :null).run(*vips_command_args(original_file.path, vips_output_pathname))
         out =~ /vips[ \-](\d+\.\d+\.\d+.*$)/
+
         if $1
           @captured_vips_version = $1
         end
+
+        # Due to bug in some versions of vips, may leave an empty .dz file, remove it
+        FileUtils.rm("#{vips_output_pathname}.dz", force: true)
 
         yield tmp_output_dir
       end
@@ -120,14 +126,22 @@ class DziFiles
   end
 
   def vips_command_args(original_file_path, vips_output_pathname)
+    # `vips` dzsave will corrupt colors unless original TIFF is in srgb. Because it removes color
+    # profile info, but does not do color transformation.
+    #
+    # So we use this more complex invocation that should properly convert to sRGB too.
+    #
+    # https://github.com/libvips/libvips/discussions/4470
+    #
+
     [
       vips_command,
-      "dzsave",
-      "--version",
+    "--version",
+      "icc_transform",
+      "--embedded",
       original_file_path,
-      vips_output_pathname.to_s,
-      "--suffix",
-      ".jpg[Q=#{jpeg_quality}]"
+      "#{vips_output_pathname}.dz[container=fs,suffix=.jpg[Q=#{jpeg_quality}]]",
+      "srgb"
     ]
   end
 
