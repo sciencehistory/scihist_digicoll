@@ -56,6 +56,12 @@ class Asset < Kithe::Asset
   attr_json :hls_playlist_file_data, ActiveModel::Type::Value.new
   include VideoHlsUploader::Attachment(:hls_playlist_file, store: :video_derivatives, column_serializer: nil)
 
+  # And similar for storing the DZI manifest file -- DZI tiles filess are also stored adjacent,
+  # but not pointed to by shrine file, just this one.
+  attr_json :dzi_manifest_file_data, ActiveModel::Type::Value.new
+  include GenericActiveRecordUploader::Attachment(:dzi_manifest_file, store: :dzi_storage, column_serializer: nil)
+
+
   before_promotion :store_exiftool
   before_promotion :invalidate_audio_missing_metadata, if: ->(asset) { asset.content_type&.start_with?("audio/") }
   before_promotion :invalidate_corrupt_tiff, if: ->(asset) { asset.content_type == "image/tiff" }
@@ -429,6 +435,19 @@ class Asset < Kithe::Asset
     end
   end
 
+
+  # returns true for TIFFs that have more than one layer or page.
+  # returns false for all other TIFFs, including ones with a thumbnail.
+  # See https://sciencehistory.atlassian.net/wiki/spaces/HDC/pages/2775351299/TIFF+files+in+the+digital+collections
+  # See https://github.com/sciencehistory/scihist_digicoll/issues/2939
+  def more_than_one_layer_or_page?
+    layer_or_page_keys = [
+      'Photoshop:LayerCount',
+      'EXIF:PageNumber'
+    ]
+    (self.exiftool_result.keys & layer_or_page_keys).any?
+  end
+
   def invalidate_corrupt_tiff
     exif = Kithe::ExiftoolCharacterization.presenter_for(self.exiftool_result)
 
@@ -447,6 +466,11 @@ class Asset < Kithe::Asset
       /IFD0:StripByteCounts is zero/,
       /Undersized IFD0 StripByteCounts/
     ].map { |error_regexp| exif.exiftool_validation_warnings.grep(error_regexp) }.flatten.uniq
+
+    # also reject multipage or multilayer tiffs.
+    if more_than_one_layer_or_page?
+      fatal_errors << 'More than one layer or page detected.'
+    end
 
     if fatal_errors.present?
       # We need to disable promotion, so that we can save our errors despite

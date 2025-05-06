@@ -41,8 +41,8 @@ module Scihist
           interval: (zero_interval_retry ? 0 : 0.300),
           # exponential backoff 2 means: 1) 0.300; 2) .600; 3) 1.2; 4) 2.4
           backoff_factor: 2,
-          # But we only allow the first two before giving up.
-          max: 2,
+          # But we only actually only ONE retry at present, so it should be 300ms
+          max: 1,
           exceptions: [
             # default faraday retry exceptions
             Errno::ETIMEDOUT,
