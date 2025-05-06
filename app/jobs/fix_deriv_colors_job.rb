@@ -16,6 +16,11 @@ class FixDerivColorsJob < ApplicationJob
     # Make sure DZI deleting happens inline, not in a separate job
     asset.set_promotion_directives(promote: :inline, delete: :inline, create_derivatives: :inline)
 
+    # Except that annoyingly seems to be not working as intended, let's see if we can
+    # control dzi deletion specficially like this, should be okay if this config "escapes"
+    # cause we're only running in special workers right now.
+    DeleteDziJob.queue_adapter = :inline
+
     if (thumb_derivs = self.class.needed_derivs(asset)).present?
       asset.create_derivatives(only: thumb_derivs)
     end
