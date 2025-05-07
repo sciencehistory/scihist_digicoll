@@ -13,13 +13,13 @@ class FixDerivColorsJob < ApplicationJob
   }
 
   def perform(asset)
-    # Make sure DZI deleting happens inline, not in a separate job
-    asset.set_promotion_directives(promote: :inline, delete: :inline, create_derivatives: :inline)
 
-    # Except that annoyingly seems to be not working as intended, let's see if we can
-    # control dzi deletion specficially like this, should be okay if this config "escapes"
-    # cause we're only running in special workers right now.
-    DeleteDziJob.queue_adapter = :inline
+    # Could be a lot of DZI tile deletion work, put it in it's own queue
+    # so we can manage it with regard to AWS api max and such too.
+    #
+    # Changing this global could be bad, but since we're running these
+    # jobs only on special worker to begin with, should be okay.
+    DeleteDziJob.queue_adapter = :special_jobs_two
 
     if (thumb_derivs = self.class.needed_derivs(asset)).present?
       asset.create_derivatives(only: thumb_derivs)
