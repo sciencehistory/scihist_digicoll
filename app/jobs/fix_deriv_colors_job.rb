@@ -19,7 +19,7 @@ class FixDerivColorsJob < ApplicationJob
     #
     # Changing this global could be bad, but since we're running these
     # jobs only on special worker to begin with, should be okay.
-    DeleteDziJob.queue_adapter = :special_jobs_two
+    DeleteDziJob.queue_as(:special_jobs_two)
 
     if (thumb_derivs = self.class.needed_derivs(asset)).present?
       asset.create_derivatives(only: thumb_derivs)
