@@ -11,7 +11,7 @@ worker: bundle exec resque-pool
 # See config/resque-pool-special-worker.yml for more details.
 special_worker: bundle exec resque-pool --config  config/resque-pool-special-worker.yml
 # A second one when we need two queues of special work!
-special_worker_two: bundle exec resque-pool --config  config/resque-pool-special-worker_two.yml
+special_worker_two: bundle exec resque-pool --config  config/resque-pool-special-worker-two.yml
 
 # https://devcenter.heroku.com/articles/release-phase
 release: bundle exec rake scihist:heroku:on_release
