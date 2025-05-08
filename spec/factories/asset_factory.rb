@@ -65,7 +65,7 @@ FactoryBot.define do
 
     trait :fake_dzi do
       after(:build) do |asset, evaluator|
-        asset.dzi_manifest_file_attacher.set(Shrine::UploadedFile.new(id: "faked", storage: DziFiles::DEFAULT_SHRINE_STORAGE_KEY.to_s))
+        asset.dzi_manifest_file_attacher.set(Shrine::UploadedFile.new(id: "faked", storage: DziPackage::DEFAULT_SHRINE_STORAGE_KEY.to_s))
       end
     end
 

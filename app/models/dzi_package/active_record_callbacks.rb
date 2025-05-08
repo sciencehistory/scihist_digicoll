@@ -1,4 +1,4 @@
-class DziFiles
+class DziPackage
   # Just a container for some methods used as ActiveRecord callbacks for
   # DZI lifecycle management. Registered on Asset class in after_commit
   # and after_promotion registrations.
@@ -11,7 +11,7 @@ class DziFiles
           directives: asset.file_attacher.promotion_directives) do |directive|
 
         if directive.inline?
-          DziFiles.new(asset).create
+          DziPackage.new(asset).create
         elsif directive.background?
           CreateDziJob.perform_later(asset)
         end

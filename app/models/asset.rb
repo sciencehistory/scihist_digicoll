@@ -35,7 +35,7 @@ class Asset < Kithe::Asset
     Rails.logger.error("AssetPromotionValidation: Asset `#{friendlier_id}` failed ingest: #{promotion_validation_errors.inspect}")
   end
 
-  kithe_earlier_after_commit DziFiles::ActiveRecordCallbacks, only: [:update, :destroy]
+  kithe_earlier_after_commit DziPackage::ActiveRecordCallbacks, only: [:update, :destroy]
 
   set_shrine_uploader(AssetUploader)
 
@@ -157,7 +157,7 @@ class Asset < Kithe::Asset
   after_destroy_commit :log_destroyed
 
 
-  # Our DziFiles object to manage associated DZI (deep zoom, for OpenSeadragon
+  # Our DziPackage object to manage associated DZI (deep zoom, for OpenSeadragon
   # panning/zooming) file(s).
   #
   #     asset.dzi_package.url # url to manifest file
@@ -168,7 +168,7 @@ class Asset < Kithe::Asset
   # See also dzi_manifest_file which points to the single .dzi file -- this object
   # manages a whole directory.
   def dzi_package
-    @dzi_files ||= DziFiles.new(self)
+    @dzi_package ||= DziPackage.new(self)
   end
 
   # our hls_playlist_file attachment is usually created by AWS MediaConvert,
@@ -262,7 +262,7 @@ class Asset < Kithe::Asset
     end
   end
 
-  after_promotion DziFiles::ActiveRecordCallbacks, if: ->(asset) { asset.content_type&.start_with?("image/") && asset.derivative_storage_type == "public" }
+  after_promotion DziPackage::ActiveRecordCallbacks, if: ->(asset) { asset.content_type&.start_with?("image/") && asset.derivative_storage_type == "public" }
 
   after_promotion :create_initial_checksum
 

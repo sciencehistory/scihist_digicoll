@@ -22,7 +22,7 @@ require 'tty-command'
 # but ordinary AR callbacks to delete a stale DZI if an Asset is deleted or has it's file changed. Callbacks
 # are registered in Asset, to class methods here. Creation and deletion when triggered by lifecycle hooks
 # is done in background ActiveJobs.
-class DziFiles
+class DziPackage
   DEFAULT_SHRINE_STORAGE_KEY = :dzi_storage
   CACHE_VERSION = "1" # included in location, so we can bump to bust cache when derivation changes. Since we cache these forever in cloudfront.
 
