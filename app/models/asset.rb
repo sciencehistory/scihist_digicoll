@@ -35,7 +35,7 @@ class Asset < Kithe::Asset
     Rails.logger.error("AssetPromotionValidation: Asset `#{friendlier_id}` failed ingest: #{promotion_validation_errors.inspect}")
   end
 
-  kithe_earlier_after_commit DziFiles::ActiveRecordCallbacks, only: [:update, :destroy]
+  kithe_earlier_after_commit DziPackage::ActiveRecordCallbacks, only: [:update, :destroy]
 
   set_shrine_uploader(AssetUploader)
 
@@ -57,7 +57,8 @@ class Asset < Kithe::Asset
   include VideoHlsUploader::Attachment(:hls_playlist_file, store: :video_derivatives, column_serializer: nil)
 
   # And similar for storing the DZI manifest file -- DZI tiles filess are also stored adjacent,
-  # but not pointed to by shrine file, just this one.
+  # but not pointed to by shrine file, just this one. See also #dzi_package for an object
+  # managing the whole package.
   attr_json :dzi_manifest_file_data, ActiveModel::Type::Value.new
   include GenericActiveRecordUploader::Attachment(:dzi_manifest_file, store: :dzi_storage, column_serializer: nil)
 
@@ -156,15 +157,18 @@ class Asset < Kithe::Asset
   after_destroy_commit :log_destroyed
 
 
-  # Our DziFiles object to manage associated DZI (deep zoom, for OpenSeadragon
+  # Our DziPackage object to manage associated DZI (deep zoom, for OpenSeadragon
   # panning/zooming) file(s).
   #
-  #     asset.dzi_file.url # url to manifest file
-  #     asset.dzi_file.exists?
-  #     asset.dzi_file.create # normally handled by automatic lifecycle hooks
-  #     asset.dzi_file.delete # normally handled by automatic lifecycle hooks
-  def dzi_file
-    @dzi_file ||= DziFiles.new(self)
+  #     asset.dzi_package.url # url to manifest file
+  #     asset.dzi_package.exists?
+  #     asset.dzi_package.create # normally handled by automatic lifecycle hooks
+  #     asset.dzi_package.delete # normally handled by automatic lifecycle hooks
+  #
+  # See also dzi_manifest_file which points to the single .dzi file -- this object
+  # manages a whole directory.
+  def dzi_package
+    @dzi_package ||= DziPackage.new(self)
   end
 
   # our hls_playlist_file attachment is usually created by AWS MediaConvert,
@@ -258,7 +262,7 @@ class Asset < Kithe::Asset
     end
   end
 
-  after_promotion DziFiles::ActiveRecordCallbacks, if: ->(asset) { asset.content_type&.start_with?("image/") && asset.derivative_storage_type == "public" }
+  after_promotion DziPackage::ActiveRecordCallbacks, if: ->(asset) { asset.content_type&.start_with?("image/") && asset.derivative_storage_type == "public" }
 
   after_promotion :create_initial_checksum
 

@@ -95,8 +95,8 @@ describe PdfToPageImages do
       expect(asset.file_metadata["width"]).to be_present
       expect(asset.file_metadata["height"]).to be_present
 
-      expect(asset.dzi_file).to be_present
-      expect(asset.dzi_file.exists?).to be true
+      expect(asset.dzi_package).to be_present
+      expect(asset.dzi_package.exists?).to be true
 
       expect(asset.hocr).to be_present
       xml = Nokogiri::XML(asset.hocr)  { |config| config.strict }
@@ -139,8 +139,8 @@ describe PdfToPageImages do
         expect(asset.extracted_pdf_source_info.source_pdf_asset_pk).to eq "newid"
 
         # it should have new derivatives and dzi created, all inline!
-        expect(asset.dzi_file&.present?).to eq true
-        expect(asset.dzi_file.dzi_manifest_file.id).not_to eq original_dzi_id
+        expect(asset.dzi_package&.present?).to eq true
+        expect(asset.dzi_package.dzi_manifest_file.id).not_to eq original_dzi_id
 
         expect(asset.file_derivatives).to be_present
         expect(asset.file_derivatives.as_json).not_to eq original_derivatives_json

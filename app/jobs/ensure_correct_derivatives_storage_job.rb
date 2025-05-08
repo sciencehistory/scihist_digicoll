@@ -74,8 +74,8 @@ class EnsureCorrectDerivativesStorageJob < ApplicationJob
     end
 
     # remove DZI file in the normal more reliable way, regardless of storage type
-    if asset.dzi_file
-      asset.dzi_file.delete
+    if asset.dzi_package
+      asset.dzi_package.delete
     end
 
     # remove all versions of all DZI files from main DZI location IF on S3 (expected in production, not staging/dev/test)

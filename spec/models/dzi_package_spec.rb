@@ -1,8 +1,8 @@
 require 'rails_helper'
 
-describe DziFiles do
+describe DziPackage do
   let(:asset) { create(:asset_with_faked_file) }
-  let(:dzi_management) { DziFiles.new(asset) }
+  let(:dzi_management) { DziPackage.new(asset) }
 
   describe "create and delete" do
     it "creates and deletes and does everything" do
@@ -70,14 +70,14 @@ describe DziFiles do
         asset.set_promotion_directives(delete: :inline)
         asset.destroy
         expect(DeleteDziJob).not_to have_been_enqueued
-        expect(asset.dzi_file.exists?).to be false
+        expect(asset.dzi_package.exists?).to be false
       end
     end
 
     describe "asset file change",  queue_adapter: :test do
       let(:asset) {
         create(:asset_with_faked_file, faked_file: File.open((Rails.root + "spec/test_support/images/30x30.png").to_s)).
-        tap {|a| a.dzi_file.create }
+        tap {|a| a.dzi_package.create }
       }
 
       it "deletes original and creates new" do
@@ -124,7 +124,7 @@ describe DziFiles do
 
         it "does not queue dzi creation" do
           expect {
-            asset.dzi_file.create
+            asset.dzi_package.create
           }.to raise_error(ArgumentError)
 
           expect(CreateDziJob).not_to have_been_enqueued.with(asset)

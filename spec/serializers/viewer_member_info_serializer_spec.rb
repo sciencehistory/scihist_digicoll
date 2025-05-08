@@ -23,7 +23,7 @@ describe ViewerMemberInfoSerializer, type: :model, queue_adapter: :inline do
     expect(child_serialized[:memberShouldShowInfo]).to be true
     expect(child_serialized[:title]).to eq child.title
     expect(child_serialized[:memberShowUrl]).to eq work_path(child)
-    expect(child_serialized[:tileSource]).to eq child.leaf_representative.dzi_file.url
+    expect(child_serialized[:tileSource]).to eq child.leaf_representative.dzi_package.url
     expect(child_serialized[:fallbackTileSource]).to eq({ type: "image", url: download_derivative_path(child.leaf_representative, :download_medium, disposition: "inline")})
     expect(child_serialized[:downloads]).to be_kind_of(Array)
     expect(child_serialized[:downloads]).to be_present
@@ -35,7 +35,7 @@ describe ViewerMemberInfoSerializer, type: :model, queue_adapter: :inline do
     expect(asset_serialized[:memberShouldShowInfo]).to be false
     expect(asset_serialized[:title]).to eq asset.title
     expect(asset_serialized[:memberShowUrl]).to be nil
-    expect(asset_serialized[:tileSource]).to eq asset.dzi_file.url
+    expect(asset_serialized[:tileSource]).to eq asset.dzi_package.url
     expect(asset_serialized[:fallbackTileSource]).to eq({ type: "image", url: download_derivative_path(asset, :download_medium, disposition: "inline") })
     expect(child_serialized[:downloads]).to be_kind_of(Array)
     expect(child_serialized[:downloads]).to be_present
