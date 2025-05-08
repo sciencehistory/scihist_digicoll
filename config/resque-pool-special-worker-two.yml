@@ -1,0 +1,10 @@
+# See also Procfile .
+
+# Most of our redis config is in resque-pool.yml,
+# but we use this queue for big jobs
+# (like creating a bunch of derivatives in parallel).
+production:
+  "special_jobs_two": <%= ENV['SPECIAL_JOB_TWO_WORKER_COUNT'] || 2 %>
+
+development:
+  "*": 0
