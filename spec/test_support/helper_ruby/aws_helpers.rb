@@ -12,15 +12,13 @@ module AwsHelpers
   class MockS3Client
     attr_reader :client
     def initialize(paths:, bucket_name:"bucket", common_prefixes: [])
-      contents = paths.map { |path| Struct.new(:key).new(path) }
+      contents = paths.map { |path| Aws::S3::Types::Object.new(key: path) }
 
-      output = Aws::S3::Types::ListObjectsOutput.new(
+      output = Aws::S3::Types::ListObjectsV2Output.new(
         name: bucket_name,
         common_prefixes: common_prefixes,
         contents: contents,
         is_truncated: false,
-        marker: '',
-        next_marker: nil,
         delimiter: '/',
         max_keys: 1000,
         encoding_type: 'url',
