@@ -1,8 +1,10 @@
 require 'rails_helper'
 
 describe OpenaiAudioTranscribe do
-  let(:opus_path) { (Rails.root + "spec/test_support/audio/short.opus").to_s}
+  let(:opus_path) { (Rails.root + "spec/test_support/audio/short_opus.oga").to_s}
   let(:service) { described_class.new }
+
+
 
   describe "#get_vtt" do
     it "submits API request" do
@@ -36,6 +38,27 @@ describe OpenaiAudioTranscribe do
       }.to raise_error(described_class::Error)
     ensure
       file.close if file
+    end
+  end
+
+  describe "#get_vtt_for_asset" do
+    let(:asset) { create(:asset_with_faked_file, :video)}
+
+    it "submits API request with oga" do
+      expect(service.client.audio).to receive(:transcribe) do |args|
+        expect(args.keys).to eq [:parameters]
+        parameters = args[:parameters]
+
+        expect(parameters.slice(:model, :response_format)).to eq({:model=>"whisper-1", :response_format=>"vtt"})
+
+        expect(parameters[:file]).to be_kind_of(Tempfile)
+        expect(parameters[:file].path).to end_with(".oga")
+      end.and_return(sample_webvtt)
+
+      webvtt = service.get_vtt_for_asset(asset)
+
+      expect(webvtt).to be_kind_of(String)
+      expect(webvtt).to start_with("WEBVTT")
     end
   end
 

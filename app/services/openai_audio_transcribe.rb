@@ -3,15 +3,10 @@
 class OpenaiAudioTranscribe
   class Error < StandardError ; end
 
+  def get_vtt_for_asset(asset)
+    lofi_opus = FfmpegExtractOpusAudio.new.call(asset.file)
 
-
-
-  def get_transcription_for_asset(asset)
-    lofi_opus = FfmpegExtractLofiSpeechOgg.new.call(asset.file)
-
-    webvtt = get_vtt(lofi_opus)
-
-
+    get_vtt(lofi_opus)
   ensure
     lofi_opus.unlink if lofi_opus
   end
@@ -22,11 +17,14 @@ class OpenaiAudioTranscribe
   #
   # @param lang_code [String] ISO-279 two-letter language code, optional, Whisper
   #   can only take one, the 'primary' one of the audio. Without it,  whisper will guess.
+  #
+  # File path needs to actually end in a recognized suffix for OpenAI whisper:
+  # ['flac', 'm4a', 'mp3', 'mp4', 'mpeg', 'mpga', 'oga', 'ogg', 'wav', 'webm']
   def get_vtt(audio_file, lang_code: nil)
       response = client.audio.transcribe(
         parameters: {
           model: "whisper-1",
-          #file: audio_file,
+          file: audio_file,
           response_format: "vtt",
           language: lang_code, # Optional
         }
