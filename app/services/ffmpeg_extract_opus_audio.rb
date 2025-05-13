@@ -14,12 +14,14 @@ class FfmpegExtractOpusAudio
 
   DEFAULT_BITRATE = "16k"
   DEFAULT_OPUS_APPLICATION = "voip" # can be `voip` `audio` (default) or `lowdelay`
+  DEFAULT_FILE_SUFFIX = ".oga" # while some like .opus for opus in OGG, OpenAI can't handle it needs `.oga` ogg audio
 
-  attr_reader :bitrate_arg, :opus_application
+  attr_reader :bitrate_arg, :opus_application, :file_suffix
 
-  def initialize(bitrate_arg: DEFAULT_BITRATE, opus_application: DEFAULT_OPUS_APPLICATION)
+  def initialize(bitrate_arg: DEFAULT_BITRATE, opus_application: DEFAULT_OPUS_APPLICATION, file_suffix: DEFAULT_FILE_SUFFIX)
     @bitrate_arg = bitrate_arg
     @opus_application = opus_application
+    @file_suffix = file_suffix
   end
 
   # add_metadata param can be used with kithe derivative definitions, to supply
@@ -47,7 +49,7 @@ class FfmpegExtractOpusAudio
   private
 
   def _call(ffmpeg_source_arg, add_metadata: nil)
-    tempfile = Tempfile.new([self.class.name, ".opus"])
+    tempfile = Tempfile.new([self.class.name, file_suffix])
 
     ffmpeg_args = produce_ffmpeg_args(input_arg: ffmpeg_source_arg, output_path: tempfile.path)
     out, err = TTY::Command.new(printer: :null).run(*ffmpeg_args)

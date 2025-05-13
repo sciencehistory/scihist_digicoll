@@ -9,7 +9,7 @@ describe FfmpegExtractOpusAudio do
     tempfile = service.call(video_path)
 
     expect(tempfile).to be_kind_of(Tempfile)
-    expect(tempfile.path).to end_with(".opus")
+    expect(tempfile.path).to end_with(".oga")
     expect(Marcel::MimeType.for(tempfile)).to eq "audio/opus"
   ensure
     tempfile.unlink if tempfile
