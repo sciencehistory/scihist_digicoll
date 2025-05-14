@@ -3,7 +3,14 @@
 class OpenaiAudioTranscribe
   class Error < StandardError ; end
 
+
+  # Given an Asset with audio or video, extract audio as lowfi
+  # Opus OGG, and contact OpenAI API to get a webvtt transcript
   def get_vtt_for_asset(asset)
+    unless asset.content_type.start_with?("audio/") || asset.content_type.start_with?("video/")
+      raise ArgumentError.new("Can only extract transcript from audio or video")
+    end
+
     lofi_opus = FfmpegExtractOpusAudio.new.call(asset.file)
 
     get_vtt(lofi_opus)
@@ -11,7 +18,9 @@ class OpenaiAudioTranscribe
     lofi_opus.unlink if lofi_opus
   end
 
-  # @param audio_file [File] pointing to an audio file, needs to be under 25 meg or
+  # Given a File or Tempfile, contact OpenAI API and return transcribed WebVTT
+  #
+  # @param audio_file [Tempfile,File] pointing to an audio file, needs to be under 25 meg or
   # you'll get an error from Whisper. May need to be an actual File with #path for
   # the openai ruby client, even though it's not supposed to be required.
   #
