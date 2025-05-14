@@ -17,6 +17,7 @@
 class OpenaiAudioTranscribe
   class Error < StandardError ; end
 
+  REQUEST_TIMEOUT = 360 # seconds. default may be 120. In some cases not long enough?
   MODEL = "whisper-1"
 
   # process audio from Asset with OpenAI whsiper, and store the transcript in
@@ -98,7 +99,8 @@ class OpenaiAudioTranscribe
     @client ||= OpenAI::Client.new(
       access_token: ScihistDigicoll::Env.lookup("openai_api_key"),
       # Highly recommended in development, so you can see what errors OpenAI is returning. Not recommended in production because it could leak private data to your logs.
-      log_errors: Rails.env.development?
+      log_errors: Rails.env.development?,
+      request_timeout: REQUEST_TIMEOUT,
     )
   end
 
