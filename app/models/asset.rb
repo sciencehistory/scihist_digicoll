@@ -3,6 +3,11 @@
 class Asset < Kithe::Asset
   include AttrJson::Record::QueryScopes
 
+  # special derivatives for Automated Speech Recognition on video or audio files,
+  # initially for OpenAI Whisper and Video
+  ASR_WEBVTT_DERIVATIVE_KEY = :asr_webvtt_transcript
+  CORRECTED_WEBVTT_DERIVATIVE_KEY = :corrected_webvtt_transcript # possibly manually corrected from automated!
+
   include RecordPublishedAt
 
   # keep json_attributes out of string version of model shown in logs and console --
@@ -288,6 +293,32 @@ class Asset < Kithe::Asset
       primary.downcase
     end
   end
+
+  # fetch shrine attachment return as string
+  def asr_webvtt
+    if asr_webvtt?
+      stringio = StringIO.new
+      file_derivatives[ASR_WEBVTT_DERIVATIVE_KEY.to_sym].stream(stringio)
+      stringio.string
+    end
+  end
+
+  def asr_webvtt?
+    file_derivatives[ASR_WEBVTT_DERIVATIVE_KEY.to_sym].present?
+  end
+
+  def corrected_webvtt
+    if corrected_webvtt?
+      stringio = StringIO.new
+      file_derivatives[CORRECTED_WEBVTT_DERIVATIVE_KEY.to_sym].stream(stringio)
+      stringio.string
+    end
+  end
+
+  def corrected_webvtt?
+    file_derivatives[CORRECTED_WEBVTT_DERIVATIVE_KEY.to_sym].present?
+  end
+
 
   # Used as an around_promotion callback. If we're promoting a shrine cache file using remote_url storage, and
   # the file is from our ingest_bucket, then add a record to table to schedule it's deletion in the future
