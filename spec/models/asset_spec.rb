@@ -253,7 +253,7 @@ describe Asset do
         add_metadata:  { Asset::ASR_WEBVTT_DERIVATIVE_KEY => { "foo" => "bar"}}
       )
 
-      expect(asset.asr_webvtt).to eq sample_webvtt
+      expect(asset.asr_webvtt_str).to eq sample_webvtt
 
       expect(DateTime.parse(asset.file_derivatives[Asset::ASR_WEBVTT_DERIVATIVE_KEY].metadata["created_at"])).to be <= DateTime.now
       expect(asset.file_derivatives[Asset::ASR_WEBVTT_DERIVATIVE_KEY].metadata["foo"]).to eq "bar"
@@ -266,7 +266,7 @@ describe Asset do
         add_metadata:  { Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY => { "foo" => "bar"}}
       )
 
-      expect(asset.corrected_webvtt).to eq sample_webvtt
+      expect(asset.corrected_webvtt_str).to eq sample_webvtt
 
       expect(DateTime.parse(asset.file_derivatives[Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY].metadata["created_at"])).to be <= DateTime.now
       expect(asset.file_derivatives[Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY].metadata["foo"]).to eq "bar"

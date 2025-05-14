@@ -295,7 +295,7 @@ class Asset < Kithe::Asset
   end
 
   # fetch shrine attachment return as string
-  def asr_webvtt
+  def asr_webvtt_str
     if asr_webvtt?
       stringio = StringIO.new
       file_derivatives[ASR_WEBVTT_DERIVATIVE_KEY.to_sym].stream(stringio)
@@ -307,7 +307,7 @@ class Asset < Kithe::Asset
     file_derivatives[ASR_WEBVTT_DERIVATIVE_KEY.to_sym].present?
   end
 
-  def corrected_webvtt
+  def corrected_webvtt_str
     if corrected_webvtt?
       stringio = StringIO.new
       file_derivatives[CORRECTED_WEBVTT_DERIVATIVE_KEY.to_sym].stream(stringio)
