@@ -2,7 +2,7 @@ require 'rails_helper'
 require 'marcel'
 
 describe FfmpegExtractOpusAudio do
-  let(:video_path) { "/Users/jrochkind/Documents/sample/video/SampleVideo_360x240_1mb.mp4" }
+  let(:video_path) { Rails.root.join("spec/test_support/video/sample_video.mp4").to_s }
   let(:service) { described_class.new }
 
   it "creates opus file" do
