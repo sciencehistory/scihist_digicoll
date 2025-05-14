@@ -668,6 +668,8 @@ module ScihistDigicoll
 
     define_key :honeybadger_api_key
 
+    define_key :openai_api_key
+
     # nil means use default, but we can define if we want to put all OCR work on, say, `special_jobs`.
     define_key :active_job_ocr_queue
 
