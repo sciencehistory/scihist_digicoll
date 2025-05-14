@@ -3,6 +3,22 @@
 class OpenaiAudioTranscribe
   class Error < StandardError ; end
 
+  MODEL = "whisper-1"
+
+  # process audio from Asset with OpenAI whsiper, and store the transcript in
+  # Asset derivatives, writing over anything else we had.
+  def get_and_store_vtt_for_asset(asset)
+    webvtt = get_vtt_for_asset(asset)
+
+    asset.file_attacher.add_persisted_derivatives(
+        {Asset::ASR_WEBVTT_DERIVATIVE_KEY => StringIO.new(webvtt)},
+        add_metadata:  { Asset::ASR_WEBVTT_DERIVATIVE_KEY =>
+          {
+            "asr_engine" => "OpenAI transcribe API, model=#{MODEL}"
+          }
+        }
+    )
+  end
 
   # Given an Asset with audio or video, extract audio as lowfi
   # Opus OGG, and contact OpenAI API to get a webvtt transcript
@@ -32,7 +48,7 @@ class OpenaiAudioTranscribe
   def get_vtt(audio_file, lang_code: nil)
       response = client.audio.transcribe(
         parameters: {
-          model: "whisper-1",
+          model: MODEL,
           file: audio_file,
           response_format: "vtt",
           language: lang_code, # Optional
