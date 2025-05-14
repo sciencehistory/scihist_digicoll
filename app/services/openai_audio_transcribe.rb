@@ -22,13 +22,25 @@ class OpenaiAudioTranscribe
   # process audio from Asset with OpenAI whsiper, and store the transcript in
   # Asset derivatives, writing over anything else we had.
   def get_and_store_vtt_for_asset(asset)
-    webvtt = get_vtt_for_asset(asset)
+    # If it's english and only english, give whisper a language code to
+    # help it get started quicker. Otherwise let it figure it out for itself,
+    # we don't have enough examples of this yet to spend time on it. If you give
+    # a lang, can only give ONE.
+    lang_code = asset.parent&.language == ["English"] ? "en" : nil
+
+    webvtt = get_vtt_for_asset(asset, lang_code: lang_code)
+
+    tech_provenance_metadata = {
+      "api" => "OpenAI transcribe",
+      "model" => MODEL
+    }
+    tech_provenance_metadata["language"] = lang_code if lang_code
 
     asset.file_attacher.add_persisted_derivatives(
         {Asset::ASR_WEBVTT_DERIVATIVE_KEY => StringIO.new(webvtt)},
         add_metadata:  { Asset::ASR_WEBVTT_DERIVATIVE_KEY =>
           {
-            "asr_engine" => "OpenAI transcribe API, model=#{MODEL}"
+            "asr_engine" => tech_provenance_metadata
           }
         }
     )
@@ -36,14 +48,14 @@ class OpenaiAudioTranscribe
 
   # Given an Asset with audio or video, extract audio as lowfi
   # Opus OGG, and contact OpenAI API to get a webvtt transcript
-  def get_vtt_for_asset(asset)
+  def get_vtt_for_asset(asset, lang_code: nil)
     unless asset.content_type.start_with?("audio/") || asset.content_type.start_with?("video/")
       raise ArgumentError.new("Can only extract transcript from audio or video")
     end
 
     lofi_opus = FfmpegExtractOpusAudio.new.call(asset.file)
 
-    get_vtt(lofi_opus)
+    get_vtt(lofi_opus, lang_code: lang_code)
   ensure
     lofi_opus.unlink if lofi_opus
   end

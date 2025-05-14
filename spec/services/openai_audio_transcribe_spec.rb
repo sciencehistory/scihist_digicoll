@@ -76,10 +76,39 @@ describe OpenaiAudioTranscribe do
 
       service.get_and_store_vtt_for_asset(asset)
 
-      expect(asset.asr_webvtt).to eq sample_webvtt
+      expect(asset.asr_webvtt_str).to eq sample_webvtt
 
-      expect(asset.file_derivatives[Asset::ASR_WEBVTT_DERIVATIVE_KEY].metadata["asr_engine"]).to eq "OpenAI transcribe API, model=whisper-1"
+      expect(asset.file_derivatives[Asset::ASR_WEBVTT_DERIVATIVE_KEY].metadata["asr_engine"]).to eq({
+        "api" => "OpenAI transcribe",
+        "model" => "whisper-1"
+      })
       expect(DateTime.parse(asset.file_derivatives[Asset::ASR_WEBVTT_DERIVATIVE_KEY].metadata["created_at"])).to be_present
+    end
+
+    describe "with work with english language only" do
+      let(:asset) { create(:asset_with_faked_file, :video, parent: create(:work, language: ["English"]))}
+
+      it "can submit with lang" do
+        expect(service.client.audio).to receive(:transcribe) do |args|
+          expect(args.keys).to eq [:parameters]
+          parameters = args[:parameters]
+
+          expect(parameters.slice(:model, :response_format)).to eq({:model=>"whisper-1", :response_format=>"vtt"})
+
+          expect(parameters[:language]).to eq "en"
+
+          expect(parameters[:file]).to be_kind_of(Tempfile)
+          expect(parameters[:file].path).to end_with(".oga")
+        end.and_return(sample_webvtt)
+
+        service.get_and_store_vtt_for_asset(asset)
+
+        expect(asset.file_derivatives[Asset::ASR_WEBVTT_DERIVATIVE_KEY].metadata["asr_engine"]).to eq({
+        "api" => "OpenAI transcribe",
+        "model" => "whisper-1",
+        "language" => "en"
+      })
+      end
     end
   end
 
