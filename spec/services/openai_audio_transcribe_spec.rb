@@ -4,8 +4,6 @@ describe OpenaiAudioTranscribe do
   let(:opus_path) { (Rails.root + "spec/test_support/audio/short_opus.oga").to_s}
   let(:service) { described_class.new }
 
-
-
   describe "#get_vtt" do
     it "submits API request" do
       expect(service.client.audio).to receive(:transcribe) do |args|

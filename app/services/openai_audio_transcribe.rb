@@ -1,4 +1,18 @@
-# Use OpenAI audio transcribe API with whisper to transcribe
+# Use OpenAI audio transcribe API with whisper to transcribe.
+#
+# Will convert audio to a low-bitrate Opus Ogg for most efficient use with OpenAI
+# API, under size limits.
+#
+# Can be used at several levels of abstraction, at the highest and most useful:
+#
+#    OpenaiAudioTranscribe.new.get_and_store_vtt_for_asset(audio_or_video_asset)
+#    # => will extract and store in expected shrine derivative location
+#
+#    OpenaiAudioTranscribe.new.get_vtt_for_asset(audio_or_video_asset)
+#    # => will extract and return webvtt as string
+#
+#    OpenaiAudioTranscribe.new.get_vtt(audio_file_io_obj)
+#    # => process audio file with OpenAI api, return webvtt as string.
 #
 class OpenaiAudioTranscribe
   class Error < StandardError ; end
