@@ -78,11 +78,15 @@ describe OpenaiAudioTranscribe do
 
       expect(asset.asr_webvtt_str).to eq sample_webvtt
 
-      expect(asset.file_derivatives[Asset::ASR_WEBVTT_DERIVATIVE_KEY].metadata["asr_engine"]).to eq({
+      metadata = asset.file_derivatives[Asset::ASR_WEBVTT_DERIVATIVE_KEY].metadata
+
+      expect(metadata["mime_type"]).to eq "text/vtt"
+
+      expect(metadata["asr_engine"]).to eq({
         "api" => "OpenAI transcribe",
         "model" => "whisper-1"
       })
-      expect(DateTime.parse(asset.file_derivatives[Asset::ASR_WEBVTT_DERIVATIVE_KEY].metadata["created_at"])).to be_present
+      expect(metadata["created_at"]).to be_present
     end
 
     describe "with work with english language only" do
