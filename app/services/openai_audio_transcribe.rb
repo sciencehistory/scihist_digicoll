@@ -81,7 +81,17 @@ class OpenaiAudioTranscribe
         }
       )
   rescue Faraday::Error => e
-    raise Error.new("OpenAI API error: #{e.response[:status]}: #{e.response[:body]}")
+    size_msg = if audio_file.respond_to?(:size) && audio_file.size
+       "input file: #{ActiveSupport::NumberHelper.number_to_human_size(audio_file.size)}: "
+    else
+      ""
+    end
+
+    if e.response
+      raise Error.new("OpenAI API error: #{size_msg}#{e.response[:status]}: #{e.response[:body]}")
+    else
+      raise Error.new("OpenAI API error: #{size_msg}#{e.class}: #{e.message}")
+    end
   end
 
   def client
