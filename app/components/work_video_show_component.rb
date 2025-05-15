@@ -29,6 +29,18 @@ class WorkVideoShowComponent < ApplicationComponent
     video_asset.file_url(expires_in: 5.days.to_i)
   end
 
+  def auto_caption_track_url
+    unless defined? @auto_caption_track_url
+      @auto_caption_track_url = if video_asset.corrected_webvtt?
+        download_derivative_path(video_asset, Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY, disposition: :inline)
+      elsif video_asset.asr_webvtt?
+        download_derivative_path(video_asset, Asset::ASR_WEBVTT_DERIVATIVE_KEY, disposition: :inline)
+      end
+    end
+
+    @auto_caption_track_url
+  end
+
   # the representative, if it's visible to current user, otherwise nil!
   def video_asset
     return @video_asset if defined?(@video_asset)

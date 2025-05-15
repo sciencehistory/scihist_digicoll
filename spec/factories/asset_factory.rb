@@ -167,6 +167,23 @@ FactoryBot.define do
         }
       end
 
+      trait :asr_vtt do
+        after(:build) do |asset|
+          asset.file_attacher.merge_derivatives({
+            Asset::ASR_WEBVTT_DERIVATIVE_KEY => build(:stored_uploaded_file, file: StringIO.new("foo"), filename: "vtt.vtt", content_type: "text/vtt")
+          })
+        end
+      end
+
+      trait :corrected_vtt do
+        after(:build) do |asset|
+          asset.file_attacher.merge_derivatives({
+            Asset::ASR_WEBVTT_DERIVATIVE_KEY => build(:stored_uploaded_file, file: StringIO.new("WEBVTT\n\noriginal"), filename: "vtt.vtt", content_type: "text/vtt"),
+            Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY => build(:stored_uploaded_file, file: StringIO.new("WEBVTT\n\ncorrected"), filename: "vtt.vtt", content_type: "text/vtt")
+          })
+        end
+      end
+
       trait :mp3 do
         faked_file { File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.mp3")) }
         faked_content_type { "audio/mpeg" }
