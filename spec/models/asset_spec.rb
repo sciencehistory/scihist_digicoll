@@ -234,4 +234,42 @@ describe Asset do
       expect(asset.file_metadata[AssetUploader::WHITE_EDGE_DETECT_KEY]).to be true
     end
   end
+
+  describe "vtt_transcript derivative attachments" do
+    let(:sample_webvtt) do
+      <<~EOS
+        WEBVTT
+
+        00:00.000 --> 00:01.500
+        Hello, welcome to the podcast.
+      EOS
+    end
+    let(:asset) { create(:asset_with_faked_file, :video) }
+
+    it "asr_webvtt added with metadata and retrived" do
+      # using a kithe feature with `add_metadata`
+      asset.file_attacher.add_persisted_derivatives(
+        {Asset::ASR_WEBVTT_DERIVATIVE_KEY => StringIO.new(sample_webvtt)},
+        add_metadata:  { Asset::ASR_WEBVTT_DERIVATIVE_KEY => { "foo" => "bar"}}
+      )
+
+      expect(asset.asr_webvtt_str).to eq sample_webvtt
+
+      expect(DateTime.parse(asset.file_derivatives[Asset::ASR_WEBVTT_DERIVATIVE_KEY].metadata["created_at"])).to be <= DateTime.now
+      expect(asset.file_derivatives[Asset::ASR_WEBVTT_DERIVATIVE_KEY].metadata["foo"]).to eq "bar"
+    end
+
+    it "corrected_webvtt added with metadata and retrived" do
+      # using a kithe feature with `add_metadata`
+      asset.file_attacher.add_persisted_derivatives(
+        {Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY => StringIO.new(sample_webvtt)},
+        add_metadata:  { Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY => { "foo" => "bar"}}
+      )
+
+      expect(asset.corrected_webvtt_str).to eq sample_webvtt
+
+      expect(DateTime.parse(asset.file_derivatives[Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY].metadata["created_at"])).to be <= DateTime.now
+      expect(asset.file_derivatives[Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY].metadata["foo"]).to eq "bar"
+    end
+  end
 end

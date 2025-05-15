@@ -264,6 +264,7 @@ GEM
     erubi (1.13.1)
     ethon (0.16.0)
       ffi (>= 1.15.0)
+    event_stream_parser (1.0.0)
     factory_bot (6.5.0)
       activesupport (>= 5.0.0)
     factory_bot_rails (6.4.4)
@@ -275,6 +276,8 @@ GEM
       logger
     faraday-follow_redirects (0.3.0)
       faraday (>= 1, < 3)
+    faraday-multipart (1.1.0)
+      multipart-post (~> 2.0)
     faraday-net_http (3.4.0)
       net-http (>= 0.5.0)
     faraday-retry (2.2.1)
@@ -418,7 +421,6 @@ GEM
     matrix (0.4.2)
     method_source (1.1.0)
     mini_mime (1.1.5)
-    mini_portile2 (2.8.8)
     minitar (1.0.2)
     minitest (5.25.4)
     mono_logger (1.1.2)
@@ -444,9 +446,6 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     nio4r (2.7.4)
-    nokogiri (1.18.8)
-      mini_portile2 (~> 2.8.2)
-      racc (~> 1.4)
     nokogiri (1.18.8-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.18.8-x86_64-linux-gnu)
@@ -658,6 +657,10 @@ GEM
     ruby-ll (2.1.3)
       ansi
       ast
+    ruby-openai (8.1.0)
+      event_stream_parser (>= 0.3.0, < 2.0.0)
+      faraday (>= 1)
+      faraday-multipart (>= 1)
     ruby-progressbar (1.13.0)
     ruby-rc4 (0.1.5)
     ruby2_keywords (0.0.5)
@@ -797,7 +800,7 @@ GEM
 
 PLATFORMS
   arm64-darwin-21
-  ruby
+  arm64-darwin-23
   x86_64-linux
 
 DEPENDENCIES
@@ -875,6 +878,7 @@ DEPENDENCIES
   rinku (~> 2.0)
   rsolr (~> 2.4)
   rspec-rails (~> 7.0)
+  ruby-openai (~> 8.0)
   ruby-progressbar
   rubyzip (~> 2.0)
   sane_patch (< 2.0)

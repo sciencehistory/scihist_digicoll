@@ -274,3 +274,5 @@ gem "barnes"
 gem 'equivalent-xml'
 
 gem "bot_challenge_page"
+
+gem "ruby-openai", "~> 8.0"
