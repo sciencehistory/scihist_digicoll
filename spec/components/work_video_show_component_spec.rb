@@ -16,6 +16,8 @@ describe WorkVideoShowComponent, type: :component do
 
     expect(source_element["src"]).to eq work.representative.file_url
     expect(source_element["type"]).to eq work.representative.content_type
+
+    expect(source_element).not_to have_selector("track")
   end
 
   describe "when it is missing derivatives" do
@@ -88,5 +90,41 @@ describe WorkVideoShowComponent, type: :component do
       expect(page).to have_selector("img[src='#{placeholder_img_src}']")
     end
   end
+
+  describe "with captions" do
+    let(:work) { create(:video_work, :published, members: [ asset ]) }
+
+    describe "only ASR captions" do
+      let(:asset) { build(:asset_with_faked_file, :video, :asr_vtt) }
+
+
+      it "includes track element" do
+        render_inline described_class.new(work)
+
+        expect(page).to have_selector("video track", count: 1)
+        track_element = page.first("video track")
+
+        expect(track_element["src"]).to eq download_derivative_path(asset, Asset::ASR_WEBVTT_DERIVATIVE_KEY, disposition: :inline)
+        expect(track_element["label"]).to eq "Auto-captions"
+        expect(track_element["kind"]).to eq "captions"
+      end
+    end
+
+    describe "corrected captions" do
+      let(:asset) { build(:asset_with_faked_file, :video, :corrected_vtt) }
+
+      it "includes track element for corrected" do
+        render_inline described_class.new(work)
+
+        expect(page).to have_selector("video track", count: 1)
+        track_element = page.first("video track")
+
+        expect(track_element["src"]).to eq download_derivative_path(asset, Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY, disposition: :inline)
+        expect(track_element["label"]).to eq "Auto-captions"
+        expect(track_element["kind"]).to eq "captions"
+      end
+    end
+  end
+
 end
 
