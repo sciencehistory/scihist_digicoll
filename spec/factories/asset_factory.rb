@@ -63,6 +63,12 @@ FactoryBot.define do
       end
     end
 
+    trait :fake_dzi do
+      after(:build) do |asset, evaluator|
+        asset.dzi_manifest_file_attacher.set(Shrine::UploadedFile.new(id: "faked", storage: DziPackage::DEFAULT_SHRINE_STORAGE_KEY.to_s))
+      end
+    end
+
     # While it still uses a real file, it skips all of the (slow) standard metadata extraction
     # and derivative generation, instead just SETTING the metadata and derivatives to fixed
     # values (which may not be actually right, but that doesn't matter for many tests).
@@ -159,6 +165,23 @@ FactoryBot.define do
             thumb_large_2x: faked_thumbnail,
           }
         }
+      end
+
+      trait :asr_vtt do
+        after(:build) do |asset|
+          asset.file_attacher.merge_derivatives({
+            Asset::ASR_WEBVTT_DERIVATIVE_KEY => build(:stored_uploaded_file, file: StringIO.new("foo"), filename: "vtt.vtt", content_type: "text/vtt")
+          })
+        end
+      end
+
+      trait :corrected_vtt do
+        after(:build) do |asset|
+          asset.file_attacher.merge_derivatives({
+            Asset::ASR_WEBVTT_DERIVATIVE_KEY => build(:stored_uploaded_file, file: StringIO.new("WEBVTT\n\noriginal"), filename: "vtt.vtt", content_type: "text/vtt"),
+            Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY => build(:stored_uploaded_file, file: StringIO.new("WEBVTT\n\ncorrected"), filename: "vtt.vtt", content_type: "text/vtt")
+          })
+        end
       end
 
       trait :mp3 do

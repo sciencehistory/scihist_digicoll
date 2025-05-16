@@ -1,5 +1,5 @@
 class CreateDziJob < ApplicationJob
   def perform(asset)
-    DziFiles.new(asset).create
+    DziPackage.new(asset).create
   end
 end

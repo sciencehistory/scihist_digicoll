@@ -289,7 +289,7 @@ ScihistImageViewer.prototype.selectThumb = function(thumbElement , { resetCurren
   this.viewer.close();
 
   this.addLoading();
-  this.viewer.open(tileSource);
+  this.viewer.open(tileSource || "[no url provided]"); // hacky way to trigger error and error handling
 
   document.querySelector('*[data-hook="viewer-navbar-title-label"]').textContent = title;
   document.querySelector('*[data-hook="viewer-navbar-info-link"]').href = linkUrl;

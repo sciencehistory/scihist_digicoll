@@ -10,6 +10,8 @@ worker: bundle exec resque-pool
 #     2. Regular worker dynos will NEVER execute jobs from the special_jobs queue.
 # See config/resque-pool-special-worker.yml for more details.
 special_worker: bundle exec resque-pool --config  config/resque-pool-special-worker.yml
+# A second one when we need two queues of special work!
+special_worker_two: bundle exec resque-pool --config  config/resque-pool-special-worker-two.yml
 
 # https://devcenter.heroku.com/articles/release-phase
 release: bundle exec rake scihist:heroku:on_release

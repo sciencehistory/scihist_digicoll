@@ -118,8 +118,7 @@ gem "device_detector", "~> 1.0" # user-agent parsing we use for logging
 
 gem "attr_json", "~> 2.3"
 
-# temporarily use kithe off main git, that has updates to work with bootstrap 5
-gem 'kithe', "~> 2.16"
+gem 'kithe', "~> 2.17"
 
 gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 
@@ -191,6 +190,11 @@ gem "warning", "~> 1.2" # managing ruby warning output
 gem "rack-attack", "~> 6.6" # throttling excessive requests
 
 gem "webvtt", "< 2" # https://github.com/jronallo/webvtt
+
+# MS Word .docx for some OH transcript handling
+# Appears entirely unmaintained and has some bugfixes we need in unreleased master
+# We will lock to SHA for safety.
+gem "docx", github: "ruby-docx/docx", ref: "c5bcb57"
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -270,3 +274,5 @@ gem "barnes"
 gem 'equivalent-xml'
 
 gem "bot_challenge_page"
+
+gem "ruby-openai", "~> 8.0"

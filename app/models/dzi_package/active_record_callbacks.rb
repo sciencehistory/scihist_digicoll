@@ -1,4 +1,4 @@
-class DziFiles
+class DziPackage
   # Just a container for some methods used as ActiveRecord callbacks for
   # DZI lifecycle management. Registered on Asset class in after_commit
   # and after_promotion registrations.
@@ -11,7 +11,7 @@ class DziFiles
           directives: asset.file_attacher.promotion_directives) do |directive|
 
         if directive.inline?
-          DziFiles.new(asset).create
+          DziPackage.new(asset).create
         elsif directive.background?
           CreateDziJob.perform_later(asset)
         end
@@ -20,8 +20,8 @@ class DziFiles
 
     def self.after_commit(asset)
       if asset.destroyed?
-        if asset.md5.blank?
-          Rails.logger.warn("Deleting file without an md5, can't find/delete DZI: #{asset.friendlier_id || asset.id}")
+        if asset.dzi_manifest_file.blank?
+          Rails.logger.warn("Deleting file without a dzi_manifest_file listed, can't find/delete DZI: #{asset.friendlier_id || asset.id}")
           return
         end
 
@@ -32,26 +32,35 @@ class DziFiles
             directives: asset.file_attacher.promotion_directives) do |directive|
 
           if directive.inline?
-            asset.dzi_file.delete
+            asset.dzi_package.delete
           elsif directive.background?
-            DeleteDziJob.perform_later(asset.dzi_file.dzi_uploaded_file.id)
+            DeleteDziJob.perform_later(asset.dzi_manifest_file&.id, asset.dzi_manifest_file&.storage_key)
           end
         end
       else
+
         # file changed, need to delete an old dzi?
         old_file_data, new_file_data = asset.file_data_previous_change
-        if old_file_data.present?
-          if old_file_data.kind_of?(String) # not sure why this happens, it should be JSON already
-            old_file_data = JSON.parse(old_file_data)
-          end
-          if old_file_data["id"] != new_file_data["id"] &&
-             old_md5 = old_file_data.dig("metadata", "md5")
+        old_dzi_manifest_file_data, new_dzi_manifest_file_data = asset.dzi_manifest_file_data_previous_change
 
-             old_id = DziFiles.new(asset, md5: old_md5).dzi_uploaded_file.id
-             DeleteDziJob.perform_later(old_id)
-           end
+
+        if old_file_data.present? || old_dzi_manifest_file_data.present?
+          if asset.dzi_manifest_file.blank?
+            Rails.logger.warn("Altering file without a dzi_manifest_file listed, can't find/delete DZI: #{asset.friendlier_id || asset.id}")
+            return
+          end
+
+          if (old_file_data && old_file_data["id"] != new_file_data["id"]) ||
+             old_dzi_manifest_file_data && old_dzi_manifest_file_data != new_dzi_manifest_file_data
+
+            DeleteDziJob.perform_later(
+              asset.json_attributes_previously_was.dig("dzi_manifest_file_data", "id"),
+              asset.json_attributes_previously_was.dig("dzi_manifest_file_data", "storage")
+            )
+          end
         end
       end
+      #
     end
   end
 end

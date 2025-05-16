@@ -3,6 +3,11 @@
 class Asset < Kithe::Asset
   include AttrJson::Record::QueryScopes
 
+  # special derivatives for Automated Speech Recognition on video or audio files,
+  # initially for OpenAI Whisper and Video
+  ASR_WEBVTT_DERIVATIVE_KEY = :asr_webvtt_transcript
+  CORRECTED_WEBVTT_DERIVATIVE_KEY = :corrected_webvtt_transcript # possibly manually corrected from automated!
+
   include RecordPublishedAt
 
   # keep json_attributes out of string version of model shown in logs and console --
@@ -35,7 +40,7 @@ class Asset < Kithe::Asset
     Rails.logger.error("AssetPromotionValidation: Asset `#{friendlier_id}` failed ingest: #{promotion_validation_errors.inspect}")
   end
 
-  kithe_earlier_after_commit DziFiles::ActiveRecordCallbacks, only: [:update, :destroy]
+  kithe_earlier_after_commit DziPackage::ActiveRecordCallbacks, only: [:update, :destroy]
 
   set_shrine_uploader(AssetUploader)
 
@@ -55,6 +60,13 @@ class Asset < Kithe::Asset
   # json by parent column.
   attr_json :hls_playlist_file_data, ActiveModel::Type::Value.new
   include VideoHlsUploader::Attachment(:hls_playlist_file, store: :video_derivatives, column_serializer: nil)
+
+  # And similar for storing the DZI manifest file -- DZI tiles filess are also stored adjacent,
+  # but not pointed to by shrine file, just this one. See also #dzi_package for an object
+  # managing the whole package.
+  attr_json :dzi_manifest_file_data, ActiveModel::Type::Value.new
+  include GenericActiveRecordUploader::Attachment(:dzi_manifest_file, store: :dzi_storage, column_serializer: nil)
+
 
   before_promotion :store_exiftool
   before_promotion :invalidate_audio_missing_metadata, if: ->(asset) { asset.content_type&.start_with?("audio/") }
@@ -150,15 +162,18 @@ class Asset < Kithe::Asset
   after_destroy_commit :log_destroyed
 
 
-  # Our DziFiles object to manage associated DZI (deep zoom, for OpenSeadragon
+  # Our DziPackage object to manage associated DZI (deep zoom, for OpenSeadragon
   # panning/zooming) file(s).
   #
-  #     asset.dzi_file.url # url to manifest file
-  #     asset.dzi_file.exists?
-  #     asset.dzi_file.create # normally handled by automatic lifecycle hooks
-  #     asset.dzi_file.delete # normally handled by automatic lifecycle hooks
-  def dzi_file
-    @dzi_file ||= DziFiles.new(self)
+  #     asset.dzi_package.url # url to manifest file
+  #     asset.dzi_package.exists?
+  #     asset.dzi_package.create # normally handled by automatic lifecycle hooks
+  #     asset.dzi_package.delete # normally handled by automatic lifecycle hooks
+  #
+  # See also dzi_manifest_file which points to the single .dzi file -- this object
+  # manages a whole directory.
+  def dzi_package
+    @dzi_package ||= DziPackage.new(self)
   end
 
   # our hls_playlist_file attachment is usually created by AWS MediaConvert,
@@ -252,7 +267,7 @@ class Asset < Kithe::Asset
     end
   end
 
-  after_promotion DziFiles::ActiveRecordCallbacks, if: ->(asset) { asset.content_type&.start_with?("image/") && asset.derivative_storage_type == "public" }
+  after_promotion DziPackage::ActiveRecordCallbacks, if: ->(asset) { asset.content_type&.start_with?("image/") && asset.derivative_storage_type == "public" }
 
   after_promotion :create_initial_checksum
 
@@ -278,6 +293,32 @@ class Asset < Kithe::Asset
       primary.downcase
     end
   end
+
+  # fetch shrine attachment return as string
+  def asr_webvtt_str
+    if asr_webvtt?
+      stringio = StringIO.new
+      file_derivatives[ASR_WEBVTT_DERIVATIVE_KEY.to_sym].stream(stringio)
+      stringio.string
+    end
+  end
+
+  def asr_webvtt?
+    file_derivatives[ASR_WEBVTT_DERIVATIVE_KEY.to_sym].present?
+  end
+
+  def corrected_webvtt_str
+    if corrected_webvtt?
+      stringio = StringIO.new
+      file_derivatives[CORRECTED_WEBVTT_DERIVATIVE_KEY.to_sym].stream(stringio)
+      stringio.string
+    end
+  end
+
+  def corrected_webvtt?
+    file_derivatives[CORRECTED_WEBVTT_DERIVATIVE_KEY.to_sym].present?
+  end
+
 
   # Used as an around_promotion callback. If we're promoting a shrine cache file using remote_url storage, and
   # the file is from our ingest_bucket, then add a record to table to schedule it's deletion in the future
@@ -429,6 +470,19 @@ class Asset < Kithe::Asset
     end
   end
 
+
+  # returns true for TIFFs that have more than one layer or page.
+  # returns false for all other TIFFs, including ones with a thumbnail.
+  # See https://sciencehistory.atlassian.net/wiki/spaces/HDC/pages/2775351299/TIFF+files+in+the+digital+collections
+  # See https://github.com/sciencehistory/scihist_digicoll/issues/2939
+  def more_than_one_layer_or_page?
+    layer_or_page_keys = [
+      'Photoshop:LayerCount',
+      'EXIF:PageNumber'
+    ]
+    (self.exiftool_result.keys & layer_or_page_keys).any?
+  end
+
   def invalidate_corrupt_tiff
     exif = Kithe::ExiftoolCharacterization.presenter_for(self.exiftool_result)
 
@@ -447,6 +501,11 @@ class Asset < Kithe::Asset
       /IFD0:StripByteCounts is zero/,
       /Undersized IFD0 StripByteCounts/
     ].map { |error_regexp| exif.exiftool_validation_warnings.grep(error_regexp) }.flatten.uniq
+
+    # also reject multipage or multilayer tiffs.
+    if more_than_one_layer_or_page?
+      fatal_errors << 'More than one layer or page detected.'
+    end
 
     if fatal_errors.present?
       # We need to disable promotion, so that we can save our errors despite

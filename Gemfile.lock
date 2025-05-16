@@ -1,3 +1,12 @@
+GIT
+  remote: https://github.com/ruby-docx/docx.git
+  revision: c5bcb57b3d21fead105f1c7af8d3881dd31674cc
+  ref: c5bcb57
+  specs:
+    docx (0.8.0)
+      nokogiri (~> 1.13, >= 1.13.0)
+      rubyzip (~> 2.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -91,8 +100,8 @@ GEM
     ast (2.4.2)
     attr_json (2.5.0)
       activerecord (>= 6.0.0, < 8.1)
-    aws-eventstream (1.3.0)
-    aws-partitions (1.1021.0)
+    aws-eventstream (1.3.2)
+    aws-partitions (1.1099.0)
     aws-sdk-cloudfront (1.107.0)
       aws-sdk-core (~> 3, >= 3.210.0)
       aws-sigv4 (~> 1.5)
@@ -102,22 +111,24 @@ GEM
     aws-sdk-cloudwatchlogs (1.104.0)
       aws-sdk-core (~> 3, >= 3.210.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-core (3.214.0)
+    aws-sdk-core (3.223.0)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
       aws-sigv4 (~> 1.9)
+      base64
       jmespath (~> 1, >= 1.6.1)
-    aws-sdk-kms (1.96.0)
-      aws-sdk-core (~> 3, >= 3.210.0)
+      logger
+    aws-sdk-kms (1.100.0)
+      aws-sdk-core (~> 3, >= 3.216.0)
       aws-sigv4 (~> 1.5)
     aws-sdk-mediaconvert (1.145.0)
       aws-sdk-core (~> 3, >= 3.210.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-s3 (1.176.0)
-      aws-sdk-core (~> 3, >= 3.210.0)
+    aws-sdk-s3 (1.185.0)
+      aws-sdk-core (~> 3, >= 3.216.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.5)
-    aws-sigv4 (1.10.1)
+    aws-sigv4 (1.11.0)
       aws-eventstream (~> 1, >= 1.0.2)
     axe-core-api (4.10.2)
       dumb_delegator
@@ -158,7 +169,7 @@ GEM
     bootstrap4-kaminari-views (1.0.1)
       kaminari (>= 0.13)
       rails (>= 3.1)
-    bot_challenge_page (0.3.1)
+    bot_challenge_page (0.4.0)
       http (~> 5.2)
       rack-attack (~> 6.7)
       rails (>= 7.1, < 8.1)
@@ -253,6 +264,7 @@ GEM
     erubi (1.13.1)
     ethon (0.16.0)
       ffi (>= 1.15.0)
+    event_stream_parser (1.0.0)
     factory_bot (6.5.0)
       activesupport (>= 5.0.0)
     factory_bot_rails (6.4.4)
@@ -264,12 +276,14 @@ GEM
       logger
     faraday-follow_redirects (0.3.0)
       faraday (>= 1, < 3)
+    faraday-multipart (1.1.0)
+      multipart-post (~> 2.0)
     faraday-net_http (3.4.0)
       net-http (>= 0.5.0)
     faraday-retry (2.2.1)
       faraday (~> 2.0)
     faster_s3_url (1.2.0)
-    fastimage (2.3.1)
+    fastimage (2.4.0)
     ffi (1.17.0)
     ffi (1.17.0-arm64-darwin)
     ffi (1.17.0-x86_64-linux-gnu)
@@ -352,7 +366,7 @@ GEM
       activerecord
       kaminari-core (= 1.2.2)
     kaminari-core (1.2.2)
-    kithe (2.16.0)
+    kithe (2.17.0)
       attr_json (~> 2.0)
       fastimage (~> 2.0)
       fx (>= 0.6.0, < 1)
@@ -407,7 +421,6 @@ GEM
     matrix (0.4.2)
     method_source (1.1.0)
     mini_mime (1.1.5)
-    mini_portile2 (2.8.8)
     minitar (1.0.2)
     minitest (5.25.4)
     mono_logger (1.1.2)
@@ -423,7 +436,7 @@ GEM
       racc (~> 1.7)
     net-http (0.6.0)
       uri
-    net-imap (0.5.6)
+    net-imap (0.5.7)
       date
       net-protocol
     net-pop (0.1.2)
@@ -433,12 +446,9 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     nio4r (2.7.4)
-    nokogiri (1.18.4)
-      mini_portile2 (~> 2.8.2)
+    nokogiri (1.18.8-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.18.4-arm64-darwin)
-      racc (~> 1.4)
-    nokogiri (1.18.4-x86_64-linux-gnu)
+    nokogiri (1.18.8-x86_64-linux-gnu)
       racc (~> 1.4)
     oai (1.3.0)
       builder (>= 3.1.0)
@@ -521,7 +531,7 @@ GEM
       rails (>= 5.0, < 8.1)
       rdf
     racc (1.8.1)
-    rack (3.1.12)
+    rack (3.1.14)
     rack-attack (6.7.0)
       rack (>= 1.0, < 4)
     rack-protection (4.1.1)
@@ -530,7 +540,7 @@ GEM
       rack (>= 3.0.0, < 4)
     rack-proxy (0.7.7)
       rack
-    rack-session (2.1.0)
+    rack-session (2.1.1)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
     rack-test (2.2.0)
@@ -647,6 +657,10 @@ GEM
     ruby-ll (2.1.3)
       ansi
       ast
+    ruby-openai (8.1.0)
+      event_stream_parser (>= 0.3.0, < 2.0.0)
+      faraday (>= 1)
+      faraday-multipart (>= 1)
     ruby-progressbar (1.13.0)
     ruby-rc4 (0.1.5)
     ruby2_keywords (0.0.5)
@@ -786,7 +800,7 @@ GEM
 
 PLATFORMS
   arm64-darwin-21
-  ruby
+  arm64-darwin-23
   x86_64-linux
 
 DEPENDENCIES
@@ -820,6 +834,7 @@ DEPENDENCIES
   db-query-matchers (< 2.0)
   device_detector (~> 1.0)
   devise (~> 4.5)
+  docx!
   equivalent-xml
   factory_bot_rails
   faraday (~> 2.0)
@@ -833,7 +848,7 @@ DEPENDENCIES
   irb (>= 1.3.1)
   jbuilder (~> 2.5)
   kaminari (~> 1.2)
-  kithe (~> 2.16)
+  kithe (~> 2.17)
   listen (~> 3.3)
   lockbox
   lograge (< 2)
@@ -863,6 +878,7 @@ DEPENDENCIES
   rinku (~> 2.0)
   rsolr (~> 2.4)
   rspec-rails (~> 7.0)
+  ruby-openai (~> 8.0)
   ruby-progressbar
   rubyzip (~> 2.0)
   sane_patch (< 2.0)
@@ -885,7 +901,7 @@ DEPENDENCIES
   webvtt (< 2)
 
 RUBY VERSION
-   ruby 3.3.7p123
+   ruby 3.3.8p144
 
 BUNDLED WITH
-   2.5.22
+   2.6.8

@@ -47,6 +47,9 @@
             <%= tag "source", src: video_src_url, type: video_asset.content_type %>
           <% end %>
 
+          <% if auto_caption_track_url %>
+            <%= tag "track", src: auto_caption_track_url, label: "Auto-captions", kind: "captions" %>
+          <% end %>
 
           <p class="vjs-no-js">
             To view this video please enable JavaScript, and consider upgrading to a

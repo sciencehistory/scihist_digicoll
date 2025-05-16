@@ -22,10 +22,10 @@ namespace :scihist do
       next unless asset.stored?
       next unless asset.content_type&.start_with?("image/")
 
-      next if asset.dzi_file.exists?
+      next if asset.dzi_package.exists?
 
       progress_bar.title = asset.friendlier_id
-      asset.dzi_file.create
+      asset.dzi_package.create
     rescue *FixityChecker::SHRINE_NOT_FOUND_ERRORS
       progress_bar.log("Missing original for #{asset.friendlier_id}")
     ensure
@@ -38,7 +38,7 @@ namespace :scihist do
     progress_bar = ProgressBar.create(total: args.to_a.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
     Kithe::Asset.where(friendlier_id: args.to_a).find_each do |asset|
       progress_bar.title = asset.friendlier_id
-      asset.dzi_file.create
+      asset.dzi_package.create
       progress_bar.increment
     end
   end
