@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'webvtt'
 
 describe WorkIndexer do
   let(:work) { create(:work, :with_complete_metadata) }
@@ -397,6 +398,53 @@ describe WorkIndexer do
         it "goes in searchable_fulltext_language_agnostic" do
           expect(german).to be_nil
           expect(unsure).to eq(expected_hocr)
+          expect(english).to be_nil
+        end
+      end
+    end
+
+    describe "with webvtt" do
+      let(:assets) do
+        [2, 1].map { |page| create(
+          :asset_with_faked_file,
+          :asr_vtt,
+          position: page,
+          published: true
+          ) }
+      end
+
+      let(:expected_webvtt_txt_arr) {
+        assets.sort_by {|a| a.position }.collect do |a|
+          OralHistoryContent::OhmsXml::VttTranscript.new(a.webvtt_str).transcript_text
+        end
+      }
+
+      let(:output_hash) { WorkIndexer.new.map_record(language_test_work) }
+      let(:english) { output_hash["searchable_fulltext_en"] }
+      let(:german)  { output_hash["searchable_fulltext_de"] }
+      let(:unsure)  { output_hash["searchable_fulltext_language_agnostic"] }
+
+      describe "text known to be in English" do
+        let(:language_test_work) { create(:public_work, language: ['English'], members: assets ) }
+        it "goes in searchable_fulltext_en" do
+          expect(english).to eq(expected_webvtt_txt_arr)
+          expect(german).to be_nil
+          expect(unsure).to be_nil
+        end
+      end
+      describe "text known to be in German" do
+        let(:language_test_work) { create(:public_work, language: ['German'], members: assets ) }
+        it "goes in searchable_fulltext_de" do
+          expect(german).to eq(expected_webvtt_txt_arr)
+          expect(english).to be_nil
+          expect(unsure).to be_nil
+        end
+      end
+      describe "bilingual text" do
+        let(:language_test_work) { create(:public_work, language: ['English', 'German'], members: assets) }
+        it "goes in searchable_fulltext_language_agnostic" do
+          expect(german).to be_nil
+          expect(unsure).to eq(expected_webvtt_txt_arr)
           expect(english).to be_nil
         end
       end
