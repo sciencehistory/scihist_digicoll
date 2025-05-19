@@ -41,6 +41,14 @@ class WorkVideoShowComponent < ApplicationComponent
     @auto_caption_track_url
   end
 
+  def has_transcript?
+    video_asset.has_webvtt?
+  end
+
+  def vtt_transcript
+    video_asset.webvtt_str
+  end
+
   # the representative, if it's visible to current user, otherwise nil!
   def video_asset
     return @video_asset if defined?(@video_asset)
