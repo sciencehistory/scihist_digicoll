@@ -15,6 +15,12 @@ $(document).on("click", "*[data-ohms-timestamp-s]", function(event) {
 
   var html5Audio = $("*[data-role=now-playing-container] audio").get(0);
 
+
+  if (!html5Audio) {
+    html5Audio = $(".show-video video").get(0);
+  }
+
+
   html5Audio.currentTime = seconds;
   html5Audio.play();
 });
