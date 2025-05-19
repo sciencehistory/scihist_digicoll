@@ -254,6 +254,7 @@ describe Asset do
       )
 
       expect(asset.asr_webvtt_str).to eq sample_webvtt
+      expect(asset.webvtt_str).to eq sample_webvtt
 
       expect(DateTime.parse(asset.file_derivatives[Asset::ASR_WEBVTT_DERIVATIVE_KEY].metadata["created_at"])).to be <= DateTime.now
       expect(asset.file_derivatives[Asset::ASR_WEBVTT_DERIVATIVE_KEY].metadata["foo"]).to eq "bar"
@@ -267,9 +268,18 @@ describe Asset do
       )
 
       expect(asset.corrected_webvtt_str).to eq sample_webvtt
+      expect(asset.webvtt_str).to eq sample_webvtt
 
       expect(DateTime.parse(asset.file_derivatives[Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY].metadata["created_at"])).to be <= DateTime.now
       expect(asset.file_derivatives[Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY].metadata["foo"]).to eq "bar"
+    end
+
+    describe "both" do
+      let(:asset) { create(:asset_with_faked_file, :corrected_vtt)}
+
+      it "uses corrected for webvtt_str" do
+        expect(asset.webvtt_str).to eq asset.corrected_webvtt_str
+      end
     end
   end
 end
