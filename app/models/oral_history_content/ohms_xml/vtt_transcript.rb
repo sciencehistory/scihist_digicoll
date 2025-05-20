@@ -8,7 +8,9 @@ class OralHistoryContent
     # https://www.w3.org/TR/webvtt1/
     #
     # Also handles some OHMS quirks, strips and formats OHMS-style citation
-    # footnotes, etc.  This really is OHMS-speciifc in the end.
+    # footnotes, etc.  This really is OHMS-speciifc in the end -- although
+    # should be okay to use basic features for generic WebVTT?  We do so for
+    # whisper ASR WebVTT too.
     #
     # Uses the `webvtt` gem for initial parsing, but that gem is basic and
     # not very maintained, so we need some massaging and post-processing

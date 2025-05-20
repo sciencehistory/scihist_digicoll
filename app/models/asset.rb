@@ -319,6 +319,15 @@ class Asset < Kithe::Asset
     file_derivatives[CORRECTED_WEBVTT_DERIVATIVE_KEY.to_sym].present?
   end
 
+  def has_webvtt?
+    corrected_webvtt? || asr_webvtt?
+  end
+
+  # expensive even if empty, better to check has_asr? cheaper first
+  def webvtt_str
+    corrected_webvtt_str || asr_webvtt_str
+  end
+
 
   # Used as an around_promotion callback. If we're promoting a shrine cache file using remote_url storage, and
   # the file is from our ingest_bucket, then add a record to table to schedule it's deletion in the future

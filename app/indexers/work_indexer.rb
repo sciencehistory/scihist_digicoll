@@ -1,3 +1,5 @@
+require 'webvtt'
+
 # Solr indexing for our work class.
 class WorkIndexer < Kithe::Indexer
   configure do
@@ -206,15 +208,19 @@ class WorkIndexer < Kithe::Indexer
       acc.concat get_string_from_each_published_member(rec, :english_translation)
 
       # Index the transcription and OCR here if we can assume that the work is entirely in English.
+      # Manual transcription, OCR, ASR, whatever
       if rec.language == ['English']
         acc.concat get_string_from_each_published_member(rec, :transcription)
         acc.concat get_string_from_each_published_member(rec, :hocr).map { |hocr| ocr_text(hocr) }
+        acc.concat get_webvtt(rec)
       end
     end
 
     # and for oral histories, let's put just ohms keywords ALSO in our field we use for subject-level boosting,
     # for higher boosting. (This does mean it kind of gets double-boosted -- we still want
     # it in fulltext field for highlighting. I think that's ok).
+    #
+    # Manual transcription, OCR, ASR, whatever.
     to_field "text3_tesim", obj_extract("oral_history_content", "ohms_xml", "index_points", "all_keywords_and_subjects")
 
     to_field "searchable_fulltext_de" do |rec, acc|
@@ -222,16 +228,19 @@ class WorkIndexer < Kithe::Indexer
         # Index the transcription and OCR here if the work is entirely in German.
         acc.concat get_string_from_each_published_member(rec, :transcription)
         acc.concat get_string_from_each_published_member(rec, :hocr).map { |hocr| ocr_text(hocr) }
+        acc.concat get_webvtt(rec)
       end
     end
 
     # Index the transcription here unless we have place to index it in our language-specific indexes.
+    # Manual transcription, OCR, ASR, whatever.
     to_field "searchable_fulltext_language_agnostic" do |rec, acc|
       entirely_in_english = (rec.language == ['English'])
       entirely_in_german  = (rec.language == ['German'])
       unless entirely_in_english || entirely_in_german
         acc.concat get_string_from_each_published_member(rec, :transcription)
         acc.concat get_string_from_each_published_member(rec, :hocr).map { |hocr| ocr_text(hocr) }
+        acc.concat get_webvtt(rec)
       end
     end
 
@@ -294,6 +303,18 @@ class WorkIndexer < Kithe::Indexer
     Nokogiri::HTML(hocr) { |config| config.strict }
       .css('body').first.xpath('//text()')
       .map(&:text).join(' ').squish.html_safe
+  end
+
+  # Find and parse any WebVTT to get text
+  def get_webvtt(work)
+    return [] unless work.members.present?
+
+    work.members.sort_by { |m| m.position || 0 }.map do |mem|
+      if mem.asset? && mem.published? && mem.has_webvtt?
+        # Use existing WebVTT code to parse and strip any html tags etc
+        OralHistoryContent::OhmsXml::VttTranscript.new(mem.webvtt_str).transcript_text
+      end
+    end.compact
   end
 
 end

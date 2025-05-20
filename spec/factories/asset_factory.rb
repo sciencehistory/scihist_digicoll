@@ -170,7 +170,7 @@ FactoryBot.define do
       trait :asr_vtt do
         after(:build) do |asset|
           asset.file_attacher.merge_derivatives({
-            Asset::ASR_WEBVTT_DERIVATIVE_KEY => build(:stored_uploaded_file, file: StringIO.new("foo"), filename: "vtt.vtt", content_type: "text/vtt")
+            Asset::ASR_WEBVTT_DERIVATIVE_KEY => build(:stored_uploaded_file, file: StringIO.new("WEBVTT\n\n00:00.000 --> 00:01.500\nASR WebVTT #{rand 100}"), filename: "vtt.vtt", content_type: "text/vtt")
           })
         end
       end
@@ -178,8 +178,8 @@ FactoryBot.define do
       trait :corrected_vtt do
         after(:build) do |asset|
           asset.file_attacher.merge_derivatives({
-            Asset::ASR_WEBVTT_DERIVATIVE_KEY => build(:stored_uploaded_file, file: StringIO.new("WEBVTT\n\noriginal"), filename: "vtt.vtt", content_type: "text/vtt"),
-            Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY => build(:stored_uploaded_file, file: StringIO.new("WEBVTT\n\ncorrected"), filename: "vtt.vtt", content_type: "text/vtt")
+            Asset::ASR_WEBVTT_DERIVATIVE_KEY => build(:stored_uploaded_file, file: StringIO.new("WEBVTT\n\n00:00.000 --> 00:01.500\nASR Webvtt #{rand 100}"), filename: "vtt.vtt", content_type: "text/vtt"),
+            Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY => build(:stored_uploaded_file, file: StringIO.new("WEBVTT\n\n00:00.000 --> 00:01.500\ncorrected WebVTT #{rand 100}"), filename: "vtt.vtt", content_type: "text/vtt")
           })
         end
       end
