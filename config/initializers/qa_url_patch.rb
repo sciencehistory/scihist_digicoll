@@ -10,6 +10,10 @@
 SanePatch.patch('qa', '5.14.0') do
   module Qa::Authorities
     class AssignFast::GenericAuthority < Base
+
+
+      # original method at:
+      # https://github.com/samvera/questioning_authority/blob/296085f94c52ed5f617daac3273febc35f9649c6/lib/qa/authorities/assign_fast/generic_authority.rb#L44-L53
       def build_query_url(q)
         escaped_query = clean_query_string q
         index = AssignFast.index_for_authority(subauthority)
@@ -20,6 +24,8 @@ SanePatch.patch('qa', '5.14.0') do
         # we formerly got without specifying, that is most useful in our use case.
         "https://fast.oclc.org/searchfast/fastsuggest?&query=#{escaped_query}&queryIndex=#{index}&queryReturn=#{return_data}&suggest=autoSubject&rows=#{num_rows}&sort=usage+desc"
       end
+
+
     end
   end
 end
