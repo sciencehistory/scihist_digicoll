@@ -40,7 +40,7 @@ describe OpenaiAudioTranscribe do
   end
 
   describe "#get_vtt_for_asset" do
-    let(:asset) { create(:asset_with_faked_file, :video)}
+    let(:asset) { create(:asset_with_faked_file, :video, parent: build(:work, description: "This is a video described"))}
 
     it "submits API request with oga" do
       expect(service.client.audio).to receive(:transcribe) do |args|
@@ -51,6 +51,8 @@ describe OpenaiAudioTranscribe do
 
         expect(parameters[:file]).to be_kind_of(Tempfile)
         expect(parameters[:file].path).to end_with(".oga")
+
+        expect(parameters[:prompt]).to eq "This is a video described"
       end.and_return(sample_webvtt)
 
       webvtt = service.get_vtt_for_asset(asset)
@@ -61,7 +63,7 @@ describe OpenaiAudioTranscribe do
   end
 
   describe "#get_and_store_vtt_for_asset" do
-    let(:asset) { create(:asset_with_faked_file, :video)}
+    let(:asset) { create(:asset_with_faked_file, :video, parent: build(:work, description: "This is a video described"))}
 
     it "stores as derivative and metadata" do
       expect(service.client.audio).to receive(:transcribe) do |args|
@@ -84,7 +86,8 @@ describe OpenaiAudioTranscribe do
 
       expect(metadata["asr_engine"]).to eq({
         "api" => "OpenAI transcribe",
-        "model" => "whisper-1"
+        "model" => "whisper-1",
+        "prompt" => "This is a video described"
       })
       expect(metadata["created_at"]).to be_present
     end
