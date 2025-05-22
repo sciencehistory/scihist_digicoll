@@ -17,7 +17,10 @@
 class OpenaiAudioTranscribe
   class Error < StandardError ; end
 
-  REQUEST_TIMEOUT = 360 # seconds. default may be 120. In some cases not long enough?
+  # timeout in seconds. default may be 120. In some cases not long enough?
+  # Let's do a REALLY long one, we kind of want to wait for it? If WE timeout
+  # waiting, we pay for it anyway!  but long ones are hard for ActiveJob
+  REQUEST_TIMEOUT = 600
   MODEL = "whisper-1"
 
   attr_reader :use_prompt
