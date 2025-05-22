@@ -20,6 +20,12 @@ class OpenaiAudioTranscribe
   REQUEST_TIMEOUT = 360 # seconds. default may be 120. In some cases not long enough?
   MODEL = "whisper-1"
 
+  attr_reader :use_prompt
+
+  def initialize(use_prompt: true)
+    @use_prompt = !!use_prompt
+  end
+
   # process audio from Asset with OpenAI whsiper, and store the transcript in
   # Asset derivatives, writing over anything else we had.
   def get_and_store_vtt_for_asset(asset)
@@ -33,9 +39,10 @@ class OpenaiAudioTranscribe
 
     tech_provenance_metadata = {
       "api" => "OpenAI transcribe",
-      "model" => MODEL
-    }
-    tech_provenance_metadata["language"] = lang_code if lang_code
+      "model" => MODEL,
+      "language" => (lang_code if lang_code),
+      "prompt" => (whisper_prompt(asset) if use_prompt)
+    }.compact
 
     asset.file_attacher.add_persisted_derivatives(
         {Asset::ASR_WEBVTT_DERIVATIVE_KEY => StringIO.new(webvtt)},
@@ -56,7 +63,7 @@ class OpenaiAudioTranscribe
 
     lofi_opus = FfmpegExtractOpusAudio.new.call(asset.file)
 
-    get_vtt(lofi_opus, lang_code: lang_code)
+    get_vtt(lofi_opus, lang_code: lang_code, whisper_prompt: (whisper_prompt(asset) if use_prompt))
   ensure
     lofi_opus.unlink if lofi_opus
   end
@@ -70,17 +77,23 @@ class OpenaiAudioTranscribe
   # @param lang_code [String] ISO-279 two-letter language code, optional, Whisper
   #   can only take one, the 'primary' one of the audio. Without it,  whisper will guess.
   #
+  # @param whisper_prompt [Boolean] pass to openai whisper api as propmt if given.
+  #    see eg https://cookbook.openai.com/examples/whisper_prompting_guide
+  #
   # File path needs to actually end in a recognized suffix for OpenAI whisper:
   # ['flac', 'm4a', 'mp3', 'mp4', 'mpeg', 'mpga', 'oga', 'ogg', 'wav', 'webm']
-  def get_vtt(audio_file, lang_code: nil)
-      response = client.audio.transcribe(
-        parameters: {
-          model: MODEL,
-          file: audio_file,
-          response_format: "vtt",
-          language: lang_code, # Optional
-        }
-      )
+  def get_vtt(audio_file, lang_code: nil, whisper_prompt:nil)
+    parameters = {
+      model: MODEL,
+      file: audio_file,
+      response_format: "vtt",
+      language: lang_code, # Optional,
+      prompt: whisper_prompt
+    }.compact
+
+    response = client.audio.transcribe(
+      parameters: parameters
+    )
   rescue Faraday::Error => e
     size_msg = if audio_file.respond_to?(:size) && audio_file.size
        "input file: #{ActiveSupport::NumberHelper.number_to_human_size(audio_file.size)}: "
@@ -102,6 +115,19 @@ class OpenaiAudioTranscribe
       log_errors: Rails.env.development?,
       request_timeout: REQUEST_TIMEOUT,
     )
+  end
+
+  # For guidance on openAI API whisper prompts, see:
+  # https://cookbook.openai.com/examples/whisper_prompting_guide
+  #
+  # We're going to try using description to provide example words....
+  def whisper_prompt(asset)
+    # whisper prompt can only be max 224 "tokens", and otherwise it takes the LAST
+    # part. We'd rather have the first part, so we'll try to truncate, using openai
+    # rule of thumb that 100 tokens is 75 words, just limit to first 150 words.
+    #
+    # https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them
+    asset.parent&.description&.truncate_words(150, omission: "")
   end
 
 end
