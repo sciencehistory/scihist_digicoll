@@ -232,7 +232,7 @@ $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90p
 
   .show-video-transcript {
     grid-area: show-video-transcript;
-    border: 1px solid $shi-gray-3;
+    border: 2px solid $shi-gray-3;
     // Kind of hacky formula. No longer than screen to allow scrolling.
     // Ideally all on screen on first page load, even with navbar at top (~17 rem),
     // but no shorter than video. Works out decently, including on mobile sizes.
@@ -245,6 +245,8 @@ $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90p
       display: flex;
       justify-content: space-between;
       align-items: baseline;
+
+      background-color: $shi-gray-3;
      }
     .show-video-transcript-content {
       overflow-y: scroll;
