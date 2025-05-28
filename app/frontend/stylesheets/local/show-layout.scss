@@ -50,6 +50,16 @@
     }
   }
 
+  .show-video-transcript {
+    border: 1px solid $shi-gray-3;
+    // Kind of hacky formula. No longer than screen to allow scrolling.
+    // Ideally all on screen on first page load, even with navbar at top (~17 rem),
+    // but no shorter than video. Works out decently, including on mobile sizes.
+    max-height: max(349px, calc(95vh - 17rem - 3rem));
+    overflow-y: scroll;
+    padding: 1rem;
+  }
+
   // some margin at small screen single-column to leave space before image.
   // This needs to be erased at larger screen with columns.  Couldn't manage
   // to get this to work with margin collapsing alone.
