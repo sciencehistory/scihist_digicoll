@@ -6,7 +6,7 @@
   <%= render "works/meta_tags", work: work  %>
 <% end %>
 
-<div class="show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
+<div class="video-show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
 
   <div class="show-title">
     <%# kinda cheesy to stuff transscript inside show-title, but easiest -%>
@@ -77,7 +77,6 @@
     <% else %> <%# no video file available %>
       <%= tag "img", src: asset_path("placeholderbox.svg", alt: "") %>
     <% end %>
-
 
     <%= render "works/rights_and_social", work: work %>
 

@@ -24,19 +24,17 @@
 // This code has gotten a bit crazy -- WARNING it's used on several different
 // 'show' pages, making it even harder to change now.  But it works, and does a
 //  bunch of nice responsive things.
-//
+
+$main-gutter-width: 40px; // 2.5 16px rem, but we built this on px alas
+// thumb width large size (525px)
+$max-image-column: 525px;
+// this is the point the image column is 'naturally' 525px, any bigger it's 'naturally' bigger,
+// and we don't want to let it get so.
+// 90px seem to be our main layout/bootstrap outer margins, hacky.
+$max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90px;
+
+
 .show-page-layout {
-
-  $main-gutter-width: 40px; // 2.5 16px rem, but we built this on px alas
-  // thumb width large size (525px)
-  $max-image-column: 525px;
-  // this is the point the image column is 'naturally' 525px, any bigger it's 'naturally' bigger,
-  // and we don't want to let it get so.
-  // 90px seem to be our main layout/bootstrap outer margins, hacky.
-  $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90px;
-
-
-
   // even when collapsed to no columns, we don't want image bigger than this
   .show-hero {
     max-width: $max-image-column;
@@ -179,6 +177,45 @@
         float: right;
       }
     }
+  }
+}
+
+// We fork the layout for video page, using grid and flex instead of that crazy legacy
+// float, so we can more easily re-order the transcript on mobile.
+.video-show-page-layout {
+  // Big enough for grid
+  @include media-breakpoint-up(md) {
+    display: grid;
+    grid-template-columns: $max-image-column 1fr;
+    column-gap: $main_gutter_width;
+    grid-template-areas:
+      "show-video show-title"
+      "show-video show-metadata";
+  }
+
+  .show-video {
+    grid-area: show-video;
+    video {
+      width: 100%;
+    }
+  }
+
+  .show-title {
+    grid-area: show-title;
+  }
+
+  .show-metadata {
+    grid-area: show-metadata;
+  }
+
+  .show-video-transcript {
+    border: 1px solid $shi-gray-3;
+    // Kind of hacky formula. No longer than screen to allow scrolling.
+    // Ideally all on screen on first page load, even with navbar at top (~17 rem),
+    // but no shorter than video. Works out decently, including on mobile sizes.
+    max-height: max(349px, calc(95vh - 17rem - 3rem));
+    overflow-y: scroll;
+    padding: 1rem;
   }
 }
 
