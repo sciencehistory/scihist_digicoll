@@ -9,21 +9,6 @@
 <div class="video-show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
 
   <div class="show-title">
-    <%# kinda cheesy to stuff transscript inside show-title, but easiest -%>
-    <% if has_vtt_transcript? %>
-      <div class="collapse" id="show-video-transcript">
-        <div class="show-video-transcript mb-4">
-          <div class="d-flex justify-content-between align-items-baseline mb-3">
-            <h2 class="h3">Transcript</h2>
-            <button type="button" class="btn-close" aria-label="Close" data-bs-toggle="collapse" data-bs-target="#show-video-transcript" aria-expanded="true">
-            </button>
-          </div>
-
-          <%= render OralHistory::VttTranscriptComponent.new(OralHistoryContent::OhmsXml::VttTranscript.new(vtt_transcript_str)) %>
-        </div>
-      </div>
-    <% end %>
-
     <%= render WorkTitleAndDatesComponent.new(work) %>
   </div>
 
@@ -90,6 +75,20 @@
       </p>
     <% end %>
   </div>
+
+  <% if has_vtt_transcript? %>
+    <div class="collapse" id="show-video-transcript">
+      <div class="show-video-transcript mb-4">
+        <div class="d-flex justify-content-between align-items-baseline mb-3">
+          <h2 class="h3">Transcript</h2>
+          <button type="button" class="btn-close" aria-label="Close" data-bs-toggle="collapse" data-bs-target="#show-video-transcript" aria-expanded="true">
+          </button>
+        </div>
+
+        <%= render OralHistory::VttTranscriptComponent.new(OralHistoryContent::OhmsXml::VttTranscript.new(vtt_transcript_str)) %>
+      </div>
+    </div>
+  <% end %>
 
   <div class="show-metadata">
     <div class="work-description">
