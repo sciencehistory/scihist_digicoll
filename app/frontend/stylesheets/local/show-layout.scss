@@ -237,8 +237,19 @@ $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90p
     // Ideally all on screen on first page load, even with navbar at top (~17 rem),
     // but no shorter than video. Works out decently, including on mobile sizes.
     max-height: max(349px, calc(95vh - 17rem - 3rem));
-    overflow-y: scroll;
-    padding: 1rem;
+
+    display: flex;
+    flex-direction: column;
+    .show-video-transcript-heading{
+      padding: 0.5rem 1rem 0 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+     }
+    .show-video-transcript-content {
+      overflow-y: scroll;
+       padding: 0 1rem 1rem 1rem;
+    }
   }
 }
 

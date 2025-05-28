@@ -83,13 +83,15 @@
   <% if has_vtt_transcript? %>
     <div class="collapse" id="show-video-transcript">
       <div class="show-video-transcript mb-4">
-        <div class="d-flex justify-content-between align-items-baseline mb-3">
+        <div class="show-video-transcript-heading">
           <h2 class="h3">Transcript</h2>
           <button type="button" class="btn-close" aria-label="Close" data-bs-toggle="collapse" data-bs-target="#show-video-transcript" aria-expanded="true">
           </button>
         </div>
 
-        <%= render OralHistory::VttTranscriptComponent.new(OralHistoryContent::OhmsXml::VttTranscript.new(vtt_transcript_str)) %>
+        <div class="show-video-transcript-content">
+          <%= render OralHistory::VttTranscriptComponent.new(OralHistoryContent::OhmsXml::VttTranscript.new(vtt_transcript_str)) %>
+        </div>
       </div>
     </div>
   <% end %>
