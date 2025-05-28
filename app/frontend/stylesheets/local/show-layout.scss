@@ -168,13 +168,19 @@ $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90p
   // Big enough for grid
   @include media-breakpoint-up(md) {
     display: grid;
-    grid-template-columns: $max-image-column 1fr;
+    grid-template-columns: 0.9fr 1fr;
     column-gap: $main_gutter_width;
     grid-template-areas:
       "show-video show-video-transcript"
       "show-video show-title"
       "show-video show-metadata";
   }
+
+  // Keep vide from getting too too large
+  @include media-breakpoint-up(xl) {
+    grid-template-columns: ($max-image-column) 1fr;
+  }
+
 
   .show-video {
     grid-area: show-video;
