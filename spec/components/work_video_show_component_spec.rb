@@ -108,6 +108,13 @@ describe WorkVideoShowComponent, type: :component do
         expect(track_element["label"]).to eq "Auto-captions"
         expect(track_element["kind"]).to eq "captions"
       end
+
+      it "includes on-page transcript toggle" do
+        render_inline described_class.new(work)
+
+        expect(page).to have_selector("#showVideoTranscriptToggle[data-bs-target='#show-video-transcript-collapse']")
+        expect(page).to have_selector("#show-video-transcript-collapse.collapse")
+      end
     end
 
     describe "corrected captions" do
