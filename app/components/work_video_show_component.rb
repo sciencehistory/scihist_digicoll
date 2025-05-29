@@ -42,7 +42,7 @@ class WorkVideoShowComponent < ApplicationComponent
   end
 
   def has_vtt_transcript?
-    video_asset.asr_webvtt? || video_asset.corrected_webvtt?
+    video_asset&.asr_webvtt? || video_asset&.corrected_webvtt?
   end
 
   def vtt_transcript_str
