@@ -8,6 +8,12 @@ domready(function() {
   if (transcriptCollapsible && toggle) {
     transcriptCollapsible.addEventListener('shown.bs.collapse', event => {
       toggle.textContent = toggle.dataset.hideLabel;
+
+      // jump to transcript if needed
+      const bounding = transcriptCollapsible.getBoundingClientRect();
+      if (bounding && !(bounding.bottom >= 0 && bounding.top <= document.documentElement.clientHeight)) {
+        transcriptCollapsible.scrollIntoView();
+      }
     });
     transcriptCollapsible.addEventListener('hidden.bs.collapse', event => {
       toggle.textContent = toggle.dataset.showLabel;
