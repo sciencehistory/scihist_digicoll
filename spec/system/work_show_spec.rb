@@ -224,14 +224,20 @@ describe "Public work show page", type: :system, js: false do
   end
 
   describe "Video work", queue_adapter: :test do
-    let(:work) { create(:video_work, :published) }
+    describe "with captions" do
+      let(:work) { create(:video_work, :published, members: [build(:asset_with_faked_file, :video, :asr_vtt)]) }
 
-    it "smoke tests", js: true do
-      visit work_path(work)
+      it "smoke tests, with transcript", js: true do
+        visit work_path(work)
 
-      expect(page).to be_axe_clean
+        expect(page).to be_axe_clean
 
-      expect(page).to have_css("video")
+        expect(page).to have_css("video")
+
+        click_on "Show transcript"
+        expect(page).to have_selector("#show-video-transcript-collapse h2", text: "Transcript")
+        expect(page).to have_selector("#show-video-transcript-collapse a[data-ohms-timestamp-s='0.0']")
+      end
     end
   end
 end
