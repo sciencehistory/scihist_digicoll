@@ -23,6 +23,7 @@
           <%= content_tag("video",
                   id: "work-video-player",
                   class: "video-js vjs-fluid vjs-big-play-centered",
+                  playsinline: true, # https://developer.apple.com/documentation/webkit/delivering-video-content-for-safari#Enable-Inline-Video-Playback
                   controls: true,
                   preload: "metadata",
                   poster: poster_src,
