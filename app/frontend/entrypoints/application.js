@@ -87,3 +87,4 @@ import "../javascript/video_player.js";
 
 import "../javascript/main_nav_collapse_toggle.js";
 import "../javascript/lazy_member_images.js"
+import "../javascript/transcript_toggle.js"

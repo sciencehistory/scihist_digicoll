@@ -24,30 +24,20 @@
 // This code has gotten a bit crazy -- WARNING it's used on several different
 // 'show' pages, making it even harder to change now.  But it works, and does a
 //  bunch of nice responsive things.
-//
+
+$main-gutter-width: 40px; // 2.5 16px rem, but we built this on px alas
+// thumb width large size (525px)
+$max-image-column: 525px;
+// this is the point the image column is 'naturally' 525px, any bigger it's 'naturally' bigger,
+// and we don't want to let it get so.
+// 90px seem to be our main layout/bootstrap outer margins, hacky.
+$max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90px;
+
+
 .show-page-layout {
-
-  $main-gutter-width: 40px; // 2.5 16px rem, but we built this on px alas
-  // thumb width large size (525px)
-  $max-image-column: 525px;
-  // this is the point the image column is 'naturally' 525px, any bigger it's 'naturally' bigger,
-  // and we don't want to let it get so.
-  // 90px seem to be our main layout/bootstrap outer margins, hacky.
-  $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90px;
-
-
-
   // even when collapsed to no columns, we don't want image bigger than this
   .show-hero {
     max-width: $max-image-column;
-  }
-
-  // Used in place of .show-hero on video screen. No max-width, on small
-  // screen we want to let video be full width.
-  .show-video {
-    video {
-      width: 100%;
-    }
   }
 
   // some margin at small screen single-column to leave space before image.
@@ -168,6 +158,99 @@
 
         float: right;
       }
+    }
+  }
+}
+
+// We fork the layout for video page, using grid and flex instead of that crazy legacy
+// float, so we can more easily re-order the transcript on mobile. A bit hacky
+// with margins and media queries, sorry.
+.video-show-page-layout {
+  display: grid;
+
+  // At very small screen, single column, and re-arrange transcript
+  // to be right below video, which requires us elminating one container
+  grid-template-columns: 1fr;
+  .show-video {
+    display: contents;
+  }
+  grid-template-areas:
+    "show-title"
+    "video-player"
+    "show-video-transcript"
+    "rights-and-social"
+    "transcript-toggle"
+    "show-metadata";
+  .video-player { grid-area: video-player; }
+  .transcript-toggle { grid-area: transcript-toggle; }
+  .rights-and-social { grid-area: rights-and-social; }
+
+  .show-title, .video-player {
+    margin-bottom: $paragraph-spacer * 2;
+  }
+
+  .show-video-transcript: {
+    margin-top: $paragraph-spacer;
+  }
+
+  // Big enough for grid
+  @include media-breakpoint-up(md) {
+    grid-template-columns: 0.9fr 1fr;
+    column-gap: $main_gutter_width;
+    grid-template-areas:
+      "show-video show-video-transcript"
+      "show-video show-title"
+      "show-video show-metadata";
+
+    .show-video { display: block; }
+    .video-player, .transcript-toggle, .rights-and-social { grid-area: unset; }
+    .show-title { margin-bottom: unset; }
+    .show-video-transcript: { margin-top: unset; }
+  }
+
+  // Keep vide from getting too too large
+  @include media-breakpoint-up(xl) {
+    grid-template-columns: ($max-image-column) 1fr;
+  }
+
+
+  .show-video {
+    grid-area: show-video;
+    video {
+      width: 100%;
+    }
+  }
+
+
+  .show-title {
+    grid-area: show-title;
+  }
+
+  .show-metadata {
+    grid-area: show-metadata;
+  }
+
+  .show-video-transcript {
+    grid-area: show-video-transcript;
+    border: 2px solid $shi-gray-3;
+    // Kind of hacky formula. No longer than screen to allow scrolling.
+    // Ideally all on screen on first page load, even with navbar at top (~17 rem),
+    // but no shorter than video. Works out decently, including on mobile sizes.
+    max-height: max(349px, calc(95vh - 17rem - 3rem));
+
+    display: flex;
+    flex-direction: column;
+    .show-video-transcript-heading{
+      padding: 0.5rem 1rem 0 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+
+      background-color: $shi-gray-3;
+     }
+    .show-video-transcript-content {
+      overflow-y: scroll;
+       padding: 1rem;
     }
   }
 }

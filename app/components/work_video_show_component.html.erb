@@ -6,67 +6,95 @@
   <%= render "works/meta_tags", work: work  %>
 <% end %>
 
-<div class="show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
+<div class="video-show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
 
   <div class="show-title">
     <%= render WorkTitleAndDatesComponent.new(work) %>
   </div>
 
   <div class="show-video">
-
-    <% if video_asset.present? %>
-      <div class="position-relative">
-        <% if ! video_asset.published? %>
-          <%= private_label %>
-        <% end %>
-
-        <%= content_tag("video",
-                id: "work-video-player",
-                class: "video-js vjs-fluid vjs-big-play-centered",
-                controls: true,
-                preload: "metadata",
-                poster: poster_src,
-                style: "aspect-ratio: #{video_asset.width }/#{ video_asset.height };",
-                # the data-setup with serialized json triggers video.js
-                data: {
-                  setup: {
-                    controlBar: {
-                      skipButtons: {
-                        # seconds. only 5, 10, and 30 are supported by video.js
-                        forward: 30,
-                        backward: 10
-                      }
-                    },
-                    aspectRatio: "#{video_asset.width}:#{video_asset.height}"
-                  }.to_json
-                }
-        ) do %>
-          <% if video_asset.hls_playlist_file.present? %>
-            <%= tag "source", src: video_asset.hls_playlist_file.url, type: "application/x-mpegURL" %>
-          <% else %>
-            <%= tag "source", src: video_src_url, type: video_asset.content_type %>
+    <div class="video-player">
+      <% if video_asset.present? %>
+        <div class="position-relative">
+          <% if ! video_asset.published? %>
+            <%= private_label %>
           <% end %>
 
-          <% if auto_caption_track_url %>
-            <%= tag "track", src: auto_caption_track_url, label: "Auto-captions", kind: "captions" %>
+          <%= content_tag("video",
+                  id: "work-video-player",
+                  class: "video-js vjs-fluid vjs-big-play-centered",
+                  controls: true,
+                  preload: "metadata",
+                  poster: poster_src,
+                  style: "aspect-ratio: #{video_asset.width }/#{ video_asset.height };",
+                  # the data-setup with serialized json triggers video.js
+                  data: {
+                    setup: {
+                      controlBar: {
+                        skipButtons: {
+                          # seconds. only 5, 10, and 30 are supported by video.js
+                          forward: 30,
+                          backward: 10
+                        }
+                      },
+                      aspectRatio: "#{video_asset.width}:#{video_asset.height}"
+                    }.to_json
+                  }
+          ) do %>
+            <% if video_asset.hls_playlist_file.present? %>
+              <%= tag "source", src: video_asset.hls_playlist_file.url, type: "application/x-mpegURL" %>
+            <% else %>
+              <%= tag "source", src: video_src_url, type: video_asset.content_type %>
+            <% end %>
+
+            <% if auto_caption_track_url %>
+              <%= tag "track", src: auto_caption_track_url, label: "Auto-captions", kind: "captions" %>
+            <% end %>
+
+            <p class="vjs-no-js">
+              To view this video please enable JavaScript, and consider upgrading to a
+              web browser that
+              <a href="https://videojs.com/html5-video-support/" target="_blank"
+                >supports HTML5 video</a
+              >
+            </p>
           <% end %>
-
-          <p class="vjs-no-js">
-            To view this video please enable JavaScript, and consider upgrading to a
-            web browser that
-            <a href="https://videojs.com/html5-video-support/" target="_blank"
-              >supports HTML5 video</a
-            >
-          </p>
-        <% end %>
-      </div>
-    <% else %> <%# no video file available %>
-      <%= tag "img", src: asset_path("placeholderbox.svg", alt: "") %>
-    <% end %>
-
+        </div>
+      <% else %> <%# no video file available %>
+        <%= tag "img", src: asset_path("placeholderbox.svg", alt: "") %>
+      <% end %>
+    </div>
 
     <%= render "works/rights_and_social", work: work %>
+
+    <% if has_vtt_transcript? %>
+      <div class="transcript-toggle">
+        <button id="showVideoTranscriptToggle" class="btn btn-lg btn-brand-main" type="button" data-bs-toggle="collapse" data-bs-target="#show-video-transcript-collapse" aria-expanded="false" aria-controls="show-video-transcript" data-show-label="Show transcript" data-hide-label="Hide transcript">
+          Show transcript
+        </button>
+
+        <p class="alert alert-warning mt-3">
+          These captions and transcript were generated by a computer and may contain errors. If there are significant errors that should be corrected, please let us know by emailing <a href="mailto:digital@sciencehistory.org">digital@sciencehistory.org</a>.</p>
+        </p>
+      </div>
+    <% end %>
   </div>
+
+  <% if has_vtt_transcript? %>
+    <div class="collapse" id="show-video-transcript-collapse">
+      <div class="show-video-transcript mb-4">
+        <div class="show-video-transcript-heading">
+          <h2 class="h3">Transcript</h2>
+          <button type="button" class="btn-close" aria-label="Close" data-bs-toggle="collapse" data-bs-target="#show-video-transcript-collapse" aria-expanded="true">
+          </button>
+        </div>
+
+        <div class="show-video-transcript-content">
+          <%= render OralHistory::VttTranscriptComponent.new(OralHistoryContent::OhmsXml::VttTranscript.new(vtt_transcript_str)) %>
+        </div>
+      </div>
+    </div>
+  <% end %>
 
   <div class="show-metadata">
     <div class="work-description">

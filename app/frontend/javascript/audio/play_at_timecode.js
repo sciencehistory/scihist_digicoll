@@ -13,8 +13,9 @@ $(document).on("click", "*[data-ohms-timestamp-s]", function(event) {
 
   var seconds = this.dataset.ohmsTimestampS;
 
-  var html5Audio = $("*[data-role=now-playing-container] audio").get(0);
+  // OH audio player, or our video player
+  var html5Media = $("*[data-role=now-playing-container] audio, .show-video video").get(0);
 
-  html5Audio.currentTime = seconds;
-  html5Audio.play();
+  html5Media.currentTime = seconds;
+  html5Media.play();
 });
