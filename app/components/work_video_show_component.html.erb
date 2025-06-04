@@ -22,7 +22,8 @@
 
           <%= content_tag("video",
                   id: "work-video-player",
-                  class: "video-js vjs-fluid vjs-big-play-centered vjs-theme-scihist",
+                  # normalise-time-controls: https://github.com/videojs/video.js/pull/8833
+                  class: "video-js vjs-fluid vjs-big-play-centered vjs-theme-scihist vjs-normalise-time-controls",
                   playsinline: true, # https://developer.apple.com/documentation/webkit/delivering-video-content-for-safari#Enable-Inline-Video-Playback
                   controls: true,
                   preload: "metadata",
@@ -32,6 +33,30 @@
                   data: {
                     setup: {
                       controlBar: {
+                        # custom children list to move volume to right, and remove remaining time.
+                        # Started from:
+                        # https://github.com/videojs/video.js/blob/09eb7150453bb2cbd96e638be3e115590ae98578/src/js/control-bar/control-bar.js#L56-L76
+                        children: [
+                          'playToggle',
+                          'skipBackward',
+                          'skipForward',
+                          'currentTimeDisplay',
+                          'timeDivider',
+                          'durationDisplay',
+                          'progressControl',
+                          'liveDisplay',
+                          'seekToLive',
+                          #'remainingTimeDisplay',
+                          'customControlSpacer',
+                          'volumePanel',
+                          'playbackRateMenuButton',
+                          'chaptersButton',
+                          'descriptionsButton',
+                          'subsCapsButton',
+                          'audioTrackButton',
+                          'pictureInPictureToggle',
+                          'fullscreenToggle'
+                        ],
                         skipButtons: {
                           # seconds. only 5, 10, and 30 are supported by video.js
                           forward: 30,
@@ -39,7 +64,8 @@
                         },
                         volumePanel: {
                           inline: false
-                        }
+                        },
+                        durationDisplay: true
                       },
                       aspectRatio: "#{video_asset.width}:#{video_asset.height}"
                     }.to_json

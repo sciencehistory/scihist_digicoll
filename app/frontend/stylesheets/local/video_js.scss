@@ -181,10 +181,30 @@
   // Make font bigger in time display
   .vjs-control-bar .vjs-time-control {
     width: auto;
+    min-width: 0.5em; // not sure why min-width makes em shrink to fit properly
     font-size: 120%;
     line-height: 2.7em; // not sure, but works
-    flex-grow: 2; // take up extra space
-    text-align: left;
+  }
+
+  // volume take up extra space to it's left, to give us two groups
+  // this works, oddly enough.
+  .vjs-volume-panel {
+    margin-left: auto;
+    width: 3.5em !important;
+  }
+
+  // Remove padding around time-divider, why the heck is it there so huge?
+  .vjs-time-divider {
+    padding: 0 0.25em;
+    flex-grow: 0;
+  }
+  .vjs-duration {
+    padding: 0;
+    flex-grow: 0;
+  }
+  .vjs-current-time {
+    padding-left: 0.25em;
+    padding-right: 0;
   }
 
   // Fix subtitles for control bar
@@ -204,5 +224,16 @@
   &.vjs-controls-disabled .vjs-text-track-display,
   &.vjs-user-inactive.vjs-playing .vjs-text-track-display {
     transform: translateY(0);
+  }
+}
+
+// on smaller screens, we can't fit in duration, just hide it. We can use
+// CSS container queries to actually do it in terms of size of video!
+.show-video {
+  container-type: size;
+}
+@container (max-width: 25rem) {
+  .vjs-theme-scihist .vjs-duration, .vjs-theme-scihist .vjs-time-divider {
+    display: none !important;
   }
 }
