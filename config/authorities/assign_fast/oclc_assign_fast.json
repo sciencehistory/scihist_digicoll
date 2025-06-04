@@ -1,0 +1,5 @@
+{
+  "search": {
+    "connection": { "timeout":"2"}
+  }
+}
