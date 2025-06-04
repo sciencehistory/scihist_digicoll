@@ -207,6 +207,20 @@
     padding-right: 0;
   }
 
+  // The elapsed time tooltip over grabber, not needed as we show elapsed
+  // time in toolbar, plus it gets in the way of current hover time
+  .vjs-play-progress .vjs-time-tooltip {
+    display:none !important;
+  }
+
+  // the mouse position hover time tooltip, display black on white instead please,
+  // uses styling that was on the elapsed time tooltip
+  .vjs-mouse-display .vjs-time-tooltip {
+    background-color: white;
+    background-color: rgba(255, 255, 255, 0.95);
+    color: black;
+  }
+
   // Fix subtitles for control bar
 
   // 1.5 em is differnece in size of our custom control bar (4em + 1 em padding == 5em, plus 0.5em progress controls == 5.5em?), and
