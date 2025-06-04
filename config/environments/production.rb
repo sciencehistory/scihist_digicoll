@@ -1,5 +1,4 @@
 require 'scihist_digicoll/logger_formatter'
-require 'byebug'
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
