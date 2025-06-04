@@ -219,6 +219,23 @@
     background-color: white;
     background-color: rgba(255, 255, 255, 0.95);
     color: black;
+
+     // make it a bit closer, since it's over scrubber we moved up
+    top: -2.8em;
+  }
+  .vjs-mouse-display { // the little line that hovers over progress bar
+    background-color: white !important;
+  }
+
+  // put it above our new higher controlbar to avoid overlap
+  .vjs-volume-vertical {
+    bottom: 9em;
+  }
+
+  // Place popup menus above and on top of progress control
+  .vjs-menu-button-popup .vjs-menu {
+    bottom: 1.5em;
+    z-index: 1;
   }
 
   // Fix subtitles for control bar
