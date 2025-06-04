@@ -69,19 +69,8 @@ Rails.application.configure do
   # Prepend all log lines with the following tags.
   config.log_tags = [ :request_id ]
 
-  config.cache_store = :redis_cache_store, { url: ScihistDigicoll::Env.lookup(:redis_cache_store_url),
-
-    # just defaults for now
-
-    # connect_timeout:    30,  # Defaults to 1 second
-    # read_timeout:       0.2, # Defaults to 1 second
-    # write_timeout:      0.2, # Defaults to 1 second
-    # reconnect_attempts: 2,   # Defaults to 1
-
-    # error_handler: -> (method:, returning:, exception:) {
-    #   Rails.logger.warn(exception)
-    # }
-  }
+  # for now, let's use as many default settings as possible:
+  config.cache_store = :redis_cache_store, { url: ScihistDigicoll::Env.lookup(:redis_cache_store_url) }
 
   # Use a real queuing backend for Active Job (and separate queues per environment)
   config.active_job.queue_adapter     = :resque

@@ -214,6 +214,13 @@ module ScihistDigicoll
     define_key :cf_turnstile_enabled, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM, default: false
 
     define_key :redis_cache_store_url_env
+
+
+    # REDIS_CACHE_STORE_URL_ENV
+    # should be set to the env key containing
+    # redis instance's secure URL,
+    # for instance
+    # AH_REDIS_STACKHERO_JADE_URL_TLS
     define_key :redis_cache_store_url, default: ( ENV[ ENV['REDIS_CACHE_STORE_URL_ENV'] ] unless ENV['REDIS_CACHE_STORE_URL_ENV'].nil? )
 
     # Logic to get network location of the Redis instance we will
