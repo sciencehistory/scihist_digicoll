@@ -203,7 +203,7 @@
     flex-grow: 0;
   }
   .vjs-current-time {
-    padding-left: 0.25em;
+    padding-left: 0.75em;
     padding-right: 0;
   }
 
@@ -258,12 +258,29 @@
   }
 }
 
-// on smaller screens, we can't fit in duration, just hide it. We can use
-// CSS container queries to actually do it in terms of size of video!
-.show-video {
-  container-type: size;
+// When video box is too small, we need to make control bar smaller.
+// CSS container queries are super useful for this -- but was hard to make
+// work right, if we put `container-type` on the .vjs-theme-scihist itself, which
+// would make it neater as a theme -- Chrome crashes trying to play the video!
+//
+// If we we `container-type: size`, the layout gets all messed up in ways
+// we didn't expect.
+//
+// But a wrapper div with `inline-size` seems to work. Hacky and fragile but
+// good enough for now.
+
+.vjs-theme-scihist-wrapper {
+  container-type: inline-size;
 }
+
+// Below this size, make the words and buttons smaller
 @container (max-width: 25rem) {
+  .vjs-control-bar {
+    font-size: 100% !important;
+  }
+}
+// on EVEN smaller screens, we gotta also hide the duration
+@container (max-width: 21rem) {
   .vjs-theme-scihist .vjs-duration, .vjs-theme-scihist .vjs-time-divider {
     display: none !important;
   }
