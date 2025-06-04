@@ -4,8 +4,8 @@
 
 <% content_for :head do %>
   <%= render "works/meta_tags", work: work  %>
-<% end %>
 
+<% end %>
 <div class="video-show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
 
   <div class="show-title">
@@ -22,7 +22,7 @@
 
           <%= content_tag("video",
                   id: "work-video-player",
-                  class: "video-js vjs-fluid vjs-big-play-centered",
+                  class: "video-js vjs-fluid vjs-big-play-centered vjs-theme-scihist",
                   playsinline: true, # https://developer.apple.com/documentation/webkit/delivering-video-content-for-safari#Enable-Inline-Video-Playback
                   controls: true,
                   preload: "metadata",
