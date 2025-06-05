@@ -6,6 +6,8 @@ require 'rails_helper'
 #
 describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapter: :inline do
   let(:getter) {MoreLikeThisGetter.new(work_to_match)}
+  let(:other_getter) {MoreLikeThisGetter.new(work_to_match)}
+
   let(:getter_of_two_works) {MoreLikeThisGetter.new(work_to_match, max_number_of_works: 2)}
   let(:work_to_match)   { create(:public_work, subject: "aaa", description: "aaa")  }
   let(:five_public_works) { [
@@ -31,12 +33,9 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
     before do
       # Override the Minimum Term Frequency and
       # Minimum Document Frequency so we can test with few works
-      allow(getter).to receive(:mlt_params).and_return({
-        "q"         => "id:#{work_to_match.friendlier_id}",
-        "mlt.fl"    => 'more_like_this_keywords_tsimv',
-        "mlt.mintf"    => '0',
-        "mlt.mindf"    => '0',
-      })
+      allow(getter).to receive(:mlt_params).and_return(
+        getter.mlt_params.merge({  "mlt.mintf" => '0',  "mlt.mindf" => '0'})
+      )
     end
     it "can limit the number of works returned" do
       expect(getter_of_two_works.works).to eq five_public_works[0..1]
@@ -45,6 +44,29 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
       expect(getter.works.count).to eq 5
       expect(getter.works.all? {|w| w.published?}).to be true
       expect(getter.works.include? work_to_match).to be false
+    end
+  end
+
+  context "caching" do
+    let(:memory_store) { ActiveSupport::Cache.lookup_store(:memory_store) }
+    before do
+      allow(Rails).to receive(:cache).and_return(memory_store)
+      Rails.cache.clear
+    end
+    it "writes to the cache" do
+      # cache should start out empty
+      expect(Rails.cache.read(work_to_match.friendlier_id)).to eq nil
+      expect(getter.works.map {|w| w.friendlier_id}).to eq Rails.cache.read(work_to_match.friendlier_id)
+    end
+
+    it "reads from the cache" do
+      expect(Rails.cache.read(work_to_match.friendlier_id)).to eq nil
+      Rails.cache.write(work_to_match.friendlier_id, ['a', 'b', 'c'])
+      expect(getter.friendlier_ids).to eq ['a', 'b', 'c']
+    end
+
+    it "only returns public works, even if the cache contains private works" do
+
     end
   end
 
