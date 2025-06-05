@@ -245,6 +245,12 @@
     display: none;
   }
 
+  // Make control bar fade-out faster, cause subtitles start overlapping
+  // right away before transition completes, and are hard to read until it completes.
+  &.vjs-has-started.vjs-user-inactive.vjs-playing .vjs-control-bar {
+     transition: visibility 0.25s, opacity 0.25s;;
+  }
+
   // Fix subtitles for control bar
 
   // 2.5 em is differnece in size of our custom control bar (4em + 1 em padding == 5em, plus 0.5em progress controls == 5.5em?), and
