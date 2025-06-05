@@ -238,6 +238,13 @@
     z-index: 1;
   }
 
+  // Menus (like CC menu) only open on click not hover -- since we've put a gap
+  // for the progress bar between buttons and menus, hover is confusing since the thing
+  // goes away when you try to move to it after hover opening it!
+  &.vjs-workinghover .vjs-menu-button-popup:hover .vjs-menu {
+    display: none;
+  }
+
   // Fix subtitles for control bar
 
   // 2.5 em is differnece in size of our custom control bar (4em + 1 em padding == 5em, plus 0.5em progress controls == 5.5em?), and
