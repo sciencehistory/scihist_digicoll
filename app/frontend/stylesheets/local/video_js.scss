@@ -124,7 +124,7 @@
 //
 // Which was itself based on video.js "city" theme. https://github.com/videojs/themes/blob/master/city/index.css
 
-.vjs-theme-scihist {
+.video-js.vjs-theme-scihist {
   .vjs-control-bar {
     font-size: 120%;
     height: 4em;
@@ -240,12 +240,13 @@
 
   // Fix subtitles for control bar
 
-  // 1.5 em is differnece in size of our custom control bar (4em + 1 em padding == 5em, plus 0.5em progress controls == 5.5em?), and
+  // 2.5 em is differnece in size of our custom control bar (4em + 1 em padding == 5em, plus 0.5em progress controls == 5.5em?), and
   // default videojs control bar (3em), negative. - 2.5em.
   //
   // Moves text tracks out of way of control bar. Class below will reset it to not be out of the way when control bar is not
   // visible, using same technique as default video.js.
-  // See https://github.com/videojs/video.js/discussions/9050 and https://github.com/videojs/video.js/blob/09eb7150453bb2cbd96e638be3e115590ae98578/src/css/components/_text-track.scss#L2-L20
+  // See https://github.com/videojs/video.js/discussions/9050 and
+  //    https://github.com/videojs/video.js/blob/09eb7150453bb2cbd96e638be3e115590ae98578/src/css/components/_text-track.scss#L2-L20
 
   .vjs-text-track-display {
     transform: translateY(-2.5em);
@@ -255,6 +256,19 @@
   &.vjs-controls-disabled .vjs-text-track-display,
   &.vjs-user-inactive.vjs-playing .vjs-text-track-display {
     transform: translateY(0);
+  }
+
+  // Okay, now hit some Safari-only classes for native text tracks...
+  // possibly this is required for two-line text tracks, not sure
+  // if that bug exists also in default video.js, not sure why 1.75em
+  // seems right, 0.75em less than above.
+  video::-webkit-media-text-track-container {
+    transform: translateY(-1.75em);
+  }
+  &.vjs-controls-disabled, &.vjs-user-inactive.vjs-playing {
+    video::-webkit-media-text-track-container {
+      transform: translateY(0);
+    }
   }
 }
 
