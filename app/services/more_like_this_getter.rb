@@ -27,6 +27,7 @@ class MoreLikeThisGetter
   # and this appears on a part of the website that's usually fast.
   TIMEOUT=1
   OPEN_TIMEOUT=1
+  HOW_LONG_TO_CACHE = 7.days
 
   # @param work [Work] Work
   # @param max_number_of_works: if specified,
@@ -93,13 +94,27 @@ class MoreLikeThisGetter
     end
   end
 
-  private
-
   # Returns the friendlier_ids of the similar works, most similar first.
+  # These are cached for a week, to save trips to our flaky solr provider.
   def friendlier_ids
-    @friendlier_ids ||= more_like_this_doc_set&.map { |d| d['id'] }
+    @friendlier_ids ||= begin
+      if read_from_cache.nil?
+        more_like_this_doc_set&.map { |d| d['id'] }.tap { |ids| write_to_cache ids }
+      else
+        read_from_cache || []
+      end
+    end
   end
 
+  def read_from_cache
+    @read_from_cache ||= Rails.cache.read @work.friendlier_id
+  end
+
+  def write_to_cache(array_of_ids)
+    Rails.cache.write(@work.friendlier_id, array_of_ids, expires_in: HOW_LONG_TO_CACHE )
+  end
+
+  private
 
   def mlt_params
     @mlt_params ||= begin
@@ -115,6 +130,4 @@ class MoreLikeThisGetter
   def solr_url
     ScihistDigicoll::Env.lookup!(:solr_url)
   end
-
-
 end
