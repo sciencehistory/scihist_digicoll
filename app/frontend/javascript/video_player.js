@@ -1,9 +1,5 @@
 import videojs from 'video.js';
 
-// Get video.js styles too, vite will spit them out for us
-import 'video.js/dist/video-js.css';
-
-
 // if we have a video player, look for extra track empty captions safari loads
 // from HLS manifests that do not declare no captions, and remove them.
 //
@@ -30,3 +26,6 @@ if (navigator.vendor?.includes("Apple")) {
     });
   }
 }
+
+// css is imported through our CSS pipelines, with custom theming, in video_js.scss
+

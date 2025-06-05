@@ -4,8 +4,8 @@
 
 <% content_for :head do %>
   <%= render "works/meta_tags", work: work  %>
-<% end %>
 
+<% end %>
 <div class="video-show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
 
   <div class="show-title">
@@ -15,14 +15,15 @@
   <div class="show-video">
     <div class="video-player">
       <% if video_asset.present? %>
-        <div class="position-relative">
+        <div class="position-relative vjs-theme-scihist-wrapper">
           <% if ! video_asset.published? %>
             <%= private_label %>
           <% end %>
 
           <%= content_tag("video",
                   id: "work-video-player",
-                  class: "video-js vjs-fluid vjs-big-play-centered",
+                  # normalise-time-controls: https://github.com/videojs/video.js/pull/8833
+                  class: "video-js vjs-fluid vjs-big-play-centered vjs-theme-scihist vjs-normalise-time-controls",
                   playsinline: true, # https://developer.apple.com/documentation/webkit/delivering-video-content-for-safari#Enable-Inline-Video-Playback
                   controls: true,
                   preload: "metadata",
@@ -32,11 +33,39 @@
                   data: {
                     setup: {
                       controlBar: {
+                        # custom children list to move volume to right, and remove remaining time.
+                        # Started from:
+                        # https://github.com/videojs/video.js/blob/09eb7150453bb2cbd96e638be3e115590ae98578/src/js/control-bar/control-bar.js#L56-L76
+                        children: [
+                          'playToggle',
+                          'skipBackward',
+                          'skipForward',
+                          'currentTimeDisplay',
+                          'timeDivider',
+                          'durationDisplay',
+                          'progressControl',
+                          'liveDisplay',
+                          'seekToLive',
+                          #'remainingTimeDisplay',
+                          'customControlSpacer',
+                          'volumePanel',
+                          'playbackRateMenuButton',
+                          'chaptersButton',
+                          'descriptionsButton',
+                          'subsCapsButton',
+                          'audioTrackButton',
+                          'pictureInPictureToggle',
+                          'fullscreenToggle'
+                        ],
                         skipButtons: {
                           # seconds. only 5, 10, and 30 are supported by video.js
                           forward: 30,
                           backward: 10
-                        }
+                        },
+                        volumePanel: {
+                          inline: false
+                        },
+                        durationDisplay: true
                       },
                       aspectRatio: "#{video_asset.width}:#{video_asset.height}"
                     }.to_json
