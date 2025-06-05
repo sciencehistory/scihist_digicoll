@@ -44,6 +44,8 @@ class MoreLikeThisGetter
     friendlier_ids.map {|id| works_in_arbitrary_order[id] }.compact
   end
 
+  # Note that we check one last time here using fresh data from the DB
+  # that all items returned are published.
   def works_in_arbitrary_order
     @works_in_arbitrary_order ||= Work.where(
       friendlier_id: friendlier_ids,
@@ -100,9 +102,9 @@ class MoreLikeThisGetter
   def friendlier_ids
     @friendlier_ids ||= begin
       if read_from_cache.nil?
-        more_like_this_doc_set&.map { |d| d['id'] }.tap { |ids| write_to_cache ids }
+        more_like_this_doc_set&.map { |d| d['id'] }.tap { |ids| write_to_cache ids }  || []
       else
-        read_from_cache || []
+        read_from_cache
       end
     end
   end
@@ -111,22 +113,25 @@ class MoreLikeThisGetter
     @read_from_cache ||= Rails.cache.read @work.friendlier_id
   end
 
-  def write_to_cache(array_of_ids)
-    Rails.cache.write(@work.friendlier_id, array_of_ids, expires_in: HOW_LONG_TO_CACHE )
+  def write_to_cache(array_of_ids_to_cache)
+    Rails.cache.write(@work.friendlier_id, array_of_ids_to_cache, expires_in: HOW_LONG_TO_CACHE )
   end
-
-  private
 
   def mlt_params
     @mlt_params ||= begin
       parameters = {
         "q"         => "id:#{@work.friendlier_id}",
+        "fq"        => "{!term f=published_bsi}1",
         "mlt.fl"    => 'more_like_this_keywords_tsimv',
       }
       parameters["rows"] = @max_number_of_works unless @max_number_of_works.nil?
       parameters
     end
   end
+
+  private
+  # see https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html
+
 
   def solr_url
     ScihistDigicoll::Env.lookup!(:solr_url)
