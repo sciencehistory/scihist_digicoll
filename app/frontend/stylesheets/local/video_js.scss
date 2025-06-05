@@ -263,12 +263,14 @@
 
   .vjs-text-track-display {
     transform: translateY(-2.5em);
+    transition: transform 0.25s ease-out; // transition when moving up
   }
 
   // Move captions down when controls aren't being shown
   &.vjs-controls-disabled .vjs-text-track-display,
   &.vjs-user-inactive.vjs-playing .vjs-text-track-display {
     transform: translateY(0);
+    transition: transform 0.5s ease-out // transition when moving down
   }
 
   // Okay, now hit some Safari-only classes for native text tracks...
