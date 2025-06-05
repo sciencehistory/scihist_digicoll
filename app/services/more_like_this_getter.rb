@@ -40,6 +40,7 @@ class MoreLikeThisGetter
   # Returns an array of up to @max_number_of_works
   # published works that SOLR deems similar, in order of similarity
   def works
+    return [] if @work&.friendlier_id.nil?
     friendlier_ids.map {|id| works_in_arbitrary_order[id] }.compact
   end
 
@@ -107,7 +108,7 @@ class MoreLikeThisGetter
   end
 
   def read_from_cache
-    @read_from_cache ||= Rails.cache.read(@work.friendlier_id)
+    @read_from_cache ||= Rails.cache.read @work.friendlier_id
   end
 
   def write_to_cache(array_of_ids)
