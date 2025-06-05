@@ -107,7 +107,7 @@ class MoreLikeThisGetter
   end
 
   def read_from_cache
-    @read_from_cache ||= Rails.cache.read @work.friendlier_id
+    @read_from_cache ||= Rails.cache.read(@work.friendlier_id)
   end
 
   def write_to_cache(array_of_ids)
