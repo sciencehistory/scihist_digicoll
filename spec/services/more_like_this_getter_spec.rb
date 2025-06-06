@@ -37,9 +37,11 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
         getter.mlt_params.merge({  "mlt.mintf" => '0',  "mlt.mindf" => '0'})
       )
     end
+    
     it "can limit the number of works returned" do
       expect(getter_of_two_works.works).to eq five_public_works[0..1]
     end
+
     it "retrieves only public works" do
       expect(getter.works.count).to eq 5
       expect(getter.works.all? {|w| w.published?}).to be true
@@ -54,7 +56,6 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
       Rails.cache.clear
     end
     it "writes to the cache" do
-      # cache should start out empty
       expect(Rails.cache.read(work_to_match.friendlier_id)).to eq nil
       expect(getter.works.map {|w| w.friendlier_id}).to eq Rails.cache.read(work_to_match.friendlier_id)
     end
@@ -63,10 +64,14 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
       expect(Rails.cache.read(work_to_match.friendlier_id)).to eq nil
       Rails.cache.write(work_to_match.friendlier_id, ['a', 'b', 'c'])
       expect(getter.friendlier_ids).to eq ['a', 'b', 'c']
+
     end
 
-    it "only returns public works, even if the cache contains private works" do
-
+    context "a work was unpublished after being cached" do
+      it "only returns public works, even if the cache contains private works" do
+        allow(getter).to receive(:read_from_cache).and_return five_private_works.map(&:friendlier_id)
+        expect(getter.works.length).to eq 0
+      end
     end
   end
 
@@ -76,17 +81,15 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
     expect(getter.works).to eq five_public_works
   end
 
-  # # TODO: fix this one test.
-  # # This one stopped working since we deleted the file. Has to do with rsolr internals and a method signature that changed.
-  #
-  # it "recovers from a solr error and logs the error" do
-  #   expect(Rails.logger).to receive(:error).with(/ConnectionRefused .* #{work_to_match.friendlier_id}/)
-  #   allow(getter).to receive(:solr_connection).and_raise(RSolr::Error::ConnectionRefused)
-  #   expect(getter.works).to eq []
-  # end
-
   it "fails gracefully if the solr connection isn't available" do
     allow(getter).to receive(:solr_connection).and_return(nil)
     expect(getter.more_like_this_doc_set).to eq []
   end
+
+  it "recovers from a solr error and logs the error" do
+    expect(Rails.logger).to receive(:error).with(/RSolr::Error::Http .* #{work_to_match.friendlier_id}/)
+    allow(getter).to receive(:solr_connection).and_raise(RSolr::Error::Http.new({},nil))
+    expect(getter.works).to eq []
+  end
+
 end
