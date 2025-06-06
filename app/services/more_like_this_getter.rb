@@ -72,7 +72,7 @@ class MoreLikeThisGetter
     #
     # Note the existence of Scihist::BlacklightSolrRepository, which we are
     # consciously not using as the solr repo in this method. Its only purpose
-    # is to provide two successive retries on failure, which we don't really want here.
+    # is to provide two successive retries on failure, which we don't want here.
     @solr_connection ||= begin
       Blacklight::Solr::Repository.new(CatalogController.blacklight_config).connection.tap do |conn|
         conn.connection.params = {
@@ -114,9 +114,11 @@ class MoreLikeThisGetter
   end
 
   def write_to_cache(array_of_ids_to_cache)
+    array_of_ids_to_cache ||= []
     Rails.cache.write(@work.friendlier_id, array_of_ids_to_cache, expires_in: HOW_LONG_TO_CACHE )
   end
 
+  # see https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html
   def mlt_params
     @mlt_params ||= begin
       parameters = {
@@ -130,7 +132,6 @@ class MoreLikeThisGetter
   end
 
   private
-  # see https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html
 
 
   def solr_url
