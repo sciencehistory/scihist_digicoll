@@ -27,6 +27,7 @@ class MoreLikeThisGetter
   # and this appears on a part of the website that's usually fast.
   TIMEOUT=1
   OPEN_TIMEOUT=1
+  HOW_LONG_TO_CACHE = 7.days
 
   # @param work [Work] Work
   # @param max_number_of_works: if specified,
@@ -39,9 +40,12 @@ class MoreLikeThisGetter
   # Returns an array of up to @max_number_of_works
   # published works that SOLR deems similar, in order of similarity
   def works
+    return [] if @work&.friendlier_id.nil?
     friendlier_ids.map {|id| works_in_arbitrary_order[id] }.compact
   end
 
+  # Note that we check one last time here using fresh data from the DB
+  # that all items returned are published.
   def works_in_arbitrary_order
     @works_in_arbitrary_order ||= Work.where(
       friendlier_id: friendlier_ids,
@@ -68,7 +72,7 @@ class MoreLikeThisGetter
     #
     # Note the existence of Scihist::BlacklightSolrRepository, which we are
     # consciously not using as the solr repo in this method. Its only purpose
-    # is to provide two successive retries on failure, which we don't really want here.
+    # is to provide two successive retries on failure, which we don't want here.
     @solr_connection ||= begin
       Blacklight::Solr::Repository.new(CatalogController.blacklight_config).connection.tap do |conn|
         conn.connection.params = {
@@ -93,18 +97,33 @@ class MoreLikeThisGetter
     end
   end
 
-  private
-
   # Returns the friendlier_ids of the similar works, most similar first.
+  # These are cached for a week, to save trips to our flaky solr provider.
   def friendlier_ids
-    @friendlier_ids ||= more_like_this_doc_set&.map { |d| d['id'] }
+    @friendlier_ids ||= begin
+      if read_from_cache.nil?
+        more_like_this_doc_set&.map { |d| d['id'] }.tap { |ids| write_to_cache ids }  || []
+      else
+        read_from_cache
+      end
+    end
   end
 
+  def read_from_cache
+    @read_from_cache ||= Rails.cache.read @work.friendlier_id
+  end
 
+  def write_to_cache(array_of_ids_to_cache)
+    array_of_ids_to_cache ||= []
+    Rails.cache.write(@work.friendlier_id, array_of_ids_to_cache, expires_in: HOW_LONG_TO_CACHE )
+  end
+
+  # see https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html
   def mlt_params
     @mlt_params ||= begin
       parameters = {
         "q"         => "id:#{@work.friendlier_id}",
+        "fq"        => "{!term f=published_bsi}1",
         "mlt.fl"    => 'more_like_this_keywords_tsimv',
       }
       parameters["rows"] = @max_number_of_works unless @max_number_of_works.nil?
@@ -112,9 +131,10 @@ class MoreLikeThisGetter
     end
   end
 
+  private
+
+
   def solr_url
     ScihistDigicoll::Env.lookup!(:solr_url)
   end
-
-
 end
