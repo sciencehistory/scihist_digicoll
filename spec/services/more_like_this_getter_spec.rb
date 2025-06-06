@@ -30,14 +30,6 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
   let! (:indexed_works) { [work_to_match] + five_public_works + five_private_works }
 
   context "calls to test solr" do
-    before do
-      # Override the Minimum Term Frequency and
-      # Minimum Document Frequency so we can test with few works
-      allow(getter).to receive(:mlt_params).and_return(
-        getter.mlt_params.merge({  "mlt.mintf" => '0',  "mlt.mindf" => '0'})
-      )
-    end
-    
     it "can limit the number of works returned" do
       expect(getter_of_two_works.works).to eq five_public_works[0..1]
     end
