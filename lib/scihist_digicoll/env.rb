@@ -215,57 +215,56 @@ module ScihistDigicoll
 
 
     # Logic to get network location of the Redis instance we will
-    # use for persistent data -- such as our jobs queue for resque.
+    # use for our rescue jobs queue.
     #
-    # Does not cache/memorize, will create a new one on every call, thus the ! in name.
+    # Does not cache/memoize, will create a new one on every call, thus the ! in name.
     #
     # @returns [Redis] some result of `Redis.new`
     #
-    # * We use ENV['REDIS_PROVIDER_ENV'] to point to name of ENV that has redis connection
-    #   url!
+    # * We use ENV['QUEUE_REDIS_PROVIDER_ENV'] to point to name of ENV that has the URL for the queue redis
     #
-    # * If not found, we try some used by our various redis providers. n!)
+    # * If not found, we try some used by our various redis providers.)
     #
     # * otherwise default to default redis location "localhost:6379"
     #
-    def self.persistent_redis_connection!
+    def self.persistent_queue_redis_connection!
       connection = nil
 
       # So many places the redis url can be, in a bit of indirection we use
       # REDIS_PROVIDER to point to the name of the ENV that has it!
-      if ENV['REDIS_PROVIDER_ENV']
-        redis_url = ENV[ ENV['REDIS_PROVIDER_ENV'] ]
+      if ENV['QUEUE_REDIS_PROVIDER_ENV']
+        queue_redis_url = ENV[ ENV['QUEUE_REDIS_PROVIDER_ENV'] ]
       end
 
       # we didn't find one, look in the various URLs that heroku redis or stack hero
       # might use, which of course we are also free to use locally etc.
-      if redis_url.blank?
+      if queue_redis_url.blank?
         # def prever _TLS one with rediss: TLS connection if both alternatives are avail!
         # https://devcenter.heroku.com/articles/securing-heroku-redis
-        redis_url = ENV['REDIS_TLS_URL'] || ENV['REDIS_URL'] || ENV['STACKHERO_REDIS_URL_TLS']
+        queue_redis_url = ENV['REDIS_TLS_URL'] || ENV['REDIS_URL'] || ENV['STACKHERO_REDIS_URL_TLS']
       end
 
-      if redis_url
+      if queue_redis_url
         ssl_params = {}
         # Heroku redis super annoyingly requires us to disable SSL verification.
         # https://devcenter.heroku.com/articles/securing-heroku-redis
         #
         # Super annoying, we default to disabling for an rediss secure connection
         # from REDIS_URL or REDIS_TLS_URL
-        if redis_url.start_with?("rediss:") && redis_url.in?([ENV['REDIS_TLS_URL'], ENV['REDIS_URL']])
+        if queue_redis_url.start_with?("rediss:") && queue_redis_url.in?([ENV['REDIS_TLS_URL'], ENV['REDIS_URL']])
           ssl_params = { verify_mode: OpenSSL::SSL::VERIFY_NONE }
         end
 
-        return Redis.new(url: redis_url, ssl_params: ssl_params)
+        return Redis.new(url: queue_redis_url, ssl_params: ssl_params)
       elsif false && !Rails.env.production?
         # Still didn't find one? Probably in dev, just use default redis location.
         return Redis.new(url: "redis://localhost:6379")
       end
 
       error_message = "No redis url could be found, cannot provide!\n\n" +
-       "REDIS_PROVIDER_ENV=='#{ENV['REDIS_PROVIDER_ENV']}' ;\n"
-      if ENV['REDIS_PROVIDER_ENV']
-        error_message += "ENV[ ENV['REDIS_PROVIDER_ENV'] ]=='#{ENV[ ENV['REDIS_PROVIDER_ENV'] ]}'\n"
+       "QUEUE_REDIS_PROVIDER_ENV=='#{ENV['QUEUE_REDIS_PROVIDER_ENV']}' ;\n"
+      if ENV['QUEUE_REDIS_PROVIDER_ENV']
+        error_message += "ENV[ ENV['QUEUE_REDIS_PROVIDER_ENV'] ]=='#{ENV[ ENV['QUEUE_REDIS_PROVIDER_ENV'] ]}'\n"
       end
       Rails.logger.fatal("#{self.name}#persistent_redis_connection! => #{error_message}")
 
