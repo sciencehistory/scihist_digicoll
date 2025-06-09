@@ -238,7 +238,7 @@
   // Place popup menus above and on top of progress control
   .vjs-menu-button-popup .vjs-menu {
     bottom: 1.5em;
-    z-index: 1;
+    z-index: 2;
   }
 
   // Menus (like CC menu) only open on click not hover -- since we've put a gap
@@ -253,6 +253,20 @@
   &.vjs-has-started.vjs-user-inactive.vjs-playing .vjs-control-bar {
      transition: visibility 0.25s, opacity 0.25s;;
   }
+
+  // Fro some reason icons in these particular buttons appear tiny,
+  // make em bigger without changing button size. Does require
+  // progress bar to have a z-index so on overlap progress bar gets clicks.
+  .vjs-subs-caps-button .vjs-icon-placeholder:before,
+  .vjs-play-control .vjs-icon-placeholder:before,
+  .vjs-mute-control .vjs-icon-placeholder:before {
+    font-size: 2.2em;
+    margin-top: -0.14em;
+  }
+  .vjs-progress-control {
+      z-index: 1;
+  }
+
 
   // Fix subtitles for control bar
 
@@ -305,6 +319,7 @@
   container-type: inline-size;
 }
 
+
 // Below this size, make the words and buttons smaller
 @container (max-width: 25rem) {
   .vjs-control-bar {
@@ -317,3 +332,4 @@
     display: none !important;
   }
 }
+
