@@ -126,7 +126,10 @@
 
 .video-js.vjs-theme-scihist {
   .vjs-control-bar {
-    font-size: 120%;
+    // video.js sets to 10px for 'ease of calculation', but leaves it default
+    // here, far too small -- this will increase size of everything in video.js
+    // since it's all em-based, this ends up looking pretty good.
+    font-size: 12px;
     height: 4em;
     padding-top: 1em;
     display: flex;
