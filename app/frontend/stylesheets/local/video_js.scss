@@ -79,14 +79,6 @@
       top: calc(3em + 1px);
     }
 
-
-    // When mouse hover over progress bar, there's a current time tooltip and a
-    // where-you're-hovering tooltip, but it seems to a bug/misdesign which
-    // one is on top, let's fix to put the mouse-position on on top:
-    .vjs-progress-control .vjs-mouse-display {
-      z-index: 2;
-    }
-
     // on small screens, we'll just hide many of the elements. Somewhat
     // based on https://github.com/videojs/video.js/blob/f16d73b52840452f217722fc6ee7f9f51ba57cb2/src/css/components/_adaptive.scss
     // but for our actual screen size (we have a button next to video.js audio), and
