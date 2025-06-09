@@ -35,6 +35,8 @@ class MoreLikeThisGetter
   def initialize(work, max_number_of_works: nil)
     @work = work
     @max_number_of_works = max_number_of_works
+    # Defaults to false.
+    @use_cache = ScihistDigicoll::Env.lookup(:cache_more_like_this)
   end
 
   # Returns an array of up to @max_number_of_works
@@ -98,22 +100,21 @@ class MoreLikeThisGetter
   end
 
   # Returns the friendlier_ids of the similar works, most similar first.
-  # These are cached for a week, to save trips to our flaky solr provider.
+  # Can be cached.
   def friendlier_ids
-    @friendlier_ids ||= Rails.cache.fetch(@work.friendlier_id, expires_in: HOW_LONG_TO_CACHE) do
-      more_like_this_doc_set&.map { |d| d['id'] } || []
+    @friendlier_ids ||= @use_cache ? cached_friendlier_ids : uncached_friendlier_ids
+  end
+
+  # Caching these should save trips to our flaky solr provider.
+  def cached_friendlier_ids
+    Rails.cache.fetch(@work.friendlier_id, expires_in: HOW_LONG_TO_CACHE, namespace: :more_like_this) do
+      uncached_friendlier_ids
     end
   end
 
-  # def read_from_cache
-  #   @read_from_cache ||= Rails.cache.read @work.friendlier_id
-  # end
-
-  # # caches its argument then returns it unchanged
-  # def cache_and_return array_to_cache
-  #   Rails.cache.write(@work.friendlier_id, array_to_cache, expires_in: HOW_LONG_TO_CACHE )
-  #   array_to_cache
-  # end
+  def uncached_friendlier_ids
+    more_like_this_doc_set&.map { |d| d['id'] } || []
+  end
 
   # see https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html
   def mlt_params

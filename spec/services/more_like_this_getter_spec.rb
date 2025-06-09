@@ -39,6 +39,7 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
       expect(getter.works.all? {|w| w.published?}).to be true
       expect(getter.works.include? work_to_match).to be false
     end
+
   end
 
   context "caching" do
@@ -47,22 +48,38 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
       allow(Rails).to receive(:cache).and_return(memory_store)
       Rails.cache.clear
     end
-    it "writes to the cache" do
-      expect(Rails.cache.read(work_to_match.friendlier_id)).to eq nil
-      expect(getter.works.map {|w| w.friendlier_id}).to eq Rails.cache.read(work_to_match.friendlier_id)
+
+    it "doesn't cache by default" do
+      expect(Rails.cache.read(work_to_match.friendlier_id, namespace: :more_like_this)).to eq nil
+      getter.works
+      expect(Rails.cache.read(work_to_match.friendlier_id, namespace: :more_like_this)).to eq nil
     end
 
-    it "reads from the cache" do
-      expect(Rails.cache.read(work_to_match.friendlier_id)).to eq nil
-      Rails.cache.write(work_to_match.friendlier_id, ['a', 'b', 'c'])
-      expect(getter.friendlier_ids).to eq ['a', 'b', 'c']
+    context "setting turned on" do
+      before do
+        allow(ScihistDigicoll::Env).to receive(:lookup).with(:cache_more_like_this).and_return(true)
+      end 
 
-    end
+      after do
+        allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
+      end
 
-    context "a work was unpublished after being cached" do
-      it "only returns public works, even if the cache contains private works" do
-        Rails.cache.write(work_to_match.friendlier_id, five_private_works.map(&:friendlier_id))
-        expect(getter.works.length).to eq 0
+      it "writes to the cache" do
+        expect(Rails.cache.read(work_to_match.friendlier_id, namespace: :more_like_this)).to eq nil
+        expect(getter.works.map {|w| w.friendlier_id}).to eq Rails.cache.read(work_to_match.friendlier_id, namespace: :more_like_this)
+      end
+
+      it "reads from the cache" do
+        expect(Rails.cache.read(work_to_match.friendlier_id)).to eq nil
+        Rails.cache.write(work_to_match.friendlier_id, ['a', 'b', 'c'], namespace: :more_like_this)
+        expect(getter.friendlier_ids).to eq ['a', 'b', 'c']
+      end
+
+      context "a work was unpublished after being cached" do
+        it "only returns public works, even if the cache contains private works" do
+          Rails.cache.write(work_to_match.friendlier_id, five_private_works.map(&:friendlier_id), namespace: :more_like_this)
+          expect(getter.works.length).to eq 0
+        end
       end
     end
   end
