@@ -61,7 +61,7 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
 
     context "a work was unpublished after being cached" do
       it "only returns public works, even if the cache contains private works" do
-        allow(getter).to receive(:read_from_cache).and_return five_private_works.map(&:friendlier_id)
+        Rails.cache.write(work_to_match.friendlier_id, five_private_works.map(&:friendlier_id))
         expect(getter.works.length).to eq 0
       end
     end

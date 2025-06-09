@@ -100,22 +100,20 @@ class MoreLikeThisGetter
   # Returns the friendlier_ids of the similar works, most similar first.
   # These are cached for a week, to save trips to our flaky solr provider.
   def friendlier_ids
-    @friendlier_ids ||= if read_from_cache.nil?
-      cache_and_return more_like_this_doc_set&.map { |d| d['id'] } || []
-    else
-      read_from_cache
+    @friendlier_ids ||= Rails.cache.fetch(@work.friendlier_id, expires_in: HOW_LONG_TO_CACHE) do
+      more_like_this_doc_set&.map { |d| d['id'] } || []
     end
   end
 
-  def read_from_cache
-    @read_from_cache ||= Rails.cache.read @work.friendlier_id
-  end
+  # def read_from_cache
+  #   @read_from_cache ||= Rails.cache.read @work.friendlier_id
+  # end
 
-  # caches its argument then returns it unchanged
-  def cache_and_return array_to_cache
-    Rails.cache.write(@work.friendlier_id, array_to_cache, expires_in: HOW_LONG_TO_CACHE )
-    array_to_cache
-  end
+  # # caches its argument then returns it unchanged
+  # def cache_and_return array_to_cache
+  #   Rails.cache.write(@work.friendlier_id, array_to_cache, expires_in: HOW_LONG_TO_CACHE )
+  #   array_to_cache
+  # end
 
   # see https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html
   def mlt_params
@@ -131,7 +129,6 @@ class MoreLikeThisGetter
   end
 
   private
-
 
   def solr_url
     ScihistDigicoll::Env.lookup!(:solr_url)
