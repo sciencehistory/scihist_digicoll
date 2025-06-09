@@ -105,7 +105,7 @@ class MoreLikeThisGetter
     @mlt_params ||= begin
       parameters = {
         "q"         => "id:#{@work.friendlier_id}",
-        "fq"        => "{!term f=published_bsi}1",
+        "fq"        => "{!term f=published_bsi}true",
         "mlt.fl"    => 'more_like_this_keywords_tsimv',
       }
       parameters["rows"] = @max_number_of_works unless @max_number_of_works.nil?
