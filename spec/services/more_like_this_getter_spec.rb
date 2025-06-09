@@ -34,7 +34,11 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
       expect(getter_of_two_works.works).to eq five_public_works[0..1]
     end
 
-    it "retrieves only public works" do
+    it "fetches only public works from Solr" do
+      expect(getter.more_like_this_doc_set.map { |doc| doc['published_bsi'] }).to match_array Array.new(5, true)
+    end
+
+    it "returns only public works" do
       expect(getter.works.count).to eq 5
       expect(getter.works.all? {|w| w.published?}).to be true
       expect(getter.works.include? work_to_match).to be false
