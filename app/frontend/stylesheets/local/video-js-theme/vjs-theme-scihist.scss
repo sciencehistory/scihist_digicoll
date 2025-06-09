@@ -1,0 +1,216 @@
+// Custom theme making controls larger, and putting "scrubber" bar on
+// top, full-width.
+//
+// Inspired in part by ramp theme, https://github.com/samvera-labs/ramp/blob/23aae5c5aa9e7c95d1c94cba5cf870daf76df1aa/src/components/MediaPlayer/VideoJS/videojs-theme.scss
+//
+// Which was itself based on video.js "city" theme. https://github.com/videojs/themes/blob/master/city/index.css
+
+.video-js.vjs-theme-scihist {
+  .vjs-control-bar {
+    // video.js sets to 10px for 'ease of calculation', but leaves it default
+    // here, far too small -- this will increase size of everything in video.js
+    // since it's all em-based, this ends up looking pretty good.
+    font-size: 12px;
+    height: 4em;
+    padding-top: 1em;
+    display: flex;
+  }
+
+  .vjs-control {
+    width: 3.5em; // instead of 4em, with bigger font-size don't need it
+  }
+
+  // move scrubber up on top
+  .vjs-progress-control {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    font-size: 200%;
+  }
+
+  .vjs-progress-control .vjs-progress-holder {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+  }
+
+  // How high should it be? Yes this is an odd way to do it, worked
+  // best of what I tried.
+  .vjs-progress-control, .vjs-progress-holder, .vjs-play-progress {
+    height: 0.5em;
+  }
+
+  // Keep scurbber from getting bigger on hover, distracting and unneeded
+  // when it's on top
+  .vjs-progress-control:hover .vjs-progress-holder {
+    font-size: unset;
+  }
+
+  // This is the big circle current time indicator itself, this tweak
+  // aligns it properly vertically with our fatter bar. Should be a better way?
+  .vjs-play-progress::before {
+    top: 0.1em;
+  }
+
+  // Custom theme color
+  .vjs-play-progress {
+    background-color: #78712e;
+  }
+
+  // Make font bigger in time display
+  .vjs-control-bar .vjs-time-control {
+    width: auto;
+    min-width: 0.5em; // not sure why min-width makes em shrink to fit properly
+    font-size: 120%;
+    line-height: 2.7em; // not sure, but works
+  }
+
+  // volume take up extra space to it's left, to give us two groups
+  // this works, oddly enough.
+  .vjs-volume-panel {
+    margin-left: auto;
+    width: 3.5em !important;
+  }
+
+  // Remove padding around time-divider, why the heck is it there so huge?
+  .vjs-time-divider {
+    padding: 0 0.25em;
+    flex-grow: 0;
+  }
+  .vjs-duration {
+    padding: 0;
+    flex-grow: 0;
+  }
+  .vjs-current-time {
+    padding-left: 0.75em;
+    padding-right: 0;
+  }
+
+  // The elapsed time tooltip over grabber, not needed as we show elapsed
+  // time in toolbar, plus it gets in the way of current hover time
+  .vjs-play-progress .vjs-time-tooltip {
+    display:none !important;
+  }
+
+  // the mouse position hover time tooltip, display black on white instead please,
+  // uses styling that was on the elapsed time tooltip
+  .vjs-mouse-display .vjs-time-tooltip {
+    background-color: white;
+    background-color: rgba(255, 255, 255, 0.95);
+    color: black;
+
+     // make it a bit closer, since it's over scrubber we moved up
+    top: -2.8em;
+  }
+  .vjs-mouse-display { // the little line that hovers over progress bar
+    background-color: white !important;
+  }
+
+  // put it above our new higher controlbar to avoid overlap
+  .vjs-volume-vertical {
+    bottom: 9em;
+  }
+
+  // Place popup menus above and on top of progress control
+  .vjs-menu-button-popup .vjs-menu {
+    bottom: 1.5em;
+    z-index: 2;
+  }
+
+  // Menus (like CC menu) only open on click not hover -- since we've put a gap
+  // for the progress bar between buttons and menus, hover is confusing since the thing
+  // goes away when you try to move to it after hover opening it!
+  &.vjs-workinghover .vjs-menu-button-popup:hover .vjs-menu {
+    display: none;
+  }
+
+  // Make control bar fade-out faster, cause subtitles start overlapping
+  // right away before transition completes, and are hard to read until it completes.
+  &.vjs-has-started.vjs-user-inactive.vjs-playing .vjs-control-bar {
+     transition: visibility 0.25s, opacity 0.25s;;
+  }
+
+  // Fro some reason icons in these particular buttons appear tiny,
+  // make em bigger without changing button size. Does require
+  // progress bar to have a z-index so on overlap progress bar gets clicks.
+  .vjs-subs-caps-button .vjs-icon-placeholder:before,
+  .vjs-play-control .vjs-icon-placeholder:before,
+  .vjs-mute-control .vjs-icon-placeholder:before {
+    font-size: 2.2em;
+    margin-top: -0.14em;
+  }
+  .vjs-progress-control {
+      z-index: 1;
+  }
+
+
+  // Fix subtitles for control bar
+
+  // 2.5 em is differnece in size of our custom control bar (4em + 1 em padding == 5em, plus 0.5em progress controls == 5.5em?), and
+  // default videojs control bar (3em), negative. - 2.5em.
+  //
+  // Moves text tracks out of way of control bar. Class below will reset it to not be out of the way when control bar is not
+  // visible, using same technique as default video.js.
+  // See https://github.com/videojs/video.js/discussions/9050 and
+  //    https://github.com/videojs/video.js/blob/09eb7150453bb2cbd96e638be3e115590ae98578/src/css/components/_text-track.scss#L2-L20
+
+  .vjs-text-track-display {
+    transform: translateY(-2.5em);
+    transition: transform 0.25s ease-out; // transition when moving up
+  }
+
+  // Move captions down when controls aren't being shown
+  &.vjs-controls-disabled .vjs-text-track-display,
+  &.vjs-user-inactive.vjs-playing .vjs-text-track-display {
+    transform: translateY(0);
+    transition: transform 0.5s ease-out // transition when moving down
+  }
+
+  // Okay, now hit some Safari-only classes for native text tracks...
+  // possibly this is required for two-line text tracks, not sure
+  // if that bug exists also in default video.js, not sure why 1.75em
+  // seems right, 0.75em less than above.
+  video::-webkit-media-text-track-container {
+    transform: translateY(-1.75em);
+  }
+  &.vjs-controls-disabled, &.vjs-user-inactive.vjs-playing {
+    video::-webkit-media-text-track-container {
+      transform: translateY(0);
+    }
+  }
+}
+
+// When video box is too small, we need to make control bar smaller.
+// CSS container queries are super useful for this -- but was hard to make
+// work right, if we put `container-type` on the .vjs-theme-scihist itself, which
+// would make it neater as a theme -- Chrome crashes trying to play the video!
+//
+// If we we `container-type: size`, the layout gets all messed up in ways
+// we didn't expect.
+//
+// But a wrapper div with `inline-size` seems to work. Hacky and fragile but
+// good enough for now.
+
+.vjs-theme-scihist-wrapper {
+  container-type: inline-size;
+}
+
+
+// Below this size, make the words and buttons smaller
+@container (max-width: 25rem) {
+  .vjs-control-bar {
+    font-size: 100% !important;
+  }
+}
+// on EVEN smaller screens, we gotta also hide the duration
+@container (max-width: 21rem) {
+  .vjs-theme-scihist .vjs-duration, .vjs-theme-scihist .vjs-time-divider {
+    display: none !important;
+  }
+}
+
