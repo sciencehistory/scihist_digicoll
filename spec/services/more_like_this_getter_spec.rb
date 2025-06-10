@@ -7,9 +7,11 @@ require 'rails_helper'
 describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapter: :inline do
   let(:getter) {MoreLikeThisGetter.new(work_to_match)}
   let(:other_getter) {MoreLikeThisGetter.new(work_to_match)}
-
   let(:getter_of_two_works) {MoreLikeThisGetter.new(work_to_match, max_number_of_works: 2)}
   let(:work_to_match)   { create(:public_work, subject: "aaa", description: "aaa")  }
+  let(:cache_namespace) { MoreLikeThisGetter::CACHE_NAMESPACE }
+
+
   let(:five_public_works) { [
       create(:public_work, subject: "aaa", description: "aaa"),
       create(:public_work, subject: "aaa", description: "aaa"),
@@ -50,9 +52,9 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
     end
 
     it "doesn't cache by default" do
-      expect(Rails.cache.read(work_to_match.friendlier_id, namespace: :more_like_this)).to eq nil
+      expect(Rails.cache.read(work_to_match.friendlier_id, namespace: cache_namespace)).to eq nil
       getter.works
-      expect(Rails.cache.read(work_to_match.friendlier_id, namespace: :more_like_this)).to eq nil
+      expect(Rails.cache.read(work_to_match.friendlier_id, namespace: cache_namespace)).to eq nil
     end
 
     context "setting turned on" do
@@ -65,19 +67,19 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
       end
 
       it "writes to the cache" do
-        expect(Rails.cache.read(work_to_match.friendlier_id, namespace: :more_like_this)).to eq nil
-        expect(getter.works.map {|w| w.friendlier_id}).to eq Rails.cache.read(work_to_match.friendlier_id, namespace: :more_like_this)
+        expect(Rails.cache.read(work_to_match.friendlier_id, namespace: cache_namespace)).to eq nil
+        expect(getter.works.map {|w| w.friendlier_id}).to eq Rails.cache.read(work_to_match.friendlier_id, namespace: cache_namespace)
       end
 
       it "reads from the cache" do
         expect(Rails.cache.read(work_to_match.friendlier_id)).to eq nil
-        Rails.cache.write(work_to_match.friendlier_id, ['a', 'b', 'c'], namespace: :more_like_this)
+        Rails.cache.write(work_to_match.friendlier_id, ['a', 'b', 'c'], namespace: cache_namespace)
         expect(getter.friendlier_ids).to eq ['a', 'b', 'c']
       end
 
       context "a work was unpublished after being cached" do
         it "only returns public works, even if the cache contains private works" do
-          Rails.cache.write(work_to_match.friendlier_id, five_private_works.map(&:friendlier_id), namespace: :more_like_this)
+          Rails.cache.write(work_to_match.friendlier_id, five_private_works.map(&:friendlier_id), namespace: cache_namespace)
           expect(getter.works.length).to eq 0
         end
       end

@@ -28,6 +28,7 @@ class MoreLikeThisGetter
   TIMEOUT=1
   OPEN_TIMEOUT=1
   HOW_LONG_TO_CACHE = 7.days
+  CACHE_NAMESPACE = :scihist_digicoll_more_like_this
 
   # @param work [Work] Work
   # @param max_number_of_works: if specified,
@@ -107,7 +108,7 @@ class MoreLikeThisGetter
 
   # Caching these should save trips to our flaky solr provider.
   def cached_friendlier_ids
-    Rails.cache.fetch(@work.friendlier_id, expires_in: HOW_LONG_TO_CACHE, namespace: :more_like_this) do
+    Rails.cache.fetch(@work.friendlier_id, expires_in: HOW_LONG_TO_CACHE, namespace: CACHE_NAMESPACE) do
       uncached_friendlier_ids
     end
   end
