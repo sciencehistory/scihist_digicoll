@@ -67,11 +67,17 @@ class OpenaiAudioTranscribe
       raise ArgumentError.new("asset #{asset&.friendlier_id} does not have a #{AssetUploader::LOFI_OPUS_AUDIO_DERIV_KEY.inspect} derivative. Either needs to exist, or pass in `create_deriv_if_needed:true`")
     end
 
+    # Would be nice to pass the IO object directly instead of having to make a temporary
+    # download to our disk first, but ruby's lack of clear API for non-File IO leaves things
+    # incompatible. At least the FIRST problem is:
+    #
+    # * https://github.com/socketry/multipart-post/issues/110
+    # * https://github.com/janko/down/issues/99
     asset.file_derivatives[AssetUploader::LOFI_OPUS_AUDIO_DERIV_KEY].download do |opus_file|
       return get_vtt(opus_file, lang_code: lang_code, whisper_prompt: (whisper_prompt(asset) if use_prompt))
     end
-  ensure
-    #lofi_opus.unlink if lofi_opus
+  #ensure
+    #opus_file.close if opus_file
   end
 
   # Given a File or Tempfile, contact OpenAI API and return transcribed WebVTT
