@@ -39,7 +39,7 @@ describe "derivative creation" do
       expect(video_asset.file_derivatives[:audio_16k_opus].size).to be > 0
 
       # our stack is currently getting confused and producing '.bin', but everything works, so oh well for now.
-      #expect(video_asset.file_derivatives[:audio_16k_opus].metadata["filename"]).to end_with("oga")
+      expect(video_asset.file_derivatives[:audio_16k_opus].metadata["filename"]).to end_with(".oga")
     end
   end
 
