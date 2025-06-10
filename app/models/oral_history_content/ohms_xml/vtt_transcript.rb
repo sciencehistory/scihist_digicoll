@@ -41,8 +41,7 @@ class OralHistoryContent
           # extra doesn't hurt
           src = src + "\n"
 
-          # original gem is sometimes picking up empty cues, which is annoying
-          Webvtt::File.new(src).cues.collect { |webvtt_cue| Cue.new(webvtt_cue) }
+          WebVTT.from_blob(src).cues.collect { |webvtt_cue| Cue.new(webvtt_cue) }
         end
       end
 
@@ -110,19 +109,13 @@ class OralHistoryContent
         # parse start str into number of seconds as float
         # times can be hh:mm:ss.ff or mm:ss.ff
         def start_sec_f
-          @start_sec_f ||= begin
-            self.start =~ /(?:(\d+):)?(\d+):(\d\d)(\.\d+)?/
-            ($1.to_i * 60 * 60) + ($2.to_i * 60) + $3.to_i + $4.to_f
-          end
+          self.start.to_f
         end
 
         #  parase end str into number of seconds as float
         #  times can be hh:mm:ss.ff or mm:ss.ff
         def end_sec_f
-          @end_sec_f ||= begin
-            self.end =~ /(?:(\d+):)?(\d+):(\d\d)(\.\d\d\d)?/
-            ($1.to_i * 60 * 60) + ($2.to_i * 60) + $3.to_i + $4.to_f
-          end
+          self.end.to_f
         end
 
         # split text inside a cue into paragraphs.
