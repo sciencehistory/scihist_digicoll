@@ -155,7 +155,7 @@ FactoryBot.define do
           }
         end
 
-        faked_derivatives {
+        faked_derivatives do
           {
             thumb_standard: faked_thumbnail,
             thumb_standard_2X: faked_thumbnail,
@@ -163,8 +163,12 @@ FactoryBot.define do
             thumb_mini_2X: faked_thumbnail,
             thumb_large: faked_thumbnail,
             thumb_large_2x: faked_thumbnail,
+            audio_16k_opus:  create(:stored_uploaded_file,
+                file: File.open(Rails.root + "spec/test_support/audio/short_opus.oga"),
+                content_type: "audio/opus"
+              )
           }
-        }
+        end
       end
 
       trait :asr_vtt do
