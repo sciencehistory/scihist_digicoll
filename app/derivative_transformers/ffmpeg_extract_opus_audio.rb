@@ -13,8 +13,10 @@ class FfmpegExtractOpusAudio
   class_attribute :ffmpeg_command, default: "ffmpeg"
 
   DEFAULT_BITRATE = "16k"
-  DEFAULT_OPUS_APPLICATION = "voip" # can be `voip` `audio` (default) or `lowdelay`
-  DEFAULT_FILE_SUFFIX = ".oga" # while some like .opus for opus in OGG, OpenAI can't handle it needs `.oga` ogg audio
+  DEFAULT_OPUS_APPLICATION = "voip" # app profile for opus codec. can be `voip` `audio` (default) or `lowdelay`
+  # Have to use this not .opus to get ffmpeg to actually create an OGG with opus encoding,
+  # which is what eg OpenAI audio api can read.
+  DEFAULT_FILE_SUFFIX = ".oga"
 
   attr_reader :bitrate_arg, :opus_application, :file_suffix
 
