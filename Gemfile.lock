@@ -436,7 +436,6 @@ GEM
     matrix (0.4.2)
     method_source (1.1.0)
     mini_mime (1.1.5)
-    mini_portile2 (2.8.9)
     minitar (1.0.2)
     minitest (5.25.5)
     mono_logger (1.1.2)
@@ -462,9 +461,6 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     nio4r (2.7.4)
-    nokogiri (1.18.8)
-      mini_portile2 (~> 2.8.2)
-      racc (~> 1.4)
     nokogiri (1.18.8-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.18.8-x86_64-linux-gnu)
@@ -821,7 +817,7 @@ GEM
       base64
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    webvtt (0.0.3)
+    webvtt-ruby (0.4.3)
     xpath (3.2.0)
       nokogiri (~> 1.8)
     yell (2.2.2)
@@ -830,7 +826,6 @@ GEM
 PLATFORMS
   arm64-darwin-21
   arm64-darwin-23
-  ruby
   x86_64-linux
 
 DEPENDENCIES
@@ -928,7 +923,7 @@ DEPENDENCIES
   warning (~> 1.2)
   web-console (>= 4.1.0)
   webmock (~> 3.5)
-  webvtt (< 2)
+  webvtt-ruby (< 2)
 
 RUBY VERSION
    ruby 3.3.8p144
