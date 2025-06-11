@@ -1,48 +1,76 @@
-<h3 class="mt-4">Video HLS attached?</h3>
+<div class="bg-light border p-3 mt-4">
+  <h3>Video HLS attached?</h3>
+  <% if @asset.hls_playlist_file.present? %>
+    <b class="text-success">YES</b>
+    <%= link_to "[S3 Console]",
+          S3ConsoleUri.from_shrine_uploaded_file(@asset.hls_playlist_file).console_uri,
+          target: "_blank" %>
+  <% else %>
+    <b class="text-danger">NO</b>
+  <% end %>
+</div>
 
-<% if asset.hls_playlist_file.present? %>
-  <b class="text-success">YES</b>
-  <%= link_to "[S3 Console]",
-        S3ConsoleUri.from_shrine_uploaded_file(asset.hls_playlist_file).console_uri,
-        target: "_blank" %>
-<% else %>
-  <b class="text-danger">NO</b>
-<% end %>
 
+<div class="bg-light border p-3 mt-4">
+  <h3>Video Transcription</h3>
+
+  <hr>
+  <h4>Automated (ASR) WebVTT</h4>
+    <% if @asset.asr_webvtt? %>
+      <%= link_to asr_webvtt_download_label,
+                  download_derivative_path(@asset, Asset::ASR_WEBVTT_DERIVATIVE_KEY, disposition: :inline),
+                  target: "_blank" %>
+    <% else %>
+      <code>None</code>
+    <% end %>
+
+  <hr>
+  <h4>Corrected WebVTT</h4>
+    <% if @asset.corrected_webvtt? %>
+      <%= link_to corrected_webvtt_download_label,
+          download_derivative_path(@asset, Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY),
+          target: "_blank" %>
+    <% else %>
+      <code>None</code>
+    <% end %>
+</div>
 
 <% if asset.active_encode_statuses.present? %>
-  <h3 class="mt-4 mb-4">Video HLS Encode Jobs</h3>
-  <% asset.active_encode_statuses.order(updated_at: :desc).each do |status| %>
-    <dl class='row'>
-      <dt class="col-sm-4">started</dt><dd class="col-sm-8"><%= l status.created_at, format: :admin %></dd>
-      <dt class="col-sm-4">last updated</dt><dd class="col-sm-8"><%= l status.updated_at, format: :admin %></dd>
-      <dt class="col-sm-4">state</dt>
-        <dd class="col-sm-8">
-          <%= status.state %>
-          <% if status.running? && status.percent_complete.to_i > 0 %>
-            (<%= status.percent_complete  %>%)
-          <% end %>
-        </dd>
-      <dt class="col-sm-4">job id</dt>
-        <dd class="col-sm-8">
-          <%= status.active_encode_id %><br>
-          <%= link_to "[In AWS MediaConvert Console]", "https://us-east-1.console.aws.amazon.com/mediaconvert/home?#/jobs/summary/#{ status.active_encode_id }", target: "_blank" %>
-        </dd>
-      <% if status.encode_error.present? %>
-        <dt>Error</dt>
-        <dd><code><%= status.encode_error %></code></dd>
+  <div class="bg-light border p-3 mt-4">
+    <h3 class="mt-4 mb-4 ">Video HLS Encode Jobs</h3>
+
+    <% asset.active_encode_statuses.order(updated_at: :desc).each do |status| %>
+      <dl class='row'>
+        <dt class="col-sm-4">started</dt><dd class="col-sm-8"><%= l status.created_at, format: :admin %></dd>
+        <dt class="col-sm-4">last updated</dt><dd class="col-sm-8"><%= l status.updated_at, format: :admin %></dd>
+        <dt class="col-sm-4">state</dt>
+          <dd class="col-sm-8">
+            <%= status.state %>
+            <% if status.running? && status.percent_complete.to_i > 0 %>
+              (<%= status.percent_complete  %>%)
+            <% end %>
+          </dd>
+        <dt class="col-sm-4">job id</dt>
+          <dd class="col-sm-8">
+            <%= status.active_encode_id %><br>
+            <%= link_to "[In AWS MediaConvert Console]", "https://us-east-1.console.aws.amazon.com/mediaconvert/home?#/jobs/summary/#{ status.active_encode_id }", target: "_blank" %>
+          </dd>
+        <% if status.encode_error.present? %>
+          <dt>Error</dt>
+          <dd><code><%= status.encode_error %></code></dd>
+        <% end %>
+        <% if status.hls_master_playlist_s3_url.present? %>
+          <dt class="col-sm-4">.m3u8 playlist</dt>
+          <dd class="col-sm-8">
+            <%= text_field_tag "", status.hls_master_playlist_s3_url, readonly: true, style: "width: 100%" %><br>
+            <%= link_to "[In AWS S3 Console]", S3ConsoleUri.from_uri(status.hls_master_playlist_s3_url).console_uri, target: "_blank" %>
+          </dd>
+        <% end %>
+      </dl>
+      <% if status.running? %>
+        <%= link_to "Refresh status", admin_refresh_active_encode_status_path(status.id), method: "put", class: "btn btn-primary btn-sm" %>
       <% end %>
-      <% if status.hls_master_playlist_s3_url.present? %>
-        <dt class="col-sm-4">.m3u8 playlist</dt>
-        <dd class="col-sm-8">
-          <%= text_field_tag "", status.hls_master_playlist_s3_url, readonly: true, style: "width: 100%" %><br>
-          <%= link_to "[In AWS S3 Console]", S3ConsoleUri.from_uri(status.hls_master_playlist_s3_url).console_uri, target: "_blank" %>
-        </dd>
-      <% end %>
-    </dl>
-    <% if status.running? %>
-      <%= link_to "Refresh status", admin_refresh_active_encode_status_path(status.id), method: "put", class: "btn btn-primary btn-sm" %>
+      <hr>
     <% end %>
-    <hr>
-  <% end %>
+  </div>
 <% end %>
