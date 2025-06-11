@@ -106,14 +106,10 @@ class OralHistoryContent
           @webvtt_cue = webvtt_cue
         end
 
-        # parse start str into number of seconds as float
-        # times can be hh:mm:ss.ff or mm:ss.ff
         def start_sec_f
           self.start.to_f
         end
 
-        #  parase end str into number of seconds as float
-        #  times can be hh:mm:ss.ff or mm:ss.ff
         def end_sec_f
           self.end.to_f
         end
