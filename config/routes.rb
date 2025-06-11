@@ -324,6 +324,11 @@ Rails.application.routes.draw do
       member do
         put "convert_to_child_work"
         put "setup_work_from_pdf_source"
+
+        # video transcripts
+        scope controller: "asset_transcripts" do
+          put "set_audio_asr_enabled"
+        end
       end
     end
 

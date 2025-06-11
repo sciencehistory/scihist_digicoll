@@ -12,6 +12,15 @@ module Admin
       @asset = asset
     end
 
+    # @returns [False,String] false, or a boolean message on why
+    def invalid_for_asr
+      if asset.file_derivatives[AssetUploader::LOFI_OPUS_AUDIO_DERIV_KEY].blank?
+        return "Missing <code>#{AssetUploader::LOFI_OPUS_AUDIO_DERIV_KEY.inspect}</code> derivative".html_safe
+      end
+
+      return false
+    end
+
     def asr_webvtt_download_label
       created_at = @asset.file_derivatives[Asset::ASR_WEBVTT_DERIVATIVE_KEY]&.metadata&.dig("created_at")
 

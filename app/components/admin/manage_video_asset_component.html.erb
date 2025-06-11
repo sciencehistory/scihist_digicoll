@@ -1,9 +1,9 @@
 <div class="bg-light border p-3 mt-4">
   <h3>Video HLS attached?</h3>
-  <% if @asset.hls_playlist_file.present? %>
+  <% if asset.hls_playlist_file.present? %>
     <b class="text-success">YES</b>
     <%= link_to "[S3 Console]",
-          S3ConsoleUri.from_shrine_uploaded_file(@asset.hls_playlist_file).console_uri,
+          S3ConsoleUri.from_shrine_uploaded_file(asset.hls_playlist_file).console_uri,
           target: "_blank" %>
   <% else %>
     <b class="text-danger">NO</b>
@@ -11,14 +11,33 @@
 </div>
 
 
-<div class="bg-light border p-3 mt-4">
+<div class="bg-light border p-3 mt-4" id="video_transcription">
   <h3>Video Transcription</h3>
+
+
+  <% if invalid_for_asr %>
+    Cannot ASR: <%= invalid_for_asr %>
+  <% else %>
+    <% if !asset.audio_asr_enabled && asset.parent&.description&.blank? %>
+      <div class="alert alert-warning" role="alert">
+        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        Parent description is blank; ASR will work better with a complete description filled out.
+      </div>
+    <% end %>
+
+    <%= simple_form_for(asset, url: set_audio_asr_enabled_admin_asset_path(asset), method: :put) do |f| %>
+       <%= f.input :audio_asr_enabled,
+                  wrapper: :custom_boolean_switch,
+                  label: "Automated Speech Recognition (ASR) Enabled?",
+                  input_html: { onchange: "this.form.submit();" } %>
+    <% end %>
+  <% end %>
 
   <hr>
   <h4>Automated (ASR) WebVTT</h4>
-    <% if @asset.asr_webvtt? %>
+    <% if asset.asr_webvtt? %>
       <%= link_to asr_webvtt_download_label,
-                  download_derivative_path(@asset, Asset::ASR_WEBVTT_DERIVATIVE_KEY, disposition: :inline),
+                  download_derivative_path(asset, Asset::ASR_WEBVTT_DERIVATIVE_KEY, disposition: :inline),
                   target: "_blank" %>
     <% else %>
       <code>None</code>
@@ -26,9 +45,9 @@
 
   <hr>
   <h4>Corrected WebVTT</h4>
-    <% if @asset.corrected_webvtt? %>
+    <% if asset.corrected_webvtt? %>
       <%= link_to corrected_webvtt_download_label,
-          download_derivative_path(@asset, Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY),
+          download_derivative_path(asset, Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY),
           target: "_blank" %>
     <% else %>
       <code>None</code>
