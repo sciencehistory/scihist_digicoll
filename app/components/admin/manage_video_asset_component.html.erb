@@ -34,11 +34,17 @@
   <% end %>
 
   <hr>
+
   <h4>Automated (ASR) WebVTT</h4>
     <% if asset.asr_webvtt? %>
-      <%= link_to asr_webvtt_download_label,
-                  download_derivative_path(asset, Asset::ASR_WEBVTT_DERIVATIVE_KEY, disposition: :inline),
-                  target: "_blank" %>
+      <div class="d-flex justify-content-between">
+        <%= link_to asr_webvtt_download_label,
+                    download_derivative_path(asset, Asset::ASR_WEBVTT_DERIVATIVE_KEY, disposition: :inline),
+                    target: "_blank" %>
+        <%= link_to "Delete",
+              delete_transcript_admin_asset_path(asset, Asset::ASR_WEBVTT_DERIVATIVE_KEY),
+              data: { confirm: "Delete ASR WebVTT?" }, method: :delete %>
+      </div>
     <% else %>
       <code>None</code>
     <% end %>
@@ -46,9 +52,14 @@
   <hr>
   <h4>Corrected WebVTT</h4>
     <% if asset.corrected_webvtt? %>
-      <%= link_to corrected_webvtt_download_label,
-          download_derivative_path(asset, Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY),
-          target: "_blank" %>
+      <div class="d-flex justify-content-between">
+        <%= link_to corrected_webvtt_download_label,
+            download_derivative_path(asset, Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY),
+            target: "_blank" %>
+        <%= link_to "Delete",
+            delete_transcript_admin_asset_path(asset, Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY),
+            data: { confirm: "Delete Corrected WebVTT?" }, method: :delete %>
+      </div>
     <% else %>
       <code>None</code>
     <% end %>

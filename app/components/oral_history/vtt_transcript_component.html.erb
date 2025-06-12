@@ -1,7 +1,7 @@
-<div class="ohms-transcript-container">
+<div class="vtt-transcript-container">
   <% display_paragraphs do |start_seconds, speaker, html_text| %>
     <%# need ohms-transcript-line class for compat with legacy transcript search JS %>
-    <p class="ohms-transcript-paragraph ohms-transcript-line">
+    <div class="ohms-transcript-line">
       <% if start_seconds %>
         <%=  content_tag(
                 "a",
@@ -13,12 +13,14 @@
         %>
       <% end %>
 
-      <% if speaker %>
-        <span class="ohms-speaker"><%= speaker %></span>:
-      <% end %>
+      <p class="ohms-transcript-paragraph">
+        <% if speaker %>
+          <span class="ohms-speaker"><%= speaker %></span>:
+        <% end %>
 
-      <%= html_text %>
-    </p>
+        <%= html_text %>
+      </p>
+    </div>
   <% end %>
 </div>
 
