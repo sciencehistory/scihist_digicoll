@@ -214,6 +214,10 @@ module ScihistDigicoll
     define_key :cf_turnstile_enabled, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM, default: false
 
 
+    # Whether to cache the results of more_like_this SOLR queries.
+    # see app/services/more_like_this_getter.rb
+    define_key :cache_more_like_this, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM, default: false
+
     # Logic to get network location of the Redis instance we will
     # use for our rescue jobs queue.
     #

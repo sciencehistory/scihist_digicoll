@@ -189,7 +189,7 @@ gem "warning", "~> 1.2" # managing ruby warning output
 
 gem "rack-attack", "~> 6.6" # throttling excessive requests
 
-gem "webvtt", "< 2" # https://github.com/jronallo/webvtt
+gem "webvtt-ruby", "< 2" # https://github.com/opencoconut/webvtt-ruby
 
 # MS Word .docx for some OH transcript handling
 # Appears entirely unmaintained and has some bugfixes we need in unreleased master

@@ -1,6 +1,7 @@
 class AssetUploader < Kithe::AssetUploader
   SCALED_PDF_DERIV_KEY = :scaled_down_pdf
   WHITE_EDGE_DETECT_KEY = "white_edge_detect"
+  LOFI_OPUS_AUDIO_DERIV_KEY = :audio_16k_opus
 
   # gives us md5, sha1, sha512
   plugin :kithe_checksum_signatures
@@ -133,6 +134,11 @@ class AssetUploader < Kithe::AssetUploader
         bitrate: '64k', force_mono: true, audio_codec: 'aac', output_suffix: 'm4a',
       ).call(original_file, add_metadata: add_metadata)
     end
+  end
+
+  # For videos, derive a compact audio representation to use with ASR transcription
+  Attacher.define_derivative(LOFI_OPUS_AUDIO_DERIV_KEY, content_type: "video") do |original_file, add_metadata:|
+    FfmpegExtractOpusAudio.new(bitrate_arg: "16k").call(original_file, add_metadata: add_metadata)
   end
 
   # Use a standard shrine derivative processor to d some complex stuff with video thumbs,
