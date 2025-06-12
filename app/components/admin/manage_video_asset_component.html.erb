@@ -54,7 +54,7 @@
     <% if asset.corrected_webvtt? %>
       <div class="d-flex justify-content-between">
         <%= link_to corrected_webvtt_download_label,
-            download_derivative_path(asset, Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY),
+            download_derivative_path(asset, Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY, disposition: :inline),
             target: "_blank" %>
         <%= link_to "Delete",
             delete_transcript_admin_asset_path(asset, Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY),
@@ -62,6 +62,13 @@
       </div>
     <% else %>
       <code>None</code>
+    <% end %>
+
+    <%= simple_form_for(:asset_derivative, url: upload_corrected_vtt_admin_asset_path(asset), local: true, multipart: true, method: :put) do |f| %>
+      <div class="input-group mt-3">
+        <%= f.input_field Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY, as: :file, class: "form-control", accept: "text/vtt" %>
+        <%= f.submit value: (asset.corrected_webvtt?  ? "Replace" : "Add"), class: "btn btn-primary", data: { confirm: ("Replace existing corrected webvtt?" if asset.corrected_webvtt?) } %>
+      </div>
     <% end %>
 </div>
 

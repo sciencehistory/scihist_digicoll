@@ -328,7 +328,8 @@ Rails.application.routes.draw do
         # video transcripts
         scope controller: "asset_transcripts" do
           put "set_audio_asr_enabled"
-          delete "delete_transcript/:derivative_key", to: "delete", as: "delete_transcript",
+          put "upload_corrected_vtt"
+          delete "delete_transcript/:derivative_key", to: "delete_transcript", as: "delete_transcript",
             constraints: { vtt_type: /#{Regexp.escape Asset::ASR_WEBVTT_DERIVATIVE_KEY}|#{Regexp.escape Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY}/}
         end
       end
