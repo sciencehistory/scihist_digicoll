@@ -69,8 +69,10 @@ Rails.application.configure do
   # Prepend all log lines with the following tags.
   config.log_tags = [ :request_id ]
 
-  # for now, let's use as many default settings as possible:
-  config.cache_store = :redis_cache_store, { url: ScihistDigicoll::Env.lookup(:redis_cache_store_url) }
+  # This is the ephemeral redis cache store, used for caching more-like-this and rack_attack information.
+  # When the cache is full, information will be quietly ejected from the cache.
+  # See https://github.com/sciencehistory/scihist_digicoll/pull/2994
+  config.cache_store = :redis_cache_store, { url: ScihistDigicoll::Env.lookup(:ephemeral_redis_cache_store_url) }
 
   # Use a real queuing backend for Active Job (and separate queues per environment)
   config.active_job.queue_adapter     = :resque

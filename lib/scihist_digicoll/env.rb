@@ -216,12 +216,12 @@ module ScihistDigicoll
     define_key :redis_cache_store_url_env
 
 
-    # REDIS_CACHE_STORE_URL_ENV
+    # EPHEMERAL_REDIS_CACHE_STORE_URL_ENV
     # should be set to the env key containing
     # redis instance's secure URL,
     # for instance
     # AH_REDIS_STACKHERO_JADE_URL_TLS
-    define_key :redis_cache_store_url, default: ( ENV[ ENV['REDIS_CACHE_STORE_URL_ENV'] ] unless ENV['REDIS_CACHE_STORE_URL_ENV'].nil? )
+    define_key :ephemeral_redis_cache_store_url, default: ( ENV[ ENV['EPHEMERAL_REDIS_CACHE_STORE_URL_ENV'] ] unless ENV['EPHEMERAL_REDIS_CACHE_STORE_URL_ENV'].nil? )
 
     # Whether to cache the results of more_like_this SOLR queries.
     # see app/services/more_like_this_getter.rb
