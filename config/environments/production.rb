@@ -69,9 +69,20 @@ Rails.application.configure do
   # Prepend all log lines with the following tags.
   config.log_tags = [ :request_id ]
 
-  # This is the ephemeral redis cache store, used for caching more-like-this and rack_attack information.
-  # When the cache is full, information will be quietly ejected from the cache.
-  # See https://github.com/sciencehistory/scihist_digicoll/pull/2994
+
+  # Caching is not normally turned on in test or dev, but config/environments/development.rb
+  # has some standard Rails code that lets you turn it on in dev with in-memory store,
+  # with `./bin/rails dev:cache` toggle.
+  #
+  # On heroku we use a Redis instance named ephemeral_redis for our cache.
+  # (see https://github.com/sciencehistory/scihist_digicoll/pull/2994).
+
+  # We tune the timeouts for ephemeral_redis to give up really quickly -- we don't want the server
+  # waiting too long on a slow memcached, especially with rack-attack accessing
+  # it on every request and more-like-this accessing it everytime a work page is shown.
+  # It's just a cache; give up if it's slow!
+
+  # (Note that we use another Redis instance (noeviction_redis) for our active job queue; do not confuse them.)
   config.cache_store = :redis_cache_store, { url: ScihistDigicoll::Env.lookup(:ephemeral_redis_cache_store_url) }
 
   # Use a real queuing backend for Active Job (and separate queues per environment)
