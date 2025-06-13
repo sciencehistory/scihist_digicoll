@@ -56,16 +56,28 @@ class OpenaiAudioTranscribe
 
   # Given an Asset with audio or video, extract audio as lowfi
   # Opus OGG, and contact OpenAI API to get a webvtt transcript
-  def get_vtt_for_asset(asset, lang_code: nil)
+  def get_vtt_for_asset(asset, lang_code: nil, create_deriv_if_needed: false)
     unless asset.content_type.start_with?("audio/") || asset.content_type.start_with?("video/")
       raise ArgumentError.new("Can only extract transcript from audio or video")
     end
 
-    lofi_opus = FfmpegExtractOpusAudio.new.call(asset.file)
+    if asset.file_derivatives[AssetUploader::LOFI_OPUS_AUDIO_DERIV_KEY].blank? && create_deriv_if_needed
+      asset.create_derivatives(only: AssetUploader::LOFI_OPUS_AUDIO_DERIV_KEY)
+    elsif asset.file_derivatives[AssetUploader::LOFI_OPUS_AUDIO_DERIV_KEY].blank?
+      raise ArgumentError.new("asset #{asset&.friendlier_id} does not have a #{AssetUploader::LOFI_OPUS_AUDIO_DERIV_KEY.inspect} derivative. Either needs to exist, or pass in `create_deriv_if_needed:true`")
+    end
 
-    get_vtt(lofi_opus, lang_code: lang_code, whisper_prompt: (whisper_prompt(asset) if use_prompt))
-  ensure
-    lofi_opus.unlink if lofi_opus
+    # Would be nice to pass the IO object directly instead of having to make a temporary
+    # download to our disk first, but ruby's lack of clear API for non-File IO leaves things
+    # incompatible. At least the FIRST problem is:
+    #
+    # * https://github.com/socketry/multipart-post/issues/110
+    # * https://github.com/janko/down/issues/99
+    asset.file_derivatives[AssetUploader::LOFI_OPUS_AUDIO_DERIV_KEY].download do |opus_file|
+      return get_vtt(opus_file, lang_code: lang_code, whisper_prompt: (whisper_prompt(asset) if use_prompt))
+    end
+  #ensure
+    #opus_file.close if opus_file
   end
 
   # Given a File or Tempfile, contact OpenAI API and return transcribed WebVTT

@@ -39,18 +39,18 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
     expect(cues.length).to eq 4
 
     first_cue = cues[0]
-    expect(first_cue.start).to eq "00:00:00.000"
+    expect(first_cue.start.to_s).to eq "00:00:00.000"
     expect(first_cue.start_sec_f).to eq 0.0
-    expect(first_cue.end).to eq "00:00:02.000"
+    expect(first_cue.end.to_s).to eq "00:00:02.000"
     expect(first_cue.end_sec_f).to eq 2.0
     expect(first_cue.paragraphs.length).to eq 1
     expect(first_cue.paragraphs[0].speaker_name).to eq "Esme Johnson"
     expect(first_cue.paragraphs[0].raw_html).to eq "It’s a <i>blue</i> <script>apple</script> tree!"
 
     second_cue = cues[1]
-    expect(second_cue.start).to eq "00:00:02.400"
+    expect(second_cue.start.to_s).to eq "00:00:02.400"
     expect(second_cue.start_sec_f).to eq 2.4
-    expect(second_cue.end).to eq "00:00:04.000"
+    expect(second_cue.end.to_s).to eq "00:00:04.000"
     expect(second_cue.end_sec_f).to eq 4.0
 
     expect(second_cue.paragraphs.length).to eq 3

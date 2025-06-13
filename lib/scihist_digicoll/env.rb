@@ -223,6 +223,10 @@ module ScihistDigicoll
     # AH_REDIS_STACKHERO_JADE_URL_TLS
     define_key :redis_cache_store_url, default: ( ENV[ ENV['REDIS_CACHE_STORE_URL_ENV'] ] unless ENV['REDIS_CACHE_STORE_URL_ENV'].nil? )
 
+    # Whether to cache the results of more_like_this SOLR queries.
+    # see app/services/more_like_this_getter.rb
+    define_key :cache_more_like_this, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM, default: false
+
     # Logic to get network location of the Redis instance we will
     # use for persistent data -- such as our jobs queue for resque.
     #
