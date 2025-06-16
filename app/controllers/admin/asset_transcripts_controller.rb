@@ -10,7 +10,7 @@ class Admin::AssetTranscriptsController < AdminController
       OpenaiAudioTranscribeJob.perform_later(@asset)
     end
 
-    redirect_to admin_asset_path(@asset, anchor: "video_transcription")
+    redirect_to admin_asset_path(@asset)
   end
 
   def upload_corrected_vtt
@@ -20,7 +20,7 @@ class Admin::AssetTranscriptsController < AdminController
         params[:asset_derivative][Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY]
     })
 
-    redirect_to admin_asset_path(@asset, anchor: "video_transcription")
+    redirect_to admin_asset_path(@asset)
   end
 
   def delete_transcript
@@ -30,7 +30,7 @@ class Admin::AssetTranscriptsController < AdminController
 
     @asset.remove_derivatives(params[:derivative_key].to_sym)
 
-    redirect_to admin_asset_path(@asset, anchor: "video_transcription")
+    redirect_to admin_asset_path(@asset)
   end
 
   private
