@@ -330,6 +330,16 @@
   //color: $shi-red;
 }
 
+.transcript-footnote-popover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+
+  a {
+    // Make it look like a link, not sure why it wasn't looking like any kind
+    // of link otherwise
+    @extend .text-link;
+  }
+}
+
 // make room for and position the timecode links
 // This is more or less how standard OHMS viewer does it.
 .ohms-transcript-container {
@@ -342,16 +352,6 @@
       font-family: $brand-sans-serif;
       position: absolute;
       left: 0;
-    }
-  }
-
-  .ohms-footnote-popover {
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-
-    a {
-      // Make it look like a link, not sure why it wasn't looking like any kind
-      // of link otherwise
-      @extend .text-link;
     }
   }
 }
