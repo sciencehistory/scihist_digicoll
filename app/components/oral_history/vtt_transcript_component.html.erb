@@ -1,23 +1,25 @@
 <div class="ohms-transcript-container">
   <% display_paragraphs do |start_seconds, speaker, html_text| %>
-    <p class="ohms-transcript-paragraph" data-searchable-transcript-line="true">
-      <% if start_seconds %>
-        <%=  content_tag(
-                "a",
-                format_ohms_timestamp(start_seconds),
-                href: "#t=#{start_seconds}",
-                class: "ohms-transcript-timestamp default-link-style",
-                data: { "ohms_timestamp_s" => start_seconds}
-              )
-        %>
-      <% end %>
+      <div class="ohms-transcript-paragraph-wrapper">
+        <p class="ohms-transcript-paragraph" data-searchable-transcript-line="true">
+          <% if start_seconds %>
+            <%=  content_tag(
+                    "a",
+                    format_ohms_timestamp(start_seconds),
+                    href: "#t=#{start_seconds}",
+                    class: "ohms-transcript-timestamp default-link-style",
+                    data: { "ohms_timestamp_s" => start_seconds}
+                  )
+            %>
+          <% end %>
 
-      <% if speaker %>
-        <span class="transcript-speaker"><%= speaker %></span>:
-      <% end %>
+          <% if speaker %>
+            <span class="transcript-speaker"><%= speaker %></span>:
+          <% end %>
 
-      <%= html_text %>
-    </p>
+          <%= html_text %>
+        </p>
+    </div>
   <% end %>
 </div>
 

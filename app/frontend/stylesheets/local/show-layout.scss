@@ -250,7 +250,8 @@ $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90p
      }
     .show-video-transcript-content {
       overflow-y: scroll;
-       padding: 1rem;
+      // leaving room for margin and padding for highlighted paragraphs
+      padding: ($paragraph-spacer * 0.5) ($paragraph-spacer * 0.75);
     }
   }
 }

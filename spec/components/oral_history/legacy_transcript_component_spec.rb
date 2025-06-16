@@ -21,7 +21,7 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
     # plus one because we have added one for the 0 timestamp
     expect(parsed.css("a.ohms-transcript-timestamp").count).to eq(ohms_xml.legacy_transcript.sync_timecodes.count + 1)
 
-    first_line = parsed.css("div.ohms-transcript-container > p.ohms-transcript-paragraph > span.ohms-transcript-line").first
+    first_line = parsed.css("div.ohms-transcript-container p.ohms-transcript-paragraph > span.ohms-transcript-line").first
 
     expect(first_line.to_html).to eq(
       %Q{<span class="ohms-transcript-line" id="ohms_line_1" data-searchable-transcript-line="true"><a href="#t=0" class="ohms-transcript-timestamp" data-ohms-timestamp-s="0">00:00:00</a><span class="transcript-speaker">BROCK:</span> This is an oral history interview with Ron Duarte taking place on 13 June \n</span>}

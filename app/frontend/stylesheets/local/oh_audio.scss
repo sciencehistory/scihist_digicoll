@@ -225,6 +225,11 @@
     text-transform: uppercase;
   }
 
+  #ohTranscript.tab-pane {
+    // Compensate for extra padding for highlighting
+    margin: -0.5rem -0.25rem;
+  }
+
 
   .tab-pane.downloads {
     margin-bottom: 2rem;
@@ -233,6 +238,7 @@
       margin-top: 0;
     }
   }
+
 
   .downloads-pdf {
     border-top: 3px solid $table-border-color;
@@ -343,15 +349,33 @@
 // make room for and position the timecode links
 // This is more or less how standard OHMS viewer does it.
 .ohms-transcript-container {
-  position: relative;
-  padding-left: 5.5em;
-  max-width: calc(5.5em + #{$max-readable-width});
+  // hack to disable margin collapsing
+  display: flex;
+  flex-direction: column;
 
   .ohms-transcript-paragraph {
+    position: relative;
+    padding-left: 5.5em;
+    max-width: calc(5.5em + #{$max-readable-width});
+
     .ohms-transcript-timestamp {
       font-family: $brand-sans-serif;
       position: absolute;
       left: 0;
+    }
+  }
+
+  // To allow bg color highlighting of a paragraph without the edges of
+  // the highlight touching text, we have to wrap in a container with some
+  // padding and margin. Perhaps we could have done this with just padding,
+  // was hard to get this all to line up right, had to compensate in some
+  // wrappers.
+  .ohms-transcript-paragraph-wrapper {
+    margin: (0.25 * $paragraph-spacer) 0;
+    padding: (0.25 * $paragraph-spacer);
+
+    .ohms-transcript-paragraph {
+      margin-bottom: 0;
     }
   }
 }
