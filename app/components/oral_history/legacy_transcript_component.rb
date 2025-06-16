@@ -52,7 +52,10 @@ module OralHistory
       paragraph_html_arr = paragraphs.collect do |p_arr|
         content_tag("p", class: "ohms-transcript-paragraph") do
           safe_join(p_arr.collect do |line|
-            content_tag("span", format_ohms_line(line), class: "ohms-transcript-line", id: "ohms_line_#{line[:line_num]}")
+            content_tag("span", format_ohms_line(line),
+              class: "ohms-transcript-line",
+                id: "ohms_line_#{line[:line_num]}",
+                "data-searchable-transcript-line" => true)
           end)
         end
       end

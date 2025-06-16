@@ -1,7 +1,6 @@
 <div class="ohms-transcript-container">
   <% display_paragraphs do |start_seconds, speaker, html_text| %>
-    <%# need ohms-transcript-line class for compat with legacy transcript search JS %>
-    <p class="ohms-transcript-paragraph ohms-transcript-line">
+    <p class="ohms-transcript-paragraph" data-searchable-transcript-line="true">
       <% if start_seconds %>
         <%=  content_tag(
                 "a",
