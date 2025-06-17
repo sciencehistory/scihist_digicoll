@@ -193,4 +193,20 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
       expect(vtt_transcript.footnotes["3"]).to eq 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. See:<a href="https://en.wikipedia.org/wiki/Lorem_ipsum" target="_blank" rel="noopener">Lorem Ipsum</a>'
     end
   end
+
+  describe "file with binary encoding" do
+    let(:sample_webvtt) do
+      <<~EOS.force_encoding("BINARY")
+        WEBVTT
+
+        00:00.000 --> 00:02.000 align:left size:50%
+        This has « utf-8 in it »!
+
+      EOS
+    end
+
+    it "still ingests as UTF-8" do
+      expect(vtt_transcript.cues.first.text).to eq "This has « utf-8 in it »!"
+    end
+  end
 end

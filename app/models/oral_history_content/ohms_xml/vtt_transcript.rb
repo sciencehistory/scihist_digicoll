@@ -25,12 +25,21 @@ class OralHistoryContent
       attr_reader :raw_webvtt_text
 
       # @param raw_webvtt_text [String] WebVTT text as included in an OHMS xml export
-      def initialize(raw_webvtt_text)
-        @raw_webvtt_text = raw_webvtt_text || ""
+      def initialize(raw_webvtt_text = "")
+        # WebVTT must be in UTF-8, and vtt gem does not well if they aren't, but
+        # file uplaods etc from Rails come in in Binary
+        if raw_webvtt_text.encoding == Encoding::BINARY
+          raw_webvtt_text.force_encoding("UTF-8")
+        elsif raw_webvtt_text.encoding == Encoding::UTF_8
+          raw_webvtt_text.encode("UTF-8")
+        end
+
+        @raw_webvtt_text = raw_webvtt_text
       end
 
       def cues
         @cues ||= begin
+          # TODO move this into initialier with argument.
           # parser requires initial WEBVTT line, which OHMS omits
           src = raw_webvtt_text
           unless src.start_with?('WEBVTT')
