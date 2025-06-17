@@ -121,7 +121,10 @@ describe WorkVideoShowComponent, type: :component do
       let(:asset) { build(:asset_with_faked_file, :video, :corrected_vtt) }
 
       it "includes track element for corrected" do
-        render_inline described_class.new(work)
+        instance = described_class.new(work)
+        render_inline instance
+
+        expect(instance.vtt_transcript_str).to eq asset.corrected_webvtt_str
 
         expect(page).to have_selector("video track", count: 1)
         track_element = page.first("video track")

@@ -46,10 +46,10 @@ class WorkVideoShowComponent < ApplicationComponent
   end
 
   def vtt_transcript_str
-    if video_asset.asr_webvtt?
+    if video_asset.corrected_webvtt?
+      video_asset.corrected_webvtt_str
+    elsif video_asset.asr_webvtt?
       video_asset.asr_webvtt_str
-    elsif video_asset.corrected_webvtt?
-      video_asset.video_asset.corrected_webvtt_str
     end
   end
 

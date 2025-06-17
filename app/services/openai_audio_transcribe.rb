@@ -20,10 +20,11 @@ class OpenaiAudioTranscribe
   REQUEST_TIMEOUT = 360 # seconds. default may be 120. In some cases not long enough?
   MODEL = "whisper-1"
 
-  attr_reader :use_prompt
+  attr_reader :use_prompt, :create_audio_derivative_if_needed
 
-  def initialize(use_prompt: true)
+  def initialize(use_prompt: true, create_audio_derivative_if_needed: false)
     @use_prompt = !!use_prompt
+    @create_audio_derivative_if_needed = !!create_audio_derivative_if_needed
   end
 
   # process audio from Asset with OpenAI whsiper, and store the transcript in
@@ -56,7 +57,7 @@ class OpenaiAudioTranscribe
 
   # Given an Asset with audio or video, extract audio as lowfi
   # Opus OGG, and contact OpenAI API to get a webvtt transcript
-  def get_vtt_for_asset(asset, lang_code: nil, create_deriv_if_needed: false)
+  def get_vtt_for_asset(asset, lang_code: nil)
     unless asset.content_type.start_with?("audio/") || asset.content_type.start_with?("video/")
       raise ArgumentError.new("Can only extract transcript from audio or video")
     end

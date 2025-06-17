@@ -134,6 +134,9 @@ class Asset < Kithe::Asset
   # regardless of the parent work's settings.
   attr_json :suppress_ocr, :boolean, default: false
 
+  # Do we want whisper Automated Speech Recognition? Only used for videos at present.
+  attr_json :audio_asr_enabled, :boolean
+
   # A place for staff to enter any internal notes about OCR for this asset.
   attr_json :ocr_admin_note, :text
 
