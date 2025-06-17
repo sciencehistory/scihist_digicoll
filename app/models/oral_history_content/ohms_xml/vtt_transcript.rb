@@ -22,7 +22,7 @@ class OralHistoryContent
     class VttTranscript
       FullSanitizer = Rails::HTML5::FullSanitizer.new
 
-      attr_reader :raw_webvtt_text
+      attr_reader :raw_webvtt_text, :parsed_webvtt
 
       # @param raw_webvtt_text [String] WebVTT text as included in an OHMS xml export
       #
@@ -49,10 +49,11 @@ class OralHistoryContent
         end
 
         @raw_webvtt_text = raw_webvtt_text
+        @parsed_webvtt = WebVTT.from_blob(raw_webvtt_text)
       end
 
       def cues
-        @cues ||= WebVTT.from_blob(raw_webvtt_text).cues.collect { |webvtt_cue| Cue.new(webvtt_cue) }
+        @cues ||= parsed_webvtt.cues.collect { |webvtt_cue| Cue.new(webvtt_cue) }
       end
 
       # delivers extracted and indexed footnotes from OHMS WebVTT

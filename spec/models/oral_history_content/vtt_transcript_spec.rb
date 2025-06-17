@@ -209,4 +209,14 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
       expect(vtt_transcript.cues.first.text).to eq "This has « utf-8 in it »!"
     end
   end
+
+  describe "invalid input" do
+    let(:sample_webvtt) { "this\n\nis not it"}
+
+    it "raises in strict mode" do
+      expect {
+        described_class.new(sample_webvtt, auto_correct_format: false)
+      }.to raise_error(WebVTT::MalformedFile)
+    end
+  end
 end
