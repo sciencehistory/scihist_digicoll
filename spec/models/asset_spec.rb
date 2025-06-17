@@ -244,7 +244,7 @@ describe Asset do
         Hello, welcome to the podcast.
       EOS
     end
-    let(:asset) { create(:asset_with_faked_file, :video) }
+    let(:asset) { create(:asset_with_faked_file, :video, audio_asr_enabled: true) }
 
     it "asr_webvtt added with metadata and retrived" do
       # using a kithe feature with `add_metadata`

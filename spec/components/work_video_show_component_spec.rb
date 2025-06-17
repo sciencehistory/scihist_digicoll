@@ -112,8 +112,21 @@ describe WorkVideoShowComponent, type: :component do
       it "includes on-page transcript toggle" do
         render_inline described_class.new(work)
 
-        expect(page).to have_selector("#showVideoTranscriptToggle[data-bs-target='#show-video-transcript-collapse']")
+        expect(page).to have_selector("#showVideoTranscriptToggle[data-bs-target='#show-video-transcript-collapse']", text: /Show transcript/i)
         expect(page).to have_selector("#show-video-transcript-collapse.collapse")
+      end
+    end
+
+    describe "only ASR captions but without audio_asr_enabled" do
+      let(:asset) { build(:asset_with_faked_file, :video, :asr_vtt, audio_asr_enabled: false) }
+
+      it "does not show captions" do
+        render_inline described_class.new(work)
+
+        expect(page).not_to have_selector("video track", count: 1)
+
+        expect(page).not_to have_selector(:link_or_button, text: /Show transcript/i)
+        expect(page).not_to have_selector("#show-video-transcript-collapse.collapse")
       end
     end
 

@@ -323,12 +323,12 @@ class Asset < Kithe::Asset
   end
 
   def has_webvtt?
-    corrected_webvtt? || asr_webvtt?
+    corrected_webvtt? || (audio_asr_enabled? && asr_webvtt?)
   end
 
   # expensive even if empty, better to check has_asr? cheaper first
   def webvtt_str
-    corrected_webvtt_str || asr_webvtt_str
+    corrected_webvtt_str || (audio_asr_enabled?.presence &&  asr_webvtt_str)
   end
 
 
