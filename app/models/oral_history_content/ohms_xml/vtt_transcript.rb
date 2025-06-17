@@ -34,24 +34,20 @@ class OralHistoryContent
           raw_webvtt_text.encode("UTF-8")
         end
 
+        # parser requires initial WEBVTT line, which OHMS omits
+        unless raw_webvtt_text.start_with?('WEBVTT')
+          raw_webvtt_text = "WEBVTT\n" + raw_webvtt_text
+        end
+
+        # and OHMS also often omits final empty line also required, adding an
+        # extra doesn't hurt
+        raw_webvtt_text = raw_webvtt_text + "\n"
+
         @raw_webvtt_text = raw_webvtt_text
       end
 
       def cues
-        @cues ||= begin
-          # TODO move this into initialier with argument.
-          # parser requires initial WEBVTT line, which OHMS omits
-          src = raw_webvtt_text
-          unless src.start_with?('WEBVTT')
-            src = "WEBVTT\n" + src
-          end
-
-          # and OHMS also often omits final empty line also required, adding an
-          # extra doesn't hurt
-          src = src + "\n"
-
-          WebVTT.from_blob(src).cues.collect { |webvtt_cue| Cue.new(webvtt_cue) }
-        end
+        @cues ||= WebVTT.from_blob(raw_webvtt_text).cues.collect { |webvtt_cue| Cue.new(webvtt_cue) }
       end
 
       # delivers extracted and indexed footnotes from OHMS WebVTT
