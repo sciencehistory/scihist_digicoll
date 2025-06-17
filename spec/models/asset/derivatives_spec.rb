@@ -26,7 +26,7 @@ describe "derivative creation" do
   end
 
   describe "video asset" do
-    let!(:video_asset) { create(:asset_with_faked_file, :video, faked_derivatives: {}) }
+    let!(:video_asset) { create(:asset_with_faked_file, :video, :with_real_exiftool, faked_derivatives: {}) }
 
     it "extracts a frame for thumbnails and a compact opus audio" do
       video_asset.create_derivatives
@@ -38,6 +38,22 @@ describe "derivative creation" do
       expect(video_asset.file_derivatives[:audio_16k_opus].content_type).to eq "audio/opus"
       expect(video_asset.file_derivatives[:audio_16k_opus].size).to be > 0
       expect(video_asset.file_derivatives[:audio_16k_opus].metadata["filename"]).to end_with(".oga")
+    end
+
+    describe "without audio track" do
+      let!(:video_asset) {
+        create(:asset_with_faked_file, :video, :with_real_exiftool,
+          faked_derivatives: {},
+          file: File.open(Rails.root + "spec/test_support/video/tiny_no_audio.mp4")
+        )
+      }
+
+      it "does not create opus derivative, with no errors" do
+        video_asset.create_derivatives
+
+        expect(video_asset.file_derivatives[:audio_16k_opus]).to be_blank
+        expect(video_asset.file_derivatives.keys).not_to include(:audio_16k_opus)
+      end
     end
   end
 
