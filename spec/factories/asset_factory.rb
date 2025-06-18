@@ -112,6 +112,18 @@ FactoryBot.define do
         faked_derivatives { nil }
       end
 
+      trait :real_extract_metadata do
+        after(:build) do |asset|
+          asset.file.add_metadata(asset.file_attacher.cache.extract_metadata(asset.file))
+        end
+      end
+
+      trait :with_real_exiftool do
+        after(:build) do |asset|
+          asset.store_exiftool
+        end
+      end
+
       trait :restricted_derivatives do
         published { false }
         derivative_storage_type { "restricted" }
