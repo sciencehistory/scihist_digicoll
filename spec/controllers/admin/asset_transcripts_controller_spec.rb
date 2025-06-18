@@ -1,7 +1,59 @@
 require 'rails_helper'
 
-RSpec.describe Admin::AssetTranscriptsController, :logged_in_user, type: :controller do
+RSpec.describe Admin::AssetTranscriptsController, :logged_in_user, type: :controller, queue_adapter: :test do
   let(:asset) { create(:asset_with_faked_file, :video) }
+
+  describe "set_audio_asr_enabled" do
+    it "enqueues job" do
+      expect {
+        put :set_audio_asr_enabled, params: {
+          id: asset.friendlier_id,
+          asset: {
+            audio_asr_enabled: "1"
+          }
+        }
+      }.to have_enqueued_job(OpenaiAudioTranscribeJob)
+
+      asset.reload
+      expect(asset.audio_asr_enabled?).to be true
+    end
+
+    describe "if already has ASR vtt" do
+      let(:asset) { create(:asset_with_faked_file, :video, :asr_vtt) }
+
+      it "does not enqueue job" do
+        expect {
+          put :set_audio_asr_enabled, params: {
+            id: asset.friendlier_id,
+            asset: {
+              audio_asr_enabled: "1"
+            }
+          }
+        }.not_to have_enqueued_job(OpenaiAudioTranscribeJob)
+
+        asset.reload
+        expect(asset.audio_asr_enabled?).to be true
+      end
+    end
+
+    describe "disable" do
+      let(:asset) { create(:asset_with_faked_file, :video, audio_asr_enabled: true) }
+
+      it "sets to false without enqueing job" do
+        expect {
+          put :set_audio_asr_enabled, params: {
+            id: asset.friendlier_id,
+            asset: {
+              audio_asr_enabled: "0"
+            }
+          }
+        }.not_to have_enqueued_job(OpenaiAudioTranscribeJob)
+
+        asset.reload
+        expect(asset.audio_asr_enabled?).to be false
+      end
+    end
+  end
 
   describe "#upload_corrected_vtt" do
     it "can upload" do
