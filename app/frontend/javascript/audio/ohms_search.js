@@ -120,7 +120,7 @@ Search.regexpStrForSearch = function(query) {
 // Returns array of 'result' objects, how do we standardize what that is?
 // context, tab id, id.
 //
-// looks through all objects that are .ohms-transcript-line,
+// looks through all objects that are in a *[data-searchable-transcript-line] container.
 // that works for our DOM. Should we add a data- hook?
 //
 // Highlights every hit, results a list of result objects.
@@ -139,7 +139,7 @@ Search.searchTranscript = function(query) {
   // 3: after match
   var find_re = new RegExp("((?:\\S*\\s+\\S*){0,1})(" + query + ")((?:\\s*\\S+\\s*){0,4})", "gi")
 
-  return $(".ohms-transcript-line").map(function() {
+  return $("*[data-searchable-transcript-line]").map(function() {
     var line = $(this);
 
     var lineId = this.id;

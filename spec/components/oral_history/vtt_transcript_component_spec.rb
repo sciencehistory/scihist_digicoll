@@ -9,11 +9,11 @@ describe OralHistory::VttTranscriptComponent, type: :component do
   it "renders html as expected" do
     parsed = render_inline(vtt_transcript_component)
 
-    paragraphs = parsed.css(".ohms-transcript-container p.ohms-transcript-paragraph.ohms-transcript-line")
+    paragraphs = parsed.css(".ohms-transcript-container p.ohms-transcript-paragraph")
     expect(paragraphs.length).to eq 8
 
     # Don't use same speaker name in multiple paragraphs in a row
-    expect(paragraphs.collect { |p| p.css("span.ohms-speaker")&.text }).to eq [
+    expect(paragraphs.collect { |p| p.css("span.transcript-speaker")&.text }).to eq [
       "SCHNEIDER", "NAME OF INTERVIEWEE", "SCHNEIDER", "NAME OF INTERVIEWEE", "", "", "SCHNEIDER", "NAME OF INTERVIEWEE"
     ]
 
@@ -55,7 +55,7 @@ describe OralHistory::VttTranscriptComponent, type: :component do
     it "scrubs output" do
       parsed = render_inline(vtt_transcript_component)
 
-      paragraphs = parsed.css(".ohms-transcript-container p.ohms-transcript-paragraph.ohms-transcript-line")
+      paragraphs = parsed.css(".ohms-transcript-container p.ohms-transcript-paragraph")
 
       expect(paragraphs.length).to eq 4
 
