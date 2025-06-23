@@ -103,9 +103,9 @@ if (videoPlayerEl) {
       let firstHighlightedEl = undefined;
 
       activeCuesArr.forEach( (cue) => {
-        // in HTML attribute, we rounded to one digit after decimal point... hope it's the same
-        // rounding algorithm? TODO we need to test, or change algorithm.
-        document.querySelectorAll(`*[data-ohms-timestamp-s="${cue.startTime.toFixed(1)}"]`).forEach( (el) => {
+        // when outputting seconds float in vtt_transcript_component.html.erb, it must be output
+        // with exact same number of decimal places including trailing zeroes as here.
+        document.querySelectorAll(`*[data-ohms-timestamp-s="${cue.startTime.toFixed(3)}"]`).forEach( (el) => {
           firstHighlightedEl = firstHighlightedEl || el;
 
           el.closest(".ohms-transcript-paragraph-wrapper")?.classList?.add(highlightCssClass);

@@ -8,7 +8,9 @@
                     format_ohms_timestamp(start_seconds),
                     href: "#t=#{start_seconds}",
                     class: "ohms-transcript-timestamp default-link-style",
-                    data: { "ohms_timestamp_s" => start_seconds}
+                      # must be formatted exactly the same in JS transcript highlighter
+                      # code that searches for it.
+                    data: { "ohms_timestamp_s" => "%.3f" % start_seconds.round(3)}
                   )
             %>
           <% end %>
