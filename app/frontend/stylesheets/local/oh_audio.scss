@@ -380,6 +380,15 @@
   }
 }
 
+.transcript-highlighted {
+  // shi-gray-1
+  background-color: #efeeed;
+
+  .ohms-transcript-timestamp {
+    font-weight: bold;
+  }
+}
+
 .ohms-index-container {
   max-width: $max-readable-width;
   padding-bottom: 1.5rem;

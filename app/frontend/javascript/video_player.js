@@ -29,4 +29,51 @@ if (videoPlayerEl && navigator.vendor?.includes("Apple")) {
 }
 
 
+// in on-page transcript, highlight current line that matches where video is playing,
+// scrolling to it if necessary. A lot of this UX is modelled on youtube
+//
+// We count on the fact that we have our VTT loaded in the video as a text track, so
+// we can use HTML5 video API to find "activeCues" at any given time, and then locate those
+// in the transcript. Using HTML5 video API via video.js, which delegates or polyfills as needed.
+if (videoPlayerEl) {
+  const highlightCssClass = "transcript-highlighted"
+
+  videojs(videoPlayerEl).ready(function() {
+    const autoCaptionTrack = this.textTracks().getTrackById("scihistAutoCaptions");
+    if (autoCaptionTrack) {
+      let currentCues = null;
+
+      this.on("timeupdate", function() {
+        const stringified = JSON.stringify(autoCaptionTrack.activeCues);
+
+        if (currentCues != stringified) {
+          removeTranscriptHighlights();
+          addTranscriptHighlights(autoCaptionTrack.activeCues);
+
+
+          currentCues = stringified;
+        }
+      });
+    }
+
+    function removeTranscriptHighlights() {
+      document.querySelectorAll(`.${highlightCssClass}`).forEach( (el) => el.classList.remove(highlightCssClass))
+    }
+
+    function addTranscriptHighlights(activeCues) {
+      // Odd JS way to turn it to a standard array so we can interate
+      const activeCuesArr = Array.prototype.slice.call(activeCues, 0)
+
+      activeCuesArr.forEach( (cue) => {
+        // in HTML attribute, we rounded to one digit after decimal point... hope it's the same
+        // rounding algorithm? TODO we need to test, or change algorithm.
+        document.querySelectorAll(`*[data-ohms-timestamp-s="${cue.startTime.toFixed(1)}"]`).forEach( (el) => {
+          el.closest(".ohms-transcript-paragraph-wrapper")?.classList?.add(highlightCssClass);
+        });
+      })
+    }
+  });
+}
+
+
 
