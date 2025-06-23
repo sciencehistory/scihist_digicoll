@@ -78,6 +78,8 @@ if (videoPlayerEl) {
       })
     }
 
+    const vjsPlayer = this;
+
     function removeTranscriptHighlights() {
       document.querySelectorAll(`.${highlightCssClass}`).forEach( (el) => el.classList.remove(highlightCssClass))
     }
@@ -88,7 +90,15 @@ if (videoPlayerEl) {
       }
 
       // Odd JS way to turn it to a standard array so we can interate
-      const activeCuesArr = Array.prototype.slice.call(activeCues, 0)
+      let activeCuesArr = Array.prototype.slice.call(activeCues, 0)
+
+      // Sometimes there's more than one because end time for one cue is start time for the other,
+      // we dont' need to show the one that's about to end.
+      if (activeCuesArr.length > 1) {
+        activeCuesArr = activeCuesArr.filter( cue => {
+          vjsPlayer.currentTime() <= (cue.endTime - 0.25)
+        });
+      }
 
       let firstHighlightedEl = undefined;
 
