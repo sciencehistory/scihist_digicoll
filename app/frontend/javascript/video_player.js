@@ -40,20 +40,42 @@ if (videoPlayerEl) {
 
   videojs(videoPlayerEl).ready(function() {
     const autoCaptionTrack = this.textTracks().getTrackById("scihistAutoCaptions");
+
     if (autoCaptionTrack) {
-      let currentCues = null;
 
-      this.on("timeupdate", function() {
-        const stringified = JSON.stringify(autoCaptionTrack.activeCues);
-
-        if (currentCues != stringified) {
-          removeTranscriptHighlights();
-          addTranscriptHighlights(autoCaptionTrack.activeCues);
-
-
-          currentCues = stringified;
+      //We need text track to be hidden instead of disabled, so we can still track
+      //cuechange events for transcript
+      autoCaptionTrack.mode = "hidden";
+      this.textTracks().addEventListener("change", function() {
+        if (autoCaptionTrack.mode == "disabled") {
+          autoCaptionTrack.mode = "hidden";
         }
       });
+
+      // whether track is visible or hidden, we'll get cuechange
+      // events we can use to highlight our transcript
+      autoCaptionTrack.addEventListener("cuechange", function() {
+        removeTranscriptHighlights();
+
+        const highlightedEl = addTranscriptHighlights(autoCaptionTrack.activeCues);
+
+        // Scroll to highlighted El if present, the transcript is open, and the
+        // mouse cursor isn't currently over transcript window. UX modelled on Youtube.
+        if (highlightedEl &&
+            document.querySelector("#show-video-transcript-collapse.show") &&
+            !document.querySelector("*[data-transcript-content-target]").matches(':hover')) {
+          scrollToTranscriptHighlight(highlightedEl);
+        }
+      });
+
+      // When transcript window opens, scroll to if needed
+      const transcriptCollapsible = document.getElementById('show-video-transcript-collapse');
+      transcriptCollapsible.addEventListener('shown.bs.collapse', event => {
+        let highlighted = document.querySelector(`.${highlightCssClass}`);
+        if (highlighted && !elementFullyVisibleWithin(highlighted, transcriptCollapsible)) {
+          scrollToTranscriptHighlight(highlighted);
+        }
+      })
     }
 
     function removeTranscriptHighlights() {
@@ -61,16 +83,54 @@ if (videoPlayerEl) {
     }
 
     function addTranscriptHighlights(activeCues) {
+      if (!activeCues || activeCues.length == 0) {
+        return;
+      }
+
       // Odd JS way to turn it to a standard array so we can interate
       const activeCuesArr = Array.prototype.slice.call(activeCues, 0)
+
+      let firstHighlightedEl = undefined;
 
       activeCuesArr.forEach( (cue) => {
         // in HTML attribute, we rounded to one digit after decimal point... hope it's the same
         // rounding algorithm? TODO we need to test, or change algorithm.
         document.querySelectorAll(`*[data-ohms-timestamp-s="${cue.startTime.toFixed(1)}"]`).forEach( (el) => {
+          firstHighlightedEl = firstHighlightedEl || el;
+
           el.closest(".ohms-transcript-paragraph-wrapper")?.classList?.add(highlightCssClass);
         });
-      })
+      });
+
+      // Return first one to scroll to
+      return firstHighlightedEl;
+    }
+
+    function scrollToTranscriptHighlight(highlightedEl) {
+      const container = document.querySelector("*[data-transcript-content-target]");
+      const line = highlightedEl.closest('.ohms-transcript-paragraph-wrapper');
+
+      // Do nothing if it's already scrolled *entirely* in container view
+      if (elementFullyVisibleWithin(line, container)) {
+        return false;
+      }
+
+      // otherwise continue, do two lines before if possible, matching youtube UX
+      let scrollToEl = line.previousElementSibling || line;
+      //scrollToEl = scrollToEl.previousElementSibling || scrollToEl;
+
+      container.scrollTo(0, scrollToEl.offsetTop);
+    }
+
+    function elementFullyVisibleWithin(element, container) {
+      const elementRect = element.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+
+      return (elementRect.bottom >= containerRect.top &&
+              elementRect.bottom <= containerRect.bottom &&
+              elementRect.top <= containerRect.bottom &&
+              elementRect.top >= containerRect.top);
+
     }
   });
 }

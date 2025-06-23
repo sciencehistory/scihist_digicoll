@@ -119,7 +119,7 @@
           </button>
         </div>
 
-        <div class="show-video-transcript-content">
+        <div class="show-video-transcript-content" data-transcript-content-target>
           <%= render OralHistory::VttTranscriptComponent.new(OralHistoryContent::OhmsXml::VttTranscript.new(vtt_transcript_str)) %>
         </div>
       </div>

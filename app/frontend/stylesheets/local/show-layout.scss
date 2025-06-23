@@ -249,6 +249,7 @@ $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90p
       background-color: $shi-gray-3;
      }
     .show-video-transcript-content {
+      position: relative; // for scrolling target
       overflow-y: scroll;
       // leaving room for margin and padding for highlighted paragraphs
       padding: ($paragraph-spacer * 0.5) ($paragraph-spacer * 0.75);
