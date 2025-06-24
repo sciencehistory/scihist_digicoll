@@ -50,10 +50,15 @@ module OralHistory
       paragraphs << current_paragraph
 
       paragraph_html_arr = paragraphs.collect do |p_arr|
-        content_tag("p", class: "ohms-transcript-paragraph") do
-          safe_join(p_arr.collect do |line|
-            content_tag("span", format_ohms_line(line), class: "ohms-transcript-line", id: "ohms_line_#{line[:line_num]}")
-          end)
+        content_tag("div", class: "ohms-transcript-paragraph-wrapper") do
+          content_tag("p", class: "ohms-transcript-paragraph") do
+            safe_join(p_arr.collect do |line|
+              content_tag("span", format_ohms_line(line),
+                class: "ohms-transcript-line",
+                  id: "ohms_line_#{line[:line_num]}",
+                  "data-searchable-transcript-line" => true)
+            end)
+          end
         end
       end
 
@@ -98,7 +103,7 @@ module OralHistory
       # catch speaker prefix, adapted from standard PHP OHMS viewer
       if ohms_line_str =~ /\A[[:space:]]*([A-Z\-.\' ]+:) (.*)\Z/
         ohms_line_str = safe_join([
-          content_tag("span", $1, class: "ohms-speaker"),
+          content_tag("span", $1, class: "transcript-speaker"),
           " ",
           $2
         ])
