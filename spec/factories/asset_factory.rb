@@ -184,6 +184,8 @@ FactoryBot.define do
       end
 
       trait :asr_vtt do
+        audio_asr_enabled { true }
+
         after(:build) do |asset|
           asset.file_attacher.merge_derivatives({
             Asset::ASR_WEBVTT_DERIVATIVE_KEY => build(:stored_uploaded_file, file: StringIO.new("WEBVTT\n\n00:00.000 --> 00:01.500\nASR WebVTT #{rand 100}"), filename: "vtt.vtt", content_type: "text/vtt")
