@@ -14,6 +14,13 @@ class Admin::AssetTranscriptsController < AdminController
   end
 
   def upload_corrected_vtt
+    # validate, will raise if invalid from inside, or if we raise for no cues
+    unless OralHistoryContent::OhmsXml::VttTranscript.new(
+      params[:asset_derivative][Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY].read,
+      auto_correct_format: false
+    ).cues.length > 0
+      raise WebVTT::MalformedFile.new("Has no cues, probably malformed")
+    end
 
     @asset.file_attacher.add_persisted_derivatives({
        Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY =>
@@ -21,6 +28,8 @@ class Admin::AssetTranscriptsController < AdminController
     })
 
     redirect_to admin_asset_path(@asset)
+  rescue WebVTT::MalformedFile => e
+    redirect_to admin_asset_path(@asset), flash: { error: "Could not upload corrected VTT file: #{e.message}" }
   end
 
   def delete_transcript
