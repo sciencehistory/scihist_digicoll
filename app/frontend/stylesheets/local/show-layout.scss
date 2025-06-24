@@ -168,6 +168,13 @@ $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90p
 .video-show-page-layout {
   display: grid;
 
+  // .ohms-transcript-paragraph-wrapper {
+  //   margin-left: -0.75em;
+  //   margin-right: -0.75rem;
+  //   padding-left: 1rem;
+  //   padding-right: 1rem;
+  // }
+
   // At very small screen, single column, and re-arrange transcript
   // to be right below video, which requires us elminating one container
   grid-template-columns: 1fr;
