@@ -13,10 +13,16 @@ module OralHistory
       scrubber.tags = ['i', 'b', 'u', 'a']
     end
 
-    attr_reader :vtt_transcript
+    attr_reader :vtt_transcript, :basee_link
 
-    def initialize(vtt_transcript)
+    # @param vtt_transcript [OralHistoryContent::OhmsXml::VttTranscript]
+    #
+    # @param base_link [String] if you want timestamps to link to a separate page, with
+    #   anchor on end. If blank, will just have href to same page with anchor, to be
+    #   picked up by JS.
+    def initialize(vtt_transcript, base_link: nil)
       @vtt_transcript = vtt_transcript
+      @base_link = base_link
     end
 
     def sanitized_footnotes
