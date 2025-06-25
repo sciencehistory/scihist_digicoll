@@ -448,6 +448,26 @@ describe WorkIndexer do
           expect(english).to be_nil
         end
       end
+
+      describe "without audio_asr_enabled" do
+        let(:language_test_work) { create(:public_work, language: ['English'], members: assets ) }
+        let(:assets) do
+          [
+            create(
+              :asset_with_faked_file,
+              :asr_vtt,
+              audio_asr_enabled: false,
+              published: true
+            )
+          ]
+        end
+
+        it "does not index asr_vtt" do
+          expect(german).to be nil
+          expect(english).to be nil
+          expect(unsure).to be nil
+        end
+      end
     end
 
     describe "with unpublished assets" do

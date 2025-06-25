@@ -33,7 +33,7 @@ class WorkVideoShowComponent < ApplicationComponent
     unless defined? @auto_caption_track_url
       @auto_caption_track_url = if video_asset.corrected_webvtt?
         download_derivative_path(video_asset, Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY, disposition: :inline)
-      elsif video_asset.asr_webvtt?
+      elsif video_asset&.audio_asr_enabled? && video_asset.asr_webvtt?
         download_derivative_path(video_asset, Asset::ASR_WEBVTT_DERIVATIVE_KEY, disposition: :inline)
       end
     end
@@ -42,7 +42,7 @@ class WorkVideoShowComponent < ApplicationComponent
   end
 
   def has_vtt_transcript?
-    video_asset&.asr_webvtt? || video_asset&.corrected_webvtt?
+    (video_asset&.audio_asr_enabled? && video_asset&.asr_webvtt?) || video_asset&.corrected_webvtt?
   end
 
   def vtt_transcript_str

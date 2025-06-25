@@ -1,1 +1,1 @@
-Resque.redis = ScihistDigicoll::Env.persistent_redis_connection!
+Resque.redis = ScihistDigicoll::Env.persistent_noeviction_redis_connection!

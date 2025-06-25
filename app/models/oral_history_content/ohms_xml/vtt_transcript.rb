@@ -22,27 +22,38 @@ class OralHistoryContent
     class VttTranscript
       FullSanitizer = Rails::HTML5::FullSanitizer.new
 
-      attr_reader :raw_webvtt_text
+      attr_reader :raw_webvtt_text, :parsed_webvtt
 
       # @param raw_webvtt_text [String] WebVTT text as included in an OHMS xml export
-      def initialize(raw_webvtt_text)
-        @raw_webvtt_text = raw_webvtt_text || ""
-      end
+      #
+      # @param auto_correct_format [Boolean] default true. Add preface and suffix
+      #   material if needed to make valid WebVTT.  Needed for some OHMS source.
+      def initialize(raw_webvtt_text = "", auto_correct_format: true)
+        # WebVTT must be in UTF-8, and vtt gem does not well if they aren't, but
+        # file uplaods etc from Rails come in in Binary
+        if raw_webvtt_text.encoding == Encoding::BINARY
+          raw_webvtt_text.force_encoding("UTF-8")
+        elsif raw_webvtt_text.encoding == Encoding::UTF_8
+          raw_webvtt_text.encode("UTF-8")
+        end
 
-      def cues
-        @cues ||= begin
+        if auto_correct_format
           # parser requires initial WEBVTT line, which OHMS omits
-          src = raw_webvtt_text
-          unless src.start_with?('WEBVTT')
-            src = "WEBVTT\n" + src
+          unless raw_webvtt_text.start_with?('WEBVTT')
+            raw_webvtt_text = "WEBVTT\n" + raw_webvtt_text
           end
 
           # and OHMS also often omits final empty line also required, adding an
           # extra doesn't hurt
-          src = src + "\n"
-
-          WebVTT.from_blob(src).cues.collect { |webvtt_cue| Cue.new(webvtt_cue) }
+          raw_webvtt_text = raw_webvtt_text + "\n"
         end
+
+        @raw_webvtt_text = raw_webvtt_text
+        @parsed_webvtt = WebVTT.from_blob(raw_webvtt_text)
+      end
+
+      def cues
+        @cues ||= parsed_webvtt.cues.collect { |webvtt_cue| Cue.new(webvtt_cue) }
       end
 
       # delivers extracted and indexed footnotes from OHMS WebVTT
