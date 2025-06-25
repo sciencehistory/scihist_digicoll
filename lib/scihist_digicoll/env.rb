@@ -213,9 +213,6 @@ module ScihistDigicoll
     define_key :cf_turnstile_secret_key, default: ("1x0000000000000000000000000000000AA" if Rails.env.development?)
     define_key :cf_turnstile_enabled, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM, default: false
 
-    define_key :redis_cache_store_url_env
-
-
     # EPHEMERAL_REDIS_CACHE_STORE_URL_ENV
     # should be set to the env key containing
     # redis instance's secure URL,
