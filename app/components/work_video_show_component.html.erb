@@ -99,7 +99,10 @@
 
     <% if has_vtt_transcript? %>
       <div class="transcript-toggle">
-        <a id="showVideoTranscriptToggle" class="btn btn-lg btn-brand-main" type="button" data-bs-toggle="collapse" data-bs-target="#show-video-transcript-collapse" aria-expanded="false" aria-controls="show-video-transcript" data-show-label="Show transcript" data-hide-label="Hide transcript">
+        <%# href leads to separate page with transcript, that we hope google will follow, but don't expect users to,
+            although they can with eg "open in new tab". Normally data-bs-target will be used by Bootstrap collapse JS
+            to open box on page with transcript instead %>
+        <a href="<%= asset_transcript_path(video_asset) %>" data-bs-target="#show-video-transcript-collapse" id="showVideoTranscriptToggle" class="btn btn-lg btn-brand-main" type="button" data-bs-toggle="collapse"  aria-expanded="false" aria-controls="show-video-transcript" data-show-label="Show transcript" data-hide-label="Hide transcript">
           Show transcript
         </a>
 

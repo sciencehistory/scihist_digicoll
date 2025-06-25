@@ -212,6 +212,8 @@ Rails.application.routes.draw do
   # download_derivative_url(asset, "thumb_small")
   get "downloads/deriv/:asset_id/:derivative_key", to: "downloads#derivative", as: :download_derivative
 
+  # Kind of a weird mismatch, HTML vtt transcript for crawlers
+  get 'download/:asset_id/transcript_html' => "downloads#transcript_html", as: :asset_transcript
 
   # We redirect the old version of /downloads/:asset_id, before we changed to above
   # with status 301 Moved Permanently

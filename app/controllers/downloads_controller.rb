@@ -82,6 +82,18 @@ class DownloadsController < ApplicationController
     ), status: 302, allow_other_host: true
   end
 
+  # right now only for video vtt, trying to see if it works to get google indexed,
+  # if it does, we'll add other kinds of OCR and manually transcribed text.
+  #
+  # Kind of a mismatch in DownloadsController, but this is all we got for assets,
+  # also kind of confusing compare with work transcription and translation PDF downloads.
+  # We've added a lot of features, they've gotten a bit scrambled.
+  def transcript_html
+    unless @asset.has_webvtt?
+      raise ActiveRecord::RecordNotFound.new("asset has no vtt available")
+    end
+  end
+
   private
 
   # sets @asset, but also aborts by raising RecordNotFound if permission denied, or asset is not yet promoted/stored.

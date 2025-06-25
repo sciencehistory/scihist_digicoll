@@ -208,4 +208,63 @@ describe DownloadsController do
       end
     end
   end
+
+  describe "#transcript_html" do
+    describe "no transcript" do
+      let(:asset) { create(:asset_with_faked_file, published: true) }
+
+      it "raises NotFound" do
+        expect {
+          get :transcript_html, params: { asset_id: asset }
+        }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    describe "asr transcript but toggled off" do
+      let(:asset) { create(:asset_with_faked_file, :asr_vtt, published: true, audio_asr_enabled: false) }
+
+      it "raises NotFound" do
+        expect {
+          get :transcript_html, params: { asset_id: asset }
+        }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    describe "good asr" do
+      let(:asset) { create(:asset_with_faked_file, :asr_vtt, parent: create(:video_work), published: true) }
+      render_views
+
+      it "renders" do
+        get :transcript_html, params: { asset_id: asset }
+
+        expect(response.status).to eq 200
+
+        expect(response.body).to include(asset.parent.title)
+
+        page_text = Nokogiri::HTML(response.body).text.gsub(/\s+/, ' ')
+        vtt_text = OralHistoryContent::OhmsXml::VttTranscript.new(asset.webvtt_str).transcript_text.gsub(/\s+/, ' ')
+
+        expect(page_text).to include(vtt_text)
+      end
+    end
+
+    describe "corrected vtt" do
+      render_views
+
+      let(:asset) { create(:asset_with_faked_file, :asr_vtt, :corrected_vtt, parent: create(:video_work), published: true) }
+
+      it "renders" do
+        get :transcript_html, params: { asset_id: asset }
+
+        expect(response.status).to eq 200
+
+        expect(response.body).to include(asset.parent.title)
+
+        page_text = Nokogiri::HTML(response.body).text.gsub(/\s+/, ' ')
+        vtt_text = OralHistoryContent::OhmsXml::VttTranscript.new(asset.corrected_webvtt_str).transcript_text.gsub(/\s+/, ' ')
+
+        expect(page_text).to include(vtt_text)
+      end
+    end
+  end
 end
