@@ -6,7 +6,19 @@
   <%= render "works/meta_tags", work: work  %>
 
 <% end %>
-<div class="video-show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
+
+<%# try to include microdata for schema.org video object, including marking up transcript text
+    https://linkilo.co/blog/are-video-transcripts-a-seo-ranking-factor/ %>
+
+<div class="video-show-page-layout work-show" itemscope itemtype="http://schema.org/VideoObject" class="row">
+
+  <% attributes = WorkSocialShareAttributes.new(work, view_context: self) %>
+
+  <%= tag.meta itemprop: "name", content: attributes.simple_title %>
+  <%= tag.meta itemprop: "description", content: attributes.short_plain_description %>
+  <%= tag.meta itemprop: "duration", content: "P1H12M13S" %>
+  <%= tag.meta itemprop: "thumbnailUrl", content: attributes.share_media_url %>
+
 
   <div class="show-title">
     <%= render WorkTitleAndDatesComponent.new(work) %>
@@ -88,6 +100,8 @@
                 >supports HTML5 video</a
               >
             </p>
+
+
           <% end %>
         </div>
       <% else %> <%# no video file available %>
@@ -122,7 +136,8 @@
           </button>
         </div>
 
-        <div class="show-video-transcript-content" data-transcript-content-target>
+
+        <div class="show-video-transcript-content" data-transcript-content-target itemprop="transcript">
           <%= render OralHistory::VttTranscriptComponent.new(OralHistoryContent::OhmsXml::VttTranscript.new(vtt_transcript_str)) %>
         </div>
       </div>
