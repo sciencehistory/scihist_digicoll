@@ -84,21 +84,26 @@ Rails.application.configure do
     # It's just a cache; give up if it's slow!
 
     # (Note that we use another Redis instance (noeviction_redis) for our active job queue; do not confuse them.)
+    # Note that additional settings pertaining to the cache itself (e.g. expiration policy) can be set
+    # within Heroku's addon.
     config.cache_store = :redis_cache_store, {
-      # https://edgeguides.rubyonrails.org/caching_with_rails.html#activesupport-cache-rediscachestore
-      # https://github.com/rails/rails/issues/39479
       url: ScihistDigicoll::Env.lookup(:ephemeral_redis_cache_store_url),
+
+      # See e.g. https://github.com/rails/rails/pull/39658
       pool_size: ENV.fetch("RAILS_MAX_THREADS") { 5 },
-      pool: { timeout: 0.5 },
-      read_timeout:    0.2,      # Defaults to 1 second
-      write_timeout:   0.15,    # Defaults to 1 second
-      read_timeout:    0.2, 
+      pool: { timeout: 0.15 },
+
+      # See https://edgeguides.rubyonrails.org/caching_with_rails.html#activesupport-cache-rediscachestore
+      connect_timeout:    1,   # Defaults to 1 second
+      read_timeout:       0.2, # Defaults to 1 second
+      write_timeout:      0.2, # Defaults to 1 second
     }
   else
     ##################################################
     ##################################################
     ### BEGIN OBSOLETE MEMCACHED CODE
-    ### REMOVE ALL THIS MEMCACHED CODE AFTER WE STOP USING MEMCACHED:
+    ### REMOVE ALL THIS MEMCACHED CODE WHEN WE ARE READY TO STOP USING MEMCACHED.
+    ###
     # On heroku we try to set up either memcachier or memcachedcloud, in that order,
     # depending on what env variables are defined.
     #
