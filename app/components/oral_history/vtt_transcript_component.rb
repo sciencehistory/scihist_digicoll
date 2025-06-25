@@ -13,7 +13,7 @@ module OralHistory
       scrubber.tags = ['i', 'b', 'u', 'a']
     end
 
-    attr_reader :vtt_transcript, :basee_link
+    attr_reader :vtt_transcript, :base_link
 
     # @param vtt_transcript [OralHistoryContent::OhmsXml::VttTranscript]
     #
