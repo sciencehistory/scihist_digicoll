@@ -1,4 +1,5 @@
 require 'scihist_digicoll/logger_formatter'
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -69,11 +70,9 @@ Rails.application.configure do
   # Prepend all log lines with the following tags.
   config.log_tags = [ :request_id ]
 
-
   # Caching is not normally turned on in test or dev, but config/environments/development.rb
   # has some standard Rails code that lets you turn it on in dev with in-memory store,
   # with `./bin/rails dev:cache` toggle.
-  
 
   if ScihistDigicoll::Env.lookup(:ephemeral_redis_cache_store_url)
     # On heroku we use a Redis instance named ephemeral_redis for our cache.
@@ -85,9 +84,17 @@ Rails.application.configure do
     # It's just a cache; give up if it's slow!
 
     # (Note that we use another Redis instance (noeviction_redis) for our active job queue; do not confuse them.)
-    config.cache_store = :redis_cache_store, { url: ScihistDigicoll::Env.lookup(:ephemeral_redis_cache_store_url) }
+    config.cache_store = :redis_cache_store, {
+      # https://edgeguides.rubyonrails.org/caching_with_rails.html#activesupport-cache-rediscachestore
+      # https://github.com/rails/rails/issues/39479
+      url: ScihistDigicoll::Env.lookup(:ephemeral_redis_cache_store_url)
+      pool_size: ENV.fetch("RAILS_MAX_THREADS") { 5 },
+      pool: { timeout: 0.5 },
+      read_timeout:    0.2,      # Defaults to 1 second
+      write_timeout:   0.15,    # Defaults to 1 second
+      read_timeout:    0.2, 
+    }
   else
-
     ##################################################
     ##################################################
     ### BEGIN OBSOLETE MEMCACHED CODE
