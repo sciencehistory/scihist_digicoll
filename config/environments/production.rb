@@ -87,7 +87,7 @@ Rails.application.configure do
     config.cache_store = :redis_cache_store, {
       # https://edgeguides.rubyonrails.org/caching_with_rails.html#activesupport-cache-rediscachestore
       # https://github.com/rails/rails/issues/39479
-      url: ScihistDigicoll::Env.lookup(:ephemeral_redis_cache_store_url)
+      url: ScihistDigicoll::Env.lookup(:ephemeral_redis_cache_store_url),
       pool_size: ENV.fetch("RAILS_MAX_THREADS") { 5 },
       pool: { timeout: 0.5 },
       read_timeout:    0.2,      # Defaults to 1 second
