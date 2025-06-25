@@ -90,8 +90,10 @@ Rails.application.configure do
       url: ScihistDigicoll::Env.lookup(:ephemeral_redis_cache_store_url),
 
       # See e.g. https://github.com/rails/rails/pull/39658
-      pool_size: ENV.fetch("RAILS_MAX_THREADS") { 5 },
-      pool: { timeout: 0.15 },
+      pool: {
+        timeout: 0.2,
+        size:    ENV.fetch("RAILS_MAX_THREADS") { 5 },
+      },
 
       # See https://edgeguides.rubyonrails.org/caching_with_rails.html#activesupport-cache-rediscachestore
       connect_timeout:    1,   # Defaults to 1 second
