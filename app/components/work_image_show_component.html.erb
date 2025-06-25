@@ -23,7 +23,7 @@
             wrapping_component: TranscriptionTabsComponent.new(work: work, members: members_for_transcription_tabs),
             should_wrap: has_transcription_or_translation?) do %>
 
-        <div class="work-description">
+        <div class="work-description" itemprop="description">
           <%= DescriptionDisplayFormatter.new(work.description).format  %>
         </div>
 
