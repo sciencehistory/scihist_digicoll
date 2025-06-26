@@ -6,7 +6,7 @@
             <%=  content_tag(
                     "a",
                     format_ohms_timestamp(start_seconds),
-                    href: "#t=#{start_seconds}",
+                    href: "#{base_link}#t=#{start_seconds}",
                     class: "ohms-transcript-timestamp default-link-style",
                       # must be formatted exactly the same in JS transcript highlighter
                       # code that searches for it.

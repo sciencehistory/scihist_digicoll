@@ -1,5 +1,7 @@
 // If page anchor has a timecode in it like #t=13434 where that's a number of seconds, then
-// on page load, we should jump to that timecode in audio player.
+// on page load, we should jump to that timecode in audio or video player.
+//
+// Used for both Oral History audio, and work show video.
 //
 // Using "t" as a key is roughly compatible with WC3 "media fragment" standard, and other
 // common practice.
@@ -20,7 +22,7 @@ domready(function() {
       history.scrollRestoration = 'manual';
     }
 
-    var player = document.querySelector("*[data-role=now-playing-container] audio");
+    var player = document.querySelector("*[data-role=now-playing-container] audio, .video-player video");
     if (player) {
 
       // player might not be in state where it can seek yet, if not then wait
@@ -33,25 +35,27 @@ domready(function() {
         });
       }
 
+      // For OH
+      //
       // "tab" in anchor will cause other JS code in another file to switch to that tab.
       //
       // If tab in anchor is ToC, we expand to relevant segment.
       //
       // Otherwise, we need to switch to transcript tab and jump to relevant timecode.
-
-      if (hashParams.get("tab") == "ohToc") {
-        execWhenTabActive("ohToc", function() {
-          gotoTocSegmentAtTimecode(timeCodeSeconds);
-        });
-      } else {
-        if (hashParams.get("tab") != "ohTranscript") {
+      if (hasOhTabs()) {
+        if (hashParams.get("tab") == "ohToc") {
+          execWhenOhTabActive("ohToc", function() {
+            gotoTocSegmentAtTimecode(timeCodeSeconds);
+          });
+        } else if (hashParams.get("tab") != "ohTranscript") {
           bootstrap.Tab.getOrCreateInstance(
             document.querySelector('*[data-bs-toggle="tab"][href="#ohTranscript"]')
           ).show();
+
+          execWhenOhTabActive("ohTranscript", function() {
+            gotoTranscriptTimecode(timeCodeSeconds);
+          });
         }
-        execWhenTabActive("ohTranscript", function() {
-          gotoTranscriptTimecode(timeCodeSeconds);
-        });
       }
     }
   }
@@ -60,7 +64,7 @@ domready(function() {
 // Something has already executed bootstrap tab to switch to targetTabId. But maybe
 // it's finished it's transition, maybe it hasn't. We want to execute procArg
 // only once/if transition to tab is complete.
-function execWhenTabActive(targetTabId, procArg) {
+function execWhenOhTabActive(targetTabId, procArg) {
   var activeTabContentId = document.querySelector("#ohmsScrollable .tab-pane.active")?.id;
 
   if (activeTabContentId == targetTabId) {
@@ -72,6 +76,10 @@ function execWhenTabActive(targetTabId, procArg) {
       procArg();
     });
   }
+}
+
+function hasOhTabs() {
+  return !!document.querySelector("#ohmsScrollable .tab-pane.active")
 }
 
 // Must be called when player is in a readyState where we can seek,

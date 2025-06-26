@@ -114,4 +114,18 @@ describe "sitemap generator", js: false do
       expect(work_url.parent.at_xpath("image:image", image: "http://www.google.com/schemas/sitemap-image/1.1")).not_to be_present
     end
   end
+
+  describe "asset with vtt transcript" do
+    let(:vtt_asset) { create(:asset_with_faked_file, :asr_vtt, published: true) }
+    let!(:work) { create(:video_work, :published, members: [vtt_asset])}
+
+    it "includes asset transcript paths" do
+      Rake::Task["sitemap:create"].invoke
+
+      expect(
+        loc_with_url(sitemap_xml_doc, asset_transcript_path(vtt_asset))
+      ).to be_present
+    end
+  end
+
 end

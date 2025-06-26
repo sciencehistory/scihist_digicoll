@@ -127,4 +127,16 @@ describe OralHistory::VttTranscriptComponent, type: :component do
       )
     end
   end
+
+  describe "with base_link" do
+    let(:vtt_transcript_component) { described_class.new(vtt_transcript, base_link: "/foo/bar") }
+
+    it "includes in link" do
+      parsed = render_inline(vtt_transcript_component)
+
+      expect(
+        parsed.at_css("a.ohms-transcript-timestamp[href^='/foo/bar#t=']")
+      ).to be_present
+    end
+  end
 end

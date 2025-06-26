@@ -73,5 +73,12 @@ SitemapGenerator::Sitemap.create(
     pdf_members.each do |pdf_asset|
       add download_path(pdf_asset.file_category, pdf_asset, disposition: :inline)
     end
+
+    # if we have video transcripts, include them.
+    member_representatives.find_all do |asset|
+      asset.published? && asset.has_webvtt?
+    end.each do |vtt_asset|
+      add asset_transcript_path(vtt_asset)
+    end
   end
 end
