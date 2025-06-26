@@ -11,13 +11,21 @@
     https://linkilo.co/blog/are-video-transcripts-a-seo-ranking-factor/ %>
 
 <div class="video-show-page-layout work-show" itemscope itemtype="http://schema.org/VideoObject" class="row">
+  <%# uploadDate REQUIRED by google for VideoObject, don't know why %>
+  <%= tag.meta itemprop: "uploadDate", content: work.published_at.iso8601 %>
 
-  <% attributes = WorkSocialShareAttributes.new(work, view_context: self) %>
+  <% if video_asset&.file_metadata&.has_key?("duration_seconds") %>
+    <%=
+        # schema.org 'duration' requires ISO8601 duration which looks like `PTnHnMnS`
 
-  <%= tag.meta itemprop: "name", content: attributes.simple_title %>
-  <%= tag.meta itemprop: "description", content: attributes.short_plain_description %>
-  <%= tag.meta itemprop: "duration", content: "P1H12M13S" %>
-  <%= tag.meta itemprop: "thumbnailUrl", content: attributes.share_media_url %>
+        seconds = video_asset.file_metadata["duration_seconds"]
+        tag.meta itemprop: "duration",
+          content: ActiveSupport::Duration.build(
+                      seconds
+                    ).iso8601(precision: (seconds % 1 == 0 ? 0 : 3))
+    %>
+  <% end %>
+  <%= tag.meta itemprop: "thumbnailUrl", content: WorkSocialShareAttributes.new(work, view_context: view_context).share_media_url %>
 
 
   <div class="show-title">
@@ -145,7 +153,7 @@
   <% end %>
 
   <div class="show-metadata">
-    <div class="work-description">
+    <div class="work-description" itemprop="description">
       <%= DescriptionDisplayFormatter.new(work.description).format  %>
     </div>
 
