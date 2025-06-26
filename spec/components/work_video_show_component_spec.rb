@@ -107,6 +107,7 @@ describe WorkVideoShowComponent, type: :component do
         expect(track_element["src"]).to eq download_derivative_path(asset, Asset::ASR_WEBVTT_DERIVATIVE_KEY, disposition: :inline)
         expect(track_element["label"]).to eq "Auto-captions"
         expect(track_element["kind"]).to eq "captions"
+        expect(track_element["id"]).to eq "scihistAutoCaptions" # used by JS
       end
 
       it "includes on-page transcript toggle" do

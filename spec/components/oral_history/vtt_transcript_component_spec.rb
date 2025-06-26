@@ -23,7 +23,7 @@ describe OralHistory::VttTranscriptComponent, type: :component do
     ]
 
     expect(paragraphs.collect { |p| p.at_css("a.ohms-transcript-timestamp").try(:[], 'data-ohms-timestamp-s') }).to eq [
-      "3603.0", "3618.0", "3631.0", "3638.0", nil, nil, "3674.0", "3682.0"
+      "3603.000", "3618.000", "3631.000", "3638.000", nil, nil, "3674.000", "3682.000"
     ]
   end
 

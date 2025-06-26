@@ -78,7 +78,7 @@
             <% end %>
 
             <% if auto_caption_track_url %>
-              <%= tag "track", src: auto_caption_track_url, label: "Auto-captions", kind: "captions" %>
+              <%= tag "track", id: "scihistAutoCaptions", src: auto_caption_track_url, label: "Auto-captions", kind: "captions" %>
             <% end %>
 
             <p class="vjs-no-js">
@@ -119,7 +119,7 @@
           </button>
         </div>
 
-        <div class="show-video-transcript-content">
+        <div class="show-video-transcript-content" data-transcript-content-target>
           <%= render OralHistory::VttTranscriptComponent.new(OralHistoryContent::OhmsXml::VttTranscript.new(vtt_transcript_str)) %>
         </div>
       </div>

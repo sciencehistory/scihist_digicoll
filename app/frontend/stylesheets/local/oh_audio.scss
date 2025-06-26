@@ -367,16 +367,24 @@
 
   // To allow bg color highlighting of a paragraph without the edges of
   // the highlight touching text, we have to wrap in a container with some
-  // padding and margin. Perhaps we could have done this with just padding,
-  // was hard to get this all to line up right, had to compensate in some
-  // wrappers.
+  // padding and margin. Plus some negative margin to go to edge on
+  // video show page. Hard to get this all right, applies to oral history too.
   .ohms-transcript-paragraph-wrapper {
-    margin: (0.25 * $paragraph-spacer) 0;
-    padding: (0.25 * $paragraph-spacer);
+    margin: (0.25 * $paragraph-spacer) (-0.75 * $paragraph-spacer);
+    padding: (0.25 * $paragraph-spacer) $paragraph-spacer;
 
     .ohms-transcript-paragraph {
       margin-bottom: 0;
     }
+  }
+}
+
+.transcript-highlighted {
+  // shi-gray-1
+  background-color: #efeeed;
+
+  .ohms-transcript-timestamp {
+    font-weight: bold;
   }
 }
 

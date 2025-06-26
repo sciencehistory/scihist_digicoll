@@ -236,7 +236,7 @@ describe "Public work show page", type: :system, js: false do
 
         click_on "Show transcript"
         expect(page).to have_selector("#show-video-transcript-collapse h2", text: "Transcript")
-        expect(page).to have_selector("#show-video-transcript-collapse a[data-ohms-timestamp-s='0.0']")
+        expect(page).to have_selector("#show-video-transcript-collapse a[data-ohms-timestamp-s='0.000']")
       end
     end
   end
