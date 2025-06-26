@@ -220,6 +220,11 @@ module ScihistDigicoll
     # AH_REDIS_STACKHERO_JADE_URL_TLS
     define_key :ephemeral_redis_cache_store_url, default: ( ENV[ ENV['EPHEMERAL_REDIS_CACHE_STORE_URL_ENV'] ] unless ENV['EPHEMERAL_REDIS_CACHE_STORE_URL_ENV'].nil? )
 
+    define_key :ephemeral_redis_pool_timeout,     default: 0.2
+    define_key :ephemeral_redis_connect_timeout,  default: 1
+    define_key :ephemeral_redis_read_timeout,     default: 0.2
+    define_key :ephemeral_redis_write_timeout,    default: 0.2
+
     # Whether to cache the results of more_like_this SOLR queries.
     # see app/services/more_like_this_getter.rb
     define_key :cache_more_like_this, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM, default: false

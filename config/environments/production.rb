@@ -91,14 +91,14 @@ Rails.application.configure do
 
       # See e.g. https://github.com/rails/rails/pull/39658
       pool: {
-        timeout: 0.2,
+        timeout: ScihistDigicoll::Env.lookup(:ephemeral_redis_pool_timeout),
         size:    ENV.fetch("RAILS_MAX_THREADS") { 5 },
       },
 
       # See https://edgeguides.rubyonrails.org/caching_with_rails.html#activesupport-cache-rediscachestore
-      connect_timeout:    1,   # Defaults to 1 second
-      read_timeout:       0.2, # Defaults to 1 second
-      write_timeout:      0.2, # Defaults to 1 second
+      connect_timeout: ScihistDigicoll::Env.lookup(:ephemeral_redis_connect_timeout),
+      read_timeout:    ScihistDigicoll::Env.lookup(:ephemeral_redis_read_timeout   ),
+      write_timeout:   ScihistDigicoll::Env.lookup(:ephemeral_redis_write_timeout  ),
     }
   else
     ##################################################
