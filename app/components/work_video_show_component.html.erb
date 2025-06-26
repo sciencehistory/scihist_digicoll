@@ -6,7 +6,27 @@
   <%= render "works/meta_tags", work: work  %>
 
 <% end %>
-<div class="video-show-page-layout work-show" itemscope itemtype="http://schema.org/CreativeWork" class="row">
+
+<%# try to include microdata for schema.org video object, including marking up transcript text
+    https://linkilo.co/blog/are-video-transcripts-a-seo-ranking-factor/ %>
+
+<div class="video-show-page-layout work-show" itemscope itemtype="http://schema.org/VideoObject" class="row">
+  <%# uploadDate REQUIRED by google for VideoObject, don't know why %>
+  <%= tag.meta itemprop: "uploadDate", content: work.published_at.iso8601 %>
+
+  <% if video_asset&.file_metadata&.has_key?("duration_seconds") %>
+    <%=
+        # schema.org 'duration' requires ISO8601 duration which looks like `PTnHnMnS`
+
+        seconds = video_asset.file_metadata["duration_seconds"]
+        tag.meta itemprop: "duration",
+          content: ActiveSupport::Duration.build(
+                      seconds
+                    ).iso8601(precision: (seconds % 1 == 0 ? 0 : 3))
+    %>
+  <% end %>
+  <%= tag.meta itemprop: "thumbnailUrl", content: WorkSocialShareAttributes.new(work, view_context: view_context).share_media_url %>
+
 
   <div class="show-title">
     <%= render WorkTitleAndDatesComponent.new(work) %>
@@ -88,6 +108,8 @@
                 >supports HTML5 video</a
               >
             </p>
+
+
           <% end %>
         </div>
       <% else %> <%# no video file available %>
@@ -122,7 +144,8 @@
           </button>
         </div>
 
-        <div class="show-video-transcript-content" data-transcript-content-target>
+
+        <div class="show-video-transcript-content" data-transcript-content-target itemprop="transcript">
           <%= render OralHistory::VttTranscriptComponent.new(OralHistoryContent::OhmsXml::VttTranscript.new(vtt_transcript_str)) %>
         </div>
       </div>
@@ -130,7 +153,7 @@
   <% end %>
 
   <div class="show-metadata">
-    <div class="work-description">
+    <div class="work-description" itemprop="description">
       <%= DescriptionDisplayFormatter.new(work.description).format  %>
     </div>
 

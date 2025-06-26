@@ -150,5 +150,27 @@ describe WorkVideoShowComponent, type: :component do
     end
   end
 
+  describe "schema.org microdata" do
+    let(:asset) { build(:asset_with_faked_file, :video, :asr_vtt) }
+    let(:work) { create(:video_work, :published, members: [ asset ]) }
+
+    it "is included" do
+      instance = described_class.new(work)
+      render_inline described_class.new(work)
+
+      container = page.find('*[itemscope][itemtype="http://schema.org/VideoObject"]')
+      expect(container).to be_present
+
+      expect(container).to have_selector("*[itemprop='name']", text: work.title)
+      expect(container).to have_selector("*[itemprop='description']", text: work.description)
+
+      iso8601_duration = ActiveSupport::Duration.build(work.representative.file_metadata["duration_seconds"]).iso8601(precision: 3)
+      expect(container).to have_selector("meta[itemprop='duration'][content='#{iso8601_duration}']")
+
+      expect(container).to have_selector("*[itemprop='transcript']",
+        text: OralHistoryContent::OhmsXml::VttTranscript.new(instance.vtt_transcript_str).transcript_text)
+    end
+  end
+
 end
 

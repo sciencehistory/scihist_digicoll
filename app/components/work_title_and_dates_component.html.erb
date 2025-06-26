@@ -5,7 +5,7 @@
     </div>
   <% end %>
 
-  <h1>
+  <h1 itemprop="name">
     <%= title %>
     <%= publication_badge(work) %>
     <% if can?(:update, work) %>
@@ -33,7 +33,7 @@
         <ul>
           <% DateDisplayFormatter.new(date_of_work).display_dates.each do |interval| %>
             <li>
-              <span itemprop="date_created">
+              <span itemprop="dateCreated">
                 <%= interval %>
               </span>
             </li>
