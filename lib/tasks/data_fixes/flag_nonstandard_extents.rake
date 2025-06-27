@@ -1,3 +1,17 @@
+class InchesToCentimetersConverter
+  
+  def initialize(str)
+    @str = str
+  end
+
+  def centimeters
+    return @str unless @str.include? 'in'
+    @str.gsub(/^[\d\.]+/) { |num| (num.to_f * 2.54).round(2) }.gsub(/in.?/, 'cm')
+  end
+
+end
+
+
 namespace :scihist do
   namespace :data_fixes do
 
@@ -9,7 +23,8 @@ namespace :scihist do
         where("json_attributes -> 'extent' IS NOT NULL AND json_attributes -> 'extent' != '[]'")
 
 
-      puts "#{'ID'.rjust(10)}  #{'Extent'.rjust(50)}  #{'Flagged'.rjust(30)}"
+
+      weird_items = []
 
       Kithe::Indexable.index_with(batching: true) do
         scope.find_each do |work|
@@ -44,12 +59,23 @@ namespace :scihist do
             tmp = tmp.gsub(/ x/, '')
 
             # ignore if all we have left are spaces:
-            next if tmp.gsub(/ /, '') == ''
-
-            puts "#{work.friendlier_id.rjust(10)}  #{ext.rjust(50)}  #{tmp.rjust(30)}"
+            if tmp.gsub(/ /, '') == ''
+              converted = ext.gsub(standard_extent_regex) { |s| InchesToCentimetersConverter.new(s).centimeters }
+              puts work.friendlier_id
+              pp ext
+              pp converted
+              puts
+            else
+              weird_items << "#{work.friendlier_id.rjust(10)}  #{ext.rjust(50)}  #{tmp.rjust(30)}"
+            end
           end
         end
       end
+
+      puts "Nonstandard extents:"
+      puts
+      puts "#{'ID'.rjust(10)}  #{'Extent'.rjust(50)}  #{'Flagged'.rjust(30)}"
+      puts weird_items
     end
   end
 end
