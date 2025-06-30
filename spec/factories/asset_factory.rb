@@ -155,6 +155,14 @@ FactoryBot.define do
         faked_height { nil }
         faked_width { nil }
 
+        faked_duration_seconds { 5.02 }
+        faked_bitrate { 8002 }
+        faked_audio_bitrate { 8000 }
+        faked_audio_sample_rate { 44100 }
+        faked_video_bitrate { 8000 }
+
+
+
         transient do
           faked_thumbnail {
             create(:stored_uploaded_file,
