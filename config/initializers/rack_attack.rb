@@ -54,8 +54,8 @@ end
 # We also do reverse IP lookup on the less frequent ALERTS.
 #
 # To do this, we need to store and consult some state about the last time(s)
-# we logged, which we do in the cache that rack-attackc is already using
-# (probably the Rails.cache which is probably a memcached)
+# we logged, which we do in the cache that rack-attack is already using
+# (probably the Redis-based Rails.cache)
 #
 # The implementation of all of this is currently kind of squirrely and hard
 # to follow, sorry.

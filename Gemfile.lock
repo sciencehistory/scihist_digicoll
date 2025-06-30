@@ -233,7 +233,6 @@ GEM
     css_parser (1.21.1)
       addressable
     csv (3.3.4)
-    dalli (3.2.8)
     database_cleaner (2.1.0)
       database_cleaner-active_record (>= 2, < 3)
     database_cleaner-active_record (2.2.1)
@@ -436,6 +435,7 @@ GEM
     matrix (0.4.2)
     method_source (1.1.0)
     mini_mime (1.1.5)
+    mini_portile2 (2.8.9)
     minitar (1.0.2)
     minitest (5.25.5)
     mono_logger (1.1.2)
@@ -461,6 +461,9 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     nio4r (2.7.4)
+    nokogiri (1.18.8)
+      mini_portile2 (~> 2.8.2)
+      racc (~> 1.4)
     nokogiri (1.18.8-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.18.8-x86_64-linux-gnu)
@@ -826,6 +829,7 @@ GEM
 PLATFORMS
   arm64-darwin-21
   arm64-darwin-23
+  ruby
   x86_64-linux
 
 DEPENDENCIES
@@ -854,7 +858,6 @@ DEPENDENCIES
   content_disposition (~> 1.0)
   csl-styles (~> 2.0)
   csv (~> 3.3.0)
-  dalli (~> 3.2)
   database_cleaner (~> 2.0)
   db-query-matchers (< 2.0)
   device_detector (~> 1.0)
