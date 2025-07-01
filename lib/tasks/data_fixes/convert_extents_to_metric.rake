@@ -36,26 +36,18 @@ namespace :scihist do
 
             standard_extent_regex = /[\d]*\.*[\d]* +(in\.?|cm\.?|mm\.?)/
 
-
-
             tmp = extent
-
             # remove standard extents like "12.45 in."
             tmp = tmp.gsub(standard_extent_regex) {|s|  ""}
-
             # remove label at end (in parentheses)
             tmp = tmp.gsub( /\([\w -]*\)$/ , '')
-
             # remove label at beginning (separated by semicolon)
             tmp = tmp.gsub( /^[\w &]*:/ , '')
-
             # standardize D and C
             tmp = tmp.gsub(/Diameter|Diam\.?/, 'D')
             tmp = tmp.gsub(/Circumference|Circum\.?|Circ\.?/, 'C')
-
             # remove dimension labels
             tmp = tmp.gsub(/ H| W| D| C| L/, '')
-
             # remove x's
             tmp = tmp.gsub(/ x/, '')
 
