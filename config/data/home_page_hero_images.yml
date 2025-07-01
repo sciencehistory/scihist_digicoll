@@ -5,38 +5,50 @@
 #
 images:
 
-  - path_1x: homepage/hero_images/1x/greene.jpg
-    path_2x: homepage/hero_images/2x/greene.jpg
+  - path_1x: homepage/hero_images/1x/greene.webp
+    path_2x: homepage/hero_images/2x/greene.webp
+    path_4x: homepage/hero_images/4x/greene.webp
+    path_8x: homepage/hero_images/8x/greene.webp
     original_file: https://files.sciencehistory.org/navigate/file/79dd4db9-001a-4a80-8891-4856b6e0ef2d
     link_title: Dr. Bettye Washington Greene
     work_friendlier_id: t722h939f
 
-  - path_1x: homepage/hero_images/1x/work.jpg
-    path_2x: homepage/hero_images/2x/work.jpg
+  - path_1x: homepage/hero_images/1x/work.webp
+    path_2x: homepage/hero_images/2x/work.webp
+    path_4x: homepage/hero_images/4x/work.webp
+    path_8x: homepage/hero_images/8x/work.webp
     original_file: https://files.sciencehistory.org/navigate/file/d752c849-27ee-481e-bdf3-f4aee1b0ecd4
     link_title: Genevieve Work
     work_friendlier_id: zw12z624s
 
-  - path_1x: homepage/hero_images/1x/emocromometro.jpg
-    path_2x: homepage/hero_images/2x/emocromometro.jpg
+  - path_1x: homepage/hero_images/1x/emocromometro.webp
+    path_2x: homepage/hero_images/2x/emocromometro.webp
+    path_4x: homepage/hero_images/4x/emocromometro.webp
+    path_8x: homepage/hero_images/8x/emocromometro.webp
     original_file: https://files.sciencehistory.org/navigate/file/16e66684-79dd-4fcf-a763-5d681b771ef5
     link_title: Emocromometro
     work_friendlier_id: 4j03d059d
 
-  - path_1x: homepage/hero_images/1x/wilson.jpg
-    path_2x: homepage/hero_images/2x/wilson.jpg
+  - path_1x: homepage/hero_images/1x/wilson.webp
+    path_2x: homepage/hero_images/2x/wilson.webp
+    path_4x: homepage/hero_images/4x/wilson.webp
+    path_8x: homepage/hero_images/8x/wilson.webp
     original_file: https://files.sciencehistory.org/navigate/file/f2a693d0-9dba-46a7-b52b-46d5b432c80d
     link_title: Wilson College Chemistry Club
     work_friendlier_id: w6634363x
 
-  - path_1x: homepage/hero_images/1x/ramie.jpg
-    path_2x: homepage/hero_images/2x/ramie.jpg
+  - path_1x: homepage/hero_images/1x/ramie.webp
+    path_2x: homepage/hero_images/2x/ramie.webp
+    path_4x: homepage/hero_images/4x/ramie.webp
+    path_8x: homepage/hero_images/8x/ramie.webp
     original_file: https://files.sciencehistory.org/navigate/file/77eebc16-bec3-4662-ab38-567c6a773caa
     link_title: The Story of Ramie
     work_friendlier_id: ko5gpgj
 
-  - path_1x: homepage/hero_images/1x/medicine.jpg
-    path_2x: homepage/hero_images/2x/medicine.jpg
+  - path_1x: homepage/hero_images/1x/medicine.webp
+    path_2x: homepage/hero_images/2x/medicine.webp
+    path_4x: homepage/hero_images/4x/medicine.webp
+    path_8x: homepage/hero_images/8x/medicine.webp
     original_file: https://files.sciencehistory.org/navigate/file/83e70205-0d1d-4e5f-8833-b0f3fd366ddf
     link_title: Medicine for the Millions
     work_friendlier_id: wrdbluu
