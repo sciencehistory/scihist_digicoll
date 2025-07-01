@@ -34,6 +34,14 @@ class HomePageHeroImageComponent < ApplicationComponent
     image_metadata['path_2x']
   end
 
+  def path_4x
+    image_metadata['path_4x']
+  end
+
+  def path_8x
+    image_metadata['path_8x']
+  end
+
   def link_title
     image_metadata['link_title']
   end
