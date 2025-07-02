@@ -18,6 +18,12 @@ namespace :scihist do
     # bundle exec rake scihist:data_fixes:convert_extents_to_metric
     desc "Convert extents to metric"
     task :convert_extents_to_metric => :environment do
+      dry_run = (ENV['DRY_RUN'] == "true")
+      if dry_run
+        puts "DRY RUN\n\n"
+      else
+        puts "CHANGING DATA\n\n"
+      end
 
       scope = Work.where("json_attributes -> 'department' ?| array[:depts  ]", depts:   ['Museum'] ).
         where("json_attributes -> 'extent' IS NOT NULL AND json_attributes -> 'extent' != '[]'")
@@ -34,7 +40,7 @@ namespace :scihist do
             next if extent.include? 'Item'
             next if extent.include? 'oz.'
 
-            standard_extent_regex = /[\d]*\.*[\d]* +(in\.?|cm\.?|mm\.?)/
+            standard_extent_regex = /\d*\.*\d*\s+(in\.?|cm\.?|mm\.?)/
 
             tmp = extent
             # remove standard extents like "12.45 in."
@@ -53,21 +59,32 @@ namespace :scihist do
 
             # ignore if all we have left are spaces:
             if tmp.gsub(/ /, '') == ''
-              work.extent[index] = extent.gsub(standard_extent_regex) do |s|
+              converted_extent = extent.gsub(standard_extent_regex) do |s|
                 InchesToCentimetersConverter.new(s).centimeters
               end
+
+
+              puts work.friendlier_id
+              puts work.extent[index]
+              puts converted_extent
+              puts
+              
+              work.extent[index] = converted_extent unless dry_run
             else
               weird_items << "#{work.friendlier_id.rjust(10)}  #{extent.rjust(50)}  #{tmp.rjust(30)}"
             end
           end
-          work.save!
+          work.save! unless dry_run
         end
       end
 
-      puts "Nonstandard extents:"
-      puts
-      puts "#{'ID'.rjust(10)}  #{'Extent'.rjust(50)}  #{'Flagged'.rjust(30)}"
-      puts weird_items
+      if weird_items.count > 0
+        puts "Nonstandard extents:"
+        puts
+        puts "#{'ID'.rjust(10)}  #{'Extent'.rjust(50)}  #{'Flagged'.rjust(30)}"
+        puts weird_items
+      end
+
     end
   end
 end
