@@ -168,7 +168,7 @@
   &.vjs-controls-disabled .vjs-text-track-display,
   &.vjs-user-inactive.vjs-playing .vjs-text-track-display {
     transform: translateY(0);
-    transition: transform 0.5s ease-out // transition when moving down
+    transition: transform 0.5s ease // transition when moving down
   }
 
   // Okay, now hit some Safari-only classes for native text tracks...
