@@ -59,8 +59,7 @@
 
   // Custom theme color
   .vjs-play-progress {
-    // shi-teal-3 == shi-turquose
-    background-color: #a9dbd4;
+    background-color: transparentize($shi-turquoise, 0.2);
   }
 
   // Make font bigger in time display
