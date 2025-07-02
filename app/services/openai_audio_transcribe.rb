@@ -62,10 +62,10 @@ class OpenaiAudioTranscribe
       raise ArgumentError.new("Can only extract transcript from audio or video")
     end
 
-    if asset.file_derivatives[AssetUploader::LOFI_OPUS_AUDIO_DERIV_KEY].blank? && create_deriv_if_needed
+    if asset.file_derivatives[AssetUploader::LOFI_OPUS_AUDIO_DERIV_KEY].blank? && create_audio_derivative_if_needed
       asset.create_derivatives(only: AssetUploader::LOFI_OPUS_AUDIO_DERIV_KEY)
     elsif asset.file_derivatives[AssetUploader::LOFI_OPUS_AUDIO_DERIV_KEY].blank?
-      raise ArgumentError.new("asset #{asset&.friendlier_id} does not have a #{AssetUploader::LOFI_OPUS_AUDIO_DERIV_KEY.inspect} derivative. Either needs to exist, or pass in `create_deriv_if_needed:true`")
+      raise ArgumentError.new("asset #{asset&.friendlier_id} does not have a #{AssetUploader::LOFI_OPUS_AUDIO_DERIV_KEY.inspect} derivative. Either needs to exist, or pass in `create_audio_derivative_if_needed:true`")
     end
 
     # Would be nice to pass the IO object directly instead of having to make a temporary
