@@ -37,7 +37,7 @@ namespace :scihist do
             next if ext.include? 'Item'
             next if ext.include? 'oz.'
 
-            standard_extent_regex = /[\d]*\.*[\d]* +(in\.?|cm\.?|mm\.?)/
+            standard_extent_regex = /\d*\.*\d*\s+(in\.?|cm\.?|mm\.?)/
 
             # remove standard extents like "12.45 in."
             tmp = ext.gsub(standard_extent_regex) {|s|  ""}
