@@ -133,8 +133,8 @@ if (videoPlayerEl) {
 
       // on small screen with really big lines, maybe it's still not visible,
       // we need to skip the previous line and just put this on top
-      if (!elementFullyVisibleWithin(line, constainer)) {
-        conatainer.scrollTo(0, line.offsetTop);
+      if (!elementFullyVisibleWithin(line, container)) {
+        container.scrollTo(0, line.offsetTop);
       }
     }
 
