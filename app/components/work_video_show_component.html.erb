@@ -12,7 +12,7 @@
 
 <div class="video-show-page-layout work-show" itemscope itemtype="http://schema.org/VideoObject" class="row">
   <%# uploadDate REQUIRED by google for VideoObject, don't know why %>
-  <%= tag.meta itemprop: "uploadDate", content: work.published_at.iso8601 %>
+  <%= tag.meta itemprop: "uploadDate", content: work.published_at&.iso8601 %>
 
   <% if video_asset&.file_metadata&.has_key?("duration_seconds") %>
     <%=
