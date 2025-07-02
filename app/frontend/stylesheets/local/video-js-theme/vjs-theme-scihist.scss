@@ -183,6 +183,12 @@
       transform: translateY(0);
     }
   }
+
+  // Custom JS will add .text-track-visible to CC button, when we are showing
+  // captions and want to underline it.
+  button.vjs-subs-caps-button.text-track-visible {
+    border-bottom: 0.4rem ridge $shi-teal-3;
+  }
 }
 
 // When video box is too small, we need to make control bar smaller.
