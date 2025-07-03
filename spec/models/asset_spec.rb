@@ -93,6 +93,14 @@ describe Asset do
         expect(WebMock).to have_requested(:post, solr_update_url_regex)
       end
 
+      it "re-indexes on WebVTT change" do
+        asset.file_attacher.add_persisted_derivatives(
+          {Asset::ASR_WEBVTT_DERIVATIVE_KEY => StringIO.new("WEBVTT\n\nTest")}
+        )
+
+        expect(WebMock).to have_requested(:post, solr_update_url_regex)
+      end
+
       it "does not re-index when relevant attributes did not change" do
         asset.title = "new one"
         asset.save!

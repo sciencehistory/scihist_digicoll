@@ -252,7 +252,7 @@ class Asset < Kithe::Asset
   # worse if we end up not indexing when we do!
   #
   # This may be "too clever"... but seems ok?
-  def should_reindex_parent_after_save?(indexed_attributes: [:transcription, :english_translation])
+  def should_reindex_parent_after_save?(indexed_attributes: [:transcription, :english_translation, :audio_asr_enabled])
     if parent.nil?
       return false
     elsif self.destroyed?
@@ -263,6 +263,10 @@ class Asset < Kithe::Asset
       # if published status changed, we have to reindex if and only if we HAVE any indexed attributes,
       # to include them in index.
       indexed_attributes.any? { |attr| self.send(attr).present? }
+    elsif saved_change_to_file_data?
+      # did we add or remove a VTT transcript? Reindex just in case. Kinda
+      # tricky use of AR dirty attributes and lazy access methods, sorry.
+      saved_change_to_file_data[0]&.dig("derivatives")&.slice(ASR_WEBVTT_DERIVATIVE_KEY.to_s, CORRECTED_WEBVTT_DERIVATIVE_KEY.to_s).presence != saved_change_to_file_data[1]&.dig("derivatives")&.slice(ASR_WEBVTT_DERIVATIVE_KEY.to_s, CORRECTED_WEBVTT_DERIVATIVE_KEY.to_s).presence
     else
       # an ordinary save (including create), did any attributes of interest CHANGE? (Including removal)
       # then we need to reindex parent to get them updated in index.
