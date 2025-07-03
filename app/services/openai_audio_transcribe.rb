@@ -20,6 +20,16 @@ class OpenaiAudioTranscribe
   REQUEST_TIMEOUT = 360 # seconds. default may be 120. In some cases not long enough?
   MODEL = "whisper-1"
 
+  # some known hallucinations that very unlikely to be correct in our corpus, we
+  # will just remove them.
+  #
+  # https://arxiv.org/html/2501.11378v1
+  # https://github.com/DSP-AGH/ICASSP2025_Whisper_Hallucination
+  REMOVE_TEXT = [
+    # \p{Zs} is unicode separator space (not newline)
+    /\p{Zs}*(© )?transcript Emily Beynon/
+  ]
+
   attr_reader :use_prompt, :create_audio_derivative_if_needed
 
   def initialize(use_prompt: true, create_audio_derivative_if_needed: false)
@@ -107,6 +117,8 @@ class OpenaiAudioTranscribe
     response = client.audio.transcribe(
       parameters: parameters
     )
+
+    filter_removal_text(response)
   rescue Faraday::Error => e
     size_msg = if audio_file.respond_to?(:size) && audio_file.size
        "input file: #{ActiveSupport::NumberHelper.number_to_human_size(audio_file.size)}: "
@@ -143,4 +155,17 @@ class OpenaiAudioTranscribe
     asset.parent&.description&.truncate_words(150, omission: "")
   end
 
+  # Remove text we've marked as likely hallucination...
+  #
+  # While it would be best to delete whole cue if it's now blank, we aren't doing
+  # that for now, keeping it quick and easy.
+  def filter_removal_text(webvtt_str)
+    webvtt_str = webvtt_str.dup
+
+    REMOVE_TEXT.each do |pattern|
+      webvtt_str.gsub!(pattern, '')
+    end
+
+    return webvtt_str
+  end
 end
