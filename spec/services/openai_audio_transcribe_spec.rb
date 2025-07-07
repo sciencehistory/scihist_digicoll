@@ -60,6 +60,51 @@ describe OpenaiAudioTranscribe do
       expect(webvtt).to be_kind_of(String)
       expect(webvtt).to start_with("WEBVTT")
     end
+
+    describe "filtered transcript for known hallucinations" do
+      let(:original) do
+        <<~EOS
+        WEBVTT
+
+        00:00.000 --> 00:01.500
+        This one is good
+
+        00:01.500 --> 00:03.000
+        © transcript Emily Beynon
+
+        00:03.000 --> 00:05.000
+        This one keeps © transcript Emily Beynon some words
+        EOS
+      end
+
+      # While it would be best to delete whole cue if it's now blank, we aren't doing
+      # that for now, keeping it quick and easy.
+      let(:filtered) do
+        <<~EOS
+        WEBVTT
+
+        00:00.000 --> 00:01.500
+        This one is good
+
+        00:01.500 --> 00:03.000
+
+
+        00:03.000 --> 00:05.000
+        This one keeps some words
+        EOS
+      end
+
+      it "filters" do
+        expect(service.client.audio).to receive(:transcribe).and_return(original)
+
+        webvtt = service.get_vtt_for_asset(asset)
+
+        expect(webvtt).to eq filtered
+
+        # and make sure it's really parseable
+        WebVTT.from_blob(filtered)
+      end
+    end
   end
 
   describe "#get_and_store_vtt_for_asset" do
