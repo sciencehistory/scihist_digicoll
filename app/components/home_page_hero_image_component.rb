@@ -26,20 +26,20 @@ class HomePageHeroImageComponent < ApplicationComponent
     @override = override
   end
 
-  def path_1x
-    image_metadata['path_1x']
+  def path_250
+    image_metadata['path_250']
   end
   
-  def path_2x
-    image_metadata['path_2x']
+  def path_500
+    image_metadata['path_500']
   end
 
-  def path_4x
-    image_metadata['path_4x']
+  def path_1000
+    image_metadata['path_1000']
   end
 
-  def path_8x
-    image_metadata['path_8x']
+  def path_2000
+    image_metadata['path_2000']
   end
 
   def link_title

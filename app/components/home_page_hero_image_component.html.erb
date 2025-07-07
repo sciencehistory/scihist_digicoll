@@ -1,10 +1,10 @@
 <figure class="hero-image">
-  <%=  image_tag( path_1x,
+  <%=  image_tag( path_2000,
     srcset: [
-      [path_1x, "250w" ], # scaled to 250 width
-      [path_2x, "500w" ], # scaled to 500 width
-      [path_4x, "1000w"], # scaled to 1000 width
-      [path_8x, "2000w"], # scaled to 2000 width
+      [path_250,  "250w" ], # scaled to 250 width
+      [path_500,  "500w" ], # scaled to 500 width
+      [path_1000, "1000w"], # scaled to 1000 width
+      [path_2000, "2000w"], # scaled to 2000 width
     ],
     'aria-labelledby' => 'homeHeroCaption'
   ) %>
