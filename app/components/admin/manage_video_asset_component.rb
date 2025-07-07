@@ -32,11 +32,12 @@ module Admin
     end
 
     def corrected_webvtt_download_label
+      filename = @asset.file_derivatives[Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY]&.metadata&.dig("filename")
       created_at = @asset.file_derivatives[Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY]&.metadata&.dig("created_at")
 
-      return DEFAULT_VTT_LINK_LABEL unless created_at
+      return DEFAULT_VTT_LINK_LABEL unless created_at || filename.present?
 
-      I18n.l(DateTime.parse(created_at).localtime, format: :long)
+      "#{I18n.l(DateTime.parse(created_at).localtime, format: :long)} — #{filename}"
     rescue Date::Error
       return DEFAULT_VTT_LINK_LABEL
     end
