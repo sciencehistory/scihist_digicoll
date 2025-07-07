@@ -22,9 +22,9 @@ Prefer colorful subjects or people doing science, especially people from under-r
 ORIGINAL=greene.jpg
 DESTINATION=greene.webp
 
-vipsthumbnail $ORIGINAL --size 250x  -o app/assets/images/homepage/hero_images/1x/$DESTINATION
-vipsthumbnail $ORIGINAL --size 500x  -o app/assets/images/homepage/hero_images/2x/$DESTINATION
-vipsthumbnail $ORIGINAL --size 1000x -o app/assets/images/homepage/hero_images/4x/$DESTINATION
-vipsthumbnail $ORIGINAL --size 2000x -o app/assets/images/homepage/hero_images/8x/$DESTINATION
+vipsthumbnail $ORIGINAL --size 250x  -o app/assets/images/homepage/hero_images/250/$DESTINATION
+vipsthumbnail $ORIGINAL --size 500x  -o app/assets/images/homepage/hero_images/500/$DESTINATION
+vipsthumbnail $ORIGINAL --size 1000x -o app/assets/images/homepage/hero_images/1000/$DESTINATION
+vipsthumbnail $ORIGINAL --size 2000x -o app/assets/images/homepage/hero_images/2000/$DESTINATION
 ```
 4) Add metadata into `config/data/home_page_hero_images.yml`
