@@ -51,6 +51,7 @@ namespace :scihist do
 
             standard_extent_regex = /\d*\.*\d*\s+(in\.?|cm\.?|mm\.?)/
 
+            # validate the extent and flag it if it's ill-formed in some way:
             tmp = extent
             # remove standard extents like "12.45 in."
             tmp = tmp.gsub(standard_extent_regex) {|s|  ""}
@@ -66,8 +67,10 @@ namespace :scihist do
             # remove x's
             tmp = tmp.gsub(/ x/, '')
 
-            # ignore if all we have left are spaces:
+            #if the extent is well-formed, then all we should have left is spaces.
             if tmp.gsub(/ /, '') == ''
+
+              #calculate converted extent and modify the extent.
               converted_extent = extent.gsub(standard_extent_regex) do |s|
                 InchesToCentimetersConverter.new(s).centimeters
               end
