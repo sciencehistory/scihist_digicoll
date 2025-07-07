@@ -13,10 +13,12 @@ describe HomePageHeroImageComponent, type: :component do
 
   describe "images in Rails.application.assets" do
     it "all needed keys and images exist" do
-      expected_keys = ["link_title", "original_file", "path_1x", "path_2x", "work_friendlier_id"]
+      expected_keys = ["link_title", "original_file", "path_250", "path_500", "path_1000", "path_2000", "work_friendlier_id"]
       all_metadata.each do |metadata|
-        expect(File).to exist File.join(Rails.root, 'app', 'assets', 'images', metadata['path_1x'])
-        expect(File).to exist File.join(Rails.root, 'app', 'assets', 'images', metadata['path_2x'])
+        expect(File).to exist File.join(Rails.root, 'app', 'assets', 'images', metadata['path_250'])
+        expect(File).to exist File.join(Rails.root, 'app', 'assets', 'images', metadata['path_500'])
+        expect(File).to exist File.join(Rails.root, 'app', 'assets', 'images', metadata['path_1000'])
+        expect(File).to exist File.join(Rails.root, 'app', 'assets', 'images', metadata['path_2000'])
         expected_keys.each do |k|
           expect(metadata[k].class).to eq String
         end
