@@ -1,12 +1,21 @@
 class InchesToCentimetersConverter
   
+  # Takes a form
   def initialize(str)
     @str = str
   end
 
   def centimeters
-    return @str unless @str.include? 'in'
-    @str.gsub(/^[\d\.]+/) { |num| (num.to_f * 2.54).round(2) }.gsub(/in.?/, 'cm')
+    # anything that doesn't have 'in' - do not alter.
+    return @str unless @str.match /\d*\.*\d*\s+in/
+
+    @str = @str.gsub(/^[\d\.]+/) do |num|
+      (num.to_f * 2.54).round(1) 
+    end
+
+    @str = @str.gsub(/in.?/, 'cm')
+
+    @str
   end
 
 end
