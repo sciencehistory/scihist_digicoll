@@ -20,11 +20,11 @@ class Admin::CollectionsController < AdminController
 
       scope = scope.where(id: index_params[:title_or_id]
       ).or(
-        Collection.where(friendlier_id: index_params[:title_or_id])
+        Collection.strict_loading.where(friendlier_id: index_params[:title_or_id])
       ).or(
-        Collection.where("title ilike ?", "%" + sanitized_search_phrase + "%")
+        Collection.strict_loading.where("title ilike ?", "%" + sanitized_search_phrase + "%")
       ).or(
-        Collection.where matches_external_id
+        Collection.strict_loading.where matches_external_id
       )
     end
 
