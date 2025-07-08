@@ -5,7 +5,7 @@ require 'csv'
 class Admin::OralHistoryRequestsController < AdminController
   def index
     status = params.dig(:query, :status)
-    scope = OralHistoryRequest
+    scope = OralHistoryRequest.includes(:oral_history_requester, :work)
     unless status == "any" || status.blank?
       scope = scope.where(delivery_status: status)
     end
