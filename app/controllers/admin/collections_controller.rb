@@ -10,7 +10,7 @@ class Admin::CollectionsController < AdminController
     # unpublished collections.
 
     # Searching, filtering, sorting and pagination.
-    scope = Collection
+    scope = Collection.strict_loading.includes(:leaf_representative)
     if index_params[:title_or_id].present?
       sanitized_search_phrase = Collection.sanitize_sql_like params[:title_or_id]
 
