@@ -38,7 +38,7 @@ namespace :scihist do
         where("json_attributes -> 'extent' IS NOT NULL AND json_attributes -> 'extent' != '[]'")
 
 
-      weird_items = []
+      nonstandard_items = []
       Kithe::Indexable.index_with(batching: true) do
         scope.find_each do |work|
           work.extent.each_with_index do |extent, index|
@@ -75,26 +75,24 @@ namespace :scihist do
                 InchesToCentimetersConverter.new(s).centimeters
               end
 
-
-              puts work.friendlier_id
-              puts work.extent[index]
-              puts converted_extent
-              puts
+              unless work.extent[index] == converted_extent
+                puts "#{work.friendlier_id}\t#{index}\t#{work.extent[index]}\t#{converted_extent}"                 
+                work.extent[index] = converted_extent unless dry_run
+              end
               
-              work.extent[index] = converted_extent unless dry_run
             else
-              weird_items << "#{work.friendlier_id.rjust(10)}  #{extent.rjust(50)}  #{tmp.rjust(30)}"
+              nonstandard_items << "#{work.friendlier_id.rjust(10)}  #{extent.rjust(50)}  #{tmp.rjust(30)}"
             end
           end
           work.save! unless dry_run
         end
       end
 
-      if weird_items.count > 0
+      if nonstandard_items.count > 0
         puts "Nonstandard extents:"
         puts
         puts "#{'ID'.rjust(10)}  #{'Extent'.rjust(50)}  #{'Flagged'.rjust(30)}"
-        puts weird_items
+        puts nonstandard_items
       end
 
     end
