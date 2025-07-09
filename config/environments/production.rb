@@ -77,15 +77,14 @@ Rails.application.configure do
   if ScihistDigicoll::Env.lookup(:ephemeral_redis_cache_store_url)
     # On heroku we use a Redis instance named ephemeral_redis for our cache.
     # (see https://github.com/sciencehistory/scihist_digicoll/pull/2994).
-    #
-    # We tune the timeouts for ephemeral_redis to give up really quickly -- we don't want the server
-    # waiting too long on a slow memcached, especially with rack-attack accessing
-    # it on every request and more-like-this accessing it everytime a work page is shown.
-    # It's just a cache; give up if it's slow!
-
-    # (Note that we use another Redis instance (noeviction_redis) for our active job queue; do not confuse them.)
     # Note that additional settings pertaining to the cache itself (e.g. expiration policy) can be set
     # within Heroku's addon.
+    #
+    # We tune the timeouts for ephemeral_redis to give up quickly: we don't want the server
+    # waiting too long on a slow cache, especially with rack-attack accessing
+    # it on every request and more-like-this accessing it on every work page request.
+    #
+    # (Note that we use another Redis instance (noeviction_redis) for our active job queue; do not confuse them.)
     config.cache_store = :redis_cache_store, {
       url: ScihistDigicoll::Env.lookup(:ephemeral_redis_cache_store_url),
 
@@ -100,53 +99,6 @@ Rails.application.configure do
       read_timeout:    ScihistDigicoll::Env.lookup(:ephemeral_redis_read_timeout   ),
       write_timeout:   ScihistDigicoll::Env.lookup(:ephemeral_redis_write_timeout  ),
     }
-  else
-    ##################################################
-    ##################################################
-    ### BEGIN OBSOLETE MEMCACHED CODE
-    ### REMOVE ALL THIS MEMCACHED CODE WHEN WE ARE READY TO STOP USING MEMCACHED.
-    ###
-    # On heroku we try to set up either memcachier or memcachedcloud, in that order,
-    # depending on what env variables are defined.
-    #
-    # We tune the timeouts to give up really quickly -- we don't want the server
-    # waiting too long on a slow memcached, especially with rack-attack accessing
-    # it on every request. It's just a cache; give up if it's slow!
-    #
-    # https://github.com/petergoldstein/dalli/blob/5588d98f79eb04a9abcaeeff3263e08f93468b30/lib/dalli/protocol/connection_manager.rb
-    #
-    # We use configuration including 'pool' suggested by memcachier docs, which requires
-    # connection_pool gem to be available to work.
-    #
-    require 'connection_pool'  # needed for dalli pool_size to work
-
-    mem_cache_store_config = {
-      :socket_timeout => (ENV["MEMCACHE_TIMEOUT"] || 0.15).to_f,       # default is maybe 1 second?
-      :socket_failure_delay => 0.08,                                   # retry failures with fairly quick 80ms delay
-      :failover => true,                                              # don't think it matters unless provider gives us more than one hostname
-      # Rails 7.1+ uses :pool with sub-hash instead of individual pool_size and pool_timeout
-      :pool => {
-        :size => ENV.fetch("RAILS_MAX_THREADS") { 5 },              # should match puma, suggested by memcachier docs
-        :timeout => (ENV["MEMCACHE_TIMEOUT"] || 0.15).to_f          # don't wait too long for a connection from pool either
-      }
-    }
-
-    if ENV["MEMCACHIER_SERVERS"]
-      # https://devcenter.heroku.com/articles/memcachier#ruby-puma-webserver
-      config.cache_store = :mem_cache_store, ENV["MEMCACHIER_SERVERS"].split(","), mem_cache_store_config.merge({
-        :username => ENV["MEMCACHIER_USERNAME"],
-        :password => ENV["MEMCACHIER_PASSWORD"]
-      })
-    elsif ENV["MEMCACHEDCLOUD_SERVERS"]
-      # https://devcenter.heroku.com/articles/memcachedcloud#using-memcached-from-ruby
-      config.cache_store = :mem_cache_store, ENV["MEMCACHEDCLOUD_SERVERS"].split(','), mem_cache_store_config.merge({
-        :username => ENV["MEMCACHEDCLOUD_USERNAME"],
-        :password => ENV["MEMCACHEDCLOUD_PASSWORD"]
-      })
-    end
-    ### END OBSOLETE MEMCACHED CODE
-    ##################################################
-    ##################################################
   end
 
   # Use a real queuing backend for Active Job (and separate queues per environment)

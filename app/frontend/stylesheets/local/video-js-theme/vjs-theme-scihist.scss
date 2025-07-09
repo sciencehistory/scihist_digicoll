@@ -59,7 +59,7 @@
 
   // Custom theme color
   .vjs-play-progress {
-    background-color: #78712e;
+    background-color: transparentize($shi-turquoise, 0.2);
   }
 
   // Make font bigger in time display
@@ -168,7 +168,7 @@
   &.vjs-controls-disabled .vjs-text-track-display,
   &.vjs-user-inactive.vjs-playing .vjs-text-track-display {
     transform: translateY(0);
-    transition: transform 0.5s ease-out // transition when moving down
+    transition: transform 0.5s ease // transition when moving down
   }
 
   // Okay, now hit some Safari-only classes for native text tracks...
@@ -181,6 +181,23 @@
   &.vjs-controls-disabled, &.vjs-user-inactive.vjs-playing {
     video::-webkit-media-text-track-container {
       transform: translateY(0);
+    }
+  }
+
+  // Custom JS will add .text-track-visible to CC button, when we are showing
+  // captions and want to underline it.
+  button.vjs-subs-caps-button.text-track-visible {
+    border-bottom: 0.4rem ridge $shi-teal-3;
+  }
+
+  // Make big play button a circle
+  .vjs-big-play-button {
+    border-radius: 50%;
+    width: 1.75em;
+    height: 1.75em;
+
+    .vjs-icon-placeholder:before {
+      align-content: center;
     }
   }
 }

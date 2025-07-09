@@ -12,7 +12,7 @@
 
 <div class="video-show-page-layout work-show" itemscope itemtype="http://schema.org/VideoObject" class="row">
   <%# uploadDate REQUIRED by google for VideoObject, don't know why %>
-  <%= tag.meta itemprop: "uploadDate", content: work.published_at.iso8601 %>
+  <%= tag.meta itemprop: "uploadDate", content: work.published_at&.iso8601 %>
 
   <% if video_asset&.file_metadata&.has_key?("duration_seconds") %>
     <%=
@@ -52,6 +52,7 @@
                   # the data-setup with serialized json triggers video.js
                   data: {
                     setup: {
+                      inactivityTimeout: 1400, # shorter than 2000ms default. youtube actually does 0.
                       controlBar: {
                         # custom children list to move volume to right, and remove remaining time.
                         # Started from:

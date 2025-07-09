@@ -97,7 +97,6 @@ gem "resque-heroku-signals" # gah, weirdly needed for graceful shutdown on herok
 gem "http", "~> 5.2" # for http client access
 
 # using memcached for Rails.cache in production, requires dalli
-gem "dalli", "~> 3.2"
 
 gem 'honeybadger', '~> 5.0'
 

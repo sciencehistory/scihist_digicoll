@@ -29,6 +29,20 @@ if (videoPlayerEl && navigator.vendor?.includes("Apple")) {
 }
 
 
+// For custom skin/theme, we want to underline when captions are showing
+if (videoPlayerEl) {
+  videojs(videoPlayerEl).textTracks().on("change", function() {
+    // Odd JS way to turn it to a standard array so we can interate
+    let trackArr = Array.prototype.slice.call(this, 0);
+    if (trackArr.find( track => track.mode == "showing")) {
+      document.querySelector("button.vjs-subs-caps-button")?.classList?.add("text-track-visible");
+    } else {
+      document.querySelector("button.vjs-subs-caps-button")?.classList?.remove("text-track-visible");
+    }
+  });
+}
+
+
 // in on-page transcript, highlight current line that matches where video is playing,
 // scrolling to it if necessary. A lot of this UX is modelled on youtube
 //
@@ -133,8 +147,8 @@ if (videoPlayerEl) {
 
       // on small screen with really big lines, maybe it's still not visible,
       // we need to skip the previous line and just put this on top
-      if (!elementFullyVisibleWithin(line, constainer)) {
-        conatainer.scrollTo(0, line.offsetTop);
+      if (!elementFullyVisibleWithin(line, container)) {
+        container.scrollTo(0, line.offsetTop);
       }
     }
 
