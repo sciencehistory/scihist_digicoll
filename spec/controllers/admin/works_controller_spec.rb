@@ -411,7 +411,8 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         let!(:works) { [
           create(:work, title: "work_a"),
           create(:work, title: "work_b")
-          ] }
+        ] }
+
         it "sorts correctly by title" do
           get :index, params: { sort_field: :title, sort_order: :asc }
           rows = response.parsed_body.css('.table.admin-list tbody tr')
@@ -443,6 +444,16 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
           get :index, params: { work_format: "" }
           rows = response.parsed_body.css('.table.admin-list tbody tr')
           expect(rows.length).to eq 2
+        end
+
+        context "sql escaping" do
+          let(:quotey_title) { " \\\''''  Bellen's \"lecture\" \\\'''' " }
+          let!(:works) { [ create(:work, title: quotey_title) ] }
+          it "escapes SQL properly" do
+            get :index, params:{"title_or_id"=> quotey_title }
+            rows = response.parsed_body.css('.table.admin-list tbody tr')
+            expect(rows.length).to eq 1
+          end
         end
 
         # object bib item accn aspace interview
