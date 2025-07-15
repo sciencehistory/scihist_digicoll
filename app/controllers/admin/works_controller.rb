@@ -708,14 +708,25 @@ class Admin::WorksController < AdminController
     def build_search(params)
       scope = Work.all
       if params[:title_or_id].present?
-        sanitized_search_phrase = Work.sanitize_sql_like(params[:title_or_id])
 
-        # This expression will match any element of the external_id jsonb array,
-        # as long as its value is sanitized_search_phrase, regardless of the value of 'category'.
-        jsonb_match_value = "'[{\"value\": \"#{sanitized_search_phrase}\"}]'::jsonb"
+        # 1) to match titles and friendlier IDs, use sanitize_sql_like
+        sanitized_search_phrase = Work.sanitize_sql_like params[:title_or_id]
 
-        # This condition attempts to match external_id against jsonb_match_value:
+
+        # 2) to simplify escaping in the jsonb expression for external_id matching,
+        # we're also removing single and double quotes from
+        # the string we use to match external_id,
+        # on the assumption that Sierra bib IDs, ArchivesSpace IDs, etc.
+        # will not contain either quote character.
+        external_id_search_phrase = sanitized_search_phrase.delete("\"'")
+
+        # this expression should match any element of the external_id jsonb array,
+        # as long as its value is external_id_search_phrase, regardless of the value of 'category'.
+        jsonb_match_value = "'[{\"value\": \"#{external_id_search_phrase}\"}]'::jsonb"
+
+        # this condition attempts to match external_id against jsonb_match_value:
         matches_external_id = "json_attributes -> 'external_id' @> #{jsonb_match_value}"
+
 
         scope = scope.where("(title ILIKE ? OR friendlier_id ILIKE ? OR #{matches_external_id} OR id = ?)",
           "%#{sanitized_search_phrase}%",
@@ -723,10 +734,10 @@ class Admin::WorksController < AdminController
           Work.type_for_attribute(:id).cast(params[:title_or_id])
         )
       end
+
       if params[:genre].present?
         scope = scope.where("json_attributes -> 'genre' ? :genre", genre: params[:genre])
       end
-
 
       # format is a reserved word
       # (see https://stackoverflow.com/questions/70726614/ruby-on-rails-use-format-as-a-url-get-parameter )
