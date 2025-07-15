@@ -33,11 +33,11 @@ class SearchBuilder
     end
 
     def box_id
-      scope.context.fetch(:box_id)
+      RSolr.solr_escape scope.context.fetch :box_id
     end
 
     def folder_id
-      scope.context.fetch(:folder_id)
+      RSolr.solr_escape scope.context.fetch :folder_id
     end
 
   end
