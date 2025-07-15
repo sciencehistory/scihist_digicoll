@@ -33,11 +33,15 @@ class SearchBuilder
     end
 
     def box_id
-      scope.context.fetch(:box_id)
+      safe_solr_escape scope.context.fetch :box_id
     end
 
     def folder_id
-      scope.context.fetch(:folder_id)
+      safe_solr_escape scope.context.fetch :folder_id
+    end
+
+    def safe_solr_escape str
+      RSolr.solr_escape str unless str.nil?
     end
 
   end
