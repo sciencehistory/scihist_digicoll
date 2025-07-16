@@ -196,7 +196,7 @@ describe "System Environment" do
 
     it "has acceptable version" do
       ver = `exiftool -ver`.chomp
-      expect(ver).to match_version_requirements("~> 12.60")
+      expect(ver).to match_version_requirements(">= 12.60", "< 14")
     end
   end
 
