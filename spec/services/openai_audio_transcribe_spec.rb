@@ -73,7 +73,7 @@ describe OpenaiAudioTranscribe do
         © transcript Emily Beynon
 
         00:03.000 --> 00:05.000
-        This one keeps © transcript Emily Beynon some words
+        This one keeps some words © transcript Emily Beynon more stuff
         EOS
       end
 
