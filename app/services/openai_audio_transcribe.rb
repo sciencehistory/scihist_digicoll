@@ -26,8 +26,9 @@ class OpenaiAudioTranscribe
   # https://arxiv.org/html/2501.11378v1
   # https://github.com/DSP-AGH/ICASSP2025_Whisper_Hallucination
   REMOVE_TEXT = [
+    # copyright symbol at beginning of line followed by anything
     # \p{Zs} is unicode separator space (not newline)
-    /\p{Zs}*(© )?transcript Emily Beynon/
+    /\p{Zs}*©.*/
   ]
 
   attr_reader :use_prompt, :create_audio_derivative_if_needed
