@@ -14,21 +14,9 @@ Just run:
 
 ## On heroku
 
-App needs to be installed to heroku first. By default, Heroku does not install gems in `development` or `test` group, but we need them here.
+We have `rspec-rails` gem dependency in default gem group so it is installed in "production" too (ie heroku), to make it possible to simply run:
 
-First, tell the app you want to install `rspec` on the next deploy:
-
-    heroku config:set BUNDLE_WITHOUT=" "
-
-This sets `BUNDLE_WITHOUT` to be a space (by default, the variable doesn't exist; empty string is ignored by heroku, need one space!). Although this restarts the dyno, it doesn't actually trigger a deploy.
-
-Next, trigger a deploy.  Use a null commit if you have to, and deploy it to Heroku. On deploy, `rspec` will be installed.
-
- Finally, `heroku run "rspec system_env_spec"`
-
-When you are done, remember to unset the heroku config again:
-
-    heroku config:unset BUNDLE_WITHOUT
+    heroku run "rspec system_env_spec"
 
 ## Note on versions of CLI dependencies
 
