@@ -64,7 +64,7 @@ RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :sy
 
     expect(biography.job.length).to eq 1
 
-    correct_job = "{\"end\"=>\"2334-12-35\", \"role\"=>\"Sotheby's\", \"start\"=>\"2334-12-34\", \"institution\"=>\"Head Auctioneer\"}"
+    correct_job = "{\"end\" => \"2334-12-35\", \"role\" => \"Sotheby's\", \"start\" => \"2334-12-34\", \"institution\" => \"Head Auctioneer\"}"
     expect(biography.job.first.attributes.to_s ).to eq correct_job
   end
 
