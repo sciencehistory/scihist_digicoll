@@ -56,5 +56,14 @@ if (Blacklight.Modal.target()) {
       Blacklight.Modal.hide();
     }
   });
+
+  // Make sure we catch html modal's own close (eg escape key), to trigger blacklight
+  // hide cleanup, including restoration of scroll behavior!
+  // https://github.com/sciencehistory/scihist_digicoll/issues/3049
+  Blacklight.Modal.target().addEventListener("cancel", (event) => {
+    // we can stop default behavior, we're going to close the dialog ourselves
+    event.preventDefault();
+    Blacklight.Modal.hide();
+  });
 }
 
