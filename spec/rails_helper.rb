@@ -58,6 +58,11 @@ RSpec.configure do |config|
     version = Capybara::Selenium::Driver.load_selenium
     options_key = Capybara::Selenium::Driver::CAPS_VERSION.satisfied_by?(version) ? :capabilities : :options
     browser_options = Selenium::WebDriver::Chrome::Options.new.tap do |opts|
+      # Not sure what default chrome headless window size is, but we want to make sure
+      # it's big enough for "non-collapse" responsive size, for our specs, but still
+      # kinda small seems good for testing?
+      opts.add_argument "--window-size=820,540"
+
       # These are defaults from capybara
       # https://github.com/teamcapybara/capybara/blob/0480f90168a40780d1398c75031a255c1819dce8/lib/capybara/registrations/drivers.rb#L31-L39
 
