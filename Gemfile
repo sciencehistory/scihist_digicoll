@@ -208,8 +208,11 @@ group :development do
   gem 'listen', '~> 3.3'
 end
 
+# rspec-rails is NOt in group :test, so we can run `rspec system_env_spec` on heroku,
+# where dev/test aren't installed.
+gem 'rspec-rails', '~> 8.0'
+
 group :test do
-  gem 'rspec-rails', '~> 8.0'
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '>= 2.15'
   gem 'selenium-webdriver'
