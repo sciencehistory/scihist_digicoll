@@ -708,18 +708,18 @@ class Admin::WorksController < AdminController
     def build_search(params)
       scope = Work.all
       if params[:title_or_id].present?
-        match_ilike = Work.sanitize_sql_like params[:title_or_id]
-        match_uuid = Work.type_for_attribute(:id).cast(params[:title_or_id])
-        match_any_external_id = [{ "value" => params[:title_or_id] }].to_json
-
         scope = scope.where(
           [
-            "title ILIKE ?",
-            "friendlier_id ILIKE ?",
-            "id = ?",
-            "json_attributes -> 'external_id' @> ?::jsonb",
+            "title ILIKE :match_ilike",
+            "friendlier_id ILIKE :match_ilike",
+            "id = :match_uuid",
+            "json_attributes -> 'external_id' @> :match_any_external_id::jsonb",
           ].join(" OR "),
-          match_ilike, match_ilike, match_uuid, match_any_external_id
+          {
+            match_ilike: Work.sanitize_sql_like(params[:title_or_id]),
+            match_uuid:  Work.type_for_attribute(:id).cast(params[:title_or_id]),
+            match_any_external_id: [{ "value" => params[:title_or_id] }].to_json
+          }
         )
       end
 
