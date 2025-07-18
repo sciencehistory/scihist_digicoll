@@ -1,13 +1,15 @@
 <figure class="hero-image">
-  <%= image_tag(
-    path_1x,                # scaled to 1000px width
-    'srcset'          => {
-      path_1x=>"1x",        # scaled to 1000px width
-      path_2x=>"2x"         # scaled to 2000px width
-    },
-    'aria-labelledby' => 'homeHeroCaption')
-  %>
+  <%=  image_tag( path_2000,
+    srcset: [
+      [path_250,  "250w" ], # scaled to 250 width
+      [path_500,  "500w" ], # scaled to 500 width
+      [path_1000, "1000w"], # scaled to 1000 width
+      [path_2000, "2000w"], # scaled to 2000 width
+    ],
+    'aria-labelledby' => 'homeHeroCaption'
+  ) %>
   <figcaption id="homeHeroCaption">
-      <%= link_to link_title, work_path(work_friendlier_id) %>
+      <%= link_to "#{link_title}", work_path(work_friendlier_id) %>
   </figcaption>
 </figure>
+<%# See also images/homepage/hero_images/README.md %>
