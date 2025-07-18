@@ -1,5 +1,11 @@
+
+
 // override sufia facet widget styles to be more brand-like, and generally neater
 .facets {
+  // disable border Blacklight default is trying to put in at small sizes,
+  // we have already taken care of it differently.
+  --bl-facets-smallish-border: none;
+
   .facets-header {
     // To try to make top line of search results all line up, we hackily try to make
     // this have the exact same line-height in pixels as .page_links. hack to try to improve on BL.
@@ -11,6 +17,13 @@
       font-weight: 600;
       text-align: center;
     }
+  }
+
+  // We don't collapse our facets until bootstrap `sm` but Blacklight
+  // wants to display them at medium, and the way blacklight does by hiding
+  // with a `.d-sm-none` means this seems the best way to fix, a bit annoying.
+  .facet-toggle-button {
+    @extend .d-md-none;
   }
 
   .card-header {
