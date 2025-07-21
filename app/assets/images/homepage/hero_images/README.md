@@ -18,7 +18,13 @@ Prefer colorful subjects or people doing science, especially people from under-r
 2) Upload the cropped image to the P drive and save the URL
 3) Resize your original image:
 ```
-vipsthumbnail cropped_original.tiff --size 1000x -o homepage/hero_images/1x/new_file_1x.jpg
-vipsthumbnail cropped_original.tiff --size 2000x -o homepage/hero_images/1x/new_file_2x.jpg
+
+ORIGINAL=greene.jpg
+DESTINATION=greene.webp
+
+vipsthumbnail $ORIGINAL --size 250x  -o app/assets/images/homepage/hero_images/250/$DESTINATION
+vipsthumbnail $ORIGINAL --size 500x  -o app/assets/images/homepage/hero_images/500/$DESTINATION
+vipsthumbnail $ORIGINAL --size 1000x -o app/assets/images/homepage/hero_images/1000/$DESTINATION
+vipsthumbnail $ORIGINAL --size 2000x -o app/assets/images/homepage/hero_images/2000/$DESTINATION
 ```
 4) Add metadata into `config/data/home_page_hero_images.yml`
