@@ -1,2 +1,0 @@
-class ExtentConverterComponent < ApplicationComponent
-end
