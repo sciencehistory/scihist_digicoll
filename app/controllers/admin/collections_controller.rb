@@ -21,7 +21,7 @@ class Admin::CollectionsController < AdminController
             "json_attributes -> 'external_id' @> :match_any_external_id::jsonb",
           ].join(" OR "),
           {
-            match_ilike: Collection.sanitize_sql_like(params[:title_or_id]),
+            match_ilike: "%#{Collection.sanitize_sql_like(params[:title_or_id])}%",
             match_uuid:  Collection.type_for_attribute(:id).cast(params[:title_or_id]),
             match_any_external_id: [{ value: params[:title_or_id] }].to_json
           }
