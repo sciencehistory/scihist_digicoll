@@ -707,7 +707,6 @@ class Admin::WorksController < AdminController
     # Searching, filtering, and pagination for the #index method
     def build_search(params)
       scope = Work.all
-      #byebug
       if params[:title_or_id].present?
         scope = scope.where(
           [
