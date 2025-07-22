@@ -12,12 +12,17 @@ RSpec.describe Admin::CollectionsController, :logged_in_user, type: :controller 
     context "filter collections" do
       render_views
       let!(:collection) {
-        create(:collection, external_id: [
-          Work::ExternalId.new( {"value"=>"2010.028",   "category"=>"accn"} ),
+        create(:collection, title: "Newly created collection", external_id: [
+          Work::ExternalId.new( {"value"=>"2010.028", "category"=>"accn"} ),
         ])
       }
       it "can filter on external id, regardless of the category of the ID" do
         get :index, params: { title_or_id: "2010.028" }
+        rows = response.parsed_body.css('.table.admin-list tbody tr')
+        expect(rows.length).to eq 1
+      end
+      it "can filter on partial title" do
+        get :index, params: { title_or_id: "newly" }
         rows = response.parsed_body.css('.table.admin-list tbody tr')
         expect(rows.length).to eq 1
       end

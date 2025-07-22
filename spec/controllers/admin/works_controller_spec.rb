@@ -424,6 +424,13 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
           expect(rows[1].inner_html).to include works[0].title
         end
 
+        it "filters by partial title" do
+          get :index, params:{"title_or_id"=> 'k_a' }
+          rows = response.parsed_body.css('.table.admin-list tbody tr')
+          expect(rows[0].inner_html).to include works[0].title
+        end
+
+
         it "uses default sort with only include_child_works in the params" do
           get :index, params: { "include_child_works" => "true" }
           rows = response.parsed_body.css('.table.admin-list tbody tr')
