@@ -23,4 +23,27 @@ RSpec.describe Admin::CollectionsController, :logged_in_user, type: :controller 
       end
     end
   end
+
+  context "sql escaping" do
+    render_views
+    let(:quotey_string) { " \\\''''  Bellen's \"lecture\" \\\'''' " }
+    let(:rows) { response.parsed_body.css '.table.admin-list tbody tr' }
+
+    context "sql escaping for title" do
+      let!(:collection) { create(:collection, title: quotey_string) }
+      it "matches title" do
+        get :index, params:{"title_or_id"=> quotey_string }
+        expect(rows.length).to eq 1
+      end
+    end
+    context "sql escaping" do
+      let!(:collection) { create(:collection, external_id: [
+        Work::ExternalId.new( {"value"=>quotey_string,   "category"=>"accn"} ),
+      ]) }
+      it "matches external_id" do
+        get :index, params:{"title_or_id"=> quotey_string }
+        expect(rows.length).to eq 1
+      end
+    end
+  end
 end

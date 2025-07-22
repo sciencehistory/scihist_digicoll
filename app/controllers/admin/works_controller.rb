@@ -708,30 +708,18 @@ class Admin::WorksController < AdminController
     def build_search(params)
       scope = Work.all
       if params[:title_or_id].present?
-
-        # 1) to match titles and friendlier IDs, use sanitize_sql_like
-        sanitized_search_phrase = Work.sanitize_sql_like params[:title_or_id]
-
-
-        # 2) to simplify escaping in the jsonb expression for external_id matching,
-        # we're also removing single and double quotes from
-        # the string we use to match external_id,
-        # on the assumption that Sierra bib IDs, ArchivesSpace IDs, etc.
-        # will not contain either quote character.
-        external_id_search_phrase = sanitized_search_phrase.delete("\"'")
-
-        # this expression should match any element of the external_id jsonb array,
-        # as long as its value is external_id_search_phrase, regardless of the value of 'category'.
-        jsonb_match_value = "'[{\"value\": \"#{external_id_search_phrase}\"}]'::jsonb"
-
-        # this condition attempts to match external_id against jsonb_match_value:
-        matches_external_id = "json_attributes -> 'external_id' @> #{jsonb_match_value}"
-
-
-        scope = scope.where("(title ILIKE ? OR friendlier_id ILIKE ? OR #{matches_external_id} OR id = ?)",
-          "%#{sanitized_search_phrase}%",
-          "%#{sanitized_search_phrase}%",
-          Work.type_for_attribute(:id).cast(params[:title_or_id])
+        scope = scope.where(
+          [
+            "title ILIKE :match_ilike",
+            "friendlier_id ILIKE :match_ilike",
+            "id = :match_uuid",
+            "json_attributes -> 'external_id' @> :match_any_external_id::jsonb",
+          ].join(" OR "),
+          {
+            match_ilike: Work.sanitize_sql_like(params[:title_or_id]),
+            match_uuid:  Work.type_for_attribute(:id).cast(params[:title_or_id]),
+            match_any_external_id: [{ value: params[:title_or_id] }].to_json
+          }
         )
       end
 
@@ -773,3 +761,4 @@ class Admin::WorksController < AdminController
       scope.includes(:leaf_representative).page(params[:page]).per(20)
     end
 end
+

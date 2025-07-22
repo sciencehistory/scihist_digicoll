@@ -449,12 +449,28 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         context "sql escaping" do
           let(:quotey_title) { " \\\''''  Bellen's \"lecture\" \\\'''' " }
           let!(:works) { [ create(:work, title: quotey_title) ] }
-          it "escapes SQL properly" do
+          it "matches title correctly despite quotes" do
             get :index, params:{"title_or_id"=> quotey_title }
             rows = response.parsed_body.css('.table.admin-list tbody tr')
             expect(rows.length).to eq 1
           end
         end
+
+        context "sql escaping" do
+          let(:quotey_title) { " \\\''''  Bellen's \"lecture\" \\\'''' " }
+          let!(:works) { [
+            create(:work, external_id: [ Work::ExternalId.new({"value"=>quotey_title, "category"=>"interview"}) ]),
+          ] }
+          it "matches external_id correctly despite quotes" do
+            get :index, params:{"title_or_id"=> quotey_title }
+            rows = response.parsed_body.css('.table.admin-list tbody tr')
+            expect(rows.length).to eq 1
+          end
+        end
+
+
+
+
 
         # object bib item accn aspace interview
         context "filtering by external_id" do
