@@ -707,6 +707,7 @@ class Admin::WorksController < AdminController
     # Searching, filtering, and pagination for the #index method
     def build_search(params)
       scope = Work.all
+      #byebug
       if params[:title_or_id].present?
         scope = scope.where(
           [
@@ -716,7 +717,7 @@ class Admin::WorksController < AdminController
             "json_attributes -> 'external_id' @> :match_any_external_id::jsonb",
           ].join(" OR "),
           {
-            match_ilike: Work.sanitize_sql_like(params[:title_or_id]),
+            match_ilike: "%#{Work.sanitize_sql_like(params[:title_or_id])}%",
             match_uuid:  Work.type_for_attribute(:id).cast(params[:title_or_id]),
             match_any_external_id: [{ value: params[:title_or_id] }].to_json
           }
