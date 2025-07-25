@@ -188,7 +188,7 @@
     <fieldType name="text_de" class="solr.TextField" positionIncrementGap="100">
       <analyzer>
         <tokenizer class="solr.ICUTokenizerFactory"/>
-        <filter class="solr.ICUNormalizer2FilterFactory" name="nfkc_cf" mode="compose"/> <!-- NFKC, case folding, but leave diacritics! -->
+        <filter name="icuNormalizer2" form="nfkc_cf" mode="compose"/> <!-- NFKC, case folding, but leave diacritics! -->
 
         <!-- will produce different number of tokens than text_en, which would
              make it incompatible for combining in dismax qf.
