@@ -28,7 +28,7 @@ domready(function() {
 
       const parsed = parseFloat(cleanValue);
       if (!isNaN(parsed)) {
-        target.el.value = source.convert(parsed).toFixed(2);
+        target.el.value = source.convert(parsed).toFixed(1);
       } else {
         target.el.value = '';
       }
