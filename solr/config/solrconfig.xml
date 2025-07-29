@@ -34,6 +34,8 @@
        affect both how text is indexed and queried.
   -->
   <luceneMatchVersion>9.8.1</luceneMatchVersion>
+  <lib dir="${solr.install.dir:../../../..}/modules/analysis-extras/lib" />
+  <lib dir="${solr.install.dir:../../../..}/modules/extraction/lib" />
 
   <directoryFactory name="DirectoryFactory"
                     class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}">
