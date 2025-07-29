@@ -9,7 +9,7 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
   let(:other_getter) {MoreLikeThisGetter.new(work_to_match)}
   let(:getter_of_two_works) {MoreLikeThisGetter.new(work_to_match, max_number_of_works: 2)}
   let(:work_to_match)   { create(:public_work, subject: "aaa", description: "aaa")  }
-  let(:work_to_match_cache_key) {"more_like_this/#{work_to_match.friendlier_id}"}
+  let(:work_to_match_cache_key) {"scihist:more_like_this:#{work_to_match.friendlier_id}"}
 
   let(:five_public_works) { [
       create(:public_work, subject: "aaa", description: "aaa"),
@@ -18,7 +18,7 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
       create(:public_work, subject: "aaa", description: "aaa"),
       create(:public_work, subject: "aaa", description: "aaa"),
     ]
-  } 
+  }
   let(:five_private_works) { [
       create(:private_work, subject: "aaa", description: "aaa"),
       create(:private_work, subject: "aaa", description: "aaa"),
@@ -56,7 +56,7 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
     context "setting turned on" do
       before do
         allow(ScihistDigicoll::Env).to receive(:lookup).with(:cache_more_like_this).and_return(true)
-      end 
+      end
       after do
         allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
       end

@@ -88,7 +88,7 @@ class MoreLikeThisGetter
   # standard blacklight config, except it won't retry failed queries.
   def solr_connection
     # If we don't get a response from SOLR right away,
-    # we just want to show the page without the more_like_this content. 
+    # we just want to show the page without the more_like_this content.
     #
     # Note the existence of Scihist::BlacklightSolrRepository, which we are
     # consciously not using as the solr repo in this method. Its only purpose
@@ -129,7 +129,7 @@ class MoreLikeThisGetter
   end
 
   def cache_key
-    "more_like_this/#{@work.friendlier_id}"
+    "scihist:more_like_this:#{@work.friendlier_id}"
   end
 
   # Caching these should save trips to our flaky solr provider.
