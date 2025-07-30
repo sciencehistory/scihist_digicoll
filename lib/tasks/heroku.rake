@@ -11,10 +11,10 @@ namespace :scihist do
         $stderr.puts "\n!!! WARNING, no ENV['DATABASE_URL'], not running rake db:migrate as part of heroku release !!!\n\n"
       end
 
-      if ENV['SOLR_URL']
+      if ENV['SOLR_URL'] && ENV['SKIP_SYNC_SOLR_CONFIGSET'] != 'true'
         Rake::Task["scihist:solr_cloud:sync_configset"].invoke
       else
-        $stderr.puts "\n!!! WARNING, no ENV['SOLR_URL'], not running rake scihist:solr_cloud:sync_configset as part of heroku release !!!\n\n"
+        $stderr.puts "\n\nWARNING: no ENV['SOLR_URL'] or ENV['SKIP_SYNC_SOLR_CONFIGSET'] is set to 'true'.\n\nNot running rake scihist:solr_cloud:sync_configset as part of heroku release.\n\n"
       end
     end
 
