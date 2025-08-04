@@ -11,6 +11,26 @@ class CatalogController < ApplicationController
   before_action :catch_bad_request_headers, only: :index
   before_action :catch_bad_format_param,  only: :index
 
+  # This should apply to all CatalogController sub-classes too, which include CollectionShowController and
+  # FeaturedTopicController. They all share a counter though.
+  #
+  # We let bots through if they have NO query params, we want let collection/focus sploash
+  # pages be indexed -- this will actually let bot paginate through entire results with
+  # no query/facets, which we seem to be able to tolerate.
+  bot_challenge after: 1, within: 12.hours,
+    if: -> {
+      # was using #has_constraints?, but for some reason that returns true if
+      # search field is set with no query, that some of our stuff does for no great reason.
+      search_state.has_constraints?
+    },
+    except: ["facet", "range_limit"]
+
+  # facet and range_limit both get challenged immediately, unless they are JS fetch,
+  # in which case they are let in freely.
+  bot_challenge only: ["facet", "range_limit"], unless: -> {
+    request.headers["sec-fetch-dest"] == "empty"
+  }
+
   rescue_from ActionController::UnpermittedParameters, with: :handle_unpermitted_params
 
   # Blacklight wanted Blacklight::Controller included in ApplicationController,
