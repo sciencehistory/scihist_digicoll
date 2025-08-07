@@ -14,9 +14,16 @@
 
 port: <%= Rails.env.test? ? '8989' : '8987' %>
 
+
+# Note: these env variables are only used in dev.
+# To get SearchStax to include the analysis-extras and extraction modules, we use two <lib/> tags in solrconfig.xml instead.
 env:
   SOLR_MODULES: analysis-extras,extraction
   SOLR_SECURITY_MANAGER_ENABLED: 'false'
+
+# No luck getting the JVM to work with these solr_options in dev:
+# solr_options:
+#  "-jvm-opts": "-Dsolr.config.lib.enabled=true,-Djava.security.manager=disallow"
 
 instance_dir: tmp/solr_<%= Rails.env %>
   <% # in subdir of tmp to make it easier to tell travis to cache,
