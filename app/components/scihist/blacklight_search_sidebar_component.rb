@@ -11,7 +11,7 @@ class Scihist::BlacklightSearchSidebarComponent < ApplicationComponent
 
   def initialize(**kwargs)
     @original_initialize_kwargs = kwargs
-    super
+    super()
   end
 
   def render_original_sidebar
