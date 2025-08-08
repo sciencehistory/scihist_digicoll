@@ -181,6 +181,8 @@ class CatalogController < ApplicationController
       qf: "text1_tesim^1000 text2_tesim^500 text3_tesim^100 text4_tesim^50 description_text4_tesim^50 text_no_boost_tesim^10 friendlier_id_ssi id^10 searchable_fulltext_en^0.5 searchable_fulltext_de^0.5 searchable_fulltext_language_agnostic^0.5",
       pf: "text1_tesim^1500 text2_tesim^1200 text3_tesim^600 text4_tesim^120 description_text4_tesim^120 text_no_boost_tesim^55 friendlier_id_ssi id^55 searchable_fulltext_en^12 searchable_fulltext_de^12 searchable_fulltext_language_agnostic^12",
 
+      fl: "id",
+
       # HIGHLIGHTING-related params, full snippets from fulltext matches
       #
       # https://lucene.apache.org/solr/guide/8_0/highlighting.html
