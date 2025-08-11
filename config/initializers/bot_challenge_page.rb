@@ -13,7 +13,7 @@ BotChallengePage.configure do |config|
     # https://docs.honeybadger.io/guides/security/
     (
       ENV['HONEYBADGER_TOKEN'].present? &&
-      controller.request.headers['Honeybadger-Token'] == ENV['HONEYBADGER_TOKEN']
+      request.headers['Honeybadger-Token'] == ENV['HONEYBADGER_TOKEN']
     )
   }
 
