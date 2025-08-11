@@ -13,6 +13,18 @@
 # solr_url must be localhost too if you want it to use this solr_wrapper launched solr.
 
 port: <%= Rails.env.test? ? '8989' : '8987' %>
+
+
+# Note: these env variables are only used in dev.
+# To get SearchStax to include the analysis-extras module, we use a <lib/> tag in solrconfig.xml instead.
+env:
+  SOLR_MODULES: analysis-extras
+  SOLR_SECURITY_MANAGER_ENABLED: 'false'
+
+# No luck getting the JVM to work with these solr_options in dev:
+# solr_options:
+#  "-jvm-opts": "-Dsolr.config.lib.enabled=true,-Djava.security.manager=disallow"
+
 instance_dir: tmp/solr_<%= Rails.env %>
   <% # in subdir of tmp to make it easier to tell travis to cache,
      # so we're not downloading it over and over. Make sure it exists.
@@ -22,4 +34,4 @@ collection:
   persist: <%= Rails.env.test? ? "false" : "true" %>
   dir: solr/config
   name: scihist_digicoll_<%= Rails.env %>
-version: 8.11.2
+version: 9.8.1
