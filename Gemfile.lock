@@ -168,9 +168,8 @@ GEM
     bootstrap4-kaminari-views (1.0.1)
       kaminari (>= 0.13)
       rails (>= 3.1)
-    bot_challenge_page (0.4.0)
+    bot_challenge_page (0.10.0)
       http (~> 5.2)
-      rack-attack (~> 6.7)
       rails (>= 7.1, < 8.1)
     browse-everything (1.5.0)
       addressable (~> 2.5)
@@ -854,7 +853,7 @@ DEPENDENCIES
   blacklight_range_limit (~> 9.0.0)
   bootsnap (>= 1.4.4)
   bootstrap4-kaminari-views
-  bot_challenge_page
+  bot_challenge_page (>= 0.10.0, < 2)
   browse-everything (~> 1.5)
   browser (~> 6.0)
   capybara (>= 2.15)
