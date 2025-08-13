@@ -78,7 +78,7 @@ $( document ).ready(function() {
               <p>Large downloads may take some time to prepare. We appreciate your patience.</p>\
             </div>\
             <div class="modal-footer">\
-              <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>\
+              <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>\
             </div>\
           </div>\
         </div>\
