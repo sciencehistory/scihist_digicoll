@@ -172,6 +172,7 @@
     <fieldType name="text_en" class="solr.TextField" positionIncrementGap="100">
       <analyzer>
         <tokenizer class="solr.ICUTokenizerFactory"/>
+         <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_en.txt" />
         <filter class="solr.ICUFoldingFilterFactory"/>  <!-- NFKC, case folding, diacritics removed -->
         <filter class="solr.EnglishPossessiveFilterFactory"/>
         <!-- EnglishMinimalStemFilterFactory is less aggressive than PorterStemFilterFactory: -->
@@ -188,13 +189,11 @@
     <fieldType name="text_de" class="solr.TextField" positionIncrementGap="100">
       <analyzer>
         <tokenizer class="solr.ICUTokenizerFactory"/>
+        <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_de.txt" />
         <filter class="solr.ICUNormalizer2FilterFactory" name="nfkc_cf" mode="compose"/> <!-- NFKC, case folding, but leave diacritics! -->
-
         <!-- will produce different number of tokens than text_en, which would
              make it incompatible for combining in dismax qf.
-
              See https://github.com/sciencehistory/scihist_digicoll/issues/1883
-
              We *think* erman normlization and stemming below should be ok.
         -->
         <!-- <filter class="solr.HyphenationCompoundWordTokenFilterFactory"
@@ -202,7 +201,6 @@
           dictionary="lang/dictionary-de.txt"
           onlyLongestMatch="true"
           minSubwordSize="4"/> -->
-
         <filter class="solr.GermanNormalizationFilterFactory"/>
         <filter class="solr.GermanStemFilterFactory"/>
       </analyzer>
