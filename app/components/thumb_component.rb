@@ -159,7 +159,7 @@ class ThumbComponent < ApplicationComponent
     # thumb we're actually displaying for width and height
     thumb = asset&.file("thumb_#{thumb_size}")
 
-    if asset.width && asset.height
+    if thumb.width && thumb.height
       # width / height as string is supported
       return "aspect-ratio: #{thumb.width} / #{thumb.height}"
     elsif lazy?
