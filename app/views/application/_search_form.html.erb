@@ -11,9 +11,6 @@
 %>
 
 <%= form_tag search_catalog_url, method: :get, class: "search-form", role: "search" do %>
-  <%= hidden_field_tag :search_field, 'all_fields' %>
-
-
   <div class="input-group nav-search-text">
     <%= text_field_tag :q, '', class: "q form-control",
         id: "q",
