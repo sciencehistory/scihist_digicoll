@@ -6,7 +6,7 @@ module SearchResult
   class BaseComponent < ApplicationComponent
     # note order matters here! The fields listed first will listed first in snippet, and preferred
     # as far as first MAX_HIGHLIGHT_SNIPPETS included only.
-    HIGHLIGHT_SOLR_FIELDS = ["searchable_fulltext_en", "searchable_fulltext_de", "searchable_fulltext_language_agnostic", "description_text4_tesim"]
+    HIGHLIGHT_SOLR_FIELDS = ["searchable_fulltext_en", "searchable_fulltext_de", "searchable_fulltext_language_agnostic", "description_text4_tesimvo"]
     MAX_HIGHLIGHT_SNIPPETS = 3
 
     attr_reader :model, :child_counter, :cart_presence, :solr_document

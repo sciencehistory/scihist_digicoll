@@ -38,7 +38,7 @@ describe WorkIndexer do
     let(:work) { create(:work, description: "This originally had <b>html</b> and <a href='http://example.com'>stuff</a>.") }
     it "is stripped to plaintext in index" do
       output_hash = WorkIndexer.new.map_record(work)
-      expect(output_hash["description_text4_tesim"]).to eq ["This originally had html and stuff."]
+      expect(output_hash["description_text4_tesimvo"]).to eq ["This originally had html and stuff."]
     end
   end
 

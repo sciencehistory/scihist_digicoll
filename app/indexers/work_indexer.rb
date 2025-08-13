@@ -25,7 +25,7 @@ class WorkIndexer < Kithe::Indexer
 
     # index description to it's own field for highlighting purposes. Fields with
     # HTML in them need to have it stripped before indexing.
-    to_field ["description_text4_tesim", "more_like_this_keywords_tsimv"], obj_extract("description"), transform(->(val) { ActionView::Base.full_sanitizer.sanitize(val) })
+    to_field ["description_text4_tesimvo", "more_like_this_keywords_tsimv"], obj_extract("description"), transform(->(val) { ActionView::Base.full_sanitizer.sanitize(val) })
     to_field "text4_tesim", obj_extract("provenance"), transform(->(val) { ActionView::Base.full_sanitizer.sanitize(val) })
 
     to_field ["text_no_boost_tesim", "language_facet"], obj_extract("language")

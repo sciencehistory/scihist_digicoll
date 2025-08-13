@@ -76,8 +76,8 @@ describe AllSearchResultIdsController, type: :request, solr: true, queue_adapter
       expect(solr_params['q']).to eq "Midland"
 
       # fields:
-      expect(solr_params['qf']).to eq "text1_tesim^1000 text2_tesim^500 text3_tesim^100 text4_tesim^50 description_text4_tesim^50 text_no_boost_tesim^10 friendlier_id_ssi id^10 searchable_fulltext_en^0.5 searchable_fulltext_de^0.5 searchable_fulltext_language_agnostic^0.5 admin_only_text_tesim admin_only_text_tesim"
-      expect(solr_params['pf']).to eq "text1_tesim^1500 text2_tesim^1200 text3_tesim^600 text4_tesim^120 description_text4_tesim^120 text_no_boost_tesim^55 friendlier_id_ssi id^55 searchable_fulltext_en^12 searchable_fulltext_de^12 searchable_fulltext_language_agnostic^12"
+      expect(solr_params['qf']).to eq "text1_tesim^1000 text2_tesim^500 text3_tesim^100 text4_tesim^50 description_text4_tesimvo^50 text_no_boost_tesim^10 friendlier_id_ssi id^10 searchable_fulltext_en^0.5 searchable_fulltext_de^0.5 searchable_fulltext_language_agnostic^0.5 admin_only_text_tesim admin_only_text_tesim"
+      expect(solr_params['pf']).to eq "text1_tesim^1500 text2_tesim^1200 text3_tesim^600 text4_tesim^120 description_text4_tesimvo^120 text_no_boost_tesim^55 friendlier_id_ssi id^55 searchable_fulltext_en^12 searchable_fulltext_de^12 searchable_fulltext_language_agnostic^12"
 
       # facets:
       expect(solr_params['fq']).to eq   [

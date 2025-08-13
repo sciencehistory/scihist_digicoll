@@ -286,13 +286,49 @@
     -->
     
     <!-- Full text search for works entirely in English -->
-    <field name="searchable_fulltext_en" type="text_en" stored="true" indexed="true" multiValued="true" omitNorms="false" storeOffsetsWithPositions="true"/>
+    <field name="searchable_fulltext_en"
+      type="text_en"
+
+      stored="true"
+      indexed="true"
+      multiValued="true"
+      omitNorms="false"
+
+      termVectors="true"
+      termPositions="true"
+      termOffsets="true"
+      storeOffsetsWithPositions="true"
+    />
 
     <!-- Full text search for works entirely in German -->
-    <field name="searchable_fulltext_de" type="text_de" stored="true" indexed="true" multiValued="true" omitNorms="false" storeOffsetsWithPositions="true"/>
+    <field name="searchable_fulltext_de"
+      type="text_de"
+
+      stored="true"
+      indexed="true"
+      multiValued="true"
+      omitNorms="false"
+
+      termVectors="true"
+      termPositions="true"
+      termOffsets="true"
+      storeOffsetsWithPositions="true"
+    />
 
     <!-- Full text search for works that are neither entirely in English, nor entirely in German -->
-    <field name="searchable_fulltext_language_agnostic" type="text" stored="true" indexed="true" multiValued="true" omitNorms="false" storeOffsetsWithPositions="true"/>
+    <field name="searchable_fulltext_language_agnostic"
+      type="text"
+
+      stored="true"
+      indexed="true"
+      multiValued="true"
+      omitNorms="false"
+
+      termVectors="true"
+      termPositions="true"
+      termOffsets="true"
+      storeOffsetsWithPositions="true"
+    />
 
     <!-- added by Science History Institute, a dynamic field that's good for string facets, using docValues fields -->
     <dynamicField name="*_facet" type="string_dv" multiValued="true"/>
@@ -322,6 +358,9 @@
     <dynamicField name="*_teimv" type="text_en" stored="false" indexed="true" multiValued="true" termVectors="true" termPositions="true" termOffsets="true"/>
     <dynamicField name="*_tesiv" type="text_en" stored="true" indexed="true" multiValued="false" termVectors="true" termPositions="true" termOffsets="true"/>
     <dynamicField name="*_tesimv" type="text_en" stored="true" indexed="true" multiValued="true" termVectors="true" termPositions="true" termOffsets="true"/>
+
+    <!-- using this for description highlighting -->
+    <dynamicField name="*_tesimvo" type="text_en" stored="true" indexed="true" multiValued="true" termVectors="true" termPositions="true" termOffsets="true" storeOffsetsWithPositions="true"/>
 
     <!-- string (_s...) -->
     <dynamicField name="*_si" type="string" stored="false" indexed="true" multiValued="false"/>
