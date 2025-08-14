@@ -209,6 +209,38 @@
     </fieldType>
 
 
+
+                <!-- NEW -->
+                <fieldType name="stop_text_en" class="solr.TextField" positionIncrementGap="100">
+                  <analyzer>
+                    <tokenizer class="solr.ICUTokenizerFactory"/>
+                    <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_en.txt" />
+                    <filter class="solr.ICUFoldingFilterFactory"/>  <!-- NFKC, case folding, diacritics removed -->
+                    <filter class="solr.EnglishPossessiveFilterFactory"/>
+                    <!-- EnglishMinimalStemFilterFactory is less aggressive than PorterStemFilterFactory: -->
+                    <filter class="solr.EnglishMinimalStemFilterFactory"/>
+                    <!--
+                    <filter class="solr.PorterStemFilterFactory"/>
+                    -->
+                    <filter class="solr.TrimFilterFactory"/>
+                  </analyzer>
+                </fieldType>
+
+                <!-- NEW -->
+                <fieldType name="stop_text_de" class="solr.TextField" positionIncrementGap="100">
+                  <analyzer>
+                    <tokenizer class="solr.ICUTokenizerFactory"/>
+                    <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/stopwords_de.txt" format="snowball"/>
+                    <filter class="solr.ICUNormalizer2FilterFactory" name="nfkc_cf" mode="compose"/> <!-- NFKC, case folding, but leave diacritics! -->
+                    <filter class="solr.GermanNormalizationFilterFactory"/>
+                    <filter class="solr.GermanStemFilterFactory"/>
+                  </analyzer>
+                </fieldType>
+
+
+
+
+
     <!-- queries for paths match documents at that path, or in descendent paths -->
     <fieldType name="descendent_path" class="solr.TextField">
       <analyzer type="index">
@@ -293,6 +325,22 @@
 
     <!-- Full text search for works that are neither entirely in English, nor entirely in German -->
     <field name="searchable_fulltext_language_agnostic" type="text" stored="true" indexed="true" multiValued="true" omitNorms="false" storeOffsetsWithPositions="true"/>
+
+
+    <!-- START highlighting -->
+
+    <!-- highlighting for works entirely in English. Contains both the full text of english transcripts and descriptions. -->
+    <field name="hl_en"  type="stop_text_en" stored="true" indexed="true" multiValued="true" omitNorms="false" storeOffsetsWithPositions="true"/>
+
+    <!-- highlighting for works entirely in German -->
+    <field name="hl_de"  type="stop_text_de" stored="true" indexed="true" multiValued="true" omitNorms="false" storeOffsetsWithPositions="true"/>
+
+    <!-- highlighting for works that are neither entirely in English, nor entirely in German -->
+    <field name="hl_agn" type="text" stored="true" indexed="true" multiValued="true" omitNorms="false" storeOffsetsWithPositions="true"/>
+
+    <!-- END highlighting -->
+
+
 
     <!-- added by Science History Institute, a dynamic field that's good for string facets, using docValues fields -->
     <dynamicField name="*_facet" type="string_dv" multiValued="true"/>

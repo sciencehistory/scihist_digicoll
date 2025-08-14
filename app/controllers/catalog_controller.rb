@@ -209,7 +209,9 @@ class CatalogController < ApplicationController
       #
       "hl" => "true",
       "hl.method" => "unified",
+
       "hl.fl" => SearchResult::BaseComponent::HIGHLIGHT_SOLR_FIELDS.join(" "),
+      
       "hl.usePhraseHighlighter" => "true",
       "hl.snippets" => SearchResult::BaseComponent::MAX_HIGHLIGHT_SNIPPETS,
       "hl.encoder" => "html",

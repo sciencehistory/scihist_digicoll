@@ -25,7 +25,7 @@ class WorkIndexer < Kithe::Indexer
 
     # index description to it's own field for highlighting purposes. Fields with
     # HTML in them need to have it stripped before indexing.
-    to_field ["description_text4_tesim", "more_like_this_keywords_tsimv"], obj_extract("description"), transform(->(val) { ActionView::Base.full_sanitizer.sanitize(val) })
+    to_field ["description_text4_tesim", "more_like_this_keywords_tsimv", "hl_en"], obj_extract("description"), transform(->(val) { ActionView::Base.full_sanitizer.sanitize(val) })
     to_field "text4_tesim", obj_extract("provenance"), transform(->(val) { ActionView::Base.full_sanitizer.sanitize(val) })
 
     to_field ["text_no_boost_tesim", "language_facet"], obj_extract("language")
@@ -182,7 +182,7 @@ class WorkIndexer < Kithe::Indexer
     # we got it.
     #
     # 2. If OHMS Table of Contents is present: title, synopsis, and keywords
-    to_field "searchable_fulltext_en" do |rec, acc|
+    to_field ["searchable_fulltext_en", "hl_en"] do |rec, acc|
       if rec.oral_history_content
         if rec.oral_history_content.has_ohms_transcript?
           text = rec.oral_history_content.ohms_xml.transcript_text
@@ -223,7 +223,7 @@ class WorkIndexer < Kithe::Indexer
     # Manual transcription, OCR, ASR, whatever.
     to_field "text3_tesim", obj_extract("oral_history_content", "ohms_xml", "index_points", "all_keywords_and_subjects")
 
-    to_field "searchable_fulltext_de" do |rec, acc|
+    to_field ["searchable_fulltext_de", "hl_de"] do |rec, acc|
       if rec.language == ['German']
         # Index the transcription and OCR here if the work is entirely in German.
         acc.concat get_string_from_each_published_member(rec, :transcription)
@@ -234,7 +234,7 @@ class WorkIndexer < Kithe::Indexer
 
     # Index the transcription here unless we have place to index it in our language-specific indexes.
     # Manual transcription, OCR, ASR, whatever.
-    to_field "searchable_fulltext_language_agnostic" do |rec, acc|
+    to_field ["searchable_fulltext_language_agnostic", "hl_agn"] do |rec, acc|
       entirely_in_english = (rec.language == ['English'])
       entirely_in_german  = (rec.language == ['German'])
       unless entirely_in_english || entirely_in_german
