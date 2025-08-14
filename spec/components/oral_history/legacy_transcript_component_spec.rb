@@ -33,7 +33,7 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
     line_with_first_footnote = parsed.css("#ohms_line_503").to_s
 
     expect(line_with_first_footnote).to match /Nemours/
-    expect(line_with_first_footnote).to include "\"Polyamides,\""
+    expect(line_with_first_footnote).to include /\"|(&quot;)Polyamides,\"|(&quot;)/
     expect(line_with_first_footnote).to include "[1]"
 
     expect(parsed.css(".footnote").count).to eq 2
