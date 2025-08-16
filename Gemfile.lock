@@ -753,6 +753,7 @@ GEM
       activesupport (>= 6.1)
       sprockets (>= 3.0.0)
     statsd-ruby (1.5.0)
+    stopwords-filter2 (0.1.0)
     stringio (3.1.7)
     thor (1.4.0)
     thread_safe (0.3.6)
@@ -923,6 +924,7 @@ DEPENDENCIES
   sitemap_generator (~> 6.0)
   solr_wrapper (~> 4.0)
   sprockets-rails (>= 3.4.2)
+  stopwords-filter2
   traject (>= 3.5)
   uppy-s3_multipart
   view_component (~> 3.9)

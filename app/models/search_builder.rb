@@ -14,6 +14,7 @@ class SearchBuilder < Blacklight::SearchBuilder
   include SearchBuilder::AdminOnlySearchFields
   include SearchBuilder::CustomSortLogic
   include SearchBuilder::AllSearchResultIdsBuilder
+  include SearchBuilder::CustomHighlightingLogic
 
   ##
   # @example Adding a new step to the processor chain
