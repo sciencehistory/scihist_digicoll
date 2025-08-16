@@ -10,10 +10,18 @@ class SearchBuilder
       self.default_processor_chain += [:custom_highlighting_logic]
     end
 
+    #    HIGHLIGHT_SOLR_FIELDS = ["hl_en", "hl_de", "hl_agn"]
+
+
     def custom_highlighting_logic(solr_parameters)
       return if solr_parameters['q'].nil?
-      solr_parameters['hl.q'] = (ENGLISH_FILTER.filter solr_parameters['q'].split).join(' ').strip
-      solr_parameters[:"hl.q"] = (ENGLISH_FILTER.filter solr_parameters['q'].split).join(' ').strip
+
+      #solr_parameters['hl.q'] = (ENGLISH_FILTER.filter solr_parameters['q'].split).join(' ').strip
+
+      solr_parameters[:"f.hl_en.hl.q"]  = (ENGLISH_FILTER.filter solr_parameters['q'].split).join(' ').strip
+      solr_parameters[:"f.hl_de.hl.q"]  = (GERMAN_FILTER.filter solr_parameters['q'].split).join(' ').strip
+      solr_parameters[:"f.hl_agn.hl.q"] =  solr_parameters['q']
+
     end
   end
 end
