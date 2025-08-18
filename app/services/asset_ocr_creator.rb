@@ -22,6 +22,10 @@ class AssetOcrCreator
   # in heroku standard-1x, how much before too much RAM?
   # https://github.com/sciencehistory/scihist_digicoll/issues/2825
   MAX_INPUT_FILE_SIZE = 210.megabytes
+
+  # dropping width/dpi by 2 is essentially a FOUR-fold reduction in size, although
+  # in fact we're seeing a lot MORE than that? Not sure why, should be enough though.
+  # We think even factors of two is better for downsample quality? not sure.
   DEFAULT_DOWNSAMPLE_RATIO = 0.5
 
   TYPE_TO_SUFFIX = Rack::Mime::MIME_TYPES.invert
@@ -61,15 +65,21 @@ class AssetOcrCreator
   end
 
   def call
-    hocr_file, textonly_pdf_file = get_hocr
+    should_downsample = force_downsample || asset.file_metadata["size"] > MAX_INPUT_FILE_SIZE
+    hocr_file, textonly_pdf_file = get_hocr(downsample: should_downsample)
 
     # read hocr file into string to set as json attribute
     asset.hocr = hocr_file.read
 
+    # save admin note if downsampled
+    if should_downsample
+      asset.admin_note << "#{I18n.localize Time.current}: OCR done on original downsampled by #{downsample_ratio}"
+    end
+
     # give pdf file as a derivative
     #
-    # This kithe method will call `save` internally, also saving our hocr
-    # change, but doing it all in a concurrency-safe atomic way.
+    # This kithe method will call `save` internally, also saving our hocr and asset model
+    # changes, but doing it all in a concurrency-safe atomic way.
     asset.update_derivative(:textonly_pdf, textonly_pdf_file, allow_other_changes: true)
   ensure
     # clean up temporary files and
@@ -89,13 +99,13 @@ class AssetOcrCreator
   # @returns [File hOCR, File textonly_pdf]
   #
   # Downloads a copy of original asset to use as tesseract input; cleans up local copy
-  def get_hocr
+  def get_hocr(downsample: false)
     # while some versions of tesseract can read directly from URL, the one
     # we currently have needs a local file, so we need to download it locally.
     # This is a lot slower with all the disk writing and reading.
     local_input = asset.file.download
 
-    if force_downsample || asset.file_metadata["size"] > MAX_INPUT_FILE_SIZE
+    if downsample
       downsampled_input = downsample(local_input)
 
       local_input.unlink
@@ -107,7 +117,7 @@ class AssetOcrCreator
     local_input&.unlink
   end
 
-  # Downsample image by half and return new tempfile, using vips command line
+  # Downsample image by specified asset ratio and return new tempfile, using vips command line
   #
   #    `vips resize input.jpg output.jpg 0.5`
   #
@@ -120,9 +130,6 @@ class AssetOcrCreator
     orig_dpi = asset.file_metadata["dpi"]
     orig_width = asset.width
 
-    # drpping width/dpi by 2 is essentially a FOUR-fold reduction in size, although
-    # in fact we're seeing a lot MORE than that? Not sure why, should be enough though.
-    # We think even factors of two is better for downsample quality? not sure.
     factor = downsample_ratio
 
     new_width = (orig_width * factor).round(0).to_i.to_s

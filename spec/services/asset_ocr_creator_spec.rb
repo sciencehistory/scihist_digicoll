@@ -64,6 +64,8 @@ describe AssetOcrCreator, type: :model do
           with(/AssetOcrCreator: Downsampling asset #{asset.friendlier_id} for tesseract: .* @ 150 dpi, 30 px wide => .* @ 15 px wide/)
 
         expect(asset.hocr).to be_present
+
+        expect(asset.admin_note).to include /OCR done on original downsampled by #{described_class::DEFAULT_DOWNSAMPLE_RATIO}/
       end
     end
 
