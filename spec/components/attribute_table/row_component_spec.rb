@@ -4,7 +4,12 @@ describe AttributeTable::RowComponent, type: :component do
   let(:values) { ["one", "one & two", "'three' <>>> four >>>"] }
 
   let(:displayer) { AttributeTable::RowComponent.new(:place_of_publication, values: values) }
-  let(:rendered) { render_inline displayer }
+  let(:rendered) {
+    render_inline(displayer)
+    # workaorund for ViewComponent/Nokogiri HTML5 issue
+    # https://github.com/ViewComponent/view_component/issues/2422#issuecomment-3168271669
+    Nokogiri::HTML5.fragment(@rendered_content, context: "template")
+  }
 
   it "renders a row" do
     tr = rendered.at_css("tr")
