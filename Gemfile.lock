@@ -540,7 +540,7 @@ GEM
       date
       stringio
     public_suffix (6.0.2)
-    puma (6.6.0)
+    puma (7.0.0.pre1)
       nio4r (~> 2.0)
     qa (5.15.0)
       activerecord-import
@@ -896,7 +896,7 @@ DEPENDENCIES
   prawn-html (< 2)
   prawn-svg (< 2)
   pry-byebug
-  puma (~> 6.4)
+  puma (>= 7.0.0.pre1, < 8)
   qa (~> 5.2, >= 5.14.0)
   rack (>= 3.0)
   rack-attack (~> 6.6)

@@ -84,7 +84,7 @@ gem "aws-sdk-cloudfront", "~> 1.91"
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
-gem 'puma', '~> 6.4'
+gem 'puma', '>= 7.0.0.pre1', '< 8'
 
 # resque+redis being used for activejob.
 # resque-pool currently does not support resque 2.0 alas.
