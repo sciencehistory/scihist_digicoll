@@ -155,11 +155,11 @@ namespace :scihist do
   end
 
   namespace :derivatives do
-    require 'pstore'
-
     desc "Dump all paths from storage (s3) to a PSTORE file for analysis"
 
     task :dump_paths => :environment do
+      require 'pstore'
+
       ENV["DESTINATION"] ||= "./tmp/derivative_paths.pstore"
 
 
@@ -188,6 +188,8 @@ namespace :scihist do
 
     desc "check all derivative references exist as files on storage from DB produced by :dump"
     task :check_paths => :environment do
+      require 'pstore'
+
       ENV["SOURCE"] ||= "./tmp/derivative_paths.pstore"
 
       missing_count = 0
