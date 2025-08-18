@@ -4,6 +4,7 @@ require 'rails_helper'
 # System tests are slow and tend to be flaky. Many of these tests used to be
 # in a system test (login_spec.rb) but this request test is faster and more reliable.
 RSpec.describe AuthController, type: :request, queue_adapter: :test do
+  include Rails.application.routes.url_helpers
 
   # This is the user that gets looked up in the DB:
   let!(:user) { FactoryBot.create(:admin_user, email: 'the_user@sciencehistory.org', password: "goatgoat") }
@@ -12,12 +13,16 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
 
     # An authenticated email. This email address belongs to a person who has gotten authenticated.
     let(:incoming_email) { 'the_user@sciencehistory.org' }
-  
+
     before do
       allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
       allow(ScihistDigicoll::Env).to receive(:lookup).with(:log_in_using_microsoft_sso).and_return(true)
 
       # Reload_routes! takes on the order of 10 milliseconds.
+      #
+      # Not sure why we need to call it TWICE to have it work right including
+      # reliable route helpers.
+      Rails.application.reload_routes!
       Rails.application.reload_routes!
 
       OmniAuth.config.test_mode = true
