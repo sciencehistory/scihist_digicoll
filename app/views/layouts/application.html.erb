@@ -28,6 +28,11 @@
     <!-- Internet Explorer use the highest version available -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
+    <!-- try to improve performance of typekit fonts noted as perf hit
+        https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/ -->
+    <link rel="preconnect" href="https://use.typekit.net" crossorigin>
+    <link rel="preconnect" href="https://p.typekit.net" crossorigin>
+
     <%= render 'layouts/google_analytics_4' %>
 
     <title><%= render_page_title %></title>
