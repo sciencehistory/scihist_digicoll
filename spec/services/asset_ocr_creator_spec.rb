@@ -2,10 +2,13 @@ require 'rails_helper'
 
 describe AssetOcrCreator, type: :model do
   describe "with real tesseract" do
+    let(:tiff_filepath) { "spec/test_support/images/text_and_embedded_thumb.tiff" }
     let(:asset) {
       create(:asset_with_faked_file,
-        faked_file: "spec/test_support/images/text_and_embedded_thumb.tiff",
+        faked_file: tiff_filepath,
         faked_content_type: "image/tiff",
+        faked_size: File.size(tiff_filepath),
+        faked_metadata: { "dpi" => 150 },
         parent: create(:work, language: ["English"])
       )
     }
@@ -40,6 +43,30 @@ describe AssetOcrCreator, type: :model do
       # Make sure it looks like a PDF
       pdf_reader = PDF::Reader.new(textonly_pdf_file)
       expect(pdf_reader.pages.count).to eq 1
+    end
+
+    describe "with asset resizing" do
+      before do
+        # mock our limit super crazy small so we can demo the resize
+        stub_const("AssetOcrCreator::MAX_INPUT_FILE_SIZE", asset.size - 10)
+
+        # so we can check it later
+        allow(Rails.logger).to receive(:warn)
+        allow(creator).to receive(:downsample).and_call_original
+      end
+
+      it "resizes" do
+        creator.call
+
+        expect(creator).to have_received(:downsample)
+
+        expect(Rails.logger).to have_received(:warn).
+          with(/AssetOcrCreator: Downsampling asset #{asset.friendlier_id} for tesseract: .* @ 150 dpi, 30 px wide => .* @ 15 px wide/)
+
+        expect(asset.hocr).to be_present
+
+        expect(asset.admin_note).to include /OCR done on original downsampled by #{described_class::DEFAULT_DOWNSAMPLE_RATIO}/
+      end
     end
 
     describe "asset with role extracted_pdf_page" do
