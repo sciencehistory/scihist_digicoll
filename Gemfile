@@ -51,7 +51,7 @@ gem "mail", ">= 2.8.0.rc1", "< 3"
 #
 gem "net-protocol", "!= 0.2.0"
 
-gem "view_component", "~> 3.9"
+gem "view_component", "~> 4.0"
 gem "alba", "~> 3.1" # for JSON serialization of models
 
 #  Scout is a monitoring tool we are experimenting with
@@ -66,8 +66,8 @@ gem 'scout_apm'
 # NOTE ALSO: We are using `blacklight-frontend` JS NPM package, updating blacklight
 # version may require an update with yarn to `blacklight-frontend`, has to be
 # checked manually.
-gem "blacklight", "~> 8.11.0"
-gem "blacklight_range_limit", "~> 9.0.0" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
+gem "blacklight", "~> 8.12.2"
+gem "blacklight_range_limit", "~> 9.1.0" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
 # for some code to deal with transcoding video, via AWS MediaConvert
 # Lower than 1.2.1 had far too big gem builds! https://github.com/samvera-labs/active_encode/issues/126
@@ -84,7 +84,7 @@ gem "aws-sdk-cloudfront", "~> 1.91"
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
-gem 'puma', '~> 6.4'
+gem 'puma', '>= 7.0.0.pre1', '< 8'
 
 # resque+redis being used for activejob.
 # resque-pool currently does not support resque 2.0 alas.
