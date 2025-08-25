@@ -30,6 +30,9 @@ Rails.application.configure do
   config.action_controller.perform_caching = false
   config.cache_store = :null_store
 
+  # let's not use gzip compression of responses in test, just slows things down
+  config.middleware.delete Rack::Deflater
+
   # Raise exceptions instead of rendering exception templates.
   # :rescueable is default in Rails 7.1, but we need to fix our tests
   config.action_dispatch.show_exceptions = :none
