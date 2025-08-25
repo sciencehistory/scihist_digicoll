@@ -46,8 +46,8 @@ module ScihistDigicoll
       config.log_level = ScihistDigicoll::Env.lookup("rails_log_level")
     end
 
-    # gzip responses if user-agent allows it, on heroku nobody else is going
-    # to do this for us -- lighthouse performance advice.
+    # gzip responses if user-agent allows it, on heroku without a CDN in front of dynamic responses,
+    # nobody else is going to do this for us -- lighthouse performance advice.
     #
     # "before ActionDispatch::Static" seems to be documented advice if our
     # app is delivering static resources direct, which it does in heroku. don't totally understand.
@@ -60,8 +60,6 @@ module ScihistDigicoll
     config.middleware.insert_before ActionDispatch::Static, Rack::Deflater, if: ->(_env, _status, headers, _body) {
       headers[Rack::CONTENT_TYPE]&.start_with?("text/") || headers[Rack::CONTENT_TYPE]&.start_with?("application/json")
     }
-
-
 
     # lograge config. lograge is turned on in production.rb with
     # config.lograge.enabled = true
