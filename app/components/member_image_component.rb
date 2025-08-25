@@ -33,7 +33,7 @@
 # we don't want to show people the placeholder, this is just a fail-safe to avoid
 # showing non-public content in case of other errors.
 class MemberImageComponent < ApplicationComponent
-  attr_reader :size, :lazy, :member, :image_label, :work_download_options
+  attr_reader :size, :lazy, :member, :image_label, :work_download_options, :fetchpriority
 
   delegate :can?, to: :helpers
 
@@ -60,13 +60,16 @@ class MemberImageComponent < ApplicationComponent
   #
   #  @param work_download_options [Array<DownloadOption>] sometimes we want to show them, sometimes we
   #     don't, and they are expensive, so pass them in if you want them.
-  def initialize(member, size: :standard, lazy: false, image_label: nil, work_download_options: nil)
+  #
+  #  @param fetchpriority [String] pass `high` or `low` fetchpriority to underlying img tag
+  def initialize(member, size: :standard, lazy: false, image_label: nil, work_download_options: nil, fetchpriority:nil)
     @lazy = !!lazy
     @size = size
     @member = member
 
     @image_label = image_label
     @work_download_options = work_download_options
+    @fetchpriority = fetchpriority
   end
 
   def call
@@ -77,7 +80,7 @@ class MemberImageComponent < ApplicationComponent
     content_tag("div", class: "member-image-presentation") do
       private_label +
       content_tag("a", **thumb_link_attributes) do
-        render ThumbComponent.new(representative_asset, thumb_size: size, lazy: lazy, alt_text_override: "")
+        render ThumbComponent.new(representative_asset, thumb_size: size, lazy: lazy, alt_text_override: "", fetchpriority: fetchpriority)
       end +
 
       content_tag("div", class: "action-item-bar") do

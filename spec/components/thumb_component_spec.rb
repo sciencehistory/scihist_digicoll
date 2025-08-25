@@ -99,6 +99,15 @@ describe ThumbComponent, type: :component do
       expect(img_tag["style"]).to eq "aspect-ratio: #{argument.width} / #{argument.height}"
     end
 
+    describe "fetchpriority" do
+      let(:instance) { ThumbComponent.new(argument, thumb_size: thumb_size, fetchpriority: "high") }
+
+      it "is included as argument" do
+        img_tag = rendered.at_css("img")
+        expect(img_tag[:fetchpriority]).to eq "high"
+      end
+    end
+
     describe "with no aspect ratio available" do
       let(:argument) do
         build(:asset_with_faked_file).tap do |asset|
