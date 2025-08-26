@@ -31,7 +31,7 @@
 # ThumbComponent does NOT do any access control, it will display whatever you give it, if it can,
 # even if not published with no logged in user. Access control should be done by caller.
 class ThumbComponent < ApplicationComponent
-  attr_accessor :placeholder_img_url, :thumb_size, :asset
+  attr_accessor :placeholder_img_url, :thumb_size, :asset, :fetchpriority
 
   delegate :needs_border?, to: :helpers
 
@@ -54,17 +54,21 @@ class ThumbComponent < ApplicationComponent
   # @param recent_items [Boolean] The ThumbComponents used in the recent_itmes section of the homepage
   # function slightly differently: they are intended to be visible on screenreaders, so we
   # are allowing an alt text for them.
+  #
+  # @param fetchpriority [String] `high` or `low` for fetchpriority attribute on img tag.
   def initialize(asset,
     thumb_size: :standard,
     placeholder_img_url: nil,
     lazy: false,
-    alt_text_override: nil)
+    alt_text_override: nil,
+    fetchpriority: nil)
 
     @asset = asset
     @placeholder_img_url = placeholder_img_url
     @thumb_size = thumb_size.to_sym
     @lazy = lazy
     @alt_text_override = alt_text_override
+    @fetchpriority = fetchpriority
 
     unless ALLOWED_THUMB_SIZES.include? thumb_size
       raise ArgumentError.new("thumb_size must be in #{ALLOWED_THUMB_SIZES}, but was '#{thumb_size}'")
@@ -94,7 +98,7 @@ class ThumbComponent < ApplicationComponent
       # well while just letting people call ThumbComponent from different places
       helpers.fa_file_audio_class_solid
     else
-      tag "img", alt: "", src: placeholder_img_url, width: "100%";
+      tag "img", alt: "", src: placeholder_img_url, width: "100%"
     end
   end
 
@@ -146,6 +150,10 @@ class ThumbComponent < ApplicationComponent
 
     if needs_border?(asset)
       img_attributes[:class] = "bordered"
+    end
+
+    if fetchpriority.present?
+      img_attributes[:fetchpriority] = fetchpriority
     end
 
     img_attributes.merge!(style: aspect_ratio_style_tag)

@@ -409,22 +409,6 @@ describe "Oral history with audio display", type: :system, js: true do
         click_on "Search"
       end
 
-      click_on "Share link"
-
-      copy_to_clipboard = "*[data-trigger='linkClipboardCopy']"
-      begin
-        expect(page).to have_selector(copy_to_clipboard, wait: 0.05)
-      rescue RSpec::Expectations::ExpectationNotMetError
-        # the "copy to clipboard" button sometimes fails to show up fast enough.
-        # Just click "search" again.
-        # See similar workaround below.
-        within("*[data-ohms-search-form]") { click_on "Search" }
-        expect(page).to have_selector(copy_to_clipboard)
-      end
-
-      page.find(copy_to_clipboard).click
-      expect(page).to have_content("Copied to clipboard")
-
       # ToC tab should be selected as it is first tab with results from search
       expect(page).to have_selector("#ohTocTab[aria-selected='true']")
 
@@ -457,7 +441,7 @@ describe "Oral history with audio display", type: :system, js: true do
       expect(page).to have_text("This has some html")
     end
 
-    describe "table of contents direct link" do
+    describe "table of contents segment direct link" do
       let(:segment) { parent_work.oral_history_content.ohms_xml.index_points.second }
       let(:segment_direct_url) do
         # don't know why we need to specify capybara port to get the port that is actually
@@ -466,7 +450,12 @@ describe "Oral history with audio display", type: :system, js: true do
           port: Capybara.current_session.server.port)
       end
 
-      it "has table of contents segment direct link" do
+      it "is visible and copyable" do
+        # The giant fixed navbar and small window size makes it very hard to get
+        # this test to pass in capybara, even though as a user it's FAIRLY easy to
+        # scroll correctly. But let's just make a bigger window for this test.
+        page.current_window.resize_to(820, 600)
+
         visit work_path(parent_work.friendlier_id)
 
         click_on "Table of Contents"
@@ -477,6 +466,19 @@ describe "Oral history with audio display", type: :system, js: true do
         end
 
         expect(page).to have_field(readonly: true, with: segment_direct_url)
+
+        copy_to_clipboard = page.find("*[data-trigger='linkClipboardCopy']")
+        page.scroll_to(copy_to_clipboard, align: :bottom)
+
+        begin
+          copy_to_clipboard.click
+        rescue Selenium::WebDriver::Error::ElementClickInterceptedError
+          # try again, things may still have been moving, gah.
+          page.scroll_to(copy_to_clipboard, align: :bottom)
+          copy_to_clipboard.click
+        end
+
+        expect(page).to have_content("Copied to clipboard")
       end
     end
   end
