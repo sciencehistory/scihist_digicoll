@@ -39,8 +39,9 @@ class DownloadsController < ApplicationController
   before_action :set_derivative, only: :derivative
 
   # protect originals only from bots with bot challenge redirect, no allowed pre-challenge
-  # rate limit.
-  before_action(only: :original) { |controller| BotChallengePage::BotChallengePageController.bot_challenge_enforce_filter(controller, immediate: true) }
+  # rate limit. Only originals, not counting PDFs which we want Google to get. Note some
+  # derivatives we want DPLA/wikimedia to get, is one reason not currently protecting.
+  bot_challenge only: :original, unless: -> { params[:file_category] == "pdf" }
 
   #GET /downloads/:asset_id
   def original

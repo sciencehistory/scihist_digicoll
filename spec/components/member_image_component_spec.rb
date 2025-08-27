@@ -28,6 +28,13 @@ describe MemberImageComponent, type: :component do
         expect(poster_link["tabindex"]).to eq "-1"
         expect(poster_link["aria-hidden"]).to eq "true"
       end
+
+      describe "with fetchpriority:high" do
+        let(:presenter) { MemberImageComponent.new(member, fetchpriority: :high) }
+        it "includes attribute on img tag" do
+          expect(wrapper_div.at_css(".thumb img[fetchpriority=high]")).to be_present
+        end
+      end
     end
 
     describe "with whole-work download options passed in" do

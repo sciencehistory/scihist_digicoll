@@ -11,6 +11,26 @@ class CatalogController < ApplicationController
   before_action :catch_bad_request_headers, only: :index
   before_action :catch_bad_format_param,  only: :index
 
+  # This should apply to all CatalogController sub-classes too, which include CollectionShowController and
+  # FeaturedTopicController. They all share a counter though.
+  #
+  # We let bots through if they have NO query params, we want let collection/focus sploash
+  # pages be indexed -- this will actually let bot paginate through entire results with
+  # no query/facets, which we seem to be able to tolerate.
+  bot_challenge after: 1, within: 12.hours,
+    if: -> {
+      # was using #has_constraints?, but for some reason that returns true if
+      # search field is set with no query, that some of our stuff does for no great reason.
+      search_state.has_constraints?
+    },
+    except: ["facet", "range_limit"]
+
+  # facet and range_limit both get challenged immediately, unless they are JS fetch,
+  # in which case they are let in freely.
+  bot_challenge only: ["facet", "range_limit"], unless: -> {
+    request.headers["sec-fetch-dest"] == "empty"
+  }
+
   rescue_from ActionController::UnpermittedParameters, with: :handle_unpermitted_params
 
   # Blacklight wanted Blacklight::Controller included in ApplicationController,
@@ -180,6 +200,8 @@ class CatalogController < ApplicationController
       rows: 25,
       qf: "text1_tesim^1000 text2_tesim^500 text3_tesim^100 text4_tesim^50 description_text4_tesim^50 text_no_boost_tesim^10 friendlier_id_ssi id^10 searchable_fulltext_en^0.5 searchable_fulltext_de^0.5 searchable_fulltext_language_agnostic^0.5",
       pf: "text1_tesim^1500 text2_tesim^1200 text3_tesim^600 text4_tesim^120 description_text4_tesim^120 text_no_boost_tesim^55 friendlier_id_ssi id^55 searchable_fulltext_en^12 searchable_fulltext_de^12 searchable_fulltext_language_agnostic^12",
+
+      fl: "id",
 
       # HIGHLIGHTING-related params, full snippets from fulltext matches
       #

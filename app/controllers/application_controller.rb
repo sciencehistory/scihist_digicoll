@@ -1,9 +1,5 @@
 class ApplicationController < ActionController::Base
-  # This will only protect CONFIGURED routes, but also could be put on just certain
-  # controllers, it does not need to be in ApplicationController
-  before_action do |controller|
-    BotChallengePage::BotChallengePageController.bot_challenge_enforce_filter(controller)
-  end
+  include BotChallengePage::Controller
 
   # Blacklight tried to add some things to ApplicationController, but
   # we pretty much only want to use CatalogController from Blacklight, so

@@ -46,7 +46,7 @@
     <% if @asset.file %>
       <p>
         <%= link_to "Download Original",
-              @asset.file.url(response_content_disposition: ContentDisposition.format(disposition: :attachment, filename: DownloadFilenameHelper.filename_for_asset(@asset))),
+              @asset.file.url(response_content_disposition: ContentDisposition.format(disposition: :attachment, filename: @asset.file_metadata["filename"].presence || DownloadFilenameHelper.filename_for_asset(@asset))),
               class: "btn btn-outline-secondary btn-lg mt-4" %>
       </p>
     <% end %>

@@ -1,3 +1,7 @@
+# Not sure why we need this explicit require of a dependency, only in CI at the moment,
+# but easy enough fix.
+require 'view_component/version'
+
 # This overrides Blacklight::ConstraintsComponent ONLY for the purpose of over-riding the
 # default value for the initializer `query_constraint_component` keyword argument --
 #

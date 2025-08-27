@@ -1,4 +1,4 @@
-<%= simple_form_for(model, data: {remote: true, auto_submit: true, dq_status_form: true, type: 'json'}) do |f| %>
+<%= helpers.simple_form_for(model, data: {remote: true, auto_submit: true, dq_status_form: true, type: 'json'}) do |f| %>
   <div class="input-group input-group-sm flex-nowrap">
     <%= f.collection_select :status,
           model.available_statuses.collect {|s| [s.humanize, s]}, :second, :first, {},
