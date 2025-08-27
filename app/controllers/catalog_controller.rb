@@ -218,9 +218,9 @@ class CatalogController < ApplicationController
       # have things set up right, it ought to be able to handle very big, unclear.
       #
       # As of summer 2025, we're starting to run into problems related to slow highlighting.
-      # We're going to edit maxAnalyzedChars down to half a million for now.
+      # We're going to edit maxAnalyzedChars down to 250K for now.
       # This makes searches measurably faster.
-      "hl.maxAnalyzedChars" => "500000",
+      "hl.maxAnalyzedChars" => "250000",
       "hl.bs.type" => "WORD",
       "hl.fragsize" => "140",
       "hl.fragsizeIsMinimum" => "true"
