@@ -33,10 +33,8 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
   -->
-  <luceneMatchVersion>8.0.0</luceneMatchVersion>
-
-  <lib dir="${solr.install.dir:../../../..}/contrib/analysis-extras/lib" />
-  <lib dir="${solr.install.dir:../../../..}/contrib/analysis-extras/lucene-libs" />
+  <luceneMatchVersion>9.8.1</luceneMatchVersion>
+  <lib dir="${solr.install.dir:../../../..}/modules/analysis-extras/lib" />
 
   <directoryFactory name="DirectoryFactory"
                     class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}">
