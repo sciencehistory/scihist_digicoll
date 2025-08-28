@@ -3,6 +3,9 @@
 require 'kithe/blacklight_tools/bulk_loading_search_service'
 
 class CatalogController < ApplicationController
+  # Do these before loading Blacklgiht kind of for legacy reasons, they MIGHT be
+  # better the blacklight includes, but at present that breaks some of our tests,
+  # need to look into it.
   before_action :redirect_legacy_filter_params, only: :index
   before_action :redirect_hash_facet_params, only: :index
   before_action :redirect_legacy_query_urls, only: :index
@@ -10,6 +13,12 @@ class CatalogController < ApplicationController
   before_action :swap_range_limit_params_if_needed, only: [:index, :facet]
   before_action :catch_bad_request_headers, only: :index
   before_action :catch_bad_format_param,  only: :index
+
+  # Blacklight wanted Blacklight::Controller included in ApplicationController,
+  # we do it just here instead.
+  include Blacklight::Controller
+  include Blacklight::Catalog
+  include BlacklightRangeLimit::ControllerOverride
 
   # This should apply to all CatalogController sub-classes too, which include CollectionShowController and
   # FeaturedTopicController. They all share a counter though.
@@ -19,6 +28,10 @@ class CatalogController < ApplicationController
   # no query/facets, which we seem to be able to tolerate.
   bot_challenge after: 1, within: 12.hours,
     if: -> {
+      # A fix that ought not to be necessary (but won't hurt) after
+      # https://github.com/projectblacklight/blacklight_range_limit/pull/320
+      (blacklight_config.search_state_fields += BlacklightRangeLimit::ControllerOverride::RANGE_LIMIT_FIELDS).uniq!
+
       # was using #has_constraints?, but for some reason that returns true if
       # search field is set with no query, that some of our stuff does for no great reason.
       search_state.has_constraints?
@@ -32,12 +45,6 @@ class CatalogController < ApplicationController
   }
 
   rescue_from ActionController::UnpermittedParameters, with: :handle_unpermitted_params
-
-  # Blacklight wanted Blacklight::Controller included in ApplicationController,
-  # we do it just here instead.
-  include Blacklight::Controller
-  include Blacklight::Catalog
-  include BlacklightRangeLimit::ControllerOverride
 
   # Not totally sure why we need this, instead of Rails loading all helpers automatically
   helper LocalBlacklightHelpers

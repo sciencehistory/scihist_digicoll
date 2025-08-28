@@ -11,9 +11,13 @@ describe CatalogController, solr: true, indexable_callbacks: true do
     let!(:work1) do
       create(:public_work,
         description: 'priceless work',
+        date_of_work: { start: "2019" },
         subject: ["one", "two", "three", "four", "five", "six"],
         representative: create(:asset, :inline_promoted_file, published: true),
-        members: [create(:public_work), create(:public_work)])
+        members: [
+          create(:public_work, date_of_work: { start: "2020" }),
+          create(:public_work, date_of_work: { start: "2021" })
+        ])
     end
 
     let!(:collection) do
@@ -51,7 +55,12 @@ describe CatalogController, solr: true, indexable_callbacks: true do
       # See https://github.com/sciencehistory/scihist_digicoll/issues/2282
       click_on "Date"
       within "div.blacklight-year_facet_isim" do
-         expect(page).to have_content "Undated"
+        expect(page).to have_content "Undated"
+
+        # requires async JS to load actual chart, but make sure it does show up,
+        # along with ranges
+        expect(page).to have_selector(".chart-wrapper canvas")
+        expect(page).to have_selector("summary", text: "Range List")
       end
 
       # no fulltext search highlights here
