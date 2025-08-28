@@ -25,6 +25,10 @@ class CatalogController < ApplicationController
   # no query/facets, which we seem to be able to tolerate.
   bot_challenge after: 1, within: 12.hours,
     if: -> {
+      # A fix that won't be necessary (but won't hurt) after
+      # https://github.com/projectblacklight/blacklight_range_limit/pull/320
+      (blacklight_config.search_state_fields += BlacklightRangeLimit::ControllerOverride::RANGE_LIMIT_FIELDS).uniq!
+
       # was using #has_constraints?, but for some reason that returns true if
       # search field is set with no query, that some of our stuff does for no great reason.
       search_state.has_constraints?
