@@ -25,7 +25,7 @@
       </div>
     <% end %>
 
-    <%= simple_form_for(asset, url: set_audio_asr_enabled_admin_asset_path(asset), method: :put) do |f| %>
+    <%= helpers.simple_form_for(asset, url: set_audio_asr_enabled_admin_asset_path(asset), method: :put) do |f| %>
        <%= f.input :audio_asr_enabled,
                   wrapper: :custom_boolean_switch,
                   label: "Automated Speech Recognition (ASR) Enabled?",
@@ -64,7 +64,7 @@
       <code>None</code>
     <% end %>
 
-    <%= simple_form_for(:asset_derivative, url: upload_corrected_vtt_admin_asset_path(asset), local: true, multipart: true, method: :put) do |f| %>
+    <%= helpers.simple_form_for(:asset_derivative, url: upload_corrected_vtt_admin_asset_path(asset), local: true, multipart: true, method: :put) do |f| %>
       <div class="input-group mt-3">
         <%= f.input_field Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY, as: :file, class: "form-control", accept: "text/vtt" %>
         <%= f.submit value: (asset.corrected_webvtt?  ? "Replace" : "Add"), class: "btn btn-primary", data: { confirm: ("Replace existing corrected webvtt?" if asset.corrected_webvtt?) } %>
