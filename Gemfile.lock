@@ -168,7 +168,7 @@ GEM
     bootstrap4-kaminari-views (1.0.1)
       kaminari (>= 0.13)
       rails (>= 3.1)
-    bot_challenge_page (0.10.0)
+    bot_challenge_page (0.11.0)
       http (~> 5.2)
       rails (>= 7.1, < 8.1)
     browse-everything (1.5.0)
