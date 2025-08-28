@@ -3,6 +3,12 @@
 require 'kithe/blacklight_tools/bulk_loading_search_service'
 
 class CatalogController < ApplicationController
+  # Blacklight wanted Blacklight::Controller included in ApplicationController,
+  # we do it just here instead.
+  include Blacklight::Controller
+  include Blacklight::Catalog
+  include BlacklightRangeLimit::ControllerOverride
+
   before_action :redirect_legacy_filter_params, only: :index
   before_action :redirect_hash_facet_params, only: :index
   before_action :redirect_legacy_query_urls, only: :index
@@ -32,12 +38,6 @@ class CatalogController < ApplicationController
   }
 
   rescue_from ActionController::UnpermittedParameters, with: :handle_unpermitted_params
-
-  # Blacklight wanted Blacklight::Controller included in ApplicationController,
-  # we do it just here instead.
-  include Blacklight::Controller
-  include Blacklight::Catalog
-  include BlacklightRangeLimit::ControllerOverride
 
   # Not totally sure why we need this, instead of Rails loading all helpers automatically
   helper LocalBlacklightHelpers
