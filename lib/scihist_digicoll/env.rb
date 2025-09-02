@@ -688,9 +688,13 @@ module ScihistDigicoll
     define_key :active_job_ocr_queue
 
     # Used for sending mail, and if no queue is specified:
-    define_key :regular_job_worker_count, default: 0
+    define_key :regular_job_worker_count, default: -> {
+      Rails.env.production? ? 1 : 0
+    }
     # Used for generating PDFs or Zip files requested by users on the front end:
-    define_key :on_demand_job_worker_count, default: 0
+    define_key :on_demand_job_worker_count, default: -> {
+      Rails.env.production? ? 1 : 0
+    }
     # Used (infrequently) by additional special_worker job
     # servers whose only purpose is to handle special tasks:
     define_key :special_job_worker_count, default: 2

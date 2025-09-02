@@ -26,5 +26,9 @@ Honeybadger.configure do |config|
     secrets.each do |secret_name, secret_value|
       notice.error_message.gsub!(secret_value, "[:#{secret_name}]") unless secret_value.blank?
     end
+
+    # Make sure all get combined into ONE error group from HB, slight differences in how
+    # they were reported made them many errors, too noisy.
+
   end
 end

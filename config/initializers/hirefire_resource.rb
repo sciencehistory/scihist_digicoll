@@ -12,12 +12,16 @@ if ENV['HIREFIRE_TOKEN']
     # https://help.hirefire.io/article/53-job-queue-ruby-on-rails
     # https://github.com/hirefire/hirefire-resource
     config.dyno(:worker) do
-      # We want all queues EXCEPT `special_jobs`, which are not handled by
-      # 'worker' dynos. But there's currently no way to say "all queues except",
-      # so we have to list the queues we know about.
+      # All queues that aren't in other special purpose queues -- not included are our special worker
+      # queues and our on_demand_derivatives_worker queues, possibly others.
+      #
       #
       # Pitfall: If we add more queues, we're going to forget to edit here, sorry.
-      HireFire::Macro::Resque.queue("default", "on_demand_derivatives", "mailers")
+      HireFire::Macro::Resque.queue("default", "mailers")
+    end
+
+    config.dyno(:on_demand_derivatives_worker) do
+      HireFire::Macro::Resque.queue("on_demand_derivatives")
     end
 
     # for queue time-based web dyno scaling, if we choose to use that.

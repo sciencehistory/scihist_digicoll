@@ -2,7 +2,11 @@
 
 web: bundle exec puma -C config/heroku_puma.rb
 
+# standard worker handling most queues
 worker: bundle exec resque-pool
+
+# these jobs are slow but users are waiting for them, give them their own queue
+on_demand_derivatives_worker: bundle exec resque-pool --config config/resque-pool/on-demand-derivatives-pool.yml
 
 # special_worker dynos are used for occasional heavy lifting (e.g. generating derivatives en masse).
 # To keep this work apart from the regular functioning of the application:

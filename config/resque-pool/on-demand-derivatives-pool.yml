@@ -1,0 +1,13 @@
+# Note also the existence of resque-pool-special-worker.yml for special cases.
+
+production:
+  # on_demand_derivatives are slow, can take a lot of RAM, and users are waiting on them,
+  # we give them their own queue.
+  #
+  # Usually only one worker per dyno.
+  #
+  "on_demand_derivatives": <%= ScihistDigicoll::Env.lookup!(:on_demand_job_worker_count)%>
+
+# none in development, we have some generic workers in main pool handling everything
+development:
+  "*": 0
