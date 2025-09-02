@@ -227,8 +227,6 @@ GEM
       set (~> 1.1)
       singleton (< 1.0)
       time (< 1.0)
-    csl-styles (2.0.1)
-      csl (~> 2.0)
     css_parser (1.21.1)
       addressable
     csv (3.3.5)
@@ -859,7 +857,6 @@ DEPENDENCIES
   capybara-screenshot
   citeproc-ruby (~> 2.0)
   content_disposition (~> 1.0)
-  csl-styles (~> 2.0)
   csv (~> 3.3.0)
   database_cleaner (~> 2.0)
   db-query-matchers (< 2.0)
@@ -887,7 +884,6 @@ DEPENDENCIES
   matrix (~> 0.4)
   net-protocol (!= 0.2.0)
   oai (~> 1.0, >= 1.0.1)
-  observer
   omniauth-entra-id
   omniauth-rails_csrf_protection
   pdf-reader (~> 2.2)

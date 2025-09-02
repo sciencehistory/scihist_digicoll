@@ -31,18 +31,13 @@ class CitationDisplay
 
   # reuse this style cause it's expensive to load. It appears to be concurrency-safe.
   def self.csl_chicago_style
-    # We lock to the older styles for "16th edition", because the newer 17th edition styles,
-    # while improved, change things in ways we may have to change some of our code to accomodate,
-    # for now we'll just lock to style version that we originally developed with.
-    #
-    # See: https://github.com/inukshuk/csl-styles/issues/5
-    #
-    # You could say just `chicago-note-bibliography` to mean latest version available.
-    @csl_chicago_style ||= ::CSL::Style.load("chicago-note-bibliography-16th-edition")
+    # See vendor/citation-style-language/README.md
+    @csl_chicago_style ||= ::CSL::Style.load("vendor/citation-style-language/styles/chicago-notes-bibliography-16th-edition.csl")
   end
 
-  # similar to csl_chicago_style
+  # cache, as we are for csl_chicago_style above.
   def self.csl_en_us_locale
-    @csl_en_us_locale ||= ::CSL::Locale.load("en-US")
+    # See vendor/citation-style-language/README.md
+    @csl_en_us_locale ||= ::CSL::Locale.load("vendor/citation-style-language/locales/locales-en-US.xml")
   end
 end

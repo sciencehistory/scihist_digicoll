@@ -254,10 +254,9 @@ end
 
 # we use for data structures for citation models, and for generating citations
  gem "citeproc-ruby", '~> 2.0'
- gem 'csl-styles', '~> 2.0' # Need to load the styles so we can use chicago
- # citeproc-ruby dep needs listing separately  for ruby 3.4 deprecation until
- # fixed in citeproc-ruby. https://github.com/inukshuk/citeproc-ruby/issues/82
- gem "observer"
+ # We vendor specific files from csl-styles now,
+ # See vendor/citation-style-language/README.md
+ #gem 'csl-styles', '~> 2.0' # Need to load the styles so we can use chicago
 
  gem 'ruby-progressbar'
 
