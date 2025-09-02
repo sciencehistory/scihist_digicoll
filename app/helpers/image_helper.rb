@@ -56,6 +56,6 @@ module ImageHelper
   #
   # We like the border blending into bg for physical object photos
   def needs_border?(asset)
-    asset.file_metadata[AssetUploader::WHITE_EDGE_DETECT_KEY] && !asset.parent.format.include?("physical_object")
+    asset.file_metadata[AssetUploader::WHITE_EDGE_DETECT_KEY] && !(asset.parent.respond_to?(:format) && asset.parent.format.include?("physical_object"))
   end
 end
