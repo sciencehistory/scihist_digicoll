@@ -13,9 +13,10 @@ on_demand_derivatives_worker: bundle exec resque-pool --config config/resque-poo
 #     1. special_worker dynos will ONLY  execute jobs from the special_jobs queue.
 #     2. Regular worker dynos will NEVER execute jobs from the special_jobs queue.
 # See config/resque-pool-special-worker.yml for more details.
-special_worker: bundle exec resque-pool --config  config/resque-pool-special-worker.yml
+special_worker: bundle exec resque-pool --config  config/resque-pool/special-worker-pool.yml
+
 # A second one when we need two queues of special work!
-special_worker_two: bundle exec resque-pool --config  config/resque-pool-special-worker-two.yml
+special_worker_two: bundle exec resque-pool --config  config/resque-pool/special-worker-two-pool.yml
 
 # https://devcenter.heroku.com/articles/release-phase
 release: bundle exec rake scihist:heroku:on_release
