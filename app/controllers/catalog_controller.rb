@@ -223,7 +223,12 @@ class CatalogController < ApplicationController
       # Biggest current transcript seems to be OH0624 with 817,139 chars.
       # Set maxAnalyzed Chars to two million? I dunno. Solr suggests if we
       # have things set up right, it ought to be able to handle very big, unclear.
-      "hl.maxAnalyzedChars" => "2000000",
+      #
+      # In summer 2025, we started to run into problems related to slow highlighting.
+      # We edited maxAnalyzedChars down to 250K.
+      # The change did not substantially impair the quality of the snippets returned,
+      # and made searches much faster.
+      "hl.maxAnalyzedChars" => "250000",
       "hl.bs.type" => "WORD",
       "hl.fragsize" => "140",
       "hl.fragsizeIsMinimum" => "true"
