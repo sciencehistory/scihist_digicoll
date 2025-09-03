@@ -234,7 +234,7 @@ class CatalogController < ApplicationController
       # Trey Pendragon suggested turning this off. Thanks, Trey!
       # "Currently, this setting slows down the unified highlighter a lot when many fields are highlighted"
       # https://solr.apache.org/guide/solr/latest/query-guide/highlighting.html
-      "hl.weightMatches" => "false"
+      "hl.weightMatches" => "false",
 
       "hl.bs.type" => "WORD",
       "hl.fragsize" => "140",
