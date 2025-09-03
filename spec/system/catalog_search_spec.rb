@@ -208,18 +208,7 @@ describe CatalogController, solr: true, indexable_callbacks: true do
       visit search_catalog_path(search_field: "all_fields", q: '"I graduated from Bristol High School"')
       expect(page).to have_selector("#document_#{published_work.friendlier_id}")
       within("#document_#{published_work.friendlier_id}") do
-        # byebug
-        # expect(page).to have_selector(".scihist-results-list-item-highlights em", text: "I graduated from Bristol High School")
-
-        # expect(page).to have_selector(".scihist-results-list-item-highlights em", text: "I")
-        # expect(page).to have_selector(".scihist-results-list-item-highlights em", text: "graduated")
-        # expect(page).to have_selector(".scihist-results-list-item-highlights em", text: "from")
-        # expect(page).to have_selector(".scihist-results-list-item-highlights em", text: "Bristol")
-        # expect(page).to have_selector(".scihist-results-list-item-highlights em", text: "High")
-        # expect(page).to have_selector(".scihist-results-list-item-highlights em", text: "School")
-
-         "I graduated from Bristol High School".split.each {|word| expect(page).to have_selector(".scihist-results-list-item-highlights em", text: word) }
-
+        "I graduated from Bristol High School".split.each {|word| expect(page).to have_selector(".scihist-results-list-item-highlights em", text: word) }
         expect(page).not_to have_selector(".scihist-results-list-item-description")
         expect(page).not_to have_content(published_work.description)
       end
