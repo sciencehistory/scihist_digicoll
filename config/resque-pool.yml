@@ -1,19 +1,15 @@
 # Note also the existence of resque-pool-special-worker.yml for special cases.
 
 production:
-  # Note: these three settings are
-  # *always* defined, with zero as the default.
-  # Hence, OK to use lookup!
-
   # "default" queue is mostly ingest-related at present.
+  # "mailers" is specifically sending emails, which I guess we don't mind
+  #    if they get queued up being ingest a big
+  #
+  # We generally only run 1 worker per dyno
 
-  # These will only work on  mailers and default.
   "mailers,default": <%= ScihistDigicoll::Env.lookup!(:regular_job_worker_count) %>
 
-  # Prioritize on_demand_derivatives, but if you're free it's okay to work on mailers and default.
-  # We keep this small though, cause right now on_demand_derivatives jobs can take up a lot
-  # of RAM, we can't afford too many of them at once (depending on particular host size)
-  "on_demand_derivatives,mailers,default": <%= ScihistDigicoll::Env.lookup!(:on_demand_job_worker_count)%>
+  # We run on_demand_derivatives in a different pool and different heroku dyno type
 
 development:
-  "*": 5
+  "*": 3
