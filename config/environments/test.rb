@@ -9,11 +9,16 @@ Rails.application.configure do
   # and recreated between test runs. Don't rely on the data there!
   config.enable_reloading = false
 
-   # Eager loading loads your entire application. When running a single test locally,
-   # this is usually not necessary, and can slow down your test suite. However, it's
-   # recommended that you enable it in continuous integration systems to ensure eager
-   # loading is working properly before deploying your code.
-   config.eager_load = ENV["CI"].present?
+  # Eager loading loads your entire application. When running a single test locally,
+  # this is usually not necessary, and can slow down your test suite. However, it's
+  # recommended that you enable it in continuous integration systems to ensure eager
+  # loading is working properly before deploying your code.
+  config.eager_load = ENV["CI"].present?
+
+  # Speed up tests a little bit by logging less
+  config.active_record.verbose_query_logs = false
+  config.active_record.query_log_tags_enabled = false
+  config.log_level = :fatal
 
   # Use :test ActiveJob adapter which does not really run jobs, as default.
   # We can change on an example-by-example basis if needed.
