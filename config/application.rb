@@ -49,15 +49,16 @@ module ScihistDigicoll
     # gzip responses if user-agent allows it, on heroku without a CDN in front of dynamic responses,
     # nobody else is going to do this for us -- lighthouse performance advice.
     #
-    # "before ActionDispatch::Static" seems to be documented advice if our
-    # app is delivering static resources direct, which it does in heroku. don't totally understand.
+    # Docs tell you to insert after ActionDispatch::Static not sure why we had to move it later,
+    # just before Rack::Head to avoid interfering with Honeybadger middleware (which is before it either way!)
+    # But this works: https://github.com/sciencehistory/scihist_digicoll/issues/3109
     #
     # We are doing htis mainly for HTML, allow for any text/ mime-type, but
     # exclude, other media is likely to be already compressed and not benefit, if
     # it winds up going through this pipeline. Def want application/json though,
     # compression will help there for big ones!
     #
-    config.middleware.insert_before ActionDispatch::Static, Rack::Deflater, if: ->(_env, _status, headers, _body) {
+    config.middleware.insert_before Rack::Head, Rack::Deflater, if: ->(_env, _status, headers, _body) {
       headers[Rack::CONTENT_TYPE]&.start_with?("text/") || headers[Rack::CONTENT_TYPE]&.start_with?("application/json")
     }
 
