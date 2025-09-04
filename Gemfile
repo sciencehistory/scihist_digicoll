@@ -98,7 +98,7 @@ gem "http", "~> 5.2" # for http client access
 
 # using memcached for Rails.cache in production, requires dalli
 
-gem 'honeybadger', '~> 5.0'
+gem 'honeybadger', '~> 6.0'
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'
