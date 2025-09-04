@@ -538,7 +538,7 @@ GEM
       date
       stringio
     public_suffix (6.0.2)
-    puma (7.0.0.pre1)
+    puma (7.0.0)
       nio4r (~> 2.0)
     qa (5.15.0)
       activerecord-import
