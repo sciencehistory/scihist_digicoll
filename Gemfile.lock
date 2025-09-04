@@ -333,7 +333,7 @@ GEM
     hashery (2.1.2)
     hashie (5.0.0)
     hirefire-resource (1.0.7)
-    honeybadger (5.29.1)
+    honeybadger (6.1.0)
       logger
       ostruct
     html_aware_truncation (1.0.0)
@@ -870,7 +870,7 @@ DEPENDENCIES
   faster_s3_url (~> 1.1)
   font-awesome-rails (~> 4.7)
   hirefire-resource (>= 0.10.1)
-  honeybadger (~> 5.0)
+  honeybadger (~> 6.0)
   html_aware_truncation (~> 1.0)
   http (~> 5.2)
   irb (>= 1.3.1)
