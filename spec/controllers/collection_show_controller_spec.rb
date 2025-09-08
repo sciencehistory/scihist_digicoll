@@ -45,7 +45,7 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
         collection_id:   collection.friendlier_id,
         "facet.page" =>  { goat: 'goat' }
       }
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
     end
 
     it "doesn't throw an error when facet.page is an array" do
@@ -54,7 +54,7 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
         collection_id:   collection.friendlier_id,
         "facet.page" =>  ['x', 'y']
       }
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
     end
   end
 
@@ -121,11 +121,11 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
 
       let(:random_order) { (0..containers.length - 1).to_a.shuffle }
 
-      let(:containers) do  
+      let(:containers) do
         [
           { "box"=> "1",  "folder"=> "1"  },
           { "box"=> "1" },
-          
+
           { "box"=> "2",   "folder"=> "1"  },
           { "box"=> "2",   "folder"=> "2"  },
 
@@ -139,7 +139,7 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
       let(:titles) do
         containers.map do |pc|
           "#{pc.try('box', 'none')},#{pc.try('folder', 'none')}"
-        end   
+        end
       end
 
       let!(:works) do

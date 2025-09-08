@@ -114,7 +114,7 @@ class Admin::WorksController < AdminController
         format.json { render :show, status: :created, location: @work }
       else
         format.html { render :edit }
-        format.json { render json: @work.errors, status: :unprocessable_entity }
+        format.json { render json: @work.errors, status: :unprocessable_content }
       end
     end
   end
@@ -136,7 +136,7 @@ class Admin::WorksController < AdminController
         format.json { render :show, status: :ok, location: @work }
       else
         format.html { render :edit }
-        format.json { render json: @work.errors, status: :unprocessable_entity }
+        format.json { render json: @work.errors, status: :unprocessable_content }
       end
     end
   end
