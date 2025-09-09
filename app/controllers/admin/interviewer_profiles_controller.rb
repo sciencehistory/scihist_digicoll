@@ -33,7 +33,7 @@ class Admin::InterviewerProfilesController < AdminController
         format.json { render :show, status: :created, location: @interviewer_profile }
       else
         format.html { render :new }
-        format.json { render json: @interviewer_profile.errors, status: :unprocessable_entity }
+        format.json { render json: @interviewer_profile.errors, status: :unprocessable_content }
       end
     end
   end
@@ -47,7 +47,7 @@ class Admin::InterviewerProfilesController < AdminController
         format.json { render :show, status: :ok, location: @interviewer_profile }
       else
         format.html { render :edit }
-        format.json { render json: @interviewer_profile.errors, status: :unprocessable_entity }
+        format.json { render json: @interviewer_profile.errors, status: :unprocessable_content }
       end
     end
   end

@@ -36,7 +36,7 @@ class Admin::DigitizationQueueItemsController < AdminController
         format.json { render :show, status: :created, location: admin_digitization_queue_items_url(@admin_digitization_queue_item) }
       else
         format.html { render :new }
-        format.json { render json: @admin_digitization_queue_item.errors, status: :unprocessable_entity }
+        format.json { render json: @admin_digitization_queue_item.errors, status: :unprocessable_content }
       end
     end
   end
@@ -68,7 +68,7 @@ class Admin::DigitizationQueueItemsController < AdminController
         format.json { render json: { notice: notice } }
       else
         format.html { render :edit }
-        format.json { render json: @admin_digitization_queue_item.errors, status: :unprocessable_entity }
+        format.json { render json: @admin_digitization_queue_item.errors, status: :unprocessable_content }
       end
     end
   end

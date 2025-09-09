@@ -30,7 +30,7 @@ class Admin::IntervieweeBiographiesController < AdminController
         format.json { render :edit, status: :created, location: @interviewee_biography }
       else
         format.html { render :new }
-        format.json { render json: @interviewee_biography.errors, status: :unprocessable_entity }
+        format.json { render json: @interviewee_biography.errors, status: :unprocessable_content }
       end
     end
 
@@ -50,7 +50,7 @@ class Admin::IntervieweeBiographiesController < AdminController
         @interviewee_biography.oral_history_content&.collect(&:work)&.each(&:update_index)
       else
         format.html { render :edit }
-        format.json { render json: @interviewee_biography.errors, status: :unprocessable_entity }
+        format.json { render json: @interviewee_biography.errors, status: :unprocessable_content }
       end
     end
   end

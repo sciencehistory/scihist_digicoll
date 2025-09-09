@@ -721,9 +721,9 @@ class CatalogController < ApplicationController
 
 
   # Suppress noisy UnpermittedParameters errors, caused in practice by a bot.
-  # Respond instead with :unprocessable_entity.
+  # Respond instead with :unprocessable_content.
   def handle_unpermitted_params
-    return render plain: "Error: unpermitted parameters.", status: :unprocessable_entity
+    return render plain: "Error: unpermitted parameters.", status: :unprocessable_content
   end
 
 end
