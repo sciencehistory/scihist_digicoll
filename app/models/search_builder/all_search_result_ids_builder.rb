@@ -20,7 +20,7 @@ class SearchBuilder
         k.start_with?("stats")  
       end
 
-      solr_parameters.merge!({fl:"model_pk_ssi", rows: '10000000', hl: 'false'})
+      solr_parameters.merge!({fl:"model_pk_ssi", rows: '10000000', hl: 'false', facet: 'false'})
     end
   end
 end
