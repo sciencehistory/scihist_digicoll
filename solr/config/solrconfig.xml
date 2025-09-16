@@ -327,5 +327,12 @@
     REMOVED in PR https://github.com/sciencehistory/scihist_digicoll/pull/3071 .
   </requestHandler>
 -->
+  <query>
+    <documentCache class="solr.CaffeineCache"
+       size="512"
+       initialSize="512"
+       autowarmCount="0"/>
+  </query>
+
 </config>
 
