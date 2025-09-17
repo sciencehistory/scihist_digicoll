@@ -1,6 +1,6 @@
 class Admin::DigitizationQueueItemsController < AdminController
   before_action :set_admin_digitization_queue_item,
-    only: [:show, :edit, :update, :destroy, :add_comment, :delete_comment, :destroy]
+    only: [:show, :edit, :update, :destroy, :add_comment, :delete_comment, :destroy, :export_attached_works_to_cart, :import_attached_works_from_cart]
 
   # GET /admin/digitization_queue_items
   # GET /admin/digitization_queue_items.json
@@ -113,6 +113,27 @@ class Admin::DigitizationQueueItemsController < AdminController
     redirect_to @admin_digitization_queue_item,
       notice: notice
   end
+
+
+
+  # Add all attached works to my cart"
+  def export_attached_works_to_cart
+    current_user_id = current_user.id
+    row_attributes = @admin_digitization_queue_item.works.pluck(:id).map {|work_id| {work_id: work_id, user_id: current_user_id} }
+    CartItem.transaction do
+      CartItem.upsert_all( row_attributes, unique_by: [:user_id, :work_id])
+    end
+    redirect_to @admin_digitization_queue_item, notice: "#{row_attributes.count} works were added to your cart."
+  end
+
+
+  # Replace currently attached works with the contents of my cart"
+  def import_attached_works_from_cart
+    @admin_digitization_queue_item.work_ids = current_user.works_in_cart.pluck(:id)
+    @admin_digitization_queue_item.save!
+    redirect_to @admin_digitization_queue_item, notice: 'imported!'
+  end
+
 
   private
     # Use callbacks to share common setup or constraints between actions.

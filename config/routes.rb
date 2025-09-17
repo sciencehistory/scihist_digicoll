@@ -369,6 +369,10 @@ Rails.application.routes.draw do
       as: "delete_digitization_queue_item_comment"
 
 
+    get "digitization_queue_items/:id/export_attached_works_to_cart", to: "digitization_queue_items#export_attached_works_to_cart", as: "export_attached_works_to_cart"
+
+    get "digitization_queue_items/:id/import_attached_works_from_cart", to: "digitization_queue_items#import_attached_works_from_cart", as: "import_attached_works_from_cart"
+
     #Cart:
     resources :cart_items, param: :work_friendlier_id, only: [:index, :update, :destroy] do
       collection do
