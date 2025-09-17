@@ -102,7 +102,7 @@
       <%= link_to "Create new attached work", new_admin_work_path(digitization_queue_item: @admin_digitization_queue_item.id), class: "btn btn-primary mb-1" %>
       <%= link_to "Batch create attached works", admin_batch_create_path(digitization_queue_item: @admin_digitization_queue_item.id), class: "btn btn-outline-secondary" %>
       <%= link_to "Export to cart ...", admin_export_attached_works_to_cart_path(id: @admin_digitization_queue_item.id), class: "btn btn-outline-secondary",  data: { confirm: "Add #{ @admin_digitization_queue_item.works.count } attached works to your cart?" } %>
-      <%= link_to "Attach from cart ...", admin_import_attached_works_from_cart_path(id: @admin_digitization_queue_item.id), class: "btn btn-outline-secondary",  data: { confirm: "This will disconnect any currently attached works and replace them with the #{ current_user.works_in_cart.count } works currently in your cart. Are you sure?" } %>
+      <%= link_to "Attach from cart ...", admin_import_attached_works_from_cart_path(id: @admin_digitization_queue_item.id), class: "btn btn-outline-secondary",  data: { confirm: "This will detach #{ @admin_digitization_queue_item.works.count } works, and replace them with the #{ current_user.works_in_cart.count } works currently in your cart. Are you sure?" } %>
     </p>
 
     <h2>Comments</h2>

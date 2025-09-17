@@ -131,7 +131,7 @@ class Admin::DigitizationQueueItemsController < AdminController
   def import_attached_works_from_cart
     @admin_digitization_queue_item.work_ids = current_user.works_in_cart.pluck(:id)
     @admin_digitization_queue_item.save!
-    redirect_to @admin_digitization_queue_item, notice: 'imported!'
+    redirect_to @admin_digitization_queue_item, notice: "#{current_user.works_in_cart.count} works from your cart have been attached."
   end
 
 
