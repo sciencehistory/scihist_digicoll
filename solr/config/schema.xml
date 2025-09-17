@@ -252,7 +252,7 @@
          do queries including it without triggering stored field loading.  So it doesn't really
          match *_ssi anymore, sorry, but we don't wanna change the name. This holds actual UUID
          pk.  -->
-    <field name="model_pk_ssi" type="string" docValues="true" useDocValuesAsStored="true" stored="true" indexed="true" multiValued="false"/>
+    <field name="model_pk_ssi" type="string" docValues="true" useDocValuesAsStored="true" stored="false" indexed="true" multiValued="false"/>
 
 
     <field name="lat" type="pdouble" stored="true" indexed="true" multiValued="false"/>
