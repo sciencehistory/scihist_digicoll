@@ -128,11 +128,10 @@ class Admin::DigitizationQueueItemsController < AdminController
 
 
 
-
   # DELETE /admin/digitization_queue_items/1/delete_work/abcde
   def delete_work_association
     removed_work = @admin_digitization_queue_item.works.delete(Work.find(params['work_id'])).first
-    notice =  "Detached \"#{removed_work.title}." 
+    notice =  "Detached \"#{removed_work.title}\"."
     respond_to do |format|
       format.html { redirect_to @admin_digitization_queue_item, notice: notice}
       format.json { render json: { notice: notice } }
