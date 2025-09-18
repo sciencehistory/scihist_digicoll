@@ -373,6 +373,14 @@ Rails.application.routes.draw do
 
     get "digitization_queue_items/:id/import_attached_works_from_cart", to: "digitization_queue_items#import_attached_works_from_cart", as: "import_attached_works_from_cart"
 
+
+    # DELETE /admin/digitization_queue_items/1/delete_work/abcde
+    #def destroy_work_association
+    delete  "digitization_queue_items/:id/delete_work_association/:work_id",
+      to: "digitization_queue_items#delete_work_association",
+      as: "delete_digitization_queue_item_work_association"
+
+
     #Cart:
     resources :cart_items, param: :work_friendlier_id, only: [:index, :update, :destroy] do
       collection do

@@ -92,7 +92,8 @@
       <div id="attachedWorks" class="collapse" aria-labelledby="attachedHeading">
         <ul class="list-unstyled card-body">
           <% @admin_digitization_queue_item.works.order(updated_at: :desc).each do |work| %>
-            <li><%= link_to work.title, admin_work_path(work) %> <%= publication_badge(work) %></li>
+          <%# TODO: use "<i class=\"bi bi-x\"></i>" %>
+            <li><%= link_to work.title, admin_work_path(work) %> <%= publication_badge(work) %> <%= link_to "X", admin_delete_digitization_queue_item_work_association_path( id: @admin_digitization_queue_item.id, work_id: work.id), method: 'delete', data: { confirm: "Detach this work?" } %></li>
           <% end %>
         </ul>
       </div>
@@ -101,8 +102,8 @@
     <p>
       <%= link_to "Create new attached work", new_admin_work_path(digitization_queue_item: @admin_digitization_queue_item.id), class: "btn btn-primary mb-1" %>
       <%= link_to "Batch create attached works", admin_batch_create_path(digitization_queue_item: @admin_digitization_queue_item.id), class: "btn btn-outline-secondary" %>
-      <%= link_to "Export to cart ...", admin_export_attached_works_to_cart_path(id: @admin_digitization_queue_item.id), class: "btn btn-outline-secondary",  data: { confirm: "Add #{ @admin_digitization_queue_item.works.count } attached works to your cart?" } %>
-      <%= link_to "Attach from cart ...", admin_import_attached_works_from_cart_path(id: @admin_digitization_queue_item.id), class: "btn btn-outline-secondary",  data: { confirm: "This will detach #{ @admin_digitization_queue_item.works.count } works, and replace them with the #{ current_user.works_in_cart.count } works currently in your cart. Are you sure?" } %>
+      <%#= link_to "Export to cart ...", admin_export_attached_works_to_cart_path(id: @admin_digitization_queue_item.id), class: "btn btn-outline-secondary",  data: { confirm: "Add #{ @admin_digitization_queue_item.works.count } attached works to your cart?" } %>
+      <%= link_to "Attach from cart ...", admin_import_attached_works_from_cart_path(id: @admin_digitization_queue_item.id), class: "btn btn-outline-secondary",  data: { confirm: "This will attach the #{ current_user.works_in_cart.count } works currently in your cart#{ ", in addition to the #{@admin_digitization_queue_item.works.count} works already attached" if @admin_digitization_queue_item.works.count > 0 }. Are you sure?" } %>
     </p>
 
     <h2>Comments</h2>

@@ -1,6 +1,6 @@
 class Admin::DigitizationQueueItemsController < AdminController
   before_action :set_admin_digitization_queue_item,
-    only: [:show, :edit, :update, :destroy, :add_comment, :delete_comment, :destroy, :export_attached_works_to_cart, :import_attached_works_from_cart]
+    only: [:show, :edit, :update, :destroy, :add_comment, :delete_comment, :destroy, :export_attached_works_to_cart, :import_attached_works_from_cart, :delete_work_association]
 
   # GET /admin/digitization_queue_items
   # GET /admin/digitization_queue_items.json
@@ -40,6 +40,18 @@ class Admin::DigitizationQueueItemsController < AdminController
       end
     end
   end
+
+ 
+  # DELETE /admin/digitization_queue_items/1/delete_work/abcde
+  def delete_work_association
+    removed_work = @admin_digitization_queue_item.works.delete(Work.find(params['work_id'])).first
+    notice =  "Detached \"#{removed_work.title}." 
+    respond_to do |format|
+      format.html { redirect_to @admin_digitization_queue_item, notice: notice}
+      format.json { render json: { notice: notice } }
+    end
+  end
+
 
   # DELETE /admin/digitization_queue_items/1
   def destroy
@@ -116,7 +128,18 @@ class Admin::DigitizationQueueItemsController < AdminController
 
 
 
-  # Add all attached works to my cart"
+
+  # DELETE /admin/digitization_queue_items/1/delete_work/abcde
+  def delete_work_association
+    removed_work = @admin_digitization_queue_item.works.delete(Work.find(params['work_id'])).first
+    notice =  "Detached \"#{removed_work.title}." 
+    respond_to do |format|
+      format.html { redirect_to @admin_digitization_queue_item, notice: notice}
+      format.json { render json: { notice: notice } }
+    end
+  end
+
+  # Add all attached works to my cart. Maybe we don't need this.
   def export_attached_works_to_cart
     current_user_id = current_user.id
     row_attributes = @admin_digitization_queue_item.works.pluck(:id).map {|work_id| {work_id: work_id, user_id: current_user_id} }
@@ -127,9 +150,10 @@ class Admin::DigitizationQueueItemsController < AdminController
   end
 
 
-  # Replace currently attached works with the contents of my cart"
+  # Add the contents of the cart to this DQ item.
   def import_attached_works_from_cart
-    @admin_digitization_queue_item.work_ids = current_user.works_in_cart.pluck(:id)
+    # union of two arrays, no duplicates:
+    @admin_digitization_queue_item.work_ids |= current_user.works_in_cart.pluck(:id)
     @admin_digitization_queue_item.save!
     redirect_to @admin_digitization_queue_item, notice: "#{current_user.works_in_cart.count} works from your cart have been attached."
   end
