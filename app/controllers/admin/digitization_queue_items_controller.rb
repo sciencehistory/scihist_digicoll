@@ -1,6 +1,6 @@
 class Admin::DigitizationQueueItemsController < AdminController
   before_action :set_admin_digitization_queue_item,
-    only: [:show, :edit, :update, :destroy, :add_comment, :delete_comment, :destroy, :export_attached_works_to_cart, :import_attached_works_from_cart, :delete_work_association]
+    only: [:show, :edit, :update, :destroy, :add_comment, :delete_comment, :destroy, :import_attached_works_from_cart, :delete_work_association]
 
   # GET /admin/digitization_queue_items
   # GET /admin/digitization_queue_items.json
@@ -127,36 +127,33 @@ class Admin::DigitizationQueueItemsController < AdminController
   end
 
 
-
-  # DELETE /admin/digitization_queue_items/1/delete_work/abcde
+  # DELETE /admin/digitization_queue_items/:id/delete_work/:work_id
   def delete_work_association
-    removed_work = @admin_digitization_queue_item.works.delete(Work.find(params['work_id'])).first
-    notice =  "Detached \"#{removed_work.title}\"."
+    if can?(:update, Kithe::Model)
+      removed_work = @admin_digitization_queue_item.works.delete(Work.find(params['work_id'])).first
+      notice =  "Detached \"#{removed_work.title}\"."
+    else
+      notice = "You don't have permission to detach this work."
+    end
     respond_to do |format|
       format.html { redirect_to @admin_digitization_queue_item, notice: notice}
       format.json { render json: { notice: notice } }
     end
   end
 
-  # Add all attached works to my cart. Maybe we don't need this.
-  def export_attached_works_to_cart
-    current_user_id = current_user.id
-    row_attributes = @admin_digitization_queue_item.works.pluck(:id).map {|work_id| {work_id: work_id, user_id: current_user_id} }
-    CartItem.transaction do
-      CartItem.upsert_all( row_attributes, unique_by: [:user_id, :work_id])
-    end
-    redirect_to @admin_digitization_queue_item, notice: "#{row_attributes.count} works were added to your cart."
-  end
-
 
   # Add the contents of the cart to this DQ item.
   def import_attached_works_from_cart
+    if can?(:update, Kithe::Model)
+      @admin_digitization_queue_item.work_ids |= current_user.works_in_cart.pluck(:id)
+      @admin_digitization_queue_item.save!
+      notice = "#{current_user.works_in_cart.count} works from your cart have been attached."
+    else
+      notice = "You don't have permission to do this."
+    end    
     # union of two arrays, no duplicates:
-    @admin_digitization_queue_item.work_ids |= current_user.works_in_cart.pluck(:id)
-    @admin_digitization_queue_item.save!
-    redirect_to @admin_digitization_queue_item, notice: "#{current_user.works_in_cart.count} works from your cart have been attached."
+    redirect_to @admin_digitization_queue_item, notice: notice
   end
-
 
   private
     # Use callbacks to share common setup or constraints between actions.
