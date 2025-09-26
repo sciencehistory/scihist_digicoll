@@ -24,6 +24,17 @@
           // for small screens at collapsed size
           max-height: 20rem;
           object-fit: cover;
+          /*
+            Note:
+
+            The Bootstrap breakpoint of 992 pixels,
+            referenced below as media-breakpoint-up('lg')
+            is also hard-wired in the template:
+            /app/components/home_page_hero_image_component.html.erb
+
+            See https://github.com/sciencehistory/scihist_digicoll/issues/2647 for context.
+
+          */
           @include media-breakpoint-up('lg') {
             max-height: revert;
             object-fit: revert; // cause apparently sometimes it's off by 1 pixel!

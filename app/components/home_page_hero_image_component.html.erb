@@ -6,6 +6,13 @@
       [path_1000, "1000w"], # scaled to 1000 width
       [path_2000, "2000w"], # scaled to 2000 width
     ],
+
+
+    # This max-width: 992 value is the 'lg' breakpoint in Bootstrap.
+    # See also homepage.scss.
+    # See also https://github.com/sciencehistory/scihist_digicoll/issues/2647
+    sizes: "(max-width: 992) 50vw, 100vw",
+
     'aria-labelledby' => 'homeHeroCaption'
   ) %>
   <figcaption id="homeHeroCaption">
