@@ -92,17 +92,13 @@
           <% @admin_digitization_queue_item.works.order(updated_at: :desc).each do |work| %>
               <li>
                 <%= link_to work.title, admin_work_path(work) %> <%= publication_badge(work) %>
-
-                <%# Source for "x" icon: https://fontawesome.com/icons/x?f=classic&s=solid %>
                 <%= link_to(
-                        '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-                         <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
-                         </svg>'.html_safe,
-                      admin_delete_digitization_queue_item_work_association_path( id: @admin_digitization_queue_item.id, work_id: work.id),
-                      method: 'delete',
-                      data: { confirm: "Detach this work?"},
-                      class: "text-danger",
-                     'aria-label': 'Detach this work ...'
+                    '<i class="fa fa-times-circle" aria-hidden="true"></i>'.html_safe,
+                    admin_delete_digitization_queue_item_work_association_path( id: @admin_digitization_queue_item.id, work_id: work.id),
+                    method: 'delete',
+                    data: { confirm: "Detach '#{work.title}' ?"},
+                    class: "text-danger",
+                    'aria-label': "Detach this work ..."
                   )
                 %>
             </li>
@@ -113,8 +109,8 @@
 
     <p>
       <%= link_to "Create new attached work", new_admin_work_path(digitization_queue_item: @admin_digitization_queue_item.id), class: "btn btn-primary mb-1" %>
-      <%= link_to "Batch create attached works", admin_batch_create_path(digitization_queue_item: @admin_digitization_queue_item.id), class: "btn btn-outline-secondary" %>
-      <%= link_to "Attach ...", admin_import_attached_works_from_cart_path(id: @admin_digitization_queue_item.id), class: "btn btn-outline-secondary", 'aria-label': 'Attach ...', data: { confirm: "This will attach the #{ current_user.works_in_cart.count } works currently in your cart#{ ", in addition to the #{@admin_digitization_queue_item.works.count} works already attached" if @admin_digitization_queue_item.works.count > 0 }. Are you sure?" } %>
+      <%= link_to "Batch create attached works", admin_batch_create_path(digitization_queue_item: @admin_digitization_queue_item.id), class: "btn btn-outline-secondary mb-1" %>
+      <%= link_to "Attach works from cart", admin_import_attached_works_from_cart_path(id: @admin_digitization_queue_item.id), class: "btn btn-outline-secondary mb-1", 'aria-label': 'Attach ...', data: { confirm: "This will attach the #{ current_user.works_in_cart.count } works currently in your cart#{ ", in addition to the #{@admin_digitization_queue_item.works.count} works already attached" if @admin_digitization_queue_item.works.count > 0 }. Are you sure?" } %>
     </p>
 
     <h2>Comments</h2>
