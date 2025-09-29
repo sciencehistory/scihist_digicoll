@@ -245,15 +245,8 @@
     -->
     <field name="_version_" type="long" indexed="true" stored="true"/>
 
-    <field name="id" type="string" stored="true" docValues="true" useDocValuesAsStored="true" indexed="true" multiValued="false" required="true"/>
+    <field name="id" type="string" stored="true" indexed="true" multiValued="false" required="true"/>
     <field name="timestamp" type="pdate" indexed="true" stored="true" default="NOW" multiValued="false"/>
-
-    <!-- this was dynamic typed *_ssi, but we override specifically to add docValues, so we can
-         do queries including it without triggering stored field loading.  So it doesn't really
-         match *_ssi anymore, sorry, but we don't wanna change the name. This holds actual UUID
-         pk.  -->
-    <field name="model_pk_ssi" type="string" docValues="true" useDocValuesAsStored="true" stored="false" indexed="true" multiValued="false"/>
-
 
     <field name="lat" type="pdouble" stored="true" indexed="true" multiValued="false"/>
     <field name="lng" type="pdouble" stored="true" indexed="true" multiValued="false"/>
@@ -279,7 +272,7 @@
     <!-- Three full text fields (containing oral history transcripts, transcriptions, translations, OCR text, and the like).
 
       stored=true is necessary for highlighting.
-
+      
       We've gone back and forth about whether to use length normalization for these fields.
       (see omitNorms at https://solr.apache.org/guide/solr/latest/indexing-guide/fields.html).
       The consensus is it doesn't make that big of a difference in practice, so we're going
@@ -291,7 +284,7 @@
       https://lucene.apache.org/solr/guide/8_0/highlighting.html#Highlighting-SchemaOptionsandPerformanceConsiderations
 
     -->
-
+    
     <!-- Full text search for works entirely in English -->
     <field name="searchable_fulltext_en" type="text_en" stored="true" indexed="true" multiValued="true" omitNorms="false" storeOffsetsWithPositions="true"/>
 
