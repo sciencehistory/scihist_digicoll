@@ -223,10 +223,11 @@ class SolrConfigsetUpdater
     begin
       upload(configset_name: new_name)
     rescue SolrConfigsetUpdater::SolrError => e
-      # With our intended logic flow, there shouldn't be any way for it to already exist,
-      # but it happens sometimes, let's just ignore it if it does.
-      if e.message == "The configuration #{new_name} already exists in zookeeper"
-        # no-op
+      # Normally it shouldn't already exist, but can on a revert to a past exact identical
+      # configset. if it happens, it just means we don't need to create it, it already exists,
+      # and can continue.
+      if e.message =~ /The configuration #{new_name} already exists/
+        # no-op, continue
       else
         raise e
       end
