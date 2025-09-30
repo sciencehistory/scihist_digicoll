@@ -124,8 +124,8 @@ namespace :scihist do
         # a bit, but not too bad.
 
         [
-          Work.strict_loading.for_batch_indexing,
-          Collection.strict_loading.includes(:contains_contained_by)
+          Work.strict_loading.readonly.for_batch_indexing,
+          Collection.strict_loading.readonly.includes(:contains_contained_by)
         ].each do |scope|
           # use util to try to minimize RAM use.
           # limiting batch size to 100 seems to have good effect on limiting RAM use
