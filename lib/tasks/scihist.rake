@@ -129,7 +129,7 @@ namespace :scihist do
         ].each do |scope|
           # use util to try to minimize RAM use.
           # limiting batch size to 100 seems to have good effect on limiting RAM use
-          ScihistDigicoll::Util.find_each(scope, batch_size: 100) do |model|
+          ScihistDigicoll::Util.find_each(scope, batch_size: 50) do |model|
             progress_bar.title = "#{model.class.name}:#{model.friendlier_id}" if progress_bar
             model.update_index
             progress_bar.increment if progress_bar
