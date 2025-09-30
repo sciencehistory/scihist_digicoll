@@ -89,13 +89,31 @@ RSpec.describe Admin::DigitizationQueueItemsController, :logged_in_user, type: :
 
     describe "with attached work" do
       let(:queue_item) { create(:digitization_queue_item, title: "Newly scanned rare book", works: [create(:work)]) }
+      it "can attach works from cart" do
+        controller.current_user.works_in_cart = [
+          create(:work, title: "1"),
+          create(:work, title: "2"),
+          create(:work, title: "3"),
+          queue_item.works.first
+        ]
+        expect(controller.current_user.works_in_cart.count).to eq 4
+        get :import_attached_works_from_cart,  params: { id: queue_item.id }
+        expect(queue_item.reload.works.map {|i| i.title}.sort).to eq ["1", "2", "3", "Test title"]
+      end
 
-      it "denies deletion" do
+      it "denies deletion if there are works attached" do
         delete :destroy, params: { id: queue_item.id }
 
         expect(response.redirect?).to be true
         expect(response).to redirect_to(admin_digitization_queue_item_path(queue_item))
         expect(response.request.flash[:notice]).to eq "Can't delete Digitization Queue Item with attached works"
+      end
+
+      it "can detach the work"  do
+        delete :delete_work_association, params: {id: queue_item.id, work_id: queue_item.works[0].id}
+        expect(response).to redirect_to(admin_digitization_queue_item_path(queue_item))
+        expect(response.request.flash[:notice]).to eq "Detached \"Test title\"."
+        expect(queue_item.reload.works.length).to eq 0
       end
     end
   end
