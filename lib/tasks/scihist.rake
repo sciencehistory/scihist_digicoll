@@ -108,7 +108,7 @@ namespace :scihist do
       # for collection, so have to in two parts.
 
       Kithe.indexable_settings.writer_settings.merge!(
-        "solr_writer.thread_pool" => 1,
+        "solr_writer.thread_pool" => 2,
         "solr_writer.http_timeout" => 8
       )
 
