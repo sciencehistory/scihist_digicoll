@@ -127,8 +127,9 @@ namespace :scihist do
           Work.strict_loading.for_batch_indexing,
           Collection.strict_loading.includes(:contains_contained_by)
         ].each do |scope|
+          # use util to try to minimize RAM use.
           # limiting batch size to 100 seems to have good effect on limiting RAM use
-          scope.find_each(batch_size: 100) do |model|
+          ScihistDigicoll::Util.find_each(scope, batch_size: 100) do |model|
             progress_bar.title = "#{model.class.name}:#{model.friendlier_id}" if progress_bar
             model.update_index
             progress_bar.increment if progress_bar
