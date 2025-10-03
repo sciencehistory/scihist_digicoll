@@ -73,24 +73,27 @@ namespace :scihist do
   namespace :check_fixity do
     desc "find any assets marked as overdue for fixity check, and check them"
     task :complete_overdue => :environment do
-      reporter = FixityReport.new
 
-      # default no progress bar for scheduled job, but optionally can add it...
-      if ENV['SHOW_PROGRESS_BAR'] == 'true'
-        progress_bar =  ProgressBar.create(total: reporter.not_recent_with_no_checks_or_stale_checks, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
-      end
-
+      stored_file  = FixityReport::STORED_FILE_SQL
+      recent_asset = FixityReport::RECENT_ASSET_SQL
+      stale_check  = FixityReport::STALE_CHECKS_SQL
       count_of_items_checked = 0;
 
-      reporter.need_checks_assets_relation.find_each do |asset|
+      overdue_assets = Asset.where(id: Asset.
+        select("kithe_models.id").
+        left_outer_joins(:fixity_checks).group(:id).having(stored_file).
+        having("#{recent_asset} = false").
+        having("(#{stale_check}) OR (#{stale_check} is NULL)"))
+
+      overdue_assets.find_each do |asset|
         if asset.stored?
           checker = FixityChecker.new(asset)
           new_check = checker.check
           FixityCheckFailureService.new(new_check).send if new_check&.failed?
           count_of_items_checked = count_of_items_checked + 1
         end
-        progress_bar.increment if progress_bar
       end
+
       if count_of_items_checked > 0
         puts "complete_stale_checks: found and checked #{count_of_items_checked} stale assets!"
       end
