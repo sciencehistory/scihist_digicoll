@@ -96,11 +96,12 @@ class Admin::AssetsController < AdminController
   end
 
   def fixity_report
+    minutes_before_allowing_recalc = 5
     @latest_report = FixityReport.new.report_from_cache
-    if @latest_report.nil? || ((Time.now - DateTime.parse(@latest_report[:timestamp])).to_i / 60 > 4)
+    if @latest_report.nil? || ( @latest_report.present? && ((Time.now - DateTime.parse(@latest_report[:timestamp])).to_i / 60) > minutes_before_allowing_recalc) && params[:force_recalculate_report] == 'true'
       CalculateFixityReportJob.perform_later  
     end
-    @report_is_older_than_five_minutes  = (@latest_report.present? && (Time.now - DateTime.parse(@latest_report[:timestamp])).to_i / 60 > 5)
+    @allow_recalc  = (@latest_report.present? && ((Time.now - DateTime.parse(@latest_report[:timestamp])).to_i / 60) > minutes_before_allowing_recalc)
   end
 
   def display_attach_form
@@ -274,7 +275,7 @@ class Admin::AssetsController < AdminController
 
   def asset_params
     allowed_params = [:title, :derivative_storage_type, :alt_text, :caption,
-      :transcription, :english_translation, :suppress_ocr, :ocr_admin_note,
+      :transcription, :english_translation, :suppress_ocr, :ocr_admin_note, :force_recalculate_report,
       :role, {admin_note_attributes: []}]
     allowed_params << :published if can?(:publish, @asset)
     asset_params = params.require(:asset).permit(*allowed_params)

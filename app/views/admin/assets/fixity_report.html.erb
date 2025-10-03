@@ -12,8 +12,8 @@
   <div class="row">
     <div class="col-md">
         <p> This report is from <%= distance_of_time_in_words(@latest_report[:timestamp], Time.now) %> ago.
-          <% if @report_is_older_than_five_minutes %>
-            <%= link_to "Latest numbers" %>
+          <% if @allow_recalc %>
+            <%= link_to "Recalculate",  params.merge(force_recalculate_report: "true") .permit! %>
           <% end %>
         </p>
     </div>
