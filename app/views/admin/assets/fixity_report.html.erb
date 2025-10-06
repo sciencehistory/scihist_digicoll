@@ -3,7 +3,11 @@
   <div class="container">
     <div class="row">
       <div class="col-md">
-          <p> No report was found. A new one is being prepared and should be available shortly. <%= link_to "New report" %></p>
+        <% if @new_report_started %>
+          <p> A <%= link_to "new report", admin_fixity_report_path %> is being prepared and should be available in a few minutes.</p>
+        <% else %>
+          <p> No report was found. <%= link_to "New report", admin_new_fixity_report_path %></p>
+        <% end %>
       </div>
     </div>
   </div>
@@ -13,7 +17,7 @@
     <div class="col-md">
         <p> This report is from <%= distance_of_time_in_words(@latest_report[:timestamp], Time.now) %> ago.
           <% if @allow_recalc %>
-            <%= link_to "Recalculate",  params.merge(force_recalculate_report: "true") .permit! %>
+            <%= link_to "Recalculate",  admin_new_fixity_report_path %>
           <% end %>
         </p>
     </div>

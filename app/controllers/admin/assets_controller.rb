@@ -95,12 +95,15 @@ class Admin::AssetsController < AdminController
     redirect_to admin_asset_url(@asset), notice: 'This file will be checked shortly.'
   end
 
+  def new_fixity_report
+    CalculateFixityReportJob.perform_later
+    redirect_to admin_fixity_report_path(new_report_started: true)
+  end
+
   def fixity_report
-    minutes_before_allowing_recalc = 5
+    minutes_before_allowing_recalc = 0
     @latest_report = FixityReport.new.report_from_cache
-    if @latest_report.nil? || ( @latest_report.present? && ((Time.now - DateTime.parse(@latest_report[:timestamp])).to_i / 60) > minutes_before_allowing_recalc) && params[:force_recalculate_report] == 'true'
-      CalculateFixityReportJob.perform_later  
-    end
+    @new_report_started = params[:new_report_started]
     @allow_recalc  = (@latest_report.present? && ((Time.now - DateTime.parse(@latest_report[:timestamp])).to_i / 60) > minutes_before_allowing_recalc)
   end
 
@@ -275,7 +278,7 @@ class Admin::AssetsController < AdminController
 
   def asset_params
     allowed_params = [:title, :derivative_storage_type, :alt_text, :caption,
-      :transcription, :english_translation, :suppress_ocr, :ocr_admin_note, :force_recalculate_report,
+      :transcription, :english_translation, :suppress_ocr, :ocr_admin_note, :new_report_started,
       :role, {admin_note_attributes: []}]
     allowed_params << :published if can?(:publish, @asset)
     asset_params = params.require(:asset).permit(*allowed_params)

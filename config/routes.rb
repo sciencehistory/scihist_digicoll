@@ -341,6 +341,7 @@ Rails.application.routes.draw do
     put "/active_encode_status/:active_encode_status_id", to: "assets#refresh_active_encode_status", as: "refresh_active_encode_status"
 
     post "/asset_files/:asset_id/check_fixity", to: "assets#check_fixity", as: "check_fixity"
+    get "/new_fixity_report", to: "assets#new_fixity_report", as: "new_fixity_report"
     get "/fixity_report", to: "assets#fixity_report", as: "fixity_report"
     get "/storage_report", to: "storage_report#index", as: "storage_report"
     get "/orphan_report", to: "orphan_report#index", as: "orphan_report"
