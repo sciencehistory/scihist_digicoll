@@ -28,11 +28,11 @@ class FixityReport
     Rails.cache.fetch(REPORT_CACHE_KEY, expires_in: HOW_LONG_TO_CACHE_REPORT)
   end
 
+  private
+
   def latest_report
     Rails.cache.fetch(REPORT_CACHE_KEY, expires_in: HOW_LONG_TO_CACHE_REPORT) { report_hash }
   end
-
-  private
 
   def report_hash
     rep = {}
