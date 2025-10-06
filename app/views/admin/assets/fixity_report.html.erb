@@ -1,5 +1,5 @@
 <h1 class="mb-4">Fixity Report</h1>
-<% if @latest_report.nil? %>
+<% if @fixity_report.nil? || @new_report_started %>
   <div class="container">
     <div class="row">
       <div class="col-md">
@@ -15,7 +15,7 @@
 <div class="container">
   <div class="row">
     <div class="col-md">
-        <p> This report is from <%= distance_of_time_in_words(@latest_report[:timestamp], Time.now) %> ago.
+        <p> This report is from <%= distance_of_time_in_words(@fixity_report[:timestamp], Time.now) %> ago.
           <% if @allow_recalc %>
             <%= link_to "Recalculate",  admin_new_fixity_report_path %>
           <% end %>
@@ -25,16 +25,16 @@
 
   <div class="row">
     <div class="col-md">
-      <% if @latest_report[:bad_asset_ids].blank? && @latest_report[:not_recent_with_no_checks_or_stale_checks] == 0 %>
+      <% if @fixity_report[:bad_asset_ids].blank? && @fixity_report[:not_recent_with_no_checks_or_stale_checks] == 0 %>
         <p class="h2 alert alert-success"><i class="fa fa fa-thumbs-up" aria-hidden="true"></i> Fixity health good.</p>
       <% else %>
         <p class="h2 alert alert-danger"><i class="fa fa fa-thumbs-down" aria-hidden="true"></i> There are fixity health problems!</p>
         <ul>
-          <% unless @latest_report[:bad_asset_ids].blank? %>
-            <li><%= pluralize @latest_report[:bad_asset_ids].count, 'asset' %> currently failing fixity check</li>
+          <% unless @fixity_report[:bad_asset_ids].blank? %>
+            <li><%= pluralize @fixity_report[:bad_asset_ids].count, 'asset' %> currently failing fixity check</li>
           <% end %>
-          <% unless @latest_report[:not_recent_with_no_checks_or_stale_checks] == 0 %>
-            <li><%= pluralize @latest_report[:not_recent_with_no_checks_or_stale_checks], 'asset' %> expected to have fresh fixity checks, but missing fresh fixity checks</li>
+          <% unless @fixity_report[:not_recent_with_no_checks_or_stale_checks] == 0 %>
+            <li><%= pluralize @fixity_report[:not_recent_with_no_checks_or_stale_checks], 'asset' %> expected to have fresh fixity checks, but missing fresh fixity checks</li>
           <% end %>
         </ul>
       <% end %>
@@ -43,7 +43,7 @@
     <div class="col-md alert alert-info">
       <ul>
         <li>We intend to schedule checks such that every file is checked at least once every <%= pluralize FixityReport::STALE_IN_DAYS, 'day' %>.</li>
-        <li>Fixity checks run <b>nightly</b> and will check 1/<%= FixityReport::STALE_IN_DAYS %> of our total assets (~<%= @latest_report[:asset_count] / FixityReport::STALE_IN_DAYS %> assets) each night, choosing the assets with missing or most stale checks to run checks on.</li>
+        <li>Fixity checks run <b>nightly</b> and will check 1/<%= FixityReport::STALE_IN_DAYS %> of our total assets (~<%= @fixity_report[:asset_count] / FixityReport::STALE_IN_DAYS %> assets) each night, choosing the assets with missing or most stale checks to run checks on.</li>
         <li>Can only run fixity checks on assets that are <i>fully ingested</i> and have attached files.</li>
         <li>For assets created within last <%= pluralize FixityReport::EXPECTED_FRESH_IN_DAYS, 'day' %>, we tolerate missing fixity checks, as they may not have run yet.</li>
       </ul>
@@ -53,12 +53,12 @@
 
 <div class="mt-5">
   <h2 class="border-bottom">Assets Currently Failing Fixity</h2>
-  <% if @latest_report[:bad_asset_ids].present? %>
+  <% if @fixity_report[:bad_asset_ids].present? %>
       <p class="text-danger">
-        <i class="fa fa fa-thumbs-down" aria-hidden="true"></i> <%= pluralize(@latest_report[:bad_asset_ids].count, 'failure') %>
+        <i class="fa fa fa-thumbs-down" aria-hidden="true"></i> <%= pluralize(@fixity_report[:bad_asset_ids].count, 'failure') %>
       </p>
       <ul class="list-unstyled alert alert-danger">
-        <% Asset.find(@latest_report[:bad_asset_ids]).each do |asset| %>
+        <% Asset.find(@fixity_report[:bad_asset_ids]).each do |asset| %>
             <li >
               <i class="fa fa-times" aria-hidden="true" ></i>
               <%= link_to(asset.title, admin_asset_path(asset)) %>
@@ -88,13 +88,13 @@
       <tbody>
         <tr>
           <td>Total</td>
-          <td colspan="2"><%= number_with_delimiter @latest_report[:not_recent_count] %></td>
+          <td colspan="2"><%= number_with_delimiter @fixity_report[:not_recent_count] %></td>
         </tr>
 
         <tr>
           <td>Not yet fully ingested</td>
-          <td><%= number_with_delimiter @latest_report[:not_recent_not_stored_count] %></td>
-          <% if (@latest_report[:not_recent_not_stored_count] > 0) %>
+          <td><%= number_with_delimiter @fixity_report[:not_recent_not_stored_count] %></td>
+          <% if (@fixity_report[:not_recent_not_stored_count] > 0) %>
             <td class="bg-warning">
               <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
               Expect 0. Are these stuck in ingest process?
@@ -106,8 +106,8 @@
 
         <tr>
           <td>Fully ingested without <em>fresh</em> (within past <%= pluralize FixityReport::STALE_IN_DAYS, 'day' %>) fixity check</td>
-          <td><%= number_with_delimiter(@latest_report[:not_recent_with_no_checks_or_stale_checks]) %></td>
-          <% if @latest_report[:not_recent_with_no_checks_or_stale_checks] == 0 %>
+          <td><%= number_with_delimiter(@fixity_report[:not_recent_with_no_checks_or_stale_checks]) %></td>
+          <% if @fixity_report[:not_recent_with_no_checks_or_stale_checks] == 0 %>
             <td class="bg-success text-white">
               <i class="fa fa fa-thumbs-up" aria-hidden="true"></i> Good
             </td>
@@ -135,61 +135,61 @@
     <tbody>
         <tr>
           <td>Total assets</td>
-          <td><%= number_with_delimiter(@latest_report[:asset_count]) %></td>
+          <td><%= number_with_delimiter(@fixity_report[:asset_count]) %></td>
         </tr>
 
         <tr>
           <td>Created in the last <%= pluralize FixityReport::EXPECTED_FRESH_IN_DAYS, 'day' %></td>
-          <td><%= number_with_delimiter @latest_report[:recent_count] %></td>
+          <td><%= number_with_delimiter @fixity_report[:recent_count] %></td>
         </tr>
 
         <tr>
           <td>Not yet fully ingested (no attached file)<br>
             <i>These should be temporary, pending ingest, and can't be fixity checked yet.</i>
           </td>
-          <td><%=  number_with_delimiter(@latest_report[:no_stored_files]) %></td>
+          <td><%=  number_with_delimiter(@fixity_report[:no_stored_files]) %></td>
         </tr>
 
 
         <tr>
           <td>Stored (attached file)</td>
-          <td><%= number_with_delimiter(@latest_report[:stored_files])%></td>
+          <td><%= number_with_delimiter(@fixity_report[:stored_files])%></td>
         </tr>
 
         <tr>
           <td>Stored, no checks</td>
-          <td><%= number_with_delimiter(@latest_report[:no_checks]) %></td>
+          <td><%= number_with_delimiter(@fixity_report[:no_checks]) %></td>
         </tr>
 
         <tr>
           <td>Stored, at least one check</td>
-          <td><%= number_with_delimiter(@latest_report[:with_checks]) %></td>
+          <td><%= number_with_delimiter(@fixity_report[:with_checks]) %></td>
         </tr>
 
         <tr>
           <td>Stored, checked in the past <%= FixityReport::STALE_IN_DAYS %> days</td>
-          <td><%= number_with_delimiter(@latest_report[:recent_checks]) %></td>
+          <td><%= number_with_delimiter(@fixity_report[:recent_checks]) %></td>
         </tr>
 
         <tr>
           <td>Stored, stale checks (have not been checked for <%= FixityReport::STALE_IN_DAYS %> days, or ever)</td>
-          <td><%= number_with_delimiter(@latest_report[:no_checks_or_stale_checks]) %></td>
+          <td><%= number_with_delimiter(@fixity_report[:no_checks_or_stale_checks]) %></td>
         </tr>
 
         <tr>
           <td>Stored asset with stalest fixity check</td>
           <td>
-              <% if @latest_report[:stalest_current_fixity_check_asset_id] %>
-                <%= link_to l(@latest_report[:stalest_current_fixity_check_timestamp], format: :admin), admin_asset_path(Asset.find(@latest_report[:stalest_current_fixity_check_asset_id] )) %>
+              <% if @fixity_report[:stalest_current_fixity_check_asset_id] %>
+                <%= link_to l(@fixity_report[:stalest_current_fixity_check_timestamp], format: :admin), admin_asset_path(Asset.find(@fixity_report[:stalest_current_fixity_check_asset_id] )) %>
               <% end %>
           </td>
         <tr>
           <td>Oldest fixity check on record</td>
-          <td><%= @latest_report[:earliest_check_date] ? l(@latest_report[:earliest_check_date], format: :admin) : "NONE!" %></td>
+          <td><%= @fixity_report[:earliest_check_date] ? l(@fixity_report[:earliest_check_date], format: :admin) : "NONE!" %></td>
         </tr>
         <tr>
           <td>Most recent fixity check on record</td>
-          <td><%= @latest_report[:latest_check_date] ? l(@latest_report[:latest_check_date], format: :admin) : "NONE!" %></td>
+          <td><%= @fixity_report[:latest_check_date] ? l(@fixity_report[:latest_check_date], format: :admin) : "NONE!" %></td>
         </tr>
     </tbody>
   </table>
