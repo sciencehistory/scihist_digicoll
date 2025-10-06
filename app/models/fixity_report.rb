@@ -21,15 +21,15 @@ class FixityReport
   def report_hash
     rep = {}
     rep[:asset_count]      = Asset.count
-    rep[:recent_count]     = Asset.count(RECENT_ASSET_SQL)
-    rep[:not_recent_count] = Asset.count("#{RECENT_ASSET_SQL} = false")
+    rep[:recent_count]     = Asset.where(RECENT_ASSET_SQL).count
+    rep[:not_recent_count] = Asset.where("#{RECENT_ASSET_SQL} = false").count
     rep[:stored_files]     = Asset.count(STORED_FILE_SQL)
     rep[:no_checks]     = check_count_having([STORED_FILE_SQL, "fixity_checks.count = 0"])
     rep[:recent_checks] = check_count_having([ STORED_FILE_SQL, "#{STALE_CHECKS_SQL} = false" ])
     rep[:stale_checks]  = check_count_having([ STORED_FILE_SQL, STALE_CHECKS_SQL ])
     rep[:no_stored_files] = rep[:asset_count]  - rep[:stored_files]
     rep[:with_checks]     = rep[:stored_files] - rep[:no_checks]
-    rep[:not_recent_not_stored_count] = Asset.where("#{RECENT_ASSET_SQL} = false").count(NOT_STORED_FILE_SQL)
+    rep[:not_recent_not_stored_count] = Asset.where("#{RECENT_ASSET_SQL} = false").where(NOT_STORED_FILE_SQL).count
 
     rep[:earliest_check_date] = FixityCheck.minimum(:created_at).in_time_zone
     rep[:latest_check_date]   = FixityCheck.maximum(:created_at).in_time_zone
@@ -77,6 +77,22 @@ class FixityReport
     rep[:timestamp] = Time.current.to_s
     rep
   end
+
+
+  # This method will be moved out of this class in a future refactor:
+  def need_checks_assets_relation
+    stored_file  = FixityReport::STORED_FILE_SQL
+    recent_asset = FixityReport::RECENT_ASSET_SQL
+    stale_check  = FixityReport::STALE_CHECKS_SQL
+
+    Asset.where(
+      id: Asset.select("kithe_models.id").
+        left_outer_joins(:fixity_checks).group(:id).having(stored_file).
+        having("#{recent_asset} = false").
+        having("(#{stale_check}) OR (#{stale_check} is NULL)")
+    )
+  end
+
 
   def check_count_having(conditions)
     subquery = Asset.
