@@ -38,8 +38,8 @@ class FixityReport
     rep = {}
 
     rep[:asset_count]      = Asset.count
-    rep[:recent_count]     = Asset.count(RECENT_ASSET_SQL)
-    rep[:not_recent_count] = Asset.count("#{RECENT_ASSET_SQL} = false")
+    rep[:recent_count]     = Asset.where(RECENT_ASSET_SQL).count
+    rep[:not_recent_count] = Asset.where("#{RECENT_ASSET_SQL} = false").count
     rep[:stored_files]     = Asset.count(STORED_FILE_SQL)
 
     rep[:no_checks]     = check_count_having([STORED_FILE_SQL, "fixity_checks.count = 0"])
@@ -49,7 +49,7 @@ class FixityReport
     rep[:no_stored_files] = rep[:asset_count]  - rep[:stored_files]
     rep[:with_checks]     = rep[:stored_files] - rep[:no_checks]
 
-    rep[:not_recent_not_stored_count] = Asset.where("#{RECENT_ASSET_SQL} = false").count(NOT_STORED_FILE_SQL)
+    rep[:not_recent_not_stored_count] = Asset.where("#{RECENT_ASSET_SQL} = false").where(NOT_STORED_FILE_SQL).count
 
     rep[:earliest_check_date] = FixityCheck.minimum(:created_at).in_time_zone
     rep[:latest_check_date]   = FixityCheck.maximum(:created_at).in_time_zone
@@ -81,9 +81,9 @@ class FixityReport
     rep[:stalest_current_fixity_check_asset_id] = pk
     rep[:stalest_current_fixity_check_timestamp] = timestamp&.in_time_zone
 
-  # Any assets whose most recent check has failed.
-  # This query will get slow if we
-  # accumulate a lot of failed checks.
+    # Any assets whose most recent check has failed.
+    # This query will get slow if we
+    # accumulate a lot of failed checks.
     rep[:bad_asset_ids]    = ActiveRecord::Base.connection.execute("""
       SELECT bad.asset_id FROM fixity_checks bad
       WHERE bad.passed = 'f'
