@@ -74,16 +74,8 @@ namespace :scihist do
     desc "find any assets marked as overdue for fixity check, and check them"
     task :complete_overdue => :environment do
 
-      stored_file  = FixityReport::STORED_FILE_SQL
-      recent_asset = FixityReport::RECENT_ASSET_SQL
-      stale_check  = FixityReport::STALE_CHECKS_SQL
+      overdue_assets = ScihistDigicoll::AssetsNeedingFixityChecks.new.overdue_assets
       count_of_items_checked = 0;
-
-      overdue_assets = Asset.where(id: Asset.
-        select("kithe_models.id").
-        left_outer_joins(:fixity_checks).group(:id).having(stored_file).
-        having("#{recent_asset} = false").
-        having("(#{stale_check}) OR (#{stale_check} is NULL)"))
 
       overdue_assets.find_each do |asset|
         if asset.stored?
