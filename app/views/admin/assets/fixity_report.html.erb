@@ -66,7 +66,7 @@
         <% end %>
       </ul>
   <% else %>
-      <span class="text-success"><i class="fa fa-thumbs-up" aria-hidden="true"></i> None<span>
+      <span class="text-success"><i class="fa fa-thumbs-up" aria-hidden="true"></i> None</span>
   <% end %>
 </div>
 
@@ -183,6 +183,7 @@
                 <%= link_to l(@fixity_report[:stalest_current_fixity_check_timestamp], format: :admin), admin_asset_path(Asset.find(@fixity_report[:stalest_current_fixity_check_asset_id] )) %>
               <% end %>
           </td>
+        </tr>
         <tr>
           <td>Oldest fixity check on record</td>
           <td><%= @fixity_report[:earliest_check_date] ? l(@fixity_report[:earliest_check_date], format: :admin) : "NONE!" %></td>
