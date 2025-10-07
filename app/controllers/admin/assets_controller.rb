@@ -96,7 +96,7 @@ class Admin::AssetsController < AdminController
   end
 
   def fixity_report
-    @fixity_report = FixityReport.new()
+    @fixity_report = FixityReport.new.report_hash
   end
 
   def display_attach_form
