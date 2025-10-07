@@ -83,14 +83,11 @@ namespace :scihist do
       count_of_items_checked = 0;
 
       reporter.need_checks_assets_relation.find_each do |asset|
-        if asset.stored?
-          checker = FixityChecker.new(asset)
-          new_check = checker.check
-          FixityCheckFailureService.new(new_check).send if new_check&.failed?
-          count_of_items_checked = count_of_items_checked + 1
-        end
+        FixityChecker.new(asset).check_prune_report
+        count_of_items_checked = count_of_items_checked + 1
         progress_bar.increment if progress_bar
       end
+      
       if count_of_items_checked > 0
         puts "complete_stale_checks: found and checked #{count_of_items_checked} stale assets!"
       end
