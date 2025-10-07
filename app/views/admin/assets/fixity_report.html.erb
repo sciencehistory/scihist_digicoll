@@ -45,7 +45,7 @@
         <% end %>
       </ul>
   <% else %>
-      <span class="text-success"><i class="fa fa-thumbs-up" aria-hidden="true"></i> None<span>
+      <span class="text-success"><i class="fa fa-thumbs-up" aria-hidden="true"></i> None</span>
   <% end %>
 </div>
 
@@ -96,12 +96,6 @@
             </td>
           <% end %>
         </tr>
-
-        <tr>
-
-
-
-
       </tbody>
     </tr>
   </table>
@@ -168,6 +162,7 @@
                 <%= link_to l(@fixity_report.stalest_current_fixity_check.timestamp, format: :admin), admin_asset_path(@fixity_report.stalest_current_fixity_check.asset) %>
               <% end %>
           </td>
+        </tr>
 
         <tr>
           <td>Oldest fixity check on record</td>
