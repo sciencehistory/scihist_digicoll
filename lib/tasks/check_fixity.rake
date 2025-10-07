@@ -11,12 +11,6 @@ namespace :scihist do
   To check 1/30th today instea dof 1/7th, checking all every 30 days:
     CYCLE_LENGTH=30 bundle exec rake scihist:check_fixity
 
-  To run checks, but leave stale checks around without pruning them:
-    SKIP_PRUNE='true'  bundle exec rake scihist:check_fixity
-
-  To just prune stale checks, without checking any assets:
-    SKIP_CHECK='true'  bundle exec rake scihist:check_fixity
-
   For a progress bar, preface any of these with
     SHOW_PROGRESS_BAR='true'
 
@@ -45,10 +39,10 @@ namespace :scihist do
           transaction_batch.each do |asset|
             if asset.stored?
               checker = FixityChecker.new(asset)
-              new_check = checker.check  unless ENV['SKIP_CHECK'] == 'true'
-              checker.prune_checks       unless ENV['SKIP_PRUNE'] == 'true'
+              new_check = checker.check
+              checker.prune_checks
               FixityCheckFailureService.new(new_check).send if new_check&.failed?
-              count_of_items_checked = count_of_items_checked + 1 unless ENV['SKIP_CHECK'] == 'true'
+              count_of_items_checked = count_of_items_checked + 1
             end
             progress_bar.increment unless progress_bar.nil?
           end
