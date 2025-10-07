@@ -304,8 +304,9 @@ class Asset < Kithe::Asset
   # fetch shrine attachment return as string
   def asr_webvtt_str
     if asr_webvtt?
+      # rewindable false may improve performance and save some RAM, avoiding cached copy
       stringio = StringIO.new
-      file_derivatives[ASR_WEBVTT_DERIVATIVE_KEY.to_sym].stream(stringio)
+      file_derivatives[ASR_WEBVTT_DERIVATIVE_KEY.to_sym].stream(stringio, rewindable: false)
       stringio.string
     end
   end
@@ -317,7 +318,8 @@ class Asset < Kithe::Asset
   def corrected_webvtt_str
     if corrected_webvtt?
       stringio = StringIO.new
-      file_derivatives[CORRECTED_WEBVTT_DERIVATIVE_KEY.to_sym].stream(stringio)
+      # rewindable false may improve performance and save some RAM, avoiding cached copy
+      file_derivatives[CORRECTED_WEBVTT_DERIVATIVE_KEY.to_sym].stream(stringio, rewindable: false)
       stringio.string
     end
   end
