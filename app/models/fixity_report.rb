@@ -105,6 +105,10 @@ class FixityReport
 
     Asset.where(
       id: Asset.select("kithe_models.id").
+        left_outer_joins(:fixity_checks).group(:id).having(stored_file).
+        having("#{recent_asset} = false").
+        having("(#{stale_check}) OR (#{stale_check} is NULL)")
+    )
   end
 
 
