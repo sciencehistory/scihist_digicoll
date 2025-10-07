@@ -32,6 +32,19 @@ class FixityChecker
     @asset = asset
   end
 
+
+  # Encapsulate a common sequence:
+  #   check the asset,
+  #   remove outdated fixity checks
+  #   report any problems.
+  def check_prune_report
+    return unless @asset.stored?
+    new_check = check
+    prune_checks
+    FixityCheckFailureService.new(new_check).send if new_check.failed?
+  end
+
+
   # FixityChecker.new(asset).check
   def check
     FixityCheck.create!(
