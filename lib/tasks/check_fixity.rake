@@ -19,7 +19,7 @@ namespace :scihist do
   task :check_fixity => :environment do
     cycle_length = ENV['CYCLE_LENGTH'].nil? ? ScihistDigicoll::AssetsNeedingFixityChecks::DEFAULT_PERIOD_IN_DAYS : Integer(ENV['CYCLE_LENGTH'])
     check_lister = ScihistDigicoll::AssetsNeedingFixityChecks.new(cycle_length)
-    puts "check_fixity: starting fixity check for #{check_lister.expected_num_to_check} of #{Asset.count} assets."
+    Rails.logger.info "check_fixity: starting fixity check for #{check_lister.expected_num_to_check} of #{Asset.count} assets."
 
     if ENV['SHOW_PROGRESS_BAR'] == 'true'
       progress_bar = ProgressBar.create(total: check_lister.expected_num_to_check, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
@@ -47,7 +47,7 @@ namespace :scihist do
     end
 
     if count_of_items_checked > 0
-      puts "check_fixity: found and checked #{count_of_items_checked} assets."
+      Rails.logger.info "check_fixity: found and checked #{count_of_items_checked} assets."
     end
   end
 
@@ -66,7 +66,7 @@ namespace :scihist do
         progress_bar.increment if progress_bar
       end
       if count_of_items_checked > 0
-        puts "complete_stale_checks: found and checked #{count_of_items_checked} stale assets."
+        Rails.logger.info "complete_stale_checks: found and checked #{count_of_items_checked} stale assets."
       end
     end
   end
