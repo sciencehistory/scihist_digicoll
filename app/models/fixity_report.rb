@@ -32,6 +32,7 @@ class FixityReport
   def report_hash
     rep = {}
 
+
     rep[:asset_count]      = Asset.count
     rep[:recent_count]     = Asset.where(RECENT_ASSET_SQL).count
     rep[:not_recent_count] = Asset.where("#{RECENT_ASSET_SQL} = false").count
@@ -43,6 +44,7 @@ class FixityReport
 
     rep[:no_stored_files] = rep[:asset_count]  - rep[:stored_files]
     rep[:with_checks]     = rep[:stored_files] - rep[:no_checks]
+
 
     rep[:not_recent_not_stored_count] = Asset.where("#{RECENT_ASSET_SQL} = false").where(NOT_STORED_FILE_SQL).count
 
@@ -95,12 +97,22 @@ class FixityReport
 
   end
 
+  # This method will be moved out of this class in a future refactor:
+  def need_checks_assets_relation
+    stored_file  = FixityReport::STORED_FILE_SQL
+    recent_asset = FixityReport::RECENT_ASSET_SQL
+    stale_check  = FixityReport::STALE_CHECKS_SQL
+
+    Asset.where(
+      id: Asset.select("kithe_models.id").
+  end
+
+
   private
 
   def latest_report
     Rails.cache.fetch(REPORT_CACHE_KEY, expires_in: HOW_LONG_TO_CACHE_REPORT) { report_hash }
   end
-
 
   def check_count_having(conditions)
     subquery = Asset.

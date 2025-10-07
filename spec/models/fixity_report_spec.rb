@@ -155,11 +155,12 @@ describe FixityReport do
 
       # this is no longer in this method:
       # and can we fetch the actual assets that correspond, with this other method?
-      # found = []
-      # FixityReport.new.need_checks_assets_relation.each do |asset|
-      #   found << asset
-      # end
-      # expect(found.length).to eq 1
+
+      found = []
+      FixityReport.new.need_checks_assets_relation.each do |asset|
+        found << asset
+      end
+      expect(found.length).to eq 1
 
     end
   end
