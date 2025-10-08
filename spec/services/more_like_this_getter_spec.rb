@@ -6,7 +6,6 @@ require 'rails_helper'
 #
 describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapter: :inline do
   let(:getter) {MoreLikeThisGetter.new(work_to_match)}
-  let(:other_getter) {MoreLikeThisGetter.new(work_to_match)}
   let(:getter_of_two_works) {MoreLikeThisGetter.new(work_to_match, max_number_of_works: 2)}
   let(:work_to_match)   { create(:public_work, subject: "aaa", description: "aaa")  }
   let(:work_to_match_cache_key) {"scihist:more_like_this:#{work_to_match.friendlier_id}"}
