@@ -19,13 +19,12 @@ class FixityReport
   HOW_LONG_TO_CACHE_REPORT = 1.days
 
 
-  def recalculate_report
-    Rails.cache.delete(REPORT_CACHE_KEY)
-    latest_report
-  end
-
   def report_from_cache
     Rails.cache.fetch(REPORT_CACHE_KEY, expires_in: HOW_LONG_TO_CACHE_REPORT)
+  end
+
+  def write_new_report_to_cache
+    Rails.cache.write(REPORT_CACHE_KEY, report_hash, expires_in: HOW_LONG_TO_CACHE_REPORT)
   end
 
 
