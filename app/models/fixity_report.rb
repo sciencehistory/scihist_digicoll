@@ -18,12 +18,9 @@ class FixityReport  < ApplicationRecord
   REPORT_CACHE_KEY = "scihist:fixity_report"
   HOW_LONG_TO_CACHE_REPORT = 1.days
 
-
   def get_latest
     latest = FixityReport.order(created_at: :desc).first
-    if latest
-      FixityReport.where.not(id: latest.id).delete_all
-    end
+    FixityReport.where.not(id: latest.id).delete_all if latest
     latest&.data_for_report
   end
 
@@ -31,7 +28,6 @@ class FixityReport  < ApplicationRecord
     self.data_for_report = report_hash
     self.save!
   end
-
 
   def report_hash
     rep = {}
@@ -116,10 +112,6 @@ class FixityReport  < ApplicationRecord
 
 
   private
-
-  def latest_report
-    Rails.cache.fetch(REPORT_CACHE_KEY, expires_in: HOW_LONG_TO_CACHE_REPORT) { report_hash }
-  end
 
   def check_count_having(conditions)
     subquery = Asset.
