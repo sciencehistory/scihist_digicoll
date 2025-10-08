@@ -95,23 +95,14 @@ class Admin::AssetsController < AdminController
     redirect_to admin_asset_url(@asset), notice: 'This file will be checked shortly.'
   end
 
-  def new_fixity_report
-    CalculateFixityReportJob.perform_later
-    redirect_to admin_fixity_report_path(new_report_started: true)
-  end
-
   def fixity_report
     minutes_before_allowing_recalc = 5
     @fixity_report = FixityReport.new.report_from_cache
-
-    if @fixity_report.nil? && params[:new_report_started] != 'true'
+    fixity_report_stale = @fixity_report.present? && ((Time.now - DateTime.parse(@fixity_report[:timestamp])).to_i / 60) >= minutes_before_allowing_recalc
+    if  @fixity_report.nil? || fixity_report_stale
       CalculateFixityReportJob.perform_later
-      @new_report_started = true
-    else
-      @new_report_started = params[:new_report_started]
+      @new_report_started = 'true'
     end
-
-    @allow_recalc  = (@fixity_report.present? && ((Time.now - DateTime.parse(@fixity_report[:timestamp])).to_i / 60) >= minutes_before_allowing_recalc)
   end
 
   def display_attach_form

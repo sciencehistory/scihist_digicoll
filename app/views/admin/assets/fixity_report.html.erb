@@ -4,22 +4,20 @@
     <div class="row">
       <div class="col-md">
         <% if @new_report_started %>
-          <p>A <%= link_to "new report", admin_fixity_report_path %> is being prepared and should be available in a few minutes.</p>
+          <p>No report was found, but a <%= link_to "new report", admin_fixity_report_path %> is being prepared and should be available in a few minutes.</p>
         <% else %>
-          <p>No report was found. <%= link_to "Start a new report", admin_new_fixity_report_path, class:"btn btn-primary ms-1"%>
+          <%# Shouldn't happen very often, but still.%>
+          <p>No report was found.</p>
         <% end %>
     </div>
   </div>
 <% else %>
-
   <div class="container">
     <div class="row">
       <div class="col-md">
           <p> This report is from <%= distance_of_time_in_words(@fixity_report[:timestamp], Time.now) %> ago.
             <% if @new_report_started %>
               A <%= link_to "new report", admin_fixity_report_path %> is being prepared and should be available in a few minutes.
-            <% elsif @allow_recalc %>
-              <%= link_to "Recalculate",  admin_new_fixity_report_path, class:"btn btn-primary"%>
             <% end %>
           </p>
       </div>
