@@ -21,15 +21,12 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
       create(:public_work, subject: shared_subject, description: shared_description)
     ]
   }
-  let(:five_private_works) { [
-      create(:private_work, subject: shared_subject, description: shared_description),
-      create(:private_work, subject: shared_subject, description: shared_description),
-      create(:private_work, subject: shared_subject, description: shared_description),
+  let(:private_works) { [
       create(:private_work, subject: shared_subject, description: shared_description),
       create(:private_work, subject: shared_subject, description: shared_description),
     ]
   }
-  let! (:indexed_works) { [work_to_match] + five_public_works + five_private_works }
+  let! (:indexed_works) { [work_to_match] + five_public_works + private_works }
 
   context "calls to test solr" do
     context "with limit" do
@@ -83,7 +80,7 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
 
       context "a work was unpublished after being cached" do
         it "only returns public works, even if the cache contains private works" do
-          Rails.cache.write(work_to_match_cache_key, five_private_works.map(&:friendlier_id))
+          Rails.cache.write(work_to_match_cache_key, private_works.map(&:friendlier_id))
           expect(getter.works.length).to eq 0
         end
       end
