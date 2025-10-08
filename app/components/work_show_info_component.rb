@@ -15,6 +15,8 @@
 #
 #
 class WorkShowInfoComponent < ApplicationComponent
+  RELATED_ITEMS_SIZE = 4
+
   # Delegate through to WORK
   delegate :additional_credit, :additional_title,
     :contained_by, :date_of_work, :department,
@@ -117,7 +119,12 @@ class WorkShowInfoComponent < ApplicationComponent
   end
 
   def related_or_more_like_this_works
-    @related_or_more_like_this_works ||= related_works.present? ? related_works : more_like_this_works
+    # we want RELATED_ITEMS_SIZE total; some may come from manually set related_works;
+    # pad out with auto more_like_this_works -- we always fetch/cache RELATED_ITEMS_SIZE
+    # from more_like_this_works, but then only use however many weneed. For cacheabiltiy.
+    @related_or_more_like_this_works ||= begin
+      related_works + more_like_this_works.slice(0, [RELATED_ITEMS_SIZE - related_works.count, 0].max)
+    end
   end
 
   # We'll pull ID's out of our related_links for related_works, and then fetch
@@ -137,7 +144,7 @@ class WorkShowInfoComponent < ApplicationComponent
   # This triggers a single request to SOLR to retrieve works deemed similar.
   # This is unusual, but calling the code in the controller turned out to be unduly complex.
   def more_like_this_works
-    @more_like_this_works ||= MoreLikeThisGetter.new(work, limit: 3).works
+    @more_like_this_works ||= MoreLikeThisGetter.new(work, limit: RELATED_ITEMS_SIZE).works
   end
 
   def public_contained_by
