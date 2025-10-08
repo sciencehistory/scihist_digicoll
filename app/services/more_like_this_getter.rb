@@ -73,15 +73,12 @@ class MoreLikeThisGetter
 
   # see https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html
   def mlt_params
-    @mlt_params ||= begin
-      parameters = {
-        "q"         => "id:#{@work.friendlier_id}",
-        "fq"        => "{!term f=published_bsi}true",
-        "mlt.fl"    => 'more_like_this_keywords_tsimv',
-      }
-      parameters["rows"] = @limit
-      parameters
-    end
+    @mlt_params ||= {
+      "q"         => "id:#{@work.friendlier_id}",
+      "fq"        => "{!term f=published_bsi}true",
+      "mlt.fl"    => 'more_like_this_keywords_tsimv',
+      "rows"      => @limit
+    }
   end
 
   private
