@@ -4,7 +4,7 @@
 # fixity_report.html.erb.
 # The class is used in controllers/admin/assets_controller.rb .
 
-class FixityReport
+class FixityReport  < ApplicationRecord
   # If no fixity check no older than STALE_IN_DAYS, considered stale
   STALE_IN_DAYS = ScihistDigicoll::AssetsNeedingFixityChecks::DEFAULT_PERIOD_IN_DAYS
   # Assets older than EXPECTED_FRESH_IN_DAYS should not be stale, or it's a problem.
@@ -19,18 +19,22 @@ class FixityReport
   HOW_LONG_TO_CACHE_REPORT = 1.days
 
 
-  def report_from_cache
-    Rails.cache.fetch(REPORT_CACHE_KEY, expires_in: HOW_LONG_TO_CACHE_REPORT)
+  def get_latest
+    latest = FixityReport.order(created_at: :desc).first
+    if latest
+      FixityReport.where.not(id: latest.id).delete_all
+    end
+    latest&.data_for_report
   end
 
-  def write_new_report_to_cache
-    Rails.cache.write(REPORT_CACHE_KEY, report_hash, expires_in: HOW_LONG_TO_CACHE_REPORT)
+  def save_new
+    self.data_for_report = report_hash
+    self.save!
   end
 
 
   def report_hash
     rep = {}
-
 
     rep[:asset_count]      = Asset.count
     rep[:recent_count]     = Asset.where(RECENT_ASSET_SQL).count
