@@ -29,7 +29,7 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
   let! (:indexed_works) { [work_to_match] + five_public_works + private_works }
 
   context "calls to test solr" do
-    context "with limit" do
+    context "with smaller limit" do
       let(:limit) { 2 }
 
       it "can limit the number of works returned" do
@@ -37,10 +37,14 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
       end
     end
 
-    it "returns only public works" do
-      expect(getter.works.count).to eq 5
-      expect(getter.works.all? {|w| w.published?}).to be true
-      expect(getter.works.include? work_to_match).to be false
+    context "with limit great enough to get everything" do
+      let(:limit) { indexed_works.count }
+
+      it "returns only public works, and not self" do
+        expect(getter.works.count).to eq five_public_works.count
+        expect(getter.works.all? {|w| w.published?}).to be true
+        expect(getter.works.include? work_to_match).to be false
+      end
     end
   end
 
