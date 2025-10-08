@@ -11,7 +11,7 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
   let(:limit) { nil }
   let(:getter) {MoreLikeThisGetter.new(work_to_match, limit: limit)}
   let(:work_to_match)   { create(:public_work, subject: shared_subject, description: shared_description)  }
-  let(:work_to_match_cache_key) {"scihist:more_like_this:#{work_to_match.friendlier_id}"}
+  let(:work_to_match_cache_key) {"scihist:more_like_this:#{work_to_match.friendlier_id}:#{limit || MoreLikeThisGetter::DEFAULT_LIMIT}"}
 
   let(:five_public_works) { [
       create(:public_work, subject: shared_subject, description: shared_description),

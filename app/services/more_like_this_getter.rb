@@ -128,7 +128,7 @@ class MoreLikeThisGetter
   end
 
   def cache_key
-    "scihist:more_like_this:#{@work.friendlier_id}"
+    "scihist:more_like_this:#{@work.friendlier_id}:#{@limit}"
   end
 
   # Caching these should save trips to our flaky solr provider.
