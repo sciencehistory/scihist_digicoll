@@ -20,6 +20,8 @@
 # MoreLikeThisGetter.new(work).works
 #
 class MoreLikeThisGetter
+  DEFAULT_LIMIT = 5
+
   attr_reader :work
 
   # These timeouts are short. We want to be conservative,
@@ -32,9 +34,9 @@ class MoreLikeThisGetter
   # @param work [Work] Work
   # @param max_number_of_works: if specified,
   # this limits the number of works returned.
-  def initialize(work, max_number_of_works: nil)
+  def initialize(work, limit:nil)
     @work = work
-    @max_number_of_works = max_number_of_works
+    @max_number_of_works = max_number_of_works || DEFAULT_LIMIT
   end
 
   # Returns an array of up to @max_number_of_works
@@ -77,7 +79,7 @@ class MoreLikeThisGetter
         "fq"        => "{!term f=published_bsi}true",
         "mlt.fl"    => 'more_like_this_keywords_tsimv',
       }
-      parameters["rows"] = @max_number_of_works unless @max_number_of_works.nil?
+      parameters["rows"] = @max_number_of_works
       parameters
     end
   end
