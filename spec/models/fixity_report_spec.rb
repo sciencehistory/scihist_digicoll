@@ -152,10 +152,7 @@ describe FixityReport do
       # Sound the alarm!
       expect(report[:not_recent_with_no_checks_or_stale_checks]).to eq 1
 
-
-      # this is no longer in this method:
       # and can we fetch the actual assets that correspond, with this other method?
-
       found = []
       FixityReport.new.need_checks_assets_relation.each do |asset|
         found << asset
