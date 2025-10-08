@@ -8,8 +8,8 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
   let(:shared_subject)  { "aaa" }
   let(:shared_description) { "aaa" }
 
-  let(:max_number_of_works) { nil }
-  let(:getter) {MoreLikeThisGetter.new(work_to_match, max_number_of_works: max_number_of_works)}
+  let(:limit) { nil }
+  let(:getter) {MoreLikeThisGetter.new(work_to_match, limit: limit)}
   let(:work_to_match)   { create(:public_work, subject: shared_subject, description: shared_description)  }
   let(:work_to_match_cache_key) {"scihist:more_like_this:#{work_to_match.friendlier_id}"}
 
@@ -33,10 +33,10 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
 
   context "calls to test solr" do
     context "with limit" do
-      let(:max_number_of_works) { 2 }
+      let(:limit) { 2 }
 
       it "can limit the number of works returned" do
-        expect(getter.works).to eq five_public_works[0..(max_number_of_works - 1)]
+        expect(getter.works).to eq five_public_works[0..(limit - 1)]
       end
     end
 

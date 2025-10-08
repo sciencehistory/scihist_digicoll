@@ -32,14 +32,14 @@ class MoreLikeThisGetter
   HOW_LONG_TO_CACHE = 7.days
 
   # @param work [Work] Work
-  # @param max_number_of_works: if specified,
+  # @param limit: if specified,
   # this limits the number of works returned.
   def initialize(work, limit:nil)
     @work = work
-    @max_number_of_works = max_number_of_works || DEFAULT_LIMIT
+    @limit = limit || DEFAULT_LIMIT
   end
 
-  # Returns an array of up to @max_number_of_works
+  # Returns an array of up to @limit
   # published works that SOLR deems similar, in order of similarity
   def works
     return [] if @work&.friendlier_id.nil?
@@ -79,7 +79,7 @@ class MoreLikeThisGetter
         "fq"        => "{!term f=published_bsi}true",
         "mlt.fl"    => 'more_like_this_keywords_tsimv',
       }
-      parameters["rows"] = @max_number_of_works
+      parameters["rows"] = @limit
       parameters
     end
   end

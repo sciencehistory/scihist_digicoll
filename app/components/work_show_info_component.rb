@@ -137,7 +137,7 @@ class WorkShowInfoComponent < ApplicationComponent
   # This triggers a single request to SOLR to retrieve works deemed similar.
   # This is unusual, but calling the code in the controller turned out to be unduly complex.
   def more_like_this_works
-    @more_like_this_works ||= MoreLikeThisGetter.new(work, max_number_of_works: 3).works
+    @more_like_this_works ||= MoreLikeThisGetter.new(work, limit: 3).works
   end
 
   def public_contained_by
