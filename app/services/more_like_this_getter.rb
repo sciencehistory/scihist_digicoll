@@ -20,6 +20,8 @@
 # MoreLikeThisGetter.new(work).works
 #
 class MoreLikeThisGetter
+  DEFAULT_LIMIT = 5
+
   attr_reader :work
 
   # These timeouts are short. We want to be conservative,
@@ -30,14 +32,14 @@ class MoreLikeThisGetter
   HOW_LONG_TO_CACHE = 7.days
 
   # @param work [Work] Work
-  # @param max_number_of_works: if specified,
+  # @param limit: if specified,
   # this limits the number of works returned.
-  def initialize(work, max_number_of_works: nil)
+  def initialize(work, limit:nil)
     @work = work
-    @max_number_of_works = max_number_of_works
+    @limit = limit || DEFAULT_LIMIT
   end
 
-  # Returns an array of up to @max_number_of_works
+  # Returns an array of up to @limit
   # published works that SOLR deems similar, in order of similarity
   def works
     return [] if @work&.friendlier_id.nil?
@@ -71,15 +73,12 @@ class MoreLikeThisGetter
 
   # see https://solr.apache.org/guide/solr/latest/query-guide/morelikethis.html
   def mlt_params
-    @mlt_params ||= begin
-      parameters = {
-        "q"         => "id:#{@work.friendlier_id}",
-        "fq"        => "{!term f=published_bsi}true",
-        "mlt.fl"    => 'more_like_this_keywords_tsimv',
-      }
-      parameters["rows"] = @max_number_of_works unless @max_number_of_works.nil?
-      parameters
-    end
+    @mlt_params ||= {
+      "q"         => "id:#{@work.friendlier_id}",
+      "fq"        => "{!term f=published_bsi}true",
+      "mlt.fl"    => 'more_like_this_keywords_tsimv',
+      "rows"      => @limit
+    }
   end
 
   private
