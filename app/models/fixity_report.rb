@@ -21,7 +21,7 @@ class FixityReport  < ApplicationRecord
   def get_latest
     latest = FixityReport.order(created_at: :desc).first
     FixityReport.where.not(id: latest.id).delete_all if latest
-    latest&.data_for_report
+    latest&.data_for_report&.symbolize_keys
   end
 
   def save_new
