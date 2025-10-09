@@ -42,8 +42,8 @@ class FixityReport  < ApplicationRecord
     rep[:with_checks]     = rep[:stored_files] - rep[:no_checks]
     rep[:not_recent_not_stored_count] = Asset.where("#{RECENT_ASSET_SQL} = false").where(NOT_STORED_FILE_SQL).count
 
-    rep[:earliest_check_date] = FixityCheck.minimum(:created_at).in_time_zone
-    rep[:latest_check_date]   = FixityCheck.maximum(:created_at).in_time_zone
+    rep[:earliest_check_date] = FixityCheck.minimum(:created_at)&.in_time_zone
+    rep[:latest_check_date]   = FixityCheck.maximum(:created_at)&.in_time_zone
 
 
     # Note the left join.

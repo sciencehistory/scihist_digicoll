@@ -192,4 +192,42 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
       expect(flash[:notice]).to eq "Updated HOCR and textonly_pdf."
     end
   end
+
+  describe "#fixity_report", logged_in_user: :editor do
+    context "report absent" do
+      it "enqueues a 'create report' job" do
+        expect { get :fixity_report }.to have_enqueued_job(CalculateFixityReportJob)
+        expect(response).to have_http_status(200)
+      end
+    end
+    context "report exists" do
+      let(:report_date) { "2025-01-01 00:00:00 -0400" }
+      let!(:rep) {
+        FixityReport.new.tap do |rep|
+          rep.update!( data_for_report: { "no_checks" => 0, "timestamp" =>report_date,
+            "asset_count" => 0, "with_checks" => 0, "recent_count" => 0, "stale_checks" => 0
+          })
+        end
+      }
+
+      it "finds a report and passes it to the template after enqueuing a new calculate job" do
+        expect { get :fixity_report }.to have_enqueued_job(CalculateFixityReportJob)
+        expect(response).to have_http_status(200)
+        expect(assigns(:fixity_report)[:timestamp]).to eq "2025-01-01 00:00:00 -0400"
+        expect(assigns(:new_report_started)).to eq 'true'
+      end
+
+      context "recent report" do
+        let(:report_date) { Time.current.to_s }
+        it "finds a recent report and passes it to the template; does not attempt to recalculate" do
+          expect {
+           get :fixity_report
+          }.not_to have_enqueued_job(CalculateFixityReportJob)
+          expect(response).to have_http_status(200)
+          expect(assigns(:fixity_report)[:timestamp]).to eq rep.data_for_report['timestamp']
+          expect(assigns(:new_report_started)).to be_nil
+         end
+      end
+    end
+  end  
 end
