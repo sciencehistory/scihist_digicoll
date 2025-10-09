@@ -75,19 +75,6 @@ module ScihistDigicoll
       @expected_num_to_check ||= (cycle_length == 0 ? Asset.count : (Asset.count.to_f / cycle_length).ceil)
     end
 
-    def overdue_assets
-      stored_file  = FixityReport::STORED_FILE_SQL
-      recent_asset = FixityReport::RECENT_ASSET_SQL
-      stale_check  = FixityReport::STALE_CHECKS_SQL
-
-      Asset.where(
-        id: Asset.select("kithe_models.id").
-          left_outer_joins(:fixity_checks).group(:id).having(stored_file).
-          having("#{recent_asset} = false").
-          having("(#{stale_check}) OR (#{stale_check} is NULL)")
-      )
-    end
-
     private
 
     # ActiveRecord scope for those Assets most in need of fixity checks -- either
