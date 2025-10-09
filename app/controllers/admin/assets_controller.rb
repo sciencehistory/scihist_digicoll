@@ -277,7 +277,7 @@ class Admin::AssetsController < AdminController
 
   def asset_params
     allowed_params = [:title, :derivative_storage_type, :alt_text, :caption,
-      :transcription, :english_translation, :suppress_ocr, :ocr_admin_note, :new_report_started,
+      :transcription, :english_translation, :suppress_ocr, :ocr_admin_note,
       :role, {admin_note_attributes: []}]
     allowed_params << :published if can?(:publish, @asset)
     asset_params = params.require(:asset).permit(*allowed_params)
