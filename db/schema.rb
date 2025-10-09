@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_23_154128) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_08_171351) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -137,6 +137,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_23_154128) do
     t.index ["asset_id", "checked_uri"], name: "by_asset_and_checked_uri"
     t.index ["asset_id"], name: "index_fixity_checks_on_asset_id"
     t.index ["checked_uri"], name: "index_fixity_checks_on_checked_uri"
+  end
+
+  create_table "fixity_reports", force: :cascade do |t|
+    t.jsonb "data_for_report", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "interviewee_biographies", force: :cascade do |t|

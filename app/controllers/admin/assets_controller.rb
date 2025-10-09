@@ -96,7 +96,14 @@ class Admin::AssetsController < AdminController
   end
 
   def fixity_report
-    @fixity_report = FixityReport.new.report_hash
+    minutes_before_allowing_recalc = 5
+    @fixity_report = FixityReport.new.get_latest
+
+    fixity_report_stale = @fixity_report.present? && ((Time.now - DateTime.parse(@fixity_report[:timestamp])).to_i / 60) >= minutes_before_allowing_recalc
+    if  @fixity_report.nil? || fixity_report_stale
+      CalculateFixityReportJob.perform_later
+      @new_report_started = 'true'
+    end
   end
 
   def display_attach_form
