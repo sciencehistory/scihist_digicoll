@@ -71,7 +71,7 @@ gem "blacklight_range_limit", "~> 9.1.0" # version no longer sync'd with blackli
 
 # for some code to deal with transcoding video, via AWS MediaConvert
 # Lower than 1.2.1 had far too big gem builds! https://github.com/samvera-labs/active_encode/issues/126
-gem "active_encode", "~> 1.0", ">= 1.2.1"
+gem "active_encode", "~> 2.0"
 
 # these gems are needed for active_encode MediaConvert adapter
 # https://github.com/samvera-labs/active_encode/blob/main/guides/media_convert_adapter.md
