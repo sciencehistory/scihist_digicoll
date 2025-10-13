@@ -191,9 +191,7 @@ gem "rack-attack", "~> 6.6" # throttling excessive requests
 gem "webvtt-ruby", "< 2" # https://github.com/opencoconut/webvtt-ruby
 
 # MS Word .docx for some OH transcript handling
-# Appears entirely unmaintained and has some bugfixes we need in unreleased master
-# We will lock to SHA for safety.
-gem "docx", github: "ruby-docx/docx", ref: "c5bcb57"
+gem "docx", "< 1.0"
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
