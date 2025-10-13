@@ -398,7 +398,7 @@ class SolrConfigsetUpdater
   # and you have to clean it up.
   def create_temp_zip_file
     tmp_zip_file = Tempfile.new([self.class.name, ".zip"]).tap { |t| t.binmode }
-    zip = Zip::File.open(tmp_zip_file.path, Zip::File::CREATE) do |zipfile|
+    zip = Zip::File.open(tmp_zip_file.path, create: true) do |zipfile|
       Dir["#{conf_dir}/**/**"].each do |file|
         zipfile.add(file.sub("#{conf_dir}/", ''), file)
       end

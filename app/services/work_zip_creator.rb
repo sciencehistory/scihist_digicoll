@@ -34,7 +34,7 @@ class WorkZipCreator
 
     derivative_files = []
 
-    Zip::File.open(tmp_zipfile.path, Zip::File::CREATE) do |zipfile|
+    Zip::File.open(tmp_zipfile.path, create: true) do |zipfile|
       # Add attribution as file and zip comment text
       zipfile.comment = comment_text
       zipfile.add("about.txt", comment_file)
