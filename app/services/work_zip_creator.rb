@@ -54,12 +54,9 @@ class WorkZipCreator
 
 
         # We want to add to zip as "STORED", not "DEFLATE", since our JPGs
-        # won't compress under DEFLATE anyway, save the CPU. Ruby zip does not
-        # give us a GREAT api to do that, but it gives us a way.
-        #
-        # https://github.com/rubyzip/rubyzip/blob/05af1231f49f2637b577accea2b6b732b7204bbb/lib/zip/file.rb#L271
-        # https://github.com/rubyzip/rubyzip/blob/05af1231f49f2637b577accea2b6b732b7204bbb/lib/zip/entry.rb#L53
-        entry = ::Zip::Entry.new(zipfile.name, filename, nil, nil, nil, nil, ::Zip::Entry::STORED)
+        # won't compress under DEFLATE anyway, save the CPU. Using legacy API could
+        # be using convenience add_stored but this is fine.
+        entry = ::Zip::Entry.new(zipfile.name, filename, compression_method: ::Zip::Entry::STORED)
         zipfile.add(entry, file_obj)
 
         # We don't really need to update on every page, the front-end is only polling every two seconds anyway
