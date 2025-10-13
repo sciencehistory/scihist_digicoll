@@ -195,39 +195,31 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
 
   describe "#fixity_report", logged_in_user: :editor do
     context "report absent" do
-      it "enqueues a 'create report' job" do
-        expect { get :fixity_report }.to have_enqueued_job(CalculateFixityReportJob)
+      it "shows page normally" do
+        get :fixity_report
         expect(response).to have_http_status(200)
       end
     end
+
     context "report exists" do
-      let(:report_date) { "2025-01-01 00:00:00 -0400" }
       let!(:rep) {
         FixityReport.new.tap do |rep|
-          rep.update!( data_for_report: { "no_checks" => 0, "timestamp" =>report_date,
-            "asset_count" => 0, "with_checks" => 0, "recent_count" => 0, "stale_checks" => 0
-          })
+          rep.update!( data_for_report: { "no_checks" => 0, "asset_count" => 12 })
         end
       }
-
-      it "finds a report and passes it to the template after enqueuing a new calculate job" do
-        expect { get :fixity_report }.to have_enqueued_job(CalculateFixityReportJob)
+      it "finds a report and passes it to the template" do
+        get :fixity_report
         expect(response).to have_http_status(200)
-        expect(assigns(:fixity_report)[:timestamp]).to eq "2025-01-01 00:00:00 -0400"
-        expect(assigns(:new_report_started)).to eq 'true'
-      end
-
-      context "recent report" do
-        let(:report_date) { Time.current.to_s }
-        it "finds a recent report and passes it to the template; does not attempt to recalculate" do
-          expect {
-           get :fixity_report
-          }.not_to have_enqueued_job(CalculateFixityReportJob)
-          expect(response).to have_http_status(200)
-          expect(assigns(:fixity_report)[:timestamp]).to eq rep.data_for_report['timestamp']
-          expect(assigns(:new_report_started)).to be_nil
-         end
+        expect(assigns(:fixity_report).symbolize_keys).to eq rep[:data_for_report].symbolize_keys
       end
     end
-  end  
+  end
+
+  describe "#calculate_fixity_report", logged_in_user: :editor do
+    it "enqueues the job" do
+      expect { get :calculate_fixity_report }.to have_enqueued_job(CalculateFixityReportJob)
+      expect(response).to have_http_status(302)
+    end
+  end 
+
 end
