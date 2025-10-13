@@ -4,7 +4,7 @@
 # fixity_report.html.erb.
 # The class is used in controllers/admin/assets_controller.rb .
 
-class FixityReport
+class FixityReport  < ApplicationRecord
   # If no fixity check no older than STALE_IN_DAYS, considered stale
   STALE_IN_DAYS = ScihistDigicoll::AssetsNeedingFixityChecks::DEFAULT_PERIOD_IN_DAYS
   # Assets older than EXPECTED_FRESH_IN_DAYS should not be stale, or it's a problem.
@@ -17,6 +17,17 @@ class FixityReport
   RECENT_ASSET_SQL    = "(kithe_models.created_at > (NOW() - INTERVAL '#{EXPECTED_FRESH_IN_DAYS} days'))"
   REPORT_CACHE_KEY = "scihist:fixity_report"
   HOW_LONG_TO_CACHE_REPORT = 1.days
+
+  def get_latest
+    latest = FixityReport.order(created_at: :desc).first
+    FixityReport.where.not(id: latest.id).delete_all if latest
+    latest&.data_for_report&.symbolize_keys
+  end
+
+  def save_new
+    self.data_for_report = report_hash
+    self.save!
+  end
 
   def report_hash
     rep = {}
