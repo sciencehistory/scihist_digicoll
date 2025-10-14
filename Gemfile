@@ -53,7 +53,6 @@ gem "net-protocol", "!= 0.2.0"
 
 gem "view_component", "~> 4.0"
 gem "alba", "~> 3.1" # for JSON serialization of models
-
 #  Scout is a monitoring tool we are experimenting with
 gem 'scout_apm'
 
@@ -71,7 +70,7 @@ gem "blacklight_range_limit", "~> 9.1.0" # version no longer sync'd with blackli
 
 # for some code to deal with transcoding video, via AWS MediaConvert
 # Lower than 1.2.1 had far too big gem builds! https://github.com/samvera-labs/active_encode/issues/126
-gem "active_encode", "~> 1.0", ">= 1.2.1"
+gem "active_encode", "~> 2.0"
 
 # these gems are needed for active_encode MediaConvert adapter
 # https://github.com/samvera-labs/active_encode/blob/main/guides/media_convert_adapter.md
@@ -123,7 +122,7 @@ gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 
 gem 'simple_form', "~> 5.0"
 
-gem "browse-everything", "~> 1.5"
+gem "browse-everything", ">= 2.0.0.alpha.1", "< 3"
 gem "qa", "~> 5.2", ">= 5.14.0"
 gem "shrine", "~> 3.3" #, path: "../shrine"
 # shrine-compat endpoint to get uppy to direct upload to S3 with resumable multi-part upload
@@ -157,7 +156,7 @@ gem "prawn-html", "< 2"
 gem 'matrix', '~> 0.4'
 
 gem "pdf-reader", "~> 2.2" # simple metadata extraction from pdfs
-gem 'rubyzip', '~> 2.0'
+gem 'rubyzip', '~> 3.0'
 gem 'browser', '~> 6.0' # browser user-agent detection, maybe only for IE-unsupported warning.
 
 
@@ -191,9 +190,7 @@ gem "rack-attack", "~> 6.6" # throttling excessive requests
 gem "webvtt-ruby", "< 2" # https://github.com/opencoconut/webvtt-ruby
 
 # MS Word .docx for some OH transcript handling
-# Appears entirely unmaintained and has some bugfixes we need in unreleased master
-# We will lock to SHA for safety.
-gem "docx", github: "ruby-docx/docx", ref: "c5bcb57"
+gem "docx", "< 1.0"
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
