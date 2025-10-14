@@ -71,7 +71,7 @@ gem "blacklight_range_limit", "~> 9.1.0" # version no longer sync'd with blackli
 
 # for some code to deal with transcoding video, via AWS MediaConvert
 # Lower than 1.2.1 had far too big gem builds! https://github.com/samvera-labs/active_encode/issues/126
-gem "active_encode", "~> 1.0", ">= 1.2.1"
+gem "active_encode", "~> 2.0"
 
 # these gems are needed for active_encode MediaConvert adapter
 # https://github.com/samvera-labs/active_encode/blob/main/guides/media_convert_adapter.md
@@ -191,9 +191,7 @@ gem "rack-attack", "~> 6.6" # throttling excessive requests
 gem "webvtt-ruby", "< 2" # https://github.com/opencoconut/webvtt-ruby
 
 # MS Word .docx for some OH transcript handling
-# Appears entirely unmaintained and has some bugfixes we need in unreleased master
-# We will lock to SHA for safety.
-gem "docx", github: "ruby-docx/docx", ref: "c5bcb57"
+gem "docx", "< 1.0"
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

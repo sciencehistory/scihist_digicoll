@@ -1,28 +1,6 @@
 require 'docx'
 require 'tempfile'
 
-
-# Patch to Docx gem to give us substitute_block, where we can supply a block that
-# has access to regexp match data, with captures.
-#
-# See https://github.com/ruby-docx/docx/pulls
-#
-# docx gem may not currently be maintained, this may not ever be merged upstream.
-
-SanePatch.patch('docx', '0.8.0') do
-  require 'docx/document'
-  class Docx::Elements::Containers::TextRun
-    def substitute_block(match, &block)
-      @text_nodes.each do |text_node|
-        text_node.content = text_node.content.gsub(match) { |_unused_matched_string|
-          block.call(Regexp.last_match)
-        }
-      end
-      reset_text
-    end
-  end
-end
-
 # arithematically alter timestamps in multi-part joined Oral History transcripts to be in proper sequence
 #
 # Transcript is a MS Word .docx file that has timestamps in it of the form `[hhh:mm:ss]`, and tape split
@@ -76,7 +54,7 @@ class SequenceOhTimestamps
       end
 
       paragraph.each_text_run do |text_run|
-        text_run.substitute_block(/\[(\d+):(\d\d):(\d\d)(?:\.(\d+))?\]/) do |match_data|
+        text_run.substitute_with_block(/\[(\d+):(\d\d):(\d\d)(?:\.(\d+))?\]/) do |match_data|
           hours, minutes, seconds, fractional_seconds = match_data[1].to_i, match_data[2].to_i, match_data[3].to_i, match_data[4].to_f
           timecode_seconds = seconds + (minutes * 60) + (hours * 60 * 60)
 
