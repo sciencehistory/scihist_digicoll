@@ -53,7 +53,6 @@ gem "net-protocol", "!= 0.2.0"
 
 gem "view_component", "~> 4.0"
 gem "alba", "~> 3.1" # for JSON serialization of models
-
 #  Scout is a monitoring tool we are experimenting with
 gem 'scout_apm'
 
@@ -157,7 +156,7 @@ gem "prawn-html", "< 2"
 gem 'matrix', '~> 0.4'
 
 gem "pdf-reader", "~> 2.2" # simple metadata extraction from pdfs
-gem 'rubyzip', '~> 2.0'
+gem 'rubyzip', '~> 3.0'
 gem 'browser', '~> 6.0' # browser user-agent detection, maybe only for IE-unsupported warning.
 
 
