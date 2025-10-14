@@ -136,7 +136,7 @@
       </tr>
 
       <tr>
-        <td>Not yet stored (the asset has no file attached to it yet)<br>
+        <td>Not yet fully ingested (no attached file)<br>
           <i>These should be temporary, pending ingest, and can't be fixity checked yet.</i>
         </td>
         <td><%=  number_with_delimiter(@fixity_report[:no_stored_files]) %></td>
@@ -144,32 +144,32 @@
 
 
       <tr>
-        <td>Stored (the asset has a file attached to it)</td>
+        <td>Fully ingested (attached file)</td>
         <td><%= number_with_delimiter(@fixity_report[:stored_files])%></td>
       </tr>
 
       <tr>
-        <td>Stored, but no checks</td>
+        <td>Fully ingested, no checks</td>
         <td><%= number_with_delimiter(@fixity_report[:no_checks]) %></td>
       </tr>
 
       <tr>
-        <td>Stored, at least one check</td>
+        <td>Fully ingested, at least one check</td>
         <td><%= number_with_delimiter(@fixity_report[:with_checks]) %></td>
       </tr>
 
       <tr>
-        <td>Stored, checked in the past <%= FixityReport::STALE_IN_DAYS %> days</td>
+        <td>Fully ingested, checked in the past <%= FixityReport::STALE_IN_DAYS %> days</td>
         <td><%= number_with_delimiter(@fixity_report[:recent_checks]) %></td>
       </tr>
 
       <tr>
-        <td>Stored, stale checks (have not been checked for <%= FixityReport::STALE_IN_DAYS %> days, or ever)</td>
+        <td>Fully ingested, stale checks (have not been checked for <%= FixityReport::STALE_IN_DAYS %> days, or ever)</td>
         <td><%= number_with_delimiter(@fixity_report[:no_checks_or_stale_checks]) %></td>
       </tr>
 
       <tr>
-        <td>Stored asset with stalest fixity check</td>
+        <td>Fully ingested asset with stalest fixity check</td>
         <td>
             <% if @fixity_report[:stalest_current_fixity_check_asset_id] %>
               <%= link_to l(DateTime.parse(@fixity_report[:stalest_current_fixity_check_timestamp]), format: :admin), admin_asset_path(Asset.find(@fixity_report[:stalest_current_fixity_check_asset_id] )) %>
