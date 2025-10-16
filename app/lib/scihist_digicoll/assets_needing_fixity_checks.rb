@@ -40,8 +40,8 @@ module ScihistDigicoll
     # Enumerator back, which lets you chain methods like `each_slice` onto it, which is actually
     # what our intended caller does.
     #
-    # The implementation fetches 1000 (BATCH_FETCH_SIZE) of the Assets with stalest
-    # fixity checks in; and keeps doing that in batches of 1000 until all the assets
+    # The implementation fetches 200 (BATCH_FETCH_SIZE) of the Assets with stalest
+    # fixity checks in; and keeps doing that in batches of 200 until all the assets
     # we desire to fetch (based on total number of assets divide by CYCLE_LENGTH) have
     # been fetched.
     #
@@ -51,13 +51,12 @@ module ScihistDigicoll
     # to add fixity checks records, in a way that affected the conditions of the `find_each`,
     # and may have resulted in ending up checking everything. The trick here is to avoid
     # fetching everything into memory, including huge lists of IDs, or making SQL involving
-    # lists of hundreds/thousands of IDs, while still batching fetching multipe objects
+    # lists of hundreds/thousands of IDs, while still batching fetching multiple objects
     # per SQL select.
     def assets_to_check
       # Clever way to return an enumerator that can be chained
       # https://blog.arkency.com/2014/01/ruby-to-enum-for-enumerator
       return to_enum(:assets_to_check) unless block_given?
-
 
       fetched = 0
       while (fetched < expected_num_to_check)
@@ -74,6 +73,23 @@ module ScihistDigicoll
       # make sure we round UP
       @expected_num_to_check ||= (cycle_length == 0 ? Asset.count : (Asset.count.to_f / cycle_length).ceil)
     end
+
+    # Assets for which all fixity checks are older DEFAULT_PERIOD_IN_DAYS.
+    # Under ordinary circumstances we check overdue assets only as a failsafe after the main assets_to_check routine is run,
+    # and thus this method usually returns an empty or short array. It's fine to load these assets into memory.
+    def overdue_assets
+      stored_file  = FixityReport::STORED_FILE_SQL
+      recent_asset = FixityReport::RECENT_ASSET_SQL
+      stale_check  = FixityReport::STALE_CHECKS_SQL
+
+      Asset.where(
+        id: Asset.select("kithe_models.id").
+          left_outer_joins(:fixity_checks).group(:id).having(stored_file).
+          having("#{recent_asset} = false").
+          having("(#{stale_check}) OR (#{stale_check} is NULL)")
+      )
+    end
+
 
     private
 
