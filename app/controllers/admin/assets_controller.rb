@@ -104,6 +104,7 @@ class Admin::AssetsController < AdminController
   end
 
   def fixity_report
+    @stale_in_days = ScihistDigicoll::AssetsNeedingFixityChecks::DEFAULT_PERIOD_IN_DAYS
     @fixity_report = FixityReport.new.get_latest
     if @fixity_report.nil?
       CalculateFixityReportJob.perform_later
