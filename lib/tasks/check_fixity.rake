@@ -1,5 +1,15 @@
 namespace :scihist do
   namespace :check_fixity do
+
+    desc """
+    This is meant to be run on a nightly basis in a cron job / Heroku scheduler.
+    * First check a fixed number of assets;
+    * Then, check any leftover 'overdue' works that have not been checked in a certain number of days.
+    """
+    task :nightly => [:check_fixity, :complete_overdue] do
+      Rails.logger.info "check_fixity: nightly fixity check completed."
+    end
+
     desc """
     Checks the fixity of some or all Assets in the database.
 
@@ -64,7 +74,7 @@ namespace :scihist do
         progress_bar.increment if progress_bar
       end
       if count_of_items_checked > 0
-        Rails.logger.info "complete_stale_checks: found and checked #{count_of_items_checked} stale assets."
+        Rails.logger.info "check_fixity: complete_stale_checks: found and checked #{count_of_items_checked} stale assets."
       end
     end
   end
