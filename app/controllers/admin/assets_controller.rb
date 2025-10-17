@@ -95,8 +95,20 @@ class Admin::AssetsController < AdminController
     redirect_to admin_asset_url(@asset), notice: 'This file will be checked shortly.'
   end
 
+  def calculate_fixity_report
+    if CalculateFixityReportJob.perform_later.successfully_enqueued?
+      redirect_to admin_fixity_report_path, notice: 'A new fixity report is being calculated. Reload this page in a few minutes to see it.'
+    else
+      redirect_to admin_fixity_report_path, error:'Unable to request a new fixity report. Please check the logs.'
+    end
+  end
+
   def fixity_report
-    @fixity_report = FixityReport.new()
+    @fixity_report = FixityReport.new.get_latest
+    if @fixity_report.nil?
+      CalculateFixityReportJob.perform_later
+      @new_report_started = 'true'
+    end
   end
 
   def display_attach_form
