@@ -61,5 +61,20 @@ if [ -n "$FILES" ]; then
     fi
 fi
 
+
+# Get the current branch name
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+# Specify the branch to protect
+protected_branch="master"
+
+# Check if the current branch is the protected branch
+if [ "$current_branch" = "$protected_branch" ]; then
+  echo "Error: Direct commits to '$protected_branch' branch are not allowed."
+  echo "Please switch to a different branch or create a new one."
+  exit 1 # Exit with a non-zero status to abort the commit
+fi
+
+
 # Normal exit
 exit 0
