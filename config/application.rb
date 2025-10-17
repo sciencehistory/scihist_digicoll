@@ -10,7 +10,7 @@ require "action_controller/railtie"
 require "action_mailer/railtie"
 require "action_view/railtie"
 require "action_cable/engine"
-require "sprockets/railtie"
+#require "sprockets/railtie" # we use propshaft now
 require "rails/test_unit/railtie"
 
 

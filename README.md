@@ -113,8 +113,8 @@ Then:
 
 ### Assets: Javascript, CSS, etc
 
-We preferentially use Vite.js (an ES6-style JS bundler, https://vite-ruby.netlify.app/) for managing and assembling our **javascript AND CSS stylesheets**.  (Sprockets is still used for
-last-mile asset delivery and static images and fonts, until we replace with rails-preferred propshaft)
+We  use Vite.js (an ES6-style JS bundler, https://vite-ruby.netlify.app/) for managing and assembling our **javascript AND CSS stylesheets**.  Rails propshaft  used for
+last-mile asset delivery and static images and fonts.
 
 
 * Frontend assets managed by vite source are at `./app/frontend`.
@@ -135,11 +135,9 @@ last-mile asset delivery and static images and fonts, until we replace with rail
 
   * The sass npm package uses "dart-sass", the currently only officially supported sass package. So that's good.
 
-  * Sass rubygems used ruby-sass or libsass, which are deprecated by sass! So that's good we're not using them anymore.
+  * dart-sass deprecates some things, [like the `/` divide operator](https://sass-lang.com/documentation/breaking-changes/slash-div), that were not depreccated in previous rubysass/libsass.  It also provides some functions which were NOT supported by previous libsass/rubysass. So that's a bit confusing.
 
-  * dart-sass deprecates some things, [like the `/` divide operator](https://sass-lang.com/documentation/breaking-changes/slash-div), that were not depreccated in rubysass/libsass.  It also provides some functions which were NOT supported by previous libsass/rubysass. So that's a bit confusing.
-
-* MOST image files (and similar static assets) still handled by sprockets, located in ./app/assets/images and fonts/, and referenced via rails sprockets helper methods. But if an (eg) image needs to be referenced in a vite (S)CSS file:
+* MOST image files (and similar static assets) are handled by propshaft, located in ./app/assets/images and fonts/, and referenced via rails helper methods. But if an (eg) image needs to be referenced in a vite (S)CSS file:
   * image is in `./app/frontend/images/*`
   * reference using standard CSS `url(@/images/*)`, vite will properly serve/build and translate url. Note the `@/` at the beginning that vite will use to look it up in vite entrypoint directories, which are configured by vite-ruby to include ./app/frontend/images.
 
