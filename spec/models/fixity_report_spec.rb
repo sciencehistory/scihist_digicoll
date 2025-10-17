@@ -153,8 +153,6 @@ describe FixityReport do
       expect(report[:not_recent_with_no_checks_or_stale_checks]).to eq 1
 
       # and can we fetch the actual assets that correspond, with this other method?
-      found = []
-
       expect(ScihistDigicoll::AssetsNeedingFixityChecks.new.overdue_assets.length).to eq 1
 
     end
