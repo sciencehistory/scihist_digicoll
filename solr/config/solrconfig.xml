@@ -336,8 +336,8 @@
 -->
   <query>
     <documentCache class="solr.CaffeineCache"
-       size="1024"
-       initialSize="1024"
+       size="512"
+       initialSize="512"
        autowarmCount="0"/>
   </query>
 
