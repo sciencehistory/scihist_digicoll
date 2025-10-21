@@ -328,17 +328,24 @@
   </requestHandler>
 -->
 
-  
-<!--
-  Note from https://solr.apache.org/guide/solr/latest/configuration-guide/caches-warming.html#document-cache: 
-  Do not use the maxRamMB setting for the documentCache. The amount of memory required for the cached documents will
-  not be calculated properly, which can lead to the cache using much more memory than anticipated.
--->
+
+
   <query>
+    <!--
+      Note from https://solr.apache.org/guide/solr/latest/configuration-guide/caches-warming.html#document-cache:
+      Do not use the maxRamMB setting for the documentCache. The amount of memory required for the cached documents will
+      not be calculated properly, which can lead to the cache using much more memory than anticipated.
+    -->
     <documentCache class="solr.CaffeineCache"
        size="256"
        initialSize="256"
        autowarmCount="0"/>
+
+    <filterCache class="solr.CaffeineCache"
+             size="1024"
+             initialSize="1024"
+             autowarmCount="128"
+             async="true" />
   </query>
 
 </config>
