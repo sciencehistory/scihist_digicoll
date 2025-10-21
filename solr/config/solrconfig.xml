@@ -341,16 +341,19 @@
        initialSize="256"
        autowarmCount="0"/>
 
+
+    <!-- as of Oct 2025 with 14K docs, caching a result set with entire corpus is around 4Kb
+         so 1 meg is 250 cached items as a floor (more since most items are not the entire corpus)
+    -->
+
     <filterCache class="solr.CaffeineCache"
-             size="1024"
-             initialSize="1024"
-             autowarmCount="128"
+             maxRamMB="3"
+             autowarmCount="500"
              async="true" />
 
      <queryResultCache class="solr.CaffeineCache"
-             size="1024"
-             initialSize="1024"
-             autowarmCount="128"
+             maxRamMB="2"
+             autowarmCount="300"
              async="true" />
 
   </query>
