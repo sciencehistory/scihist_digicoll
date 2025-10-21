@@ -346,6 +346,13 @@
              initialSize="1024"
              autowarmCount="128"
              async="true" />
+
+     <queryResultCache class="solr.CaffeineCache"
+             size="1024"
+             initialSize="1024"
+             autowarmCount="128"
+             async="true" />
+
   </query>
 
 </config>
