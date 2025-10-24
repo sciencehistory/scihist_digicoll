@@ -204,7 +204,7 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
     context "report exists" do
       let!(:rep) {
         FixityReport.new.tap do |rep|
-          rep.update!( data_for_report: { "no_checks" => 0, "asset_count" => 12 })
+          rep.update!( data_for_report: { "no_checks" => 0, "asset_count" => 12, "timestamp" => DateTime.now })
         end
       }
       it "finds a report and passes it to the template" do
