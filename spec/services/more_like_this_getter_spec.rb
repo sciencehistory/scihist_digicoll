@@ -28,7 +28,7 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
   }
   let! (:indexed_works) { [work_to_match] + five_public_works + private_works }
 
-  context "calls to test solr" do
+  context "calls to test solr", reload_solr_core: true do
     context "with smaller limit" do
       let(:limit) { 2 }
 
@@ -62,7 +62,7 @@ describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapt
       expect(Rails.cache.read(work_to_match_cache_key)).to eq nil
     end
 
-    context "setting turned on" do
+    context "setting turned on", reload_solr_core: true do
       before do
         allow(ScihistDigicoll::Env).to receive(:lookup).with(:cache_more_like_this).and_return(true)
       end

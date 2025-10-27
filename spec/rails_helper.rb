@@ -202,6 +202,12 @@ RSpec.configure do |config|
     Kithe.indexable_settings.disable_callbacks = original
   end
 
+  config.before(:each, :reload_solr_core) do
+    tmp = ScihistDigicoll::Env.lookup!(:solr_url).split('/')[0..-2].join('/')
+    reload_solr_core_url = URI("#{tmp}/admin/cores?action=RELOAD&core=scihist_digicoll_test")
+    Net::HTTP.get(reload_solr_core_url)
+  end
+
   # Vaguely based on advice for sunspot-solr
   # https://github.com/sunspot/sunspot/wiki/RSpec-and-Sunspot#running-sunspot-during-testing
   #

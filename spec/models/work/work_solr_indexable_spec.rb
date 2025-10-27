@@ -4,6 +4,7 @@ require 'rails_helper'
 describe "Work auto-indexes in Solr", indexable_callbacks: true do
   describe "with stubbed solr" do
     let(:update_url) { "#{ScihistDigicoll::Env.lookup!(:solr_url)}/update/json?softCommit=true" }
+
     before do
       stub_request(:post, update_url)
     end
@@ -56,7 +57,7 @@ describe "Work auto-indexes in Solr", indexable_callbacks: true do
   end
 
   # mostly to test our real solr integration tests
-  describe "with real solr", solr: true do
+  describe "with real solr", solr: true, reload_solr_core: true do
     it "indexes to real solr" do
       work = FactoryBot.create(:work, title: "to be indexed")
       solr_query_url = "#{ScihistDigicoll::Env.lookup!(:solr_url)}/select?q=id:#{CGI.escape work.friendlier_id}"
