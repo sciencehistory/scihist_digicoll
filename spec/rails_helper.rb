@@ -203,9 +203,7 @@ RSpec.configure do |config|
   end
 
   config.before(:each, :reload_solr_core) do
-    tmp = ScihistDigicoll::Env.lookup!(:solr_url).split('/')[0..-2].join('/')
-    reload_solr_core_url = URI("#{tmp}/admin/cores?action=RELOAD&core=scihist_digicoll_test")
-    Net::HTTP.get(reload_solr_core_url)
+    Net::HTTP.get(URI("#{ScihistDigicoll::Env.solr_base_url}/admin/cores?action=RELOAD&core=#{ScihistDigicoll::Env.solr_collection_name}"))
   end
 
   # Vaguely based on advice for sunspot-solr
@@ -234,8 +232,7 @@ RSpec.configure do |config|
             puts "Shutting down test solr..."
             ScihistDigicoll::SolrWrapperUtil.stop_with_collection(SolrWrapper.instance)
             $test_solr_known_running = false
-            $test_solr_started = false
-          }
+            $test_solr_started = false          }
 
 
           ScihistDigicoll::SolrWrapperUtil.start_with_collection(SolrWrapper.instance)
