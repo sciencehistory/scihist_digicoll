@@ -336,9 +336,9 @@
 -->
   <query>
     <documentCache class="solr.CaffeineCache"
-       size="3"
-       initialSize="3"
-       autowarmCount="3"
+       size="256"
+       initialSize="256"
+       autowarmCount="256"
        regenerator="solr.NoOpRegenerator"
     />
   </query>
