@@ -9,6 +9,8 @@ class FixityReport  < ApplicationRecord
   # Assets older than EXPECTED_FRESH_IN_DAYS should not be stale, or it's a problem.
   EXPECTED_FRESH_IN_DAYS = 1
 
+  STALE_IN_DAYS = ScihistDigicoll::AssetsNeedingFixityChecks::DEFAULT_PERIOD_IN_DAYS
+
   # We store video originals in 'video_store' and everything else in 'store'.
   NOT_STORED_FILE_SQL = "(file_data ->> 'storage' NOT IN ('store', 'video_store') or file_data ->> 'storage' is NULL)"
   STORED_FILE_SQL     = "(file_data ->> 'storage' IN ('store','video_store'))"
