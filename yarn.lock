@@ -514,12 +514,12 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
 
-blacklight-frontend@^8.12.2:
-  version "8.12.2"
-  resolved "https://registry.yarnpkg.com/blacklight-frontend/-/blacklight-frontend-8.12.2.tgz#4abc0769af2c804e21b376ece0fd22fc34cd9a89"
-  integrity sha512-9bTZMc/52KBFttUAddgx7xnL2C9zOFiVpctcXb4rWaKSCV87FMym+mkfB4iP0UGKn3B2z8XXs0iLDNflQnOpsQ==
+blacklight-frontend@9.0.0-beta7:
+  version "9.0.0-beta7"
+  resolved "https://registry.yarnpkg.com/blacklight-frontend/-/blacklight-frontend-9.0.0-beta7.tgz#947b1868277ea783adb9216970cc682b441b1688"
+  integrity sha512-R3Z6/KS0ZPqCta9jfNucz88MPl02EDofmU4HDhrpfOwskj1mwn4CYKkAMmMpy7L28dUcE5VhluTGmmK2scXK/A==
   dependencies:
-    bootstrap ">=4.3.1 <6.0.0"
+    bootstrap ">=5.3.5 <6.0.0"
 
 blacklight-range-limit@9.1.0:
   version "9.1.0"
@@ -528,7 +528,12 @@ blacklight-range-limit@9.1.0:
   dependencies:
     chart.js "^ 4.4.1"
 
-"bootstrap@>=4.3.1 <6.0.0", "bootstrap@^ 5.0.0":
+"bootstrap@>=5.3.5 <6.0.0":
+  version "5.3.8"
+  resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-5.3.8.tgz#6401a10057a22752d21f4e19055508980656aeed"
+  integrity sha512-HP1SZDqaLDPwsNiqRqi5NcP0SSXciX2s9E+RyqJIIqGo+vJeN5AJVM98CXmW/Wux0nQ5L7jeWUdplCEf0Ee+tg==
+
+"bootstrap@^ 5.0.0":
   version "5.3.3"
   resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-5.3.3.tgz#de35e1a765c897ac940021900fcbb831602bac38"
   integrity sha512-8HLCdWgyoMguSO9o+aH+iuZ+aht+mzW0u3HIMzVu7Srrpv7EBBxTnrFlSCskwdY1+EOFQSm7uMJhNQHkdPcmjg==
