@@ -1,10 +1,47 @@
 
-
 // override sufia facet widget styles to be more brand-like, and generally neater
-.facets {
+.facets  {
   // disable border Blacklight default is trying to put in at small sizes,
   // we have already taken care of it differently.
   --bl-facets-smallish-border: none;
+
+  // no special styles for active facets
+  --bl-facet-active-bg: #{$shi-bg-gray};
+  --bl-facet-active-color: initial;
+  --bl-facet-active-item-color: initial;
+
+  // override various bootstrap and blacklight CSS properties for our facet
+  // accordion to look how it was designed before bootstrap acccordion existed,
+  // we still like it.
+  //
+  // Includes grey bg for button/header, white body, border, with NO
+  // special colors for active\/open/hover, just the same!
+  //
+  // Bit tricky to get it overridden everywhere with right specificity
+  .accordion, .facet-limit {
+    --bs-accordion-btn-bg: #{$shi-bg-gray};
+    --bs-accordion-active-bg: var(--bs-accordion-btn-bg);
+    --bs-accordion-btn-active-icon: var(--bs-accordion-btn-icon);
+
+    --bs-btn-hover-bg: var(--bs-accordion-btn-bg);
+    --bs-accordion-btn-padding-x: 0.5rem;
+    --bs-accordion-btn-padding-y: 0.5rem;
+    --bs-accordion-border-color: #{$card-border-color};
+
+    --bs-accordion-body-padding-x: 1rem;
+    --bs-accordion-body-padding-y: 1rem;
+
+    // need to override variable set on .btn
+    .btn {
+      --bs-btn-font-weight: 500;
+    }
+  }
+
+  // get rid of custom Blacklight-set active icon with different color, this was so hard to
+  // figure out! Having the exact right selector is important, to undo what they set.
+  .facet-limit-active {
+    --bs-accordion-btn-icon: inherit;
+  }
 
   .facets-header {
     // To try to make top line of search results all line up, we hackily try to make
@@ -26,7 +63,7 @@
     @extend .d-md-none;
   }
 
-  .card-header {
+  .accordion-header {
     font-weight: normal;
     line-height: 1.4;
     color: inherit;
@@ -34,18 +71,9 @@
     padding: .625rem .9375rem;
   }
 
-  .card-body {
-    border-top: $card-border-width solid $card-border-color;
-  }
-
   .facet-limit {
     margin-top: 0;
     margin-bottom: 0;
-  }
-
-  // keep double border from happening between "boxes" in our facet limit stack
-  .facet-limit:not(:first-child) {
-    border-top: 0;
   }
 
   .facet-values li {
@@ -54,27 +82,6 @@
     padding-top: 0;
     padding-bottom: 0.5rem;
   }
-
-
-
-  // eliminate any special styles on active facet by overrides
-  // Originally active facet gets green bg and white text, we don't want!
-  .facet-limit-active {
-    color: inherit;
-    border-color: $card-border-color !important;
-    &  .card-header {
-      background-color: $card-cap-bg !important;
-      color: $body-color;
-      border-color: $card-border-color !important;
-      button {
-        color: inherit; // in BL 8 need to override at this level too
-      }
-    }
-    .facet-values li .selected {
-      color: inherit !important;
-    }
-  }
-
 
   form.range_limit {
     display: block;
