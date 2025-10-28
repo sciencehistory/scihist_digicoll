@@ -142,7 +142,8 @@
     </section>
   <% end %>
 
-  <%= render 'catalog/constraints' %>
+  <%= render blacklight_config.view_config(document_index_view_type).constraints_component.new(search_state: search_state) %>
+
   <div class="row">
     <% if @response.documents.present? %>
       <div class="sidebar-col">
