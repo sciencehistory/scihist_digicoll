@@ -147,7 +147,10 @@
   <div class="row">
     <% if @response.documents.present? %>
       <div class="sidebar-col">
-        <%= render 'facets' %>
+        <% conf = blacklight_config.view_config(document_index_view_type) %>
+        <%= render conf.sidebar_component.new(blacklight_config: blacklight_config,
+                                        response: @response,
+                                        view_config: conf) %>
       </div>
       <div class="content-col">
         <%# per-page and sort controls, from Blacklight partial %>
