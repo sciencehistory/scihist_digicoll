@@ -5,7 +5,7 @@
     Better would be extracting the common design elements to ViewComponents you can use
     in both. Maybe in the future. %>
 
-<% provide :page_title, @featured_topic.title %>
+<% @page_title = [@featured_topic.title, render_search_to_page_title(search_state)].collect(&:presence).compact.join(": ") %>
 
 <div itemscope itemtype="http://schema.org/CollectionPage" class="collection-show featured-collection-show">
   <% if has_deeper_search? %>
