@@ -77,7 +77,7 @@
 
       </div>
       <div class="content-col">
-        <%= render 'search_header' %>
+        <%= render blacklight_config.view_config(document_index_view_type).search_header_component.new %>
         <%= render "document_list", documents: @response.documents %>
         <%= render 'catalog/results_pagination' %>
       </div>
