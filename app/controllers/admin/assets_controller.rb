@@ -106,9 +106,9 @@ class Admin::AssetsController < AdminController
   def fixity_report
     @stale_in_days = ScihistDigicoll::AssetsNeedingFixityChecks::DEFAULT_PERIOD_IN_DAYS
     @fixity_report = FixityReport.new.get_latest
-    if @fixity_report.nil?
-      CalculateFixityReportJob.perform_later
-      @new_report_started = 'true'
+    if @fixity_report
+      age_in_days_of_fixity_report = (DateTime.now() - DateTime.parse(@fixity_report[:timestamp])).floor
+      @fixity_report_older_than_a_day = ( age_in_days_of_fixity_report >= 1)
     end
   end
 

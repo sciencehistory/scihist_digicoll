@@ -1,5 +1,6 @@
-<h1 class="mb-4">Fixity Health Report</h1>
-
+<div class="container">
+  <h1 class="mb-4">Fixity Health Report</h1>
+</div>
 <% if @fixity_report.nil? %>
   <div class="container">
     <div class="row">
@@ -12,7 +13,12 @@
 <div class="container">
   <div class="row">
     <div class="col-md">
-        <p> This report is from <%= distance_of_time_in_words(@fixity_report[:timestamp], Time.now) %> ago. <%= link_to "New report", admin_calculate_fixity_report_path, class:"btn btn-primary mb-3"%></p>
+        <p> This report was created <%= distance_of_time_in_words(@fixity_report[:timestamp], Time.now) %> ago (<%=  l(DateTime.parse(@fixity_report[:timestamp]), format: :admin) %>).
+          <% if @fixity_report_older_than_a_day %>
+            <p class="h2 alert alert-danger"><i class="fa fa fa-thumbs-down" aria-hidden="true"></i> This report is out of date.</p>
+          <% end %>
+          </p>
+          <p><%= link_to "Prepare a new report now", admin_calculate_fixity_report_path, class:"btn btn-primary mb-3"%></p>
     </div>
   </div>
   <div class="row">
@@ -43,7 +49,7 @@
   </div>
 </div>
 
-<div class="mt-5">
+<div class="mt-5 container">
   <h2 class="border-bottom">Assets Currently Failing Fixity</h2>
   <% if @fixity_report[:bad_asset_ids].present? %>
       <p class="text-danger">
@@ -62,7 +68,7 @@
   <% end %>
 </div>
 
-<div class="mt-5">
+<div class="mt-5 container">
   <div class="mb-1">
     <h2 class="mb-0">Assets created more than <%= pluralize FixityReport::EXPECTED_FRESH_IN_DAYS, "day" %> ago    </h2>
     <span class="ms-2"><i>Expected to have a recent fixity check on record</i></span>
@@ -115,7 +121,7 @@
 </div>
 
 
-<div class="mt-5">
+<div class="mt-5 container">
   <h2>Asset and Fixity Decriptive Statistics</h2>
   <table class="table mt-3">
     <thead>
