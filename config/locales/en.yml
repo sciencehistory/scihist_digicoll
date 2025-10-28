@@ -57,7 +57,8 @@ en:
         submit: "Search"
         search:
           placeholder: "Search Digital Collections..."
-      search_constraints_header: "You Searched For"
+      filters:
+        title: "You Searched For"
     range_limit:
       submit_limit: Apply
 
