@@ -4,11 +4,11 @@ namespace :scihist do
     desc """
     These three tasks should be completed nightly by the Heroku scheduler.
     * 1) Check a fixed number of assets;
-    * 2) Check any 'overdue' works that have not been checked in a certain number of days;
+    * 2) Check any 'overdue' works that have not been checked in a certain number of days (under normal circumstances, very few);
     * 3) Compile a fresh report for the admin pages.
     """
-    task :nightly => [:check_fixity, :complete_overdue, :prepare_report] do
-      Rails.logger.info "check_fixity: nightly fixity check completed; new report will be prepared."
+    task :nightly => [:check, :check_overdue, :prepare_report] do
+      Rails.logger.info "check_fixity: nightly fixity checks completed; new report will be prepared."
     end
 
 
@@ -17,19 +17,19 @@ namespace :scihist do
     Checks the fixity of some or all Assets in the database.
 
     To check only a subset today, checking all every 7 days:
-      bundle exec rake scihist:check_fixity
+      bundle exec rake scihist:check_fixity:check
 
     To run a full check of all assets with stored files:
-      CYCLE_LENGTH=0 bundle exec rake scihist:check_fixity
+      CYCLE_LENGTH=0 bundle exec rake scihist:check_fixity:check
 
     To check 1/30th today instead of 1/7th, checking all every 30 days:
-      CYCLE_LENGTH=30 bundle exec rake scihist:check_fixity
+      CYCLE_LENGTH=30 bundle exec rake scihist:check_fixity:check
 
     For a progress bar, preface any of these with
       SHOW_PROGRESS_BAR='true'
 
     """
-    task :check_fixity => :environment do
+    task :check => :environment do
       cycle_length = ENV['CYCLE_LENGTH'].nil? ? ScihistDigicoll::AssetsNeedingFixityChecks::DEFAULT_PERIOD_IN_DAYS : Integer(ENV['CYCLE_LENGTH'])
       check_lister = ScihistDigicoll::AssetsNeedingFixityChecks.new(cycle_length)
       Rails.logger.info "check_fixity: starting fixity check for #{check_lister.expected_num_to_check} of #{Asset.count} assets."
@@ -67,7 +67,7 @@ namespace :scihist do
     
 
     desc "Check any assets marked as overdue for a fixity check"
-    task :complete_overdue => :environment do
+    task :check_overdue => :environment do
       overdue_assets = ScihistDigicoll::AssetsNeedingFixityChecks.new.overdue_assets
       if ENV['SHOW_PROGRESS_BAR'] == 'true'
         progress_bar =  ProgressBar.create(total: overdue_assets.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
