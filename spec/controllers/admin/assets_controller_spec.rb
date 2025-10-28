@@ -194,6 +194,8 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
   end
 
   describe "#fixity_report", logged_in_user: :editor do
+    render_views
+
     context "report absent" do
       it "shows page normally" do
         get :fixity_report
@@ -202,9 +204,21 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
     end
 
     context "report exists" do
+      let(:asset) {  create(:asset) }
       let!(:rep) {
         FixityReport.new.tap do |rep|
-          rep.update!( data_for_report: { "no_checks" => 0, "asset_count" => 12, "timestamp" => DateTime.now })
+          rep.update!( data_for_report: {
+            "no_checks" => 0, "timestamp" => DateTime.now,
+            "asset_count" => 88363, "with_checks" => 88363, "stored_files" => 88363,
+            "recent_checks" => 88363, "not_recent_count" => 88363,
+            "recent_count" => 0, "stale_checks" => 0, "no_stored_files" => 0,
+            "not_recent_not_stored_count" => 0, "no_checks_or_stale_checks" => 0, "bad_asset_ids" => [],
+            "latest_check_date" => "2025-10-28T03:34:30.537-04:00",
+            "earliest_check_date" => "2019-09-25T02:30:06.276-04:00",
+            "stalest_current_fixity_check_asset_id" => asset.id,
+            "stalest_current_fixity_check_timestamp" => "2025-08-01T02:51:49.062-04:00",
+            "not_recent_with_no_checks_or_stale_checks" => 0
+          })
         end
       }
       it "finds a report and passes it to the template" do
