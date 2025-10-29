@@ -93,6 +93,12 @@
   }
 }
 
+// override blacklight to make sure right-edge button in "sort/per page" area
+// is right-justified. Annoying.
+.search-widgets :last-child {
+  margin-right: 0 !important;
+}
+
 .sort-pagination {
   // to try to make search results line up horizontally, we have to override
   // some BL things, and match blacklight .facets-header so it lines up
@@ -106,15 +112,7 @@
   flex-wrap: wrap;
   justify-content: space-between;
   border: none;
-  .search-widgets {
-    float: none !important;
 
-    // override blacklight's use of bootstrap -- in our layout we want
-    // this flush with right margin.
-    #sort-dropdown {
-      margin-right: 0 !important;
-    }
-  }
   &:after {
     display: none;
   }
