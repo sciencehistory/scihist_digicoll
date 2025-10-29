@@ -328,17 +328,38 @@
   </requestHandler>
 -->
 
-  
-<!--
-  Note from https://solr.apache.org/guide/solr/latest/configuration-guide/caches-warming.html#document-cache: 
-  Do not use the maxRamMB setting for the documentCache. The amount of memory required for the cached documents will
-  not be calculated properly, which can lead to the cache using much more memory than anticipated.
--->
+
+
   <query>
+    <!--
+      Note from https://solr.apache.org/guide/solr/latest/configuration-guide/caches-warming.html#document-cache:
+      Do not use the maxRamMB setting for the documentCache. The amount of memory required for the cached documents will
+      not be calculated properly, which can lead to the cache using much more memory than anticipated.
+    -->
     <documentCache class="solr.CaffeineCache"
        size="256"
        initialSize="256"
        autowarmCount="0"/>
+
+
+    <!-- as of Oct 2025 with 14K docs, filter and query result caches look like they may be around 3-7K
+         per entry. filterCaches look SMALLER, but not sure if that's true. This is just approximate.
+         So caches should get around 150-300 entries per megabyte.
+
+         As our corpus gets larger, space for each cache entry will increase, holding fewer entries
+         per megabyte.
+    -->
+
+    <filterCache class="solr.CaffeineCache"
+             maxRamMB="3"
+             autowarmCount="500"
+             async="true" />
+
+     <queryResultCache class="solr.CaffeineCache"
+             maxRamMB="2"
+             autowarmCount="300"
+             async="true" />
+
   </query>
 
 </config>
