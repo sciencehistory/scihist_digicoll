@@ -232,7 +232,8 @@ RSpec.configure do |config|
             puts "Shutting down test solr..."
             ScihistDigicoll::SolrWrapperUtil.stop_with_collection(SolrWrapper.instance)
             $test_solr_known_running = false
-            $test_solr_started = false          }
+            $test_solr_started = false
+          }
 
 
           ScihistDigicoll::SolrWrapperUtil.start_with_collection(SolrWrapper.instance)

@@ -4,7 +4,6 @@ require 'rails_helper'
 describe "Work auto-indexes in Solr", indexable_callbacks: true do
   describe "with stubbed solr" do
     let(:update_url) { "#{ScihistDigicoll::Env.lookup!(:solr_url)}/update/json?softCommit=true" }
-
     before do
       stub_request(:post, update_url)
     end
