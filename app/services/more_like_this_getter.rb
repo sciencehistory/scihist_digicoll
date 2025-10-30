@@ -77,6 +77,7 @@ class MoreLikeThisGetter
       "q"         => "id:#{@work.friendlier_id}",
       "fq"        => "{!term f=published_bsi}true",
       "mlt.fl"    => 'more_like_this_keywords_tsimv',
+      "fl"        => 'id',
       "rows"      => @limit
     }
   end
