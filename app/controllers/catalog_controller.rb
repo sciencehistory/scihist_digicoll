@@ -289,6 +289,11 @@ class CatalogController < ApplicationController
     #config.show.display_type_field = 'format'
     #config.show.thumbnail_field = 'thumbnail_path_ss'
 
+
+    # Turn off the new facet-suggest functionality, until we are ready to turn it on.
+    # https://github.com/sciencehistory/scihist_digicoll/issues/3062
+    config.default_facet_suggest = false
+
     # solr fields that will be treated as facets by the blacklight application
     #   The ordering of the field names is the order of the display
     #
