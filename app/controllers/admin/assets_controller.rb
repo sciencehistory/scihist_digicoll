@@ -104,6 +104,7 @@ class Admin::AssetsController < AdminController
   end
 
   def fixity_report
+    @stale_in_days = ScihistDigicoll::AssetsNeedingFixityChecks::DEFAULT_PERIOD_IN_DAYS
     @fixity_report = FixityReport.new.get_latest
     if @fixity_report
       age_in_days_of_fixity_report = (DateTime.now() - DateTime.parse(@fixity_report[:timestamp])).floor
