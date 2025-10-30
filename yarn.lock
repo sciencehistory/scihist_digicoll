@@ -514,10 +514,10 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
 
-blacklight-frontend@9.0.0-beta7:
-  version "9.0.0-beta7"
-  resolved "https://registry.yarnpkg.com/blacklight-frontend/-/blacklight-frontend-9.0.0-beta7.tgz#947b1868277ea783adb9216970cc682b441b1688"
-  integrity sha512-R3Z6/KS0ZPqCta9jfNucz88MPl02EDofmU4HDhrpfOwskj1mwn4CYKkAMmMpy7L28dUcE5VhluTGmmK2scXK/A==
+blacklight-frontend@9.0.0-beta8:
+  version "9.0.0-beta8"
+  resolved "https://registry.yarnpkg.com/blacklight-frontend/-/blacklight-frontend-9.0.0-beta8.tgz#7f2bfb1491b8c049c3d55ddaf6c665139e02050e"
+  integrity sha512-qtEiFGi0hjvuV41I1jhTuKnUf6ckw4Qs7wa3wSlLDnFyiaIIY8fBR5gp8d/dQQiGJF4CMfcJK3DMMobTN0AkTg==
   dependencies:
     bootstrap ">=5.3.5 <6.0.0"
 

@@ -144,7 +144,7 @@ GEM
     benchmark (0.4.1)
     bigdecimal (3.3.1)
     bindex (0.8.1)
-    blacklight (9.0.0.beta7)
+    blacklight (9.0.0.beta8)
       globalid
       i18n (>= 1.7.0)
       jbuilder (~> 2.7)
@@ -825,7 +825,7 @@ DEPENDENCIES
   aws-sdk-s3 (~> 1.0)
   axe-core-rspec (~> 4.3)
   barnes
-  blacklight (~> 9.0.0.beta7)
+  blacklight (~> 9.0.0.beta8)
   blacklight_range_limit (~> 9.1.0)
   bootsnap (>= 1.4.4)
   bootstrap4-kaminari-views
