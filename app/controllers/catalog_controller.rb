@@ -292,7 +292,10 @@ class CatalogController < ApplicationController
 
     # Turn off the new facet-suggest functionality, until we are ready to turn it on.
     # https://github.com/sciencehistory/scihist_digicoll/issues/3062
-    config.default_facet_suggest = false
+    # config.default_facet_suggest = false
+
+    # customize facet list display, so we can customize suggest form
+    config.index.facet_filters_component = Scihist::BlacklightFacetFiltersComponent
 
     # solr fields that will be treated as facets by the blacklight application
     #   The ordering of the field names is the order of the display
