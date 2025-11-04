@@ -5,7 +5,7 @@ require 'rails_helper'
 # admin/works_controller.rb
 # This one tests only the second.
 
-RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue_adapter: :test do
+RSpec.describe Admin::WorksController, type: :controller, queue_adapter: :test do
 
   context "not-logged-in user", logged_in_user: false do
     it "redirects to login" do
@@ -14,7 +14,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     end
   end
 
-  context "logged-in user" do
+  context "logged-in user", :logged_in_user do
     it "shows page" do
       get :index
       expect(response).not_to be_redirect
@@ -141,10 +141,19 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         end
       end
     end
+
+    context "logged-in user cannot" do
+      let(:work) { create(:work) }
+      it "can not publish" do
+        put :publish, params: { id: work.friendlier_id }
+        expect(response.status).to redirect_to(root_path)
+        expect(flash[:alert]).to match /You don't have permission/
+      end
+    end
   end
 
-  context "editor user" do
-    context "#update", logged_in_user: :editor do
+  context "editor user", logged_in_user: :editor do
+    context "#update" do
       let(:work) { create(:public_work, ocr_requested: true, members: [create(:asset_with_faked_file, hocr: "<random ocr/>")]) }
       it "trims leading and trailing spaces" do
         put :update, params: {
@@ -201,7 +210,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       end
     end
 
-    context "#reorder_members", logged_in_user: :editor do
+    context "#reorder_members" do
       let(:c)  { create(:asset_with_faked_file, :mp3, title: "c", position: 1) }
       let(:b)  { create(:asset_with_faked_file, :mp3, title: "b", position: 2) }
       let(:a)  { create(:asset_with_faked_file, :mp3, title: "a", position: 3) }
@@ -228,26 +237,8 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         expect( work.members.order(:position).map {|member| member.title}).to eq ['a', 'b', 'c']
       end
     end
-  end
 
-  context "admin user" do
-    let(:work) { create(:work) }
-
-    context "non-admin user cannot" do
-      it "can not publish" do
-        put :publish, params: { id: work.friendlier_id }
-        expect(response.status).to redirect_to(root_path)
-        expect(flash[:alert]).to match /You don't have permission/
-      end
-
-      it "can not delete" do
-        put :destroy, params: { id: work.friendlier_id }
-        expect(response.status).to redirect_to(root_path)
-        expect(flash[:alert]).to match /You don't have permission/
-      end
-    end
-
-    context "admin user can", logged_in_user: :admin do
+    describe "publishing and unpublishing" do
       # works that have the necessary metadata to be published, but aren't actually published yet
       let(:work_child) { build(:work, :published, published: false) }
       let(:asset_child) { build(:asset_with_faked_file, :tiff, published: false) }
@@ -295,16 +286,6 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
           expect(work.published?).to be true
           expect(work.members.all? {|m| m.published?}).to be false
         end
-      end
-
-      it "can delete, and deletes children" do
-        put :destroy, params: { id: work.friendlier_id }
-        expect(response.status).to redirect_to(admin_works_path)
-        expect(flash[:notice]).to match /was successfully destroyed/
-
-        expect { work.reload }.to raise_error(ActiveRecord::RecordNotFound)
-        expect { work_child.reload }.to raise_error(ActiveRecord::RecordNotFound)
-        expect { asset_child.reload }.to raise_error(ActiveRecord::RecordNotFound)
       end
 
       context "work missing required fields for publication" do
@@ -364,5 +345,32 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         end
       end
     end
+
+    context "editor user cannot" do
+      let(:work) { create(:work) }
+      it "can not delete" do
+        put :destroy, params: { id: work.friendlier_id }
+        expect(response.status).to redirect_to(root_path)
+        expect(flash[:alert]).to match /You don't have permission/
+      end
+    end
+  end
+
+  context "admin user", logged_in_user: :admin do
+    let(:work_child) { build(:work) }
+    let(:asset_child) { build(:asset_with_faked_file) }
+    let(:work) do
+      create(:work, :published, members: [asset_child, work_child])
+    end
+
+    it "can delete, and deletes children" do
+      put :destroy, params: { id: work.friendlier_id }
+      expect(response.status).to redirect_to(admin_works_path)
+      expect(flash[:notice]).to match /was successfully destroyed/
+      expect { work.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      expect { work_child.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      expect { asset_child.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
   end
 end
