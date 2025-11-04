@@ -5,7 +5,7 @@ require 'rails_helper'
 # admin/works_controller.rb
 # This one tests only the second.
 
-RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue_adapter: :test do
+RSpec.describe Admin::WorksController, type: :controller, queue_adapter: :test do
 
   context "not-logged-in user", logged_in_user: false do
     it "redirects to login" do
@@ -14,7 +14,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     end
   end
 
-  context "logged-in user" do
+  context "logged-in user", :logged_in_user do
     it "shows page" do
       get :index
       expect(response).not_to be_redirect
@@ -141,10 +141,19 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         end
       end
     end
+
+    context "logged-in user cannot" do
+      let(:work) { create(:work) }
+      it "can not publish" do
+        put :publish, params: { id: work.friendlier_id }
+        expect(response.status).to redirect_to(root_path)
+        expect(flash[:alert]).to match /You don't have permission/
+      end
+    end
   end
 
-  context "editor user" do
-    context "#update", logged_in_user: :editor do
+  context "editor user", logged_in_user: :editor do
+    context "#update" do
       let(:work) { create(:public_work, ocr_requested: true, members: [create(:asset_with_faked_file, hocr: "<random ocr/>")]) }
       it "trims leading and trailing spaces" do
         put :update, params: {
@@ -201,7 +210,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       end
     end
 
-    context "#reorder_members", logged_in_user: :editor do
+    context "#reorder_members" do
       let(:c)  { create(:asset_with_faked_file, :mp3, title: "c", position: 1) }
       let(:b)  { create(:asset_with_faked_file, :mp3, title: "b", position: 2) }
       let(:a)  { create(:asset_with_faked_file, :mp3, title: "a", position: 3) }
@@ -228,140 +237,132 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         expect( work.members.order(:position).map {|member| member.title}).to eq ['a', 'b', 'c']
       end
     end
-  end
 
-  context "admin user" do
-    let(:work) { create(:work) }
-
-    context "non-admin user cannot" do
-      it "can not publish" do
-        put :publish, params: { id: work.friendlier_id }
-        expect(response.status).to redirect_to(root_path)
-        expect(flash[:alert]).to match /You don't have permission/
-      end
-
+    context "editor user cannot" do
+      let(:work) { create(:work) }
       it "can not delete" do
         put :destroy, params: { id: work.friendlier_id }
         expect(response.status).to redirect_to(root_path)
         expect(flash[:alert]).to match /You don't have permission/
       end
     end
+  end
 
-    context "admin user can", logged_in_user: :admin do
-      # works that have the necessary metadata to be published, but aren't actually published yet
-      let(:work_child) { build(:work, :published, published: false) }
-      let(:asset_child) { build(:asset_with_faked_file, :tiff, published: false) }
-      let(:work) do
-        create(:work, :published, published: false, published_at: nil, members: [asset_child, work_child])
-      end
+  context "admin user", logged_in_user: :admin do
+    let(:work) { create(:work) }
+    # works that have the necessary metadata to be published, but aren't actually published yet
+    let(:work_child) { build(:work, :published, published: false) }
+    let(:asset_child) { build(:asset_with_faked_file, :tiff, published: false) }
+    let(:work) do
+      create(:work, :published, published: false, published_at: nil, members: [asset_child, work_child])
+    end
 
-      describe "publishing" do
-        around do |example|
-          freeze_time do
-            example.run
-          end
-        end
-
-        context "work has assets with invalid files" do
-          let(:corrupt_tiff_path) { Rails.root + "spec/test_support/images/corrupt_bad.tiff" }
-          let(:bad_asset) {create(:asset, :inline_promoted_file, file: File.open(corrupt_tiff_path))}
-          let(:good_asset) {create(:asset, :inline_promoted_file) }
-          let(:parent_work) { create(:work, :with_complete_metadata, published: false, members: [bad_asset, good_asset]) }
-          before do
-            allow(Rails.logger).to receive(:warn)
-          end
-          it "refuses to publish" do
-            expect(bad_asset.promotion_failed?).to be true
-            put :publish, params: { id: parent_work.friendlier_id, cascade: 'true' }
-            expect(response.status).to redirect_to(admin_work_path(parent_work, anchor: "tab=nav-members"))
-            expect(Rails.logger).to have_received(:warn).with(/.*couldn't be published. Something was wrong with the file for asset*/)
-          end
-        end
-
-        it "can publish, and publishes children" do
-          expect(work.members.first.content_type).to eq "image/tiff"
-          put :publish, params: { id: work.friendlier_id, cascade: 'true' }
-          expect(response.status).to redirect_to(admin_work_path(work))
-          work.reload
-          expect(work.published?).to be true
-          expect(work.published_at).to eq Time.now
-          expect(work.members.all? {|m| m.published?}).to be true
-        end
-
-        it "does not change unpublished children unless requested" do
-          put :publish, params: { id: work.friendlier_id, cascade: 'false' }
-          expect(response.status).to redirect_to(admin_work_path(work))
-          work.reload
-          expect(work.published?).to be true
-          expect(work.members.all? {|m| m.published?}).to be false
+    describe "publishing" do
+      around do |example|
+        freeze_time do
+          example.run
         end
       end
 
-      it "can delete, and deletes children" do
-        put :destroy, params: { id: work.friendlier_id }
-        expect(response.status).to redirect_to(admin_works_path)
-        expect(flash[:notice]).to match /was successfully destroyed/
-
-        expect { work.reload }.to raise_error(ActiveRecord::RecordNotFound)
-        expect { work_child.reload }.to raise_error(ActiveRecord::RecordNotFound)
-        expect { asset_child.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      context "work has assets with invalid files" do
+        let(:corrupt_tiff_path) { Rails.root + "spec/test_support/images/corrupt_bad.tiff" }
+        let(:bad_asset) {create(:asset, :inline_promoted_file, file: File.open(corrupt_tiff_path))}
+        let(:good_asset) {create(:asset, :inline_promoted_file) }
+        let(:parent_work) { create(:work, :with_complete_metadata, published: false, members: [bad_asset, good_asset]) }
+        before do
+          allow(Rails.logger).to receive(:warn)
+        end
+        it "refuses to publish" do
+          expect(bad_asset.promotion_failed?).to be true
+          put :publish, params: { id: parent_work.friendlier_id, cascade: 'true' }
+          expect(response.status).to redirect_to(admin_work_path(parent_work, anchor: "tab=nav-members"))
+          expect(Rails.logger).to have_received(:warn).with(/.*couldn't be published. Something was wrong with the file for asset*/)
+        end
       end
 
-      context "work missing required fields for publication" do
-        render_views
+      it "can publish, and publishes children" do
+        expect(work.members.first.content_type).to eq "image/tiff"
+        put :publish, params: { id: work.friendlier_id, cascade: 'true' }
+        expect(response.status).to redirect_to(admin_work_path(work))
+        work.reload
+        expect(work.published?).to be true
+        expect(work.published_at).to eq Time.now
+        expect(work.members.all? {|m| m.published?}).to be true
+      end
 
-        let(:representative) {  build(:asset_with_faked_file, :tiff, published: true)}
-        let(:work) { create(:private_work, rights: nil, format: nil, genre: nil, department: nil, date_of_work: nil, members: [representative], representative: representative)}
+      it "does not change unpublished children unless requested" do
+        put :publish, params: { id: work.friendlier_id, cascade: 'false' }
+        expect(response.status).to redirect_to(admin_work_path(work))
+        work.reload
+        expect(work.published?).to be true
+        expect(work.members.all? {|m| m.published?}).to be false
+      end
+    end
 
-        it "can not publish, displaying proper error and work form" do
-          put :publish, params: { id: work.friendlier_id, cascade: 'true' }
+    it "can delete, and deletes children" do
+      put :destroy, params: { id: work.friendlier_id }
+      expect(response.status).to redirect_to(admin_works_path)
+      expect(flash[:notice]).to match /was successfully destroyed/
+
+      expect { work.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      expect { work_child.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      expect { asset_child.reload }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    context "work missing required fields for publication" do
+      render_views
+
+      let(:representative) {  build(:asset_with_faked_file, :tiff, published: true)}
+      let(:work) { create(:private_work, rights: nil, format: nil, genre: nil, department: nil, date_of_work: nil, members: [representative], representative: representative)}
+
+      it "can not publish, displaying proper error and work form" do
+        put :publish, params: { id: work.friendlier_id, cascade: 'true' }
+        expect(response.status).to be(200)
+
+        expect(response.body).to include("Can&#39;t publish work: #{work.title}: Validation failed")
+        expect(response.body).to include("Date can&#39;t be blank for published works")
+        expect(response.body).to include("Rights can&#39;t be blank for published works")
+        expect(response.body).to include("Format can&#39;t be blank for published works")
+        expect(response.body).to include("Genre can&#39;t be blank for published works")
+        expect(response.body).to include("Department can&#39;t be blank for published works")
+      end
+
+      describe "child work missing required fields" do
+        let(:work_child) { build(:private_work, title: "the_child_work_title") }
+        let(:work) do
+          create(:work, :published, members: [work_child], published:false)
+        end
+
+        it "can not publish, displaing proper error for child work" do
+          put :publish, params: { id: work.friendlier_id, cascade: 'true'}
           expect(response.status).to be(200)
-
-          expect(response.body).to include("Can&#39;t publish work: #{work.title}: Validation failed")
-          expect(response.body).to include("Date can&#39;t be blank for published works")
-          expect(response.body).to include("Rights can&#39;t be blank for published works")
-          expect(response.body).to include("Format can&#39;t be blank for published works")
-          expect(response.body).to include("Genre can&#39;t be blank for published works")
-          expect(response.body).to include("Department can&#39;t be blank for published works")
-        end
-
-        describe "child work missing required fields" do
-          let(:work_child) { build(:private_work, title: "the_child_work_title") }
-          let(:work) do
-            create(:work, :published, members: [work_child], published:false)
-          end
-
-          it "can not publish, displaing proper error for child work" do
-            put :publish, params: { id: work.friendlier_id, cascade: 'true'}
-            expect(response.status).to be(200)
-            expect(response.body).to include("Can&#39;t publish work: #{work_child.title}: Validation failed")
-          end
+          expect(response.body).to include("Can&#39;t publish work: #{work_child.title}: Validation failed")
         end
       end
+    end
 
-      context "published work" do
-        let(:work_child) { build(:public_work) }
-        let(:asset_child) { build(:asset, published: true) }
-        let(:work) { create(:public_work, members: [asset_child, work_child]) }
+    context "published work" do
+      let(:work_child) { build(:public_work) }
+      let(:asset_child) { build(:asset, published: true) }
+      let(:work) { create(:public_work, members: [asset_child, work_child]) }
 
 
-        it "can unpublish, unpublishes children" do
-          put :unpublish, params: { id: work.friendlier_id, cascade: 'true' }
-          expect(response.status).to redirect_to(admin_work_path(work))
+      it "can unpublish, unpublishes children" do
+        put :unpublish, params: { id: work.friendlier_id, cascade: 'true' }
+        expect(response.status).to redirect_to(admin_work_path(work))
 
-          work.reload
-          expect(work.published?).to be false
-          expect(work.members.none? {|m| m.published?}).to be true
-        end
+        work.reload
+        expect(work.published?).to be false
+        expect(work.members.none? {|m| m.published?}).to be true
+      end
 
-        it "does not change published children unless requested" do
-          put :unpublish, params: { id: work.friendlier_id, cascade: 'false' }
-          expect(response.status).to redirect_to(admin_work_path(work))
+      it "does not change published children unless requested" do
+        put :unpublish, params: { id: work.friendlier_id, cascade: 'false' }
+        expect(response.status).to redirect_to(admin_work_path(work))
 
-          work.reload
-          expect(work.published?).to be false
-          expect(work.members.all? {|m| m.published?}).to be true
-        end
+        work.reload
+        expect(work.published?).to be false
+        expect(work.members.all? {|m| m.published?}).to be true
       end
     end
   end
