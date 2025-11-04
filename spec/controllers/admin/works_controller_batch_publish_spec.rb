@@ -5,6 +5,9 @@ require 'rails_helper'
 # admin/works_controller.rb
 # This one tests only the second.
 
+# mostly we use feature tests, but some things can't easily be tested that way
+# Should this be a 'request' spec instead of a rspec 'controller' spec
+# (that is a rails 'functional' test)?
 RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue_adapter: :test do
   context "#demote_to_asset" do
     context "work not suitable" do
@@ -115,6 +118,276 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
       }
       expect(response.status).to eq(302)
       expect( work.members.order(:position).map {|member| member.title}).to eq ['a', 'b', 'c']
+    end
+  end
+
+  context "#batch_publish_toggle", logged_in_user: :admin do
+    let(:representative) {  build(:asset_with_faked_file, :tiff, published: true)}
+    let(:publishable_work) { create(:work, :with_complete_metadata, published: false, members: [representative], representative: representative) }
+    let(:unpublishable_work) { create(:work, published: false) }
+
+    context "unpublishable works" do
+      before do
+        controller.current_user.works_in_cart << unpublishable_work
+      end
+      it "lists missing metadata on attempt to publish" do
+        put :batch_publish_toggle, params: { publish: "on" }
+        expect(response).to redirect_to(admin_cart_items_path)
+        expect(flash["error"]).to match /Genre can.t be blank/
+      end
+    end
+
+    context "work with corrupt file" do
+      let(:corrupt_tiff_path) { Rails.root + "spec/test_support/images/corrupt_bad.tiff" }
+      let(:bad_asset) {create(:asset, :inline_promoted_file, file: File.open(corrupt_tiff_path))}
+      let(:good_asset) {create(:asset, :inline_promoted_file) }
+      let(:work_with_bad_asset) { create(:work, :with_complete_metadata, published: false, members: [bad_asset, good_asset]) }
+      before do
+        controller.current_user.works_in_cart << unpublishable_work
+        controller.current_user.works_in_cart << publishable_work
+        controller.current_user.works_in_cart << work_with_bad_asset
+      end
+      it "displays error on attempt to publish" do
+        put :batch_publish_toggle, params: { publish: "on" }
+        expect(response).to redirect_to(admin_cart_items_path)
+        expect(flash["error"]).to match /No changes made due to error/
+      end
+    end
+
+    context "work with a png instead of a tiff" do
+      let(:png) { create(:asset, :inline_promoted_file) }
+      let(:work_with_png) { create(:work, :with_complete_metadata, published: false, members: [png]) }
+
+      before do
+        controller.current_user.works_in_cart << work_with_png
+      end
+      it "refuses to publish: image assets need to be tiffs unless they are portraits or collection thumbs." do
+        expect(png.content_type).to eq "image/png"
+        put :batch_publish_toggle, params: { publish: "on" }
+        expect(response).to redirect_to(admin_cart_items_path)
+        expect(flash["error"]).to match /contains one or more assets with invalid files./
+        expect(work_with_png.reload.published?).to be false
+      end
+    end
+
+
+    context "work with an asset with no mimetype" do
+      let(:no_file_type) { create(:asset_with_faked_file, faked_content_type:nil) }
+      let(:work_with_no_file_type) { create(:work, :with_complete_metadata, published: false, members: [no_file_type]) }
+      before do
+        controller.current_user.works_in_cart << work_with_no_file_type
+      end
+      it "refuses to publish: image assets need to be have a mime type." do
+        expect(no_file_type.content_type).to be_nil
+        put :batch_publish_toggle, params: { publish: "on" }
+        expect(response).to redirect_to(admin_cart_items_path)
+        expect(flash["error"]).to match /contains one or more assets with invalid files./
+        expect(work_with_no_file_type.reload.published?).to be false
+      end
+    end
+
+    context "work with a legitimate portrait png" do
+      let(:portrait_png) { create(:asset, :inline_promoted_file, role: "portrait") }
+      let(:work) { create(:work, :with_complete_metadata, published: false, members: [portrait_png]) }
+      before do
+        controller.current_user.works_in_cart << work
+      end
+      it "No error; should publish the work" do
+        expect(publishable_work.members.first.content_type).to eq "image/tiff"
+        put :batch_publish_toggle, params: { publish: "on" }
+        expect(response).to redirect_to(admin_cart_items_path)
+        expect(flash["error"]).to be nil
+        expect(work.reload.published?).to be true
+      end
+    end
+
+    context "publishable works" do
+      around do |example|
+        freeze_time do
+          example.run
+        end
+      end
+
+      before do
+        controller.current_user.works_in_cart << publishable_work
+      end
+
+      it "publishes" do
+
+        put :batch_publish_toggle, params: { publish: "on" }
+
+        expect(response).to redirect_to(admin_cart_items_path)
+        expect(flash["error"]).to be_blank
+
+        expect(publishable_work.reload).to be_published
+        expect(publishable_work.published_at).to eq Time.now
+      end
+    end
+  end
+
+  context "Oral histories", logged_in_user: :editor do
+    let(:work) { create(:oral_history_work) }
+
+    context "add an OHMS XML file" do
+      let(:valid_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/duarte_OH0344.xml" }
+
+      it "can add valid file" do
+        put :submit_ohms_xml, params: { id: work.friendlier_id, ohms_xml: Rack::Test::UploadedFile.new(valid_xml_path, "application/xml")}
+        expect(response).to redirect_to(admin_work_path(work, anchor: "tab=nav-oral-histories"))
+        expect(flash[:error]).to be_blank
+
+        expect(work.reload.oral_history_content.ohms_xml).to be_present
+      end
+
+      it "can't add an invalid file" do
+        put :submit_ohms_xml, params: {
+          id: work.friendlier_id,
+          ohms_xml: Rack::Test::UploadedFile.new(StringIO.new("not > xml"), "application/xml", original_filename: "foo.xml")
+        }
+
+        expect(response).to redirect_to(admin_work_path(work, anchor: "tab=nav-oral-histories"))
+        expect(flash[:error]).to include("OHMS XML file was invalid and could not be accepted")
+
+        expect(work.reload.oral_history_content&.ohms_xml).not_to be_present
+      end
+    end
+
+    context "correcting timestamp sequence for multiple recordings" do
+      let(:work) do
+        create(:oral_history_work).tap do |awork|
+          awork.oral_history_content!.output_sequenced_docx_transcript = build(:stored_uploaded_file)
+        end
+      end
+      let(:docx_path) { Rails.root + "spec/test_support/oh_docx/sample-oh-timecode-need-sequencing.docx" }
+
+      it "#store_input_docx_transcript" do
+        # make sure we're testing what we expect
+        expect(work.oral_history_content.output_sequenced_docx_transcript).to be_present
+        expect(work.oral_history_content.input_docx_transcript_data).not_to be_present
+
+        put :store_input_docx_transcript, params: {
+          id: work.friendlier_id,
+          docx: Rack::Test::UploadedFile.new(docx_path)
+        }
+
+        work.reload
+        expect(work.oral_history_content.input_docx_transcript_data).to be_present
+        # zero'd out since existing one no longer appropriate for new input
+        expect(work.oral_history_content.output_sequenced_docx_transcript).not_to be_present
+        expect(SequenceOhTimestampsJob).to have_been_enqueued.with(work)
+      end
+    end
+
+    context "Adding, updating and removing full-text searches " do
+      let(:transcript_path) { Rails.root + "spec/test_support/text/0767.txt" }
+      let(:pdf_path) { Rails.root + "spec/test_support/pdf/sample.pdf" }
+
+      let(:work) { FactoryBot.create(:work,
+        genre: ["Oral histories"],
+        external_id: [
+          Work::ExternalId.new({"value"=>"0012",   "category"=>"interview"}),
+        ])
+      }
+
+      it "can add a file" do
+        put :submit_searchable_transcript_source, params: {
+          id: work.friendlier_id,
+          searchable_transcript_source: Rack::Test::UploadedFile.new(transcript_path, "text/plain")
+        }
+        expect(response).to redirect_to(admin_work_path(work, anchor: "tab=nav-oral-histories"))
+        expect(flash[:error]).to be_blank
+        expect(work.oral_history_content!.searchable_transcript_source).to be_present
+      end
+
+      it "can delete the file" do
+        put :remove_searchable_transcript_source, params: {
+          id: work.friendlier_id#,
+        }
+        expect(response).to redirect_to(admin_work_path(work, anchor: "tab=nav-oral-histories"))
+        expect(flash[:error]).to be_blank
+        expect(flash[:notice]).to match /has been removed/
+        expect(work.oral_history_content!.searchable_transcript_source).not_to be_present
+      end
+
+      it "can download the file" do
+        get :download_searchable_transcript_source, params: { id: work.friendlier_id }
+        expect(response.status).to eq 200
+        expect(response.header["Content-Disposition"]).to eq(
+          "attachment; filename=\"0012_transcript.txt\"; filename*=UTF-8''0012_transcript.txt"
+        )
+      end
+    end
+
+    context "create audio derivatives",  logged_in_user: :admin do
+
+      let!(:audio_asset_1)  { create(:asset, :inline_promoted_file,
+          position: 1,
+          title: "Audio asset 1",
+          file: File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.mp3"))
+        )
+      }
+      let!(:audio_asset_2)  { create(:asset, :inline_promoted_file,
+          position: 2,
+          title: "Audio asset 2",
+          file: File.open((Rails.root + "spec/test_support/audio/10-seconds-of-silence.mp3"))
+        )
+      }
+      let!(:oral_history) { FactoryBot.create(
+        :work,
+        genre: ["Oral histories"],
+        members: [audio_asset_1, audio_asset_2],
+        title: "Oral history with two interview audio segments")
+      }
+
+      it "kicks off an audio derivatives job" do
+        expect(oral_history.members.map(&:stored?)).to match([true, true])
+        put :create_combined_audio_derivatives, params: { id: oral_history.friendlier_id }
+        expect(response).to redirect_to(admin_work_path(oral_history, anchor: "tab=nav-oral-histories"))
+        expect(CreateCombinedAudioDerivativesJob).to have_been_enqueued
+      end
+    end
+
+    context "change oh available by request" do
+      let(:was_true_asset) { create(:asset_with_faked_file, :mp3, oh_available_by_request: true) }
+      let(:was_false_asset) { create(:asset_with_faked_file, :mp3, oh_available_by_request: false) }
+      let(:work) { create(:oral_history_work, members: [was_true_asset, was_false_asset])}
+
+      it "changes" do
+        put :update_oh_available_by_request, params: {
+          id: work.friendlier_id,
+          oral_history_content: {
+            available_by_request_mode: "automatic"
+          },
+          available_by_request: {
+            was_true_asset.id => "false",
+            was_false_asset.id => "true",
+            "no_such_id" => "true"
+          }
+        }
+        expect(response).to redirect_to(admin_work_path(work, anchor: "tab=nav-oral-histories"))
+
+        expect(work.reload.oral_history_content.available_by_request_mode).to eq("automatic")
+        expect(was_false_asset.reload.oh_available_by_request).to be true
+        expect(was_true_asset.reload.oh_available_by_request).to be false
+      end
+    end
+
+    context "update interviewee biography" do
+      let(:interviewee_biography) { create(:interviewee_biography) }
+
+      it "reindexes the work" do
+        # cheesy hacky way to intercept solr index update method and ensure it happened
+        expect_any_instance_of(Work).to receive(:update_index)
+
+        put :update_oral_history_content, params: {
+          id: work.friendlier_id,
+          oral_history_content: {
+            interviewee_biography_ids: [interviewee_biography.id]
+          }
+        }
+
+        expect(work.oral_history_content.reload.interviewee_biography_ids).to eq([interviewee_biography.id])
+      end
     end
   end
 
