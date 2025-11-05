@@ -42,6 +42,10 @@ namespace :scihist do
 
     git_sha = ENV['SOURCE_VERSION']
 
+    if git_sha.nil?
+      raise "Unable to obtain source version."
+    end
+
     # Put the sha and the backup into file_2
     cmd.run "echo \"-- GIT SHA:\"                    >  #{temp_file_2.path}"
     cmd.run "echo \"-- #{git_sha}\n\"                >> #{temp_file_2.path}"
