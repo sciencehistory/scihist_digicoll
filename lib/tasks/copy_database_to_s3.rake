@@ -20,6 +20,7 @@ namespace :scihist do
   task :copy_database_to_s3 => :environment do
     region = ScihistDigicoll::Env.lookup(:s3_backup_bucket_region)
     bucket   = ENV['BUCKET']                         || 'chf-hydra-backup'
+
     s3_backup_file_path = ScihistDigicoll::Env.lookup!(:s3_backup_file_path)
 
 
@@ -39,32 +40,12 @@ namespace :scihist do
 
     cmd.run!('pg_dump', '--no-password', '--no-owner', '--no-acl', '--clean', ENV['DATABASE_URL'], :out => temp_file_1.path )
 
-
-    # Obtain, by questionble means, the GIT sha hash for the master branch:
-    #
-    # Note:
-    # git ls-remote https://github.com/sciencehistory/scihist_digicoll.git master
-    # would have been better, but we don't have git installed on heroku dynos by default.
-    #
-    git_sha_line = cmd.run("curl -s https://api.github.com/repos/sciencehistory/scihist_digicoll/branches/master | grep 'sha'  | head -1").out
-    git_sha = git_sha_line.scan(/\"(.*?)\"/)[1][0]
-
+    git_sha = ENV['SOURCE_VERSION']
 
     # Put the sha and the backup into file_2
     cmd.run "echo \"-- GIT SHA:\"                    >  #{temp_file_2.path}"
     cmd.run "echo \"-- #{git_sha}\n\"                >> #{temp_file_2.path}"
     cmd.run "cat  \"#{temp_file_1.path}\"            >> #{temp_file_2.path}"
-
-    # This gives us:
-    # -- GIT SHA:
-    # -- afd2bd0b69f585bfb977649af946cc40abf051ea
-
-    # --
-    # -- PostgreSQL database dump
-    # --
-    #
-    # [...]
-
 
     # Zip file 2 into file 3
     cmd.run!('gzip', '-c', temp_file_2.path, :out => temp_file_3.path )
