@@ -20,7 +20,6 @@ namespace :scihist do
   task :copy_database_to_s3 => :environment do
     region = ScihistDigicoll::Env.lookup(:s3_backup_bucket_region)
     bucket   = ENV['BUCKET']                         || 'chf-hydra-backup'
-
     s3_backup_file_path = ScihistDigicoll::Env.lookup!(:s3_backup_file_path)
 
 
@@ -37,7 +36,7 @@ namespace :scihist do
     temp_file_2 = Tempfile.new(['temp_database_dump_with_git_hash','.sql'])
     temp_file_3 = Tempfile.new(['temp_database_dump','.sql.gz'])
 
-
+    # --clean means "include DROP commands at the top of the file."
     cmd.run!('pg_dump', '--no-password', '--no-owner', '--no-acl', '--clean', ENV['DATABASE_URL'], :out => temp_file_1.path )
 
     git_sha = ENV['SOURCE_VERSION']
