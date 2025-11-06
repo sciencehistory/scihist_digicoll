@@ -33,32 +33,32 @@ namespace :scihist do
     )
     cmd = TTY::Command.new(printer: :null)
     temp_file_1 = Tempfile.new(['temp_database_dump','.sql'])
-    temp_file_2 = Tempfile.new(['temp_database_dump_with_git_hash','.sql'])
-    temp_file_3 = Tempfile.new(['temp_database_dump','.sql.gz'])
+    temp_file_2 = Tempfile.new(['temp_database_dump','.sql.gz'])
 
-    # --clean means "include DROP commands at the top of the file."
-    cmd.run!('pg_dump', '--no-password', '--no-owner', '--no-acl', '--clean', ENV['DATABASE_URL'], :out => temp_file_1.path )
 
-    git_sha = ENV['SOURCE_VERSION']
-
-    if git_sha.nil?
+    unless ENV['SOURCE_VERSION'].present?
       raise "Unable to obtain source version."
     end
 
-    # Put the sha and the backup into file_2
-    cmd.run "echo \"-- GIT SHA:\"                    >  #{temp_file_2.path}"
-    cmd.run "echo \"-- #{git_sha}\n\"                >> #{temp_file_2.path}"
-    cmd.run "cat  \"#{temp_file_1.path}\"            >> #{temp_file_2.path}"
+    dump_command = [
+      'echo', "\"-- GIT SHA:\"",                 '&&',
+      'echo', "\"-- #{ENV['SOURCE_VERSION']}\"", '&&',
 
-    # Zip file 2 into file 3
-    cmd.run!('gzip', '-c', temp_file_2.path, :out => temp_file_3.path )
+      # --clean means "include DROP commands at the top of the file."
+      'pg_dump', '--no-password', '--no-owner', '--no-acl', '--clean', ENV['DATABASE_URL']
+    ].join(" ")
+
+    cmd.run!(dump_command, :out => temp_file_1.path )
+
+    # zip file 1 into file 2
+    cmd.run!('gzip', '-c', temp_file_1.path, :out => temp_file_2.path )
 
     aws_bucket = Aws::S3::Bucket.new(name: bucket, client: aws_client)
     aws_object = aws_bucket.object(s3_backup_file_path)
 
-    raise "Backup file looks too small. (#{temp_file_3.size} bytes)." unless temp_file_3.size > 100000000
+    raise "Backup file looks too small. (#{temp_file_2.size} bytes)." unless temp_file_2.size > 100000000
 
-    result = aws_object.upload_file(temp_file_3.path,
+    result = aws_object.upload_file(temp_file_2.path,
         content_type: "application/gzip",
         storage_class: "STANDARD_IA",
         metadata: { "backup_time" => Time.now.utc.to_s, "git_sha_hash" => git_sha }
@@ -68,6 +68,5 @@ namespace :scihist do
 
     temp_file_1.unlink
     temp_file_2.unlink
-    temp_file_3.unlink
   end
 end
