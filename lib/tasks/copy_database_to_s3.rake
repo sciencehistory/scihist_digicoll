@@ -43,7 +43,6 @@ namespace :scihist do
     dump_command = [
       'echo', "\"-- GIT SHA:\"",                 '&&',
       'echo', "\"-- #{ENV['SOURCE_VERSION']}\"", '&&',
-
       # --clean means "include DROP commands at the top of the file."
       'pg_dump', '--no-password', '--no-owner', '--no-acl', '--clean', ENV['DATABASE_URL']
     ].join(" ")
@@ -61,7 +60,7 @@ namespace :scihist do
     result = aws_object.upload_file(temp_file_2.path,
         content_type: "application/gzip",
         storage_class: "STANDARD_IA",
-        metadata: { "backup_time" => Time.now.utc.to_s, "git_sha_hash" => git_sha }
+        metadata: { "backup_time" => Time.now.utc.to_s, "git_sha_hash" => ENV['SOURCE_VERSION'] }
         )
 
     raise "Upload failed" unless result
