@@ -348,16 +348,18 @@
 
          As our corpus gets larger, space for each cache entry will increase, holding fewer entries
          per megabyte.
+
+         autowarmCount choices are guesses, more investigation is possible.
     -->
 
     <filterCache class="solr.CaffeineCache"
              maxRamMB="3"
-             autowarmCount="500"
+             autowarmCount="60%"
              async="true" />
 
      <queryResultCache class="solr.CaffeineCache"
              maxRamMB="2"
-             autowarmCount="300"
+             autowarmCount="30%"
              async="true" />
 
   </query>
