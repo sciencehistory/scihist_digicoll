@@ -35,9 +35,21 @@ namespace :scihist do
     temp_file_1 = Tempfile.new(['temp_database_dump','.sql'])
     temp_file_2 = Tempfile.new(['temp_database_dump','.sql.gz'])
 
-    # --clean means "include DROP commands at the top of the file."
 
-    cmd.run!('pg_dump', '--no-password', '--no-owner', '--no-acl', '--clean', ENV['DATABASE_URL'], :out => temp_file_1.path )
+    unless ENV['SOURCE_VERSION'].present?
+      raise "Unable to obtain source version."
+    end
+
+    dump_command = [
+      'echo', "\"-- GIT SHA:\"",                 '&&',
+      'echo', "\"-- #{ENV['SOURCE_VERSION']}\"", '&&',
+      # --clean means "include DROP commands at the top of the file."
+      'pg_dump', '--no-password', '--no-owner', '--no-acl', '--clean', ENV['DATABASE_URL']
+    ].join(" ")
+
+    cmd.run!(dump_command, :out => temp_file_1.path )
+
+    # zip file 1 into file 2
     cmd.run!('gzip', '-c', temp_file_1.path, :out => temp_file_2.path )
 
     aws_bucket = Aws::S3::Bucket.new(name: bucket, client: aws_client)
@@ -48,7 +60,7 @@ namespace :scihist do
     result = aws_object.upload_file(temp_file_2.path,
         content_type: "application/gzip",
         storage_class: "STANDARD_IA",
-        metadata: { "backup_time" => Time.now.utc.to_s}
+        metadata: { "backup_time" => Time.now.utc.to_s, "git_sha_hash" => ENV['SOURCE_VERSION'] }
         )
 
     raise "Upload failed" unless result

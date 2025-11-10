@@ -320,6 +320,11 @@
         </dd>
       <% end %>
 
+      <%if @asset.contains_embedded_preview? %>
+        <dt class="col-sm-4">Embedded preview</dt>
+        <dd class="col-sm-8">Present</dd>
+      <% end %>
+
       <% if @exiftool_result.pdf_version.present? %>
         <dt class="col-sm-4">PDF Version</dt>
         <dd class="col-sm-8">

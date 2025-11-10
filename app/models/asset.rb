@@ -324,6 +324,21 @@ class Asset < Kithe::Asset
     end
   end
 
+  # "Embedded preview" means pretty much
+  # the same thing as "Photoshop thumbnail", but to
+  # reduce confusion with represenative thumbnails
+  # we're calling it by a different name.
+  #
+  # Images with an embedded preview always have more than one exiftool key ending in ':ImageWidth'.
+  #
+  # Details:
+  #   https://sciencehistory.atlassian.net/wiki/spaces/HDC/pages/2775351299/TIFF+files+in+the+digital+collections
+  def contains_embedded_preview?
+    return false if self.exiftool_result.nil?
+    image_width_keys = self.exiftool_result.keys.select {|k| k.end_with?(':ImageWidth') }
+    (more_than_one_layer_or_page? == false) && image_width_keys.present? && image_width_keys.count > 1
+  end
+
   def corrected_webvtt?
     file_derivatives[CORRECTED_WEBVTT_DERIVATIVE_KEY.to_sym].present?
   end
@@ -494,6 +509,7 @@ class Asset < Kithe::Asset
   # See https://sciencehistory.atlassian.net/wiki/spaces/HDC/pages/2775351299/TIFF+files+in+the+digital+collections
   # See https://github.com/sciencehistory/scihist_digicoll/issues/2939
   def more_than_one_layer_or_page?
+    return false if self.exiftool_result.nil?
     layer_or_page_keys = [
       'Photoshop:LayerCount',
       'EXIF:PageNumber'

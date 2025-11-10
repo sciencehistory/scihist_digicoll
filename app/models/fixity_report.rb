@@ -5,15 +5,16 @@
 # The class is used in controllers/admin/assets_controller.rb .
 
 class FixityReport  < ApplicationRecord
-  # If no fixity check no older than STALE_IN_DAYS, considered stale
-  STALE_IN_DAYS = ScihistDigicoll::AssetsNeedingFixityChecks::DEFAULT_PERIOD_IN_DAYS
+
   # Assets older than EXPECTED_FRESH_IN_DAYS should not be stale, or it's a problem.
   EXPECTED_FRESH_IN_DAYS = 1
+
+  STALE_IN_DAYS = ScihistDigicoll::AssetsNeedingFixityChecks::DEFAULT_PERIOD_IN_DAYS
 
   # We store video originals in 'video_store' and everything else in 'store'.
   NOT_STORED_FILE_SQL = "(file_data ->> 'storage' NOT IN ('store', 'video_store') or file_data ->> 'storage' is NULL)"
   STORED_FILE_SQL     = "(file_data ->> 'storage' IN ('store','video_store'))"
-  STALE_CHECKS_SQL    = "(max(fixity_checks.created_at) < (NOW() - INTERVAL '#{STALE_IN_DAYS} days'))"
+  STALE_CHECKS_SQL    = "(max(fixity_checks.created_at) < (NOW() - INTERVAL '#{ScihistDigicoll::AssetsNeedingFixityChecks::DEFAULT_PERIOD_IN_DAYS} days'))"
   RECENT_ASSET_SQL    = "(kithe_models.created_at > (NOW() - INTERVAL '#{EXPECTED_FRESH_IN_DAYS} days'))"
   REPORT_CACHE_KEY = "scihist:fixity_report"
   HOW_LONG_TO_CACHE_REPORT = 1.days
@@ -92,22 +93,6 @@ class FixityReport  < ApplicationRecord
     rep[:timestamp] = Time.current.to_s
     rep
   end
-
-
-  # This method will be moved out of this class in a future refactor:
-  def need_checks_assets_relation
-    stored_file  = FixityReport::STORED_FILE_SQL
-    recent_asset = FixityReport::RECENT_ASSET_SQL
-    stale_check  = FixityReport::STALE_CHECKS_SQL
-
-    Asset.where(
-      id: Asset.select("kithe_models.id").
-        left_outer_joins(:fixity_checks).group(:id).having(stored_file).
-        having("#{recent_asset} = false").
-        having("(#{stale_check}) OR (#{stale_check} is NULL)")
-    )
-  end
-
 
   def check_count_having(conditions)
     subquery = Asset.

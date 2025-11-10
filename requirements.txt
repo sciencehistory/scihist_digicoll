@@ -11,16 +11,4 @@
 # used for installs. https://www.codementor.io/@inanc/how-to-run-python-and-ruby-on-heroku-with-multiple-buildpacks-kgy6g3b1e
 
 
-
-# img2pdf==0.4.4
-#
-# We need an img2pdf with a fix for jp2 alpha channels that is not yet included
-# in a release.
-#
-# https://gitlab.mister-muffin.de/josch/img2pdf/issues/173
-# https://gitlab.mister-muffin.de/josch/img2pdf/commit/acc25a49265effbbffa36e053ae2a3aa633eddbf
-#
-# When that fix is included in a release, sometime after 0.4.4, we can go back to ordinary
-# pip install.
-#
-img2pdf @ git+https://gitlab.mister-muffin.de/josch/img2pdf.git@09064e8
+img2pdf==0.6.1
