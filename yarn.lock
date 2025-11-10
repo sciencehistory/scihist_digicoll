@@ -438,12 +438,12 @@ binary-extensions@^2.0.0:
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.3.0.tgz#f6e14a97858d327252200242d4ccfe522c445522"
   integrity sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==
 
-blacklight-frontend@^8.12.2:
-  version "8.12.2"
-  resolved "https://registry.yarnpkg.com/blacklight-frontend/-/blacklight-frontend-8.12.2.tgz#4abc0769af2c804e21b376ece0fd22fc34cd9a89"
-  integrity sha512-9bTZMc/52KBFttUAddgx7xnL2C9zOFiVpctcXb4rWaKSCV87FMym+mkfB4iP0UGKn3B2z8XXs0iLDNflQnOpsQ==
+blacklight-frontend@9.0.0-beta8:
+  version "9.0.0-beta8"
+  resolved "https://registry.yarnpkg.com/blacklight-frontend/-/blacklight-frontend-9.0.0-beta8.tgz#7f2bfb1491b8c049c3d55ddaf6c665139e02050e"
+  integrity sha512-qtEiFGi0hjvuV41I1jhTuKnUf6ckw4Qs7wa3wSlLDnFyiaIIY8fBR5gp8d/dQQiGJF4CMfcJK3DMMobTN0AkTg==
   dependencies:
-    bootstrap ">=4.3.1 <6.0.0"
+    bootstrap ">=5.3.5 <6.0.0"
 
 blacklight-range-limit@9.1.0:
   version "9.1.0"
@@ -452,7 +452,7 @@ blacklight-range-limit@9.1.0:
   dependencies:
     chart.js "^ 4.4.1"
 
-"bootstrap@>=4.3.1 <6.0.0", "bootstrap@^ 5.0.0":
+"bootstrap@^ 5.0.0":
   version "5.3.3"
   resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-5.3.3.tgz#de35e1a765c897ac940021900fcbb831602bac38"
   integrity sha512-8HLCdWgyoMguSO9o+aH+iuZ+aht+mzW0u3HIMzVu7Srrpv7EBBxTnrFlSCskwdY1+EOFQSm7uMJhNQHkdPcmjg==

@@ -4,7 +4,9 @@ class FeaturedTopicController < CatalogController
 
   configure_blacklight do |config|
     # Limit just to items in the featured topic.
+    # For Blacklight 9, we need to do this in two classes.
     config.search_builder_class = ::SearchBuilder::WithinFeaturedTopicBuilder
+    config.facet_search_builder_class = ::SearchBuilder::WithinFeaturedTopicFacetBuilder
 
     # And we need to make sure the :slug param is allowed by blacklight,
     # don't totally understand why, as of BL 7.25
@@ -37,11 +39,10 @@ class FeaturedTopicController < CatalogController
 
       empty_search_state = search_state_class.new(params.slice(:controller, :action, :slug), blacklight_config, self)
 
-      # In future BL versions you may need to remove .to_h, just `search_service.search_builder.with(empty_search_state)`
-      builder = search_service.search_builder.with(empty_search_state.to_h)
+      builder = search_service.search_builder.with(empty_search_state)
       builder.rows = 0 # we don't want any actual results back, just search metadata
 
-      response = search_service.repository.search(builder)
+      response = search_service.repository.search(params: builder)
 
       response.total_count
     end

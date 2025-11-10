@@ -18,7 +18,7 @@ describe Scihist::BlacklightSolrRepository do
     end
 
     it "can return results" do
-      response = repository.search
+      response = repository.search(params: {})
       expect(response).to be_kind_of(Blacklight::Solr::Response)
       expect(response.documents).to be_present
     end
@@ -36,7 +36,7 @@ describe Scihist::BlacklightSolrRepository do
 
       it "does not retry" do
         expect {
-          response = repository.search
+          response = repository.search(params: {})
         }.to raise_error(Blacklight::Exceptions::InvalidRequest)
 
         expect(WebMock).to have_requested(:any, solr_select_url_regex).once
@@ -50,7 +50,7 @@ describe Scihist::BlacklightSolrRepository do
 
       it "retries once" do
         expect {
-          response = repository.search
+          response = repository.search(params: {})
         }.to raise_error(Blacklight::Exceptions::InvalidRequest)
 
         expect(WebMock).to have_requested(:any, solr_select_url_regex).times(2)
@@ -63,7 +63,7 @@ describe Scihist::BlacklightSolrRepository do
         end
 
         expect {
-          response = repository.search
+          response = repository.search(params: {})
         }.to raise_error(Blacklight::Exceptions::InvalidRequest)
 
         expect(logged).to include /\AScihist::BlacklightSolrRepository: Retrying Solr request: HTTP 404: Faraday::ResourceNotFound: retry 1/

@@ -40,7 +40,11 @@ class CollectionShowController < CatalogController
   configure_blacklight do |config|
     # Our custom sub-class to limit just to docs in collection, with collection id
     # taken from params[:collection_id]
+    #
+    # Blacklight 9 requires this logic to be duplicated in two parallel search builder
+    # classes, see https://github.com/projectblacklight/blacklight/pull/3762
     config.search_builder_class = ::SearchBuilder::WithinCollectionBuilder
+    config.facet_search_builder_class = ::SearchBuilder::WithinCollectionFacetBuilder
 
     # and we need to make sure collection_id is allowed by BL, don't totally
     # understand this, as of BL 7.25
